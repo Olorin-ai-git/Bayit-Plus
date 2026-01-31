@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from '../../components';
 import { useAuthStore } from '../../stores/authStore';
 import { subscriptionService } from '../../services/api';
@@ -138,7 +139,7 @@ export const ProfileScreen: React.FC = () => {
             <View className="h-[1px] bg-[rgba(255,255,255,0.1)] my-3" />
 
             <TouchableOpacity onPress={handleLogout} className="flex-row items-center py-3 px-3 rounded-lg">
-              <Text className="text-[20px] ml-2">🚪</Text>
+              <NativeIcon name="logout" size="lg" context="tv" color="#ef4444" style={{ marginLeft: 8 }} />
               <Text className="text-[16px] text-[#ef4444]">{t('account.logout')}</Text>
             </TouchableOpacity>
           </GlassView>

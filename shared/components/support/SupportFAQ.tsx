@@ -18,6 +18,7 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 import { supportConfig } from '../../config/supportConfig';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface FAQItem {
   id: string;
@@ -102,13 +103,19 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
                     style={styles.feedbackButton}
                     onPress={() => handleFeedback(true)}
                   >
-                    <Text style={styles.feedbackButtonText}>👍 Yes</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                      <NativeIcon name="thumbsUp" size="sm" color="#a855f7" />
+                      <Text style={styles.feedbackButtonText}>Yes</Text>
+                    </View>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.feedbackButton}
                     onPress={() => handleFeedback(false)}
                   >
-                    <Text style={styles.feedbackButtonText}>👎 No</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                      <NativeIcon name="thumbsDown" size="sm" color="#a855f7" />
+                      <Text style={styles.feedbackButtonText}>No</Text>
+                    </View>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -127,11 +134,11 @@ const AccordionItem: React.FC<AccordionItemProps> = ({
 };
 
 const categories = [
-  { id: 'all', labelKey: 'support.faq.categories.all', icon: '📋' },
-  { id: 'general', labelKey: 'support.faq.categories.general', icon: '❓' },
-  { id: 'billing', labelKey: 'support.faq.categories.billing', icon: '💳' },
-  { id: 'technical', labelKey: 'support.faq.categories.technical', icon: '🔧' },
-  { id: 'features', labelKey: 'support.faq.categories.features', icon: '✨' },
+  { id: 'all', labelKey: 'support.faq.categories.all', icon: 'clipboard' },
+  { id: 'general', labelKey: 'support.faq.categories.general', icon: 'helpCircle' },
+  { id: 'billing', labelKey: 'support.faq.categories.billing', icon: 'creditCard' },
+  { id: 'technical', labelKey: 'support.faq.categories.technical', icon: 'tool' },
+  { id: 'features', labelKey: 'support.faq.categories.features', icon: 'sparkles' },
 ];
 
 export const SupportFAQ: React.FC = () => {
@@ -271,7 +278,13 @@ export const SupportFAQ: React.FC = () => {
               focusedCategory === cat.id && styles.categoryButtonFocused,
             ]}
           >
-            <Text style={styles.categoryIcon}>{cat.icon}</Text>
+            <View style={styles.categoryIconContainer}>
+              <NativeIcon
+                name={cat.icon as any}
+                size={isTV ? 'md' : 'sm'}
+                color={selectedCategory === cat.id ? '#a855f7' : '#9ca3af'}
+              />
+            </View>
             <Text
               style={[
                 styles.categoryText,

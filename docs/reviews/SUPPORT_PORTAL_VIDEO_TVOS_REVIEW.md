@@ -27,6 +27,7 @@ The Bayit Plus Widgets Intro Video Integration in the Support Portal has **criti
 - ✅ Follows 10-foot UI typography guidelines
 
 **Code Reference** (Lines 70-78):
+::: v-pre
 ```tsx
 <Text className={`text-3xl mb-3 ${isTV ? 'text-4xl' : ''} text-center`}>
   🎬
@@ -38,6 +39,7 @@ The Bayit Plus Widgets Intro Video Integration in the Support Portal has **criti
   {t('support.videos.widgetsDescription')}
 </Text>
 ```
+:::
 
 #### 2. Tab Navigation Structure
 - ✅ Horizontal ScrollView for tab navigation
@@ -47,6 +49,7 @@ The Bayit Plus Widgets Intro Video Integration in the Support Portal has **criti
 - ✅ Tab icons scale appropriately for tvOS
 
 **Code Reference** (Lines 177-205):
+::: v-pre
 ```tsx
 <ScrollView
   horizontal
@@ -67,6 +70,7 @@ The Bayit Plus Widgets Intro Video Integration in the Support Portal has **criti
       }`}
     >
 ```
+:::
 
 #### 3. Localization Support
 - ✅ Uses i18n translation keys (`t('support.videos.widgetsIntro')`)
@@ -92,6 +96,7 @@ The Bayit Plus Widgets Intro Video Integration in the Support Portal has **criti
 **Issue**:
 The video player is **web-only** and shows an error message on tvOS:
 
+::: v-pre
 ```tsx
 {Platform.OS === 'web' ? (
   <video
@@ -106,6 +111,7 @@ The video player is **web-only** and shows an error message on tvOS:
   </Text>
 )}
 ```
+:::
 
 **Evidence**:
 - Lines 82-98 show platform check that excludes tvOS
@@ -116,6 +122,7 @@ The video player is **web-only** and shows an error message on tvOS:
 **Required Fix**:
 Replace native `<video>` element with `react-native-video` component for tvOS support:
 
+::: v-pre
 ```tsx
 import Video from 'react-native-video';
 
@@ -131,6 +138,7 @@ import Video from 'react-native-video';
   />
 )}
 ```
+:::
 
 **Apple Guidelines Violated**:
 - tvOS HIG: "All features available on web must work on tvOS"
@@ -159,6 +167,7 @@ The HTML5 video element's native controls are not keyboard/Siri Remote accessibl
 **Required Fix**:
 Implement custom video controls with focus navigation:
 
+::: v-pre
 ```tsx
 <View>
   <Video {...videoProps} />
@@ -180,6 +189,7 @@ Implement custom video controls with focus navigation:
   </View>
 </View>
 ```
+:::
 
 **Apple Guidelines Violated**:
 - tvOS HIG: "All interactive elements must be focusable"
@@ -288,6 +298,7 @@ Video container uses web-centric styling:
 **Required Fix**:
 Use StyleSheet and tvOS-specific properties:
 
+::: v-pre
 ```tsx
 const styles = StyleSheet.create({
   videoContainer: {
@@ -303,6 +314,7 @@ const styles = StyleSheet.create({
 
 <View style={styles.videoContainer} tvParallaxProperties={{ magnification: 1.1 }}>
 ```
+:::
 
 **Apple Guidelines Referenced**:
 - tvOS HIG: "Use parallax effects for visual depth"
@@ -390,6 +402,7 @@ const styles = StyleSheet.create({
 
 ### Example 1: Cross-Platform Video Component
 
+::: v-pre
 ```tsx
 import Video from 'react-native-video';
 import { Platform, StyleSheet } from 'react-native';
@@ -438,9 +451,11 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### Example 2: Focusable Video Controls
 
+::: v-pre
 ```tsx
 import { GlassButton } from '@bayit/glass';
 
@@ -477,9 +492,11 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### Example 3: Siri Remote Integration
 
+::: v-pre
 ```swift
 // SiriRemoteManager.m (Objective-C bridge)
 #import <React/RCTBridgeModule.h>
@@ -490,6 +507,7 @@ RCT_EXTERN_METHOD(setupRemoteGestures:(NSDictionary *)config)
 
 @end
 ```
+:::
 
 ```tsx
 // React Native usage

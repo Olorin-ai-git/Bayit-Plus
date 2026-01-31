@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import {
   View,
-  Text,
   FlatList,
   Image,
   TouchableOpacity,
@@ -11,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 export interface Episode {
   id: string;
@@ -90,7 +90,7 @@ const EpisodeCard: React.FC<{
           {(isFocused || isSelected) && (
             <View className="absolute inset-0 bg-black/40 justify-center items-center">
               <View className={`${isTV ? 'w-[60px] h-[60px]' : 'w-10 h-10'} rounded-full bg-primary justify-center items-center`}>
-                <Text className={`${isTV ? 'text-2xl' : 'text-base'} text-background ml-1`}>▶</Text>
+                <NativeIcon name="play" size={isTV ? 'xl' : 'md'} color={colors.background} context={isTV ? 'tv' : undefined} />
               </View>
             </View>
           )}

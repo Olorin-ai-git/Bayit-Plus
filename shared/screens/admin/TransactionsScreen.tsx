@@ -22,6 +22,7 @@ import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatDate, formatCurrency } from '../../utils/formatters';
 import { getStatusColor, getPaymentMethodIcon } from '../../utils/adminConstants';
 import { logger } from '../../utils/logger';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 // Scoped logger for transactions screen
 const transactionsLogger = logger.scope('Admin:Transactions');
@@ -238,7 +239,7 @@ export const TransactionsScreen: React.FC = () => {
         style={styles.actionButton}
         onPress={() => handleGenerateInvoice(transaction)}
       >
-        <Text style={styles.actionIcon}>📄</Text>
+        <NativeIcon name="fileText" size="sm" color="#9ca3af" />
       </TouchableOpacity>
       {transaction.status === 'completed' && (
         <TouchableOpacity

@@ -128,6 +128,7 @@ The Olorin Glass Notification System (`@olorin/glass-ui` GlassToast) exists as a
 **Current System**: Custom `useNotifications` hook
 
 **Implementation**:
+::: v-pre
 ```typescript
 // File: frontend/src/shared/hooks/useNotifications.ts
 // Custom notification system using Event Bus pattern
@@ -150,6 +151,7 @@ export function useNotifications() {
   };
 }
 ```
+:::
 
 **Issues**:
 - ❌ NOT using `@olorin/glass-ui` package
@@ -447,6 +449,7 @@ notifications.showSuccess(message, 'Success');
 
 ### All Platforms: Root Setup
 
+::: v-pre
 ```tsx
 // App.tsx or index.tsx
 import { NotificationProvider } from '@olorin/glass-ui/contexts';
@@ -462,9 +465,11 @@ export default function App() {
   );
 }
 ```
+:::
 
 ### Component Usage
 
+::: v-pre
 ```tsx
 import { useNotifications } from '@olorin/glass-ui/hooks';
 
@@ -483,6 +488,7 @@ function MyComponent() {
   return <button onClick={handleAction}>Do Action</button>;
 }
 ```
+:::
 
 ### Imperative API (Outside Components)
 

@@ -42,6 +42,7 @@ The Bayit+ Notification System Migration for web platform demonstrates **excelle
 ### 1.1 Technology Stack
 
 **Web Platform**:
+::: v-pre
 ```tsx
 // App.tsx - Web-specific setup
 <NotificationProvider position="top" maxVisible={3}>
@@ -52,6 +53,7 @@ The Bayit+ Notification System Migration for web platform demonstrates **excelle
   </Suspense>
 </NotificationProvider>
 ```
+:::
 
 **Browser Support Matrix**:
 | Browser | Version | Status | Notes |
@@ -65,6 +67,7 @@ The Bayit+ Notification System Migration for web platform demonstrates **excelle
 ### 1.2 Web-Specific Features
 
 **Glassmorphism on Web** (verified in `GlassToast/index.tsx`):
+::: v-pre
 ```tsx
 if (Platform.OS === 'web') {
   return (
@@ -84,6 +87,7 @@ if (Platform.OS === 'web') {
   );
 }
 ```
+:::
 
 **Status**: ✅ **PASS** - Web styling properly separated from native
 
@@ -222,6 +226,7 @@ const announceToWeb = (announcement: string, level: NotificationLevel): void => 
 ### 3.2 Keyboard Navigation
 
 **Accessible Controls** (from `GlassToast/index.tsx`):
+::: v-pre
 ```tsx
 <TouchableOpacity
   style={styles.actionButton}
@@ -234,6 +239,7 @@ const announceToWeb = (announcement: string, level: NotificationLevel): void => 
   <Text>{notification.action.label}</Text>
 </TouchableOpacity>
 ```
+:::
 
 **Keyboard Shortcuts** (to be tested):
 - [ ] **Tab**: Navigate to action button
@@ -414,6 +420,7 @@ import { useNotifications } from '@olorin/glass-ui/hooks';
 ```
 
 **Alias Pattern** (when naming conflicts exist):
+::: v-pre
 ```tsx
 // PushNotificationsPage.tsx - local state named 'notifications'
 import { useNotifications as useNotificationSystem } from '@olorin/glass-ui/hooks';
@@ -421,6 +428,7 @@ import { useNotifications as useNotificationSystem } from '@olorin/glass-ui/hook
 const notificationSystem = useNotificationSystem();
 const [notifications, setNotifications] = useState<PushNotification[]>([]);
 ```
+:::
 
 **Status**: ✅ **PASS** - Proper import patterns followed
 
@@ -485,6 +493,7 @@ const handleDelete = (id: string) => {
 ### 6.1 XSS Prevention
 
 **Sanitization** (from `sanitization.ts`):
+::: v-pre
 ```typescript
 export const sanitizeMessage = (message: string): string => {
   // Remove script tags and their content
@@ -505,6 +514,7 @@ export const sanitizeMessage = (message: string): string => {
   return sanitized.substring(0, 500);
 };
 ```
+:::
 
 **Status**: ✅ **PASS** - Comprehensive XSS protection
 

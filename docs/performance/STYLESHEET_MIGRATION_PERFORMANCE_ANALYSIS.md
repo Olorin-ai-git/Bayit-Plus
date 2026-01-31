@@ -97,6 +97,7 @@ Sample analysis of key files:
 
 ### Key Components Performance Characteristics
 
+::: v-pre
 ```javascript
 // ✅ GOOD - VideoPlayer.tsx
 const [state, setState] = useState({...})
@@ -112,6 +113,7 @@ const cardContent = <View style={[styles.image, ...]}>  // Proper array spread
 const containerStyle = [styles.container, isPlaying && styles.playing]
 // Should use useCallback for style calculations if complex
 ```
+:::
 
 ### Conclusion
 ✅ **PASSES** - No performance regressions in re-render behavior

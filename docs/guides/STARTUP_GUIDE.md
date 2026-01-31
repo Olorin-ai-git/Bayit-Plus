@@ -204,6 +204,7 @@ db.Podcast.countDocuments()    # Should return 3
 ## Troubleshooting
 
 ### Backend Not Starting
+::: v-pre
 ```bash
 # Check if port 8000 is in use
 lsof -i :8000
@@ -214,6 +215,7 @@ kill -9 <PID>
 # Restart backend
 poetry run uvicorn app.main:app --reload
 ```
+:::
 
 ### Frontend Not Connecting to Backend
 ```bash

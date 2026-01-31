@@ -15,6 +15,7 @@ import { View, StyleSheet } from 'react-native';
 import { z } from 'zod';
 import { GlassButton } from '@bayit/shared/ui';
 import { colors, spacing } from '@olorin/design-tokens';
+import { renderIcon } from '@olorin/shared-icons/web';
 
 const SidebarToggleButtonPropsSchema = z.object({
   isExpanded: z.boolean(),
@@ -32,11 +33,11 @@ export default function SidebarToggleButton({
   onToggle,
 }: SidebarToggleButtonProps) {
   // Toggle icon based on direction and expanded state
-  const getToggleIcon = () => {
+  const getToggleIconName = () => {
     if (isRTL) {
-      return isExpanded ? '◀' : '▶';
+      return isExpanded ? 'chevronLeft' : 'chevronRight';
     }
-    return isExpanded ? '▶' : '◀';
+    return isExpanded ? 'chevronRight' : 'chevronLeft';
   };
 
   return (
@@ -45,7 +46,7 @@ export default function SidebarToggleButton({
       isRTL ? styles.containerRTL : styles.containerLTR,
     ]}>
       <GlassButton
-        title={getToggleIcon()}
+        icon={renderIcon(getToggleIconName(), 'sm', 'navigation')}
         onPress={isUIInteractionEnabled ? onToggle : undefined}
         variant="secondary"
         size="sm"

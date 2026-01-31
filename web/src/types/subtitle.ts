@@ -24,6 +24,7 @@ export interface SubtitleTrack {
   format: 'vtt' | 'srt'
   cues: SubtitleCue[]
   has_nikud_version: boolean  // Hebrew vocalization available
+  has_shoresh_version?: boolean // Hebrew root word highlighting available
   is_default: boolean
   is_auto_generated: boolean
   created_at: string
@@ -40,11 +41,16 @@ export interface SubtitleSettings {
   opacity?: number
 }
 
+// ============ HEBREW MODE ============
+
+export type HebrewMode = 'regular' | 'nikud' | 'shoresh'
+
 // ============ SUBTITLE PREFERENCES ============
 
 export interface SubtitlePreferences {
   enabled: boolean
   language: string | null  // Selected language code
+  hebrew_mode?: HebrewMode  // Hebrew subtitle display mode
   settings: SubtitleSettings
 }
 

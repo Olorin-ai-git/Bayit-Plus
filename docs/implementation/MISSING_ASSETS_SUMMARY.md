@@ -52,6 +52,7 @@
 ```
 
 **Usage:**
+::: v-pre
 ```tsx
 <GlassPageHeader
   title="Podcasts"
@@ -60,6 +61,7 @@
   isRTL={isRTL}
 />
 ```
+:::
 
 ### 2. GlassSkeleton System
 **File:** `/shared/components/ui/GlassSkeleton.tsx`
@@ -80,6 +82,7 @@
 - No layout shift when content loads
 
 **Usage:**
+::: v-pre
 ```tsx
 // Simple skeleton
 <GlassSkeleton width="80%" height={20} />
@@ -90,6 +93,7 @@
 // Row of cards
 <RowSkeleton numCards={5} />
 ```
+:::
 
 ### 3. GlassContentPlaceholder System
 **File:** `/shared/components/ui/GlassContentPlaceholder.tsx`
@@ -110,6 +114,7 @@
 **Sizes:** Small (0.6x), Medium (1x), Large (1.4x)
 
 **Usage:**
+::: v-pre
 ```tsx
 // Pre-configured
 <MoviePlaceholder size="medium" />
@@ -123,6 +128,7 @@
   label="Movie"
 />
 ```
+:::
 
 ---
 

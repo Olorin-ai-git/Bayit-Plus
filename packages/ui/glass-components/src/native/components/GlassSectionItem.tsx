@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import { GlassView } from './GlassView';
 import { colors, spacing } from '../../theme';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 // Detect TV platform
 const isTV = Platform.isTV || Platform.OS === 'android';
@@ -152,12 +153,11 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
                 accessibilityLabel={moveUpLabel}
                 accessibilityRole="button"
               >
-                <Text
-                  className={arrowTextSize}
-                  style={{ color: isFirst ? colors.textMuted : colors.text }}
-                >
-                  ▲
-                </Text>
+                <NativeIcon
+                  name="arrowUp"
+                  size={isTV ? 'sm' : 'xs'}
+                  color={isFirst ? colors.textMuted : colors.text}
+                />
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -171,12 +171,11 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
                 accessibilityLabel={moveDownLabel}
                 accessibilityRole="button"
               >
-                <Text
-                  className={arrowTextSize}
-                  style={{ color: isLast ? colors.textMuted : colors.text }}
-                >
-                  ▼
-                </Text>
+                <NativeIcon
+                  name="arrowDown"
+                  size={isTV ? 'sm' : 'xs'}
+                  color={isLast ? colors.textMuted : colors.text}
+                />
               </TouchableOpacity>
             </>
           )}

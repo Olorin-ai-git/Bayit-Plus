@@ -167,12 +167,14 @@ result = await agent.validate_streams(
 ### Configuration
 
 **Environment Variables:**
+::: v-pre
 ```bash
 ANTHROPIC_API_KEY=<secret-manager>  # Claude API key
 AI_AGENT_MAX_ITERATIONS=20          # Max tool calls per run
 AI_AGENT_BUDGET_LIMIT=5.0           # Max cost per run ($)
 AI_AGENT_DRY_RUN=false              # Dry run mode (no writes)
 ```
+:::
 
 **API Endpoints:**
 - `POST /api/v1/admin/ai-agent/audit` - Library audit

@@ -284,7 +284,7 @@ By end of Phase 5:
 
 ### Risk 1: Template Placeholders Not Replaced
 
-**Impact**: Generated files have `{{PLACEHOLDER}}` text
+**Impact**: Generated files have `\{\{PLACEHOLDER\}\}` text
 **Mitigation**: Improve metadata extraction from Python scripts
 **Status**: Known issue, will fix in Week 5 Day 1
 

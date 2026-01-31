@@ -44,6 +44,7 @@ cp shared/test/WizardAvatarTest.tsx mobile-app/src/screens/WizardAvatarTestScree
 
 Edit `mobile-app/src/navigation/AppNavigator.tsx`:
 
+::: v-pre
 ```typescript
 import WizardAvatarTestScreen from '../screens/WizardAvatarTestScreen';
 
@@ -54,6 +55,7 @@ import WizardAvatarTestScreen from '../screens/WizardAvatarTestScreen';
   options={{ title: 'Wizard Avatar Test' }}
 />
 ```
+:::
 
 #### 3. Build and Run iOS
 
@@ -240,6 +242,7 @@ screenshots/tvos/
 
 Create `web/src/pages/WizardAvatarTestPage.tsx`:
 
+::: v-pre
 ```typescript
 import React from 'react';
 import { WizardAvatarTest } from '../../../shared/test/WizardAvatarTest';
@@ -250,6 +253,7 @@ export function WizardAvatarTestPage() {
 
 export default WizardAvatarTestPage;
 ```
+:::
 
 #### 2. Build and Run Web App
 
@@ -433,6 +437,7 @@ mv shared/assets/video/wizard/wizard-speaking-with-audio.mp4 \
 
 ### Unit Tests
 
+::: v-pre
 ```typescript
 // Example: WizardAvatar.test.tsx
 import { render, fireEvent } from '@testing-library/react-native';
@@ -452,6 +457,7 @@ describe('WizardAvatar', () => {
   });
 });
 ```
+:::
 
 ### Integration Tests
 

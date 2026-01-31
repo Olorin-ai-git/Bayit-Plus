@@ -8,6 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { EPGProgram, Channel, Timezone } from '../../services/epgApi';
 import { isTV } from '../../utils/platform';
 
@@ -167,7 +168,7 @@ export const EPGChannelRow: React.FC<EPGChannelRowProps> = ({
             className="bg-white/10 rounded-sm justify-center items-center"
             style={{ width: isTV ? 48 : 36, height: isTV ? 48 : 36 }}
           >
-            <Text style={{ fontSize: isTV ? 24 : 18 }}>📺</Text>
+            <NativeIcon name="tv" size={isTV ? 24 : 18} color="#fff" />
           </View>
         )}
         <View className="flex-1 ml-2">
@@ -175,9 +176,12 @@ export const EPGChannelRow: React.FC<EPGChannelRowProps> = ({
             {getLocalizedChannelName()}
           </Text>
           {channel.requires_subscription === 'premium' && (
-            <Text style={{ fontSize: isTV ? 12 : 10, color: '#fbbf24', marginTop: 2 }}>
-              ⭐ {t('common.premium', 'Premium')}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
+              <NativeIcon name="star" size={isTV ? 12 : 10} color="#fbbf24" />
+              <Text style={{ fontSize: isTV ? 12 : 10, color: '#fbbf24' }}>
+                {t('common.premium', 'Premium')}
+              </Text>
+            </View>
           )}
         </View>
       </TouchableOpacity>

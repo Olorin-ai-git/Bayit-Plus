@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { GlassModal } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
+import { Icon } from '@olorin/shared-icons/web'
 
 export interface ContentItem {
   id: string
@@ -191,9 +192,12 @@ const MergeConfirmationModal: React.FC<MergeConfirmationModalProps> = ({
               <Text style={styles.actionTitle}>
                 {t('admin.content.removeActionDelete', 'Delete permanently')}
               </Text>
-              <Text style={[styles.actionDescription, { color: colors.error }]}>
-                {t('admin.content.deleteWarning', '⚠️ Deleted items cannot be recovered')}
-              </Text>
+              <View style={[styles.warningRow, { flexDirection: 'row', alignItems: 'center', gap: spacing.xs }]}>
+                <Icon name="warning" size="sm" className="text-red-500" />
+                <Text style={[styles.actionDescription, { color: colors.error }]}>
+                  {t('admin.content.deleteWarning', 'Deleted items cannot be recovered')}
+                </Text>
+              </View>
             </View>
           </Pressable>
         </View>
@@ -416,6 +420,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.textMuted,
     lineHeight: 18,
+  },
+  warningRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   reasonInput: {
     backgroundColor: 'rgba(255, 255, 255, 0.05)',

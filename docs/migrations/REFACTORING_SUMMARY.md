@@ -214,6 +214,7 @@ web/src/pages/admin/librarian/
 - ❌ **Files >1000 lines**: Should be split
 
 ### 2. Component Composition
+::: v-pre
 ```typescript
 // ❌ BAD: Everything in one component
 function MassiveComponent() {
@@ -231,8 +232,10 @@ function MainComponent() {
   )
 }
 ```
+:::
 
 ### 3. Custom Hooks for Logic
+::: v-pre
 ```typescript
 // ❌ BAD: Logic mixed with UI
 function Component() {
@@ -247,6 +250,7 @@ function Component() {
   return <div>...</div>
 }
 ```
+:::
 
 ### 4. Module Organization
 ```python

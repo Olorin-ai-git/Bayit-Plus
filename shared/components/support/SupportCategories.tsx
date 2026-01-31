@@ -17,6 +17,7 @@ import { useDirection } from '../../hooks/useDirection';
 import { useSupportStore, DocCategory } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
 import { supportConfig } from '../../config/supportConfig';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface CategoryCardProps {
   category: DocCategory;
@@ -38,7 +39,9 @@ const CategoryCard: React.FC<CategoryCardProps> = ({ category, onPress }) => {
       <GlassView
         className={`${isTV ? 'w-[200px]' : 'w-40'} p-4 md:p-6 rounded-2xl items-center border-2 ${isFocused ? 'border-purple-500 bg-purple-500/15' : 'border-transparent'}`}
       >
-        <Text className={`${isTV ? 'text-4xl' : 'text-3xl'} mb-2`}>{category.icon}</Text>
+        <View className="mb-2">
+          <NativeIcon name={category.icon as any} size={isTV ? '2xl' : 'xl'} color="#a855f7" />
+        </View>
         <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold text-white mb-1`} style={{ textAlign }}>
           {t(category.titleKey, category.id)}
         </Text>
@@ -89,7 +92,7 @@ export const SupportCategories: React.FC = () => {
       const categories: DocCategory[] = (data.categories || []).map((cat: { id: string; title: string; title_key: string; icon: string }) => ({
         id: cat.id,
         titleKey: cat.title_key,
-        icon: cat.icon || '📄',
+        icon: cat.icon || 'fileText',
         articles: (data.articles || []).filter((a: { category: string }) => a.category === cat.id).map((a: { id: string; slug: string; title_key: string; language: string }) => ({
           id: a.id,
           slug: a.slug,
@@ -109,25 +112,25 @@ export const SupportCategories: React.FC = () => {
         {
           id: 'getting-started',
           titleKey: 'support.categories.gettingStarted',
-          icon: '🚀',
+          icon: 'rocket',
           articles: [],
         },
         {
           id: 'features',
           titleKey: 'support.categories.features',
-          icon: '✨',
+          icon: 'sparkles',
           articles: [],
         },
         {
           id: 'troubleshooting',
           titleKey: 'support.categories.troubleshooting',
-          icon: '🔧',
+          icon: 'tool',
           articles: [],
         },
         {
           id: 'account',
           titleKey: 'support.categories.account',
-          icon: '👤',
+          icon: 'user',
           articles: [],
         },
       ]);
@@ -157,7 +160,7 @@ export const SupportCategories: React.FC = () => {
   if (error) {
     return (
       <View className="p-8 md:p-16 items-center justify-center gap-3 md:gap-4">
-        <Text className={`${isTV ? 'text-5xl' : 'text-4xl'}`}>⚠️</Text>
+        <NativeIcon name="alertTriangle" size={isTV ? '3xl' : '2xl'} color="#ef4444" />
         <Text className={`${isTV ? 'text-base' : 'text-sm'} text-red-500`} style={{ textAlign }}>{error}</Text>
         <TouchableOpacity className="bg-purple-500 px-4 md:px-6 py-2 md:py-3 rounded-lg" onPress={loadCategories}>
           <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-black`}>

@@ -29,6 +29,7 @@ import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { youngstersService } from '@bayit/shared-services';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
@@ -62,17 +63,17 @@ interface Category {
   icon: string;
 }
 
-const CATEGORY_ICONS: Record<string, string> = {
-  all: '🎯',
-  trending: '🔥',
-  news: '📰',
-  culture: '🎭',
-  educational: '📚',
-  music: '🎵',
-  entertainment: '🎬',
-  sports: '⚽',
-  tech: '💻',
-  judaism: '✡️',
+const CATEGORY_ICON_NAMES: Record<string, string> = {
+  all: 'target',
+  trending: 'trendingUp',
+  news: 'newspaper',
+  culture: 'users',
+  educational: 'bookOpen',
+  music: 'music',
+  entertainment: 'vod',
+  sports: 'activity',
+  tech: 'monitor',
+  judaism: '✡️', // Religious symbol - preserved as emoji
 };
 
 interface YoungstersCardProps {
@@ -89,7 +90,8 @@ const YoungstersCard: React.FC<YoungstersCardProps> = ({ item, onPress, getLocal
     onPress();
   }, [onPress]);
 
-  const categoryIcon = CATEGORY_ICONS[item.category] || '🎯';
+  const categoryIconName = CATEGORY_ICON_NAMES[item.category] || 'target';
+  const isEmoji = categoryIconName.length > 1 && categoryIconName.charCodeAt(0) > 127;
 
   return (
     <TouchableOpacity
@@ -106,11 +108,19 @@ const YoungstersCard: React.FC<YoungstersCardProps> = ({ item, onPress, getLocal
           />
         ) : (
           <View style={styles.cardImagePlaceholder}>
-            <Text style={styles.placeholderIcon}>{categoryIcon}</Text>
+            {isEmoji ? (
+              <Text style={styles.placeholderIcon}>{categoryIconName}</Text>
+            ) : (
+              <NativeIcon name={categoryIconName} size="xxl" color="#a855f7" />
+            )}
           </View>
         )}
         <View style={[styles.categoryBadge, isRTL ? { left: 8 } : { right: 8 }]}>
-          <Text style={styles.categoryBadgeText}>{categoryIcon}</Text>
+          {isEmoji ? (
+            <Text style={styles.categoryBadgeText}>{categoryIconName}</Text>
+          ) : (
+            <NativeIcon name={categoryIconName} size="xs" color="#ffffff" />
+          )}
         </View>
         {item.age_rating !== undefined && (
           <View style={[styles.ageBadge, isRTL ? { right: 8 } : { left: 8 }]}>
@@ -122,9 +132,12 @@ const YoungstersCard: React.FC<YoungstersCardProps> = ({ item, onPress, getLocal
             {getLocalizedText(item, 'title')}
           </Text>
           {item.duration && (
-            <Text style={[styles.cardDuration, { textAlign }]}>
-              ⏱️ {item.duration}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+              <NativeIcon name="clock" size="xs" color="#a855f7" />
+              <Text style={[styles.cardDuration, { textAlign, marginLeft: 4 }]}>
+                {item.duration}
+              </Text>
+            </View>
           )}
         </View>
       </View>
@@ -150,15 +163,22 @@ const CategoryPill: React.FC<CategoryPillProps> = ({
     onPress();
   }, [onPress]);
 
+  const categoryIconName = CATEGORY_ICON_NAMES[category.id] || 'target';
+  const isEmoji = categoryIconName.length > 1 && categoryIconName.charCodeAt(0) > 127;
+
   return (
     <TouchableOpacity
       onPress={handlePress}
       style={[styles.categoryPill, isActive && styles.categoryPillActive]}
       activeOpacity={0.7}
     >
-      <Text style={styles.categoryEmoji}>
-        {CATEGORY_ICONS[category.id] || '🎯'}
-      </Text>
+      {isEmoji ? (
+        <Text style={styles.categoryEmoji}>
+          {categoryIconName}
+        </Text>
+      ) : (
+        <NativeIcon name={categoryIconName} size="sm" color={isActive ? '#a855f7' : colors.textSecondary} />
+      )}
       <Text style={[styles.categoryLabel, isActive && styles.categoryLabelActive]}>
         {getLocalizedText(category, 'name')}
       </Text>
@@ -253,7 +273,7 @@ export const YoungstersScreenMobile: React.FC = () => {
       {/* Header */}
       <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
         <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }]}>
-          <Text style={styles.headerIconText}>👥</Text>
+          <NativeIcon name="users" size="lg" color="#a855f7" />
         </View>
         <View style={styles.headerTextContainer}>
           <Text style={[styles.title, { textAlign }]}>{t('youngsters.title', 'צעירים')}</Text>
@@ -290,7 +310,9 @@ export const YoungstersScreenMobile: React.FC = () => {
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
       <View style={styles.emptyCard}>
-        <Text style={styles.emptyIcon}>🎯</Text>
+        <View style={{ marginBottom: spacing.md }}>
+          <NativeIcon name="target" size="xxl" color="#a855f7" />
+        </View>
         <Text style={[styles.emptyTitle, { textAlign }]}>
           {t('youngsters.empty', 'אין תוכן זמין')}
         </Text>
@@ -483,7 +505,6 @@ const styles = StyleSheet.create({
   cardDuration: {
     fontSize: 11,
     color: '#a855f7',
-    marginTop: 4,
   },
   emptyState: {
     flex: 1,
@@ -497,10 +518,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(168, 85, 247, 0.1)',
     borderRadius: borderRadius.lg,
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
   },
   emptyTitle: {
     fontSize: 18,

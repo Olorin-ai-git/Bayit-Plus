@@ -339,7 +339,7 @@
       "removeActionUnpublish": "আনপাবলিশ (প্রস্তাবিত)",
       "removeActionDelete": "স্থায়ীভাবে মুছুন",
       "unpublishDescription": "আইটেমগুলো লুকানো হবে কিন্তু পরে পুনরুদ্ধার করা যাবে",
-      "deleteWarning": "⚠️ মুছে ফেলা আইটেম পুনরুদ্ধার করা যাবে না",
+      "deleteWarning": "মুছে ফেলা আইটেম পুনরুদ্ধার করা যাবে না",
       "mergeReason": "মার্জের কারণ",
       "mergeReasonPlaceholder": "কারণ লিখুন (ন্যূনতম ১০ অক্ষর)...",
       "mergeReasonTooShort": "কারণ কমপক্ষে ১০ অক্ষর হতে হবে",

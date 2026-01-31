@@ -10,6 +10,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { z } from 'zod';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { Icon } from '@olorin/shared-icons/web';
 
 const WidgetsErrorBannerPropsSchema = z.object({
   message: z.string(),
@@ -25,11 +26,11 @@ export default function WidgetsErrorBanner({ message, onDismiss }: WidgetsErrorB
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
-        <Text style={styles.alertIcon}>⚠️</Text>
+        <Icon name="alertTriangle" size="md" color="#fca5a5" />
       </View>
       <Text style={styles.message}>{message}</Text>
       <Pressable onPress={onDismiss} style={styles.closeButton}>
-        <Text style={styles.closeIcon}>✕</Text>
+        <Icon name="x" size="md" color="#fca5a5" />
       </Pressable>
     </View>
   );
@@ -53,9 +54,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  alertIcon: {
-    fontSize: 18,
-  },
   message: {
     flex: 1,
     color: '#fecaca',
@@ -69,10 +67,5 @@ const styles = StyleSheet.create({
     height: 24,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  closeIcon: {
-    color: '#fca5a5',
-    fontSize: 18,
-    fontWeight: '600',
   },
 });

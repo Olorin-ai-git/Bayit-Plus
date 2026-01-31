@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Icon } from '@olorin/shared-icons/web';
 import { colors, spacing, borderRadius, typography } from '@olorin/design-tokens';
 import { useTranslation } from 'react-i18next';
 import { useSupportStore } from '@bayit/shared/stores/supportStore';
@@ -100,7 +101,7 @@ const AvatarModeCard: React.FC<AvatarModeCardProps> = ({ mode, isSelected, onSel
       {/* Mode Icon/Preview */}
       <View style={styles.modePreview}>
         <View style={[styles.modeIconContainer, { backgroundColor: getModeColor(mode) }]}>
-          <Text style={styles.modeIcon}>{getModeIcon(mode)}</Text>
+          {getModeIconComponent(mode)}
         </View>
 
         {/* Dimensions Label */}
@@ -116,16 +117,28 @@ const AvatarModeCard: React.FC<AvatarModeCardProps> = ({ mode, isSelected, onSel
         {/* Features */}
         <View style={styles.modeFeatures}>
           {config.showWizard && (
-            <Text style={styles.modeFeature}>{t('voice.features.wizard', '🧙 Wizard')}</Text>
+            <View style={styles.featureRow}>
+              <Icon name="user" size="xs" color={colors.textSecondary} />
+              <Text style={styles.modeFeature}>{t('voice.features.wizard', 'Wizard')}</Text>
+            </View>
           )}
           {config.showAnimations && (
-            <Text style={styles.modeFeature}>{t('voice.features.animations', '✨ Animations')}</Text>
+            <View style={styles.featureRow}>
+              <Icon name="zap" size="xs" color={colors.textSecondary} />
+              <Text style={styles.modeFeature}>{t('voice.features.animations', 'Animations')}</Text>
+            </View>
           )}
           {config.showWaveform && (
-            <Text style={styles.modeFeature}>{t('voice.features.waveform', '〰️ Waveform')}</Text>
+            <View style={styles.featureRow}>
+              <Icon name="activity" size="xs" color={colors.textSecondary} />
+              <Text style={styles.modeFeature}>{t('voice.features.waveform', 'Waveform')}</Text>
+            </View>
           )}
           {config.showTranscript && (
-            <Text style={styles.modeFeature}>{t('voice.features.transcript', '💬 Transcript')}</Text>
+            <View style={styles.featureRow}>
+              <Icon name="messageCircle" size="xs" color={colors.textSecondary} />
+              <Text style={styles.modeFeature}>{t('voice.features.transcript', 'Transcript')}</Text>
+            </View>
           )}
         </View>
       </View>
@@ -133,7 +146,7 @@ const AvatarModeCard: React.FC<AvatarModeCardProps> = ({ mode, isSelected, onSel
       {/* Selection Indicator */}
       {isSelected && (
         <View style={styles.selectedBadge}>
-          <Text style={styles.selectedBadgeText}>✓</Text>
+          <Icon name="check" size="sm" color={colors.white} />
         </View>
       )}
     </TouchableOpacity>
@@ -159,18 +172,19 @@ function getModeColor(mode: AvatarMode): string {
   }
 }
 
-function getModeIcon(mode: AvatarMode): string {
+function getModeIconComponent(mode: AvatarMode): React.ReactNode {
+  const iconColor = '#ffffff';
   switch (mode) {
     case 'full':
-      return '🧙‍♂️';
+      return <Icon name="user" size="xl" color={iconColor} />;
     case 'compact':
-      return '⭕';
+      return <Icon name="circle" size="xl" color={iconColor} />;
     case 'minimal':
-      return '〰️';
+      return <Icon name="activity" size="xl" color={iconColor} />;
     case 'icon_only':
-      return '🎩';
+      return <Icon name="star" size="xl" color={iconColor} />;
     default:
-      return '❓';
+      return <Icon name="helpCircle" size="xl" color={iconColor} />;
   }
 }
 
@@ -235,9 +249,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  modeIcon: {
-    fontSize: 32,
-  },
   modeDimensions: {
     ...typography.caption,
     color: colors.textSecondary,
@@ -253,8 +264,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   modeFeatures: {
+    flexDirection: 'column',
+    gap: spacing.xs,
+  },
+  featureRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    alignItems: 'center',
     gap: spacing.xs,
   },
   modeFeature: {
@@ -274,11 +289,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  selectedBadgeText: {
-    color: colors.white,
-    fontSize: 14,
-    fontWeight: 'bold',
   },
 
   // Current Mode Description

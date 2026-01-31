@@ -24,6 +24,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useDirection } from '@bayit/shared/hooks';
 import { chatService } from '../services/api';
 import { useAuthStore } from '../../../shared/stores/authStore';
@@ -161,7 +162,7 @@ export const SearchScreen: React.FC = () => {
       {/* Header */}
       <View className="px-12 pt-10 pb-4 flex-row items-center gap-6">
         <View className="w-16 h-16 rounded-full bg-purple-500/30 items-center justify-center">
-          <Text className="text-4xl">🔍</Text>
+          <NativeIcon name="search" size="xxl" context="tv" color="#a855f7" />
         </View>
         <View className="flex-1">
           <Text className={`text-white text-5xl font-bold ${isRTL ? 'text-right' : 'text-left'}`}>
@@ -179,7 +180,7 @@ export const SearchScreen: React.FC = () => {
           {/* Main Search Input */}
           <View className="flex-1">
             <View className="flex-row items-center gap-3 px-6 py-4 bg-white/5 backdrop-blur-xl rounded-2xl border-2 border-white/10">
-              <Text className="text-3xl">🔍</Text>
+              <NativeIcon name="search" size="lg" context="tv" color="#a855f7" />
               <TextInput
                 ref={searchInputRef}
                 value={query}
@@ -206,7 +207,7 @@ export const SearchScreen: React.FC = () => {
                   `}
                   activeOpacity={0.7}
                 >
-                  <Text className="text-white text-2xl">✕</Text>
+                  <NativeIcon name="x" size="lg" context="tv" color="#FFFFFF" />
                 </TouchableOpacity>
               )}
             </View>
@@ -223,7 +224,7 @@ export const SearchScreen: React.FC = () => {
             `}
             activeOpacity={0.7}
           >
-            <Text className="text-4xl">🤖</Text>
+            <NativeIcon name="ai" size="xxl" context="tv" color="#a855f7" />
             <Text className="text-white font-semibold text-xl">
               {t('search.smartSearch', { defaultValue: 'Smart Search' })}
             </Text>
@@ -245,7 +246,7 @@ export const SearchScreen: React.FC = () => {
             `}
             activeOpacity={0.7}
           >
-            <Text className="text-3xl">⚙️</Text>
+            <NativeIcon name="settings" size="xl" context="tv" color="#FFFFFF" />
             <Text className="text-white font-semibold text-xl">
               {t('search.filters', { defaultValue: 'Filters' })}
             </Text>
@@ -310,20 +311,22 @@ export const SearchScreen: React.FC = () => {
               </View>
             )}
             {filters.ratingMin && (
-              <View className="px-4 py-2 bg-yellow-500/30 rounded-full">
-                <Text className="text-yellow-300 text-base">{filters.ratingMin}+ ⭐</Text>
+              <View className="px-4 py-2 bg-yellow-500/30 rounded-full flex-row items-center gap-1">
+                <Text className="text-yellow-300 text-base">{filters.ratingMin}+</Text>
+                <NativeIcon name="star" size="sm" context="tv" color="#fcd34d" />
               </View>
             )}
             <TouchableOpacity
               onPress={() => setFilters({ contentTypes: filters.contentTypes })}
               onFocus={() => setFocusedElement('clear-filters')}
               className={`
-                px-4 py-2 rounded-full
+                px-4 py-2 rounded-full flex-row items-center gap-2
                 ${focusedElement === 'clear-filters' ? 'bg-red-500/50 border-2 border-red-400' : 'bg-red-500/30'}
               `}
               activeOpacity={0.7}
             >
-              <Text className="text-red-300 text-base font-medium">✕ Clear All</Text>
+              <NativeIcon name="x" size="sm" context="tv" color="#fca5a5" />
+              <Text className="text-red-300 text-base font-medium">Clear All</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -336,7 +339,7 @@ export const SearchScreen: React.FC = () => {
           {recentSearches.length > 0 && (
             <View className="mb-10">
               <View className="flex-row items-center gap-3 mb-4">
-                <Text className="text-4xl">🕐</Text>
+                <NativeIcon name="clock" size="xl" context="tv" color="#FFFFFF" />
                 <Text className="text-white font-semibold text-2xl">
                   {t('search.recentSearches', { defaultValue: 'Recent Searches' })}
                 </Text>
@@ -364,8 +367,8 @@ export const SearchScreen: React.FC = () => {
 
           {/* Initial Prompt */}
           <View className="items-center justify-center py-24">
-            <Text className="text-9xl mb-8">🔍</Text>
-            <Text className="text-white text-center font-bold text-4xl mb-4">
+            <NativeIcon name="search" size="xxxl" context="tv" color="#a855f7" />
+            <Text className="text-white text-center font-bold text-4xl mb-4 mt-8">
               {t('search.promptTitle', { defaultValue: 'Search for Content' })}
             </Text>
             <Text className="text-white/60 text-center max-w-3xl text-2xl">

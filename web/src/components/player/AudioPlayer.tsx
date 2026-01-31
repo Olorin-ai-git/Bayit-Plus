@@ -15,6 +15,7 @@ import { useRef, useState, useEffect, useCallback } from 'react'
 import { View, Text, Pressable, Image, ActivityIndicator, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react'
+import { Icon } from '@olorin/shared-icons/web'
 import { colors, borderRadius, spacing } from '@olorin/design-tokens'
 import { GlassView, GlassBadge, GlassSlider } from '@bayit/shared/ui'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
@@ -377,7 +378,7 @@ export default function AudioPlayer({
             style={styles.closeErrorButton}
             accessibilityLabel={t('common.close', 'Close')}
           >
-            <Text style={styles.closeErrorText}>✕</Text>
+            <Icon name="x" size="md" color={colors.error.DEFAULT} />
           </Pressable>
         </View>
       )}
@@ -522,10 +523,5 @@ const styles = StyleSheet.create({
     padding: spacing.xs,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  closeErrorText: {
-    color: colors.error.DEFAULT,
-    fontSize: 18,
-    fontWeight: 'bold',
   },
 })

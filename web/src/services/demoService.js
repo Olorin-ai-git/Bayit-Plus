@@ -696,6 +696,14 @@ export const demoSubtitlesService = {
       generated_at: new Date().toISOString(),
     };
   },
+  generateShoresh: async (contentId, language = 'he', force = false) => {
+    await delay(500);
+    return {
+      message: 'Shoresh generated successfully',
+      content_id: contentId,
+      generated_at: new Date().toISOString(),
+    };
+  },
   importSubtitles: async (contentId, sourceUrl, language, languageName, isDefault) => {
     await delay();
     return { message: 'Subtitles imported', id: 'demo-subtitle-id' };

@@ -5,6 +5,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView, GlassButton } from '../../components';
 import { colors } from '../../theme';
 import { styles } from './ProfileScreen.styles';
@@ -50,7 +51,7 @@ export const BillingTab: React.FC<BillingTabProps> = ({
           paymentMethods.map((method) => (
             <View key={method.id} style={styles.paymentMethod}>
               <View style={styles.cardInfo}>
-                <Text style={styles.cardIcon}>💳</Text>
+                <NativeIcon name="plans" size="xl" context="tv" color="#8a2be2" style={{ marginRight: 12 }} />
                 <View style={styles.cardDetails}>
                   <Text style={styles.cardType}>
                     {method.type.toUpperCase()} •••• {method.last4}
@@ -105,7 +106,10 @@ export const BillingTab: React.FC<BillingTabProps> = ({
         )}
 
         <TouchableOpacity style={styles.downloadInvoice}>
-          <Text style={styles.downloadInvoiceText}>📄 {t('profile.billing.downloadInvoices')}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <NativeIcon name="document" size="md" context="tv" color="#8a2be2" style={{ marginRight: 8 }} />
+            <Text style={styles.downloadInvoiceText}>{t('profile.billing.downloadInvoices')}</Text>
+          </View>
         </TouchableOpacity>
       </GlassView>
 

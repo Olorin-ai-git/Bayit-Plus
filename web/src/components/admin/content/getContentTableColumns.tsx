@@ -1,4 +1,5 @@
-import { View, Text } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
+import { Sparkles } from 'lucide-react'
 import { colors, fontSize, spacing } from '@olorin/design-tokens'
 import {
   ThumbnailCell,
@@ -56,10 +57,32 @@ const getLanguageName = (lang: string): string => {
   return names[lang] || lang
 }
 
+// Custom action creator for Hebrew AI features
+const createHebrewAIAction = (
+  onClick: () => void,
+  hasHebrew: boolean = false
+) => ({
+  icon: (
+    <Pressable
+      onPress={onClick}
+      style={{
+        padding: 6,
+        borderRadius: 6,
+        backgroundColor: 'rgba(139, 92, 246, 0.15)',
+      }}
+    >
+      <Sparkles size={16} color={hasHebrew ? colors.primary.DEFAULT : colors.textSecondary} />
+    </Pressable>
+  ),
+  label: 'Hebrew AI',
+  onClick,
+})
+
 export function getContentTableColumns(
   t: (key: string, fallback?: string) => string,
   onToggleFeatured: (id: string) => void,
-  onDelete: (id: string) => void
+  onDelete: (id: string) => void,
+  onHebrewAI?: (id: string, title: string) => void
 ): HierarchicalTableColumn<ContentItem | Episode>[] {
   return [
     {
@@ -211,21 +234,30 @@ export function getContentTableColumns(
     {
       key: 'actions',
       label: t('common.actions'),
-      width: 180,
-      minWidth: 150,
-      maxWidth: 250,
+      width: 220,
+      minWidth: 180,
+      maxWidth: 280,
       align: 'right',
       resizable: false, // Don't allow resizing actions column
       render: (_, row) => {
         const content = row as ContentItem
+        const hasHebrew = content.available_subtitles?.includes('he') || false
+        const actions = [
+          createStarAction(() => onToggleFeatured(content.id), content.is_featured),
+          createViewAction(() => { window.location.href = `/admin/content/${content.id}` }),
+          createEditAction(() => { window.location.href = `/admin/content/${content.id}/edit` }),
+          createDeleteAction(() => onDelete(content.id)),
+        ]
+        // Add Hebrew AI action if handler is provided
+        if (onHebrewAI) {
+          actions.splice(1, 0, createHebrewAIAction(
+            () => onHebrewAI(content.id, content.title),
+            hasHebrew
+          ))
+        }
         return (
           <ActionsCell
-            actions={[
-              createStarAction(() => onToggleFeatured(content.id), content.is_featured),
-              createViewAction(() => { window.location.href = `/admin/content/${content.id}` }),
-              createEditAction(() => { window.location.href = `/admin/content/${content.id}/edit` }),
-              createDeleteAction(() => onDelete(content.id)),
-            ]}
+            actions={actions}
             align="right"
           />
         )

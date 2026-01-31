@@ -14,6 +14,7 @@ import { useAuthStore } from '../stores/authStore';
 import { subscriptionService } from '../services/api';
 import { colors, spacing, borderRadius, fontSize } from '../theme';
 import { isTV } from '../utils/platform';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface PaymentMethod {
   id: string;
@@ -41,11 +42,11 @@ interface Tab {
 }
 
 const TABS: Tab[] = [
-  { id: 'profile', icon: '👤', labelKey: 'profile.tabs.personal' },
-  { id: 'billing', icon: '💳', labelKey: 'profile.tabs.billing' },
-  { id: 'subscription', icon: '⭐', labelKey: 'profile.tabs.subscription' },
-  { id: 'notifications', icon: '🔔', labelKey: 'profile.tabs.notifications' },
-  { id: 'security', icon: '🛡️', labelKey: 'profile.tabs.security' },
+  { id: 'profile', icon: 'user', labelKey: 'profile.tabs.personal' },
+  { id: 'billing', icon: 'creditCard', labelKey: 'profile.tabs.billing' },
+  { id: 'subscription', icon: 'star', labelKey: 'profile.tabs.subscription' },
+  { id: 'notifications', icon: 'bell', labelKey: 'profile.tabs.notifications' },
+  { id: 'security', icon: 'shield', labelKey: 'profile.tabs.security' },
 ];
 
 // Subscription plans
@@ -210,9 +211,9 @@ export const ProfileScreen: React.FC = () => {
             paymentMethods.map((method) => (
               <View key={method.id} className="flex-row justify-between items-center bg-white/10 rounded-lg p-4 mb-3 border border-white/10">
                 <View className="flex-row items-center flex-1">
-                  <Text className="text-2xl mr-3">
-                    {method.type === 'visa' ? '💳' : '💳'}
-                  </Text>
+                  <View className="mr-3">
+                    <NativeIcon name="creditCard" size="lg" color="#a855f7" />
+                  </View>
                   <View className="flex-1">
                     <Text className="text-white font-medium text-base">
                       {method.type.toUpperCase()} •••• {method.last4}
@@ -267,7 +268,8 @@ export const ProfileScreen: React.FC = () => {
           )}
 
           <TouchableOpacity className="flex-row items-center justify-center bg-white/10 p-4 rounded-lg mt-6">
-            <Text className="text-purple-500 text-base font-medium">📄 {t('profile.billing.downloadInvoices')}</Text>
+            <NativeIcon name="download" size="md" color="#a855f7" />
+            <Text className="text-purple-500 text-base font-medium ml-2">{t('profile.billing.downloadInvoices')}</Text>
           </TouchableOpacity>
         </GlassView>
 
@@ -317,8 +319,8 @@ export const ProfileScreen: React.FC = () => {
           </View>
         ) : (
           <View className="bg-white/5 rounded-xl p-8 items-center">
-            <Text className="text-5xl mb-4">📺</Text>
-            <Text className="text-gray-400 text-base text-center">{t('profile.subscription.noActivePlan')}</Text>
+            <NativeIcon name="live" size="3xl" color="#9ca3af" />
+            <Text className="text-gray-400 text-base text-center mt-4">{t('profile.subscription.noActivePlan')}</Text>
           </View>
         )}
       </GlassView>
@@ -348,7 +350,9 @@ export const ProfileScreen: React.FC = () => {
                 <View className="mb-6">
                   {plan.features.map((feature, index) => (
                     <View key={index} className="flex-row items-start mb-2">
-                      <Text className="text-green-400 text-base mr-2">✓</Text>
+                      <View className="mr-2">
+                        <NativeIcon name="check" size="sm" color="#22c55e" />
+                      </View>
                       <Text className="text-gray-300 text-sm flex-1">{t(feature)}</Text>
                     </View>
                   ))}
@@ -409,7 +413,7 @@ export const ProfileScreen: React.FC = () => {
           <Text className="text-white text-base font-medium mb-1">{t('profile.changePassword')}</Text>
           <Text className="text-gray-400 text-sm">{t('profile.updatePassword')}</Text>
         </View>
-        <Text className="text-gray-400 text-xl">◀</Text>
+        <NativeIcon name="chevronLeft" size="md" color="#9ca3af" />
       </TouchableOpacity>
 
       <TouchableOpacity className="flex-row justify-between items-center bg-white/10 rounded-lg p-4 mb-3">
@@ -417,7 +421,7 @@ export const ProfileScreen: React.FC = () => {
           <Text className="text-white text-base font-medium mb-1">{t('profile.connectedDevices')}</Text>
           <Text className="text-gray-400 text-sm">{t('profile.manageDevices')}</Text>
         </View>
-        <Text className="text-gray-400 text-xl">◀</Text>
+        <NativeIcon name="chevronLeft" size="md" color="#9ca3af" />
       </TouchableOpacity>
 
       <TouchableOpacity className="flex-row justify-between items-center bg-white/10 rounded-lg p-4 mb-3">
@@ -425,7 +429,7 @@ export const ProfileScreen: React.FC = () => {
           <Text className="text-white text-base font-medium mb-1">{t('profile.twoFactorAuth')}</Text>
           <Text className="text-gray-400 text-sm">{t('profile.addExtraSecurity')}</Text>
         </View>
-        <Text className="text-gray-400 text-xl">◀</Text>
+        <NativeIcon name="chevronLeft" size="md" color="#9ca3af" />
       </TouchableOpacity>
     </GlassView>
   );
@@ -452,7 +456,7 @@ export const ProfileScreen: React.FC = () => {
       {/* Header */}
       <View className="flex-row items-center px-12 pt-10 pb-6">
         <View className="w-[60px] h-[60px] rounded-full bg-purple-700/20 justify-center items-center ml-6">
-          <Text className="text-[28px]">⚙️</Text>
+          <NativeIcon name="settings" size="xl" color="#a855f7" />
         </View>
         <View>
           <Text className="text-[42px] font-bold text-white text-right">{t('profile.title')}</Text>
@@ -472,8 +476,10 @@ export const ProfileScreen: React.FC = () => {
                 // @ts-ignore
                 hasTVPreferredFocus={index === 0 && isTV}
               >
-                <Text className="text-xl ml-2">{tab.icon}</Text>
-                <Text className={`text-base ${activeTab === tab.id ? 'text-purple-500 font-semibold' : 'text-gray-400'}`}>
+                <View className="ml-2">
+                  <NativeIcon name={tab.icon} size="md" color={activeTab === tab.id ? '#a855f7' : '#9ca3af'} />
+                </View>
+                <Text className={`text-base ml-2 ${activeTab === tab.id ? 'text-purple-500 font-semibold' : 'text-gray-400'}`}>
                   {t(tab.labelKey)}
                 </Text>
               </TouchableOpacity>
@@ -485,8 +491,10 @@ export const ProfileScreen: React.FC = () => {
               onPress={handleLogout}
               className="flex-row items-center py-4 px-4 rounded-2xl"
             >
-              <Text className="text-xl ml-2">🚪</Text>
-              <Text className="text-base text-red-500">{t('account.logout')}</Text>
+              <View className="ml-2">
+                <NativeIcon name="logOut" size="md" color="#ef4444" />
+              </View>
+              <Text className="text-base text-red-500 ml-2">{t('account.logout')}</Text>
             </TouchableOpacity>
           </GlassView>
         </View>

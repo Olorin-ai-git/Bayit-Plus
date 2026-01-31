@@ -14,6 +14,7 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 import { VoiceState } from '../../stores/supportStore';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface VoiceStatusIndicatorProps {
   state: VoiceState;
@@ -21,12 +22,12 @@ interface VoiceStatusIndicatorProps {
   className?: string;
 }
 
-const stateConfig: Record<VoiceState, { color: string; icon: string; pulseEnabled: boolean }> = {
-  idle: { color: colors.textSecondary, icon: '🎤', pulseEnabled: false },
-  listening: { color: colors.success.DEFAULT, icon: '🎤', pulseEnabled: true },
-  processing: { color: colors.warning.DEFAULT, icon: '⚙️', pulseEnabled: true },
-  speaking: { color: colors.primary.DEFAULT, icon: '🔊', pulseEnabled: true },
-  error: { color: colors.error.DEFAULT, icon: '⚠️', pulseEnabled: false },
+const stateConfig: Record<VoiceState, { color: string; iconName: string; pulseEnabled: boolean }> = {
+  idle: { color: colors.textSecondary, iconName: 'mic', pulseEnabled: false },
+  listening: { color: colors.success.DEFAULT, iconName: 'mic', pulseEnabled: true },
+  processing: { color: colors.warning.DEFAULT, iconName: 'settings', pulseEnabled: true },
+  speaking: { color: colors.primary.DEFAULT, iconName: 'volume2', pulseEnabled: true },
+  error: { color: colors.error.DEFAULT, iconName: 'alertTriangle', pulseEnabled: false },
 };
 
 export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
@@ -133,7 +134,7 @@ export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
           transform: [{ scale: pulseAnim }],
         }}
       >
-        <Text className={`${isTV ? 'text-2xl' : 'text-xl'}`}>{config.icon}</Text>
+        <NativeIcon name={config.iconName as any} size={isTV ? 'xl' : 'lg'} color={config.color} />
       </Animated.View>
 
       {/* Status Text */}

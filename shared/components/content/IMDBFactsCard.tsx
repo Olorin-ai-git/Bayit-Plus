@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 
@@ -81,7 +82,9 @@ export const IMDBFactsCard: React.FC<IMDBFactsCardProps> = ({
         </View>
         <View className="flex-1">
           <View className="flex-row items-baseline">
-            <Text className={`${isTV ? 'text-lg' : 'text-base'} mr-1`}>⭐</Text>
+            <View className="mr-1">
+              <NativeIcon name="star" size={isTV ? 18 : 16} color="#F5C518" />
+            </View>
             <Text className={`${isTV ? 'text-4xl' : 'text-[28px]'} font-bold text-white`}>{formatRating(imdbRating)}</Text>
             <Text className={`${isTV ? 'text-lg' : 'text-base'} text-textSecondary ml-0.5`}>/10</Text>
           </View>

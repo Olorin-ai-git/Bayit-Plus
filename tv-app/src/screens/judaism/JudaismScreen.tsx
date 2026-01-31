@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView, GlassCategoryPill, JerusalemRow, TelAvivRow } from '../../components';
 import { colors, spacing } from '../../theme';
 import { isTV } from '../../utils/platform';
@@ -146,8 +147,8 @@ export const JudaismScreen: React.FC = () => {
           )}
           ListEmptyComponent={
             <View className="flex-1 justify-center items-center py-[60px]">
-              <Text className="text-[64px] mb-3">📰</Text>
-              <Text className="text-[20px] font-semibold text-white">{t('judaism.news.empty', 'No news available')}</Text>
+              <NativeIcon name="news" size="xxxl" context="tv" color="#a855f7" />
+              <Text className="text-[20px] font-semibold text-white mt-3">{t('judaism.news.empty', 'No news available')}</Text>
             </View>
           }
         />
@@ -165,8 +166,8 @@ export const JudaismScreen: React.FC = () => {
     if (selectedCategory === 'community') {
       return (
         <View className="flex-1 justify-center items-center py-[60px]">
-          <Text className="text-[64px] mb-3">🏛️</Text>
-          <Text className="text-[20px] font-semibold text-white">{t('judaism.community.title', 'Community Directory')}</Text>
+          <NativeIcon name="users" size="xxxl" context="tv" color="#a855f7" />
+          <Text className="text-[20px] font-semibold text-white mt-3">{t('judaism.community.title', 'Community Directory')}</Text>
           <Text className="text-[16px] text-[rgba(255,255,255,0.6)]">{t('judaism.community.comingSoon', 'Coming soon to TV')}</Text>
         </View>
       );

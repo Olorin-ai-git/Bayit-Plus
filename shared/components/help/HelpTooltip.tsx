@@ -14,6 +14,7 @@ import {
   LayoutChangeEvent,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 
@@ -143,7 +144,7 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
           {children}
           {showIndicator && (
             <View className={`items-center justify-center bg-purple-500 ${isTV ? 'w-5 h-5 rounded-[10px]' : 'w-4 h-4 rounded-lg'}`}>
-              <Text className={`text-white font-bold ${isTV ? 'text-xs' : 'text-[10px]'}`}>?</Text>
+              <NativeIcon name="help-circle" size={isTV ? 12 : 10} color="#fff" />
             </View>
           )}
         </TouchableOpacity>
@@ -185,7 +186,7 @@ export const HelpTooltip: React.FC<HelpTooltipProps> = ({
               accessibilityRole="button"
               accessibilityLabel={t('common.close', 'Close')}
             >
-              <Text className="text-white/70 text-sm">✕</Text>
+              <NativeIcon name="x" size={14} color="rgba(255, 255, 255, 0.7)" />
             </TouchableOpacity>
           </Animated.View>
         </Pressable>

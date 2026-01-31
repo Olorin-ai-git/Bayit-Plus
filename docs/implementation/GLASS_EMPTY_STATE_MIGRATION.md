@@ -107,6 +107,7 @@ empty.permissionDenied.{title,description}
 ### Simple Replacement
 
 **Before:**
+::: v-pre
 ```tsx
 <EmptyState
   icon={<Film size={48} color={colors.textMuted} />}
@@ -114,8 +115,10 @@ empty.permissionDenied.{title,description}
   description="Content will appear here"
 />
 ```
+:::
 
 **After:**
+::: v-pre
 ```tsx
 <GlassEmptyState
   variant="no-content"
@@ -123,10 +126,12 @@ empty.permissionDenied.{title,description}
   description="Content will appear here"
 />
 ```
+:::
 
 ### With Action Button
 
 **Before:**
+::: v-pre
 ```tsx
 <EmptyState
   icon={<Search size={48} />}
@@ -136,8 +141,10 @@ empty.permissionDenied.{title,description}
   onAction={handleClear}
 />
 ```
+:::
 
 **After:**
+::: v-pre
 ```tsx
 <GlassEmptyState
   variant="no-results"
@@ -146,10 +153,12 @@ empty.permissionDenied.{title,description}
   primaryAction={{ label: 'Clear Search', onPress: handleClear }}
 />
 ```
+:::
 
 ### Conditional States
 
 **Before:**
+::: v-pre
 ```tsx
 {loading && <EmptyState loading={true} />}
 {error && <EmptyState error={error} onRetry={retry} />}
@@ -157,8 +166,10 @@ empty.permissionDenied.{title,description}
   <EmptyState title="No results" />
 )}
 ```
+:::
 
 **After:**
+::: v-pre
 ```tsx
 {loading && <GlassEmptyState variant="loading" loading={true} />}
 {error && (
@@ -172,10 +183,12 @@ empty.permissionDenied.{title,description}
   <GlassEmptyState variant="no-results" />
 )}
 ```
+:::
 
 ### With Suggestions
 
 **Before:**
+::: v-pre
 ```tsx
 <EmptyState title="No results">
   <Text>Try these suggestions:</Text>
@@ -183,8 +196,10 @@ empty.permissionDenied.{title,description}
   <Text>• Use different keywords</Text>
 </EmptyState>
 ```
+:::
 
 **After:**
+::: v-pre
 ```tsx
 <GlassEmptyState
   variant="no-results"
@@ -196,17 +211,21 @@ empty.permissionDenied.{title,description}
   suggestionsTitle="Try these suggestions:"
 />
 ```
+:::
 
 ### Section Empty (Compact)
 
 **Before:**
+::: v-pre
 ```tsx
 <View style={{ padding: 16 }}>
   <Text>No items</Text>
 </View>
 ```
+:::
 
 **After:**
+::: v-pre
 ```tsx
 <GlassEmptyState
   variant="section-empty"
@@ -215,6 +234,7 @@ empty.permissionDenied.{title,description}
   noCard={true}
 />
 ```
+:::
 
 ## Special Cases
 
@@ -223,6 +243,7 @@ empty.permissionDenied.{title,description}
 This component has 2 action cards side-by-side (unique pattern).
 
 **Option 1: Use children prop**
+::: v-pre
 ```tsx
 <GlassEmptyState
   variant="no-data"
@@ -241,8 +262,10 @@ This component has 2 action cards side-by-side (unique pattern).
   </View>
 </GlassEmptyState>
 ```
+:::
 
 **Option 2: Use primaryAction + secondaryAction**
+::: v-pre
 ```tsx
 <GlassEmptyState
   variant="no-data"
@@ -260,6 +283,7 @@ This component has 2 action cards side-by-side (unique pattern).
   }}
 />
 ```
+:::
 
 ## Testing Checklist
 

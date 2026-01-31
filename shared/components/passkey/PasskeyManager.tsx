@@ -19,6 +19,7 @@ import { GlassView } from '../ui/GlassView';
 import { GlassButton } from '../ui/GlassButton';
 import { GlassModal } from '../ui/GlassModal';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useAuthStore } from '../../stores/authStore';
 import { useDirection } from '../../hooks/useDirection';
 import { rtlSpacing } from '../../utils/rtlHelpers';
@@ -140,7 +141,9 @@ export const PasskeyManager: React.FC<PasskeyManagerProps> = ({
           <Text className="text-xl font-semibold text-white">{t('passkey.manager.title')}</Text>
         )}
         <View className="items-center p-8">
-          <Text className="text-5xl mb-4 opacity-50">🔐</Text>
+          <View className="mb-4 opacity-50">
+            <NativeIcon name="lock" size="xxl" color="#9ca3af" />
+          </View>
           <Text className="text-base text-white/60 text-center">
             {t('passkey.unsupported')}
           </Text>
@@ -174,7 +177,9 @@ export const PasskeyManager: React.FC<PasskeyManagerProps> = ({
           <View className="mb-6">
             {passkeys.length === 0 ? (
               <View className="items-center p-8">
-                <Text className="text-5xl mb-4">🔑</Text>
+                <View className="mb-4">
+                  <NativeIcon name="key" size="xxl" color="#fbbf24" />
+                </View>
                 <Text className="text-base text-white/60 text-center">
                   {t('passkey.noPasskeys')}
                 </Text>

@@ -392,6 +392,7 @@ olorin skill info glass-ux-design --json
 ```
 
 **Output Format:**
+::: v-pre
 ```
 Skill: glass-ux-design
 
@@ -415,6 +416,7 @@ Location:
 
 ────────────────────────────────────────────────────────────────────────────────
 ```
+:::
 
 ### 9. Bash Router Integration ✅
 
@@ -480,6 +482,7 @@ Agent Registry: Loads and displays statistics
 
 **File:** `cli/src/types/agent.ts`
 
+::: v-pre
 ```typescript
 export interface Agent {
   name: string;
@@ -511,6 +514,7 @@ export interface SubagentsConfig {
   presets: Record<string, AgentPreset>;
 }
 ```
+:::
 
 **Why Two Interfaces?**
 - `AgentData`: Nested data in subagents.json (no name/category)
@@ -543,6 +547,7 @@ export interface SkillMetadata {
 
 **File:** `cli/src/types/command.ts`
 
+::: v-pre
 ```typescript
 export interface CommandManifest {
   name: string;
@@ -562,6 +567,7 @@ export interface CommandsConfig {
   }>;
 }
 ```
+:::
 
 ## Build and Installation
 
@@ -665,6 +671,7 @@ cp /path/to/subagents.json ~/.claude/
 ```
 
 **Solution:**
+::: v-pre
 ```bash
 # List all available agents
 olorin agent list
@@ -672,6 +679,7 @@ olorin agent list
 # Search for agent
 olorin agent list --search <query>
 ```
+:::
 
 ## Performance
 

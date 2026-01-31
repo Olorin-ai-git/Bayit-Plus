@@ -8,6 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from '../ui/GlassView';
 import { ChapterItem, Chapter } from './ChapterItem';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
@@ -77,7 +78,7 @@ export const ChaptersOverlay: React.FC<ChaptersOverlayProps> = ({
         {/* Header */}
         <View className="flex-row items-center justify-between px-6 py-4 border-b border-white/10">
           <View className="flex-row items-center gap-2">
-            <Text className="text-lg">📑</Text>
+            <NativeIcon name="file-text" size={18} color="#fff" />
             <Text className="text-lg font-semibold text-white">{t('chapters.title')}</Text>
             <Text className="text-sm text-gray-400">({chapters.length})</Text>
           </View>
@@ -86,7 +87,7 @@ export const ChaptersOverlay: React.FC<ChaptersOverlayProps> = ({
             onPress={onClose}
             accessibilityLabel={t('common.close')}
           >
-            <Text className="text-base text-gray-300">✕</Text>
+            <NativeIcon name="x" size={16} color="#d1d5db" />
           </TouchableOpacity>
         </View>
 
@@ -104,7 +105,7 @@ export const ChaptersOverlay: React.FC<ChaptersOverlayProps> = ({
             </View>
           ) : chapters.length === 0 ? (
             <View className="flex-1 justify-center items-center py-24">
-              <Text className="text-5xl opacity-50 mb-4">📑</Text>
+              <NativeIcon name="file-text" size={48} color="#fff" style={{ opacity: 0.5, marginBottom: 16 }} />
               <Text className="text-sm text-gray-400 text-center">{t('chapters.noChapters')}</Text>
             </View>
           ) : (

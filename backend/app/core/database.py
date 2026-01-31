@@ -15,6 +15,7 @@ from app.core.config import settings
 from app.models.admin import (AuditLog, Campaign, EmailCampaign,
                               PushNotification, Refund, SubscriptionPlan,
                               SystemSettings, Transaction)
+from app.models.ai_generation_job import AIGenerationJob
 # Beta 500 program models
 from app.models.beta_credit import BetaCredit
 from app.models.beta_credit_transaction import BetaCreditTransaction
@@ -229,6 +230,7 @@ async def connect_to_mongo():
         SubtitleSearchCacheDoc,
         SubtitleQuotaTrackerDoc,
         SubtitlePreference,
+        AIGenerationJob,
         # Search analytics models
         SearchQuery,
         # Admin models

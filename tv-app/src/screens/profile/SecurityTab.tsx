@@ -5,6 +5,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from '../../components';
 import { styles } from './ProfileScreen.styles';
 
@@ -27,7 +28,7 @@ export const SecurityTab: React.FC = () => {
             <Text style={styles.securityLabel}>{item.label}</Text>
             <Text style={styles.securityDesc}>{item.desc}</Text>
           </View>
-          <Text style={styles.chevron}>◀</Text>
+          <NativeIcon name="chevronLeft" size="md" context="tv" color="#9ca3af" />
         </TouchableOpacity>
       ))}
     </GlassView>

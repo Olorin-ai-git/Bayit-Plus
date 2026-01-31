@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { liveService } from '../services/api';
 import { colors, spacing } from '../theme';
 import { useDirection } from '@bayit/shared/hooks';
@@ -171,7 +172,7 @@ export const LiveTVScreen: React.FC = () => {
       {/* Header */}
       <View className="flex-row items-center px-12 pt-10 pb-5" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
         <View className="w-[60px] h-[60px] rounded-full bg-purple-700/30 justify-center items-center" style={{ marginLeft: isRTL ? 20 : 0, marginRight: isRTL ? 0 : 20 }}>
-          <Text className="text-[28px]">📺</Text>
+          <NativeIcon name="live" size="xl" context="tv" color="#7e22ce" />
         </View>
         <View>
           <Text className="text-[42px] font-bold text-white" style={{ textAlign }}>{t('liveTV.title')}</Text>

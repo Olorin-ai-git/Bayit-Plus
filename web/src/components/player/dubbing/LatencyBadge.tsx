@@ -7,6 +7,7 @@ import React, { useMemo } from 'react'
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { GlassTooltip } from '@olorin/glass-ui/web'
+import { Icon } from '@olorin/shared-icons/web'
 
 interface LatencyBadgeProps {
   totalLatency: number
@@ -39,7 +40,7 @@ export const LatencyBadge: React.FC<LatencyBadgeProps> = ({
     >
       <View style={[styles.badgeDot, { backgroundColor: badgeColor }]} />
       <Text style={styles.badgeText}>{totalLatency.toFixed(0)}ms</Text>
-      <Text style={styles.badgeArrow}>{isExpanded ? '▼' : '▶'}</Text>
+      <Icon name={isExpanded ? 'chevronDown' : 'chevronRight'} size="xs" color="#FFFFFF" />
     </TouchableOpacity>
   )
 

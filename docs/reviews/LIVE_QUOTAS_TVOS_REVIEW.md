@@ -39,6 +39,7 @@ The Live Quotas implementation includes usage indicators and admin management pa
 **Issue**: Badge is not focusable and lacks tvOS focus management
 
 **Current Implementation**:
+::: v-pre
 ```tsx
 // Position: absolute (no interaction)
 <View style={styles.container}>
@@ -48,6 +49,7 @@ The Live Quotas implementation includes usage indicators and admin management pa
   </View>
 </View>
 ```
+:::
 
 **Problems**:
 - ❌ No `focusable` prop - cannot receive Siri Remote focus
@@ -62,6 +64,7 @@ The Live Quotas implementation includes usage indicators and admin management pa
 - Poor accessibility - critical information invisible
 
 **Required Changes**:
+::: v-pre
 ```tsx
 import { TouchableOpacity, Platform } from 'react-native'
 import { useTVFocus } from '@bayit/glass-components/hooks'
@@ -110,6 +113,7 @@ const styles = StyleSheet.create({
   },
 })
 ```
+:::
 
 ---
 
@@ -119,6 +123,7 @@ const styles = StyleSheet.create({
 **Issue**: Multiple TextInput fields for numeric quota editing - extremely poor UX on tvOS
 
 **Current Implementation**:
+::: v-pre
 ```tsx
 <TextInput
   style={styles.formInput}
@@ -127,6 +132,7 @@ const styles = StyleSheet.create({
   keyboardType="numeric"
 />
 ```
+:::
 
 **Problems**:
 - ❌ **No native keyboard on tvOS** - typing with Siri Remote is painful
@@ -141,6 +147,7 @@ const styles = StyleSheet.create({
 - Does not meet Apple TV Human Interface Guidelines
 
 **Recommendation**:
+::: v-pre
 ```tsx
 // Option 1: Disable admin pages on tvOS
 if (Platform.isTV) {
@@ -174,6 +181,7 @@ import { GlassNumericStepper } from '@bayit/glass'
   focusable={Platform.isTV}
 />
 ```
+:::
 
 ---
 
@@ -183,6 +191,7 @@ import { GlassNumericStepper } from '@bayit/glass'
 **Issue**: Data table lacks proper focus navigation
 
 **Current Implementation**:
+::: v-pre
 ```tsx
 <View style={styles.table}>
   <View style={styles.tableHeader}>...</View>
@@ -193,6 +202,7 @@ import { GlassNumericStepper } from '@bayit/glass'
   ))}
 </View>
 ```
+:::
 
 **Problems**:
 - ⚠️ Table rows are non-interactive Views - cannot be focused
@@ -206,6 +216,7 @@ import { GlassNumericStepper } from '@bayit/glass'
 - Poor spatial navigation experience
 
 **Required Changes**:
+::: v-pre
 ```tsx
 <FlatList
   data={topUsers}
@@ -222,6 +233,7 @@ import { GlassNumericStepper } from '@bayit/glass'
   contentContainerStyle={styles.tableContainer}
 />
 ```
+:::
 
 ---
 
@@ -359,6 +371,7 @@ const TEXT_SIZES = Platform.select({
 
 ### Required Additions
 
+::: v-pre
 ```tsx
 // At top of each component
 import { Platform } from 'react-native'
@@ -381,6 +394,7 @@ const fontSize = Platform.select({
   {/* Make interactive on TV */}
 </TouchableOpacity>
 ```
+:::
 
 ---
 
@@ -458,6 +472,7 @@ const fontSize = Platform.select({
 
 ### 1. LiveFeatureUsageIndicator.tsx (Enhanced)
 
+::: v-pre
 ```tsx
 import { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native'
@@ -675,11 +690,13 @@ const styles = StyleSheet.create({
   },
 })
 ```
+:::
 
 ### 2. UserLiveQuotaPage.tsx (Platform Gate)
 
 Add at the top of the component:
 
+::: v-pre
 ```tsx
 export default function UserLiveQuotaPage() {
   const { t } = useTranslation()
@@ -751,6 +768,7 @@ const additionalStyles = StyleSheet.create({
   },
 })
 ```
+:::
 
 ---
 

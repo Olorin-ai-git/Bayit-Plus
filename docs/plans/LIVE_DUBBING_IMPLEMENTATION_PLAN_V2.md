@@ -973,6 +973,7 @@ export function detectBrowserCapabilities(): BrowserCapabilities {
 
 ### 3.3 Audio Mixer Service
 
+::: v-pre
 ```typescript
 // web/src/services/dubbingAudioMixer.ts
 
@@ -1134,9 +1135,11 @@ export class DubbingAudioMixer {
   }
 }
 ```
+:::
 
 ### 3.4 Live Dubbing Service
 
+::: v-pre
 ```typescript
 // web/src/services/liveDubbingService.ts
 
@@ -1412,9 +1415,11 @@ export class LiveDubbingService {
   }
 }
 ```
+:::
 
 ### 3.5 React Hook
 
+::: v-pre
 ```typescript
 // web/src/components/player/hooks/useLiveDubbing.ts
 
@@ -1541,9 +1546,11 @@ export function useLiveDubbing({
   };
 }
 ```
+:::
 
 ### 3.6 UI Components
 
+::: v-pre
 ```tsx
 // web/src/components/player/dubbing/DubbingControls.tsx
 
@@ -1776,6 +1783,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### 3.7 i18n Keys
 
@@ -1965,6 +1973,7 @@ extension Notification.Name {
 
 ### 4.2 tvOS Focus Navigation
 
+::: v-pre
 ```tsx
 // tvos-app/components/player/dubbing/TVDubbingControls.tsx
 
@@ -2103,6 +2112,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ---
 
@@ -2400,6 +2410,7 @@ class AudioDubbingModule: RCTEventEmitter {
 }
 ```
 
+::: v-pre
 ```objc
 // ios-app/BayitPlus/Dubbing/AudioDubbingModule.m (Bridge Header)
 
@@ -2425,6 +2436,7 @@ RCT_EXTERN_METHOD(stop:(RCTPromiseResolveBlock)resolve
 
 @end
 ```
+:::
 
 ### 8.4 Android Native Module (Kotlin)
 
@@ -2558,6 +2570,7 @@ class AudioDubbingModule(reactContext: ReactApplicationContext) :
 }
 ```
 
+::: v-pre
 ```kotlin
 // android-app/app/src/main/java/com/bayitplus/dubbing/AudioDubbingPackage.kt
 
@@ -2578,9 +2591,11 @@ class AudioDubbingPackage : ReactPackage {
     }
 }
 ```
+:::
 
 ### 8.5 React Native Bridge (TypeScript)
 
+::: v-pre
 ```typescript
 // shared/services/dubbing/DubbingAudioMixer.native.ts
 
@@ -2691,9 +2706,11 @@ export class DubbingAudioMixer {
   }
 }
 ```
+:::
 
 ### 8.6 Mobile WebSocket with App Lifecycle
 
+::: v-pre
 ```typescript
 // shared/services/dubbing/WebSocketConnection.native.ts
 
@@ -2824,6 +2841,7 @@ export class MobileWebSocketConnection {
   }
 }
 ```
+:::
 
 ### 8.7 Mobile Performance Requirements
 

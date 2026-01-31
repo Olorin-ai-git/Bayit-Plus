@@ -56,5 +56,5 @@
 - `maxWidth: 500` → `max-w-[500px]`
 
 ### Dynamic Styles (Keep as inline style)
-- `style={{ backgroundColor: getStatusColor(status) + '20' }}` → Keep as is
-- `style={{ color: getStatusColor(status) }}` → Keep as is
+- `style=\{\{ backgroundColor: getStatusColor(status) + '20' \}\}` → Keep as is
+- `style=\{\{ color: getStatusColor(status) \}\}` → Keep as is

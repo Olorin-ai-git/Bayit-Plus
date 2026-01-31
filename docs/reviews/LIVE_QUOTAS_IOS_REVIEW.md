@@ -92,12 +92,14 @@ const styles = StyleSheet.create({
 **Problem:**
 None of the page components use `SafeAreaView` or `useSafeAreaInsets`:
 
+::: v-pre
 ```typescript
 // UserLiveQuotaPage.tsx - CURRENT (WRONG)
 <ScrollView style={styles.container} contentContainerStyle={styles.content}>
   {/* Content renders under notch/home indicator */}
 </ScrollView>
 ```
+:::
 
 **Impact:**
 - Content obscured by iPhone notch on iPhone X and later
@@ -112,6 +114,7 @@ None of the page components use `SafeAreaView` or `useSafeAreaInsets`:
 - All iPad models (safe area margins)
 
 **Required Fix:**
+::: v-pre
 ```typescript
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -130,6 +133,7 @@ const styles = StyleSheet.create({
   // ...
 });
 ```
+:::
 
 **Required Dependency:**
 ```bash
@@ -147,6 +151,7 @@ yarn add react-native-safe-area-context
 **Problem:**
 Multiple `TextInput` components without keyboard management:
 
+::: v-pre
 ```typescript
 <TextInput
   style={styles.formInput}
@@ -158,6 +163,7 @@ Multiple `TextInput` components without keyboard management:
   // ❌ No returnKeyType specification
 />
 ```
+:::
 
 **Impact:**
 - Keyboard covers form inputs on iPhone (especially SE/8)
@@ -168,6 +174,7 @@ Multiple `TextInput` components without keyboard management:
 **Required Fixes:**
 
 1. **Wrap in KeyboardAvoidingView:**
+::: v-pre
 ```typescript
 import { KeyboardAvoidingView, Platform } from 'react-native';
 
@@ -181,8 +188,10 @@ import { KeyboardAvoidingView, Platform } from 'react-native';
   </ScrollView>
 </KeyboardAvoidingView>
 ```
+:::
 
 2. **Add keyboard dismissal:**
+::: v-pre
 ```typescript
 <ScrollView
   keyboardShouldPersistTaps="handled"
@@ -191,8 +200,10 @@ import { KeyboardAvoidingView, Platform } from 'react-native';
   {/* Content */}
 </ScrollView>
 ```
+:::
 
 3. **Improve TextInput props:**
+::: v-pre
 ```typescript
 <TextInput
   style={styles.formInput}
@@ -205,6 +216,7 @@ import { KeyboardAvoidingView, Platform } from 'react-native';
   accessibilityLabel="Subtitle minutes per hour"  // Accessibility
 />
 ```
+:::
 
 ---
 
@@ -377,6 +389,7 @@ useEffect(() => {
 **Problem:**
 No haptic feedback on button presses:
 
+::: v-pre
 ```typescript
 <GlassButton
   variant="primary"
@@ -386,6 +399,7 @@ No haptic feedback on button presses:
   <Text>Save Changes</Text>
 </GlassButton>
 ```
+:::
 
 **Impact:**
 - Less polished iOS experience
@@ -393,6 +407,7 @@ No haptic feedback on button presses:
 - Reduced user confidence in interactions
 
 **Required Fix:**
+::: v-pre
 ```typescript
 import { Platform } from 'react-native';
 import * as Haptics from 'expo-haptics';
@@ -412,6 +427,7 @@ const handleSaveWithHaptic = async () => {
   <Text>Save Changes</Text>
 </GlassButton>
 ```
+:::
 
 ---
 
@@ -426,6 +442,7 @@ const handleSaveWithHaptic = async () => {
 
 **Required Additions:**
 
+::: v-pre
 ```typescript
 // LiveFeatureUsageIndicator.tsx
 <View
@@ -448,6 +465,7 @@ const handleSaveWithHaptic = async () => {
   accessibilityValue={{ text: String(formData.subtitle_minutes_per_hour || 0) }}
 />
 ```
+:::
 
 ---
 

@@ -15,6 +15,7 @@ import { View, Image, Text, Pressable, Dimensions } from 'react-native';
 import { GlassView } from '@bayit/shared';
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
 import { GlassPlaceholder } from '@olorin/glass-ui';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { responsive } from '../utils/responsive';
 import { optimizeTMDBImageUrl } from '../utils/imageUtils';
 import { typography, spacing, borderRadius, colors } from '@olorin/design-tokens';
@@ -110,7 +111,10 @@ export const ContentCardMobile: React.FC<ContentCardMobileProps> = ({
             {content.rating && typeof content.rating === 'number' && (
               <>
                 <Text className="text-xs text-gray-500 mx-1">•</Text>
-                <Text className="text-xs text-gray-400">⭐ {content.rating.toFixed(1)}</Text>
+                <View className="flex-row items-center">
+                  <NativeIcon name="star" size="xs" color="#9ca3af" />
+                  <Text className="text-xs text-gray-400 ml-1">{content.rating.toFixed(1)}</Text>
+                </View>
               </>
             )}
             {content.duration && typeof content.duration === 'number' && content.duration > 0 && (
@@ -125,7 +129,7 @@ export const ContentCardMobile: React.FC<ContentCardMobileProps> = ({
         {/* Play overlay */}
         <View className="absolute inset-0 justify-center items-center bg-transparent">
           <View className="w-14 h-14 rounded-full bg-purple-600/90 justify-center items-center">
-            <Text className="text-2xl text-white ml-0.5">▶</Text>
+            <NativeIcon name="play" size="lg" color="#ffffff" />
           </View>
         </View>
       </GlassView>

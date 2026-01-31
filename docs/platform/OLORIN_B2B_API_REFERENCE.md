@@ -13,9 +13,11 @@ Production: https://api.bayit.tv/api/v1/olorin
 All API requests (except partner registration) require authentication using an API key.
 
 **Header Format:**
+::: v-pre
 ```
 X-API-Key: olorin_<your_api_key>
 ```
+:::
 
 ## Rate Limiting
 

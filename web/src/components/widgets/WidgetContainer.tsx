@@ -19,6 +19,7 @@ import { useDirection } from '@/hooks/useDirection';
 import type { Widget, WidgetPosition } from '@/types/widget';
 import type { PodcastEpisode } from '@/types/podcast';
 import logger from '@/utils/logger';
+import { Icon } from '@olorin/shared-icons/web';
 
 interface WidgetContainerProps {
   widget: Widget;
@@ -651,13 +652,9 @@ export default function WidgetContainer({
           </View>
 
           {/* Drag indicator in center - only when not minimized */}
-          {widget.is_draggable && !isMinimized && (
+          {widget.is_draggable && !isMinimized && !IS_TV_BUILD && (
             <View style={styles.dragIndicator}>
-              {IS_TV_BUILD ? (
-                <Text style={styles.tvControlText}>⬅️ ⬆️ ⬇️ ➡️</Text>
-              ) : (
-                <GripHorizontal size={16} color="rgba(255,255,255,0.4)" />
-              )}
+              <GripHorizontal size={16} color="rgba(255,255,255,0.4)" />
             </View>
           )}
 

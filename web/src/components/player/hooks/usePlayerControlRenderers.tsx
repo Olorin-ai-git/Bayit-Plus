@@ -11,7 +11,7 @@ import LiveFeatureButton from '../controls/LiveFeatureButton'
 import { MessageCircle, Lightbulb } from 'lucide-react'
 import { colors } from '@olorin/design-tokens'
 import liveSubtitleService from '@/services/liveSubtitleService'
-import { SubtitleTrack, SubtitleSettings } from '@/types/subtitle'
+import { SubtitleTrack, SubtitleSettings, HebrewMode } from '@/types/subtitle'
 import { UseLiveDubbingState } from './useLiveDubbing'
 import { WatchParty } from '@/types/watchparty'
 import { SubtitleCue } from '../types'
@@ -46,6 +46,8 @@ interface UsePlayerControlRenderersParams {
   handleSubtitleToggle: () => void
   handleSubtitleSettingsChange: (settings: SubtitleSettings) => void
   fetchAvailableSubtitles: () => void
+  hebrewMode: HebrewMode
+  handleHebrewModeChange: (mode: HebrewMode) => void
 
   // Live Subtitles
   liveSubtitleLang: string
@@ -111,6 +113,8 @@ export function usePlayerControlRenderers({
   handleSubtitleToggle,
   handleSubtitleSettingsChange,
   fetchAvailableSubtitles,
+  hebrewMode,
+  handleHebrewModeChange,
   liveSubtitleLang,
   setLiveSubtitleLang,
   handleLiveSubtitleCue,
@@ -156,11 +160,13 @@ export function usePlayerControlRenderers({
         onSubtitlesRefresh={fetchAvailableSubtitles}
         isLoading={subtitlesLoading}
         containerRef={containerRef}
+        hebrewMode={hebrewMode}
+        onHebrewModeChange={handleHebrewModeChange}
       />
     ) : null
   , [isLive, contentId, availableSubtitles, currentSubtitleLang, subtitlesEnabled, subtitleSettings,
      handleSubtitleLanguageChange, handleSubtitleToggle, handleSubtitleSettingsChange,
-     fetchAvailableSubtitles, subtitlesLoading, containerRef])
+     fetchAvailableSubtitles, subtitlesLoading, containerRef, hebrewMode, handleHebrewModeChange])
 
   const renderLiveSubtitleControls = useCallback(() =>
     isLive && contentId && !isWidget ? (

@@ -6,6 +6,7 @@
 import { View, Text, Pressable } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@olorin/shared-icons/web';
 import { FeedItem } from './schemas';
 
 interface FeedOverlayProps {
@@ -52,15 +53,15 @@ export function FeedOverlay({ item }: FeedOverlayProps) {
           className="items-center gap-1 p-2 rounded-lg hover:bg-white/10"
           onPress={() => item.id && navigate(`/watch/${item.id}`)}
         >
-          <Text className="text-2xl">▶️</Text>
+          <Icon name="play" size="lg" className="text-white" />
           <Text className="text-xs text-white">{t('common.watch')}</Text>
         </Pressable>
         <Pressable className="items-center gap-1 p-2 rounded-lg hover:bg-white/10">
-          <Text className="text-2xl">➕</Text>
+          <Icon name="plus" size="lg" className="text-white" />
           <Text className="text-xs text-white">{t('common.save')}</Text>
         </Pressable>
         <Pressable className="items-center gap-1 p-2 rounded-lg hover:bg-white/10">
-          <Text className="text-2xl">↗️</Text>
+          <Icon name="share" size="lg" className="text-white" />
           <Text className="text-xs text-white">{t('common.share')}</Text>
         </Pressable>
       </View>

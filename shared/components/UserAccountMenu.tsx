@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from './ui';
 import { useAuthStore } from '../stores/authStore';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -64,12 +65,16 @@ export const UserAccountMenu: React.FC = () => {
           styles.avatarPlaceholder,
           isAuthenticated && styles.avatarAuthenticated,
         ]}>
-          <Text style={[
-            styles.avatarText,
-            isAuthenticated && styles.avatarTextAuthenticated,
-          ]}>
-            {displayName.charAt(0).toUpperCase() || '👤'}
-          </Text>
+          {displayName.charAt(0) ? (
+            <Text style={[
+              styles.avatarText,
+              isAuthenticated && styles.avatarTextAuthenticated,
+            ]}>
+              {displayName.charAt(0).toUpperCase()}
+            </Text>
+          ) : (
+            <NativeIcon name="user" size={18} color={isAuthenticated ? colors.background : colors.textSecondary} />
+          )}
         </View>
         {isAuthenticated && (
           <View style={styles.authBadge} />
@@ -102,9 +107,13 @@ export const UserAccountMenu: React.FC = () => {
               {/* User Info Section */}
               <View style={styles.userSection}>
                 <View style={styles.userAvatarPlaceholder}>
-                  <Text style={styles.userAvatarText}>
-                    {displayName.charAt(0).toUpperCase() || '👤'}
-                  </Text>
+                  {displayName.charAt(0) ? (
+                    <Text style={styles.userAvatarText}>
+                      {displayName.charAt(0).toUpperCase()}
+                    </Text>
+                  ) : (
+                    <NativeIcon name="user" size={24} color={colors.background} />
+                  )}
                 </View>
                 <View style={styles.userInfo}>
                   <Text style={styles.userName}>{displayName}</Text>
@@ -128,7 +137,7 @@ export const UserAccountMenu: React.FC = () => {
                 }}
                 style={[styles.menuOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
               >
-                <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>👤</Text>
+                <NativeIcon name="user" size={20} color={colors.text} style={isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }} />
                 <Text style={styles.menuText}>{t('account.personalDetails')}</Text>
               </TouchableOpacity>
 
@@ -139,7 +148,7 @@ export const UserAccountMenu: React.FC = () => {
                 }}
                 style={[styles.menuOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
               >
-                <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>💳</Text>
+                <NativeIcon name="creditCard" size={20} color={colors.text} style={isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }} />
                 <Text style={styles.menuText}>{t('account.billing')}</Text>
               </TouchableOpacity>
 
@@ -150,7 +159,7 @@ export const UserAccountMenu: React.FC = () => {
                 }}
                 style={[styles.menuOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
               >
-                <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>⭐</Text>
+                <NativeIcon name="star" size={20} color={colors.text} style={isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }} />
                 <Text style={styles.menuText}>{t('account.manageSubscription')}</Text>
               </TouchableOpacity>
 
@@ -158,7 +167,7 @@ export const UserAccountMenu: React.FC = () => {
                 onPress={handleSettings}
                 style={[styles.menuOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
               >
-                <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>⚙️</Text>
+                <NativeIcon name="settings" size={20} color={colors.text} style={isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }} />
                 <Text style={styles.menuText}>{t('account.settings')}</Text>
               </TouchableOpacity>
 
@@ -171,7 +180,7 @@ export const UserAccountMenu: React.FC = () => {
                   onPress={handleLogout}
                   style={[styles.menuOption, styles.logoutOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
                 >
-                  <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>🚪</Text>
+                  <NativeIcon name="logOut" size={20} color={colors.error.DEFAULT} style={isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }} />
                   <Text style={[styles.menuText, styles.logoutText]}>{t('account.logout')}</Text>
                 </TouchableOpacity>
               ) : (
@@ -179,7 +188,7 @@ export const UserAccountMenu: React.FC = () => {
                   onPress={handleLogin}
                   style={[styles.menuOption, styles.loginOption, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}
                 >
-                  <Text style={[styles.menuIcon, isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }]}>🔑</Text>
+                  <NativeIcon name="key" size={20} color={colors.primary.DEFAULT} style={isRTL ? { marginLeft: spacing.md } : { marginRight: spacing.md }} />
                   <Text style={[styles.menuText, styles.loginText]}>{t('account.login')}</Text>
                 </TouchableOpacity>
               )}
@@ -311,9 +320,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.sm,
     borderRadius: borderRadius.md,
-  },
-  menuIcon: {
-    fontSize: 20,
   },
   menuText: {
     fontSize: 16,

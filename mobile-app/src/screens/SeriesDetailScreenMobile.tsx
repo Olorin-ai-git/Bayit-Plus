@@ -32,6 +32,7 @@ import { contentService } from "@bayit/shared-services";
 import { getLocalizedName, getLocalizedDescription } from "@bayit/shared-utils";
 import { useDirection } from "@bayit/shared-hooks";
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 import logger from '@/utils/logger';
 
@@ -135,7 +136,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
           <Text className="text-xs font-semibold text-white">{episode.episode_number}</Text>
         </View>
         <TouchableOpacity className="absolute top-1/2 left-1/2 -mt-5 -ml-5 w-10 h-10 rounded-full bg-purple-600/90 justify-center items-center" onPress={onPress}>
-          <Text className="text-base text-white ml-0.5">▶</Text>
+          <NativeIcon name="play" size="sm" color="#ffffff" />
         </TouchableOpacity>
       </View>
       <View className="p-2">
@@ -367,14 +368,14 @@ export const SeriesDetailScreenMobile: React.FC = () => {
           {/* Header Actions */}
           <SafeAreaView style={styles.headerActions}>
             <TouchableOpacity onPress={handleBack} style={styles.headerButton}>
-              <Text style={styles.headerButtonIcon}>←</Text>
+              <NativeIcon name="chevronLeft" size="lg" color="#ffffff" />
             </TouchableOpacity>
             <View style={styles.headerRightActions}>
               <TouchableOpacity
                 onPress={handleShare}
                 style={styles.headerButton}
               >
-                <Text style={styles.headerButtonIcon}>⤴</Text>
+                <NativeIcon name="share" size="lg" color="#ffffff" />
               </TouchableOpacity>
             </View>
           </SafeAreaView>
@@ -426,7 +427,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
             <Text style={styles.seasonSelectorLabel}>
               {t("content.season", "Season")} {selectedSeason}
             </Text>
-            <Text style={styles.seasonSelectorArrow}>▼</Text>
+            <NativeIcon name="chevronDown" size="sm" color="#9ca3af" />
           </TouchableOpacity>
 
           {/* Episodes */}
@@ -469,9 +470,13 @@ export const SeriesDetailScreenMobile: React.FC = () => {
               onPress={handleToggleWatchlist}
               style={styles.quickActionButton}
             >
-              <Text style={styles.quickActionIcon}>
-                {isInWatchlist ? "✓" : "+"}
-              </Text>
+              <View style={styles.quickActionIcon}>
+                {isInWatchlist ? (
+                  <NativeIcon name="check" size="lg" color="#a855f7" />
+                ) : (
+                  <NativeIcon name="plus" size="lg" color="#ffffff" />
+                )}
+              </View>
               <Text style={styles.quickActionLabel}>
                 {t("content.myList", "My List")}
               </Text>
@@ -480,7 +485,9 @@ export const SeriesDetailScreenMobile: React.FC = () => {
               onPress={handleShare}
               style={styles.quickActionButton}
             >
-              <Text style={styles.quickActionIcon}>⤴</Text>
+              <View style={styles.quickActionIcon}>
+                <NativeIcon name="share" size="lg" color="#ffffff" />
+              </View>
               <Text style={styles.quickActionLabel}>
                 {t("content.share", "Share")}
               </Text>
@@ -587,7 +594,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
           >
-            <Text style={styles.watchButtonIcon}>▶</Text>
+            <NativeIcon name="play" size="md" color="#ffffff" />
             <Text style={styles.watchButtonText}>
               {selectedEpisode
                 ? `${t("content.play", "Play")} S${selectedSeason}:E${selectedEpisode.episode_number}`
@@ -615,7 +622,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
                 {t("content.selectSeason", "Select Season")}
               </Text>
               <TouchableOpacity onPress={() => setShowSeasonPicker(false)}>
-                <Text style={styles.seasonPickerClose}>✕</Text>
+                <NativeIcon name="x" size="lg" color="#ffffff" />
               </TouchableOpacity>
             </View>
             <ScrollView style={styles.seasonList}>
@@ -642,7 +649,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
                     {season.episode_count} {t("content.episodes", "episodes")}
                   </Text>
                   {selectedSeason === season.season_number && (
-                    <Text style={styles.seasonItemCheck}>✓</Text>
+                    <NativeIcon name="check" size="md" color="#a855f7" />
                   )}
                 </TouchableOpacity>
               ))}

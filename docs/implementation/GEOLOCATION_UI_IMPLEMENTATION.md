@@ -95,6 +95,7 @@ const shouldShow = !hasConsent && !hasDismissed && supportsGeolocation && !isLoa
 - Automatic consent expiration after 90 days
 
 **API**:
+::: v-pre
 ```typescript
 interface LocationConsentHook {
   hasConsent: boolean;
@@ -107,6 +108,7 @@ interface LocationConsentHook {
   closeConsentModal: () => void;
 }
 ```
+:::
 
 **Storage Keys**:
 - `bayit_location_consent` - Consent status (true/false)
@@ -179,6 +181,7 @@ PATCH /api/v1/users/me/preferences - Save location to user profile
 - Add once to app root
 
 **Usage**:
+::: v-pre
 ```tsx
 // In App.tsx or root component
 import { LocationManager } from './components/location/LocationManager';
@@ -192,6 +195,7 @@ function App() {
   );
 }
 ```
+:::
 
 ---
 
@@ -247,6 +251,7 @@ import { LocationManager } from './components/location/LocationManager';
 ```
 
 **Step 2**: Add to app root
+::: v-pre
 ```tsx
 function App() {
   return (
@@ -259,8 +264,10 @@ function App() {
   );
 }
 ```
+:::
 
 **Step 3**: Use location data in components
+::: v-pre
 ```tsx
 import useUserGeolocationWithConsent from './hooks/useUserGeolocationWithConsent';
 
@@ -282,6 +289,7 @@ function MyComponent() {
   return null;
 }
 ```
+:::
 
 ---
 

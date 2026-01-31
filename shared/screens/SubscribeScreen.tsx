@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useDirection } from '../hooks/useDirection';
 import { GlassView, GlassCard } from '../components/ui';
 import { colors, spacing, borderRadius } from '../theme';
@@ -227,7 +228,7 @@ function PlanCard({ plan, isSelected, isFocused, onSelect, onFocus, billingPerio
         {/* Popular Badge */}
         {plan.popular && (
           <View className="absolute -top-3.5 right-4 flex-row items-center gap-1 bg-[#a855f7] px-4 py-1 rounded-full">
-            <Text className="text-sm">✨</Text>
+            <NativeIcon name="star" size="sm" color="#ffffff" />
             <Text className="text-xs font-semibold text-white">{t('subscribe.popular', 'הכי פופולרי')}</Text>
           </View>
         )}
@@ -249,7 +250,7 @@ function PlanCard({ plan, isSelected, isFocused, onSelect, onFocus, billingPerio
           {getFeatures().map((feature, i) => (
             <View key={i} className="flex-row items-center gap-2 mb-2">
               <View className="w-[22px] h-[22px] rounded-full bg-[rgba(34,197,94,0.2)] justify-center items-center">
-                <Text className="text-xs text-[#22c55e] font-bold">✓</Text>
+                <NativeIcon name="check" size="xs" color="#22c55e" />
               </View>
               <Text className="text-sm text-white flex-1 text-right">{feature}</Text>
             </View>
@@ -398,7 +399,7 @@ export function SubscribeScreen() {
         <GlassCard className="p-6 items-center min-w-[300px]">
           <Text className="text-base text-gray-300 mb-4">{t('subscribe.scanQR', 'או הירשם מהנייד')}</Text>
           <View className="w-[150px] h-[150px] bg-white/10 rounded-lg justify-center items-center mb-4 border-2 border-white/20 border-dashed">
-            <Text className="text-5xl">📱</Text>
+            <NativeIcon name="smartphone" size="3xl" color="#9ca3af" />
           </View>
           <Text className="text-sm text-gray-400 text-center">
             {t('subscribe.scanToSignup', 'סרוק את הקוד כדי להירשם מהטלפון')}

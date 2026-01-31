@@ -8,6 +8,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { formatDistanceToNow } from 'date-fns';
 import { colors } from '@olorin/design-tokens';
 import { VoiceCommand, getCommandTypeColor } from '@bayit/shared/utils/voiceCommandUtils';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface CommandHistoryItemProps {
   command: VoiceCommand;
@@ -23,7 +24,7 @@ export const CommandHistoryItem: React.FC<CommandHistoryItemProps> = ({
   onDelete,
 }) => {
   const commandTypeColor = getCommandTypeColor(command.commandType);
-  const statusIcon = command.success ? '✓' : '✗';
+  const statusIconName = command.success ? 'check' : 'x';
   const statusColor = command.success ? colors.success.DEFAULT : colors.error.DEFAULT;
 
   return (
@@ -40,13 +41,7 @@ export const CommandHistoryItem: React.FC<CommandHistoryItemProps> = ({
           className="w-7 h-7 rounded-full justify-center items-center mt-0.5"
           style={{ backgroundColor: statusColor }}
         >
-          <Text
-            className="text-sm font-bold text-white"
-            allowFontScaling={true}
-            maxFontSizeMultiplier={1.3}
-          >
-            {statusIcon}
-          </Text>
+          <NativeIcon name={statusIconName} size="sm" color="#ffffff" />
         </View>
 
         {/* Command Details */}
@@ -109,13 +104,7 @@ export const CommandHistoryItem: React.FC<CommandHistoryItemProps> = ({
           onPress={onDelete}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
-          <Text
-            className="text-xl text-slate-600 font-light"
-            allowFontScaling={true}
-            maxFontSizeMultiplier={1.3}
-          >
-            ×
-          </Text>
+          <NativeIcon name="x" size="md" color="#475569" />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>

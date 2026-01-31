@@ -13,6 +13,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 export interface Column<T> {
   key: keyof T | string;
@@ -108,9 +109,13 @@ export function DataTable<T>({
   const renderSortIndicator = (columnKey: string) => {
     if (sortConfig.key !== columnKey) return null;
     return (
-      <Text className="text-[10px] text-primary ml-1">
-        {sortConfig.direction === 'asc' ? '▲' : '▼'}
-      </Text>
+      <View className="ml-1">
+        <NativeIcon
+          name={sortConfig.direction === 'asc' ? 'arrowUp' : 'arrowDown'}
+          size={10}
+          color="#8b5cf6"
+        />
+      </View>
     );
   };
 
@@ -187,7 +192,9 @@ export function DataTable<T>({
             value={searchQuery}
             onChangeText={handleSearch}
           />
-          <Text className="absolute right-6 text-base">🔍</Text>
+          <View className="absolute right-6">
+            <NativeIcon name="search" size={16} color="#9CA3AF" />
+          </View>
         </View>
       )}
 
@@ -202,7 +209,7 @@ export function DataTable<T>({
                 onPress={handleSelectAll}
               >
                 <View className={`w-5 h-5 rounded border-2 justify-center items-center ${allSelected ? 'bg-primary border-primary' : 'border-textMuted'}`}>
-                  {allSelected && <Text className="text-text text-xs font-bold">✓</Text>}
+                  {allSelected && <NativeIcon name="check" size={12} color="#ffffff" style={{ fontWeight: 'bold' }} />}
                 </View>
               </TouchableOpacity>
             )}
@@ -261,7 +268,7 @@ export function DataTable<T>({
                     onPress={() => handleSelectRow(id)}
                   >
                     <View className={`w-5 h-5 rounded border-2 justify-center items-center ${isSelected ? 'bg-primary border-primary' : 'border-textMuted'}`}>
-                      {isSelected && <Text className="text-text text-xs font-bold">✓</Text>}
+                      {isSelected && <NativeIcon name="check" size={12} color="#ffffff" style={{ fontWeight: 'bold' }} />}
                     </View>
                   </TouchableOpacity>
                 )}

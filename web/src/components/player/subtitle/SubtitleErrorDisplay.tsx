@@ -5,6 +5,7 @@
 
 import { useTranslation } from 'react-i18next'
 import { useMemo } from 'react'
+import { Icon } from '@olorin/shared-icons/web'
 
 interface SubtitleErrorDisplayProps {
   error: Error | string | null
@@ -35,7 +36,7 @@ function categorizeError(error: Error | string): ErrorInfo {
   ) {
     return {
       category: 'network',
-      icon: '📡',
+      icon: 'broadcast',
       titleKey: 'subtitles.error.networkTitle',
       messageKey: 'subtitles.error.networkError',
     }
@@ -45,7 +46,7 @@ function categorizeError(error: Error | string): ErrorInfo {
   if (errorLower.includes('500') || errorLower.includes('502') || errorLower.includes('503') || errorLower.includes('504') || errorLower.includes('server error')) {
     return {
       category: 'server',
-      icon: '🔧',
+      icon: 'settings',
       titleKey: 'subtitles.error.serverTitle',
       messageKey: 'subtitles.error.serverError',
     }
@@ -55,7 +56,7 @@ function categorizeError(error: Error | string): ErrorInfo {
   if (errorLower.includes('400') || errorLower.includes('401') || errorLower.includes('403') || errorLower.includes('404') || errorLower.includes('not found')) {
     return {
       category: 'client',
-      icon: '❌',
+      icon: 'x',
       titleKey: 'subtitles.error.clientTitle',
       messageKey: 'subtitles.error.clientError',
     }
@@ -64,7 +65,7 @@ function categorizeError(error: Error | string): ErrorInfo {
   // Unknown/generic errors
   return {
     category: 'unknown',
-    icon: '⚠️',
+    icon: 'alertTriangle',
     titleKey: 'subtitles.error.title',
     messageKey: 'subtitles.error.loadFailed',
   }
@@ -97,9 +98,13 @@ export default function SubtitleErrorDisplay({
       aria-live="polite"
     >
       <div className="flex items-start gap-3">
-        <span className="text-2xl flex-shrink-0" aria-hidden="true">
-          {errorInfo.icon}
-        </span>
+        <Icon
+          name={errorInfo.icon}
+          size="lg"
+          color={errorInfo.category === 'network' ? '#fbbf24' : '#f87171'}
+          className="flex-shrink-0"
+          aria-hidden="true"
+        />
         <div className="flex-1">
           <h3 className={`text-sm font-semibold ${textColor} mb-1`}>
             {t(errorInfo.titleKey, 'Subtitle Error')}

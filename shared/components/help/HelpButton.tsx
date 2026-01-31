@@ -13,6 +13,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { isTV } from '../../utils/platform';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -115,12 +116,12 @@ export const HelpButton: React.FC<HelpButtonProps> = ({
     [onHelpPress, expandAnim]
   );
 
-  const menuItems: { action: HelpAction; icon: string; labelKey: string }[] = [
-    { action: 'search', icon: '🔍', labelKey: 'help.actions.search' },
-    { action: 'docs', icon: '📚', labelKey: 'help.actions.docs' },
-    { action: 'faq', icon: '❓', labelKey: 'help.actions.faq' },
-    { action: 'support', icon: '💬', labelKey: 'help.actions.support' },
-    { action: 'tutorial', icon: '🎓', labelKey: 'help.actions.tutorial' },
+  const menuItems: { action: HelpAction; iconName: string; labelKey: string }[] = [
+    { action: 'search', iconName: 'search', labelKey: 'help.actions.search' },
+    { action: 'docs', iconName: 'book-open', labelKey: 'help.actions.docs' },
+    { action: 'faq', iconName: 'help-circle', labelKey: 'help.actions.faq' },
+    { action: 'support', iconName: 'message-circle', labelKey: 'help.actions.support' },
+    { action: 'tutorial', iconName: 'award', labelKey: 'help.actions.tutorial' },
   ];
 
   return (
@@ -185,7 +186,7 @@ export const HelpButton: React.FC<HelpButtonProps> = ({
                 accessibilityRole="button"
                 accessibilityLabel={t(item.labelKey)}
               >
-                <Text className={isTV ? 'text-xl' : 'text-lg'}>{item.icon}</Text>
+                <NativeIcon name={item.iconName} size={isTV ? 20 : 18} color="#fff" />
                 <Text className={`text-white font-medium ${isTV ? 'text-sm' : 'text-[13px]'}`}>{t(item.labelKey)}</Text>
               </TouchableOpacity>
             </Animated.View>
@@ -210,7 +211,7 @@ export const HelpButton: React.FC<HelpButtonProps> = ({
           accessibilityRole="button"
           accessibilityLabel={t('help.openHelp', 'Open help menu')}
         >
-          <Text className={`text-white font-bold ${isTV ? 'text-[32px]' : 'text-2xl'}`}>{expanded ? '✕' : '?'}</Text>
+          <NativeIcon name={expanded ? 'x' : 'help-circle'} size={isTV ? 32 : 24} color="#fff" />
           {badgeCount && badgeCount > 0 && (
             <View className="absolute -top-1 -right-1 min-w-[20px] h-5 rounded-full bg-red-500 items-center justify-center px-1.5">
               <Text className="text-white text-xs font-bold">

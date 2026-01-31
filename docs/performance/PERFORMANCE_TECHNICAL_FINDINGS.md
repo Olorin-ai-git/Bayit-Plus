@@ -11,6 +11,7 @@
 
 **✅ EXEMPLARY USAGE - GlassCard.tsx**
 
+::: v-pre
 ```typescript
 // Proper pattern: StyleSheet defined at module level (outside component)
 import { StyleSheet } from 'react-native'
@@ -36,6 +37,7 @@ export const GlassCard = ({ title, children }) => (
   </View>
 )
 ```
+:::
 
 **Benefits**:
 - ✅ Styles computed once at module load
@@ -52,6 +54,7 @@ export const GlassCard = ({ title, children }) => (
 
 **✅ SAFE - VideoPlayer.tsx**
 
+::: v-pre
 ```typescript
 // Safe conditional styling with style arrays
 <View
@@ -62,6 +65,7 @@ export const GlassCard = ({ title, children }) => (
   ]}
 />
 ```
+:::
 
 **Why This Works**:
 - Array is created in JSX (re-created on render, but React Native handles efficiently)
@@ -128,12 +132,14 @@ const styles = StyleSheet.create({
 - Impact: Adds ~1ms to module load time (negligible)
 
 **Recommendation**: Consider breaking into sub-components:
+::: v-pre
 ```typescript
 // Future optimization (not critical now)
 export const SidebarHeader = () => <View style={styles.header} />
 export const SidebarMenu = () => <View style={styles.menu} />
 export const SidebarFooter = () => <View style={styles.footer} />
 ```
+:::
 
 ---
 
@@ -141,6 +147,7 @@ export const SidebarFooter = () => <View style={styles.footer} />
 
 **File**: `/web/src/components/player/VideoPlayer.tsx`
 
+::: v-pre
 ```typescript
 // Example of deeply nested conditional styles (currently minimal)
 <View
@@ -152,6 +159,7 @@ export const SidebarFooter = () => <View style={styles.footer} />
   ]}
 />
 ```
+:::
 
 **Assessment**: ✅ SAFE
 - React Native StyleSheet handles array merging efficiently
@@ -342,6 +350,7 @@ export const colors = {
 - useMemo usage: Minimal
 
 **Opportunity 1: Memoize List Items**
+::: v-pre
 ```typescript
 // Before: Re-renders entire list on parent update
 const MenuItemList = ({ items }) => (
@@ -357,6 +366,7 @@ const MenuItem = React.memo(({ label, onPress }) => (
   </TouchableOpacity>
 ))
 ```
+:::
 
 **Estimated Improvement**: 15-20% for lists with 50+ items
 
@@ -480,6 +490,7 @@ Theme Import Compliance: 100%
 
 ### Before (TailwindCSS approach):
 
+::: v-pre
 ```typescript
 // Multiple class applications, runtime parsing
 <View className="flex flex-col gap-4 bg-black/20 backdrop-blur-xl rounded-lg p-6" />
@@ -488,6 +499,7 @@ Theme Import Compliance: 100%
 // Runtime class application: ~1ms
 // Total per render: ~3ms
 ```
+:::
 
 **Issues**:
 - Runtime CSS parsing overhead
@@ -499,6 +511,7 @@ Theme Import Compliance: 100%
 
 ### After (StyleSheet approach):
 
+::: v-pre
 ```typescript
 // Pre-computed styles, direct application
 <View style={styles.container} />
@@ -519,6 +532,7 @@ Theme Import Compliance: 100%
 // Style application: ~0.01ms
 // Total per render: ~0.06ms
 ```
+:::
 
 **Improvements**:
 - 50x faster style application

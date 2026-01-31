@@ -6,6 +6,7 @@ import { judaismService } from '@/services/api';
 import { GlassCard } from '@bayit/shared/ui';
 import { colors } from '@olorin/design-tokens';
 import logger from '@/utils/logger';
+import { Icon } from '@olorin/shared-icons/web';
 
 interface ShabbatTimes {
   city: string;
@@ -141,8 +142,8 @@ export function ShabbatModeBanner({
               </p>
             </div>
 
-            {/* Challah */}
-            <span className="text-2xl">🍞</span>
+            {/* Judaism Icon */}
+            <Icon name="judaism" size="lg" color={colors.warning} />
           </div>
 
           {/* Dismiss button */}
@@ -190,10 +191,10 @@ export function ShabbatModeBanner({
 
         {/* Decorative stars - position based on RTL */}
         <div className={`absolute top-2 ${isRTL ? 'left-12' : 'right-12'} opacity-50`}>
-          <span className="text-lg">✨</span>
+          <Icon name="sparkle" size="md" color={colors.text} />
         </div>
         <div className={`absolute bottom-2 ${isRTL ? 'right-2' : 'left-2'} opacity-30`}>
-          <span className="text-sm">⭐</span>
+          <Icon name="star" size="sm" color={colors.text} />
         </div>
       </div>
     </GlassCard>

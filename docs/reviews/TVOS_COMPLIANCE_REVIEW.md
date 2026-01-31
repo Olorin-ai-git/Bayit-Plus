@@ -185,6 +185,7 @@ export const useTVFocus = (options: UseTVFocusOptions = {}): UseTVFocusReturn =>
 - ✅ Returns ready-to-use focus styles and animation transforms
 
 **Usage Examples Found (312 instances):**
+::: v-pre
 ```typescript
 // From /web/src/components/player/controls/LeftControls.tsx
 const playFocus = useTVFocus({ styleType: 'button' })
@@ -197,6 +198,7 @@ const muteFocus = useTVFocus({ styleType: 'button' })
   style={[styles.controlButton, playFocus.isFocused && playFocus.focusStyle]}
 >
 ```
+:::
 
 **2. TV Focus Styles** (`/shared/components/theme/tvFocusStyles.ts`) ✅
 

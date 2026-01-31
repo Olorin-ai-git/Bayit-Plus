@@ -125,6 +125,7 @@ You can:
 4. Use CI feedback for Phase 4D scope
 
 **Commands for Phase 4C** (can do now):
+::: v-pre
 ```bash
 cd /Users/olorin/Documents/olorin
 
@@ -142,6 +143,7 @@ git commit -m "Phase 4C: Update CI/CD coverage threshold to 85%
 
 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>"
 ```
+:::
 
 ---
 

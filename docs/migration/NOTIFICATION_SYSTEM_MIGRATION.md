@@ -225,6 +225,7 @@ grep -r "Alert\.alert" --include="*.{ts,tsx}" \
 ### NotificationProvider Setup
 
 **Mobile (mobile-app/App.tsx)**:
+::: v-pre
 ```tsx
 import { NotificationProvider } from '@olorin/glass-ui/contexts';
 
@@ -242,8 +243,10 @@ function App() {
   );
 }
 ```
+:::
 
 **Web (web/src/App.tsx)**:
+::: v-pre
 ```tsx
 import { NotificationProvider } from '@olorin/glass-ui/contexts';
 
@@ -259,9 +262,11 @@ function App() {
   );
 }
 ```
+:::
 
 ### Hook-Based API (React Components)
 
+::: v-pre
 ```tsx
 import { useNotifications } from '@olorin/glass-ui/hooks';
 
@@ -302,6 +307,7 @@ function MyComponent() {
   );
 }
 ```
+:::
 
 ### Imperative API (Utility Hooks, Error Handlers)
 
@@ -334,6 +340,7 @@ axios.interceptors.response.use(
 
 When local state uses `notifications` variable:
 
+::: v-pre
 ```tsx
 import { useNotifications } from '@olorin/glass-ui/hooks';
 
@@ -355,6 +362,7 @@ function MyComponent() {
   );
 }
 ```
+:::
 
 ---
 
@@ -527,6 +535,7 @@ notifications.show({
 2. Verify component is inside NotificationProvider tree
 3. Check console for errors
 
+::: v-pre
 ```tsx
 // ❌ WRONG - NotificationProvider not set up
 function App() {
@@ -542,6 +551,7 @@ function App() {
   );
 }
 ```
+:::
 
 ### Issue: "useNotificationContext must be used within NotificationProvider"
 
@@ -549,6 +559,7 @@ function App() {
 
 **Solution**: Ensure NotificationProvider wraps the entire app or use imperative API
 
+::: v-pre
 ```tsx
 // ❌ WRONG - Hook used outside provider
 const notifications = useNotifications(); // Error!
@@ -572,6 +583,7 @@ function MyComponent() {
   return <Button onPress={() => notifications.showInfo('Info')} />;
 }
 ```
+:::
 
 ### Issue: Infinite Loop with Custom Hooks
 
@@ -623,6 +635,7 @@ import { useNotifications } from '@olorin/glass-ui/hooks';
 
 **Solution**: Set position prop on NotificationProvider
 
+::: v-pre
 ```tsx
 // Mobile - bottom position
 <NotificationProvider position="bottom" maxVisible={3}>
@@ -630,6 +643,7 @@ import { useNotifications } from '@olorin/glass-ui/hooks';
 // Web - top position
 <NotificationProvider position="top" maxVisible={3}>
 ```
+:::
 
 ---
 

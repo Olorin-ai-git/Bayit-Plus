@@ -119,6 +119,7 @@ npm run android
 
 ### Screen Component
 
+::: v-pre
 ```typescript
 // src/screens/HomeScreen.tsx
 import React, { useEffect, useState } from 'react';
@@ -194,9 +195,11 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### Reusable Component
 
+::: v-pre
 ```typescript
 // src/components/ContentCard.tsx
 import React from 'react';
@@ -258,6 +261,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ---
 
@@ -265,6 +269,7 @@ const styles = StyleSheet.create({
 
 ### Navigation Configuration
 
+::: v-pre
 ```typescript
 // src/navigation/RootNavigator.tsx
 import React from 'react';
@@ -324,6 +329,7 @@ export const RootNavigator = () => {
   );
 };
 ```
+:::
 
 ---
 
@@ -331,6 +337,7 @@ export const RootNavigator = () => {
 
 ### StyleSheet Best Practices
 
+::: v-pre
 ```typescript
 // ✅ GOOD - Use StyleSheet.create
 const styles = StyleSheet.create({
@@ -360,6 +367,7 @@ const styles = StyleSheet.create({
 // ❌ BAD - Don't use Tailwind classes
 <View className="p-4 bg-black" /> // Doesn't work in React Native
 ```
+:::
 
 ### Platform-Specific Styles
 
@@ -440,6 +448,7 @@ await AsyncStorage.clear();
 
 ### Gesture Handler
 
+::: v-pre
 ```typescript
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
@@ -479,9 +488,11 @@ const SwipeableCard = () => {
   );
 };
 ```
+:::
 
 ### Animations
 
+::: v-pre
 ```typescript
 import Animated, {
   useAnimatedStyle,
@@ -517,6 +528,7 @@ const AnimatedButton = () => {
   );
 };
 ```
+:::
 
 ---
 
@@ -605,6 +617,7 @@ Geolocation.getCurrentPosition(
 
 ### Unit Tests (Jest)
 
+::: v-pre
 ```typescript
 // src/components/ContentCard.test.tsx
 import React from 'react';
@@ -640,6 +653,7 @@ describe('ContentCard', () => {
   });
 });
 ```
+:::
 
 ### E2E Tests (Detox)
 
@@ -678,6 +692,7 @@ describe('Home Screen', () => {
 
 ### List Performance
 
+::: v-pre
 ```typescript
 import { FlatList } from 'react-native';
 
@@ -698,9 +713,11 @@ import { FlatList } from 'react-native';
   })}
 />
 ```
+:::
 
 ### Image Optimization
 
+::: v-pre
 ```typescript
 import FastImage from 'react-native-fast-image';
 
@@ -713,6 +730,7 @@ import FastImage from 'react-native-fast-image';
   resizeMode={FastImage.resizeMode.cover}
 />
 ```
+:::
 
 ---
 

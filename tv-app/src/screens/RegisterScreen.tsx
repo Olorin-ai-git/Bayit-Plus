@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView, GlassButton } from '../components';
 import { useAuthStore } from '../stores/authStore';
 import { colors, spacing, borderRadius } from '../theme';
@@ -112,7 +113,7 @@ export const RegisterScreen: React.FC = () => {
               className={`items-center bg-[#1a1525] rounded-lg border-2 px-4 ${focusedField === 'name' ? 'border-purple-500' : 'border-white/10'}`}
               style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
             >
-              <Text className="text-lg" style={isRTL ? { marginLeft: 8 } : { marginRight: 8 }}>👤</Text>
+              <NativeIcon name="profile" size="md" context="tv" color="#a855f7" style={isRTL ? { marginLeft: 8 } : { marginRight: 8 }} />
               <TextInput
                 className="flex-1 text-base text-white py-4"
                 style={{ textAlign: isRTL ? 'right' : 'left' }}
@@ -161,7 +162,7 @@ export const RegisterScreen: React.FC = () => {
                 onPress={() => setShowPassword(!showPassword)}
                 className="p-1"
               >
-                <Text className="text-lg">{showPassword ? '🙈' : '👁️'}</Text>
+                <NativeIcon name={showPassword ? 'eyeOff' : 'eye'} size="md" context="tv" color="#a855f7" />
               </TouchableOpacity>
               <TextInput
                 className="flex-1 text-base text-white py-4 text-left"
@@ -184,7 +185,7 @@ export const RegisterScreen: React.FC = () => {
               className={`items-center bg-[#1a1525] rounded-lg border-2 px-4 ${focusedField === 'confirmPassword' ? 'border-purple-500' : 'border-white/10'}`}
               style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
             >
-              <Text className="text-lg" style={isRTL ? { marginLeft: 8 } : { marginRight: 8 }}>🔒</Text>
+              <NativeIcon name="lock" size="md" context="tv" color="#a855f7" style={isRTL ? { marginLeft: 8 } : { marginRight: 8 }} />
               <TextInput
                 className="flex-1 text-base text-white py-4 text-left"
                 value={formData.confirmPassword}

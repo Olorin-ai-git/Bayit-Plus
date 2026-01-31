@@ -34,6 +34,7 @@ Before diving into specific issues, run through this checklist:
 
 **1. Port 8000 already in use:**
 
+::: v-pre
 ```bash
 # Find process using port 8000
 lsof -i :8000
@@ -44,6 +45,7 @@ kill -9 <PID>
 # Or use different port (not recommended)
 uvicorn app.main:app --port 8001
 ```
+:::
 
 **2. MongoDB connection failure:**
 
@@ -182,6 +184,7 @@ cat backend/.env | grep JWT_EXPIRY_HOURS
 
 **2. Token format:**
 
+::: v-pre
 ```bash
 # Token should be: Bearer <token>
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
@@ -189,6 +192,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 # ❌ WRONG
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 ```
+:::
 
 **3. Firebase token issues:**
 
@@ -514,6 +518,7 @@ org.gradle.jvmargs=-Xmx4096m
 
 **1. Verify focusable components:**
 
+::: v-pre
 ```typescript
 // ✅ CORRECT - Focusable component
 <Pressable focusable={true} onPress={handlePress}>
@@ -525,9 +530,11 @@ org.gradle.jvmargs=-Xmx4096m
   <Text>Button</Text>
 </View>
 ```
+:::
 
 **2. Add focus styles:**
 
+::: v-pre
 ```typescript
 const styles = StyleSheet.create({
   button: {
@@ -546,9 +553,11 @@ const styles = StyleSheet.create({
   ]}
 >
 ```
+:::
 
 **3. Use TVFocusGuideView:**
 
+::: v-pre
 ```typescript
 import { TVFocusGuideView } from 'react-native';
 
@@ -561,6 +570,7 @@ import { TVFocusGuideView } from 'react-native';
   </View>
 </TVFocusGuideView>
 ```
+:::
 
 ---
 

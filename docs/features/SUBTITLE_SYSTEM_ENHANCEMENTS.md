@@ -250,6 +250,7 @@ function categorizeError(error: Error | string): ErrorInfo {
 - `web/src/components/player/subtitle/HebrewModePickerModal.tsx`
 
 **Code Example**:
+::: v-pre
 ```tsx
 const [showFirstTimeHint, setShowFirstTimeHint] = useState(false)
 
@@ -276,6 +277,7 @@ useEffect(() => {
   </div>
 )}
 ```
+:::
 
 **i18n Key**:
 ```json
@@ -304,6 +306,7 @@ useEffect(() => {
 - `packages/ui/shared-i18n/locales/en.json`
 
 **Code Example**:
+::: v-pre
 ```tsx
 {!isAvailable && (
   <p className="text-xs text-amber-500/90 mb-2 italic">
@@ -316,6 +319,7 @@ useEffect(() => {
   </p>
 )}
 ```
+:::
 
 **User Experience**:
 - Clear explanation of why features are unavailable
@@ -412,12 +416,13 @@ export function useHasNotch(): boolean {
 - Added `accessible={true}` to all interactive elements
 - Added descriptive `accessibilityLabel` with context
 - Added contextual `accessibilityHint` for actions
-- Added `accessibilityState={{ selected }}` for state announcements
+- Added `accessibilityState=\{\{ selected \}\}` for state announcements
 
 **Files Modified**:
 - `web/src/components/player/subtitle/SubtitleLanguageList.tsx`
 
 **Code Example**:
+::: v-pre
 ```tsx
 <Pressable
   accessible={true}
@@ -433,6 +438,7 @@ export function useHasNotch(): boolean {
   {/* Button content */}
 </Pressable>
 ```
+:::
 
 **VoiceOver Announcements**:
 - **Off button**: "Subtitles off. Turn off subtitles. Selected."
@@ -455,6 +461,7 @@ export function useHasNotch(): boolean {
 - `web/src/components/player/subtitle/SubtitleLanguageList.tsx`
 
 **Code Example**:
+::: v-pre
 ```typescript
 const isIOS = Platform.OS === 'ios'
 const fontScale = isIOS ? PixelRatio.getFontScale() : 1
@@ -467,6 +474,7 @@ const fontScale = isIOS ? PixelRatio.getFontScale() : 1
   {track.language_name}
 </Text>
 ```
+:::
 
 **User Experience**:
 - Respects Settings > Accessibility > Display & Text Size
@@ -489,6 +497,7 @@ const fontScale = isIOS ? PixelRatio.getFontScale() : 1
 - `web/src/components/player/subtitle/SubtitleLanguageList.tsx`
 
 **Code Example**:
+::: v-pre
 ```tsx
 const isTV = Platform.isTV || Platform.OS === 'tvos'
 
@@ -516,6 +525,7 @@ const styles = StyleSheet.create({
   },
 })
 ```
+:::
 
 **10-Foot UI**:
 - Clear focus indication with 3px border
@@ -541,6 +551,7 @@ const styles = StyleSheet.create({
 - `web/src/components/player/hooks/useSubtitles.ts`
 
 **Code Example**:
+::: v-pre
 ```typescript
 import { z } from 'zod'
 
@@ -582,6 +593,7 @@ const prefs = await storageHelpers.getValidatedJSON(
   StorageSchemas.SubtitlePreferences
 )
 ```
+:::
 
 **Benefits**:
 - Type-safe data retrieval

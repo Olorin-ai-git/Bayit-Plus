@@ -6,10 +6,11 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import { colors, borderRadius } from '@olorin/design-tokens';
+import { Icon } from '@olorin/shared-icons/web';
 
 // Platform-specific touch target sizes
 const TOUCH_TARGET_SIZE = Platform.select({
@@ -74,7 +75,7 @@ export function SearchSemanticToggle({
             focusable={Platform.isTV}
             accessibilityLabel={t('search.semantic.infoTitle')}
           >
-            <Text style={styles.infoIcon}>ℹ️</Text>
+            <Icon name="info" size="sm" color={colors.textSecondary} />
           </GlassButton>
         )}
       </View>

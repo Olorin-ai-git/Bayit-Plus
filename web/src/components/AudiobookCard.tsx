@@ -12,6 +12,7 @@ import { colors } from '@olorin/design-tokens'
 import { GlassCard } from '@bayit/shared/ui'
 import type { Audiobook } from '@/types/audiobook'
 import { AudibleBadge } from './audiobook/AudibleBadge'
+import { Icon } from '@olorin/shared-icons/web'
 
 const styles = StyleSheet.create({
   container: {
@@ -70,6 +71,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+    alignItems: 'center',
+  },
+  metaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   metaText: {
     fontSize: 12,
@@ -141,10 +148,16 @@ export function AudiobookCard({ audiobook, onAudiblePlay }: AudiobookCardProps) 
         <View style={styles.metaContainer}>
           <Text style={styles.metaText}>{audiobook.duration || 'N/A'}</Text>
           {audiobook.view_count > 0 && (
-            <Text style={styles.metaText}>👁 {viewCountDisplay}</Text>
+            <View style={styles.metaItem}>
+              <Icon name="vod" size="xs" color="#6B7280" />
+              <Text style={styles.metaText}>{viewCountDisplay}</Text>
+            </View>
           )}
           {audiobook.avg_rating > 0 && (
-            <Text style={styles.metaText}>⭐ {audiobook.avg_rating.toFixed(1)}</Text>
+            <View style={styles.metaItem}>
+              <Icon name="star" size="xs" color={colors.warning} />
+              <Text style={styles.metaText}>{audiobook.avg_rating.toFixed(1)}</Text>
+            </View>
           )}
         </View>
       </View>

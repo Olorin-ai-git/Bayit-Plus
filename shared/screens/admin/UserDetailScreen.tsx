@@ -26,6 +26,7 @@ import { AdminStackParamList } from '../../navigation/AdminNavigator';
 import { formatDate, formatCurrency } from '../../utils/formatters';
 import { getRoleColor, getRoleLabel } from '../../utils/adminConstants';
 import { logger } from '../../utils/logger';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 type UserDetailRouteProp = RouteProp<AdminStackParamList, 'UserDetail'>;
 
@@ -447,7 +448,7 @@ export const UserDetailScreen: React.FC = () => {
                       {getRoleLabel(formData.role)}
                     </Text>
                   </View>
-                  <Text style={styles.roleSelectorArrow}>▼</Text>
+                  <NativeIcon name="chevronDown" size="sm" color={colors.textMuted} />
                 </TouchableOpacity>
               </View>
 
@@ -520,7 +521,7 @@ export const UserDetailScreen: React.FC = () => {
                         {permission}
                       </Text>
                       <View style={[styles.permissionCheckbox, isGranted && styles.permissionCheckboxActive]}>
-                        {isGranted && <Text style={styles.permissionCheckmark}>✓</Text>}
+                        {isGranted && <NativeIcon name="check" size="xs" color="#ffffff" />}
                       </View>
                     </TouchableOpacity>
                   );
@@ -585,7 +586,7 @@ export const UserDetailScreen: React.FC = () => {
                 billingHistory.map((transaction) => (
                   <View key={transaction.id} style={styles.billingItem}>
                     <View style={styles.billingIcon}>
-                      <Text style={styles.billingIconText}>💳</Text>
+                      <NativeIcon name="creditCard" size="md" color="#a855f7" />
                     </View>
                     <View style={styles.billingContent}>
                       <Text style={styles.billingDescription}>

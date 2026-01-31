@@ -99,6 +99,7 @@ npm run preview
 
 ### Functional Components with TypeScript
 
+::: v-pre
 ```typescript
 // src/components/features/ContentCard.tsx
 import React from 'react';
@@ -141,9 +142,11 @@ export const ContentCard: React.FC<ContentCardProps> = ({
   );
 };
 ```
+:::
 
 ### Custom Hooks
 
+::: v-pre
 ```typescript
 // src/hooks/useContent.ts
 import { useState, useEffect } from 'react';
@@ -177,6 +180,7 @@ export const useContent = (contentId: string) => {
 // Usage:
 const { content, loading, error } = useContent('123');
 ```
+:::
 
 ---
 
@@ -184,6 +188,7 @@ const { content, loading, error } = useContent('123');
 
 ### Creating a Store
 
+::: v-pre
 ```typescript
 // src/stores/authStore.ts
 import { create } from 'zustand';
@@ -240,6 +245,7 @@ export const useAuthStore = create<AuthState>()(
 // Usage in components:
 const { user, isAuthenticated, login, logout } = useAuthStore();
 ```
+:::
 
 ### Store Best Practices
 
@@ -254,6 +260,7 @@ const { user, isAuthenticated, login, logout } = useAuthStore();
 
 ### API Service Pattern
 
+::: v-pre
 ```typescript
 // src/services/api.ts
 import axios, { AxiosInstance } from 'axios';
@@ -316,9 +323,11 @@ class ApiService {
 
 export const apiService = new ApiService();
 ```
+:::
 
 ### Service Layer
 
+::: v-pre
 ```typescript
 // src/services/contentService.ts
 import { apiService } from './api';
@@ -344,6 +353,7 @@ class ContentService {
 
 export const contentService = new ContentService();
 ```
+:::
 
 ---
 
@@ -351,6 +361,7 @@ export const contentService = new ContentService();
 
 ### Route Configuration
 
+::: v-pre
 ```typescript
 // src/App.tsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
@@ -379,9 +390,11 @@ export const App = () => {
   );
 };
 ```
+:::
 
 ### Protected Route Component
 
+::: v-pre
 ```typescript
 // src/components/common/ProtectedRoute.tsx
 import { Navigate, Outlet } from 'react-router-dom';
@@ -397,6 +410,7 @@ export const ProtectedRoute = () => {
   return <Outlet />;
 };
 ```
+:::
 
 ---
 
@@ -428,6 +442,7 @@ module.exports = {
 
 ### Styling Best Practices
 
+::: v-pre
 ```typescript
 // ✅ GOOD - Use TailwindCSS utility classes
 <div className="flex flex-col gap-4 p-6 bg-black/20 backdrop-blur-xl rounded-2xl">
@@ -450,6 +465,7 @@ import { GlassCard } from '@bayit/glass';
 // ❌ BAD - Don't create external CSS files
 import './MyComponent.css';
 ```
+:::
 
 ---
 
@@ -457,6 +473,7 @@ import './MyComponent.css';
 
 ### Code Splitting
 
+::: v-pre
 ```typescript
 import { lazy, Suspense } from 'react';
 import { GlassLoadingSpinner } from '@bayit/glass';
@@ -468,9 +485,11 @@ const HeavyComponent = lazy(() => import('./HeavyComponent'));
   <HeavyComponent />
 </Suspense>
 ```
+:::
 
 ### Memoization
 
+::: v-pre
 ```typescript
 import { memo, useMemo, useCallback } from 'react';
 
@@ -489,9 +508,11 @@ const MemoizedComponent = memo(({ data }) => {
   return <div>{data}</div>;
 });
 ```
+:::
 
 ### Virtual Scrolling
 
+::: v-pre
 ```typescript
 import { useVirtualizer } from '@tanstack/react-virtual';
 
@@ -532,6 +553,7 @@ const VirtualList = ({ items }) => {
   );
 };
 ```
+:::
 
 ---
 
@@ -539,6 +561,7 @@ const VirtualList = ({ items }) => {
 
 ### Unit Tests (Jest + React Testing Library)
 
+::: v-pre
 ```typescript
 // src/components/ContentCard.test.tsx
 import { render, screen } from '@testing-library/react';
@@ -570,6 +593,7 @@ describe('ContentCard', () => {
   });
 });
 ```
+:::
 
 ### E2E Tests (Playwright)
 

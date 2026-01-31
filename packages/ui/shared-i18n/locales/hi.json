@@ -131,7 +131,7 @@
       "removeActionUnpublish": "अप्रकाशित करें (अनुशंसित)",
       "removeActionDelete": "स्थायी रूप से हटाएं",
       "unpublishDescription": "आइटम छिपाए जाएंगे लेकिन बाद में पुनर्स्थापित किए जा सकते हैं",
-      "deleteWarning": "⚠️ हटाए गए आइटम पुनर्प्राप्त नहीं किए जा सकते",
+      "deleteWarning": "हटाए गए आइटम पुनर्प्राप्त नहीं किए जा सकते",
       "mergeReason": "मर्ज का कारण",
       "mergeReasonPlaceholder": "कारण दर्ज करें (न्यूनतम 10 अक्षर)...",
       "mergeReasonTooShort": "कारण कम से कम 10 अक्षर का होना चाहिए",

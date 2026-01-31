@@ -24,6 +24,7 @@ import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatDate } from '../../utils/formatters';
 import { getRoleColor } from '../../utils/adminConstants';
 import { logger } from '../../utils/logger';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 // Scoped logger for users list screen
 const usersListLogger = logger.scope('Admin:UsersList');
@@ -368,9 +369,12 @@ export const UsersListScreen: React.FC = () => {
                 style={styles.filterChip}
                 onPress={() => handleRoleFilter('')}
               >
-                <Text style={styles.filterChipText}>
-                  Role: {filters.role} ✕
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                  <Text style={styles.filterChipText}>
+                    Role: {filters.role}
+                  </Text>
+                  <NativeIcon name="x" size="xs" color="#a855f7" />
+                </View>
               </TouchableOpacity>
             )}
             {filters.status !== 'all' && (
@@ -378,9 +382,12 @@ export const UsersListScreen: React.FC = () => {
                 style={styles.filterChip}
                 onPress={() => handleStatusFilter('all')}
               >
-                <Text style={styles.filterChipText}>
-                  Status: {filters.status} ✕
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                  <Text style={styles.filterChipText}>
+                    Status: {filters.status}
+                  </Text>
+                  <NativeIcon name="x" size="xs" color="#a855f7" />
+                </View>
               </TouchableOpacity>
             )}
             {filters.subscription && (
@@ -388,9 +395,12 @@ export const UsersListScreen: React.FC = () => {
                 style={styles.filterChip}
                 onPress={() => setFilters(prev => ({ ...prev, subscription: '' }))}
               >
-                <Text style={styles.filterChipText}>
-                  Plan: {filters.subscription} ✕
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                  <Text style={styles.filterChipText}>
+                    Plan: {filters.subscription}
+                  </Text>
+                  <NativeIcon name="x" size="xs" color="#a855f7" />
+                </View>
               </TouchableOpacity>
             )}
           </View>

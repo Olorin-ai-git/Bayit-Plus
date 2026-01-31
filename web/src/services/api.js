@@ -471,12 +471,27 @@ const apiSubtitlesService = {
   getLanguages: () => api.get('/subtitles/languages'),
   getTracks: (contentId, language) =>
     api.get(`/subtitles/${contentId}`, { params: { language } }),
-  getCues: (contentId, language = 'he', withNikud = false, startTime, endTime) =>
-    api.get(`/subtitles/${contentId}/cues`, {
-      params: { language, with_nikud: withNikud, start_time: startTime, end_time: endTime }
-    }),
+  getCues: (contentId, language = 'he', hebrewMode = 'regular', startTime, endTime) => {
+    // Convert hebrewMode string to API parameters
+    const withNikud = hebrewMode === 'nikud'
+    const withShoresh = hebrewMode === 'shoresh'
+    return api.get(`/subtitles/${contentId}/cues`, {
+      params: {
+        language,
+        with_nikud: withNikud,
+        with_shoresh: withShoresh,
+        start_time: startTime,
+        end_time: endTime
+      }
+    })
+  },
   generateNikud: (contentId, language = 'he', force = false) =>
     api.post(`/subtitles/${contentId}/nikud`, null, { params: { language, force } }),
+  generateShoresh: (contentId, language = 'he', force = false) =>
+    api.post(`/subtitles/${contentId}/shoresh`, null, { params: { language, force } }),
+  // Job status polling
+  getJobStatus: (jobId) => api.get(`/subtitles/job/${jobId}`),
+  getActiveJobs: (contentId) => api.get(`/subtitles/${contentId}/job/active`),
   importSubtitles: (contentId, sourceUrl, language = 'he', languageName = 'עברית', isDefault = false) =>
     api.post(`/subtitles/${contentId}/import`, {
       source_url: sourceUrl, language, language_name: languageName, is_default: isDefault
@@ -504,6 +519,8 @@ const apiSubtitlePreferencesService = {
     api.get(`/subtitles/preferences/${contentId}`),
   setPreference: (contentId, language) =>
     api.post(`/subtitles/preferences/${contentId}`, null, { params: { language } }),
+  setHebrewMode: (contentId, mode) =>
+    api.post(`/subtitles/preferences/${contentId}/hebrew-mode`, null, { params: { mode } }),
   deletePreference: (contentId) =>
     api.delete(`/subtitles/preferences/${contentId}`),
   getAllPreferences: () =>

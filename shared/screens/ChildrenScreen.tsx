@@ -23,6 +23,7 @@ import { useDirection } from '../hooks/useDirection';
 import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocalization';
 import { useProfile } from '../contexts/ProfileContext';
 import { childrenService } from '../services/api';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface KidsItem {
   id: string;
@@ -128,15 +129,18 @@ const KidsCard: React.FC<{
             </Text>
           )}
           {item.duration && (
-            <Text className="text-[10px] text-[#ffd93d] mt-1" style={{ textAlign }}>
-              ⏱️ {item.duration}
-            </Text>
+            <View className="flex-row items-center mt-1">
+              <NativeIcon name="clock" size="xs" color="#ffd93d" />
+              <Text className="text-[10px] text-[#ffd93d] ml-1" style={{ textAlign }}>
+                {item.duration}
+              </Text>
+            </View>
           )}
         </View>
         {isFocused && (
           <View className="absolute inset-0 bg-black/40 justify-center items-center">
             <View className="w-14 h-14 rounded-full bg-[#ffd93d] justify-center items-center">
-              <Text className="text-2xl text-[#1a1525] ml-1">▶</Text>
+              <NativeIcon name="play" size="lg" color="#1a1525" />
             </View>
           </View>
         )}
@@ -221,7 +225,7 @@ export const ChildrenScreen: React.FC = () => {
     <View className="flex-1 bg-[#1a1525]">
       <View className={`flex-row items-center px-12 pt-10 pb-4 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
         <View className={`w-[60px] h-[60px] rounded-full bg-[#ffd93d]/20 justify-center items-center ${isRTL ? 'ml-4' : 'mr-4'}`}>
-          <Text className="text-[28px]">👶</Text>
+          <NativeIcon name="baby" size="xl" color="#ffd93d" />
         </View>
         <View>
           <Text className="text-[42px] font-bold text-[#ffd93d]" style={{ textAlign }}>{t('children.title')}</Text>
@@ -268,8 +272,8 @@ export const ChildrenScreen: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-[60px]">
             <GlassView className="p-12 items-center bg-[#ffd93d]/10">
-              <Text className="text-[64px] mb-4">🌈</Text>
-              <Text className="text-xl font-semibold text-[#ffd93d] mb-2" style={{ textAlign }}>{t('children.empty')}</Text>
+              <NativeIcon name="smile" size="4xl" color="#ffd93d" />
+              <Text className="text-xl font-semibold text-[#ffd93d] mb-2 mt-4" style={{ textAlign }}>{t('children.empty')}</Text>
               <Text className="text-base text-[#ffd93d]/70" style={{ textAlign }}>{t('children.emptyHint')}</Text>
             </GlassView>
           </View>

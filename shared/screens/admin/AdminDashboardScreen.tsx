@@ -23,6 +23,7 @@ import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatNumber, formatCurrency, formatDateTime } from '../../utils/formatters';
 import { getActivityIcon } from '../../utils/adminConstants';
 import { logger } from '../../utils/logger';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 // Scoped logger for admin dashboard screen
 const adminDashboardLogger = logger.scope('Admin:Dashboard');
@@ -77,7 +78,7 @@ export const AdminDashboardScreen: React.FC = () => {
     return (
       <AdminLayout title={t('admin.titles.dashboard', 'Dashboard')}>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorIcon}>⚠️</Text>
+          <NativeIcon name="alert-triangle" size={48} color={colors.error} />
           <Text style={styles.errorText}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={loadDashboardData}>
             <Text style={styles.retryText}>{t('common.retry', 'Retry')}</Text>
@@ -393,10 +394,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: spacing.xl,
-  },
-  errorIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
   },
   errorText: {
     fontSize: fontSize.md,

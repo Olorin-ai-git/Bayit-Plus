@@ -15,6 +15,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { GlassView, GlassCard } from '../ui';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { chatService } from '../../services/api';
 import { useAuthStore } from '../../stores/authStore';
@@ -308,7 +309,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
           <View className="flex-row items-center justify-between px-6 py-4 border-b border-white/10 bg-purple-700/20">
             <View className="flex-row items-center gap-4">
               <View className="w-11 h-11 rounded-[22px] bg-purple-600 justify-center items-center">
-                <Text className="text-[22px]">✨</Text>
+                <NativeIcon name="sparkles" size={22} color="#fff" />
               </View>
               <View>
                 <Text className="text-lg font-bold text-white">{t('chat.title', 'עוזר בית+')}</Text>
@@ -317,10 +318,10 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
             </View>
             <View className="flex-row gap-2">
               <TouchableOpacity onPress={clearChat} className="w-10 h-10 rounded-full bg-white/10 justify-center items-center">
-                <Text className="text-lg">🗑️</Text>
+                <NativeIcon name="trash" size={18} color="#fff" />
               </TouchableOpacity>
               <TouchableOpacity onPress={onClose} className="w-10 h-10 rounded-full bg-white/10 justify-center items-center">
-                <Text className="text-xl text-white">✕</Text>
+                <NativeIcon name="x" size="md" color="#ffffff" />
               </TouchableOpacity>
             </View>
           </View>
@@ -355,7 +356,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
                             />
                           ) : (
                             <View className="w-full aspect-video bg-white/10 justify-center items-center">
-                              <Text className="text-2xl">🎬</Text>
+                              <NativeIcon name="vod" size={24} color="rgba(255,255,255,0.5)" />
                             </View>
                           )}
                           <Text className="text-xs text-white p-2 text-right" numberOfLines={2}>
@@ -435,7 +436,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
               } ${isRecording ? 'bg-red-500' : ''}`}
             >
               <Animated.View style={{ transform: [{ scale: isRecording ? pulseAnim : 1 }] }}>
-                <Text className="text-2xl">{isRecording ? '⏹️' : '🎤'}</Text>
+                <NativeIcon name={isRecording ? 'stop' : 'microphone'} size={24} color="#fff" />
               </Animated.View>
             </Pressable>
 

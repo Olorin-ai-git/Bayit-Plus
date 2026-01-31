@@ -3,6 +3,7 @@ import { View, Text, Pressable } from 'react-native';
 import { Edit2, Lock } from 'lucide-react';
 import { z } from 'zod';
 import { platformClass, platformStyle } from '@/utils/platformClass';
+import { Icon } from '@olorin/shared-icons/web';
 
 /**
  * Available avatar colors for profiles
@@ -113,7 +114,7 @@ export function ProfileCard(props: ProfileCardProps) {
               'absolute -bottom-1 -right-1 bg-[#FBBF24] rounded-full p-1.5'
             )}
           >
-            <Text className="text-sm">👶</Text>
+            <Icon name="profile" size="xs" color="#000000" />
           </View>
         )}
 

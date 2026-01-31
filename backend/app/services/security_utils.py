@@ -3,7 +3,6 @@ Security utilities for input sanitization.
 Provides protection against NoSQL injection, XSS, and prompt injection attacks.
 """
 
-import html
 import re
 from typing import Optional
 
@@ -60,6 +59,9 @@ def sanitize_ai_output(text: str) -> str:
     Sanitize AI-generated text to prevent XSS.
     Applied to all AI-generated trivia facts.
 
+    Note: React automatically escapes text content, so we don't use html.escape()
+    which would cause double-encoding (showing &#x27; instead of apostrophes).
+
     Args:
         text: The AI-generated text to sanitize
 
@@ -68,10 +70,10 @@ def sanitize_ai_output(text: str) -> str:
     """
     if not text:
         return ""
-    # HTML escape to prevent XSS
-    sanitized = html.escape(text)
-    # Remove any HTML tags that might have slipped through
-    sanitized = re.sub(r"<[^>]+>", "", sanitized)
+    # Remove any HTML tags to prevent XSS
+    sanitized = re.sub(r"<[^>]+>", "", text)
     # Remove javascript: URLs
     sanitized = re.sub(r"javascript:", "", sanitized, flags=re.IGNORECASE)
+    # Remove any script-related patterns
+    sanitized = re.sub(r"on\w+\s*=", "", sanitized, flags=re.IGNORECASE)
     return sanitized.strip()

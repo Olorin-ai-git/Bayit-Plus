@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { colors } from '@olorin/design-tokens';
 import { VoiceCommandResponse } from '../../services/backendProxyService';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface VoiceResponseDisplayProps {
   response: VoiceCommandResponse | null;
@@ -69,7 +70,7 @@ export const VoiceResponseDisplay: React.FC<VoiceResponseDisplayProps> = ({
   }
 
   const commandTypeColor = getCommandTypeColor(response.commandType);
-  const statusIcon = response.success ? '✓' : '✗';
+  const statusIconName = response.success ? 'check' : 'x';
   const statusColor = response.success ? colors.success.DEFAULT : colors.error.DEFAULT;
 
   return (
@@ -86,13 +87,7 @@ export const VoiceResponseDisplay: React.FC<VoiceResponseDisplayProps> = ({
             className="w-7 h-7 rounded-full justify-center items-center mt-0.5"
             style={{ backgroundColor: statusColor }}
           >
-            <Text
-              className="text-base font-bold text-white"
-              allowFontScaling={true}
-              maxFontSizeMultiplier={1.3}
-            >
-              {statusIcon}
-            </Text>
+            <NativeIcon name={statusIconName} size="sm" color="#ffffff" />
           </View>
           <View className="flex-1">
             <Text
@@ -130,13 +125,7 @@ export const VoiceResponseDisplay: React.FC<VoiceResponseDisplayProps> = ({
             onPress={handleDismiss}
             className="p-1"
           >
-            <Text
-              className="text-lg text-slate-600"
-              allowFontScaling={true}
-              maxFontSizeMultiplier={1.3}
-            >
-              ✕
-            </Text>
+            <NativeIcon name="x" size="md" color="#475569" />
           </TouchableOpacity>
         </View>
 

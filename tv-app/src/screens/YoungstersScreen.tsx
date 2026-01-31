@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView, GlassCategoryPill } from '../components';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
@@ -47,15 +48,15 @@ interface Category {
 }
 
 const CATEGORY_ICONS: Record<string, string> = {
-  all: '🎯',
-  trending: '🔥',
-  news: '📰',
-  culture: '🎭',
-  educational: '📚',
-  music: '🎵',
-  entertainment: '🎬',
-  sports: '⚽',
-  tech: '💻',
+  all: 'target',
+  trending: 'flame',
+  news: 'news',
+  culture: 'vod',
+  educational: 'educational',
+  music: 'music',
+  entertainment: 'vod',
+  sports: 'sports',
+  tech: 'vod',
   judaism: '✡️',
 };
 
@@ -87,7 +88,7 @@ const YoungstersCard: React.FC<{
     }).start();
   };
 
-  const categoryIcon = CATEGORY_ICONS[item.category] || '🎯';
+  const categoryIcon = CATEGORY_ICONS[item.category] || 'target';
 
   return (
     <TouchableOpacity
@@ -111,11 +112,11 @@ const YoungstersCard: React.FC<{
           />
         ) : (
           <View className="w-full aspect-video bg-purple-500/10 justify-center items-center">
-            <Text className="text-5xl">{categoryIcon}</Text>
+            <NativeIcon name={categoryIcon} size="xxl" context="tv" color="#a855f7" />
           </View>
         )}
         <View className="absolute top-2 bg-black/70 rounded-xl px-2 py-1" style={isRTL ? { left: 8 } : { right: 8 }}>
-          <Text className="text-sm">{categoryIcon}</Text>
+          <NativeIcon name={categoryIcon} size="sm" context="tv" color="#FFFFFF" />
         </View>
         {item.age_rating !== undefined && (
           <View className="absolute top-2 bg-purple-500/90 rounded-lg px-1.5 py-0.5" style={isRTL ? { right: 8 } : { left: 8 }}>
@@ -132,15 +133,18 @@ const YoungstersCard: React.FC<{
             </Text>
           )}
           {item.duration && (
-            <Text className="text-[10px] text-purple-500 mt-1" style={{ textAlign }}>
-              ⏱️ {item.duration}
-            </Text>
+            <View className="flex-row items-center gap-1 mt-1">
+              <NativeIcon name="clock" size="xs" context="tv" color="#a855f7" />
+              <Text className="text-[10px] text-purple-500" style={{ textAlign }}>
+                {item.duration}
+              </Text>
+            </View>
           )}
         </View>
         {isFocused && (
           <View className="absolute inset-0 bg-black/40 justify-center items-center">
             <View className="w-14 h-14 rounded-full bg-purple-500 justify-center items-center">
-              <Text className="text-2xl text-[#1a1525] ml-1">▶</Text>
+              <NativeIcon name="play" size="xl" context="tv" color="#1a1525" />
             </View>
           </View>
         )}
@@ -224,7 +228,7 @@ export const YoungstersScreen: React.FC = () => {
     <View className="flex-1 bg-[#1a1525]">
       <View className="flex-row items-center px-12 pt-10 pb-5" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
         <View className="w-15 h-15 rounded-full bg-purple-500/20 justify-center items-center" style={{ marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }}>
-          <Text className="text-3xl">👥</Text>
+          <NativeIcon name="users" size="xl" context="tv" color="#a855f7" />
         </View>
         <View>
           <Text className="text-[42px] font-bold text-purple-500" style={{ textAlign }}>{t('youngsters.title', 'צעירים')}</Text>
@@ -270,8 +274,8 @@ export const YoungstersScreen: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-15">
             <GlassView className="p-12 items-center bg-purple-500/10">
-              <Text className="text-6xl mb-4">🎯</Text>
-              <Text className="text-xl font-semibold text-purple-500 mb-2" style={{ textAlign }}>{t('youngsters.empty', 'אין תוכן זמין')}</Text>
+              <NativeIcon name="target" size="xxxl" context="tv" color="#a855f7" />
+              <Text className="text-xl font-semibold text-purple-500 mb-2 mt-4" style={{ textAlign }}>{t('youngsters.empty', 'אין תוכן זמין')}</Text>
               <Text className="text-base text-purple-500/70" style={{ textAlign }}>{t('youngsters.emptyHint', 'נסה קטגוריה אחרת')}</Text>
             </GlassView>
           </View>

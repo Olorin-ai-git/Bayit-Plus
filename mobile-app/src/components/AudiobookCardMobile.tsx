@@ -7,6 +7,7 @@ import React from 'react'
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
+import { NativeIcon } from '@olorin/shared-icons/native'
 import type { Audiobook } from '@/types/audiobook'
 
 interface AudiobookCardMobileProps {
@@ -22,7 +23,6 @@ export default function AudiobookCardMobile({ audiobook, cardWidth, navigation }
     navigation.navigate('AudiobookDetail', { id: audiobook.id })
   }
 
-  const renderStars = (rating: number) => rating > 0 ? `⭐ ${rating.toFixed(1)}` : ''
   const formatViewCount = (count: number) => count > 1000 ? `${(count / 1000).toFixed(1)}K` : count.toString()
 
   return (
@@ -32,7 +32,7 @@ export default function AudiobookCardMobile({ audiobook, cardWidth, navigation }
           <Image source={{ uri: audiobook.thumbnail }} style={styles.image} resizeMode="contain" />
         ) : (
           <View style={[styles.image, styles.placeholder]}>
-            <Text style={styles.placeholderText}>🎧</Text>
+            <NativeIcon name="audiobooks" size="xxxl" color="rgba(255,255,255,0.3)" />
           </View>
         )}
       </View>
@@ -49,9 +49,12 @@ export default function AudiobookCardMobile({ audiobook, cardWidth, navigation }
 
         <View style={styles.footer}>
           {audiobook.avg_rating > 0 && (
-            <Text style={styles.rating} numberOfLines={1}>
-              {renderStars(audiobook.avg_rating)}
-            </Text>
+            <View style={styles.ratingContainer}>
+              <NativeIcon name="star" size="xs" color={colors.primary.DEFAULT} />
+              <Text style={styles.rating} numberOfLines={1}>
+                {audiobook.avg_rating.toFixed(1)}
+              </Text>
+            </View>
           )}
           {audiobook.view_count > 0 && (
             <Text style={styles.viewCount} numberOfLines={1}>
@@ -74,6 +77,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 13, fontWeight: '600', color: colors.text, lineHeight: 16 },
   author: { fontSize: 11, color: colors.textMuted },
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.xs },
+  ratingContainer: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   rating: { fontSize: 10, color: colors.primary.DEFAULT, fontWeight: '500' },
   viewCount: { fontSize: 10, color: colors.textMuted },
 })

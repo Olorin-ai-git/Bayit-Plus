@@ -69,6 +69,7 @@ olorin-core/packages/shared-i18n/
 
 ### Web Platform
 
+::: v-pre
 ```typescript
 // app/main.tsx
 import i18n from '@olorin/shared-i18n';
@@ -84,9 +85,11 @@ import { I18nextProvider } from 'react-i18next';
   <App />
 </I18nextProvider>
 ```
+:::
 
 ### Mobile Platform (iOS/Android)
 
+::: v-pre
 ```typescript
 // app/index.tsx
 import i18n from '@olorin/shared-i18n';
@@ -98,6 +101,7 @@ await initNativeI18n();
 // Use with React Native
 <App />
 ```
+:::
 
 ### tvOS Platform
 
@@ -114,6 +118,7 @@ await initNativeI18n();
 
 ### Basic Translation
 
+::: v-pre
 ```typescript
 import { useTranslation } from 'react-i18next';
 
@@ -128,9 +133,11 @@ function MyComponent() {
   );
 }
 ```
+:::
 
 ### Translation with Variables
 
+::: v-pre
 ```typescript
 const { t } = useTranslation();
 
@@ -138,9 +145,11 @@ const { t } = useTranslation();
 <Text>{t('common.greeting', { name: 'John' })}</Text>
 // Output: "Hello, John!"
 ```
+:::
 
 ### Pluralization
 
+::: v-pre
 ```typescript
 const { t } = useTranslation();
 
@@ -154,6 +163,7 @@ const { t } = useTranslation();
 <Text>{t('common.items', { count: 5 })}</Text>
 // Output: "5 items"
 ```
+:::
 
 ### Date/Time Formatting
 
@@ -209,6 +219,7 @@ const currentLang = i18n.language; // 'es'
 
 ### Language Selector Component
 
+::: v-pre
 ```typescript
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '@bayit/glass';
@@ -238,6 +249,7 @@ function LanguageSelector() {
   );
 }
 ```
+:::
 
 ---
 
@@ -317,6 +329,7 @@ const rtl = isRTL(i18n.language);
 ### Applying RTL Styles
 
 **Web:**
+::: v-pre
 ```typescript
 import { useTranslation } from 'react-i18next';
 
@@ -331,6 +344,7 @@ function MyComponent() {
   );
 }
 ```
+:::
 
 **React Native:**
 ```typescript
@@ -345,6 +359,7 @@ I18nManager.forceRTL(true);
 
 ### RTL-Aware Styling
 
+::: v-pre
 ```typescript
 // Tailwind CSS (Web)
 <div className="ml-4 rtl:mr-4 rtl:ml-0">
@@ -359,6 +374,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ---
 

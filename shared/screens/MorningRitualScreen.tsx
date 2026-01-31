@@ -16,6 +16,7 @@ import { GlassView } from '../components/ui/GlassView';
 import { colors, spacing, fontSize, borderRadius } from '../theme';
 import { ritualService } from '../services/api';
 import { isTV } from '../utils/platform';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -152,12 +153,12 @@ export default function MorningRitualScreen() {
     return (
       <View className="flex-1 bg-[#1e1b4b]">
         <View className="flex-1 justify-center items-center">
-          <Animated.Text
-            className={`mb-4 ${isTV ? 'text-[80px]' : 'text-[64px]'}`}
+          <Animated.View
+            className="mb-4"
             style={{ transform: [{ scale: sunAnim }] }}
           >
-            ☀️
-          </Animated.Text>
+            <NativeIcon name="sun" size={isTV ? '4xl' : '3xl'} color="#fbbf24" />
+          </Animated.View>
           <ActivityIndicator color={colors.primary} size="large" />
           <Text className="text-white/70 text-lg mt-4">{t('ritual.preparingRitual')}</Text>
         </View>
@@ -181,12 +182,12 @@ export default function MorningRitualScreen() {
             transform: [{ translateY: slideAnim }],
           }}
         >
-          <Animated.Text
-            className={`mb-8 ${isTV ? 'text-[100px]' : 'text-[80px]'}`}
+          <Animated.View
+            className="mb-8"
             style={{ transform: [{ scale: sunAnim }] }}
           >
-            ☀️
-          </Animated.Text>
+            <NativeIcon name="sun" size={isTV ? '5xl' : '4xl'} color="#fbbf24" />
+          </Animated.View>
 
           <Text className={`${isTV ? 'text-5xl' : 'text-4xl'} font-bold text-white mb-4 text-center`}>{aiBrief.greeting}</Text>
           <Text className={`${isTV ? 'text-2xl' : 'text-xl'} text-white/90 mb-2 text-center`}>{aiBrief.israel_update}</Text>
@@ -321,10 +322,24 @@ export default function MorningRitualScreen() {
                     <Text className="text-base font-medium text-white" numberOfLines={1}>
                       {item.title}
                     </Text>
-                    <Text className="text-sm text-white/70">
-                      {item.type === 'live' ? `🔴 ${t('ritual.typeLive')}` :
-                       item.type === 'radio' ? `📻 ${t('ritual.typeRadio')}` : `🎬 ${t('ritual.typeVideo')}`}
-                    </Text>
+                    <View className="flex-row items-center">
+                      {item.type === 'live' ? (
+                        <>
+                          <NativeIcon name="live" size="xs" color="#ef4444" />
+                          <Text className="text-sm text-white/70 ml-1">{t('ritual.typeLive')}</Text>
+                        </>
+                      ) : item.type === 'radio' ? (
+                        <>
+                          <NativeIcon name="radio" size="xs" color="#ffffff" />
+                          <Text className="text-sm text-white/70 ml-1">{t('ritual.typeRadio')}</Text>
+                        </>
+                      ) : (
+                        <>
+                          <NativeIcon name="vod" size="xs" color="#ffffff" />
+                          <Text className="text-sm text-white/70 ml-1">{t('ritual.typeVideo')}</Text>
+                        </>
+                      )}
+                    </View>
                   </View>
                   {index === currentIndex && (
                     <View className="w-[10px] h-[10px] rounded-full bg-orange-500" />

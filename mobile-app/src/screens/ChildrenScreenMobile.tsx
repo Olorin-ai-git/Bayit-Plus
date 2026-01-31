@@ -31,6 +31,7 @@ import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 import logger from '@/utils/logger';
 
@@ -61,12 +62,12 @@ interface Category {
 }
 
 const CATEGORY_ICONS: Record<string, string> = {
-  all: '🌈',
-  cartoons: '🎬',
-  educational: '📚',
-  music: '🎵',
+  all: 'rainbow',
+  cartoons: 'cartoons',
+  educational: 'educational',
+  music: 'music',
   hebrew: 'א',
-  stories: '📖',
+  stories: 'stories',
   jewish: '✡️',
 };
 
@@ -84,7 +85,8 @@ const KidsCard: React.FC<KidsCardProps> = ({ item, onPress, getLocalizedText }) 
     onPress();
   }, [onPress]);
 
-  const categoryIcon = CATEGORY_ICONS[item.category] || '🌈';
+  const categoryIcon = CATEGORY_ICONS[item.category] || 'rainbow';
+  const isNativeIcon = ['rainbow', 'cartoons', 'educational', 'music', 'stories'].includes(categoryIcon);
 
   return (
     <TouchableOpacity
@@ -101,11 +103,19 @@ const KidsCard: React.FC<KidsCardProps> = ({ item, onPress, getLocalizedText }) 
           />
         ) : (
           <View className="w-full aspect-video bg-[#ffd93d]/10 justify-center items-center">
-            <Text className="text-4xl">{categoryIcon}</Text>
+            {isNativeIcon ? (
+              <NativeIcon name={categoryIcon} size="xl" color="#FFFFFF" />
+            ) : (
+              <Text className="text-4xl">{categoryIcon}</Text>
+            )}
           </View>
         )}
         <View className={`absolute top-2 bg-black/70 rounded-xl px-2 py-1 ${isRTL ? 'left-2' : 'right-2'}`}>
-          <Text className="text-xs">{categoryIcon}</Text>
+          {isNativeIcon ? (
+            <NativeIcon name={categoryIcon} size="sm" color="#FFFFFF" />
+          ) : (
+            <Text className="text-xs">{categoryIcon}</Text>
+          )}
         </View>
         {item.age_rating !== undefined && (
           <View className={`absolute top-2 bg-[#ffd93d]/90 rounded-lg px-1.5 py-0.5 ${isRTL ? 'right-2' : 'left-2'}`}>
@@ -117,9 +127,12 @@ const KidsCard: React.FC<KidsCardProps> = ({ item, onPress, getLocalizedText }) 
             {getLocalizedText(item, 'title')}
           </Text>
           {item.duration && (
-            <Text style={{ textAlign }} className="text-[11px] text-[#ffd93d] mt-1">
-              ⏱️ {item.duration}
-            </Text>
+            <View className="flex-row items-center mt-1">
+              <NativeIcon name="clock" size="xs" color="#ffd93d" />
+              <Text style={{ textAlign }} className="text-[11px] text-[#ffd93d] ml-1">
+                {item.duration}
+              </Text>
+            </View>
           )}
         </View>
       </View>
@@ -145,15 +158,20 @@ const CategoryPill: React.FC<CategoryPillProps> = ({
     onPress();
   }, [onPress]);
 
+  const categoryIcon = CATEGORY_ICONS[category.id] || 'rainbow';
+  const isNativeIcon = ['rainbow', 'cartoons', 'educational', 'music', 'stories'].includes(categoryIcon);
+
   return (
     <TouchableOpacity
       onPress={handlePress}
       className={`flex-row items-center px-4 py-2 bg-white/10 rounded-lg gap-1 min-h-[48px] ${isActive ? 'bg-[#ffd93d]/30 border border-[#ffd93d]' : ''}`}
       activeOpacity={0.7}
     >
-      <Text className="text-base">
-        {CATEGORY_ICONS[category.id] || '🌈'}
-      </Text>
+      {isNativeIcon ? (
+        <NativeIcon name={categoryIcon} size="md" color={isActive ? '#ffd93d' : 'rgba(255, 255, 255, 0.6)'} />
+      ) : (
+        <Text className="text-base">{categoryIcon}</Text>
+      )}
       <Text className={`text-sm font-medium ${isActive ? 'text-[#ffd93d]' : 'text-white/60'}`}>
         {getLocalizedText(category, 'name')}
       </Text>
@@ -246,7 +264,7 @@ export const ChildrenScreenMobile: React.FC = () => {
       {/* Header */}
       <View className="flex-row items-center px-4 pt-6 pb-4" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
         <View className="w-12 h-12 rounded-full bg-[#ffd93d]/20 justify-center items-center" style={{ marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }}>
-          <Text className="text-2xl">👶</Text>
+          <NativeIcon name="baby" size="lg" color="#ffd93d" />
         </View>
         <View className="flex-1">
           <Text style={{ textAlign }} className="text-3xl font-bold text-[#ffd93d]">{t('children.title')}</Text>
@@ -281,8 +299,8 @@ export const ChildrenScreenMobile: React.FC = () => {
   const renderEmptyState = () => (
     <View className="flex-1 justify-center items-center py-[60px] px-6">
       <View className="p-6 items-center bg-[#ffd93d]/10 rounded-lg">
-        <Text className="text-5xl mb-4">🌈</Text>
-        <Text style={{ textAlign }} className="text-lg font-semibold text-[#ffd93d] mb-2">
+        <NativeIcon name="rainbow" size="2xl" color="#ffd93d" />
+        <Text style={{ textAlign }} className="text-lg font-semibold text-[#ffd93d] mt-4 mb-2">
           {t('children.empty')}
         </Text>
         <Text style={{ textAlign }} className="text-sm text-[#ffd93d]/70">

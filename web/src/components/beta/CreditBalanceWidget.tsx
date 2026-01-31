@@ -9,6 +9,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GlassCard, GlassButton } from '@olorin/glass-ui/web';
 import { useNavigate } from 'react-router-dom';
+import { Icon } from '@olorin/shared-icons/web';
 
 interface CreditBalanceWidgetProps {
   userId: string;
@@ -137,25 +138,27 @@ export const CreditBalanceWidget: React.FC<CreditBalanceWidgetProps> = ({
 
       {/* Warning States */}
       {balance.is_critical && (
-        <div 
+        <div
           className="flex items-center gap-2 px-4 py-2 bg-red-500/20 rounded-lg"
           role="alert"
           aria-live="assertive"
         >
+          <Icon name="warning" size="sm" className="text-red-300" />
           <span className="text-red-300 text-sm font-medium">
-            🚨 {t('beta.credits.warningCritical')}
+            {t('beta.credits.warningCritical')}
           </span>
         </div>
       )}
 
       {balance.is_low && !balance.is_critical && (
-        <div 
+        <div
           className="flex items-center gap-2 px-4 py-2 bg-amber-500/20 rounded-lg"
           role="alert"
           aria-live="polite"
         >
+          <Icon name="warning" size="sm" className="text-amber-300" />
           <span className="text-amber-300 text-sm">
-            ⚠️ {t('beta.credits.warningLow')}
+            {t('beta.credits.warningLow')}
           </span>
         </div>
       )}

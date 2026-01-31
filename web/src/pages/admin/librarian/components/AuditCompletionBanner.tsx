@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { Icon } from '@olorin/shared-icons/web';
 import { AuditReportDetail } from '@/services/librarianService';
 
 interface AuditCompletionBannerProps {
@@ -24,11 +25,11 @@ export const AuditCompletionBanner = ({ report }: AuditCompletionBannerProps) =>
   const getStatusIcon = () => {
     switch (report.status) {
       case 'completed':
-        return '[✓] ';
+        return <Icon name="check" size={16} color={statusColor} style={{ marginRight: 4 }} />;
       case 'failed':
-        return '[✗] ';
+        return <Icon name="x" size={16} color={statusColor} style={{ marginRight: 4 }} />;
       default:
-        return '[!] ';
+        return <Icon name="alertTriangle" size={16} color={statusColor} style={{ marginRight: 4 }} />;
     }
   };
 
@@ -44,12 +45,14 @@ export const AuditCompletionBanner = ({ report }: AuditCompletionBannerProps) =>
         },
       ]}
     >
-      <Text style={[styles.text, { color: statusColor }]}>
+      <View style={styles.content}>
         {getStatusIcon()}
-        {t(`admin.librarian.status.${report.status}`)}
-        {report.execution_time_seconds && ` • ${report.execution_time_seconds.toFixed(1)}s`}
-        {report.summary && ` • ${report.summary.total_items || 0} ${t('admin.librarian.itemsChecked', 'items checked')}`}
-      </Text>
+        <Text style={[styles.text, { color: statusColor }]}>
+          {t(`admin.librarian.status.${report.status}`)}
+          {report.execution_time_seconds && ` • ${report.execution_time_seconds.toFixed(1)}s`}
+          {report.summary && ` • ${report.summary.total_items || 0} ${t('admin.librarian.itemsChecked', 'items checked')}`}
+        </Text>
+      </View>
     </View>
   );
 };
@@ -61,6 +64,11 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.xl,
     borderWidth: 2,
     alignItems: 'center',
+  },
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
     fontSize: 15,

@@ -31,6 +31,7 @@ import { useProfile } from "@bayit/shared-contexts";
 import { useDirection } from "@bayit/shared-hooks";
 import api from "@bayit/shared-services/api";
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 import logger from '@/utils/logger';
 
@@ -72,11 +73,11 @@ interface Flow {
   ai_brief_enabled: boolean;
 }
 
-const FLOW_ICONS: { [key: string]: { icon: string; colors: string[] } } = {
-  "טקס בוקר": { icon: "☀️", colors: ["#ff9500", "#ff6b00"] },
-  "ליל שבת": { icon: "🌙", colors: ["#5856d6", "#8b5cf6"] },
-  "שעת שינה": { icon: "🛏️", colors: ["#1a1a2e", "#4a4a8a"] },
-  "זמן ילדים": { icon: "👶", colors: ["#ff2d55", "#ff6b9d"] },
+const FLOW_ICONS: { [key: string]: { iconName: string; iconColor: string; colors: string[] } } = {
+  "טקס בוקר": { iconName: "sun", iconColor: "#ff9500", colors: ["#ff9500", "#ff6b00"] },
+  "ליל שבת": { iconName: "moon", iconColor: "#8b5cf6", colors: ["#5856d6", "#8b5cf6"] },
+  "שעת שינה": { iconName: "bed", iconColor: "#4a4a8a", colors: ["#1a1a2e", "#4a4a8a"] },
+  "זמן ילדים": { iconName: "baby", iconColor: "#ff6b9d", colors: ["#ff2d55", "#ff6b9d"] },
 };
 
 interface FlowCardProps {
@@ -93,7 +94,8 @@ const FlowCard: React.FC<FlowCardProps> = ({
   const { t } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const iconConfig = FLOW_ICONS[flow.name] || {
-    icon: "▶️",
+    iconName: "play",
+    iconColor: colors.primary.DEFAULT,
     colors: [colors.primary.DEFAULT, colors.primaryDark],
   };
   const isSystem = flow.flow_type === "system";
@@ -119,7 +121,7 @@ const FlowCard: React.FC<FlowCardProps> = ({
           colors={iconConfig.colors}
           style={styles.flowIcon}
         >
-          <Text style={styles.flowIconText}>{iconConfig.icon}</Text>
+          <NativeIcon name={iconConfig.iconName} size="lg" color="#ffffff" />
         </LinearGradientComponent>
 
         <View
@@ -162,20 +164,21 @@ const FlowCard: React.FC<FlowCardProps> = ({
             ]}
           >
             {flow.ai_enabled && (
-              <View style={styles.featureBadge}>
-                <Text style={styles.featureText}>✨ AI</Text>
+              <View style={[styles.featureBadge, { flexDirection: 'row', alignItems: 'center', gap: 4 }]}>
+                <NativeIcon name="sparkles" size="xs" color={colors.primary.DEFAULT} />
+                <Text style={styles.featureText}>AI</Text>
               </View>
             )}
             {flow.auto_play && (
-              <View style={styles.featureBadge}>
-                <Text style={styles.featureText}>
-                  ▶️ {t("flows.autoPlay", "Auto")}
-                </Text>
+              <View style={[styles.featureBadge, { flexDirection: 'row', alignItems: 'center', gap: 4 }]}>
+                <NativeIcon name="play" size="xs" color={colors.primary.DEFAULT} />
+                <Text style={styles.featureText}>{t("flows.autoPlay", "Auto")}</Text>
               </View>
             )}
             {flow.items.length > 0 && (
-              <View style={styles.featureBadge}>
-                <Text style={styles.featureText}>📋 {flow.items.length}</Text>
+              <View style={[styles.featureBadge, { flexDirection: 'row', alignItems: 'center', gap: 4 }]}>
+                <NativeIcon name="list" size="xs" color={colors.primary.DEFAULT} />
+                <Text style={styles.featureText}>{flow.items.length}</Text>
               </View>
             )}
           </View>
@@ -338,7 +341,7 @@ export const FlowsScreenMobile: React.FC = () => {
               },
             ]}
           >
-            <Text style={styles.headerIconText}>🎬</Text>
+            <NativeIcon name="vod" size="lg" color="#a855f7" />
           </View>
           <View style={styles.headerTextContainer}>
             <Text style={[styles.title, { textAlign }]}>
@@ -366,9 +369,11 @@ export const FlowsScreenMobile: React.FC = () => {
                 ]}
               >
                 <View style={styles.activeFlowIconContainer}>
-                  <Text style={styles.activeFlowIcon}>
-                    {FLOW_ICONS[activeFlow.name]?.icon || "▶️"}
-                  </Text>
+                  <NativeIcon
+                    name={FLOW_ICONS[activeFlow.name]?.iconName || "play"}
+                    size="xl"
+                    color="#ffffff"
+                  />
                 </View>
                 <View
                   style={[
@@ -390,9 +395,10 @@ export const FlowsScreenMobile: React.FC = () => {
                   style={styles.startButton}
                   onPress={() => handleStartFlow(activeFlow)}
                 >
-                  <Text style={styles.startButtonText}>
-                    ▶ {t("flows.start", "Start")}
-                  </Text>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                    <NativeIcon name="play" size="sm" color="#ffffff" />
+                    <Text style={styles.startButtonText}>{t("flows.start", "Start")}</Text>
+                  </View>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.skipButton}
@@ -472,9 +478,12 @@ export const FlowsScreenMobile: React.FC = () => {
             {selectedFlow && (
               <>
                 <View style={styles.modalHeader}>
-                  <Text style={styles.modalIcon}>
-                    {FLOW_ICONS[selectedFlow.name]?.icon || "▶️"}
-                  </Text>
+                  <NativeIcon
+                    name={FLOW_ICONS[selectedFlow.name]?.iconName || "play"}
+                    size="xxl"
+                    color="#a855f7"
+                    style={{ marginBottom: spacing.md }}
+                  />
                   <Text style={[styles.modalTitle, { textAlign }]}>
                     {getLocalizedName(selectedFlow)}
                   </Text>
@@ -514,9 +523,10 @@ export const FlowsScreenMobile: React.FC = () => {
                       handleStartFlow(selectedFlow);
                     }}
                   >
-                    <Text style={styles.modalStartButtonText}>
-                      ▶ {t("flows.start", "Start")}
-                    </Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                      <NativeIcon name="play" size="md" color="#ffffff" />
+                      <Text style={styles.modalStartButtonText}>{t("flows.start", "Start")}</Text>
+                    </View>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.modalCloseButton}
@@ -573,9 +583,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  headerIconText: {
-    fontSize: 24,
-  },
   headerTextContainer: {
     flex: 1,
   },
@@ -611,9 +618,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(126, 34, 206, 0.4)",
     justifyContent: "center",
     alignItems: "center",
-  },
-  activeFlowIcon: {
-    fontSize: 28,
   },
   activeFlowInfo: {
     flex: 1,
@@ -683,9 +687,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
-  },
-  flowIconText: {
-    fontSize: 24,
   },
   flowInfo: {
     flex: 1,
@@ -773,10 +774,6 @@ const styles = StyleSheet.create({
   modalHeader: {
     alignItems: "center",
     marginBottom: spacing.lg,
-  },
-  modalIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
   },
   modalTitle: {
     fontSize: 24,

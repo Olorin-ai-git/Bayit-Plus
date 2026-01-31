@@ -63,7 +63,7 @@
 | `overflow: 'hidden'` | `overflow-hidden` |
 | `opacity: 0.5` | `opacity-50` |
 
-### Keep as style={{}} (Dynamic Values)
+### Keep as style=\{\{\}\} (Dynamic Values)
 - Shadow properties (shadowColor, shadowOffset, shadowOpacity, shadowRadius)
 - backgroundColor with colors.primary/colors.text etc
 - Dynamic width/height calculations
@@ -85,6 +85,7 @@ import { View, Text } from 'react-native'
 ```
 
 2. **Convert style={styles.xyz} to className="..."**
+::: v-pre
 ```tsx
 // Before
 <View style={styles.container}>
@@ -92,6 +93,7 @@ import { View, Text } from 'react-native'
 // After
 <View className="flex-row items-center gap-4">
 ```
+:::
 
 3. **Handle conditional styles**
 ```tsx

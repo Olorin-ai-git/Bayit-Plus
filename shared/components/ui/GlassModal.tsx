@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 export type ModalType = 'error' | 'success' | 'warning' | 'info' | 'confirm';
 
@@ -134,7 +135,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
                   onPress={onClose}
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
-                  <Text style={styles.closeButtonText}>✕</Text>
+                  <NativeIcon name="x" size={20} color="rgba(255, 255, 255, 0.7)" />
                 </TouchableOpacity>
               )}
             </View>
@@ -355,11 +356,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
     marginLeft: spacing.md,
-  },
-  closeButtonText: {
-    fontSize: 20,
-    color: 'rgba(255, 255, 255, 0.7)',
-    lineHeight: 24,
   },
   scrollView: {
     maxHeight: '80vh' as any,

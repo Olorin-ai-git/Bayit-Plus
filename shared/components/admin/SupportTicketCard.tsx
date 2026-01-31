@@ -14,6 +14,7 @@ import { GlassView } from '../ui';
 import { colors } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface AdminTicket {
   id: string;
@@ -35,11 +36,11 @@ interface SupportTicketCardProps {
   onPress: () => void;
 }
 
-const statusConfig: Record<string, { color: string; icon: string }> = {
-  open: { color: colors.warning.DEFAULT, icon: '📝' },
-  in_progress: { color: colors.primary.DEFAULT, icon: '⚙️' },
-  resolved: { color: colors.success.DEFAULT, icon: '✅' },
-  closed: { color: colors.textSecondary, icon: '📁' },
+const statusConfig: Record<string, { color: string; iconName: string }> = {
+  open: { color: colors.warning.DEFAULT, iconName: 'file-text' },
+  in_progress: { color: colors.primary.DEFAULT, iconName: 'settings' },
+  resolved: { color: colors.success.DEFAULT, iconName: 'check-circle' },
+  closed: { color: colors.textSecondary, iconName: 'folder' },
 };
 
 const priorityConfig: Record<string, { color: string }> = {
@@ -118,7 +119,7 @@ export const SupportTicketCard: React.FC<SupportTicketCardProps> = ({
               className="flex-row items-center px-2 py-1 rounded-full gap-1"
               style={{ backgroundColor: `${status.color}20` }}
             >
-              <Text style={{ fontSize: isTV ? 12 : 10 }}>{status.icon}</Text>
+              <NativeIcon name={status.iconName} size={isTV ? 12 : 10} color={status.color} />
               <Text className="font-semibold" style={{ color: status.color, fontSize: isTV ? 12 : 10 }}>
                 {t(`admin.support.status.${ticket.status}`, ticket.status)}
               </Text>

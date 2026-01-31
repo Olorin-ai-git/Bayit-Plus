@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { GlassView, GlassButton } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { colors, spacing } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface CreditBalanceWidgetProps {
   userId: string;
@@ -111,6 +112,7 @@ const styles = StyleSheet.create({
   warningText: {
     fontSize: 14,
     fontWeight: '500',
+    flex: 1,
   },
   warningTextCritical: {
     color: '#FCA5A5',
@@ -282,8 +284,9 @@ export const CreditBalanceWidget: React.FC<CreditBalanceWidgetProps> = ({
           accessibilityRole="alert"
           accessibilityLiveRegion="assertive"
         >
+          <NativeIcon name="warning" size="sm" color="#FCA5A5" />
           <Text style={[styles.warningText, styles.warningTextCritical]}>
-            🚨 {t('beta.credits.warningCritical')}
+            {t('beta.credits.warningCritical')}
           </Text>
         </View>
       )}
@@ -295,8 +298,9 @@ export const CreditBalanceWidget: React.FC<CreditBalanceWidgetProps> = ({
           accessibilityRole="alert"
           accessibilityLiveRegion="polite"
         >
+          <NativeIcon name="warning" size="sm" color="#FCD34D" />
           <Text style={[styles.warningText, styles.warningTextLow]}>
-            ⚠️ {t('beta.credits.warningLow')}
+            {t('beta.credits.warningLow')}
           </Text>
         </View>
       )}

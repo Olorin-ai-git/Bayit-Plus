@@ -42,6 +42,7 @@ App
 
 ### State Management
 
+::: v-pre
 ```typescript
 // stores/betaCreditsStore.ts
 interface BetaCreditsState {
@@ -71,6 +72,7 @@ interface AIRecommendationsState {
   fetchRecommendations: () => Promise<void>;
 }
 ```
+:::
 
 ---
 
@@ -136,6 +138,7 @@ export default defineConfig({
 
 **Purpose:** Display real-time credit balance in top-right corner.
 
+::: v-pre
 ```typescript
 // src/components/ai/CreditBalanceWidget.tsx
 import React, { useEffect } from 'react';
@@ -176,11 +179,13 @@ export const CreditBalanceWidget: React.FC = () => {
   );
 };
 ```
+:::
 
 ### 2. AI Search Modal
 
 **Purpose:** Natural language search with Cmd/Ctrl+K shortcut.
 
+::: v-pre
 ```typescript
 // src/components/ai/AISearchModal.tsx
 import React, { useState, useEffect, useCallback } from 'react';
@@ -289,11 +294,13 @@ export const AISearchModal: React.FC = () => {
   );
 };
 ```
+:::
 
 ### 3. AI Recommendations Panel
 
 **Purpose:** Display personalized recommendations on home page.
 
+::: v-pre
 ```typescript
 // src/components/ai/AIRecommendationsPanel.tsx
 import React, { useEffect } from 'react';
@@ -386,11 +393,13 @@ export const AIRecommendationsPanel: React.FC = () => {
   );
 };
 ```
+:::
 
 ### 4. Catch-Up Button
 
 **Purpose:** Generate AI summaries for live TV.
 
+::: v-pre
 ```typescript
 // src/components/ai/CatchUpButton.tsx
 import React, { useState } from 'react';
@@ -481,6 +490,7 @@ export const CatchUpButton: React.FC<CatchUpButtonProps> = ({
   );
 };
 ```
+:::
 
 ---
 
@@ -488,6 +498,7 @@ export const CatchUpButton: React.FC<CatchUpButtonProps> = ({
 
 ### Beta Credits Store
 
+::: v-pre
 ```typescript
 // src/stores/betaCreditsStore.ts
 import { create } from 'zustand';
@@ -543,9 +554,11 @@ export const useBetaCreditsStore = create<BetaCreditsState>((set, get) => ({
   },
 }));
 ```
+:::
 
 ### AI Search Store
 
+::: v-pre
 ```typescript
 // src/stores/aiSearchStore.ts
 import { create } from 'zustand';
@@ -586,9 +599,11 @@ export const useAISearchStore = create<AISearchState>((set) => ({
   close: () => set({ isOpen: false, query: '', results: [], error: null }),
 }));
 ```
+:::
 
 ### AI Recommendations Store
 
+::: v-pre
 ```typescript
 // src/stores/aiRecommendationsStore.ts
 import { create } from 'zustand';
@@ -639,11 +654,13 @@ export const useAIRecommendationsStore = create<AIRecommendationsState>()(
   )
 );
 ```
+:::
 
 ---
 
 ## API Service
 
+::: v-pre
 ```typescript
 // src/services/aiService.ts
 import axios from 'axios';
@@ -755,6 +772,7 @@ export const aiService = {
   },
 };
 ```
+:::
 
 ---
 
@@ -804,6 +822,7 @@ export default apiClient;
 
 ### Component Error Boundaries
 
+::: v-pre
 ```typescript
 // src/components/ErrorBoundary.tsx
 import React, { Component, ErrorInfo, ReactNode } from 'react';
@@ -856,6 +875,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 }
 ```
+:::
 
 ---
 
@@ -863,6 +883,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
 ### Unit Tests
 
+::: v-pre
 ```typescript
 // src/components/ai/__tests__/CreditBalanceWidget.test.tsx
 import { render, screen, waitFor } from '@testing-library/react';
@@ -934,9 +955,11 @@ describe('CreditBalanceWidget', () => {
   });
 });
 ```
+:::
 
 ### Integration Tests
 
+::: v-pre
 ```typescript
 // src/services/__tests__/aiService.test.ts
 import { aiService } from '../aiService';
@@ -998,6 +1021,7 @@ describe('aiService', () => {
   });
 });
 ```
+:::
 
 ### E2E Tests (Playwright)
 
@@ -1075,6 +1099,7 @@ test.describe('AI Features', () => {
 
 ### Code Splitting
 
+::: v-pre
 ```typescript
 // src/App.tsx
 import { lazy, Suspense } from 'react';
@@ -1095,9 +1120,11 @@ export const App = () => {
   );
 };
 ```
+:::
 
 ### Debouncing Search
 
+::: v-pre
 ```typescript
 // src/hooks/useDebounce.ts
 import { useState, useEffect } from 'react';
@@ -1127,9 +1154,11 @@ useEffect(() => {
   }
 }, [debouncedQuery]);
 ```
+:::
 
 ### Caching
 
+::: v-pre
 ```typescript
 // src/utils/cache.ts
 interface CacheEntry<T> {
@@ -1182,6 +1211,7 @@ export const searchWithCache = async (query: string): Promise<ContentItem[]> => 
   return results;
 };
 ```
+:::
 
 ---
 
@@ -1223,6 +1253,7 @@ const deductCredits = async (amount: number) => {
 
 ### 3. Accessibility
 
+::: v-pre
 ```typescript
 // Ensure keyboard navigation
 <GlassButton
@@ -1238,9 +1269,11 @@ const deductCredits = async (amount: number) => {
   {results.length > 0 && `Found ${results.length} results`}
 </div>
 ```
+:::
 
 ### 4. i18n Integration
 
+::: v-pre
 ```typescript
 // All text must be translatable
 import { useTranslation } from 'react-i18next';
@@ -1251,6 +1284,7 @@ const { t } = useTranslation();
 <p>{t('ai.search.placeholder')}</p>
 <GlassButton>{t('ai.search.button')} (-10)</GlassButton>
 ```
+:::
 
 ---
 

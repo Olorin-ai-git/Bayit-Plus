@@ -933,6 +933,7 @@ jest.mock('react-native', () => {
 
 **V8 FIX: This file does NOT exist and must be CREATED. Previous versions incorrectly said "ADD/UPDATE".**
 
+::: v-pre
 ```javascript
 // /mobile-app/jest.config.js - CREATE NEW FILE (file does not exist)
 module.exports = {
@@ -953,6 +954,7 @@ module.exports = {
   ],
 };
 ```
+:::
 
 ### Types
 
@@ -991,6 +993,7 @@ export interface TriviaState {
 
 ### Trivia Store with NetInfo
 
+::: v-pre
 ```typescript
 // /shared/stores/triviaStore.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -1111,9 +1114,11 @@ export const useTriviaStore = create<TriviaStore>()(
   )
 );
 ```
+:::
 
 ### API Services
 
+::: v-pre
 ```typescript
 // /shared/services/api/triviaServices.ts
 import { api } from './api';
@@ -1141,9 +1146,11 @@ export const triviaApi = {
   },
 };
 ```
+:::
 
 ### useTrivia Hook with Memory Cleanup (V8 CRITICAL FIX)
 
+::: v-pre
 ```typescript
 // /mobile-app/src/components/player/hooks/useTrivia.ts
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -1334,9 +1341,11 @@ export function useTrivia({
   };
 }
 ```
+:::
 
 ### TriviaOverlay with tvOS Touch Targets (V7 CRITICAL FIX)
 
+::: v-pre
 ```typescript
 // /mobile-app/src/components/player/TriviaOverlay.tsx
 import React, { useEffect, useRef } from 'react';
@@ -1540,9 +1549,11 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### Trivia Settings Section (V8 CRITICAL FIX - minHeight)
 
+::: v-pre
 ```typescript
 // /mobile-app/src/components/player/TriviaSettingsSection.tsx
 import React from 'react';
@@ -1655,6 +1666,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ---
 
@@ -1719,6 +1731,7 @@ class TestContentTrivia:
             ContentTrivia(content_id="test", content_type="vod", facts=facts)
 ```
 
+::: v-pre
 ```python
 # /backend/tests/test_trivia_security.py
 """Unit tests for trivia security utilities."""
@@ -1766,9 +1779,11 @@ class TestSecurityUtils:
         result = sanitize_ai_output("javascript:alert('xss')")
         assert "javascript:" not in result
 ```
+:::
 
 ### Frontend Unit Tests
 
+::: v-pre
 ```typescript
 // /mobile-app/src/components/player/__tests__/TriviaOverlay.test.tsx
 import React from 'react';
@@ -1840,6 +1855,7 @@ describe('TriviaOverlay', () => {
   });
 });
 ```
+:::
 
 ---
 

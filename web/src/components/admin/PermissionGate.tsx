@@ -6,6 +6,7 @@
 import React, { ReactNode } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@olorin/shared-icons/web';
 import { usePermissions } from '@/hooks/usePermissions';
 import { Permission, Role } from '@/types/rbac';
 import { colors, spacing } from '@olorin/design-tokens';
@@ -60,7 +61,7 @@ export const PermissionGate: React.FC<PermissionGateProps> = ({
   if (showDenied) {
     return (
       <View style={styles.deniedContainer}>
-        <Text style={styles.lockIcon}>🔒</Text>
+        <Icon name="lock" size={48} color={colors.textMuted} />
         <Text style={styles.deniedTitle}>{t('admin.accessDenied')}</Text>
         <Text style={styles.deniedText}>
           {t('admin.noPermission')}
@@ -99,10 +100,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: spacing.xl,
     backgroundColor: colors.background,
-  },
-  lockIcon: {
-    fontSize: 48,
-    marginBottom: spacing.md,
+    gap: spacing.md,
   },
   deniedTitle: {
     fontSize: 24,

@@ -267,6 +267,7 @@ describe('betaCreditsStore', () => {
 
 #### 2. Component Tests
 
+::: v-pre
 ```typescript
 // web/src/components/ai/__tests__/AISearchModal.test.tsx
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
@@ -330,6 +331,7 @@ describe('AISearchModal', () => {
   });
 });
 ```
+:::
 
 ---
 

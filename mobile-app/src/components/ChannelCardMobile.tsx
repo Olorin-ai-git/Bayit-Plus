@@ -13,6 +13,7 @@
 import React from 'react';
 import { View, Image, Text, Pressable, Dimensions } from 'react-native';
 import { GlassView, GlassBadge } from '@bayit/shared';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { responsive } from '../utils/responsive';
 import { typography, spacing, borderRadius, colors } from '@olorin/design-tokens';
 
@@ -67,7 +68,7 @@ export const ChannelCardMobile: React.FC<ChannelCardMobileProps> = ({
           />
         ) : (
           <View className="w-full justify-center items-center" style={{ height: cardHeight, backgroundColor: colors.backgroundElevated }}>
-            <Text className="text-5xl opacity-30">📺</Text>
+            <NativeIcon name="live" size="xxxl" color="rgba(255,255,255,0.3)" />
           </View>
         )}
 

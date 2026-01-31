@@ -33,6 +33,7 @@ import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
 import { BottomSheet } from '../components';
 import { spacing, colors, typography } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 import logger from '@/utils/logger';
 
@@ -220,7 +221,7 @@ export const PodcastsScreenMobile: React.FC = () => {
               />
             ) : (
               <View style={[styles.cover, styles.coverPlaceholder]}>
-                <Text style={styles.coverText}>🎙️</Text>
+                <NativeIcon name="podcasts" size="xxl" color="#a855f7" />
               </View>
             )}
 
@@ -280,7 +281,7 @@ export const PodcastsScreenMobile: React.FC = () => {
             </View>
           </View>
           <View style={styles.playIconContainer}>
-            <Text style={styles.playIcon}>▶</Text>
+            <NativeIcon name="play" size="sm" color={colors.text} />
           </View>
         </GlassView>
       </Pressable>
@@ -455,9 +456,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  coverText: {
-    fontSize: 64,
-  },
   episodeBadge: {
     position: 'absolute',
     top: spacing.sm,
@@ -552,9 +550,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  playIcon: {
-    fontSize: 16,
-    color: colors.text,
   },
 });

@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import Video from 'react-native-video';
 import LinearGradient from 'react-native-linear-gradient';
 import { GlassView } from '../ui/GlassView';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 
@@ -256,7 +257,7 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
             onPress={handlePlay}
             onFocus={() => setFocusedButton('play')}
           >
-            <Text style={styles.playIcon}>▶</Text>
+            <NativeIcon name="play" size={isTV ? 'lg' : 'md'} color="#ffffff" />
             <Text style={styles.primaryButtonText}>צפה עכשיו</Text>
           </TouchableOpacity>
 
@@ -281,7 +282,7 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
               onPress={toggleTrailer}
               onFocus={() => setFocusedButton('trailer')}
             >
-              <Text style={styles.trailerIcon}>🎬</Text>
+              <NativeIcon name="vod" size={isTV ? 18 : 14} color={colors.text} />
               <Text style={styles.secondaryButtonText}>
                 {showTrailer ? t('video.closeTrailer') : t('video.watchTrailer')}
               </Text>
@@ -443,10 +444,6 @@ const styles = StyleSheet.create({
     paddingVertical: isTV ? 16 : 12,
     borderRadius: borderRadius.lg,
   },
-  playIcon: {
-    fontSize: isTV ? 20 : 16,
-    color: colors.text,
-  },
   primaryButtonText: {
     fontSize: isTV ? 20 : 16,
     fontWeight: '600',
@@ -466,9 +463,6 @@ const styles = StyleSheet.create({
   infoIcon: {
     fontSize: isTV ? 18 : 14,
     color: colors.text,
-  },
-  trailerIcon: {
-    fontSize: isTV ? 18 : 14,
   },
   secondaryButtonText: {
     fontSize: isTV ? 18 : 14,

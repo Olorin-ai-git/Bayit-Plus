@@ -14,6 +14,7 @@ import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useAuthStore } from '../stores/authStore';
 import { useDirection } from '../hooks/useDirection';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 type ViewMode = 'grid' | 'list';
 
@@ -155,7 +156,7 @@ export const EPGScreen: React.FC = () => {
       <View className="flex-row items-center justify-between mb-4" style={{ flexDirection }}>
         <View className="flex-row items-center gap-4">
           <View className={`${isTV ? 'w-16 h-16 rounded-[32px]' : 'w-12 h-12 rounded-3xl'} bg-[#a855f7]/20 justify-center items-center`}>
-            <Text className={`${isTV ? 'text-[32px]' : 'text-2xl'}`}>📺</Text>
+            <NativeIcon name="live" size={isTV ? '2xl' : 'xl'} color="#a855f7" />
           </View>
           <View>
             <Text className={`${isTV ? 'text-4xl' : 'text-[28px]'} font-bold text-[${colors.text}]`} style={{ textAlign }}>{t('epg.title', 'TV Guide')}</Text>
@@ -221,7 +222,9 @@ export const EPGScreen: React.FC = () => {
       {/* Error State */}
       {error && (
         <GlassView className="flex-row items-start p-4 rounded-2xl mb-4 border border-red-500/30 bg-red-500/10">
-          <Text className="text-2xl mr-4">⚠️</Text>
+          <View className="mr-4">
+            <NativeIcon name="alertTriangle" size="lg" color="#ef4444" />
+          </View>
           <View className="flex-1">
             <Text className={`${isTV ? 'text-lg' : 'text-base'} font-semibold text-red-500 mb-1`}>{t('epg.errorTitle', 'Error')}</Text>
             <Text className={`${isTV ? 'text-sm' : 'text-xs'} text-red-500/80 mb-4`}>{error}</Text>

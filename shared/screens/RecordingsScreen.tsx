@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from '../components/ui';
 import { useDirection } from '../hooks/useDirection';
 import { useAuthStore } from '../stores/authStore';
@@ -86,15 +87,15 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPress, onDel
   const getStatusBadge = () => {
     switch (recording.status) {
       case 'recording':
-        return { color: '#ef4444', label: t('recordings.recording', 'Recording'), icon: '🔴' };
+        return { color: '#ef4444', label: t('recordings.recording', 'Recording'), iconName: 'record' as const };
       case 'completed':
-        return { color: '#22c55e', label: t('recordings.completed', 'Completed'), icon: '✓' };
+        return { color: '#22c55e', label: t('recordings.completed', 'Completed'), iconName: 'check' as const };
       case 'scheduled':
-        return { color: '#eab308', label: t('recordings.scheduled', 'Scheduled'), icon: '📅' };
+        return { color: '#eab308', label: t('recordings.scheduled', 'Scheduled'), iconName: 'calendar' as const };
       case 'failed':
-        return { color: '#ef4444', label: t('recordings.failed', 'Failed'), icon: '✕' };
+        return { color: '#ef4444', label: t('recordings.failed', 'Failed'), iconName: 'x' as const };
       default:
-        return { color: colors.textMuted, label: '', icon: '' };
+        return { color: colors.textMuted, label: '', iconName: null };
     }
   };
 
@@ -123,13 +124,13 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPress, onDel
           />
         ) : (
           <View className={`w-full aspect-video bg-black/40 justify-center items-center`}>
-            <Text className={isTV ? 'text-5xl' : 'text-[32px]'}>📹</Text>
+            <NativeIcon name="video" size={isTV ? 'xl' : 'lg'} color="#9ca3af" />
           </View>
         )}
 
         {/* Status Badge */}
         <View className="absolute top-2 right-2 flex-row items-center px-2 py-0.5 rounded-full gap-1" style={{ backgroundColor: badge.color }}>
-          <Text className="text-[10px]">{badge.icon}</Text>
+          {badge.iconName && <NativeIcon name={badge.iconName} size="xs" color="#ffffff" />}
           <Text className="text-[10px] text-white font-semibold">{badge.label}</Text>
         </View>
 
@@ -154,7 +155,7 @@ const RecordingCard: React.FC<RecordingCardProps> = ({ recording, onPress, onDel
         {isFocused && recording.status === 'completed' && (
           <View className="absolute inset-0 bg-black/40 justify-center items-center">
             <View className="w-12 h-12 rounded-full bg-[#a855f7] justify-center items-center">
-              <Text className="text-xl text-black ml-1">▶</Text>
+              <NativeIcon name="play" size="md" color="#000000" />
             </View>
           </View>
         )}
@@ -246,7 +247,7 @@ export default function RecordingsScreen() {
       <View className="flex-row items-center justify-between mb-4" style={{ flexDirection }}>
         <View className="flex-row items-center gap-4">
           <View className={`${isTV ? 'w-16 h-16 rounded-[32px]' : 'w-12 h-12 rounded-[24px]'} bg-[rgba(168,85,247,0.2)] justify-center items-center`}>
-            <Text className={isTV ? 'text-[32px]' : 'text-2xl'}>📹</Text>
+            <NativeIcon name="video" size={isTV ? 'xl' : 'lg'} color="#a855f7" />
           </View>
           <View>
             <Text className={`${isTV ? 'text-4xl' : 'text-[28px]'} font-bold text-white`} style={{ textAlign }}>
@@ -283,8 +284,8 @@ export default function RecordingsScreen() {
       {/* Recordings List */}
       {filteredRecordings.length === 0 ? (
         <GlassView className="flex-1 justify-center items-center p-12 rounded-2xl">
-          <Text className="text-[64px] mb-4">📹</Text>
-          <Text className={`${isTV ? 'text-2xl' : 'text-xl'} font-semibold text-white mb-2`}>
+          <NativeIcon name="video" size="2xl" color="#9ca3af" />
+          <Text className={`${isTV ? 'text-2xl' : 'text-xl'} font-semibold text-white mb-2 mt-4`}>
             {t('recordings.empty', 'No recordings yet')}
           </Text>
           <Text className={`${isTV ? 'text-base' : 'text-sm'} text-gray-400 text-center mb-4 max-w-[300px]`}>

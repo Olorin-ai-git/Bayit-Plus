@@ -469,6 +469,7 @@ async def validate_stream_url(content_id: str, timeout: int = 10) -> Dict:
 
 ### Environment Variables
 
+::: v-pre
 ```bash
 # Google Cloud Secret Manager
 ANTHROPIC_API_KEY=<from-secret-manager>
@@ -479,6 +480,7 @@ AI_AGENT_DRY_RUN=false
 AI_AGENT_ENABLE_LOGGING=true
 AI_AGENT_LOG_LEVEL=info
 ```
+:::
 
 ### Agent Configuration
 

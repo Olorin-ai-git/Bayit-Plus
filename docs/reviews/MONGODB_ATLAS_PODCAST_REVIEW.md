@@ -106,7 +106,7 @@ indexes = [
 
 **Analysis**:
 - The query requires: `podcast_id` AND (`translation_status` = "pending" OR `translation_status` = "failed" AND `retry_count` < 3)
-- Existing indexes do NOT cover the `$or` branch: `{"translation_status": "failed", "retry_count": {"$lt": 3}}`
+- Existing indexes do NOT cover the `$or` branch: `{"translation_status": "failed", "retry_count": {"$lt": 3\}\}`
 - MongoDB must perform a collection scan or inefficient index merge
 
 **Atlas Explain Plan** (estimated):

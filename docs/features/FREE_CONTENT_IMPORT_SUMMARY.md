@@ -304,6 +304,7 @@ db.Content.findOne()
 
 ### Quick Production Checklist:
 
+::: v-pre
 ```bash
 # 1. Health check
 curl https://api.your-domain.com/health
@@ -318,6 +319,7 @@ mongosh <production_db_url>
 # 4. Monitor backend logs
 tail -f logs/api.log
 ```
+:::
 
 ---
 

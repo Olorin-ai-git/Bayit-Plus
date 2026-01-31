@@ -89,48 +89,49 @@ async def get_search_categories():
     Example response:
     {
       "categories": [
-        {"id": "movies", "label": "Movies", "emoji": "🎬", "filters": {"content_types": ["vod"]}},
+        {"id": "movies", "label": "Movies", "icon": "vod", "filters": {"content_types": ["vod"]}},
         ...
       ]
     }
     """
     try:
         # Predefined categories with filters
+        # Icons reference @olorin/shared-icons names (rendered by frontend)
         categories = [
             {
                 "id": "movies",
                 "label": "Movies",
-                "emoji": "🎬",
+                "icon": "vod",
                 "filters": {"content_types": ["vod"]},
             },
             {
                 "id": "series",
                 "label": "Series",
-                "emoji": "📺",
+                "icon": "live",
                 "filters": {"content_types": ["vod"]},
             },
             {
                 "id": "kids",
                 "label": "Kids",
-                "emoji": "👶",
+                "icon": "baby",
                 "filters": {"is_kids_content": True},
             },
             {
                 "id": "comedy",
                 "label": "Comedy",
-                "emoji": "😂",
+                "icon": "vod",
                 "filters": {"genres": ["Comedy"]},
             },
             {
                 "id": "drama",
                 "label": "Drama",
-                "emoji": "🎭",
+                "icon": "vod",
                 "filters": {"genres": ["Drama"]},
             },
             {
                 "id": "documentaries",
                 "label": "Documentaries",
-                "emoji": "🎥",
+                "icon": "vod",
                 "filters": {"genres": ["Documentary"]},
             },
         ]

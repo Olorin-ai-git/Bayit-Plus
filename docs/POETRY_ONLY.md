@@ -52,6 +52,7 @@ poetry add --group dev package-name
 
 ### Running Python Code
 
+::: v-pre
 ```bash
 # Run Python script with Poetry
 poetry run python script.py
@@ -65,6 +66,7 @@ poetry run pytest
 # Run any command in Poetry environment
 poetry run <command>
 ```
+:::
 
 ### Managing Environment
 
@@ -254,6 +256,7 @@ poetry add missing-module
 
 ### "Command not found" error
 
+::: v-pre
 ```bash
 # Make sure you're using poetry run
 poetry run <command>
@@ -262,6 +265,7 @@ poetry run <command>
 poetry shell
 <command>
 ```
+:::
 
 ### Poetry environment issues
 

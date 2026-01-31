@@ -324,6 +324,7 @@ Load time improvement: ~50ms faster
 
 **If issues arise** (unlikely):
 
+::: v-pre
 ```bash
 # Step 1: Identify issue
 # Step 2: Revert commit
@@ -341,6 +342,7 @@ npm run deploy:production
 # Expected time: <15 minutes
 # Risk: MINIMAL
 ```
+:::
 
 **Success rate**: 99.5%
 

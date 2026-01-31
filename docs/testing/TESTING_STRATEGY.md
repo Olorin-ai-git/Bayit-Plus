@@ -163,6 +163,7 @@ class TestBetaCreditService:
 **Pattern:** `[Component].test.tsx` (co-located with component)
 
 **Example Structure:**
+::: v-pre
 ```typescript
 // web/src/components/Feature/FeatureCard.test.tsx
 import { render, screen, waitFor } from '@testing-library/react';
@@ -209,6 +210,7 @@ describe('FeatureCard', () => {
   });
 });
 ```
+:::
 
 **Best Practices:**
 - ✅ **Test user behavior** - Not implementation details
@@ -318,6 +320,7 @@ class TestBetaAPI:
 **Pattern:** `[Feature].integration.test.tsx`
 
 **Example Structure:**
+::: v-pre
 ```typescript
 // web/src/features/beta/AISearch.integration.test.tsx
 import { render, screen, waitFor } from '@testing-library/react';
@@ -371,6 +374,7 @@ describe('AISearch Integration', () => {
   });
 });
 ```
+:::
 
 **Best Practices:**
 - ✅ **Mock API with MSW** - Realistic network mocking

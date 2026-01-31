@@ -596,6 +596,7 @@ export interface TriviaState {
 
 ### Trivia Store (Zustand) with NetInfo
 
+::: v-pre
 ```typescript
 // /shared/stores/triviaStore.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -725,9 +726,11 @@ export const useTriviaStore = create<TriviaStore>()(
   )
 );
 ```
+:::
 
 ### API Services
 
+::: v-pre
 ```typescript
 // /shared/services/api/triviaServices.ts
 import { api } from './api';
@@ -755,9 +758,11 @@ export const triviaApi = {
   },
 };
 ```
+:::
 
 ### useTrivia Hook with Memory Cleanup
 
+::: v-pre
 ```typescript
 // /web/src/components/player/hooks/useTrivia.ts
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -951,9 +956,11 @@ export function useTrivia({
   };
 }
 ```
+:::
 
 ### TriviaOverlay Component (React Native with StyleSheet + Platform Adaptations)
 
+::: v-pre
 ```typescript
 // /web/src/components/player/TriviaOverlay.tsx
 import React, { useEffect, useRef } from 'react';
@@ -1170,9 +1177,11 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### Trivia Settings Section
 
+::: v-pre
 ```typescript
 // /web/src/components/player/TriviaSettingsSection.tsx
 import React from 'react';
@@ -1272,9 +1281,11 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### VideoPlayer Integration
 
+::: v-pre
 ```typescript
 // /web/src/components/player/VideoPlayer.tsx - ADD TO EXISTING FILE
 
@@ -1299,6 +1310,7 @@ const { currentFact, dismissFact, triviaEnabled } = useTrivia({
   />
 )}
 ```
+:::
 
 ---
 
@@ -1480,6 +1492,7 @@ class TestTriviaGenerationService:
 
 ### Frontend Unit Tests
 
+::: v-pre
 ```typescript
 // /web/src/components/player/__tests__/TriviaOverlay.test.tsx
 import React from 'react';
@@ -1568,6 +1581,7 @@ describe('TriviaOverlay', () => {
   });
 });
 ```
+:::
 
 ```typescript
 // /web/src/components/player/__tests__/useTrivia.test.ts
@@ -1778,6 +1792,7 @@ describe('useTrivia', () => {
 
 ## Monitoring & Error Tracking
 
+::: v-pre
 ```typescript
 // /shared/utils/triviaSentry.ts
 import * as Sentry from '@sentry/react-native';
@@ -1816,6 +1831,7 @@ export const triviaErrorBoundary = {
 //   ...
 // }
 ```
+:::
 
 ---
 

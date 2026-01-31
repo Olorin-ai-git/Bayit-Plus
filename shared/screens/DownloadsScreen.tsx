@@ -16,6 +16,7 @@ import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocalization';
 import { downloadsService, type Download } from '../services/api';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface DownloadItem {
   id: string;
@@ -74,10 +75,10 @@ const transformDownload = (dl: Download): DownloadItem => ({
 });
 
 const TYPE_ICONS: Record<string, string> = {
-  movie: '🎬',
-  series: '📺',
-  episode: '📺',
-  podcast: '🎙️',
+  movie: 'vod',
+  series: 'live',
+  episode: 'live',
+  podcast: 'podcasts',
 };
 
 const DownloadCard: React.FC<{
@@ -133,7 +134,7 @@ const DownloadCard: React.FC<{
           />
         ) : (
           <View className={`w-full aspect-video bg-[${colors.backgroundLighter}] justify-center items-center`}>
-            <Text className="text-[32px]">{TYPE_ICONS[item.type] || '⬇️'}</Text>
+            <NativeIcon name={TYPE_ICONS[item.type] || 'download'} size="2xl" color="#a855f7" />
           </View>
         )}
 
@@ -145,7 +146,7 @@ const DownloadCard: React.FC<{
         )}
 
         <View className={`absolute top-2 ${isRTL ? 'left-2' : 'right-2'} bg-black/70 rounded-xl px-2 py-1`}>
-          <Text className="text-sm">{TYPE_ICONS[item.type]}</Text>
+          <NativeIcon name={TYPE_ICONS[item.type]} size="sm" color="#ffffff" />
         </View>
 
         <View className={`absolute top-2 ${isRTL ? 'right-2' : 'left-2'} bg-[#a855f7]/80 rounded-lg px-1.5 py-0.5`}>
@@ -173,10 +174,10 @@ const DownloadCard: React.FC<{
           <View className="absolute inset-0 bg-black/40 justify-center items-center">
             <View className="flex-row gap-4">
               <View className={`w-12 h-12 rounded-full bg-[${colors.primary}] justify-center items-center`}>
-                <Text className={`text-xl text-[${colors.background}] ml-1`}>▶</Text>
+                <NativeIcon name="play" size="lg" color={colors.background} />
               </View>
               <TouchableOpacity onPress={onDelete} className="w-12 h-12 rounded-full bg-[#ff6464]/80 justify-center items-center">
-                <Text className="text-lg">🗑️</Text>
+                <NativeIcon name="trash" size="md" color="#ffffff" />
               </TouchableOpacity>
             </View>
           </View>
@@ -272,7 +273,7 @@ export const DownloadsScreen: React.FC = () => {
       {/* Header */}
       <View className={`flex-row items-center px-12 pt-10 pb-4 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
         <View className={`w-[60px] h-[60px] rounded-full bg-[#6b21a8]/30 justify-center items-center ${isRTL ? 'ml-4' : 'mr-4'}`}>
-          <Text className="text-[28px]">⬇️</Text>
+          <NativeIcon name="download" size="xl" color="#a855f7" />
         </View>
         <View>
           <Text className={`text-[42px] font-bold text-[${colors.text}]`} style={{ textAlign }}>{t('downloads.title')}</Text>
@@ -310,8 +311,8 @@ export const DownloadsScreen: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-[60px]">
             <GlassView className="p-12 items-center">
-              <Text className="text-[64px] mb-4">⬇️</Text>
-              <Text className={`text-xl font-semibold text-[${colors.text}] mb-2`} style={{ textAlign }}>{t('downloads.empty')}</Text>
+              <NativeIcon name="download" size="4xl" color="#a855f7" />
+              <Text className={`text-xl font-semibold text-[${colors.text}] mb-2 mt-4`} style={{ textAlign }}>{t('downloads.empty')}</Text>
               <Text className={`text-base text-[${colors.textSecondary}]`} style={{ textAlign }}>{t('downloads.emptyHint')}</Text>
             </GlassView>
           </View>

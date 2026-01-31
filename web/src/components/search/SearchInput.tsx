@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import { GlassInput } from '../../../../shared/components/ui/GlassInput';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
+import { Icon } from '@olorin/shared-icons/web';
 
 interface SearchInputProps {
   /** Current search query */
@@ -30,7 +31,7 @@ export function SearchInput({ value, onChangeText, placeholder }: SearchInputPro
 
   return (
     <View style={[styles.container, isFocused && styles.containerFocused]}>
-      <Text style={styles.icon}>🔍</Text>
+      <Icon name="search" size="md" color={colors.textMuted} />
       <GlassInput
         style={styles.input}
         value={value}
@@ -49,7 +50,7 @@ export function SearchInput({ value, onChangeText, placeholder }: SearchInputPro
           style={styles.clearButton}
           accessibilityLabel={t('search.empty.clearSearch')}
         >
-          <Text style={styles.clearIcon}>✕</Text>
+          <Icon name="x" size="md" color={colors.text} />
         </GlassButton>
       )}
     </View>
@@ -73,9 +74,6 @@ const styles = StyleSheet.create({
     borderColor: colors.inputBorderFocus,
     backgroundColor: colors.inputBackgroundFocus,
   },
-  icon: {
-    fontSize: 18,
-  },
   input: {
     flex: 1,
     fontSize: 16,
@@ -83,9 +81,5 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     padding: 4,
-  },
-  clearIcon: {
-    fontSize: 16,
-    color: colors.text,
   },
 });

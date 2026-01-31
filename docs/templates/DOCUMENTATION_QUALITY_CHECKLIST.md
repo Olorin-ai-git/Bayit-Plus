@@ -67,6 +67,7 @@ async def get_feature(feature_id: str):
 ```
 
 **For Frontend Examples:**
+::: v-pre
 ```typescript
 // ✅ Good example - Type-safe, complete, with error handling
 interface Feature {
@@ -88,6 +89,7 @@ const fetchFeature = async (id: string): Promise<Feature> => {
   }
 };
 ```
+:::
 
 - [ ] **All examples follow this standard**
 

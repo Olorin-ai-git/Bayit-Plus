@@ -29,6 +29,7 @@ import {
 
 ### Basic Usage
 
+::: v-pre
 ```tsx
 import { GlassPageHeader } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
@@ -50,9 +51,11 @@ function MyPage() {
   );
 }
 ```
+:::
 
 ### With Badge Count
 
+::: v-pre
 ```tsx
 <GlassPageHeader
   title={t('vod.title')}
@@ -61,9 +64,11 @@ function MyPage() {
   isRTL={isRTL}
 />
 ```
+:::
 
 ### With Custom Icon
 
+::: v-pre
 ```tsx
 import { Sparkles } from 'lucide-react';
 
@@ -75,6 +80,7 @@ import { Sparkles } from 'lucide-react';
   isRTL={isRTL}
 />
 ```
+:::
 
 ### All Supported Page Types
 
@@ -100,6 +106,7 @@ type PageType =
 
 ### Custom Styling
 
+::: v-pre
 ```tsx
 <GlassPageHeader
   title="Custom Page"
@@ -120,6 +127,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ---
 
@@ -127,6 +135,7 @@ const styles = StyleSheet.create({
 
 ### Base Skeleton
 
+::: v-pre
 ```tsx
 import { GlassSkeleton } from '@bayit/shared/ui';
 
@@ -145,9 +154,11 @@ import { GlassSkeleton } from '@bayit/shared/ui';
 // Custom border radius
 <GlassSkeleton width={100} height={100} borderRadius={50} />
 ```
+:::
 
 ### Content Card Skeleton
 
+::: v-pre
 ```tsx
 import { ContentCardSkeleton } from '@bayit/shared/ui';
 
@@ -164,9 +175,11 @@ import { ContentCardSkeleton } from '@bayit/shared/ui';
   ))}
 </View>
 ```
+:::
 
 ### Row Skeleton (Carousel)
 
+::: v-pre
 ```tsx
 import { RowSkeleton } from '@bayit/shared/ui';
 
@@ -183,9 +196,11 @@ import { RowSkeleton } from '@bayit/shared/ui';
   <RowSkeleton numCards={5} />
 </>
 ```
+:::
 
 ### Grid Skeleton
 
+::: v-pre
 ```tsx
 import { GridSkeleton } from '@bayit/shared/ui';
 
@@ -199,9 +214,11 @@ import { GridSkeleton } from '@bayit/shared/ui';
 const numColumns = width >= 1280 ? 6 : width >= 1024 ? 5 : width >= 768 ? 4 : 2;
 <GridSkeleton numColumns={numColumns} numRows={3} />
 ```
+:::
 
 ### Hero Carousel Skeleton
 
+::: v-pre
 ```tsx
 import { HeroCarouselSkeleton } from '@bayit/shared/ui';
 
@@ -214,17 +231,21 @@ import { HeroCarouselSkeleton } from '@bayit/shared/ui';
 // For TV (larger)
 <HeroCarouselSkeleton height={IS_TV_BUILD ? 700 : 600} />
 ```
+:::
 
 ### Page Header Skeleton
 
+::: v-pre
 ```tsx
 import { PageHeaderSkeleton } from '@bayit/shared/ui';
 
 <PageHeaderSkeleton />
 ```
+:::
 
 ### List Item Skeleton
 
+::: v-pre
 ```tsx
 import { ListItemSkeleton } from '@bayit/shared/ui';
 
@@ -236,9 +257,11 @@ import { ListItemSkeleton } from '@bayit/shared/ui';
   <ListItemSkeleton key={i} />
 ))}
 ```
+:::
 
 ### Complete Loading Page Example
 
+::: v-pre
 ```tsx
 function MyPage() {
   const { t } = useTranslation();
@@ -287,6 +310,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ---
 
@@ -294,6 +318,7 @@ const styles = StyleSheet.create({
 
 ### Pre-configured Placeholders
 
+::: v-pre
 ```tsx
 import {
   MoviePlaceholder,
@@ -318,9 +343,11 @@ import {
 // Live channel placeholder (16:9 aspect ratio)
 <LiveChannelPlaceholder size="medium" />
 ```
+:::
 
 ### Generic Placeholder
 
+::: v-pre
 ```tsx
 import { GlassContentPlaceholder } from '@bayit/shared/ui';
 
@@ -331,6 +358,7 @@ import { GlassContentPlaceholder } from '@bayit/shared/ui';
   label="Movie"             // Optional label
 />
 ```
+:::
 
 ### Content Type Options
 
@@ -361,6 +389,7 @@ size: 'small' | 'medium' | 'large'
 
 ### Custom Icon and Label
 
+::: v-pre
 ```tsx
 import { Film } from 'lucide-react';
 
@@ -372,9 +401,11 @@ import { Film } from 'lucide-react';
   label="Custom Content"                      // Custom label
 />
 ```
+:::
 
 ### Conditional Rendering (Image or Placeholder)
 
+::: v-pre
 ```tsx
 // In a content card component
 function ContentCard({ item }) {
@@ -394,9 +425,11 @@ function ContentCard({ item }) {
   );
 }
 ```
+:::
 
 ### In a Show/Podcast Card
 
+::: v-pre
 ```tsx
 function ShowCard({ show }) {
   return (
@@ -417,9 +450,11 @@ function ShowCard({ show }) {
   );
 }
 ```
+:::
 
 ### In a Radio Station Card
 
+::: v-pre
 ```tsx
 function StationCard({ station }) {
   return (
@@ -440,6 +475,7 @@ function StationCard({ station }) {
   );
 }
 ```
+:::
 
 ---
 
@@ -447,6 +483,7 @@ function StationCard({ station }) {
 
 ### Full Implementation
 
+::: v-pre
 ```tsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Image, StyleSheet } from 'react-native';
@@ -614,6 +651,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ---
 
@@ -621,6 +659,7 @@ const styles = StyleSheet.create({
 
 ### 1. Always Show Loading Skeletons
 
+::: v-pre
 ```tsx
 // ✅ CORRECT
 if (loading) {
@@ -632,9 +671,11 @@ if (loading) {
   return <Text>Loading...</Text>;
 }
 ```
+:::
 
 ### 2. Use Type-Specific Placeholders
 
+::: v-pre
 ```tsx
 // ✅ CORRECT
 {item.thumbnail ? (
@@ -652,9 +693,11 @@ if (loading) {
   </View>
 )}
 ```
+:::
 
 ### 3. Match Skeleton to Final Layout
 
+::: v-pre
 ```tsx
 // ✅ CORRECT - Skeleton matches final grid
 if (loading) {
@@ -669,9 +712,11 @@ return (
   />
 );
 ```
+:::
 
 ### 4. Always Include Badge Counts
 
+::: v-pre
 ```tsx
 // ✅ CORRECT
 <GlassPageHeader
@@ -687,9 +732,11 @@ return (
   badge={shows.length > 0 ? shows.length : undefined}
 />
 ```
+:::
 
 ### 5. Respect RTL Layout
 
+::: v-pre
 ```tsx
 // ✅ CORRECT
 const { isRTL } = useDirection();
@@ -700,6 +747,7 @@ const { isRTL } = useDirection();
   isRTL={isRTL}  // Always pass RTL state
 />
 ```
+:::
 
 ---
 
@@ -707,6 +755,7 @@ const { isRTL } = useDirection();
 
 ### 1. Reuse Skeleton Components
 
+::: v-pre
 ```tsx
 // ✅ CORRECT - Single skeleton for multiple sections
 const ContentSkeleton = () => (
@@ -720,9 +769,11 @@ const ContentSkeleton = () => (
 // Use everywhere
 if (loading) return <ContentSkeleton />;
 ```
+:::
 
 ### 2. Optimize Placeholder Rendering
 
+::: v-pre
 ```tsx
 // ✅ CORRECT - Placeholder only when needed
 const renderThumbnail = useCallback((thumbnail: string | undefined) => {
@@ -732,9 +783,11 @@ const renderThumbnail = useCallback((thumbnail: string | undefined) => {
   return <MoviePlaceholder size="medium" />;
 }, []);
 ```
+:::
 
 ### 3. Lazy Load Images
 
+::: v-pre
 ```tsx
 // ✅ CORRECT - Show placeholder until image loads
 const [imageLoaded, setImageLoaded] = useState(false);
@@ -748,6 +801,7 @@ const [imageLoaded, setImageLoaded] = useState(false);
   />
 </View>
 ```
+:::
 
 ---
 
@@ -757,41 +811,49 @@ const [imageLoaded, setImageLoaded] = useState(false);
 
 **Solution:** Ensure `animate` prop is not set to `false`
 
+::: v-pre
 ```tsx
 // Check
 <GlassSkeleton animate={true} />  // or omit (defaults to true)
 ```
+:::
 
 ### Issue: Placeholder Icons Too Small/Large
 
 **Solution:** Use `iconSize` prop
 
+::: v-pre
 ```tsx
 <GlassContentPlaceholder
   type="movie"
   iconSize={64}  // Custom icon size
 />
 ```
+:::
 
 ### Issue: Badge Not Showing
 
 **Solution:** Ensure badge value is defined and non-zero
 
+::: v-pre
 ```tsx
 <GlassPageHeader
   badge={items.length || undefined}  // Hide if 0
 />
 ```
+:::
 
 ### Issue: RTL Layout Broken
 
 **Solution:** Always pass `isRTL` prop
 
+::: v-pre
 ```tsx
 const { isRTL } = useDirection();
 
 <GlassPageHeader isRTL={isRTL} />
 ```
+:::
 
 ---
 
@@ -799,6 +861,7 @@ const { isRTL } = useDirection();
 
 ### From Custom Headers to GlassPageHeader
 
+::: v-pre
 ```tsx
 // BEFORE
 <View style={styles.header}>
@@ -816,9 +879,11 @@ const { isRTL } = useDirection();
   isRTL={isRTL}
 />
 ```
+:::
 
 ### From Loading Spinners to Skeletons
 
+::: v-pre
 ```tsx
 // BEFORE
 {loading && <ActivityIndicator size="large" />}
@@ -826,9 +891,11 @@ const { isRTL } = useDirection();
 // AFTER
 {loading && <GridSkeleton numColumns={4} numRows={2} />}
 ```
+:::
 
 ### From Dark Circles to Placeholders
 
+::: v-pre
 ```tsx
 // BEFORE
 {!item.thumbnail && (
@@ -840,6 +907,7 @@ const { isRTL } = useDirection();
 // AFTER
 {!item.thumbnail && <PodcastPlaceholder size="medium" />}
 ```
+:::
 
 ---
 

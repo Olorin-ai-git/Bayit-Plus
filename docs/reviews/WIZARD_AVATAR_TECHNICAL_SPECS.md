@@ -178,6 +178,7 @@ export const ASSET_PATHS = {
 ## Platform Implementation Details
 
 ### Web Implementation
+::: v-pre
 ```typescript
 // Framework: React
 // Video Element: HTML5 <video>
@@ -192,6 +193,7 @@ export const ASSET_PATHS = {
 // - Graceful fallback on autoplay policy violation
 // - Default aspect ratio: 9:16
 ```
+:::
 
 ### React Native Implementation
 ```typescript
@@ -448,6 +450,7 @@ Error State:
 ```
 
 ### Screen Reader Support
+::: v-pre
 ```
 Component: Semantic <video> element (Web)
 Alt Text:  Can be added via caption track
@@ -457,6 +460,7 @@ Buttons:   If play/pause controls added, must be accessible
 Note: Current implementation focuses on visual display.
       Video captions could be added for full accessibility.
 ```
+:::
 
 ## Configuration Best Practices
 

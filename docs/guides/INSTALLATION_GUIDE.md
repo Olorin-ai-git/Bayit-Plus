@@ -306,6 +306,7 @@ SUPPORTED_LANGUAGES=en,he,es
 
 ### Step 5: iOS-Specific Configuration
 
+::: v-pre
 ```bash
 # Navigate to iOS directory
 cd ios
@@ -328,6 +329,7 @@ EOF
 # Return to mobile-app root
 cd ..
 ```
+:::
 
 ### Step 6: Verify Installation
 
@@ -496,6 +498,7 @@ cd ios && pod install && cd ..  # Reinstall
 
 #### Issue 2: Metro Bundler Crashes
 
+::: v-pre
 ```bash
 # Error: "Error: getuid is not allowed to be called from the main thread"
 
@@ -506,6 +509,7 @@ lsof -i :8081
 kill -9 <PID>
 npm start
 ```
+:::
 
 #### Issue 3: Build Fails with Signing Errors
 
@@ -561,6 +565,7 @@ echo $API_BASE_URL  # Should print value, not empty
 
 #### Issue 6: Port Already in Use
 
+::: v-pre
 ```bash
 # Error: "Address already in use: 8000"
 
@@ -577,6 +582,7 @@ lsof -i :8000  # Should show nothing
 # 4. Start server again:
 poetry run uvicorn app.main:app --reload
 ```
+:::
 
 #### Issue 7: iOS Deployment Target Mismatch
 

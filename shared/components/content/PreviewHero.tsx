@@ -13,6 +13,7 @@ import Video from 'react-native-video';
 import LinearGradient from 'react-native-linear-gradient';
 import { GlassView } from '../ui/GlassView';
 import { GlassButton } from '../ui/GlassButton';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 
@@ -244,7 +245,7 @@ export const PreviewHero: React.FC<PreviewHeroProps> = ({
           )}
           {metadata?.imdbRating && (
             <View className="flex-row items-center gap-1 bg-[#F5C518]/20 px-2 py-0.5 rounded">
-              <Text className="text-sm">⭐</Text>
+              <NativeIcon name="star" size={14} color="#F5C518" />
               <Text className="text-sm text-[#F5C518] font-bold">{formatImdbRating(metadata.imdbRating)}</Text>
             </View>
           )}
@@ -299,7 +300,7 @@ export const PreviewHero: React.FC<PreviewHeroProps> = ({
             onFocus={() => setFocusedButton('play')}
             activeOpacity={0.8}
           >
-            <Text className={`${isTV ? 'text-xl' : 'text-base'} text-white`}>▶</Text>
+            <NativeIcon name="play" size={isTV ? 'lg' : 'md'} color="#ffffff" />
             <Text className={`${isTV ? 'text-lg' : 'text-base'} font-semibold text-white`}>{t('content.play')}</Text>
           </TouchableOpacity>
 
@@ -329,7 +330,7 @@ export const PreviewHero: React.FC<PreviewHeroProps> = ({
               onFocus={() => setFocusedButton('preview')}
               activeOpacity={0.8}
             >
-              <Text className={`${isTV ? 'text-base' : 'text-sm'}`}>🎬</Text>
+              <NativeIcon name="vod" size={isTV ? 16 : 14} color="#fff" />
               <Text className={`${isTV ? 'text-base' : 'text-sm'} font-medium text-white`}>{t('content.preview')}</Text>
             </TouchableOpacity>
           )}

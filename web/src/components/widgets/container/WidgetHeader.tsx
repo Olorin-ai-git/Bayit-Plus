@@ -8,6 +8,7 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { X, Volume2, VolumeX, GripHorizontal, Minimize2, Maximize2, RefreshCw } from 'lucide-react';
+import { Icon } from '@olorin/shared-icons/web';
 import { platformClass, platformStyle } from '@/utils/platformClass';
 import type { Widget } from '@/types/widget';
 
@@ -121,7 +122,12 @@ export function WidgetHeader({
           style={{ transform: [{ translateX: -8 }] }}
         >
           {isTVBuild ? (
-            <Text className="text-white text-sm font-semibold">⬅️ ⬆️ ⬇️ ➡️</Text>
+            <View className="flex flex-row gap-1">
+              <Icon name="arrowLeft" size="sm" color="#ffffff" />
+              <Icon name="arrowUp" size="sm" color="#ffffff" />
+              <Icon name="arrowDown" size="sm" color="#ffffff" />
+              <Icon name="arrowRight" size="sm" color="#ffffff" />
+            </View>
           ) : (
             <GripHorizontal size={16} color="rgba(255,255,255,0.4)" />
           )}

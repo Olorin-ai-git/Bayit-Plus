@@ -169,9 +169,11 @@ export const ChapterItem: React.FC<ChapterItemProps> = ({
         <View className={`w-9 h-9 rounded-full justify-center items-center ${
           isActive ? 'bg-purple-500' : 'bg-white/5'
         }`}>
-          <Text className={`text-sm ${isActive ? 'text-black' : 'text-gray-400'}`}>
-            {isActive ? '▶' : '▷'}
-          </Text>
+          <NativeIcon
+            name="play"
+            size="sm"
+            color={isActive ? '#000000' : '#9ca3af'}
+          />
         </View>
       </Animated.View>
     </TouchableOpacity>

@@ -7,6 +7,7 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, Text, Pressable, Platform } from 'react-native';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import logger, { getCorrelationId } from '../utils/logger';
 
 // Sentry-like interface for error capture
@@ -95,7 +96,7 @@ export class ErrorBoundary extends Component<Props, State> {
               borderColor: colors.glassBorder
             }}
           >
-            <Text style={{ fontSize: Platform.isTV ? 80 : 60, marginBottom: spacing.lg }}>⚠️</Text>
+            <NativeIcon name="alertTriangle" size={Platform.isTV ? 80 : 60} color="#fbbf24" style={{ marginBottom: spacing.lg }} />
             <Text
               className="font-bold text-center"
               style={{

@@ -179,7 +179,7 @@ Follow the detailed step-by-step guide in `WIZARD_AVATAR_TESTING_GUIDE.md`:
 | Requirement | Status | Evidence |
 |-------------|--------|----------|
 | No `StyleSheet.create()` | ✅ PASS | Zero StyleSheet usage |
-| No inline `style={{}}` | ✅ PASS | All TailwindCSS (aspect ratio only) |
+| No inline `style=\{\{\}\}` | ✅ PASS | All TailwindCSS (aspect ratio only) |
 | TailwindCSS Only | ✅ PASS | All utility classes |
 | Glass Components | ✅ PASS | Uses GlassCard wrapper |
 | No Mocks/Stubs/TODOs | ✅ PASS | Full implementation |
@@ -552,6 +552,7 @@ import { WizardAvatar } from '@/shared/components/WizardAvatar';
 ```
 
 **Basic Usage:**
+::: v-pre
 ```typescript
 <WizardAvatar
   autoPlay={true}
@@ -559,6 +560,7 @@ import { WizardAvatar } from '@/shared/components/WizardAvatar';
   onEnded={() => console.log('Animation complete')}
 />
 ```
+:::
 
 **Test Component Location:**
 ```

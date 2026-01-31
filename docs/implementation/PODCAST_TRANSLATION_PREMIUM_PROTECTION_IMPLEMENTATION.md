@@ -119,6 +119,7 @@ const handleLanguageChange = async (lang: string) => {
 ```
 
 **Premium Badge UI:**
+::: v-pre
 ```tsx
 {!isPremium && availableLanguages.length > 1 && (
   <View style={styles.premiumBadge}>
@@ -126,8 +127,10 @@ const handleLanguageChange = async (lang: string) => {
   </View>
 )}
 ```
+:::
 
 **Button Disabling:**
+::: v-pre
 ```tsx
 <GlassButton
   variant={isCurrent ? 'primary' : isPremium ? 'secondary' : 'ghost'}
@@ -140,6 +143,7 @@ const handleLanguageChange = async (lang: string) => {
   // ...
 />
 ```
+:::
 
 ### 3. Parent Component Integration ✅
 

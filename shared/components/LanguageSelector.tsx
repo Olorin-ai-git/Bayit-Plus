@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors } from '@olorin/design-tokens';
 import { languages, saveLanguage, getCurrentLanguage } from '../i18n';
 
@@ -60,7 +61,7 @@ export const LanguageSelector: React.FC = () => {
                   ]}
                 >
                   {currentLang.code === lang.code && (
-                    <Text style={styles.checkmark}>✓</Text>
+                    <NativeIcon name="check" size={16} color={colors.primary.DEFAULT} style={styles.checkmark} />
                   )}
                   <Text style={styles.flag}>{lang.flag}</Text>
                   <Text
@@ -188,9 +189,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(139, 92, 246, 0.2)',
   },
   checkmark: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: colors.primary.DEFAULT,
     width: 24,
     textAlign: 'center',
   },

@@ -17,6 +17,7 @@ import { rtlSpacing, rtlMargin } from '../../utils/rtlHelpers';
 import { usePermissions } from '../../hooks/usePermissions';
 import { useAuthStore } from '../../stores/authStore';
 import { spacing } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface NavItem {
   key: string;
@@ -31,45 +32,45 @@ const NAV_ITEMS: NavItem[] = [
   {
     key: 'dashboard',
     labelKey: 'admin.nav.dashboard',
-    icon: '📊',
+    icon: 'admin',
     route: 'AdminDashboard',
   },
   {
     key: 'users',
     labelKey: 'admin.nav.users',
-    icon: '👥',
+    icon: 'users',
     route: 'UsersList',
     permission: 'users:read',
   },
   {
     key: 'campaigns',
     labelKey: 'admin.nav.campaigns',
-    icon: '🎯',
+    icon: 'target',
     route: 'CampaignsList',
     permission: 'campaigns:read',
   },
   {
     key: 'billing',
     labelKey: 'admin.nav.billing',
-    icon: '💳',
+    icon: 'plans',
     permission: 'billing:read',
     children: [
       {
         key: 'billing-overview',
         labelKey: 'admin.nav.billingOverview',
-        icon: '📈',
+        icon: 'discover',
         route: 'BillingOverview',
       },
       {
         key: 'transactions',
         labelKey: 'admin.nav.transactions',
-        icon: '📋',
+        icon: 'watchlist',
         route: 'Transactions',
       },
       {
         key: 'refunds',
         labelKey: 'admin.nav.refunds',
-        icon: '↩️',
+        icon: 'back',
         route: 'Refunds',
       },
     ],
@@ -77,19 +78,19 @@ const NAV_ITEMS: NavItem[] = [
   {
     key: 'subscriptions',
     labelKey: 'admin.nav.subscriptions',
-    icon: '📦',
+    icon: 'folder',
     permission: 'subscriptions:read',
     children: [
       {
         key: 'subscriptions-list',
         labelKey: 'admin.nav.subscriptionsList',
-        icon: '📋',
+        icon: 'watchlist',
         route: 'Subscriptions',
       },
       {
         key: 'plans',
         labelKey: 'admin.nav.plans',
-        icon: '⚙️',
+        icon: 'settings',
         route: 'PlanManagement',
       },
     ],
@@ -97,25 +98,25 @@ const NAV_ITEMS: NavItem[] = [
   {
     key: 'marketing',
     labelKey: 'admin.nav.marketing',
-    icon: '📣',
+    icon: 'notification',
     permission: 'marketing:read',
     children: [
       {
         key: 'marketing-dashboard',
         labelKey: 'admin.nav.marketingDashboard',
-        icon: '📊',
+        icon: 'admin',
         route: 'MarketingDashboard',
       },
       {
         key: 'email-campaigns',
         labelKey: 'admin.nav.emailCampaigns',
-        icon: '✉️',
+        icon: 'share',
         route: 'EmailCampaigns',
       },
       {
         key: 'push-notifications',
         labelKey: 'admin.nav.pushNotifications',
-        icon: '🔔',
+        icon: 'notification',
         route: 'PushNotifications',
       },
     ],
@@ -123,21 +124,21 @@ const NAV_ITEMS: NavItem[] = [
   {
     key: 'uploads',
     labelKey: 'admin.nav.uploads',
-    icon: '📤',
+    icon: 'upload',
     route: 'Uploads',
     permission: 'content:create',
   },
   {
     key: 'settings',
     labelKey: 'admin.nav.settings',
-    icon: '⚙️',
+    icon: 'settings',
     route: 'Settings',
     permission: 'system:config',
   },
   {
     key: 'logs',
     labelKey: 'admin.nav.auditLogs',
-    icon: '📜',
+    icon: 'document',
     route: 'AuditLogs',
     permission: 'system:logs',
   },
@@ -190,14 +191,18 @@ export const AdminSidebar: React.FC = () => {
             }
           }}
         >
-          <Text className="text-lg mr-2 w-6 text-center">{item.icon}</Text>
+          <View className="mr-2 w-6 items-center">
+            <NativeIcon name={item.icon} size="sm" color={isActive ? '#FFFFFF' : '#9ca3af'} />
+          </View>
           <Text className={`flex-1 text-sm ${isActive ? 'text-text font-semibold' : 'text-textSecondary'}`} style={{ textAlign }}>
             {t(item.labelKey, item.key)}
           </Text>
           {hasChildren && (
-            <Text className="text-[10px] text-textMuted">
-              {isExpanded ? (isRTL ? '◀' : '▶') : (isRTL ? '▶' : '◀')}
-            </Text>
+            <NativeIcon
+              name={isExpanded ? (isRTL ? 'chevronLeft' : 'chevronRight') : (isRTL ? 'chevronRight' : 'chevronLeft')}
+              size="xs"
+              color="#6b7280"
+            />
           )}
         </TouchableOpacity>
 
@@ -237,7 +242,9 @@ export const AdminSidebar: React.FC = () => {
           style={{ flexDirection }}
           onPress={() => navigation.navigate('Home')}
         >
-          <Text className="text-base mr-2">🏠</Text>
+          <View className="mr-2">
+            <NativeIcon name="home" size="sm" color="#9ca3af" />
+          </View>
           <Text className="text-sm text-textSecondary" style={{ textAlign }}>{t('admin.nav.backToApp', 'Back to App')}</Text>
         </TouchableOpacity>
 
@@ -246,7 +253,9 @@ export const AdminSidebar: React.FC = () => {
           style={{ flexDirection }}
           onPress={logout}
         >
-          <Text className="text-base mr-2">🚪</Text>
+          <View className="mr-2">
+            <NativeIcon name="logout" size="sm" color="#ef4444" />
+          </View>
           <Text className="text-sm text-textSecondary" style={{ textAlign }}>{t('admin.nav.logout', 'Logout')}</Text>
         </TouchableOpacity>
       </View>

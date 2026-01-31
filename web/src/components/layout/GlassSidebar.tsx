@@ -292,11 +292,11 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   };
 
   // Toggle icon based on direction and expanded state
-  const getToggleIcon = () => {
+  const getToggleIconName = () => {
     if (isRTL) {
-      return isExpanded ? '◀' : '▶';
+      return isExpanded ? 'chevronLeft' : 'chevronRight';
     } else {
-      return isExpanded ? '▶' : '◀';
+      return isExpanded ? 'chevronRight' : 'chevronLeft';
     }
   };
 
@@ -347,7 +347,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
             isRTL ? { left: -20 } : { right: -20 },
           ]}>
             <GlassButton
-              title={getToggleIcon()}
+              icon={renderIcon(getToggleIconName(), 'sm', 'navigation')}
               onPress={isUIInteractionEnabled ? handleToggle : undefined}
               variant="secondary"
               size="sm"

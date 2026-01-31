@@ -7,6 +7,7 @@ import React, { ReactNode } from 'react';
 import { View, Text } from 'react-native';
 import { usePermissions } from '../../hooks/usePermissions';
 import { Permission, Role } from '../../types/rbac';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface PermissionGateProps {
   // Single permission required
@@ -83,7 +84,7 @@ export const PermissionGate: React.FC<PermissionGateProps> = ({
     return (
       <View className="flex-1 justify-center items-center p-8 bg-black">
         <View className="w-20 h-20 rounded-full bg-white/10 justify-center items-center mb-4">
-          <Text style={{ fontSize: 64 }}>🔒</Text>
+          <NativeIcon name="lock" size={32} color="#ffffff" />
         </View>
         <Text className="text-white text-2xl font-bold mb-2">Access Denied</Text>
         <Text className="text-gray-400 text-base text-center">

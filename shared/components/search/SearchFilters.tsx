@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SearchFilters as SearchFiltersType } from '../../hooks/useSearch';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface FilterOption {
   genres: string[];
@@ -128,7 +129,7 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
               className="w-8 h-8 items-center justify-center bg-white/10 rounded-full"
               activeOpacity={0.7}
             >
-              <Text className="text-white text-lg">✕</Text>
+              <NativeIcon name="x" size="md" color="#ffffff" />
             </TouchableOpacity>
           )}
         </View>
@@ -220,8 +221,9 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
                 <Text className={`
                   text-center font-medium
                   ${filters.ratingMin === rating ? 'text-yellow-300' : 'text-white/80'}
+                  flex-row items-center gap-1
                 `}>
-                  {rating}+ ⭐
+                  {rating}+ <NativeIcon name="star" size="xs" color={filters.ratingMin === rating ? '#fde047' : '#9ca3af'} />
                 </Text>
               </TouchableOpacity>
             ))}
@@ -272,7 +274,11 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
             `}>
               {t('search.filters.searchInSubtitles')}
             </Text>
-            <Text className="text-xl">{filters.searchInSubtitles ? '✓' : '○'}</Text>
+            <NativeIcon
+              name={filters.searchInSubtitles ? 'check' : 'circle'}
+              size="lg"
+              color={filters.searchInSubtitles ? '#10b981' : '#9ca3af'}
+            />
           </TouchableOpacity>
         </FilterSection>
 
@@ -300,9 +306,11 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
             `}>
               {filters.isKidsContent === true ? t('search.filters.kidsOnly') : filters.isKidsContent === false ? t('search.filters.excludeKids') : t('search.filters.allContent')}
             </Text>
-            <Text className="text-xl">
-              {filters.isKidsContent === true ? '👶' : filters.isKidsContent === false ? '🚫' : '🌍'}
-            </Text>
+            <NativeIcon
+              name={filters.isKidsContent === true ? 'baby' : filters.isKidsContent === false ? 'slash' : 'globe'}
+              size="lg"
+              color={filters.isKidsContent === true ? '#ec4899' : filters.isKidsContent === false ? '#6b7280' : '#a855f7'}
+            />
           </TouchableOpacity>
         </FilterSection>
       </ScrollView>

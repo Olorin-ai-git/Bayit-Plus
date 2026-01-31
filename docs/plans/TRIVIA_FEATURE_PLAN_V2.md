@@ -507,6 +507,7 @@ class TriviaService:
 
 ### 4.2 TypeScript Types (shared/types/trivia.ts)
 
+::: v-pre
 ```typescript
 export interface TriviaFact {
   fact_id: string;
@@ -541,9 +542,11 @@ export interface TriviaState {
   isVisible: boolean;
 }
 ```
+:::
 
 ### 4.3 Zustand Store (shared/stores/triviaStore.ts)
 
+::: v-pre
 ```typescript
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
@@ -638,9 +641,11 @@ export const useTriviaSettings = () => useTriviaStore((state) => state.settings)
 export const useTriviaCurrentFact = () => useTriviaStore((state) => state.currentFact);
 export const useTriviaVisible = () => useTriviaStore((state) => state.isVisible);
 ```
+:::
 
 ### 4.4 API Service (shared/services/api/triviaServices.ts)
 
+::: v-pre
 ```typescript
 import { api } from './client';
 import { TriviaFact, TriviaSettings } from '../../types/trivia';
@@ -667,9 +672,11 @@ export const triviaService = {
     api.get<TriviaSettings>('/trivia/preferences'),
 };
 ```
+:::
 
 ### 4.5 useTrivia Hook (web/src/components/player/hooks/useTrivia.ts)
 
+::: v-pre
 ```typescript
 import { useEffect, useRef, useCallback, useMemo } from 'react';
 import { AppState, AccessibilityInfo, Platform } from 'react-native';
@@ -830,9 +837,11 @@ export function useTrivia(options: UseTriviaOptions): UseTriviaReturn {
   };
 }
 ```
+:::
 
 ### 4.6 TriviaOverlay Component (shared/components/player/TriviaOverlay.tsx)
 
+::: v-pre
 ```typescript
 import React, { useEffect, useRef, useMemo } from 'react';
 import {
@@ -1068,6 +1077,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### 4.7 i18n Translation Keys
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useDirection } from '@bayit/shared/hooks';
 import { GlassCard, GlassView } from '../components';
 
@@ -31,7 +32,7 @@ export function NotFoundScreen() {
       <GlassCard className="p-9 items-center max-w-[600px] w-full">
         {/* Error Icon */}
         <View className="w-[100px] h-[100px] rounded-[50px] bg-primary/30 justify-center items-center mb-5">
-          <Text className="text-5xl">🔍</Text>
+          <NativeIcon name="search" size="xxxl" context="tv" color="#8a2be2" />
         </View>
 
         {/* Error Code */}
@@ -57,7 +58,7 @@ export function NotFoundScreen() {
               bg-primary min-w-[140px] justify-center
             `}
           >
-            <Text className="text-xl">🏠</Text>
+            <NativeIcon name="home" size="lg" context="tv" color="#FFFFFF" />
             <Text className="text-base font-semibold text-white">
               {t('notFound.goHome', 'לדף הבית')}
             </Text>
@@ -71,7 +72,7 @@ export function NotFoundScreen() {
               bg-secondary min-w-[140px] justify-center
             `}
           >
-            <Text className="text-xl">🔎</Text>
+            <NativeIcon name="search" size="lg" context="tv" color="#FFFFFF" />
             <Text className="text-base font-semibold text-white">
               {t('notFound.search', 'חיפוש')}
             </Text>
@@ -85,7 +86,7 @@ export function NotFoundScreen() {
               bg-white/10 min-w-[140px] justify-center
             `}
           >
-            <Text className="text-xl">◀</Text>
+            <NativeIcon name="chevronLeft" size="lg" context="tv" color="#9ca3af" />
             <Text className="text-base font-semibold text-gray-400">
               {t('notFound.goBack', 'חזור')}
             </Text>

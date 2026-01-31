@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './GlassView';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
@@ -109,12 +110,11 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
                 accessibilityLabel={t('common.moveUp', 'Move up')}
                 accessibilityRole="button"
               >
-                <Text style={[
-                  isTV ? styles.arrowTextTV : styles.arrowText,
-                  { color: isFirst ? 'rgba(255, 255, 255, 0.6)' : colors.text }
-                ]}>
-                  ▲
-                </Text>
+                <NativeIcon
+                  name="arrowUp"
+                  size={isTV ? 'md' : 'sm'}
+                  color={isFirst ? 'rgba(255, 255, 255, 0.6)' : colors.text}
+                />
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -126,12 +126,11 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
                 accessibilityLabel={t('common.moveDown', 'Move down')}
                 accessibilityRole="button"
               >
-                <Text style={[
-                  isTV ? styles.arrowTextTV : styles.arrowText,
-                  { color: isLast ? 'rgba(255, 255, 255, 0.6)' : colors.text }
-                ]}>
-                  ▼
-                </Text>
+                <NativeIcon
+                  name="arrowDown"
+                  size={isTV ? 'md' : 'sm'}
+                  color={isLast ? 'rgba(255, 255, 255, 0.6)' : colors.text}
+                />
               </TouchableOpacity>
             </>
           )}
@@ -267,12 +266,6 @@ const styles = StyleSheet.create({
   },
 
   // Text in buttons
-  arrowText: {
-    fontSize: 12,
-  },
-  arrowTextTV: {
-    fontSize: 16,
-  },
   visibilityIcon: {
     fontSize: 16,
   },

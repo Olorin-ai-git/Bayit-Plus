@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet, Image } from 'react-native';
 import { useTranslation } from 'react-i18next'
 import { Plus, Edit, Trash2, Globe, ChevronDown, ChevronUp, Radio } from 'lucide-react'
+import { Icon } from '@olorin/shared-icons/web'
 import { adminLiveChannelsService } from '@/services/adminApi'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassButton, GlassInput, GlassView, GlassToggle, GlassSelect, GlassPageHeader, GlassErrorBanner } from '@bayit/shared/ui'
@@ -191,9 +192,16 @@ export default function LiveChannelsPage() {
       label: t('admin.content.columns.subtitles', { defaultValue: 'Subtitles' }),
       render: (supported: boolean, item: LiveChannel) => (
         <View style={[styles.badge, supported ? styles.badgeSubtitles : styles.badgeNoSubtitles]}>
-          <Text style={[styles.badgeText, supported ? styles.badgeTextSubtitles : styles.badgeTextInactive]}>
-            {supported ? `✓ ${item.primary_language?.toUpperCase()}` : '—'}
-          </Text>
+          {supported ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <Icon name="check" size={14} color="#a78bfa" />
+              <Text style={[styles.badgeText, styles.badgeTextSubtitles]}>
+                {item.primary_language?.toUpperCase()}
+              </Text>
+            </View>
+          ) : (
+            <Text style={[styles.badgeText, styles.badgeTextInactive]}>—</Text>
+          )}
         </View>
       ),
     },

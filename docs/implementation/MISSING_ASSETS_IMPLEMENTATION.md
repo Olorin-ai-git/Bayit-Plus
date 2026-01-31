@@ -130,6 +130,7 @@ type PageType =
 - Widgets: 🧩 (Primary color)
 
 **Usage Example:**
+::: v-pre
 ```tsx
 import { GlassPageHeader } from '@bayit/shared/ui';
 
@@ -140,6 +141,7 @@ import { GlassPageHeader } from '@bayit/shared/ui';
   isRTL={isRTL}
 />
 ```
+:::
 
 ### 3.2 GlassSkeleton Components
 
@@ -240,6 +242,7 @@ import { GlassPageHeader } from '@bayit/shared/ui';
    ```
 
 **Generic Usage:**
+::: v-pre
 ```tsx
 <GlassContentPlaceholder
   type="movie"
@@ -248,6 +251,7 @@ import { GlassPageHeader } from '@bayit/shared/ui';
   label="Movie"
 />
 ```
+:::
 
 ---
 
@@ -279,6 +283,7 @@ import { GlassPageHeader } from '@bayit/shared/ui';
 **Objective:** Add skeleton loaders to all pages
 
 **Implementation Pattern:**
+::: v-pre
 ```tsx
 if (loading) {
   return (
@@ -291,6 +296,7 @@ if (loading) {
   );
 }
 ```
+:::
 
 **Pages to Update:**
 - All 15 pages listed above
@@ -308,6 +314,7 @@ if (loading) {
 6. KidsContentCard (in ChildrenPage)
 
 **Implementation Pattern:**
+::: v-pre
 ```tsx
 {item.thumbnail ? (
   <Image source={{ uri: item.thumbnail }} />
@@ -315,6 +322,7 @@ if (loading) {
   <MoviePlaceholder size="medium" />
 )}
 ```
+:::
 
 ---
 

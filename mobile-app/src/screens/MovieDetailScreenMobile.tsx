@@ -31,6 +31,7 @@ import { contentService } from "@bayit/shared-services";
 import { getLocalizedName, getLocalizedDescription } from "@bayit/shared-utils";
 import { useDirection } from "@bayit/shared-hooks";
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 import logger from '@/utils/logger';
 
@@ -251,14 +252,14 @@ export const MovieDetailScreenMobile: React.FC = () => {
           {/* Header Actions */}
           <SafeAreaView className="absolute top-0 left-0 right-0 flex-row justify-between items-center px-3 pt-2">
             <TouchableOpacity onPress={handleBack} className="w-11 h-11 rounded-full bg-black/50 justify-center items-center">
-              <Text className="text-xl text-white">←</Text>
+              <NativeIcon name="chevronLeft" size="lg" color="#ffffff" />
             </TouchableOpacity>
             <View className="flex-row gap-2">
               <TouchableOpacity
                 onPress={handleShare}
                 className="w-11 h-11 rounded-full bg-black/50 justify-center items-center"
               >
-                <Text className="text-xl text-white">⤴</Text>
+                <NativeIcon name="share" size="lg" color="#ffffff" />
               </TouchableOpacity>
             </View>
           </SafeAreaView>
@@ -330,9 +331,13 @@ export const MovieDetailScreenMobile: React.FC = () => {
               onPress={handleToggleWatchlist}
               className="items-center min-w-[60px]"
             >
-              <Text className="text-2xl mb-1">
-                {isInWatchlist ? "✓" : "+"}
-              </Text>
+              <View className="mb-1">
+                {isInWatchlist ? (
+                  <NativeIcon name="check" size="lg" color="#a855f7" />
+                ) : (
+                  <NativeIcon name="plus" size="lg" color="#ffffff" />
+                )}
+              </View>
               <Text className="text-xs text-white/60">
                 {t("content.myList", "My List")}
               </Text>
@@ -341,9 +346,9 @@ export const MovieDetailScreenMobile: React.FC = () => {
               onPress={handleToggleFavorites}
               className="items-center min-w-[60px]"
             >
-              <Text className="text-2xl mb-1">
-                {isInFavorites ? "❤️" : "🤍"}
-              </Text>
+              <View className="mb-1">
+                <NativeIcon name="heart" size="lg" color={isInFavorites ? "#ef4444" : "#ffffff"} />
+              </View>
               <Text className="text-xs text-white/60">
                 {t("content.favorite", "Favorite")}
               </Text>
@@ -352,7 +357,9 @@ export const MovieDetailScreenMobile: React.FC = () => {
               onPress={handleShare}
               className="items-center min-w-[60px]"
             >
-              <Text className="text-2xl mb-1">⤴</Text>
+              <View className="mb-1">
+                <NativeIcon name="share" size="lg" color="#ffffff" />
+              </View>
               <Text className="text-xs text-white/60">
                 {t("content.share", "Share")}
               </Text>
@@ -460,7 +467,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
           >
-            <Text className="text-lg text-white">▶</Text>
+            <NativeIcon name="play" size="md" color="#ffffff" />
             <Text className="text-base font-semibold text-white">
               {t("content.watchNow", "Watch Now")}
             </Text>

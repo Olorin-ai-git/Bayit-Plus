@@ -7,6 +7,7 @@
 import React, { memo } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
+import { Icon } from '@olorin/shared-icons/web';
 
 interface SearchCardMetadataProps {
   /** Content category name */
@@ -46,8 +47,9 @@ export const SearchCardMetadata = memo(function SearchCardMetadata({
         </View>
       )}
       {rating && (
-        <View style={styles.metadataChip}>
-          <Text style={styles.metadataText}>⭐ {rating}</Text>
+        <View style={[styles.metadataChip, styles.ratingChip]}>
+          <Icon name="star" size="xs" color={colors.warning} />
+          <Text style={styles.metadataText}>{rating}</Text>
         </View>
       )}
       {duration && (
@@ -70,6 +72,11 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 6,
     backgroundColor: colors.inputBackground,
+  },
+  ratingChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   metadataText: {
     fontSize: 12,

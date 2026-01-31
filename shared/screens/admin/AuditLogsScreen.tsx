@@ -22,6 +22,7 @@ import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatDate, formatDateTime } from '../../utils/formatters';
 import { getActivityIcon } from '../../utils/adminConstants';
 import { logger } from '../../utils/logger';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 // Scoped logger for audit logs screen
 const auditLogsLogger = logger.scope('Admin:AuditLogs');
@@ -154,18 +155,21 @@ export const AuditLogsScreen: React.FC = () => {
 
   const renderActions = (log: AuditLog) => (
     <TouchableOpacity className="w-[30px] h-[30px] rounded-lg bg-white/5 justify-center items-center" onPress={() => handleViewDetails(log)}>
-      <Text className="text-sm">👁️</Text>
+      <NativeIcon name="eye" size={14} color="#ffffff" />
     </TouchableOpacity>
   );
 
   const headerActions = (
     <View className="flex-row gap-2">
       <TouchableOpacity className="flex-row items-center px-4 py-2 bg-black/20 backdrop-blur-xl rounded-lg border border-white/10" onPress={() => setShowFilters(true)}>
-        <Text className="text-base mr-1">🔍</Text>
+        <View className="mr-1">
+          <NativeIcon name="search" size={16} color="#ffffff" />
+        </View>
         <Text className="text-sm text-white">{t('admin.logs.filters', 'Filters')}</Text>
       </TouchableOpacity>
-      <TouchableOpacity className="px-4 py-2 bg-purple-600 rounded-lg" onPress={handleExport}>
-        <Text className="text-sm text-white font-semibold">📥 {t('admin.logs.export', 'Export')}</Text>
+      <TouchableOpacity className="flex-row items-center gap-1 px-4 py-2 bg-purple-600 rounded-lg" onPress={handleExport}>
+        <NativeIcon name="download" size={14} color="#ffffff" />
+        <Text className="text-sm text-white font-semibold">{t('admin.logs.export', 'Export')}</Text>
       </TouchableOpacity>
     </View>
   );
@@ -180,23 +184,27 @@ export const AuditLogsScreen: React.FC = () => {
         {(filters.action || filters.resource_type || filters.user_id || filters.date_from) && (
           <View className="flex-row flex-wrap gap-1 mb-4">
             {filters.action && (
-              <TouchableOpacity className="px-2 py-1 bg-purple-500/30 rounded-sm" onPress={() => setFilters(prev => ({ ...prev, action: '' }))}>
-                <Text className="text-xs text-purple-400">{t('admin.common.filterAction')}: {filters.action} ✕</Text>
+              <TouchableOpacity className="flex-row items-center gap-1 px-2 py-1 bg-purple-500/30 rounded-sm" onPress={() => setFilters(prev => ({ ...prev, action: '' }))}>
+                <Text className="text-xs text-purple-400">{t('admin.common.filterAction')}: {filters.action}</Text>
+                <NativeIcon name="x" size={10} color="#c084fc" />
               </TouchableOpacity>
             )}
             {filters.resource_type && (
-              <TouchableOpacity className="px-2 py-1 bg-purple-500/30 rounded-sm" onPress={() => setFilters(prev => ({ ...prev, resource_type: '' }))}>
-                <Text className="text-xs text-purple-400">{t('admin.common.filterResource')}: {filters.resource_type} ✕</Text>
+              <TouchableOpacity className="flex-row items-center gap-1 px-2 py-1 bg-purple-500/30 rounded-sm" onPress={() => setFilters(prev => ({ ...prev, resource_type: '' }))}>
+                <Text className="text-xs text-purple-400">{t('admin.common.filterResource')}: {filters.resource_type}</Text>
+                <NativeIcon name="x" size={10} color="#c084fc" />
               </TouchableOpacity>
             )}
             {filters.user_id && (
-              <TouchableOpacity className="px-2 py-1 bg-purple-500/30 rounded-sm" onPress={() => setFilters(prev => ({ ...prev, user_id: '' }))}>
-                <Text className="text-xs text-purple-400">{t('admin.common.filterUser')}: {filters.user_id.slice(0, 8)}... ✕</Text>
+              <TouchableOpacity className="flex-row items-center gap-1 px-2 py-1 bg-purple-500/30 rounded-sm" onPress={() => setFilters(prev => ({ ...prev, user_id: '' }))}>
+                <Text className="text-xs text-purple-400">{t('admin.common.filterUser')}: {filters.user_id.slice(0, 8)}...</Text>
+                <NativeIcon name="x" size={10} color="#c084fc" />
               </TouchableOpacity>
             )}
             {filters.date_from && (
-              <TouchableOpacity className="px-2 py-1 bg-purple-500/30 rounded-sm" onPress={() => setFilters(prev => ({ ...prev, date_from: '', date_to: '' }))}>
-                <Text className="text-xs text-purple-400">{t('admin.common.filterDateRange')} ✕</Text>
+              <TouchableOpacity className="flex-row items-center gap-1 px-2 py-1 bg-purple-500/30 rounded-sm" onPress={() => setFilters(prev => ({ ...prev, date_from: '', date_to: '' }))}>
+                <Text className="text-xs text-purple-400">{t('admin.common.filterDateRange')}</Text>
+                <NativeIcon name="x" size={10} color="#c084fc" />
               </TouchableOpacity>
             )}
           </View>

@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { View, Platform, Pressable, I18nManager, StyleSheet } from 'react-native';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 
 interface GlassSplitterHandleProps {
@@ -28,20 +29,20 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
   style,
 }) => {
   // Determine arrow direction based on collapse state, position, and RTL
-  const getArrowIcon = () => {
+  const getArrowIconName = () => {
     if (position === 'right') {
       // Right panel: collapsed = point left (expand), expanded = point right (collapse)
       if (isCollapsed) {
-        return isRTL ? '▶' : '◀';
+        return isRTL ? 'chevronRight' : 'chevronLeft';
       } else {
-        return isRTL ? '◀' : '▶';
+        return isRTL ? 'chevronLeft' : 'chevronRight';
       }
     } else {
       // Left panel: collapsed = point right (expand), expanded = point left (collapse)
       if (isCollapsed) {
-        return isRTL ? '◀' : '▶';
+        return isRTL ? 'chevronLeft' : 'chevronRight';
       } else {
-        return isRTL ? '▶' : '◀';
+        return isRTL ? 'chevronRight' : 'chevronLeft';
       }
     }
   };
@@ -60,9 +61,11 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
           style={[styles.nativeButton, { borderColor: colors.primary.DEFAULT }]}
         >
           <View style={styles.nativeIconContainer}>
-            <View style={[styles.nativeIcon, { color: colors.primary.DEFAULT }]}>
-              {/* Use a simple arrow character */}
-            </View>
+            <NativeIcon
+              name={getArrowIconName()}
+              size="md"
+              color={colors.primary.DEFAULT}
+            />
           </View>
         </Pressable>
       </View>
@@ -111,14 +114,11 @@ export const GlassSplitterHandle: React.FC<GlassSplitterHandleProps> = ({
           (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)';
         }}
       >
-        <span style={{
-          color: colors.primary.DEFAULT,
-          fontSize: 16,
-          fontWeight: 'bold',
-          lineHeight: 1,
-        }}>
-          {getArrowIcon()}
-        </span>
+        <NativeIcon
+          name={getArrowIconName()}
+          size="md"
+          color={colors.primary.DEFAULT}
+        />
       </div>
 
       {/* Drag Handle - Only show when expanded and draggable */}
@@ -175,10 +175,6 @@ const styles = StyleSheet.create({
   nativeIconContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  nativeIcon: {
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 

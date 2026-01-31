@@ -209,6 +209,7 @@ const adjustedDuration = isScreenReaderEnabled ? baseDuration * 2.5 : baseDurati
 - ✅ hasTVPreferredFocus: Changed to true
 
 **Required Fix for Critical Issue**:
+::: v-pre
 ```typescript
 // Line 1574: Add minHeight
 <GlassSelect
@@ -218,6 +219,7 @@ const adjustedDuration = isScreenReaderEnabled ? baseDuration * 2.5 : baseDurati
   }]}
 />
 ```
+:::
 
 ---
 
@@ -236,6 +238,7 @@ const adjustedDuration = isScreenReaderEnabled ? baseDuration * 2.5 : baseDurati
 - ✅ GlassSelect verified at native/index.ts:31
 
 **Required Fix for Issue 1**:
+::: v-pre
 ```javascript
 // CREATE: /mobile-app/jest.config.js
 module.exports = {
@@ -249,6 +252,7 @@ module.exports = {
   },
 };
 ```
+:::
 
 **Required Fix for Issue 2**:
 ```typescript

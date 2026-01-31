@@ -27,6 +27,7 @@ import {
 import { GlassCard } from './GlassCard';
 import { GlassButton, type ButtonVariant } from './GlassButton';
 import { colors, spacing, fontSize, fontSizeTV, borderRadius } from '../../theme';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 // Variant types
 export type EmptyStateVariant =
@@ -120,58 +121,58 @@ export interface GlassEmptyStateProps {
 const EMPTY_STATE_VARIANTS: Record<
   EmptyStateVariant,
   {
-    iconEmoji: string;
+    iconName: string;
     iconColor: string;
     size: EmptyStateSize;
   }
 > = {
   'no-content': {
-    iconEmoji: '📭',
+    iconName: 'folder',
     iconColor: colors.textMuted || '#9ca3af',
     size: 'standard',
   },
   'no-results': {
-    iconEmoji: '🔍',
+    iconName: 'search',
     iconColor: colors.textMuted || '#9ca3af',
     size: 'standard',
   },
   'no-query': {
-    iconEmoji: '🎬',
+    iconName: 'vod',
     iconColor: colors.primary || '#a855f7',
     size: 'standard',
   },
   error: {
-    iconEmoji: '⚠️',
+    iconName: 'warning',
     iconColor: colors.error || '#ef4444',
     size: 'standard',
   },
   loading: {
-    iconEmoji: '⏳',
+    iconName: 'clock',
     iconColor: colors.primary || '#a855f7',
     size: 'standard',
   },
   'no-favorites': {
-    iconEmoji: '❤️',
+    iconName: 'favorites',
     iconColor: colors.textMuted || '#9ca3af',
     size: 'full',
   },
   'no-downloads': {
-    iconEmoji: '⬇️',
+    iconName: 'downloads',
     iconColor: colors.textMuted || '#9ca3af',
     size: 'full',
   },
   'section-empty': {
-    iconEmoji: '📂',
+    iconName: 'folder',
     iconColor: colors.textMuted || '#9ca3af',
     size: 'compact',
   },
   'no-data': {
-    iconEmoji: '📊',
+    iconName: 'admin',
     iconColor: colors.textMuted || '#9ca3af',
     size: 'standard',
   },
   'permission-denied': {
-    iconEmoji: '🔒',
+    iconName: 'lock',
     iconColor: colors.warning || '#f59e0b',
     size: 'standard',
   },
@@ -179,13 +180,13 @@ const EMPTY_STATE_VARIANTS: Record<
 
 // Content type icon mapping
 const CONTENT_TYPE_ICONS: Record<ContentType, string> = {
-  movie: '🎬',
-  series: '📺',
-  podcast: '🎙️',
-  live: '📡',
-  radio: '📻',
-  vod: '🎥',
-  audiobook: '📖',
+  movie: 'vod',
+  series: 'live',
+  podcast: 'podcasts',
+  live: 'broadcast',
+  radio: 'radio',
+  vod: 'vod',
+  audiobook: 'audiobooks',
 };
 
 // Size configuration
@@ -271,17 +272,32 @@ export const GlassEmptyState: React.FC<GlassEmptyStateProps> = ({
   const sizeVariant = size || variantConfig.size;
   const sizeConfig = SIZE_CONFIG[sizeVariant];
 
+  // Map size to icon size
+  const getIconSize = () => {
+    if (sizeVariant === 'compact') return 'lg';
+    if (sizeVariant === 'full') return 'xxl';
+    return 'xl';
+  };
+
   // Determine icon to display (priority: loading > icon > contentType > iconEmoji > variant default)
   const displayIcon = loading ? (
     <ActivityIndicator size="large" color={iconColor || variantConfig.iconColor} />
   ) : icon ? (
     icon
   ) : contentType ? (
-    <Text style={{ fontSize: sizeConfig.iconSize }}>{CONTENT_TYPE_ICONS[contentType]}</Text>
+    <NativeIcon
+      name={CONTENT_TYPE_ICONS[contentType]}
+      size={getIconSize()}
+      color={iconColor || variantConfig.iconColor}
+    />
   ) : iconEmoji ? (
     <Text style={{ fontSize: sizeConfig.iconSize }}>{iconEmoji}</Text>
   ) : (
-    <Text style={{ fontSize: sizeConfig.iconSize }}>{variantConfig.iconEmoji}</Text>
+    <NativeIcon
+      name={variantConfig.iconName}
+      size={getIconSize()}
+      color={iconColor || variantConfig.iconColor}
+    />
   );
 
   // Legacy action support

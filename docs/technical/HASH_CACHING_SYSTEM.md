@@ -23,12 +23,14 @@
 
 Hashes are stored in JSON files on disk:
 
+::: v-pre
 ```
 Location: /tmp/.bayit_hash_cache/
 ├── <folder_id_1>.json
 ├── <folder_id_2>.json
 └── <folder_id_3>.json
 ```
+:::
 
 ### **2. Cache Format**
 
@@ -292,12 +294,15 @@ ls -lh /tmp/.bayit_hash_cache/
 
 ### **Inspect Cache Contents**
 
+::: v-pre
 ```bash
 cat /tmp/.bayit_hash_cache/<folder_id>.json | jq . | head -20
 ```
+:::
 
 ### **Clear Cache (Force Recalculation)**
 
+::: v-pre
 ```bash
 # Clear all caches
 rm -rf /tmp/.bayit_hash_cache/
@@ -305,6 +310,7 @@ rm -rf /tmp/.bayit_hash_cache/
 # Clear specific folder cache
 rm /tmp/.bayit_hash_cache/<folder_id>.json
 ```
+:::
 
 ### **Check Cache Efficiency**
 
@@ -421,6 +427,7 @@ No migration needed! System works with or without cache:
 
 ## Quick Reference
 
+::: v-pre
 ```bash
 # View cache location
 ls -lh /tmp/.bayit_hash_cache/
@@ -437,3 +444,4 @@ cat /tmp/.bayit_hash_cache/<folder_id>.json | jq .
 # Monitor folder scan
 tail -f /tmp/bayit-server.log | grep "📊 Scan stats"
 ```
+:::

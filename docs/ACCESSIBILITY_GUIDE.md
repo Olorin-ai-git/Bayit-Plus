@@ -192,13 +192,16 @@ Glass Components use Tailwind CSS and are built with accessibility in mind.
 #### GlassButton
 
 **Current**:
+::: v-pre
 ```tsx
 <GlassButton>
   Click me
 </GlassButton>
 ```
+:::
 
 **Enhanced**:
+::: v-pre
 ```tsx
 <GlassButton
   aria-label="Open voice command modal"
@@ -213,6 +216,7 @@ Glass Components use Tailwind CSS and are built with accessibility in mind.
   Use voice to search and control playback
 </Text>
 ```
+:::
 
 #### GlassModal
 
@@ -223,6 +227,7 @@ Glass Components use Tailwind CSS and are built with accessibility in mind.
 - Focus restored on close
 - Title associated with modal
 
+::: v-pre
 ```tsx
 <GlassModal
   accessible
@@ -234,6 +239,7 @@ Glass Components use Tailwind CSS and are built with accessibility in mind.
   {/* Content */}
 </GlassModal>
 ```
+:::
 
 #### GlassInput
 
@@ -243,6 +249,7 @@ Glass Components use Tailwind CSS and are built with accessibility in mind.
 - Error messages announced
 - Input type correct (email, password, etc.)
 
+::: v-pre
 ```tsx
 <Text accessibilityLabel="Search query">Search</Text>
 <GlassInput
@@ -258,6 +265,7 @@ Glass Components use Tailwind CSS and are built with accessibility in mind.
   </Text>
 )}
 ```
+:::
 
 #### GlassCard
 
@@ -266,6 +274,7 @@ Glass Components use Tailwind CSS and are built with accessibility in mind.
 - Provide semantic role
 - Add appropriate ARIA labels
 
+::: v-pre
 ```tsx
 <GlassCard
   accessible
@@ -276,6 +285,7 @@ Glass Components use Tailwind CSS and are built with accessibility in mind.
   {/* Content */}
 </GlassCard>
 ```
+:::
 
 ---
 
@@ -292,6 +302,7 @@ Glass Components use Tailwind CSS and are built with accessibility in mind.
 
 ### Implementation
 
+::: v-pre
 ```tsx
 // Define tabIndex explicitly
 <button tabIndex={0}>Primary Action</button>
@@ -307,6 +318,7 @@ useEffect(() => {
   firstButtonRef.current?.focus();
 }, [isModalOpen]);
 ```
+:::
 
 ### Testing Checklist
 
@@ -483,6 +495,7 @@ Test with:
 
 **Cause**: Element not properly labeled
 **Solution**:
+::: v-pre
 ```tsx
 // ❌ Bad - No label
 <button>🎤</button>
@@ -495,6 +508,7 @@ Test with:
   <Icon /> Start Voice
 </button>
 ```
+:::
 
 ### Issue 2: Keyboard Focus Not Visible
 
@@ -538,6 +552,7 @@ useEffect(() => {
 
 **Cause**: Insufficient color contrast
 **Solution**: Use approved color combinations above, or:
+::: v-pre
 ```tsx
 // ❌ Bad - 2.1:1 ratio
 <Text style={{ color: '#475569', backgroundColor: '#1E293B' }}>
@@ -549,11 +564,13 @@ useEffect(() => {
   Proper contrast
 </Text>
 ```
+:::
 
 ### Issue 5: Dynamic Content Not Announced
 
 **Cause**: Screen reader doesn't know content changed
 **Solution**:
+::: v-pre
 ```tsx
 // Use role="alert" for important updates
 <Text
@@ -569,6 +586,7 @@ useEffect(() => {
   {stage === 'listening' ? 'Listening...' : 'Ready'}
 </Text>
 ```
+:::
 
 ---
 

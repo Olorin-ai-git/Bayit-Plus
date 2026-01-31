@@ -15,6 +15,7 @@ import { useAuthStore } from '@/stores/authStore';
 import type { PodcastEpisode, EpisodesResponse } from '@/types/podcast';
 import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
+import { Icon } from '@olorin/shared-icons/web';
 
 interface Maariv103PlaylistWidgetProps {
   podcastId?: string;
@@ -239,7 +240,7 @@ export function Maariv103PlaylistWidget({
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.headerIcon}>🎙️</Text>
+          <Icon name="podcasts" size="md" color={colors.text} />
           <Text style={styles.headerTitle}>{t('widget.103fmEpisodes')}</Text>
         </View>
         <Pressable style={styles.refreshButton} onPress={handleRefresh}>
@@ -327,9 +328,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-  },
-  headerIcon: {
-    fontSize: 20,
   },
   headerTitle: {
     fontSize: 16,

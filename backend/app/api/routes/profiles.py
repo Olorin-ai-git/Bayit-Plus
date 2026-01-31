@@ -425,55 +425,56 @@ class HomePagePreferences(BaseModel):
 
 
 # Default home page sections configuration
+# Icons reference @olorin/shared-icons names (rendered by frontend)
 DEFAULT_HOME_SECTIONS = [
     {
         "id": "continue_watching",
         "labelKey": "home.continueWatching",
         "visible": True,
         "order": 0,
-        "icon": "▶️",
+        "icon": "play",
     },
     {
         "id": "live_tv",
         "labelKey": "home.liveTV",
         "visible": True,
         "order": 1,
-        "icon": "📺",
+        "icon": "live",
     },
     {
         "id": "trending",
         "labelKey": "home.trendingInIsrael",
         "visible": True,
         "order": 2,
-        "icon": "🔥",
+        "icon": "flame",
     },
     {
         "id": "jerusalem",
         "labelKey": "home.jerusalemConnection",
         "visible": True,
         "order": 3,
-        "icon": "🕌",
+        "icon": "judaism",
     },
     {
         "id": "tel_aviv",
         "labelKey": "home.telAvivConnection",
         "visible": True,
         "order": 4,
-        "icon": "🏙️",
+        "icon": "discover",
     },
     {
         "id": "featured",
         "labelKey": "home.featuredContent",
         "visible": True,
         "order": 5,
-        "icon": "⭐",
+        "icon": "favorites",
     },
     {
         "id": "categories",
         "labelKey": "home.categories",
         "visible": True,
         "order": 6,
-        "icon": "📂",
+        "icon": "folder",
     },
 ]
 

@@ -22,6 +22,7 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { colors } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 export interface Chapter {
   id?: string;
@@ -160,9 +161,11 @@ export const ChapterListMobile: React.FC<ChapterListMobileProps> = ({
 
             {/* Play indicator */}
             <View className={`w-10 h-10 rounded-full justify-center items-center ml-4 ${isActive ? `bg-[${colors.primary}]` : 'bg-white/10'}`}>
-              <Text className={`text-sm ${isActive ? `text-[${colors.text}]` : `text-[${colors.textSecondary}]`}`}>
-                {isActive ? '▶' : '▷'}
-              </Text>
+              <NativeIcon
+                name="play"
+                size="sm"
+                color={isActive ? colors.text : colors.textSecondary}
+              />
             </View>
           </View>
         </GlassView>
@@ -172,7 +175,9 @@ export const ChapterListMobile: React.FC<ChapterListMobileProps> = ({
 
   const renderEmptyState = () => (
     <View className="items-center py-8">
-      <Text className="text-5xl mb-4 opacity-50">📑</Text>
+      <View className="mb-4 opacity-50">
+        <NativeIcon name="fileText" size="xxxl" color={colors.textSecondary} />
+      </View>
       <Text className={`text-sm text-[${colors.textSecondary}]`} style={{ textAlign }}>
         {t('chapters.noChapters')}
       </Text>

@@ -29,6 +29,7 @@ import { useDirection } from '@bayit/shared-hooks';
 import { watchlistService } from '@bayit/shared-services';
 import { GlassView, GlassCategoryPill } from '@bayit/shared';
 import { getLocalizedName } from '@bayit/shared-utils';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useResponsive } from '../hooks/useResponsive';
 import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
@@ -143,7 +144,7 @@ export const WatchlistScreenMobile: React.FC = () => {
 
   const renderWatchlistItem = ({ item }: { item: WatchlistItem }) => {
     const localizedTitle = getLocalizedName(item, currentLang);
-    const typeIcon = item.type === 'movie' ? '🎬' : '📺';
+    const typeIconName = item.type === 'movie' ? 'vod' : 'live';
 
     return (
       <View className="flex-1 px-1 py-2">
@@ -158,7 +159,7 @@ export const WatchlistScreenMobile: React.FC = () => {
               />
             ) : (
               <View className="w-full aspect-video bg-white/5 items-center justify-center">
-                <Text className="text-5xl">{typeIcon}</Text>
+                <NativeIcon name={typeIconName} size="xxl" color="#a855f7" />
               </View>
             )}
 
@@ -171,7 +172,7 @@ export const WatchlistScreenMobile: React.FC = () => {
 
             {/* Type badge */}
             <View className="absolute top-2 rounded-xl px-2 py-1 bg-black/70" style={isRTL ? { left: 8 } : { right: 8 }}>
-              <Text className="text-sm">{typeIcon}</Text>
+              <NativeIcon name={typeIconName} size="sm" color="#ffffff" />
             </View>
 
             {/* Remove button */}
@@ -181,7 +182,7 @@ export const WatchlistScreenMobile: React.FC = () => {
               onPress={() => handleRemoveFromWatchlist(item)}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Text className="text-sm font-bold" style={{ color: colors.text }}>✕</Text>
+              <NativeIcon name="x" size="sm" color={colors.text} />
             </Pressable>
 
             {/* Card info */}
@@ -233,7 +234,7 @@ export const WatchlistScreenMobile: React.FC = () => {
           className="w-12 h-12 rounded-full bg-purple-500/20 justify-center items-center"
           style={{ marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }}
         >
-          <Text className="text-2xl">📋</Text>
+          <NativeIcon name="watchlist" size="lg" color="#a855f7" />
         </View>
         <View className="flex-1">
           <Text className="text-white font-bold" style={{ textAlign: isRTL ? 'right' : 'left', ...typography.h2 }}>
@@ -283,7 +284,9 @@ export const WatchlistScreenMobile: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-20 px-6">
             <GlassView className="p-8 items-center w-full">
-              <Text className="text-6xl mb-4">📋</Text>
+              <View className="mb-4">
+                <NativeIcon name="watchlist" size="xxl" color="#a855f7" />
+              </View>
               <Text className="text-white font-semibold text-xl mb-2" style={{ textAlign: isRTL ? 'right' : 'left', ...typography.h3 }}>
                 {t('watchlist.empty')}
               </Text>

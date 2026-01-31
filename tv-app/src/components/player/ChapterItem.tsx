@@ -7,6 +7,7 @@ import {
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors } from '../../theme';
 import { isTV } from '../../utils/platform';
 
@@ -130,9 +131,12 @@ export const ChapterItem: React.FC<ChapterItemProps> = ({
 
         {/* Play indicator */}
         <View className={`w-9 h-9 rounded-full justify-center items-center ${isActive ? 'bg-[#6b21a8]' : 'bg-white/10'}`}>
-          <Text className={`text-sm ${isActive ? 'text-[#0d0d18]' : 'text-[#9ca3af]'}`}>
-            {isActive ? '▶' : '▷'}
-          </Text>
+          <NativeIcon
+            name="play"
+            size="sm"
+            context="tv"
+            color={isActive ? '#0d0d18' : '#9ca3af'}
+          />
         </View>
       </Animated.View>
     </TouchableOpacity>

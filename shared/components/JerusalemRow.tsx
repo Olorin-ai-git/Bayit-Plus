@@ -26,6 +26,7 @@ import {
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon, IconName } from '@olorin/shared-icons/native';
 import { GlassView } from './ui/GlassView';
 import { GlassCard } from './ui/GlassCard';
 import { GlassBadge } from './ui/GlassBadge';
@@ -82,14 +83,14 @@ interface JerusalemRowProps {
   showTitle?: boolean;
 }
 
-// Category emojis
-const CATEGORY_EMOJIS: Record<string, string> = {
-  kotel: '🕎',
-  'idf-ceremony': '🎖️',
-  'diaspora-connection': '🌍',
-  'holy-sites': '✡️',
-  'jerusalem-events': '🇮🇱',
-  general: '📰',
+// Category icons
+const CATEGORY_ICONS: Record<string, IconName> = {
+  kotel: 'star',
+  'idf-ceremony': 'award',
+  'diaspora-connection': 'globe',
+  'holy-sites': 'star',
+  'jerusalem-events': 'briefcase',
+  general: 'newspaper',
 };
 
 /**
@@ -354,9 +355,12 @@ const ContentCard: React.FC<ContentCardProps> = ({
         >
           {/* Category Badge */}
           <View style={[styles.cardHeader, isRTL && styles.cardHeaderRTL]}>
-            <Text style={[styles.cardEmoji, isRTL && styles.cardEmojiRTL]}>
-              {CATEGORY_EMOJIS[item.category] || '📰'}
-            </Text>
+            <NativeIcon
+              name={CATEGORY_ICONS[item.category] || 'newspaper'}
+              size={fontSize.xxl}
+              color={colors.primary.DEFAULT}
+              style={isRTL ? styles.cardEmojiRTL : { marginRight: spacing.sm }}
+            />
             <GlassBadge
               variant="info"
               style={[styles.badge, isMobilePhone && styles.badgeMobile]}
@@ -616,10 +620,6 @@ const styles = StyleSheet.create({
   },
   cardHeaderRTL: {
     flexDirection: 'row-reverse',
-  },
-  cardEmoji: {
-    fontSize: fontSize.xxl,
-    marginRight: spacing.sm,
   },
   cardEmojiRTL: {
     marginRight: 0,

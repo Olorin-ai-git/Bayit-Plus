@@ -19,6 +19,7 @@ import { useDirection } from '../../hooks/useDirection';
 import { useSupportStore } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
 import { supportConfig } from '../../config/supportConfig';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface SearchResult {
   id: string;
@@ -127,7 +128,9 @@ export const SupportSearch: React.FC = () => {
           isFocused && styles.searchContainerFocused,
         ]}
       >
-        <Text style={styles.searchIcon}>🔍</Text>
+        <View style={styles.searchIconContainer}>
+          <NativeIcon name="search" size={isTV ? 'lg' : 'md'} color="#9ca3af" />
+        </View>
         <TextInput
           style={[
             styles.searchInput,
@@ -155,9 +158,13 @@ export const SupportSearch: React.FC = () => {
               onPress={() => handleResultPress(result)}
             >
               <View style={styles.resultHeader}>
-                <Text style={styles.resultTypeIcon}>
-                  {result.type === 'doc' ? '📄' : '❓'}
-                </Text>
+                <View style={styles.resultTypeIconContainer}>
+                  <NativeIcon
+                    name={result.type === 'doc' ? 'fileText' : 'helpCircle'}
+                    size="sm"
+                    color="#a855f7"
+                  />
+                </View>
                 <Text style={[styles.resultTitle, { textAlign }]} numberOfLines={1}>
                   {result.title}
                 </Text>
@@ -198,8 +205,9 @@ const styles = StyleSheet.create({
   searchContainerFocused: {
     borderColor: colors.primary.DEFAULT,
   },
-  searchIcon: {
-    fontSize: isTV ? 20 : 16,
+  searchIconContainer: {
+    width: isTV ? 20 : 16,
+    height: isTV ? 20 : 16,
   },
   searchInput: {
     flex: 1,
@@ -225,8 +233,9 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     marginBottom: spacing.xs,
   },
-  resultTypeIcon: {
-    fontSize: isTV ? 16 : 14,
+  resultTypeIconContainer: {
+    width: isTV ? 16 : 14,
+    height: isTV ? 16 : 14,
   },
   resultTitle: {
     flex: 1,

@@ -29,6 +29,7 @@ import { epgApi, EPGProgram, Channel } from '@bayit/shared-services';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 import logger from '@/utils/logger';
 
@@ -309,7 +310,7 @@ export const EPGScreenMobile: React.FC = () => {
       {/* Header */}
       <View className="items-center pt-6 pb-3" style={{ flexDirection: isRTL ? 'row' : 'row-reverse', marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }}>
         <View className="w-12 h-12 rounded-full bg-purple-600/20 justify-center items-center">
-          <Text className="text-2xl">📺</Text>
+          <NativeIcon name="live" size="lg" color="#a855f7" />
         </View>
         <View className="flex-1">
           <Text className="text-[28px] font-bold text-white" style={{ textAlign }}>{t('epg.title', 'TV Guide')}</Text>
@@ -346,10 +347,11 @@ export const EPGScreenMobile: React.FC = () => {
 
         <TouchableOpacity
           onPress={handleTimezoneToggle}
-          className="self-center px-3 py-1"
+          className="self-center px-3 py-1 flex-row items-center gap-1"
         >
+          <NativeIcon name="globe" size="xs" color="rgba(255, 255, 255, 0.6)" />
           <Text className="text-xs text-white/60">
-            🌍 {timezone === 'israel' ? t('epg.israelTime', 'Israel') : t('epg.localTime', 'Local')}
+            {timezone === 'israel' ? t('epg.israelTime', 'Israel') : t('epg.localTime', 'Local')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -368,8 +370,8 @@ export const EPGScreenMobile: React.FC = () => {
   if (error) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center bg-black p-6">
-        <Text className="text-5xl mb-3">⚠️</Text>
-        <Text className="text-xl font-semibold text-red-600 mb-2">{t('epg.errorTitle', 'Error')}</Text>
+        <NativeIcon name="alertTriangle" size="xxxl" color="#ef4444" />
+        <Text className="text-xl font-semibold text-red-600 mb-2 mt-3">{t('epg.errorTitle', 'Error')}</Text>
         <Text className="text-sm text-white/60 text-center mb-6">{error}</Text>
         <TouchableOpacity onPress={fetchEPGData} className="px-6 py-3 bg-purple-600 rounded-lg">
           <Text className="text-base font-semibold text-white">{t('common.retry', 'Retry')}</Text>

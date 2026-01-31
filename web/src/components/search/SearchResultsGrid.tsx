@@ -12,6 +12,7 @@ import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Icon } from '@olorin/shared-icons/web';
 
 interface SearchResultsGridProps {
   /** Search results to display */
@@ -85,12 +86,12 @@ export const SearchResultsGrid = memo(function SearchResultsGrid({
         <View style={styles.badges}>
           {item.requires_subscription !== 'free' && (
             <View style={styles.badge}>
-              <Text style={styles.badgeText}>👑</Text>
+              <Icon name="star" size="xs" color={colors.warning} />
             </View>
           )}
           {item.is_kids_content && (
             <View style={styles.badge}>
-              <Text style={styles.badgeText}>👶</Text>
+              <Icon name="profile" size="xs" color={colors.primary.DEFAULT} />
             </View>
           )}
         </View>

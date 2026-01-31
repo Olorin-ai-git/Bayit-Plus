@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { Timezone } from '../../services/epgApi';
 import { isTV } from '../../utils/platform';
 
@@ -52,8 +53,8 @@ export const EPGTimeControls: React.FC<EPGTimeControlsProps> = ({
             focusedButton === 'back' ? 'bg-white/10 border-purple-500' : 'border-transparent'
           }`}
         >
-          <Text className="text-gray-400 mx-1" style={{ fontSize: isTV ? 16 : 14 }}>◀</Text>
-          <Text className="text-gray-400 font-medium" style={{ fontSize: isTV ? 16 : 14 }}>
+          <NativeIcon name="chevronLeft" size={isTV ? 16 : 14} color="#9ca3af" />
+          <Text className="text-gray-400 font-medium ml-1" style={{ fontSize: isTV ? 16 : 14 }}>
             {t('epg.goBack', '-2 Hours')}
           </Text>
         </TouchableOpacity>
@@ -80,10 +81,10 @@ export const EPGTimeControls: React.FC<EPGTimeControlsProps> = ({
             focusedButton === 'forward' ? 'bg-white/10 border-purple-500' : 'border-transparent'
           }`}
         >
-          <Text className="text-gray-400 font-medium" style={{ fontSize: isTV ? 16 : 14 }}>
+          <Text className="text-gray-400 font-medium mr-1" style={{ fontSize: isTV ? 16 : 14 }}>
             {t('epg.goForward', '+2 Hours')}
           </Text>
-          <Text className="text-gray-400 mx-1" style={{ fontSize: isTV ? 16 : 14 }}>▶</Text>
+          <NativeIcon name="chevronRight" size={isTV ? 16 : 14} color="#9ca3af" />
         </TouchableOpacity>
       </View>
 

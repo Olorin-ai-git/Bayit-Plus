@@ -115,13 +115,13 @@ opacity: 0.5 → className="opacity-50"
 opacity: 0.7 → className="opacity-70"
 ```
 
-### Special Cases - Keep style={{}}
+### Special Cases - Keep style=\{\{\}\}
 
-Only use inline `style={{}}` for:
-1. **Animated values**: `style={{ opacity: fadeAnim }}`
-2. **Dynamic RTL**: `style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}`
-3. **Computed values**: `style={{ width: computedWidth }}`
-4. **Transform arrays**: `style={{ transform: [{ scale: scaleAnim }] }}`
+Only use inline `style=\{\{\}\}` for:
+1. **Animated values**: `style=\{\{ opacity: fadeAnim \}\}`
+2. **Dynamic RTL**: `style=\{\{ flexDirection: isRTL ? 'row-reverse' : 'row' \}\}`
+3. **Computed values**: `style=\{\{ width: computedWidth \}\}`
+4. **Transform arrays**: `style=\{\{ transform: [{ scale: scaleAnim }] \}\}`
 
 ### Migration Steps Per File
 
@@ -140,7 +140,7 @@ Only use inline `style={{}}` for:
 3. **Convert JSX**
    - Find all `style={styles.xyz}`
    - Replace with `className="..."`
-   - Keep dynamic styles as `style={{}}`
+   - Keep dynamic styles as `style=\{\{\}\}`
 
 4. **Delete StyleSheet.create block**
    - Remove entire `const styles = StyleSheet.create({...});`
@@ -266,7 +266,7 @@ After migrating each file:
 
 ## Notes
 
-- Some files use complex animations with StyleSheet - keep those as `style={{}}`
+- Some files use complex animations with StyleSheet - keep those as `style=\{\{\}\}`
 - Platform-specific styles (Platform.OS === 'tv') can use ternary className
 - Dynamic styles from theme should be converted to Tailwind classes
 - Consider using `cn()` helper for complex conditional classes

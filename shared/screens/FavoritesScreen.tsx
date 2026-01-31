@@ -16,6 +16,7 @@ import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocalization';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface FavoriteItem {
   id: string;
@@ -107,11 +108,11 @@ const demoFavorites: FavoriteItem[] = [
 ];
 
 const TYPE_ICONS: Record<string, string> = {
-  movie: '🎬',
-  series: '📺',
-  channel: '📡',
-  podcast: '🎙️',
-  radio: '📻',
+  movie: 'vod',
+  series: 'live',
+  channel: 'live',
+  podcast: 'podcasts',
+  radio: 'radio',
 };
 
 const FavoriteCard: React.FC<{
@@ -167,11 +168,11 @@ const FavoriteCard: React.FC<{
           />
         ) : (
           <View className={`w-full aspect-video bg-[${colors.backgroundLighter}] justify-center items-center`}>
-            <Text className="text-[32px]">{TYPE_ICONS[item.type] || '⭐'}</Text>
+            <NativeIcon name={TYPE_ICONS[item.type] || 'star'} size="2xl" color="#ffd700" />
           </View>
         )}
         <View className={`absolute top-2 bg-black/70 rounded-xl px-2 py-1 ${isRTL ? 'left-2' : 'right-2'}`}>
-          <Text className="text-sm">{TYPE_ICONS[item.type]}</Text>
+          <NativeIcon name={TYPE_ICONS[item.type]} size="sm" color="#ffffff" />
         </View>
         <View className="p-2">
           <Text className={`text-sm font-semibold text-[${colors.text}]`} style={{ textAlign }} numberOfLines={1}>
@@ -187,10 +188,10 @@ const FavoriteCard: React.FC<{
           <View className="absolute inset-0 bg-black/40 justify-center items-center">
             <View className="flex-row gap-4">
               <View className={`w-12 h-12 rounded-full bg-[${colors.primary}] justify-center items-center`}>
-                <Text className={`text-xl text-[${colors.background}] ml-1`}>▶</Text>
+                <NativeIcon name="play" size="lg" color={colors.background} />
               </View>
               <TouchableOpacity onPress={onRemove} className="w-12 h-12 rounded-full bg-white/20 justify-center items-center">
-                <Text className="text-lg">✕</Text>
+                <NativeIcon name="x" size="md" color="#ffffff" />
               </TouchableOpacity>
             </View>
           </View>
@@ -268,7 +269,7 @@ export const FavoritesScreen: React.FC = () => {
       {/* Header */}
       <View className={`flex-row items-center px-12 pt-10 pb-4 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
         <View className={`w-[60px] h-[60px] rounded-full bg-[rgba(255,215,0,0.2)] justify-center items-center ${isRTL ? 'ml-4' : 'mr-4'}`}>
-          <Text className="text-[28px]">⭐</Text>
+          <NativeIcon name="star" size="xl" color="#ffd700" />
         </View>
         <View>
           <Text className={`text-[42px] font-bold text-[${colors.text}]`} style={{ textAlign }}>{t('favorites.title')}</Text>
@@ -297,8 +298,8 @@ export const FavoritesScreen: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-[60px]">
             <GlassView className="p-12 items-center">
-              <Text className="text-[64px] mb-4">⭐</Text>
-              <Text className={`text-xl font-semibold text-[${colors.text}] mb-2`} style={{ textAlign }}>{t('favorites.empty')}</Text>
+              <NativeIcon name="star" size="4xl" color="#ffd700" />
+              <Text className={`text-xl font-semibold text-[${colors.text}] mb-2 mt-4`} style={{ textAlign }}>{t('favorites.empty')}</Text>
               <Text className={`text-base text-[${colors.textSecondary}]`} style={{ textAlign }}>{t('favorites.emptyHint')}</Text>
             </GlassView>
           </View>

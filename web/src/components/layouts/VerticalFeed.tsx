@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, ReactNode } from 'react'
 import { View, Text, StyleSheet, Pressable, Image, Animated } from 'react-native'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { Icon } from '@olorin/shared-icons/web'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView } from '@bayit/shared/ui'
 
@@ -227,7 +228,7 @@ export default function VerticalFeed({
             ]}
             onPress={() => navigate(`/watch/${item.id}`)}
           >
-            <Text style={styles.actionIcon}>▶️</Text>
+            <Icon name="play" size="lg" color={colors.text} />
             <Text style={styles.actionLabel}>{t('common.watch')}</Text>
           </Pressable>
           <Pressable
@@ -236,7 +237,7 @@ export default function VerticalFeed({
               hovered && styles.actionButtonHovered,
             ]}
           >
-            <Text style={styles.actionIcon}>➕</Text>
+            <Icon name="plus" size="lg" color={colors.text} />
             <Text style={styles.actionLabel}>{t('common.save')}</Text>
           </Pressable>
           <Pressable
@@ -245,7 +246,7 @@ export default function VerticalFeed({
               hovered && styles.actionButtonHovered,
             ]}
           >
-            <Text style={styles.actionIcon}>↗️</Text>
+            <Icon name="share" size="lg" color={colors.text} />
             <Text style={styles.actionLabel}>{t('common.share')}</Text>
           </Pressable>
         </View>
@@ -325,12 +326,12 @@ export default function VerticalFeed({
       <View style={styles.swipeHints}>
         {currentIndex > 0 && (
           <View style={[styles.hint, styles.hintUp]}>
-            <Text style={styles.hintText}>↑</Text>
+            <Icon name="arrowUp" size="md" color={colors.textMuted} />
           </View>
         )}
         {currentIndex < items.length - 1 && (
           <View style={[styles.hint, styles.hintDown]}>
-            <Text style={styles.hintText}>↓</Text>
+            <Icon name="arrowDown" size="md" color={colors.textMuted} />
           </View>
         )}
       </View>
@@ -429,9 +430,6 @@ const styles = StyleSheet.create({
   actionButtonHovered: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
-  actionIcon: {
-    fontSize: 24,
-  },
   actionLabel: {
     fontSize: 11,
     color: colors.text,
@@ -483,10 +481,6 @@ const styles = StyleSheet.create({
   },
   hintDown: {
     bottom: spacing.xl,
-  },
-  hintText: {
-    fontSize: 16,
-    color: colors.textMuted,
   },
   feedCounter: {
     position: 'absolute',

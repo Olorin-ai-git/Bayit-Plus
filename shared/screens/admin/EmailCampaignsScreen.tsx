@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@olorin/glass-ui/hooks';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DataTable, Column } from '../../components/admin/DataTable';
 import { marketingService, MarketingFilter } from '../../services/adminApi';
@@ -220,10 +221,10 @@ export const EmailCampaignsScreen: React.FC = () => {
 
   const renderActions = (campaign: EmailCampaign) => (
     <View style={styles.actionsRow}>
-      <TouchableOpacity style={styles.actionButton} onPress={() => handleEditCampaign(campaign)}><Text style={styles.actionIcon}>✏️</Text></TouchableOpacity>
-      <TouchableOpacity style={styles.actionButton} onPress={() => { setSelectedCampaign(campaign); setShowTestModal(true); }}><Text style={styles.actionIcon}>🧪</Text></TouchableOpacity>
-      {campaign.status === 'draft' && <TouchableOpacity style={[styles.actionButton, styles.sendButton]} onPress={() => handleSendCampaign(campaign)}><Text style={styles.actionIcon}>📤</Text></TouchableOpacity>}
-      <TouchableOpacity style={[styles.actionButton, styles.deleteButton]} onPress={() => handleDeleteCampaign(campaign)}><Text style={styles.actionIcon}>🗑️</Text></TouchableOpacity>
+      <TouchableOpacity style={styles.actionButton} onPress={() => handleEditCampaign(campaign)}><NativeIcon name="edit" size={12} color={colors.text} /></TouchableOpacity>
+      <TouchableOpacity style={styles.actionButton} onPress={() => { setSelectedCampaign(campaign); setShowTestModal(true); }}><NativeIcon name="flask" size={12} color={colors.text} /></TouchableOpacity>
+      {campaign.status === 'draft' && <TouchableOpacity style={[styles.actionButton, styles.sendButton]} onPress={() => handleSendCampaign(campaign)}><NativeIcon name="send" size={12} color={colors.success} /></TouchableOpacity>}
+      <TouchableOpacity style={[styles.actionButton, styles.deleteButton]} onPress={() => handleDeleteCampaign(campaign)}><NativeIcon name="trash" size={12} color={colors.error} /></TouchableOpacity>
     </View>
   );
 
@@ -328,7 +329,6 @@ const styles = StyleSheet.create({
   actionButton: { width: 28, height: 28, borderRadius: borderRadius.sm, backgroundColor: colors.backgroundLighter, justifyContent: 'center', alignItems: 'center' },
   sendButton: { backgroundColor: colors.success + '30' },
   deleteButton: { backgroundColor: colors.error + '30' },
-  actionIcon: { fontSize: 12 },
   modalOverlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'center', alignItems: 'center' },
   composerModal: { width: '95%', maxWidth: 600, maxHeight: '90%', backgroundColor: colors.backgroundLight, borderRadius: borderRadius.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.glassBorder },
   testModal: { width: '90%', maxWidth: 400, backgroundColor: colors.backgroundLight, borderRadius: borderRadius.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.glassBorder },

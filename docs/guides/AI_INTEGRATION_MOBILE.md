@@ -42,6 +42,7 @@ App
 
 ### State Management
 
+::: v-pre
 ```typescript
 // stores/betaCreditsStore.ts
 interface BetaCreditsState {
@@ -71,6 +72,7 @@ interface AIRecommendationsState {
   fetchRecommendations: () => Promise<void>;
 }
 ```
+:::
 
 ---
 
@@ -125,6 +127,7 @@ npm run android
 
 **Purpose:** Display real-time credit balance in header.
 
+::: v-pre
 ```typescript
 // src/components/ai/CreditBalanceWidget.tsx
 import React, { useEffect } from 'react';
@@ -211,11 +214,13 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### 2. AI Search Modal
 
 **Purpose:** Natural language search accessible from search tab.
 
+::: v-pre
 ```typescript
 // src/components/ai/AISearchModal.tsx
 import React, { useState, useCallback } from 'react';
@@ -508,11 +513,13 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### 3. AI Recommendations Panel
 
 **Purpose:** Display personalized recommendations on home screen.
 
+::: v-pre
 ```typescript
 // src/components/ai/AIRecommendationsPanel.tsx
 import React, { useEffect } from 'react';
@@ -743,11 +750,13 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### 4. Catch-Up Button
 
 **Purpose:** Generate AI summaries for live TV.
 
+::: v-pre
 ```typescript
 // src/components/ai/CatchUpButton.tsx
 import React, { useState } from 'react';
@@ -959,6 +968,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ---
 
@@ -966,6 +976,7 @@ const styles = StyleSheet.create({
 
 ### Beta Credits Store with Persistence
 
+::: v-pre
 ```typescript
 // src/stores/betaCreditsStore.ts
 import { create } from 'zustand';
@@ -1044,11 +1055,13 @@ export const useBetaCreditsStore = create<BetaCreditsState>((set, get) => ({
   },
 }));
 ```
+:::
 
 ---
 
 ## API Service
 
+::: v-pre
 ```typescript
 // src/services/aiService.ts
 import axios from 'axios';
@@ -1107,6 +1120,7 @@ export const aiService = {
   },
 };
 ```
+:::
 
 ---
 
@@ -1114,6 +1128,7 @@ export const aiService = {
 
 ### Unit Tests (Jest)
 
+::: v-pre
 ```typescript
 // src/components/ai/__tests__/CreditBalanceWidget.test.tsx
 import React from 'react';
@@ -1150,6 +1165,7 @@ describe('CreditBalanceWidget', () => {
   });
 });
 ```
+:::
 
 ### E2E Tests (Detox)
 
@@ -1212,6 +1228,7 @@ useEffect(() => {
 
 ### Debouncing
 
+::: v-pre
 ```typescript
 // src/hooks/useDebounce.ts
 import { useState, useEffect } from 'react';
@@ -1230,6 +1247,7 @@ export function useDebounce<T>(value: T, delay: number): T {
   return debouncedValue;
 }
 ```
+:::
 
 ---
 

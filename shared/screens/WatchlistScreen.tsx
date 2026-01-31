@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from '../components/ui';
 import { watchlistService } from '../services';
 import { colors, spacing, borderRadius } from '../theme';
@@ -172,7 +173,7 @@ const WatchlistCard: React.FC<{
           />
         ) : (
           <View className="w-full aspect-video bg-[#2a2a3e] justify-center items-center">
-            <Text className="text-[32px]">📋</Text>
+            <NativeIcon name="watchlist" size="xl" color="#9ca3af" />
           </View>
         )}
 
@@ -184,7 +185,7 @@ const WatchlistCard: React.FC<{
         )}
 
         <View className={`absolute top-2 bg-black/70 rounded-xl px-2 py-1 ${isRTL ? 'left-2' : 'right-2'}`}>
-          <Text className="text-sm">{item.type === 'movie' ? '🎬' : '📺'}</Text>
+          <NativeIcon name={item.type === 'movie' ? 'vod' : 'live'} size="sm" color="#ffffff" />
         </View>
 
         <View className="p-2">
@@ -205,10 +206,10 @@ const WatchlistCard: React.FC<{
           <View className="absolute inset-0 bg-black/40 justify-center items-center">
             <View className="flex-row gap-4">
               <View className="w-12 h-12 rounded-full bg-[#8a2be2] justify-center items-center">
-                <Text className="text-xl text-white ml-1">▶</Text>
+                <NativeIcon name="play" size="md" color="#ffffff" />
               </View>
               <TouchableOpacity onPress={onRemove} className="w-12 h-12 rounded-full bg-white/20 justify-center items-center">
-                <Text className="text-lg text-white">✕</Text>
+                <NativeIcon name="x" size="md" color="#ffffff" />
               </TouchableOpacity>
             </View>
           </View>
@@ -295,7 +296,7 @@ export const WatchlistScreen: React.FC = () => {
       {/* Header */}
       <View className={`flex-row items-center px-12 pt-10 pb-4 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
         <View className={`w-[60px] h-[60px] rounded-[30px] bg-[rgba(138,43,226,0.2)] justify-center items-center ${isRTL ? 'ml-4' : 'mr-4'}`}>
-          <Text className="text-[28px]">📋</Text>
+          <NativeIcon name="watchlist" size="xl" color="#a855f7" />
         </View>
         <View>
           <Text className="text-[42px] font-bold text-white" style={{ textAlign }}>{t('watchlist.title')}</Text>
@@ -341,8 +342,8 @@ export const WatchlistScreen: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-[60px]">
             <GlassView className="p-12 items-center">
-              <Text className="text-[64px] mb-4">📋</Text>
-              <Text className="text-xl font-semibold text-white mb-2" style={{ textAlign }}>{t('watchlist.empty')}</Text>
+              <NativeIcon name="watchlist" size="3xl" color="#9ca3af" />
+              <Text className="text-xl font-semibold text-white mb-2 mt-4" style={{ textAlign }}>{t('watchlist.empty')}</Text>
               <Text className="text-base text-gray-400" style={{ textAlign }}>{t('watchlist.emptyHint')}</Text>
             </GlassView>
           </View>

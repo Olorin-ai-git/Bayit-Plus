@@ -22,6 +22,7 @@ import { Transaction } from '../../types/rbac';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { formatCurrency, formatNumber } from '../../utils/formatters';
 import { logger } from '../../utils/logger';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 // Scoped logger for billing overview screen
 const billingOverviewLogger = logger.scope('Admin:BillingOverview');
@@ -129,7 +130,10 @@ export const BillingOverviewScreen: React.FC = () => {
             style={styles.exportButton}
             onPress={() => {/* Export logic */}}
           >
-            <Text style={styles.exportButtonText}>📥 {t('admin.billing.export', 'Export')}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+              <NativeIcon name="download" size={14} color={colors.text} />
+              <Text style={styles.exportButtonText}>{t('admin.billing.export', 'Export')}</Text>
+            </View>
           </TouchableOpacity>
         </View>
       }
@@ -275,9 +279,11 @@ export const BillingOverviewScreen: React.FC = () => {
             {recentTransactions.map((transaction) => (
               <View key={transaction.id} style={styles.transactionItem}>
                 <View style={styles.transactionIcon}>
-                  <Text style={styles.transactionIconText}>
-                    {transaction.status === 'refunded' ? '↩️' : '💳'}
-                  </Text>
+                  <NativeIcon
+                    name={transaction.status === 'refunded' ? 'rotate-ccw' : 'credit-card'}
+                    size={18}
+                    color={colors.text}
+                  />
                 </View>
                 <View style={styles.transactionInfo}>
                   <Text style={styles.transactionDescription}>
@@ -514,9 +520,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: spacing.sm,
-  },
-  transactionIconText: {
-    fontSize: 18,
   },
   transactionInfo: {
     flex: 1,

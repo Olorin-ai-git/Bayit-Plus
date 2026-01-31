@@ -15,6 +15,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { GlassView, GlassButton } from '@bayit/shared';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { spacing, colors } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 export interface SwipeableCardProps {
   /** Callback when delete action is triggered */
@@ -61,7 +62,7 @@ export const SwipeableCard: React.FC<SwipeableCardProps> = ({
           onPress={() => handleAction(onDelete)}
           className="w-20 h-full justify-center items-center rounded-none bg-[rgba(255,59,48,0.8)]"
         >
-          🗑️
+          <NativeIcon name="trash" size="md" color="#FFFFFF" />
         </GlassButton>
       )}
     </View>

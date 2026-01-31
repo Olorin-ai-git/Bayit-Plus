@@ -6,9 +6,11 @@ import {
   Animated,
   Modal,
   ScrollView,
+  StyleSheet,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { isTV, isWeb } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
@@ -97,10 +99,12 @@ const FontSizeOption: React.FC<{
           isFocused && styles.optionFocused,
         ]}
       >
-        <Text style={[styles.optionLabel, { textAlign }]}>
-          {option.label}
-          {isSelected && ' ✓'}
-        </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <Text style={[styles.optionLabel, { textAlign }]}>
+            {option.label}
+          </Text>
+          {isSelected && <NativeIcon name="check" size={isTV ? 18 : 14} color={colors.success.DEFAULT} />}
+        </View>
       </Animated.View>
     </TouchableOpacity>
   );
@@ -295,10 +299,12 @@ export const SubtitleSettings: React.FC<SubtitleSettingsProps> = ({
                       position === option.value && styles.optionSelected,
                     ]}
                   >
-                    <Text style={styles.positionLabel}>
-                      {option.label}
-                      {position === option.value && ' ✓'}
-                    </Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <Text style={styles.positionLabel}>
+                        {option.label}
+                      </Text>
+                      {position === option.value && <NativeIcon name="check" size={isTV ? 18 : 14} color={colors.success.DEFAULT} />}
+                    </View>
                     <Text style={styles.positionDescription}>{option.description}</Text>
                   </TouchableOpacity>
                 ))}
@@ -393,5 +399,193 @@ export const useSubtitlePreferences = (): SubtitlePreferences => {
 
   return preferences;
 };
+
+const styles = StyleSheet.create({
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    width: isTV ? '50%' : '90%',
+    maxWidth: 600,
+    maxHeight: isTV ? '80%' : '90%',
+    backgroundColor: 'rgba(20, 20, 20, 0.95)',
+    borderRadius: 16,
+    padding: isTV ? spacing.xl : spacing.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  header: {
+    marginBottom: isTV ? spacing.lg : spacing.md,
+  },
+  title: {
+    fontSize: isTV ? 32 : 24,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  section: {
+    marginBottom: isTV ? spacing.lg : spacing.md,
+  },
+  sectionTitle: {
+    fontSize: isTV ? 18 : 16,
+    fontWeight: '600',
+    color: '#fff',
+    marginBottom: spacing.sm,
+  },
+  optionsContainer: {
+    gap: spacing.sm,
+  },
+  optionTouchable: {
+    marginBottom: spacing.sm,
+  },
+  option: {
+    padding: isTV ? spacing.md : spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  optionSelected: {
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    borderColor: colors.primary,
+  },
+  optionFocused: {
+    borderColor: colors.primary,
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+  },
+  optionLabel: {
+    fontSize: isTV ? 16 : 14,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  colorOptionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  colorOptionTouchable: {
+    flex: 1,
+    minWidth: 80,
+  },
+  colorOption: {
+    padding: isTV ? spacing.md : spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  colorSwatch: {
+    width: isTV ? 40 : 32,
+    height: isTV ? 40 : 32,
+    borderRadius: isTV ? 20 : 16,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  colorLabel: {
+    fontSize: isTV ? 14 : 12,
+    color: '#fff',
+  },
+  sliderContainer: {
+    gap: spacing.sm,
+  },
+  sliderLabel: {
+    fontSize: isTV ? 16 : 14,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  sliderTrack: {
+    height: isTV ? 8 : 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: isTV ? 4 : 3,
+    position: 'relative',
+  },
+  sliderFill: {
+    height: '100%',
+    backgroundColor: colors.primary,
+    borderRadius: isTV ? 4 : 3,
+  },
+  sliderThumb: {
+    position: 'absolute',
+    top: isTV ? -6 : -4,
+    width: isTV ? 20 : 14,
+    height: isTV ? 20 : 14,
+    backgroundColor: '#fff',
+    borderRadius: isTV ? 10 : 7,
+    marginLeft: isTV ? -10 : -7,
+  },
+  sliderValue: {
+    fontSize: isTV ? 14 : 12,
+    color: '#fff',
+    textAlign: 'center',
+  },
+  positionOption: {
+    padding: isTV ? spacing.md : spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    marginBottom: spacing.sm,
+  },
+  positionLabel: {
+    fontSize: isTV ? 16 : 14,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  positionDescription: {
+    fontSize: isTV ? 14 : 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: spacing.xs,
+  },
+  previewSection: {
+    marginBottom: isTV ? spacing.lg : spacing.md,
+  },
+  previewContainer: {
+    height: 150,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 8,
+    justifyContent: 'center',
+    padding: spacing.md,
+  },
+  previewSubtitle: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderRadius: 4,
+  },
+  previewText: {
+    textAlign: 'center',
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  saveButton: {
+    flex: 1,
+    backgroundColor: colors.primary,
+    padding: isTV ? spacing.md : spacing.sm,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    fontSize: isTV ? 16 : 14,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    padding: isTV ? spacing.md : spacing.sm,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontSize: isTV ? 16 : 14,
+    fontWeight: '600',
+    color: '#fff',
+  },
+});
 
 export default SubtitleSettings;

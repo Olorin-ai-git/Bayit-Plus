@@ -339,7 +339,7 @@
       "removeActionUnpublish": "Dépublier (recommandé)",
       "removeActionDelete": "Supprimer définitivement",
       "unpublishDescription": "Les éléments seront masqués mais pourront être restaurés ultérieurement",
-      "deleteWarning": "⚠️ Les éléments supprimés ne peuvent pas être récupérés",
+      "deleteWarning": "Les éléments supprimés ne peuvent pas être récupérés",
       "mergeReason": "Raison de la fusion",
       "mergeReasonPlaceholder": "Entrez la raison (min 10 caractères)...",
       "mergeReasonTooShort": "La raison doit contenir au moins 10 caractères",

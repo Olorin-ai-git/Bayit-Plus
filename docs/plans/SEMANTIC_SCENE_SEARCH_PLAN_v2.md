@@ -12,6 +12,7 @@
 ### A. UX/Localization Fixes (6 items)
 
 #### A.1 Add accessibilityRole to ScrollView
+::: v-pre
 ```typescript
 // SceneSearchPanel.tsx - Line 742
 <ScrollView
@@ -24,8 +25,10 @@
   accessibilityRole="list"  // ADD THIS for React Native screen readers
 >
 ```
+:::
 
 #### A.2 Fix RTL Navigation Button Layout
+::: v-pre
 ```typescript
 // SceneSearchPanel.tsx - Navigation Footer (replace lines 782-802)
 <View style={styles.navigation}>
@@ -85,6 +88,7 @@ navButtonRTL: {
   flexDirection: 'row-reverse',
 },
 ```
+:::
 
 #### A.3 Add Missing Voice Error i18n Keys
 
@@ -125,6 +129,7 @@ navButtonRTL: {
 ```
 
 #### A.4 Implement Focus Restoration on Panel Close
+::: v-pre
 ```typescript
 // SceneSearchPanel.tsx - Focus management
 const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -148,6 +153,7 @@ useEffect(() => {
   }
 }, [isOpen]);
 ```
+:::
 
 #### A.5 Add Enter Key Handler for Result Activation
 ```typescript
@@ -174,6 +180,7 @@ const handleKeyDown = useCallback((e: KeyboardEvent) => {
 ```
 
 #### A.6 Enhance Result Card Accessibility with Episode Context
+::: v-pre
 ```typescript
 // SceneSearchResultCard.tsx - Enhanced accessibility
 const accessibilityLabel = useMemo(() => {
@@ -195,6 +202,7 @@ const accessibilityLabel = useMemo(() => {
   accessibilityState={{ selected: isActive }}
 >
 ```
+:::
 
 ---
 
@@ -217,6 +225,7 @@ panelBottomSheet: {
 ```
 
 #### B.2 Backdrop Dimming
+::: v-pre
 ```typescript
 // Add backdrop overlay when panel is open
 backdrop: {
@@ -234,8 +243,10 @@ backdrop: {
   <View style={styles.backdrop} />
 )}
 ```
+:::
 
 #### B.3 Animation Specs
+::: v-pre
 ```typescript
 // tvOS entrance animation
 const panelAnimation = useRef(new Animated.Value(0)).current;
@@ -262,6 +273,7 @@ useEffect(() => {
   },
 ]}>
 ```
+:::
 
 #### B.4 Complete Typography Scaling (tvOS)
 ```typescript
@@ -281,6 +293,7 @@ const tvOSTypography = StyleSheet.create({
 ```
 
 #### B.5 Focus Management with Focusable Props
+::: v-pre
 ```typescript
 import { useTVEventHandler, findNodeHandle, UIManager } from 'react-native';
 
@@ -297,8 +310,10 @@ useEffect(() => {
 // All interactive elements must have focusable prop
 <Pressable focusable={true} hasTVPreferredFocus={isActive} ... />
 ```
+:::
 
 #### B.6 Focus State Styling (tvOS)
+::: v-pre
 ```typescript
 // tvOS focus state - scale + shadow
 const tvOSFocusStyle = StyleSheet.create({
@@ -320,6 +335,7 @@ const tvOSFocusStyle = StyleSheet.create({
   focusable={true}
 >
 ```
+:::
 
 #### B.7 Siri Remote Gesture Handling
 ```typescript
@@ -374,6 +390,7 @@ const tvOSTouchTargets = StyleSheet.create({
 ```
 
 #### B.9 ScrollView Focus Configuration
+::: v-pre
 ```typescript
 // tvOS ScrollView optimizations
 <ScrollView
@@ -384,6 +401,7 @@ const tvOSTouchTargets = StyleSheet.create({
   showsVerticalScrollIndicator={Platform.OS !== 'tvos'}  // Hide on tvOS
 >
 ```
+:::
 
 #### B.10 Video Dimming Behavior Specification
 ```typescript
@@ -483,6 +501,7 @@ export default SceneSearchPanel;
 ```
 
 #### C.6 Replace ScrollView with FlatList for Virtualization
+::: v-pre
 ```typescript
 import { FlatList, Platform } from 'react-native';
 
@@ -509,10 +528,12 @@ import { FlatList, Platform } from 'react-native';
   aria-label={t('player.sceneSearch.results')}
 />
 ```
+:::
 
 #### C.7 Native Deep Link Configuration
 
 **iOS - Info.plist:**
+::: v-pre
 ```xml
 <key>CFBundleURLTypes</key>
 <array>
@@ -526,8 +547,10 @@ import { FlatList, Platform } from 'react-native';
   </dict>
 </array>
 ```
+:::
 
 **Android - AndroidManifest.xml:**
+::: v-pre
 ```xml
 <intent-filter>
   <action android:name="android.intent.action.VIEW" />
@@ -536,6 +559,7 @@ import { FlatList, Platform } from 'react-native';
   <data android:scheme="bayitplus" android:host="watch" />
 </intent-filter>
 ```
+:::
 
 **React Native Linking handler:**
 ```typescript
@@ -561,6 +585,7 @@ useEffect(() => {
 ```
 
 #### C.8 Fix RTL Detection
+::: v-pre
 ```typescript
 // Use standard RTL detection
 import { I18nManager } from 'react-native';
@@ -576,6 +601,7 @@ const isRTL = i18n.dir() === 'rtl';
 // Add Android RTL support in AndroidManifest.xml:
 // <application android:supportsRtl="true">
 ```
+:::
 
 #### C.9 Screen Reader Announcements for Dynamic Content
 ```typescript
@@ -634,6 +660,7 @@ const logPerformance = (metric: string, value: number) => {
 #### C.11 Mobile-Specific Test Cases
 
 **Add to Phase 6 Testing:**
+::: v-pre
 ```typescript
 // tests/scene-search-mobile.spec.ts
 describe('Mobile-Specific Tests', () => {
@@ -674,6 +701,7 @@ describe('Mobile-Specific Tests', () => {
   });
 });
 ```
+:::
 
 ---
 
@@ -788,6 +816,7 @@ controls/
 
 **File:** `/web/src/components/player/hooks/usePlayerPanels.ts`
 
+::: v-pre
 ```typescript
 import { useState, useCallback } from 'react';
 
@@ -824,6 +853,7 @@ export function usePlayerPanels(): UsePlayerPanelsReturn {
   return { activePanel, openPanel, closePanel, togglePanel, isOpen };
 }
 ```
+:::
 
 ---
 
@@ -1325,6 +1355,7 @@ async def check_scene_search_rate_limit(partner_id: str) -> None:
 
 **File:** `/web/src/components/player/SceneSearchPanel.tsx`
 
+::: v-pre
 ```typescript
 import { useRef, useEffect, useCallback } from 'react';
 import { View, Text, Pressable, ScrollView, ActivityIndicator, StyleSheet, I18nManager } from 'react-native';
@@ -1655,11 +1686,13 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### 2.2 SceneSearchResultCard Component
 
 **File:** `/web/src/components/player/SceneSearchResultCard.tsx`
 
+::: v-pre
 ```typescript
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Play } from 'lucide-react';
@@ -1789,11 +1822,13 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### 2.3 useSceneSearch Hook
 
 **File:** `/web/src/components/player/hooks/useSceneSearch.ts`
 
+::: v-pre
 ```typescript
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
@@ -1999,11 +2034,13 @@ export function useSceneSearch(options: UseSceneSearchOptions = {}): UseSceneSea
   };
 }
 ```
+:::
 
 ### 2.4 SceneSearchEmptyState Component
 
 **File:** `/web/src/components/player/SceneSearchEmptyState.tsx`
 
+::: v-pre
 ```typescript
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -2062,6 +2099,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ---
 
@@ -2147,6 +2185,7 @@ const styles = StyleSheet.create({
 
 **After Phase 0 refactoring, add to VideoPlayer.tsx:**
 
+::: v-pre
 ```typescript
 // Import
 import SceneSearchPanel from './SceneSearchPanel';
@@ -2166,11 +2205,13 @@ const { activePanel, togglePanel, closePanel } = usePlayerPanels();
   />
 )}
 ```
+:::
 
 ### 4.2 PlayerControls Search Button
 
 **After Phase 0 refactoring, add to PlayerControls.tsx:**
 
+::: v-pre
 ```typescript
 // Add search button between chapters and settings
 {!isLive && contentId && (
@@ -2187,6 +2228,7 @@ const { activePanel, togglePanel, closePanel } = usePlayerPanels();
   </Pressable>
 )}
 ```
+:::
 
 ### 4.3 Deep Link Handling (WatchPage)
 
@@ -2298,6 +2340,7 @@ interface SceneSearchVoiceConfig {
 
 ### 5.3 Error Handling
 
+::: v-pre
 ```typescript
 async function handleVoiceSearch(audioBlob: Blob): Promise<void> {
   try {
@@ -2325,6 +2368,7 @@ async function handleVoiceSearch(audioBlob: Blob): Promise<void> {
   }
 }
 ```
+:::
 
 ---
 

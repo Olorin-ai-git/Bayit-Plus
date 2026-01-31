@@ -6,6 +6,7 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { X, Check } from 'lucide-react'
+import { Icon } from '@olorin/shared-icons/web'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView } from '@bayit/shared/ui'
 import type { QualityOption } from './types'
@@ -43,17 +44,17 @@ export default function SettingsPanel({
 
   if (!isOpen) return null
 
-  const langMap: Record<string, { flag: string; label: string }> = {
-    'he': { flag: '🇮🇱', label: 'עברית' },
-    'en': { flag: '🇺🇸', label: 'English' },
-    'ar': { flag: '🇸🇦', label: 'العربية' },
-    'es': { flag: '🇪🇸', label: 'Español' },
-    'ru': { flag: '🇷🇺', label: 'Русский' },
-    'fr': { flag: '🇫🇷', label: 'Français' },
-    'de': { flag: '🇩🇪', label: 'Deutsch' },
-    'it': { flag: '🇮🇹', label: 'Italiano' },
-    'pt': { flag: '🇵🇹', label: 'Português' },
-    'yi': { flag: '🕍', label: 'ייִדיש' },
+  const langMap: Record<string, { icon: string; label: string }> = {
+    'he': { icon: '🇮🇱', label: 'עברית' },
+    'en': { icon: '🇺🇸', label: 'English' },
+    'ar': { icon: '🇸🇦', label: 'العربية' },
+    'es': { icon: '🇪🇸', label: 'Español' },
+    'ru': { icon: '🇷🇺', label: 'Русский' },
+    'fr': { icon: '🇫🇷', label: 'Français' },
+    'de': { icon: '🇩🇪', label: 'Deutsch' },
+    'it': { icon: '🇮🇹', label: 'Italiano' },
+    'pt': { icon: '🇵🇹', label: 'Português' },
+    'yi': { icon: 'synagogue', label: 'ייִדיש' },
   }
 
   return (
@@ -75,8 +76,9 @@ export default function SettingsPanel({
             <Text style={styles.label}>{t('subtitles.translateTo', 'Translate To')}</Text>
             <View style={styles.optionsList}>
               {availableSubtitleLanguages.map((langCode) => {
-                const lang = langMap[langCode] || { flag: '🌐', label: langCode.toUpperCase() }
+                const lang = langMap[langCode] || { icon: 'globe', label: langCode.toUpperCase() }
                 const isActive = liveSubtitleLang === langCode
+                const isIconName = lang.icon === 'synagogue' || lang.icon === 'globe'
                 return (
                   <Pressable
                     key={langCode}
@@ -90,7 +92,11 @@ export default function SettingsPanel({
                     }}
                   >
                     <View style={styles.optionContent}>
-                      <Text style={styles.optionIcon}>{lang.flag}</Text>
+                      {isIconName ? (
+                        <Icon name={lang.icon} size="md" color="#FFFFFF" />
+                      ) : (
+                        <Text style={styles.optionIcon}>{lang.icon}</Text>
+                      )}
                       <Text
                         style={[
                           styles.optionText,

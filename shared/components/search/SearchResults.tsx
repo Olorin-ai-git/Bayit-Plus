@@ -10,6 +10,7 @@ import { View, Text, FlatList, TouchableOpacity, Image, ActivityIndicator } from
 import { useTranslation } from 'react-i18next';
 import { SearchResult } from '../../hooks/useSearch';
 import SubtitleMatchCard from './SubtitleMatchCard';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import {
   speakSearchResult,
   speakSearchResults,
@@ -111,7 +112,9 @@ export function SearchResults({
 
     return (
       <View className="flex-1 items-center justify-center py-20">
-        <Text className="text-6xl mb-4">🔍</Text>
+        <View className="mb-4">
+          <NativeIcon name="search" size="3xl" color="#9ca3af" />
+        </View>
         <Text className="text-white text-lg">{emptyMessage || t('search.noResults')}</Text>
         <Text className="text-white/60 text-sm mt-2">{t('search.tryDifferentKeywords')}</Text>
       </View>
@@ -128,7 +131,7 @@ export function SearchResults({
           className="flex-row items-center gap-2 px-4 py-3 bg-purple-500/20 border border-purple-400/50 rounded-xl"
           activeOpacity={0.7}
         >
-          <Text className="text-2xl">{isSpeaking ? '⏸️' : '🔊'}</Text>
+          <NativeIcon name={isSpeaking ? 'pause' : 'volume2'} size="xl" color="#a855f7" />
           <Text className="text-white font-medium">
             {isSpeaking ? t('search.stopReading') : t('search.readAllResults')}
           </Text>
@@ -186,7 +189,7 @@ function ContentCard({
         />
       ) : (
         <View className="w-full aspect-video bg-white/5 items-center justify-center">
-          <Text className="text-4xl">🎬</Text>
+          <NativeIcon name="film" size="2xl" color="#a855f7" />
         </View>
       )}
 
@@ -204,7 +207,7 @@ function ContentCard({
           )}
           {result.rating && (
             <View className="flex-row items-center gap-1">
-              <Text className="text-yellow-400 text-xs">⭐</Text>
+              <NativeIcon name="star" size="xs" color="#fbbf24" />
               <Text className="text-white/60 text-xs">{result.rating}</Text>
             </View>
           )}
@@ -253,7 +256,7 @@ function ContentCard({
             className="mt-3 flex-row items-center gap-2 px-3 py-2 bg-purple-500/20 border border-purple-400/50 rounded-lg"
             activeOpacity={0.7}
           >
-            <Text className="text-lg">🔊</Text>
+            <NativeIcon name="volume2" size="md" color="#a855f7" />
             <Text className="text-purple-200 text-xs font-medium">{t('search.readAloud')}</Text>
           </TouchableOpacity>
         )}

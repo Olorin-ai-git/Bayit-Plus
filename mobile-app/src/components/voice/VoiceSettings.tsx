@@ -25,6 +25,7 @@ import { useNotifications } from '@olorin/glass-ui/hooks';
 import { useConversationContextMobile } from '../../hooks/useConversationContextMobile';
 import { useSupportStore } from '../../stores/supportStore';
 import { AvatarPreferences } from './AvatarPreferences';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface VoiceSettingsProps {
   onClose?: () => void;
@@ -112,14 +113,15 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
           accessibilityRole="button"
           accessibilityHint="Closes the voice settings screen"
           style={{ minWidth: 44, minHeight: 44 }}
-          className="justify-center"
+          className="justify-center flex-row items-center gap-1"
         >
+          <NativeIcon name="x" size="sm" color="#2563eb" />
           <Text
             className="text-sm text-blue-600 font-medium"
             allowFontScaling={true}
             maxFontSizeMultiplier={1.3}
           >
-            ✕ Close
+            Close
           </Text>
         </TouchableOpacity>
         <Text
@@ -269,13 +271,20 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
                 >
                   Microphone
                 </Text>
-                <Text
-                  className="text-xs text-slate-400 mt-0.5"
-                  allowFontScaling={true}
-                  maxFontSizeMultiplier={1.3}
-                >
-                  {settings.microphonePermission ? '✓ Granted' : '✗ Denied'}
-                </Text>
+                <View className="flex-row items-center gap-1 mt-0.5">
+                  <NativeIcon
+                    name={settings.microphonePermission ? 'check' : 'x'}
+                    size="xs"
+                    color={settings.microphonePermission ? '#10B981' : '#EF4444'}
+                  />
+                  <Text
+                    className="text-xs text-slate-400"
+                    allowFontScaling={true}
+                    maxFontSizeMultiplier={1.3}
+                  >
+                    {settings.microphonePermission ? 'Granted' : 'Denied'}
+                  </Text>
+                </View>
               </View>
               <View
                 className="w-3 h-3 rounded-full"

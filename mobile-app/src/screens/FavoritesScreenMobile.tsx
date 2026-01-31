@@ -26,6 +26,7 @@ import { useDirection } from '@bayit/shared-hooks';
 import { favoritesService } from '@bayit/shared-services';
 import { GlassView } from '@bayit/shared';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useResponsive } from '../hooks/useResponsive';
 import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
@@ -50,12 +51,13 @@ interface FavoriteItem {
   addedAt?: string;
 }
 
-const TYPE_ICONS: Record<string, string> = {
-  movie: '🎬',
-  series: '📺',
-  channel: '📡',
-  podcast: '🎙️',
-  radio: '📻',
+const TYPE_ICON_NAMES: Record<string, string> = {
+  movie: 'vod',
+  series: 'live',
+  channel: 'live',
+  podcast: 'podcasts',
+  radio: 'radio',
+  audiobook: 'audiobooks',
 };
 
 type FavoritesRoute = RouteProp<RootStackParamList, 'Favorites'>;
@@ -138,6 +140,7 @@ export const FavoritesScreenMobile: React.FC = () => {
           ? item.subtitle_es || item.subtitle_en || item.subtitle
           : item.subtitle_en || item.subtitle
       : undefined;
+    const iconName = TYPE_ICON_NAMES[item.type] || 'star';
 
     return (
       <View className="flex-1 px-1 py-2">
@@ -152,15 +155,13 @@ export const FavoritesScreenMobile: React.FC = () => {
               />
             ) : (
               <View className="w-full aspect-video bg-white/5 justify-center items-center">
-                <Text className="text-5xl">
-                  {TYPE_ICONS[item.type] || '⭐'}
-                </Text>
+                <NativeIcon name={iconName} size="xxl" color="#a855f7" />
               </View>
             )}
 
             {/* Type badge */}
             <View className={`absolute top-2 ${isRTL ? 'left-2' : 'right-2'} bg-black/70 rounded-xl px-2 py-1`}>
-              <Text className="text-sm">{TYPE_ICONS[item.type]}</Text>
+              <NativeIcon name={iconName} size="sm" color="#ffffff" />
             </View>
 
             {/* Remove button */}
@@ -169,7 +170,7 @@ export const FavoritesScreenMobile: React.FC = () => {
               onPress={() => handleRemoveFavorite(item)}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <Text className="text-sm text-white font-bold">✕</Text>
+              <NativeIcon name="x" size="sm" color="#ffffff" />
             </Pressable>
 
             {/* Card info */}
@@ -214,7 +215,7 @@ export const FavoritesScreenMobile: React.FC = () => {
           className="w-12 h-12 rounded-full bg-yellow-500/20 justify-center items-center"
           style={{ marginLeft: isRTL ? 16 : 0, marginRight: isRTL ? 0 : 16 }}
         >
-          <Text className="text-2xl">⭐</Text>
+          <NativeIcon name="star" size="lg" color="#eab308" />
         </View>
         <View className="flex-1">
           <Text className={`text-3xl font-bold text-white ${isRTL ? 'text-right' : 'text-left'}`} style={{ textAlign: isRTL ? 'right' : 'left' }}>
@@ -246,7 +247,9 @@ export const FavoritesScreenMobile: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-24 px-6">
             <GlassView className="p-8 items-center w-full">
-              <Text className="text-6xl mb-4">⭐</Text>
+              <View className="mb-4">
+                <NativeIcon name="star" size="xxl" color="#eab308" />
+              </View>
               <Text className={`text-xl font-semibold text-white mb-2 ${isRTL ? 'text-right' : 'text-left'}`} style={{ textAlign: isRTL ? 'right' : 'left' }}>
                 {t('favorites.empty')}
               </Text>

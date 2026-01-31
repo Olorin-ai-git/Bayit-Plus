@@ -26,6 +26,7 @@
 
 ### C4 Level 1: System Context
 
+::: v-pre
 ```mermaid
 graph TB
     subgraph "External Actors"
@@ -55,9 +56,11 @@ graph TB
     O -->|Data| M
     O <-->|Content Metadata| B
 ```
+:::
 
 ### C4 Level 2: Container Diagram
 
+::: v-pre
 ```mermaid
 graph TB
     subgraph "Olorin Platform"
@@ -96,6 +99,7 @@ graph TB
     CS --> DB2
     RS --> DB3
 ```
+:::
 
 ### Service Dependency Graph
 
@@ -358,6 +362,7 @@ RecapSession.transcript_segments: Unbounded list growth
 
 ### Long-Term (Architectural)
 
+::: v-pre
 ```mermaid
 graph LR
     P1[Phase 1<br/>Config Separation] --> P2[Phase 2<br/>Database Separation]
@@ -369,6 +374,7 @@ graph LR
     style P3 fill:#ffcdd2
     style P4 fill:#e1bee7
 ```
+:::
 
 ---
 

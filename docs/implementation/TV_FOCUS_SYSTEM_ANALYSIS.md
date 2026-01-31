@@ -172,6 +172,7 @@ Component 1 Component 2 Component 3 ... Component 20+
 ## Usage Example
 
 ### Before (Old GlassCard - 30 lines)
+::: v-pre
 ```typescript
 export const GlassCard = ({ ... }) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -214,8 +215,10 @@ export const GlassCard = ({ ... }) => {
   );
 };
 ```
+:::
 
 ### After (New GlassCard - 10 lines)
+::: v-pre
 ```typescript
 import { useTVFocus } from '../hooks/useTVFocus';
 
@@ -234,6 +237,7 @@ export const GlassCard = ({ ... }) => {
   );
 };
 ```
+:::
 
 **Result:** 67% less code, 100% consistent behavior
 

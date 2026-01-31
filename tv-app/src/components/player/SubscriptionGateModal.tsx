@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius, fontSize } from '@bayit/shared/theme';
 
 export interface SubscriptionGateModalProps {
@@ -97,7 +98,9 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                   className="flex-row items-center px-5 py-4 border-t-4 border-b bg-yellow-500/10"
                   style={{ borderTopColor: colors.warning, borderBottomColor: colors.glassBorder, borderBottomWidth: 1 }}
                 >
-                  <Text className="text-2xl mr-4">🔐</Text>
+                  <View className="mr-4">
+                    <NativeIcon name="lock" size="xl" context="tv" color={colors.warning} />
+                  </View>
                   <Text className={`text-lg font-semibold flex-1 ${isRTL ? 'text-right' : ''}`} style={{ color: colors.warning }}>
                     {t('subscription.required', 'Subscription Required')}
                   </Text>
@@ -122,7 +125,9 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                   {/* Tier info card */}
                   <View className={`bg-green-500/15 rounded-md border border-green-500 p-4 mb-6 ${isRTL ? 'items-end' : ''}`}>
                     <View className="flex-row items-center mb-4">
-                      <Text className="text-xl mr-2">💎</Text>
+                      <View className="mr-2">
+                        <NativeIcon name="premium" size="lg" context="tv" color={colors.success} />
+                      </View>
                       <Text className={`text-base font-semibold ${isRTL ? 'text-right' : ''}`} style={{ color: colors.success }}>
                         {tierInfo.name}
                       </Text>
@@ -132,7 +137,9 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                     <View className="gap-2">
                       {tierInfo.features.map((feature, index) => (
                         <View key={index} className={`flex-row items-start ${isRTL ? 'flex-row-reverse' : ''}`}>
-                          <Text className="text-sm font-semibold mr-2" style={{ color: colors.success }}>✓</Text>
+                          <View className="mr-2">
+                            <NativeIcon name="check" size="sm" context="tv" color={colors.success} />
+                          </View>
                           <Text className={`text-sm text-white flex-1 ${isRTL ? 'text-right' : ''}`} style={{ lineHeight: 18 }}>
                             {feature}
                           </Text>
@@ -143,7 +150,9 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
 
                   {/* Info message */}
                   <View className={`bg-blue-500/10 rounded-md px-4 py-4 flex-row items-start gap-4 ${isRTL ? 'flex-row-reverse border-r-[3px]' : 'border-l-[3px]'}`} style={{ borderLeftColor: isRTL ? undefined : colors.primary, borderRightColor: isRTL ? colors.primary : undefined }}>
-                    <Text className="text-lg" style={{ marginTop: 2 }}>ℹ️</Text>
+                    <View style={{ marginTop: 2 }}>
+                      <NativeIcon name="info" size="lg" context="tv" color={colors.primary} />
+                    </View>
                     <Text className={`text-sm text-gray-400 flex-1 ${isRTL ? 'text-right' : ''}`} style={{ lineHeight: 18 }}>
                       {t('subscription.upgradeInfo', 'Upgrade your subscription to access premium content')}
                     </Text>

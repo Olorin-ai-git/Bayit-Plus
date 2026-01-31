@@ -228,7 +228,7 @@ function LegacyHelpScreen() {
           <View style={styles.remoteControls}>
             <View style={styles.remoteRow}>
               <View style={styles.remoteKey}>
-                <Text style={styles.remoteKeyText}>◀ ▶ ▲ ▼</Text>
+                <Text style={styles.remoteKeyText}>Navigation arrows</Text>
               </View>
               <Text style={styles.remoteLabel}>{t('help.remote.navigate', 'Navigate')}</Text>
             </View>
@@ -246,7 +246,7 @@ function LegacyHelpScreen() {
             </View>
             <View style={styles.remoteRow}>
               <View style={styles.remoteKey}>
-                <Text style={styles.remoteKeyText}>▶⏸</Text>
+                <Text style={styles.remoteKeyText}>Play/Pause</Text>
               </View>
               <Text style={styles.remoteLabel}>{t('help.remote.playPause', 'Play / Pause')}</Text>
             </View>

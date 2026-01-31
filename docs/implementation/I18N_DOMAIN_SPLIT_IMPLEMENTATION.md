@@ -55,6 +55,7 @@ packages/ui/bayit-i18n/
 ```
 
 **Backward Compatibility Exports**:
+::: v-pre
 ```typescript
 // From @bayit/i18n
 export type LanguageCode = BayitLanguage;
@@ -69,6 +70,7 @@ export function saveLanguageWeb(lang: BayitLanguage): void;
 export function loadLanguageWeb(): BayitLanguage | null;
 export async function initBayitI18nWeb(): Promise<i18n>;
 ```
+:::
 
 **Build Verification**:
 ```bash
@@ -400,6 +402,7 @@ ls packages/ui/shared-i18n/dist/       # index.*, web.*, native.*
 ### Git Rollback
 
 Each phase is a separate commit for easy rollback:
+::: v-pre
 ```bash
 # Rollback Phase 2 (web migration)
 git revert <phase-2-commit>
@@ -407,6 +410,7 @@ git revert <phase-2-commit>
 # Rollback Phase 1 (package creation)
 git revert <phase-1-commit>
 ```
+:::
 
 ### Emergency Restoration
 

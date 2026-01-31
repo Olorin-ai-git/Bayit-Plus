@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { judaismService } from '../../services/api';
 import { useDirection } from '../../hooks/useDirection';
@@ -159,12 +160,12 @@ export const ShabbatModeBanner: React.FC<ShabbatModeBannerProps> = ({
             <View style={[styles.titleRow, isRTL && styles.titleRowRTL]}>
               {/* Animated candles */}
               <View style={styles.candlesContainer}>
-                <Animated.Text style={[styles.candleEmoji, { opacity: pulseAnim }]}>
-                  🕯️
-                </Animated.Text>
-                <Animated.Text style={[styles.candleEmoji, { opacity: pulseAnim }]}>
-                  🕯️
-                </Animated.Text>
+                <Animated.View style={{ opacity: pulseAnim }}>
+                  <NativeIcon name="candle" size={isTV ? 32 : 24} color={colors.warning.DEFAULT} />
+                </Animated.View>
+                <Animated.View style={{ opacity: pulseAnim }}>
+                  <NativeIcon name="candle" size={isTV ? 32 : 24} color={colors.warning.DEFAULT} />
+                </Animated.View>
               </View>
 
               <View style={styles.titleContainer}>
@@ -177,7 +178,7 @@ export const ShabbatModeBanner: React.FC<ShabbatModeBannerProps> = ({
               </View>
 
               {/* Challah */}
-              <Text style={styles.challahEmoji}>🍞</Text>
+              <NativeIcon name="bread" size={isTV ? 32 : 24} color={colors.warning.DEFAULT} />
             </View>
 
             {/* Dismiss button */}
@@ -204,7 +205,7 @@ export const ShabbatModeBanner: React.FC<ShabbatModeBannerProps> = ({
           {/* Countdown section */}
           <View style={[styles.countdownSection, isRTL && styles.countdownSectionRTL]}>
             <View style={[styles.countdownLabel, isRTL && styles.countdownLabelRTL]}>
-              <Text style={styles.moonEmoji}>🌙</Text>
+              <NativeIcon name="moon" size={isTV ? 24 : 20} color={colors.primaryLight} />
               <Text style={styles.countdownLabelText}>
                 {t('judaism.shabbat.endsIn', 'Shabbat ends in')}
               </Text>
@@ -215,7 +216,7 @@ export const ShabbatModeBanner: React.FC<ShabbatModeBannerProps> = ({
                 {countdown}
               </Text>
               <View style={styles.havdalahBadge}>
-                <Text style={styles.flameEmoji}>🔥</Text>
+                <NativeIcon name="flame" size={14} color={colors.warning.DEFAULT} />
                 <Text style={styles.havdalahText}>
                   {t('judaism.shabbat.havdalah', 'Havdalah')}
                 </Text>
@@ -224,12 +225,12 @@ export const ShabbatModeBanner: React.FC<ShabbatModeBannerProps> = ({
           </View>
 
           {/* Decorative stars */}
-          <Text style={[styles.star, styles.starTop, isRTL ? styles.starTopRTL : styles.starTopLTR]}>
-            ✨
-          </Text>
-          <Text style={[styles.star, styles.starBottom, isRTL ? styles.starBottomRTL : styles.starBottomLTR]}>
-            ⭐
-          </Text>
+          <View style={[styles.star, styles.starTop, isRTL ? styles.starTopRTL : styles.starTopLTR]}>
+            <NativeIcon name="sparkles" size={18} color="rgba(255,255,255,0.5)" />
+          </View>
+          <View style={[styles.star, styles.starBottom, isRTL ? styles.starBottomRTL : styles.starBottomLTR]}>
+            <NativeIcon name="star" size={14} color="rgba(255,255,255,0.3)" />
+          </View>
         </View>
       </GlassView>
     </View>
@@ -281,9 +282,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 2,
   },
-  candleEmoji: {
-    fontSize: isTV ? 32 : 24,
-  },
   titleContainer: {
     flexDirection: 'column',
   },
@@ -296,9 +294,6 @@ const styles = StyleSheet.create({
     fontSize: isTV ? fontSize.md : fontSize.sm,
     color: colors.warning.DEFAULT,
     fontWeight: '600',
-  },
-  challahEmoji: {
-    fontSize: isTV ? 32 : 24,
   },
   dismissButton: {
     width: 32,
@@ -344,9 +339,6 @@ const styles = StyleSheet.create({
   countdownLabelRTL: {
     flexDirection: 'row-reverse',
   },
-  moonEmoji: {
-    fontSize: isTV ? 24 : 20,
-  },
   countdownLabelText: {
     fontSize: isTV ? fontSize.md : fontSize.sm,
     color: colors.primaryLight,
@@ -370,9 +362,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-  flameEmoji: {
-    fontSize: 14,
-  },
   havdalahText: {
     fontSize: fontSize.xs,
     color: colors.warning.DEFAULT,
@@ -382,8 +371,6 @@ const styles = StyleSheet.create({
   },
   starTop: {
     top: spacing.sm,
-    opacity: 0.5,
-    fontSize: 18,
   },
   starTopLTR: {
     right: 48,
@@ -393,8 +380,6 @@ const styles = StyleSheet.create({
   },
   starBottom: {
     bottom: spacing.sm,
-    opacity: 0.3,
-    fontSize: 14,
   },
   starBottomLTR: {
     left: spacing.sm,

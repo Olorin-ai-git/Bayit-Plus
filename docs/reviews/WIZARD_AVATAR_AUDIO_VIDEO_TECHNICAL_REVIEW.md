@@ -108,6 +108,7 @@ ffmpeg -i "shared/assets/video/wizard/wizard-speaking-animation.mp4" \
 ### 1. Web Implementation (WizardAvatar.web.tsx)
 
 #### Video Element
+::: v-pre
 ```tsx
 <video
   ref={videoRef}
@@ -124,6 +125,7 @@ ffmpeg -i "shared/assets/video/wizard/wizard-speaking-animation.mp4" \
   style={{ aspectRatio: '9/16' }}  // Computed, not hardcoded
 />
 ```
+:::
 
 #### Autoplay Handling ✓
 ```typescript
@@ -164,6 +166,7 @@ if (playPromise !== undefined) {
 ### 2. React Native Implementation (WizardAvatar.native.tsx)
 
 #### Video Component (react-native-video)
+::: v-pre
 ```tsx
 <Video
   ref={videoRef}
@@ -183,6 +186,7 @@ if (playPromise !== undefined) {
   }}
 />
 ```
+:::
 
 #### Dependencies
 | Platform | Package | Version | Status |
@@ -195,6 +199,7 @@ if (playPromise !== undefined) {
 #### Audio Session Handling (iOS)
 
 **Current Configuration in Info.plist:**
+::: v-pre
 ```xml
 <key>UIBackgroundModes</key>
 <array>
@@ -202,12 +207,15 @@ if (playPromise !== undefined) {
   <string>fetch</string>
 </array>
 ```
+:::
 
 **Microphone Permissions:**
+::: v-pre
 ```xml
 <key>NSMicrophoneUsageDescription</key>
 <string>Bayit+ needs microphone access for voice commands and "Hey Bayit" wake word detection.</string>
 ```
+:::
 
 **Status:** ✓ COMPLIANT
 - Background audio mode enabled (UIBackgroundModes: audio)
@@ -334,12 +342,14 @@ const videoSource = silent
 ### 4. Background Audio Handling (iOS Specific)
 
 **Configuration Present:**
+::: v-pre
 ```xml
 <key>UIBackgroundModes</key>
 <array>
   <string>audio</string>  ✓ Enables background playback
 </array>
 ```
+:::
 
 **Behavior:**
 - ✓ Wizard video audio continues when app backgrounded
@@ -378,6 +388,7 @@ Total:  3.2 MB ✓
 ## Accessibility & Error Handling
 
 ### Error States
+::: v-pre
 ```typescript
 const handleError = (error: any) => {
   console.error('Video error:', error);
@@ -394,6 +405,7 @@ if (error) {
   );
 }
 ```
+:::
 
 **Status:** ✓ Proper error handling with user-facing message.
 
@@ -466,6 +478,7 @@ const videoSource = silent
 ## Design System Compliance
 
 ### TailwindCSS + Glass Components ✓
+::: v-pre
 ```tsx
 <GlassCard
   className={`${sizeClass} overflow-hidden backdrop-blur-xl bg-black/20 rounded-2xl border border-white/10 shadow-2xl`}
@@ -477,6 +490,7 @@ const videoSource = silent
   />
 </GlassCard>
 ```
+:::
 
 **Status:** ✓ COMPLIANT
 - Uses GlassCard wrapper (no native elements for container)

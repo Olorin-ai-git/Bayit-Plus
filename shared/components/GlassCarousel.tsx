@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { GlassView } from './ui';
 import { GlassPlaceholder } from '@olorin/glass-ui';
 import { SubtitleFlags } from './SubtitleFlags';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 import { useDirection } from '../hooks/useDirection';
 import { logger } from '../utils/logger';
@@ -347,7 +348,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               {/* Play Button - Right for RTL, Left for LTR */}
               <View style={[styles.playButtonContainer, isRTL ? styles.playButtonRight : styles.playButtonLeft]}>
                 <GlassView intensity="medium" style={[styles.playButton, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-                  <Text style={styles.playIcon}>▶</Text>
+                  <NativeIcon name="play" size="sm" color={colors.primary.DEFAULT} />
                   <Text style={styles.playText}>{t('common.watchNow')}</Text>
                 </GlassView>
               </View>
@@ -606,10 +607,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: isMobilePhone ? 14 : 24,
     paddingVertical: isMobilePhone ? 8 : 14,
     gap: isMobilePhone ? 6 : 12,
-  },
-  playIcon: {
-    fontSize: isMobilePhone ? 14 : 18,
-    color: colors.primary.DEFAULT,
   },
   playText: {
     fontSize: isMobilePhone ? 14 : 18,

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Play, X } from 'lucide-react';
 import { GlassView, GlassCard } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { Icon } from '@olorin/shared-icons/web';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { watchlistService } from '@/services/api';
 import { useDirection } from '@/hooks/useDirection';
@@ -202,7 +203,7 @@ export default function WatchlistPage() {
     <View style={styles.container}>
       <View style={[styles.header, { flexDirection, justifyContent }]}>
         <View style={[styles.headerIcon, isRTL ? { marginLeft: spacing.lg } : { marginRight: spacing.lg }]}>
-          <Text style={styles.headerIconText}>📋</Text>
+          <Icon name="clipboard" size={28} color={colors.secondary.DEFAULT} />
         </View>
         <View>
           <Text style={[styles.title, { textAlign }]}>{t('watchlist.title')}</Text>
@@ -242,7 +243,7 @@ export default function WatchlistPage() {
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <GlassCard style={styles.emptyCard}>
-              <Text style={styles.emptyIcon}>📋</Text>
+              <Icon name="clipboard" size={64} color={colors.textMuted} />
               <Text style={[styles.emptyTitle, { textAlign }]}>{t('watchlist.empty')}</Text>
               <Text style={[styles.emptySubtitle, { textAlign }]}>
                 {t('watchlist.emptyHint')}
@@ -261,7 +262,6 @@ const styles = StyleSheet.create({
   loadingText: { color: colors.text, fontSize: 18, marginTop: spacing.md },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.xl, paddingTop: 40, paddingBottom: spacing.lg },
   headerIcon: { width: 60, height: 60, borderRadius: 30, backgroundColor: 'rgba(138, 43, 226, 0.2)', justifyContent: 'center', alignItems: 'center' },
-  headerIconText: { fontSize: 28 },
   title: { fontSize: 36, fontWeight: 'bold', color: colors.text },
   subtitle: { fontSize: 16, color: colors.textSecondary, marginTop: 2 },
   filterContainer: { paddingHorizontal: spacing.xl, marginBottom: spacing.lg, gap: spacing.sm, flexWrap: 'wrap' },
@@ -289,8 +289,7 @@ const styles = StyleSheet.create({
   playButton: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.secondary.DEFAULT, justifyContent: 'center', alignItems: 'center' },
   removeButton: { width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.2)', justifyContent: 'center', alignItems: 'center' },
   emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 60 },
-  emptyCard: { padding: spacing.xxl, alignItems: 'center' },
-  emptyIcon: { fontSize: 64, marginBottom: spacing.md },
+  emptyCard: { padding: spacing.xxl, alignItems: 'center', gap: spacing.md },
   emptyTitle: { fontSize: 20, fontWeight: '600', color: colors.text, marginBottom: spacing.sm },
   emptySubtitle: { fontSize: 16, color: colors.textSecondary },
 });

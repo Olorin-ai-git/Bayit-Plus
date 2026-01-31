@@ -31,6 +31,7 @@ import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { subscriptionService } from '@bayit/shared-services';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 import logger from '@/utils/logger';
 
@@ -157,7 +158,7 @@ export const SubscriptionScreenMobile: React.FC = () => {
     if (!user?.subscription) {
       return (
         <GlassView style={styles.noPlanCard}>
-          <Text style={styles.noPlanIcon}>📺</Text>
+          <NativeIcon name="live" size="xxl" color="#a855f7" />
           <Text style={[styles.noPlanText, { textAlign }]}>
             {t('subscription.noActivePlan')}
           </Text>
@@ -225,7 +226,7 @@ export const SubscriptionScreenMobile: React.FC = () => {
         <View style={styles.featuresList}>
           {plan.features.map((feature, index) => (
             <View key={index} style={[styles.featureRow, isRTL && styles.featureRowRTL]}>
-              <Text style={styles.featureCheck}>✓</Text>
+              <NativeIcon name="check" size="sm" color="#22c55e" style={styles.featureCheck} />
               <Text style={[styles.featureText, { textAlign }]}>
                 {t(feature)}
               </Text>
@@ -434,10 +435,6 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
     alignItems: 'center',
   },
-  noPlanIcon: {
-    fontSize: 64,
-    marginBottom: spacing.md,
-  },
   noPlanText: {
     fontSize: 18,
     fontWeight: '600',
@@ -516,8 +513,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row-reverse',
   },
   featureCheck: {
-    fontSize: 16,
-    color: '#22c55e',
     marginRight: spacing.sm,
   },
   featureText: {

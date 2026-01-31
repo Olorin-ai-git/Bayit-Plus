@@ -78,6 +78,7 @@
 
 ### Command to Execute NOW
 
+::: v-pre
 ```bash
 cd /Users/olorin/Documents/olorin
 
@@ -113,6 +114,7 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>"
 # Step 3: Verify commit
 git log --oneline -1
 ```
+:::
 
 ### Expected Output
 

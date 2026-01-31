@@ -49,6 +49,7 @@ The Bayit+ Notification System Migration has been reviewed from a security persp
 
 **Implementation**: `/packages/ui/glass-components/src/utils/sanitization.ts`
 
+::: v-pre
 ```typescript
 export const sanitizeMessage = (message: string): string => {
   if (typeof message !== 'string') {
@@ -76,6 +77,7 @@ export const sanitizeMessage = (message: string): string => {
     .substring(0, 500); // Max length 500 chars
 };
 ```
+:::
 
 **Strengths**:
 - Multi-layer defense against XSS attacks
@@ -104,6 +106,7 @@ $ grep -r "dangerouslySetInnerHTML\|innerHTML\|eval\(\|Function\(" packages/ui/g
 | Tag nesting | `<div><script>alert(1)</script></div>` | `alert(1)` | ✅ Blocked |
 
 **Test Coverage**: 100% (sanitization.test.ts)
+::: v-pre
 ```typescript
 describe('sanitizeMessage', () => {
   it('should remove HTML tags', () => {
@@ -113,12 +116,14 @@ describe('sanitizeMessage', () => {
   // 7 additional XSS tests ✅
 });
 ```
+:::
 
 ---
 
 ### 2. No Dangerous HTML Rendering ✅ EXCELLENT
 
 **Verification**:
+::: v-pre
 ```bash
 # No dangerouslySetInnerHTML usage
 $ grep -r "dangerouslySetInnerHTML" packages/ui/glass-components/src
@@ -126,13 +131,16 @@ $ grep -r "dangerouslySetInnerHTML" packages/ui/glass-components/src
 
 # All text rendered via safe React Native <Text> component
 ```
+:::
 
 **GlassToast Component** (`GlassToast/index.tsx`):
+::: v-pre
 ```tsx
 <Text style={[styles.message, { color: levelColors.text }]} numberOfLines={2}>
   {notification.message}
 </Text>
 ```
+:::
 
 **Safety**:
 - ✅ Uses React Native `<Text>` component (auto-escapes content)
@@ -236,6 +244,7 @@ const handleAction = () => {
 ### 5. Data Privacy ✅ EXCELLENT
 
 **No Notification Persistence**:
+::: v-pre
 ```typescript
 // Zustand store - in-memory only
 export const useNotificationStore = create<NotificationStore>((set, get) => ({
@@ -244,6 +253,7 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
   // No localStorage, AsyncStorage, or IndexedDB persistence
 }));
 ```
+:::
 
 **Privacy Benefits**:
 - ✅ No notification data written to disk
@@ -419,18 +429,22 @@ No high severity vulnerabilities identified.
 **Location**: `packages/ui/glass-components/src/utils/sanitization.ts`
 
 **Vulnerable Code**:
+::: v-pre
 ```typescript
 // Potentially vulnerable to ReDoS
 sanitized = message.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
 sanitized = sanitized.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '');
 ```
+:::
 
 **Attack Scenario**:
+::: v-pre
 ```typescript
 // Malicious input with nested tags
 const malicious = '<script' + '<'.repeat(10000) + '</script>';
 sanitizeMessage(malicious); // Could cause CPU spike
 ```
+:::
 
 **Risk Assessment**:
 - **Impact**: High (CPU exhaustion, client-side DoS)
@@ -438,6 +452,7 @@ sanitizeMessage(malicious); // Could cause CPU spike
 - **Severity**: Medium
 
 **Recommendation**: Use safer regex or string parsing
+::: v-pre
 ```typescript
 // Safe alternative: Simple tag removal
 export const sanitizeMessage = (message: string): string => {
@@ -458,6 +473,7 @@ export const sanitizeMessage = (message: string): string => {
   return sanitized.replace(/\s+/g, ' ').trim();
 };
 ```
+:::
 
 ### Low Severity Vulnerabilities: 2 ℹ️
 
@@ -600,6 +616,7 @@ $ grep -r "TODO\|FIXME\|HACK\|XXX\|PENDING\|STUB" packages/ui/glass-components/s
 ```
 
 **No Hardcoded Values** ✅:
+::: v-pre
 ```typescript
 // Configuration-driven design
 const MAX_QUEUE_SIZE = 10;              // Constant, not hardcoded
@@ -608,6 +625,7 @@ const DEDUPLICATION_WINDOW_MS = 1000;   // Configurable
 // Position from props
 <NotificationProvider position="bottom" maxVisible={3}>
 ```
+:::
 
 **File Size Compliance** ✅:
 ```bash
@@ -683,17 +701,22 @@ const announceToWeb = (announcement: string, level: NotificationLevel): void => 
 #### 1. Fix ReDoS Vulnerability in Sanitization
 
 **Current**:
+::: v-pre
 ```typescript
 sanitized = message.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
 ```
+:::
 
 **Recommended**:
+::: v-pre
 ```typescript
 // Safe, non-backtracking regex
 sanitized = message.replace(/<script[^>]*>.*?<\/script>/gi, '');
 ```
+:::
 
 **Implementation**:
+::: v-pre
 ```typescript
 export const sanitizeMessage = (message: string): string => {
   if (typeof message !== 'string') {
@@ -713,8 +736,10 @@ export const sanitizeMessage = (message: string): string => {
   return sanitized.replace(/\s+/g, ' ').trim();
 };
 ```
+:::
 
 **Testing**:
+::: v-pre
 ```typescript
 describe('sanitizeMessage - ReDoS protection', () => {
   it('should handle pathological input without timeout', () => {
@@ -728,6 +753,7 @@ describe('sanitizeMessage - ReDoS protection', () => {
   });
 });
 ```
+:::
 
 #### 2. Replace Console Logging with Structured Logging
 
@@ -809,6 +835,7 @@ export const redactSensitiveData = (text: string): string => {
 **Purpose**: Prevent notification spam and client-side DoS
 
 **Implementation**:
+::: v-pre
 ```typescript
 // In notificationStore.ts
 const RATE_LIMIT_WINDOW_MS = 1000; // 1 second
@@ -848,6 +875,7 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
   },
 }));
 ```
+:::
 
 **Test Coverage**:
 ```typescript
@@ -931,6 +959,7 @@ export const sanitizeMessage = (message: string): string => {
 #### 7. Content Security Policy (CSP) Headers
 
 **For Web Platform**:
+::: v-pre
 ```typescript
 // Add to web/src/index.html
 <meta http-equiv="Content-Security-Policy" content="
@@ -946,6 +975,7 @@ export const sanitizeMessage = (message: string): string => {
   frame-ancestors 'none';
 ">
 ```
+:::
 
 #### 8. Add Notification Source Tracking
 

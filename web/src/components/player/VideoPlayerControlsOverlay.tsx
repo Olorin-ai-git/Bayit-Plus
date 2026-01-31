@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { Icon } from '@olorin/shared-icons/web'
 import { spacing, borderRadius, colors } from '@olorin/design-tokens'
 import { GlassView, GlassBadge } from '@bayit/shared/ui'
 import { getLanguageInfo } from '@/types/subtitle'
@@ -89,10 +90,17 @@ export default function VideoPlayerControlsOverlay({
             <View style={styles.subtitleFlagsRow}>
               {availableSubtitles.slice(0, 6).map((track) => {
                 const langInfo = getLanguageInfo(track.language)
-                return (
+                return langInfo?.flag ? (
                   <Text key={track.id} style={styles.subtitleFlag}>
-                    {langInfo?.flag || '🌐'}
+                    {langInfo.flag}
                   </Text>
+                ) : (
+                  <Icon
+                    key={track.id}
+                    name="globe"
+                    size="md"
+                    color="#FFFFFF"
+                  />
                 )
               })}
               {availableSubtitles.length > 6 && (

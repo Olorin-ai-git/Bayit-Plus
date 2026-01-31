@@ -340,6 +340,7 @@ import { VoiceInteractionPanel } from '@bayit/shared/components/voice/VoiceInter
 ### Example 1: Replace VoiceSearchModal (Mobile)
 
 **Before**:
+::: v-pre
 ```typescript
 import { VoiceSearchModal } from '@/components/voice';
 
@@ -363,8 +364,10 @@ function HomeScreen() {
   );
 }
 ```
+:::
 
 **After**:
+::: v-pre
 ```typescript
 import { VoiceInteractionPanel } from '@bayit/shared/components/voice/VoiceInteractionPanel';
 import { useVoiceOrchestrator } from '@bayit/shared/hooks/useVoiceOrchestrator';
@@ -393,10 +396,12 @@ function HomeScreen() {
   );
 }
 ```
+:::
 
 ### Example 2: Integrate Orchestrator (voiceManager)
 
 **Before**:
+::: v-pre
 ```typescript
 private async _onSpeechResult(result: any): Promise<void> {
   const response = await backendProxyService.processVoiceCommand({
@@ -410,8 +415,10 @@ private async _onSpeechResult(result: any): Promise<void> {
   }
 }
 ```
+:::
 
 **After**:
+::: v-pre
 ```typescript
 private async _onSpeechResult(result: any): Promise<void> {
   let response: { responseText?: string; intent?: string; confidence?: number };
@@ -442,12 +449,14 @@ private async _onSpeechResult(result: any): Promise<void> {
   }
 }
 ```
+:::
 
 ### Example 3: Avatar Mode Settings (Web)
 
 **Before**: No avatar mode settings existed
 
 **After**:
+::: v-pre
 ```typescript
 import { AvatarPreferencesSection } from '@/components/settings/voice/components/AvatarPreferencesSection';
 
@@ -460,6 +469,7 @@ function VoiceSettings() {
   );
 }
 ```
+:::
 
 ---
 

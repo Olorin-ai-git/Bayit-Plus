@@ -35,7 +35,7 @@ Implemented comprehensive UI/UX improvements to the Admin Uploads page focusing 
 
 ### Key Features
 - Plural forms supported (`selectedFilesOne`, `selectedFilesOther`)
-- Variable interpolation ({{count}}, {{size}}, {{error}})
+- Variable interpolation (\{\{count\}\}, \{\{size\}\}, \{\{error\}\})
 - Context-aware translations
 - Mobile-specific messaging
 - Accessibility announcements for screen readers
@@ -181,6 +181,7 @@ Integrated all components into main `UploadsPage` component.
 **File:** `/web/src/pages/admin/UploadsPage/index.tsx`
 
 ### Changes
+::: v-pre
 ```tsx
 // Added imports
 import { ConnectionStatus } from './components/ConnectionStatus';
@@ -197,6 +198,7 @@ const { queueState, connected, loading, refreshQueue, reconnecting, reconnectAtt
   onRefresh={refreshQueue}
 />
 ```
+:::
 
 ---
 

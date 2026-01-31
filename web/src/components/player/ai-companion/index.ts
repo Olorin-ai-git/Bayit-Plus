@@ -6,4 +6,7 @@
 
 export { default as AICompanionSidebar } from './AICompanionSidebar';
 export { useAICompanion } from './useAICompanion';
-export type { VocabularyWord, EpisodeContext, QuizQuestion, AICompanionData } from './useAICompanion';
+export { VocabularyTab } from './VocabularyTab';
+export { ContextTab } from './ContextTab';
+export { QuizTab } from './QuizTab';
+export * from './types';

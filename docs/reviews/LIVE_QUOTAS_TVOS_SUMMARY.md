@@ -103,6 +103,7 @@
 ## Quick Code Snippets
 
 ### Usage Indicator - Add Focus
+::: v-pre
 ```tsx
 import { TouchableOpacity, Platform } from 'react-native'
 import { useTVFocus } from '@bayit/glass-components/hooks'
@@ -115,8 +116,10 @@ const { isFocused, handleFocus, handleBlur, focusStyle } = useTVFocus({ styleTyp
   </View>
 </TouchableOpacity>
 ```
+:::
 
 ### Admin Pages - Platform Gate
+::: v-pre
 ```tsx
 if (Platform.isTV) {
   return (
@@ -133,6 +136,7 @@ if (Platform.isTV) {
   )
 }
 ```
+:::
 
 ---
 

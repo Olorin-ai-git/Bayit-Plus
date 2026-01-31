@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { radioService } from '../services/api';
 import { colors } from '../theme';
 import { useDirection } from '@bayit/shared/hooks';
@@ -131,7 +132,7 @@ const StationCard: React.FC<{
 
         {/* Play Icon */}
         <View className={`absolute top-3 right-3 w-8 h-8 rounded-full justify-center items-center ${isFocused ? 'bg-purple-600' : 'bg-white/20'}`}>
-          <Text className="text-sm text-white">▶</Text>
+          <NativeIcon name="play" size="sm" context="tv" color="#ffffff" />
         </View>
       </Animated.View>
     </TouchableOpacity>
@@ -200,7 +201,7 @@ export const RadioScreen: React.FC = () => {
       {/* Header */}
       <View className="flex-row items-center px-12 pt-10 pb-5" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
         <View className="w-[60px] h-[60px] rounded-full bg-purple-600/20 justify-center items-center" style={{ marginLeft: isRTL ? 20 : 0, marginRight: isRTL ? 0 : 20 }}>
-          <Text className="text-[28px]">📻</Text>
+          <NativeIcon name="radio" size="xl" context="tv" color="#9333ea" />
         </View>
         <View>
           <Text className="text-[42px] font-bold text-white text-right" style={{ textAlign }}>{t('radio.title')}</Text>

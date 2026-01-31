@@ -82,6 +82,7 @@ grep -r "console\\.log\\|console\\.error\\|console\\.warn" web/src/pages/admin/C
 - Line 288: `<Text className="text-sm text-gray-400">`
 
 **Required Changes:**
+::: v-pre
 ```typescript
 // ❌ BEFORE (VIOLATION)
 <ScrollView className="flex-1">
@@ -111,6 +112,7 @@ const styles = StyleSheet.create({
   },
 })
 ```
+:::
 
 **Verification:**
 ```bash
@@ -466,6 +468,7 @@ for lang in languages:
 
 **Create:** `shared/utils/languageHelpers.ts`
 
+::: v-pre
 ```typescript
 // shared/utils/languageHelpers.ts
 
@@ -519,6 +522,7 @@ export function formatLanguageFlags(languages: string[]): string {
   return languages.map(getLanguageFlag).join(' ')
 }
 ```
+:::
 
 **Add to locale files:**
 ```json
@@ -721,6 +725,7 @@ function hashString(str: string): number {
 
 **Feature Flag Wrapper Pattern:**
 
+::: v-pre
 ```typescript
 // web/src/pages/admin/ContentLibraryPage.tsx
 
@@ -738,6 +743,7 @@ export default function ContentLibraryPageWrapper() {
   return enabled ? <ContentLibraryPageNew /> : <ContentLibraryPageLegacy />
 }
 ```
+:::
 
 **Seed Feature Flags:**
 
@@ -908,6 +914,7 @@ const handleUrlUpload = async () => {
 
 **0.7.3: File Upload Validation**
 
+::: v-pre
 ```typescript
 // shared/components/admin/ImageUploader.tsx
 
@@ -954,6 +961,7 @@ const getImageDimensions = (file: File): Promise<{ width: number; height: number
   })
 }
 ```
+:::
 
 **Backend: Magic Number Validation**
 
@@ -1156,6 +1164,7 @@ async def bulk_update_featured_order(
 
 #### 1.1: GlassFilterBar Component
 
+::: v-pre
 ```typescript
 // shared/components/ui/GlassFilterBar.tsx
 
@@ -1206,9 +1215,11 @@ export function GlassFilterBar({ searchValue, onSearchChange, filters, isRTL }: 
   )
 }
 ```
+:::
 
 #### 1.2: GlassBatchActionBar Component
 
+::: v-pre
 ```typescript
 // shared/components/ui/GlassBatchActionBar.tsx
 
@@ -1253,6 +1264,7 @@ export function GlassBatchActionBar({ selectedCount, actions, onClearSelection, 
   )
 }
 ```
+:::
 
 ### CORRECTED: Simplified Hooks
 
@@ -1264,6 +1276,7 @@ export function GlassBatchActionBar({ selectedCount, actions, onClearSelection, 
 
 #### 1.3: useAdminForm Hook
 
+::: v-pre
 ```typescript
 // web/src/hooks/admin/useAdminForm.ts
 
@@ -1327,6 +1340,7 @@ export function useAdminForm<T extends Record<string, any>>(options: UseAdminFor
   }
 }
 ```
+:::
 
 #### 1.4: Move Existing useSelection to Shared
 

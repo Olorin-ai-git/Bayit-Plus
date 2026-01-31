@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView, GlassCategoryPill } from '../components/ui';
 import { SubtitleFlags } from '../components/SubtitleFlags';
 import { OptimizedImage } from '../components/OptimizedImage';
@@ -87,7 +88,7 @@ const ContentCard: React.FC<{
             />
           ) : (
             <View className="w-full aspect-video bg-white/20 justify-center items-center">
-              <Text className="text-4xl">🎬</Text>
+              <NativeIcon name="vod" size="xl" color="#9ca3af" />
             </View>
           )}
 
@@ -114,7 +115,7 @@ const ContentCard: React.FC<{
         {isFocused && (
           <View className="absolute inset-0 bg-black/40 justify-center items-center">
             <View className="w-12 h-12 rounded-full bg-purple-500 justify-center items-center">
-              <Text className="text-xl text-black ml-1">▶</Text>
+              <NativeIcon name="play" size="md" color="#000000" />
             </View>
           </View>
         )}
@@ -208,7 +209,7 @@ export const VODScreen: React.FC = () => {
           className="w-[60px] h-[60px] rounded-full bg-purple-700/30 justify-center items-center"
           style={isRTL ? { marginLeft: spacing.lg } : { marginRight: spacing.lg }}
         >
-          <Text className="text-3xl">🎬</Text>
+          <NativeIcon name="vod" size="xl" color="#a855f7" />
         </View>
         <View>
           <Text className="text-5xl font-bold text-white" style={{ textAlign }}>{t('vod.title')}</Text>
@@ -256,8 +257,8 @@ export const VODScreen: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-[60px]">
             <GlassView className="p-12 items-center">
-              <Text className="text-6xl mb-4">🎬</Text>
-              <Text className="text-xl font-semibold text-white mb-2">{t('empty.noContent')}</Text>
+              <NativeIcon name="vod" size="3xl" color="#9ca3af" />
+              <Text className="text-xl font-semibold text-white mb-2 mt-4">{t('empty.noContent')}</Text>
               <Text className="text-base text-white/60">{t('empty.tryAnotherCategory')}</Text>
             </GlassView>
           </View>

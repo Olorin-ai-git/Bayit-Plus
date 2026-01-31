@@ -26,6 +26,7 @@ import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import LinearGradient from "react-native-linear-gradient";
 import { GlassView, GlassButton } from "@bayit/shared";
 import { useDirection } from "@bayit/shared-hooks";
+import { NativeIcon } from "@olorin/shared-icons/native";
 
 // Type assertion for LinearGradient React component
 const LinearGradientComponent = LinearGradient as any as React.FC<any>;
@@ -87,6 +88,13 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   },
 ];
 
+const CONTENT_TYPE_ICONS: Record<string, string> = {
+  movie: "vod",
+  series: "live",
+  live: "broadcast",
+  premium: "gem",
+};
+
 export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
   visible,
   onClose,
@@ -119,16 +127,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
   }, [onClose]);
 
   const getContentTypeIcon = () => {
-    switch (contentType) {
-      case "movie":
-        return "🎬";
-      case "series":
-        return "📺";
-      case "live":
-        return "📡";
-      default:
-        return "⭐";
-    }
+    return CONTENT_TYPE_ICONS[contentType] || "gem";
   };
 
   const getContentTypeText = () => {
@@ -183,7 +182,9 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                 key={index}
                 className={`flex-row items-center mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}
               >
-                <Text className="text-sm text-green-500 mr-2">✓</Text>
+                <View className="mr-2">
+                  <NativeIcon name="check" size="sm" color="#10B981" />
+                </View>
                 <Text className={`text-xs text-white flex-1 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                   {t(feature)}
                 </Text>
@@ -227,7 +228,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                   onPress={handleClose}
                   className={`absolute top-4 ${isRTL ? 'left-4' : 'right-4'} w-10 h-10 rounded-full bg-white/10 justify-center items-center z-10`}
                 >
-                  <Text className="text-lg text-white">✕</Text>
+                  <NativeIcon name="x" size="md" color="#FFFFFF" />
                 </TouchableOpacity>
 
                 <ScrollView
@@ -236,7 +237,9 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                 >
                   {/* Header */}
                   <View className="items-center mb-4">
-                    <Text className="text-5xl mb-3">🔒</Text>
+                    <View className="mb-3">
+                      <NativeIcon name="lock" size="xxl" color="#a855f7" />
+                    </View>
                     <Text className={`text-2xl font-bold text-white mb-1 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                       {t("subscriptionGate.title")}
                     </Text>
@@ -248,9 +251,9 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                   {/* Content info */}
                   {contentTitle && (
                     <GlassView className="flex-row items-center p-3 rounded-lg mb-4">
-                      <Text className="text-3xl mr-3">
-                        {getContentTypeIcon()}
-                      </Text>
+                      <View className="mr-3">
+                        <NativeIcon name={getContentTypeIcon()} size="lg" color="#FFFFFF" />
+                      </View>
                       <View className="flex-1">
                         <Text className={`text-xs text-gray-400 uppercase ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                           {getContentTypeText()}
@@ -268,7 +271,9 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                   {/* Trial offer */}
                   <GlassView className="p-4 rounded-lg mb-4 border border-purple-600">
                     <View className="flex-row items-center mb-2">
-                      <Text className="text-2xl mr-2">🎁</Text>
+                      <View className="mr-2">
+                        <NativeIcon name="gem" size="md" color="#FFFFFF" />
+                      </View>
                       <Text className={`text-lg font-semibold text-white ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                         {t("subscriptionGate.trialTitle")}
                       </Text>

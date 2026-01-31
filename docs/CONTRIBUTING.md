@@ -13,6 +13,7 @@ Thank you for contributing to Bayit+! This guide covers our development workflow
 
 ### Getting Started
 
+::: v-pre
 ```bash
 # Clone repository
 git clone <repo-url>
@@ -29,6 +30,7 @@ cp .env.example .env  # Configure environment variables
 # Frontend setup (from root)
 npm run dev:web
 ```
+:::
 
 ## Code Quality Standards
 

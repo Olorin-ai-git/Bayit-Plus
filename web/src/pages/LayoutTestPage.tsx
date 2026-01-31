@@ -9,6 +9,7 @@
 
 import { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Icon } from '@olorin/shared-icons/web';
 import Header from '../components/layout/Header';
 import GlassSidebar from '../components/layout/GlassSidebar';
 import Footer from '../components/layout/Footer';
@@ -37,9 +38,12 @@ export default function LayoutTestPage() {
           </Text>
 
           <View style={styles.section}>
-            <Text style={styles.sectionText}>
-              ✅ Header (242 lines, down from 421 - 42% reduction)
-            </Text>
+            <View style={styles.sectionRow}>
+              <Icon name="check" size={16} color={colors.success} />
+              <Text style={styles.sectionText}>
+                Header (242 lines, down from 421 - 42% reduction)
+              </Text>
+            </View>
             <Text style={styles.sectionText}>
               &nbsp;&nbsp;└─ HeaderNav (113 lines)
             </Text>
@@ -49,9 +53,12 @@ export default function LayoutTestPage() {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionText}>
-              ✅ GlassSidebar (376 lines, down from 772 - 51% reduction)
-            </Text>
+            <View style={styles.sectionRow}>
+              <Icon name="check" size={16} color={colors.success} />
+              <Text style={styles.sectionText}>
+                GlassSidebar (376 lines, down from 772 - 51% reduction)
+              </Text>
+            </View>
             <Text style={styles.sectionText}>
               &nbsp;&nbsp;└─ SidebarToggleButton (68 lines)
             </Text>
@@ -70,9 +77,12 @@ export default function LayoutTestPage() {
           </View>
 
           <View style={styles.section}>
-            <Text style={styles.sectionText}>
-              ✅ Footer (220 lines, down from 785 - 72% reduction)
-            </Text>
+            <View style={styles.sectionRow}>
+              <Icon name="check" size={16} color={colors.success} />
+              <Text style={styles.sectionText}>
+                Footer (220 lines, down from 785 - 72% reduction)
+              </Text>
+            </View>
             <Text style={styles.sectionText}>
               &nbsp;&nbsp;└─ FooterBrand (153 lines)
             </Text>
@@ -91,9 +101,12 @@ export default function LayoutTestPage() {
           </View>
 
           <View style={styles.successBox}>
-            <Text style={styles.successTitle}>
-              ✅ Phase 2 Complete
-            </Text>
+            <View style={styles.successTitleRow}>
+              <Icon name="check" size={20} color="#4ade80" />
+              <Text style={styles.successTitle}>
+                Phase 2 Complete
+              </Text>
+            </View>
             <Text style={styles.successText}>
               Header, Sidebar, and Footer migrated to 100% TailwindCSS
             </Text>
@@ -143,6 +156,12 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg, // 8
     marginBottom: spacing.md, // 16
   },
+  sectionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs, // 4
+    marginBottom: spacing.sm, // 8
+  },
   sectionText: {
     fontSize: 14, // text-sm
     color: 'rgba(255, 255, 255, 0.9)',
@@ -159,11 +178,16 @@ const styles = StyleSheet.create({
     padding: spacing.md, // 16
     borderRadius: borderRadius.lg, // 8
   },
+  successTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs, // 4
+    marginBottom: spacing.sm, // 8
+  },
   successTitle: {
     fontSize: fontSize.base, // 16
     fontWeight: 'bold',
     color: '#4ade80', // green-400
-    marginBottom: spacing.sm, // 8
   },
   successText: {
     fontSize: 14, // text-sm

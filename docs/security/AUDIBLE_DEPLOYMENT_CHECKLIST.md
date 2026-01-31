@@ -34,15 +34,18 @@
 ## Environment Configuration
 
 ### Step 1: Generate Encryption Key
+::: v-pre
 ```bash
 # In your development environment (or use Python)
 python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 
 # Output: <key string to save>
 ```
+:::
 
 ### Step 2: Store Secrets in Google Cloud Secret Manager
 
+::: v-pre
 ```bash
 # Set Audible OAuth Credentials
 gcloud secrets create AUDIBLE_CLIENT_ID --data-file=- << EOF
@@ -61,11 +64,13 @@ EOF
 # Verify secrets created
 gcloud secrets list | grep AUDIBLE
 ```
+:::
 
 ### Step 3: Configure Environment Variables
 
 **In Cloud Run deployment (or equivalent):**
 
+::: v-pre
 ```bash
 AUDIBLE_CLIENT_ID=<from-secret>
 AUDIBLE_CLIENT_SECRET=<from-secret>
@@ -78,6 +83,7 @@ AUDIBLE_HTTP_CONNECT_TIMEOUT_SECONDS=10
 AUDIBLE_HTTP_MAX_CONNECTIONS=5
 AUDIBLE_HTTP_KEEPALIVE_CONNECTIONS=2
 ```
+:::
 
 ### Step 4: Verify Configuration
 

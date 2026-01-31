@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { isTV, isWeb } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
@@ -75,10 +76,12 @@ const SpeedOption: React.FC<{
         style={{ transform: [{ scale: scaleAnim }] }}
       >
         <View className="flex-col">
-          <Text className={`text-${isTV ? 'xl' : 'lg'} font-semibold text-white mb-1`} style={{ textAlign }}>
-            {option.label}
-            {isSelected && ' ✓'}
-          </Text>
+          <View className="flex-row items-center gap-2 mb-1">
+            <Text className={`text-${isTV ? 'xl' : 'lg'} font-semibold text-white`} style={{ textAlign }}>
+              {option.label}
+            </Text>
+            {isSelected && <NativeIcon name="check" size={isTV ? 20 : 16} color={colors.success.DEFAULT} />}
+          </View>
           <Text className={`text-${isTV ? 'base' : 'sm'} text-gray-300`} style={{ textAlign }}>
             {option.description}
           </Text>

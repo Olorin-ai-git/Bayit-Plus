@@ -24,6 +24,7 @@ import { Subscription, User } from '../../types/rbac';
 import { formatDate, formatCurrency } from '../../utils/formatters';
 import { getStatusColor, getPlanColor } from '../../utils/adminConstants';
 import { logger } from '../../utils/logger';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 type SubscriptionWithUser = Subscription & { user: User };
 
@@ -263,11 +264,11 @@ export const SubscriptionsScreen: React.FC = () => {
       </TouchableOpacity>
       {sub.status === 'active' ? (
         <TouchableOpacity className="w-7 h-7 rounded justify-center items-center bg-yellow-500/30" onPress={() => handlePause(sub)}>
-          <Text className="text-xs">⏸️</Text>
+          <NativeIcon name="pause" size="sm" color="#eab308" />
         </TouchableOpacity>
       ) : sub.status === 'paused' ? (
         <TouchableOpacity className="w-7 h-7 rounded justify-center items-center bg-green-500/30" onPress={() => handleResume(sub)}>
-          <Text className="text-xs">▶️</Text>
+          <NativeIcon name="play" size="sm" color="#22c55e" />
         </TouchableOpacity>
       ) : null}
       {sub.status !== 'cancelled' && (
@@ -293,7 +294,7 @@ export const SubscriptionsScreen: React.FC = () => {
         <View className="flex-row flex-wrap gap-3 mb-4">
           <StatCard title={t('admin.subscriptions.active', 'Active')} value={subscriptions.filter(s => s.status === 'active').length.toString()} icon="✅" color="#10b981" />
           <StatCard title={t('admin.subscriptions.churnRate', 'Churn Rate')} value={`${churnAnalytics?.churn_rate || 0}%`} icon="📉" color={churnAnalytics?.churn_rate < 5 ? "#10b981" : "#ef4444"} />
-          <StatCard title={t('admin.subscriptions.atRisk', 'At Risk')} value={(churnAnalytics?.at_risk_users || 0).toString()} icon="⚠️" color="#f59e0b" />
+          <StatCard title={t('admin.subscriptions.atRisk', 'At Risk')} value={(churnAnalytics?.at_risk_users || 0).toString()} icon="alertTriangle" color="#f59e0b" />
           <StatCard title={t('admin.subscriptions.retention', 'Retention')} value={`${churnAnalytics?.retention_rate || 0}%`} icon="📈" color="#a855f7" />
         </View>
 

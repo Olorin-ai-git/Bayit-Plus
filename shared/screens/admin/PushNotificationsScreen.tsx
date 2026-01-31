@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@olorin/glass-ui/hooks';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DataTable, Column } from '../../components/admin/DataTable';
 import { marketingService, MarketingFilter } from '../../services/adminApi';
@@ -226,14 +227,14 @@ export const PushNotificationsScreen: React.FC = () => {
 
   const renderActions = (notification: PushNotification) => (
     <View className="flex-row gap-1">
-      <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#1a1a1a] justify-center items-center" onPress={() => handleEditNotification(notification)}><Text className="text-xs">✏️</Text></TouchableOpacity>
+      <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#1a1a1a] justify-center items-center" onPress={() => handleEditNotification(notification)}><NativeIcon name="edit" size={12} color="#ffffff" /></TouchableOpacity>
       {notification.status === 'draft' && (
         <>
-          <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#FFA500]/30 justify-center items-center" onPress={() => handleSchedule(notification)}><Text className="text-xs">📅</Text></TouchableOpacity>
-          <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#4CAF50]/30 justify-center items-center" onPress={() => handleSendNotification(notification)}><Text className="text-xs">📤</Text></TouchableOpacity>
+          <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#FFA500]/30 justify-center items-center" onPress={() => handleSchedule(notification)}><NativeIcon name="calendar" size={12} color="#FFA500" /></TouchableOpacity>
+          <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#4CAF50]/30 justify-center items-center" onPress={() => handleSendNotification(notification)}><NativeIcon name="send" size={12} color="#4CAF50" /></TouchableOpacity>
         </>
       )}
-      <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#FF4444]/30 justify-center items-center" onPress={() => handleDeleteNotification(notification)}><Text className="text-xs">🗑️</Text></TouchableOpacity>
+      <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#FF4444]/30 justify-center items-center" onPress={() => handleDeleteNotification(notification)}><NativeIcon name="trash" size={12} color="#FF4444" /></TouchableOpacity>
     </View>
   );
 

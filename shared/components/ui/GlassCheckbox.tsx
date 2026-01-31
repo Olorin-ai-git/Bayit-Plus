@@ -10,6 +10,7 @@ import { colors, spacing } from '@olorin/design-tokens';
 import { isTV } from '../utils/platform';
 import { useTVFocus } from '../hooks/useTVFocus';
 import { useDirection } from '../../hooks/useDirection';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface GlassCheckboxProps {
   label?: string;
@@ -68,9 +69,7 @@ export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({
           ]}
         >
           {checked && (
-            <Text style={[styles.checkmark, { fontSize: isTV ? 18 : 14 }]}>
-              ✓
-            </Text>
+            <NativeIcon name="check" size={isTV ? 18 : 14} color={colors.background} />
           )}
         </Animated.View>
 
@@ -133,10 +132,6 @@ const styles = StyleSheet.create({
   },
   marginRight: {
     marginRight: spacing.sm,
-  },
-  checkmark: {
-    fontWeight: 'bold',
-    color: colors.background,
   },
   label: {
     color: colors.text,

@@ -9,6 +9,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView, GlassCategoryPill } from '../components';
 import { colors, spacing } from '../theme';
 import { useDirection } from '@bayit/shared/hooks';
@@ -79,7 +80,7 @@ export const FlowsScreen: React.FC = () => {
     >
       <GlassView style={flowStyles.flowInner}>
         <View style={flowStyles.flowIcon}>
-          <Text style={flowStyles.flowIconText}>▶</Text>
+          <NativeIcon name="play" size="md" context="tv" color="#ffffff" />
         </View>
         <Text style={[flowStyles.flowTitle, { textAlign }]} numberOfLines={2}>
           {item.title}
@@ -110,7 +111,7 @@ export const FlowsScreen: React.FC = () => {
     <View style={flowStyles.container}>
       <View style={[flowStyles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
         <View style={flowStyles.headerIcon}>
-          <Text style={flowStyles.headerIconText}>🎬</Text>
+          <NativeIcon name="vod" size="xl" context="tv" color="#7e22ce" />
         </View>
         <View>
           <Text style={[flowStyles.headerTitle, { textAlign }]}>{t('flows.title', 'Content Flows')}</Text>
@@ -143,8 +144,8 @@ export const FlowsScreen: React.FC = () => {
         renderItem={renderFlow}
         ListEmptyComponent={
           <View style={flowStyles.emptyContainer}>
-            <Text style={flowStyles.emptyIcon}>🎬</Text>
-            <Text style={flowStyles.emptyText}>{t('flows.empty', 'No flows available')}</Text>
+            <NativeIcon name="vod" size="xxxl" context="tv" color="#7e22ce" />
+            <Text style={[flowStyles.emptyText, { marginTop: 16 }]}>{t('flows.empty', 'No flows available')}</Text>
             <Text style={flowStyles.emptyHint}>{t('flows.emptyHint', 'Check back later for curated content')}</Text>
           </View>
         }

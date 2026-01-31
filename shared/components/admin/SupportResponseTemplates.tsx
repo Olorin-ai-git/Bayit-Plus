@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface SupportResponseTemplatesProps {
   onSelect: (template: string) => void;
@@ -178,7 +179,7 @@ export const SupportResponseTemplates: React.FC<SupportResponseTemplatesProps> =
               style={{ width: isTV ? 36 : 28, height: isTV ? 36 : 28, borderRadius: isTV ? 18 : 14 }}
               onPress={onClose}
             >
-              <Text className="text-white" style={{ fontSize: isTV ? 18 : 14 }}>✕</Text>
+              <NativeIcon name="x" size={isTV ? 18 : 14} color="#ffffff" />
             </TouchableOpacity>
           </View>
 

@@ -6,6 +6,7 @@ import { Menu } from 'lucide-react'
 import AdminSidebar from './AdminSidebar'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useAuthStore } from '@/stores/authStore'
+import { Icon } from '@olorin/shared-icons/web'
 
 const SIDEBAR_DEFAULT_WIDTH = 280
 const SIDEBAR_MIN_WIDTH = 240
@@ -130,11 +131,13 @@ export default function AdminLayout() {
               toggleHovered && styles.toggleButtonHovered,
             ]}
           >
-            <Text style={styles.toggleIcon}>
-              {isRTL
-                ? (sidebarOpen ? '▶' : '◀')
-                : (sidebarOpen ? '◀' : '▶')}
-            </Text>
+            <Icon
+              name={isRTL
+                ? (sidebarOpen ? 'chevronRight' : 'chevronLeft')
+                : (sidebarOpen ? 'chevronLeft' : 'chevronRight')}
+              size="sm"
+              color={colors.primary.DEFAULT}
+            />
           </View>
         </Pressable>
       )}

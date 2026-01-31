@@ -276,6 +276,7 @@ gcloud logging read "jsonPayload.message=~'WebSocket.*connected'" \
 
 If critical issues are detected:
 
+::: v-pre
 ```bash
 # 1. Identify last known good commit
 git log --oneline -n 10
@@ -294,6 +295,7 @@ git checkout main
 # Debug and fix issues
 # Re-deploy following standard process
 ```
+:::
 
 ---
 

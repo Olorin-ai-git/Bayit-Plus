@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from '../components';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
@@ -20,11 +21,11 @@ import logger from '../utils/logger';
 const favoritesLogger = logger.scope('FavoritesScreen');
 
 const TYPE_ICONS: Record<string, string> = {
-  movie: '🎬',
-  series: '📺',
-  channel: '📡',
-  podcast: '🎙️',
-  radio: '📻',
+  movie: 'vod',
+  series: 'live',
+  channel: 'broadcast',
+  podcast: 'podcasts',
+  radio: 'radio',
 };
 
 const FavoriteCard: React.FC<{
@@ -78,11 +79,11 @@ const FavoriteCard: React.FC<{
           />
         ) : (
           <View className="w-full aspect-video bg-[#2a2235] justify-center items-center">
-            <Text className="text-[32px]">{TYPE_ICONS[item.type] || '⭐'}</Text>
+            <NativeIcon name={TYPE_ICONS[item.type] || 'vod'} size="xxl" context="tv" color="#eab308" />
           </View>
         )}
         <View className="absolute top-2 bg-black/70 rounded-xl px-2 py-1" style={isRTL ? { left: 8 } : { right: 8 }}>
-          <Text className="text-sm">{TYPE_ICONS[item.type]}</Text>
+          <NativeIcon name={TYPE_ICONS[item.type]} size="sm" context="tv" color="#FFFFFF" />
         </View>
         <View className="p-2">
           <Text className="text-sm font-semibold text-white" style={{ textAlign }} numberOfLines={1}>
@@ -98,10 +99,10 @@ const FavoriteCard: React.FC<{
           <View className="absolute inset-0 bg-black/40 justify-center items-center">
             <View className="flex-row gap-4">
               <View className="w-12 h-12 rounded-full bg-purple-500 justify-center items-center">
-                <Text className="text-xl text-[#0a0a1a] ml-1">▶</Text>
+                <NativeIcon name="play" size="lg" context="tv" color="#0a0a1a" />
               </View>
               <TouchableOpacity onPress={onRemove} className="w-12 h-12 rounded-full bg-white/20 justify-center items-center">
-                <Text className="text-lg text-white">✕</Text>
+                <NativeIcon name="x" size="md" context="tv" color="#FFFFFF" />
               </TouchableOpacity>
             </View>
           </View>
@@ -176,7 +177,7 @@ export const FavoritesScreen: React.FC = () => {
       {/* Header */}
       <View className="flex-row items-center px-12 pt-10 pb-5" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
         <View className="w-[60px] h-[60px] rounded-full bg-yellow-500/20 justify-center items-center" style={{ marginLeft: isRTL ? 20 : 0, marginRight: isRTL ? 0 : 20 }}>
-          <Text className="text-[28px]">⭐</Text>
+          <NativeIcon name="star" size="xl" context="tv" color="#eab308" />
         </View>
         <View>
           <Text className="text-[42px] font-bold text-white" style={{ textAlign }}>{t('favorites.title')}</Text>
@@ -205,8 +206,8 @@ export const FavoritesScreen: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-[60px]">
             <GlassView className="p-12 items-center">
-              <Text className="text-[64px] mb-4">⭐</Text>
-              <Text className="text-xl font-semibold text-white mb-2" style={{ textAlign }}>{t('favorites.empty')}</Text>
+              <NativeIcon name="star" size="xxxl" context="tv" color="#eab308" />
+              <Text className="text-xl font-semibold text-white mb-2 mt-4" style={{ textAlign }}>{t('favorites.empty')}</Text>
               <Text className="text-base text-gray-400" style={{ textAlign }}>{t('favorites.emptyHint')}</Text>
             </GlassView>
           </View>

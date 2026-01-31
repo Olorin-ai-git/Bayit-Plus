@@ -3,6 +3,7 @@ import { View, Text, Pressable, Image, StyleSheet } from 'react-native';
 import { Play, X } from 'lucide-react';
 import { useDirection } from '@/hooks/useDirection';
 import { colors } from '@olorin/design-tokens';
+import { Icon } from '@olorin/shared-icons/web';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { z } from 'zod';
 
@@ -85,7 +86,7 @@ export const WatchlistCard: React.FC<WatchlistCardProps> = ({
           />
         ) : (
           <View className="w-full aspect-video bg-[#171717] justify-center items-center">
-            <Text className="text-[32px]">📋</Text>
+            <Icon name="clipboard" size={32} color={colors.textMuted} />
           </View>
         )}
 

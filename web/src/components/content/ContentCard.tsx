@@ -840,8 +840,8 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderColor: 'rgba(107, 33, 168, 0.3)',
     borderTopColor: colors.primary.DEFAULT,
-    // @ts-ignore - Web animation
-    animationName: 'spin',
+    // @ts-ignore - Web animation (React Native Web compatibility)
+    animationKeyframes: 'spin',
     animationDuration: '1s',
     animationTimingFunction: 'linear',
     animationIterationCount: 'infinite',

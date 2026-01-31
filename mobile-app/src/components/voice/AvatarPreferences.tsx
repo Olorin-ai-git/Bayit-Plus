@@ -22,6 +22,7 @@ import {
 } from '@bayit/shared/constants/voiceAvatarModes';
 import { colors, spacing, borderRadius, typography } from '@olorin/design-tokens';
 import { useDirection } from '@bayit/shared/hooks/useDirection';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 export const AvatarPreferences: React.FC = () => {
   const { avatarVisibilityMode, setAvatarVisibilityMode } = useSupportStore();
@@ -100,13 +101,9 @@ export const AvatarPreferences: React.FC = () => {
         <View style={styles.featuresList}>
           {getFeatures(avatarVisibilityMode).map((feature, index) => (
             <View key={index} style={[styles.featureItem, { flexDirection }]}>
-              <Text
-                style={styles.featureIcon}
-                allowFontScaling={true}
-                maxFontSizeMultiplier={1.3}
-              >
-                {feature.icon}
-              </Text>
+              <View style={styles.featureIconContainer}>
+                <NativeIcon name={feature.iconName} size="sm" color={colors.text} />
+              </View>
               <Text
                 style={[styles.featureText, { textAlign }]}
                 allowFontScaling={true}
@@ -153,13 +150,7 @@ const AvatarModeCard: React.FC<AvatarModeCardProps> = ({ mode, isSelected, onSel
         accessible
         accessibilityLabel={`${getModeDisplayName(mode)} icon`}
       >
-        <Text
-          style={styles.modeIcon}
-          allowFontScaling={true}
-          maxFontSizeMultiplier={1.3}
-        >
-          {getModeIcon(mode)}
-        </Text>
+        <NativeIcon name={getModeIconName(mode)} size="xxl" color="#ffffff" />
       </View>
 
       {/* Mode Name */}
@@ -190,13 +181,7 @@ const AvatarModeCard: React.FC<AvatarModeCardProps> = ({ mode, isSelected, onSel
           accessible
           accessibilityLabel="Selected"
         >
-          <Text
-            style={styles.selectedBadgeText}
-            allowFontScaling={true}
-            maxFontSizeMultiplier={1.3}
-          >
-            ✓
-          </Text>
+          <NativeIcon name="check" size="sm" color={colors.white} />
         </View>
       )}
     </TouchableOpacity>
@@ -237,21 +222,21 @@ function getModeDescription(mode: AvatarMode): string {
   }
 }
 
-function getFeatures(mode: AvatarMode): Array<{ icon: string; text: string }> {
+function getFeatures(mode: AvatarMode): Array<{ iconName: string; text: string }> {
   const config = AVATAR_MODE_CONFIGS[mode];
   const features = [];
 
   if (config.showWizard) {
-    features.push({ icon: '🧙', text: 'Wizard character' });
+    features.push({ iconName: 'profile', text: 'Wizard character' });
   }
   if (config.showAnimations) {
-    features.push({ icon: '✨', text: 'Animated gestures' });
+    features.push({ iconName: 'sparkle', text: 'Animated gestures' });
   }
   if (config.showWaveform) {
-    features.push({ icon: '〰️', text: 'Audio waveform' });
+    features.push({ iconName: 'podcasts', text: 'Audio waveform' });
   }
   if (config.showTranscript) {
-    features.push({ icon: '💬', text: 'Live transcript' });
+    features.push({ iconName: 'vod', text: 'Live transcript' });
   }
 
   return features;
@@ -272,18 +257,18 @@ function getModeColor(mode: AvatarMode): string {
   }
 }
 
-function getModeIcon(mode: AvatarMode): string {
+function getModeIconName(mode: AvatarMode): string {
   switch (mode) {
     case 'full':
-      return '🧙‍♂️';
+      return 'profile';
     case 'compact':
-      return '⭕';
+      return 'live';
     case 'minimal':
-      return '〰️';
+      return 'podcasts';
     case 'icon_only':
-      return '🎩';
+      return 'gem';
     default:
-      return '❓';
+      return 'search';
   }
 }
 
@@ -339,9 +324,6 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  modeIcon: {
-    fontSize: 28,
   },
   modeName: {
     fontSize: 13,
@@ -412,8 +394,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.sm,
   },
-  featureIcon: {
-    fontSize: 14,
+  featureIconContainer: {
+    width: 20,
+    alignItems: 'center',
   },
   featureText: {
     fontSize: 12,

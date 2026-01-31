@@ -157,6 +157,7 @@ pre-commit run --all-files
 
 **STOP! Do not push!**
 
+::: v-pre
 ```bash
 # If secret is in most recent commit (not pushed)
 git reset --soft HEAD~1  # Undo commit, keep changes
@@ -169,6 +170,7 @@ git commit -m "Your message"
 2. Contact security team
 3. Follow git history cleanup procedure (see SECRETS.md)
 ```
+:::
 
 ## Security Checklist
 

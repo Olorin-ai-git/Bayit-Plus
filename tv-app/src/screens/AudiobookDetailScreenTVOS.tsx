@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, Image, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native'
 import { useRoute, useNavigation } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
+import { NativeIcon } from '@olorin/shared-icons/native'
 import { useDirection } from '@bayit/shared/hooks'
 import { GlassView, GlassButton } from '../components'
 import { audiobookService } from '../services/audiobookService'
@@ -53,9 +54,21 @@ export const AudiobookDetailScreenTVOS: React.FC = () => {
   const renderStars = (rating: number) => {
     const stars = []
     for (let i = 1; i <= 5; i++) {
-      stars.push(i <= Math.round(rating) ? '⭐' : '☆')
+      stars.push(
+        <NativeIcon
+          key={i}
+          name="star"
+          size="md"
+          context="tv"
+          color={i <= Math.round(rating) ? '#eab308' : '#6b7280'}
+        />
+      )
     }
-    return stars.join('')
+    return (
+      <View className="flex-row gap-1">
+        {stars}
+      </View>
+    )
   }
 
   if (loading) {
@@ -70,8 +83,8 @@ export const AudiobookDetailScreenTVOS: React.FC = () => {
     return (
       <View className="flex-1 bg-[#0a0a1a] justify-center items-center px-12">
         <GlassView className="p-12 items-center">
-          <Text className="text-6xl mb-6">❌</Text>
-          <Text className="text-3xl font-bold text-white mb-4" style={{ textAlign }}>
+          <NativeIcon name="error" size="xxxl" context="tv" color="#ef4444" />
+          <Text className="text-3xl font-bold text-white mb-4 mt-6" style={{ textAlign }}>
             {t('errors.notFound')}
           </Text>
           <GlassButton variant="primary" onPress={() => navigation.goBack()}>
@@ -95,7 +108,7 @@ export const AudiobookDetailScreenTVOS: React.FC = () => {
           onPress={() => navigation.goBack()}
           className="bg-yellow-500/20 rounded-full w-16 h-16 justify-center items-center"
         >
-          <Text className="text-3xl">‹</Text>
+          <NativeIcon name="chevronLeft" size="xxl" context="tv" color="#eab308" />
         </TouchableOpacity>
       </View>
 
@@ -137,7 +150,7 @@ export const AudiobookDetailScreenTVOS: React.FC = () => {
           {/* Rating */}
           {audiobook.avg_rating > 0 && (
             <View className="mb-4">
-              <Text className="text-2xl text-white mb-1">{renderStars(audiobook.avg_rating)}</Text>
+              <View className="mb-1">{renderStars(audiobook.avg_rating)}</View>
               <Text className="text-lg text-gray-400">{audiobook.avg_rating.toFixed(1)}/5</Text>
             </View>
           )}

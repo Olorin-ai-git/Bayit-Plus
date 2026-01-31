@@ -5,6 +5,7 @@
 
 import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { Icon } from '@olorin/shared-icons/web'
 import { colors, spacing } from '@olorin/design-tokens'
 
 const styles = StyleSheet.create({
@@ -79,7 +80,7 @@ export default function AudiobooksPageHeader({
           </View>
           {lastUpdated && (
             <View style={styles.stat}>
-              <Text style={styles.statValue}>✓</Text>
+              <Icon name="check" size={18} color={colors.primary.DEFAULT} />
               <Text style={styles.statLabel}>
                 {t('common.lastUpdated', 'Updated')}
               </Text>

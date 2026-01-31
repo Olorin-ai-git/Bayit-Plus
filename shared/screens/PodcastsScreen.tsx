@@ -16,6 +16,7 @@ import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocalization';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface PodcastShow {
   id: string;
@@ -95,7 +96,7 @@ const PodcastCard: React.FC<{
           />
         ) : (
           <View className="w-full aspect-square bg-[#2a2a3e] justify-center items-center">
-            <Text className="text-5xl">🎙️</Text>
+            <NativeIcon name="podcasts" size="3xl" color="#10b981" />
           </View>
         )}
 
@@ -112,8 +113,8 @@ const PodcastCard: React.FC<{
           <View className={`flex-wrap gap-2 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
             {show.episodes && show.episodes.length > 0 && (
               <View className={`flex-row items-center ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
-                <Text className="text-[10px] ml-1">🎧</Text>
-                <Text className="text-[10px] text-gray-500">{show.episodes.length} {t('content.episodes')}</Text>
+                <NativeIcon name="audiobooks" size="xs" color="#9ca3af" />
+                <Text className="text-[10px] text-gray-500 ml-1">{show.episodes.length} {t('content.episodes')}</Text>
               </View>
             )}
           </View>
@@ -123,7 +124,7 @@ const PodcastCard: React.FC<{
         {isFocused && (
           <View className="absolute inset-0 bg-black/40 justify-center items-center">
             <View className="w-14 h-14 rounded-full bg-[#10b981] justify-center items-center">
-              <Text className="text-2xl text-black ml-1">▶</Text>
+              <NativeIcon name="play" size="lg" color="#000000" />
             </View>
           </View>
         )}
@@ -206,7 +207,7 @@ export const PodcastsScreen: React.FC = () => {
       {/* Header */}
       <View className={`flex-row items-center px-12 pt-10 pb-4 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
         <View className={`w-[60px] h-[60px] rounded-[30px] bg-[rgba(16,185,129,0.2)] justify-center items-center ${isRTL ? 'ml-4' : 'mr-4'}`}>
-          <Text className="text-[28px]">🎙️</Text>
+          <NativeIcon name="podcasts" size="xl" color="#10b981" />
         </View>
         <View>
           <Text className="text-[42px] font-bold text-white text-right" style={{ textAlign }}>{t('podcasts.title')}</Text>
@@ -218,55 +219,55 @@ export const PodcastsScreen: React.FC = () => {
       <View className={`flex-row flex-wrap px-12 mb-6 gap-3 z-10 ${isRTL ? 'flex-row justify-start' : 'flex-row-reverse justify-start'}`}>
         <GlassCategoryPill
           label={t('podcasts.categories.all')}
-          emoji="🎧"
+          iconName="audiobooks"
           isActive={selectedCategory === 'all'}
           onPress={() => setSelectedCategory('all')}
           hasTVPreferredFocus
         />
         {(isRTL ? categories : [...categories].reverse()).map((category) => {
-          // Enhanced emoji mappings for categories
-          const emojiMap: Record<string, string> = {
-            'קומי': '😂',
-            'comedy': '😂',
-            'פסיכולוגיה': '🧠',
-            'psychology': '🧠',
-            'כללה': '📌',
-            'general': '📌',
-            'טכנולוגיה': '💻',
-            'technology': '💻',
-            'tech': '💻',
-            'חדשות ואקטואליה': '📰',
-            'news': '📰',
-            'היסטוריה': '📚',
-            'history': '📚',
-            'politics': '🏛️',
-            'business': '💼',
-            'entertainment': '🎭',
-            'sports': '⚽',
-            'jewish': '✡️',
-            'judaism': '✡️',
-            'educational': '🎓',
-            'science': '🔬',
-            'health': '🏥',
-            'fitness': '💪',
-            'arts': '🎨',
-            'music': '🎵',
-            'food': '🍽️',
-            'travel': '✈️',
-            'lifestyle': '🌟',
-            'relationships': '❤️',
-            'parenting': '👶',
-            'spirituality': '🙏',
+          // Enhanced icon mappings for categories
+          const iconMap: Record<string, string> = {
+            'קומי': 'smile',
+            'comedy': 'smile',
+            'פסיכולוגיה': 'alertCircle',
+            'psychology': 'alertCircle',
+            'כללה': 'star',
+            'general': 'star',
+            'טכנולוגיה': 'settings',
+            'technology': 'settings',
+            'tech': 'settings',
+            'חדשות ואקטואליה': 'live',
+            'news': 'live',
+            'היסטוריה': 'bookOpen',
+            'history': 'bookOpen',
+            'politics': 'star',
+            'business': 'briefcase',
+            'entertainment': 'vod',
+            'sports': 'activity',
+            'jewish': 'star',
+            'judaism': 'star',
+            'educational': 'bookOpen',
+            'science': 'search',
+            'health': 'heart',
+            'fitness': 'activity',
+            'arts': 'star',
+            'music': 'music',
+            'food': 'coffee',
+            'travel': 'map',
+            'lifestyle': 'star',
+            'relationships': 'heart',
+            'parenting': 'baby',
+            'spirituality': 'sun',
           };
 
           const categoryName = getLocalizedText(category, 'name');
-          const emoji = emojiMap[category.id.toLowerCase()] || emojiMap[categoryName?.toLowerCase()] || '🎙️';
+          const iconName = iconMap[category.id.toLowerCase()] || iconMap[categoryName?.toLowerCase()] || 'podcasts';
 
           return (
             <GlassCategoryPill
               key={category.id}
               label={categoryName}
-              emoji={emoji}
+              iconName={iconName}
               isActive={selectedCategory === category.id}
               onPress={() => setSelectedCategory(category.id)}
             />
@@ -292,8 +293,8 @@ export const PodcastsScreen: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-[60px]">
             <GlassView className="p-12 items-center">
-              <Text className="text-[64px] mb-4">🎙️</Text>
-              <Text className="text-xl font-semibold text-white mb-2">{t('empty.noPodcasts')}</Text>
+              <NativeIcon name="podcasts" size="4xl" color="#10b981" />
+              <Text className="text-xl font-semibold text-white mb-2 mt-4">{t('empty.noPodcasts')}</Text>
               <Text className="text-base text-gray-400">{t('empty.tryLater')}</Text>
             </GlassView>
           </View>

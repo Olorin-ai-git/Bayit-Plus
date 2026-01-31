@@ -139,6 +139,7 @@ poetry run pytest tests/ --cov=app --cov-report=html --cov-report=term-missing -
 
 ### Command to Execute
 
+::: v-pre
 ```bash
 cd /Users/olorin/Documents/olorin
 
@@ -156,6 +157,7 @@ git commit -m "Phase 4C: Update CI/CD coverage threshold to 85%
 
 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>"
 ```
+:::
 
 ---
 

@@ -99,8 +99,8 @@ const styles = StyleSheet.create({
     boxShadow: '0 4px 20px rgba(107, 33, 168, 0.4)',
   },
   iconActive: {
-    // @ts-ignore - Web animation
-    animationName: 'pulse',
+    // @ts-ignore - Web animation (React Native Web compatibility)
+    animationKeyframes: 'pulse',
     animationDuration: '2s',
     animationIterationCount: 'infinite',
   },

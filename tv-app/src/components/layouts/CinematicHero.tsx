@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import Video from 'react-native-video';
 import LinearGradient from 'react-native-linear-gradient';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from '../ui/GlassView';
 import { colors, spacing, fontSize, borderRadius } from '../../theme';
 import { isTV } from '../../utils/platform';
@@ -252,7 +253,7 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
             onPress={handlePlay}
             onFocus={() => setFocusedButton('play')}
           >
-            <Text className="text-white" style={{ fontSize: isTV ? 20 : 16 }}>▶</Text>
+            <NativeIcon name="play" size={isTV ? "lg" : "md"} context="tv" color="#ffffff" />
             <Text className="font-semibold text-white" style={{ fontSize: isTV ? 20 : 16 }}>צפה עכשיו</Text>
           </TouchableOpacity>
 
@@ -273,7 +274,7 @@ export const CinematicHero: React.FC<CinematicHeroProps> = ({
               onPress={toggleTrailer}
               onFocus={() => setFocusedButton('trailer')}
             >
-              <Text style={{ fontSize: isTV ? 18 : 14 }}>🎬</Text>
+              <NativeIcon name="vod" size={isTV ? "lg" : "md"} context="tv" color="#FFFFFF" />
               <Text className="font-medium text-white" style={{ fontSize: isTV ? 18 : 14 }}>
                 {showTrailer ? 'סגור טריילר' : 'צפה בטריילר'}
               </Text>

@@ -164,6 +164,7 @@ Icons scale contextually for different platforms and use cases:
 
 ### Web (React)
 
+::: v-pre
 ```tsx
 import { Icon, useIcon, renderIcon, ICON_REGISTRY } from '@olorin/shared-icons/web';
 
@@ -184,9 +185,11 @@ const iconDef = ICON_REGISTRY['friends'];
 console.log(iconDef.lucideName);  // "Users2"
 console.log(iconDef.category);     // "navigation"
 ```
+:::
 
 ### Mobile/TV (React Native)
 
+::: v-pre
 ```tsx
 import { useIcon, getIconData, ICON_REGISTRY } from '@olorin/shared-icons/native';
 
@@ -207,6 +210,7 @@ function GameMenuButton() {
   );
 }
 ```
+:::
 
 ### Backend / Data-Driven Apps
 
@@ -238,6 +242,7 @@ navIcons.forEach(icon => {
 
 The main sidebar now uses the unified icon system:
 
+::: v-pre
 ```tsx
 // Before (emoji)
 { id: 'friends', icon: '👥', labelKey: 'nav.friends', path: '/friends' }
@@ -248,6 +253,7 @@ The main sidebar now uses the unified icon system:
 // Rendering
 <Icon name={item.icon} size="md" context="navigation" />
 ```
+:::
 
 **File Updates:**
 - `web/src/components/layout/GlassSidebar.tsx` ✅
@@ -285,6 +291,7 @@ const items = [
 ```
 
 **Step 3: Update rendering**
+::: v-pre
 ```tsx
 // Before
 {items.map(item => (
@@ -302,6 +309,7 @@ const items = [
   </button>
 ))}
 ```
+:::
 
 ### For Existing Components
 
@@ -317,6 +325,7 @@ grep -r "icon: 'Star'" src/
 
 Replace with registry references:
 
+::: v-pre
 ```typescript
 import { ICON_REGISTRY } from '@olorin/shared-icons/web';
 
@@ -326,6 +335,7 @@ import { ICON_REGISTRY } from '@olorin/shared-icons/web';
 // ❌ Bad
 <Icon lucideName="Star" size={24} />
 ```
+:::
 
 ## Adding New Icons
 

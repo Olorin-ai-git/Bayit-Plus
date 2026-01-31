@@ -5,6 +5,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { EPGProgram, Channel, Timezone } from '../../services/epgApi';
 import { EPGChannelRow } from './EPGChannelRow';
 import { GlassView } from '../ui';
@@ -111,7 +112,7 @@ export const EPGGrid: React.FC<EPGGridProps> = ({
     return (
       <GlassView className="p-8 items-center justify-center rounded-3xl">
         <View className="w-20 h-20 rounded-full bg-purple-500/10 justify-center items-center mb-4">
-          <Text style={{ fontSize: 40 }}>📺</Text>
+          <NativeIcon name="tv" size={40} color="#a855f7" />
         </View>
         <Text className="text-white font-semibold mb-2 text-center" style={{ fontSize: isTV ? 24 : 20 }}>
           {t('epg.noChannels', 'No TV Guide Data Available')}

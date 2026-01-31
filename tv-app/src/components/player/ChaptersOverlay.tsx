@@ -8,6 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from '../ui';
 import { ChapterItem, Chapter } from './ChapterItem';
 import { colors } from '../../theme';
@@ -77,7 +78,7 @@ export const ChaptersOverlay: React.FC<ChaptersOverlayProps> = ({
         {/* Header */}
         <View className="flex-row items-center justify-between px-5 py-4 border-b border-white/10">
           <View className="flex-row items-center gap-2">
-            <Text className="text-lg">📑</Text>
+            <NativeIcon name="list" size="lg" context="tv" color="#a855f7" />
             <Text className="text-lg font-semibold text-white">{t('chapters.title')}</Text>
             <Text className="text-sm text-[#9ca3af]">({chapters.length})</Text>
           </View>
@@ -86,7 +87,7 @@ export const ChaptersOverlay: React.FC<ChaptersOverlayProps> = ({
             onPress={onClose}
             accessibilityLabel={t('common.close')}
           >
-            <Text className="text-base text-[#d1d5db]">✕</Text>
+            <NativeIcon name="x" size="md" context="tv" color="#d1d5db" />
           </TouchableOpacity>
         </View>
 
@@ -104,8 +105,8 @@ export const ChaptersOverlay: React.FC<ChaptersOverlayProps> = ({
             </View>
           ) : chapters.length === 0 ? (
             <View className="flex-1 justify-center items-center py-12">
-              <Text className="text-5xl opacity-50 mb-4">📑</Text>
-              <Text className="text-sm text-[#9ca3af] text-center">{t('chapters.noChapters')}</Text>
+              <NativeIcon name="list" size="xxxl" context="tv" color="#9ca3af" />
+              <Text className="text-sm text-[#9ca3af] text-center mt-4">{t('chapters.noChapters')}</Text>
             </View>
           ) : (
             chapters.map((chapter, index) => (

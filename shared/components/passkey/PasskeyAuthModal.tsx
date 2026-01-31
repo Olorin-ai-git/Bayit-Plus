@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { GlassModal } from '../ui/GlassModal';
 import { GlassButton } from '../ui/GlassButton';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useAuthStore } from '../../stores/authStore';
 import { useDirection } from '../../hooks/useDirection';
 import { rtlSpacing } from '../../utils/rtlHelpers';
@@ -172,7 +173,9 @@ export const PasskeyAuthModal: React.FC<PasskeyAuthModalProps> = ({
       case 'success':
         return (
           <View className="items-center p-8">
-            <Text className="text-5xl text-green-500">✓</Text>
+            <View className="w-16 h-16 rounded-full bg-green-500/20 items-center justify-center mb-4">
+              <NativeIcon name="check" size="3xl" color="#22c55e" />
+            </View>
             <Text className="text-lg text-white mt-4 text-center">{t('passkey.auth.success')}</Text>
           </View>
         );
@@ -212,7 +215,7 @@ export const PasskeyAuthModal: React.FC<PasskeyAuthModalProps> = ({
         return (
           <View className="items-center p-6">
             <View className="w-20 h-20 rounded-full bg-purple-600/20 items-center justify-center mb-6">
-              <Text className="text-[40px]">🔐</Text>
+              <NativeIcon name="lock" size="xl" color={colors.primary} />
             </View>
             <Text className="text-xl font-semibold text-white mb-2 text-center">{t('passkey.auth.title')}</Text>
             <Text className="text-base text-white/60 text-center mb-8 leading-[22px]">{t('passkey.auth.description')}</Text>

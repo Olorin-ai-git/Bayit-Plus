@@ -8,6 +8,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Modal, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface LLMSearchModalProps {
   visible: boolean;
@@ -94,7 +95,9 @@ export function LLMSearchModal({
       <Modal visible={visible} transparent animationType="fade">
         <View className="flex-1 bg-black/80 items-center justify-center p-6">
           <View className="bg-black/40 backdrop-blur-xl rounded-3xl border border-white/20 p-8 max-w-md">
-            <Text className="text-6xl text-center mb-4">🔒</Text>
+            <View className="items-center mb-4">
+              <NativeIcon name="lock" size="3xl" color="#ffffff" />
+            </View>
             <Text className="text-white text-2xl font-bold text-center mb-4">
               {t('search.premiumFeature')}
             </Text>
@@ -128,7 +131,7 @@ export function LLMSearchModal({
           {/* Header */}
           <View className="flex-row items-center justify-between px-6 py-4 border-b border-white/10">
             <View className="flex-row items-center gap-2">
-              <Text className="text-2xl">🤖</Text>
+              <NativeIcon name="cpu" size="xl" color="#a855f7" />
               <Text className="text-white text-xl font-bold">{t('search.smartSearch')}</Text>
             </View>
             <TouchableOpacity
@@ -136,7 +139,7 @@ export function LLMSearchModal({
               className="w-10 h-10 items-center justify-center bg-white/10 rounded-full"
               activeOpacity={0.7}
             >
-              <Text className="text-white text-xl">✕</Text>
+              <NativeIcon name="x" size="lg" color="#ffffff" />
             </TouchableOpacity>
           </View>
 

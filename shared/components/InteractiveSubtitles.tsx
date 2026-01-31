@@ -9,6 +9,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from './ui/GlassView';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { subtitlesService } from '../services/api';
@@ -262,7 +263,7 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
             className={`flex-row items-center gap-1 px-4 py-2 bg-white/15 rounded-full border border-white/25 ${subtitlesMode === 'select' ? 'bg-purple-500/50 border-blue-500/70' : ''}`}
             onPress={toggleSelectMode}
           >
-            <Text className="text-base">👆</Text>
+            <NativeIcon name="hand" size={16} color="#ffffff" />
             <Text className="text-sm text-white">
               {subtitlesMode === 'select' ? t('subtitles.selection') : t('subtitles.translation')}
             </Text>

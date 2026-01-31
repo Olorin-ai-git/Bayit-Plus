@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView, TVSwitch } from '../components/ui';
 import { useDirection } from '../hooks/useDirection';
 import { useAuthStore } from '../stores/authStore';
@@ -20,7 +21,7 @@ import { isTV } from '../utils/platform';
 import type { QualityLevel } from '../components/player/QualitySelector';
 
 interface SettingRowProps {
-  icon: string;
+  icon: string; // Icon name from @olorin/shared-icons
   label: string;
   value?: string;
   onPress?: () => void;
@@ -43,7 +44,7 @@ const SettingRow: React.FC<SettingRowProps> = ({
       style={{ flexDirection }}
     >
       <View className={`flex-row items-center gap-4 flex-1`} style={{ flexDirection }}>
-        <Text className={isTV ? 'text-2xl' : 'text-xl'}>{icon}</Text>
+        <NativeIcon name={icon as any} size={isTV ? 'lg' : 'md'} color="#a855f7" />
         <Text className={`${isTV ? 'text-lg' : 'text-base'} text-white`} style={{ textAlign }}>{label}</Text>
       </View>
       {children ? (
@@ -51,7 +52,7 @@ const SettingRow: React.FC<SettingRowProps> = ({
       ) : (
         <View className="flex-row items-center gap-2" style={{ flexDirection }}>
           {value && <Text className={`${isTV ? 'text-base' : 'text-sm'} text-white/40`}>{value}</Text>}
-          <Text className={`${isTV ? 'text-base' : 'text-sm'} text-white/40`}>{isRTL ? '◀' : '▶'}</Text>
+          <NativeIcon name={isRTL ? 'chevronLeft' : 'chevronRight'} size={isTV ? 'md' : 'sm'} color="rgba(255, 255, 255, 0.4)" />
         </View>
       )}
     </View>
@@ -429,7 +430,7 @@ export default function SettingsScreen() {
       {/* Header */}
       <View className={`gap-4 mb-8`} style={{ flexDirection }}>
         <View className={`${isTV ? 'w-16 h-16 rounded-full' : 'w-12 h-12 rounded-3xl'} bg-purple-500/20 justify-center items-center`}>
-          <Text className={isTV ? 'text-4xl' : 'text-2xl'}>⚙️</Text>
+          <NativeIcon name="settings" size={isTV ? 'xl' : 'lg'} color="#a855f7" />
         </View>
         <View>
           <Text className={`${isTV ? 'text-4xl' : 'text-3xl'} font-bold text-white`} style={{ textAlign }}>{t('nav.settings', 'Settings')}</Text>
@@ -445,7 +446,7 @@ export default function SettingsScreen() {
           {t('settings.language', 'Language')}
         </Text>
         <SettingRow
-          icon="🌍"
+          icon="globe"
           label={t('settings.appLanguage', 'App Language')}
           value={currentLanguage}
           onPress={handleLanguageChange}
@@ -457,7 +458,7 @@ export default function SettingsScreen() {
         <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.voice', 'Voice Control')}
         </Text>
-        <SettingRow icon="🎤" label={t('settings.wakeWord', 'Wake Word Activation')}>
+        <SettingRow icon="mic" label={t('settings.wakeWord', 'Wake Word Activation')}>
           <TVSwitch
             value={wakeWord}
             onValueChange={handleWakeWordToggle}
@@ -466,7 +467,7 @@ export default function SettingsScreen() {
           />
         </SettingRow>
         <SettingRow
-          icon="🔊"
+          icon="speaker"
           label={t('settings.voiceSettings', 'Voice Preferences')}
           onPress={() => navigation.navigate('VoiceSettings')}
         />
@@ -477,7 +478,7 @@ export default function SettingsScreen() {
         <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.playback', 'Playback')}
         </Text>
-        <SettingRow icon="▶️" label={t('settings.autoplay', 'Autoplay Next Episode')}>
+        <SettingRow icon="play" label={t('settings.autoplay', 'Autoplay Next Episode')}>
           <TVSwitch
             value={autoplay}
             onValueChange={setAutoplay}
@@ -485,7 +486,7 @@ export default function SettingsScreen() {
             thumbColor={colors.text}
           />
         </SettingRow>
-        <SettingRow icon="💬" label={t('settings.subtitles', 'Subtitles')}>
+        <SettingRow icon="subtitles" label={t('settings.subtitles', 'Subtitles')}>
           <TVSwitch
             value={subtitles}
             onValueChange={setSubtitles}
@@ -501,7 +502,7 @@ export default function SettingsScreen() {
           {t('settings.display', 'Display')}
         </Text>
         <SettingRow
-          icon="🏠"
+          icon="home"
           label={t('settings.homePageSections', 'Home Page Sections')}
           onPress={() => navigation.navigate('HomeSectionConfiguration' as never)}
         />
@@ -513,13 +514,13 @@ export default function SettingsScreen() {
           {t('settings.videoAudio', 'Video & Audio')}
         </Text>
         <SettingRow
-          icon="🎬"
+          icon="vod"
           label={t('settings.defaultQuality', 'Default Video Quality')}
           value={getQualityLabel(defaultQuality)}
           onPress={handleQualityChange}
         />
         <SettingRow
-          icon="📶"
+          icon="signal"
           label={t('settings.autoAdjustQuality', 'Auto-Adjust Quality')}
         >
           <TVSwitch
@@ -530,7 +531,7 @@ export default function SettingsScreen() {
           />
         </SettingRow>
         <SettingRow
-          icon="📉"
+          icon="trendingDown"
           label={t('settings.dataSaver', 'Data Saver Mode')}
         >
           <TVSwitch
@@ -548,7 +549,7 @@ export default function SettingsScreen() {
           {t('settings.parentalControls', 'Parental Controls')}
         </Text>
         <SettingRow
-          icon="🔐"
+          icon="shield"
           label={t('settings.enableParentalControls', 'Enable Parental Controls')}
         >
           <TVSwitch
@@ -561,12 +562,12 @@ export default function SettingsScreen() {
         {parentalControlsEnabled && (
           <>
             <SettingRow
-              icon="🔢"
+              icon="hash"
               label={t('settings.changePIN', 'Change PIN')}
               onPress={handleChangePIN}
             />
             <SettingRow
-              icon="🎭"
+              icon="award"
               label={t('settings.contentRating', 'Content Rating Restriction')}
               value={`${contentRating} - ${getRatingDescription(contentRating)}`}
               onPress={handleContentRatingChange}
@@ -581,13 +582,13 @@ export default function SettingsScreen() {
           {t('settings.downloads', 'Downloads')}
         </Text>
         <SettingRow
-          icon="📥"
+          icon="download"
           label={t('settings.downloadQuality', 'Download Quality')}
           value={getDownloadQualityLabel(downloadQuality)}
           onPress={handleDownloadQualityChange}
         />
         <SettingRow
-          icon="📶"
+          icon="wifi"
           label={t('settings.wifiOnly', 'WiFi Only Downloads')}
         >
           <TVSwitch
@@ -598,7 +599,7 @@ export default function SettingsScreen() {
           />
         </SettingRow>
         <SettingRow
-          icon="⏭️"
+          icon="skipForward"
           label={t('settings.autoDownloadNext', 'Auto-Download Next Episode')}
         >
           <TVSwitch
@@ -616,7 +617,7 @@ export default function SettingsScreen() {
           {t('settings.accessibility', 'Accessibility')}
         </Text>
         <SettingRow
-          icon="🔤"
+          icon="type"
           label={t('settings.largeText', 'Large Text')}
         >
           <TVSwitch
@@ -627,7 +628,7 @@ export default function SettingsScreen() {
           />
         </SettingRow>
         <SettingRow
-          icon="🌓"
+          icon="contrast"
           label={t('settings.highContrast', 'High Contrast Mode')}
         >
           <TVSwitch
@@ -638,7 +639,7 @@ export default function SettingsScreen() {
           />
         </SettingRow>
         <SettingRow
-          icon="👁️"
+          icon="eye"
           label={t('settings.screenReader', 'Enhanced Screen Reader Support')}
         >
           <TVSwitch
@@ -649,7 +650,7 @@ export default function SettingsScreen() {
           />
         </SettingRow>
         <SettingRow
-          icon="🎬"
+          icon="move"
           label={t('settings.reducedMotion', 'Reduced Motion')}
         >
           <TVSwitch
@@ -666,7 +667,7 @@ export default function SettingsScreen() {
         <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-white/40 mb-4 uppercase tracking-wider`} style={{ textAlign }}>
           {t('settings.notifications', 'Notifications')}
         </Text>
-        <SettingRow icon="🔔" label={t('settings.pushNotifications', 'Push Notifications')}>
+        <SettingRow icon="bell" label={t('settings.pushNotifications', 'Push Notifications')}>
           <TVSwitch
             value={notifications}
             onValueChange={setNotifications}
@@ -683,19 +684,19 @@ export default function SettingsScreen() {
             {t('settings.account', 'Account')}
           </Text>
           <SettingRow
-            icon="👤"
+            icon="profile"
             label={t('settings.profile', 'Profile')}
             value={user.name || user.email}
             onPress={() => navigation.navigate('Profile')}
           />
           <SettingRow
-            icon="💎"
+            icon="star"
             label={t('settings.subscription', 'Subscription')}
             value={user.subscription?.plan || t('common.free', 'Free')}
             onPress={() => navigation.navigate('Subscribe')}
           />
           <SettingRow
-            icon="🚪"
+            icon="logOut"
             label={t('settings.logout', 'Log Out')}
             onPress={handleLogout}
           />
@@ -708,12 +709,12 @@ export default function SettingsScreen() {
           {t('settings.privacy', 'Privacy & Legal')}
         </Text>
         <SettingRow
-          icon="🔒"
+          icon="lock"
           label={t('settings.privacyPolicy', 'Privacy Policy')}
           onPress={() => {}}
         />
         <SettingRow
-          icon="📄"
+          icon="file"
           label={t('settings.termsOfService', 'Terms of Service')}
           onPress={() => {}}
         />
@@ -725,12 +726,12 @@ export default function SettingsScreen() {
           {t('settings.support', 'Support')}
         </Text>
         <SettingRow
-          icon="❓"
+          icon="helpCircle"
           label={t('settings.helpCenter', 'Help Center')}
           onPress={() => navigation.navigate('Help')}
         />
         <SettingRow
-          icon="📧"
+          icon="mail"
           label={t('settings.contactUs', 'Contact Us')}
           onPress={() => {}}
         />

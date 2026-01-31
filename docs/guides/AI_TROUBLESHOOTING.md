@@ -378,11 +378,13 @@ curl -X GET "http://localhost:8000/api/v1/live/{channel_id}/catchup?detail=high"
 ```
 
 **3. Check Transcript Quality**
+::: v-pre
 ```bash
 # Backend - Review transcript
 cd backend
 poetry run python scripts/view_channel_transcript.py --channel-id <channel_id>
 ```
+:::
 
 **4. Upgrade to Sonnet for Better Summaries (Admin)**
 ```bash

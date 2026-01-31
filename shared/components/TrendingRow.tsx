@@ -13,6 +13,7 @@ import { GlassView } from './ui/GlassView';
 import { trendingService } from '../services/api';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 // Platform-specific detection
 const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';
@@ -48,17 +49,18 @@ interface TrendingRowProps {
   onTopicPress?: (topic: TrendingTopic) => void;
 }
 
-const CATEGORY_EMOJIS: Record<string, string> = {
-  security: '🔒',
-  politics: '🏛️',
-  tech: '💻',
-  culture: '🎭',
-  sports: '⚽',
-  economy: '📈',
-  entertainment: '🎬',
-  weather: '🌤️',
-  health: '🏥',
-  general: '📰',
+// Category icons - maps to @olorin/shared-icons registry
+const CATEGORY_ICONS: Record<string, string> = {
+  security: 'lock',
+  politics: 'judaism',
+  tech: 'vod',
+  culture: 'vod',
+  sports: 'target',
+  economy: 'discover',
+  entertainment: 'vod',
+  weather: 'globe',
+  health: 'heart',
+  general: 'news',
 };
 
 /**
@@ -110,9 +112,9 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
           <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
             {t('trending.title')}
           </Text>
-          <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
-            📈
-          </Text>
+          <View className={isRTL ? 'mr-2' : 'ml-2'}>
+            <NativeIcon name="flame" size={isMobilePhone ? 'md' : 'lg'} color="#a855f7" />
+          </View>
         </View>
         <View className={`justify-center items-center ${isMobilePhone ? 'h-24' : 'h-36'}`}>
           <ActivityIndicator color="#a855f7" size="large" />
@@ -131,9 +133,9 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
           <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
             {t('trending.title')}
           </Text>
-          <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
-            📈
-          </Text>
+          <View className={isRTL ? 'mr-2' : 'ml-2'}>
+            <NativeIcon name="flame" size={isMobilePhone ? 'md' : 'lg'} color="#a855f7" />
+          </View>
         </View>
         <View className={`justify-center items-center px-6 ${isMobilePhone ? 'h-14' : 'h-24'}`}>
           <Text className={`text-${isMobilePhone ? 'sm' : 'base'} text-white/60 text-center`}>
@@ -169,9 +171,9 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
         <Text className={`text-${isMobilePhone ? 'base' : 'lg'} font-semibold text-white`}>
           {t('trending.title')}
         </Text>
-        <Text className={`text-${isMobilePhone ? 'base' : 'xl'} ${isRTL ? 'mr-2' : 'ml-2'}`}>
-          📈
-        </Text>
+        <View className={isRTL ? 'mr-2' : 'ml-2'}>
+          <NativeIcon name="flame" size={isMobilePhone ? 'md' : 'lg'} color="#a855f7" />
+        </View>
       </View>
 
       {/* Overall Mood */}
@@ -285,9 +287,13 @@ const TopicCard: React.FC<TopicCardProps> = ({
           intensity="medium"
         >
           <View className={`flex items-center mb-${isMobilePhone ? '2' : '4'} ${isRTL ? 'flex-row-reverse' : 'flex-row'}`}>
-            <Text className={`text-${isMobilePhone ? 'base' : '3xl'} ${isRTL ? 'ml-2' : 'mr-2'}`}>
-              {CATEGORY_EMOJIS[topic.category] || '📌'}
-            </Text>
+            <View className={isRTL ? 'ml-2' : 'mr-2'}>
+              <NativeIcon
+                name={CATEGORY_ICONS[topic.category] || 'location'}
+                size={isMobilePhone ? 'md' : 'xl'}
+                color="#a855f7"
+              />
+            </View>
             <View className={`bg-purple-900/30 px-${isMobilePhone ? '2' : '4'} py-1 rounded-full border border-purple-400/60`}>
               <Text className={`text-${isMobilePhone ? 'xs' : 'sm'} text-purple-400/90 font-semibold`}>
                 {categoryLabel}

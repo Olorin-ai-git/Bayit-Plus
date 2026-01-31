@@ -25,6 +25,7 @@ The Watch Party MongoDB/Beanie implementation now includes comprehensive server-
 **EXCELLENT**: Pydantic field validators are correctly implemented across all user-input models:
 
 #### ChatMessage Document (lines 121-183)
+::: v-pre
 ```python
 @field_validator("user_name")
 @classmethod
@@ -45,6 +46,7 @@ def validate_message(cls, v: str) -> str:
     # ✅ Control character stripping (except \n and \t)
     # ✅ XSS pattern detection
 ```
+:::
 
 #### ChatMessageCreate Request Model (lines 235-277)
 ```python
@@ -256,10 +258,12 @@ if len(v) == 0:
 **Status**: ✅ CORRECT
 
 #### Null Byte Injection
+::: v-pre
 ```python
 v = v.replace('\0', '')  # ✅ Null bytes removed
 # Prevents: "message\0<script>alert(1)</script>"
 ```
+:::
 **Status**: ✅ CORRECT
 
 #### Control Character Bypass
@@ -271,10 +275,12 @@ v = re.sub(r'[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]', '', v)
 **Status**: ✅ CORRECT - Multiline messages supported
 
 #### Case Sensitivity
+::: v-pre
 ```python
 if re.search(pattern, v, re.IGNORECASE):
     # Blocks: <SCRIPT>, <ScRiPt>, <script>
 ```
+:::
 **Status**: ✅ CORRECT - Case-insensitive detection
 
 ---

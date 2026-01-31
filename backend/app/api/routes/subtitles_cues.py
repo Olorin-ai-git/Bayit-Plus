@@ -3,13 +3,16 @@ Subtitle Cues Routes.
 Handles cue retrieval with Hebrew mode support, nikud/shoresh generation.
 """
 
+import asyncio
 from datetime import datetime
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query, Request
+from beanie import PydanticObjectId
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request
 
 from app.core.logging_config import get_logger
 from app.core.rate_limiter import RATE_LIMITS, limiter
+from app.models.ai_generation_job import AIGenerationJob, JobStatus, JobType
 from app.models.subtitles import SubtitleTrackDoc
 from app.services.nikud_service import add_nikud, add_nikud_batch, get_cache_stats
 from app.services.shoresh_service import extract_shoresh_batch
@@ -100,17 +103,64 @@ async def get_subtitle_cues(
     }
 
 
+async def _process_nikud_job(job_id: str, content_id: str, language: str) -> None:
+    """Background task to process nikud generation"""
+    job = await AIGenerationJob.get(PydanticObjectId(job_id))
+    if not job:
+        logger.error("Job not found", extra={"job_id": job_id})
+        return
+
+    try:
+        await job.start_processing()
+
+        tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
+        if not tracks:
+            await job.fail("Subtitle track not found")
+            return
+
+        track = tracks[0]
+        texts_to_process = [cue.text for cue in track.cues]
+
+        # Process in batches and update progress
+        batch_size = 10
+        nikud_texts = []
+        for i in range(0, len(texts_to_process), batch_size):
+            batch = texts_to_process[i : i + batch_size]
+            batch_results = await add_nikud_batch(batch)
+            nikud_texts.extend(batch_results)
+            await job.update_progress(len(nikud_texts))
+
+        for i, cue in enumerate(track.cues):
+            cue.text_nikud = nikud_texts[i]
+
+        track.has_nikud_version = True
+        track.nikud_generated_at = datetime.utcnow()
+        track.updated_at = datetime.utcnow()
+        await track.save()
+
+        await job.complete()
+        logger.info(
+            "Nikud generated",
+            extra={"content_id": content_id, "language": language, "cues_processed": len(track.cues)},
+        )
+
+    except Exception as e:
+        logger.error("Nikud generation failed", extra={"job_id": job_id, "error": str(e)})
+        await job.fail(str(e))
+
+
 @router.post("/{content_id}/nikud")
 @limiter.limit(RATE_LIMITS["subtitle_nikud"])
 async def generate_nikud_for_track(
     request: Request,
+    background_tasks: BackgroundTasks,
     content_id: str,
     language: str = "he",
     force: bool = False,
 ) -> dict:
     """
-    Generate nikud (vocalization) for a subtitle track.
-    Uses Claude AI to add Hebrew vowel marks.
+    Start async nikud (vocalization) generation for a subtitle track.
+    Returns a job_id to poll for status.
     """
     tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
 
@@ -122,50 +172,93 @@ async def generate_nikud_for_track(
     if track.has_nikud_version and not force:
         return {
             "message": "Nikud already generated",
+            "status": "completed",
             "content_id": content_id,
-            "generated_at": track.nikud_generated_at,
+            "generated_at": track.nikud_generated_at.isoformat() if track.nikud_generated_at else None,
         }
 
-    texts_to_process = [cue.text for cue in track.cues]
-    nikud_texts = await add_nikud_batch(texts_to_process)
+    # Check for existing active job
+    existing_job = await AIGenerationJob.get_active_job(content_id, JobType.NIKUD)
+    if existing_job:
+        return existing_job.to_response()
 
-    for i, cue in enumerate(track.cues):
-        cue.text_nikud = nikud_texts[i]
-
-    track.has_nikud_version = True
-    track.nikud_generated_at = datetime.utcnow()
-    track.updated_at = datetime.utcnow()
-    await track.save()
-
-    logger.info(
-        "Nikud generated",
-        extra={
-            "content_id": content_id,
-            "language": language,
-            "cues_processed": len(track.cues),
-        },
+    # Create new job
+    job = await AIGenerationJob.create_job(
+        content_id=content_id,
+        job_type=JobType.NIKUD,
+        language=language,
+        total_cues=len(track.cues),
     )
 
-    return {
-        "message": "Nikud generated successfully",
-        "content_id": content_id,
-        "cues_processed": len(track.cues),
-        "generated_at": track.nikud_generated_at,
-    }
+    # Start background processing
+    background_tasks.add_task(_process_nikud_job, str(job.id), content_id, language)
+
+    logger.info(
+        "Nikud generation started",
+        extra={"content_id": content_id, "job_id": str(job.id), "total_cues": len(track.cues)},
+    )
+
+    return job.to_response()
+
+
+async def _process_shoresh_job(job_id: str, content_id: str, language: str) -> None:
+    """Background task to process shoresh generation"""
+    job = await AIGenerationJob.get(PydanticObjectId(job_id))
+    if not job:
+        logger.error("Job not found", extra={"job_id": job_id})
+        return
+
+    try:
+        await job.start_processing()
+
+        tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
+        if not tracks:
+            await job.fail("Subtitle track not found")
+            return
+
+        track = tracks[0]
+        texts_to_process = [cue.text for cue in track.cues]
+
+        # Process in batches and update progress
+        batch_size = 10
+        shoresh_texts = []
+        for i in range(0, len(texts_to_process), batch_size):
+            batch = texts_to_process[i : i + batch_size]
+            batch_results = await extract_shoresh_batch(batch)
+            shoresh_texts.extend(batch_results)
+            await job.update_progress(len(shoresh_texts))
+
+        for i, cue in enumerate(track.cues):
+            cue.text_shoresh = shoresh_texts[i]
+
+        track.has_shoresh_version = True
+        track.shoresh_generated_at = datetime.utcnow()
+        track.updated_at = datetime.utcnow()
+        await track.save()
+
+        await job.complete()
+        logger.info(
+            "Shoresh generated",
+            extra={"content_id": content_id, "language": language, "cues_processed": len(track.cues)},
+        )
+
+    except Exception as e:
+        logger.error("Shoresh generation failed", extra={"job_id": job_id, "error": str(e)})
+        await job.fail(str(e))
 
 
 @router.post("/{content_id}/shoresh")
 @limiter.limit(RATE_LIMITS["subtitle_shoresh"])
 async def generate_shoresh_for_track(
     request: Request,
+    background_tasks: BackgroundTasks,
     content_id: str,
     language: str = "he",
     force: bool = False,
 ) -> dict:
     """
-    Generate shoresh (root words) for a subtitle track.
-    Uses Claude AI to extract Hebrew root words.
-    Format: "word [root]" for each word.
+    Start async shoresh (root words) generation for a subtitle track.
+    Returns a job_id to poll for status.
     """
     tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
 
@@ -177,35 +270,65 @@ async def generate_shoresh_for_track(
     if track.has_shoresh_version and not force:
         return {
             "message": "Shoresh already generated",
+            "status": "completed",
             "content_id": content_id,
-            "generated_at": track.shoresh_generated_at,
+            "generated_at": track.shoresh_generated_at.isoformat() if track.shoresh_generated_at else None,
         }
 
-    texts_to_process = [cue.text for cue in track.cues]
-    shoresh_texts = await extract_shoresh_batch(texts_to_process)
+    # Check for existing active job
+    existing_job = await AIGenerationJob.get_active_job(content_id, JobType.SHORESH)
+    if existing_job:
+        return existing_job.to_response()
 
-    for i, cue in enumerate(track.cues):
-        cue.text_shoresh = shoresh_texts[i]
-
-    track.has_shoresh_version = True
-    track.shoresh_generated_at = datetime.utcnow()
-    track.updated_at = datetime.utcnow()
-    await track.save()
-
-    logger.info(
-        "Shoresh generated",
-        extra={
-            "content_id": content_id,
-            "language": language,
-            "cues_processed": len(track.cues),
-        },
+    # Create new job
+    job = await AIGenerationJob.create_job(
+        content_id=content_id,
+        job_type=JobType.SHORESH,
+        language=language,
+        total_cues=len(track.cues),
     )
 
+    # Start background processing
+    background_tasks.add_task(_process_shoresh_job, str(job.id), content_id, language)
+
+    logger.info(
+        "Shoresh generation started",
+        extra={"content_id": content_id, "job_id": str(job.id), "total_cues": len(track.cues)},
+    )
+
+    return job.to_response()
+
+
+@router.get("/job/{job_id}")
+async def get_generation_job_status(job_id: str) -> dict:
+    """
+    Get status of a nikud/shoresh generation job.
+    Poll this endpoint to track progress.
+    """
+    try:
+        job = await AIGenerationJob.get(PydanticObjectId(job_id))
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid job ID format")
+
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    return job.to_response()
+
+
+@router.get("/{content_id}/job/active")
+async def get_active_generation_jobs(content_id: str) -> dict:
+    """
+    Get any active generation jobs for content.
+    Returns both nikud and shoresh job status if active.
+    """
+    nikud_job = await AIGenerationJob.get_active_job(content_id, JobType.NIKUD)
+    shoresh_job = await AIGenerationJob.get_active_job(content_id, JobType.SHORESH)
+
     return {
-        "message": "Shoresh generated successfully",
         "content_id": content_id,
-        "cues_processed": len(track.cues),
-        "generated_at": track.shoresh_generated_at,
+        "nikud_job": nikud_job.to_response() if nikud_job else None,
+        "shoresh_job": shoresh_job.to_response() if shoresh_job else None,
     }
 
 

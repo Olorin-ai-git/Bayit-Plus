@@ -20,12 +20,13 @@ import { useDirection } from '../../hooks/useDirection';
 import { useSupportStore, SupportTicket } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
 import { SupportTicketForm } from './SupportTicketForm';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
-const statusConfig: Record<string, { color: string; icon: string }> = {
-  open: { color: colors.warning.DEFAULT, icon: '📝' },
-  in_progress: { color: colors.primary.DEFAULT, icon: '⚙️' },
-  resolved: { color: colors.success.DEFAULT, icon: '✅' },
-  closed: { color: colors.textSecondary, icon: '📁' },
+const statusConfig: Record<string, { color: string; iconName: string }> = {
+  open: { color: colors.warning.DEFAULT, iconName: 'edit' },
+  in_progress: { color: colors.primary.DEFAULT, iconName: 'settings' },
+  resolved: { color: colors.success.DEFAULT, iconName: 'checkCircle' },
+  closed: { color: colors.textSecondary, iconName: 'folder' },
 };
 
 const priorityConfig: Record<string, { color: string; label: string }> = {
@@ -75,7 +76,9 @@ const TicketCard: React.FC<TicketCardProps> = ({ ticket, onPress }) => {
           <View style={styles.ticketIdContainer}>
             <Text style={styles.ticketId}>#{ticket.id.slice(-6).toUpperCase()}</Text>
             <View style={[styles.statusBadge, { backgroundColor: `${status.color}20` }]}>
-              <Text style={styles.statusIcon}>{status.icon}</Text>
+              <View style={styles.statusIconContainer}>
+                <NativeIcon name={status.iconName as any} size={isTV ? 'sm' : 'xs'} color={status.color} />
+              </View>
               <Text style={[styles.statusText, { color: status.color }]}>
                 {t(`support.ticket.status.${ticket.status}`, ticket.status)}
               </Text>
@@ -262,7 +265,9 @@ export const SupportTicketList: React.FC = () => {
       >
         {filteredTickets.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyIcon}>🎫</Text>
+            <View style={styles.emptyIconContainer}>
+              <NativeIcon name="tag" size="3xl" color="#a855f7" />
+            </View>
             <Text style={[styles.emptyText, { textAlign }]}>
               {filter === 'all'
                 ? t('support.tickets.empty', 'No support tickets yet')
@@ -347,14 +352,16 @@ const TicketDetailModal: React.FC<TicketDetailModalProps> = ({
                 #{ticket.id.slice(-6).toUpperCase()}
               </Text>
               <View style={[styles.statusBadge, { backgroundColor: `${status.color}20` }]}>
-                <Text style={styles.statusIcon}>{status.icon}</Text>
+                <View style={styles.statusIconContainer}>
+                  <NativeIcon name={status.iconName as any} size={isTV ? 'sm' : 'xs'} color={status.color} />
+                </View>
                 <Text style={[styles.statusText, { color: status.color }]}>
                   {t(`support.ticket.status.${ticket.status}`, ticket.status)}
                 </Text>
               </View>
             </View>
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-              <Text style={styles.closeButtonText}>✕</Text>
+              <NativeIcon name="x" size={isTV ? 'lg' : 'md'} color="#ffffff" />
             </TouchableOpacity>
           </View>
 
@@ -515,8 +522,11 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.full,
     gap: spacing.xs,
   },
-  statusIcon: {
-    fontSize: isTV ? 12 : 10,
+  statusIconContainer: {
+    width: isTV ? 12 : 10,
+    height: isTV ? 12 : 10,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   statusText: {
     fontSize: isTV ? 12 : 10,
@@ -606,8 +616,11 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xl * 2,
     gap: spacing.md,
   },
-  emptyIcon: {
-    fontSize: isTV ? 64 : 48,
+  emptyIconContainer: {
+    width: isTV ? 64 : 48,
+    height: isTV ? 64 : 48,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   emptyText: {
     fontSize: isTV ? 16 : 14,

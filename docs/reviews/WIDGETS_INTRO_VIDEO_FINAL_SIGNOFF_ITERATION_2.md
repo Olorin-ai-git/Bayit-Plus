@@ -63,9 +63,11 @@ export function getCaptionUrls(videoSrc: string): CaptionUrls {
 - Supports both web (HTMLVideoElement) and native (react-native-video ref)
 
 **Code**:
+::: v-pre
 ```typescript
 const videoRef = useRef<any>(null); // Cross-platform: web (HTMLVideoElement) or native (react-native-video ref)
 ```
+:::
 
 **Reviewer Consensus**: Acceptable compromise for cross-platform refs, properly documented
 

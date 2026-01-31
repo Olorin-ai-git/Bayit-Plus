@@ -17,6 +17,7 @@ While the StyleSheet migration is production-ready with zero critical issues, th
 ### Opportunity 1.1: Memoize List Item Components
 
 **Current State**:
+::: v-pre
 ```typescript
 // web/src/components/player/ChaptersPanel.tsx
 const ChaptersList = ({ chapters }) => (
@@ -31,10 +32,12 @@ const ChaptersList = ({ chapters }) => (
   </View>
 )
 ```
+:::
 
 **Problem**: Parent re-render causes all chapter items to re-render
 
 **Solution**:
+::: v-pre
 ```typescript
 const ChapterItem = React.memo(({ chapter, onSelect }) => (
   <TouchableOpacity onPress={() => onSelect(chapter.id)}>
@@ -63,6 +66,7 @@ const ChaptersList = ({ chapters, onSelect }) => {
   )
 }
 ```
+:::
 
 **Affected Files**:
 - `/web/src/components/player/ChaptersPanel.tsx` (list rendering)
@@ -80,6 +84,7 @@ const ChaptersList = ({ chapters, onSelect }) => {
 ### Opportunity 1.2: Cache Computed Style Arrays
 
 **Current State**:
+::: v-pre
 ```typescript
 // web/src/components/player/AudioPlayer.tsx
 const AudioPlayer = ({ isPlaying, isFocused }) => {
@@ -94,10 +99,12 @@ const AudioPlayer = ({ isPlaying, isFocused }) => {
   )
 }
 ```
+:::
 
 **Problem**: Style array is recreated on every render, even if values don't change
 
 **Solution**:
+::: v-pre
 ```typescript
 const AudioPlayer = ({ isPlaying, isFocused }) => {
   const containerStyle = useMemo(() => [
@@ -109,6 +116,7 @@ const AudioPlayer = ({ isPlaying, isFocused }) => {
   return <View style={containerStyle} />
 }
 ```
+:::
 
 **Affected Files**:
 - `/web/src/components/player/AudioPlayer.tsx`
@@ -128,6 +136,7 @@ const AudioPlayer = ({ isPlaying, isFocused }) => {
 ### Opportunity 2.1: Component Extraction - Large Layout Files
 
 **Current State**:
+::: v-pre
 ```typescript
 // GlassSidebar.tsx: 789 lines total
 const GlassSidebar = ({ isExpanded, onToggle }) => {
@@ -151,10 +160,12 @@ const GlassSidebar = ({ isExpanded, onToggle }) => {
   )
 }
 ```
+:::
 
 **Problem**: Large monolithic component harder to debug and optimize
 
 **Solution - Extract Sub-components**:
+::: v-pre
 ```typescript
 // SidebarHeader.tsx
 const SidebarHeader = ({ onClose }) => (
@@ -188,6 +199,7 @@ const GlassSidebar = ({ isExpanded, onToggle }) => (
   </View>
 )
 ```
+:::
 
 **Affected Files**:
 - `/web/src/components/layout/GlassSidebar.tsx` (789 lines)
@@ -265,6 +277,7 @@ const styles = StyleSheet.create({
 ### Opportunity 3.1: Route-Based Code Splitting
 
 **Current State**:
+::: v-pre
 ```typescript
 // All components loaded upfront
 import VideoPlayer from './VideoPlayer'
@@ -280,10 +293,12 @@ export default App() => (
   </Router>
 )
 ```
+:::
 
 **Problem**: Users download code for all routes, even ones they never visit
 
 **Solution - Lazy Load Routes**:
+::: v-pre
 ```typescript
 // Lazy load components by route
 const VideoPlayer = lazy(() => import('./VideoPlayer'))
@@ -304,6 +319,7 @@ export default App() => (
   </Router>
 )
 ```
+:::
 
 **Bundle Impact**:
 - Initial bundle: -500KB (30% reduction)
@@ -328,6 +344,7 @@ export default App() => (
 ### Opportunity 3.2: Image Optimization
 
 **Current State**:
+::: v-pre
 ```typescript
 // Large PNG images in player
 <Image
@@ -335,10 +352,12 @@ export default App() => (
   style={{ width: '100%', aspectRatio: 2 }}
 />
 ```
+:::
 
 **Problem**: PNG images can be 5-10x larger than optimized formats
 
 **Solution - AVIF + WebP with Fallback**:
+::: v-pre
 ```typescript
 // Image optimization library
 import OptimizedImage from '@bayit/shared/components/OptimizedImage'
@@ -354,8 +373,10 @@ import OptimizedImage from '@bayit/shared/components/OptimizedImage'
   }}
 />
 ```
+:::
 
 **Generated Markup**:
+::: v-pre
 ```html
 <picture>
   <source srcset="poster.avif" type="image/avif" />
@@ -363,6 +384,7 @@ import OptimizedImage from '@bayit/shared/components/OptimizedImage'
   <img src="poster.png" alt="Video poster" />
 </picture>
 ```
+:::
 
 **Impact**:
 - Player poster: 500KB → 50KB (90% reduction)
@@ -381,6 +403,7 @@ import OptimizedImage from '@bayit/shared/components/OptimizedImage'
 ### Opportunity 4.1: Virtual Scrolling for Large Lists
 
 **Current State**:
+::: v-pre
 ```typescript
 // HierarchicalContentTable renders all 10,000 rows
 const HierarchicalContentTable = ({ data }) => (
@@ -391,10 +414,12 @@ const HierarchicalContentTable = ({ data }) => (
   </ScrollView>
 )
 ```
+:::
 
 **Problem**: Renders 10,000 DOM nodes even though only 20 visible
 
 **Solution - Virtual Scrolling**:
+::: v-pre
 ```typescript
 import { FlatList } from 'react-native'
 
@@ -410,6 +435,7 @@ const HierarchicalContentTable = ({ data }) => (
   />
 )
 ```
+:::
 
 **Performance Impact**:
 - Initial render: 10,000 items → 20 items (99% faster)

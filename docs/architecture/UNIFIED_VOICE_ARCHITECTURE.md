@@ -64,6 +64,7 @@ The Unified Voice System consolidates three previously separate voice systems (s
 - Error handling and retry logic
 
 **Key Methods**:
+::: v-pre
 ```typescript
 async initialize(config?: Partial<VoiceConfig>): Promise<void>
 async startListening(trigger: 'manual' | 'wake-word'): Promise<void>
@@ -71,6 +72,7 @@ async stopListening(): Promise<void>
 async interrupt(): Promise<void>
 async processTranscript(transcript: string, conversationId?: string): Promise<VoiceCommandResponse>
 ```
+:::
 
 #### 2. State Management
 
@@ -149,6 +151,7 @@ Response:
 
 ### Mode Configuration
 
+::: v-pre
 ```typescript
 // /shared/constants/voiceAvatarModes.ts
 export const AVATAR_MODE_CONFIGS: Record<AvatarMode, AvatarModeConfig> = {
@@ -166,6 +169,7 @@ export const AVATAR_MODE_CONFIGS: Record<AvatarMode, AvatarModeConfig> = {
   // ... other modes
 };
 ```
+:::
 
 ---
 
@@ -246,6 +250,7 @@ def _classify_intent(self, transcript: str) -> tuple[VoiceIntent, float]:
 - Wake word detection ("Jarvis")
 
 **Integration**:
+::: v-pre
 ```typescript
 // /mobile-app/src/services/voiceManager.ts
 private async _initializeOrchestrator(): Promise<void> {
@@ -257,6 +262,7 @@ private async _initializeOrchestrator(): Promise<void> {
   await this.orchestrator.initialize();
 }
 ```
+:::
 
 **Key Files**:
 - `/mobile-app/src/services/voiceManager.ts`
@@ -372,6 +378,7 @@ private async _initializeOrchestrator(): Promise<void> {
 
 ### Retry Logic
 
+::: v-pre
 ```typescript
 async processTranscript(transcript: string): Promise<VoiceCommandResponse> {
   let retries = 3;
@@ -386,6 +393,7 @@ async processTranscript(transcript: string): Promise<VoiceCommandResponse> {
   }
 }
 ```
+:::
 
 ---
 

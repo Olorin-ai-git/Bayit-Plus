@@ -192,6 +192,7 @@ VITE_WIDGETS_INTRO_VIDEO_URL=https://media.bayitplus.com/videos/widgets-intro.mp
 
 Allow CDN domain for video loading:
 
+::: v-pre
 ```xml
 <key>NSAppTransportSecurity</key>
 <dict>
@@ -217,17 +218,21 @@ Allow CDN domain for video loading:
   </dict>
 </dict>
 ```
+:::
 
 ### Android (AndroidManifest.xml)
 
+::: v-pre
 ```xml
 <application
   android:usesCleartextTraffic="false"
   android:networkSecurityConfig="@xml/network_security_config">
 </application>
 ```
+:::
 
 **res/xml/network_security_config.xml:**
+::: v-pre
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
@@ -237,6 +242,7 @@ Allow CDN domain for video loading:
   </domain-config>
 </network-security-config>
 ```
+:::
 
 ### tvOS
 
@@ -409,9 +415,11 @@ ffmpeg -i widgets-intro.mp4 -ss 00:00:02 -vframes 1 \
 ```
 
 Update component:
+::: v-pre
 ```tsx
 <video poster={`${videoUrl.replace('.mp4', '-poster.jpg')}`} ... />
 ```
+:::
 
 ### Progressive Enhancement
 Detect network quality and serve appropriate resolution:

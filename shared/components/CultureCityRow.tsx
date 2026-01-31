@@ -19,6 +19,7 @@ import {
   Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon, IconName } from '@olorin/shared-icons/native';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { cultureService } from '../services/api';
 import { isTV } from '../utils/platform';
@@ -183,28 +184,24 @@ export const CultureCityRow: React.FC<CultureCityRowProps> = ({
     }
   }, [onItemPress]);
 
-  // Get category emoji from city config or fallback
-  const getCategoryEmoji = useCallback((categoryId: string): string => {
-    if (city?.categories) {
-      const cat = city.categories.find(c => c.id === categoryId);
-      if (cat?.icon_emoji) return cat.icon_emoji;
-    }
-    // Fallback emojis
-    const fallbacks: Record<string, string> = {
-      kotel: '🕎',
-      'idf-ceremony': '🎖️',
-      'diaspora-connection': '🌍',
-      'holy-sites': '✡️',
-      beaches: '🏖️',
-      nightlife: '🌃',
-      tech: '💻',
-      culture: '🎭',
-      food: '🍽️',
-      history: '🏛️',
-      finance: '💹',
-      general: '📰',
+  // Get category icon from city config or fallback
+  const getCategoryIcon = useCallback((categoryId: string): IconName => {
+    // Icon mapping for categories
+    const iconMap: Record<string, IconName> = {
+      kotel: 'star',
+      'idf-ceremony': 'award',
+      'diaspora-connection': 'globe',
+      'holy-sites': 'star',
+      beaches: 'sun',
+      nightlife: 'moon',
+      tech: 'cpu',
+      culture: 'music',
+      food: 'coffee',
+      history: 'book',
+      finance: 'trendingUp',
+      general: 'newspaper',
     };
-    return fallbacks[categoryId] || '📰';
+    return iconMap[categoryId] || 'newspaper';
   }, [city]);
 
   // Get category label
@@ -352,7 +349,7 @@ export const CultureCityRow: React.FC<CultureCityRowProps> = ({
                 title={getLocalizedField(item, 'title')}
                 summary={getLocalizedField(item, 'summary') || undefined}
                 categoryLabel={getCategoryLabel(item)}
-                categoryEmoji={getCategoryEmoji(item.category)}
+                categoryIcon={getCategoryIcon(item.category)}
                 accentColor={accentColor}
                 isFocused={focusedIndex === index}
                 onFocus={() => setFocusedIndex(index)}
@@ -380,7 +377,7 @@ interface ContentCardProps {
   title: string;
   summary?: string;
   categoryLabel: string;
-  categoryEmoji: string;
+  categoryIcon: IconName;
   accentColor: string;
   isFocused: boolean;
   onFocus: () => void;
@@ -393,7 +390,7 @@ const ContentCard: React.FC<ContentCardProps> = ({
   title,
   summary,
   categoryLabel,
-  categoryEmoji,
+  categoryIcon,
   accentColor,
   isFocused,
   onFocus,
@@ -428,9 +425,12 @@ const ContentCard: React.FC<ContentCardProps> = ({
           ]}
         >
           <View style={[styles.cardHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Text style={[styles.categoryEmoji, { marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }]}>
-              {categoryEmoji}
-            </Text>
+            <NativeIcon
+              name={categoryIcon}
+              size={isTV ? fontSize.lg : fontSize.md}
+              color={accentColor}
+              style={{ marginLeft: isRTL ? spacing.sm : 0, marginRight: isRTL ? 0 : spacing.sm }}
+            />
             <View style={[styles.categoryBadge, { backgroundColor: `${accentColor}40` }]}>
               <Text style={[styles.categoryText, { color: accentColor }]}>
                 {categoryLabel}
@@ -562,9 +562,6 @@ const styles = StyleSheet.create({
   cardHeader: {
     alignItems: 'center',
     marginBottom: spacing.sm,
-  },
-  categoryEmoji: {
-    fontSize: isTV ? fontSize.lg : fontSize.md,
   },
   categoryBadge: {
     paddingHorizontal: spacing.sm,

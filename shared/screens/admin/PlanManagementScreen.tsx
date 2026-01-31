@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@olorin/glass-ui/hooks';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { subscriptionsService, SubscriptionPlan } from '../../services/adminApi';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
@@ -220,10 +221,10 @@ export const PlanManagementScreen: React.FC = () => {
                 <Text className="text-xl font-bold text-white">{plan.name}</Text>
                 <View className="flex-row gap-1">
                   <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#1a1a1a] justify-center items-center" onPress={() => handleEditPlan(plan)}>
-                    <Text className="text-sm">✏️</Text>
+                    <NativeIcon name="edit" size={14} color="#ffffff" />
                   </TouchableOpacity>
                   <TouchableOpacity className="w-7 h-7 rounded-sm bg-[#1a1a1a] justify-center items-center" onPress={() => handleDeletePlan(plan)}>
-                    <Text className="text-sm">🗑️</Text>
+                    <NativeIcon name="trash" size={14} color="#ef4444" />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -242,7 +243,7 @@ export const PlanManagementScreen: React.FC = () => {
               <View className="mb-4">
                 {plan.features.map((feature, index) => (
                   <View key={index} className="flex-row items-center mb-1">
-                    <Text className="text-sm text-[#4CAF50] mr-2">✓</Text>
+                    <NativeIcon name="check" size={14} color="#4CAF50" style={{ marginRight: 8 }} />
                     <Text className="text-sm text-[#cccccc]">{feature}</Text>
                   </View>
                 ))}
@@ -344,7 +345,7 @@ export const PlanManagementScreen: React.FC = () => {
                     />
                     {formData.features.length > 1 && (
                       <TouchableOpacity className="w-[30px] h-[30px] ml-1 rounded-sm bg-[#FF4444]/30 justify-center items-center" onPress={() => handleRemoveFeature(index)}>
-                        <Text className="text-sm text-[#FF4444]">✕</Text>
+                        <NativeIcon name="x" size={14} color="#FF4444" />
                       </TouchableOpacity>
                     )}
                   </View>

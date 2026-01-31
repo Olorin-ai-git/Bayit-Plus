@@ -73,6 +73,7 @@ Background: `bg-indigo-500/10`, `bg-indigo-500/20`
 ## Common Violations & Fixes
 
 ### ❌ Violation: Insufficient Contrast
+::: v-pre
 ```tsx
 // WRONG - text-gray-600 fails WCAG AA (3.8:1 contrast)
 <p className="text-sm text-gray-600">Description</p>
@@ -80,8 +81,10 @@ Background: `bg-indigo-500/10`, `bg-indigo-500/20`
 // CORRECT - text-gray-500 passes WCAG AA (5.5:1 contrast)
 <p className="text-sm text-gray-500">Description</p>
 ```
+:::
 
 ### ❌ Violation: Dark Text on Dark Background
+::: v-pre
 ```tsx
 // WRONG - text-gray-800 on bg-gray-900 (insufficient contrast)
 <div className="bg-gray-900">
@@ -93,6 +96,7 @@ Background: `bg-indigo-500/10`, `bg-indigo-500/20`
   <p className="text-gray-400">Text</p>
 </div>
 ```
+:::
 
 ### ✅ Best Practice: Semantic Color Variables
 ```tsx

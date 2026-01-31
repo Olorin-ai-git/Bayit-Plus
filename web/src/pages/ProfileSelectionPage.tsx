@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator } from 'rea
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@olorin/shared-icons/web';
 import { useProfileStore } from '@/stores/profileStore';
 import { useAuthStore } from '@/stores/authStore';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -61,7 +62,7 @@ function ProfileCard({ profile, onSelect, isManageMode }: {
         {/* Kids indicator */}
         {profile.is_kids_profile && (
           <View style={styles.kidsIndicator}>
-            <Text style={styles.kidsIcon}>👶</Text>
+            <Icon name="baby" size={14} color="#000000" />
           </View>
         )}
 
@@ -399,9 +400,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FBBF24',
     borderRadius: borderRadius.full,
     padding: 6,
-  },
-  kidsIcon: {
-    fontSize: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   pinIndicator: {
     position: 'absolute',

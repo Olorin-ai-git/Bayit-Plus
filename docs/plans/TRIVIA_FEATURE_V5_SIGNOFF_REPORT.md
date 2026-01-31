@@ -182,6 +182,7 @@ V5 represents significant improvement from V4 (4/13 → 8/13), with all verified
 | 4 | Memory cleanup pattern | Medium | Cleanup pattern incomplete for iOS-specific listeners |
 
 **Required Changes**:
+::: v-pre
 ```tsx
 // Add to TriviaOverlay component
 <View
@@ -191,6 +192,7 @@ V5 represents significant improvement from V4 (4/13 → 8/13), with all verified
   accessibilityHint={t('trivia.dismissHint')}
 >
 ```
+:::
 
 ---
 

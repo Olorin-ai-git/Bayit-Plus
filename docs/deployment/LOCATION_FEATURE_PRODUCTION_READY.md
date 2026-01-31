@@ -100,6 +100,7 @@ The system validates critical configuration on startup:
 
 ### 1. Pre-Deployment Setup
 
+::: v-pre
 ```bash
 # 1. Sign up for free GeoNames account
 # Visit: https://www.geonames.org/login
@@ -113,6 +114,7 @@ export GEONAMES_USERNAME=olorin_bayit
 export LOCATION_ENCRYPTION_KEY=<generated_key>
 export ENVIRONMENT=production
 ```
+:::
 
 ### 2. Database Initialization
 
@@ -360,11 +362,13 @@ Effect: All location endpoints return 404
 
 ### Option 3: Full Rollback (Hard Rollback)
 
+::: v-pre
 ```bash
 git revert <commit_hash>
 poetry install
 systemctl restart bayit-plus-backend
 ```
+:::
 
 ---
 

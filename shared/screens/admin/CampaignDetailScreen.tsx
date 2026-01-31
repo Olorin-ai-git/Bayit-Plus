@@ -23,6 +23,7 @@ import { Campaign, AudienceFilter } from '../../types/rbac';
 import { colors, spacing, borderRadius, fontSize } from '../../theme';
 import { AdminStackParamList } from '../../navigation/AdminNavigator';
 import { useNotifications } from '@olorin/glass-ui/hooks';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 type CampaignDetailRouteProp = RouteProp<AdminStackParamList, 'CampaignDetail'>;
 
@@ -222,15 +223,24 @@ export const CampaignDetailScreen: React.FC = () => {
           <View style={styles.headerActions}>
             {formData.is_active ? (
               <TouchableOpacity style={styles.deactivateButton} onPress={handleDeactivate}>
-                <Text style={styles.deactivateButtonText}>⏸️ {t('admin.campaigns.deactivate', 'Deactivate')}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                  <NativeIcon name="pause" size={14} color={colors.warning} />
+                  <Text style={styles.deactivateButtonText}>{t('admin.campaigns.deactivate', 'Deactivate')}</Text>
+                </View>
               </TouchableOpacity>
             ) : (
               <TouchableOpacity style={styles.activateButton} onPress={handleActivate}>
-                <Text style={styles.activateButtonText}>▶️ {t('admin.campaigns.activate', 'Activate')}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                  <NativeIcon name="play" size={14} color={colors.success} />
+                  <Text style={styles.activateButtonText}>{t('admin.campaigns.activate', 'Activate')}</Text>
+                </View>
               </TouchableOpacity>
             )}
             <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-              <Text style={styles.deleteButtonText}>🗑️ {t('common.delete', 'Delete')}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                <NativeIcon name="trash-2" size={14} color={colors.error} />
+                <Text style={styles.deleteButtonText}>{t('common.delete', 'Delete')}</Text>
+              </View>
             </TouchableOpacity>
           </View>
         )
@@ -268,20 +278,21 @@ export const CampaignDetailScreen: React.FC = () => {
           <View style={styles.formGroup}>
             <Text style={styles.label}>{t('admin.campaigns.type', 'Campaign Type')}</Text>
             <View style={styles.typeSelector}>
-              {(['discount', 'trial', 'referral', 'promotional'] as CampaignType[]).map((type) => (
-                <TouchableOpacity
-                  key={type}
-                  style={[styles.typeOption, formData.type === type && styles.typeOptionActive]}
-                  onPress={() => setFormData(prev => ({ ...prev, type }))}
-                >
-                  <Text style={styles.typeIcon}>
-                    {type === 'discount' ? '💰' : type === 'trial' ? '🎁' : type === 'referral' ? '👥' : '🎯'}
-                  </Text>
-                  <Text style={[styles.typeText, formData.type === type && styles.typeTextActive]}>
-                    {type}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+              {(['discount', 'trial', 'referral', 'promotional'] as CampaignType[]).map((type) => {
+                const iconName = type === 'discount' ? 'dollar-sign' : type === 'trial' ? 'gift' : type === 'referral' ? 'users' : 'target';
+                return (
+                  <TouchableOpacity
+                    key={type}
+                    style={[styles.typeOption, formData.type === type && styles.typeOptionActive]}
+                    onPress={() => setFormData(prev => ({ ...prev, type }))}
+                  >
+                    <NativeIcon name={iconName} size={24} color={formData.type === type ? colors.primary.DEFAULT : colors.textSecondary} style={{ marginBottom: spacing.xs }} />
+                    <Text style={[styles.typeText, formData.type === type && styles.typeTextActive]}>
+                      {type}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
         </View>
@@ -302,7 +313,10 @@ export const CampaignDetailScreen: React.FC = () => {
                 autoCapitalize="characters"
               />
               <TouchableOpacity style={styles.generateButton} onPress={generatePromoCode}>
-                <Text style={styles.generateButtonText}>🎲 {t('admin.campaigns.generate', 'Generate')}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+                  <NativeIcon name="shuffle" size={14} color={colors.text} />
+                  <Text style={styles.generateButtonText}>{t('admin.campaigns.generate', 'Generate')}</Text>
+                </View>
               </TouchableOpacity>
             </View>
           </View>
@@ -315,20 +329,30 @@ export const CampaignDetailScreen: React.FC = () => {
           <View style={styles.formGroup}>
             <Text style={styles.label}>{t('admin.campaigns.discountType', 'Discount Type')}</Text>
             <View style={styles.discountTypeSelector}>
-              {(['percentage', 'fixed', 'trial_days'] as DiscountType[]).map((type) => (
-                <TouchableOpacity
-                  key={type}
-                  style={[styles.discountTypeOption, formData.discount_type === type && styles.discountTypeOptionActive]}
-                  onPress={() => setFormData(prev => ({ ...prev, discount_type: type }))}
-                >
-                  <Text style={[styles.discountTypeText, formData.discount_type === type && styles.discountTypeTextActive]}>
-                    {type === 'percentage' ? '%' : type === 'fixed' ? '$' : '📅'}
-                  </Text>
-                  <Text style={[styles.discountTypeLabel, formData.discount_type === type && styles.discountTypeLabelActive]}>
-                    {type === 'percentage' ? 'Percentage' : type === 'fixed' ? 'Fixed Amount' : 'Trial Days'}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+              {(['percentage', 'fixed', 'trial_days'] as DiscountType[]).map((type) => {
+                let iconOrText;
+                if (type === 'percentage') {
+                  iconOrText = <Text style={[styles.discountTypeText, formData.discount_type === type && styles.discountTypeTextActive]}>%</Text>;
+                } else if (type === 'fixed') {
+                  iconOrText = <NativeIcon name="dollar-sign" size={20} color={formData.discount_type === type ? colors.primary.DEFAULT : colors.textSecondary} />;
+                } else {
+                  iconOrText = <NativeIcon name="calendar" size={20} color={formData.discount_type === type ? colors.primary.DEFAULT : colors.textSecondary} />;
+                }
+                return (
+                  <TouchableOpacity
+                    key={type}
+                    style={[styles.discountTypeOption, formData.discount_type === type && styles.discountTypeOptionActive]}
+                    onPress={() => setFormData(prev => ({ ...prev, discount_type: type }))}
+                  >
+                    <View style={{ marginBottom: spacing.xs }}>
+                      {iconOrText}
+                    </View>
+                    <Text style={[styles.discountTypeLabel, formData.discount_type === type && styles.discountTypeLabelActive]}>
+                      {type === 'percentage' ? 'Percentage' : type === 'fixed' ? 'Fixed Amount' : 'Trial Days'}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
 
@@ -408,7 +432,7 @@ export const CampaignDetailScreen: React.FC = () => {
                 onPress={() => setShowDatePicker('start')}
               >
                 <Text style={styles.dateText}>{formData.start_date}</Text>
-                <Text style={styles.dateIcon}>📅</Text>
+                <NativeIcon name="calendar" size={16} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
 
@@ -419,7 +443,7 @@ export const CampaignDetailScreen: React.FC = () => {
                 onPress={() => setShowDatePicker('end')}
               >
                 <Text style={styles.dateText}>{formData.end_date}</Text>
-                <Text style={styles.dateIcon}>📅</Text>
+                <NativeIcon name="calendar" size={16} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
           </View>
@@ -763,10 +787,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary + '20',
     borderColor: colors.primary,
   },
-  typeIcon: {
-    fontSize: 24,
-    marginBottom: spacing.xs,
-  },
   typeText: {
     fontSize: fontSize.xs,
     color: colors.textSecondary,
@@ -853,9 +873,6 @@ const styles = StyleSheet.create({
   dateText: {
     fontSize: fontSize.md,
     color: colors.text,
-  },
-  dateIcon: {
-    fontSize: 16,
   },
   switchRow: {
     flexDirection: 'row',

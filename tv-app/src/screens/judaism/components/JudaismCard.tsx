@@ -4,6 +4,7 @@
 
 import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, Animated, Image } from 'react-native';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useDirection } from '@bayit/shared/hooks';
 import { styles } from '../JudaismScreen.styles';
 import { JudaismItem, CATEGORY_ICONS } from '../types';
@@ -122,7 +123,7 @@ export const JudaismCard: React.FC<JudaismCardProps> = ({
         {isFocused && (
           <View style={styles.overlay}>
             <View style={styles.playButton}>
-              <Text style={styles.playIcon}>▶</Text>
+              <NativeIcon name="play" size="xl" context="tv" color="#fcd34d" />
             </View>
           </View>
         )}

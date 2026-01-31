@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView, GlassButton } from '../components/ui';
 import { useAuthStore } from '../stores/authStore';
 import { colors, spacing, borderRadius } from '../theme';
@@ -112,7 +113,9 @@ export const RegisterScreen: React.FC = () => {
               className={`items-center bg-white/10 rounded-2xl border-2 ${focusedField === 'name' ? 'border-purple-500' : 'border-white/10'} px-4`}
               style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
             >
-              <Text className="text-lg" style={isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }}>👤</Text>
+              <View style={isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }}>
+                <NativeIcon name="profile" size="md" color="#a855f7" />
+              </View>
               <TextInput
                 className="flex-1 text-base text-white py-4"
                 style={{ textAlign: isRTL ? 'right' : 'left' }}
@@ -134,7 +137,9 @@ export const RegisterScreen: React.FC = () => {
               className={`items-center bg-white/10 rounded-2xl border-2 ${focusedField === 'email' ? 'border-purple-500' : 'border-white/10'} px-4`}
               style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
             >
-              <Text className="text-lg" style={isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }}>✉️</Text>
+              <View style={isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }}>
+                <NativeIcon name="mail" size="md" color="#a855f7" />
+              </View>
               <TextInput
                 className="flex-1 text-base text-white py-4 text-left"
                 value={formData.email}
@@ -161,7 +166,7 @@ export const RegisterScreen: React.FC = () => {
                 onPress={() => setShowPassword(!showPassword)}
                 className="p-1"
               >
-                <Text className="text-lg">{showPassword ? '🙈' : '👁️'}</Text>
+                <NativeIcon name={showPassword ? 'eyeOff' : 'eye'} size="md" color="#a855f7" />
               </TouchableOpacity>
               <TextInput
                 className="flex-1 text-base text-white py-4 text-left"
@@ -184,7 +189,9 @@ export const RegisterScreen: React.FC = () => {
               className={`items-center bg-white/10 rounded-2xl border-2 ${focusedField === 'confirmPassword' ? 'border-purple-500' : 'border-white/10'} px-4`}
               style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
             >
-              <Text className="text-lg" style={isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }}>🔒</Text>
+              <View style={isRTL ? { marginLeft: spacing.sm } : { marginRight: spacing.sm }}>
+                <NativeIcon name="lock" size="md" color="#a855f7" />
+              </View>
               <TextInput
                 className="flex-1 text-base text-white py-4 text-left"
                 value={formData.confirmPassword}

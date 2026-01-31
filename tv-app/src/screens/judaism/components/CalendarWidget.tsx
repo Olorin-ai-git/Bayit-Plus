@@ -5,6 +5,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from '../../../components';
 import { useDirection } from '@bayit/shared/hooks';
 import { styles } from '../JudaismScreen.styles';
@@ -25,7 +26,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({ data }) => {
   return (
     <GlassView style={styles.calendarWidget}>
       <View style={[styles.calendarHeader, { flexDirection }]}>
-        <Text style={styles.calendarIcon}>📅</Text>
+        <NativeIcon name="calendar" size="lg" context="tv" color="#a855f7" />
         <Text style={styles.calendarTitle}>
           {t('judaism.calendar.title', 'Jewish Calendar')}
         </Text>
@@ -38,7 +39,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({ data }) => {
       </View>
       {(data.is_shabbat || data.is_holiday) && (
         <View style={styles.specialDayBadge}>
-          <Text style={styles.specialDayIcon}>⭐</Text>
+          <NativeIcon name="star" size="md" context="tv" color="#fbbf24" />
           <Text style={styles.specialDayText}>
             {data.is_shabbat ? t('judaism.calendar.shabbat', 'Shabbat') : t('judaism.calendar.holiday', 'Holiday')}
           </Text>
@@ -46,7 +47,7 @@ export const CalendarWidget: React.FC<CalendarWidgetProps> = ({ data }) => {
       )}
       {data.parasha && (
         <View style={styles.parashaRow}>
-          <Text style={styles.parashaRowIcon}>📖</Text>
+          <NativeIcon name="book" size="md" context="tv" color="#a855f7" />
           <Text style={styles.parashaRowLabel}>{t('judaism.calendar.parasha', 'Parasha')}:</Text>
           <Text style={styles.parashaRowValue}>
             {i18n.language === 'he' ? data.parasha_he : data.parasha}

@@ -31,6 +31,7 @@ import { GlassView, GlassButton } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { useNotifications } from '@olorin/glass-ui/hooks';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { securityService } from '@bayit/shared-services';
 import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
@@ -201,13 +202,13 @@ export const SecurityScreenMobile: React.FC = () => {
     });
   }, [t, notifications]);
 
-  const getDeviceIcon = (type: string) => {
+  const getDeviceIconName = (type: string) => {
     switch (type.toLowerCase()) {
-      case 'mobile': return '📱';
-      case 'tablet': return '📱';
-      case 'tv': return '📺';
-      case 'desktop': return '💻';
-      default: return '💻';
+      case 'mobile': return 'smartphone';
+      case 'tablet': return 'smartphone';
+      case 'tv': return 'live';
+      case 'desktop': return 'monitor';
+      default: return 'monitor';
     }
   };
 
@@ -215,7 +216,7 @@ export const SecurityScreenMobile: React.FC = () => {
     title: string,
     description: string,
     onPress: () => void,
-    icon?: string
+    iconName?: string
   ) => (
     <TouchableOpacity
       onPress={onPress}
@@ -223,7 +224,11 @@ export const SecurityScreenMobile: React.FC = () => {
     >
       <GlassView className="rounded-lg mb-2 p-4">
         <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
-          {icon && <Text className="text-2xl mr-4">{icon}</Text>}
+          {iconName && (
+            <View className="mr-4">
+              <NativeIcon name={iconName} size="lg" color="#a855f7" />
+            </View>
+          )}
           <View className="flex-1">
             <Text className="text-base font-medium text-white" style={{ textAlign }}>{title}</Text>
             <Text className="text-sm text-white/60" style={{ textAlign }}>{description}</Text>
@@ -240,11 +245,15 @@ export const SecurityScreenMobile: React.FC = () => {
     value: boolean,
     onToggle: (value: boolean) => void,
     disabled?: boolean,
-    icon?: string
+    iconName?: string
   ) => (
     <GlassView className="rounded-lg mb-2 p-4">
       <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
-        {icon && <Text className="text-2xl mr-4">{icon}</Text>}
+        {iconName && (
+          <View className="mr-4">
+            <NativeIcon name={iconName} size="lg" color="#a855f7" />
+          </View>
+        )}
         <View className="flex-1">
           <Text className="text-base font-medium text-white" style={{ textAlign }}>{title}</Text>
           <Text className="text-sm text-white/60" style={{ textAlign }}>{description}</Text>
@@ -305,7 +314,7 @@ export const SecurityScreenMobile: React.FC = () => {
             t('security.changePassword'),
             t('security.changePasswordDesc'),
             handleChangePassword,
-            '🔑'
+            'key'
           )}
         </View>
 
@@ -321,7 +330,7 @@ export const SecurityScreenMobile: React.FC = () => {
             twoFactorEnabled,
             handleToggleTwoFactor,
             false,
-            '🛡️'
+            'shield'
           )}
 
           {biometricAvailable && renderToggleOption(
@@ -330,7 +339,7 @@ export const SecurityScreenMobile: React.FC = () => {
             biometricEnabled,
             handleToggleBiometric,
             false,
-            '👆'
+            'fingerprint'
           )}
         </View>
 
@@ -342,7 +351,9 @@ export const SecurityScreenMobile: React.FC = () => {
 
           {devices.length === 0 ? (
             <GlassView className="rounded-lg p-6 items-center">
-              <Text className="text-5xl mb-4">📱</Text>
+              <View className="mb-4">
+                <NativeIcon name="smartphone" size="xxl" color="#a855f7" />
+              </View>
               <Text className="text-base text-white/60" style={{ textAlign }}>
                 {t('security.noDevices')}
               </Text>
@@ -351,9 +362,9 @@ export const SecurityScreenMobile: React.FC = () => {
             devices.map((device) => (
               <GlassView key={device.id} className="rounded-lg mb-2 p-4">
                 <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
-                  <Text className="text-3xl mr-4">
-                    {getDeviceIcon(device.type)}
-                  </Text>
+                  <View className="mr-4">
+                    <NativeIcon name={getDeviceIconName(device.type)} size="xl" color="#a855f7" />
+                  </View>
                   <View className="flex-1">
                     <View className={`flex-row items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
                       <Text className="text-base font-medium text-white" style={{ textAlign }}>
@@ -393,7 +404,9 @@ export const SecurityScreenMobile: React.FC = () => {
 
           {loginHistory.length === 0 ? (
             <GlassView className="rounded-lg p-6 items-center">
-              <Text className="text-5xl mb-4">📋</Text>
+              <View className="mb-4">
+                <NativeIcon name="list" size="xxl" color="#a855f7" />
+              </View>
               <Text className="text-base text-white/60" style={{ textAlign }}>
                 {t('security.noLoginHistory')}
               </Text>
@@ -403,9 +416,11 @@ export const SecurityScreenMobile: React.FC = () => {
               <GlassView key={entry.id} className="rounded-lg mb-2 p-4">
                 <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <View className={`w-8 h-8 rounded-full justify-center items-center mr-4 ${entry.success ? 'bg-green-500/20' : 'bg-red-500/20'}`}>
-                    <Text className="text-base font-bold text-white">
-                      {entry.success ? '✓' : '✕'}
-                    </Text>
+                    <NativeIcon
+                      name={entry.success ? 'check' : 'x'}
+                      size="sm"
+                      color={entry.success ? '#22c55e' : '#ef4444'}
+                    />
                   </View>
                   <View className="flex-1">
                     <Text className="text-base font-medium text-white" style={{ textAlign }}>

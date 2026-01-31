@@ -179,6 +179,7 @@ echo -n 'EXISTING_OPENSUBTITLES_KEY' | gcloud secrets create bayit-opensubtitles
 
 **Replace** all hardcoded values with placeholders:
 
+::: v-pre
 ```bash
 # ============================================
 # OLORIN BASE PLATFORM CONFIGURATION
@@ -232,6 +233,7 @@ CDN_BASE_URL=https://cdn.bayit.tv
 STORAGE_TYPE=gcs
 GOOGLE_APPLICATION_CREDENTIALS=/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/credentials/bayit-plus-7c3927963c21.json
 ```
+:::
 
 #### Step 1.5: Create Shared Secrets
 
@@ -303,6 +305,7 @@ steps:
 ```
 
 **mobile-app/.env** (committed to repo):
+::: v-pre
 ```bash
 # Bayit+ iOS Mobile App Environment Configuration
 # PRODUCTION VALUES INJECTED AT BUILD TIME FROM SECRET MANAGER
@@ -341,6 +344,7 @@ APPLE_TEAM_ID=963B7732N5
 APPLE_BUNDLE_ID=tv.bayit.plus
 ENABLE_ANALYTICS=true
 ```
+:::
 
 ##### Option B: Backend Proxy (Alternative)
 

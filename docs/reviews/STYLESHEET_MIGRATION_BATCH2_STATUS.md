@@ -25,7 +25,7 @@
 All completed files:
 1. Removed StyleSheet import
 2. Converted all styles to TailwindCSS className props
-3. Kept dynamic/animated values in inline style={{}} prop
+3. Kept dynamic/animated values in inline style=\{\{\}\} prop
 4. Removed StyleSheet.create() blocks
 5. Maintained all functionality and behavior
 

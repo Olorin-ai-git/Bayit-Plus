@@ -159,6 +159,7 @@ poetry run pytest tests/ \
 
 ### Step 3: Commit Changes
 
+::: v-pre
 ```bash
 cd /Users/olorin/Documents/olorin
 
@@ -190,6 +191,7 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>"
 # View the commit
 git log --oneline -1
 ```
+:::
 
 ---
 

@@ -11,6 +11,7 @@ import '@bayit/shared-utils/microphoneDiagnostics'
 // Initialize Sentry error tracking before React renders
 import { initSentry, SentryErrorBoundary } from './utils/sentry'
 import logger from './utils/logger'
+import { Icon } from '@olorin/shared-icons/web'
 
 const appLogger = logger.scope('App');
 
@@ -25,10 +26,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       fallback={({ error }) => (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
           <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-8 max-w-md text-center">
-            <div className="text-5xl mb-4">
-              <span role="img" aria-label="warning">
-                ⚠️
-              </span>
+            <div className="flex justify-center mb-4">
+              <Icon name="warning" size="xxxl" className="text-yellow-500" />
             </div>
             <h1 className="text-2xl font-bold text-white mb-2">
               Something went wrong

@@ -416,6 +416,7 @@ importService = {
 
 **TypeScript Interfaces:**
 
+::: v-pre
 ```typescript
 // VOD
 interface Content { /* 15 properties */ }
@@ -453,6 +454,7 @@ interface UploadResponse { /* file upload result */ }
 interface ValidateUrlResponse { /* URL validation */ }
 interface PresignedUrlResponse { /* S3 presigned URL */ }
 ```
+:::
 
 ### 2.5 Navigation & Routing
 

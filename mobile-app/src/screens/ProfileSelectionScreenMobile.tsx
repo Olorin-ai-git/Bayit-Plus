@@ -31,6 +31,7 @@ import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 import logger from '@/utils/logger';
 
@@ -87,12 +88,12 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
         )}
         {profile.is_kids_profile && (
           <View className="absolute -bottom-[5px] -right-[5px] bg-[#ffd93d] rounded-xl p-1">
-            <Text className="text-[12px]">👶</Text>
+            <NativeIcon name="profile" size="xs" color="#000000" />
           </View>
         )}
         {profile.has_pin && (
           <View className="absolute -top-[5px] -right-[5px] bg-black/60 rounded-[10px] p-1">
-            <Text className="text-[10px]">🔒</Text>
+            <NativeIcon name="lock" size="xs" color="#ffffff" />
           </View>
         )}
       </View>
@@ -101,7 +102,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       </Text>
       {isManageMode && (
         <View className="absolute top-0 left-[10px] w-20 h-20 rounded-xl bg-black/50 justify-center items-center">
-          <Text className="text-2xl">✏️</Text>
+          <NativeIcon name="edit" size="lg" color="#ffffff" />
         </View>
       )}
     </TouchableOpacity>
@@ -194,7 +195,7 @@ const PinModal: React.FC<PinModalProps> = ({
                   onBiometric();
                 }}
               >
-                <Text className="text-2xl">👆</Text>
+                <NativeIcon name="fingerprint" size="lg" color="#a855f7" />
               </TouchableOpacity>
             )}
 

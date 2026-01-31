@@ -298,6 +298,200 @@ export const ICON_COLOR_THEME: Record<string, IconStyling> = {
     defaultColor: COLORS.primary,
     glassLevel: 'light',
   },
+
+  // ============================================
+  // NEW ICONS - Emoji Migration (2026-01-31)
+  // ============================================
+
+  // Navigation/UI Icons
+  logout: {
+    defaultColor: COLORS.secondary,
+    glassLevel: 'light',
+    backgroundColor: 'rgba(134, 25, 143, 0.08)',
+    borderColor: 'rgba(134, 25, 143, 0.15)',
+  },
+  lock: {
+    defaultColor: COLORS.warning,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    borderColor: 'rgba(245, 158, 11, 0.25)',
+  },
+  unlock: {
+    defaultColor: COLORS.success,
+    glassLevel: 'light',
+    backgroundColor: 'rgba(16, 185, 129, 0.08)',
+    borderColor: 'rgba(16, 185, 129, 0.15)',
+  },
+  key: {
+    defaultColor: COLORS.gold,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(251, 191, 36, 0.1)',
+    borderColor: 'rgba(251, 191, 36, 0.25)',
+  },
+  globe: {
+    defaultColor: COLORS.info,
+    glassLevel: 'light',
+    backgroundColor: 'rgba(59, 130, 246, 0.08)',
+    borderColor: 'rgba(59, 130, 246, 0.15)',
+  },
+  location: {
+    defaultColor: COLORS.error,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderColor: 'rgba(239, 68, 68, 0.25)',
+  },
+  calendar: {
+    defaultColor: COLORS.primary,
+    glassLevel: 'light',
+    backgroundColor: 'rgba(126, 34, 206, 0.08)',
+    borderColor: 'rgba(126, 34, 206, 0.15)',
+  },
+  notification: {
+    defaultColor: COLORS.warning,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    borderColor: 'rgba(245, 158, 11, 0.25)',
+  },
+
+  // Content Type Icons
+  stories: {
+    defaultColor: COLORS.primary,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(126, 34, 206, 0.1)',
+    borderColor: 'rgba(126, 34, 206, 0.25)',
+  },
+  music: {
+    defaultColor: COLORS.secondary,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(134, 25, 143, 0.1)',
+    borderColor: 'rgba(134, 25, 143, 0.25)',
+  },
+  educational: {
+    defaultColor: COLORS.info,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    borderColor: 'rgba(59, 130, 246, 0.25)',
+  },
+  cartoons: {
+    defaultColor: COLORS.primary,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(126, 34, 206, 0.1)',
+    borderColor: 'rgba(126, 34, 206, 0.25)',
+  },
+  news: {
+    defaultColor: COLORS.secondary,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(134, 25, 143, 0.1)',
+    borderColor: 'rgba(134, 25, 143, 0.25)',
+  },
+  document: {
+    defaultColor: COLORS.secondary,
+    glassLevel: 'light',
+    backgroundColor: 'rgba(134, 25, 143, 0.08)',
+    borderColor: 'rgba(134, 25, 143, 0.15)',
+  },
+  folder: {
+    defaultColor: COLORS.primary,
+    glassLevel: 'light',
+    backgroundColor: 'rgba(126, 34, 206, 0.08)',
+    borderColor: 'rgba(126, 34, 206, 0.15)',
+  },
+  broadcast: {
+    defaultColor: COLORS.error,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderColor: 'rgba(239, 68, 68, 0.25)',
+  },
+
+  // Action Icons
+  trash: {
+    defaultColor: COLORS.error,
+    glassLevel: 'light',
+    backgroundColor: 'rgba(239, 68, 68, 0.08)',
+    borderColor: 'rgba(239, 68, 68, 0.15)',
+  },
+  record: {
+    defaultColor: COLORS.error,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderColor: 'rgba(239, 68, 68, 0.25)',
+  },
+  stop: {
+    defaultColor: COLORS.secondary,
+    glassLevel: 'light',
+  },
+  eye: {
+    defaultColor: COLORS.secondary,
+    glassLevel: 'light',
+  },
+  eyeOff: {
+    defaultColor: COLORS.secondary,
+    glassLevel: 'light',
+  },
+  upload: {
+    defaultColor: COLORS.info,
+    glassLevel: 'light',
+    backgroundColor: 'rgba(59, 130, 246, 0.08)',
+    borderColor: 'rgba(59, 130, 246, 0.15)',
+  },
+
+  // Status/Category Icons
+  rainbow: {
+    defaultColor: COLORS.gold,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(251, 191, 36, 0.1)',
+    borderColor: 'rgba(251, 191, 36, 0.25)',
+  },
+  baby: {
+    defaultColor: COLORS.primary,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(126, 34, 206, 0.1)',
+    borderColor: 'rgba(126, 34, 206, 0.25)',
+  },
+  users: {
+    defaultColor: COLORS.secondary,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(134, 25, 143, 0.1)',
+    borderColor: 'rgba(134, 25, 143, 0.25)',
+  },
+  target: {
+    defaultColor: COLORS.error,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderColor: 'rgba(239, 68, 68, 0.25)',
+  },
+  flame: {
+    defaultColor: COLORS.error,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderColor: 'rgba(239, 68, 68, 0.25)',
+  },
+  gem: {
+    defaultColor: COLORS.gold,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(251, 191, 36, 0.1)',
+    borderColor: 'rgba(251, 191, 36, 0.25)',
+  },
+
+  // Cultural/Religious Icons
+  candle: {
+    defaultColor: COLORS.warning,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+    borderColor: 'rgba(245, 158, 11, 0.25)',
+  },
+  moon: {
+    defaultColor: COLORS.info,
+    glassLevel: 'light',
+    backgroundColor: 'rgba(59, 130, 246, 0.08)',
+    borderColor: 'rgba(59, 130, 246, 0.15)',
+  },
+  synagogue: {
+    defaultColor: COLORS.info,
+    glassLevel: 'medium',
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    borderColor: 'rgba(59, 130, 246, 0.25)',
+  },
 };
 
 /**

@@ -11,10 +11,11 @@
     "deploy:staging": "npm run build && firebase hosting:channel:deploy docs-staging --expires 30d --only docs-bayit-plus"
   },
   "dependencies": {
-    "vitepress": "^1.0.0",
-    "vue": "^3.4.0",
+    "@vue/server-renderer": "^3.5.27",
+    "@vueuse/core": "^10.7.2",
     "flexsearch": "^0.7.43",
-    "@vueuse/core": "^10.7.2"
+    "vitepress": "^1.6.4",
+    "vue": "^3.5.27"
   },
   "devDependencies": {
     "@types/node": "^20.11.5"

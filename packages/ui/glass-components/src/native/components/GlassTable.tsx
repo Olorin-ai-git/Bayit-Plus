@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import { GlassView } from './GlassView';
 import { colors, spacing } from '../../theme';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 export interface GlassTableColumn<T = Record<string, unknown>> {
   /** Column key matching data property */
@@ -126,12 +127,12 @@ export function GlassTable<T extends Record<string, unknown>>({
   // Default navigation icons
   const renderPrevIcon = () => {
     if (prevIcon) return prevIcon;
-    return <Text className="text-sm" style={{ color: colors.text }}>{isRTL ? '▶' : '◀'}</Text>;
+    return <NativeIcon name={isRTL ? 'chevronRight' : 'chevronLeft'} size="sm" color={colors.text} />;
   };
 
   const renderNextIcon = () => {
     if (nextIcon) return nextIcon;
-    return <Text className="text-sm" style={{ color: colors.text }}>{isRTL ? '◀' : '▶'}</Text>;
+    return <NativeIcon name={isRTL ? 'chevronLeft' : 'chevronRight'} size="sm" color={colors.text} />;
   };
 
   return (

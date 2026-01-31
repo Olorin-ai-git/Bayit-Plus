@@ -13,6 +13,7 @@ import {
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface Suggestion {
   id: string;
@@ -28,9 +29,9 @@ interface TVProactiveSuggestionBannerProps {
 }
 
 const DEFAULT_SUGGESTIONS: Suggestion[] = [
-  { id: 'search', text: 'voice.search_suggestion', icon: '🔍' },
-  { id: 'play', text: 'voice.play_suggestion', icon: '▶️' },
-  { id: 'settings', text: 'voice.settings_suggestion', icon: '⚙️' },
+  { id: 'search', text: 'voice.search_suggestion', icon: 'search' },
+  { id: 'play', text: 'voice.play_suggestion', icon: 'play' },
+  { id: 'settings', text: 'voice.settings_suggestion', icon: 'settings' },
 ];
 
 export const TVProactiveSuggestionBanner: React.FC<TVProactiveSuggestionBannerProps> = ({
@@ -103,9 +104,9 @@ export const TVProactiveSuggestionBanner: React.FC<TVProactiveSuggestionBannerPr
                     },
                   ]}
                 >
-                  <Text style={styles.suggestionIcon}>
-                    {suggestion.icon}
-                  </Text>
+                  <View style={styles.suggestionIcon}>
+                    <NativeIcon name={suggestion.icon} size="lg" color="#ffffff" context="tv" />
+                  </View>
                   <Text style={styles.suggestionText}>
                     {t(suggestion.text as any, suggestion.text)}
                   </Text>

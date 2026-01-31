@@ -8,23 +8,24 @@ import { useRef, useEffect, useState } from 'react'
 import { View, Text, Pressable, Animated, StyleSheet, Modal, Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Maximize, Minimize, Sparkles, X } from 'lucide-react'
+import { Icon } from '@olorin/shared-icons/web'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import { GlassView, GlassErrorBanner } from '@bayit/shared/ui'
 
 // Language flag emoji map
-const LANG_FLAGS: Record<string, string> = {
-  he: '🇮🇱',
-  en: '🇺🇸',
-  ar: '🇸🇦',
-  es: '🇪🇸',
-  ru: '🇷🇺',
-  fr: '🇫🇷',
-  de: '🇩🇪',
-  it: '🇮🇹',
-  pt: '🇵🇹',
-  yi: '🕍',
+const LANG_FLAGS: Record<string, { isIconName: boolean; value: string }> = {
+  he: { isIconName: false, value: '🇮🇱' },
+  en: { isIconName: false, value: '🇺🇸' },
+  ar: { isIconName: false, value: '🇸🇦' },
+  es: { isIconName: false, value: '🇪🇸' },
+  ru: { isIconName: false, value: '🇷🇺' },
+  fr: { isIconName: false, value: '🇫🇷' },
+  de: { isIconName: false, value: '🇩🇪' },
+  it: { isIconName: false, value: '🇮🇹' },
+  pt: { isIconName: false, value: '🇵🇹' },
+  yi: { isIconName: true, value: 'synagogue' },
 }
 
 interface GlassLiveControlsPanelProps {
@@ -129,7 +130,7 @@ export function GlassLiveControlsPanel({
     outputRange: [0, 0, 1],
   })
 
-  const flag = LANG_FLAGS[currentLanguage] || currentLanguage.toUpperCase()
+  const languageDisplay = LANG_FLAGS[currentLanguage] || { isIconName: false, value: currentLanguage.toUpperCase() }
   const [hoveredButton, setHoveredButton] = useState<string | null>(null)
 
   // Panel-level tooltip only for buttons that don't have their own GlassTooltip
@@ -196,7 +197,11 @@ export function GlassLiveControlsPanel({
                 accessibilityRole="button"
                 accessibilityLabel={t('player.selectLanguage', 'Select Language')}
               >
-                <Text style={styles.flagText}>{flag}</Text>
+                {languageDisplay.isIconName ? (
+                  <Icon name={languageDisplay.value} size="md" color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.flagText}>{languageDisplay.value}</Text>
+                )}
               </Pressable>
               <Pressable
                 onPress={onToggleExpand}
@@ -326,7 +331,7 @@ export function GlassLiveControlsPanel({
                 {/* Language List */}
                 <View style={styles.languageList}>
                   {availableLanguages.map((lang) => {
-                    const langFlag = LANG_FLAGS[lang] || lang.toUpperCase()
+                    const langDisplay = LANG_FLAGS[lang] || { isIconName: false, value: lang.toUpperCase() }
                     const isSelected = lang === currentLanguage
                     return (
                       <Pressable
@@ -343,13 +348,17 @@ export function GlassLiveControlsPanel({
                         accessibilityLabel={t(`languages.${lang}`, lang.toUpperCase())}
                         accessibilityState={{ selected: isSelected }}
                       >
-                        <Text style={styles.languageFlag}>{langFlag}</Text>
+                        {langDisplay.isIconName ? (
+                          <Icon name={langDisplay.value} size="lg" color="#FFFFFF" />
+                        ) : (
+                          <Text style={styles.languageFlag}>{langDisplay.value}</Text>
+                        )}
                         <Text style={styles.languageName}>
                           {t(`languages.${lang}`, lang.toUpperCase())}
                         </Text>
                         {isSelected && (
                           <View style={styles.checkmark}>
-                            <Text style={styles.checkmarkText}>✓</Text>
+                            <Icon name="check" size="sm" color={colors.text} />
                           </View>
                         )}
                       </Pressable>
@@ -551,11 +560,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary.DEFAULT,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  checkmarkText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: colors.text,
   },
   tooltip: {
     position: 'absolute',

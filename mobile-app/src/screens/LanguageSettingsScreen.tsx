@@ -25,6 +25,7 @@ import { useDirection } from '@bayit/shared-hooks';
 import { languages as sharedLanguages } from '@bayit/i18n';
 import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { spacing, colors, typography, touchTarget } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 type Language = {
   code: string;
@@ -111,7 +112,7 @@ export const LanguageSettingsScreen: React.FC = () => {
         </View>
         {isSelected && (
           <View className="w-7 h-7 rounded-full bg-[#7e22ce] justify-center items-center">
-            <Text className="text-base text-white font-bold">✓</Text>
+            <NativeIcon name="check" size="sm" color="#ffffff" />
           </View>
         )}
       </GlassView>

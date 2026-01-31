@@ -10,6 +10,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { GlassCard, GlassSpinner } from '@olorin/glass-ui/web';
 import { AlertCircle } from 'lucide-react';
+import { Icon } from '@olorin/shared-icons/web';
 
 export function AudibleCallbackPage() {
   const { t } = useTranslation();
@@ -94,7 +95,9 @@ export function AudibleCallbackPage() {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-black to-gray-900">
       <GlassCard className="p-8 max-w-md">
         <div className="text-center">
-          <div className="text-green-500 text-5xl mb-4">✓</div>
+          <div className="flex justify-center mb-4">
+            <Icon name="check" size={48} color="#22c55e" />
+          </div>
           <h1 className="text-2xl font-bold text-white mb-4">{t('audible.connected')}</h1>
           <p className="text-gray-300">{t('audible.accountLinked')}</p>
         </div>

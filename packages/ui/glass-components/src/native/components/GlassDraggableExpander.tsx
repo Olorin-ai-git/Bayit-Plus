@@ -18,6 +18,7 @@ import {
   StyleProp,
 } from 'react-native';
 import { colors, spacing } from '../../theme';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 export interface GlassDraggableExpanderProps {
   /** Section title */
@@ -173,7 +174,7 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
   // Default chevron icon
   const renderChevron = () => {
     if (chevronIcon) return chevronIcon;
-    return <Text className="text-base" style={{ color: colors.primary }}>▼</Text>;
+    return <NativeIcon name="dropdown" size="sm" color={colors.primary} />;
   };
 
   // Default drag handle icon

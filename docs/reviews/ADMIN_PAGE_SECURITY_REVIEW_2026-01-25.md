@@ -71,6 +71,7 @@ adminApi.interceptors.response.use(
 ### ✅ Strengths
 
 **Backend Middleware Protection:**
+::: v-pre
 ```python
 # backend/app/middleware/input_sanitization.py
 class InputSanitizationMiddleware(BaseHTTPMiddleware):
@@ -84,8 +85,10 @@ class InputSanitizationMiddleware(BaseHTTPMiddleware):
         # ... etc
     ]
 ```
+:::
 
 **Frontend Sanitization:**
+::: v-pre
 ```typescript
 // packages/ui/glass-components/src/utils/sanitization.ts
 export const sanitizeMessage = (message: string): string => {
@@ -99,6 +102,7 @@ export const sanitizeMessage = (message: string): string => {
   return sanitized.replace(/javascript:/gi, '').replace(/on\w+\s*=/gi, '');
 };
 ```
+:::
 
 ### 🔴 CRITICAL ISSUES
 
@@ -312,6 +316,7 @@ const validateFile = (file: File): boolean => {
 
 **Required Changes:**
 
+::: v-pre
 ```typescript
 const ALLOWED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
@@ -386,6 +391,7 @@ const getImageDimensions = (file: File): Promise<{ width: number; height: number
   })
 }
 ```
+:::
 
 **Backend Validation Required:**
 ```python

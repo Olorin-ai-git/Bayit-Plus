@@ -19,6 +19,7 @@ import { colors } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 import { SupportResponseTemplates } from './SupportResponseTemplates';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface AdminTicket {
   id: string;
@@ -143,7 +144,7 @@ export const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
                 style={{ width: isTV ? 40 : 32, height: isTV ? 40 : 32, borderRadius: isTV ? 20 : 16 }}
                 onPress={onClose}
               >
-                <Text className="text-white" style={{ fontSize: isTV ? 20 : 16 }}>✕</Text>
+                <NativeIcon name="x" size={isTV ? 20 : 16} color="#ffffff" />
               </TouchableOpacity>
             </View>
 

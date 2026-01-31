@@ -7,6 +7,7 @@ import {
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { EPGProgram, Timezone } from '../../services/epgApi';
 import { isTV } from '../../utils/platform';
 
@@ -108,7 +109,7 @@ export const EPGProgramCard: React.FC<EPGProgramCardProps> = ({
             className="bg-black/40 justify-center items-center"
             style={{ width: isTV ? 180 : 100, height: isTV ? 120 : 80 }}
           >
-            <Text style={{ fontSize: isTV ? 48 : 32 }}>📺</Text>
+            <NativeIcon name="tv" size={isTV ? 48 : 32} color="#fff" />
           </View>
         )}
 
@@ -138,9 +139,12 @@ export const EPGProgramCard: React.FC<EPGProgramCardProps> = ({
               {channelName}
             </Text>
             <Text className="text-white/40 mx-2" style={{ fontSize: isTV ? 14 : 12 }}>•</Text>
-            <Text className="text-gray-400" style={{ fontSize: isTV ? 14 : 12 }}>
-              🕐 {timeLabel}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+              <NativeIcon name="clock" size={isTV ? 14 : 12} color="#9ca3af" />
+              <Text className="text-gray-400" style={{ fontSize: isTV ? 14 : 12 }}>
+                {timeLabel}
+              </Text>
+            </View>
             {program.category && (
               <>
                 <Text className="text-white/40 mx-2" style={{ fontSize: isTV ? 14 : 12 }}>•</Text>

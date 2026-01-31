@@ -412,6 +412,7 @@ Current: Uses 10 emoji avatars (👤👨👩👶👦👧🧒👨‍💼👩‍�
 
 ### Before (Emoji)
 
+::: v-pre
 ```tsx
 // ❌ WRONG - Using emoji
 const categories = [
@@ -427,9 +428,11 @@ return (
   </View>
 );
 ```
+:::
 
 ### After (Olorin Icons)
 
+::: v-pre
 ```tsx
 // ✅ CORRECT - Using @olorin/shared-icons
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -447,9 +450,11 @@ return (
   </View>
 );
 ```
+:::
 
 ### Web Pattern
 
+::: v-pre
 ```tsx
 // ✅ CORRECT - Web platform
 import { Icon } from '@olorin/shared-icons/web';
@@ -461,6 +466,7 @@ return (
   </div>
 );
 ```
+:::
 
 ### Backend Pattern
 

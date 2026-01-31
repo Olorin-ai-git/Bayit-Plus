@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@olorin/shared-icons/web';
 import { GlassButton, GlassBadge } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
@@ -100,8 +101,11 @@ export function PodcastLanguageSelector({
               title={
                 isSwitching
                   ? t('podcast.player.switchingLanguage')
-                  : `${LANGUAGE_FLAGS[lang] || '🌐'} ${t(`podcast.languages.${lang}.short`)}`
+                  : `${LANGUAGE_FLAGS[lang] || ''} ${t(`podcast.languages.${lang}.short`)}`
               }
+              icon={!LANGUAGE_FLAGS[lang] && !isSwitching ? (
+                <Icon name="globe" size="sm" color="#FFFFFF" />
+              ) : undefined}
             />
           );
         })}

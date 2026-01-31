@@ -18,6 +18,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../../hooks/useDirection';
 import { GlassView } from '../ui/GlassView';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useCultureStore, Culture } from '../../contexts/CultureContext';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
@@ -284,7 +285,7 @@ const CultureCard: React.FC<CultureCardProps> = ({
         >
           {isSelected && (
             <View className="absolute top-1 right-1 w-5 h-5 rounded-full bg-[#6B21A8] justify-center items-center">
-              <Text className="text-xs text-white font-bold">✓</Text>
+              <NativeIcon name="check" size="xs" color="#ffffff" />
             </View>
           )}
           <Text className={`${isTV ? 'text-[40px]' : 'text-[32px]'} mb-1`}>{culture.flag_emoji || '🌍'}</Text>
@@ -292,10 +293,14 @@ const CultureCard: React.FC<CultureCardProps> = ({
             {localizedName}
           </Text>
           {culture.has_shabbat_mode && (
-            <Text className="text-xs mt-1">🕯️</Text>
+            <View style={{ marginTop: 4 }}>
+              <NativeIcon name="candle" size={12} color={colors.warning.DEFAULT} />
+            </View>
           )}
           {culture.has_lunar_calendar && (
-            <Text className="text-xs mt-1">🌙</Text>
+            <View style={{ marginTop: 4 }}>
+              <NativeIcon name="moon" size={12} color={colors.primaryLight} />
+            </View>
           )}
         </GlassView>
       </Animated.View>

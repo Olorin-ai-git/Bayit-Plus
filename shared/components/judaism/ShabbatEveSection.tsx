@@ -15,6 +15,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { judaismService } from '../../services/api';
 import { useDirection } from '../../hooks/useDirection';
@@ -128,7 +129,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
   const quickActions: QuickAction[] = [
     {
       id: 'music',
-      emoji: '🎵',
+      emoji: 'music',
       label: t('judaism.erevShabbat.shabbatSongs', 'Shabbat Songs'),
       color: colors.warning.DEFAULT,
       bgColor: 'rgba(245, 158, 11, 0.2)',
@@ -136,7 +137,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
     },
     {
       id: 'parasha',
-      emoji: '📖',
+      emoji: 'book',
       label: t('judaism.erevShabbat.parashaStudy', 'Parasha'),
       color: colors.primaryLight,
       bgColor: 'rgba(192, 132, 252, 0.2)',
@@ -144,7 +145,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
     },
     {
       id: 'recipes',
-      emoji: '🍽️',
+      emoji: 'utensils',
       label: t('judaism.erevShabbat.shabbatRecipes', 'Recipes'),
       color: colors.success.DEFAULT,
       bgColor: 'rgba(16, 185, 129, 0.2)',
@@ -152,7 +153,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
     },
     {
       id: 'tefila',
-      emoji: '✨',
+      emoji: 'sparkles',
       label: t('judaism.erevShabbat.prayers', 'Prayers'),
       color: colors.primary.DEFAULT,
       bgColor: 'rgba(126, 34, 206, 0.2)',
@@ -184,16 +185,21 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
             {/* Left: Title with icons */}
             <View style={[styles.titleSection, isRTL && styles.titleSectionRTL]}>
               <View style={styles.candlesContainer}>
-                <Text style={styles.candleEmoji}>🕯️</Text>
-                <Text style={[styles.candleEmoji, styles.candleOffset]}>🕯️</Text>
+                <NativeIcon name="candle" size={isTV ? 56 : 48} color={colors.warning.DEFAULT} />
+                <View style={styles.candleOffset}>
+                  <NativeIcon name="candle" size={isTV ? 56 : 48} color={colors.warning.DEFAULT} />
+                </View>
               </View>
               <View>
                 <Text style={styles.title}>
                   {t('judaism.erevShabbat.title', 'Erev Shabbat')}
                 </Text>
-                <Text style={styles.greeting}>
-                  {t('judaism.erevShabbat.shabbatShalom', 'Shabbat Shalom!')} 🍞
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+                  <Text style={styles.greeting}>
+                    {t('judaism.erevShabbat.shabbatShalom', 'Shabbat Shalom!')}
+                  </Text>
+                  <NativeIcon name="bread" size={isTV ? 20 : 18} color={colors.warning.DEFAULT} />
+                </View>
               </View>
             </View>
 
@@ -201,7 +207,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
             {countdown && (
               <View style={styles.countdownBox}>
                 <View style={[styles.countdownHeader, isRTL && styles.countdownHeaderRTL]}>
-                  <Text style={styles.clockEmoji}>⏰</Text>
+                  <NativeIcon name="clock" size={16} color={colors.warning.DEFAULT} />
                   <Text style={styles.countdownLabel}>
                     {t('judaism.erevShabbat.timeUntil', 'Time until Shabbat')}
                   </Text>
@@ -217,7 +223,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
           {getParasha() && (
             <View style={styles.parashaBanner}>
               <View style={[styles.parashaContent, isRTL && styles.parashaContentRTL]}>
-                <Text style={styles.bookEmoji}>📖</Text>
+                <NativeIcon name="book" size={isTV ? 28 : 24} color={colors.primaryLight} />
                 <View style={styles.parashaTextContainer}>
                   <Text style={styles.parashaLabel}>
                     {t('judaism.shabbat.parashat', 'Parashat')}
@@ -234,7 +240,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
           <View style={[styles.timesRow, isRTL && styles.timesRowRTL]}>
             {/* Candle Lighting */}
             <View style={[styles.timeCard, styles.candleLightingCard]}>
-              <Text style={styles.timeEmoji}>🔥</Text>
+              <NativeIcon name="flame" size={isTV ? 36 : 32} color={colors.warning.DEFAULT} />
               <Text style={styles.timeLabel}>
                 {t('judaism.shabbat.candleLighting', 'Candle Lighting')}
               </Text>
@@ -248,7 +254,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
 
             {/* Havdalah */}
             <View style={[styles.timeCard, styles.havdalahCard]}>
-              <Text style={styles.timeEmoji}>🌙</Text>
+              <NativeIcon name="moon" size={isTV ? 36 : 32} color={colors.primaryLight} />
               <Text style={styles.timeLabel}>
                 {t('judaism.shabbat.havdalah', 'Havdalah')}
               </Text>
@@ -280,7 +286,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
                       { backgroundColor: action.bgColor, borderColor: `${action.color}4D` },
                     ]}
                   >
-                    <Text style={styles.actionEmoji}>{action.emoji}</Text>
+                    <NativeIcon name={action.emoji as any} size={isTV ? 28 : 24} color={action.color} />
                     <Text style={styles.actionLabel} numberOfLines={1}>
                       {action.label}
                     </Text>
@@ -347,9 +353,7 @@ const styles = StyleSheet.create({
   candlesContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-  },
-  candleEmoji: {
-    fontSize: isTV ? 56 : 48,
+    gap: -8,
   },
   candleOffset: {
     marginLeft: -8,
@@ -382,9 +386,6 @@ const styles = StyleSheet.create({
   countdownHeaderRTL: {
     flexDirection: 'row-reverse',
   },
-  clockEmoji: {
-    fontSize: 16,
-  },
   countdownLabel: {
     fontSize: isTV ? fontSize.md : fontSize.sm,
     color: colors.warning.DEFAULT,
@@ -413,9 +414,6 @@ const styles = StyleSheet.create({
   },
   parashaContentRTL: {
     flexDirection: 'row-reverse',
-  },
-  bookEmoji: {
-    fontSize: isTV ? 28 : 24,
   },
   parashaTextContainer: {
     alignItems: 'center',
@@ -451,10 +449,6 @@ const styles = StyleSheet.create({
   havdalahCard: {
     backgroundColor: 'rgba(126, 34, 206, 0.15)',
     borderColor: 'rgba(126, 34, 206, 0.3)',
-  },
-  timeEmoji: {
-    fontSize: isTV ? 36 : 32,
-    marginBottom: spacing.sm,
   },
   timeLabel: {
     fontSize: isTV ? fontSize.md : fontSize.sm,
@@ -498,10 +492,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     alignItems: 'center',
     borderWidth: 1,
-  },
-  actionEmoji: {
-    fontSize: isTV ? 28 : 24,
-    marginBottom: spacing.sm,
+    gap: spacing.sm,
   },
   actionLabel: {
     fontSize: isTV ? fontSize.sm : fontSize.xs,

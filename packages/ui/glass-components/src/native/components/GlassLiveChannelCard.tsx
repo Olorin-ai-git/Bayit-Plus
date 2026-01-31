@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, borderRadius } from '../../theme';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 export interface LiveChannelData {
   /** Channel unique identifier */
@@ -79,7 +80,7 @@ export function GlassLiveChannelCard({
   // Default play icon (triangle)
   const renderPlayIcon = () => {
     if (playIcon) return playIcon;
-    return '▶';
+    return <NativeIcon name="play" size="lg" color={colors.text} />;
   };
 
   // Default favorite icon (star)
@@ -196,9 +197,9 @@ export function GlassLiveChannelCard({
                   end={{ x: 1, y: 1 }}
                   className="absolute inset-0"
                 />
-                <Text className="text-2xl ml-1" style={{ color: colors.text }}>
+                <View style={{ marginLeft: 4 }}>
                   {renderPlayIcon()}
-                </Text>
+                </View>
               </View>
             </View>
           )}

@@ -207,26 +207,30 @@ async def get_daily_summary(current_user: Optional[User] = Depends(get_optional_
     # Build Hebrew summary
     summary_parts = []
 
+    # Category icon mapping (frontend renders these via @olorin/shared-icons)
+    CATEGORY_ICONS = {
+        "security": "lock",
+        "politics": "judaism",
+        "tech": "vod",
+        "culture": "vod",
+        "sports": "target",
+        "economy": "discover",
+        "entertainment": "vod",
+        "general": "location",
+    }
+
     if analysis.top_story:
-        summary_parts.append(f"📰 {analysis.top_story}")
+        summary_parts.append(f"[news] {analysis.top_story}")
 
     if analysis.overall_mood:
-        summary_parts.append(f"🇮🇱 {analysis.overall_mood}")
+        summary_parts.append(f"[globe] {analysis.overall_mood}")
 
     # Add top 3 topics
     for i, topic in enumerate(analysis.topics[:3], 1):
-        emoji = {
-            "security": "🔒",
-            "politics": "🏛️",
-            "tech": "💻",
-            "culture": "🎭",
-            "sports": "⚽",
-            "economy": "📈",
-            "entertainment": "🎬",
-        }.get(topic.category, "📌")
+        icon = CATEGORY_ICONS.get(topic.category, "location")
 
         if topic.summary:
-            summary_parts.append(f"{emoji} {topic.summary}")
+            summary_parts.append(f"[{icon}] {topic.summary}")
 
     return {
         "summary": "\n\n".join(summary_parts),

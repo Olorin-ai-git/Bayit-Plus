@@ -19,6 +19,7 @@ import { useDirection } from '../../hooks/useDirection';
 import { useSupportStore, SupportTab } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
 import { config } from '../../config/appConfig';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { SupportCategories } from './SupportCategories';
 import { SupportDocViewer } from './SupportDocViewer';
 import { SupportSearch } from './SupportSearch';
@@ -33,11 +34,11 @@ interface TabConfig {
 }
 
 const tabs: TabConfig[] = [
-  { id: 'docs', labelKey: 'support.tabs.docs', icon: '📚' },
-  { id: 'faq', labelKey: 'support.tabs.faq', icon: '❓' },
-  { id: 'videos', labelKey: 'support.tabs.videos', icon: '🎬' },
-  { id: 'contact', labelKey: 'support.tabs.contact', icon: '💬' },
-  { id: 'tickets', labelKey: 'support.tabs.tickets', icon: '🎫' },
+  { id: 'docs', labelKey: 'support.tabs.docs', icon: 'book' },
+  { id: 'faq', labelKey: 'support.tabs.faq', icon: 'helpCircle' },
+  { id: 'videos', labelKey: 'support.tabs.videos', icon: 'film' },
+  { id: 'contact', labelKey: 'support.tabs.contact', icon: 'messageCircle' },
+  { id: 'tickets', labelKey: 'support.tabs.tickets', icon: 'tag' },
 ];
 
 export const SupportPortal: React.FC = () => {
@@ -67,9 +68,9 @@ export const SupportPortal: React.FC = () => {
         return (
           <View className="gap-4">
             <GlassView className="p-4 rounded-2xl">
-              <Text className={`text-3xl mb-3 ${isTV ? 'text-4xl' : ''} text-center`}>
-                🎬
-              </Text>
+              <View className="items-center mb-3">
+                <NativeIcon name="film" size={isTV ? '3xl' : '2xl'} color="#a855f7" />
+              </View>
               <Text className={`text-white text-xl font-bold mb-2 ${isTV ? 'text-2xl' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.videos.widgetsIntro')}
               </Text>
@@ -107,7 +108,9 @@ export const SupportPortal: React.FC = () => {
         return (
           <View className="gap-4">
             <GlassView className="p-4 rounded-2xl items-center">
-              <Text className={`text-4xl mb-3 ${isTV ? 'text-5xl' : ''}`}>💬</Text>
+              <View className="mb-3">
+                <NativeIcon name="messageCircle" size={isTV ? '3xl' : '2xl'} color="#a855f7" />
+              </View>
               <Text className={`text-white text-lg font-semibold mb-2 ${isTV ? 'text-xl' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.contact.voiceTitle', 'Voice Support')}
               </Text>
@@ -117,7 +120,9 @@ export const SupportPortal: React.FC = () => {
             </GlassView>
 
             <GlassView className="p-4 rounded-2xl items-center">
-              <Text className={`text-4xl mb-3 ${isTV ? 'text-5xl' : ''}`}>🎫</Text>
+              <View className="mb-3">
+                <NativeIcon name="tag" size={isTV ? '3xl' : '2xl'} color="#a855f7" />
+              </View>
               <Text className={`text-white text-lg font-semibold mb-2 ${isTV ? 'text-xl' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.contact.ticketTitle', 'Create Support Ticket')}
               </Text>
@@ -135,7 +140,9 @@ export const SupportPortal: React.FC = () => {
             </GlassView>
 
             <GlassView className="p-4 rounded-2xl items-center">
-              <Text className={`text-4xl mb-3 ${isTV ? 'text-5xl' : ''}`}>📧</Text>
+              <View className="mb-3">
+                <NativeIcon name="mail" size={isTV ? '3xl' : '2xl'} color="#a855f7" />
+              </View>
               <Text className={`text-white text-lg font-semibold mb-2 ${isTV ? 'text-xl' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.contact.emailTitle', 'Email Support')}
               </Text>
@@ -163,7 +170,7 @@ export const SupportPortal: React.FC = () => {
       {/* Header */}
       <View className={`flex-row items-center gap-3 ${isTV ? 'p-6' : 'p-4'} pb-3`} style={{ flexDirection }}>
         <View className={`justify-center items-center bg-primary/20 ${isTV ? 'w-16 h-16 rounded-[32px]' : 'w-12 h-12 rounded-3xl'}`}>
-          <Text className={isTV ? 'text-4xl' : 'text-2xl'}>🎧</Text>
+          <NativeIcon name="headphones" size={isTV ? '2xl' : 'xl'} color="#a855f7" />
         </View>
         <View>
           <Text className={`text-white font-bold ${isTV ? 'text-4xl' : 'text-3xl'} ${textAlign === 'right' ? 'text-right' : ''}`}>
@@ -194,7 +201,7 @@ export const SupportPortal: React.FC = () => {
               focusedTab === tab.id ? 'border-primary' : 'border-transparent'
             }`}
           >
-            <Text className={isTV ? 'text-xl' : 'text-base'}>{tab.icon}</Text>
+            <NativeIcon name={tab.icon as any} size={isTV ? 'lg' : 'md'} color={activeTab === tab.id ? '#a855f7' : '#9ca3af'} />
             <Text
               className={`${isTV ? 'text-base' : 'text-sm'} ${
                 activeTab === tab.id ? 'text-primary font-semibold' : 'text-text-secondary'

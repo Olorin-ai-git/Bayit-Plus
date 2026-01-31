@@ -24,6 +24,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useDirection } from '../hooks/useDirection';
 import { chatService } from '../services/api';
 import { getLocalizedName } from '../utils/i18n';
@@ -194,7 +195,7 @@ export const SearchScreen: React.FC = () => {
           </TouchableOpacity>
         )}
         <View className={`${isTV ? 'w-16 h-16' : 'w-12 h-12'} rounded-full bg-purple-500/30 items-center justify-center`}>
-          <Text className={iconSizeClass}>🔍</Text>
+          <NativeIcon name="search" size={isTV ? 'xl' : 'lg'} color="#a855f7" />
         </View>
         <View className="flex-1">
           <Text className={`text-white ${headerSizeClass} font-bold ${isRTL ? 'text-right' : 'text-left'}`}>
@@ -244,7 +245,7 @@ export const SearchScreen: React.FC = () => {
             `}
             activeOpacity={0.7}
           >
-            <Text className={`${isMobile ? 'text-xl' : iconSizeClass}`}>⚙️</Text>
+            <NativeIcon name="settings" size={isMobile ? 'md' : isTV ? 'xl' : 'lg'} color="#a855f7" />
             <Text className={`text-white font-semibold ${isTV ? 'text-xl' : isMobile ? 'text-sm' : 'text-base'}`}>
               {t('search.filters', { defaultValue: 'Filters' })}
             </Text>
@@ -306,10 +307,10 @@ export const SearchScreen: React.FC = () => {
             )}
             <TouchableOpacity
               onPress={() => setFilters({ contentTypes: filters.contentTypes })}
-              className={`${isMobile ? 'px-2 py-1' : 'px-3 py-1'} bg-red-500/30 rounded-full`}
+              className={`${isMobile ? 'px-2 py-1' : 'px-3 py-1'} bg-red-500/30 rounded-full flex items-center justify-center`}
               activeOpacity={0.7}
             >
-              <Text className={`text-red-300 ${isMobile ? 'text-xs' : 'text-sm'} font-medium`}>✕</Text>
+              <NativeIcon name="x" size="xs" color="#fca5a5" />
             </TouchableOpacity>
           </View>
         )}
@@ -322,7 +323,7 @@ export const SearchScreen: React.FC = () => {
           {recentSearches.length > 0 && (
             <View className={isTV ? 'mb-10' : 'mb-6'}>
               <View className={`flex-row items-center gap-2 ${isTV ? 'mb-4' : 'mb-3'}`}>
-                <Text className={isTV ? 'text-4xl' : isMobile ? 'text-xl' : 'text-2xl'}>🕐</Text>
+                <NativeIcon name="clock" size={isTV ? 'xl' : isMobile ? 'md' : 'lg'} color="#a855f7" />
                 <Text className={`text-white font-semibold ${isTV ? 'text-2xl' : isMobile ? 'text-base' : 'text-lg'}`}>
                   {t('search.recentSearches', { defaultValue: 'Recent Searches' })}
                 </Text>
@@ -349,10 +350,10 @@ export const SearchScreen: React.FC = () => {
 
           {/* Initial Prompt */}
           <View className={`items-center justify-center ${isTV ? 'py-24' : isMobile ? 'py-12' : 'py-20'}`}>
-            <Text className={`${isTV ? 'text-9xl mb-8' : isMobile ? 'text-7xl mb-4' : 'text-8xl mb-6'}`}>🔍</Text>
+            <NativeIcon name="search" size="3xl" color="#a855f7" />
             <Text className={`
               text-white text-center font-bold
-              ${isTV ? 'text-4xl mb-4' : isMobile ? 'text-xl mb-2' : 'text-2xl mb-3'}
+              ${isTV ? 'text-4xl mb-4 mt-8' : isMobile ? 'text-xl mb-2 mt-4' : 'text-2xl mb-3 mt-6'}
             `}>
               {t('search.promptTitle', { defaultValue: 'Search for Content' })}
             </Text>

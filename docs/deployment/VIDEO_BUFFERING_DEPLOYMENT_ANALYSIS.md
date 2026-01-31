@@ -395,6 +395,7 @@ resource "google_monitoring_dashboard" "ffmpeg_processing" {
 
 **File:** `cloudbuild.yaml` (UPDATED)
 
+::: v-pre
 ```yaml
 steps:
   # Step 1: Verify FFmpeg Installation
@@ -578,6 +579,7 @@ options:
 
 timeout: "2400s"  # Increased for load testing
 ```
+:::
 
 ---
 

@@ -137,6 +137,7 @@ All interactive elements must be at least **200x80 points** for comfortable Siri
 
 **Purpose:** Display credit balance in top-right corner with high visibility.
 
+::: v-pre
 ```typescript
 // src/components/ai/CreditBalanceWidget.tsx
 import React, { useEffect } from 'react';
@@ -219,11 +220,13 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### 2. AI Search Screen
 
 **Purpose:** Dedicated search screen with keyboard and focus navigation.
 
+::: v-pre
 ```typescript
 // src/screens/AISearchScreen.tsx
 import React, { useState, useRef } from 'react';
@@ -533,11 +536,13 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### 3. AI Recommendations Row
 
 **Purpose:** Horizontal scrollable row with focus navigation.
 
+::: v-pre
 ```typescript
 // src/components/ai/AIRecommendationsRow.tsx
 import React, { useEffect } from 'react';
@@ -758,11 +763,13 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### 4. Catch-Up Button (tvOS)
 
 **Purpose:** Generate AI summaries with large touch target.
 
+::: v-pre
 ```typescript
 // src/components/ai/CatchUpButton.tsx
 import React, { useState } from 'react';
@@ -1016,6 +1023,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ---
 
@@ -1023,6 +1031,7 @@ const styles = StyleSheet.create({
 
 ### 1. TVFocusGuideView
 
+::: v-pre
 ```typescript
 import { TVFocusGuideView } from 'react-native';
 
@@ -1036,6 +1045,7 @@ import { TVFocusGuideView } from 'react-native';
   </Pressable>
 </TVFocusGuideView>
 ```
+:::
 
 ### 2. Custom Focus Navigation
 
@@ -1057,6 +1067,7 @@ useTVEventHandler((evt) => {
 
 ### 3. Focus State Styling
 
+::: v-pre
 ```typescript
 <Pressable
   style={({ focused, pressed }) => [
@@ -1086,6 +1097,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ---
 
@@ -1106,6 +1118,7 @@ useEffect(() => {
 
 ### Lazy Loading
 
+::: v-pre
 ```typescript
 import { FlatList } from 'react-native';
 
@@ -1122,6 +1135,7 @@ import { FlatList } from 'react-native';
   })}
 />
 ```
+:::
 
 ---
 
@@ -1169,6 +1183,7 @@ describe('tvOS AI Features', () => {
 
 ### Focus Not Working
 
+::: v-pre
 ```typescript
 // Ensure Pressable has focusable prop
 <Pressable focusable onPress={handlePress}>
@@ -1180,6 +1195,7 @@ describe('tvOS AI Features', () => {
   <Pressable focusable>...</Pressable>
 </TVFocusGuideView>
 ```
+:::
 
 ### Text Too Small
 

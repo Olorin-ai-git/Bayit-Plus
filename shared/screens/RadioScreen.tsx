@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { radioService } from '../services/api';
 import { colors } from '../theme';
 import { useDirection } from '../hooks/useDirection';
@@ -138,7 +139,7 @@ const StationCard: React.FC<{
 
         {/* Play Icon */}
         <View className={`absolute top-3 right-3 w-8 h-8 rounded-2xl ${isFocused ? 'bg-purple-500' : 'bg-white/20'} justify-center items-center`}>
-          <Text className="text-sm text-white">▶</Text>
+          <NativeIcon name="play" size="sm" color="#ffffff" />
         </View>
       </Animated.View>
     </TouchableOpacity>

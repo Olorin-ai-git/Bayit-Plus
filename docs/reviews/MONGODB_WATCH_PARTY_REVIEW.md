@@ -68,6 +68,7 @@ This can be **bypassed by**:
 
 **Required Implementation**:
 
+::: v-pre
 ```python
 from pydantic import Field, field_validator, validator
 from typing import Literal
@@ -187,6 +188,7 @@ class ChatMessage(Document):
             [("party_id", 1), ("timestamp", -1)],  # Compound index
         ]
 ```
+:::
 
 **Also Update Request Models**:
 
@@ -470,6 +472,7 @@ messages = await query.sort(-ChatMessage.timestamp).limit(limit).to_list()
 ### Performance Comparison
 
 **Before (current indexes)**:
+::: v-pre
 ```javascript
 // MongoDB explain plan
 {
@@ -482,8 +485,10 @@ messages = await query.sort(-ChatMessage.timestamp).limit(limit).to_list()
 }
 // Must sort 50 documents in memory
 ```
+:::
 
 **After (compound index)**:
+::: v-pre
 ```javascript
 // MongoDB explain plan
 {
@@ -497,6 +502,7 @@ messages = await query.sort(-ChatMessage.timestamp).limit(limit).to_list()
 // No FETCH stage needed (covered query)
 // No in-memory sort (index provides sort order)
 ```
+:::
 
 ---
 
@@ -1015,6 +1021,7 @@ async def database_health():
 
 ### Security Testing
 
+::: v-pre
 ```python
 # tests/test_chat_security.py
 import pytest
@@ -1052,6 +1059,7 @@ async def test_null_byte_removal():
     )
     assert "\x00" not in msg.message
 ```
+:::
 
 ### Performance Testing
 

@@ -14,6 +14,7 @@ import { GlassView } from './GlassView';
 import { colors, borderRadius, spacing, fontSize } from '@olorin/design-tokens';
 import { isTV } from '../utils/platform';
 import { useTVFocus } from '../hooks/useTVFocus';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface SelectOption {
   value: string;
@@ -112,13 +113,9 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
             >
               {selectedOption?.label || placeholder}
             </Text>
-            <Text style={[
-              styles.chevron,
-              { color: colors.textSecondary },
-              isRTL ? { marginRight: spacing.sm, marginLeft: 0 } : { marginLeft: spacing.sm }
-            ]}>
-              ▼
-            </Text>
+            <View style={isRTL ? { marginRight: spacing.sm, marginLeft: 0 } : { marginLeft: spacing.sm }}>
+              <NativeIcon name="chevronDown" size="sm" color={colors.textSecondary} />
+            </View>
           </GlassView>
         </Animated.View>
       </TouchableOpacity>
@@ -170,13 +167,9 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
                     {item.label}
                   </Text>
                   {item.value === value && (
-                    <Text style={[
-                      styles.checkmark,
-                      { color: colors.primary.DEFAULT },
-                      isRTL ? { marginRight: spacing.sm, marginLeft: 0 } : { marginLeft: spacing.sm }
-                    ]}>
-                      ✓
-                    </Text>
+                    <View style={isRTL ? { marginRight: spacing.sm, marginLeft: 0 } : { marginLeft: spacing.sm }}>
+                      <NativeIcon name="check" size={16} color={colors.primary.DEFAULT} />
+                    </View>
                   )}
                 </TouchableOpacity>
               )}
@@ -261,10 +254,6 @@ const styles = StyleSheet.create({
 
   selectedOptionText: {
     fontWeight: '600',
-  },
-
-  checkmark: {
-    fontSize: 16,
   },
 });
 

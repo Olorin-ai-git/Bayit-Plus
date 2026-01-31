@@ -10,6 +10,7 @@ import { useDirection } from '@bayit/shared-hooks'
 import { Heart, Share2, ArrowLeft } from 'lucide-react'
 import { GlassView, GlassButton } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
+import { NativeIcon } from '@olorin/shared-icons/native'
 import logger from '@/utils/logger'
 import type { Audiobook } from '@/types/audiobook'
 import audiobookService from '@/services/audiobookService'
@@ -55,7 +56,14 @@ export default function AudiobookDetailScreenMobile({ route, navigation }: any) 
     </GlassView>
   )
 
-  const renderStars = (rating: number) => '⭐'.repeat(Math.round(rating))
+  const renderStars = (rating: number) => {
+    const stars = []
+    const count = Math.round(rating)
+    for (let i = 0; i < count; i++) {
+      stars.push(<NativeIcon key={i} name="star" size="sm" color="#ffd93d" />)
+    }
+    return <View style={{ flexDirection: 'row', gap: 2 }}>{stars}</View>
+  }
 
   return (
     <GlassView style={[styles.container, { paddingTop: safeAreaPadding.top, paddingBottom: safeAreaPadding.bottom }]}>
@@ -73,7 +81,7 @@ export default function AudiobookDetailScreenMobile({ route, navigation }: any) 
             <Image source={{ uri: audiobook.thumbnail }} style={styles.thumbnail} resizeMode="cover" />
           ) : (
             <View style={[styles.thumbnail, styles.placeholder]}>
-              <Text style={styles.placeholderText}>🎧</Text>
+              <NativeIcon name="audiobooks" size="xxl" color="#a855f7" />
             </View>
           )}
         </View>
@@ -92,7 +100,10 @@ export default function AudiobookDetailScreenMobile({ route, navigation }: any) 
 
         {audiobook.avg_rating > 0 && (
           <View style={styles.ratingSection}>
-            <Text style={styles.ratingStars}>{renderStars(audiobook.avg_rating)} {audiobook.avg_rating.toFixed(1)}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+              {renderStars(audiobook.avg_rating)}
+              <Text style={styles.ratingText}>{audiobook.avg_rating.toFixed(1)}</Text>
+            </View>
           </View>
         )}
 
@@ -117,7 +128,6 @@ const styles = StyleSheet.create({
   thumbnailContainer: { alignItems: 'center' },
   thumbnail: { width: 200, height: 300, borderRadius: borderRadius.lg, backgroundColor: 'rgba(255,255,255,0.05)' },
   placeholder: { justifyContent: 'center', alignItems: 'center' },
-  placeholderText: { fontSize: 80 },
   title: { fontSize: 22, fontWeight: '700', color: colors.text },
   author: { fontSize: 16, fontWeight: '600', color: colors.primary.DEFAULT },
   narrator: { fontSize: 13, color: colors.textMuted },
@@ -127,7 +137,7 @@ const styles = StyleSheet.create({
   metaLabel: { fontSize: 12, color: colors.textMuted, fontWeight: '600' },
   metaValue: { fontSize: 13, color: colors.text },
   ratingSection: { alignItems: 'center', padding: spacing.md, backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: borderRadius.md },
-  ratingStars: { fontSize: 16, fontWeight: '600', color: colors.text },
+  ratingText: { fontSize: 16, fontWeight: '600', color: colors.text },
   actions: { flexDirection: 'row', gap: spacing.md },
   actionButton: { flex: 1 },
   errorText: { fontSize: 16, color: '#ef4444', marginBottom: spacing.lg, textAlign: 'center' },

@@ -7,6 +7,7 @@ import React from 'react'
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useTranslation } from 'react-i18next'
+import { NativeIcon } from '@olorin/shared-icons/native'
 import { useDirection } from '@bayit/shared/hooks'
 import { GlassView } from '../components'
 import { AudiobookRowTVOS } from '../components/audiobooks/AudiobookRowTVOS'
@@ -40,8 +41,8 @@ export const AudiobooksScreenTVOS: React.FC = () => {
     return (
       <View className="flex-1 bg-[#0a0a1a] justify-center items-center px-12">
         <GlassView className="p-12 items-center">
-          <Text className="text-6xl mb-6">🎧</Text>
-          <Text className="text-2xl font-semibold text-white mb-3" style={{ textAlign }}>
+          <NativeIcon name="audiobooks" size="xxxl" context="tv" color="#eab308" />
+          <Text className="text-2xl font-semibold text-white mb-3 mt-6" style={{ textAlign }}>
             {t('errors.loadFailed')}
           </Text>
           <Text className="text-lg text-gray-400 text-center mb-8">{error}</Text>
@@ -62,8 +63,8 @@ export const AudiobooksScreenTVOS: React.FC = () => {
     return (
       <View className="flex-1 bg-[#0a0a1a] justify-center items-center px-12">
         <GlassView className="p-12 items-center">
-          <Text className="text-6xl mb-6">🎧</Text>
-          <Text className="text-2xl font-semibold text-white mb-3" style={{ textAlign }}>
+          <NativeIcon name="audiobooks" size="xxxl" context="tv" color="#eab308" />
+          <Text className="text-2xl font-semibold text-white mb-3 mt-6" style={{ textAlign }}>
             {t('empty.noAudiobooks')}
           </Text>
           <Text className="text-lg text-gray-400 text-center">{t('empty.tryLater')}</Text>
@@ -77,7 +78,7 @@ export const AudiobooksScreenTVOS: React.FC = () => {
       {/* Header */}
       <View className="flex-row items-center px-12 pt-10 pb-8" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
         <View className="w-[70px] h-[70px] rounded-full bg-yellow-500/20 justify-center items-center" style={{ marginLeft: isRTL ? 24 : 0, marginRight: isRTL ? 0 : 24 }}>
-          <Text className="text-[36px]">🎧</Text>
+          <NativeIcon name="audiobooks" size="xxl" context="tv" color="#eab308" />
         </View>
         <View>
           <Text className="text-5xl font-bold text-white" style={{ textAlign }}>

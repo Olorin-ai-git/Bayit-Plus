@@ -15,6 +15,7 @@ import { colors, spacing } from '../theme';
 import { useDirection } from '../hooks/useDirection';
 import { GlassCategoryPill } from '../components/ui';
 import { getLocalizedName, getLocalizedCurrentProgram } from '../utils/contentLocalization';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface Channel {
   id: string;
@@ -171,7 +172,7 @@ export const LiveTVScreen: React.FC = () => {
       {/* Header */}
       <View className={`flex-row items-center px-12 pt-10 pb-5 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
         <View className={`w-[60px] h-[60px] rounded-full bg-purple-600/30 justify-center items-center ${isRTL ? 'ml-5' : 'mr-5'}`}>
-          <Text className="text-[28px]">📺</Text>
+          <NativeIcon name="live" size="xl" color="#a855f7" />
         </View>
         <View>
           <Text className={`text-[42px] font-bold text-white ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>{t('liveTV.title')}</Text>

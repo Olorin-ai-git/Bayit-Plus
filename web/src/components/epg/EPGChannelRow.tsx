@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { Channel, EPGProgram } from '@/services/epgApi'
 import EPGTimeSlot from './EPGTimeSlot'
 import { RecordingStatus } from './EPGRecordingIndicator'
+import { Icon } from '@olorin/shared-icons/web'
 
 interface EPGChannelRowProps {
   channel: Channel
@@ -46,7 +47,10 @@ const EPGChannelRow: React.FC<EPGChannelRowProps> = ({
         <View style={styles.channelDetails}>
           <Text style={styles.channelName} numberOfLines={1}>{channel.name}</Text>
           {channel.requires_subscription === 'premium' && (
-            <Text style={styles.premiumBadge}>⭐ {t('common.premium')}</Text>
+            <View style={styles.premiumBadge}>
+              <Icon name="star" size="xs" color="#fbbf24" />
+              <Text style={styles.premiumText}>{t('common.premium')}</Text>
+            </View>
           )}
         </View>
       </View>
@@ -109,6 +113,11 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   premiumBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  premiumText: {
     fontSize: 12,
     color: '#fbbf24',
   },

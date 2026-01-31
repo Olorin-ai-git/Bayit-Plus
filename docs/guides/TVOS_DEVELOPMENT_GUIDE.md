@@ -190,6 +190,7 @@ const styles = StyleSheet.create({
 
 ### Making Components Focusable
 
+::: v-pre
 ```typescript
 import { Pressable, View, Text, StyleSheet } from 'react-native';
 
@@ -238,9 +239,11 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### Focus Order
 
+::: v-pre
 ```typescript
 import { View, Pressable, Text, StyleSheet } from 'react-native';
 
@@ -279,11 +282,13 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### TVFocusGuideView
 
 Use `TVFocusGuideView` to control focus navigation:
 
+::: v-pre
 ```typescript
 import { View, Pressable, Text, TVFocusGuideView } from 'react-native';
 import { useRef } from 'react';
@@ -314,9 +319,11 @@ export const CustomFocusLayout = () => {
   );
 };
 ```
+:::
 
 ### Preventing Focus Traps
 
+::: v-pre
 ```typescript
 // ❌ BAD - Focus can get stuck
 <ScrollView>
@@ -343,6 +350,7 @@ export const CustomFocusLayout = () => {
   </View>
 </ScrollView>
 ```
+:::
 
 ---
 
@@ -350,6 +358,7 @@ export const CustomFocusLayout = () => {
 
 ### Remote Gestures
 
+::: v-pre
 ```typescript
 import { useTVEventHandler } from 'react-native';
 
@@ -395,6 +404,7 @@ export const VideoPlayer = () => {
   return <View>{/* Video player UI */}</View>;
 };
 ```
+:::
 
 ### Siri Remote Events
 
@@ -415,6 +425,7 @@ export const VideoPlayer = () => {
 
 ### Content Card (10-Foot UI)
 
+::: v-pre
 ```typescript
 import { Pressable, View, Text, Image, StyleSheet } from 'react-native';
 import { GlassCard } from '@bayit/glass';
@@ -476,9 +487,11 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### Horizontal Scroll (FlatList)
 
+::: v-pre
 ```typescript
 import { FlatList, View, StyleSheet } from 'react-native';
 
@@ -518,9 +531,11 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### Loading State
 
+::: v-pre
 ```typescript
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
 
@@ -547,6 +562,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ---
 
@@ -554,6 +570,7 @@ const styles = StyleSheet.create({
 
 ### Stack Navigator Setup
 
+::: v-pre
 ```typescript
 // App.tsx
 import { NavigationContainer } from '@react-navigation/native';
@@ -587,9 +604,11 @@ export const App = () => {
   );
 };
 ```
+:::
 
 ### Navigation Between Screens
 
+::: v-pre
 ```typescript
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -611,6 +630,7 @@ export const HomeScreen = () => {
   );
 };
 ```
+:::
 
 ---
 
@@ -618,6 +638,7 @@ export const HomeScreen = () => {
 
 ### Using StyleSheet
 
+::: v-pre
 ```typescript
 import { View, Text, StyleSheet } from 'react-native';
 
@@ -642,9 +663,11 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### Dynamic Styles
 
+::: v-pre
 ```typescript
 // Conditional styling based on props
 interface CardProps {
@@ -661,6 +684,7 @@ const getCardStyle = ({ focused, selected }: CardProps) => [
 // Usage
 <View style={getCardStyle({ focused: true, selected: false })} />
 ```
+:::
 
 ### Responsive Sizing
 
@@ -683,6 +707,7 @@ const styles = StyleSheet.create({
 
 ### FlatList Optimization
 
+::: v-pre
 ```typescript
 <FlatList
   data={items}
@@ -700,9 +725,11 @@ const styles = StyleSheet.create({
   })}
 />
 ```
+:::
 
 ### Memoization
 
+::: v-pre
 ```typescript
 import { memo, useMemo, useCallback } from 'react';
 
@@ -724,9 +751,11 @@ const filteredItems = useMemo(() => {
   return items.filter(item => item.section === 'movies');
 }, [items]);
 ```
+:::
 
 ### Image Optimization
 
+::: v-pre
 ```typescript
 import FastImage from 'react-native-fast-image';
 
@@ -737,6 +766,7 @@ import FastImage from 'react-native-fast-image';
   priority={FastImage.priority.high}
 />
 ```
+:::
 
 ---
 
@@ -744,6 +774,7 @@ import FastImage from 'react-native-fast-image';
 
 ### Component Testing
 
+::: v-pre
 ```typescript
 // ContentCard.test.tsx
 import { render, fireEvent } from '@testing-library/react-native';
@@ -775,9 +806,11 @@ describe('ContentCard', () => {
   });
 });
 ```
+:::
 
 ### Focus Testing
 
+::: v-pre
 ```typescript
 import { render } from '@testing-library/react-native';
 import { FocusableButton } from './FocusableButton';
@@ -804,6 +837,7 @@ describe('FocusableButton', () => {
   });
 });
 ```
+:::
 
 ### Manual Testing on tvOS Simulator
 
@@ -935,6 +969,7 @@ const apiUrl = Config.REACT_APP_API_BASE_URL;
 ### Issue: Focus Not Working
 
 **Solution:**
+::: v-pre
 ```typescript
 // Ensure focusable={true} is set
 <Pressable focusable={true} onPress={handlePress}>
@@ -948,6 +983,7 @@ const apiUrl = Config.REACT_APP_API_BASE_URL;
   </Pressable>
 </View>
 ```
+:::
 
 ### Issue: Text Too Small
 

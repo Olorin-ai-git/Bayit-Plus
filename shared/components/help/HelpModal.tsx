@@ -15,6 +15,7 @@ import {
   Linking,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 import { supportConfig } from '../../config/supportConfig';
@@ -142,7 +143,7 @@ export const HelpModal: React.FC<HelpModalProps> = ({
               accessibilityRole="button"
               accessibilityLabel={t('common.close', 'Close')}
             >
-              <Text className="text-white text-lg">✕</Text>
+              <NativeIcon name="x" size={18} color="#fff" />
             </TouchableOpacity>
           </View>
 
@@ -201,13 +202,11 @@ export const HelpModal: React.FC<HelpModalProps> = ({
                     style={{ flexDirection }}
                     onPress={() => handleArticlePress(article.slug)}
                   >
-                    <Text className={isTV ? 'text-lg' : 'text-base'}>📄</Text>
+                    <NativeIcon name="file-text" size={isTV ? 18 : 16} color="#fff" />
                     <Text className={`flex-1 text-white ${isTV ? 'text-sm' : 'text-[13px]'}`} style={{ textAlign }}>
                       {t(article.titleKey)}
                     </Text>
-                    <Text className={`text-white/70 ${isTV ? 'text-base' : 'text-sm'}`}>
-                      {isRTL ? '←' : '→'}
-                    </Text>
+                    <NativeIcon name={isRTL ? 'arrow-left' : 'arrow-right'} size={isTV ? 16 : 14} color="rgba(255, 255, 255, 0.7)" />
                   </TouchableOpacity>
                 ))}
               </View>

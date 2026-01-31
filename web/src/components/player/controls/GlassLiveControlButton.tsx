@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useRef, ReactNode } from 'react'
 import { View, Text, Pressable, ActivityIndicator, Animated, StyleSheet } from 'react-native'
+import { Icon } from '@olorin/shared-icons/web'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 import { GlassTooltip } from '@bayit/shared/components/ui/GlassTooltip'
@@ -17,6 +18,7 @@ interface GlassLiveControlButtonProps {
   isPremium: boolean
   onPress: () => void
   premiumLabel?: string
+  premiumIcon?: ReactNode
   quotaExceeded?: boolean
   tooltip?: string
   /** Optional split button: shows a secondary action section (like Record's chevron) */
@@ -33,7 +35,8 @@ export function GlassLiveControlButton({
   isConnecting = false,
   isPremium,
   onPress,
-  premiumLabel = '⭐ Premium',
+  premiumLabel = 'Premium',
+  premiumIcon = <Icon name="star" size="sm" color="#fbbf24" />,
   quotaExceeded = false,
   tooltip,
   splitIcon,
@@ -94,17 +97,20 @@ export function GlassLiveControlButton({
       {/* Icon */}
       <View style={styles.iconContainer}>{icon}</View>
 
-      {/* Label */}
-      <Text
-        style={[
-          styles.buttonText,
-          isEnabled && styles.textEnabled,
-          !isPremium && styles.textPremium,
-        ]}
-        numberOfLines={1}
-      >
-        {displayLabel}
-      </Text>
+      {/* Label with optional premium icon */}
+      <View style={styles.labelContainer}>
+        {!isPremium && premiumIcon}
+        <Text
+          style={[
+            styles.buttonText,
+            isEnabled && styles.textEnabled,
+            !isPremium && styles.textPremium,
+          ]}
+          numberOfLines={1}
+        >
+          {displayLabel}
+        </Text>
+      </View>
 
       {/* Loading indicator */}
       {isConnecting && (
@@ -212,6 +218,11 @@ const styles = StyleSheet.create({
     height: 20,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  labelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
   },
   buttonText: {
     fontSize: isTV ? 15 : 13,

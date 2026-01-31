@@ -5,6 +5,8 @@ export default defineConfig({
   description: 'Complete documentation for the Bayit+ streaming platform',
   base: '/docs/',
   srcDir: '../docs',
+  srcExclude: ['**/templates/**'],
+  ignoreDeadLinks: true,
   outDir: '.vitepress/dist',
 
   head: [
@@ -249,7 +251,10 @@ export default defineConfig({
       port: 5173
     },
     build: {
-      chunkSizeWarningLimit: 1000
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        external: ['vue', 'vue/server-renderer']
+      }
     }
   }
 })

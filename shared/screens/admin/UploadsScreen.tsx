@@ -31,6 +31,7 @@ import uploadService, {
   MonitoredFolderUpdate,
 } from '../../services/uploadService';
 import { logger } from '../../utils/logger';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 // Scoped logger for uploads screen
 const uploadsLogger = logger.scope('Admin:Uploads');
@@ -175,9 +176,12 @@ export const UploadsScreen: React.FC = () => {
         {/* Connection Status */}
         {!connected && (
           <View style={styles.warningBanner}>
-            <Text style={styles.warningText}>
-              ⚠️ Real-time updates disconnected
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs }}>
+              <NativeIcon name="alertTriangle" size="sm" color="#f59e0b" />
+              <Text style={styles.warningText}>
+                Real-time updates disconnected
+              </Text>
+            </View>
           </View>
         )}
 

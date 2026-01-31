@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@olorin/shared-icons/web';
+import { colors } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { z } from 'zod';
 
@@ -51,7 +53,7 @@ export const WatchlistPageHeader: React.FC<WatchlistPageHeaderProps> = ({
       {/* Header with icon and title */}
       <View className="flex-row items-center px-8 pt-10 pb-6" style={[isRTL ? styles.headerRTL : styles.headerLTR]}>
         <View className="w-[60px] h-[60px] rounded-full bg-purple-500/20 justify-center items-center" style={[isRTL ? styles.iconML : styles.iconMR]}>
-          <Text className="text-[28px]">📋</Text>
+          <Icon name="clipboard" size={28} color={colors.secondary.DEFAULT} />
         </View>
         <View>
           <Text className="text-[36px] font-bold text-white" style={[isRTL ? styles.textRight : styles.textLeft]}>

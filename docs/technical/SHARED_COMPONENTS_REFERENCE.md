@@ -27,6 +27,7 @@ The Glass UI component library provides a unified set of glassmorphism-styled co
 **Purpose:** Container component with glassmorphism styling
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassCard } from '@bayit/glass';
 
@@ -35,6 +36,7 @@ import { GlassCard } from '@bayit/glass';
   <Text className="text-white/70">Description</Text>
 </GlassCard>
 ```
+:::
 
 **Props:**
 | Prop | Type | Default | Description |
@@ -61,6 +63,7 @@ import { GlassCard } from '@bayit/glass';
 **Purpose:** Interactive button with glassmorphism styling
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassButton } from '@bayit/glass';
 
@@ -72,6 +75,7 @@ import { GlassButton } from '@bayit/glass';
   Click Me
 </GlassButton>
 ```
+:::
 
 **Props:**
 | Prop | Type | Default | Description |
@@ -101,6 +105,7 @@ import { GlassButton } from '@bayit/glass';
 **Purpose:** Text input with glassmorphism styling
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassInput } from '@bayit/glass';
 
@@ -111,6 +116,7 @@ import { GlassInput } from '@bayit/glass';
   type="text"
 />
 ```
+:::
 
 **Props:**
 | Prop | Type | Default | Description |
@@ -136,6 +142,7 @@ import { GlassInput } from '@bayit/glass';
 **Purpose:** Modal dialog with glassmorphism overlay
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassModal } from '@bayit/glass';
 
@@ -147,6 +154,7 @@ import { GlassModal } from '@bayit/glass';
   <Text>Modal content</Text>
 </GlassModal>
 ```
+:::
 
 **Props:**
 | Prop | Type | Default | Description |
@@ -171,6 +179,7 @@ import { GlassModal } from '@bayit/glass';
 **Purpose:** Alert/toast notification
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassAlert } from '@bayit/glass';
 
@@ -180,6 +189,7 @@ import { GlassAlert } from '@bayit/glass';
   onDismiss={handleDismiss}
 />
 ```
+:::
 
 **Props:**
 | Prop | Type | Default | Description |
@@ -202,6 +212,7 @@ import { GlassAlert } from '@bayit/glass';
 **Purpose:** Checkbox with glassmorphism styling
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassCheckbox } from '@bayit/glass';
 
@@ -211,6 +222,7 @@ import { GlassCheckbox } from '@bayit/glass';
   label="Accept terms"
 />
 ```
+:::
 
 **Props:**
 | Prop | Type | Default | Description |
@@ -227,6 +239,7 @@ import { GlassCheckbox } from '@bayit/glass';
 **Purpose:** Toggle switch with glassmorphism styling
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassSwitch } from '@bayit/glass';
 
@@ -236,6 +249,7 @@ import { GlassSwitch } from '@bayit/glass';
   label="Enable feature"
 />
 ```
+:::
 
 **Props:**
 | Prop | Type | Default | Description |
@@ -252,6 +266,7 @@ import { GlassSwitch } from '@bayit/glass';
 **Purpose:** Progress indicator with glassmorphism styling
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassProgressBar } from '@bayit/glass';
 
@@ -260,6 +275,7 @@ import { GlassProgressBar } from '@bayit/glass';
   label="65% complete"
 />
 ```
+:::
 
 **Props:**
 | Prop | Type | Default | Description |
@@ -275,11 +291,13 @@ import { GlassProgressBar } from '@bayit/glass';
 **Purpose:** Loading spinner animation
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassLoadingSpinner } from '@bayit/glass';
 
 <GlassLoadingSpinner size="md" color="white" />
 ```
+:::
 
 **Props:**
 | Prop | Type | Default | Description |
@@ -296,6 +314,7 @@ import { GlassLoadingSpinner } from '@bayit/glass';
 **Purpose:** Top navigation bar with glassmorphism
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassTopBar } from '@bayit/glass';
 
@@ -308,6 +327,7 @@ import { GlassTopBar } from '@bayit/glass';
   ]}
 />
 ```
+:::
 
 ---
 
@@ -316,6 +336,7 @@ import { GlassTopBar } from '@bayit/glass';
 **Purpose:** Page header with title and breadcrumbs
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassPageHeader } from '@bayit/glass';
 
@@ -328,6 +349,7 @@ import { GlassPageHeader } from '@bayit/glass';
   ]}
 />
 ```
+:::
 
 ---
 
@@ -336,6 +358,7 @@ import { GlassPageHeader } from '@bayit/glass';
 **Purpose:** Tab navigation with glassmorphism
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassTabs } from '@bayit/glass';
 
@@ -349,6 +372,7 @@ import { GlassTabs } from '@bayit/glass';
   onTabChange={setActiveTab}
 />
 ```
+:::
 
 ---
 
@@ -359,6 +383,7 @@ import { GlassTabs } from '@bayit/glass';
 **Purpose:** Empty state placeholder
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassContentPlaceholder } from '@bayit/glass';
 
@@ -373,6 +398,7 @@ import { GlassContentPlaceholder } from '@bayit/glass';
   }
 />
 ```
+:::
 
 ---
 
@@ -381,6 +407,7 @@ import { GlassContentPlaceholder } from '@bayit/glass';
 **Purpose:** Statistics card with icon and value
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassStatCard } from '@bayit/glass';
 
@@ -392,6 +419,7 @@ import { GlassStatCard } from '@bayit/glass';
   trend="up"
 />
 ```
+:::
 
 ---
 
@@ -400,6 +428,7 @@ import { GlassStatCard } from '@bayit/glass';
 **Purpose:** Breadcrumb navigation
 
 **Usage:**
+::: v-pre
 ```typescript
 import { GlassBreadcrumbs } from '@bayit/glass';
 
@@ -411,6 +440,7 @@ import { GlassBreadcrumbs } from '@bayit/glass';
   ]}
 />
 ```
+:::
 
 ---
 
@@ -503,6 +533,7 @@ border: 1px solid rgba(255, 255, 255, 0.1);
 
 All interactive components support ARIA labels:
 
+::: v-pre
 ```typescript
 <GlassButton
   onPress={handleSave}
@@ -512,6 +543,7 @@ All interactive components support ARIA labels:
   Save
 </GlassButton>
 ```
+:::
 
 ### Keyboard Navigation
 
@@ -534,12 +566,14 @@ All components include proper ARIA roles and labels for screen readers.
 
 All components automatically adapt for RTL languages:
 
+::: v-pre
 ```typescript
 // Automatically flips for RTL
 <GlassCard>
   <Text>محتوى بالعربية</Text>
 </GlassCard>
 ```
+:::
 
 **RTL Adjustments:**
 - Text alignment flipped
@@ -553,6 +587,7 @@ All components automatically adapt for RTL languages:
 
 ### Lazy Loading
 
+::: v-pre
 ```typescript
 import { lazy, Suspense } from 'react';
 import { GlassLoadingSpinner } from '@bayit/glass';
@@ -563,9 +598,11 @@ const HeavyComponent = lazy(() => import('./HeavyComponent'));
   <HeavyComponent />
 </Suspense>
 ```
+:::
 
 ### Memoization
 
+::: v-pre
 ```typescript
 import { memo } from 'react';
 
@@ -578,6 +615,7 @@ const GlassCard = memo(({ title, description }) => {
   );
 });
 ```
+:::
 
 ---
 

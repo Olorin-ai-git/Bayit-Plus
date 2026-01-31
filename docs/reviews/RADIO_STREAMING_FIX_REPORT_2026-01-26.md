@@ -80,10 +80,12 @@ stream_url: 'https://test-streams.mux.dev/x36xhzz/audio.m3u8'
 - Added error banner UI with close button and retry indicator
 
 **New States**:
+::: v-pre
 ```typescript
 const [error, setError] = useState<string | null>(null)
 const [retryCount, setRetryCount] = useState(0)
 ```
+:::
 
 **Error Message Handling**:
 - `MEDIA_ERR_ABORTED` → "Loading was aborted"

@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
 import { isDemo } from '../config/appConfig';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 /**
  * DemoBanner Component
@@ -19,7 +20,7 @@ export const DemoBanner: React.FC = () => {
 
   return (
     <View className="flex-row items-center justify-center bg-orange-500/90 py-1.5 px-4 gap-2 z-[1000]" style={{ flexDirection }}>
-      <Text className="text-sm">🎭</Text>
+      <NativeIcon name="vod" size="sm" color="#000000" />
       <Text className="text-xs font-bold text-black tracking-wider" style={{ textAlign }}>{t('demo.banner')}</Text>
       <Text className="text-xs text-gray-800" style={{ textAlign }}>{t('demo.bannerSubtext')}</Text>
     </View>

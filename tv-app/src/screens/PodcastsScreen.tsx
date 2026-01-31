@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView, GlassCategoryPill } from '../components';
 import { podcastService } from '../services/api';
 import { colors, spacing, borderRadius } from '../theme';
@@ -92,7 +93,7 @@ const PodcastCard: React.FC<{
           />
         ) : (
           <View className="w-full aspect-square bg-[#2a2235] justify-center items-center">
-            <Text className="text-5xl">🎙️</Text>
+            <NativeIcon name="podcasts" size="xxl" context="tv" color="#10b981" />
           </View>
         )}
 
@@ -109,7 +110,7 @@ const PodcastCard: React.FC<{
           <View className="flex-wrap gap-2" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
             {show.episodes && show.episodes.length > 0 && (
               <View className="flex-row items-center" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
-                <Text className="text-[10px] ml-1">🎧</Text>
+                <NativeIcon name="audiobooks" size="xs" context="tv" color="#6b7280" style={{ marginLeft: 4 }} />
                 <Text className="text-[10px] text-gray-500">{show.episodes.length} {t('content.episodes')}</Text>
               </View>
             )}
@@ -120,7 +121,7 @@ const PodcastCard: React.FC<{
         {isFocused && (
           <View className="absolute inset-0 bg-black/40 justify-center items-center">
             <View className="w-14 h-14 rounded-full bg-green-500 justify-center items-center">
-              <Text className="text-2xl text-[#0a0a1a] ml-1">▶</Text>
+              <NativeIcon name="play" size="xl" context="tv" color="#0a0a1a" />
             </View>
           </View>
         )}
@@ -190,7 +191,7 @@ export const PodcastsScreen: React.FC = () => {
       {/* Header */}
       <View className="flex-row items-center px-12 pt-10 pb-5" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
         <View className="w-[60px] h-[60px] rounded-full bg-green-500/20 justify-center items-center" style={{ marginLeft: isRTL ? 20 : 0, marginRight: isRTL ? 0 : 20 }}>
-          <Text className="text-[28px]">🎙️</Text>
+          <NativeIcon name="podcasts" size="xl" context="tv" color="#10b981" />
         </View>
         <View>
           <Text className="text-[42px] font-bold text-white text-right" style={{ textAlign }}>{t('podcasts.title')}</Text>
@@ -234,8 +235,8 @@ export const PodcastsScreen: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-[60px]">
             <GlassView className="p-12 items-center">
-              <Text className="text-[64px] mb-4">🎙️</Text>
-              <Text className="text-xl font-semibold text-white mb-2">{t('empty.noPodcasts')}</Text>
+              <NativeIcon name="podcasts" size="xxxl" context="tv" color="#10b981" />
+              <Text className="text-xl font-semibold text-white mb-2 mt-4">{t('empty.noPodcasts')}</Text>
               <Text className="text-base text-gray-400">{t('empty.tryLater')}</Text>
             </GlassView>
           </View>

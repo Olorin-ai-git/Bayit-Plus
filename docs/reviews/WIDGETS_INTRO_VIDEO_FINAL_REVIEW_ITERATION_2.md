@@ -65,12 +65,14 @@ After implementing all Priority 1 and Priority 2 fixes from the initial review, 
 
 **WIDGET TYPE DUPLICATION IN WIDGETCARD.TSX** (Lines 9-39)
 
+::: v-pre
 ```typescript
 // ❌ DUPLICATE TYPE DEFINITIONS STILL PRESENT
 const WidgetContentSchema = z.object({...});  // Lines 9-14
 const WidgetSchema = z.object({...});          // Lines 16-37
 type Widget = z.infer<typeof WidgetSchema>;    // Line 39
 ```
+:::
 
 **Problem**: Local Widget type definition via Zod schema duplicates centralized `@/types/widget`
 
@@ -86,6 +88,7 @@ type Widget = z.infer<typeof WidgetSchema>;    // Line 39
 | `created_by` | Audit trail broken |
 
 **Required Fix**:
+::: v-pre
 ```typescript
 // Remove lines 9-39
 // Add:
@@ -94,6 +97,7 @@ import { Widget, WidgetContent } from '@/types/widget';
 // If runtime validation needed, centralize Zod schema in @/types/widget.ts:
 export const WidgetSchema = z.object({...}) satisfies z.ZodType<Widget>;
 ```
+:::
 
 **Approval**: **NOT SIGNED** - Requires removal of duplicate type definitions
 
@@ -139,10 +143,12 @@ uri: '/media/widgets-intro-en.vtt',  // ❌ Won't work on iOS
 - **Fix**: Split into multiple files (main component, web video, native video, types, styles)
 
 #### Issue 4: **VIDEO REF TYPE MISMATCH**
+::: v-pre
 ```typescript
 // Line 44
 const videoRef = useRef<HTMLVideoElement | null>(null);
 ```
+:::
 - **Problem**: HTMLVideoElement is web-only, TypeScript will error on iOS
 - **Impact**: Type safety violation
 - **Fix**: Use `useRef<any>(null)` or separate refs for web/native
@@ -178,10 +184,12 @@ const videoRef = useRef<HTMLVideoElement | null>(null);
 - **Status**: BLOCKING - Must refactor
 
 #### Issue 2: **WEB-ONLY TYPESCRIPT TYPE**
+::: v-pre
 ```typescript
 // Line 44 - TypeScript compilation will FAIL on native
 const videoRef = useRef<HTMLVideoElement | null>(null);
 ```
+:::
 - **Impact**: iOS/Android/tvOS builds will fail at compile time
 - **Status**: CRITICAL
 
@@ -332,6 +340,7 @@ shared/components/widgets/
 ```
 
 **Main Component**:
+::: v-pre
 ```typescript
 export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({ ... }) => {
   // State management
@@ -350,6 +359,7 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({ ... }) => 
   );
 };
 ```
+:::
 
 ---
 
@@ -370,6 +380,7 @@ const captionUrls = getCaptionUrls(videoUrl);
 ```
 
 **Update all 6 hardcoded references**:
+::: v-pre
 ```typescript
 // Web (Lines 181, 188, 194)
 <track src={captionUrls.en} ... />
@@ -381,11 +392,13 @@ const captionUrls = getCaptionUrls(videoUrl);
 { uri: captionUrls.es, ... },
 { uri: captionUrls.he, ... },
 ```
+:::
 
 ---
 
 ### Fix 3: Fix TypeScript Type (5 minutes)
 
+::: v-pre
 ```typescript
 // WRONG
 const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -398,6 +411,7 @@ const videoRef = Platform.OS === 'web'
   ? useRef<HTMLVideoElement>(null)
   : useRef<any>(null);
 ```
+:::
 
 ---
 
@@ -433,6 +447,7 @@ const handleVideoError = useCallback(() => {
 
 **File**: `web/src/components/widgets/WidgetCard.tsx`
 
+::: v-pre
 ```typescript
 // REMOVE Lines 9-39 (Zod schemas)
 
@@ -442,6 +457,7 @@ import { Widget, WidgetContent } from '@/types/widget';
 // If Zod validation needed, centralize in @/types/widget.ts:
 // export const WidgetSchema = z.object({...}) satisfies z.ZodType<Widget>;
 ```
+:::
 
 ---
 

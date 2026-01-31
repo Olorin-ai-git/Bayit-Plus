@@ -168,6 +168,7 @@ ws.onerror = (error) => {
 #### 3.1 Session Issue Banner (Red)
 Shows when auth token is missing or expired:
 
+::: v-pre
 ```typescript
 {!isAuthenticated && (
   <View style={[styles.statusBanner, styles.statusBannerError]}>
@@ -179,10 +180,12 @@ Shows when auth token is missing or expired:
   </View>
 )}
 ```
+:::
 
 #### 3.2 WebSocket Disconnected Banner (Yellow)
 Shows when authenticated but WebSocket can't connect:
 
+::: v-pre
 ```typescript
 {isAuthenticated && !wsConnected && !wsReconnecting && (
   <View style={[styles.statusBanner, styles.statusBannerWarning]}>
@@ -194,10 +197,12 @@ Shows when authenticated but WebSocket can't connect:
   </View>
 )}
 ```
+:::
 
 #### 3.3 Reconnecting Banner (Blue)
 Shows during reconnection attempts:
 
+::: v-pre
 ```typescript
 {wsReconnecting && (
   <View style={[styles.statusBanner, styles.statusBannerInfo]}>
@@ -208,6 +213,7 @@ Shows during reconnection attempts:
   </View>
 )}
 ```
+:::
 
 ---
 
@@ -267,6 +273,7 @@ else {
 ```
 
 **Dismissible banners with X button:**
+::: v-pre
 ```typescript
 {lastTriggerResult && (
   <View style={[styles.statusBanner, 
@@ -281,6 +288,7 @@ else {
   </View>
 )}
 ```
+:::
 
 ---
 
@@ -320,14 +328,17 @@ const handleTriggerUpload = async () => {
 ```
 
 **Button disabled state:**
+::: v-pre
 ```typescript
 <GlassButton
   disabled={triggeringUpload || queueStats.processing > 0 || queueStats.queued > 0}
   // ...
 />
 ```
+:::
 
 **Visual notice when uploads active:**
+::: v-pre
 ```typescript
 {(queueStats.processing > 0 || queueStats.queued > 0) && (
   <View style={[styles.statusBanner, styles.statusBannerInfo]}>
@@ -339,6 +350,7 @@ const handleTriggerUpload = async () => {
   </View>
 )}
 ```
+:::
 
 ---
 
@@ -347,6 +359,7 @@ const handleTriggerUpload = async () => {
 ### Replaced Static Card with `GlassDraggableExpander`
 
 **Before ❌:**
+::: v-pre
 ```typescript
 <GlassCard style={styles.section}>
   <View style={styles.sectionHeader}>
@@ -361,8 +374,10 @@ const handleTriggerUpload = async () => {
   )}
 </GlassCard>
 ```
+:::
 
 **After ✅:**
+::: v-pre
 ```typescript
 <GlassDraggableExpander
   title={t('admin.uploads.monitoredFolders')}
@@ -373,6 +388,7 @@ const handleTriggerUpload = async () => {
   {monitoredFolders.map(folder => ...)}
 </GlassDraggableExpander>
 ```
+:::
 
 **Benefits:**
 - ✅ Collapsible by default (less clutter)
@@ -753,6 +769,7 @@ const wsUrl = `${wsProtocol}://${wsHost}/api/v1/admin/uploads/ws?token=${token}`
 ```
 
 ### How to Show Status Banner
+::: v-pre
 ```typescript
 {!isAuthenticated && (
   <View style={[styles.statusBanner, styles.statusBannerError]}>
@@ -764,8 +781,10 @@ const wsUrl = `${wsProtocol}://${wsHost}/api/v1/admin/uploads/ws?token=${token}`
   </View>
 )}
 ```
+:::
 
 ### How to Protect Concurrent Operations
+::: v-pre
 ```typescript
 const hasActiveUploads = queueStats.processing > 0 || queueStats.queued > 0;
 if (hasActiveUploads) {
@@ -776,6 +795,7 @@ if (hasActiveUploads) {
 // Button:
 <GlassButton disabled={hasActiveUploads} />
 ```
+:::
 
 ---
 

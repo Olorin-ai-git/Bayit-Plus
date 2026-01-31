@@ -9,6 +9,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Lock } from 'lucide-react';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
+import { Icon } from '@olorin/shared-icons/web';
 
 interface SearchCardBadgesProps {
   /** Subscription tier requirement */
@@ -46,17 +47,20 @@ export const SearchCardBadges = memo(function SearchCardBadges({
       )}
       {requiresSubscription !== 'free' && (
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>👑 Premium</Text>
+          <Icon name="star" size="xs" color={colors.warning} />
+          <Text style={styles.badgeText}>Premium</Text>
         </View>
       )}
       {isKidsContent && (
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>👶 Kids</Text>
+          <Icon name="profile" size="xs" color={colors.primary.DEFAULT} />
+          <Text style={styles.badgeText}>Kids</Text>
         </View>
       )}
       {isFeatured && (
         <View style={[styles.badge, styles.featuredBadge]}>
-          <Text style={styles.badgeText}>⭐ Featured</Text>
+          <Icon name="sparkle" size="xs" color={colors.text} />
+          <Text style={styles.badgeText}>Featured</Text>
         </View>
       )}
     </View>

@@ -8,6 +8,7 @@ import {
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
@@ -81,12 +82,13 @@ const RecommendationCard: React.FC<{
             />
           ) : (
             <View className="flex-1 justify-center items-center bg-white/5">
-              <Text className={`${isTV ? 'text-5xl' : 'text-[32px]'}`}>🎬</Text>
+              <NativeIcon name="vod" size={isTV ? 40 : 32} color="rgba(255,255,255,0.5)" />
             </View>
           )}
           {item.imdb_rating && (
-            <View className="absolute top-2 right-2 bg-black/80 px-2 py-0.5 rounded">
-              <Text className={`${isTV ? 'text-sm' : 'text-xs'} text-white font-semibold`}>⭐ {item.imdb_rating.toFixed(1)}</Text>
+            <View className="absolute top-2 right-2 bg-black/80 px-2 py-0.5 rounded flex-row items-center gap-1">
+              <NativeIcon name="star" size={isTV ? 12 : 10} color="#F5C518" />
+              <Text className={`${isTV ? 'text-sm' : 'text-xs'} text-white font-semibold`}>{item.imdb_rating.toFixed(1)}</Text>
             </View>
           )}
           {item.type && (

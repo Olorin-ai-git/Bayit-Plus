@@ -200,6 +200,7 @@ import { RecentReportsList } from './components/RecentReportsList.improved';
 ```
 
 **Step 2**: Add optional callbacks (if desired)
+::: v-pre
 ```tsx
 <LiveAuditLogPanel
   onTriggerAudit={handleTriggerAudit} // NEW
@@ -210,6 +211,7 @@ import { RecentReportsList } from './components/RecentReportsList.improved';
   onDeleteReport={handleDeleteReport}     // NEW (optional)
 />
 ```
+:::
 
 **Step 3**: Add translations (copy-paste from docs)
 - ~15 new translation keys

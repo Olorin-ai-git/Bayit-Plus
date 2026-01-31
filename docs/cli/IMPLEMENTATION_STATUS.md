@@ -70,6 +70,7 @@ The Olorin CLI Tool has been successfully implemented through Phase 3, providing
 **Total Lines:** ~1,063
 
 **Commands Available:**
+::: v-pre
 ```bash
 olorin agent list [--category] [--search] [--stats] [--json]
 olorin agent info <name> [--json]
@@ -77,6 +78,7 @@ olorin agent categories [--json]
 olorin skill list [--search] [--stats] [--json]
 olorin skill info <name> [--json]
 ```
+:::
 
 ### ✅ Phase 3: Bayit+ Deep Integration (Week 3) - COMPLETE
 
@@ -244,6 +246,7 @@ olorin status bayit --json            # JSON output
 
 ### Agent Management
 
+::: v-pre
 ```bash
 # List agents
 olorin agent list                     # All agents
@@ -260,9 +263,11 @@ olorin agent info react-expert --json
 olorin agent categories
 olorin agent categories --json
 ```
+:::
 
 ### Skill Management
 
+::: v-pre
 ```bash
 # List skills
 olorin skill list                     # All skills
@@ -274,9 +279,11 @@ olorin skill info <name>
 olorin skill info glass-ux-design
 olorin skill info glass-ux-design --json
 ```
+:::
 
 ### Utility Commands
 
+::: v-pre
 ```bash
 # Platform status
 olorin status                         # Current platform
@@ -293,6 +300,7 @@ olorin script backup                  # Find backup scripts
 olorin --help                         # General help
 olorin <command> --help               # Command-specific help
 ```
+:::
 
 ## NPM Scripts
 

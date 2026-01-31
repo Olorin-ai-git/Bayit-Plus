@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RefreshCw, Search, Filter, Merge } from 'lucide-react'
 import MergeWizard from '@/components/admin/content/MergeWizard'
+import HebrewSubtitleActionsModal from '@/components/admin/content/HebrewSubtitleActionsModal'
 import { adminContentService } from '@/services/adminApi'
 import {
   GlassInput,
@@ -61,6 +62,7 @@ export default function ContentLibraryPage() {
   const [showMergeModal, setShowMergeModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null)
+  const [hebrewAIContent, setHebrewAIContent] = useState<{ id: string; title: string } | null>(null)
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
@@ -114,8 +116,13 @@ export default function ContentLibraryPage() {
     }
   }
 
+  const handleHebrewAI = (id: string, title: string) => {
+    setHebrewAIContent({ id, title })
+    logger.info('Opening Hebrew AI modal', 'ContentLibraryPage', { id, title })
+  }
+
   const columns = useMemo(
-    () => getContentTableColumns(t, handleToggleFeatured, handleDeleteContent),
+    () => getContentTableColumns(t, handleToggleFeatured, handleDeleteContent, handleHebrewAI),
     [t]
   )
 
@@ -279,6 +286,19 @@ export default function ContentLibraryPage() {
         ]}
         onClose={cancelSingleDelete}
       />
+
+      {/* Hebrew AI Actions Modal */}
+      {hebrewAIContent && (
+        <HebrewSubtitleActionsModal
+          visible={!!hebrewAIContent}
+          contentId={hebrewAIContent.id}
+          contentTitle={hebrewAIContent.title}
+          onClose={() => setHebrewAIContent(null)}
+          onGenerated={() => {
+            logger.info('Hebrew AI features generated', 'ContentLibraryPage', { contentId: hebrewAIContent.id })
+          }}
+        />
+      )}
     </>
   )
 }

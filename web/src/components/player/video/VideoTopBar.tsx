@@ -7,6 +7,7 @@
 
 import { View, Text, StyleSheet } from 'react-native'
 import { z } from 'zod'
+import { Icon } from '@olorin/shared-icons/web'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassBadge } from '@bayit/shared/ui'
 import { getLanguageInfo } from '@/types/subtitle'
@@ -47,13 +48,20 @@ export default function VideoTopBar({
           <View style={styles.subtitleFlags}>
             {availableSubtitles.slice(0, 6).map((track) => {
               const langInfo = getLanguageInfo(track.language)
-              return (
+              return langInfo?.flag ? (
                 <Text
                   key={track.id}
                   style={styles.flag}
                 >
-                  {langInfo?.flag || '🌐'}
+                  {langInfo.flag}
                 </Text>
+              ) : (
+                <Icon
+                  key={track.id}
+                  name="globe"
+                  size="md"
+                  color="#FFFFFF"
+                />
               )
             })}
             {availableSubtitles.length > 6 && (

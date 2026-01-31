@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useAuthStore } from '../../stores/authStore';
 import { useDirection } from '../../hooks/useDirection';
 import { rtlSpacing } from '../../utils/rtlHelpers';
@@ -64,7 +65,9 @@ export const UnlockButton: React.FC<UnlockButtonProps> = ({
       onPress={handlePress}
       activeOpacity={0.7}
     >
-      <Text className={`text-base ${isRTL ? 'ml-2' : 'mr-2'}`}>🔐</Text>
+      <View className={isRTL ? 'ml-2' : 'mr-2'}>
+        <NativeIcon name="lock" size="sm" color="#9333ea" />
+      </View>
       <Text className="text-sm font-medium text-purple-600">{t('passkey.unlock')}</Text>
     </TouchableOpacity>
   );
@@ -75,7 +78,7 @@ export const UnlockButton: React.FC<UnlockButtonProps> = ({
       onPress={handlePress}
       activeOpacity={0.7}
     >
-      <Text className="text-base">🔐</Text>
+      <NativeIcon name="lock" size="sm" color="#9333ea" />
     </TouchableOpacity>
   );
 
@@ -86,7 +89,7 @@ export const UnlockButton: React.FC<UnlockButtonProps> = ({
       activeOpacity={0.7}
     >
       <View className={`w-12 h-12 rounded-full bg-purple-600/30 items-center justify-center ${isRTL ? 'ml-4' : 'mr-4'}`}>
-        <Text className="text-2xl">🔐</Text>
+        <NativeIcon name="lock" size="lg" color="#9333ea" />
       </View>
       <View className="flex-1">
         <Text className="text-base font-semibold text-white mb-1">{t('passkey.unlockContent')}</Text>

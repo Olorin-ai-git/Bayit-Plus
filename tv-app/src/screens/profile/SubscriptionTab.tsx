@@ -6,6 +6,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView, GlassButton } from '../../components';
 import { styles } from './ProfileScreen.styles';
 import { SUBSCRIPTION_PLANS } from './types';
@@ -53,8 +54,8 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ user }) => {
           </View>
         ) : (
           <View style={styles.noPlanCard}>
-            <Text style={styles.noPlanIcon}>📺</Text>
-            <Text style={styles.noPlanText}>{t('profile.subscription.noActivePlan')}</Text>
+            <NativeIcon name="live" size="xxxl" context="tv" color="#8a2be2" />
+            <Text style={[styles.noPlanText, { marginTop: 16 }]}>{t('profile.subscription.noActivePlan')}</Text>
           </View>
         )}
       </GlassView>
@@ -86,7 +87,7 @@ export const SubscriptionTab: React.FC<SubscriptionTabProps> = ({ user }) => {
                 <View style={styles.planFeatures}>
                   {plan.features.map((feature, index) => (
                     <View key={index} style={styles.featureItem}>
-                      <Text style={styles.featureCheck}>✓</Text>
+                      <NativeIcon name="check" size="sm" context="tv" color="#22c55e" />
                       <Text style={styles.featureText}>{t(feature)}</Text>
                     </View>
                   ))}

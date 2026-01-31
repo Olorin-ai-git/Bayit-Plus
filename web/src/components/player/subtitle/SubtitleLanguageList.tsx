@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { View, Text, Pressable, ActivityIndicator, StyleSheet, Platform, PixelRatio } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
+import { Icon } from '@olorin/shared-icons/web'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { SubtitleTrack, getLanguageInfo, HebrewMode } from '@/types/subtitle'
 import HebrewModePickerModal from './HebrewModePickerModal'
@@ -24,9 +25,11 @@ const SubtitleLanguageListPropsSchema = z.object({
   hebrewMode: z.enum(['regular', 'nikud', 'shoresh']).optional(),
   enabled: z.boolean(),
   isLoading: z.boolean(),
+  contentId: z.string().optional(),
   onLanguageSelect: z.function().args(z.string()).returns(z.void()),
   onHebrewModeChange: z.function().args(z.enum(['regular', 'nikud', 'shoresh'])).returns(z.void()).optional(),
   onDisable: z.function().args().returns(z.void()),
+  onSubtitlesRefresh: z.function().args().returns(z.void()).optional(),
 })
 
 export type SubtitleLanguageListProps = z.infer<typeof SubtitleLanguageListPropsSchema>
@@ -37,9 +40,11 @@ export default function SubtitleLanguageList({
   hebrewMode = 'regular',
   enabled,
   isLoading,
+  contentId,
   onLanguageSelect,
   onHebrewModeChange,
   onDisable,
+  onSubtitlesRefresh,
 }: SubtitleLanguageListProps) {
   const { t } = useTranslation()
   const [showHebrewModePicker, setShowHebrewModePicker] = useState(false)
@@ -52,17 +57,19 @@ export default function SubtitleLanguageList({
       hebrewMode,
       enabled,
       isLoading,
+      contentId,
       onLanguageSelect,
       onHebrewModeChange,
       onDisable,
+      onSubtitlesRefresh,
     })
   }
 
-  const getHebrewModeIcon = (mode: HebrewMode): string => {
-    const icons: Record<HebrewMode, string> = {
-      regular: '🔤',
-      nikud: 'א׳',
-      shoresh: '📖',
+  const getHebrewModeIcon = (mode: HebrewMode) => {
+    const icons: Record<HebrewMode, { isIconName: boolean; value: string }> = {
+      regular: { isIconName: true, value: 'settings' },
+      nikud: { isIconName: false, value: 'א׳' },
+      shoresh: { isIconName: true, value: 'stories' },
     }
     return icons[mode]
   }
@@ -171,7 +178,11 @@ export default function SubtitleLanguageList({
                   ]}
                 >
                   <View style={[styles.flagBadge, isActive && styles.flagBadgeActive]}>
-                    <Text style={styles.flagText}>{langInfo?.flag || '🌐'}</Text>
+                    {langInfo?.flag ? (
+                      <Text style={styles.flagText}>{langInfo.flag}</Text>
+                    ) : (
+                      <Icon name="globe" size="lg" color="#FFFFFF" />
+                    )}
                   </View>
                   <View style={styles.languageInfo}>
                     <Text
@@ -209,8 +220,15 @@ export default function SubtitleLanguageList({
                     { opacity: pressed ? 0.7 : 1 },
                   ]}
                 >
-                  <Text style={styles.modeIcon}>{getHebrewModeIcon(hebrewMode)}</Text>
-                  <Text style={styles.chevron}>▼</Text>
+                  {(() => {
+                    const modeIcon = getHebrewModeIcon(hebrewMode)
+                    return modeIcon.isIconName ? (
+                      <Icon name={modeIcon.value} size="md" color="#FFFFFF" />
+                    ) : (
+                      <Text style={styles.modeIcon}>{modeIcon.value}</Text>
+                    )
+                  })()}
+                  <Icon name="chevronDown" size="sm" color={colors.textSecondary} />
                 </Pressable>
 
                 {/* Hebrew Mode Picker Modal */}
@@ -220,10 +238,14 @@ export default function SubtitleLanguageList({
                     currentMode={hebrewMode}
                     hasNikud={track.has_nikud_version || false}
                     hasShoresh={track.has_shoresh_version || false}
+                    contentId={contentId}
                     onClose={() => setShowHebrewModePicker(false)}
                     onModeSelect={(mode) => {
                       onHebrewModeChange(mode)
                       setShowHebrewModePicker(false)
+                    }}
+                    onGenerationComplete={() => {
+                      onSubtitlesRefresh?.()
                     }}
                   />
                 )}
@@ -257,7 +279,11 @@ export default function SubtitleLanguageList({
               ]}
             >
               <View style={[styles.flagBadge, isActive && styles.flagBadgeActive]}>
-                <Text style={styles.flagText}>{langInfo?.flag || '🌐'}</Text>
+                {langInfo?.flag ? (
+                  <Text style={styles.flagText}>{langInfo.flag}</Text>
+                ) : (
+                  <Icon name="globe" size="lg" color="#FFFFFF" />
+                )}
               </View>
               <View style={styles.languageInfo}>
                 <Text style={[styles.languageName, isActive ? styles.textActive : styles.textInactive]}>
@@ -280,7 +306,7 @@ export default function SubtitleLanguageList({
           onMouseUp={stopPropagation}
           style={styles.emptyOption}
         >
-          <Text style={styles.flagText}>🚫</Text>
+          <Icon name="error" size="lg" color="#FFFFFF" style={{ marginRight: spacing.sm }} />
           <Text style={styles.emptyText}>
             {t('subtitles.none', 'None')}
           </Text>
@@ -409,10 +435,6 @@ const styles = StyleSheet.create({
   },
   modeIcon: {
     fontSize: 18,
-  },
-  chevron: {
-    fontSize: 10,
-    color: colors.textSecondary,
   },
   tvFocused: {
     borderColor: colors.primary.DEFAULT,

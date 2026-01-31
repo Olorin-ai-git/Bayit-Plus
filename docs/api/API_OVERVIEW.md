@@ -146,10 +146,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 Firebase ID tokens can be used directly:
 
+::: v-pre
 ```http
 GET /api/v1/content
 Authorization: Bearer <firebase_id_token>
 ```
+:::
 
 The backend validates Firebase tokens using Firebase Admin SDK.
 
@@ -347,6 +349,7 @@ X-RateLimit-Reset: 1706630400
 
 Implement exponential backoff:
 
+::: v-pre
 ```typescript
 const retryWithBackoff = async (fn: () => Promise<any>, maxRetries = 3) => {
   for (let i = 0; i < maxRetries; i++) {
@@ -364,6 +367,7 @@ const retryWithBackoff = async (fn: () => Promise<any>, maxRetries = 3) => {
   throw new Error('Max retries exceeded');
 };
 ```
+:::
 
 ---
 

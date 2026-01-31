@@ -212,11 +212,13 @@ fontWeight: {
 
 **Standard card with glassmorphic background:**
 
+::: v-pre
 ```tsx
 <GlassCard>
   <Text>Content</Text>
 </GlassCard>
 ```
+:::
 
 **Properties:**
 - Background: `glass.bg` with `backdrop-filter: blur(20px)`
@@ -228,6 +230,7 @@ fontWeight: {
 
 **Primary button:**
 
+::: v-pre
 ```tsx
 <GlassButton
   title="Click Me"
@@ -235,6 +238,7 @@ fontWeight: {
   onPress={handlePress}
 />
 ```
+:::
 
 **Variants:**
 - `primary` - Purple background (#a855f7) with white text
@@ -245,6 +249,7 @@ fontWeight: {
 
 **Input field with glassmorphic styling:**
 
+::: v-pre
 ```tsx
 <GlassInput
   placeholder="Enter text..."
@@ -252,6 +257,7 @@ fontWeight: {
   onChangeText={setValue}
 />
 ```
+:::
 
 **Properties:**
 - Background: `glass.bgLight`
@@ -263,11 +269,13 @@ fontWeight: {
 
 **Modal with glassmorphic overlay:**
 
+::: v-pre
 ```tsx
 <GlassModal isOpen={isOpen} onClose={onClose}>
   <Text>Modal content</Text>
 </GlassModal>
 ```
+:::
 
 **Properties:**
 - Overlay: `glass.overlayStrong` with `backdrop-filter: blur(10px)`
@@ -280,6 +288,7 @@ fontWeight: {
 
 ### Cards
 
+::: v-pre
 ```tsx
 // Content card
 <GlassCard style={styles.card}>
@@ -313,9 +322,11 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### Buttons
 
+::: v-pre
 ```tsx
 // Primary button
 <Pressable
@@ -343,9 +354,11 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### Tables
 
+::: v-pre
 ```tsx
 <GlassTable
   columns={columns}
@@ -355,6 +368,7 @@ const styles = StyleSheet.create({
   onPageChange={handlePageChange}
 />
 ```
+:::
 
 **Styling:**
 - Header: `glass.bgLight` with `glass.borderLight` bottom border
@@ -610,6 +624,7 @@ const styles = StyleSheet.create({
 
 ### Complete Card Example
 
+::: v-pre
 ```tsx
 import { View, Text, Image, StyleSheet } from 'react-native';
 import { GlassCard } from '@bayit/shared/ui';
@@ -650,6 +665,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ---
 

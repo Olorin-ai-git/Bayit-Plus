@@ -258,10 +258,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(139, 92, 246, 0.3)',
     borderColor: '#8b5cf6',
     borderWidth: 2,
-    // @ts-ignore - Web CSS
+    // @ts-ignore - Web CSS (React Native Web compatibility)
     transform: [{ scale: 1.15 }],
     boxShadow: '0 0 24px rgba(139, 92, 246, 0.8), 0 0 48px rgba(139, 92, 246, 0.4)',
-    animationName: 'pulse',
+    animationKeyframes: 'pulse',
     animationDuration: '1s',
     animationTimingFunction: 'ease-in-out',
     animationIterationCount: 'infinite',

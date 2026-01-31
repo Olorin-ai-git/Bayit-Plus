@@ -7,6 +7,7 @@
 import React, { useState } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { NativeIcon } from '@olorin/shared-icons/native'
 import { GlassButton, GlassModal, GlassBadge } from '@bayit/shared/ui'
 import { isTV } from '../../utils/platform'
 import { useDirection } from '../../hooks/useDirection'
@@ -90,7 +91,7 @@ export const LiveDubbingControls: React.FC<LiveDubbingControlsProps> = ({
           onPress={handlePress}
           variant={isEnabled ? 'primary' : 'ghost'}
           size={isTV ? 'lg' : 'md'}
-          icon={<Text style={isTV ? styles.iconTV : styles.icon}>🔊</Text>}
+          icon={<NativeIcon name="volume-2" size={isTV ? 32 : 18} color="#fff" />}
           loading={isConnecting}
           accessibilityLabel={
             isPremium
@@ -126,7 +127,7 @@ export const LiveDubbingControls: React.FC<LiveDubbingControlsProps> = ({
             onPress={() => setShowLanguageModal(true)}
             variant="ghost"
             size={isTV ? 'lg' : 'md'}
-            icon={<Text style={isTV ? styles.iconTV : styles.icon}>🌐</Text>}
+            icon={<NativeIcon name="globe" size={isTV ? 32 : 18} color="#fff" />}
             accessibilityLabel={t('dubbing.targetLanguage', 'Target Language') + ': ' + getLanguageName(targetLanguage)}
             accessibilityHint={t('dubbing.tapToChangeLanguage', 'Tap to change target language')}
             style={tvTouchTarget ? { minHeight: tvTouchTarget, minWidth: tvTouchTarget } : undefined}
@@ -190,11 +191,12 @@ export const LiveDubbingControls: React.FC<LiveDubbingControlsProps> = ({
           {availableLanguages.map((lang) => (
             <View key={lang} style={isTV ? styles.tvButtonWrapper : undefined}>
               <GlassButton
-                title={`${getLanguageName(lang)}${targetLanguage === lang ? ' ✓' : ''}`}
+                title={getLanguageName(lang)}
                 onPress={() => handleLanguageSelect(lang)}
                 variant={targetLanguage === lang ? 'primary' : 'ghost'}
                 size={isTV ? 'lg' : 'md'}
                 fullWidth
+                icon={targetLanguage === lang ? <NativeIcon name="check" size={isTV ? 20 : 16} color="#fff" /> : undefined}
                 accessibilityLabel={getLanguageName(lang)}
                 accessibilityHint={
                   targetLanguage === lang
@@ -222,13 +224,6 @@ const styles = StyleSheet.create({
     minWidth: 80,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  icon: {
-    fontSize: 18,
-  },
-  // tvOS 10-foot UI requires minimum 29pt for legibility
-  iconTV: {
-    fontSize: 32,
   },
   statusIndicator: {
     width: 8,

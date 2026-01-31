@@ -23,6 +23,7 @@ async def connect_dubbing(
 ```
 
 **Frontend Protection:**
+::: v-pre
 ```tsx
 // shared/components/player/LiveDubbingControls.tsx
 export const LiveDubbingControls: React.FC<LiveDubbingControlsProps> = ({
@@ -45,6 +46,7 @@ export const LiveDubbingControls: React.FC<LiveDubbingControlsProps> = ({
   )
 }
 ```
+:::
 
 ### ✅ CORRECT Implementation Example: LLM Search
 
@@ -60,6 +62,7 @@ async def llm_natural_language_search(
 ```
 
 **Frontend Protection:**
+::: v-pre
 ```tsx
 // shared/components/search/LLMSearchButton.tsx
 export function LLMSearchButton({
@@ -76,6 +79,7 @@ export function LLMSearchButton({
   )
 }
 ```
+:::
 
 ### ✅ CORRECT Implementation Example: Recordings
 
@@ -150,6 +154,7 @@ async def trigger_translation(
 **File:** `web/src/components/player/PodcastLanguageSelector.tsx`
 
 **Problem:** No premium check or premium badge
+::: v-pre
 ```tsx
 export function PodcastLanguageSelector({
   availableLanguages,  // ❌ Shows all languages without checking premium
@@ -176,6 +181,7 @@ export function PodcastLanguageSelector({
   );
 }
 ```
+:::
 
 **Missing Props:**
 - ❌ No `isPremium` prop
@@ -268,6 +274,7 @@ async def get_episode(
 
 **Add premium protection:**
 
+::: v-pre
 ```tsx
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
@@ -422,6 +429,7 @@ const styles = StyleSheet.create({
   },
 });
 ```
+:::
 
 ### 3. Update Parent Components
 

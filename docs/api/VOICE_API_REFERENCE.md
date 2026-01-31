@@ -1,3 +1,7 @@
+---
+outline: deep
+---
+
 # Voice API Reference
 
 **Version**: 1.0.0
@@ -24,10 +28,12 @@ All voice API endpoints require Firebase authentication.
 
 ### Headers
 
+::: v-pre
 ```http
 Authorization: Bearer <firebase_id_token>
 Content-Type: application/json
 ```
+:::
 
 ### Getting Firebase Token
 
@@ -49,11 +55,13 @@ Process a voice command with intent classification and routing.
 
 #### Request
 
+::: v-pre
 ```http
 POST /api/v1/voice/unified
 Authorization: Bearer <token>
 Content-Type: application/json
 ```
+:::
 
 **Request Body**:
 ```json
@@ -319,7 +327,7 @@ import type { VoiceConfig, VoiceCommandResponse } from '@bayit/shared/types/voic
 
 #### Methods
 
-##### initialize(config?: Partial<VoiceConfig>): Promise<void>
+##### `initialize(config?: Partial<VoiceConfig>): Promise<void>`
 
 Initialize the orchestrator with configuration.
 
@@ -338,7 +346,7 @@ const orchestrator = createVoiceOrchestrator({
 await orchestrator.initialize();
 ```
 
-##### startListening(trigger: VoiceTrigger): Promise<void>
+##### `startListening(trigger: VoiceTrigger): Promise<void>`
 
 Start listening for voice input.
 
@@ -354,7 +362,7 @@ await orchestrator.startListening('manual');
 await orchestrator.startListening('wake-word');
 ```
 
-##### stopListening(): Promise<void>
+##### `stopListening(): Promise<void>`
 
 Stop listening for voice input.
 
@@ -363,7 +371,7 @@ Stop listening for voice input.
 await orchestrator.stopListening();
 ```
 
-##### interrupt(): Promise<void>
+##### `interrupt(): Promise<void>`
 
 Interrupt current voice processing.
 
@@ -372,7 +380,7 @@ Interrupt current voice processing.
 await orchestrator.interrupt();
 ```
 
-##### processTranscript(transcript: string, conversationId?: string): Promise<VoiceCommandResponse>
+##### `processTranscript(transcript: string, conversationId?: string): Promise<VoiceCommandResponse>`
 
 Process a voice transcript and get response.
 
@@ -429,6 +437,7 @@ import { useVoiceOrchestrator } from '@bayit/shared/hooks/useVoiceOrchestrator';
 
 #### Usage
 
+::: v-pre
 ```typescript
 function VoiceFeature() {
   const {
@@ -455,6 +464,7 @@ function VoiceFeature() {
   );
 }
 ```
+:::
 
 #### Return Values
 
@@ -462,10 +472,10 @@ function VoiceFeature() {
 |----------|------|-------------|
 | `orchestrator` | OlorinVoiceOrchestrator \| null | Orchestrator instance |
 | `isInitialized` | boolean | Initialization status |
-| `startListening` | (trigger: VoiceTrigger) => Promise<void> | Start listening |
-| `stopListening` | () => Promise<void> | Stop listening |
-| `interrupt` | () => Promise<void> | Interrupt processing |
-| `processTranscript` | (transcript: string, convId?: string) => Promise<VoiceCommandResponse> | Process transcript |
+| `startListening` | `(trigger: VoiceTrigger) => Promise<void>` | Start listening |
+| `stopListening` | `() => Promise<void>` | Stop listening |
+| `interrupt` | `() => Promise<void>` | Interrupt processing |
+| `processTranscript` | `(transcript: string, convId?: string) => Promise<VoiceCommandResponse>` | Process transcript |
 
 ---
 
@@ -481,6 +491,7 @@ import { useVoiceAvatarMode } from '@bayit/shared/hooks/useVoiceAvatarMode';
 
 #### Usage
 
+::: v-pre
 ```typescript
 function AvatarDisplay() {
   const {
@@ -501,6 +512,7 @@ function AvatarDisplay() {
   );
 }
 ```
+:::
 
 #### Return Values
 
@@ -689,6 +701,7 @@ async function sendVoiceCommand(transcript: string) {
 
 ### Example 1: Basic Voice Search (Web)
 
+::: v-pre
 ```typescript
 import { useVoiceOrchestrator } from '@bayit/shared/hooks/useVoiceOrchestrator';
 import { useSupportStore } from '@bayit/shared/stores/supportStore';
@@ -718,9 +731,11 @@ function SearchComponent() {
   );
 }
 ```
+:::
 
 ### Example 2: Wake Word Detection (Mobile)
 
+::: v-pre
 ```typescript
 // In voiceManager initialization
 private async _initializeOrchestrator(): Promise<void> {
@@ -747,9 +762,11 @@ private async _onWakeWordDetected(detection: any): Promise<void> {
   await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 }
 ```
+:::
 
 ### Example 3: Avatar Mode Switching
 
+::: v-pre
 ```typescript
 import { useSupportStore } from '@bayit/shared/stores/supportStore';
 
@@ -773,9 +790,11 @@ function AvatarSettings() {
   );
 }
 ```
+:::
 
 ### Example 4: Streaming vs Batch Mode
 
+::: v-pre
 ```typescript
 import { useVoiceOrchestrator } from '@bayit/shared/hooks/useVoiceOrchestrator';
 
@@ -802,6 +821,7 @@ function VoiceComponent() {
   );
 }
 ```
+:::
 
 ### Example 5: Error Handling
 

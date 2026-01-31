@@ -13,6 +13,7 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '../hooks/useDirection';
 import { useAuthStore } from '../stores/authStore';
 import { useTVFocus } from './hooks/useTVFocus';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -44,41 +45,41 @@ interface MenuSection {
 const baseMenuSections: MenuSection[] = [
   {
     items: [
-      { id: 'home', icon: '🏠', labelKey: 'nav.home', route: 'Home' },
-      { id: 'liveTV', icon: '📺', labelKey: 'nav.liveTV', route: 'LiveTV' },
-      { id: 'vod', icon: '🎬', labelKey: 'nav.vod', route: 'VOD' },
-      { id: 'radio', icon: '📻', labelKey: 'nav.radio', route: 'Radio' },
-      { id: 'podcasts', icon: '🎙️', labelKey: 'nav.podcasts', route: 'Podcasts' },
+      { id: 'home', icon: 'home', labelKey: 'nav.home', route: 'Home' },
+      { id: 'liveTV', icon: 'live', labelKey: 'nav.liveTV', route: 'LiveTV' },
+      { id: 'vod', icon: 'vod', labelKey: 'nav.vod', route: 'VOD' },
+      { id: 'radio', icon: 'radio', labelKey: 'nav.radio', route: 'Radio' },
+      { id: 'podcasts', icon: 'podcasts', labelKey: 'nav.podcasts', route: 'Podcasts' },
     ],
   },
   {
     titleKey: 'nav.discover',
     items: [
-      { id: 'flows', icon: '✨', labelKey: 'nav.flows', route: 'Flows' },
-      { id: 'judaism', icon: '✡️', labelKey: 'nav.judaism', route: 'Judaism' },
-      { id: 'children', icon: '👶', labelKey: 'nav.children', route: 'Children' },
+      { id: 'flows', icon: 'discover', labelKey: 'nav.flows', route: 'Flows' },
+      { id: 'judaism', icon: 'judaism', labelKey: 'nav.judaism', route: 'Judaism' },
+      { id: 'children', icon: 'baby', labelKey: 'nav.children', route: 'Children' },
     ],
   },
   {
     titleKey: 'nav.favorites',
     items: [
-      { id: 'favorites', icon: '⭐', labelKey: 'nav.favorites', route: 'Favorites' },
-      { id: 'watchlist', icon: '📋', labelKey: 'nav.watchlist', route: 'Watchlist' },
-      { id: 'downloads', icon: '⬇️', labelKey: 'nav.downloads', route: 'Downloads' },
+      { id: 'favorites', icon: 'favorites', labelKey: 'nav.favorites', route: 'Favorites' },
+      { id: 'watchlist', icon: 'watchlist', labelKey: 'nav.watchlist', route: 'Watchlist' },
+      { id: 'downloads', icon: 'downloads', labelKey: 'nav.downloads', route: 'Downloads' },
     ],
   },
   {
     titleKey: 'nav.account',
     items: [
-      { id: 'profile', icon: '👤', labelKey: 'nav.profile', route: 'Profile' },
-      { id: 'subscribe', icon: '💎', labelKey: 'nav.subscribe', route: 'Subscribe' },
+      { id: 'profile', icon: 'profile', labelKey: 'nav.profile', route: 'Profile' },
+      { id: 'subscribe', icon: 'gem', labelKey: 'nav.subscribe', route: 'Subscribe' },
     ],
   },
   {
     titleKey: 'nav.settings',
     items: [
-      { id: 'settings', icon: '⚙️', labelKey: 'nav.settings', route: 'Settings' },
-      { id: 'support', icon: '🎧', labelKey: 'nav.support', route: 'Support' },
+      { id: 'settings', icon: 'settings', labelKey: 'nav.settings', route: 'Settings' },
+      { id: 'support', icon: 'audiobooks', labelKey: 'nav.support', route: 'Support' },
     ],
   },
 ];
@@ -104,7 +105,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
         return {
           ...section,
           items: [
-            { id: 'admin', icon: '👨‍💼', labelKey: 'nav.admin', route: 'Admin' },
+            { id: 'admin', icon: 'admin', labelKey: 'nav.admin', route: 'Admin' },
             ...section.items,
           ],
         };
@@ -173,11 +174,11 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   };
 
   // Toggle icon based on direction and expanded state
-  const getToggleIcon = () => {
+  const getToggleIconName = () => {
     if (isRTL) {
-      return isExpanded ? '▶' : '◀';
+      return isExpanded ? 'chevronRight' : 'chevronLeft';
     } else {
-      return isExpanded ? '◀' : '▶';
+      return isExpanded ? 'chevronLeft' : 'chevronRight';
     }
   };
 
@@ -210,7 +211,12 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
           <View className={`w-10 h-10 rounded-full bg-white/5 justify-center items-center border ${
             focusedItem === 'toggle' ? 'border-primary border-[3px] bg-primary/30' : 'border-transparent'
           }`}>
-            <Text className="text-base text-white">{getToggleIcon()}</Text>
+            <NativeIcon
+              name={getToggleIconName()}
+              size="sm"
+              color={colors.text}
+              context="navigation"
+            />
           </View>
         </TouchableOpacity>
 
@@ -243,9 +249,12 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
                   } ${focusedItem === item.id ? 'bg-primary/30 border-[3px] border-primary' : ''}`}
                 >
                   <View className={`${IS_TV_BUILD ? 'w-12 h-12' : 'w-9 h-9'} justify-center items-center`}>
-                    <Text className={`${IS_TV_BUILD ? 'text-2xl' : 'text-lg'}`}>
-                      {item.icon}
-                    </Text>
+                    <NativeIcon
+                      name={item.icon}
+                      size={IS_TV_BUILD ? 'lg' : 'md'}
+                      color={isActive(item) ? colors.primary : '#FFFFFF'}
+                      context={IS_TV_BUILD ? 'tv' : 'navigation'}
+                    />
                   </View>
                   {isExpanded && (
                     <Animated.Text

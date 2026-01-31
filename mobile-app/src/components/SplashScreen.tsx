@@ -52,7 +52,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   const currentLang = (i18n.language || 'he') as string;
   const videoSource = VIDEO_SOURCES[currentLang] || VIDEO_SOURCES.he;
 
-  moduleLogger.info('🎬 Splash screen MOUNTED', {
+  moduleLogger.info('Splash screen MOUNTED', {
     language: currentLang,
     hasVideoSource: !!videoSource,
     videoSourceKeys: Object.keys(VIDEO_SOURCES)
@@ -63,7 +63,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
     const elapsed = Date.now() - startTimeRef.current;
     const remainingTime = Math.max(0, minimumDuration - elapsed);
 
-    moduleLogger.info('🎬 Splash completing', {
+    moduleLogger.info('Splash completing', {
       elapsed,
       minimumDuration,
       remainingTime,
@@ -77,7 +77,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
         duration: 400,
         useNativeDriver: true,
       }).start(() => {
-        moduleLogger.info('🎬 Splash fade complete, calling onComplete');
+        moduleLogger.info('Splash fade complete, calling onComplete');
         onComplete();
       });
     }, remainingTime);
@@ -103,17 +103,17 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   }, [handleComplete, videoEnded]);
 
   const onVideoLoad = (data: OnLoadData) => {
-    moduleLogger.info('🎬 Video LOADED successfully', { duration: data.duration });
+    moduleLogger.info('Video LOADED successfully', { duration: data.duration });
     setVideoLoaded(true);
   };
 
   const onVideoEnd = () => {
-    moduleLogger.info('🎬 Video ENDED');
+    moduleLogger.info('Video ENDED');
     setVideoEnded(true);
   };
 
   const onVideoError = (error: any) => {
-    moduleLogger.error('🎬 Video ERROR - completing immediately', error);
+    moduleLogger.error('Video ERROR - completing immediately', error);
     // Complete immediately on error
     handleComplete();
   };

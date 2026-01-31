@@ -22,6 +22,7 @@ import { isTV } from '../../utils/platform';
 import { WizardSprite, SpritesheetType } from './WizardSprite';
 import { WizardEffects } from './WizardEffects';
 import { sfxService, WizardGesture } from '../../services/sfxService';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 // Gestures that have associated sound effects
 const GESTURE_SFX: Partial<Record<GestureState, WizardGesture>> = {
@@ -346,9 +347,11 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
               borderColor: '#fff',
             }}
           >
-            <Text style={{ fontSize: isTV ? 18 : 16 }}>
-              {voiceError.type === 'mic' ? '🎤' : voiceError.type === 'connection' ? '📡' : '⚠️'}
-            </Text>
+            <NativeIcon
+              name={voiceError.type === 'mic' ? 'mic' : voiceError.type === 'connection' ? 'wifi' : 'alertTriangle'}
+              size={isTV ? 'lg' : 'md'}
+              color="#ffffff"
+            />
           </View>
         )}
 

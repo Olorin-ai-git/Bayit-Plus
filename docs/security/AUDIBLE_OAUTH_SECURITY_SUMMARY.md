@@ -149,6 +149,7 @@
 
 ### Required Environment Variables
 
+::: v-pre
 ```bash
 # OAuth Credentials (from Audible)
 AUDIBLE_CLIENT_ID=<value>
@@ -168,6 +169,7 @@ AUDIBLE_HTTP_CONNECT_TIMEOUT_SECONDS=10
 AUDIBLE_HTTP_MAX_CONNECTIONS=5
 AUDIBLE_HTTP_KEEPALIVE_CONNECTIONS=2
 ```
+:::
 
 ### Critical Deployment Checklist
 

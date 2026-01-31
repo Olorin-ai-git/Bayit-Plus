@@ -80,12 +80,14 @@ export default function VideoPlayer({
   const {
     subtitlesEnabled,
     currentSubtitleLang,
+    hebrewMode,
     availableSubtitles,
     subtitlesLoading,
     currentCues,
     subtitleSettings,
     handleSubtitleToggle,
     handleSubtitleLanguageChange,
+    handleHebrewModeChange,
     handleSubtitleSettingsChange,
     fetchAvailableSubtitles,
   } = useSubtitles({ contentId, isLive })
@@ -366,6 +368,8 @@ export default function VideoPlayer({
     handleSubtitleToggle,
     handleSubtitleSettingsChange,
     fetchAvailableSubtitles,
+    hebrewMode,
+    handleHebrewModeChange,
     liveSubtitleLang,
     setLiveSubtitleLang,
     handleLiveSubtitleCue: handleLiveSubtitleCueWithTrivia,

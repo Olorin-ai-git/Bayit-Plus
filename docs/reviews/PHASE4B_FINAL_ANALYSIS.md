@@ -103,6 +103,7 @@ Total: 594 tests
 **Edit**: `.github/workflows/pr-validation.yml`
 **Change**: `--cov-fail-under=70` → `--cov-fail-under=85`
 
+::: v-pre
 ```bash
 cd /Users/olorin/Documents/olorin
 
@@ -118,6 +119,7 @@ git commit -m "Phase 4C: Update CI/CD coverage threshold to 85%
 
 Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>"
 ```
+:::
 
 #### PHASE 4B.5 ALTERNATIVE: Skip Local Diagnostic
 

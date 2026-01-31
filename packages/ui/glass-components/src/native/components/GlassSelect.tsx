@@ -19,6 +19,7 @@ import {
 import { GlassView } from './GlassView';
 import { colors, borderRadius, spacing } from '../../theme';
 import { useTVFocus } from '../../hooks/useTVFocus';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 export interface SelectOption {
   /** Option value */
@@ -135,15 +136,13 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
             >
               {selectedOption?.label || placeholder}
             </Text>
-            <Text
-              className="text-xs"
+            <View
               style={[
-                { color: colors.textSecondary },
                 isRTL ? { marginRight: spacing.sm, marginLeft: 0 } : { marginLeft: spacing.sm },
               ]}
             >
-              ▼
-            </Text>
+              <NativeIcon name="dropdown" size="xs" color={colors.textSecondary} />
+            </View>
           </GlassView>
         </Animated.View>
       </TouchableOpacity>

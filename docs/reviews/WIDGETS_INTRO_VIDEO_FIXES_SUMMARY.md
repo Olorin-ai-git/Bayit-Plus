@@ -110,6 +110,7 @@ Watch live channels in Picture-in-Picture mode
 **Integration in Component**:
 
 **File**: `shared/components/widgets/WidgetsIntroVideo.tsx` (Lines 178-196)
+::: v-pre
 ```typescript
 {Platform.OS === 'web' ? (
   <video ... >
@@ -146,6 +147,7 @@ Watch live channels in Picture-in-Picture mode
   />
 )}
 ```
+:::
 
 **Caption Coverage**:
 - 15 synchronized captions over 85-second video
@@ -169,6 +171,7 @@ Watch live channels in Picture-in-Picture mode
 **File**: `shared/components/widgets/WidgetsIntroVideo.tsx`
 
 **BEFORE (Web-Only)**:
+::: v-pre
 ```typescript
 // Lines 130-132
 if (Platform.OS !== 'web' || !visible) {
@@ -178,8 +181,10 @@ if (Platform.OS !== 'web' || !visible) {
 // Only HTML5 video
 <video src={videoUrl} controls />
 ```
+:::
 
 **AFTER (Cross-Platform)**:
+::: v-pre
 ```typescript
 // Lines 129-131 - Removed web-only check
 if (!visible) {
@@ -211,6 +216,7 @@ if (!visible) {
   />
 )}
 ```
+:::
 
 **StyleSheet Addition** (Line 229):
 ```typescript
@@ -319,6 +325,7 @@ import { GlassCard, GlassButton } from '@bayit/shared/ui';  // Added GlassButton
 **3 Pressable Components Replaced** (Lines 132-157):
 
 **1. Reset Position Button**:
+::: v-pre
 ```typescript
 // BEFORE:
 <Pressable onPress={() => onResetPosition(widget.id)} ...>
@@ -335,8 +342,10 @@ import { GlassCard, GlassButton } from '@bayit/shared/ui';  // Added GlassButton
   <RotateCcw size={16} color={colors.text} />
 </GlassButton>
 ```
+:::
 
 **2. Toggle Visibility Button**:
+::: v-pre
 ```typescript
 // BEFORE:
 <Pressable onPress={() => onToggleVisibility(widget.id)} ...>
@@ -353,8 +362,10 @@ import { GlassCard, GlassButton } from '@bayit/shared/ui';  // Added GlassButton
   {isHidden ? <Eye size={16} color={colors.text} /> : <EyeOff size={16} color={colors.text} />}
 </GlassButton>
 ```
+:::
 
 **3. Delete Button**:
+::: v-pre
 ```typescript
 // BEFORE:
 <Pressable onPress={() => onDelete(widget.id)} ...>
@@ -371,6 +382,7 @@ import { GlassCard, GlassButton } from '@bayit/shared/ui';  // Added GlassButton
   <Trash2 size={16} color={colors.text} />
 </GlassButton>
 ```
+:::
 
 **StyleSheet Addition** (Lines 171-176):
 ```typescript

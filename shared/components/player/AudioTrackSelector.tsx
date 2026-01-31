@@ -8,6 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { isTV, isWeb } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
@@ -98,11 +99,13 @@ const AudioTrackOption: React.FC<{
       >
         <View className="flex-col">
           <View className="flex-row justify-between items-center mb-1">
-            <Text className={`flex-1 text-lg font-semibold text-white ${isTV ? 'text-xl' : 'text-lg'}`} style={{ textAlign }}>
-              {track.language}
-              {isSelected && ' ✓'}
-              {track.isDefault && ' (Default)'}
-            </Text>
+            <View className="flex-row items-center gap-1 flex-1">
+              <Text className={`text-lg font-semibold text-white ${isTV ? 'text-xl' : 'text-lg'}`} style={{ textAlign }}>
+                {track.language}
+              </Text>
+              {isSelected && <NativeIcon name="check" size={isTV ? 20 : 16} color={colors.success.DEFAULT} />}
+              {track.isDefault && <Text className={`text-white/70 ${isTV ? 'text-sm' : 'text-xs'}`}>(Default)</Text>}
+            </View>
             {track.languageCode && (
               <Text className={`font-semibold text-white/70 bg-white/10 px-2 py-1 rounded ${isTV ? 'text-sm' : 'text-xs'}`}>
                 {track.languageCode.toUpperCase()}

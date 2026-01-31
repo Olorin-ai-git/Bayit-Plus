@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
 import { searchService } from '../../services/api';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 export interface TrendingItem {
   query: string;
@@ -49,12 +50,14 @@ const TrendingChip: React.FC<{
     }).start();
   };
 
-  const getRankIcon = (rank: number): string => {
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    return '🔥';
+  const getRankIconConfig = (rank: number): { name: string; color: string } => {
+    if (rank === 1) return { name: 'award', color: '#fbbf24' };
+    if (rank === 2) return { name: 'award', color: '#9ca3af' };
+    if (rank === 3) return { name: 'award', color: '#cd7f32' };
+    return { name: 'trendingUp', color: '#ef4444' };
   };
+
+  const iconConfig = getRankIconConfig(item.rank);
 
   return (
     <TouchableOpacity
@@ -74,7 +77,7 @@ const TrendingChip: React.FC<{
           ...(isFocused && { boxShadow: '0 0 15px rgba(168, 85, 247, 0.5)' } as any),
         }}
       >
-        <Text className={isTV ? 'text-lg' : 'text-base'}>{getRankIcon(item.rank)}</Text>
+        <NativeIcon name={iconConfig.name as any} size={isTV ? 'md' : 'sm'} color={iconConfig.color} />
         <Text className={`text-white font-semibold ${isTV ? 'text-base' : 'text-sm'}`} numberOfLines={1}>
           {item.query}
         </Text>

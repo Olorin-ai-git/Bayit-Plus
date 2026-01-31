@@ -20,6 +20,7 @@ import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocal
 import { judaismService } from '../services/api';
 import { JerusalemRow } from '../components/JerusalemRow';
 import { TelAvivRow } from '../components/TelAvivRow';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface JudaismItem {
   id: string;
@@ -46,12 +47,12 @@ interface Category {
 }
 
 const TYPE_ICONS: Record<string, string> = {
-  shiur: '📖',
-  prayer: '🕯️',
-  music: '🎵',
-  documentary: '🎬',
-  lecture: '🎓',
-  holiday: '🕎',
+  shiur: 'bookOpen',
+  prayer: 'sun',
+  music: 'music',
+  documentary: 'vod',
+  lecture: 'star',
+  holiday: 'star',
 };
 
 const JudaismCard: React.FC<{
@@ -106,11 +107,11 @@ const JudaismCard: React.FC<{
           />
         ) : (
           <View className="w-full aspect-video bg-white/20 justify-center items-center">
-            <Text className="text-5xl">{TYPE_ICONS[item.type] || '✡️'}</Text>
+            <NativeIcon name={TYPE_ICONS[item.type] || 'star'} size="3xl" color="#a855f7" />
           </View>
         )}
         <View className={`absolute top-2 ${isRTL ? 'left-2' : 'right-2'} bg-black/70 rounded-xl px-2 py-1`}>
-          <Text className="text-sm">{TYPE_ICONS[item.type]}</Text>
+          <NativeIcon name={TYPE_ICONS[item.type]} size="sm" color="#ffffff" />
         </View>
         {item.duration && (
           <View className={`absolute top-2 ${isRTL ? 'right-2' : 'left-2'} bg-purple-500 rounded-lg px-1.5 py-0.5`}>
@@ -135,7 +136,7 @@ const JudaismCard: React.FC<{
         {isFocused && (
           <View className="absolute inset-0 bg-black/60 justify-center items-center">
             <View className="w-14 h-14 rounded-full bg-purple-500 justify-center items-center">
-              <Text className="text-2xl text-white ml-1">▶</Text>
+              <NativeIcon name="play" size="lg" color="#ffffff" />
             </View>
           </View>
         )}
@@ -221,7 +222,7 @@ export const JudaismScreen: React.FC = () => {
     <View className="flex-1 bg-[#0a0a14]">
       <View className={`flex-row items-center px-12 pt-10 pb-6 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
         <View className={`w-[60px] h-[60px] rounded-full bg-purple-600/20 justify-center items-center ${isRTL ? 'ml-6' : 'mr-6'}`}>
-          <Text className="text-[28px]">✡️</Text>
+          <NativeIcon name="star" size="xl" color="#a855f7" />
         </View>
         <View>
           <Text className={`text-[42px] font-bold text-white ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>{t('judaism.title')}</Text>
@@ -277,8 +278,8 @@ export const JudaismScreen: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-15">
             <GlassView className="p-12 items-center">
-              <Text className="text-[64px] mb-4">✡️</Text>
-              <Text className={`text-xl font-semibold text-white mb-2 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>{t('judaism.empty')}</Text>
+              <NativeIcon name="star" size="4xl" color="#a855f7" />
+              <Text className={`text-xl font-semibold text-white mb-2 mt-4 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>{t('judaism.empty')}</Text>
               <Text className={`text-base text-gray-400 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>{t('judaism.emptyHint')}</Text>
             </GlassView>
           </View>

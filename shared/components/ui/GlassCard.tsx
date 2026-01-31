@@ -88,7 +88,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
       {showPlayIcon && isFocused && (
         <View style={styles.playOverlay}>
           <View style={styles.playButton}>
-            <Text style={styles.playIcon}>▶</Text>
+            <NativeIcon name="play" size="md" color={colors.background} />
           </View>
         </View>
       )}
@@ -210,11 +210,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  playIcon: {
-    fontSize: 20,
-    color: colors.background,
-    marginLeft: 4,
   },
   progressContainer: {
     position: 'absolute',

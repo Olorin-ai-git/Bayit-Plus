@@ -57,6 +57,7 @@ interface Maariv103PlaylistWidgetProps {
 - Detection logic: `component_name === 'maariv_103_playlist'` OR `(title.includes('103FM') && title.includes('ארכיון'))`
 
 **Integration Code**:
+::: v-pre
 ```typescript
 if (is103PlaylistWidget) {
   return (
@@ -69,6 +70,7 @@ if (is103PlaylistWidget) {
   );
 }
 ```
+:::
 
 ### 3. Type Definitions
 

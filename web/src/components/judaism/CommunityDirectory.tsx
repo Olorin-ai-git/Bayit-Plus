@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Building2, Utensils, Users, MapPin, Phone, Globe, ChevronDown, Search, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { Icon } from '@olorin/shared-icons/web';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
 import { GlassCard } from '@bayit/shared/ui';
@@ -248,7 +249,7 @@ export function CommunityDirectory() {
                         className="px-1.5 py-0.5 rounded"
                         style={{ backgroundColor: `${colors.success}4D` }}
                       >
-                        <span className="text-xs" style={{ color: colors.success }}>✓</span>
+                        <Icon name="check" size="xs" color={colors.success} />
                       </span>
                     )}
                   </div>

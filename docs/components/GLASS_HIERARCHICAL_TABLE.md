@@ -50,6 +50,7 @@ import {
 
 ## Basic Usage
 
+::: v-pre
 ```typescript
 const columns: HierarchicalTableColumn[] = [
   {
@@ -86,6 +87,7 @@ const rows: HierarchicalTableRow[] = [
   onPageChange={(page) => console.log(page)}
 />
 ```
+:::
 
 ## Component API
 
@@ -112,6 +114,7 @@ const rows: HierarchicalTableRow[] = [
 
 ### Column Definition
 
+::: v-pre
 ```typescript
 interface HierarchicalTableColumn<T = any> {
   key: string;                          // Data key
@@ -122,9 +125,11 @@ interface HierarchicalTableColumn<T = any> {
   renderChild?: (value: any, row: T, parent: T, level: number) => ReactNode;  // Child renderer
 }
 ```
+:::
 
 ### Row Definition
 
+::: v-pre
 ```typescript
 interface HierarchicalTableRow<T = any> {
   id: string;                           // Unique row ID
@@ -133,6 +138,7 @@ interface HierarchicalTableRow<T = any> {
   isExpanded?: boolean;                 // Initial expand state
 }
 ```
+:::
 
 ## Helper Components
 
@@ -140,6 +146,7 @@ interface HierarchicalTableRow<T = any> {
 
 Display images with fallback placeholders.
 
+::: v-pre
 ```typescript
 <ThumbnailCell
   uri={imageUrl}
@@ -148,11 +155,13 @@ Display images with fallback placeholders.
   onPress={() => {}}
 />
 ```
+:::
 
 ### TitleCell
 
 Display title with optional subtitle and badge.
 
+::: v-pre
 ```typescript
 <TitleCell
   title="Item Title"
@@ -162,11 +171,13 @@ Display title with optional subtitle and badge.
   align="left" | "center" | "right"
 />
 ```
+:::
 
 ### BadgeCell
 
 Display status badges with color variants.
 
+::: v-pre
 ```typescript
 <BadgeCell
   label="Published"
@@ -174,11 +185,13 @@ Display status badges with color variants.
   icon={<Icon />}
 />
 ```
+:::
 
 ### ActionsCell
 
 Display action buttons.
 
+::: v-pre
 ```typescript
 <ActionsCell
   actions={[
@@ -190,11 +203,13 @@ Display action buttons.
   align="right"
 />
 ```
+:::
 
 ### TextCell
 
 Display plain text with formatting options.
 
+::: v-pre
 ```typescript
 <TextCell
   text="Cell value"
@@ -203,6 +218,7 @@ Display plain text with formatting options.
   size="sm" | "md" | "lg"
 />
 ```
+:::
 
 ## Pre-built Action Creators
 
@@ -224,6 +240,7 @@ createStarAction(() => console.log('Star'), filled)
 
 ### Custom Parent and Child Renderers
 
+::: v-pre
 ```typescript
 const columns: HierarchicalTableColumn[] = [
   {
@@ -247,9 +264,11 @@ const columns: HierarchicalTableColumn[] = [
   },
 ];
 ```
+:::
 
 ### Controlled Selection
 
+::: v-pre
 ```typescript
 const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -260,9 +279,11 @@ const [selectedIds, setSelectedIds] = useState<string[]>([]);
   // ... other props
 />
 ```
+:::
 
 ### Controlled Expansion
 
+::: v-pre
 ```typescript
 const handleExpandToggle = (rowId: string, expanded: boolean) => {
   console.log(`Row ${rowId} is now ${expanded ? 'expanded' : 'collapsed'}`);
@@ -275,6 +296,7 @@ const handleExpandToggle = (rowId: string, expanded: boolean) => {
   // ... other props
 />
 ```
+:::
 
 ## Styling Guidelines
 

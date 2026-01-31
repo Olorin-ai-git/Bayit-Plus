@@ -8,6 +8,7 @@
 import { useEffect, useState } from 'react'
 import { View, Text } from 'react-native'
 import { StyleSheet } from 'react-native'
+import { Icon } from '@olorin/shared-icons/web'
 import { GlassModal } from '@bayit/shared/components/ui/GlassModal'
 import { GlassButton } from '@bayit/shared/components/ui/GlassButton'
 import { useTranslation } from 'react-i18next'
@@ -68,21 +69,21 @@ export function DubbingOnboarding({
 
         <View style={styles.features}>
           <View style={styles.feature}>
-            <Text style={styles.icon}>🌍</Text>
+            <Icon name="globe" size="lg" color="#FFFFFF" />
             <Text style={styles.featureText}>
               {t('dubbing.onboarding.feature1', '7 languages supported')}
             </Text>
           </View>
 
           <View style={styles.feature}>
-            <Text style={styles.icon}>⚡</Text>
+            <Icon name="broadcast" size="lg" color="#FFFFFF" />
             <Text style={styles.featureText}>
               {t('dubbing.onboarding.feature2', 'Real-time processing')}
             </Text>
           </View>
 
           <View style={styles.feature}>
-            <Text style={styles.icon}>🎚️</Text>
+            <Icon name="settings" size="lg" color="#FFFFFF" />
             <Text style={styles.featureText}>
               {t('dubbing.onboarding.feature3', 'Adjust audio balance')}
             </Text>
@@ -127,9 +128,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     paddingHorizontal: 12,
-  },
-  icon: {
-    fontSize: 24,
   },
   featureText: {
     color: '#d1d5db',

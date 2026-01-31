@@ -17,6 +17,7 @@ import {
   ImageBackground,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon, IconName } from '@olorin/shared-icons/native';
 import { GlassView } from './ui/GlassView';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { cultureService } from '../services/api';
@@ -56,33 +57,33 @@ interface CultureTrendingRowProps {
   showSources?: boolean;
 }
 
-const CATEGORY_EMOJIS: Record<string, string> = {
+const CATEGORY_ICONS: Record<string, IconName> = {
   // General categories
-  security: '🔒',
-  politics: '🏛️',
-  tech: '💻',
-  technology: '💻',
-  culture: '🎭',
-  sports: '⚽',
-  economy: '📈',
-  finance: '💰',
-  entertainment: '🎬',
-  weather: '🌤️',
-  health: '🏥',
-  food: '🍜',
-  fashion: '👗',
-  travel: '✈️',
-  history: '📜',
-  expat: '🌍',
-  general: '📰',
+  security: 'lock',
+  politics: 'briefcase',
+  tech: 'cpu',
+  technology: 'cpu',
+  culture: 'music',
+  sports: 'activity',
+  economy: 'trendingUp',
+  finance: 'dollarSign',
+  entertainment: 'film',
+  weather: 'cloudRain',
+  health: 'heart',
+  food: 'coffee',
+  fashion: 'shoppingBag',
+  travel: 'map',
+  history: 'book',
+  expat: 'globe',
+  general: 'newspaper',
   // Israeli-specific categories
-  kotel: '🕍',
-  'idf-ceremony': '🎖️',
-  diaspora: '🌐',
-  'holy-sites': '✡️',
-  'jerusalem-events': '🏛️',
-  beaches: '🏖️',
-  nightlife: '🌃',
+  kotel: 'star',
+  'idf-ceremony': 'award',
+  diaspora: 'globe',
+  'holy-sites': 'star',
+  'jerusalem-events': 'briefcase',
+  beaches: 'sun',
+  nightlife: 'moon',
 };
 
 /**
@@ -216,9 +217,7 @@ export const CultureTrendingRow: React.FC<CultureTrendingRowProps> = ({
           <Text style={styles.headerTitle}>
             {t('cultureTrending.whatsHotIn', { location: getCultureLabel() })}
           </Text>
-          <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>
-            🔥
-          </Text>
+          <NativeIcon name="flame" size={isTV ? 24 : 20} color="#f97316" style={{ marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }} />
         </View>
         <View style={styles.loadingContainer}>
           <ActivityIndicator color={colors.primary} size="large" />
@@ -234,9 +233,7 @@ export const CultureTrendingRow: React.FC<CultureTrendingRowProps> = ({
           <Text style={styles.headerTitle}>
             {t('cultureTrending.whatsHotIn', { location: getCultureLabel() })}
           </Text>
-          <Text style={[styles.headerEmoji, { marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }]}>
-            🔥
-          </Text>
+          <NativeIcon name="flame" size={isTV ? 24 : 20} color="#f97316" style={{ marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }} />
         </View>
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyText}>{t('cultureTrending.noTopics')}</Text>
@@ -263,7 +260,7 @@ export const CultureTrendingRow: React.FC<CultureTrendingRowProps> = ({
           ]}>
             {t('cultureTrending.whatsHotIn', { location: getCultureLabel() })}
           </Text>
-          <Text style={styles.headerEmoji}>🔥</Text>
+          <NativeIcon name="flame" size={isTV ? 24 : 20} color="#f97316" />
         </View>
 
         {/* Overall Mood */}
@@ -339,7 +336,7 @@ const TopicCard: React.FC<TopicCardProps> = ({
     }
   }, [isFocused, scaleAnim]);
 
-  const categoryEmoji = CATEGORY_EMOJIS[topic.category] || '📌';
+  const categoryIcon = CATEGORY_ICONS[topic.category] || 'bookmark';
 
   return (
     <TouchableOpacity
@@ -357,7 +354,7 @@ const TopicCard: React.FC<TopicCardProps> = ({
           intensity="subtle"
         >
           <View style={[styles.topicHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <Text style={styles.categoryEmoji}>{categoryEmoji}</Text>
+            <NativeIcon name={categoryIcon} size={isTV ? 28 : 24} color="#a855f7" />
             <View style={styles.categoryBadge}>
               <Text style={styles.categoryText}>
                 {topic.category}
@@ -496,9 +493,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.sm,
     gap: spacing.sm,
-  },
-  categoryEmoji: {
-    fontSize: isTV ? 28 : 24,
   },
   categoryBadge: {
     backgroundColor: 'rgba(107, 33, 168, 0.3)',

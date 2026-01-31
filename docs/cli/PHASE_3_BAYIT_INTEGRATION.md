@@ -218,6 +218,7 @@ Starting Bayit+ services...
 
 #### Implementation
 
+::: v-pre
 ```typescript
 async function startBayitServices(
   services: string[],
@@ -237,6 +238,7 @@ async function startBayitServices(
   }
 }
 ```
+:::
 
 ### 4. Stop Command ✅
 
@@ -279,6 +281,7 @@ Stopping Bayit+ services...
 
 #### Implementation
 
+::: v-pre
 ```typescript
 static async stopService(serviceName: string): Promise<void> {
   const service = services[serviceName];
@@ -289,6 +292,7 @@ static async stopService(serviceName: string): Promise<void> {
   }
 }
 ```
+:::
 
 ### 5. Status Command ✅
 

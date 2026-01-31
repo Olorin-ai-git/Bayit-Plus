@@ -8,6 +8,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { SearchResult } from '../../hooks/useSearch';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface SubtitleMatchCardProps {
   result: SearchResult;
@@ -71,7 +72,7 @@ export function SubtitleMatchCard({
           />
         ) : (
           <View className="w-32 h-32 bg-white/5 items-center justify-center">
-            <Text className="text-4xl">🎬</Text>
+            <NativeIcon name="film" size="2xl" color="#a855f7" />
           </View>
         )}
 
@@ -84,9 +85,10 @@ export function SubtitleMatchCard({
 
           {/* Subtitle Match Badge */}
           <View className="flex-row items-center gap-2 mb-2">
-            <View className="px-2 py-1 bg-purple-500/20 rounded">
+            <View className="px-2 py-1 bg-purple-500/20 rounded flex-row items-center gap-1">
+              <NativeIcon name="fileText" size="xs" color="#c084fc" />
               <Text className="text-purple-300 text-xs font-medium">
-                📝 {matches.length} subtitle match{matches.length > 1 ? 'es' : ''}
+                {matches.length} subtitle match{matches.length > 1 ? 'es' : ''}
               </Text>
             </View>
             {result.year && (
@@ -129,7 +131,7 @@ export function SubtitleMatchCard({
             </Text>
           </View>
           <View className="w-10 h-10 bg-purple-500/30 rounded-full items-center justify-center">
-            <Text className="text-purple-300 text-xl">▶</Text>
+            <NativeIcon name="play" size="lg" color="#c084fc" />
           </View>
         </View>
       </View>

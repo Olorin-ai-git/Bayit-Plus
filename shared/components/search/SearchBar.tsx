@@ -8,6 +8,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, FlatList } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface SearchBarProps {
   value: string;
@@ -70,7 +71,7 @@ export function SearchBar({
         ${isFocused ? 'border-white/30' : 'border-white/10'}
       `}>
         {/* Search Icon */}
-        <Text className="text-white/60 text-xl">🔍</Text>
+        <NativeIcon name="search" size="lg" color="#9ca3af" />
 
         {/* Input Field */}
         <TextInput
@@ -98,7 +99,7 @@ export function SearchBar({
             className="w-8 h-8 items-center justify-center rounded-full bg-white/10"
             activeOpacity={0.7}
           >
-            <Text className="text-white/80 text-lg">✕</Text>
+            <NativeIcon name="x" size="md" color="#ffffff" />
           </TouchableOpacity>
         )}
 
@@ -109,7 +110,7 @@ export function SearchBar({
             className="w-10 h-10 items-center justify-center rounded-full bg-white/10"
             activeOpacity={0.7}
           >
-            <Text className="text-xl">🎤</Text>
+            <NativeIcon name="mic" size="lg" color="#a855f7" />
           </TouchableOpacity>
         )}
       </View>
@@ -134,7 +135,7 @@ export function SearchBar({
                 `}
                 activeOpacity={0.7}
               >
-                <Text className="text-white/60 text-base">🔍</Text>
+                <NativeIcon name="search" size="md" color="#9ca3af" />
                 <Text className={`
                   flex-1 text-white text-base
                   ${isRTL ? 'text-right' : 'text-left'}

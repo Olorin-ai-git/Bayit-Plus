@@ -5,6 +5,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from '../../../components';
 import { useDirection } from '@bayit/shared/hooks';
 import { styles } from '../JudaismScreen.styles';
@@ -40,16 +41,21 @@ export const ShabbatEveBanner: React.FC<ShabbatEveBannerProps> = ({ status }) =>
     <GlassView style={styles.shabbatBanner}>
       <View style={[styles.shabbatHeader, { flexDirection }]}>
         <View style={[styles.shabbatIconsContainer, { flexDirection }]}>
-          <Text style={styles.shabbatCandle}>🕯️</Text>
-          <Text style={[styles.shabbatCandle, { marginLeft: -8 }]}>🕯️</Text>
+          <NativeIcon name="candle" size="xl" context="tv" color="#fbbf24" />
+          <View style={{ marginLeft: -8 }}>
+            <NativeIcon name="candle" size="xl" context="tv" color="#fbbf24" />
+          </View>
         </View>
         <View style={styles.shabbatTitleContainer}>
           <Text style={styles.shabbatTitle}>
             {t('judaism.erevShabbat.title', 'Erev Shabbat')}
           </Text>
-          <Text style={styles.shabbatSubtitle}>
-            {t('judaism.erevShabbat.shabbatShalom', 'Shabbat Shalom!')} 🍞
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <Text style={styles.shabbatSubtitle}>
+              {t('judaism.erevShabbat.shabbatShalom', 'Shabbat Shalom!')}
+            </Text>
+            <NativeIcon name="bread" size="md" context="tv" color="#fbbf24" />
+          </View>
         </View>
       </View>
 
@@ -64,7 +70,7 @@ export const ShabbatEveBanner: React.FC<ShabbatEveBannerProps> = ({ status }) =>
 
       <View style={[styles.shabbatTimesRow, { flexDirection }]}>
         <View style={styles.shabbatTimeCard}>
-          <Text style={styles.shabbatTimeIcon}>🔥</Text>
+          <NativeIcon name="flame" size="xl" context="tv" color="#f97316" />
           <Text style={styles.shabbatTimeLabel}>
             {t('judaism.shabbat.candleLighting', 'Candle Lighting')}
           </Text>
@@ -73,7 +79,7 @@ export const ShabbatEveBanner: React.FC<ShabbatEveBannerProps> = ({ status }) =>
           </Text>
         </View>
         <View style={styles.shabbatTimeCard}>
-          <Text style={styles.shabbatTimeIcon}>🌙</Text>
+          <NativeIcon name="moon" size="xl" context="tv" color="#60a5fa" />
           <Text style={styles.shabbatTimeLabel}>
             {t('judaism.shabbat.havdalah', 'Havdalah')}
           </Text>

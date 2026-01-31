@@ -272,6 +272,7 @@ class RecapSession(Document):
 - `GET /voices` - List available voices
 
 **WebSocket Protocol**:
+::: v-pre
 ```
 Client sends: Binary audio (16kHz, mono, LINEAR16)
 Server sends:
@@ -279,6 +280,7 @@ Server sends:
   - {"type": "dubbed_audio", "data": "<base64>", "timestamp": 123.45}
   - {"type": "error", "message": "..."}
 ```
+:::
 
 ### 4.3 Semantic Search (`/api/v1/olorin/search/`)
 

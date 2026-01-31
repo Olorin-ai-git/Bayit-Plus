@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView, GlassCategoryPill } from '../components';
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
 import { contentService } from '../services/api';
@@ -86,7 +87,7 @@ const ContentCard: React.FC<{
             />
           ) : (
             <View className="w-full aspect-video bg-white/5 justify-center items-center">
-              <Text className="text-[32px]">🎬</Text>
+              <NativeIcon name="vod" size="xxl" context="tv" color="#8a2be2" />
             </View>
           )}
 
@@ -113,7 +114,7 @@ const ContentCard: React.FC<{
         {isFocused && (
           <View className="absolute inset-0 bg-black/40 justify-center items-center">
             <View className={`w-12 h-12 rounded-full bg-[${colors.primary}] justify-center items-center`}>
-              <Text className="text-xl text-black ml-1">▶</Text>
+              <NativeIcon name="play" size="lg" context="tv" color="#000000" />
             </View>
           </View>
         )}
@@ -194,7 +195,7 @@ export const VODScreen: React.FC = () => {
       {/* Header */}
       <View className={`flex-row items-center px-12 pt-10 pb-5 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
         <View className={`w-[60px] h-[60px] rounded-full bg-purple-900/30 justify-center items-center ${isRTL ? 'ml-5' : 'mr-5'}`}>
-          <Text className="text-[28px]">🎬</Text>
+          <NativeIcon name="vod" size="xl" context="tv" color="#8a2be2" />
         </View>
         <View>
           <Text className="text-[42px] font-bold text-white" style={{ textAlign }}>{t('vod.title')}</Text>
@@ -237,8 +238,8 @@ export const VODScreen: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-[60px]">
             <GlassView className="p-8 items-center">
-              <Text className="text-6xl mb-4">🎬</Text>
-              <Text className="text-xl font-semibold text-white mb-2">{t('empty.noContent')}</Text>
+              <NativeIcon name="vod" size="xxxl" context="tv" color="#8a2be2" />
+              <Text className="text-xl font-semibold text-white mb-2 mt-4">{t('empty.noContent')}</Text>
               <Text className="text-base text-gray-400">{t('empty.tryAnotherCategory')}</Text>
             </GlassView>
           </View>

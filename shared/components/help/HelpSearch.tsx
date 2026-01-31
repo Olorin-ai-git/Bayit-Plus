@@ -14,6 +14,7 @@ import {
   Keyboard,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 import { supportConfig } from '../../config/supportConfig';
@@ -195,9 +196,9 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
       onPress={() => handleResultPress(item)}
       accessibilityRole="button"
     >
-      <Text className={`mt-0.5 ${isTV ? 'text-xl' : 'text-lg'}`}>
-        {item.type === 'article' ? '📄' : '❓'}
-      </Text>
+      <View style={{ marginTop: 2 }}>
+        <NativeIcon name={item.type === 'article' ? 'file-text' : 'help-circle'} size={isTV ? 20 : 18} color="#fff" />
+      </View>
       <View className="flex-1">
         <Text className={`text-white font-semibold mb-0.5 ${isTV ? 'text-base' : 'text-sm'}`} style={{ textAlign }} numberOfLines={1}>
           {item.title}
@@ -227,7 +228,7 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
       <View className={`flex-row items-center bg-white/10 rounded-lg px-3 py-2 border-2 gap-2 ${
         focused ? 'border-purple-500 bg-white/15' : 'border-transparent'
       }`}>
-        <Text className={isTV ? 'text-xl' : 'text-base'}>🔍</Text>
+        <NativeIcon name="search" size={isTV ? 20 : 16} color="#fff" />
         <TextInput
           ref={inputRef}
           className={`flex-1 text-white p-0 ${isTV ? 'text-lg' : 'text-base'} ${isRTL ? 'text-right' : 'text-left'}`}
@@ -246,7 +247,7 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
         )}
         {query.length > 0 && !loading && (
           <TouchableOpacity onPress={handleClear} className="w-6 h-6 items-center justify-center">
-            <Text className="text-white/70 text-sm">✕</Text>
+            <NativeIcon name="x" size={14} color="rgba(255, 255, 255, 0.7)" />
           </TouchableOpacity>
         )}
       </View>
@@ -310,7 +311,7 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
       {/* No Results */}
       {query.length >= minQueryLength && !loading && results.length === 0 && (
         <View className="mt-2 p-6 bg-[rgba(30,30,40,0.98)] rounded-lg items-center border border-white/10">
-          <Text className="text-[32px] mb-2 opacity-50">🔍</Text>
+          <NativeIcon name="search" size={32} color="#fff" style={{ opacity: 0.5, marginBottom: 8 }} />
           <Text className={`text-white mb-1 ${isTV ? 'text-base' : 'text-sm'}`} style={{ textAlign }}>
             {t('help.search.noResults', 'No results found for "{query}"', { query })}
           </Text>

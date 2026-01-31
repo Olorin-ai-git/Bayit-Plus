@@ -18,6 +18,7 @@ import {
 import { GlassView } from './GlassView';
 import { colors, spacing } from '../../theme';
 import { useTVFocus } from '../../hooks/useTVFocus';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 export interface GlassCardProps {
   /** Card title */
@@ -109,7 +110,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
       {showPlayIcon && isFocused && (
         <View className="absolute inset-0 justify-center items-center" style={{ backgroundColor: colors.glassOverlay }}>
           <View className="w-12 h-12 rounded-full justify-center items-center" style={{ backgroundColor: colors.primary }}>
-            <Text className="text-xl ml-1" style={{ color: colors.background }}>▶</Text>
+            <NativeIcon name="play" size="md" color={colors.background} />
           </View>
         </View>
       )}

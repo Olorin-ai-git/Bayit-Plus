@@ -6,6 +6,7 @@
 import React, { useState, useRef } from 'react'
 import { View, Text, Image, Animated, TouchableOpacity } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { NativeIcon } from '@olorin/shared-icons/native'
 import type { Audiobook } from '../../types/audiobook'
 
 interface AudiobookCardTVOSProps {
@@ -74,7 +75,7 @@ export const AudiobookCardTVOS: React.FC<AudiobookCardTVOSProps> = ({
           />
         ) : (
           <View className="w-full aspect-[3/4] bg-[#2a2235] justify-center items-center">
-            <Text className="text-6xl">🎧</Text>
+            <NativeIcon name="audiobooks" size="xxxl" context="tv" color="#a855f7" />
           </View>
         )}
 
@@ -82,7 +83,7 @@ export const AudiobookCardTVOS: React.FC<AudiobookCardTVOSProps> = ({
         {focused && (
           <View className="absolute inset-0 bg-black/40 justify-center items-center">
             <View className="w-16 h-16 rounded-full bg-yellow-400 justify-center items-center">
-              <Text className="text-3xl">▶</Text>
+              <NativeIcon name="play" size="xxl" context="tv" color="#000000" />
             </View>
           </View>
         )}

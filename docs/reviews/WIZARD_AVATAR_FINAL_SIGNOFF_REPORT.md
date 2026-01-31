@@ -91,12 +91,12 @@ The WizardAvatar component integration has been **completed with critical fixes 
 **Status:** APPROVED - This is a necessary exception per CLAUDE.md (platform limitation)
 
 #### Issue #4: Inline Style Violations (Native) ❌ → ✅ FIXED
-**Problem:** Used `style={{width: '100%', height: '100%'}}`
+**Problem:** Used `style=\{\{width: '100%', height: '100%'\}\}`
 **Fix:** Replaced with TailwindCSS `w-full h-full` classes
 **Verification:** No inline styles remain in native implementation
 
 #### Issue #5: Inline Style Violations (Web) ❌ → ✅ FIXED
-**Problem:** Used `style={{aspectRatio: '9/16'}}`
+**Problem:** Used `style=\{\{aspectRatio: '9/16'\}\}`
 **Fix:** Replaced with TailwindCSS `aspect-[9/16]` utility class
 **Verification:** No inline styles remain in web implementation
 
@@ -139,7 +139,7 @@ The CI/CD expert identified valid infrastructure concerns that require organizat
 | Requirement | Status | Evidence |
 |-------------|--------|----------|
 | No `StyleSheet.create()` | ✅ PASS | Zero StyleSheet usage |
-| No inline `style={{}}` (except exceptions) | ✅ PASS | All converted to TailwindCSS |
+| No inline `style=\{\{\}\}` (except exceptions) | ✅ PASS | All converted to TailwindCSS |
 | TailwindCSS Only | ✅ PASS | All styling via utility classes |
 | Glass Components | ✅ PASS | Uses GlassCard wrapper |
 | No Mocks/Stubs | ✅ PASS | Full implementation, no TODOs |
@@ -196,6 +196,7 @@ interface WizardAvatarProps {
 
 ## USAGE EXAMPLE
 
+::: v-pre
 ```tsx
 import { WizardAvatar } from '@/shared/components/WizardAvatar';
 
@@ -221,6 +222,7 @@ function IntroScreen() {
   );
 }
 ```
+:::
 
 ---
 

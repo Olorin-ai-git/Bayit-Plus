@@ -20,6 +20,7 @@ import { useDirection } from '../../hooks/useDirection';
 import { useSupportStore } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
 import { supportConfig } from '../../config/supportConfig';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface SupportTicketFormProps {
   onClose: () => void;
@@ -27,10 +28,10 @@ interface SupportTicketFormProps {
 }
 
 const categories = [
-  { id: 'billing', labelKey: 'support.ticket.category.billing', icon: '💳' },
-  { id: 'technical', labelKey: 'support.ticket.category.technical', icon: '🔧' },
-  { id: 'feature', labelKey: 'support.ticket.category.feature', icon: '✨' },
-  { id: 'general', labelKey: 'support.ticket.category.general', icon: '💬' },
+  { id: 'billing', labelKey: 'support.ticket.category.billing', icon: 'creditCard' },
+  { id: 'technical', labelKey: 'support.ticket.category.technical', icon: 'tool' },
+  { id: 'feature', labelKey: 'support.ticket.category.feature', icon: 'sparkles' },
+  { id: 'general', labelKey: 'support.ticket.category.general', icon: 'messageCircle' },
 ];
 
 const priorities = [
@@ -125,7 +126,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
                 {t('support.ticket.title', 'Create Support Ticket')}
               </Text>
               <TouchableOpacity className={`${isTV ? 'w-10 h-10' : 'w-8 h-8'} ${isTV ? 'rounded-[20px]' : 'rounded-2xl'} bg-white/10 justify-center items-center`} onPress={onClose}>
-                <Text className={`${isTV ? 'text-xl' : 'text-base'} text-white`}>✕</Text>
+                <NativeIcon name="x" size={isTV ? 'lg' : 'md'} color="#ffffff" />
               </TouchableOpacity>
             </View>
 
@@ -165,7 +166,11 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
                     className={`flex-row items-center px-3 md:px-4 py-2 ${category === cat.id ? 'bg-purple-500/20 border-purple-500' : 'bg-white/5'} rounded-lg gap-1 border-2 ${category === cat.id ? 'border-purple-500' : 'border-transparent'}`}
                     onPress={() => setCategory(cat.id)}
                   >
-                    <Text className={`${isTV ? 'text-base' : 'text-sm'}`}>{cat.icon}</Text>
+                    <NativeIcon
+                      name={cat.icon as any}
+                      size={isTV ? 'md' : 'sm'}
+                      color={category === cat.id ? '#a855f7' : '#9ca3af'}
+                    />
                     <Text
                       className={`${isTV ? 'text-sm' : 'text-xs'} ${category === cat.id ? 'text-purple-500 font-semibold' : 'text-gray-400'}`}
                     >

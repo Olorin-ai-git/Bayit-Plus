@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { isTV } from '../../utils/platform';
 import { GlassProgressBar } from '../ui/GlassProgressBar';
 
@@ -171,14 +172,14 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
             />
           ) : (
             <View className="w-full h-full justify-center items-center bg-black/30">
-              <Text className="text-[32px] opacity-50">🎬</Text>
+              <NativeIcon name="vod" size={32} color="rgba(255,255,255,0.5)" />
             </View>
           )}
 
           {/* Play icon overlay */}
           <View className="absolute inset-0 justify-center items-center bg-black/30 opacity-80">
             <View className={`${isTV ? 'w-12 h-12' : 'w-9 h-9'} rounded-full bg-white/90 justify-center items-center`}>
-              <Text className={`${isTV ? 'text-base' : 'text-xs'} text-black ml-0.5`}>▶</Text>
+              <NativeIcon name="play" size={isTV ? 'md' : 'sm'} color="#000000" />
             </View>
           </View>
 
@@ -218,7 +219,7 @@ const EpisodeCard: React.FC<EpisodeCardProps> = ({
         {/* Selected indicator */}
         {isSelected && (
           <View className={`${isTV ? 'w-12' : 'w-10'} justify-center items-center bg-primary`}>
-            <Text className={`${isTV ? 'text-lg' : 'text-sm'} text-white`}>▶</Text>
+            <NativeIcon name="play" size={isTV ? 'md' : 'sm'} color="#ffffff" />
           </View>
         )}
       </TouchableOpacity>

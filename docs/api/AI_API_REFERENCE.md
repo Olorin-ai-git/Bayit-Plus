@@ -8,9 +8,11 @@
 
 All AI endpoints require JWT authentication via the `Authorization` header.
 
+::: v-pre
 ```bash
 Authorization: Bearer <your_jwt_token>
 ```
+:::
 
 **Token Requirements:**
 - Valid JWT from Firebase Auth
@@ -45,6 +47,7 @@ curl -X GET "https://api.bayitplus.com/api/v1/beta/credits/balance" \
 ```
 
 **TypeScript:**
+::: v-pre
 ```typescript
 interface CreditBalanceResponse {
   balance: number;
@@ -61,6 +64,7 @@ const getBalance = async (): Promise<CreditBalanceResponse> => {
   return response.json();
 };
 ```
+:::
 
 **Error Responses:**
 ```json
@@ -155,6 +159,7 @@ interface AISearchRequest {
 ```
 
 **TypeScript:**
+::: v-pre
 ```typescript
 interface AISearchResponse {
   success: boolean;
@@ -193,6 +198,7 @@ const searchWithAI = async (query: string): Promise<AISearchResponse> => {
   return response.json();
 };
 ```
+:::
 
 **Error Responses:**
 ```json
@@ -264,6 +270,7 @@ interface RecommendationsParams {
 ```
 
 **TypeScript:**
+::: v-pre
 ```typescript
 interface RecommendationsResponse {
   success: boolean;
@@ -296,6 +303,7 @@ const getRecommendations = async (
   return response.json();
 };
 ```
+:::
 
 ---
 
@@ -353,6 +361,7 @@ interface CatchUpParams {
 ```
 
 **TypeScript:**
+::: v-pre
 ```typescript
 interface CatchUpResponse {
   success: boolean;
@@ -386,6 +395,7 @@ const getCatchUp = async (
   return response.json();
 };
 ```
+:::
 
 ---
 
@@ -500,6 +510,7 @@ X-RateLimit-Reset: 1706611200
 
 When rate-limited (429 response), implement exponential backoff:
 
+::: v-pre
 ```typescript
 async function retryWithBackoff<T>(
   fn: () => Promise<T>,
@@ -520,6 +531,7 @@ async function retryWithBackoff<T>(
   throw new Error('Max retries exceeded');
 }
 ```
+:::
 
 ---
 
@@ -615,11 +627,13 @@ const debouncedSearch = debounce(async (query: string) => {
 
 Wrap AI features in error boundaries:
 
+::: v-pre
 ```typescript
 <ErrorBoundary fallback={<div>AI feature temporarily unavailable</div>}>
   <AISearchComponent />
 </ErrorBoundary>
 ```
+:::
 
 ### 5. Progressive Enhancement
 

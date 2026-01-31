@@ -20,6 +20,7 @@ import {
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { VoiceCommand, groupCommandsByDate } from '@bayit/shared/utils/voiceCommandUtils';
 import { CommandHistoryItem } from './CommandHistoryItem';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface VoiceCommandHistoryProps {
   commands: VoiceCommand[];
@@ -94,13 +95,14 @@ export const VoiceCommandHistory: React.FC<VoiceCommandHistoryProps> = ({
     return (
       <SafeAreaView className="flex-1 bg-slate-900">
         <View className="flex-row justify-between items-center px-4 py-3 border-b border-slate-800">
-          <TouchableOpacity onPress={onClose} style={{ minWidth: 44, minHeight: 44 }} className="justify-center">
+          <TouchableOpacity onPress={onClose} style={{ minWidth: 44, minHeight: 44 }} className="justify-center flex-row items-center gap-1">
+            <NativeIcon name="x" size="sm" color="#2563eb" />
             <Text
               className="text-sm text-blue-600 font-medium"
               allowFontScaling={true}
               maxFontSizeMultiplier={1.3}
             >
-              ✕ Close
+              Close
             </Text>
           </TouchableOpacity>
           <Text
@@ -113,13 +115,9 @@ export const VoiceCommandHistory: React.FC<VoiceCommandHistoryProps> = ({
           <View className="w-12" />
         </View>
         <View className="flex-1 justify-center items-center">
-          <Text
-            className="text-5xl mb-3"
-            allowFontScaling={true}
-            maxFontSizeMultiplier={1.3}
-          >
-            🎤
-          </Text>
+          <View className="mb-3">
+            <NativeIcon name="mic" size="xxl" color="#a855f7" />
+          </View>
           <Text
             className="text-lg font-semibold text-slate-100 mb-2"
             allowFontScaling={true}
@@ -142,13 +140,14 @@ export const VoiceCommandHistory: React.FC<VoiceCommandHistoryProps> = ({
   return (
     <SafeAreaView className="flex-1 bg-slate-900">
       <View className="flex-row justify-between items-center px-4 py-3 border-b border-slate-800">
-        <TouchableOpacity onPress={onClose}>
+        <TouchableOpacity onPress={onClose} className="flex-row items-center gap-1">
+          <NativeIcon name="x" size="sm" color="#2563eb" />
           <Text
             className="text-sm text-blue-600 font-medium"
             allowFontScaling={true}
             maxFontSizeMultiplier={1.3}
           >
-            ✕ Close
+            Close
           </Text>
         </TouchableOpacity>
         <Text

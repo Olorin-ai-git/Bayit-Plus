@@ -26,6 +26,7 @@ import {
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon, IconName } from '@olorin/shared-icons/native';
 import { GlassView } from './ui/GlassView';
 import { GlassCard } from './ui/GlassCard';
 import { GlassBadge } from './ui/GlassBadge';
@@ -82,16 +83,16 @@ interface TelAvivRowProps {
   showTitle?: boolean;
 }
 
-// Category emojis
-const CATEGORY_EMOJIS: Record<string, string> = {
-  beaches: '🏖️',
-  nightlife: '🌃',
-  culture: '🎭',
-  music: '🎵',
-  food: '🍽️',
-  tech: '💻',
-  events: '🎉',
-  general: '📰',
+// Category icons
+const CATEGORY_ICONS: Record<string, IconName> = {
+  beaches: 'sun',
+  nightlife: 'moon',
+  culture: 'music',
+  music: 'headphones',
+  food: 'coffee',
+  tech: 'cpu',
+  events: 'calendar',
+  general: 'newspaper',
 };
 
 // Orange accent color for Tel Aviv theme
@@ -361,9 +362,12 @@ const ContentCard: React.FC<ContentCardProps> = ({
         >
           {/* Category Badge */}
           <View style={[styles.cardHeader, isRTL && styles.cardHeaderRTL]}>
-            <Text style={[styles.cardEmoji, isRTL && styles.cardEmojiRTL]}>
-              {CATEGORY_EMOJIS[item.category] || '📰'}
-            </Text>
+            <NativeIcon
+              name={CATEGORY_ICONS[item.category] || 'newspaper'}
+              size={fontSize.xxl}
+              color={TELAVIV_COLOR}
+              style={isRTL ? styles.cardEmojiRTL : { marginRight: spacing.sm }}
+            />
             <GlassBadge
               variant="warning"
               style={[styles.badge, isMobilePhone && styles.badgeMobile]}
@@ -623,10 +627,6 @@ const styles = StyleSheet.create({
   },
   cardHeaderRTL: {
     flexDirection: 'row-reverse',
-  },
-  cardEmoji: {
-    fontSize: fontSize.xxl,
-    marginRight: spacing.sm,
   },
   cardEmojiRTL: {
     marginRight: 0,

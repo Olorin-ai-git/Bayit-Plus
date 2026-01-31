@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { View, Text } from 'react-native';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassModal } from './ui/GlassModal';
 import { GlassButton } from './ui/GlassButton';
 import { GlassInput } from './ui/GlassInput';
@@ -87,7 +88,10 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
     if (step === 'email') {
       return (
         <View className="items-center gap-4">
-          <Text className="text-lg font-bold text-white text-center">📧 Verify Your Email</Text>
+          <View className="flex-row items-center gap-2">
+            <NativeIcon name="mail" size={24} color="#a855f7" />
+            <Text className="text-lg font-bold text-white text-center">Verify Your Email</Text>
+          </View>
           <Text className="text-base text-white/70 text-center leading-[22px]">
             Check your inbox at <Text className="text-purple-500 font-semibold">{user?.email}</Text>
             {'\n\n'}Click the verification link we sent you.
@@ -105,7 +109,10 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
     if (step === 'phone') {
       return (
         <View className="items-center gap-4">
-          <Text className="text-lg font-bold text-white text-center">📱 Verify Your Phone</Text>
+          <View className="flex-row items-center gap-2">
+            <NativeIcon name="smartphone" size={24} color="#a855f7" />
+            <Text className="text-lg font-bold text-white text-center">Verify Your Phone</Text>
+          </View>
           <Text className="text-base text-white/70 text-center leading-[22px]">
             Enter your phone number to receive a verification code
           </Text>
@@ -125,7 +132,10 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
     if (step === 'phone-code') {
       return (
         <View className="items-center gap-4">
-          <Text className="text-lg font-bold text-white text-center">🔑 Enter Code</Text>
+          <View className="flex-row items-center gap-2">
+            <NativeIcon name="key" size={24} color="#a855f7" />
+            <Text className="text-lg font-bold text-white text-center">Enter Code</Text>
+          </View>
           <Text className="text-base text-white/70 text-center leading-[22px]">
             Enter the 6-digit code sent to{'\n'}<Text className="text-purple-500 font-semibold">{phoneNumber}</Text>
           </Text>
@@ -149,7 +159,7 @@ export const VerificationModal: React.FC<VerificationModalProps> = ({
     if (step === 'success') {
       return (
         <View className="items-center gap-4">
-          <Text className="text-5xl mb-2">✅</Text>
+          <NativeIcon name="checkCircle" size={60} color="#22c55e" style={{ marginBottom: 8 }} />
           <Text className="text-lg font-bold text-white text-center">Verified!</Text>
           <Text className="text-base text-white/70 text-center leading-[22px]">
             Your account is now verified.{'\n'}Redirecting...

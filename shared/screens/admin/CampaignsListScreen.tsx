@@ -15,6 +15,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { useNotifications } from '@olorin/glass-ui/hooks';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { DataTable, Column } from '../../components/admin/DataTable';
 import { campaignsService, CampaignsFilter } from '../../services/adminApi';
@@ -259,34 +260,34 @@ export const CampaignsListScreen: React.FC = () => {
         style={styles.actionButton}
         onPress={() => handleViewCampaign(campaign)}
       >
-        <Text style={styles.actionIcon}>✏️</Text>
+        <NativeIcon name="edit" size={14} color={colors.text} />
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.actionButton}
         onPress={() => handleViewStats(campaign)}
       >
-        <Text style={styles.actionIcon}>📊</Text>
+        <NativeIcon name="barChart" size={14} color={colors.text} />
       </TouchableOpacity>
       {campaign.status === 'draft' || campaign.status === 'paused' ? (
         <TouchableOpacity
           style={[styles.actionButton, styles.activateButton]}
           onPress={() => handleActivateCampaign(campaign)}
         >
-          <Text style={styles.actionIcon}>▶️</Text>
+          <NativeIcon name="play" size={14} color={colors.text} />
         </TouchableOpacity>
       ) : campaign.status === 'active' ? (
         <TouchableOpacity
           style={[styles.actionButton, styles.pauseButton]}
           onPress={() => handleDeactivateCampaign(campaign)}
         >
-          <Text style={styles.actionIcon}>⏸️</Text>
+          <NativeIcon name="pause" size={14} color={colors.text} />
         </TouchableOpacity>
       ) : null}
       <TouchableOpacity
         style={[styles.actionButton, styles.deleteButton]}
         onPress={() => handleDeleteCampaign(campaign)}
       >
-        <Text style={styles.actionIcon}>🗑️</Text>
+        <NativeIcon name="trash" size={14} color={colors.error} />
       </TouchableOpacity>
     </View>
   );
@@ -297,14 +298,14 @@ export const CampaignsListScreen: React.FC = () => {
         style={styles.filterButton}
         onPress={() => setShowFilters(true)}
       >
-        <Text style={styles.filterButtonIcon}>🔍</Text>
+        <NativeIcon name="search" size={16} color={colors.text} style={{ marginRight: spacing.xs }} />
         <Text style={styles.filterButtonText}>{t('admin.campaigns.filters', 'Filters')}</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.addButton}
         onPress={handleCreateCampaign}
       >
-        <Text style={styles.addButtonIcon}>+</Text>
+        <NativeIcon name="plus" size={18} color={colors.text} style={{ marginRight: spacing.xs }} />
         <Text style={styles.addButtonText}>{t('admin.campaigns.create', 'Create Campaign')}</Text>
       </TouchableOpacity>
     </View>
@@ -501,10 +502,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.glassBorder,
   },
-  filterButtonIcon: {
-    fontSize: 16,
-    marginRight: spacing.xs,
-  },
   filterButtonText: {
     fontSize: fontSize.sm,
     color: colors.text,
@@ -516,12 +513,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     backgroundColor: colors.secondary,
     borderRadius: borderRadius.md,
-  },
-  addButtonIcon: {
-    fontSize: 18,
-    color: colors.text,
-    marginRight: spacing.xs,
-    fontWeight: 'bold',
   },
   addButtonText: {
     fontSize: fontSize.sm,
@@ -623,9 +614,6 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: colors.error + '30',
-  },
-  actionIcon: {
-    fontSize: 14,
   },
   modalOverlay: {
     flex: 1,

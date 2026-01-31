@@ -10,6 +10,7 @@ import { GlassProgressBar } from '../ui/GlassProgressBar';
 import { colors } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { UploadJob } from '../../services/uploadService';
+import { NativeIcon } from '@olorin/shared-icons/native';
 
 interface UploadProgressProps {
   job: UploadJob;
@@ -33,22 +34,22 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
 }) => {
   const { textAlign } = useDirection();
 
-  const getStatusIcon = () => {
+  const getStatusIconName = () => {
     switch (job.status) {
       case 'queued':
-        return '⏳';
+        return 'clock';
       case 'processing':
-        return '⚙️';
+        return 'settings';
       case 'uploading':
-        return '📤';
+        return 'upload';
       case 'completed':
-        return '✅';
+        return 'check-circle';
       case 'failed':
-        return '❌';
+        return 'x-circle';
       case 'cancelled':
-        return '🚫';
+        return 'slash';
       default:
-        return '📁';
+        return 'folder';
     }
   };
 
@@ -93,7 +94,9 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
     <GlassCard autoSize className="p-4 mb-4">
       <View className="flex-row justify-between items-start mb-4">
         <View className="flex-row items-center flex-1">
-          <Text className="text-3xl mr-4">{getStatusIcon()}</Text>
+          <View className="mr-4">
+            <NativeIcon name={getStatusIconName()} size={32} color={getStatusColor()} />
+          </View>
           <View className="flex-1">
             <Text className="text-white text-base font-semibold mb-1" style={{ textAlign }} numberOfLines={1}>
               {job.filename}
@@ -110,7 +113,7 @@ export const UploadProgress: React.FC<UploadProgressProps> = ({
             style={{ backgroundColor: colors.error + '20' }}
             onPress={() => onCancel(job.job_id)}
           >
-            <Text className="text-lg font-bold" style={{ color: colors.error }}>✕</Text>
+            <NativeIcon name="x" size={18} color={colors.error} style={{ fontWeight: 'bold' }} />
           </TouchableOpacity>
         )}
       </View>

@@ -22,6 +22,7 @@ The Widgets Intro Video integration demonstrates solid web implementation with H
 #### 1.1 HTML5 Video Implementation
 **File:** `shared/components/widgets/WidgetsIntroVideo.tsx`
 
+::: v-pre
 ```typescript
 // ✅ EXCELLENT: Proper HTML5 video with all essential attributes
 <video
@@ -35,6 +36,7 @@ The Widgets Intro Video integration demonstrates solid web implementation with H
   onError={handleVideoError}        // ✅ Error handling
 />
 ```
+:::
 
 **Rating:** ⭐⭐⭐⭐⭐ (Excellent)
 
@@ -237,6 +239,7 @@ if (Platform.OS !== 'web' || !visible) {
 **Rating:** ⭐⭐⭐⭐⭐ (Excellent)
 
 ### ✅ Loading State Management
+::: v-pre
 ```typescript
 // ✅ EXCELLENT: Shows spinner during video load
 {isLoading && !hasError && (
@@ -245,6 +248,7 @@ if (Platform.OS !== 'web' || !visible) {
   </View>
 )}
 ```
+:::
 
 **Rating:** ⭐⭐⭐⭐⭐ (Excellent)
 
@@ -277,6 +281,7 @@ const handleVideoError = () => {
 ### ❌ CRITICAL ISSUES FOUND
 
 #### 5.1 Missing Video Controls Accessibility
+::: v-pre
 ```typescript
 // ❌ ISSUE: No aria-label for video element
 <video
@@ -288,8 +293,10 @@ const handleVideoError = () => {
   autoPlay={autoPlay}
 />
 ```
+:::
 
 **REQUIRED FIX:**
+::: v-pre
 ```typescript
 <video
   ref={videoRef}
@@ -300,16 +307,20 @@ const handleVideoError = () => {
   autoPlay={autoPlay}
 />
 ```
+:::
 
 #### 5.2 Missing Button Accessibility
+::: v-pre
 ```typescript
 // ❌ ISSUE: Buttons lack ARIA labels
 <TouchableOpacity style={styles.skipButton} onPress={handleComplete}>
   <Text style={styles.buttonText}>{t('widgets.intro.skip')}</Text>
 </TouchableOpacity>
 ```
+:::
 
 **REQUIRED FIX:**
+::: v-pre
 ```typescript
 <TouchableOpacity
   style={styles.skipButton}
@@ -321,6 +332,7 @@ const handleVideoError = () => {
   <Text style={styles.buttonText}>{t('widgets.intro.skip')}</Text>
 </TouchableOpacity>
 ```
+:::
 
 #### 5.3 Missing Keyboard Navigation
 ```typescript
@@ -361,6 +373,7 @@ useEffect(() => {
 ```
 
 #### 5.4 Missing Focus Management
+::: v-pre
 ```typescript
 // ❌ ISSUE: No focus trap in modal overlay
 // Screen reader users can tab to elements behind overlay
@@ -371,6 +384,7 @@ import { useFocusTrap } from '@/hooks/useFocusTrap';
 const overlayRef = useRef<View>(null);
 useFocusTrap(overlayRef, visible);
 ```
+:::
 
 ### 📊 Accessibility Score
 
@@ -439,6 +453,7 @@ Warnings only in unrelated check-uploads scripts
 ## 7. INTEGRATION QUALITY
 
 ### ✅ UserWidgetsPage Integration
+::: v-pre
 ```typescript
 // ✅ EXCELLENT: Clean integration with proper state management
 <WidgetsIntroVideo
@@ -464,10 +479,12 @@ Warnings only in unrelated check-uploads scripts
   </View>
 )}
 ```
+:::
 
 **Rating:** ⭐⭐⭐⭐⭐ (Excellent)
 
 ### ✅ SupportPortal Integration
+::: v-pre
 ```typescript
 // ✅ EXCELLENT: Embedded in Videos tab with proper platform detection
 case 'videos':
@@ -490,6 +507,7 @@ case 'videos':
     </View>
   );
 ```
+:::
 
 **Rating:** ⭐⭐⭐⭐⭐ (Excellent - proper platform fallback)
 
@@ -528,6 +546,7 @@ videoUrl={config.media.widgetsIntroVideo}
 **Priority:** P0
 **Files:** `shared/components/widgets/WidgetsIntroVideo.tsx`
 
+::: v-pre
 ```typescript
 <video
   ref={videoRef}
@@ -561,6 +580,7 @@ videoUrl={config.media.widgetsIntroVideo}
   <Text style={styles.dismissText}>{t('widgets.intro.dismiss')}</Text>
 </TouchableOpacity>
 ```
+:::
 
 #### 9.2 Implement Keyboard Navigation
 **Priority:** P0
@@ -603,6 +623,7 @@ useEffect(() => {
 **Priority:** P0
 **Files:** `shared/components/widgets/WidgetsIntroVideo.tsx`
 
+::: v-pre
 ```typescript
 // Create custom hook: shared/hooks/useFocusTrap.ts
 import { useEffect, useRef } from 'react';
@@ -656,6 +677,7 @@ return (
   </Animated.View>
 );
 ```
+:::
 
 ### 🟡 RECOMMENDED (Should Fix Soon)
 
@@ -663,6 +685,7 @@ return (
 **Priority:** P1
 **Files:** `shared/components/widgets/WidgetsIntroVideo.tsx`
 
+::: v-pre
 ```typescript
 <video
   ref={videoRef}
@@ -695,11 +718,13 @@ return (
   />
 </video>
 ```
+:::
 
 #### 9.5 Add Loading Progress Indicator
 **Priority:** P1
 **Files:** `shared/components/widgets/WidgetsIntroVideo.tsx`
 
+::: v-pre
 ```typescript
 const [loadProgress, setLoadProgress] = useState(0);
 
@@ -724,6 +749,7 @@ const [loadProgress, setLoadProgress] = useState(0);
   </View>
 )}
 ```
+:::
 
 #### 9.6 Responsive Button Positioning
 **Priority:** P1
@@ -749,6 +775,7 @@ buttonContainer: {
 ### 🟢 NICE TO HAVE (Future Enhancements)
 
 #### 9.7 Add Playback Speed Control
+::: v-pre
 ```typescript
 const [playbackRate, setPlaybackRate] = useState(1.0);
 
@@ -762,6 +789,7 @@ const [playbackRate, setPlaybackRate] = useState(1.0);
   <Text>{playbackRate}x</Text>
 </TouchableOpacity>
 ```
+:::
 
 #### 9.8 Add Picture-in-Picture Support
 ```typescript

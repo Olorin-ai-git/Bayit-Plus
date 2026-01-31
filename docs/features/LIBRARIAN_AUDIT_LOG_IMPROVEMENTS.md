@@ -33,6 +33,7 @@ Comprehensive improvements to the Librarian Audit Log interface, focusing on enh
 
 #### Visual Enhancements
 
+::: v-pre
 ```tsx
 <View style={styles.iconContainer}>
   <View style={styles.iconBackground}>
@@ -41,6 +42,7 @@ Comprehensive improvements to the Librarian Audit Log interface, focusing on enh
   <View style={styles.pulseRing} />
 </View>
 ```
+:::
 
 #### Quick Audit Cards
 
@@ -145,6 +147,7 @@ Each card includes:
 
 #### Responsive Toolbar
 
+::: v-pre
 ```tsx
 <View style={styles.toolbar}>
   <SearchBar />
@@ -152,6 +155,7 @@ Each card includes:
   <ClearAllButton />
 </View>
 ```
+:::
 
 ---
 
@@ -179,6 +183,7 @@ import { RecentReportsList } from './components/RecentReportsList.improved';
 
 ### Step 2: Add Trigger Audit Callback
 
+::: v-pre
 ```tsx
 <LiveAuditLogPanel
   // ... existing props
@@ -195,9 +200,11 @@ const handleTriggerAudit = (auditType: string) => {
   }
 };
 ```
+:::
 
 ### Step 3: Add Optional Callbacks
 
+::: v-pre
 ```tsx
 <RecentReportsList
   // ... existing props
@@ -218,6 +225,7 @@ const handleDeleteReport = async (auditId: string) => {
   }
 };
 ```
+:::
 
 ### Step 4: Update Translations
 
@@ -291,12 +299,14 @@ Add to `shared/i18n/locales/en.json`:
 
 ### State Management
 
+::: v-pre
 ```tsx
 const [searchQuery, setSearchQuery] = useState('');
 const [sortField, setSortField] = useState<SortField>('date');
 const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 const [statusFilter, setStatusFilter] = useState<string | null>(null);
 ```
+:::
 
 ### Memoized Filtering & Sorting
 
