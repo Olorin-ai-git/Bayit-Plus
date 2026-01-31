@@ -11,7 +11,7 @@ import { Maximize, Minimize, Sparkles, X } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
-import { GlassView } from '@bayit/shared/ui'
+import { GlassView, GlassErrorBanner } from '@bayit/shared/ui'
 
 // Language flag emoji map
 const LANG_FLAGS: Record<string, string> = {
@@ -42,6 +42,8 @@ interface GlassLiveControlsPanelProps {
   renderCatchUpButton?: () => React.ReactNode
   renderChannelChatButton?: () => React.ReactNode
   renderLiveTriviaButton?: () => React.ReactNode
+  error?: string | null
+  onDismissError?: () => void
 }
 
 export function GlassLiveControlsPanel({
@@ -59,6 +61,8 @@ export function GlassLiveControlsPanel({
   renderCatchUpButton,
   renderChannelChatButton,
   renderLiveTriviaButton,
+  error,
+  onDismissError,
 }: GlassLiveControlsPanelProps) {
   const { t } = useTranslation()
   const [isHovered, setIsHovered] = useState(false)
@@ -125,10 +129,12 @@ export function GlassLiveControlsPanel({
   const flag = LANG_FLAGS[currentLanguage] || currentLanguage.toUpperCase()
   const [hoveredButton, setHoveredButton] = useState<string | null>(null)
 
+  // Panel-level tooltip only for buttons that don't have their own GlassTooltip
+  // Child controls (liveTranslate, liveDubbing) have tooltips via GlassLiveControlButton
   const getTooltipText = () => {
     switch (hoveredButton) {
       case 'flag':
-        return t('player.selectLanguage', 'Select Language')
+        return t('player.selectOutputLanguage', 'Select Output Language')
       case 'expand':
         return isExpanded
           ? t('player.hideAIFeatures', 'Hide AI Features')
@@ -137,15 +143,22 @@ export function GlassLiveControlsPanel({
         return isFullscreen
           ? t('player.exitFullscreen', 'Exit Fullscreen')
           : t('player.enterFullscreen', 'Enter Fullscreen')
-      case 'liveTranslate':
-        return t('subtitles.liveTranslate', 'Live Translate')
-      case 'liveDubbing':
-        return t('dubbing.title', 'Live Dubbing')
-      case 'voiceSelector':
-        return t('dubbing.selectVoice', 'Select Voice')
       default:
         return null
     }
+  }
+
+  // Position tooltip near the hovered button, not centered on the full panel
+  const getTooltipPositionStyle = () => {
+    if (hoveredButton === 'fullscreen') {
+      return { left: undefined, right: 0, transform: [] }
+    }
+    // flag and expand are at the left edge
+    if (isExpanded) {
+      return { left: 0, right: undefined, transform: [] }
+    }
+    // Collapsed: center over the small panel
+    return { left: '50%', right: undefined, transform: [{ translateX: '-50%' }] }
   }
 
   const handleHoverChange = (button: string | null) => {
@@ -157,6 +170,15 @@ export function GlassLiveControlsPanel({
 
   return (
     <View style={styles.wrapper}>
+      {/* Error Banner - appears above the panel */}
+      {error && onDismissError && (
+        <GlassErrorBanner
+          message={error}
+          onDismiss={onDismissError}
+          marginBottom={0}
+          style={styles.errorBanner}
+        />
+      )}
       <Animated.View style={[styles.panelContainer, { width: dragWidth != null ? dragWidth : 'fit-content' as any }]}>
         {/* Glass background with single clean border */}
         <View style={styles.glassBackground}>
@@ -201,8 +223,8 @@ export function GlassLiveControlsPanel({
                 {/* Divider */}
                 <View style={styles.divider} />
 
-                {/* Live Translate - hidden when dubbing is active */}
-                {!isDubbingActive && renderLiveSubtitleControls && (
+                {/* Live Translate */}
+                {renderLiveSubtitleControls && (
                   <View style={styles.controlItem}>
                     {renderLiveSubtitleControls()}
                   </View>
@@ -337,9 +359,9 @@ export function GlassLiveControlsPanel({
         </Modal>
       )}
 
-      {/* Single Glass Tooltip Above Container */}
+      {/* Glass Tooltip Above Container - positioned near hovered button */}
       {tooltipText && (
-        <GlassView style={styles.tooltip} intensity="high">
+        <GlassView style={[styles.tooltip, getTooltipPositionStyle()]} intensity="high">
           <Text style={styles.tooltipText}>{tooltipText}</Text>
         </GlassView>
       )}
@@ -352,6 +374,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.sm,
+  },
+  errorBanner: {
+    position: 'absolute',
+    bottom: '100%',
+    right: 0,
+    marginBottom: spacing.sm,
+    maxWidth: 360,
+    zIndex: 1000,
   },
   panelContainer: {
     height: isTV ? 56 : 48,
@@ -526,8 +556,6 @@ const styles = StyleSheet.create({
   tooltip: {
     position: 'absolute',
     bottom: '100%',
-    left: '50%',
-    transform: [{ translateX: '-50%' }],
     marginBottom: spacing.sm,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,

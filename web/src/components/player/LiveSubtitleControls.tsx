@@ -228,7 +228,7 @@ export default function LiveSubtitleControls({
         splitIcon={<Text style={styles.splitFlag}>{LANG_FLAGS[inputLang] || inputLang.toUpperCase()}</Text>}
         onSplitPress={() => setShowLangPicker(true)}
         splitAccessibilityLabel={t('subtitles.selectInputLanguage', 'Select input language')}
-        splitTooltip={t('subtitles.inputLanguageTooltip', 'Input language (audio source)')}
+        splitTooltip={t('subtitles.inputLanguageTooltip', 'Check Input Language')}
       />
 
       {/* Language Picker Modal */}

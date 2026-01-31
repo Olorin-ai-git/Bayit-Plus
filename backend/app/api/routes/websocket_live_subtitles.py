@@ -80,8 +80,9 @@ async def websocket_live_subtitles(
     - Rate limits connections and audio chunks per user
     - Validates channel and subscription tier
     """
-    # SECURITY: Step 0 - Enforce wss:// in production
-    if settings.olorin.dubbing.require_secure_websocket and not settings.DEBUG:
+    # SECURITY: Step 0 - Enforce wss:// in production (allow ws:// for localhost)
+    is_localhost = websocket.client and websocket.client.host in ("127.0.0.1", "::1", "localhost")
+    if settings.olorin.dubbing.require_secure_websocket and not settings.DEBUG and not is_localhost:
         if websocket.url.scheme != "wss":
             await websocket.close(
                 code=4000,

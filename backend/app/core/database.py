@@ -1,3 +1,4 @@
+import logging
 from typing import List, Type
 
 from beanie import Document, init_beanie
@@ -5,6 +6,8 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from olorin_shared.database import (close_mongodb_connection,
                                     get_mongodb_client, get_mongodb_database,
                                     init_mongodb)
+
+logger = logging.getLogger(__name__)
 
 from app.api.routes.downloads import Download
 from app.api.routes.favorites import Favorite
@@ -280,12 +283,26 @@ async def connect_to_mongo():
     # Note: allow_index_dropping disabled to prevent errors on missing indexes
     # Use dedicated migration scripts (rebuild_all_indexes.py) for index management
     database = get_mongodb_database()
-    await init_beanie(
-        database=database,
-        document_models=document_models,
-        allow_index_dropping=False,
-    )
-    print(f"Connected to MongoDB via olorin-shared: {database.name}")
+    try:
+        await init_beanie(
+            database=database,
+            document_models=document_models,
+            allow_index_dropping=False,
+        )
+    except Exception as e:
+        # Index conflicts (e.g. TTL value changes) crash init_beanie before all
+        # models are registered, leaving the server in DEGRADED mode. Retry with
+        # skip_indexes=True so all models are still usable for queries.
+        logger.warning(
+            f"init_beanie failed during index creation ({type(e).__name__}: {e}). "
+            "Retrying with skip_indexes=True - resolve index conflicts via migration scripts."
+        )
+        await init_beanie(
+            database=database,
+            document_models=document_models,
+            skip_indexes=True,
+        )
+    logger.info(f"Connected to MongoDB via olorin-shared: {database.name}")
 
 
 async def close_mongo_connection():

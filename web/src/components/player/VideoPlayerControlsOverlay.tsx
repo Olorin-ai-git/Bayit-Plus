@@ -36,6 +36,8 @@ interface VideoPlayerControlsOverlayProps {
   renderChannelChatButton?: () => React.ReactNode
   renderLiveTriviaButton?: () => React.ReactNode
   renderCatchUpButton?: () => React.ReactNode
+  liveFeatureError?: string | null
+  onDismissLiveFeatureError?: () => void
   contentId?: string
 }
 
@@ -65,6 +67,8 @@ export default function VideoPlayerControlsOverlay({
   renderChannelChatButton,
   renderLiveTriviaButton,
   renderCatchUpButton,
+  liveFeatureError,
+  onDismissLiveFeatureError,
   contentId,
 }: VideoPlayerControlsOverlayProps) {
   const { t } = useTranslation()
@@ -147,6 +151,8 @@ export default function VideoPlayerControlsOverlay({
           renderChannelChatButton={renderChannelChatButton}
           renderLiveTriviaButton={renderLiveTriviaButton}
           renderCatchUpButton={renderCatchUpButton}
+          liveFeatureError={liveFeatureError}
+          onDismissLiveFeatureError={onDismissLiveFeatureError}
         />
       </GlassView>
     </View>

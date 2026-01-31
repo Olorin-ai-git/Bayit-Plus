@@ -42,7 +42,7 @@ export class SharedAudioCapture {
    */
   async start(videoElement: HTMLVideoElement): Promise<void> {
     try {
-      console.log('[SharedAudioCapture] Starting audio capture...')
+      logger.debug('Starting audio capture', 'SharedAudioCapture')
 
       // IMPORTANT: captureStream() gets audio DIRECTLY from video element
       // This does NOT use the microphone - it captures the video's audio track
@@ -58,15 +58,14 @@ export class SharedAudioCapture {
 
       // Verify we have audio tracks from the video
       const audioTracks = stream.getAudioTracks()
-      console.log(`[SharedAudioCapture] Video stream captured with ${audioTracks.length} audio track(s)`)
+      logger.debug(`Video stream captured with ${audioTracks.length} audio track(s)`, 'SharedAudioCapture')
 
       if (audioTracks.length === 0) {
         throw new Error('No audio tracks available from video element')
       }
 
-      // Log audio track details for debugging
-      audioTracks.forEach((track, i) => {
-        console.log(`[SharedAudioCapture] Track ${i}: ${track.label || 'unnamed'}, enabled=${track.enabled}, muted=${track.muted}`)
+      audioTracks.forEach((track: MediaStreamTrack, i: number) => {
+        logger.debug(`Track ${i}: ${track.label || 'unnamed'}, enabled=${track.enabled}, muted=${track.muted}`, 'SharedAudioCapture')
       })
 
       this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream)
@@ -74,7 +73,7 @@ export class SharedAudioCapture {
       // Use buffer size for latency control
       // 2048 samples at 16kHz = 128ms per chunk
       this.processor = this.audioContext.createScriptProcessor(this.bufferSize, 1, 1)
-      console.log(`[SharedAudioCapture] Audio processor created (buffer size: ${this.bufferSize})`)
+      logger.debug(`Audio processor created (buffer size: ${this.bufferSize})`, 'SharedAudioCapture')
 
       let silentChunks = 0
 
@@ -90,7 +89,7 @@ export class SharedAudioCapture {
         if (maxAmplitude < 0.001) {
           silentChunks++
           if (silentChunks === 100) {
-            console.warn('[SharedAudioCapture] 100 consecutive silent chunks detected')
+            logger.warn('100 consecutive silent chunks detected', 'SharedAudioCapture')
           }
         } else {
           silentChunks = 0
@@ -110,18 +109,17 @@ export class SharedAudioCapture {
         // Log every N chunks with audio level info
         if (this.chunkCount % this.chunkLogInterval === 0) {
           const dbLevel = maxAmplitude > 0 ? 20 * Math.log10(maxAmplitude) : -100
-          console.log(`[SharedAudioCapture] Sent ${this.chunkCount} chunks, level: ${dbLevel.toFixed(1)}dB`)
+          logger.debug(`Sent ${this.chunkCount} chunks, level: ${dbLevel.toFixed(1)}dB`, 'SharedAudioCapture')
         }
       }
 
       this.mediaStreamSource.connect(this.processor)
       this.processor.connect(this.audioContext.destination)
-      console.log('[SharedAudioCapture] Audio capture started - capturing DIRECTLY from video')
+      logger.debug('Audio capture started - capturing DIRECTLY from video', 'SharedAudioCapture')
     } catch (error) {
-      console.error('[SharedAudioCapture] Audio capture error:', error)
+      logger.error('Audio capture error', 'SharedAudioCapture', error)
       const message = error instanceof Error ? error.message : 'Audio capture failed'
       this.callbacks.onError(message)
-      throw error
     }
   }
 
@@ -140,9 +138,9 @@ export class SharedAudioCapture {
         this.mediaStreamSource = null
       }
 
-      console.log('[SharedAudioCapture] Audio capture stopped')
+      logger.debug('Audio capture stopped', 'SharedAudioCapture')
     } catch (error) {
-      console.error('[SharedAudioCapture] Error stopping audio capture:', error)
+      logger.error('Error stopping audio capture', 'SharedAudioCapture', error)
     }
   }
 

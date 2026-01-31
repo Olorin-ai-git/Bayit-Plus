@@ -39,6 +39,8 @@ interface RightControlsProps {
   renderChannelChatButton?: () => React.ReactNode
   renderLiveTriviaButton?: () => React.ReactNode
   renderCatchUpButton?: () => React.ReactNode
+  liveFeatureError?: string | null
+  onDismissLiveFeatureError?: () => void
 }
 
 export default function RightControls({
@@ -66,6 +68,8 @@ export default function RightControls({
   renderChannelChatButton,
   renderLiveTriviaButton,
   renderCatchUpButton,
+  liveFeatureError,
+  onDismissLiveFeatureError,
 }: RightControlsProps) {
   const { t } = useTranslation()
   const chaptersFocus = useTVFocus({ styleType: 'button' })
@@ -99,6 +103,8 @@ export default function RightControls({
           renderCatchUpButton={renderCatchUpButton}
           renderChannelChatButton={renderChannelChatButton}
           renderLiveTriviaButton={renderLiveTriviaButton}
+          error={liveFeatureError}
+          onDismissError={onDismissLiveFeatureError}
         />
       </View>
     )

@@ -156,7 +156,7 @@ class LiveDubbingService {
       this.ws = new WebSocket(wsUrl)
 
       this.ws.onopen = async () => {
-        console.log('[LiveDubbing] WebSocket connected, authenticating...')
+        logger.debug('WebSocket connected, authenticating', 'liveDubbingService')
 
         // Send authentication message first (secure - not in URL)
         this.ws?.send(JSON.stringify({
@@ -165,23 +165,25 @@ class LiveDubbingService {
         }))
 
         this.isConnected = true
-        await this.setupAudioPipeline(videoElement, onError)
+
+        const pipelineReady = await this.setupAudioPipeline(videoElement, onError)
+        if (!pipelineReady) {
+          this.disconnect()
+        }
       }
 
       this.ws.onmessage = async (event) => {
         try {
           const msg = JSON.parse(event.data)
-          console.log('[LiveDubbing] Message received:', msg.type)
+          logger.debug(`Message received: ${msg.type}`, 'liveDubbingService')
 
           if (msg.type === 'connected') {
             this.syncDelayMs = msg.sync_delay_ms || AUDIO_CONFIG.defaultSyncDelayMs
-            console.log(
-              `[LiveDubbing] Connected - Session: ${msg.session_id}, Source: ${msg.source_lang}, Target: ${msg.target_lang}, Sync delay: ${this.syncDelayMs}ms`
-            )
+            logger.info(`Connected - Session: ${msg.session_id}, Source: ${msg.source_lang}, Target: ${msg.target_lang}, Sync delay: ${this.syncDelayMs}ms`, 'liveDubbingService')
             onConnected(msg as DubbingConnectionInfo)
           } else if (msg.type === 'dubbed_audio') {
             const audioMsg = msg.data as DubbedAudioMessage
-            console.log(`[LiveDubbing] Dubbed audio #${audioMsg?.sequence}: "${audioMsg?.translated_text?.substring(0, 30)}..."`)
+            logger.debug(`Dubbed audio #${audioMsg?.sequence}: "${audioMsg?.translated_text?.substring(0, 30)}..."`, 'liveDubbingService')
 
             // Only play audio immediately if not in buffered mode
             if (!this.bufferedMode) {
@@ -190,25 +192,25 @@ class LiveDubbingService {
 
             onDubbedAudio(audioMsg)
           } else if (msg.type === 'latency_report') {
-            console.log(`[LiveDubbing] Latency: ${msg.avg_total_ms}ms (STT: ${msg.avg_stt_ms}ms, Trans: ${msg.avg_translation_ms}ms, TTS: ${msg.avg_tts_ms}ms)`)
+            logger.debug(`Latency: ${msg.avg_total_ms}ms (STT: ${msg.avg_stt_ms}ms, Trans: ${msg.avg_translation_ms}ms, TTS: ${msg.avg_tts_ms}ms)`, 'liveDubbingService')
             onLatency(msg as LatencyReport)
           } else if (msg.type === 'error') {
-            console.error('[LiveDubbing] Server error:', msg.error || msg.message)
+            logger.error(`Server error: ${msg.error || msg.message}`, 'liveDubbingService')
             onError(msg.error || msg.message, msg.recoverable ?? true)
           }
         } catch (error) {
-          console.error('[LiveDubbing] WebSocket parse error:', error)
+          logger.error('WebSocket parse error', 'liveDubbingService', error)
         }
       }
 
       this.ws.onerror = (error) => {
-        console.error('[LiveDubbing] WebSocket error:', error)
+        logger.error('WebSocket error', 'liveDubbingService', error)
         onError('Connection error', true)
         this.isConnected = false
       }
 
       this.ws.onclose = (event) => {
-        console.log(`[LiveDubbing] WebSocket closed: ${event.code} - ${event.reason}`)
+        logger.debug(`WebSocket closed: ${event.code} - ${event.reason}`, 'liveDubbingService')
         this.isConnected = false
         this.stopAudioCapture()
       }
@@ -221,13 +223,13 @@ class LiveDubbingService {
    * Set up audio pipeline using ScriptProcessorNode for reliable capture.
    * Uses 16kHz sample rate to match ElevenLabs STT requirements (same as Live Subtitles).
    */
-  private async setupAudioPipeline(videoElement: HTMLVideoElement, onError: ErrorCallback): Promise<void> {
+  private async setupAudioPipeline(videoElement: HTMLVideoElement, onError: ErrorCallback): Promise<boolean> {
     try {
-      console.log('[LiveDubbing] Setting up audio pipeline...')
+      logger.debug('Setting up audio pipeline', 'liveDubbingService')
 
       // Create AudioContext for gain control and dubbed audio playback
       this.audioContext = new AudioContext({ sampleRate: AUDIO_CONFIG.sampleRate })
-      console.log(`[LiveDubbing] AudioContext created at ${AUDIO_CONFIG.sampleRate}Hz`)
+      logger.debug(`AudioContext created at ${AUDIO_CONFIG.sampleRate}Hz`, 'liveDubbingService')
 
       // Create gain nodes for volume mixing (original vs dubbed audio)
       this.originalGain = this.audioContext.createGain()
@@ -241,7 +243,7 @@ class LiveDubbingService {
       this.originalGain.connect(this.audioContext.destination)
       this.dubbedGain.connect(this.audioContext.destination)
 
-      console.log('[LiveDubbing] Gain nodes created and connected')
+      logger.debug('Gain nodes created and connected', 'liveDubbingService')
 
       // Create shared audio capture service (pass existing AudioContext)
       this.audioCapture = new SharedAudioCapture(
@@ -250,15 +252,15 @@ class LiveDubbingService {
         AUDIO_CONFIG.chunkLogInterval,
         {
           onAudioData: (audioBuffer: ArrayBuffer) => {
-            // Send captured audio to WebSocket for STT → Translation
+            // Send captured audio to WebSocket for STT -> Translation
             if (this.ws && this.ws.readyState === WebSocket.OPEN) {
               this.ws.send(audioBuffer)
             } else {
-              console.warn('[LiveDubbing] WebSocket not ready, skipping audio chunk')
+              logger.warn('WebSocket not ready, skipping audio chunk', 'liveDubbingService')
             }
           },
           onError: (message: string) => {
-            console.error('[LiveDubbing] Audio capture error:', message)
+            logger.error(`Audio capture error: ${message}`, 'liveDubbingService')
             onError(message, false)
           },
         }
@@ -267,11 +269,18 @@ class LiveDubbingService {
       // Start capturing audio from video (uses proven Live Subtitles approach)
       await this.audioCapture.start(videoElement)
 
-      console.log('[LiveDubbing] Audio pipeline ready (using SharedAudioCapture)')
+      // Verify audio capture actually started (start() no longer throws on failure)
+      if (!this.audioCapture.isActive()) {
+        logger.warn('Audio capture did not start - pipeline incomplete', 'liveDubbingService')
+        return false
+      }
+
+      logger.debug('Audio pipeline ready (using SharedAudioCapture)', 'liveDubbingService')
+      return true
     } catch (error) {
-      console.error('[LiveDubbing] Audio pipeline setup error:', error)
+      logger.error('Audio pipeline setup error', 'liveDubbingService', error)
       onError(error instanceof Error ? error.message : 'Audio setup failed', false)
-      throw error
+      return false
     }
   }
 

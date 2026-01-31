@@ -46,6 +46,12 @@
       "@olorin/glass-ui/*": [
         "../packages/ui/glass-components/src/*"
       ],
+      "@bayit/i18n": [
+        "../packages/ui/bayit-i18n"
+      ],
+      "@bayit/i18n/native": [
+        "../packages/ui/bayit-i18n/native.ts"
+      ],
       "@bayit/shared": [
         "../shared/components"
       ],
@@ -87,12 +93,6 @@
       ],
       "@bayit/shared-contexts/*": [
         "../shared/contexts/*"
-      ],
-      "@bayit/shared-i18n": [
-        "../packages/ui/shared-i18n/src"
-      ],
-      "@bayit/shared-i18n/*": [
-        "../packages/ui/shared-i18n/src/*"
       ],
       "@bayit/shared-config": [
         "../shared/config"

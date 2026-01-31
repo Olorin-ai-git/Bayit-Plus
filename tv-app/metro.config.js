@@ -20,6 +20,10 @@ function getExtraNodeModules() {
   modules['@olorin/shared-services'] = path.resolve(packagesRoot, 'shared-services/src');
   modules['@olorin/shared-stores'] = path.resolve(packagesRoot, 'shared-stores/src');
 
+  // Add @bayit/i18n package (platform-specific translations)
+  modules['@bayit/i18n'] = path.resolve(packagesRoot, 'bayit-i18n');
+  modules['@bayit/i18n/native'] = path.resolve(packagesRoot, 'bayit-i18n/native.ts');
+
   // Add shared package aliases
   modules['@bayit/shared'] = path.resolve(sharedRoot, 'components');
   modules['@bayit/shared-screens'] = path.resolve(sharedRoot, 'screens');
@@ -27,7 +31,6 @@ function getExtraNodeModules() {
   modules['@bayit/shared-stores'] = path.resolve(sharedRoot, 'stores');
   modules['@bayit/shared-hooks'] = path.resolve(sharedRoot, 'hooks');
   modules['@bayit/shared-contexts'] = path.resolve(sharedRoot, 'contexts');
-  modules['@bayit/shared-i18n'] = path.resolve(sharedRoot, 'i18n');
   modules['@bayit/shared-assets'] = path.resolve(sharedRoot, 'assets');
 
   // Shim Expo packages to React Native alternatives

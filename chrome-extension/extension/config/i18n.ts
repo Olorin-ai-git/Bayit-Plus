@@ -1,12 +1,11 @@
 /**
  * i18n Configuration
  *
- * Initializes @bayit/shared-i18n for Chrome extension
+ * Initializes @bayit/i18n for Chrome extension
  * Supports 10 languages with RTL support for Hebrew
  */
 
-import i18n from '@bayit/shared-i18n';
-import { initWebI18n } from '@bayit/shared-i18n/web';
+import { initBayitI18nWeb } from '@bayit/i18n/web';
 import { logger } from '../lib/logger';
 
 /**
@@ -26,10 +25,15 @@ export async function initializeI18n(): Promise<void> {
     });
 
     // Initialize with web platform configuration
-    await initWebI18n(defaultLang);
+    const i18n = await initBayitI18nWeb();
+
+    // Change to preferred language if different from default
+    if (i18n.language !== defaultLang) {
+      await i18n.changeLanguage(defaultLang);
+    }
 
     // Setup direction listener for RTL support
-    setupDirectionListener();
+    setupDirectionListener(i18n);
 
     logger.info('i18n initialized successfully', {
       language: i18n.language,
@@ -44,8 +48,8 @@ export async function initializeI18n(): Promise<void> {
 /**
  * Setup listener for language changes (RTL support)
  */
-function setupDirectionListener(): void {
-  i18n.on('languageChanged', (lng) => {
+function setupDirectionListener(i18n: any): void {
+  i18n.on('languageChanged', (lng: string) => {
     const dir = ['he', 'ar'].includes(lng) ? 'rtl' : 'ltr';
     document.documentElement.setAttribute('dir', dir);
     document.documentElement.setAttribute('lang', lng);
@@ -53,31 +57,14 @@ function setupDirectionListener(): void {
     logger.debug('Language changed', { language: lng, direction: dir });
 
     // Save to storage
-    chrome.storage.sync.set({ language: lng }).catch((error) => {
+    chrome.storage.sync.set({ language: lng }).catch((error: any) => {
       logger.error('Failed to save language preference', { error: String(error) });
     });
   });
 }
 
-/**
- * Change language programmatically
- */
-export async function changeLanguage(language: string): Promise<void> {
-  try {
-    await i18n.changeLanguage(language);
-    logger.info('Language changed successfully', { language });
-  } catch (error) {
-    logger.error('Failed to change language', { error: String(error) });
-    throw error;
-  }
-}
-
-/**
- * Get current language
- */
-export function getCurrentLanguage(): string {
-  return i18n.language;
-}
+// Note: After initialization, use i18next's useTranslation hook or i18n instance
+// These functions are kept for backward compatibility but require the i18n instance
 
 /**
  * Get available languages

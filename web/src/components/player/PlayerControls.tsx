@@ -34,6 +34,8 @@ interface PlayerControlsProps {
   renderChannelChatButton?: () => React.ReactNode
   renderLiveTriviaButton?: () => React.ReactNode
   renderCatchUpButton?: () => React.ReactNode
+  liveFeatureError?: string | null
+  onDismissLiveFeatureError?: () => void
 }
 
 export default function PlayerControls({
@@ -62,6 +64,8 @@ export default function PlayerControls({
   renderChannelChatButton,
   renderLiveTriviaButton,
   renderCatchUpButton,
+  liveFeatureError,
+  onDismissLiveFeatureError,
 }: PlayerControlsProps) {
   return (
     <View style={styles.controlsRow}>
@@ -97,6 +101,8 @@ export default function PlayerControls({
         renderChannelChatButton={renderChannelChatButton}
         renderLiveTriviaButton={renderLiveTriviaButton}
         renderCatchUpButton={renderCatchUpButton}
+        liveFeatureError={liveFeatureError}
+        onDismissLiveFeatureError={onDismissLiveFeatureError}
       />
     </View>
   )

@@ -1,12 +1,12 @@
 import './global.css';
 import React, { useState, useEffect } from 'react';
-import { StatusBar, LogBox, View, Text, TouchableOpacity } from 'react-native';
+import { StatusBar, LogBox, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { I18nextProvider, useTranslation } from 'react-i18next';
-import i18n, { loadSavedLanguage } from '@bayit/shared-i18n';
+import { initBayitI18nWeb } from '@bayit/i18n/web';
 import { useDirection } from '@bayit/shared-hooks';
 
 // Initialize Sentry error tracking
@@ -399,10 +399,32 @@ const AppContentWithHandlers: React.FC = () => {
 };
 
 function App(): React.JSX.Element {
+  const [i18nReady, setI18nReady] = useState(false);
+  const [i18n, setI18n] = useState<any>(null);
+
   useEffect(() => {
-    // Load saved language preference on app start
-    loadSavedLanguage();
+    // Initialize i18n with async initialization
+    initBayitI18nWeb()
+      .then((i18nInstance) => {
+        setI18n(i18nInstance);
+        setI18nReady(true);
+      })
+      .catch((error) => {
+        console.error('Failed to initialize i18n:', error);
+        // Still set ready to avoid infinite loading
+        setI18nReady(true);
+      });
   }, []);
+
+  // Show loading screen while i18n initializes
+  if (!i18nReady || !i18n) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0d0d1a' }}>
+        <ActivityIndicator size="large" color="#A855F7" />
+        <Text style={{ color: '#fff', marginTop: 16, fontSize: 16 }}>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <I18nextProvider i18n={i18n}>

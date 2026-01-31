@@ -95,10 +95,14 @@ class QuotaChecker:
             return (True, None, usage_stats)
 
         except Exception as e:
-            logger.error(f"Error checking quota for user {user_id}: {str(e)}")
+            error_detail = str(e) or type(e).__name__
+            logger.error(
+                f"Error checking quota for user {user_id}: {type(e).__name__}: {error_detail}",
+                exc_info=True,
+            )
             return (
                 False,
-                f"Error checking quota: {str(e)}",
+                f"Error checking quota: {error_detail}",
                 {},
             )
 

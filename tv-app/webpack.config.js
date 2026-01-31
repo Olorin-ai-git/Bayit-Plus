@@ -137,9 +137,12 @@ module.exports = {
       '@bayit/shared-stores': path.resolve(__dirname, '../shared/stores'),
       '@bayit/shared-hooks': path.resolve(__dirname, '../shared/hooks'),
       '@bayit/shared-contexts': path.resolve(__dirname, '../shared/contexts'),
-      '@bayit/shared-i18n': path.resolve(__dirname, '../shared/i18n'),
       '@bayit/shared-config': path.resolve(__dirname, '../shared/config'),
       '@bayit/shared-utils': path.resolve(__dirname, '../shared/utils'),
+      // i18n packages (new domain split)
+      '@olorin/shared-i18n': path.resolve(__dirname, '../packages/ui/shared-i18n'),
+      '@bayit/i18n': path.resolve(__dirname, '../packages/ui/bayit-i18n'),
+      '@bayit/i18n/web': path.resolve(__dirname, '../packages/ui/bayit-i18n/web.ts'),
     },
     // Allow shared components to resolve node_modules from this directory
     modules: [

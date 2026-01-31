@@ -18,23 +18,7 @@ class RecordingQuotaService:
     async def check_quota(
         self, user_id: str, estimated_size_bytes: int = 0
     ) -> Dict[str, any]:
-        """
-        Check if user has available quota.
-
-        Args:
-            user_id: User ID to check
-            estimated_size_bytes: Estimated recording size
-
-        Returns:
-            Dictionary with quota check results:
-            {
-                "allowed": bool,
-                "reason": str,
-                "available_storage_bytes": int,
-                "concurrent_recordings": int,
-                "max_concurrent_recordings": int
-            }
-        """
+        """Check if user has available quota for recording."""
         try:
             user = await User.get(user_id)
             if not user:
@@ -93,39 +77,8 @@ class RecordingQuotaService:
                 "max_concurrent_recordings": 0,
             }
 
-    async def reserve_quota(self, user_id: str, estimated_size_bytes: int):
-        """
-        Reserve quota for recording (pessimistic reservation).
-
-        Note: Pessimistic quota reservation is not currently implemented.
-        Current implementation uses optimistic concurrency control where quota
-        is checked at recording start and updated at recording completion.
-
-        Pessimistic reservation would be useful if:
-        - Multiple concurrent users are competing for quota
-        - Recording size estimates are accurate enough to justify upfront reservation
-        - We want to prevent quota over-subscription
-
-        Implementation would require:
-        - Reservation tracking in database (reserved_quota field in RecordingQuota)
-        - Timeout mechanism to release stale reservations
-        - Transaction support to ensure atomic reserve/release operations
-
-        Args:
-            user_id: User ID
-            estimated_size_bytes: Estimated recording size
-        """
-        # Not implemented - using optimistic quota control instead
-        pass
-
     async def update_used_quota(self, user_id: str, recording_size_bytes: int):
-        """
-        Update used quota after recording completes.
-
-        Args:
-            user_id: User ID
-            recording_size_bytes: Actual recording size
-        """
+        """Update used quota after recording completes."""
         try:
             user = await User.get(user_id)
             if not user:
@@ -146,13 +99,7 @@ class RecordingQuotaService:
             raise
 
     async def release_quota(self, user_id: str, recording_size_bytes: int):
-        """
-        Release quota when recording deleted.
-
-        Args:
-            user_id: User ID
-            recording_size_bytes: Recording size to release
-        """
+        """Release quota when recording is deleted."""
         try:
             user = await User.get(user_id)
             if not user:
@@ -176,15 +123,7 @@ class RecordingQuotaService:
             raise
 
     async def get_quota_summary(self, user_id: str) -> Dict[str, any]:
-        """
-        Get user's quota usage summary.
-
-        Args:
-            user_id: User ID
-
-        Returns:
-            Dictionary with quota summary
-        """
+        """Get user's quota usage summary."""
         try:
             user = await User.get(user_id)
             if not user:

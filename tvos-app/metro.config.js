@@ -57,7 +57,6 @@ const config = {
       '@bayit/shared-stores': path.resolve(sharedRoot, 'stores'),
       '@bayit/shared-hooks': path.resolve(sharedRoot, 'hooks'),
       '@bayit/shared-contexts': path.resolve(sharedRoot, 'contexts'),
-      '@bayit/shared-i18n': path.resolve(sharedRoot, 'i18n'),
       '@bayit/shared-assets': path.resolve(sharedRoot, 'assets'),
       '@bayit/shared-config': path.resolve(sharedRoot, 'config'),
       '@bayit/shared-utils': path.resolve(sharedRoot, 'utils'),

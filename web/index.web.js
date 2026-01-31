@@ -12,7 +12,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import App from './src/App';
 import '../shared/styles/globals.css';
 import './src/styles/tv.css';
-import '@bayit/shared-i18n';
 
 // Check if this is a TV build (set by webpack at build time)
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;

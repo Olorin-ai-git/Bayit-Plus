@@ -8,7 +8,19 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from beanie import Document
-from pydantic import BaseModel, Field
+from pydantic import Field
+from pymongo import ASCENDING, IndexModel
+
+from app.models.recording_quota import RecordingQuota
+from app.models.recording_subtitle_cue import RecordingSubtitleCue
+
+__all__ = [
+    "RecordingSession",
+    "Recording",
+    "RecordingSchedule",
+    "RecordingSubtitleCue",
+    "RecordingQuota",
+]
 
 
 class RecordingSession(Document):
@@ -134,7 +146,7 @@ class Recording(Document):
         name = "recordings"
         indexes = [
             [("user_id", 1), ("recorded_at", -1)],
-            [("auto_delete_at", 1)],
+            IndexModel([("auto_delete_at", ASCENDING)], expireAfterSeconds=0),
             [("channel_id", 1)],
         ]
 
@@ -181,54 +193,3 @@ class RecordingSchedule(Document):
             [("series_rule_id", 1), ("status", 1)],
             [("user_id", 1), ("epg_entry_id", 1), ("status", 1)],
         ]
-
-
-class RecordingSubtitleCue(Document):
-    """Individual subtitle cues captured during recording"""
-
-    recording_id: str
-    sequence: int
-
-    # Timing (relative to recording start)
-    start_time_seconds: float
-    end_time_seconds: float
-
-    # Content
-    text: str
-    original_text: str
-    source_lang: str
-    target_lang: str
-    confidence: float
-
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-
-    class Settings:
-        name = "recording_subtitle_cues"
-        indexes = [
-            [("recording_id", 1), ("sequence", 1)],
-        ]
-
-
-class RecordingQuota(BaseModel):
-    """User recording quota tracking"""
-
-    total_storage_bytes: int = 5_368_709_120  # 5GB default for premium
-    used_storage_bytes: int = 0
-    max_recording_duration_seconds: int = 14400  # 4 hours default
-    max_concurrent_recordings: int = 1
-
-    @property
-    def available_storage_bytes(self) -> int:
-        """Calculate available storage"""
-        return max(0, self.total_storage_bytes - self.used_storage_bytes)
-
-    @property
-    def storage_usage_percentage(self) -> float:
-        """Calculate storage usage percentage"""
-        if self.total_storage_bytes == 0:
-            return 0.0
-        return (self.used_storage_bytes / self.total_storage_bytes) * 100
-
-    def has_storage_available(self, required_bytes: int = 0) -> bool:
-        """Check if storage is available"""
-        return self.available_storage_bytes >= required_bytes

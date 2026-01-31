@@ -170,7 +170,7 @@ export default function DubbingControls({
             splitIcon={<Text style={styles.splitFlag}>{LANG_FLAGS[inputLang] || inputLang.toUpperCase()}</Text>}
             onSplitPress={() => setShowLangPicker(true)}
             splitAccessibilityLabel={t('dubbing.selectInputLanguage', 'Select input language')}
-            splitTooltip={t('dubbing.inputLanguageTooltip', 'Input language (audio source)')}
+            splitTooltip={t('dubbing.inputLanguageTooltip', 'Check Input Language')}
           />
         </View>
 

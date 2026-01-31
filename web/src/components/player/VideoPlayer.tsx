@@ -18,13 +18,13 @@ import {
   useLiveDubbing,
   useTrivia,
   useLiveTrivia,
-  useChannelChat,
   useCatchUp,
   usePlayerPanels,
   usePlayerControlRenderers,
   useCastSession,
   usePlaybackSession,
 } from './hooks'
+import { useChannelChatStore } from '@/stores/channelChatSlice'
 import { castConfig } from '@/config/castConfig'
 import { useLiveFeatureQuota } from '@/hooks/useLiveFeatureQuota'
 import { useBetaUser } from '@/hooks/useBetaUser'
@@ -194,12 +194,8 @@ export default function VideoPlayer({
     enabled: isLive && !!user,
   })
 
-  // Channel chat for live TV
-  const channelChat = useChannelChat({
-    channelId: isLive ? contentId : undefined,
-    userId: user?.id,
-    enabled: isLive && !!user,
-  })
+  // Channel chat visibility (Zustand store - persisted)
+  const { isChatVisible, toggleChatVisibility } = useChannelChatStore()
 
   // Catchup summaries for live TV (Beta 500 only)
   const catchUp = useCatchUp({
@@ -220,13 +216,12 @@ export default function VideoPlayer({
   const liveFeatureError = useMemo(() => {
     const errors = [
       dubbing.error,
-      channelChat.error,
       catchUp.error,
     ].filter(Boolean)
     const activeError = errors[0] || null
     if (activeError === dismissedError) return null
     return activeError
-  }, [dubbing.error, channelChat.error, catchUp.error, dismissedError])
+  }, [dubbing.error, catchUp.error, dismissedError])
 
   const handleDismissLiveFeatureError = useCallback(() => {
     setDismissedError(liveFeatureError)
@@ -234,11 +229,11 @@ export default function VideoPlayer({
 
   // Reset dismissed error when a new error appears
   useEffect(() => {
-    const currentError = [dubbing.error, channelChat.error, catchUp.error].filter(Boolean)[0] || null
+    const currentError = [dubbing.error, catchUp.error].filter(Boolean)[0] || null
     if (currentError && currentError !== dismissedError) {
       setDismissedError(null)
     }
-  }, [dubbing.error, channelChat.error, catchUp.error])
+  }, [dubbing.error, catchUp.error])
 
   // Clear buffered player callback when dubbing disconnects
   useEffect(() => {
@@ -338,7 +333,11 @@ export default function VideoPlayer({
     cast,
     setIsRecording,
     setRecordingDuration,
-    channelChat: isLive ? channelChat : undefined,
+    channelChat: isLive ? {
+      showChat: isChatVisible,
+      toggleChat: toggleChatVisibility,
+      hasUnreadMessages: false,
+    } : undefined,
     liveTrivia: isLive ? liveTrivia : undefined,
     catchUp: isLive && isBetaUser && !isBetaUserLoading ? {
       showSummary: catchUp.showSummary,
@@ -491,15 +490,10 @@ export default function VideoPlayer({
       />
 
       {/* Channel Live Chat for Live TV */}
-      {isLive && (
+      {isLive && contentId && (
         <ChannelChatPanel
-          channelId={contentId || ''}
-          isVisible={channelChat.showChat}
-          onClose={() => channelChat.toggleChat()}
-          messages={channelChat.messages}
-          onSendMessage={channelChat.sendMessage}
-          isConnected={channelChat.isConnected}
-          user={user}
+          channelId={contentId}
+          isLiveChannel={isLive}
         />
       )}
 

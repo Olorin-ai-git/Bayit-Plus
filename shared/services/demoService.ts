@@ -3,7 +3,6 @@
  * Provides mock implementations of all API services for demo mode.
  * Returns comprehensive demo data with simulated network delay.
  */
-import i18n from '@bayit/shared-i18n';
 import { config } from '../config/appConfig';
 import {
   demoUser,
@@ -297,12 +296,12 @@ export const demoSearchService = {
     const results = demoSearchResults(query);
     return {
       ...results,
-      interpretation: i18n.t('demo.search_interpretation', { query }),
+      interpretation: `Showing results for "${query}"`,
       suggestions: [
-        i18n.t('demo.suggestions.0'),
-        i18n.t('demo.suggestions.1'),
-        i18n.t('demo.suggestions.2'),
-        i18n.t('demo.suggestions.3'),
+        'Popular Movies',
+        'Live TV Channels',
+        'Israeli Radio Stations',
+        'Recent Podcasts',
       ],
     };
   },
@@ -315,11 +314,11 @@ export const demoSearchService = {
     await delay();
     return {
       suggestions: [
-        i18n.t('demo.suggestions.0'),
-        i18n.t('demo.suggestions.1'),
-        i18n.t('demo.suggestions.2'),
-        i18n.t('demo.suggestions.3'),
-        i18n.t('demo.suggestions.4'),
+        'Popular Movies',
+        'Live TV Channels',
+        'Israeli Radio Stations',
+        'Recent Podcasts',
+        'Trending Content',
       ],
     };
   },
@@ -411,13 +410,13 @@ export const demoZmanService = {
       israelTimeStr = `${hours}:${minutes}`;
 
       const days = [
-        i18n.t('demo.days.sunday'),
-        i18n.t('demo.days.monday'),
-        i18n.t('demo.days.tuesday'),
-        i18n.t('demo.days.wednesday'),
-        i18n.t('demo.days.thursday'),
-        i18n.t('demo.days.friday'),
-        i18n.t('demo.days.saturday'),
+        'Sunday',
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
       ];
       dayOfWeek = israelDate.getUTCDay();
       israelDayStr = days[dayOfWeek];
@@ -443,7 +442,7 @@ export const demoZmanService = {
         is_shabbat: dayOfWeek === 6,
         is_erev_shabbat: dayOfWeek === 5,
         countdown: '48:00',
-        countdown_label: i18n.t('demo.until_shabbat'),
+        countdown_label: 'Until Shabbat',
         candle_lighting: '16:45',
         havdalah: '17:50',
         parasha: 'Vaera',
