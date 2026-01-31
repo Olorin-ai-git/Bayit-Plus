@@ -9,6 +9,7 @@ import {
   SubtitleSettings,
   SubtitlePreferences,
   HebrewMode,
+  EnglishMode,
 } from '@/types/subtitle'
 import { subtitlesService, subtitlePreferencesService } from '@/services/api'
 import logger from '@/utils/logger'
@@ -27,6 +28,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
   const [subtitlesEnabled, setSubtitlesEnabled] = useState(false)
   const [currentSubtitleLang, setCurrentSubtitleLang] = useState<string | null>(null)
   const [hebrewMode, setHebrewMode] = useState<HebrewMode>('regular')
+  const [englishMode, setEnglishMode] = useState<EnglishMode>('regular')
   const [availableSubtitles, setAvailableSubtitles] = useState<SubtitleTrack[]>([])
   const [subtitlesLoading, setSubtitlesLoading] = useState(false)
   const [subtitlesError, setSubtitlesError] = useState<Error | null>(null)
@@ -52,6 +54,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
           setSubtitlesEnabled(prefs.enabled)
           setCurrentSubtitleLang(prefs.language)
           setHebrewMode(prefs.hebrew_mode || 'regular')
+          setEnglishMode(prefs.english_mode || 'regular')
           setSubtitleSettings(prefs.settings)
         }
       } catch (error) {
@@ -124,7 +127,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     fetchAvailableSubtitles()
   }, [contentId, isLive])
 
-  // Fetch subtitle cues when language or Hebrew mode changes
+  // Fetch subtitle cues when language or mode changes
   useEffect(() => {
     if (!contentId || !currentSubtitleLang || !subtitlesEnabled) {
       setCurrentCues([])
@@ -136,7 +139,13 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
       setCuesLoading(true)
       setCuesError(null)
       try {
-        const response = await subtitlesService.getCues(contentId, currentSubtitleLang, hebrewMode)
+        // Pass appropriate mode based on language
+        const response = await subtitlesService.getCues(
+          contentId,
+          currentSubtitleLang,
+          currentSubtitleLang === 'he' ? hebrewMode : 'regular',
+          currentSubtitleLang === 'en' ? englishMode : 'regular'
+        )
         setCurrentCues(response.cues || [])
       } catch (error) {
         const errorObj = error instanceof Error ? error : new Error(String(error))
@@ -156,7 +165,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     }
 
     fetchCues()
-  }, [contentId, currentSubtitleLang, hebrewMode, subtitlesEnabled])
+  }, [contentId, currentSubtitleLang, hebrewMode, englishMode, subtitlesEnabled])
 
   // Save subtitle preferences to storage
   useEffect(() => {
@@ -166,6 +175,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
           enabled: subtitlesEnabled,
           language: currentSubtitleLang,
           hebrew_mode: hebrewMode,
+          english_mode: englishMode,
           settings: subtitleSettings,
         }
         await storageHelpers.setJSON(STORAGE_KEYS.SUBTITLE_PREFERENCES, prefs)
@@ -181,7 +191,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
       }
     }
     savePreferences()
-  }, [subtitlesEnabled, currentSubtitleLang, hebrewMode, subtitleSettings])
+  }, [subtitlesEnabled, currentSubtitleLang, hebrewMode, englishMode, subtitleSettings])
 
   // Subtitle handlers
   const handleSubtitleToggle = (enabled: boolean) => {
@@ -253,6 +263,41 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     }
   }
 
+  const handleEnglishModeChange = async (mode: EnglishMode) => {
+    setEnglishMode(mode)
+
+    // Auto-select English and enable subtitles when choosing heblish mode
+    if (mode === 'heblish') {
+      if (currentSubtitleLang !== 'en') {
+        setCurrentSubtitleLang('en')
+        logger.info('Auto-selected English subtitles for Heblish mode', 'useSubtitles', { mode })
+      }
+      if (!subtitlesEnabled) {
+        setSubtitlesEnabled(true)
+        logger.info('Auto-enabled subtitles for Heblish mode', 'useSubtitles', { mode })
+      }
+    }
+
+    // Save to backend if we have a contentId
+    if (contentId) {
+      try {
+        // For heblish, also save English as the language preference
+        if (mode === 'heblish') {
+          await subtitlePreferencesService.setPreference(contentId, 'en', 'regular', mode)
+        } else if (currentSubtitleLang === 'en') {
+          await subtitlePreferencesService.setEnglishMode(contentId, mode)
+        }
+      } catch (error) {
+        logger.error('Failed to save English mode preference', 'useSubtitles', error)
+        addNotification({
+          message: 'Could not save English mode preference',
+          level: 'warning',
+          duration: 3000,
+        })
+      }
+    }
+  }
+
   // Retry handlers
   const retryFetchSubtitles = () => {
     setSubtitlesError(null)
@@ -267,7 +312,12 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
         setCuesLoading(true)
         setCuesError(null)
         try {
-          const response = await subtitlesService.getCues(contentId, currentSubtitleLang, hebrewMode)
+          const response = await subtitlesService.getCues(
+            contentId,
+            currentSubtitleLang,
+            currentSubtitleLang === 'he' ? hebrewMode : 'regular',
+            currentSubtitleLang === 'en' ? englishMode : 'regular'
+          )
           setCurrentCues(response.cues || [])
         } catch (error) {
           const errorObj = error instanceof Error ? error : new Error(String(error))
@@ -286,6 +336,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     subtitlesEnabled,
     currentSubtitleLang,
     hebrewMode,
+    englishMode,
     availableSubtitles,
     subtitlesLoading,
     subtitlesError,
@@ -296,6 +347,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     handleSubtitleToggle,
     handleSubtitleLanguageChange,
     handleHebrewModeChange,
+    handleEnglishModeChange,
     handleSubtitleSettingsChange,
     fetchAvailableSubtitles,
     retryFetchSubtitles,

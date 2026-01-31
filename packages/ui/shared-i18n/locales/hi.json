@@ -4668,7 +4668,38 @@
     "inputLanguageTooltip": "इनपुट भाषा जाँचें",
     "premiumRequired": "प्रीमियम सदस्यता आवश्यक",
     "selectInputLanguage": "इनपुट भाषा चुनें",
-    "translateActive": "लाइव अनुवाद सक्रिय"
+    "translateActive": "लाइव अनुवाद सक्रिय",
+    "hebrewMode": {
+      "title": "हिब्रू प्रदर्शन मोड",
+      "unavailable": "अनुपलब्ध",
+      "regular": {
+        "title": "मानक हिब्रू",
+        "description": "स्वर चिह्नों के बिना मानक हिब्रू पाठ"
+      },
+      "nikud": {
+        "title": "Nikud के साथ हिब्रू",
+        "description": "आसान पढ़ने के लिए स्वर चिह्नों के साथ हिब्रू"
+      },
+      "shoresh": {
+        "title": "Shoresh (मूल शब्द)",
+        "description": "मूल विश्लेषण के साथ हिब्रू शब्द: शब्द [मूल]"
+      }
+    },
+    "englishMode": {
+      "title": "अंग्रेजी प्रदर्शन मोड",
+      "unavailable": "अनुपलब्ध",
+      "generate": "उत्पन्न करें",
+      "firstTimeHint": "Heblish मोड इमर्सिव भाषा सीखने के लिए अंग्रेजी उपशीर्षक में हिब्रू शब्द जोड़ता है। हिब्रू शब्दों को उच्चारण में आसानी के लिए ध्वन्यात्मक रूप से लिप्यंतरित किया गया है।",
+      "regular": {
+        "title": "मानक अंग्रेजी",
+        "description": "मानक अंग्रेजी उपशीर्षक"
+      },
+      "heblish": {
+        "title": "Heblish",
+        "description": "इमर्सिव सीखने के लिए हिब्रू शब्द जोड़ के साथ अंग्रेजी",
+        "unavailableReason": "इस सामग्री के लिए Heblish प्रोसेसिंग उपलब्ध नहीं है"
+      }
+    }
   },
   "support": {
     "title": "सहायता केंद्र",

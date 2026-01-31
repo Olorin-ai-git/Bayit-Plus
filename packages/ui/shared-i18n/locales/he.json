@@ -5727,17 +5727,35 @@
     "hebrewMode": {
       "title": "מצב תצוגת עברית",
       "unavailable": "לא זמין",
+      "generate": "יצירה",
       "regular": {
         "title": "עברית רגילה",
         "description": "טקסט עברי רגיל ללא ניקוד"
       },
       "nikud": {
         "title": "עברית עם ניקוד",
-        "description": "עברית מנוקדת עם סימני תנועה לקריאה קלה יותר"
+        "description": "עברית מנוקדת עם סימני תנועה לקריאה קלה יותר",
+        "unavailableReason": "עיבוד AI לא זמין עבור תוכן זה"
       },
       "shoresh": {
         "title": "שורש (ניתוח שורשים)",
-        "description": "מילים עבריות עם ניתוח שורש: מילה [שורש]"
+        "description": "מילים עבריות עם ניתוח שורש: מילה [שורש]",
+        "unavailableReason": "ניתוח שורשים לא זמין עבור תוכן זה"
+      }
+    },
+    "englishMode": {
+      "title": "מצב תצוגת אנגלית",
+      "unavailable": "לא זמין",
+      "generate": "יצירה",
+      "firstTimeHint": "מצב היבליש מכניס מילים עבריות לכתוביות באנגלית ללמידת שפה סוחפת. דוגמה: \"Hello friends!\" הופך ל-\"Shalom chaverim!\"",
+      "regular": {
+        "title": "אנגלית רגילה",
+        "description": "כתוביות אנגלית סטנדרטיות"
+      },
+      "heblish": {
+        "title": "היבליש",
+        "description": "אנגלית עם הזרקת מילים עבריות ללמידה סוחפת",
+        "unavailableReason": "עיבוד היבליש לא זמין עבור תוכן זה"
       }
     },
     "loading": "טוען כתוביות...",

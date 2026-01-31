@@ -5782,6 +5782,7 @@
     "hebrewMode": {
       "title": "Hebrew Display Mode",
       "unavailable": "Unavailable",
+      "generate": "Generate",
       "regular": {
         "title": "Regular Hebrew",
         "description": "Standard Hebrew text without vowel marks"
@@ -5795,6 +5796,21 @@
         "title": "Shoresh (Root Words)",
         "description": "Hebrew words with root analysis: word [root]",
         "unavailableReason": "Root word analysis not available for this content"
+      }
+    },
+    "englishMode": {
+      "title": "English Display Mode",
+      "unavailable": "Unavailable",
+      "generate": "Generate",
+      "firstTimeHint": "Heblish mode injects Hebrew words into English subtitles for immersive language learning. Example: \"Hello friends!\" becomes \"Shalom chaverim!\"",
+      "regular": {
+        "title": "Regular English",
+        "description": "Standard English subtitles"
+      },
+      "heblish": {
+        "title": "Heblish",
+        "description": "English with Hebrew word injections for immersive learning",
+        "unavailableReason": "Heblish processing not available for this content"
       }
     },
     "loading": "Loading subtitles...",

@@ -5098,7 +5098,38 @@
     "inputLanguageTooltip": "检查输入语言",
     "premiumRequired": "需要高级订阅",
     "selectInputLanguage": "选择输入语言",
-    "translateActive": "实时翻译已激活"
+    "translateActive": "实时翻译已激活",
+    "hebrewMode": {
+      "title": "希伯来语显示模式",
+      "unavailable": "不可用",
+      "regular": {
+        "title": "标准希伯来语",
+        "description": "不带元音符号的标准希伯来语文本"
+      },
+      "nikud": {
+        "title": "带Nikud的希伯来语",
+        "description": "带元音符号的希伯来语，便于阅读"
+      },
+      "shoresh": {
+        "title": "Shoresh（词根）",
+        "description": "带词根分析的希伯来语单词：单词 [词根]"
+      }
+    },
+    "englishMode": {
+      "title": "英语显示模式",
+      "unavailable": "不可用",
+      "generate": "生成",
+      "firstTimeHint": "Heblish模式将希伯来语单词注入英语字幕，实现沉浸式语言学习。希伯来语单词采用音译以便发音。",
+      "regular": {
+        "title": "标准英语",
+        "description": "标准英语字幕"
+      },
+      "heblish": {
+        "title": "Heblish",
+        "description": "带希伯来语单词注入的英语，实现沉浸式学习",
+        "unavailableReason": "此内容暂不支持Heblish处理"
+      }
+    }
   },
   "support": {
     "title": "支持中心",

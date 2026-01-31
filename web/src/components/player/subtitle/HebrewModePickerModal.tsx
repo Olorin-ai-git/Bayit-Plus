@@ -25,6 +25,8 @@ interface JobStatus {
 interface HebrewModePickerModalProps {
   visible: boolean
   currentMode: HebrewMode
+  isLoading?: boolean  // Whether subtitle track info is being loaded
+  hasHebrew?: boolean  // Whether Hebrew subtitles exist at all
   hasNikud: boolean
   hasShoresh: boolean
   contentId?: string
@@ -32,6 +34,7 @@ interface HebrewModePickerModalProps {
   onClose: () => void
   onModeSelect: (mode: HebrewMode) => void
   onGenerationComplete?: () => void
+  adminTabSwitcher?: React.ReactNode  // Optional tab switcher for admin context
 }
 
 interface ModeOption {
@@ -75,6 +78,8 @@ const HEBREW_MODE_FIRST_TIME_KEY = 'hebrew_mode_first_time_seen'
 export default function HebrewModePickerModal({
   visible,
   currentMode,
+  isLoading = false,
+  hasHebrew = true,  // Default true for player context where modal only shows if Hebrew exists
   hasNikud,
   hasShoresh,
   contentId,
@@ -82,6 +87,7 @@ export default function HebrewModePickerModal({
   onClose,
   onModeSelect,
   onGenerationComplete,
+  adminTabSwitcher,
 }: HebrewModePickerModalProps) {
   const { t } = useTranslation()
   const modalRef = useRef<HTMLDivElement>(null)
@@ -287,6 +293,13 @@ export default function HebrewModePickerModal({
         className="bg-gray-900/95 backdrop-blur-xl rounded-2xl p-6 w-[95%] max-w-4xl shadow-2xl animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Admin Tab Switcher (optional) */}
+        {adminTabSwitcher && (
+          <div className="mb-4">
+            {adminTabSwitcher}
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2
@@ -340,12 +353,39 @@ export default function HebrewModePickerModal({
           </div>
         )}
 
+        {/* Loading State */}
+        {isLoading && (
+          <div className="mb-4 flex items-center justify-center gap-3 py-4">
+            <div className="w-5 h-5 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <span className="text-sm text-gray-400">
+              {t('common.loading', 'Loading...')}
+            </span>
+          </div>
+        )}
+
+        {/* No Hebrew Subtitles Warning */}
+        {!isLoading && !hasHebrew && (
+          <div className="mb-4 bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <Icon name="warning" size="md" color="#f59e0b" className="flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-amber-200">
+                  {t('subtitles.hebrewMode.noHebrewSubtitles', 'No Hebrew Subtitles')}
+                </p>
+                <p className="text-sm text-amber-200/70 mt-1">
+                  {t('subtitles.hebrewMode.uploadHebrewFirst', 'Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.')}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Options */}
         <div className="space-y-3">
           {memoizedOptions.map((option) => {
             const isAvailable = isModeAvailable(option.mode)
             const isSelected = option.mode === currentMode
-            const canShowGenerateButton = !isAvailable && option.mode !== 'regular' && isAdmin && contentId
+            const canShowGenerateButton = !isAvailable && option.mode !== 'regular' && isAdmin && contentId && hasHebrew
 
             return (
               <div

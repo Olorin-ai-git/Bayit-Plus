@@ -13,6 +13,7 @@ import {
   SubtitleTrack,
   SubtitleSettings,
   HebrewMode,
+  EnglishMode,
   SUBTITLE_LANGUAGES,
   getLanguageInfo,
 } from '@/types/subtitle'
@@ -22,6 +23,7 @@ import { subtitlesService } from '@/services/api'
 import logger from '@/utils/logger'
 import SubtitleLanguageList from './subtitle/SubtitleLanguageList'
 import HebrewModePickerModal from './subtitle/HebrewModePickerModal'
+import EnglishModePickerModal from './subtitle/EnglishModePickerModal'
 
 interface SubtitleControlsProps {
   contentId: string
@@ -37,6 +39,8 @@ interface SubtitleControlsProps {
   containerRef?: RefObject<HTMLDivElement>
   hebrewMode?: HebrewMode
   onHebrewModeChange?: (mode: HebrewMode) => void
+  englishMode?: EnglishMode
+  onEnglishModeChange?: (mode: EnglishMode) => void
 }
 
 export default function SubtitleControls({
@@ -53,15 +57,19 @@ export default function SubtitleControls({
   containerRef,
   hebrewMode = 'regular',
   onHebrewModeChange,
+  englishMode = 'regular',
+  onEnglishModeChange,
 }: SubtitleControlsProps) {
   const { t } = useTranslation()
   const [showLanguageMenu, setShowLanguageMenu] = useState(false)
   const [showSettingsPanel, setShowSettingsPanel] = useState(false)
   const [showHebrewModePicker, setShowHebrewModePicker] = useState(false)
+  const [showEnglishModePicker, setShowEnglishModePicker] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
 
   // Guard against multiple modal openings
   const hebrewPickerOpeningRef = useRef(false)
+  const englishPickerOpeningRef = useRef(false)
   const [downloadResult, setDownloadResult] = useState<{
     type: 'success' | 'error' | 'partial'
     message: string
@@ -149,8 +157,9 @@ export default function SubtitleControls({
   // Get current language info
   const currentLangInfo = currentLanguage ? getLanguageInfo(currentLanguage) : null
 
-  // Find Hebrew track for modal props
+  // Find Hebrew and English tracks for modal props
   const hebrewTrack = availableLanguages.find((t) => t.language === 'he')
+  const englishTrack = availableLanguages.find((t) => t.language === 'en')
 
   // Handler to open Hebrew mode picker with guard against multiple opens
   const handleOpenHebrewModePicker = useCallback(() => {
@@ -162,6 +171,17 @@ export default function SubtitleControls({
       hebrewPickerOpeningRef.current = false
     }, 100)
   }, [showHebrewModePicker])
+
+  // Handler to open English mode picker with guard against multiple opens
+  const handleOpenEnglishModePicker = useCallback(() => {
+    if (englishPickerOpeningRef.current || showEnglishModePicker) return
+    englishPickerOpeningRef.current = true
+    setShowEnglishModePicker(true)
+    // Reset guard after a short delay
+    setTimeout(() => {
+      englishPickerOpeningRef.current = false
+    }, 100)
+  }, [showEnglishModePicker])
 
   // Render menu in a portal at document.body level to avoid z-index issues
   const renderMenu = () => {
@@ -241,7 +261,7 @@ export default function SubtitleControls({
           )}
 
           <ScrollView style={styles.menuContent}>
-            {/* Language list with Hebrew mode split button support */}
+            {/* Language list with Hebrew and English mode split button support */}
             <SubtitleLanguageList
               availableLanguages={availableLanguages}
               currentLanguage={currentLanguage}
@@ -255,8 +275,11 @@ export default function SubtitleControls({
               }}
               hebrewMode={hebrewMode}
               onHebrewModeChange={onHebrewModeChange}
+              englishMode={englishMode}
+              onEnglishModeChange={onEnglishModeChange}
               onSubtitlesRefresh={onSubtitlesRefresh}
               onOpenHebrewModePicker={handleOpenHebrewModePicker}
+              onOpenEnglishModePicker={handleOpenEnglishModePicker}
             />
 
             {/* Divider */}
@@ -369,6 +392,25 @@ export default function SubtitleControls({
           onModeSelect={(mode) => {
             onHebrewModeChange?.(mode)
             setShowHebrewModePicker(false)
+          }}
+          onGenerationComplete={() => {
+            onSubtitlesRefresh?.()
+          }}
+        />
+      )}
+
+      {/* English Mode Picker Modal */}
+      {showEnglishModePicker && (
+        <EnglishModePickerModal
+          visible={showEnglishModePicker}
+          currentMode={englishMode}
+          hasHeblish={englishTrack?.has_heblish_version || false}
+          contentId={contentId}
+          portalContainer={containerRef?.current}
+          onClose={() => setShowEnglishModePicker(false)}
+          onModeSelect={(mode) => {
+            onEnglishModeChange?.(mode)
+            setShowEnglishModePicker(false)
           }}
           onGenerationComplete={() => {
             onSubtitlesRefresh?.()

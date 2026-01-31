@@ -4780,6 +4780,21 @@
         "description": "Parole ebraiche con analisi della radice: parola [radice]"
       }
     },
+    "englishMode": {
+      "title": "Modalità di visualizzazione inglese",
+      "unavailable": "Non disponibile",
+      "generate": "Genera",
+      "firstTimeHint": "La modalità Heblish inserisce parole ebraiche nei sottotitoli inglesi per un apprendimento linguistico immersivo. Le parole ebraiche sono traslitterate foneticamente per facilità di pronuncia.",
+      "regular": {
+        "title": "Inglese standard",
+        "description": "Sottotitoli in inglese standard"
+      },
+      "heblish": {
+        "title": "Heblish",
+        "description": "Inglese con inserimenti di parole ebraiche per apprendimento immersivo",
+        "unavailableReason": "L'elaborazione Heblish non è disponibile per questo contenuto"
+      }
+    },
     "loading": "Caricamento sottotitoli...",
     "error": {
       "title": "Errore Sottotitoli",

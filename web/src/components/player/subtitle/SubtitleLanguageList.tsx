@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { Icon } from '@olorin/shared-icons/web'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
-import { SubtitleTrack, getLanguageInfo, HebrewMode } from '@/types/subtitle'
+import { SubtitleTrack, getLanguageInfo, HebrewMode, EnglishMode } from '@/types/subtitle'
 
 const isTV = Platform.isTV || Platform.OS === 'tvos'
 const isIOS = Platform.OS === 'ios'
@@ -21,14 +21,17 @@ const SubtitleLanguageListPropsSchema = z.object({
   availableLanguages: z.array(z.any()),
   currentLanguage: z.string().nullable(),
   hebrewMode: z.enum(['regular', 'nikud', 'shoresh']).optional(),
+  englishMode: z.enum(['regular', 'heblish']).optional(),
   enabled: z.boolean(),
   isLoading: z.boolean(),
   contentId: z.string().optional(),
   onLanguageSelect: z.function().args(z.string()).returns(z.void()),
   onHebrewModeChange: z.function().args(z.enum(['regular', 'nikud', 'shoresh'])).returns(z.void()).optional(),
+  onEnglishModeChange: z.function().args(z.enum(['regular', 'heblish'])).returns(z.void()).optional(),
   onDisable: z.function().args().returns(z.void()),
   onSubtitlesRefresh: z.function().args().returns(z.void()).optional(),
   onOpenHebrewModePicker: z.function().args().returns(z.void()).optional(),
+  onOpenEnglishModePicker: z.function().args().returns(z.void()).optional(),
 })
 
 export type SubtitleLanguageListProps = z.infer<typeof SubtitleLanguageListPropsSchema>
@@ -37,14 +40,17 @@ export default function SubtitleLanguageList({
   availableLanguages,
   currentLanguage,
   hebrewMode = 'regular',
+  englishMode = 'regular',
   enabled,
   isLoading,
   contentId,
   onLanguageSelect,
   onHebrewModeChange,
+  onEnglishModeChange,
   onDisable,
   onSubtitlesRefresh,
   onOpenHebrewModePicker,
+  onOpenEnglishModePicker,
 }: SubtitleLanguageListProps) {
   const { t } = useTranslation()
 
@@ -54,14 +60,17 @@ export default function SubtitleLanguageList({
       availableLanguages,
       currentLanguage,
       hebrewMode,
+      englishMode,
       enabled,
       isLoading,
       contentId,
       onLanguageSelect,
       onHebrewModeChange,
+      onEnglishModeChange,
       onDisable,
       onSubtitlesRefresh,
       onOpenHebrewModePicker,
+      onOpenEnglishModePicker,
     })
   }
 
@@ -70,6 +79,14 @@ export default function SubtitleLanguageList({
       regular: { isIconName: true, value: 'settings' },
       nikud: { isIconName: false, value: 'א׳' },
       shoresh: { isIconName: true, value: 'stories' },
+    }
+    return icons[mode]
+  }
+
+  const getEnglishModeIcon = (mode: EnglishMode) => {
+    const icons: Record<EnglishMode, { isIconName: boolean; value: string }> = {
+      regular: { isIconName: true, value: 'settings' },
+      heblish: { isIconName: true, value: 'translate' },
     }
     return icons[mode]
   }
@@ -240,7 +257,98 @@ export default function SubtitleLanguageList({
             )
           }
 
-          // Regular language button (non-Hebrew)
+          // English track with split button for mode selection
+          const isEnglish = track.language === 'en'
+          if (isEnglish && onEnglishModeChange) {
+            return (
+              <View key={track.id} style={styles.splitButtonContainer}>
+                {/* Main language button (left side) */}
+                <Pressable
+                  onPress={handleLanguagePress(track.language)}
+                  onClick={stopPropagation}
+                  onMouseDown={stopPropagation}
+                  tvParallaxProperties={{
+                    enabled: true,
+                    magnification: 1.05,
+                    pressMagnification: 0.95,
+                  }}
+                  accessible={true}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${track.language_name} ${t('subtitles.subtitles', 'subtitles')}`}
+                  accessibilityHint={isActive ? t('subtitles.currentLanguage', 'Currently selected') : t('subtitles.selectLanguage', 'Double tap to select')}
+                  accessibilityState={{ selected: isActive }}
+                  style={({ pressed, focused }) => [
+                    styles.option,
+                    styles.splitButtonLeft,
+                    isActive ? styles.optionActive : styles.optionInactive,
+                    focused && isTV && styles.tvFocused,
+                    { opacity: pressed ? 0.7 : 1 },
+                  ]}
+                >
+                  <View style={[styles.flagBadge, isActive && styles.flagBadgeActive]}>
+                    {langInfo?.flag ? (
+                      <Text style={styles.flagText}>{langInfo.flag}</Text>
+                    ) : (
+                      <Icon name="globe" size="lg" color="#FFFFFF" />
+                    )}
+                  </View>
+                  <View style={styles.languageInfo}>
+                    <Text
+                      style={[styles.languageName, isActive ? styles.textActive : styles.textInactive]}
+                      allowFontScaling={isIOS}
+                      maxFontSizeMultiplier={isIOS ? 1.5 : undefined}
+                    >
+                      {track.language_name}
+                    </Text>
+                  </View>
+                  {isActive && <View style={styles.activeIndicator} />}
+                </Pressable>
+
+                {/* Mode picker button (right side) - using native button for web */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                    onOpenEnglishModePicker?.()
+                  }}
+                  aria-label={`${t('subtitles.englishMode.title', 'English mode')}: ${t(`subtitles.englishMode.${englishMode}.title`, englishMode)}`}
+                  style={{
+                    minWidth: 44,
+                    minHeight: 44,
+                    width: 52,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: isActive ? colors.primaryLight : colors.glassBorderWhite,
+                    backgroundColor: isActive ? colors.glassPurpleLight : colors.glass,
+                    gap: 2,
+                    cursor: 'pointer',
+                  }}
+                >
+                  {(() => {
+                    const modeIcon = getEnglishModeIcon(englishMode)
+                    return modeIcon.isIconName ? (
+                      <Icon name={modeIcon.value} size="md" color="#FFFFFF" />
+                    ) : (
+                      <Text style={styles.modeIcon}>{modeIcon.value}</Text>
+                    )
+                  })()}
+                  <Icon name="chevronDown" size="sm" color={colors.textSecondary} />
+                </button>
+              </View>
+            )
+          }
+
+          // Regular language button (non-Hebrew, non-English)
           return (
             <Pressable
               key={track.id}

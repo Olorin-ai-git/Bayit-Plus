@@ -1,10 +1,14 @@
-import { useState, useMemo } from 'react'
-import { View, StyleSheet, ScrollView } from 'react-native'
+import { useState, useMemo, useCallback } from 'react'
+import { View, StyleSheet, ScrollView, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RefreshCw, Search, Filter, Merge } from 'lucide-react'
 import MergeWizard from '@/components/admin/content/MergeWizard'
-import HebrewSubtitleActionsModal from '@/components/admin/content/HebrewSubtitleActionsModal'
+import HebrewModePickerModal from '@/components/player/subtitle/HebrewModePickerModal'
+import EnglishModePickerModal from '@/components/player/subtitle/EnglishModePickerModal'
 import { adminContentService } from '@/services/adminApi'
+import { subtitlesService } from '@/services/api'
+import type { HebrewMode, EnglishMode } from '@/types/subtitle'
+import { colors, fontSize } from '@olorin/design-tokens'
 import {
   GlassInput,
   GlassButton,
@@ -62,7 +66,17 @@ export default function ContentLibraryPage() {
   const [showMergeModal, setShowMergeModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null)
-  const [hebrewAIContent, setHebrewAIContent] = useState<{ id: string; title: string } | null>(null)
+  const [subtitleAIContent, setSubtitleAIContent] = useState<{
+    id: string
+    title: string
+    isLoading: boolean
+    hasHebrew: boolean
+    hasNikud: boolean
+    hasShoresh: boolean
+    hasEnglish: boolean
+    hasHeblish: boolean
+  } | null>(null)
+  const [subtitleAITab, setSubtitleAITab] = useState<'hebrew' | 'english'>('hebrew')
 
   const handleSearch = (query: string) => {
     setSearchQuery(query)
@@ -126,13 +140,58 @@ export default function ContentLibraryPage() {
     }
   }
 
-  const handleHebrewAI = (id: string, title: string) => {
-    setHebrewAIContent({ id, title })
-    logger.info('Opening Hebrew AI modal', 'ContentLibraryPage', { id, title })
-  }
+  const handleSubtitleAI = useCallback((id: string, title: string) => {
+    logger.info('Opening Subtitle AI modal', 'ContentLibraryPage', { id, title })
+
+    // Open modal immediately with loading state
+    setSubtitleAIContent({
+      id,
+      title,
+      isLoading: true,
+      hasHebrew: false,
+      hasNikud: false,
+      hasShoresh: false,
+      hasEnglish: false,
+      hasHeblish: false,
+    })
+
+    // Fetch subtitle tracks in background
+    subtitlesService.getTracks(id)
+      .then(response => {
+        const hebrewTrack = response.tracks.find((track: { language: string }) => track.language === 'he')
+        const englishTrack = response.tracks.find((track: { language: string }) => track.language === 'en')
+        setSubtitleAIContent(prev => prev?.id === id ? {
+          ...prev,
+          isLoading: false,
+          hasHebrew: !!hebrewTrack,
+          hasNikud: hebrewTrack?.has_nikud_version || false,
+          hasShoresh: hebrewTrack?.has_shoresh_version || false,
+          hasEnglish: !!englishTrack,
+          hasHeblish: englishTrack?.has_heblish_version || false,
+        } : prev)
+        // Auto-select tab based on available tracks
+        if (!hebrewTrack && englishTrack) {
+          setSubtitleAITab('english')
+        } else {
+          setSubtitleAITab('hebrew')
+        }
+      })
+      .catch(err => {
+        logger.error('Failed to fetch subtitle tracks', 'ContentLibraryPage', { id, error: err })
+        setSubtitleAIContent(prev => prev?.id === id ? {
+          ...prev,
+          isLoading: false,
+          hasHebrew: false,
+          hasNikud: false,
+          hasShoresh: false,
+          hasEnglish: false,
+          hasHeblish: false,
+        } : prev)
+      })
+  }, [])
 
   const columns = useMemo(
-    () => getContentTableColumns(t, handleToggleFeatured, handleDeleteContent, handleHebrewAI, handleToggleBeta),
+    () => getContentTableColumns(t, handleToggleFeatured, handleDeleteContent, handleSubtitleAI, handleToggleBeta),
     [t]
   )
 
@@ -297,16 +356,116 @@ export default function ContentLibraryPage() {
         onClose={cancelSingleDelete}
       />
 
-      {/* Hebrew AI Actions Modal */}
-      {hebrewAIContent && (
-        <HebrewSubtitleActionsModal
-          visible={!!hebrewAIContent}
-          contentId={hebrewAIContent.id}
-          contentTitle={hebrewAIContent.title}
-          onClose={() => setHebrewAIContent(null)}
-          onGenerated={() => {
-            logger.info('Hebrew AI features generated', 'ContentLibraryPage', { contentId: hebrewAIContent.id })
+      {/* Subtitle AI Modal - Hebrew Mode */}
+      {subtitleAIContent && subtitleAITab === 'hebrew' && (
+        <HebrewModePickerModal
+          visible={!!subtitleAIContent}
+          currentMode="regular"
+          isLoading={subtitleAIContent.isLoading}
+          hasHebrew={subtitleAIContent.hasHebrew}
+          hasNikud={subtitleAIContent.hasNikud}
+          hasShoresh={subtitleAIContent.hasShoresh}
+          contentId={subtitleAIContent.id}
+          onClose={() => setSubtitleAIContent(null)}
+          onModeSelect={() => {
+            // Mode selection is not used in admin context
           }}
+          onGenerationComplete={async () => {
+            logger.info('Hebrew AI features generated', 'ContentLibraryPage', { contentId: subtitleAIContent.id })
+            // Refresh subtitle track info
+            try {
+              const response = await subtitlesService.getTracks(subtitleAIContent.id)
+              const hebrewTrack = response.tracks.find((track: { language: string }) => track.language === 'he')
+              const englishTrack = response.tracks.find((track: { language: string }) => track.language === 'en')
+              setSubtitleAIContent(prev => prev ? {
+                ...prev,
+                isLoading: false,
+                hasHebrew: !!hebrewTrack,
+                hasNikud: hebrewTrack?.has_nikud_version || false,
+                hasShoresh: hebrewTrack?.has_shoresh_version || false,
+                hasEnglish: !!englishTrack,
+                hasHeblish: englishTrack?.has_heblish_version || false,
+              } : null)
+            } catch (err) {
+              logger.error('Failed to refresh subtitle tracks', 'ContentLibraryPage', { error: err })
+            }
+          }}
+          adminTabSwitcher={
+            <View style={styles.tabContainer}>
+              <Pressable
+                style={[styles.tab, styles.tabActive]}
+                onPress={() => {}}
+              >
+                <Text style={[styles.tabText, styles.tabTextActive]}>
+                  {t('subtitles.hebrewMode.title', 'Hebrew')}
+                </Text>
+              </Pressable>
+              <Pressable
+                style={styles.tab}
+                onPress={() => setSubtitleAITab('english')}
+              >
+                <Text style={styles.tabText}>
+                  {t('subtitles.englishMode.title', 'English')}
+                </Text>
+              </Pressable>
+            </View>
+          }
+        />
+      )}
+
+      {/* Subtitle AI Modal - English Mode */}
+      {subtitleAIContent && subtitleAITab === 'english' && (
+        <EnglishModePickerModal
+          visible={!!subtitleAIContent}
+          currentMode="regular"
+          isLoading={subtitleAIContent.isLoading}
+          hasEnglish={subtitleAIContent.hasEnglish}
+          hasHeblish={subtitleAIContent.hasHeblish}
+          contentId={subtitleAIContent.id}
+          onClose={() => setSubtitleAIContent(null)}
+          onModeSelect={() => {
+            // Mode selection is not used in admin context
+          }}
+          onGenerationComplete={async () => {
+            logger.info('English AI features generated', 'ContentLibraryPage', { contentId: subtitleAIContent.id })
+            // Refresh subtitle track info
+            try {
+              const response = await subtitlesService.getTracks(subtitleAIContent.id)
+              const hebrewTrack = response.tracks.find((track: { language: string }) => track.language === 'he')
+              const englishTrack = response.tracks.find((track: { language: string }) => track.language === 'en')
+              setSubtitleAIContent(prev => prev ? {
+                ...prev,
+                isLoading: false,
+                hasHebrew: !!hebrewTrack,
+                hasNikud: hebrewTrack?.has_nikud_version || false,
+                hasShoresh: hebrewTrack?.has_shoresh_version || false,
+                hasEnglish: !!englishTrack,
+                hasHeblish: englishTrack?.has_heblish_version || false,
+              } : null)
+            } catch (err) {
+              logger.error('Failed to refresh subtitle tracks', 'ContentLibraryPage', { error: err })
+            }
+          }}
+          adminTabSwitcher={
+            <View style={styles.tabContainer}>
+              <Pressable
+                style={styles.tab}
+                onPress={() => setSubtitleAITab('hebrew')}
+              >
+                <Text style={styles.tabText}>
+                  {t('subtitles.hebrewMode.title', 'Hebrew')}
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[styles.tab, styles.tabActive]}
+                onPress={() => {}}
+              >
+                <Text style={[styles.tabText, styles.tabTextActive]}>
+                  {t('subtitles.englishMode.title', 'English')}
+                </Text>
+              </Pressable>
+            </View>
+          }
         />
       )}
     </>
@@ -328,5 +487,28 @@ const styles = StyleSheet.create({
   },
   searchWrapper: {
     flex: 1,
+  },
+  tabContainer: {
+    flexDirection: 'row',
+    marginBottom: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  tab: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    borderBottomWidth: 2,
+    borderBottomColor: 'transparent',
+  },
+  tabActive: {
+    borderBottomColor: colors.primary.DEFAULT,
+  },
+  tabText: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+  },
+  tabTextActive: {
+    color: colors.primary.DEFAULT,
+    fontWeight: '600',
   },
 })

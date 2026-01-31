@@ -25,12 +25,15 @@ interface JobStatus {
 interface EnglishModePickerModalProps {
   visible: boolean
   currentMode: EnglishMode
+  isLoading?: boolean  // Whether subtitle track info is being loaded
+  hasEnglish?: boolean // Whether English subtitles exist at all
   hasHeblish: boolean
   contentId?: string
   portalContainer?: HTMLElement | null
   onClose: () => void
   onModeSelect: (mode: EnglishMode) => void
   onGenerationComplete?: () => void
+  adminTabSwitcher?: React.ReactNode  // Optional tab switcher for admin context
 }
 
 interface ModeOption {
@@ -66,12 +69,15 @@ const ENGLISH_MODE_FIRST_TIME_KEY = 'english_mode_first_time_seen'
 export default function EnglishModePickerModal({
   visible,
   currentMode,
+  isLoading = false,
+  hasEnglish = true,
   hasHeblish,
   contentId,
   portalContainer,
   onClose,
   onModeSelect,
   onGenerationComplete,
+  adminTabSwitcher,
 }: EnglishModePickerModalProps) {
   const { t } = useTranslation()
   const modalRef = useRef<HTMLDivElement>(null)
@@ -264,6 +270,32 @@ export default function EnglishModePickerModal({
         className="bg-gray-900/95 backdrop-blur-xl rounded-2xl p-6 w-[95%] max-w-4xl shadow-2xl animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Admin Tab Switcher (optional) */}
+        {adminTabSwitcher && (
+          <div className="mb-4">
+            {adminTabSwitcher}
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500" />
+          </div>
+        )}
+
+        {/* No English Subtitles Warning */}
+        {!isLoading && !hasEnglish && (
+          <div className="mb-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+            <div className="flex items-start gap-2">
+              <Icon name="warning" size="md" color="#eab308" className="flex-shrink-0" />
+              <p className="text-sm text-yellow-200">
+                {t('subtitles.noEnglishSubtitles', 'No English subtitles available for this content.')}
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2

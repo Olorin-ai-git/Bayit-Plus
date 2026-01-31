@@ -5609,17 +5609,35 @@
     "hebrewMode": {
       "title": "Modo de visualización hebrea",
       "unavailable": "No disponible",
+      "generate": "Generar",
       "regular": {
         "title": "Hebreo regular",
         "description": "Texto hebreo estándar sin marcas de vocales"
       },
       "nikud": {
         "title": "Hebreo con Nikud",
-        "description": "Hebreo vocalizado con marcas de vocales para facilitar la lectura"
+        "description": "Hebreo vocalizado con marcas de vocales para facilitar la lectura",
+        "unavailableReason": "Procesamiento de IA no disponible para este contenido"
       },
       "shoresh": {
         "title": "Shoresh (Raíces)",
-        "description": "Palabras hebreas con análisis de raíz: palabra [raíz]"
+        "description": "Palabras hebreas con análisis de raíz: palabra [raíz]",
+        "unavailableReason": "Análisis de raíces no disponible para este contenido"
+      }
+    },
+    "englishMode": {
+      "title": "Modo de visualización inglesa",
+      "unavailable": "No disponible",
+      "generate": "Generar",
+      "firstTimeHint": "El modo Heblish inserta palabras hebreas en subtítulos en inglés para un aprendizaje inmersivo. Ejemplo: \"Hello friends!\" se convierte en \"Shalom chaverim!\"",
+      "regular": {
+        "title": "Inglés regular",
+        "description": "Subtítulos en inglés estándar"
+      },
+      "heblish": {
+        "title": "Heblish",
+        "description": "Inglés con inyecciones de palabras hebreas para aprendizaje inmersivo",
+        "unavailableReason": "Procesamiento de Heblish no disponible para este contenido"
       }
     },
     "loading": "Cargando subtítulos...",

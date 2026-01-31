@@ -57,11 +57,11 @@ const getLanguageName = (lang: string): string => {
   return names[lang] || lang
 }
 
-// Custom action creator for Hebrew AI features
-const createHebrewAIAction = (
+// Custom action creator for Subtitle AI features (Hebrew & English)
+const createSubtitleAIAction = (
   onClick: () => void,
-  hasHebrew: boolean = false,
-  tooltip: string = 'Hebrew AI'
+  hasSubtitles: boolean = false,
+  tooltip: string = 'Subtitle AI'
 ) => ({
   icon: (
     <GlassTooltip content={tooltip}>
@@ -73,7 +73,7 @@ const createHebrewAIAction = (
           backgroundColor: 'rgba(139, 92, 246, 0.15)',
         }}
       >
-        <Sparkles size={16} color={hasHebrew ? colors.primary.DEFAULT : colors.textSecondary} />
+        <Sparkles size={16} color={hasSubtitles ? colors.primary.DEFAULT : colors.textSecondary} />
       </Pressable>
     </GlassTooltip>
   ),
@@ -272,12 +272,14 @@ export function getContentTableColumns(
             isBeta ? t('admin.content.removeFromBeta', 'Remove from Beta') : t('admin.content.markAsBeta', 'Add to Beta')
           ))
         }
-        // Add Hebrew AI action if handler is provided
+        // Add Subtitle AI action if handler is provided (Hebrew & English)
         if (onHebrewAI) {
-          actions.splice(onToggleBeta ? 2 : 1, 0, createHebrewAIAction(
+          const hasEnglish = content.available_subtitles?.includes('en') || false
+          const hasAnySubtitles = hasHebrew || hasEnglish
+          actions.splice(onToggleBeta ? 2 : 1, 0, createSubtitleAIAction(
             () => onHebrewAI(content.id, content.title),
-            hasHebrew,
-            t('admin.content.hebrewAI', 'Hebrew AI')
+            hasAnySubtitles,
+            t('admin.content.subtitleAI', 'Subtitle AI (Hebrew & English)')
           ))
         }
         return (

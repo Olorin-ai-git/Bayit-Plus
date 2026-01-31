@@ -4717,17 +4717,35 @@
     "hebrewMode": {
       "title": "Mode d'affichage de l'hébreu",
       "unavailable": "Indisponible",
+      "generate": "Générer",
       "regular": {
         "title": "Hébreu standard",
         "description": "Texte hébreu standard sans signes vocaliques"
       },
       "nikud": {
         "title": "Hébreu avec Nikud",
-        "description": "Hébreu vocalisé avec signes vocaliques pour faciliter la lecture"
+        "description": "Hébreu vocalisé avec signes vocaliques pour faciliter la lecture",
+        "unavailableReason": "Traitement IA non disponible pour ce contenu"
       },
       "shoresh": {
         "title": "Shoresh (Racines)",
-        "description": "Mots hébreux avec analyse de racine : mot [racine]"
+        "description": "Mots hébreux avec analyse de racine : mot [racine]",
+        "unavailableReason": "Analyse des racines non disponible pour ce contenu"
+      }
+    },
+    "englishMode": {
+      "title": "Mode d'affichage de l'anglais",
+      "unavailable": "Indisponible",
+      "generate": "Générer",
+      "firstTimeHint": "Le mode Heblish insère des mots hébreux dans les sous-titres anglais pour un apprentissage immersif. Exemple : \"Hello friends!\" devient \"Shalom chaverim!\"",
+      "regular": {
+        "title": "Anglais standard",
+        "description": "Sous-titres anglais standards"
+      },
+      "heblish": {
+        "title": "Heblish",
+        "description": "Anglais avec injections de mots hébreux pour un apprentissage immersif",
+        "unavailableReason": "Traitement Heblish non disponible pour ce contenu"
       }
     },
     "loading": "Chargement des sous-titres...",

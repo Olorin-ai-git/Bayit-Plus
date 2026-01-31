@@ -5172,7 +5172,38 @@
     "inputLanguageTooltip": "入力言語を確認",
     "premiumRequired": "プレミアムサブスクリプションが必要です",
     "selectInputLanguage": "入力言語を選択",
-    "translateActive": "ライブ翻訳が有効です"
+    "translateActive": "ライブ翻訳が有効です",
+    "hebrewMode": {
+      "title": "ヘブライ語表示モード",
+      "unavailable": "利用不可",
+      "regular": {
+        "title": "標準ヘブライ語",
+        "description": "母音記号なしの標準ヘブライ語テキスト"
+      },
+      "nikud": {
+        "title": "Nikud付きヘブライ語",
+        "description": "読みやすくするための母音記号付きヘブライ語"
+      },
+      "shoresh": {
+        "title": "Shoresh（語根）",
+        "description": "語根分析付きヘブライ語単語：単語 [語根]"
+      }
+    },
+    "englishMode": {
+      "title": "英語表示モード",
+      "unavailable": "利用不可",
+      "generate": "生成",
+      "firstTimeHint": "Heblishモードは没入型言語学習のために英語字幕にヘブライ語の単語を注入します。ヘブライ語の単語は発音しやすいように音訳されています。",
+      "regular": {
+        "title": "標準英語",
+        "description": "標準英語字幕"
+      },
+      "heblish": {
+        "title": "Heblish",
+        "description": "没入型学習のためのヘブライ語単語注入付き英語",
+        "unavailableReason": "このコンテンツではHeblish処理は利用できません"
+      }
+    }
   },
   "support": {
     "title": "サポート",
