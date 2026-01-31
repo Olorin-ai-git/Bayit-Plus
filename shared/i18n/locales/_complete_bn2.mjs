@@ -1,0 +1,295 @@
+import fs from 'fs';
+
+const bn = JSON.parse(fs.readFileSync('bn.json', 'utf8'));
+
+function deepMerge(target, source) {
+  for (const key of Object.keys(source)) {
+    if (source[key] instanceof Object && key in target && target[key] instanceof Object && !Array.isArray(source[key])) {
+      deepMerge(target[key], source[key]);
+    } else if (!(key in target)) {
+      target[key] = source[key];
+    }
+  }
+  return target;
+}
+
+const translations = {
+  "profile": {
+    "profileDetails": "প্রোফাইল বিবরণ",
+    "notificationSettings": "বিজ্ঞপ্তি সেটিংস",
+    "security": "নিরাপত্তা",
+    "changePassword": "পাসওয়ার্ড পরিবর্তন করুন",
+    "updatePassword": "আপনার পাসওয়ার্ড আপডেট করুন",
+    "connectedDevices": "সংযুক্ত ডিভাইস",
+    "manageDevices": "আপনার অ্যাকাউন্টে সংযুক্ত ডিভাইস পরিচালনা করুন",
+    "twoFactorAuth": "দুই-ফ্যাক্টর প্রমাণীকরণ",
+    "addExtraSecurity": "অতিরিক্ত নিরাপত্তা স্তর যোগ করুন",
+    "address": {
+      "line1": "123 মেইন স্ট্রিট",
+      "line2": "তেল আভিভ, ইসরায়েল 6100000"
+    },
+    "free": "বিনামূল্যে",
+    "premiumPrice": "$7.99/মাস",
+    "familyPrice": "$12.99/মাস",
+    "remaining": "বাকি",
+    "tabs": {
+      "personal": "ব্যক্তিগত",
+      "overview": "সারাংশ",
+      "subscription": "সাবস্ক্রিপশন",
+      "notifications": "বিজ্ঞপ্তি",
+      "security": "নিরাপত্তা",
+      "ai": "AI ও ভয়েস",
+      "voice": "ভয়েস ও অ্যাক্সেসিবিলিটি"
+    },
+    "subscription": {
+      "currentPlan": "বর্তমান প্ল্যান",
+      "renewsOn": "নবায়ন হবে",
+      "manageSubscription": "সাবস্ক্রিপশন পরিচালনা করুন",
+      "cancelSubscription": "সাবস্ক্রিপশন বাতিল করুন",
+      "noActivePlan": "কোনো সক্রিয় সাবস্ক্রিপশন নেই",
+      "selectPlan": "একটি প্ল্যান নির্বাচন করুন"
+    },
+    "notifications": "বিজ্ঞপ্তি",
+    "ai": {
+      "title": "AI ও ব্যক্তিগতকরণ",
+      "description": "AI-চালিত বৈশিষ্ট্য কনফিগার করুন",
+      "assistant": "AI সহায়ক",
+      "assistantDesc": "ব্যক্তিগত সুপারিশ এবং সাহায্য",
+      "chatbot": "AI সহায়ক",
+      "chatbotEnabled": "AI সহায়ক সক্রিয় করুন",
+      "chatbotEnabledDesc": "কন্টেন্ট নেভিগেট করতে সাহায্য পান",
+      "saveHistory": "কথোপকথন ইতিহাস সংরক্ষণ করুন",
+      "saveHistoryDesc": "পূর্ববর্তী কথোপকথন মনে রাখুন",
+      "recommendations": "সুপারিশ",
+      "personalizedRecs": "ব্যক্তিগত সুপারিশ",
+      "personalizedRecsDesc": "ইতিহাসের উপর ভিত্তি করে কন্টেন্ট সাজেশন",
+      "privacy": "গোপনীয়তা ও ডেটা",
+      "privacyDesc": "আপনার ডেটা এনক্রিপ্ট করা এবং সুরক্ষিত",
+      "dataConsent": "ব্যবহার বিশ্লেষণ",
+      "dataConsentDesc": "AI বৈশিষ্ট্য উন্নত করতে সাহায্য করুন",
+      "privacyNote": "আপনার ডেটা এনক্রিপ্ট করা এবং সুরক্ষিত"
+    },
+    "voice": {
+      "title": "ভয়েস নিয়ন্ত্রণ",
+      "description": "হ্যান্ডস-ফ্রি নেভিগেশন",
+      "enabled": "ভয়েস কমান্ড",
+      "enabledDesc": "আপনার কণ্ঠ দিয়ে অ্যাপ নিয়ন্ত্রণ করুন",
+      "tts": "টেক্সট-টু-স্পিচ",
+      "ttsDesc": "AI প্রতিক্রিয়া উচ্চস্বরে পড়া হয়",
+      "wakeWord": "ওয়েক ওয়ার্ড সনাক্তকরণ",
+      "wakeWordDesc": "সক্রিয় করতে \"Bayit\" বলুন",
+      "operationMode": "অপারেশন মোড",
+      "operationModeDesc": "অ্যাপের সাথে কিভাবে ইন্টারঅ্যাক্ট করবেন তা বেছে নিন",
+      "voiceSearch": "ভয়েস সার্চ",
+      "voiceSearchEnabled": "ভয়েস সার্চ সক্রিয় করুন",
+      "voiceSearchEnabledDesc": "আপনার কণ্ঠ ব্যবহার করে কন্টেন্ট খুঁজুন",
+      "constantListening": "সর্বদা শোনার মোড",
+      "constantListeningDesc": "বোতাম না চেপে ক্রমাগত ভয়েস কমান্ড শুনুন",
+      "constantListeningPrivacy": "শুধুমাত্র কথা সনাক্ত হলে অডিও সার্ভারে পাঠানো হয়",
+      "holdButtonMode": "কথা বলতে বোতাম ধরুন",
+      "holdButtonModeDesc": "সর্বদা শোনার পরিবর্তে মাইক্রোফোন বোতাম চেপে ধরুন",
+      "sensitivity": "ভয়েস সনাক্তকরণ সংবেদনশীলতা",
+      "sensitivityDesc": "ভয়েস সনাক্তকরণ কতটা প্রতিক্রিয়াশীল তা সামঞ্জস্য করুন",
+      "sensitivityLow": "কম (কম ভুল ট্রিগার)",
+      "sensitivityMedium": "মাঝারি (সুষম)",
+      "sensitivityHigh": "উচ্চ (সবচেয়ে প্রতিক্রিয়াশীল)",
+      "silenceThreshold": "নীরবতা সনাক্তকরণ",
+      "silenceThresholdDesc": "প্রক্রিয়াকরণের আগে কথা বলার পরে কতক্ষণ অপেক্ষা করতে হবে",
+      "language": "ভয়েস ভাষা",
+      "accessibility": "অ্যাক্সেসিবিলিটি",
+      "autoSubtitle": "স্বয়ংক্রিয় সাবটাইটেল সক্রিয়",
+      "autoSubtitleDesc": "কন্টেন্ট চালানোর সময় স্বয়ংক্রিয়ভাবে সাবটাইটেল দেখান",
+      "highContrast": "উচ্চ কনট্রাস্ট মোড",
+      "highContrastDesc": "ভাল দৃশ্যমানতার জন্য কনট্রাস্ট বাড়ান",
+      "textSize": "টেক্সট আকার",
+      "textSizeSmall": "ছোট",
+      "textSizeMedium": "মাঝারি",
+      "textSizeLarge": "বড়",
+      "voiceOnlyInfo": "শুধুমাত্র ভয়েস মোড",
+      "voiceOnlyDetails": "সক্রিয় করতে \"Hi Bayit\" বলুন। রিমোট কন্ট্রোল নিষ্ক্রিয়। সম্পূর্ণ ভয়েস কমান্ড দিয়ে নেভিগেট করুন।",
+      "hybridInfo": "হাইব্রিড মোড",
+      "hybridDetails": "ভয়েস বা রিমোট কন্ট্রোল ব্যবহার করুন। নন-ভয়েস অ্যাকশনে ভয়েস ফিডব্যাক।",
+      "classicInfo": "ক্লাসিক মোড",
+      "classicDetails": "সব ভয়েস বৈশিষ্ট্য নিষ্ক্রিয়। শুধুমাত্র রিমোট কন্ট্রোল।",
+      "textToSpeech": "ভয়েস প্রতিক্রিয়া",
+      "ttsEnabled": "ভয়েস প্রতিক্রিয়া সক্রিয় করুন",
+      "ttsEnabledDesc": "অ্যাপ আপনার ভয়েস কমান্ডে প্রতিক্রিয়া বলবে",
+      "ttsVolume": "ভয়েস ভলিউম",
+      "ttsSpeed": "কথা বলার গতি",
+      "hybridFeedback": "ইন্টারঅ্যাক্টিভ ফিডব্যাক",
+      "voiceFeedback": "অ্যাকশনে ভয়েস ফিডব্যাক",
+      "voiceFeedbackDesc": "রিমোট বা বোতাম ক্লিক করলে ভয়েস নিশ্চিতকরণ পান",
+      "feedbackExample": "উদাহরণ: একটি মুভিতে ক্লিক করুন → অ্যাপ বলে \"[মুভির নাম] চালানো হচ্ছে\"",
+      "state": {
+        "idle": "প্রস্তুত",
+        "listening": "শুনছে...",
+        "processing": "প্রক্রিয়াকরণ হচ্ছে...",
+        "speaking": "বলছে",
+        "error": "ত্রুটি"
+      },
+      "avatar": {
+        "title": "অবতার প্রদর্শন",
+        "description": "ভয়েস ইন্টারঅ্যাকশনের সময় ওলোরিন জাদুকর কিভাবে দেখাবে তা বেছে নিন",
+        "currentMode": "বর্তমান মোড",
+        "modes": {
+          "full": "পূর্ণ স্ক্রিন",
+          "compact": "কম্প্যাক্ট",
+          "minimal": "ন্যূনতম",
+          "iconOnly": "শুধু আইকন"
+        },
+        "descriptions": {
+          "full": "অ্যানিমেশন, ট্রান্সক্রিপ্ট এবং সম্পূর্ণ ভয়েস ইন্টারঅ্যাকশন সহ সম্পূর্ণ জাদুকর",
+          "compact": "অ্যানিমেশন সহ ফ্লোটিং বৃত্তাকার জাদুকর প্যানেল",
+          "minimal": "শুধুমাত্র স্ট্যাটাস ইন্ডিকেটর সহ ওয়েভফর্ম বার",
+          "iconOnly": "লুকানো - শুধুমাত্র মাইক্রোফোন বোতাম দৃশ্যমান"
+        },
+        "features": {
+          "wizard": "জাদুকর চরিত্র",
+          "animations": "অ্যানিমেটেড অঙ্গভঙ্গি",
+          "waveform": "অডিও ওয়েভফর্ম",
+          "transcript": "লাইভ ট্রান্সক্রিপ্ট"
+        },
+        "closePanel": "ভয়েস প্যানেল বন্ধ করুন",
+        "closePanelHint": "ভয়েস ইন্টারঅ্যাকশন প্যানেল বন্ধ করতে ট্যাপ করুন",
+        "audioVisualization": "অডিও ভিজুয়ালাইজেশন",
+        "compactMode": "কম্প্যাক্ট ভয়েস জাদুকর",
+        "wizardAvatar": "জাদুকর অবতার",
+        "wizardCharacter": "ওলোরিন জাদুকর চরিত্র",
+        "fullMode": "পূর্ণ স্ক্রিন ভয়েস জাদুকর",
+        "wizardInteraction": "জাদুকরের সাথে ভয়েস ইন্টারঅ্যাকশন",
+        "openVoice": "ভয়েস সহায়ক খুলুন",
+        "openVoiceHint": "ওলোরিন জাদুকরের সাথে ভয়েস ইন্টারঅ্যাকশন সক্রিয় করুন",
+        "wizardHat": "জাদুকর টুপি আইকন"
+      },
+      "gesture": {
+        "browsing": "জাদুকর ব্রাউজ করছে",
+        "cheering": "জাদুকর উল্লাস করছে",
+        "clapping": "জাদুকর হাততালি দিচ্ছে",
+        "conjuring": "জাদুকর যাদু করছে",
+        "crying": "জাদুকর কাঁদছে",
+        "shrugging": "জাদুকর কাঁধ ঝাঁকাচ্ছে",
+        "facepalm": "জাদুকর ফেসপাম করছে"
+      },
+      "settings": {
+        "title": "ভয়েস সেটিংস",
+        "close": "বন্ধ করুন",
+        "voiceFeatures": "ভয়েস বৈশিষ্ট্য",
+        "enableCommands": "ভয়েস কমান্ড সক্রিয় করুন",
+        "enableCommandsDesc": "ভয়েস সার্চ এবং কমান্ড সক্রিয় করুন",
+        "voiceLanguage": "ভয়েস ভাষা",
+        "wakeWordDetection": "ওয়েক ওয়ার্ড সনাক্তকরণ",
+        "sensitivityLabel": "সংবেদনশীলতা",
+        "sensitivityHint": "উচ্চ = আরও প্রতিক্রিয়াশীল, আরও ভুল পজিটিভ হতে পারে",
+        "currentSensitivity": "বর্তমান সংবেদনশীলতা: {{value}}%",
+        "avatarDisplay": "অবতার প্রদর্শন",
+        "voiceResponse": "ভয়েস প্রতিক্রিয়া",
+        "audioResponses": "অডিও প্রতিক্রিয়া",
+        "audioResponsesDesc": "টেক্সটের পরিবর্তে ভয়েসে প্রতিক্রিয়া দিন",
+        "privacy": "গোপনীয়তা ও ইতিহাস",
+        "recordHistory": "কমান্ড ইতিহাস রেকর্ড করুন",
+        "recordHistoryDesc": "দ্রুত অ্যাক্সেসের জন্য ভয়েস কমান্ড সংরক্ষণ করুন",
+        "historyHelp": "ইতিহাস ভয়েস সনাক্তকরণ নির্ভুলতা উন্নত করতে সাহায্য করে",
+        "permissions": "অনুমতি",
+        "microphone": "মাইক্রোফোন",
+        "granted": "দেওয়া হয়েছে",
+        "denied": "প্রত্যাখ্যাত",
+        "microphoneRequired": "ভয়েস কমান্ডের জন্য মাইক্রোফোন অ্যাক্সেস প্রয়োজন",
+        "supportedCommands": "সমর্থিত কমান্ড",
+        "advanced": "উন্নত",
+        "clearHistory": "কমান্ড ইতিহাস সাফ করুন",
+        "resetSettings": "সব সেটিংস রিসেট করুন",
+        "clearHistoryConfirm": "কমান্ড ইতিহাস সাফ করুন",
+        "clearHistoryMessage": "আপনি কি সব ভয়েস কমান্ড ইতিহাস মুছে ফেলতে চান?",
+        "resetConfirm": "সেটিংস রিসেট করুন",
+        "resetMessage": "ভয়েস সেটিংস ডিফল্টে রিসেট করবেন?",
+        "historyCleared": "কমান্ড ইতিহাস সাফ হয়েছে",
+        "success": "সফল"
+      },
+      "errors": {
+        "microphoneAccess": "মাইক্রোফোন অ্যাক্সেস প্রত্যাখ্যাত",
+        "networkError": "নেটওয়ার্ক সংযোগ ত্রুটি",
+        "processingFailed": "ভয়েস ইনপুট প্রক্রিয়া করতে ব্যর্থ",
+        "intentClassification": "কমান্ড বুঝতে পারা যায়নি",
+        "timeout": "ভয়েস সনাক্তকরণ টাইমআউট"
+      }
+    },
+    "devices": {
+      "loading": "ডিভাইস লোড হচ্ছে...",
+      "minutesAgo_one": "১ মিনিট আগে",
+      "minutesAgo_other": "{{count}} মিনিট আগে",
+      "hoursAgo_one": "১ ঘণ্টা আগে",
+      "hoursAgo_other": "{{count}} ঘণ্টা আগে",
+      "daysAgo_one": "১ দিন আগে",
+      "daysAgo_other": "{{count}} দিন আগে",
+      "disconnectDevice": "ডিভাইস সংযোগ বিচ্ছিন্ন করুন"
+    },
+    "dropdown": {
+      "myProfile": "আমার প্রোফাইল",
+      "subscription": "সাবস্ক্রিপশন",
+      "favorites": "প্রিয়",
+      "downloads": "ডাউনলোড",
+      "signOut": "সাইন আউট"
+    },
+    "guest": "অতিথি",
+    "morningRitual": "সকালের রীতি",
+    "watchlist": "ওয়াচলিস্ট",
+    "favorites": "প্রিয়",
+    "downloads": "ডাউনলোড",
+    "settings": "সেটিংস",
+    "language": "ভাষা",
+    "admin": "অ্যাডমিন",
+    "watchTime": "দেখার সময়",
+    "minutes": "মিনিট",
+    "hours": "ঘণ্টা",
+    "logout": "লগ আউট",
+    "memberSince": "সদস্য হয়েছেন",
+    "aiAssistant": "AI সহায়ক",
+    "voiceSettings": "ভয়েস",
+    "subscriptionButton": "সাবস্ক্রিপশন",
+    "recentActivity": "সাম্প্রতিক কার্যকলাপ",
+    "justNow": "এইমাত্র",
+    "hoursAgo": "{{hours}} ঘণ্টা আগে",
+    "yesterday": "গতকাল",
+    "noRecentActivity": "কোনো সাম্প্রতিক কার্যকলাপ নেই",
+    "accountInfo": "অ্যাকাউন্ট তথ্য",
+    "role": "ভূমিকা",
+    "accountSecurity": "অ্যাকাউন্ট নিরাপত্তা",
+    "securityNote": "আপনার অ্যাকাউন্ট এনক্রিপ্টেড প্রমাণীকরণ দিয়ে সুরক্ষিত",
+    "lastLogin": "শেষ লগইন",
+    "dangerZone": "বিপদ অঞ্চল",
+    "invalidImageType": "একটি বৈধ ছবি ফাইল নির্বাচন করুন (JPEG, PNG, WebP, বা GIF)",
+    "imageTooLarge": "ছবি অনেক বড়। সর্বোচ্চ আকার 5MB।",
+    "uploadSuccess": "অবতার সফলভাবে আপডেট হয়েছে!",
+    "uploadFailed": "অবতার আপলোড ব্যর্থ। আবার চেষ্টা করুন।"
+  },
+  "voiceMode": {
+    "voiceOnly": "শুধুমাত্র ভয়েস",
+    "voiceOnlyDesc": "কোনো রিমোট কন্ট্রোল নেই - সম্পূর্ণ ভয়েস নেভিগেশন",
+    "hybrid": "হাইব্রিড",
+    "hybridDesc": "ভয়েস + রিমোট - অ্যাকশনে ভয়েস ফিডব্যাক",
+    "classic": "ক্লাসিক",
+    "classicDesc": "কোনো ভয়েস নেই - শুধুমাত্র রিমোট কন্ট্রোল"
+  },
+  "settings": {
+    "chatTranslation": "চ্যাট অনুবাদ",
+    "autoTranslate": "স্বয়ংক্রিয় বার্তা অনুবাদ",
+    "autoTranslateDescription": "চ্যাট বার্তা স্বয়ংক্রিয়ভাবে আপনার পছন্দের ভাষায় অনুবাদ করুন",
+    "pushNotifications": "পুশ বিজ্ঞপ্তি",
+    "display": "প্রদর্শন",
+    "homePageSections": "হোম পেজ বিভাগ",
+    "configureSections": "আপনার হোম পেজে কোন বিভাগ দেখাবে তা কনফিগার করুন",
+    "visibleSections": "দৃশ্যমান বিভাগ",
+    "hiddenSections": "লুকানো বিভাগ",
+    "dragToReorder": "পুনর্বিন্যাস করতে টানুন",
+    "tapToHide": "লুকাতে ট্যাপ করুন",
+    "tapToShow": "দেখাতে ট্যাপ করুন",
+    "resetToDefault": "ডিফল্টে রিসেট করুন",
+    "resetConfirmMessage": "আপনি কি হোম পেজ বিভাগ ডিফল্ট কনফিগারেশনে রিসেট করতে চান?",
+    "sectionHidden": "বিভাগ লুকানো হয়েছে",
+    "sectionShown": "বিভাগ দেখানো হয়েছে"
+  }
+};
+
+deepMerge(bn, translations);
+fs.writeFileSync('bn.json', JSON.stringify(bn, null, 2) + '\n');
+console.log('Part 2 complete - profile, voiceMode, settings added');

@@ -129,7 +129,7 @@ async def get_dubbing_availability(
             available=True,
             source_language=channel.dubbing_source_language or "he",
             supported_target_languages=channel.available_dubbing_languages
-            or ["en", "es", "ar", "ru", "fr", "de"],
+            or ["en", "he", "es", "ar", "ru", "fr", "de"],
             default_voice_id=channel.default_dubbing_voice_id,
             default_sync_delay_ms=channel.dubbing_sync_delay_ms or 600,
             available_voices=get_available_voices(),

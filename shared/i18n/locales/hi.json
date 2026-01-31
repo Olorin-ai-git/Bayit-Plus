@@ -54,7 +54,22 @@
     "expand": "विस्तार करें",
     "collapse": "संक्षिप्त करें",
     "upgrade": "प्रीमियम में अपग्रेड करें",
-    "skip": "छोड़ें"
+    "skip": "छोड़ें",
+    "confirmDelete": "हटाने की पुष्टि करें",
+    "partialSuccess": "आंशिक सफलता",
+    "dismiss": "खारिज करें",
+    "refresh": "रीफ्रेश करें",
+    "refreshing": "रीफ्रेश हो रहा है...",
+    "refreshData": "डेटा रीफ्रेश करें",
+    "dismissError": "त्रुटि खारिज करें",
+    "closeHint": "वर्तमान स्क्रीन बंद करता है",
+    "cancelHint": "वर्तमान कार्रवाई रद्द करता है",
+    "loadingArticle": "लेख लोड हो रहा है...",
+    "watch": "देखें",
+    "share": "साझा करें",
+    "noContent": "कोई सामग्री उपलब्ध नहीं",
+    "premium": "प्रीमियम",
+    "poweredBy": "द्वारा संचालित"
   },
   "demo": {
     "banner": "डेमो मोड",
@@ -125,7 +140,15 @@
     "send": "भेजें",
     "createAccount": "खाता बनाएं",
     "bayitThinking": "Bayit सोच रहा है...",
-    "unexpectedError": "एक अप्रत्याशित त्रुटि हुई"
+    "unexpectedError": "एक अप्रत्याशित त्रुटि हुई",
+    "qrDescription": "बिना टाइप किए लॉगिन करने के लिए इस QR कोड को अपने फोन से स्कैन करें",
+    "generatingQR": "QR कोड जनरेट हो रहा है...",
+    "howItWorks": "यह कैसे काम करता है:",
+    "step1": "अपने फोन पर कैमरा खोलें",
+    "step2": "ऊपर QR कोड स्कैन करें",
+    "step3": "अपने फोन पर लॉगिन करें",
+    "step4": "TV अपने आप लॉगिन हो जाएगा!",
+    "voicePlaceholder": "अपना जवाब टाइप करें..."
   },
   "tvLogin": {
     "invalidQR": "अमान्य QR कोड।",
@@ -138,7 +161,18 @@
     "success": "सफलता!",
     "goToHome": "होम जाएं",
     "error": "कुछ गलत हुआ",
-    "tryAgain": "पुनः प्रयास करें"
+    "tryAgain": "पुनः प्रयास करें",
+    "notLoggedIn": "आप इस डिवाइस पर लॉगिन नहीं हैं।",
+    "enterCredentials": "कृपया अपने TV को अधिकृत करने के लिए अपनी साख दर्ज करें।",
+    "authFailed": "प्राधिकरण विफल।",
+    "verifying": "सत्यापित हो रहा है...",
+    "verifyingDescription": "आपके TV से कनेक्ट हो रहा है...",
+    "loginDescription": "अपने TV को अधिकृत करने के लिए अपनी साख दर्ज करें",
+    "authorizing": "अधिकृत हो रहा है...",
+    "authorizingDescription": "आपको TV पर लॉगिन कर रहा है...",
+    "successDescription": "आपका TV अब लॉगिन हो गया है। आप इस पेज को बंद कर सकते हैं।",
+    "securityNote": "आपकी साख सुरक्षित रूप से भेजी जाती है और TV पर कभी संग्रहीत नहीं होती।",
+    "footer": "समस्या हो रही है? सुनिश्चित करें कि आपने अपने TV से एक नया QR कोड स्कैन किया है।"
   },
   "register": {
     "title": "खाता बनाएं",
@@ -168,7 +202,16 @@
       "passwordMismatch": "पासवर्ड मेल नहीं खाते",
       "acceptTerms": "आपको शर्तें स्वीकार करनी होंगी",
       "fillAllFields": "कृपया सभी फ़ील्ड भरें",
-      "registrationFailed": "पंजीकरण विफल।"
+      "registrationFailed": "पंजीकरण विफल।",
+      "googleFailed": "Google से साइन अप विफल। कृपया पुनः प्रयास करें।"
+    },
+    "fullName": "पूरा नाम",
+    "loginLink": "लॉगिन",
+    "placeholders": {
+      "fullName": "राहुल शर्मा",
+      "email": "your@email.com",
+      "password": "कम से कम 8 अक्षर",
+      "confirmPassword": "पासवर्ड दोबारा दर्ज करें"
     }
   },
   "nav": {
@@ -196,7 +239,10 @@
     "subscribe": "सब्सक्राइब करें",
     "admin": "एडमिन",
     "games": "गेम्स",
-    "friends": "मित्र"
+    "friends": "मित्र",
+    "support": "सहायता",
+    "plans": "योजनाएं",
+    "privacy": "गोपनीयता नीति"
   },
   "epg": {
     "title": "TV गाइड",
@@ -211,7 +257,41 @@
     "noChannels": "कोई चैनल उपलब्ध नहीं",
     "recordProgram": "प्रोग्राम रिकॉर्ड करें",
     "channel": "चैनल",
-    "searchPlaceholder": "प्रोग्राम, चैनल खोजें..."
+    "searchPlaceholder": "प्रोग्राम, चैनल खोजें...",
+    "il": "IL",
+    "local": "स्थानीय",
+    "goBack": "← {{hours}}घं",
+    "goForward": "{{hours}}घं →",
+    "toggleTimezone": "समय क्षेत्र बदलें",
+    "errorLoading": "TV गाइड डेटा लोड नहीं हो सका",
+    "enableSubtitles": "सबटाइटल सक्षम करें",
+    "subtitleLanguage": "सबटाइटल भाषा",
+    "storageEstimate": "स्टोरेज अनुमान",
+    "availableSpace": "उपलब्ध स्थान",
+    "lowStorage": "कम स्टोरेज चेतावनी",
+    "lowStorageMessage": "आपका स्टोरेज कम हो रहा है। पुरानी रिकॉर्डिंग हटाने पर विचार करें।",
+    "scheduleRecording": "रिकॉर्डिंग शेड्यूल करें",
+    "scheduledRecordingNotSupported": "शेड्यूल की गई रिकॉर्डिंग अभी समर्थित नहीं है। केवल तत्काल रिकॉर्डिंग उपलब्ध है।",
+    "recordingFailed": "रिकॉर्डिंग शुरू/शेड्यूल करने में विफल",
+    "smartSearch": "स्मार्ट खोज",
+    "smartSearchSubtitle": "प्राकृतिक भाषा में प्रश्न पूछें",
+    "smartSearchPlaceholder": "जैसे, आज रात अभिनेत्री के साथ सभी शो दिखाओ",
+    "premiumRequired": "प्रीमियम सुविधा",
+    "premiumRequiredMessage": "स्मार्ट खोज आपके प्रश्नों को समझने के लिए AI का उपयोग करती है। इस सुविधा का उपयोग करने के लिए प्रीमियम में अपग्रेड करें।",
+    "searchWithAI": "AI से खोजें",
+    "searching": "खोज रहे हैं...",
+    "tryThese": "ये उदाहरण आज़माएं",
+    "exampleQuery1": "आज रात अभिनेत्री के साथ सभी शो दिखाओ",
+    "exampleQuery2": "इस सप्ताह कौन से कॉमेडी शो आ रहे हैं?",
+    "exampleQuery3": "चैनल 11 पर इतिहास के बारे में डॉक्यूमेंट्री खोजें",
+    "exampleQuery4": "कल सुबह के सभी समाचार कार्यक्रम दिखाएं",
+    "aiDisclaimer": "Claude AI द्वारा संचालित। प्रोग्राम डेटा उपलब्धता के आधार पर परिणाम भिन्न हो सकते हैं।",
+    "interpretationTitle": "मैंने क्या समझा",
+    "noResultsFound": "आपकी क्वेरी से मेल खाने वाले कोई प्रोग्राम नहीं मिले",
+    "noProgramsScheduled": "कोई प्रोग्राम शेड्यूल नहीं",
+    "noProgramsFound": "कोई प्रोग्राम नहीं मिला",
+    "noDataAvailable": "कोई TV गाइड डेटा उपलब्ध नहीं",
+    "live": "लाइव"
   },
   "home": {
     "continueWatching": "देखना जारी रखें",
@@ -230,7 +310,39 @@
     "loadingContent": "सामग्री लोड हो रही है...",
     "liveNow": "अभी लाइव",
     "trendingInIsrael": "इज़राइल में ट्रेंडिंग",
-    "categories": "श्रेणियां"
+    "categories": "श्रेणियां",
+    "jerusalemConnection": "जेरूसलम कनेक्शन",
+    "telAvivConnection": "तेल अवीव कनेक्शन",
+    "podcasts": "पॉडकास्ट",
+    "audiobooks": "ऑडियोबुक",
+    "israelis_in_city": "{{city}}, {{state}} में इज़राइली",
+    "israeli_businesses": "{{city}}, {{state}} में इज़राइली व्यवसाय",
+    "israeli_businesses_nearby": "आपके पास इज़राइली व्यवसाय - {{city}} से",
+    "searching_businesses": "{{city}} में इज़राइली व्यवसाय खोज रहे हैं...",
+    "no_businesses_found": "{{city}} में कोई इज़राइली व्यवसाय नहीं मिला",
+    "businesses_load_error": "व्यवसाय सूची लोड करने में असमर्थ। कृपया पुनः प्रयास करें।",
+    "carousel": {
+      "fauda": {
+        "title": "Fauda",
+        "subtitle": "सीज़न 4 - अब स्ट्रीमिंग",
+        "description": "हिट इज़राइली सीरीज़ सस्पेंस और एक्शन से भरे चौथे सीज़न के साथ वापस"
+      },
+      "shtisel": {
+        "title": "Shtisel",
+        "subtitle": "सभी सीज़न उपलब्ध",
+        "description": "जेरूसलम के अल्ट्रा-ऑर्थोडॉक्स पड़ोस में Shtisel परिवार का अनुसरण करें"
+      },
+      "tehran": {
+        "title": "Tehran",
+        "subtitle": "सीज़न 2",
+        "description": "एक खतरनाक मिशन पर ईरान में एक मोसाद एजेंट"
+      },
+      "live": {
+        "title": "लाइव - Kan 11",
+        "subtitle": "अभी देखें",
+        "description": "समाचार, करंट अफेयर्स और गुणवत्तापूर्ण सामग्री"
+      }
+    }
   },
   "search": {
     "title": "खोजें",
@@ -249,7 +361,10 @@
       "vod": "फ़िल्में और सीरीज़",
       "live": "चैनल",
       "radio": "रेडियो",
-      "podcast": "पॉडकास्ट"
+      "podcast": "पॉडकास्ट",
+      "moviesAndSeries": "फ़िल्में और सीरीज़",
+      "channels": "चैनल",
+      "podcasts": "पॉडकास्ट"
     },
     "controls": {
       "placeholder": "Search for content...",
@@ -271,6 +386,17 @@
     },
     "empty": {
       "clearSearch": "Clear search"
+    },
+    "tryDifferent": "अलग खोज शब्द आज़माएं",
+    "resultsFor": "के लिए परिणाम",
+    "resultsFound": "\"{{query}}\" के लिए {{count}} परिणाम मिले",
+    "promptTitle": "आप क्या खोज रहे हैं?",
+    "promptDescription": "अपनी पसंदीदा सामग्री खोजें या वॉइस सर्च उपयोग करें",
+    "loadingMore": "और परिणाम लोड हो रहे हैं...",
+    "viewMode": {
+      "grid": "ग्रिड",
+      "list": "सूची",
+      "cards": "कार्ड"
     }
   },
   "liveTV": {
@@ -318,6 +444,47 @@
       "sports": "खेल",
       "history": "इतिहास",
       "educational": "शैक्षिक"
+    },
+    "selectLanguage": "ऑडियो भाषा",
+    "switchToLanguage": "{{language}} में बदलें",
+    "languageSwitched": "अब {{language}} में चल रहा है",
+    "availableInLanguage": "{{language}} में उपलब्ध",
+    "availableLanguages": "कई भाषाओं में उपलब्ध",
+    "downloadForOffline": "ऑफ़लाइन सुनने के लिए डाउनलोड करें",
+    "downloadProgress": "डाउनलोड हो रहा है {{progress}}%",
+    "downloaded": "डाउनलोड हो गया",
+    "downloadFailed": "डाउनलोड विफल",
+    "retryDownload": "डाउनलोड पुनः प्रयास करें",
+    "deleteDownload": "डाउनलोड हटाएं",
+    "confirmDelete": "डाउनलोड किया गया ऑडियो हटाएं?",
+    "quality": {
+      "label": "ऑडियो गुणवत्ता",
+      "low": "कम (64 kbps) - डेटा बचाएं",
+      "medium": "मध्यम (96 kbps) - संतुलित",
+      "high": "उच्च (128 kbps) - सर्वोत्तम गुणवत्ता"
+    },
+    "languages": {
+      "he": {
+        "short": "हिब्रू",
+        "full": "हिब्रू"
+      },
+      "en": {
+        "short": "अंग्रेज़ी",
+        "full": "अंग्रेज़ी"
+      }
+    },
+    "player": {
+      "switchingLanguage": "ऑडियो भाषा बदल रहा है...",
+      "languageSwitchError": "भाषा नहीं बदल सकी",
+      "loadingTranslation": "अनुवादित ऑडियो लोड हो रहा है...",
+      "translationUnavailable": "अनुवाद अभी उपलब्ध नहीं"
+    },
+    "onboarding": {
+      "multiLanguageTitle": "बहु-भाषा ऑडियो",
+      "multiLanguageDescription": "यह पॉडकास्ट हिब्रू और अंग्रेज़ी में उपलब्ध है। बदलने के लिए भाषा चयनकर्ता टैप करें।",
+      "downloadTitle": "ऑफ़लाइन सुनें",
+      "downloadDescription": "इंटरनेट कनेक्शन के बिना सुनने के लिए एपिसोड डाउनलोड करें।",
+      "gotIt": "समझ गया"
     }
   },
   "vod": {
@@ -339,7 +506,10 @@
       "action": "एक्शन",
       "documentary": "डॉक्यूमेंट्री",
       "kids": "बच्चे"
-    }
+    },
+    "allContent": "सभी सामग्री",
+    "noContent": "कोई सामग्री उपलब्ध नहीं",
+    "noContentInCategory": "इस श्रेणी में कोई सामग्री नहीं मिली"
   },
   "account": {
     "title": "मेरा खाता",
@@ -368,7 +538,147 @@
     "systemFlows": "तैयार फ्लो",
     "customFlows": "मेरे फ्लो",
     "createFlow": "फ्लो बनाएं",
-    "editFlow": "फ्लो संपादित करें"
+    "editFlow": "फ्लो संपादित करें",
+    "system": "सिस्टम",
+    "noCustomFlows": "अभी तक कोई कस्टम फ्लो नहीं",
+    "createHint": "अपना पहला व्यक्तिगत फ्लो बनाएं",
+    "createCustom": "कस्टम फ्लो बनाएं",
+    "type": "प्रकार",
+    "systemFlow": "सिस्टम फ्लो",
+    "customFlow": "कस्टम फ्लो",
+    "schedule": "शेड्यूल",
+    "content": "सामग्री",
+    "items": "आइटम",
+    "aiGenerated": "AI जनरेटेड",
+    "autoPlay": "ऑटो प्ले",
+    "aiEnabled": "AI क्यूरेशन",
+    "shabbatTrigger": "शब्बत शाम",
+    "manual": "मैनुअल",
+    "flowName": "फ्लो नाम",
+    "flowNamePlaceholder": "जैसे, मेरी सुबह की दिनचर्या",
+    "description": "विवरण",
+    "descriptionPlaceholder": "यह फ्लो किसके लिए है?",
+    "startTime": "प्रारंभ समय",
+    "endTime": "समाप्ति समय",
+    "actions": "कार्रवाइयां",
+    "details": "विवरण",
+    "createFlowDesc": "अपना व्यक्तिगत सामग्री अनुभव डिज़ाइन करें",
+    "editFlowDesc": "अपनी फ्लो सेटिंग्स और सामग्री अपडेट करें",
+    "basicInfo": "मूल जानकारी",
+    "options": "विकल्प",
+    "autoPlayDesc": "जब वर्तमान समाप्त हो तो अगला आइटम स्वचालित रूप से चलाएं",
+    "aiEnabledDesc": "AI को आपकी पसंद के आधार पर सामग्री क्यूरेट करने दें",
+    "startFlow": "फ्लो शुरू करें",
+    "deleteFlow": "फ्लो हटाएं",
+    "custom": "कस्टम",
+    "morning": "सुबह",
+    "evening": "शाम",
+    "shabbat": "शब्बत",
+    "addContent": "सामग्री जोड़ें",
+    "contentPicker": {
+      "title": "फ्लो में सामग्री जोड़ें",
+      "tabs": {
+        "live": "लाइव TV",
+        "radio": "रेडियो",
+        "vod": "ऑन डिमांड",
+        "podcast": "पॉडकास्ट"
+      },
+      "search": "सामग्री खोजें...",
+      "selected": "{{count}} चयनित",
+      "addSelected": "चयनित जोड़ें",
+      "noResults": "कोई सामग्री नहीं मिली",
+      "alreadyAdded": "पहले से फ्लो में",
+      "loadMore": "और लोड करें"
+    },
+    "flowItems": {
+      "title": "फ्लो सामग्री",
+      "empty": "अभी कोई सामग्री नहीं। शुरू करने के लिए सामग्री जोड़ें पर क्लिक करें।",
+      "count": "{{count}} आइटम",
+      "remove": "हटाएं",
+      "moveUp": "ऊपर ले जाएं",
+      "moveDown": "नीचे ले जाएं",
+      "order": "क्रम",
+      "confirmRemove": "हटाने की पुष्टि के लिए फिर से क्लिक करें",
+      "maxReached": "अधिकतम {{max}} आइटम पहुंच गए",
+      "more": "और आइटम"
+    },
+    "days": {
+      "sunday": "रविवार",
+      "monday": "सोमवार",
+      "tuesday": "मंगलवार",
+      "wednesday": "बुधवार",
+      "thursday": "गुरुवार",
+      "friday": "शुक्रवार",
+      "saturday": "शनिवार",
+      "sundayShort": "रवि",
+      "mondayShort": "सोम",
+      "tuesdayShort": "मंगल",
+      "wednesdayShort": "बुध",
+      "thursdayShort": "गुरु",
+      "fridayShort": "शुक्र",
+      "saturdayShort": "शनि",
+      "selectAll": "सभी चुनें",
+      "deselectAll": "सभी हटाएं",
+      "title": "सक्रिय दिन",
+      "everyday": "हर दिन",
+      "everyDay": "हर दिन",
+      "weekdays": "कार्यदिवस",
+      "weekends": "सप्ताहांत",
+      "noneSelected": "कोई दिन नहीं चुना",
+      "selectedCount": "{{count}} दिन चुने"
+    },
+    "trigger": {
+      "type": "ट्रिगर प्रकार",
+      "time": "समय-आधारित",
+      "shabbat": "शब्बत शाम",
+      "holiday": "छुट्टी",
+      "skipShabbat": "शब्बत पर छोड़ें",
+      "skipShabbatDesc": "शुक्रवार शाम या शनिवार को यह फ्लो न चलाएं",
+      "shabbatOffset": "मोमबत्ती जलाने से मिनट पहले",
+      "shabbatOffsetDesc": "शब्बत से कितने मिनट पहले यह फ्लो शुरू होना चाहिए?",
+      "calculatedTime": "गणना किया गया समय",
+      "thisWeek": "इस सप्ताह: {{day}} को {{time}} बजे",
+      "comingSoon": "छुट्टी ट्रिगर जल्द आ रहे हैं",
+      "locationBased": "आपके स्थान के आधार पर समय"
+    },
+    "examples": {
+      "title": "उदाहरण फ्लो",
+      "subtitle": "टेम्पलेट के रूप में उपयोग करने के लिए टैप करें",
+      "morningRoutine": {
+        "name": "सुबह की दिनचर्या",
+        "desc": "समाचार, मौसम और प्रेरणादायक सामग्री के साथ अपना दिन शुरू करें"
+      },
+      "eveningWindDown": {
+        "name": "शाम की विश्राम",
+        "desc": "शांत संगीत और हल्के मनोरंजन के साथ आराम करें"
+      },
+      "shabbatPrep": {
+        "name": "शब्बत की तैयारी",
+        "desc": "विशेष सामग्री के साथ शब्बत का माहौल बनाएं"
+      },
+      "coffeeBreak": {
+        "name": "कॉफी ब्रेक",
+        "desc": "छोटे ब्रेक के लिए त्वरित मनोरंजन"
+      },
+      "sunsetVibes": {
+        "name": "सनसेट वाइब्स",
+        "desc": "संगीत और एंबिएंट सामग्री के साथ सप्ताहांत विश्राम"
+      }
+    },
+    "aiBrief": "AI ब्रीफ",
+    "aiBriefDesc": "फ्लो शुरू होने से पहले व्यक्तिगत AI-जनित सारांश प्राप्त करें",
+    "aiBriefEnabled": "AI ब्रीफ सक्षम",
+    "validation": {
+      "nameRequired": "फ्लो नाम आवश्यक है",
+      "startTimeRequired": "प्रारंभ समय आवश्यक है",
+      "endTimeRequired": "समाप्ति समय आवश्यक है",
+      "timeRange": "समाप्ति समय प्रारंभ समय के बाद होना चाहिए",
+      "daysRequired": "कम से कम एक दिन चुनें",
+      "contentRequired": "सामग्री जोड़ें या AI सक्षम करें"
+    },
+    "tv": {
+      "useCompanion": "पूर्ण अनुकूलन के लिए, अपने फोन पर Bayit+ ऐप का उपयोग करें या अपने कंप्यूटर पर bayit.plus पर जाएं।"
+    }
   },
   "profile": {
     "title": "मेरी प्रोफ़ाइल",
@@ -394,7 +704,14 @@
     "unlockPremium": "प्रीमियम सुविधाएं अनलॉक करें",
     "unlockPremiumDescription": "विशेष सामग्री और सुविधाओं का आनंद लेने के लिए अपग्रेड करें",
     "tabs": {
-      "devices": "डिवाइस"
+      "devices": "डिवाइस",
+      "personal": "व्यक्तिगत",
+      "overview": "अवलोकन",
+      "subscription": "सब्सक्रिप्शन",
+      "notifications": "सूचनाएं",
+      "security": "सुरक्षा",
+      "ai": "AI और वॉइस",
+      "voice": "वॉइस और एक्सेसिबिलिटी"
     },
     "devices": {
       "registeredDevices": "पंजीकृत डिवाइस",
@@ -412,8 +729,236 @@
       "disconnectSuccessMessage": "डिवाइस सफलतापूर्वक डिस्कनेक्ट हो गया है।",
       "disconnectSuccessWithSessions": "डिवाइस डिस्कनेक्ट हो गया और {{count}} सक्रिय सत्र समाप्त हो गए।",
       "thisDevice": "यह डिवाइस",
-      "loading": "डिवाइस लोड हो रहे हैं..."
-    }
+      "loading": "डिवाइस लोड हो रहे हैं...",
+      "minutesAgo_one": "1 मिनट पहले",
+      "minutesAgo_other": "{{count}} मिनट पहले",
+      "hoursAgo_one": "1 घंटा पहले",
+      "hoursAgo_other": "{{count}} घंटे पहले",
+      "daysAgo_one": "1 दिन पहले",
+      "daysAgo_other": "{{count}} दिन पहले",
+      "disconnectDevice": "डिवाइस डिस्कनेक्ट करें"
+    },
+    "updatePassword": "अपना पासवर्ड अपडेट करें",
+    "connectedDevices": "कनेक्टेड डिवाइस",
+    "manageDevices": "अपने खाते से कनेक्टेड डिवाइस प्रबंधित करें",
+    "twoFactorAuth": "दो-कारक प्रमाणीकरण",
+    "addExtraSecurity": "अतिरिक्त सुरक्षा परत जोड़ें",
+    "address": {
+      "line1": "123 मेन स्ट्रीट",
+      "line2": "तेल अवीव, इज़राइल 6100000"
+    },
+    "free": "मुफ्त",
+    "premiumPrice": "$7.99/महीना",
+    "familyPrice": "$12.99/महीना",
+    "remaining": "शेष",
+    "subscription": {
+      "currentPlan": "वर्तमान योजना",
+      "renewsOn": "नवीनीकरण तिथि",
+      "manageSubscription": "सब्सक्रिप्शन प्रबंधित करें",
+      "cancelSubscription": "सब्सक्रिप्शन रद्द करें",
+      "noActivePlan": "कोई सक्रिय सब्सक्रिप्शन नहीं",
+      "selectPlan": "योजना चुनें"
+    },
+    "notifications": "सूचनाएं",
+    "ai": {
+      "title": "AI और व्यक्तिगतकरण",
+      "description": "AI-संचालित सुविधाएं कॉन्फ़िगर करें",
+      "assistant": "AI सहायक",
+      "assistantDesc": "व्यक्तिगत सिफारिशें और सहायता",
+      "chatbot": "AI सहायक",
+      "chatbotEnabled": "AI सहायक सक्षम करें",
+      "chatbotEnabledDesc": "सामग्री नेविगेट करने में सहायता प्राप्त करें",
+      "saveHistory": "वार्तालाप इतिहास सहेजें",
+      "saveHistoryDesc": "पिछली बातचीत याद रखें",
+      "recommendations": "सिफारिशें",
+      "personalizedRecs": "व्यक्तिगत सिफारिशें",
+      "personalizedRecsDesc": "इतिहास के आधार पर सामग्री सुझाव",
+      "privacy": "गोपनीयता और डेटा",
+      "privacyDesc": "आपका डेटा एन्क्रिप्टेड और सुरक्षित है",
+      "dataConsent": "उपयोग विश्लेषण",
+      "dataConsentDesc": "AI सुविधाओं को बेहतर बनाने में मदद करें",
+      "privacyNote": "आपका डेटा एन्क्रिप्टेड और सुरक्षित है"
+    },
+    "voice": {
+      "title": "वॉइस कंट्रोल",
+      "description": "हैंड्स-फ्री नेविगेशन",
+      "enabled": "वॉइस कमांड",
+      "enabledDesc": "अपनी आवाज से ऐप नियंत्रित करें",
+      "tts": "टेक्स्ट-टू-स्पीच",
+      "ttsDesc": "AI प्रतिक्रियाएं जोर से पढ़ें",
+      "wakeWord": "वेक वर्ड डिटेक्शन",
+      "wakeWordDesc": "सक्रिय करने के लिए \"Bayit\" बोलें",
+      "operationMode": "ऑपरेशन मोड",
+      "operationModeDesc": "चुनें कि आप ऐप के साथ कैसे इंटरैक्ट करते हैं",
+      "voiceSearch": "वॉइस सर्च",
+      "voiceSearchEnabled": "वॉइस सर्च सक्षम करें",
+      "voiceSearchEnabledDesc": "अपनी आवाज से सामग्री खोजें",
+      "constantListening": "हमेशा सुनने का मोड",
+      "constantListeningDesc": "बटन दबाए बिना लगातार वॉइस कमांड सुनें",
+      "constantListeningPrivacy": "ऑडियो केवल तब सर्वर को भेजा जाता है जब भाषण का पता चलता है",
+      "holdButtonMode": "बात करने के लिए बटन दबाएं",
+      "holdButtonModeDesc": "हमेशा सुनने के बजाय माइक्रोफोन बटन दबाकर रखें",
+      "sensitivity": "वॉइस डिटेक्शन संवेदनशीलता",
+      "sensitivityDesc": "वॉइस डिटेक्शन कितना प्रतिक्रियाशील है समायोजित करें",
+      "sensitivityLow": "कम (कम गलत ट्रिगर)",
+      "sensitivityMedium": "मध्यम (संतुलित)",
+      "sensitivityHigh": "उच्च (सबसे अधिक प्रतिक्रियाशील)",
+      "silenceThreshold": "मौन का पता लगाना",
+      "silenceThresholdDesc": "बोलने के बाद प्रोसेसिंग से पहले कितनी देर प्रतीक्षा करें",
+      "language": "वॉइस भाषा",
+      "accessibility": "एक्सेसिबिलिटी",
+      "autoSubtitle": "सबटाइटल ऑटो-सक्षम करें",
+      "autoSubtitleDesc": "सामग्री चलाते समय स्वचालित रूप से सबटाइटल दिखाएं",
+      "highContrast": "उच्च कंट्रास्ट मोड",
+      "highContrastDesc": "बेहतर दृश्यता के लिए कंट्रास्ट बढ़ाएं",
+      "textSize": "टेक्स्ट आकार",
+      "textSizeSmall": "छोटा",
+      "textSizeMedium": "मध्यम",
+      "textSizeLarge": "बड़ा",
+      "voiceOnlyInfo": "केवल वॉइस मोड",
+      "voiceOnlyDetails": "सक्रिय करने के लिए \"Hi Bayit\" बोलें। रिमोट कंट्रोल अक्षम। पूरी तरह से वॉइस कमांड से नेविगेट करें।",
+      "hybridInfo": "हाइब्रिड मोड",
+      "hybridDetails": "वॉइस या रिमोट कंट्रोल उपयोग करें। गैर-वॉइस कार्यों पर वॉइस फीडबैक।",
+      "classicInfo": "क्लासिक मोड",
+      "classicDetails": "सभी वॉइस सुविधाएं अक्षम। केवल रिमोट कंट्रोल।",
+      "textToSpeech": "वॉइस प्रतिक्रियाएं",
+      "ttsEnabled": "वॉइस प्रतिक्रियाएं सक्षम करें",
+      "ttsEnabledDesc": "ऐप आपके वॉइस कमांड के जवाब बोलेगा",
+      "ttsVolume": "वॉइस वॉल्यूम",
+      "ttsSpeed": "बोलने की गति",
+      "hybridFeedback": "इंटरैक्टिव फीडबैक",
+      "voiceFeedback": "कार्यों पर वॉइस फीडबैक",
+      "voiceFeedbackDesc": "जब आप रिमोट या बटन क्लिक करते हैं तो वॉइस पुष्टि प्राप्त करें",
+      "feedbackExample": "उदाहरण: मूवी पर क्लिक करें → ऐप बोलता है \"[मूवी नाम] चला रहा है\"",
+      "state": {
+        "idle": "तैयार",
+        "listening": "सुन रहे हैं...",
+        "processing": "प्रोसेसिंग...",
+        "speaking": "बोल रहे हैं",
+        "error": "त्रुटि"
+      },
+      "avatar": {
+        "title": "अवतार प्रदर्शन",
+        "description": "वॉइस इंटरैक्शन के दौरान Olorin विज़ार्ड कैसे दिखाई दे चुनें",
+        "currentMode": "वर्तमान मोड",
+        "modes": {
+          "full": "पूर्ण स्क्रीन",
+          "compact": "कॉम्पैक्ट",
+          "minimal": "न्यूनतम",
+          "iconOnly": "केवल आइकन"
+        },
+        "descriptions": {
+          "full": "एनिमेशन, ट्रांसक्रिप्ट और पूर्ण वॉइस इंटरैक्शन के साथ पूर्ण विज़ार्ड",
+          "compact": "एनिमेशन के साथ फ्लोटिंग सर्कुलर विज़ार्ड पैनल",
+          "minimal": "केवल स्टेटस इंडिकेटर के साथ वेवफॉर्म बार",
+          "iconOnly": "छिपा हुआ - केवल माइक्रोफोन बटन दिखाई दे"
+        },
+        "features": {
+          "wizard": "विज़ार्ड कैरेक्टर",
+          "animations": "एनिमेटेड जेस्चर",
+          "waveform": "ऑडियो वेवफॉर्म",
+          "transcript": "लाइव ट्रांसक्रिप्ट"
+        },
+        "closePanel": "वॉइस पैनल बंद करें",
+        "closePanelHint": "वॉइस इंटरैक्शन पैनल बंद करने के लिए टैप करें",
+        "audioVisualization": "ऑडियो विज़ुअलाइज़ेशन",
+        "compactMode": "कॉम्पैक्ट वॉइस विज़ार्ड",
+        "wizardAvatar": "विज़ार्ड अवतार",
+        "wizardCharacter": "Olorin विज़ार्ड कैरेक्टर",
+        "fullMode": "पूर्ण स्क्रीन वॉइस विज़ार्ड",
+        "wizardInteraction": "विज़ार्ड के साथ वॉइस इंटरैक्शन",
+        "openVoice": "वॉइस सहायक खोलें",
+        "openVoiceHint": "Olorin विज़ार्ड के साथ वॉइस इंटरैक्शन सक्रिय करें",
+        "wizardHat": "विज़ार्ड हैट आइकन"
+      },
+      "gesture": {
+        "browsing": "विज़ार्ड ब्राउज़ कर रहा है",
+        "cheering": "विज़ार्ड उत्साहित कर रहा है",
+        "clapping": "विज़ार्ड ताली बजा रहा है",
+        "conjuring": "विज़ार्ड जादू कर रहा है",
+        "crying": "विज़ार्ड रो रहा है",
+        "shrugging": "विज़ार्ड कंधे उचका रहा है",
+        "facepalm": "विज़ार्ड फेसपाम कर रहा है"
+      },
+      "settings": {
+        "title": "वॉइस सेटिंग्स",
+        "close": "बंद करें",
+        "voiceFeatures": "वॉइस सुविधाएं",
+        "enableCommands": "वॉइस कमांड सक्षम करें",
+        "enableCommandsDesc": "वॉइस सर्च और कमांड सक्रिय करें",
+        "voiceLanguage": "वॉइस भाषा",
+        "wakeWordDetection": "वेक वर्ड डिटेक्शन",
+        "sensitivityLabel": "संवेदनशीलता",
+        "sensitivityHint": "उच्च = अधिक प्रतिक्रियाशील, अधिक गलत पॉजिटिव हो सकते हैं",
+        "currentSensitivity": "वर्तमान संवेदनशीलता: {{value}}%",
+        "avatarDisplay": "अवतार प्रदर्शन",
+        "voiceResponse": "वॉइस प्रतिक्रिया",
+        "audioResponses": "ऑडियो प्रतिक्रियाएं",
+        "audioResponsesDesc": "टेक्स्ट के बजाय वॉइस से जवाब दें",
+        "privacy": "गोपनीयता और इतिहास",
+        "recordHistory": "कमांड इतिहास रिकॉर्ड करें",
+        "recordHistoryDesc": "त्वरित पहुंच के लिए वॉइस कमांड सहेजें",
+        "historyHelp": "इतिहास वॉइस रिकग्निशन सटीकता में सुधार करने में मदद करता है",
+        "permissions": "अनुमतियां",
+        "microphone": "माइक्रोफोन",
+        "granted": "दी गई",
+        "denied": "अस्वीकृत",
+        "microphoneRequired": "वॉइस कमांड के लिए माइक्रोफोन एक्सेस आवश्यक है",
+        "supportedCommands": "समर्थित कमांड",
+        "advanced": "उन्नत",
+        "clearHistory": "कमांड इतिहास साफ़ करें",
+        "resetSettings": "सभी सेटिंग्स रीसेट करें",
+        "clearHistoryConfirm": "कमांड इतिहास साफ़ करें",
+        "clearHistoryMessage": "क्या आप वाकई सभी वॉइस कमांड इतिहास हटाना चाहते हैं?",
+        "resetConfirm": "सेटिंग्स रीसेट करें",
+        "resetMessage": "वॉइस सेटिंग्स को डिफ़ॉल्ट पर रीसेट करें?",
+        "historyCleared": "कमांड इतिहास साफ़ हो गया",
+        "success": "सफलता"
+      },
+      "errors": {
+        "microphoneAccess": "माइक्रोफोन एक्सेस अस्वीकृत",
+        "networkError": "नेटवर्क कनेक्शन त्रुटि",
+        "processingFailed": "वॉइस इनपुट प्रोसेस करने में विफल",
+        "intentClassification": "कमांड समझ नहीं आई",
+        "timeout": "वॉइस रिकग्निशन टाइमआउट"
+      }
+    },
+    "dropdown": {
+      "myProfile": "मेरी प्रोफ़ाइल",
+      "subscription": "सब्सक्रिप्शन",
+      "favorites": "पसंदीदा",
+      "downloads": "डाउनलोड",
+      "signOut": "साइन आउट"
+    },
+    "guest": "अतिथि",
+    "morningRitual": "सुबह की दिनचर्या",
+    "watchlist": "वॉचलिस्ट",
+    "favorites": "पसंदीदा",
+    "downloads": "डाउनलोड",
+    "settings": "सेटिंग्स",
+    "language": "भाषा",
+    "admin": "एडमिन",
+    "watchTime": "देखने का समय",
+    "minutes": "मिनट",
+    "hours": "घंटे",
+    "aiAssistant": "AI सहायक",
+    "voiceSettings": "वॉइस",
+    "subscriptionButton": "सब्सक्रिप्शन",
+    "recentActivity": "हाल की गतिविधि",
+    "justNow": "अभी",
+    "hoursAgo": "{{hours}} घंटे पहले",
+    "yesterday": "कल",
+    "noRecentActivity": "कोई हाल की गतिविधि नहीं",
+    "accountInfo": "खाता जानकारी",
+    "role": "भूमिका",
+    "accountSecurity": "खाता सुरक्षा",
+    "securityNote": "आपका खाता एन्क्रिप्टेड प्रमाणीकरण के साथ सुरक्षित है",
+    "lastLogin": "अंतिम लॉगिन",
+    "dangerZone": "खतरनाक क्षेत्र",
+    "invalidImageType": "कृपया एक मान्य छवि फ़ाइल चुनें (JPEG, PNG, WebP, या GIF)",
+    "imageTooLarge": "छवि बहुत बड़ी है। अधिकतम आकार 5MB है।",
+    "uploadSuccess": "अवतार सफलतापूर्वक अपडेट हो गया!",
+    "uploadFailed": "अवतार अपलोड करने में विफल। कृपया पुनः प्रयास करें।"
   },
   "settings": {
     "title": "सेटिंग्स",
@@ -443,7 +988,22 @@
     "privacy": "गोपनीयता",
     "privacyPolicy": "गोपनीयता नीति",
     "termsOfService": "सेवा की शर्तें",
-    "about": "के बारे में"
+    "about": "के बारे में",
+    "chatTranslation": "चैट अनुवाद",
+    "autoTranslate": "संदेशों का स्वतः अनुवाद करें",
+    "autoTranslateDescription": "चैट संदेशों को स्वचालित रूप से आपकी पसंदीदा भाषा में अनुवाद करें",
+    "display": "प्रदर्शन",
+    "homePageSections": "होम पेज अनुभाग",
+    "configureSections": "कॉन्फ़िगर करें कि आपके होम पेज पर कौन से अनुभाग दिखाई दें",
+    "visibleSections": "दृश्यमान अनुभाग",
+    "hiddenSections": "छिपे हुए अनुभाग",
+    "dragToReorder": "पुनर्क्रम के लिए खींचें",
+    "tapToHide": "छिपाने के लिए टैप करें",
+    "tapToShow": "दिखाने के लिए टैप करें",
+    "resetToDefault": "डिफ़ॉल्ट पर रीसेट करें",
+    "resetConfirmMessage": "क्या आप वाकई होम पेज अनुभागों को उनके डिफ़ॉल्ट कॉन्फ़िगरेशन पर रीसेट करना चाहते हैं?",
+    "sectionHidden": "अनुभाग छिपा",
+    "sectionShown": "अनुभाग दिखाया"
   },
   "player": {
     "loading": "लोड हो रहा है...",
@@ -471,6 +1031,47 @@
       "activeDevices": "वर्तमान में {{count}} डिवाइस(ओं) पर स्ट्रीमिंग:",
       "hint": "स्ट्रीमिंग स्लॉट खाली करने के लिए एक डिवाइस को डिस्कनेक्ट करें, या अधिक समवर्ती स्ट्रीम के लिए अपनी योजना को अपग्रेड करें।",
       "manageDevices": "डिवाइस प्रबंधित करें"
+    },
+    "live": "लाइव",
+    "play": "चलाएं",
+    "pause": "रोकें",
+    "mute": "म्यूट",
+    "unmute": "अनम्यूट",
+    "volume": "वॉल्यूम",
+    "albumArt": "{{title}} के लिए एल्बम आर्ट",
+    "seekBar": "प्लेबैक प्रगति",
+    "skipBack": "{{seconds}} सेकंड पीछे जाएं",
+    "skipForward": "30 सेकंड आगे जाएं",
+    "previousChapter": "पिछला अध्याय",
+    "nextChapter": "अगला अध्याय",
+    "skipBackward": "30 सेकंड पीछे जाएं",
+    "subscription": {
+      "requiredTitle": "सब्सक्रिप्शन आवश्यक",
+      "requiredMessage": "के लिए पेड सब्सक्रिप्शन आवश्यक है",
+      "upgradeInfo": "प्रीमियम सामग्री तक पहुंचने के लिए अपनी सब्सक्रिप्शन अपग्रेड करें",
+      "upgrade": "अभी अपग्रेड करें"
+    },
+    "chapters": "अध्याय",
+    "sceneSearch": {
+      "title": "सीन खोजें",
+      "placeholder": "सीन खोजें...",
+      "inputLabel": "सीन सर्च इनपुट",
+      "searching": "खोज रहे हैं...",
+      "noResults": "कोई सीन नहीं मिला",
+      "resultsFound": "{{count}} सीन मिले",
+      "searchError": "खोज विफल। कृपया पुनः प्रयास करें।",
+      "hint": "खोजने के लिए कम से कम 2 अक्षर टाइप करें",
+      "voiceReceived": "खोज रहे हैं: {{query}}",
+      "seekingTo": "{{time}} पर जा रहे हैं",
+      "previous": "पिछला",
+      "next": "अगला",
+      "result": {
+        "jumpTo": "{{time}} पर {{title}} पर जाएं",
+        "hint": "इस सीन पर जाने के लिए दबाएं"
+      },
+      "panelOpened": "सीन सर्च पैनल खुला",
+      "navigation": "सीन सर्च नेविगेशन",
+      "position": "परिणाम {{current}} / {{total}}"
     }
   },
   "content": {
@@ -497,7 +1098,16 @@
     "watchTrailer": "ट्रेलर देखें",
     "youMayAlsoLike": "आपको यह भी पसंद आ सकता है",
     "relatedContent": "संबंधित सामग्री",
-    "notFound": "सामग्री नहीं मिली"
+    "notFound": "सामग्री नहीं मिली",
+    "ep": "Ep",
+    "noEpisodesAvailable": "चलाने के लिए कोई एपिसोड उपलब्ध नहीं",
+    "loadingSeries": "सीरीज़ जानकारी लोड हो रही है...",
+    "votes": "वोट",
+    "imdbRating": "IMDB रेटिंग",
+    "previewPlaying": "प्रीव्यू चल रहा है",
+    "trailerPlaying": "ट्रेलर चल रहा है",
+    "availableSubtitles": "उपलब्ध सबटाइटल",
+    "subtitleSelected": "चयनित: {{language}}"
   },
   "errors": {
     "networkError": "नेटवर्क त्रुटि",
@@ -505,14 +1115,41 @@
     "tryAgain": "पुनः प्रयास करें",
     "offline": {
       "title": "इंटरनेट कनेक्शन नहीं",
-      "message": "आप वर्तमान में ऑफ़लाइन हैं।"
+      "message": "आप वर्तमान में ऑफ़लाइन हैं।",
+      "ttsMessage": "कोई इंटरनेट कनेक्शन नहीं। आप अब ऑफ़लाइन मोड में हैं।"
     },
     "online": {
       "title": "कनेक्शन बहाल",
-      "message": "आप वापस ऑनलाइन हैं।"
+      "message": "आप वापस ऑनलाइन हैं।",
+      "ttsMessage": "इंटरनेट कनेक्शन बहाल।"
     },
     "title": "त्रुटि",
-    "networkUnavailable": "नेटवर्क अनुपलब्ध"
+    "networkUnavailable": "नेटवर्क अनुपलब्ध",
+    "api": {
+      "badRequest": "कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
+      "unauthorized": "जारी रखने के लिए कृपया लॉग इन करें।",
+      "forbidden": "आपके पास इस सामग्री तक पहुंचने की अनुमति नहीं है।",
+      "notFound": "आप जो सामग्री खोज रहे हैं वह उपलब्ध नहीं है।",
+      "rateLimit": "आप बहुत अधिक अनुरोध कर रहे हैं। कृपया कुछ देर प्रतीक्षा करें।",
+      "serverError": "हमारे सर्वर में समस्या आ रही है। कृपया बाद में पुनः प्रयास करें।",
+      "unknown": "कुछ गलत हो गया। कृपया पुनः प्रयास करें।",
+      "networkTimeout": "हमारे सर्वर से कनेक्ट करने में असमर्थ। कृपया अपना कनेक्शन जांचें।",
+      "offlineMessage": "आप ऑफ़लाइन हैं। कृपया अपना इंटरनेट कनेक्शन जांचें।",
+      "requestFailed": "कुछ गलत हो गया। कृपया पुनः प्रयास करें।"
+    },
+    "voice": {
+      "permissionDenied": "वॉइस कमांड के लिए माइक्रोफोन एक्सेस आवश्यक है। कृपया सेटिंग्स में सक्षम करें।",
+      "recognitionFailed": "समझ नहीं आया। कृपया पुनः प्रयास करें।",
+      "commandFailed": "वॉइस कमांड विफल। कृपया पुनः प्रयास करें।"
+    },
+    "widget": {
+      "loadFailed": "विजेट लोड करने में असमर्थ। कृपया पुनः प्रयास करें।"
+    },
+    "buttons": {
+      "ok": "ठीक है",
+      "retry": "पुनः प्रयास करें",
+      "cancel": "रद्द करें"
+    }
   },
   "favorites": {
     "title": "पसंदीदा",
@@ -542,7 +1179,8 @@
       "judaism": "यहूदी धर्म",
       "podcasts": "पॉडकास्ट",
       "radio": "रेडियो"
-    }
+    },
+    "watched": "देखा गया"
   },
   "children": {
     "title": "बच्चे",
@@ -735,7 +1373,14 @@
     "speaking": "बोल रहे हैं",
     "ready": "तैयार",
     "tapToSpeak": "बोलने के लिए टैप करें",
-    "processing": "प्रोसेसिंग..."
+    "processing": "प्रोसेसिंग...",
+    "transcribing": "ट्रांसक्राइब हो रहा है...",
+    "tapToStop": "रिकॉर्डिंग रोकने के लिए टैप करें",
+    "pleaseWait": "कृपया प्रतीक्षा करें...",
+    "transcriptionNotAvailable": "ट्रांसक्रिप्शन उपलब्ध नहीं",
+    "transcriptionFailed": "ट्रांसक्रिप्शन विफल",
+    "micPermissionDenied": "माइक्रोफोन अनुमति अस्वीकृत",
+    "error": "सुन नहीं पाया, कृपया पुनः प्रयास करें"
   },
   "subtitles": {
     "off": "बंद",
@@ -887,5 +1532,323 @@
       "startUsing": "वॉइस कंट्रोल उपयोग करना शुरू करें"
     },
     "skip": "अभी छोड़ें"
+  },
+  "googleLogin": {
+    "cancelledError": "Google साइन-इन रद्द कर दिया गया",
+    "missingCode": "प्रमाणीकरण कोड गायब है",
+    "loginError": "Google से साइन इन करने में त्रुटि",
+    "redirecting": "लॉगिन पेज पर रीडायरेक्ट हो रहा है...",
+    "connecting": "Google से कनेक्ट हो रहा है..."
+  },
+  "auth": {
+    "login": "लॉगिन"
+  },
+  "voiceMode": {
+    "voiceOnly": "केवल वॉइस",
+    "voiceOnlyDesc": "कोई रिमोट कंट्रोल नहीं - पूर्ण वॉइस नेविगेशन",
+    "hybrid": "हाइब्रिड",
+    "hybridDesc": "वॉइस + रिमोट - कार्यों पर वॉइस फीडबैक",
+    "classic": "क्लासिक",
+    "classicDesc": "कोई वॉइस नहीं - केवल रिमोट कंट्रोल"
+  },
+  "help": {
+    "subtitle": "हम आज आपकी कैसे मदद कर सकते हैं?",
+    "email": "ईमेल सहायता",
+    "phone": "फोन सहायता",
+    "chat": "लाइव चैट",
+    "chatAvailable": "24/7 उपलब्ध",
+    "openTooltip": "सहायता टूलटिप खोलें",
+    "openHelp": "सहायता मेनू खोलें",
+    "howTo": "कैसे उपयोग करें",
+    "relatedArticles": "संबंधित लेख",
+    "stillNeedHelp": "अभी भी सहायता चाहिए?",
+    "contactSupport": "सहायता से संपर्क करें",
+    "previous": "पिछला",
+    "next": "अगला",
+    "getStarted": "शुरू करें",
+    "skipTutorial": "ट्यूटोरियल छोड़ें",
+    "actions": {
+      "search": "सहायता खोजें",
+      "docs": "दस्तावेज़ीकरण",
+      "faq": "FAQ",
+      "support": "सहायता से संपर्क करें",
+      "tutorial": "ट्यूटोरियल देखें"
+    },
+    "search": {
+      "placeholder": "सहायता खोजें...",
+      "noResults": "\"{{query}}\" के लिए कोई परिणाम नहीं मिला",
+      "noResultsHint": "अलग कीवर्ड आज़माएं या श्रेणियां ब्राउज़ करें",
+      "recent": "हाल का",
+      "popular": "लोकप्रिय"
+    },
+    "categories": {
+      "getting-started": "शुरू करें",
+      "features": "सुविधाएं",
+      "judaism": "यहूदी धर्म",
+      "platform-guides": "प्लेटफ़ॉर्म गाइड",
+      "account": "खाता",
+      "troubleshooting": "समस्या निवारण",
+      "parents": "माता-पिता के लिए",
+      "admin": "एडमिन गाइड",
+      "developer": "डेवलपर API"
+    },
+    "faq": {
+      "title": "अक्सर पूछे जाने वाले प्रश्न",
+      "q1": "मैं अपनी सब्सक्रिप्शन योजना कैसे बदलूं?",
+      "a1": "सेटिंग्स > सब्सक्रिप्शन पर जाएं और अपनी वर्तमान योजना देखें और बदलें। आप कभी भी अपग्रेड या डाउनग्रेड कर सकते हैं।",
+      "q2": "ऑफ़लाइन देखने के लिए सामग्री कैसे डाउनलोड करूं?",
+      "a2": "किसी भी सामग्री पर डाउनलोड आइकन टैप करें। डाउनलोड केवल मोबाइल डिवाइस पर उपलब्ध हैं।",
+      "q3": "मेरा वीडियो क्यों नहीं चल रहा है?",
+      "a3": "अपना इंटरनेट कनेक्शन जांचें। यदि समस्या बनी रहे, तो ऐप कैश साफ़ करें या ऐप पुनः आरंभ करें।",
+      "q4": "मैं अपनी सब्सक्रिप्शन कैसे रद्द करूं?",
+      "a4": "आप सेटिंग्स > सब्सक्रिप्शन > योजना रद्द करें से कभी भी अपनी सब्सक्रिप्शन रद्द कर सकते हैं। आपकी बिलिंग अवधि समाप्त होने तक आपके पास एक्सेस रहेगा।"
+    },
+    "onboarding": {
+      "welcome": {
+        "title": "Bayit+ में आपका स्वागत है",
+        "description": "दुनिया में कहीं भी इज़राइली मनोरंजन के लिए आपका घर"
+      },
+      "liveTv": {
+        "title": "लाइव TV",
+        "description": "समाचार, खेल और मनोरंजन सहित इज़राइली चैनल लाइव देखें"
+      },
+      "vod": {
+        "title": "ऑन-डिमांड सामग्री",
+        "description": "कभी भी फ़िल्में, सीरीज़ और डॉक्यूमेंट्री ब्राउज़ करें"
+      },
+      "voice": {
+        "title": "वॉइस कंट्रोल",
+        "description": "अपनी आवाज से ऐप नियंत्रित करने के लिए 'Bayit' बोलें"
+      },
+      "profiles": {
+        "title": "फैमिली प्रोफाइल",
+        "description": "व्यक्तिगत सिफारिशों के साथ प्रत्येक परिवार के सदस्य के लिए प्रोफाइल बनाएं"
+      }
+    }
+  },
+  "empty": {
+    "noContent": "कोई सामग्री उपलब्ध नहीं",
+    "tryAnotherCategory": "कोई अन्य श्रेणी चुनने का प्रयास करें",
+    "noPodcasts": "कोई पॉडकास्ट उपलब्ध नहीं",
+    "tryLater": "बाद में पुनः प्रयास करें",
+    "noResults": "कोई परिणाम नहीं मिला"
+  },
+  "audiobooks": {
+    "audiobook": "ऑडियोबुक",
+    "chapter": "अध्याय",
+    "chapters": "अध्याय",
+    "playChapter": "अध्याय चलाएं",
+    "noChapters": "कोई अध्याय उपलब्ध नहीं",
+    "notFound": "ऑडियोबुक नहीं मिला",
+    "author": "लेखक",
+    "narrator": "वाचक",
+    "duration": "अवधि",
+    "isbn": "ISBN"
+  },
+  "breadcrumbs": {
+    "series": "सीरीज़",
+    "movie": "फ़िल्म",
+    "watching": "देख रहे हैं",
+    "channel": "चैनल",
+    "station": "स्टेशन",
+    "podcast": "पॉडकास्ट",
+    "watchlist": "वॉचलिस्ट",
+    "downloads": "डाउनलोड"
+  },
+  "podcast": {
+    "selectLanguage": "भाषा चुनें",
+    "switchToLanguage": "{{language}} में बदलें",
+    "premiumRequiredForTranslation": "पॉडकास्ट अनुवाद के लिए प्रीमियम सब्सक्रिप्शन आवश्यक",
+    "player": {
+      "switchingLanguage": "बदल रहा है..."
+    },
+    "languages": {
+      "he": {
+        "short": "HE",
+        "full": "हिब्रू"
+      },
+      "en": {
+        "short": "EN",
+        "full": "अंग्रेज़ी"
+      },
+      "es": {
+        "short": "ES",
+        "full": "स्पेनिश"
+      }
+    }
+  },
+  "widgets": {
+    "empty": "अभी कोई विजेट नहीं",
+    "emptyHint": "आपके विजेट यहां दिखाई देंगे",
+    "emptyPersonal": "अभी कोई व्यक्तिगत विजेट नहीं",
+    "emptyPersonalHint": "अपना पहला व्यक्तिगत विजेट बनाएं या ऊपर सिस्टम विजेट जोड़ें",
+    "itemsTotal": "कुल विजेट",
+    "systemWidgets": "सिस्टम विजेट",
+    "systemWidgetsHint": "अपने संग्रह में विजेट ब्राउज़ करें और जोड़ें",
+    "myWidgets": "मेरे व्यक्तिगत विजेट",
+    "myWidgetsHint": "आपके द्वारा बनाए गए विजेट",
+    "personalWidgets": "मेरे विजेट",
+    "noSystemWidgets": "कोई सिस्टम विजेट उपलब्ध नहीं",
+    "added": "जोड़ा गया",
+    "add": "जोड़ें",
+    "remove": "हटाएं",
+    "show": "दिखाएं",
+    "hidden": "छिपा हुआ",
+    "addToCollection": "मेरे विजेट में जोड़ें",
+    "removeFromCollection": "मेरे विजेट से हटाएं",
+    "contentTypes": {
+      "liveChannel": "लाइव चैनल",
+      "iframe": "वेब सामग्री",
+      "podcast": "पॉडकास्ट",
+      "radio": "रेडियो",
+      "vod": "वीडियो",
+      "custom": "कस्टम",
+      "widget": "विजेट"
+    },
+    "form": {
+      "title": "विजेट बनाएं",
+      "basicInfo": "मूल जानकारी",
+      "titlePlaceholder": "विजेट शीर्षक",
+      "titleRequired": "विजेट शीर्षक आवश्यक है",
+      "descriptionPlaceholder": "विवरण (वैकल्पिक)",
+      "iconPlaceholder": "आइकन इमोजी (जैसे, 📺)",
+      "content": "सामग्री",
+      "fromLibrary": "लाइब्रेरी से",
+      "iframe": "iFrame",
+      "selectContent": "सामग्री चुनें (चैनल, पॉडकास्ट, शो, आदि)",
+      "iframeUrl": "iFrame URL",
+      "iframeUrlRequired": "iFrame URL आवश्यक है",
+      "iframeTitle": "iFrame शीर्षक",
+      "positionSize": "स्थिति और आकार",
+      "behavior": "व्यवहार",
+      "mutedByDefault": "डिफ़ॉल्ट रूप से म्यूट",
+      "closable": "बंद करने योग्य",
+      "draggable": "खींचने योग्य",
+      "widgetOrder": "विजेट क्रम",
+      "orderPlaceholder": "क्रम (0 = पहला)",
+      "saveWidget": "विजेट सहेजें",
+      "saving": "सहेज रहे हैं...",
+      "cancel": "रद्द करें",
+      "change": "बदलें"
+    },
+    "intro": {
+      "title": "विजेट में आपका स्वागत है",
+      "description": "अपने देखने के अनुभव को अनुकूलित करने के लिए शक्तिशाली फ्लोटिंग विजेट खोजें",
+      "watchVideo": "परिचय देखें",
+      "skip": "छोड़ें",
+      "dismiss": "फिर न दिखाएं",
+      "videoUnavailable": "वीडियो अस्थायी रूप से अनुपलब्ध",
+      "loadingMartyJr": "Marty Jr लोड हो रहा है...",
+      "loadingWidgets": "विजेट परिचय लोड हो रहा है..."
+    }
+  },
+  "trending": {
+    "title": "इज़राइल में क्या ट्रेंड कर रहा है",
+    "noTopics": "कोई ट्रेंडिंग विषय उपलब्ध नहीं",
+    "topStory": "शीर्ष कहानी",
+    "sources": "स्रोत",
+    "categories": {
+      "security": "सुरक्षा",
+      "politics": "राजनीति",
+      "tech": "तकनीक",
+      "culture": "संस्कृति",
+      "sports": "खेल",
+      "economy": "अर्थव्यवस्था",
+      "entertainment": "मनोरंजन",
+      "weather": "मौसम",
+      "health": "स्वास्थ्य",
+      "general": "सामान्य"
+    }
+  },
+  "cultures": {
+    "title": "अपनी संस्कृति चुनें",
+    "select": "संस्कृति चुनें",
+    "selectCulture": "अपनी संस्कृति चुनें",
+    "selectCultureDescription": "अपने अनुभव को व्यक्तिगत बनाने के लिए अपनी सांस्कृतिक समुदाय चुनें",
+    "changeCulture": "संस्कृति बदलें",
+    "israeli": {
+      "name": "इज़राइली",
+      "description": "इज़राइली प्रवासी समुदाय सामग्री"
+    },
+    "chinese": {
+      "name": "चीनी",
+      "description": "चीनी समुदाय सामग्री"
+    },
+    "japanese": {
+      "name": "जापानी",
+      "description": "जापानी समुदाय सामग्री"
+    },
+    "korean": {
+      "name": "कोरियाई",
+      "description": "कोरियाई समुदाय सामग्री"
+    },
+    "indian": {
+      "name": "भारतीय",
+      "description": "भारतीय समुदाय सामग्री"
+    }
+  },
+  "cultureTrending": {
+    "whatsHotIn": "{{location}} में क्या गरम है",
+    "noTopics": "कोई ट्रेंडिंग विषय उपलब्ध नहीं",
+    "sources": "स्रोत",
+    "categories": {
+      "security": "सुरक्षा",
+      "politics": "राजनीति",
+      "tech": "तकनीक",
+      "technology": "तकनीक",
+      "culture": "संस्कृति",
+      "sports": "खेल",
+      "economy": "अर्थव्यवस्था",
+      "finance": "वित्त",
+      "entertainment": "मनोरंजन",
+      "weather": "मौसम",
+      "health": "स्वास्थ्य",
+      "food": "भोजन",
+      "fashion": "फैशन",
+      "travel": "यात्रा",
+      "history": "इतिहास",
+      "expat": "प्रवासी जीवन",
+      "general": "सामान्य"
+    }
+  },
+  "cultureCities": {
+    "connectionTo": "{{city}} कनेक्शन",
+    "explore": "{{city}} का अन्वेषण करें",
+    "noContent": "इस शहर के लिए कोई सामग्री उपलब्ध नहीं",
+    "categories": {
+      "all": "सभी",
+      "history": "इतिहास",
+      "culture": "संस्कृति",
+      "finance": "वित्त",
+      "tech": "तकनीक",
+      "food": "भोजन",
+      "expat": "प्रवासी जीवन",
+      "news": "समाचार",
+      "entertainment": "मनोरंजन"
+    }
+  },
+  "clock": {
+    "israel": "इज़राइल",
+    "local": "स्थानीय",
+    "shabbatShalom": "शब्बत शालोम!",
+    "erevShabbat": "एरेव शब्बत",
+    "candleLighting": "मोमबत्ती जलाना",
+    "parasha": "पराशा"
+  },
+  "ritual": {
+    "title": "सुबह की दिनचर्या",
+    "greeting": "सुप्रभात!",
+    "israelUpdate": "इज़राइल में दोपहर है, समाचार चल रहे घटनाक्रमों पर रिपोर्ट कर रहे हैं",
+    "recommendation": "हम सुबह की खबरों से शुरू करने और फिर रेडियो पर जाने की सलाह देते हैं",
+    "preparingRitual": "आपकी सुबह की दिनचर्या तैयार हो रही है...",
+    "israelTime": "इज़राइल समय",
+    "day": "दिन",
+    "letsStart": "शुरू करें",
+    "skipToday": "आज के लिए छोड़ें",
+    "finish": "समाप्त करें",
+    "noContentNow": "अभी कोई सामग्री उपलब्ध नहीं",
+    "typeLive": "लाइव",
+    "typeRadio": "रेडियो",
+    "typeVideo": "वीडियो"
   }
 }

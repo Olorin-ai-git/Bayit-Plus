@@ -53,7 +53,23 @@
     "expand": "বিস্তারিত দেখুন",
     "collapse": "সংক্ষিপ্ত করুন",
     "upgrade": "প্রিমিয়ামে আপগ্রেড করুন",
-    "skip": "এড়িয়ে যান"
+    "skip": "এড়িয়ে যান",
+    "confirmDelete": "মুছে ফেলা নিশ্চিত করুন",
+    "partialSuccess": "আংশিক সফল",
+    "clearSelection": "সাফ করুন",
+    "dismiss": "বাতিল করুন",
+    "refresh": "রিফ্রেশ",
+    "refreshing": "রিফ্রেশ হচ্ছে...",
+    "refreshData": "ডেটা রিফ্রেশ করুন",
+    "dismissError": "ত্রুটি বাতিল করুন",
+    "closeHint": "বর্তমান স্ক্রিন বন্ধ করে",
+    "cancelHint": "বর্তমান কাজ বাতিল করে",
+    "loadingArticle": "নিবন্ধ লোড হচ্ছে...",
+    "watch": "দেখুন",
+    "share": "শেয়ার করুন",
+    "noContent": "কোনো কন্টেন্ট নেই",
+    "premium": "প্রিমিয়াম",
+    "poweredBy": "দ্বারা চালিত"
   },
   "demo": {
     "banner": "ডেমো মোড",
@@ -69,7 +85,17 @@
     },
     "shabbat": "শাব্বাত",
     "until_shabbat": "শাব্বাত পর্যন্ত",
-    "premium_plan": "প্রিমিয়াম"
+    "premium_plan": "প্রিমিয়াম",
+    "search_interpretation": "\"{{query}}\" খুঁজুন",
+    "suggestions": {
+      "0": "ফাউদা",
+      "1": "শটিসেল",
+      "2": "তেহরান",
+      "3": "দ্য আরবিট্রেটর",
+      "4": "লেবার"
+    },
+    "assistant_response": "আমি ফাউদা সুপারিশ করি - একটি চমৎকার থ্রিলার সিরিজ!",
+    "morning_greeting": "সুপ্রভাত! আজ আবহাওয়া সুন্দর, ইসরায়েল থেকে কিছু গুরুত্বপূর্ণ সংবাদ আছে, এবং আমি বিশেষভাবে আপনার জন্য কন্টেন্ট নির্বাচন করেছি।"
   },
   "hero": {
     "watch": "দেখুন",
@@ -97,8 +123,32 @@
       "emailRequired": "ইমেইল প্রয়োজন",
       "passwordRequired": "পাসওয়ার্ড প্রয়োজন",
       "loginFailed": "লগইন ব্যর্থ।",
-      "fillAllFields": "সব ফিল্ড পূরণ করুন"
-    }
+      "fillAllFields": "সব ফিল্ড পূরণ করুন",
+      "googleFailed": "Google সাইন-ইন ব্যর্থ। আবার চেষ্টা করুন।"
+    },
+    "termsNotice": "সাইন ইন করে, আপনি আমাদের সেবার শর্তাবলী এবং গোপনীয়তা নীতিতে সম্মত হচ্ছেন",
+    "qrInstructions": "দ্রুত লগইনের জন্য আপনার ফোন দিয়ে কোডটি স্ক্যান করুন",
+    "methodQR": "QR কোড",
+    "methodVoice": "ভয়েস",
+    "methodTraditional": "ইমেইল",
+    "qrTitle": "লগইন করতে স্ক্যান করুন",
+    "qrDescription": "টাইপ না করে লগইন করতে আপনার ফোন দিয়ে এই QR কোড স্ক্যান করুন",
+    "expiresIn": "৫ মিনিটে মেয়াদ শেষ",
+    "companionConnected": "ফোন সংযুক্ত!",
+    "authenticating": "লগইন করা হচ্ছে...",
+    "sessionExpired": "সেশনের মেয়াদ শেষ",
+    "refreshQR": "নতুন কোড তৈরি করুন",
+    "generatingQR": "QR কোড তৈরি হচ্ছে...",
+    "howItWorks": "কিভাবে কাজ করে:",
+    "step1": "আপনার ফোনে ক্যামেরা খুলুন",
+    "step2": "উপরের QR কোড স্ক্যান করুন",
+    "step3": "আপনার ফোনে লগইন করুন",
+    "step4": "TV স্বয়ংক্রিয়ভাবে লগইন হবে!",
+    "voicePlaceholder": "আপনার উত্তর টাইপ করুন...",
+    "send": "পাঠান",
+    "createAccount": "অ্যাকাউন্ট তৈরি করুন",
+    "bayitThinking": "Bayit চিন্তা করছে...",
+    "unexpectedError": "একটি অপ্রত্যাশিত ত্রুটি হয়েছে"
   },
   "register": {
     "title": "অ্যাকাউন্ট তৈরি করুন",
@@ -117,7 +167,28 @@
     "and": "এবং",
     "privacyPolicy": "গোপনীয়তা নীতি",
     "haveAccount": "ইতিমধ্যে অ্যাকাউন্ট আছে?",
-    "signIn": "সাইন ইন করুন"
+    "signIn": "সাইন ইন করুন",
+    "registering": "সাইন আপ হচ্ছে...",
+    "continueWithGoogle": "Google দিয়ে সাইন আপ করুন",
+    "fullName": "পুরো নাম",
+    "loginLink": "লগইন",
+    "placeholders": {
+      "fullName": "রাহুল দাস",
+      "email": "your@email.com",
+      "password": "কমপক্ষে ৮টি অক্ষর",
+      "confirmPassword": "আবার পাসওয়ার্ড লিখুন"
+    },
+    "errors": {
+      "nameRequired": "নাম প্রয়োজন",
+      "emailRequired": "ইমেইল প্রয়োজন",
+      "passwordRequired": "পাসওয়ার্ড প্রয়োজন",
+      "passwordTooShort": "পাসওয়ার্ড কমপক্ষে ৮ অক্ষর হতে হবে",
+      "passwordMismatch": "পাসওয়ার্ড মিলছে না",
+      "acceptTerms": "আপনাকে সেবার শর্তাবলী এবং গোপনীয়তা নীতি মেনে নিতে হবে",
+      "fillAllFields": "সব ফিল্ড পূরণ করুন",
+      "registrationFailed": "নিবন্ধন ব্যর্থ। আবার চেষ্টা করুন।",
+      "googleFailed": "Google দিয়ে সাইন আপ ব্যর্থ। আবার চেষ্টা করুন।"
+    }
   },
   "nav": {
     "home": "হোম",
@@ -143,7 +214,11 @@
     "subscribe": "সাবস্ক্রাইব করুন",
     "admin": "অ্যাডমিন",
     "games": "গেমস",
-    "friends": "বন্ধুরা"
+    "friends": "বন্ধুরা",
+    "support": "সাপোর্ট",
+    "discover": "আবিষ্কার করুন",
+    "plans": "প্ল্যান",
+    "privacy": "গোপনীয়তা নীতি"
   },
   "epg": {
     "title": "TV গাইড",
@@ -155,7 +230,44 @@
     "jumpToNow": "এখনে যান",
     "errorTitle": "TV গাইড লোড করতে ব্যর্থ",
     "noPrograms": "কোনো প্রোগ্রাম নেই",
-    "noChannels": "কোনো চ্যানেল নেই"
+    "noChannels": "কোনো চ্যানেল নেই",
+    "il": "IL",
+    "local": "স্থানীয়",
+    "goBack": "← {{hours}} ঘণ্টা",
+    "goForward": "{{hours}} ঘণ্টা →",
+    "toggleTimezone": "সময় অঞ্চল পরিবর্তন করুন",
+    "errorLoading": "TV গাইড ডেটা লোড করা যায়নি",
+    "recordProgram": "প্রোগ্রাম রেকর্ড করুন",
+    "channel": "চ্যানেল",
+    "enableSubtitles": "সাবটাইটেল সক্রিয় করুন",
+    "subtitleLanguage": "সাবটাইটেল ভাষা",
+    "storageEstimate": "স্টোরেজ অনুমান",
+    "availableSpace": "উপলব্ধ স্থান",
+    "lowStorage": "কম স্টোরেজ সতর্কতা",
+    "lowStorageMessage": "আপনার স্টোরেজ কম হচ্ছে। পুরানো রেকর্ডিং মুছে ফেলার কথা বিবেচনা করুন।",
+    "scheduleRecording": "রেকর্ডিং সময়সূচী করুন",
+    "scheduledRecordingNotSupported": "সময়সূচীত রেকর্ডিং এখনও সমর্থিত নয়। শুধুমাত্র তাৎক্ষণিক রেকর্ডিং উপলব্ধ।",
+    "recordingFailed": "রেকর্ডিং শুরু/সময়সূচী করতে ব্যর্থ",
+    "smartSearch": "স্মার্ট সার্চ",
+    "smartSearchSubtitle": "প্রাকৃতিক ভাষায় প্রশ্ন করুন",
+    "smartSearchPlaceholder": "যেমন, আজ রাতে অভিনেত্রী তালি শ্যারনের সব শো দেখান",
+    "searchPlaceholder": "প্রোগ্রাম, চ্যানেল, অভিনেতা খুঁজুন...",
+    "premiumRequired": "প্রিমিয়াম বৈশিষ্ট্য",
+    "premiumRequiredMessage": "স্মার্ট সার্চ আপনার প্রশ্ন বুঝতে AI ব্যবহার করে। এই বৈশিষ্ট্য অ্যাক্সেস করতে প্রিমিয়ামে আপগ্রেড করুন।",
+    "searchWithAI": "AI দিয়ে খুঁজুন",
+    "searching": "খুঁজছে...",
+    "tryThese": "এই উদাহরণগুলি চেষ্টা করুন",
+    "exampleQuery1": "আজ রাতে অভিনেত্রী তালি শ্যারনের সব শো দেখান",
+    "exampleQuery2": "এই সপ্তাহে কোন কমেডি শো আছে?",
+    "exampleQuery3": "চ্যানেল ১১-এ ইতিহাস সম্পর্কে ডকুমেন্টারি খুঁজুন",
+    "exampleQuery4": "আগামীকাল সকালে সব সংবাদ প্রোগ্রাম দেখান",
+    "aiDisclaimer": "Claude AI দ্বারা চালিত। প্রোগ্রাম ডেটার উপলব্ধতার উপর ভিত্তি করে ফলাফল পরিবর্তিত হতে পারে।",
+    "interpretationTitle": "আমি যা বুঝেছি",
+    "noResultsFound": "আপনার প্রশ্নের সাথে মিলে যায় এমন কোনো প্রোগ্রাম পাওয়া যায়নি",
+    "noProgramsScheduled": "কোনো প্রোগ্রাম সময়সূচীত নেই",
+    "noProgramsFound": "কোনো প্রোগ্রাম পাওয়া যায়নি",
+    "noDataAvailable": "TV গাইড ডেটা উপলব্ধ নেই",
+    "live": "লাইভ"
   },
   "home": {
     "continueWatching": "দেখা চালিয়ে যান",
@@ -169,7 +281,44 @@
     "documentaries": "ডকুমেন্টারি",
     "loadingContent": "কন্টেন্ট লোড হচ্ছে...",
     "liveNow": "এখন লাইভ",
-    "categories": "বিভাগ"
+    "categories": "বিভাগ",
+    "showOnlyWithSubtitles": "শুধুমাত্র সাবটাইটেল সহ দেখান",
+    "israeli-movies": "ইসরায়েলি সিনেমা",
+    "israeli-series": "ইসরায়েলি সিরিজ",
+    "action": "অ্যাকশন ও থ্রিলার",
+    "trendingInIsrael": "ইসরায়েলে ট্রেন্ডিং",
+    "jerusalemConnection": "জেরুজালেম সংযোগ",
+    "telAvivConnection": "তেল আভিভ সংযোগ",
+    "podcasts": "পডকাস্ট",
+    "audiobooks": "অডিওবুক",
+    "israelis_in_city": "{{city}}, {{state}}-এ ইসরায়েলিরা",
+    "israeli_businesses": "{{city}}, {{state}}-এ ইসরায়েলি ব্যবসা",
+    "israeli_businesses_nearby": "আপনার কাছাকাছি ইসরায়েলি ব্যবসা - {{city}} থেকে",
+    "searching_businesses": "{{city}}-তে ইসরায়েলি ব্যবসা খোঁজা হচ্ছে...",
+    "no_businesses_found": "{{city}}-তে কোনো ইসরায়েলি ব্যবসা পাওয়া যায়নি",
+    "businesses_load_error": "ব্যবসার তালিকা লোড করা যায়নি। আবার চেষ্টা করুন।",
+    "carousel": {
+      "fauda": {
+        "title": "ফাউদা",
+        "subtitle": "সিজন ৪ - এখন স্ট্রিমিং",
+        "description": "জনপ্রিয় ইসরায়েলি সিরিজ সাসপেন্স এবং অ্যাকশনে ভরা চতুর্থ সিজন নিয়ে ফিরে এসেছে"
+      },
+      "shtisel": {
+        "title": "শটিসেল",
+        "subtitle": "সব সিজন উপলব্ধ",
+        "description": "জেরুজালেমের অতি-অর্থোডক্স পাড়ায় শটিসেল পরিবারকে অনুসরণ করুন"
+      },
+      "tehran": {
+        "title": "তেহরান",
+        "subtitle": "সিজন ২",
+        "description": "একজন মোসাদ এজেন্ট ইরানে বিপজ্জনক মিশনে"
+      },
+      "live": {
+        "title": "লাইভ - Kan 11",
+        "subtitle": "এখনই দেখুন",
+        "description": "সংবাদ, সমসাময়িক বিষয় এবং মানসম্পন্ন কন্টেন্ট"
+      }
+    }
   },
   "search": {
     "title": "খুঁজুন",
@@ -185,7 +334,10 @@
       "vod": "সিনেমা ও সিরিজ",
       "live": "চ্যানেল",
       "radio": "রেডিও",
-      "podcast": "পডকাস্ট"
+      "podcast": "পডকাস্ট",
+      "moviesAndSeries": "সিনেমা ও সিরিজ",
+      "channels": "চ্যানেল",
+      "podcasts": "পডকাস্ট"
     },
     "controls": {
       "placeholder": "Search for content...",
@@ -207,6 +359,20 @@
     },
     "empty": {
       "clearSearch": "Clear search"
+    },
+    "voicePlaceholder": "এখন বলুন...",
+    "noResultsHint": "ভিন্ন কীওয়ার্ড চেষ্টা করুন বা আপনার ফিল্টার পরিবর্তন করুন",
+    "tryDifferent": "ভিন্ন অনুসন্ধান শব্দ চেষ্টা করুন",
+    "resultsFor": "ফলাফল",
+    "resultsFound": "\"{{query}}\"-এর জন্য {{count}}টি ফলাফল পাওয়া গেছে",
+    "trending": "ট্রেন্ডিং অনুসন্ধান",
+    "promptTitle": "আপনি কী খুঁজছেন?",
+    "promptDescription": "আপনার পছন্দের কন্টেন্ট খুঁজুন বা ভয়েস সার্চ ব্যবহার করুন",
+    "loadingMore": "আরও ফলাফল লোড হচ্ছে...",
+    "viewMode": {
+      "grid": "গ্রিড",
+      "list": "তালিকা",
+      "cards": "কার্ড"
     }
   },
   "liveTV": {
@@ -253,6 +419,48 @@
       "sports": "খেলাধুলা",
       "history": "ইতিহাস",
       "educational": "শিক্ষামূলক"
+    },
+    "tryLater": "পরে আবার চেষ্টা করুন",
+    "selectLanguage": "অডিও ভাষা",
+    "switchToLanguage": "{{language}}-তে পরিবর্তন করুন",
+    "languageSwitched": "এখন {{language}}-তে চলছে",
+    "availableInLanguage": "{{language}}-তে উপলব্ধ",
+    "availableLanguages": "একাধিক ভাষায় উপলব্ধ",
+    "downloadForOffline": "অফলাইনে শোনার জন্য ডাউনলোড করুন",
+    "downloadProgress": "ডাউনলোড হচ্ছে {{progress}}%",
+    "downloaded": "ডাউনলোড হয়েছে",
+    "downloadFailed": "ডাউনলোড ব্যর্থ",
+    "retryDownload": "ডাউনলোড পুনরায় চেষ্টা করুন",
+    "deleteDownload": "ডাউনলোড মুছুন",
+    "confirmDelete": "ডাউনলোড করা অডিও মুছবেন?",
+    "quality": {
+      "label": "অডিও মান",
+      "low": "নিম্ন (64 kbps) - ডেটা সাশ্রয়",
+      "medium": "মাঝারি (96 kbps) - সুষম",
+      "high": "উচ্চ (128 kbps) - সেরা মান"
+    },
+    "languages": {
+      "he": {
+        "short": "হিব্রু",
+        "full": "হিব্রু"
+      },
+      "en": {
+        "short": "ইংরেজি",
+        "full": "ইংরেজি"
+      }
+    },
+    "player": {
+      "switchingLanguage": "অডিও ভাষা পরিবর্তন হচ্ছে...",
+      "languageSwitchError": "ভাষা পরিবর্তন করা যায়নি",
+      "loadingTranslation": "অনুবাদিত অডিও লোড হচ্ছে...",
+      "translationUnavailable": "অনুবাদ এখনও উপলব্ধ নয়"
+    },
+    "onboarding": {
+      "multiLanguageTitle": "বহু-ভাষা অডিও",
+      "multiLanguageDescription": "এই পডকাস্ট হিব্রু এবং ইংরেজিতে উপলব্ধ। পরিবর্তন করতে ভাষা সিলেক্টরে ট্যাপ করুন।",
+      "downloadTitle": "অফলাইনে শুনুন",
+      "downloadDescription": "ইন্টারনেট সংযোগ ছাড়া শুনতে পর্ব ডাউনলোড করুন।",
+      "gotIt": "বুঝেছি"
     }
   },
   "vod": {
@@ -270,7 +478,14 @@
       "action": "অ্যাকশন",
       "documentary": "ডকুমেন্টারি",
       "kids": "শিশু"
-    }
+    },
+    "showOnlyWithSubtitles": "শুধুমাত্র সাবটাইটেল সহ দেখান",
+    "allCategories": "সব",
+    "emptyTitle": "কোনো কন্টেন্ট নেই",
+    "emptyDescription": "অন্য বিভাগ নির্বাচন করুন",
+    "allContent": "সব কন্টেন্ট",
+    "noContent": "কোনো কন্টেন্ট নেই",
+    "noContentInCategory": "এই বিভাগে কোনো কন্টেন্ট নেই"
   },
   "account": {
     "title": "আমার অ্যাকাউন্ট",
@@ -281,7 +496,14 @@
     "login": "লগইন",
     "guest": "অতিথি",
     "premium": "প্রিমিয়াম",
-    "basic": "বেসিক"
+    "basic": "বেসিক",
+    "manageSubscription": "সাবস্ক্রিপশন পরিচালনা করুন",
+    "personalDetails": "ব্যক্তিগত তথ্য",
+    "billing": "বিলিং ও পেমেন্ট",
+    "register": "নিবন্ধন করুন",
+    "email": "ইমেইল",
+    "password": "পাসওয়ার্ড",
+    "name": "নাম"
   },
   "profile": {
     "title": "আমার প্রোফাইল",
@@ -302,7 +524,14 @@
     "unlockPremium": "প্রিমিয়াম বৈশিষ্ট্য আনলক করুন",
     "unlockPremiumDescription": "একচেটিয়া বিষয়বস্তু এবং বৈশিষ্ট্য উপভোগ করতে আপগ্রেড করুন",
     "tabs": {
-      "devices": "ডিভাইস"
+      "devices": "ডিভাইস",
+      "personal": "ব্যক্তিগত",
+      "overview": "সারাংশ",
+      "subscription": "সাবস্ক্রিপশন",
+      "notifications": "বিজ্ঞপ্তি",
+      "security": "নিরাপত্তা",
+      "ai": "AI ও ভয়েস",
+      "voice": "ভয়েস ও অ্যাক্সেসিবিলিটি"
     },
     "devices": {
       "registeredDevices": "নিবন্ধিত ডিভাইস",
@@ -320,8 +549,241 @@
       "disconnectSuccessMessage": "ডিভাইসটি সফলভাবে সংযোগ বিচ্ছিন্ন হয়েছে।",
       "disconnectSuccessWithSessions": "ডিভাইস সংযোগ বিচ্ছিন্ন হয়েছে এবং {{count}}টি সক্রিয় সেশন শেষ হয়েছে।",
       "thisDevice": "এই ডিভাইস",
-      "loading": "ডিভাইস লোড হচ্ছে..."
-    }
+      "loading": "ডিভাইস লোড হচ্ছে...",
+      "minutesAgo_one": "১ মিনিট আগে",
+      "minutesAgo_other": "{{count}} মিনিট আগে",
+      "hoursAgo_one": "১ ঘণ্টা আগে",
+      "hoursAgo_other": "{{count}} ঘণ্টা আগে",
+      "daysAgo_one": "১ দিন আগে",
+      "daysAgo_other": "{{count}} দিন আগে",
+      "disconnectDevice": "ডিভাইস সংযোগ বিচ্ছিন্ন করুন"
+    },
+    "profileDetails": "প্রোফাইল বিবরণ",
+    "notificationSettings": "বিজ্ঞপ্তি সেটিংস",
+    "security": "নিরাপত্তা",
+    "changePassword": "পাসওয়ার্ড পরিবর্তন করুন",
+    "updatePassword": "আপনার পাসওয়ার্ড আপডেট করুন",
+    "connectedDevices": "সংযুক্ত ডিভাইস",
+    "manageDevices": "আপনার অ্যাকাউন্টে সংযুক্ত ডিভাইস পরিচালনা করুন",
+    "twoFactorAuth": "দুই-ফ্যাক্টর প্রমাণীকরণ",
+    "addExtraSecurity": "অতিরিক্ত নিরাপত্তা স্তর যোগ করুন",
+    "address": {
+      "line1": "123 মেইন স্ট্রিট",
+      "line2": "তেল আভিভ, ইসরায়েল 6100000"
+    },
+    "free": "বিনামূল্যে",
+    "premiumPrice": "$7.99/মাস",
+    "familyPrice": "$12.99/মাস",
+    "remaining": "বাকি",
+    "subscription": {
+      "currentPlan": "বর্তমান প্ল্যান",
+      "renewsOn": "নবায়ন হবে",
+      "manageSubscription": "সাবস্ক্রিপশন পরিচালনা করুন",
+      "cancelSubscription": "সাবস্ক্রিপশন বাতিল করুন",
+      "noActivePlan": "কোনো সক্রিয় সাবস্ক্রিপশন নেই",
+      "selectPlan": "একটি প্ল্যান নির্বাচন করুন"
+    },
+    "notifications": "বিজ্ঞপ্তি",
+    "ai": {
+      "title": "AI ও ব্যক্তিগতকরণ",
+      "description": "AI-চালিত বৈশিষ্ট্য কনফিগার করুন",
+      "assistant": "AI সহায়ক",
+      "assistantDesc": "ব্যক্তিগত সুপারিশ এবং সাহায্য",
+      "chatbot": "AI সহায়ক",
+      "chatbotEnabled": "AI সহায়ক সক্রিয় করুন",
+      "chatbotEnabledDesc": "কন্টেন্ট নেভিগেট করতে সাহায্য পান",
+      "saveHistory": "কথোপকথন ইতিহাস সংরক্ষণ করুন",
+      "saveHistoryDesc": "পূর্ববর্তী কথোপকথন মনে রাখুন",
+      "recommendations": "সুপারিশ",
+      "personalizedRecs": "ব্যক্তিগত সুপারিশ",
+      "personalizedRecsDesc": "ইতিহাসের উপর ভিত্তি করে কন্টেন্ট সাজেশন",
+      "privacy": "গোপনীয়তা ও ডেটা",
+      "privacyDesc": "আপনার ডেটা এনক্রিপ্ট করা এবং সুরক্ষিত",
+      "dataConsent": "ব্যবহার বিশ্লেষণ",
+      "dataConsentDesc": "AI বৈশিষ্ট্য উন্নত করতে সাহায্য করুন",
+      "privacyNote": "আপনার ডেটা এনক্রিপ্ট করা এবং সুরক্ষিত"
+    },
+    "voice": {
+      "title": "ভয়েস নিয়ন্ত্রণ",
+      "description": "হ্যান্ডস-ফ্রি নেভিগেশন",
+      "enabled": "ভয়েস কমান্ড",
+      "enabledDesc": "আপনার কণ্ঠ দিয়ে অ্যাপ নিয়ন্ত্রণ করুন",
+      "tts": "টেক্সট-টু-স্পিচ",
+      "ttsDesc": "AI প্রতিক্রিয়া উচ্চস্বরে পড়া হয়",
+      "wakeWord": "ওয়েক ওয়ার্ড সনাক্তকরণ",
+      "wakeWordDesc": "সক্রিয় করতে \"Bayit\" বলুন",
+      "operationMode": "অপারেশন মোড",
+      "operationModeDesc": "অ্যাপের সাথে কিভাবে ইন্টারঅ্যাক্ট করবেন তা বেছে নিন",
+      "voiceSearch": "ভয়েস সার্চ",
+      "voiceSearchEnabled": "ভয়েস সার্চ সক্রিয় করুন",
+      "voiceSearchEnabledDesc": "আপনার কণ্ঠ ব্যবহার করে কন্টেন্ট খুঁজুন",
+      "constantListening": "সর্বদা শোনার মোড",
+      "constantListeningDesc": "বোতাম না চেপে ক্রমাগত ভয়েস কমান্ড শুনুন",
+      "constantListeningPrivacy": "শুধুমাত্র কথা সনাক্ত হলে অডিও সার্ভারে পাঠানো হয়",
+      "holdButtonMode": "কথা বলতে বোতাম ধরুন",
+      "holdButtonModeDesc": "সর্বদা শোনার পরিবর্তে মাইক্রোফোন বোতাম চেপে ধরুন",
+      "sensitivity": "ভয়েস সনাক্তকরণ সংবেদনশীলতা",
+      "sensitivityDesc": "ভয়েস সনাক্তকরণ কতটা প্রতিক্রিয়াশীল তা সামঞ্জস্য করুন",
+      "sensitivityLow": "কম (কম ভুল ট্রিগার)",
+      "sensitivityMedium": "মাঝারি (সুষম)",
+      "sensitivityHigh": "উচ্চ (সবচেয়ে প্রতিক্রিয়াশীল)",
+      "silenceThreshold": "নীরবতা সনাক্তকরণ",
+      "silenceThresholdDesc": "প্রক্রিয়াকরণের আগে কথা বলার পরে কতক্ষণ অপেক্ষা করতে হবে",
+      "language": "ভয়েস ভাষা",
+      "accessibility": "অ্যাক্সেসিবিলিটি",
+      "autoSubtitle": "স্বয়ংক্রিয় সাবটাইটেল সক্রিয়",
+      "autoSubtitleDesc": "কন্টেন্ট চালানোর সময় স্বয়ংক্রিয়ভাবে সাবটাইটেল দেখান",
+      "highContrast": "উচ্চ কনট্রাস্ট মোড",
+      "highContrastDesc": "ভাল দৃশ্যমানতার জন্য কনট্রাস্ট বাড়ান",
+      "textSize": "টেক্সট আকার",
+      "textSizeSmall": "ছোট",
+      "textSizeMedium": "মাঝারি",
+      "textSizeLarge": "বড়",
+      "voiceOnlyInfo": "শুধুমাত্র ভয়েস মোড",
+      "voiceOnlyDetails": "সক্রিয় করতে \"Hi Bayit\" বলুন। রিমোট কন্ট্রোল নিষ্ক্রিয়। সম্পূর্ণ ভয়েস কমান্ড দিয়ে নেভিগেট করুন।",
+      "hybridInfo": "হাইব্রিড মোড",
+      "hybridDetails": "ভয়েস বা রিমোট কন্ট্রোল ব্যবহার করুন। নন-ভয়েস অ্যাকশনে ভয়েস ফিডব্যাক।",
+      "classicInfo": "ক্লাসিক মোড",
+      "classicDetails": "সব ভয়েস বৈশিষ্ট্য নিষ্ক্রিয়। শুধুমাত্র রিমোট কন্ট্রোল।",
+      "textToSpeech": "ভয়েস প্রতিক্রিয়া",
+      "ttsEnabled": "ভয়েস প্রতিক্রিয়া সক্রিয় করুন",
+      "ttsEnabledDesc": "অ্যাপ আপনার ভয়েস কমান্ডে প্রতিক্রিয়া বলবে",
+      "ttsVolume": "ভয়েস ভলিউম",
+      "ttsSpeed": "কথা বলার গতি",
+      "hybridFeedback": "ইন্টারঅ্যাক্টিভ ফিডব্যাক",
+      "voiceFeedback": "অ্যাকশনে ভয়েস ফিডব্যাক",
+      "voiceFeedbackDesc": "রিমোট বা বোতাম ক্লিক করলে ভয়েস নিশ্চিতকরণ পান",
+      "feedbackExample": "উদাহরণ: একটি মুভিতে ক্লিক করুন → অ্যাপ বলে \"[মুভির নাম] চালানো হচ্ছে\"",
+      "state": {
+        "idle": "প্রস্তুত",
+        "listening": "শুনছে...",
+        "processing": "প্রক্রিয়াকরণ হচ্ছে...",
+        "speaking": "বলছে",
+        "error": "ত্রুটি"
+      },
+      "avatar": {
+        "title": "অবতার প্রদর্শন",
+        "description": "ভয়েস ইন্টারঅ্যাকশনের সময় ওলোরিন জাদুকর কিভাবে দেখাবে তা বেছে নিন",
+        "currentMode": "বর্তমান মোড",
+        "modes": {
+          "full": "পূর্ণ স্ক্রিন",
+          "compact": "কম্প্যাক্ট",
+          "minimal": "ন্যূনতম",
+          "iconOnly": "শুধু আইকন"
+        },
+        "descriptions": {
+          "full": "অ্যানিমেশন, ট্রান্সক্রিপ্ট এবং সম্পূর্ণ ভয়েস ইন্টারঅ্যাকশন সহ সম্পূর্ণ জাদুকর",
+          "compact": "অ্যানিমেশন সহ ফ্লোটিং বৃত্তাকার জাদুকর প্যানেল",
+          "minimal": "শুধুমাত্র স্ট্যাটাস ইন্ডিকেটর সহ ওয়েভফর্ম বার",
+          "iconOnly": "লুকানো - শুধুমাত্র মাইক্রোফোন বোতাম দৃশ্যমান"
+        },
+        "features": {
+          "wizard": "জাদুকর চরিত্র",
+          "animations": "অ্যানিমেটেড অঙ্গভঙ্গি",
+          "waveform": "অডিও ওয়েভফর্ম",
+          "transcript": "লাইভ ট্রান্সক্রিপ্ট"
+        },
+        "closePanel": "ভয়েস প্যানেল বন্ধ করুন",
+        "closePanelHint": "ভয়েস ইন্টারঅ্যাকশন প্যানেল বন্ধ করতে ট্যাপ করুন",
+        "audioVisualization": "অডিও ভিজুয়ালাইজেশন",
+        "compactMode": "কম্প্যাক্ট ভয়েস জাদুকর",
+        "wizardAvatar": "জাদুকর অবতার",
+        "wizardCharacter": "ওলোরিন জাদুকর চরিত্র",
+        "fullMode": "পূর্ণ স্ক্রিন ভয়েস জাদুকর",
+        "wizardInteraction": "জাদুকরের সাথে ভয়েস ইন্টারঅ্যাকশন",
+        "openVoice": "ভয়েস সহায়ক খুলুন",
+        "openVoiceHint": "ওলোরিন জাদুকরের সাথে ভয়েস ইন্টারঅ্যাকশন সক্রিয় করুন",
+        "wizardHat": "জাদুকর টুপি আইকন"
+      },
+      "gesture": {
+        "browsing": "জাদুকর ব্রাউজ করছে",
+        "cheering": "জাদুকর উল্লাস করছে",
+        "clapping": "জাদুকর হাততালি দিচ্ছে",
+        "conjuring": "জাদুকর যাদু করছে",
+        "crying": "জাদুকর কাঁদছে",
+        "shrugging": "জাদুকর কাঁধ ঝাঁকাচ্ছে",
+        "facepalm": "জাদুকর ফেসপাম করছে"
+      },
+      "settings": {
+        "title": "ভয়েস সেটিংস",
+        "close": "বন্ধ করুন",
+        "voiceFeatures": "ভয়েস বৈশিষ্ট্য",
+        "enableCommands": "ভয়েস কমান্ড সক্রিয় করুন",
+        "enableCommandsDesc": "ভয়েস সার্চ এবং কমান্ড সক্রিয় করুন",
+        "voiceLanguage": "ভয়েস ভাষা",
+        "wakeWordDetection": "ওয়েক ওয়ার্ড সনাক্তকরণ",
+        "sensitivityLabel": "সংবেদনশীলতা",
+        "sensitivityHint": "উচ্চ = আরও প্রতিক্রিয়াশীল, আরও ভুল পজিটিভ হতে পারে",
+        "currentSensitivity": "বর্তমান সংবেদনশীলতা: {{value}}%",
+        "avatarDisplay": "অবতার প্রদর্শন",
+        "voiceResponse": "ভয়েস প্রতিক্রিয়া",
+        "audioResponses": "অডিও প্রতিক্রিয়া",
+        "audioResponsesDesc": "টেক্সটের পরিবর্তে ভয়েসে প্রতিক্রিয়া দিন",
+        "privacy": "গোপনীয়তা ও ইতিহাস",
+        "recordHistory": "কমান্ড ইতিহাস রেকর্ড করুন",
+        "recordHistoryDesc": "দ্রুত অ্যাক্সেসের জন্য ভয়েস কমান্ড সংরক্ষণ করুন",
+        "historyHelp": "ইতিহাস ভয়েস সনাক্তকরণ নির্ভুলতা উন্নত করতে সাহায্য করে",
+        "permissions": "অনুমতি",
+        "microphone": "মাইক্রোফোন",
+        "granted": "দেওয়া হয়েছে",
+        "denied": "প্রত্যাখ্যাত",
+        "microphoneRequired": "ভয়েস কমান্ডের জন্য মাইক্রোফোন অ্যাক্সেস প্রয়োজন",
+        "supportedCommands": "সমর্থিত কমান্ড",
+        "advanced": "উন্নত",
+        "clearHistory": "কমান্ড ইতিহাস সাফ করুন",
+        "resetSettings": "সব সেটিংস রিসেট করুন",
+        "clearHistoryConfirm": "কমান্ড ইতিহাস সাফ করুন",
+        "clearHistoryMessage": "আপনি কি সব ভয়েস কমান্ড ইতিহাস মুছে ফেলতে চান?",
+        "resetConfirm": "সেটিংস রিসেট করুন",
+        "resetMessage": "ভয়েস সেটিংস ডিফল্টে রিসেট করবেন?",
+        "historyCleared": "কমান্ড ইতিহাস সাফ হয়েছে",
+        "success": "সফল"
+      },
+      "errors": {
+        "microphoneAccess": "মাইক্রোফোন অ্যাক্সেস প্রত্যাখ্যাত",
+        "networkError": "নেটওয়ার্ক সংযোগ ত্রুটি",
+        "processingFailed": "ভয়েস ইনপুট প্রক্রিয়া করতে ব্যর্থ",
+        "intentClassification": "কমান্ড বুঝতে পারা যায়নি",
+        "timeout": "ভয়েস সনাক্তকরণ টাইমআউট"
+      }
+    },
+    "dropdown": {
+      "myProfile": "আমার প্রোফাইল",
+      "subscription": "সাবস্ক্রিপশন",
+      "favorites": "প্রিয়",
+      "downloads": "ডাউনলোড",
+      "signOut": "সাইন আউট"
+    },
+    "guest": "অতিথি",
+    "morningRitual": "সকালের রীতি",
+    "watchlist": "ওয়াচলিস্ট",
+    "favorites": "প্রিয়",
+    "downloads": "ডাউনলোড",
+    "settings": "সেটিংস",
+    "language": "ভাষা",
+    "admin": "অ্যাডমিন",
+    "watchTime": "দেখার সময়",
+    "minutes": "মিনিট",
+    "hours": "ঘণ্টা",
+    "memberSince": "সদস্য হয়েছেন",
+    "aiAssistant": "AI সহায়ক",
+    "voiceSettings": "ভয়েস",
+    "subscriptionButton": "সাবস্ক্রিপশন",
+    "recentActivity": "সাম্প্রতিক কার্যকলাপ",
+    "justNow": "এইমাত্র",
+    "hoursAgo": "{{hours}} ঘণ্টা আগে",
+    "yesterday": "গতকাল",
+    "noRecentActivity": "কোনো সাম্প্রতিক কার্যকলাপ নেই",
+    "accountInfo": "অ্যাকাউন্ট তথ্য",
+    "role": "ভূমিকা",
+    "accountSecurity": "অ্যাকাউন্ট নিরাপত্তা",
+    "securityNote": "আপনার অ্যাকাউন্ট এনক্রিপ্টেড প্রমাণীকরণ দিয়ে সুরক্ষিত",
+    "lastLogin": "শেষ লগইন",
+    "dangerZone": "বিপদ অঞ্চল",
+    "invalidImageType": "একটি বৈধ ছবি ফাইল নির্বাচন করুন (JPEG, PNG, WebP, বা GIF)",
+    "imageTooLarge": "ছবি অনেক বড়। সর্বোচ্চ আকার 5MB।",
+    "uploadSuccess": "অবতার সফলভাবে আপডেট হয়েছে!",
+    "uploadFailed": "অবতার আপলোড ব্যর্থ। আবার চেষ্টা করুন।"
   },
   "settings": {
     "title": "সেটিংস",
@@ -350,7 +812,23 @@
     "privacy": "গোপনীয়তা",
     "privacyPolicy": "গোপনীয়তা নীতি",
     "termsOfService": "সেবার শর্তাবলী",
-    "about": "সম্পর্কে"
+    "about": "সম্পর্কে",
+    "chatTranslation": "চ্যাট অনুবাদ",
+    "autoTranslate": "স্বয়ংক্রিয় বার্তা অনুবাদ",
+    "autoTranslateDescription": "চ্যাট বার্তা স্বয়ংক্রিয়ভাবে আপনার পছন্দের ভাষায় অনুবাদ করুন",
+    "pushNotifications": "পুশ বিজ্ঞপ্তি",
+    "display": "প্রদর্শন",
+    "homePageSections": "হোম পেজ বিভাগ",
+    "configureSections": "আপনার হোম পেজে কোন বিভাগ দেখাবে তা কনফিগার করুন",
+    "visibleSections": "দৃশ্যমান বিভাগ",
+    "hiddenSections": "লুকানো বিভাগ",
+    "dragToReorder": "পুনর্বিন্যাস করতে টানুন",
+    "tapToHide": "লুকাতে ট্যাপ করুন",
+    "tapToShow": "দেখাতে ট্যাপ করুন",
+    "resetToDefault": "ডিফল্টে রিসেট করুন",
+    "resetConfirmMessage": "আপনি কি হোম পেজ বিভাগ ডিফল্ট কনফিগারেশনে রিসেট করতে চান?",
+    "sectionHidden": "বিভাগ লুকানো হয়েছে",
+    "sectionShown": "বিভাগ দেখানো হয়েছে"
   },
   "player": {
     "loading": "লোড হচ্ছে...",
@@ -376,6 +854,49 @@
       "activeDevices": "বর্তমানে {{count}} ডিভাইসে স্ট্রিমিং:",
       "hint": "একটি স্ট্রিমিং স্লট মুক্ত করতে একটি ডিভাইস সংযোগ বিচ্ছিন্ন করুন, বা আরও সমকালীন স্ট্রিমের জন্য আপনার পরিকল্পনা আপগ্রেড করুন।",
       "manageDevices": "ডিভাইস পরিচালনা করুন"
+    },
+    "live": "লাইভ",
+    "play": "চালান",
+    "pause": "বিরতি",
+    "mute": "নিঃশব্দ",
+    "unmute": "শব্দ চালু",
+    "volume": "ভলিউম",
+    "albumArt": "{{title}}-এর অ্যালবাম আর্ট",
+    "seekBar": "প্লেব্যাক অগ্রগতি",
+    "skipBack": "{{seconds}} সেকেন্ড পিছিয়ে যান",
+    "skipForward": "30 সেকেন্ড এগিয়ে যান",
+    "loadError": "স্ট্রিম লোড করতে ব্যর্থ",
+    "playbackSpeed": "প্লেব্যাক গতি",
+    "previousChapter": "পূর্ববর্তী অধ্যায়",
+    "nextChapter": "পরবর্তী অধ্যায়",
+    "skipBackward": "30 সেকেন্ড পিছিয়ে যান",
+    "subscription": {
+      "requiredTitle": "সাবস্ক্রিপশন প্রয়োজন",
+      "requiredMessage": "পেইড সাবস্ক্রিপশন প্রয়োজন",
+      "upgradeInfo": "প্রিমিয়াম কন্টেন্ট অ্যাক্সেস করতে আপনার সাবস্ক্রিপশন আপগ্রেড করুন",
+      "upgrade": "এখনই আপগ্রেড করুন"
+    },
+    "chapters": "অধ্যায়",
+    "sceneSearch": {
+      "title": "সিন খুঁজুন",
+      "placeholder": "একটি সিন খুঁজুন...",
+      "inputLabel": "সিন সার্চ ইনপুট",
+      "searching": "খুঁজছে...",
+      "noResults": "কোনো সিন পাওয়া যায়নি",
+      "resultsFound": "{{count}}টি সিন পাওয়া গেছে",
+      "searchError": "সার্চ ব্যর্থ। আবার চেষ্টা করুন।",
+      "hint": "সার্চ করতে কমপক্ষে ২টি অক্ষর টাইপ করুন",
+      "voiceReceived": "খুঁজছে: {{query}}",
+      "seekingTo": "{{time}}-এ যাচ্ছে",
+      "previous": "পূর্ববর্তী",
+      "next": "পরবর্তী",
+      "result": {
+        "jumpTo": "{{time}}-এ {{title}}-এ যান",
+        "hint": "এই সিনে যেতে চাপুন"
+      },
+      "panelOpened": "সিন সার্চ প্যানেল খোলা হয়েছে",
+      "navigation": "সিন সার্চ নেভিগেশন",
+      "position": "ফলাফল {{current}} / {{total}}"
     }
   },
   "content": {
@@ -394,7 +915,24 @@
     "rating": "রেটিং",
     "watchTrailer": "ট্রেলার দেখুন",
     "relatedContent": "সম্পর্কিত কন্টেন্ট",
-    "notFound": "কন্টেন্ট পাওয়া যায়নি"
+    "notFound": "কন্টেন্ট পাওয়া যায়নি",
+    "genres": "জনরা",
+    "released": "মুক্তি",
+    "starring": "অভিনয়ে",
+    "seasons": "সিজন",
+    "ep": "পর্ব",
+    "selectSeason": "সিজন নির্বাচন করুন",
+    "noEpisodes": "কোনো পর্ব নেই",
+    "noEpisodesAvailable": "চালানোর জন্য কোনো পর্ব নেই",
+    "loadingSeries": "সিরিজের তথ্য লোড হচ্ছে...",
+    "votes": "ভোট",
+    "imdbRating": "IMDB রেটিং",
+    "preview": "প্রিভিউ",
+    "previewPlaying": "প্রিভিউ চলছে",
+    "trailerPlaying": "ট্রেলার চলছে",
+    "youMayAlsoLike": "আপনার পছন্দ হতে পারে",
+    "availableSubtitles": "উপলব্ধ সাবটাইটেল",
+    "subtitleSelected": "নির্বাচিত: {{language}}"
   },
   "errors": {
     "networkError": "নেটওয়ার্ক ত্রুটি",
@@ -402,12 +940,41 @@
     "tryAgain": "পুনরায় চেষ্টা করুন",
     "offline": {
       "title": "ইন্টারনেট সংযোগ নেই",
-      "message": "আপনি বর্তমানে অফলাইনে আছেন।"
+      "message": "আপনি বর্তমানে অফলাইনে আছেন।",
+      "ttsMessage": "ইন্টারনেট সংযোগ নেই। আপনি এখন অফলাইন মোডে আছেন।"
     },
     "online": {
       "title": "সংযোগ পুনরুদ্ধার",
-      "message": "আপনি আবার অনলাইনে আছেন।"
-    }
+      "message": "আপনি আবার অনলাইনে আছেন।",
+      "ttsMessage": "ইন্টারনেট সংযোগ পুনরুদ্ধার হয়েছে।"
+    },
+    "api": {
+      "badRequest": "কিছু ভুল হয়েছে। আবার চেষ্টা করুন।",
+      "unauthorized": "চালিয়ে যেতে লগইন করুন।",
+      "forbidden": "এই কন্টেন্ট অ্যাক্সেস করার অনুমতি নেই।",
+      "notFound": "আপনি যে কন্টেন্ট খুঁজছেন তা উপলব্ধ নেই।",
+      "rateLimit": "আপনি অনেক অনুরোধ করছেন। একটু অপেক্ষা করুন।",
+      "serverError": "আমাদের সার্ভারে সমস্যা হচ্ছে। পরে আবার চেষ্টা করুন।",
+      "unknown": "কিছু ভুল হয়েছে। আবার চেষ্টা করুন।",
+      "networkTimeout": "আমাদের সার্ভারে সংযোগ করা যাচ্ছে না। আপনার সংযোগ পরীক্ষা করুন।",
+      "offlineMessage": "আপনি অফলাইনে আছেন। আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন।",
+      "requestFailed": "কিছু ভুল হয়েছে। আবার চেষ্টা করুন।"
+    },
+    "voice": {
+      "permissionDenied": "ভয়েস কমান্ডের জন্য মাইক্রোফোন অ্যাক্সেস প্রয়োজন। সেটিংসে সক্রিয় করুন।",
+      "recognitionFailed": "বুঝতে পারিনি। আবার চেষ্টা করুন।",
+      "commandFailed": "ভয়েস কমান্ড ব্যর্থ। আবার চেষ্টা করুন।"
+    },
+    "widget": {
+      "loadFailed": "উইজেট লোড করা যায়নি। আবার চেষ্টা করুন।"
+    },
+    "buttons": {
+      "ok": "ঠিক আছে",
+      "retry": "পুনরায় চেষ্টা",
+      "cancel": "বাতিল"
+    },
+    "title": "ত্রুটি",
+    "networkUnavailable": "নেটওয়ার্ক অনুপলব্ধ"
   },
   "favorites": {
     "title": "প্রিয়",
@@ -419,7 +986,9 @@
     "title": "ডাউনলোড",
     "items": "আইটেম",
     "empty": "কোনো ডাউনলোড নেই",
-    "emptyHint": "অফলাইনে দেখার জন্য কন্টেন্ট ডাউনলোড করুন"
+    "emptyHint": "অফলাইনে দেখার জন্য কন্টেন্ট ডাউনলোড করুন",
+    "storage": "স্টোরেজ",
+    "paused": "বিরতি"
   },
   "watchlist": {
     "title": "ওয়াচলিস্ট",
@@ -429,8 +998,14 @@
       "all": "সব",
       "movies": "সিনেমা",
       "series": "সিরিজ",
-      "kids": "শিশু"
-    }
+      "kids": "শিশু",
+      "continue": "দেখা চালিয়ে যান",
+      "judaism": "ইহুদি ধর্ম",
+      "podcasts": "পডকাস্ট",
+      "radio": "রেডিও"
+    },
+    "watched": "দেখা হয়েছে",
+    "emptyHint": "দেখা শুরু করুন এবং আইটেম এখানে দেখাবে"
   },
   "children": {
     "title": "শিশু",
@@ -443,7 +1018,36 @@
       "educational": "শিক্ষামূলক",
       "music": "সংগীত",
       "stories": "গল্প",
-      "jewish": "ইহুদি"
+      "jewish": "ইহুদি",
+      "hebrew": "হিব্রু"
+    },
+    "emptyHint": "অন্য বিভাগ চেষ্টা করুন",
+    "exitDescription": "বের হতে পিতামাতার কোড লিখুন",
+    "parentCode": "পিতামাতার কোড",
+    "confirm": "নিশ্চিত করুন",
+    "wrongCode": "ভুল কোড",
+    "noContent": "কোনো কন্টেন্ট নেই",
+    "tryAnotherCategory": "অন্য বিভাগ নির্বাচন করুন",
+    "ageRatings": {
+      "3": "বয়স ৩+",
+      "5": "বয়স ৫+",
+      "7": "বয়স ৭+",
+      "10": "বয়স ১০+",
+      "12": "বয়স ১২+"
+    },
+    "moderation": {
+      "pending": "পর্যালোচনা মুলতুবি",
+      "approved": "অনুমোদিত",
+      "rejected": "প্রত্যাখ্যাত"
+    },
+    "admin": {
+      "stats": "শিশু কন্টেন্ট ম্যানেজার",
+      "seedContent": "কন্টেন্ট সিড করুন",
+      "importArchive": "Archive.org ইমপোর্ট করুন",
+      "syncPodcasts": "পডকাস্ট সিঙ্ক করুন",
+      "syncYouTube": "YouTube সিঙ্ক করুন",
+      "tagVod": "VOD ট্যাগ করুন",
+      "pendingModeration": "মুলতুবি মডারেশন"
     }
   },
   "judaism": {
@@ -454,13 +1058,64 @@
       "title": "শাব্বাত সময়",
       "shabbatShalom": "শাব্বাত শালোম!",
       "candleLighting": "মোমবাতি জ্বালানো",
-      "havdalah": "হাভদালা"
+      "havdalah": "হাভদালা",
+      "shabbatMode": "শাব্বাত মোড",
+      "endsIn": "শাব্বাত শেষ হবে",
+      "parashat": "পরশত",
+      "friday": "শুক্রবার",
+      "saturday": "শনিবার",
+      "noData": "শাব্বাত সময় লোড করা যায়নি"
+    },
+    "emptyHint": "অন্য বিভাগ নির্বাচন করুন",
+    "dashboard": "আপনার ইহুদি ড্যাশবোর্ড",
+    "categories": {
+      "news": "ইহুদি সংবাদ",
+      "community": "সম্প্রদায়"
+    },
+    "erevShabbat": {
+      "title": "এরেভ শাব্বাত",
+      "prepareFor": "শাব্বাতের জন্য প্রস্তুতি নিন",
+      "inTime": "{{time}}-এ",
+      "featuredContent": "শাব্বাত কন্টেন্ট",
+      "noContent": "শাব্বাত কন্টেন্ট শীঘ্রই আসছে!",
+      "shabbatShalom": "শাব্বাত শালোম!",
+      "timeUntil": "শাব্বাত পর্যন্ত সময়",
+      "shabbatSongs": "শাব্বাত গান",
+      "parashaStudy": "পরশা",
+      "shabbatRecipes": "রেসিপি",
+      "prayers": "প্রার্থনা"
     }
   },
   "chatbot": {
     "title": "Bayit+ সহায়ক",
     "greeting": "হ্যালো! আমি Bayit+ স্মার্ট সহায়ক। আজ আমি আপনাকে কীভাবে সাহায্য করতে পারি?",
-    "placeholder": "এখানে টাইপ করুন..."
+    "placeholder": "এখানে টাইপ করুন...",
+    "openChat": "চ্যাট খুলুন",
+    "welcome": "হ্যালো! আমি Bayit+ স্মার্ট সহায়ক। আজ আমি আপনাকে কীভাবে সাহায্য করতে পারি? মাইক্রোফোনে ক্লিক করে বলুন, বা একটি বার্তা টাইপ করুন।",
+    "recording": "রেকর্ডিং হচ্ছে... আবার ক্লিক করুন থামাতে",
+    "transcribing": "ট্রান্সক্রাইব হচ্ছে...",
+    "stopRecording": "রেকর্ডিং বন্ধ করুন",
+    "startRecording": "ভয়েস রেকর্ডিং শুরু করুন",
+    "recommendations": "এখানে কিছু সুপারিশ:",
+    "showMultipleSuccess": "{{count}}টি কন্টেন্ট আইটেম উইজেটে দেখানো হচ্ছে",
+    "showMultipleNotFound": "অনুরোধকৃত কন্টেন্ট খুঁজে পাওয়া যায়নি। ভিন্ন নাম চেষ্টা করুন।",
+    "resolvingContent": "আপনার কন্টেন্ট খোঁজা হচ্ছে...",
+    "errors": {
+      "micPermission": "মাইক্রোফোন অ্যাক্সেস করা যায়নি। আপনার ব্রাউজারে মাইক্রোফোন অনুমতি পরীক্ষা করুন।",
+      "transcribeFailed": "রেকর্ডিং ট্রান্সক্রাইব করা যায়নি। আবার চেষ্টা করুন।",
+      "general": "দুঃখিত, কিছু ভুল হয়েছে। আবার চেষ্টা করুন।"
+    },
+    "suggestions": {
+      "whatToWatch": "আজ কী দেখব?",
+      "israeliMovies": "সুপারিশকৃত ইসরায়েলি সিনেমা",
+      "whatsOnNow": "এখন কী চলছে?",
+      "popularPodcasts": "জনপ্রিয় পডকাস্ট"
+    },
+    "voiceCommands": {
+      "showChannels": "চ্যানেল দেখান...",
+      "playChess": "সাথে দাবা খেলা শুরু করুন...",
+      "multiContent": "পাশাপাশি দেখান..."
+    }
   },
   "subscribe": {
     "title": "আপনার প্ল্যান বেছে নিন",
@@ -519,7 +1174,61 @@
     "support": "সাপোর্ট",
     "legal": "আইনি",
     "copyright": "© {{year}} Bayit+. সর্বস্বত্ব সংরক্ষিত।",
-    "poweredBy": "দ্বারা চালিত"
+    "poweredBy": "দ্বারা চালিত",
+    "location": "নিউ ইয়র্ক, USA",
+    "links": {
+      "home": "হোম",
+      "liveTV": "লাইভ TV",
+      "vod": "সিনেমা ও সিরিজ",
+      "radio": "রেডিও",
+      "podcasts": "পডকাস্ট",
+      "judaism": "ইহুদি ধর্ম",
+      "profile": "আমার প্রোফাইল",
+      "favorites": "প্রিয়",
+      "watchlist": "ওয়াচলিস্ট",
+      "subscribe": "সাবস্ক্রাইব",
+      "downloads": "ডাউনলোড",
+      "help": "সাহায্য কেন্দ্র",
+      "faq": "FAQ",
+      "contact": "যোগাযোগ করুন",
+      "feedback": "ফিডব্যাক",
+      "terms": "সেবার শর্তাবলী",
+      "privacy": "গোপনীয়তা নীতি",
+      "cookies": "কুকি নীতি",
+      "licenses": "লাইসেন্স"
+    },
+    "newsletter": {
+      "title": "আপডেট থাকুন",
+      "description": "সর্বশেষ আপডেট এবং এক্সক্লুসিভ কন্টেন্টের জন্য আমাদের নিউজলেটারে সাবস্ক্রাইব করুন।",
+      "placeholder": "আপনার ইমেইল লিখুন",
+      "success": "সাবস্ক্রাইব করার জন্য ধন্যবাদ!"
+    },
+    "apps": {
+      "title": "অ্যাপ পান",
+      "downloadOn": "ডাউনলোড করুন",
+      "getItOn": "পান",
+      "appStore": "App Store",
+      "googlePlay": "Google Play"
+    },
+    "social": {
+      "facebook": "Facebook",
+      "twitter": "Twitter",
+      "instagram": "Instagram",
+      "youtube": "YouTube"
+    },
+    "privacy": "গোপনীয়তা নীতি",
+    "sitemap": "সাইটম্যাপ",
+    "accessibility": "অ্যাক্সেসিবিলিটি",
+    "navigation": "নেভিগেশন",
+    "liveTV": "লাইভ TV",
+    "moviesAndSeries": "সিনেমা ও সিরিজ",
+    "radioStations": "রেডিও স্টেশন",
+    "myProfile": "আমার প্রোফাইল",
+    "subscriptions": "সাবস্ক্রিপশন",
+    "helpAndSupport": "সাহায্য ও সাপোর্ট",
+    "termsOfUse": "ব্যবহারের শর্তাবলী",
+    "privacyPolicy": "গোপনীয়তা নীতি",
+    "contactUs": "যোগাযোগ করুন"
   },
   "support": {
     "title": "সাপোর্ট সেন্টার",
@@ -529,6 +1238,114 @@
       "faq": "FAQ",
       "contact": "যোগাযোগ",
       "tickets": "আমার টিকেট"
+    },
+    "categories": {
+      "title": "ডকুমেন্টেশন ব্রাউজ করুন",
+      "loading": "ডকুমেন্টেশন লোড হচ্ছে...",
+      "loadError": "বিভাগ লোড করতে ব্যর্থ",
+      "articleCount": "{{count}}টি নিবন্ধ",
+      "gettingStarted": "শুরু করা",
+      "features": "বৈশিষ্ট্য",
+      "troubleshooting": "সমস্যা সমাধান",
+      "account": "অ্যাকাউন্ট"
+    },
+    "docs": {
+      "loading": "ডকুমেন্ট লোড হচ্ছে...",
+      "loadError": "ডকুমেন্ট লোড করতে ব্যর্থ",
+      "backToList": "ডকুমেন্টেশনে ফিরে যান"
+    },
+    "search": {
+      "placeholder": "ডকুমেন্টেশন খুঁজুন...",
+      "noResults": "কোনো ফলাফল পাওয়া যায়নি"
+    },
+    "faq": {
+      "title": "প্রায়শই জিজ্ঞাসিত প্রশ্ন",
+      "loading": "FAQ লোড হচ্ছে...",
+      "loadError": "FAQ লোড করতে ব্যর্থ",
+      "empty": "এই বিভাগে কোনো FAQ আইটেম নেই",
+      "categories": {
+        "all": "সব বিষয়",
+        "general": "সাধারণ",
+        "billing": "বিলিং",
+        "technical": "প্রযুক্তিগত",
+        "features": "বৈশিষ্ট্য"
+      }
+    },
+    "videos": {
+      "title": "টিউটোরিয়াল ভিডিও",
+      "subtitle": "Bayit+ বৈশিষ্ট্য ব্যবহার শিখুন",
+      "widgetsIntro": "উইজেট দিয়ে শুরু করা",
+      "widgetsDescription": "ফ্লোটিং উইজেট তৈরি, কাস্টমাইজ এবং পরিচালনা শিখুন"
+    },
+    "contact": {
+      "voiceTitle": "ভয়েস সাপোর্ট",
+      "voiceDescription": "আমাদের AI সহায়কের সাথে ভয়েস কথোপকথন শুরু করতে অবতার বোতামে ক্লিক করুন বা \"Jarvis\" বলুন।",
+      "ticketTitle": "সাপোর্ট টিকেট তৈরি করুন",
+      "ticketDescription": "মানবিক সহায়তা দরকার? সাপোর্ট টিকেট তৈরি করুন এবং আমাদের দল ২৪ ঘণ্টার মধ্যে প্রতিক্রিয়া জানাবে।",
+      "createTicket": "টিকেট তৈরি করুন",
+      "emailTitle": "ইমেইল সাপোর্ট",
+      "emailDescription": "ইমেইল পছন্দ করেন? যেকোনো প্রশ্ন বা উদ্বেগের জন্য support@bayit.tv-তে যোগাযোগ করুন।"
+    },
+    "ticket": {
+      "title": "সাপোর্ট টিকেট তৈরি করুন",
+      "subject": "বিষয়",
+      "subjectPlaceholder": "আপনার সমস্যার সংক্ষিপ্ত বিবরণ",
+      "message": "বার্তা",
+      "messagePlaceholder": "আপনার সমস্যা বিস্তারিত বর্ণনা করুন...",
+      "categoryLabel": "বিভাগ",
+      "priorityLabel": "অগ্রাধিকার",
+      "submit": "টিকেট জমা দিন",
+      "category": {
+        "billing": "বিলিং",
+        "technical": "প্রযুক্তিগত",
+        "feature": "বৈশিষ্ট্য অনুরোধ",
+        "general": "সাধারণ"
+      },
+      "priority": {
+        "low": "কম",
+        "medium": "মাঝারি",
+        "high": "উচ্চ",
+        "urgent": "জরুরি"
+      },
+      "status": {
+        "open": "খোলা",
+        "in_progress": "চলমান",
+        "resolved": "সমাধান হয়েছে",
+        "closed": "বন্ধ"
+      },
+      "created": "তৈরি হয়েছে",
+      "error": {
+        "required": "সব প্রয়োজনীয় ফিল্ড পূরণ করুন",
+        "submit": "টিকেট তৈরি ব্যর্থ। আবার চেষ্টা করুন।"
+      }
+    },
+    "tickets": {
+      "title": "আমার সাপোর্ট টিকেট",
+      "loading": "টিকেট লোড হচ্ছে...",
+      "loadError": "টিকেট লোড করতে ব্যর্থ",
+      "empty": "এখনও কোনো সাপোর্ট টিকেট নেই",
+      "emptyFilter": "এই স্ট্যাটাসে কোনো টিকেট নেই",
+      "create": "নতুন টিকেট",
+      "createFirst": "আপনার প্রথম টিকেট তৈরি করুন",
+      "filter": {
+        "all": "সব",
+        "open": "খোলা",
+        "inProgress": "চলমান",
+        "resolved": "সমাধান হয়েছে"
+      }
+    },
+    "voice": {
+      "title": "ভয়েস সহায়ক",
+      "listening": "আমি শুনছি...",
+      "thinking": "ভাবছি...",
+      "speaking": "বলছে...",
+      "error": "দুঃখিত, শুনতে পাইনি। আবার চেষ্টা করুন?",
+      "ready": "আপনি কী জানতে চান?",
+      "listeningNow": "শুনছে...",
+      "wakeWordHint": "বলতে \"Jarvis\" বলুন"
+    },
+    "wizard": {
+      "role": "আপনার গাইড"
     }
   },
   "notFound": {
@@ -613,7 +1430,14 @@
     "speaking": "বলছে",
     "ready": "প্রস্তুত",
     "tapToSpeak": "বলতে ট্যাপ করুন",
-    "processing": "প্রক্রিয়াকরণ হচ্ছে..."
+    "processing": "প্রক্রিয়াকরণ হচ্ছে...",
+    "transcribing": "ট্রান্সক্রাইব হচ্ছে...",
+    "tapToStop": "রেকর্ডিং বন্ধ করতে ট্যাপ করুন",
+    "pleaseWait": "অপেক্ষা করুন...",
+    "transcriptionNotAvailable": "ট্রান্সক্রিপশন উপলব্ধ নেই",
+    "transcriptionFailed": "ট্রান্সক্রিপশন ব্যর্থ",
+    "micPermissionDenied": "মাইক্রোফোন অনুমতি প্রত্যাখ্যাত",
+    "error": "শুনতে পারিনি, আবার চেষ্টা করুন"
   },
   "plans": {
     "basic": {
@@ -755,5 +1579,1216 @@
       "startUsing": "ভয়েস কন্ট্রোল ব্যবহার শুরু করুন"
     },
     "skip": "এখন এড়িয়ে যান"
+  },
+  "tvLogin": {
+    "invalidQR": "অবৈধ QR কোড। আপনার TV থেকে আবার স্ক্যান করুন।",
+    "sessionInvalid": "এই QR কোডের মেয়াদ শেষ হয়েছে। আপনার TV-তে নতুন একটি তৈরি করুন।",
+    "verificationFailed": "সেশন যাচাই ব্যর্থ। আবার চেষ্টা করুন।",
+    "fillAllFields": "সব ফিল্ড পূরণ করুন",
+    "loginFailed": "লগইন ব্যর্থ। আপনার তথ্য পরীক্ষা করুন।",
+    "notLoggedIn": "আপনি এই ডিভাইসে লগইন করেননি।",
+    "enterCredentials": "আপনার TV অনুমোদন করতে আপনার তথ্য লিখুন।",
+    "authFailed": "অনুমোদন ব্যর্থ।",
+    "verifying": "যাচাই করা হচ্ছে...",
+    "verifyingDescription": "আপনার TV-তে সংযোগ করা হচ্ছে...",
+    "loginTitle": "আপনার TV-তে লগইন করুন",
+    "loginDescription": "আপনার TV অনুমোদন করতে আপনার তথ্য লিখুন",
+    "authorizing": "অনুমোদন করা হচ্ছে...",
+    "authorizingDescription": "আপনার TV-তে লগইন করা হচ্ছে...",
+    "authorizeTV": "TV অনুমোদন করুন",
+    "success": "সফল!",
+    "successDescription": "আপনার TV এখন লগইন হয়েছে। আপনি এই পৃষ্ঠা বন্ধ করতে পারেন।",
+    "goToHome": "হোমে যান",
+    "error": "কিছু ভুল হয়েছে",
+    "tryAgain": "আবার চেষ্টা করুন",
+    "securityNote": "আপনার তথ্য নিরাপদে পাঠানো হয় এবং TV-তে কখনো সংরক্ষিত হয় না।",
+    "footer": "সমস্যা হচ্ছে? আপনার TV থেকে নতুন QR কোড স্ক্যান করেছেন কিনা নিশ্চিত করুন।"
+  },
+  "googleLogin": {
+    "cancelledError": "Google সাইন-ইন বাতিল করা হয়েছে",
+    "missingCode": "প্রমাণীকরণ কোড অনুপস্থিত",
+    "loginError": "Google দিয়ে সাইন ইন করতে ত্রুটি",
+    "redirecting": "লগইন পৃষ্ঠায় পুনঃনির্দেশ করা হচ্ছে...",
+    "connecting": "Google-এর সাথে সংযোগ করা হচ্ছে..."
+  },
+  "auth": {
+    "login": "লগইন"
+  },
+  "flows": {
+    "title": "ফ্লো",
+    "subtitle": "প্রতিটি মুহূর্তের জন্য ব্যক্তিগত কন্টেন্ট অভিজ্ঞতা",
+    "activeNow": "এখন সক্রিয়",
+    "start": "শুরু করুন",
+    "skipToday": "আজ এড়িয়ে যান",
+    "systemFlows": "তৈরি ফ্লো",
+    "customFlows": "আমার ফ্লো",
+    "system": "সিস্টেম",
+    "noCustomFlows": "এখনও কোনো কাস্টম ফ্লো নেই",
+    "createHint": "আপনার প্রথম ব্যক্তিগত ফ্লো তৈরি করুন",
+    "createCustom": "কাস্টম ফ্লো তৈরি করুন",
+    "createFlow": "ফ্লো তৈরি করুন",
+    "editFlow": "ফ্লো সম্পাদনা করুন",
+    "type": "ধরন",
+    "systemFlow": "সিস্টেম ফ্লো",
+    "customFlow": "কাস্টম ফ্লো",
+    "schedule": "সময়সূচী",
+    "content": "কন্টেন্ট",
+    "items": "আইটেম",
+    "aiGenerated": "AI তৈরি",
+    "autoPlay": "অটো প্লে",
+    "aiEnabled": "AI কিউরেশন",
+    "shabbatTrigger": "শাব্বাত সন্ধ্যা",
+    "manual": "ম্যানুয়াল",
+    "flowName": "ফ্লো নাম",
+    "flowNamePlaceholder": "যেমন, আমার সকালের রুটিন",
+    "description": "বিবরণ",
+    "descriptionPlaceholder": "এই ফ্লো কিসের জন্য?",
+    "startTime": "শুরুর সময়",
+    "endTime": "শেষের সময়",
+    "actions": "কার্যক্রম",
+    "details": "বিবরণ",
+    "createFlowDesc": "আপনার ব্যক্তিগত কন্টেন্ট অভিজ্ঞতা ডিজাইন করুন",
+    "editFlowDesc": "আপনার ফ্লো সেটিংস এবং কন্টেন্ট আপডেট করুন",
+    "basicInfo": "মৌলিক তথ্য",
+    "options": "বিকল্প",
+    "autoPlayDesc": "বর্তমান শেষ হলে স্বয়ংক্রিয়ভাবে পরবর্তী আইটেম চালান",
+    "aiEnabledDesc": "আপনার পছন্দের উপর ভিত্তি করে AI কন্টেন্ট কিউরেট করতে দিন",
+    "startFlow": "ফ্লো শুরু করুন",
+    "deleteFlow": "ফ্লো মুছুন",
+    "custom": "কাস্টম",
+    "morning": "সকাল",
+    "evening": "সন্ধ্যা",
+    "shabbat": "শাব্বাত",
+    "addContent": "কন্টেন্ট যোগ করুন",
+    "contentPicker": {
+      "title": "ফ্লোতে কন্টেন্ট যোগ করুন",
+      "tabs": {
+        "live": "লাইভ TV",
+        "radio": "রেডিও",
+        "vod": "অন ডিমান্ড",
+        "podcast": "পডকাস্ট"
+      },
+      "search": "কন্টেন্ট খুঁজুন...",
+      "selected": "{{count}}টি নির্বাচিত",
+      "addSelected": "নির্বাচিত যোগ করুন",
+      "noResults": "কোনো কন্টেন্ট পাওয়া যায়নি",
+      "alreadyAdded": "ইতিমধ্যে ফ্লোতে আছে",
+      "loadMore": "আরও লোড করুন"
+    },
+    "flowItems": {
+      "title": "ফ্লো কন্টেন্ট",
+      "empty": "এখনও কোনো কন্টেন্ট নেই। শুরু করতে কন্টেন্ট যোগ করুন ক্লিক করুন।",
+      "count": "{{count}}টি আইটেম",
+      "remove": "সরান",
+      "moveUp": "উপরে সরান",
+      "moveDown": "নিচে সরান",
+      "order": "ক্রম",
+      "confirmRemove": "সরানো নিশ্চিত করতে আবার ক্লিক করুন",
+      "maxReached": "সর্বোচ্চ {{max}}টি আইটেম পৌঁছেছে",
+      "more": "আরও আইটেম"
+    },
+    "days": {
+      "sunday": "রবিবার",
+      "monday": "সোমবার",
+      "tuesday": "মঙ্গলবার",
+      "wednesday": "বুধবার",
+      "thursday": "বৃহস্পতিবার",
+      "friday": "শুক্রবার",
+      "saturday": "শনিবার",
+      "sundayShort": "রবি",
+      "mondayShort": "সোম",
+      "tuesdayShort": "মঙ্গল",
+      "wednesdayShort": "বুধ",
+      "thursdayShort": "বৃহ",
+      "fridayShort": "শুক্র",
+      "saturdayShort": "শনি",
+      "selectAll": "সব নির্বাচন করুন",
+      "deselectAll": "সব অনির্বাচন করুন",
+      "title": "সক্রিয় দিন",
+      "everyday": "প্রতিদিন",
+      "everyDay": "প্রতিদিন",
+      "weekdays": "সপ্তাহের দিন",
+      "weekends": "সাপ্তাহিক ছুটি",
+      "noneSelected": "কোনো দিন নির্বাচিত নয়",
+      "selectedCount": "{{count}}টি দিন নির্বাচিত"
+    },
+    "trigger": {
+      "type": "ট্রিগার ধরন",
+      "time": "সময়-ভিত্তিক",
+      "shabbat": "শাব্বাত সন্ধ্যা",
+      "holiday": "ছুটির দিন",
+      "skipShabbat": "শাব্বাতে এড়িয়ে যান",
+      "skipShabbatDesc": "শুক্রবার সন্ধ্যা বা শনিবার এই ফ্লো চালাবেন না",
+      "shabbatOffset": "মোমবাতি জ্বালানোর আগে মিনিট",
+      "shabbatOffsetDesc": "শাব্বাতের কত মিনিট আগে এই ফ্লো শুরু হবে?",
+      "calculatedTime": "গণনা করা সময়",
+      "thisWeek": "এই সপ্তাহ: {{day}} {{time}}-এ",
+      "comingSoon": "ছুটির ট্রিগার শীঘ্রই আসছে",
+      "locationBased": "আপনার অবস্থানের উপর ভিত্তি করে সময়"
+    },
+    "examples": {
+      "title": "উদাহরণ ফ্লো",
+      "subtitle": "টেমপ্লেট হিসাবে ব্যবহার করতে ট্যাপ করুন",
+      "morningRoutine": {
+        "name": "সকালের রুটিন",
+        "desc": "সংবাদ, আবহাওয়া এবং উৎসাহমূলক কন্টেন্ট দিয়ে আপনার দিন শুরু করুন"
+      },
+      "eveningWindDown": {
+        "name": "সন্ধ্যার বিশ্রাম",
+        "desc": "শান্ত সংগীত এবং হালকা বিনোদন দিয়ে আরাম করুন"
+      },
+      "shabbatPrep": {
+        "name": "শাব্বাত প্রস্তুতি",
+        "desc": "বিশেষ কন্টেন্ট দিয়ে শাব্বাতের পরিবেশ তৈরি করুন"
+      },
+      "coffeeBreak": {
+        "name": "কফি বিরতি",
+        "desc": "সংক্ষিপ্ত বিরতির জন্য দ্রুত বিনোদন"
+      },
+      "sunsetVibes": {
+        "name": "সূর্যাস্তের পরিবেশ",
+        "desc": "সংগীত এবং পরিবেশ কন্টেন্ট দিয়ে সাপ্তাহিক ছুটির বিশ্রাম"
+      }
+    },
+    "aiBrief": "AI ব্রিফ",
+    "aiBriefDesc": "ফ্লো শুরু হওয়ার আগে একটি ব্যক্তিগত AI-তৈরি সারাংশ পান",
+    "aiBriefEnabled": "AI ব্রিফ সক্রিয়",
+    "validation": {
+      "nameRequired": "ফ্লো নাম প্রয়োজন",
+      "startTimeRequired": "শুরুর সময় প্রয়োজন",
+      "endTimeRequired": "শেষের সময় প্রয়োজন",
+      "timeRange": "শেষের সময় শুরুর সময়ের পরে হতে হবে",
+      "daysRequired": "অন্তত একটি দিন নির্বাচন করুন",
+      "contentRequired": "কন্টেন্ট যোগ করুন বা AI সক্রিয় করুন"
+    },
+    "tv": {
+      "useCompanion": "সম্পূর্ণ কাস্টমাইজেশনের জন্য, আপনার ফোনে Bayit+ অ্যাপ ব্যবহার করুন বা আপনার কম্পিউটারে bayit.plus-এ যান।"
+    }
+  },
+  "voiceMode": {
+    "voiceOnly": "শুধুমাত্র ভয়েস",
+    "voiceOnlyDesc": "কোনো রিমোট কন্ট্রোল নেই - সম্পূর্ণ ভয়েস নেভিগেশন",
+    "hybrid": "হাইব্রিড",
+    "hybridDesc": "ভয়েস + রিমোট - অ্যাকশনে ভয়েস ফিডব্যাক",
+    "classic": "ক্লাসিক",
+    "classicDesc": "কোনো ভয়েস নেই - শুধুমাত্র রিমোট কন্ট্রোল"
+  },
+  "help": {
+    "subtitle": "আমরা আপনাকে কিভাবে সাহায্য করতে পারি?",
+    "email": "ইমেইল সাপোর্ট",
+    "phone": "ফোন সাপোর্ট",
+    "chat": "লাইভ চ্যাট",
+    "chatAvailable": "24/7 উপলব্ধ",
+    "openTooltip": "সাহায্য টুলটিপ খুলুন",
+    "openHelp": "সাহায্য মেনু খুলুন",
+    "howTo": "কিভাবে ব্যবহার করবেন",
+    "relatedArticles": "সম্পর্কিত নিবন্ধ",
+    "stillNeedHelp": "এখনও সাহায্য দরকার?",
+    "contactSupport": "সাপোর্টে যোগাযোগ করুন",
+    "previous": "পূর্ববর্তী",
+    "next": "পরবর্তী",
+    "getStarted": "শুরু করুন",
+    "skipTutorial": "টিউটোরিয়াল এড়িয়ে যান",
+    "actions": {
+      "search": "সাহায্য খুঁজুন",
+      "docs": "ডকুমেন্টেশন",
+      "faq": "FAQ",
+      "support": "সাপোর্টে যোগাযোগ করুন",
+      "tutorial": "টিউটোরিয়াল দেখুন"
+    },
+    "search": {
+      "placeholder": "সাহায্য খুঁজুন...",
+      "noResults": "\"{{query}}\"-এর জন্য কোনো ফলাফল নেই",
+      "noResultsHint": "ভিন্ন কীওয়ার্ড চেষ্টা করুন বা বিভাগ ব্রাউজ করুন",
+      "recent": "সাম্প্রতিক",
+      "popular": "জনপ্রিয়"
+    },
+    "categories": {
+      "getting-started": "শুরু করা",
+      "features": "বৈশিষ্ট্য",
+      "judaism": "ইহুদি ধর্ম",
+      "platform-guides": "প্ল্যাটফর্ম গাইড",
+      "account": "অ্যাকাউন্ট",
+      "troubleshooting": "সমস্যা সমাধান",
+      "parents": "পিতামাতাদের জন্য",
+      "admin": "অ্যাডমিন গাইড",
+      "developer": "ডেভেলপার API"
+    },
+    "faq": {
+      "title": "প্রায়শই জিজ্ঞাসিত প্রশ্ন",
+      "q1": "আমি কিভাবে আমার সাবস্ক্রিপশন প্ল্যান পরিবর্তন করব?",
+      "a1": "আপনার বর্তমান প্ল্যান দেখতে এবং পরিবর্তন করতে সেটিংস > সাবস্ক্রিপশনে যান। আপনি যেকোনো সময় আপগ্রেড বা ডাউনগ্রেড করতে পারেন।",
+      "q2": "আমি কিভাবে অফলাইনে দেখার জন্য কন্টেন্ট ডাউনলোড করব?",
+      "a2": "অফলাইনে দেখার জন্য সংরক্ষণ করতে যেকোনো কন্টেন্টে ডাউনলোড আইকনে ট্যাপ করুন। ডাউনলোড শুধুমাত্র মোবাইল ডিভাইসে উপলব্ধ।",
+      "q3": "কেন আমার ভিডিও চলছে না?",
+      "a3": "আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন। সমস্যা থাকলে, অ্যাপ ক্যাশ সাফ করুন বা অ্যাপ পুনরায় চালু করুন।",
+      "q4": "আমি কিভাবে আমার সাবস্ক্রিপশন বাতিল করব?",
+      "a4": "আপনি সেটিংস > সাবস্ক্রিপশন > প্ল্যান বাতিল করুন-এর মাধ্যমে যেকোনো সময় আপনার সাবস্ক্রিপশন বাতিল করতে পারেন। আপনার বিলিং পিরিয়ড শেষ না হওয়া পর্যন্ত আপনার অ্যাক্সেস থাকবে।"
+    },
+    "onboarding": {
+      "welcome": {
+        "title": "Bayit+-এ স্বাগতম",
+        "description": "বিশ্বের যেকোনো জায়গায় ইসরায়েলি বিনোদনের জন্য আপনার বাড়ি"
+      },
+      "liveTv": {
+        "title": "লাইভ TV",
+        "description": "সংবাদ, খেলাধুলা এবং বিনোদন সহ ইসরায়েলি চ্যানেল লাইভ দেখুন"
+      },
+      "vod": {
+        "title": "অন-ডিমান্ড কন্টেন্ট",
+        "description": "যেকোনো সময় সিনেমা, সিরিজ এবং ডকুমেন্টারি ব্রাউজ করুন"
+      },
+      "voice": {
+        "title": "ভয়েস কন্ট্রোল",
+        "description": "আপনার কণ্ঠ দিয়ে অ্যাপ নিয়ন্ত্রণ করতে 'Bayit' বলুন"
+      },
+      "profiles": {
+        "title": "ফ্যামিলি প্রোফাইল",
+        "description": "ব্যক্তিগত সুপারিশ সহ প্রতিটি পরিবারের সদস্যের জন্য প্রোফাইল তৈরি করুন"
+      }
+    }
+  },
+  "empty": {
+    "noContent": "কোনো কন্টেন্ট নেই",
+    "tryAnotherCategory": "অন্য বিভাগ নির্বাচন করুন",
+    "noPodcasts": "কোনো পডকাস্ট নেই",
+    "tryLater": "পরে আবার চেষ্টা করুন",
+    "noResults": "কোনো ফলাফল পাওয়া যায়নি"
+  },
+  "audiobooks": {
+    "audiobook": "অডিওবুক",
+    "chapter": "অধ্যায়",
+    "chapters": "অধ্যায়",
+    "playChapter": "অধ্যায় চালান",
+    "noChapters": "কোনো অধ্যায় নেই",
+    "notFound": "অডিওবুক পাওয়া যায়নি",
+    "author": "লেখক",
+    "narrator": "বর্ণনাকারী",
+    "duration": "সময়কাল",
+    "isbn": "ISBN"
+  },
+  "breadcrumbs": {
+    "series": "সিরিজ",
+    "movie": "সিনেমা",
+    "watching": "দেখছে",
+    "channel": "চ্যানেল",
+    "station": "স্টেশন",
+    "podcast": "পডকাস্ট",
+    "watchlist": "ওয়াচলিস্ট",
+    "downloads": "ডাউনলোড"
+  },
+  "podcast": {
+    "selectLanguage": "ভাষা নির্বাচন করুন",
+    "switchToLanguage": "{{language}}-তে পরিবর্তন করুন",
+    "premiumRequiredForTranslation": "পডকাস্ট অনুবাদের জন্য প্রিমিয়াম সাবস্ক্রিপশন প্রয়োজন",
+    "player": {
+      "switchingLanguage": "পরিবর্তন হচ্ছে..."
+    },
+    "languages": {
+      "he": {
+        "short": "HE",
+        "full": "হিব্রু"
+      },
+      "en": {
+        "short": "EN",
+        "full": "ইংরেজি"
+      },
+      "es": {
+        "short": "ES",
+        "full": "স্প্যানিশ"
+      }
+    }
+  },
+  "widgets": {
+    "emptyPersonal": "এখনও কোনো ব্যক্তিগত উইজেট নেই",
+    "emptyPersonalHint": "আপনার প্রথম ব্যক্তিগত উইজেট তৈরি করুন বা উপরে সিস্টেম উইজেট যোগ করুন",
+    "itemsTotal": "মোট উইজেট",
+    "systemWidgets": "সিস্টেম উইজেট",
+    "systemWidgetsHint": "আপনার সংগ্রহে যোগ করতে উইজেট ব্রাউজ করুন",
+    "myWidgets": "আমার ব্যক্তিগত উইজেট",
+    "myWidgetsHint": "আপনার তৈরি উইজেট",
+    "personalWidgets": "আমার উইজেট",
+    "noSystemWidgets": "কোনো সিস্টেম উইজেট নেই",
+    "added": "যোগ করা হয়েছে",
+    "add": "যোগ করুন",
+    "remove": "সরান",
+    "show": "দেখান",
+    "hidden": "লুকানো",
+    "addToCollection": "আমার উইজেটে যোগ করুন",
+    "removeFromCollection": "আমার উইজেট থেকে সরান",
+    "contentTypes": {
+      "liveChannel": "লাইভ চ্যানেল",
+      "iframe": "ওয়েব কন্টেন্ট",
+      "podcast": "পডকাস্ট",
+      "radio": "রেডিও",
+      "vod": "ভিডিও",
+      "custom": "কাস্টম",
+      "widget": "উইজেট"
+    },
+    "form": {
+      "title": "উইজেট তৈরি করুন",
+      "basicInfo": "মৌলিক তথ্য",
+      "titlePlaceholder": "উইজেট শিরোনাম",
+      "titleRequired": "উইজেট শিরোনাম প্রয়োজন",
+      "descriptionPlaceholder": "বিবরণ (ঐচ্ছিক)",
+      "iconPlaceholder": "আইকন ইমোজি (যেমন, 📺)",
+      "content": "কন্টেন্ট",
+      "fromLibrary": "লাইব্রেরি থেকে",
+      "iframe": "iFrame",
+      "selectContent": "কন্টেন্ট নির্বাচন করুন (চ্যানেল, পডকাস্ট, শো ইত্যাদি)",
+      "iframeUrl": "iFrame URL",
+      "iframeUrlRequired": "iFrame URL প্রয়োজন",
+      "iframeTitle": "iFrame শিরোনাম",
+      "positionSize": "অবস্থান ও আকার",
+      "behavior": "আচরণ",
+      "mutedByDefault": "ডিফল্টে নিঃশব্দ",
+      "closable": "বন্ধযোগ্য",
+      "draggable": "টানাযোগ্য",
+      "widgetOrder": "উইজেট ক্রম",
+      "orderPlaceholder": "ক্রম (0 = প্রথম)",
+      "saveWidget": "উইজেট সংরক্ষণ করুন",
+      "saving": "সংরক্ষণ হচ্ছে...",
+      "cancel": "বাতিল",
+      "change": "পরিবর্তন"
+    },
+    "intro": {
+      "title": "উইজেটে স্বাগতম",
+      "description": "আপনার দেখার অভিজ্ঞতা কাস্টমাইজ করতে শক্তিশালী ফ্লোটিং উইজেট আবিষ্কার করুন",
+      "watchVideo": "পরিচিতি দেখুন",
+      "skip": "এড়িয়ে যান",
+      "dismiss": "আর দেখাবেন না",
+      "videoUnavailable": "ভিডিও সাময়িকভাবে অনুপলব্ধ",
+      "loadingMartyJr": "Marty Jr লোড হচ্ছে...",
+      "loadingWidgets": "উইজেট পরিচিতি লোড হচ্ছে..."
+    }
+  },
+  "trending": {
+    "title": "ইসরায়েলে কী ট্রেন্ডিং",
+    "noTopics": "কোনো ট্রেন্ডিং বিষয় নেই",
+    "topStory": "শীর্ষ সংবাদ",
+    "sources": "উৎস",
+    "categories": {
+      "security": "নিরাপত্তা",
+      "politics": "রাজনীতি",
+      "tech": "প্রযুক্তি",
+      "culture": "সংস্কৃতি",
+      "sports": "খেলাধুলা",
+      "economy": "অর্থনীতি",
+      "entertainment": "বিনোদন",
+      "weather": "আবহাওয়া",
+      "health": "স্বাস্থ্য",
+      "general": "সাধারণ"
+    }
+  },
+  "cultures": {
+    "title": "আপনার সংস্কৃতি নির্বাচন করুন",
+    "select": "সংস্কৃতি নির্বাচন করুন",
+    "selectCulture": "আপনার সংস্কৃতি বেছে নিন",
+    "selectCultureDescription": "আপনার অভিজ্ঞতা ব্যক্তিগত করতে আপনার সাংস্কৃতিক সম্প্রদায় নির্বাচন করুন",
+    "changeCulture": "সংস্কৃতি পরিবর্তন করুন",
+    "israeli": {
+      "name": "ইসরায়েলি",
+      "description": "ইসরায়েলি প্রবাসী সম্প্রদায়ের কন্টেন্ট"
+    },
+    "chinese": {
+      "name": "চীনা",
+      "description": "চীনা সম্প্রদায়ের কন্টেন্ট"
+    },
+    "japanese": {
+      "name": "জাপানি",
+      "description": "জাপানি সম্প্রদায়ের কন্টেন্ট"
+    },
+    "korean": {
+      "name": "কোরিয়ান",
+      "description": "কোরিয়ান সম্প্রদায়ের কন্টেন্ট"
+    },
+    "indian": {
+      "name": "ভারতীয়",
+      "description": "ভারতীয় সম্প্রদায়ের কন্টেন্ট"
+    }
+  },
+  "cultureTrending": {
+    "whatsHotIn": "{{location}}-এ কী হট",
+    "noTopics": "কোনো ট্রেন্ডিং বিষয় নেই",
+    "sources": "উৎস",
+    "categories": {
+      "security": "নিরাপত্তা",
+      "politics": "রাজনীতি",
+      "tech": "প্রযুক্তি",
+      "technology": "প্রযুক্তি",
+      "culture": "সংস্কৃতি",
+      "sports": "খেলাধুলা",
+      "economy": "অর্থনীতি",
+      "finance": "অর্থ",
+      "entertainment": "বিনোদন",
+      "weather": "আবহাওয়া",
+      "health": "স্বাস্থ্য",
+      "food": "খাবার",
+      "fashion": "ফ্যাশন",
+      "travel": "ভ্রমণ",
+      "history": "ইতিহাস",
+      "expat": "প্রবাসী জীবন",
+      "general": "সাধারণ"
+    }
+  },
+  "cultureCities": {
+    "connectionTo": "{{city}} সংযোগ",
+    "explore": "{{city}} অন্বেষণ করুন",
+    "noContent": "এই শহরের জন্য কোনো কন্টেন্ট নেই",
+    "categories": {
+      "all": "সব",
+      "history": "ইতিহাস",
+      "culture": "সংস্কৃতি",
+      "finance": "অর্থ",
+      "tech": "প্রযুক্তি",
+      "food": "খাবার",
+      "expat": "প্রবাসী জীবন",
+      "news": "সংবাদ",
+      "entertainment": "বিনোদন"
+    }
+  },
+  "clock": {
+    "israel": "ইসরায়েল",
+    "local": "স্থানীয়",
+    "shabbatShalom": "শাব্বাত শালোম!",
+    "erevShabbat": "এরেভ শাব্বাত",
+    "candleLighting": "মোমবাতি জ্বালানো",
+    "parasha": "পরশা"
+  },
+  "ritual": {
+    "title": "সকালের রীতি",
+    "greeting": "সুপ্রভাত!",
+    "israelUpdate": "ইসরায়েলে বিকেল, সংবাদ চলমান উন্নয়নের রিপোর্ট করছে",
+    "recommendation": "আমরা সকালের সংবাদ দিয়ে শুরু করে তারপর রেডিওতে যাওয়ার পরামর্শ দিই",
+    "preparingRitual": "আপনার সকালের রীতি প্রস্তুত হচ্ছে...",
+    "israelTime": "ইসরায়েল সময়",
+    "day": "দিন",
+    "letsStart": "শুরু করা যাক",
+    "skipToday": "আজ এড়িয়ে যান",
+    "finish": "শেষ",
+    "noContentNow": "এখন কোনো কন্টেন্ট নেই",
+    "typeLive": "লাইভ",
+    "typeRadio": "রেডিও",
+    "typeVideo": "ভিডিও"
+  },
+  "watchParty": {
+    "title": "ওয়াচ পার্টি",
+    "create": "পার্টি তৈরি করুন",
+    "join": "পার্টিতে যোগ দিন",
+    "active": "পার্টি সক্রিয়",
+    "createTitle": "ওয়াচ পার্টি তৈরি করুন",
+    "joinTitle": "পার্টিতে যোগ দিন",
+    "enterCode": "রুম কোড লিখুন",
+    "roomCode": "রুম কোড",
+    "roomCodeHint": "পার্টিতে যোগ দিতে ৮-অক্ষরের রুম কোড লিখুন",
+    "copyCode": "কোড কপি করুন",
+    "codeCopied": "কোড কপি হয়েছে!",
+    "participants": "অংশগ্রহণকারী",
+    "host": "হোস্ট",
+    "you": "আপনি",
+    "leave": "পার্টি ছাড়ুন",
+    "end": "পার্টি শেষ করুন",
+    "chat": "চ্যাট",
+    "sendMessage": "বার্তা পাঠান",
+    "typeMessage": "একটি বার্তা টাইপ করুন...",
+    "synced": "সিঙ্ক হয়েছে",
+    "syncing": "সিঙ্ক হচ্ছে...",
+    "hostPaused": "হোস্ট বিরতি দিয়েছে",
+    "userJoined": "{{name}} যোগ দিয়েছে",
+    "userLeft": "{{name}} চলে গেছে",
+    "partyEnded": "পার্টি শেষ হয়েছে",
+    "connecting": "সংযোগ হচ্ছে...",
+    "options": {
+      "chatEnabled": "চ্যাট সক্রিয়",
+      "syncPlayback": "প্লেব্যাক সিঙ্ক"
+    },
+    "errors": {
+      "invalidCode": "অবৈধ কোড",
+      "partyFull": "পার্টি পূর্ণ",
+      "partyEnded": "পার্টি শেষ হয়েছে",
+      "connectionError": "সংযোগ ত্রুটি",
+      "createFailed": "পার্টি তৈরি ব্যর্থ",
+      "joinFailed": "পার্টিতে যোগ দিতে ব্যর্থ"
+    },
+    "audio": {
+      "mute": "নিঃশব্দ",
+      "unmute": "শব্দ চালু",
+      "speaking": "বলছে",
+      "connecting": "অডিওতে সংযোগ হচ্ছে...",
+      "noAudio": "অডিও উপলব্ধ নেই",
+      "muteHint": "আপনার মাইক্রোফোন নিঃশব্দ করে",
+      "unmuteHint": "কথা বলতে আপনার মাইক্রোফোন চালু করে"
+    },
+    "textOnlyMode": "শুধুমাত্র টেক্সট চ্যাট",
+    "endParty": "পার্টি শেষ করুন",
+    "toggleEmoji": "ইমোজি পিকার টগল",
+    "toggleEmojiHint": "প্রতিক্রিয়ার জন্য ইমোজি কুইক পিকার খোলে",
+    "sendEmoji": "{{emoji}} পাঠান",
+    "sendEmojiHint": "চ্যাটে ইমোজি প্রতিক্রিয়া পাঠায়",
+    "emojiPicker": "ইমোজি পিকার",
+    "chatInput": "চ্যাট বার্তা ইনপুট",
+    "chatInputHint": "পার্টি চ্যাটে পাঠাতে একটি বার্তা টাইপ করুন",
+    "sendMessageHint": "আপনার বার্তা পার্টি চ্যাটে পাঠায়",
+    "copyCodeHint": "ক্লিপবোর্ডে রুম কোড কপি করে",
+    "share": "শেয়ার",
+    "shareHint": "পার্টি লিঙ্ক শেয়ার বা কোড কপি করুন",
+    "copied": "কপি হয়েছে!",
+    "endPartyHint": "সব অংশগ্রহণকারীদের জন্য পার্টি শেষ করে",
+    "leaveParty": "পার্টি ছাড়ুন",
+    "leavePartyHint": "শেষ না করে পার্টি ছাড়ে",
+    "buttonHint": "ওয়াচ পার্টি তৈরি বা যোগ দেওয়ার মেনু খোলে",
+    "createHint": "নতুন ওয়াচ পার্টি তৈরি করে",
+    "joinHint": "কোড দিয়ে বিদ্যমান ওয়াচ পার্টিতে যোগ দেয়",
+    "emojiPickerHint": "কুইক ইমোজি প্রতিক্রিয়া দেখায়",
+    "chatEnabledHint": "অংশগ্রহণকারীদের জন্য চ্যাট সক্রিয় করে",
+    "syncPlaybackHint": "হোস্টের সাথে প্লেব্যাক সিঙ্ক রাখে",
+    "createPartyHint": "নির্বাচিত অপশন দিয়ে পার্টি তৈরি করে",
+    "joinPartyHint": "প্রবেশকৃত কোড দিয়ে পার্টিতে যোগ দেয়",
+    "closePanelHint": "ওয়াচ পার্টি প্যানেল বন্ধ করে",
+    "cancelHint": "বাতিল করে এবং ডায়ালগ বন্ধ করে",
+    "viewPartyHint": "ওয়াচ পার্টি প্যানেল খোলে",
+    "panel": "ওয়াচ পার্টি প্যানেল"
+  },
+  "chapters": {
+    "title": "অধ্যায়",
+    "noChapters": "কোনো অধ্যায় নেই",
+    "generating": "অধ্যায় তৈরি হচ্ছে...",
+    "jumpTo": "যান",
+    "current": "এখন",
+    "categories": {
+      "intro": "ভূমিকা",
+      "news": "সংবাদ",
+      "security": "নিরাপত্তা",
+      "politics": "রাজনীতি",
+      "economy": "অর্থনীতি",
+      "sports": "খেলাধুলা",
+      "weather": "আবহাওয়া",
+      "culture": "সংস্কৃতি",
+      "conclusion": "উপসংহার"
+    }
+  },
+  "placeholder": {
+    "email": "your@email.com",
+    "password": "••••••••",
+    "pin": "••••",
+    "dateRange": {
+      "from": "থেকে (YYYY-MM-DD)",
+      "to": "পর্যন্ত (YYYY-MM-DD)"
+    },
+    "amount": {
+      "min": "সর্বনিম্ন",
+      "max": "সর্বোচ্চ",
+      "price": "0.00"
+    },
+    "chatMessage": "এখানে টাইপ করুন...",
+    "deepLink": "bayitplus://content/123",
+    "scheduleDateTime": "YYYY-MM-DDTHH:mm",
+    "roomCode": "ABCD1234",
+    "time": {
+      "start": "08:00",
+      "end": "10:00"
+    },
+    "filter": {
+      "userId": "ইউজার ID লিখুন"
+    },
+    "datetime": "YYYY-MM-DDTHH:mm",
+    "number": "0",
+    "chat": "আপনার বার্তা টাইপ করুন..."
+  },
+  "components": {
+    "select": {
+      "default": "নির্বাচন করুন..."
+    }
+  },
+  "profiles": {
+    "addProfile": "প্রোফাইল যোগ করুন",
+    "enterPin": "PIN লিখুন",
+    "selectError": "প্রোফাইল নির্বাচনে ত্রুটি",
+    "wrongPin": "ভুল PIN",
+    "loading": "প্রোফাইল লোড হচ্ছে...",
+    "manage": "প্রোফাইল পরিচালনা করুন",
+    "whoIsWatching": "কে দেখছে?",
+    "manageProfiles": "প্রোফাইল পরিচালনা করুন"
+  },
+  "watch": {
+    "notFound": "কন্টেন্ট পাওয়া যায়নি",
+    "backToHome": "হোমে ফিরে যান",
+    "episodes": "পর্ব",
+    "addToList": "তালিকায় যোগ করুন",
+    "like": "পছন্দ",
+    "share": "শেয়ার",
+    "cast": "কাস্ট",
+    "episodesList": "পর্ব",
+    "schedule": "সময়সূচী",
+    "now": "এখন",
+    "related": "সম্পর্কিত কন্টেন্ট",
+    "deleteEpisode": "পর্ব মুছুন",
+    "confirmDeleteEpisode": "এই পর্ব মুছবেন?"
+  },
+  "live": {
+    "title": "লাইভ TV",
+    "next": "পরবর্তী:",
+    "noChannels": "কোনো চ্যানেল নেই",
+    "tryLater": "পরে আবার চেষ্টা করুন",
+    "categories": {
+      "all": "সব",
+      "news": "সংবাদ",
+      "entertainment": "বিনোদন",
+      "sports": "খেলাধুলা",
+      "kids": "শিশু",
+      "music": "সংগীত"
+    }
+  },
+  "youngsters": {
+    "title": "তরুণ",
+    "items": "আইটেম",
+    "empty": "কোনো কন্টেন্ট নেই",
+    "emptyHint": "অন্য বিভাগ চেষ্টা করুন",
+    "exitYoungstersMode": "তরুণ মোড থেকে বের হন",
+    "exitDescription": "বের হতে পিতামাতার কোড লিখুন",
+    "parentCode": "পিতামাতার কোড",
+    "confirm": "নিশ্চিত করুন",
+    "wrongCode": "ভুল কোড",
+    "noContent": "কোনো কন্টেন্ট নেই",
+    "tryAnotherCategory": "অন্য বিভাগ নির্বাচন করুন",
+    "categories": {
+      "all": "সব",
+      "trending": "ট্রেন্ডিং",
+      "news": "সংবাদ",
+      "culture": "সংস্কৃতি",
+      "educational": "শিক্ষামূলক",
+      "music": "সংগীত",
+      "entertainment": "বিনোদন",
+      "sports": "খেলাধুলা",
+      "tech": "প্রযুক্তি",
+      "judaism": "ইহুদি ধর্ম"
+    },
+    "ageGroups": {
+      "middle-school": "মিডল স্কুল (১২-১৪)",
+      "high-school": "হাই স্কুল (১৫-১৭)"
+    },
+    "moderation": {
+      "pending": "পর্যালোচনা মুলতুবি",
+      "approved": "অনুমোদিত",
+      "rejected": "প্রত্যাখ্যাত"
+    },
+    "admin": {
+      "stats": "তরুণ কন্টেন্ট ম্যানেজার",
+      "seedContent": "কন্টেন্ট সিড করুন",
+      "importArchive": "Archive.org ইমপোর্ট করুন",
+      "syncPodcasts": "পডকাস্ট সিঙ্ক করুন",
+      "syncYouTube": "YouTube সিঙ্ক করুন",
+      "tagVod": "VOD ট্যাগ করুন",
+      "pendingModeration": "মুলতুবি মডারেশন"
+    }
+  },
+  "chat": {
+    "title": "Bayit+ সহায়ক",
+    "greeting": "হ্যালো! আমি Bayit+ স্মার্ট সহায়ক। আজ আমি আপনাকে কীভাবে সাহায্য করতে পারি? মাইক্রোফোনে ক্লিক করে বলুন, বা একটি বার্তা টাইপ করুন।"
+  },
+  "subtitles": {
+    "nikud": "নিকুদ",
+    "selection": "নির্বাচন",
+    "translation": "অনুবাদ",
+    "translating": "অনুবাদ হচ্ছে...",
+    "close": "বন্ধ করুন",
+    "unavailable": "অনুবাদ উপলব্ধ নেই",
+    "off": "বন্ধ",
+    "none": "কোনোটি নয়",
+    "autoGenerated": "স্বয়ংক্রিয়-তৈরি",
+    "selectLanguage": "সাবটাইটেল ভাষা নির্বাচন করুন",
+    "liveTranslate": "লাইভ অনুবাদ",
+    "translateTo": "অনুবাদ করুন",
+    "downloadMore": "আরও সাবটাইটেল ডাউনলোড করুন...",
+    "downloading": "OpenSubtitles-এ খোঁজা হচ্ছে...",
+    "opensubtitlesSource": "OpenSubtitles.com থেকে",
+    "downloadSuccess": "{{count}}টি সাবটাইটেল ডাউনলোড হয়েছে",
+    "noSubtitlesFound": "এই কন্টেন্টের জন্য কোনো সাবটাইটেল পাওয়া যায়নি"
+  },
+  "dubbing": {
+    "title": "লাইভ ডাবিং",
+    "enabled": "লাইভ ডাবিং সক্রিয়",
+    "selectLanguage": "ভাষা নির্বাচন করুন",
+    "originalAudio": "মূল অডিও",
+    "dubbedAudio": "ডাব করা অডিও",
+    "selectVoice": "ভয়েস নির্বাচন করুন",
+    "adjustVolume": "ভলিউম সামঞ্জস্য করুন",
+    "tapToSelect": "এই ভাষা নির্বাচন করতে ট্যাপ করুন",
+    "languages": {
+      "en": "English",
+      "es": "Español",
+      "he": "עברית",
+      "ar": "العربية",
+      "ru": "Русский",
+      "fr": "Français",
+      "de": "Deutsch"
+    },
+    "onboarding": {
+      "title": "লাইভ ডাবিং পরিচয়",
+      "description": "আপনার ভাষায় লাইভ কন্টেন্ট অভিজ্ঞতা করুন। আমাদের AI দেখার সময় রিয়েল-টাইমে অডিও অনুবাদ এবং রিপ্লে করে।",
+      "feature1": "৭টি ভাষা সমর্থিত",
+      "feature2": "রিয়েল-টাইম প্রক্রিয়াকরণ",
+      "feature3": "অডিও ব্যালেন্স সামঞ্জস্য করুন",
+      "tryNow": "এখনই চেষ্টা করুন",
+      "later": "পরে হবে"
+    },
+    "consent": {
+      "title": "অডিও প্রক্রিয়াকরণ সম্মতি",
+      "message": "লাইভ ডাবিং AI পরিষেবা ব্যবহার করে রিয়েল-টাইমে আপনার অডিও প্রক্রিয়া করে। অডিও শুধুমাত্র অনুবাদের জন্য প্রক্রিয়া করা হয় এবং স্থায়ীভাবে সংরক্ষিত হয় না।",
+      "accept": "আমি সম্মত",
+      "decline": "না ধন্যবাদ"
+    },
+    "errors": {
+      "connectionFailed": "সংযোগ ব্যর্থ",
+      "connectionFailedMessage": "ডাবিং পরিষেবায় সংযোগ করা যায়নি",
+      "connectionFailedAction": "আপনার ইন্টারনেট সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন",
+      "notAuthenticated": "প্রমাণীকৃত নয়",
+      "notAuthenticatedMessage": "আবার সাইন ইন করুন",
+      "notAuthenticatedAction": "লাইভ ডাবিং ব্যবহার করতে সাইন ইন করুন",
+      "premiumRequired": "প্রিমিয়াম বৈশিষ্ট্য",
+      "premiumRequiredMessage": "লাইভ ডাবিংয়ের জন্য প্রিমিয়াম সাবস্ক্রিপশন প্রয়োজন",
+      "premiumRequiredAction": "এই বৈশিষ্ট্য অ্যাক্সেস করতে প্রিমিয়ামে আপগ্রেড করুন",
+      "channelUnavailable": "অনুপলব্ধ",
+      "channelUnavailableMessage": "এই চ্যানেলের জন্য ডাবিং উপলব্ধ নেই",
+      "audioCaptureError": "মাইক্রোফোন ত্রুটি",
+      "audioCaptureErrorMessage": "আপনার মাইক্রোফোন অ্যাক্সেস করা যায়নি",
+      "sttServiceError": "স্পিচ রিকগনিশন ত্রুটি",
+      "sttServiceErrorMessage": "স্পিচ চিনতে ব্যর্থ",
+      "ttsServiceError": "ডাবিং ত্রুটি",
+      "ttsServiceErrorMessage": "ডাব করা অডিও তৈরি করতে ব্যর্থ",
+      "translationTimeout": "অনুবাদ টাইমআউট",
+      "translationTimeoutMessage": "অনুবাদে অনেক সময় লাগছে, আবার চেষ্টা করা হচ্ছে",
+      "websocketClosed": "সংযোগ বিচ্ছিন্ন",
+      "websocketClosedMessage": "ডাবিং সংযোগ বন্ধ হয়ে গেছে",
+      "rateLimitExceeded": "অনেক চেষ্টা",
+      "rateLimitExceededMessage": "আবার চেষ্টা করার আগে অপেক্ষা করুন",
+      "sessionTimeout": "সেশন মেয়াদ শেষ",
+      "sessionTimeoutMessage": "আপনার ডাবিং সেশনের মেয়াদ শেষ হয়েছে"
+    }
+  },
+  "video": {
+    "watchTrailer": "ট্রেলার দেখুন",
+    "closeTrailer": "ট্রেলার বন্ধ করুন",
+    "deleteConfirm": "এই পর্ব মুছবেন?"
+  },
+  "chess": {
+    "title": "দাবা",
+    "welcome": "দাবায় স্বাগতম",
+    "subtitle": "বিশ্বজুড়ে বন্ধু এবং পরিবারের সাথে দাবা খেলুন",
+    "createGame": "নতুন গেম তৈরি করুন",
+    "joinGame": "গেমে যোগ দিন",
+    "gameCode": "গেম কোড",
+    "enterGameCode": "গেম কোড লিখুন",
+    "invalidGameCode": "অবৈধ গেম কোড। ৬ অক্ষর হতে হবে।",
+    "joinFailed": "গেমে যোগ দিতে ব্যর্থ",
+    "join": "যোগ দিন",
+    "create": "তৈরি করুন",
+    "chooseColor": "আপনার রঙ বেছে নিন",
+    "white": "সাদা",
+    "black": "কালো",
+    "chatPlaceholder": "একটি বার্তা টাইপ করুন... (পরামর্শের জন্য @bot)",
+    "botHint": "আমাদের AI সহায়ক থেকে দাবা পরামর্শ পেতে আপনার বার্তায় @bot ট্যাগ করুন",
+    "bot": "দাবা সহায়ক",
+    "mute": "নিঃশব্দ",
+    "unmute": "শব্দ চালু",
+    "speaking": "অংশগ্রহণকারী",
+    "resign": "পরাজয় স্বীকার",
+    "offerDraw": "ড্র প্রস্তাব করুন",
+    "newGame": "নতুন গেম",
+    "checkmate": "চেকমেট!",
+    "stalemate": "স্টেলমেট",
+    "draw": "ড্র",
+    "resigned": "গেম ছেড়ে দেওয়া হয়েছে",
+    "reconnecting": "পুনঃসংযোগ হচ্ছে...",
+    "moveHistory": "চাল ইতিহাস",
+    "noMoves": "এখনও কোনো চাল নেই",
+    "showHints": "গাইড হিন্ট দেখান",
+    "yourTurn": "আপনার পালা",
+    "opponentTurn": "প্রতিপক্ষের পালা",
+    "waitingForOpponent": "প্রতিপক্ষের জন্য অপেক্ষা করা হচ্ছে...",
+    "gameOver": "গেম শেষ",
+    "sendingInvite": "{{name}}-কে গেম আমন্ত্রণ পাঠানো হচ্ছে...",
+    "inviteSent": "{{name}}-কে গেম আমন্ত্রণ পাঠানো হয়েছে! গেম কোড: {{code}}",
+    "inviteFailed": "সেই ব্যবহারকারী পাওয়া যায়নি। নাম পরীক্ষা করে আবার চেষ্টা করুন।",
+    "inviteReceived": "{{name}} আপনাকে দাবা খেলার আমন্ত্রণ জানিয়েছে!",
+    "joinInvite": "গেমে যোগ দিন",
+    "challenge": "চ্যালেঞ্জ",
+    "playedAsWhite": "সাদা হিসাবে খেলেছে",
+    "playedAsBlack": "কালো হিসাবে খেলেছে",
+    "gameMode": "গেম মোড",
+    "playVsFriend": "বন্ধুর সাথে খেলুন",
+    "playVsBot": "বটের সাথে খেলুন",
+    "difficulty": "কঠিনতা",
+    "easy": "সহজ",
+    "medium": "মাঝারি",
+    "hard": "কঠিন",
+    "chessBot": "দাবা বট"
+  },
+  "friends": {
+    "title": "বন্ধু ও প্রতিপক্ষ",
+    "subtitle": "খেলোয়াড়দের সাথে সংযোগ করুন এবং বন্ধুদের চ্যালেঞ্জ করুন",
+    "myFriends": "আমার বন্ধুরা",
+    "requests": "অনুরোধ",
+    "findPlayers": "খেলোয়াড় খুঁজুন",
+    "friendsLabel": "বন্ধু",
+    "pendingLabel": "মুলতুবি",
+    "add": "বন্ধু যোগ করুন",
+    "remove": "সরান",
+    "accept": "গ্রহণ করুন",
+    "reject": "প্রত্যাখ্যান করুন",
+    "cancel": "বাতিল",
+    "noFriends": "এখনও কোনো বন্ধু নেই",
+    "noFriendsDesc": "খেলোয়াড়দের খুঁজুন এবং বন্ধু অনুরোধ পাঠান",
+    "lastGame": "শেষ গেম: {{time}}",
+    "friendsSince": "{{date}} থেকে বন্ধু",
+    "incomingRequests": "আগত অনুরোধ",
+    "outgoingRequests": "বহির্গামী অনুরোধ",
+    "noIncoming": "কোনো আগত অনুরোধ নেই",
+    "noOutgoing": "কোনো বহির্গামী অনুরোধ নেই",
+    "sentAt": "{{time}} পাঠানো হয়েছে",
+    "searchPlaceholder": "নাম দিয়ে খুঁজুন...",
+    "noResults": "কোনো খেলোয়াড় পাওয়া যায়নি",
+    "noResultsDesc": "ভিন্ন নাম দিয়ে খুঁজুন",
+    "requestSent": "বন্ধু অনুরোধ পাঠানো হয়েছে!",
+    "requestAccepted": "বন্ধু অনুরোধ গৃহীত!",
+    "requestRejected": "বন্ধু অনুরোধ প্রত্যাখ্যাত",
+    "requestCancelled": "বন্ধু অনুরোধ বাতিল",
+    "friendRemoved": "বন্ধু সরানো হয়েছে",
+    "searchFailed": "ব্যবহারকারী খুঁজতে ব্যর্থ",
+    "requestFailed": "অনুরোধ পাঠাতে ব্যর্থ",
+    "acceptFailed": "অনুরোধ গ্রহণ করতে ব্যর্থ",
+    "rejectFailed": "অনুরোধ প্রত্যাখ্যান করতে ব্যর্থ",
+    "cancelFailed": "অনুরোধ বাতিল করতে ব্যর্থ",
+    "removeFailed": "বন্ধু সরাতে ব্যর্থ",
+    "friendsCount": "{{count}} বন্ধু",
+    "gamesCount": "{{count}} গেম",
+    "alreadyFriends": "বন্ধু"
+  },
+  "stats": {
+    "statistics": "পরিসংখ্যান",
+    "matchHistory": "ম্যাচ ইতিহাস",
+    "headToHead": "মুখোমুখি",
+    "gamesPlayed": "খেলা গেম",
+    "wins": "জয়",
+    "losses": "হার",
+    "draws": "ড্র",
+    "winRate": "জয়ের হার",
+    "rating": "রেটিং",
+    "peakRating": "সর্বোচ্চ রেটিং",
+    "peak": "সর্বোচ্চ",
+    "winStreak": "জয়ের ধারা",
+    "currentStreak": "বর্তমান ধারা",
+    "bestStreak": "সেরা ধারা",
+    "performance": "কর্মক্ষমতা",
+    "achievements": "অর্জন",
+    "currentRating": "বর্তমান রেটিং",
+    "totalGames": "মোট গেম",
+    "noGames": "এখনও কোনো গেম খেলা হয়নি",
+    "moves": "চাল",
+    "won": "জিতেছে",
+    "lost": "হেরেছে",
+    "draw": "ড্র",
+    "overall": "সামগ্রিক রেকর্ড",
+    "yourWins": "আপনার জয়",
+    "theirWins": "তাদের জয়",
+    "totalGamesPlayed": "মোট: {{count}} গেম",
+    "recentGames": "সাম্প্রতিক গেম"
+  },
+  "jerusalem": {
+    "title": "জেরুজালেম সংযোগ",
+    "subtitle": "ইসরায়েলের হৃদয়ের সাথে সংযুক্ত থাকুন",
+    "noContent": "জেরুজালেম কন্টেন্ট উপলব্ধ নেই",
+    "sources": "উৎস",
+    "kotelLive": "পশ্চিম প্রাচীর লাইভ",
+    "categories": {
+      "kotel": "পশ্চিম প্রাচীর",
+      "idf-ceremony": "IDF অনুষ্ঠান",
+      "diaspora-connection": "প্রবাসী সংযোগ",
+      "holy-sites": "পবিত্র স্থান",
+      "jerusalem-events": "জেরুজালেম ইভেন্ট",
+      "general": "জেরুজালেম"
+    }
+  },
+  "telAviv": {
+    "title": "তেল আভিভ সংযোগ",
+    "subtitle": "যে শহর কখনো থামে না",
+    "noContent": "তেল আভিভ কন্টেন্ট উপলব্ধ নেই",
+    "sources": "উৎস",
+    "beachLive": "সমুদ্র সৈকত ওয়েবক্যাম",
+    "categories": {
+      "beaches": "সমুদ্র সৈকত",
+      "nightlife": "নাইটলাইফ",
+      "culture": "সংস্কৃতি ও শিল্প",
+      "music": "সংগীত দৃশ্য",
+      "food": "খাবার ও ডাইনিং",
+      "tech": "প্রযুক্তি ও স্টার্টআপ",
+      "events": "ইভেন্ট",
+      "general": "তেল আভিভ"
+    }
+  },
+  "taxonomy": {
+    "sections": {
+      "movies": "সিনেমা",
+      "series": "সিরিজ",
+      "kids": "শিশু",
+      "youngsters": "তরুণ",
+      "music": "সংগীত",
+      "documentaries": "ডকুমেন্টারি",
+      "podcasts": "পডকাস্ট",
+      "live": "লাইভ TV",
+      "audiobooks": "অডিওবুক"
+    },
+    "subcategories": {
+      "learning-hebrew": "হিব্রু শেখা",
+      "learning-hebrew.description": "শিশুদের জন্য হিব্রুতে পড়া, লেখা এবং শব্দভাণ্ডার শেখা",
+      "young-science": "তরুণ বিজ্ঞান",
+      "young-science.description": "শিশুদের জন্য উপযোগী পরীক্ষা-নিরীক্ষা এবং বৈজ্ঞানিক ব্যাখ্যা",
+      "math-fun": "মজার গণিত",
+      "math-fun.description": "মজাদার এবং খেলার মতো উপায়ে সংখ্যা এবং পাটিগণিত শেখা",
+      "nature-animals": "প্রকৃতি ও প্রাণী",
+      "nature-animals.description": "কৌতূহলী শিশুদের জন্য প্রাণী এবং প্রকৃতির জগৎ",
+      "interactive": "ইন্টারঅ্যাক্টিভ",
+      "interactive.description": "শিশুদের জন্য ইন্টারঅ্যাক্টিভ এবং অংশগ্রহণমূলক কন্টেন্ট",
+      "hebrew-songs": "হিব্রু গান",
+      "hebrew-songs.description": "ক্লাসিক এবং নতুন ইসরায়েলি শিশুদের গান",
+      "nursery-rhymes": "নার্সারি রাইমস",
+      "nursery-rhymes.description": "ছোট শিশু এবং বাচ্চাদের জন্য গান এবং সুর",
+      "kids-movies": "শিশু সিনেমা",
+      "kids-movies.description": "শিশুদের জন্য উপযুক্ত পূর্ণদৈর্ঘ্য সিনেমা",
+      "kids-series": "শিশু সিরিজ",
+      "kids-series.description": "শিশুদের জন্য অ্যানিমেটেড সিরিজ এবং TV শো",
+      "jewish-holidays": "ইহুদি ছুটি",
+      "jewish-holidays.description": "শিশুদের জন্য ইহুদি ছুটি এবং ঐতিহ্য সম্পর্কে কন্টেন্ট",
+      "torah-stories": "তোরাহ গল্প",
+      "torah-stories.description": "তোরাহ এবং ইহুদি ঐতিহ্য থেকে গল্প",
+      "bedtime-stories": "ঘুমানোর গল্প",
+      "bedtime-stories.description": "ঘুমানোর সময়ের জন্য শান্ত গল্প"
+    }
+  },
+  "passkey": {
+    "manager": {
+      "title": "পাসকি",
+      "subtitle": "নিরাপদ কন্টেন্ট অ্যাক্সেসের জন্য আপনার পাসকি পরিচালনা করুন"
+    },
+    "unsupported": "এই ডিভাইসে পাসকি সমর্থিত নয়",
+    "fetchError": "পাসকি লোড করতে ব্যর্থ",
+    "registerError": "পাসকি নিবন্ধন করতে ব্যর্থ",
+    "deleteError": "পাসকি মুছতে ব্যর্থ",
+    "cancelled": "পাসকি অপারেশন বাতিল হয়েছে",
+    "noPasskeys": "এখনও কোনো পাসকি নিবন্ধিত নেই। প্রাইভেট কন্টেন্ট আনলক করতে একটি যোগ করুন।",
+    "unknownDevice": "অজানা ডিভাইস",
+    "created": "তৈরি হয়েছে",
+    "lastUsed": "শেষ ব্যবহার",
+    "never": "কখনো না",
+    "addPasskey": "পাসকি যোগ করুন",
+    "deleteConfirmTitle": "পাসকি মুছবেন?",
+    "deleteConfirmText": "এই পাসকি আর কন্টেন্ট আনলক করতে পারবে না। আপনি পরে আবার যোগ করতে পারেন।",
+    "unlock": "আনলক",
+    "unlockContent": "প্রাইভেট কন্টেন্ট আনলক করুন",
+    "unlockDescription": "প্রাইভেট সিনেমা এবং সিরিজ অ্যাক্সেস করতে আপনার পাসকি ব্যবহার করুন",
+    "auth": {
+      "title": "কন্টেন্ট আনলক করুন",
+      "description": "প্রাইভেট সিনেমা এবং সিরিজ আনলক করতে আপনার ফিঙ্গারপ্রিন্ট, ফেস বা ডিভাইস PIN ব্যবহার করুন।",
+      "unlock": "পাসকি দিয়ে আনলক করুন",
+      "authenticating": "প্রমাণীকরণ হচ্ছে...",
+      "success": "কন্টেন্ট আনলক হয়েছে!",
+      "cancelled": "প্রমাণীকরণ বাতিল হয়েছে",
+      "error": "প্রমাণীকরণ ব্যর্থ। আবার চেষ্টা করুন।"
+    },
+    "qr": {
+      "useQR": "আনলক করতে ফোন ব্যবহার করুন",
+      "scanWithPhone": "আপনার ফোন দিয়ে স্ক্যান করুন",
+      "instruction": "আপনার ফোনে ক্যামেরা খুলুন এবং প্রমাণীকরণ করতে QR কোড স্ক্যান করুন",
+      "error": "QR কোড তৈরি করতে ব্যর্থ",
+      "expired": "QR কোডের মেয়াদ শেষ। আবার চেষ্টা করুন।"
+    }
+  },
+  "olorin": {
+    "errors": {
+      "session_not_found": "সেশন পাওয়া যায়নি",
+      "session_different_partner": "সেশন ভিন্ন পার্টনারের",
+      "session_invalid_status": "সেশন {status}, ট্রান্সক্রিপ্ট যোগ করা যাচ্ছে না",
+      "max_sessions_reached": "সর্বোচ্চ সমকালীন সেশন ({limit}) পৌঁছেছে",
+      "invalid_api_key": "অবৈধ API কী",
+      "missing_api_key": "{header} হেডার অনুপস্থিত",
+      "capability_disabled": "'{capability}' ক্ষমতা বর্তমানে নিষ্ক্রিয়",
+      "capability_not_enabled": "'{capability}' ক্ষমতা এই পার্টনারের জন্য সক্রিয় নয়",
+      "source_language_not_supported": "সোর্স ভাষা '{language}' সমর্থিত নয়। সমর্থিত: {supported}",
+      "target_language_not_supported": "টার্গেট ভাষা '{language}' সমর্থিত নয়। সমর্থিত: {supported}",
+      "partner_not_found": "পার্টনার পাওয়া যায়নি",
+      "partner_registration_failed": "পার্টনার নিবন্ধন ব্যর্থ",
+      "no_updates_provided": "কোনো আপডেট দেওয়া হয়নি",
+      "webhook_config_failed": "ওয়েবহুক কনফিগার করতে ব্যর্থ",
+      "webhook_url_not_configured": "ওয়েবহুক URL কনফিগার করা হয়নি",
+      "webhook_secret_not_configured": "ওয়েবহুক সিক্রেট কনফিগার করা হয়নি",
+      "search_failed": "সার্চ ব্যর্থ",
+      "indexing_failed": "ইনডেক্সিং ব্যর্থ",
+      "detection_failed": "সনাক্তকরণ ব্যর্থ",
+      "explanation_failed": "ব্যাখ্যা পেতে ব্যর্থ",
+      "reference_not_found": "রেফারেন্স '{reference_id}' পাওয়া যায়নি",
+      "enrichment_failed": "এনরিচমেন্ট ব্যর্থ",
+      "get_references_failed": "রেফারেন্স পেতে ব্যর্থ",
+      "create_session_failed": "সেশন তৈরি করতে ব্যর্থ",
+      "add_transcript_failed": "ট্রান্সক্রিপ্ট যোগ করতে ব্যর্থ",
+      "generate_recap_failed": "রিক্যাপ তৈরি করতে ব্যর্থ"
+    }
+  },
+  "trivia": {
+    "didYouKnow": "আপনি কি জানতেন?",
+    "dismissHint": "এই ট্রিভিয়া ফ্যাক্ট বাতিল করতে ট্যাপ করুন",
+    "settings": {
+      "title": "ট্রিভিয়া ও মজার তথ্য",
+      "enabled": "ট্রিভিয়া দেখান",
+      "enabledDescription": "প্লেব্যাকের সময় আকর্ষণীয় তথ্য প্রদর্শন করুন",
+      "frequency": "ফ্রিকোয়েন্সি",
+      "frequencyHint": "ট্রিভিয়া প্রদর্শন ফ্রিকোয়েন্সি পরিবর্তন করুন",
+      "categories": "বিভাগ",
+      "category": "বিভাগ",
+      "selectCategory": "এই বিভাগ নির্বাচন করতে ট্যাপ করুন",
+      "deselectCategory": "এই বিভাগ অনির্বাচন করতে ট্যাপ করুন",
+      "displayDuration": "প্রদর্শন সময়কাল",
+      "durationHint": "ট্রিভিয়া কতক্ষণ প্রদর্শিত হবে তা পরিবর্তন করুন",
+      "seconds": "সেকেন্ড"
+    },
+    "categories": {
+      "cast": "কাস্ট",
+      "production": "প্রোডাকশন",
+      "location": "লোকেশন",
+      "cultural": "সাংস্কৃতিক",
+      "historical": "ঐতিহাসিক"
+    },
+    "frequency": {
+      "off": "বন্ধ",
+      "low": "কম",
+      "normal": "স্বাভাবিক",
+      "high": "উচ্চ"
+    },
+    "errors": {
+      "loadFailed": "ট্রিভিয়া লোড করতে ব্যর্থ",
+      "saveFailed": "ট্রিভিয়া পছন্দ সংরক্ষণ করতে ব্যর্থ"
+    }
+  },
+  "cities": {
+    "jerusalem": {
+      "title": "জেরুজালেম",
+      "subtitle": "চিরন্তন শহর আবিষ্কার করুন",
+      "loadingContent": "জেরুজালেম কন্টেন্ট লোড হচ্ছে...",
+      "noContent": "এই মুহূর্তে কোনো কন্টেন্ট নেই",
+      "errorLoading": "জেরুজালেম কন্টেন্ট লোড করতে ব্যর্থ",
+      "sources": "উৎস",
+      "categories": {
+        "history": "🏛️ ঐতিহাসিক স্থান",
+        "religion": "🕍 ধর্মীয় ঐতিহ্য",
+        "culture": "🎭 সাংস্কৃতিক ইভেন্ট",
+        "events": "📅 স্থানীয় ইভেন্ট",
+        "food": "🍴 রন্ধনসম্পর্কীয় আনন্দ",
+        "markets": "🛍️ ঐতিহ্যবাহী বাজার",
+        "arts": "🎨 শিল্প ও গ্যালারি"
+      }
+    },
+    "telAviv": {
+      "title": "তেল আভিভ",
+      "subtitle": "প্রাণবন্ত শহর অভিজ্ঞতা করুন",
+      "loadingContent": "তেল আভিভ কন্টেন্ট লোড হচ্ছে...",
+      "noContent": "এই মুহূর্তে কোনো কন্টেন্ট নেই",
+      "errorLoading": "তেল আভিভ কন্টেন্ট লোড করতে ব্যর্থ",
+      "sources": "উৎস",
+      "categories": {
+        "beaches": "🏖️ সমুদ্র সৈকত ও ওয়াটারফ্রন্ট",
+        "nightlife": "🌃 নাইটলাইফ ও বিনোদন",
+        "culture": "🎭 সাংস্কৃতিক ইভেন্ট",
+        "music": "🎵 সংগীত ও কনসার্ট",
+        "food": "🍴 ডাইনিং ও খাবার দৃশ্য",
+        "tech": "💻 প্রযুক্তি ও উদ্ভাবন",
+        "events": "📅 স্থানীয় ইভেন্ট"
+      }
+    },
+    "beta": {
+      "credits": {
+        "loading": "ক্রেডিট ব্যালেন্স লোড হচ্ছে...",
+        "error": "ক্রেডিট ব্যালেন্স লোড করা যায়নি",
+        "label": "AI ক্রেডিট",
+        "remaining": "বাকি ক্রেডিট",
+        "warningCritical": "সতর্কতা: ক্রেডিট কম",
+        "warningLow": "সতর্কতা: ক্রেডিট ব্যালেন্স কম",
+        "upgrade": "প্ল্যান আপগ্রেড করুন",
+        "upgradeAction": "আরও ক্রেডিট পেতে আপগ্রেড করুন"
+      },
+      "settings": {
+        "title": "বেটা প্রোগ্রাম",
+        "description": "আপনার Beta 500 এনরোলমেন্ট পরিচালনা করুন এবং প্রোগ্রাম বিবরণ দেখুন। AI-চালিত বৈশিষ্ট্যে প্রাথমিক অ্যাক্সেস পান।",
+        "enrolledTitle": "আপনি Beta 500-এ আছেন!",
+        "statusPendingVerification": "যাচাই মুলতুবি",
+        "statusActive": "সক্রিয়",
+        "statusExpired": "মেয়াদ শেষ",
+        "pendingMessage": "আমরা আপনার এনরোলমেন্ট যাচাই করছি। অনুমোদিত হলে আপনি ইমেইল পাবেন।",
+        "expiresOn": "{{date}}-এ মেয়াদ শেষ",
+        "loadingStatus": "প্রোগ্রাম স্ট্যাটাস লোড হচ্ছে...",
+        "errorLoading": "প্রোগ্রাম তথ্য লোড করা যায়নি। আবার চেষ্টা করুন।",
+        "programStatus": "প্রোগ্রাম স্ট্যাটাস",
+        "slots": "স্লট পূরণ হয়েছে",
+        "slotsAvailable": "{{count}}টি স্লট উপলব্ধ",
+        "programFull": "সব ৫০০ স্লট পূরণ হয়েছে"
+      },
+      "enrollment": {
+        "title": "Beta 500-এ যোগ দিন",
+        "subtitle": "AI-চালিত বৈশিষ্ট্য অভিজ্ঞতা করতে ৫০০ পরিবারের একজন হন",
+        "programFull": "প্রোগ্রাম পূর্ণ",
+        "joinButton": "Beta 500-এ যোগ দিন",
+        "exclusiveAccess": "এক্সক্লুসিভ অ্যাক্সেস",
+        "limitedSlots": "৫০০ পরিবারে সীমিত",
+        "slotsAvailable": "{{total}}-এর মধ্যে {{available}}টি স্লট উপলব্ধ",
+        "freeCredits": "বিনামূল্যে AI ক্রেডিট",
+        "creditsAmount": "৫,০০০ ক্রেডিট ($50 মূল্যের)",
+        "duration": "বেটা সময়কাল",
+        "durationValue": "৯০ দিন",
+        "features": "AI বৈশিষ্ট্য",
+        "featuresValue": "লাইভ ডাবিং, AI সার্চ, সুপারিশ",
+        "whatYouGet": "আপনি যা পাবেন",
+        "benefits": {
+          "liveDubbing": "দেখার সময় রিয়েল-টাইম অডিও অনুবাদ",
+          "aiSearch": "বুদ্ধিমান কন্টেন্ট আবিষ্কার",
+          "aiRecommendations": "ব্যক্তিগত সাজেশন",
+          "prioritySupport": "ডেভেলপমেন্ট টিমে সরাসরি অ্যাক্সেস"
+        },
+        "disclaimer": "Beta 500 একটি সীমিত-সময়ের প্রোগ্রাম। বেটা পিরিয়ডে ক্রেডিট নবায়নযোগ্য নয়।",
+        "waitlistMessage": "সব ৫০০ স্লট বর্তমানে পূর্ণ। স্লট উপলব্ধ হলে জানতে ওয়েটলিস্টে যোগ দিন।",
+        "enrollmentSuccess": "Beta 500-এ স্বাগতম! আপনার অ্যাকাউন্ট যাচাই করতে আপনার ইমেইল চেক করুন।",
+        "enrollmentError": "এনরোল করা যায়নি। পরে আবার চেষ্টা করুন।"
+      }
+    }
+  },
+  "catchup": {
+    "overlay": {
+      "title": "এইমাত্র যোগ দিলেন?",
+      "description": "আপনি {{programName}}-এ মাঝপথে যোগ দিয়েছেন",
+      "creditContext": "এটি আপনার {{balance}} ক্রেডিটের {{cost}} ব্যবহার করবে",
+      "lowBalanceWarning": "ক্রেডিট কম বাকি",
+      "acceptButton": "আমাকে আপডেট করুন ({{cost}} ক্রেডিট)",
+      "declineButton": "না ধন্যবাদ"
+    },
+    "button": {
+      "credits": "ক্যাচ আপ ({{cost}} ক্রেডিট)",
+      "label": "ক্যাচ আপ সারাংশ",
+      "title": "ক্যাচ আপ"
+    },
+    "generating": "সারাংশ তৈরি হচ্ছে...",
+    "summary": {
+      "title": "আপনি যা মিস করেছেন",
+      "keyPoints": "মূল পয়েন্ট",
+      "windowInfo": "শেষ {{minutes}} মিনিট",
+      "creditsUsed": "{{count}} ক্রেডিট ব্যবহৃত",
+      "creditsRemaining": "{{count}} ক্রেডিট বাকি",
+      "close": "বন্ধ করুন"
+    },
+    "error": {
+      "failed": "সারাংশ তৈরি করা যায়নি",
+      "retry": "আবার চেষ্টা করুন",
+      "insufficientCredits": "পর্যাপ্ত ক্রেডিট নেই"
+    }
+  },
+  "quota": {
+    "subtitleExceeded": "সাবটাইটেল কোটা অতিক্রম করেছে। পরে আবার চেষ্টা করুন।",
+    "dubbingExceeded": "ডাবিং কোটা অতিক্রম করেছে। পরে আবার চেষ্টা করুন।"
   }
 }
