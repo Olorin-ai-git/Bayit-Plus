@@ -14,6 +14,18 @@ const AUTH_STORAGE_KEY = 'bayit-auth'
 
 const LOG_CONTEXT = 'liveTriviaService'
 
+/** MongoDB ObjectId format: 24-character lowercase hex */
+const CHANNEL_ID_PATTERN = /^[a-f0-9]{24}$/
+
+/** Connection timeout in milliseconds */
+const CONNECTION_TIMEOUT_MS = 10_000
+
+/** Default source language when backend omits it */
+const DEFAULT_SOURCE_LANGUAGE = 'he'
+
+/** Maximum allowed display duration for a trivia fact (seconds) */
+const MAX_DISPLAY_DURATION_S = 120
+
 /**
  * Validates that VITE_API_URL is configured. Throws if missing.
  */
@@ -28,6 +40,34 @@ function validateConfiguration(): void {
 
 if (!API_BASE_URL) {
   logger.warn('VITE_API_URL not configured - trivia features will fail', LOG_CONTEXT)
+}
+
+/**
+ * Runtime type guard for incoming trivia_fact WebSocket data.
+ * Prevents malformed or injected data from reaching the UI.
+ */
+function isValidTriviaFact(data: unknown): data is LiveTriviaFact {
+  if (!data || typeof data !== 'object') return false
+  const d = data as Record<string, unknown>
+  return (
+    typeof d.fact_id === 'string' &&
+    typeof d.text === 'string' &&
+    typeof d.text_en === 'string' &&
+    typeof d.text_es === 'string' &&
+    typeof d.category === 'string' &&
+    typeof d.display_duration === 'number' &&
+    d.display_duration > 0 &&
+    d.display_duration <= MAX_DISPLAY_DURATION_S &&
+    typeof d.priority === 'number'
+  )
+}
+
+/**
+ * Validates that channelId is a valid MongoDB ObjectId (24-char hex).
+ * Prevents path injection in the WebSocket URL.
+ */
+function isValidChannelId(channelId: string): boolean {
+  return CHANNEL_ID_PATTERN.test(channelId)
 }
 
 type FactCallback = (fact: LiveTriviaFact) => void
@@ -52,6 +92,11 @@ class LiveTriviaService {
     onError: ErrorCallback,
   ): void {
     validateConfiguration()
+
+    if (!isValidChannelId(channelId)) {
+      onError({ message: 'Invalid channel ID', recoverable: false })
+      return
+    }
 
     // Disconnect any existing connection first
     this.disconnect()
@@ -80,7 +125,7 @@ class LiveTriviaService {
         this.onError?.({ message: 'Connection timeout', recoverable: true })
         this.disconnect()
       }
-    }, 10000)
+    }, CONNECTION_TIMEOUT_MS)
 
     this.ws.onopen = () => {
       logger.debug('WebSocket connected, sending authentication', LOG_CONTEXT)
@@ -100,12 +145,14 @@ class LiveTriviaService {
               `Authenticated - source_language: ${msg.source_language}`,
               LOG_CONTEXT,
             )
-            this.onConnected?.(msg.source_language || 'he')
+            this.onConnected?.(msg.source_language || DEFAULT_SOURCE_LANGUAGE)
             break
 
           case 'trivia_fact':
-            if (msg.data) {
-              this.onFact?.(msg.data as LiveTriviaFact)
+            if (msg.data && isValidTriviaFact(msg.data)) {
+              this.onFact?.(msg.data)
+            } else if (msg.data) {
+              logger.error('Invalid trivia fact data received', LOG_CONTEXT, msg.data)
             }
             break
 
@@ -195,6 +242,11 @@ class LiveTriviaService {
   }> {
     try {
       validateConfiguration()
+
+      if (!isValidChannelId(channelId)) {
+        return { available: false, error: 'Invalid channel ID' }
+      }
+
       const authData = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || '{}')
       const token = authData?.state?.token
       const response = await fetch(
@@ -218,4 +270,5 @@ class LiveTriviaService {
   }
 }
 
+export { LiveTriviaService }
 export default new LiveTriviaService()

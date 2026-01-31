@@ -643,5 +643,69 @@
     "upgradeBeta": "Upgrade to Beta 500 for auto-translation",
     "inputLabel": "Chat message input",
     "moderationDelete": "Message removed by moderator"
+  },
+  "dubbing": {
+    "latency": {
+      "badge": {
+        "title": "Latency Monitor",
+        "tooltip": "Real-time audio processing delay. Video is automatically delayed to match for perfect sync."
+      },
+      "components": {
+        "capture": "Audio Capture",
+        "captureDesc": "Time to capture audio from video",
+        "stt": "Speech-to-Text",
+        "sttDesc": "Converting speech to text",
+        "translation": "Translation",
+        "translationDesc": "Translating to target language",
+        "tts": "Text-to-Speech",
+        "ttsDesc": "Generating dubbed audio",
+        "network": "Network",
+        "networkDesc": "Data transmission delay",
+        "buffer": "Audio Buffer",
+        "bufferDesc": "Audio processing buffer",
+        "sync": "Video Sync",
+        "syncDesc": "Video delay for perfect sync"
+      },
+      "status": {
+        "excellent": "Excellent",
+        "good": "Good",
+        "fair": "Fair",
+        "poor": "Poor"
+      },
+      "info": {
+        "autoSync": "Automatic Synchronization",
+        "autoSyncDesc": "Video is automatically delayed to match audio processing time, ensuring perfect lip-sync and subtitle timing.",
+        "howItWorks": "How It Works",
+        "howItWorksDesc": "The system measures actual processing latency and delays the video stream by the same amount. This is how professional broadcast translation works.",
+        "noManualAdjustment": "No Manual Adjustment Needed",
+        "noManualAdjustmentDesc": "Unlike other systems, you don't need to manually sync audio and video. Everything is automatic.",
+        "whyDelay": "Why Is There a Delay?",
+        "whyDelayDesc": "Real-time translation and dubbing takes time (typically 600-800ms). Rather than showing out-of-sync content, we delay the video to match. You see content slightly behind 'live' but perfectly synchronized.",
+        "professionalQuality": "Professional Quality",
+        "professionalQualityDesc": "This is the same approach used by professional broadcasters for live international coverage."
+      },
+      "graph": {
+        "title": "Latency History",
+        "tooltip": "60-second rolling history of processing latency",
+        "xAxis": "Time (seconds ago)",
+        "yAxis": "Latency (ms)"
+      }
+    },
+    "controls": {
+      "enableDubbing": "Enable Live Dubbing",
+      "enableSubtitles": "Enable Live Subtitles",
+      "selectLanguage": "Select Language",
+      "selectVoice": "Select Voice",
+      "originalVolume": "Original Audio",
+      "dubbedVolume": "Dubbed Audio",
+      "tooltips": {
+        "enableDubbing": "Translate and dub live audio in real-time",
+        "enableSubtitles": "Display translated subtitles in real-time",
+        "selectLanguage": "Choose your preferred language for translation",
+        "selectVoice": "Choose the voice for dubbed audio",
+        "originalVolume": "Adjust volume of original audio (0 = muted)",
+        "dubbedVolume": "Adjust volume of dubbed audio (1 = full volume)"
+      }
+    }
   }
 }

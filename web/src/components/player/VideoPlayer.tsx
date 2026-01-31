@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/authStore'
 import { ttsService } from '@bayit/shared/services/ttsService'
+import logger from '@/utils/logger'
 import VideoPlayerOverlays from './VideoPlayerOverlays'
 import VideoPlayerPanels from './VideoPlayerPanels'
 import VideoPlayerControlsOverlay from './VideoPlayerControlsOverlay'
@@ -199,7 +200,7 @@ export default function VideoPlayer({
     (cue: Parameters<typeof handleLiveSubtitleCue>[0]) => {
       handleLiveSubtitleCue(cue)
       if (liveTrivia.isConnected && cue.original_text) {
-        liveTrivia.sendTranscript(cue.original_text, cue.source_lang || 'he')
+        liveTrivia.sendTranscript(cue.original_text, cue.source_lang)
       }
     },
     [handleLiveSubtitleCue, liveTrivia.isConnected, liveTrivia.sendTranscript],
@@ -365,12 +366,12 @@ export default function VideoPlayer({
 
   // Stable callbacks for BufferedLiveDubbingPlayer to prevent re-render loops
   const handleBufferedPlayerReady = useCallback((addSegment: (audio: ArrayBuffer, text: string) => void) => {
-    console.log('[VideoPlayer] Buffered player ready')
+    logger.info('Buffered player ready', 'VideoPlayer')
     setBufferedPlayerAddSegment(() => addSegment)
   }, [])
 
   const handleBufferedPlayerError = useCallback((error: string) => {
-    console.error('[VideoPlayer] Buffered dubbing error:', error)
+    logger.error('Buffered dubbing error', 'VideoPlayer', error)
     dubbing.disconnect()
   }, [dubbing])
 

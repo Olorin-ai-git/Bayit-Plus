@@ -7,9 +7,9 @@
  * Features:
  * - WebSocket connection management (connect/disconnect based on enabled + channelId)
  * - Transcript forwarding via sendTranscript (text from live subtitle cues)
- * - Auto-dismiss after display_duration (default: 12 seconds)
+ * - Auto-dismiss after display_duration
  * - Manual dismiss via user action
- * - Fact history tracking (last 20 facts)
+ * - Fact history tracking
  * - "waiting for transcript" hint when connected but no subtitles flowing
  * - Multilingual support (Hebrew, English, Spanish)
  */
@@ -19,6 +19,15 @@ import liveTriviaService from '@/services/liveTriviaService'
 import logger from '@/utils/logger'
 
 const LOG_CONTEXT = 'useLiveTrivia'
+
+/** Default number of facts to retain in history */
+const DEFAULT_MAX_HISTORY_SIZE = 20
+
+/** Delay before showing "enable subtitles" hint (ms) */
+const WAITING_HINT_DELAY_MS = 8_000
+
+/** Default source language for transcripts */
+const DEFAULT_SOURCE_LANGUAGE = 'he'
 
 export interface LiveTriviaFact {
   fact_id: string
@@ -57,9 +66,9 @@ export function useLiveTrivia(
 ): UseLiveTriviaReturn {
   const {
     channelId,
-    language = 'he',
+    language = DEFAULT_SOURCE_LANGUAGE,
     enabled: initialEnabled = true,
-    maxHistorySize = 20,
+    maxHistorySize = DEFAULT_MAX_HISTORY_SIZE,
   } = options
 
   const [isEnabled, setEnabled] = useState(initialEnabled)
@@ -106,19 +115,15 @@ export function useLiveTrivia(
       hasReceivedFactRef.current = true
       setWaitingForTranscript(false)
 
-      // Set as current fact
       setCurrentFact(fact)
 
-      // Add to history (FIFO with max size)
       setFactHistory((prev) => {
         const newHistory = [...prev, fact]
         return newHistory.slice(-maxHistorySize)
       })
 
-      // Clear existing timer
       clearDismissTimer()
 
-      // Set auto-dismiss timer
       const displayDuration = fact.display_duration * 1000
       dismissTimerRef.current = setTimeout(() => {
         dismissCurrentFact()
@@ -126,6 +131,13 @@ export function useLiveTrivia(
     },
     [isEnabled, maxHistorySize, clearDismissTimer, dismissCurrentFact]
   )
+
+  // Ref always holds the latest handleTriviaMessage so the WebSocket
+  // effect can invoke it without re-connecting when deps change.
+  const handleTriviaMessageRef = useRef(handleTriviaMessage)
+  useEffect(() => {
+    handleTriviaMessageRef.current = handleTriviaMessage
+  }, [handleTriviaMessage])
 
   /**
    * Send transcript text to the trivia backend.
@@ -136,7 +148,12 @@ export function useLiveTrivia(
   }, [])
 
   /**
-   * WebSocket lifecycle: connect when enabled + channelId, disconnect otherwise
+   * WebSocket lifecycle: connect when enabled + channelId, disconnect otherwise.
+   *
+   * handleTriviaMessage is accessed via handleTriviaMessageRef to avoid
+   * reconnecting when only the callback identity changes. The ref is
+   * kept in sync by the useEffect above, so the latest callback is
+   * always invoked without triggering a reconnect cycle.
    */
   useEffect(() => {
     if (!isEnabled || !channelId) {
@@ -157,7 +174,7 @@ export function useLiveTrivia(
 
     liveTriviaService.connect(
       channelId,
-      handleTriviaMessage,
+      (fact: LiveTriviaFact) => handleTriviaMessageRef.current(fact),
       (sourceLanguage: string) => {
         logger.info(
           `Connected to trivia, source language: ${sourceLanguage}`,
@@ -166,12 +183,11 @@ export function useLiveTrivia(
         setIsConnected(true)
         setConnectionError(null)
 
-        // After 8 seconds, if no fact received, show hint
         waitingTimerRef.current = setTimeout(() => {
           if (!hasReceivedFactRef.current) {
             setWaitingForTranscript(true)
           }
-        }, 8000)
+        }, WAITING_HINT_DELAY_MS)
       },
       (error) => {
         logger.error(`Trivia error: ${error.message}`, LOG_CONTEXT)
