@@ -37,7 +37,8 @@
       },
       "recentActivity": "हाल की गतिविधि",
       "quickActions": "त्वरित कार्रवाइयां",
-      "noRecentActivity": "कोई हालिया गतिविधि नहीं"
+      "noRecentActivity": "कोई हालिया गतिविधि नहीं",
+      "loadError": "डैशबोर्ड डेटा लोड करने में विफल"
     },
     "nav": {
       "dashboard": "डैशबोर्ड",
@@ -607,7 +608,21 @@
       },
       "editTitle": "शीर्षक संपादित करें",
       "newTitle": "नया शीर्षक",
-      "toggleFeatured": "विशेष टॉगल करें"
+      "toggleFeatured": "विशेष टॉगल करें",
+      "titleRequired": "शीर्षक आवश्यक है",
+      "audioUrlRequired": "Audio URL आवश्यक है",
+      "episodeTitlePlaceholder": "एपिसोड शीर्षक",
+      "descriptionPlaceholder": "विवरण",
+      "episodeNumberPlaceholder": "एपिसोड संख्या",
+      "durationPlaceholder": "अवधि (उदा., 45:30)",
+      "audioUrlPlaceholder": "Audio URL (आवश्यक)",
+      "publishedDatePlaceholder": "प्रकाशन तिथि (YYYY-MM-DD)",
+      "pasteImageUrl": "या छवि URL पेस्ट करें",
+      "podcastTitlePlaceholder": "Podcast शीर्षक",
+      "authorPlaceholder": "लेखक",
+      "categoryPlaceholder": "श्रेणी",
+      "rssFeedUrlPlaceholder": "RSS Feed URL",
+      "websiteUrlPlaceholder": "Website URL (वैकल्पिक)"
     },
     "diagnostics": {
       "title": "सिस्टम डायग्नोस्टिक्स",
@@ -821,7 +836,9 @@
       },
       "testFailed": "टेस्ट ईमेल भेजने में विफल",
       "testSent": "टेस्ट ईमेल भेजा गया",
-      "title": "ईमेल अभियान"
+      "title": "ईमेल अभियान",
+      "loadError": "ईमेल अभियान लोड करने में विफल",
+      "comingSoon": "ईमेल अभियान बनाना जल्द आ रहा है"
     },
     "campaignEdit": {
       "subtitle": "अभियान विवरण और सेटिंग्स संपादित करें"
@@ -1009,7 +1026,15 @@
       "notesLabel": "एडमिन नोट्स",
       "subtitleDayInput": "प्रति दिन उपशीर्षक मिनट",
       "subtitleHourInput": "प्रति घंटा उपशीर्षक मिनट",
-      "subtitleMonthInput": "प्रति माह उपशीर्षक मिनट"
+      "subtitleMonthInput": "प्रति माह उपशीर्षक मिनट",
+      "hour": "घंटा",
+      "day": "दिन",
+      "month": "महीना",
+      "minutes": "मिनट",
+      "saved": "सहेजा गया",
+      "loadError": "कोटा डेटा लोड करने में विफल",
+      "saveError": "सीमाएँ सहेजने में विफल",
+      "resetError": "कोटा रीसेट करने में विफल"
     },
     "categories": {
       "subtitle": "सामग्री श्रेणियां प्रबंधित करें",
@@ -1031,7 +1056,9 @@
       "createSuccess": "श्रेणी बनाई गई",
       "deleteCategory": "श्रेणी हटाएँ",
       "editCategory": "श्रेणी संपादित करें",
-      "updateSuccess": "श्रेणी अपडेट की गई"
+      "updateSuccess": "श्रेणी अपडेट की गई",
+      "active": "सक्रिय",
+      "inactive": "निष्क्रिय"
     },
     "recordings": {
       "title": "रिकॉर्डिंग प्रबंधन",
@@ -1048,7 +1075,9 @@
       "deleteFailed": "रिकॉर्डिंग हटाने में विफल",
       "loadFailed": "रिकॉर्डिंग लोड करने में विफल",
       "noRecordings": "कोई रिकॉर्डिंग नहीं मिली",
-      "noRecordingsHint": "सिस्टम में अभी तक कोई उपयोगकर्ता रिकॉर्डिंग नहीं।"
+      "noRecordingsHint": "सिस्टम में अभी तक कोई उपयोगकर्ता रिकॉर्डिंग नहीं।",
+      "live": "लाइव",
+      "offline": "ऑफलाइन"
     },
     "uploads": {
       "title": "अपलोड प्रबंधन",
@@ -1144,7 +1173,9 @@
         "totalFiles": "कुल फ़ाइलें",
         "uploadCancelled": "अपलोड रद्द",
         "uploadMode": "अपलोड मोड",
-        "validFiles": "मान्य फ़ाइलें"
+        "validFiles": "मान्य फ़ाइलें",
+        "folderNamePlaceholder": "जैसे, फिल्म आयात",
+        "folderPathPlaceholder": "/पथ/फ़ोल्डर/तक"
       },
       "urlUpload": {
         "title": "URL से आयात करें",
@@ -1393,7 +1424,10 @@
       "recentCompleted": "हाल ही में पूर्ण",
       "resumeQueue": "फिर से शुरू करें",
       "skipped": "छोड़ दिया",
-      "totalJobs": "कुल"
+      "totalJobs": "कुल",
+      "dropZone": {
+        "filesRejected": "{{count}} फ़ाइल अस्वीकृत"
+      }
     },
     "librarian": {
       "title": "लाइब्रेरियन एजेंट",
@@ -1599,7 +1633,16 @@
         "search": "रिपोर्ट खोजें...",
         "showing": "दिखा रहे हैं",
         "status": "स्थिति",
-        "type": "प्रकार"
+        "type": "प्रकार",
+        "scheduled": "अनुसूचित",
+        "manual": "मैनुअल",
+        "recent": "हाल के",
+        "titles": "शीर्षक",
+        "tmdb": "TMDB",
+        "subtitles": "उपशीर्षक",
+        "classification": "वर्गीकरण",
+        "duplicates": "डुप्लिकेट",
+        "noResults": "कोई मेल खाती रिपोर्ट नहीं मिली"
       },
       "logs": {
         "title": "निष्पादन लॉग",
@@ -1745,7 +1788,19 @@
       },
       "auditTypes": {
         "daily_incremental": "दैनिक वृद्धिशील",
-        "ai_agent": "AI एजेंट"
+        "ai_agent": "AI एजेंट",
+        "contentValidation": {
+          "name": "सामग्री सत्यापन",
+          "description": "मेटाडेटा और सामग्री अखंडता सत्यापित करें"
+        },
+        "posterEnrichment": {
+          "name": "पोस्टर संवर्धन",
+          "description": "लापता पोस्टर और कलाकृति अपडेट करें"
+        },
+        "classificationAudit": {
+          "name": "वर्गीकरण ऑडिट",
+          "description": "सामग्री वर्गीकरण की समीक्षा करें"
+        }
       },
       "kidsAudit": {
         "ageDistribution": "आयु रेटिंग वितरण",
@@ -1758,12 +1813,13 @@
         "subtitle": "सामग्री मॉडरेशन स्थिति",
         "title": "बच्चों की सामग्री स्वास्थ्य",
         "totalItems": "कुल आइटम"
-      }
+      },
+      "itemsChecked": "जाँचे गए आइटम"
     },
     "widgets": {
       "title": "विजेट",
       "subtitle": "लाइव स्ट्रीम और एम्बेड के लिए फ़्लोटिंग ओवरले विजेट प्रबंधित करें",
-      "newWidget": "नया विजेट",
+      "newWidget": "नया विजेट बनाएँ",
       "editWidget": "विजेट संपादित करें",
       "columns": {
         "title": "शीर्षक",
@@ -1851,7 +1907,8 @@
       "total": "कुल",
       "viewAll": "सभी देखें",
       "viewAllTransactions": "सभी लेनदेन देखें",
-      "viewTransactions": "लेनदेन"
+      "viewTransactions": "लेनदेन",
+      "loadError": "बिलिंग डेटा लोड करने में विफल"
     },
     "marketing": {
       "recentCampaigns": "हालिया अभियान",
@@ -2011,7 +2068,13 @@
         "targetLanguagesHelp": "चुनें कि उपयोगकर्ता रीयल-टाइम में किन भाषाओं में अनुवाद कर सकते हैं"
       },
       "deleteChannel": "चैनल हटाएँ",
-      "editChannel": "चैनल संपादित करें"
+      "editChannel": "लाइव चैनल संपादित करें",
+      "newChannel": "नया लाइव चैनल",
+      "channelName": "चैनल का नाम",
+      "streamUrl": "Stream URL (HLS/DASH)",
+      "epgSourceUrl": "EPG Source URL (वैकल्पिक)",
+      "currentShow": "वर्तमान शो (वैकल्पिक)",
+      "order": "क्रम"
     },
     "radioStations": {
       "subtitle": "रेडियो स्टेशन प्रबंधित करें",
@@ -2039,7 +2102,9 @@
       }
     },
     "podcastEpisodes": {
-      "subtitle": "पॉडकास्ट एपिसोड और मेटाडेटा प्रबंधित करें"
+      "subtitle": "पॉडकास्ट एपिसोड और मेटाडेटा प्रबंधित करें",
+      "newEpisode": "नया एपिसोड",
+      "editEpisode": "एपिसोड संपादित करें"
     },
     "userDetail": {
       "subtitle": "उपयोगकर्ता खाता विवरण और गतिविधि इतिहास"
@@ -2383,7 +2448,8 @@
       "send": "अभी भेजें",
       "confirmSend": "सूचना \"{{title}}\" भेजें?",
       "confirmDelete": "सूचना \"{{title}}\" हटाएं?",
-      "fillRequired": "कृपया शीर्षक और मुख्य भाग भरें"
+      "fillRequired": "कृपया शीर्षक और मुख्य भाग भरें",
+      "editNotification": "सूचना संपादित करें"
     },
     "audiobooks": {
       "confirmDelete": "क्या आप यह ऑडियोबुक हटाना चाहते हैं?",
@@ -2408,7 +2474,15 @@
         "quality": "ऑडियो गुणवत्ता",
         "streamUrl": "स्ट्रीम URL",
         "subscription": "सदस्यता स्तर",
-        "title": "शीर्षक"
+        "title": "शीर्षक",
+        "titlePlaceholder": "ऑडियोबुक शीर्षक",
+        "authorPlaceholder": "लेखक का नाम",
+        "narratorPlaceholder": "वाचक का नाम",
+        "descriptionPlaceholder": "ऑडियोबुक विवरण",
+        "durationPlaceholder": "घं:मि:से",
+        "isbnPlaceholder": "ISBN नंबर",
+        "publisherPlaceholder": "प्रकाशक का नाम",
+        "streamUrlPlaceholder": "https://..."
       },
       "loadError": "ऑडियोबुक लोड करने में विफल",
       "publish": {
@@ -2416,7 +2490,9 @@
         "publishConfirm": "इस ऑडियोबुक को प्रकाशित करने से यह सभी उपयोगकर्ताओं को दिखाई देगी।",
         "publishTitle": "ऑडियोबुक प्रकाशित करें",
         "unpublishTitle": "अप्रकाशित करें",
-        "unpublishWarning": "यह ऑडियोबुक वर्तमान में प्रकाशित है और उपयोगकर्ताओं को दिखाई दे रही है। अप्रकाशित करने से यह तुरंत छिप जाएगी।"
+        "unpublishWarning": "यह ऑडियोबुक वर्तमान में प्रकाशित है और उपयोगकर्ताओं को दिखाई दे रही है। अप्रकाशित करने से यह तुरंत छिप जाएगी।",
+        "missingFieldsFull": "आवश्यक फ़ील्ड अनुपलब्ध: शीर्षक, लेखक, स्ट्रीम URL",
+        "missingFieldsShort": "आवश्यक फ़ील्ड अनुपलब्ध"
       },
       "subtitle": "ऑडियोबुक लाइब्रेरी प्रबंधित करें",
       "upload": {
@@ -2426,8 +2502,20 @@
         "selectFile": "ऑडियो फ़ाइल चुनें",
         "streamUrl": "स्ट्रीम URL जनरेट हुआ",
         "title": "ऑडियो फ़ाइल अपलोड करें",
-        "tooLarge": "फ़ाइल का आकार 500MB सीमा से अधिक है"
-      }
+        "tooLarge": "फ़ाइल का आकार 500MB सीमा से अधिक है",
+        "fileTooLarge": "फ़ाइल का आकार 500MB सीमा से अधिक है",
+        "selectionRequired": "फ़ाइल और ऑडियोबुक चयन आवश्यक",
+        "urlCopied": "URL क्लिपबोर्ड पर कॉपी किया गया"
+      },
+      "deleteError": "ऑडियोबुक हटाने में विफल",
+      "sections": {
+        "audiobooks": "ऑडियोबुक",
+        "recommended": "अनुशंसित",
+        "newReleases": "नई रिलीज़",
+        "topRated": "शीर्ष रेटेड",
+        "trending": "ट्रेंडिंग"
+      },
+      "selectSection": "कृपया एक अनुभाग चुनें"
     },
     "columns": {
       "author": "लेखक",
@@ -2631,7 +2719,12 @@
         "sttProvider": "STT प्रदाता",
         "supportVoice": "सहायता आवाज़",
         "translationProvider": "अनुवाद प्रदाता",
-        "voiceIds": "आवाज़ आईडी"
+        "voiceIds": "आवाज़ आईडी",
+        "saveSuccess": "आवाज कॉन्फ़िगरेशन सफलतापूर्वक सहेजा गया",
+        "saveError": "कॉन्फ़िगरेशन सहेजने में विफल",
+        "testText": "नमस्ते, यह एक आवाज परीक्षण है।",
+        "testSuccess": "आवाज परीक्षण सफलतापूर्वक चलाया गया",
+        "testError": "आवाज परीक्षण विफल"
       },
       "quotas": {
         "dubbingLimits": "डबिंग सीमा",
@@ -2645,7 +2738,10 @@
       "settings": {
         "apiKeys": "एपीआई कुंजियाँ",
         "webhookInfo": "वेबहुक जानकारी",
-        "webhooks": "वेबहुक"
+        "webhooks": "वेबहुक",
+        "check": "जाँच करें",
+        "healthy": "स्वस्थ",
+        "unhealthy": "अस्वस्थ"
       },
       "subtitle": "उपशीर्षक",
       "tabs": {
@@ -2655,7 +2751,13 @@
         "quotas": "कोटा",
         "settings": "सेटिंग्स"
       },
-      "title": "शीर्षक"
+      "title": "शीर्षक",
+      "library": {
+        "previewText": "नमस्ते, यह इस आवाज का पूर्वावलोकन है।",
+        "assignSuccess": "आवाज {{role}} भूमिका को सौंपी गई",
+        "language": "भाषा",
+        "assign": "सौंपें"
+      }
     },
     "accessDenied": "पहुँच अस्वीकृत",
     "costDashboard": {
@@ -2687,7 +2789,24 @@
       },
       "title": "शीर्षक"
     },
-    "noPermission": "अनुमति नहीं है"
+    "noPermission": "अनुमति नहीं है",
+    "kids": {
+      "loadingStats": "बच्चों की सामग्री के आँकड़े लोड हो रहे हैं...",
+      "subtitle": "बच्चों की सामग्री स्रोतों और मॉडरेशन का प्रबंधन करें",
+      "seeded": "बीजित",
+      "imported": "आयातित",
+      "skipped": "छोड़ा गया",
+      "totalContent": "कुल बच्चों की सामग्री",
+      "kidsPodcasts": "बच्चों के Podcast",
+      "pendingReview": "समीक्षा लंबित",
+      "approved": "स्वीकृत",
+      "contentByCategory": "श्रेणी के अनुसार सामग्री",
+      "contentActions": "सामग्री क्रियाएँ",
+      "noCategory": "कोई श्रेणी नहीं",
+      "age": "आयु",
+      "approve": "स्वीकृत करें",
+      "reject": "अस्वीकार करें"
+    }
   },
   "chatbot": {
     "title": "Bayit+ सहायक",
@@ -2876,7 +2995,10 @@
     "signIn": "साइन इन करें",
     "thisContent": "यह सामग्री",
     "website": "वेबसाइट",
-    "yesterday": "कल"
+    "yesterday": "कल",
+    "more": "और",
+    "minutesShort": "मिनट",
+    "notAvailable": "N/A"
   },
   "content": {
     "play": "चलाएं",
@@ -3047,10 +3169,13 @@
     "aiDisclaimer": "Claude AI द्वारा संचालित। प्रोग्राम डेटा उपलब्धता के आधार पर परिणाम भिन्न हो सकते हैं।",
     "interpretationTitle": "मैंने क्या समझा",
     "noResultsFound": "आपकी क्वेरी से मेल खाने वाले कोई प्रोग्राम नहीं मिले",
-    "noProgramsScheduled": "कोई प्रोग्राम शेड्यूल नहीं",
+    "noProgramsScheduled": "कोई कार्यक्रम निर्धारित नहीं",
     "noProgramsFound": "कोई प्रोग्राम नहीं मिला",
     "noDataAvailable": "कोई TV गाइड डेटा उपलब्ध नहीं",
-    "live": "लाइव"
+    "live": "लाइव",
+    "scheduleUnavailable": "टीवी कार्यक्रम अनुसूची वर्तमान में अनुपलब्ध है। कृपया बाद में जाँच करें या यदि यह जारी रहता है तो सहायता से संपर्क करें।",
+    "noProgramsAvailable": "चयनित समय सीमा के लिए कोई कार्यक्रम उपलब्ध नहीं हैं। अपने फ़िल्टर समायोजित करने का प्रयास करें या बाद में जाँच करें।",
+    "loading": "TV गाइड लोड हो रहा है..."
   },
   "errors": {
     "networkError": "नेटवर्क त्रुटि",
@@ -3496,7 +3621,7 @@
   },
   "liveTV": {
     "title": "लाइव TV",
-    "channels": "चैनल",
+    "channels": "लाइव TV चैनल",
     "nowPlaying": "अभी चल रहा है",
     "loadError": "चैनल लोड करने में विफल",
     "categories": {
@@ -3506,7 +3631,8 @@
       "entertainment": "मनोरंजन",
       "kids": "बच्चे",
       "documentary": "डॉक्यूमेंट्री"
-    }
+    },
+    "loadingChannels": "चैनल लोड हो रहे हैं..."
   },
   "login": {
     "title": "वापसी पर स्वागत है",
@@ -3777,7 +3903,7 @@
     "selectOutputLanguage": "आउटपुट भाषा चुनें"
   },
   "podcasts": {
-    "title": "पॉडकास्ट",
+    "title": "Podcast",
     "episodes": "एपिसोड",
     "noPodcasts": "कोई पॉडकास्ट उपलब्ध नहीं",
     "tryLater": "बाद में पुनः प्रयास करें",
@@ -3792,7 +3918,11 @@
       "entertainment": "मनोरंजन",
       "sports": "खेल",
       "history": "इतिहास",
-      "educational": "शैक्षिक"
+      "educational": "शैक्षिक",
+      "technology": "प्रौद्योगिकी",
+      "culture": "संस्कृति",
+      "education": "शिक्षा",
+      "comedy": "कॉमेडी"
     },
     "selectLanguage": "ऑडियो भाषा",
     "switchToLanguage": "{{language}} में बदलें",
@@ -3835,7 +3965,10 @@
       "downloadDescription": "इंटरनेट कनेक्शन के बिना सुनने के लिए एपिसोड डाउनलोड करें।",
       "gotIt": "समझ गया"
     },
-    "loadingShows": "पॉडकास्ट शो लोड हो रहे हैं..."
+    "loadingShows": "पॉडकास्ट शो लोड हो रहे हैं...",
+    "loadError": "Podcast लोड करने में विफल। कृपया अपना कनेक्शन जाँचें।",
+    "loading": "Podcast लोड हो रहे हैं...",
+    "noPodcastsFound": "कोई Podcast नहीं मिला"
   },
   "profile": {
     "title": "मेरी प्रोफ़ाइल",
@@ -4254,7 +4387,7 @@
   "search": {
     "title": "खोजें",
     "subtitle": "फ़िल्में, सीरीज़, चैनल, रेडियो और पॉडकास्ट खोजें",
-    "placeholder": "सामग्री खोजें...",
+    "placeholder": "खोजें...",
     "voicePlaceholder": "अभी बोलें...",
     "searching": "खोज रहे हैं...",
     "listening": "सुन रहे हैं...",
@@ -4271,7 +4404,24 @@
       "podcast": "पॉडकास्ट",
       "moviesAndSeries": "फ़िल्में और सीरीज़",
       "channels": "चैनल",
-      "podcasts": "पॉडकास्ट"
+      "podcasts": "पॉडकास्ट",
+      "loading": "फ़िल्टर लोड हो रहे हैं...",
+      "title": "उन्नत फ़िल्टर",
+      "clearAll": "सभी साफ़ करें",
+      "genres": "शैलियाँ",
+      "yearRange": "वर्ष सीमा",
+      "decade1990s": "1990 के दशक",
+      "decade2000s": "2000 के दशक",
+      "decade2010s": "2010 के दशक",
+      "decade2020s": "2020 के दशक",
+      "minimumRating": "न्यूनतम रेटिंग",
+      "subtitleLanguages": "उपशीर्षक भाषाएँ",
+      "searchOptions": "खोज विकल्प",
+      "searchInSubtitles": "उपशीर्षक पाठ (संवाद) में खोजें",
+      "contentRating": "सामग्री रेटिंग",
+      "kidsOnly": "केवल बच्चों की सामग्री",
+      "excludeKids": "बच्चों की सामग्री को बाहर करें",
+      "allContent": "सभी सामग्री"
     },
     "controls": {
       "placeholder": "Search for content...",
@@ -4335,7 +4485,32 @@
       "retrySearch": "पुनः खोजें",
       "somethingWrong": "कुछ गलत हो गया"
     },
-    "resultsTitle": "खोज परिणाम"
+    "resultsTitle": "खोज परिणाम",
+    "tryDifferentKeywords": "विभिन्न कीवर्ड या फ़िल्टर आज़माएँ",
+    "stopReading": "पढ़ना बंद करें",
+    "readAllResults": "सभी परिणाम पढ़ें",
+    "featured": "⭐ फ़ीचर्ड",
+    "closedCaptions": "CC",
+    "kids": "👶 बच्चे",
+    "readAloud": "जोर से पढ़ें",
+    "smartSearch": "Smart Search",
+    "premiumRequired": "Smart Search के लिए Premium सदस्यता आवश्यक है",
+    "searchFailed": "खोज विफल रही",
+    "premiumFeature": "Premium सुविधा",
+    "smartSearchDescription": "Smart Search प्राकृतिक भाषा प्रश्नों को समझने और आप जो खोज रहे हैं उसे ठीक से खोजने के लिए AI का उपयोग करता है।",
+    "upgradeToPremium": "Premium में अपग्रेड करें",
+    "maybeLater": "शायद बाद में",
+    "smartSearchHint": "प्राकृतिक भाषा में पूछें और AI आपके लिए खोज करेगा",
+    "smartSearchPlaceholder": "उदा., '90 के दशक की इज़राइली कॉमेडी जिसमें उपशीर्षक हों'",
+    "searchWithAI": "AI के साथ खोजें",
+    "aiInterpretation": "AI व्याख्या:",
+    "confidence": "विश्वास:",
+    "exampleQueries": "उदाहरण प्रश्न:",
+    "exampleQuery1": "मुझे 1980 के दशक की हिब्रू फ़िल्में अंग्रेज़ी उपशीर्षक के साथ दिखाएँ",
+    "exampleQuery2": "Sacha Baron Cohen अभिनीत कॉमेडी खोजें",
+    "exampleQuery3": "Holocaust के बारे में कौन सी वृत्तचित्र उपलब्ध हैं?",
+    "exampleQuery4": "5-7 वर्ष की आयु के लिए हिब्रू में बच्चों के शो",
+    "poweredByAI": "🤖 Claude AI द्वारा संचालित। परिणाम प्रश्न व्याख्या के आधार पर भिन्न हो सकते हैं।"
   },
   "settings": {
     "title": "सेटिंग्स",
@@ -5009,7 +5184,7 @@
     "added": "जोड़ा गया",
     "add": "जोड़ें",
     "remove": "हटाएं",
-    "show": "दिखाएं",
+    "show": "दिखाएँ",
     "hidden": "छिपा हुआ",
     "addToCollection": "मेरे विजेट में जोड़ें",
     "removeFromCollection": "मेरे विजेट से हटाएं",
@@ -5020,7 +5195,8 @@
       "radio": "रेडियो",
       "vod": "वीडियो",
       "custom": "कस्टम",
-      "widget": "विजेट"
+      "widget": "विजेट",
+      "liveStream": "लाइव स्ट्रीम"
     },
     "form": {
       "title": "विजेट बनाएं",
@@ -5050,7 +5226,7 @@
       "errors": {
         "contentRequired": "कृपया सामग्री चुनें",
         "iframeUrlRequired": "iFrame URL आवश्यक है",
-        "nameExists": "इस नाम का विजेट पहले से मौजूद है",
+        "nameExists": "इस नाम का एक विजेट पहले से मौजूद है",
         "titleRequired": "शीर्षक आवश्यक है"
       },
       "validating": "मान्य कर रहे हैं..."
@@ -6013,7 +6189,9 @@
     "connected": "कनेक्टेड",
     "connecting": "कनेक्ट हो रहा है",
     "connectionFailed": "कनेक्शन विफल",
-    "pleaseWait": "कृपया प्रतीक्षा करें"
+    "pleaseWait": "कृपया प्रतीक्षा करें",
+    "connect": "Audible कनेक्ट करें",
+    "disconnect": "Audible डिस्कनेक्ट करें"
   },
   "cancelled": {
     "description": "आपका भुगतान रद्द कर दिया गया है।",

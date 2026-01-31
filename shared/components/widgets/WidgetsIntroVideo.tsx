@@ -141,7 +141,7 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={colors.primary} />
             <Text style={styles.loadingText}>
-              {t('widgets.intro.loading', 'Loading widgets intro...')}
+              {t('widgets.intro.loading')}
             </Text>
           </View>
         )}
@@ -150,7 +150,7 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
         {hasError && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>
-              {t('widgets.intro.videoUnavailable', 'Video unavailable, skipping...')}
+              {t('widgets.intro.videoUnavailable')}
             </Text>
           </View>
         )}
@@ -191,7 +191,7 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
       ]}>
         {/* Skip button */}
         <GlassButton
-          title={t('widgets.intro.skip', 'Skip')}
+          title={t('widgets.intro.skip')}
           onPress={handleSkipAll}
           variant="secondary"
           size="md"
@@ -200,7 +200,7 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
         {/* Dismiss button (Don't show again) */}
         {showDismissButton && onDismiss && (
           <GlassButton
-            title={t('widgets.intro.dismiss', "Don't show again")}
+            title={t('widgets.intro.dismiss')}
             onPress={handleDismiss}
             variant="ghost"
             size="sm"

@@ -37,7 +37,8 @@
       },
       "recentActivity": "সাম্প্রতিক কার্যকলাপ",
       "quickActions": "দ্রুত অ্যাকশন",
-      "noRecentActivity": "কোনো সাম্প্রতিক কার্যকলাপ নেই"
+      "noRecentActivity": "কোনো সাম্প্রতিক কার্যকলাপ নেই",
+      "loadError": "ড্যাশবোর্ড ডেটা লোড করতে ব্যর্থ"
     },
     "nav": {
       "dashboard": "ড্যাশবোর্ড",
@@ -607,7 +608,21 @@
       },
       "editTitle": "শিরোনাম সম্পাদনা করুন",
       "newTitle": "নতুন শিরোনাম",
-      "toggleFeatured": "বিশেষ টগল করুন"
+      "toggleFeatured": "বিশেষ টগল করুন",
+      "titleRequired": "শিরোনাম প্রয়োজন",
+      "audioUrlRequired": "Audio URL প্রয়োজন",
+      "episodeTitlePlaceholder": "পর্বের শিরোনাম",
+      "descriptionPlaceholder": "বিবরণ",
+      "episodeNumberPlaceholder": "পর্ব সংখ্যা",
+      "durationPlaceholder": "সময়কাল (যেমন, 45:30)",
+      "audioUrlPlaceholder": "Audio URL (প্রয়োজন)",
+      "publishedDatePlaceholder": "প্রকাশের তারিখ (YYYY-MM-DD)",
+      "pasteImageUrl": "বা ছবির URL পেস্ট করুন",
+      "podcastTitlePlaceholder": "Podcast শিরোনাম",
+      "authorPlaceholder": "লেখক",
+      "categoryPlaceholder": "শ্রেণী",
+      "rssFeedUrlPlaceholder": "RSS Feed URL",
+      "websiteUrlPlaceholder": "Website URL (ঐচ্ছিক)"
     },
     "diagnostics": {
       "title": "সিস্টেম ডায়াগনস্টিকস",
@@ -821,7 +836,9 @@
       },
       "testFailed": "পরীক্ষামূলক ইমেইল পাঠাতে ব্যর্থ",
       "testSent": "পরীক্ষামূলক ইমেইল পাঠানো হয়েছে",
-      "title": "ইমেইল প্রচারাভিযান"
+      "title": "ইমেইল প্রচারাভিযান",
+      "loadError": "ইমেল প্রচারণা লোড করতে ব্যর্থ",
+      "comingSoon": "ইমেল প্রচারণা তৈরি শীঘ্রই আসছে"
     },
     "campaignEdit": {
       "subtitle": "ক্যাম্পেইনের বিবরণ ও সেটিংস সম্পাদনা করুন"
@@ -1009,7 +1026,15 @@
       "notesLabel": "অ্যাডমিন নোট",
       "subtitleDayInput": "প্রতিদিন সাবটাইটেল মিনিট",
       "subtitleHourInput": "প্রতি ঘন্টায় সাবটাইটেল মিনিট",
-      "subtitleMonthInput": "প্রতি মাসে সাবটাইটেল মিনিট"
+      "subtitleMonthInput": "প্রতি মাসে সাবটাইটেল মিনিট",
+      "hour": "ঘণ্টা",
+      "day": "দিন",
+      "month": "মাস",
+      "minutes": "মিনিট",
+      "saved": "সংরক্ষিত",
+      "loadError": "কোটা ডেটা লোড করতে ব্যর্থ",
+      "saveError": "সীমা সংরক্ষণ করতে ব্যর্থ",
+      "resetError": "কোটা রিসেট করতে ব্যর্থ"
     },
     "categories": {
       "subtitle": "কন্টেন্ট ক্যাটাগরি পরিচালনা করুন",
@@ -1031,7 +1056,9 @@
       "createSuccess": "বিভাগ তৈরি হয়েছে",
       "deleteCategory": "বিভাগ মুছুন",
       "editCategory": "বিভাগ সম্পাদনা করুন",
-      "updateSuccess": "বিভাগ আপডেট হয়েছে"
+      "updateSuccess": "বিভাগ আপডেট হয়েছে",
+      "active": "সক্রিয়",
+      "inactive": "নিষ্ক্রিয়"
     },
     "recordings": {
       "title": "রেকর্ডিং ব্যবস্থাপনা",
@@ -1048,7 +1075,9 @@
       "deleteFailed": "রেকর্ডিং মুছতে ব্যর্থ",
       "loadFailed": "রেকর্ডিং লোড করতে ব্যর্থ",
       "noRecordings": "কোনো রেকর্ডিং পাওয়া যায়নি",
-      "noRecordingsHint": "সিস্টেমে এখনও কোনো ব্যবহারকারী রেকর্ডিং নেই।"
+      "noRecordingsHint": "সিস্টেমে এখনও কোনো ব্যবহারকারী রেকর্ডিং নেই।",
+      "live": "লাইভ",
+      "offline": "অফলাইন"
     },
     "uploads": {
       "title": "আপলোড ব্যবস্থাপনা",
@@ -1144,7 +1173,9 @@
         "totalFiles": "মোট ফাইল",
         "uploadCancelled": "আপলোড বাতিল",
         "uploadMode": "আপলোড মোড",
-        "validFiles": "বৈধ ফাইল"
+        "validFiles": "বৈধ ফাইল",
+        "folderNamePlaceholder": "যেমন, চলচ্চিত্র আমদানি",
+        "folderPathPlaceholder": "/পথ/ফোল্ডার"
       },
       "urlUpload": {
         "title": "URL থেকে আমদানি",
@@ -1393,7 +1424,10 @@
       "recentCompleted": "সম্প্রতি সম্পন্ন",
       "resumeQueue": "পুনরায় শুরু",
       "skipped": "বাদ দেওয়া হয়েছে",
-      "totalJobs": "মোট"
+      "totalJobs": "মোট",
+      "dropZone": {
+        "filesRejected": "{{count}}টি ফাইল প্রত্যাখ্যাত"
+      }
     },
     "librarian": {
       "title": "লাইব্রেরিয়ান এজেন্ট",
@@ -1599,7 +1633,16 @@
         "search": "রিপোর্ট অনুসন্ধান করুন...",
         "showing": "দেখানো হচ্ছে",
         "status": "অবস্থা",
-        "type": "ধরন"
+        "type": "ধরন",
+        "scheduled": "নির্ধারিত",
+        "manual": "ম্যানুয়াল",
+        "recent": "সাম্প্রতিক",
+        "titles": "শিরোনাম",
+        "tmdb": "TMDB",
+        "subtitles": "সাবটাইটেল",
+        "classification": "শ্রেণীবিন্যাস",
+        "duplicates": "ডুপ্লিকেট",
+        "noResults": "কোনো মিলে যাওয়া প্রতিবেদন পাওয়া যায়নি"
       },
       "logs": {
         "title": "এক্সিকিউশন লগ",
@@ -1745,7 +1788,19 @@
       },
       "auditTypes": {
         "daily_incremental": "দৈনিক ইনক্রিমেন্টাল",
-        "ai_agent": "AI এজেন্ট"
+        "ai_agent": "AI এজেন্ট",
+        "contentValidation": {
+          "name": "বিষয়বস্তু যাচাই",
+          "description": "মেটাডেটা এবং বিষয়বস্তুর অখণ্ডতা যাচাই করুন"
+        },
+        "posterEnrichment": {
+          "name": "পোস্টার সমৃদ্ধকরণ",
+          "description": "অনুপস্থিত পোস্টার এবং আর্টওয়ার্ক আপডেট করুন"
+        },
+        "classificationAudit": {
+          "name": "শ্রেণীবিন্যাস নিরীক্ষা",
+          "description": "বিষয়বস্তু শ্রেণীবিন্যাস পর্যালোচনা করুন"
+        }
       },
       "kidsAudit": {
         "ageDistribution": "বয়স রেটিং বিতরণ",
@@ -1758,12 +1813,13 @@
         "subtitle": "কন্টেন্ট মডারেশন অবস্থা",
         "title": "শিশু কন্টেন্ট স্বাস্থ্য",
         "totalItems": "মোট আইটেম"
-      }
+      },
+      "itemsChecked": "পরীক্ষিত আইটেম"
     },
     "widgets": {
       "title": "উইজেট",
       "subtitle": "লাইভ স্ট্রিম এবং এম্বেডের জন্য ফ্লোটিং ওভারলে উইজেট পরিচালনা করুন",
-      "newWidget": "নতুন উইজেট",
+      "newWidget": "নতুন উইজেট তৈরি করুন",
       "editWidget": "উইজেট সম্পাদনা করুন",
       "columns": {
         "title": "শিরোনাম",
@@ -1851,7 +1907,8 @@
       "total": "মোট",
       "viewAll": "সব দেখুন",
       "viewAllTransactions": "সব লেনদেন দেখুন",
-      "viewTransactions": "লেনদেন"
+      "viewTransactions": "লেনদেন",
+      "loadError": "বিলিং ডেটা লোড করতে ব্যর্থ"
     },
     "marketing": {
       "recentCampaigns": "সাম্প্রতিক ক্যাম্পেইন",
@@ -2011,7 +2068,13 @@
         "targetLanguagesHelp": "ব্যবহারকারীরা রিয়েল-টাইমে কোন ভাষায় অনুবাদ করতে পারবেন তা নির্বাচন করুন"
       },
       "deleteChannel": "চ্যানেল মুছুন",
-      "editChannel": "চ্যানেল সম্পাদনা করুন"
+      "editChannel": "লাইভ চ্যানেল সম্পাদনা করুন",
+      "newChannel": "নতুন লাইভ চ্যানেল",
+      "channelName": "চ্যানেলের নাম",
+      "streamUrl": "Stream URL (HLS/DASH)",
+      "epgSourceUrl": "EPG Source URL (ঐচ্ছিক)",
+      "currentShow": "বর্তমান শো (ঐচ্ছিক)",
+      "order": "ক্রম"
     },
     "radioStations": {
       "subtitle": "রেডিও স্টেশন পরিচালনা করুন",
@@ -2039,7 +2102,9 @@
       }
     },
     "podcastEpisodes": {
-      "subtitle": "পডকাস্ট এপিসোড এবং মেটাডেটা পরিচালনা করুন"
+      "subtitle": "পডকাস্ট এপিসোড এবং মেটাডেটা পরিচালনা করুন",
+      "newEpisode": "নতুন পর্ব",
+      "editEpisode": "পর্ব সম্পাদনা করুন"
     },
     "userDetail": {
       "subtitle": "ব্যবহারকারী অ্যাকাউন্ট বিবরণ এবং কার্যকলাপ ইতিহাস"
@@ -2126,7 +2191,7 @@
       "firstPurchaseDesc": "শুধুমাত্র প্রথম ক্রয়কারী ব্যবহারকারীদের জন্য প্রযোজ্য",
       "firstPurchaseOnly": "শুধুমাত্র প্রথম ক্রয়",
       "generate": "জেনারেট করুন",
-      "loadError": "প্রচারাভিযান লোড করতে ব্যর্থ",
+      "loadError": "প্রচারণা লোড করতে ব্যর্থ",
       "maxDiscount": "সর্বোচ্চ ছাড়ের পরিমাণ ($)",
       "minimumPurchase": "সর্বনিম্ন ক্রয়ের পরিমাণ ($)",
       "name": "প্রচারাভিযানের নাম",
@@ -2383,7 +2448,8 @@
       "send": "এখনই পাঠান",
       "confirmSend": "\"{{title}}\" নোটিফিকেশন পাঠাবেন?",
       "confirmDelete": "\"{{title}}\" নোটিফিকেশন মুছবেন?",
-      "fillRequired": "অনুগ্রহ করে শিরোনাম এবং বডি পূরণ করুন"
+      "fillRequired": "অনুগ্রহ করে শিরোনাম এবং বডি পূরণ করুন",
+      "editNotification": "বিজ্ঞপ্তি সম্পাদনা করুন"
     },
     "audiobooks": {
       "confirmDelete": "এই অডিওবুক মুছবেন?",
@@ -2408,7 +2474,15 @@
         "quality": "অডিও মান",
         "streamUrl": "স্ট্রিম URL",
         "subscription": "সাবস্ক্রিপশন স্তর",
-        "title": "শিরোনাম"
+        "title": "শিরোনাম",
+        "titlePlaceholder": "অডিওবুক শিরোনাম",
+        "authorPlaceholder": "লেখকের নাম",
+        "narratorPlaceholder": "বর্ণনাকারীর নাম",
+        "descriptionPlaceholder": "অডিওবুক বিবরণ",
+        "durationPlaceholder": "ঘণ্টা:মিনিট:সেকেন্ড",
+        "isbnPlaceholder": "ISBN নম্বর",
+        "publisherPlaceholder": "প্রকাশকের নাম",
+        "streamUrlPlaceholder": "https://..."
       },
       "loadError": "অডিওবুক লোড করতে ব্যর্থ",
       "publish": {
@@ -2416,18 +2490,32 @@
         "publishConfirm": "এই অডিওবুক প্রকাশ করলে এটি সব ব্যবহারকারীর কাছে দৃশ্যমান হবে।",
         "publishTitle": "অডিওবুক প্রকাশ করুন",
         "unpublishTitle": "অপ্রকাশিত করুন",
-        "unpublishWarning": "এই অডিওবুক বর্তমানে প্রকাশিত এবং ব্যবহারকারীদের কাছে দৃশ্যমান। অপ্রকাশিত করলে এটি তাৎক্ষণিকভাবে লুকিয়ে যাবে।"
+        "unpublishWarning": "এই অডিওবুক বর্তমানে প্রকাশিত এবং ব্যবহারকারীদের কাছে দৃশ্যমান। অপ্রকাশিত করলে এটি তাৎক্ষণিকভাবে লুকিয়ে যাবে।",
+        "missingFieldsFull": "প্রয়োজনীয় ক্ষেত্র অনুপস্থিত: শিরোনাম, লেখক, স্ট্রিম URL",
+        "missingFieldsShort": "প্রয়োজনীয় ক্ষেত্র অনুপস্থিত"
       },
       "subtitle": "অডিওবুক লাইব্রেরি পরিচালনা করুন",
       "upload": {
         "button": "আপলোড",
         "dragDrop": "অডিও ফাইল নির্বাচন করতে ক্লিক করুন",
-        "invalidType": "অবৈধ ফাইলের ধরন। অনুমোদিত: MP3, AAC, M4A, FLAC",
+        "invalidType": "অবৈধ ফাইল ধরন। অনুমোদিত: MP3, AAC, M4A, FLAC",
         "selectFile": "অডিও ফাইল নির্বাচন করুন",
         "streamUrl": "স্ট্রিম URL তৈরি হয়েছে",
         "title": "অডিও ফাইল আপলোড করুন",
-        "tooLarge": "ফাইলের আকার ৫০০MB সীমা অতিক্রম করেছে"
-      }
+        "tooLarge": "ফাইলের আকার ৫০০MB সীমা অতিক্রম করেছে",
+        "fileTooLarge": "ফাইলের আকার 500MB সীমা অতিক্রম করেছে",
+        "selectionRequired": "ফাইল এবং অডিওবুক নির্বাচন প্রয়োজন",
+        "urlCopied": "URL ক্লিপবোর্ডে কপি করা হয়েছে"
+      },
+      "deleteError": "অডিওবুক মুছতে ব্যর্থ",
+      "sections": {
+        "audiobooks": "অডিওবুক",
+        "recommended": "সুপারিশকৃত",
+        "newReleases": "নতুন মুক্তি",
+        "topRated": "শীর্ষ রেটেড",
+        "trending": "ট্রেন্ডিং"
+      },
+      "selectSection": "একটি বিভাগ নির্বাচন করুন"
     },
     "columns": {
       "author": "লেখক",
@@ -2631,7 +2719,12 @@
         "sttProvider": "STT প্রদানকারী",
         "supportVoice": "সহায়তা কণ্ঠ",
         "translationProvider": "অনুবাদ প্রদানকারী",
-        "voiceIds": "কণ্ঠ আইডি"
+        "voiceIds": "কণ্ঠ আইডি",
+        "saveSuccess": "ভয়েস কনফিগারেশন সফলভাবে সংরক্ষিত হয়েছে",
+        "saveError": "কনফিগারেশন সংরক্ষণ করতে ব্যর্থ",
+        "testText": "হ্যালো, এটি একটি ভয়েস পরীক্ষা।",
+        "testSuccess": "ভয়েস পরীক্ষা সফলভাবে চালানো হয়েছে",
+        "testError": "ভয়েস পরীক্ষা ব্যর্থ"
       },
       "quotas": {
         "dubbingLimits": "ডাবিং সীমা",
@@ -2645,7 +2738,10 @@
       "settings": {
         "apiKeys": "API কী",
         "webhookInfo": "ওয়েবহুক তথ্য",
-        "webhooks": "ওয়েবহুক"
+        "webhooks": "ওয়েবহুক",
+        "check": "পরীক্ষা করুন",
+        "healthy": "সুস্থ",
+        "unhealthy": "অসুস্থ"
       },
       "subtitle": "সাবটাইটেল",
       "tabs": {
@@ -2655,7 +2751,13 @@
         "quotas": "কোটা",
         "settings": "সেটিংস"
       },
-      "title": "শিরোনাম"
+      "title": "শিরোনাম",
+      "library": {
+        "previewText": "হ্যালো, এটি এই ভয়েসের পূর্বরূপ।",
+        "assignSuccess": "ভয়েস {{role}} ভূমিকায় বরাদ্দ করা হয়েছে",
+        "language": "ভাষা",
+        "assign": "বরাদ্দ করুন"
+      }
     },
     "accessDenied": "প্রবেশ অস্বীকৃত",
     "costDashboard": {
@@ -2687,7 +2789,24 @@
       },
       "title": "শিরোনাম"
     },
-    "noPermission": "অনুমতি নেই"
+    "noPermission": "অনুমতি নেই",
+    "kids": {
+      "loadingStats": "শিশুদের কন্টেন্ট পরিসংখ্যান লোড হচ্ছে...",
+      "subtitle": "শিশুদের কন্টেন্ট উৎস এবং মডারেশন পরিচালনা করুন",
+      "seeded": "বপন করা",
+      "imported": "আমদানি করা",
+      "skipped": "এড়িয়ে যাওয়া",
+      "totalContent": "মোট শিশুদের কন্টেন্ট",
+      "kidsPodcasts": "শিশুদের Podcast",
+      "pendingReview": "পর্যালোচনা মুলতুবি",
+      "approved": "অনুমোদিত",
+      "contentByCategory": "শ্রেণী অনুসারে কন্টেন্ট",
+      "contentActions": "কন্টেন্ট ক্রিয়াকলাপ",
+      "noCategory": "কোনো শ্রেণী নেই",
+      "age": "বয়স",
+      "approve": "অনুমোদন করুন",
+      "reject": "প্রত্যাখ্যান করুন"
+    }
   },
   "chatbot": {
     "title": "Bayit+ সহায়ক",
@@ -2876,7 +2995,10 @@
     "signIn": "সাইন ইন করুন",
     "thisContent": "এই বিষয়বস্তু",
     "website": "ওয়েবসাইট",
-    "yesterday": "গতকাল"
+    "yesterday": "গতকাল",
+    "more": "আরও",
+    "minutesShort": "মিনিট",
+    "notAvailable": "N/A"
   },
   "content": {
     "play": "চালান",
@@ -3004,7 +3126,7 @@
     "title": "কোন ফলাফল নেই"
   },
   "epg": {
-    "title": "TV গাইড",
+    "title": "টিভি গাইড",
     "subtitle": "লাইভ TV প্রোগ্রাম সময়সূচী",
     "gridView": "গ্রিড ভিউ",
     "listView": "তালিকা ভিউ",
@@ -3047,10 +3169,13 @@
     "aiDisclaimer": "Claude AI দ্বারা চালিত। প্রোগ্রাম ডেটার উপলব্ধতার উপর ভিত্তি করে ফলাফল পরিবর্তিত হতে পারে।",
     "interpretationTitle": "আমি যা বুঝেছি",
     "noResultsFound": "আপনার প্রশ্নের সাথে মিলে যায় এমন কোনো প্রোগ্রাম পাওয়া যায়নি",
-    "noProgramsScheduled": "কোনো প্রোগ্রাম সময়সূচীত নেই",
+    "noProgramsScheduled": "কোনো অনুষ্ঠান নির্ধারিত নেই",
     "noProgramsFound": "কোনো প্রোগ্রাম পাওয়া যায়নি",
     "noDataAvailable": "TV গাইড ডেটা উপলব্ধ নেই",
-    "live": "লাইভ"
+    "live": "লাইভ",
+    "scheduleUnavailable": "টিভি অনুষ্ঠান সূচী বর্তমানে অনুপলব্ধ। দয়া করে পরে চেক করুন বা এটি অব্যাহত থাকলে সহায়তার সাথে যোগাযোগ করুন।",
+    "noProgramsAvailable": "নির্বাচিত সময়সীমার জন্য কোনো অনুষ্ঠান উপলব্ধ নেই। আপনার ফিল্টার সামঞ্জস্য করার চেষ্টা করুন বা পরে চেক করুন।",
+    "loading": "টিভি গাইড লোড হচ্ছে..."
   },
   "errors": {
     "networkError": "নেটওয়ার্ক ত্রুটি",
@@ -3345,7 +3470,7 @@
   },
   "liveTV": {
     "title": "লাইভ TV",
-    "channels": "চ্যানেল",
+    "channels": "লাইভ টিভি চ্যানেল",
     "nowPlaying": "এখন চলছে",
     "loadError": "চ্যানেল লোড করতে ব্যর্থ",
     "categories": {
@@ -3355,7 +3480,8 @@
       "entertainment": "বিনোদন",
       "kids": "শিশু",
       "documentary": "ডকুমেন্টারি"
-    }
+    },
+    "loadingChannels": "চ্যানেল লোড হচ্ছে..."
   },
   "login": {
     "title": "স্বাগতম",
@@ -3622,13 +3748,13 @@
     "selectOutputLanguage": "আউটপুট ভাষা নির্বাচন করুন"
   },
   "podcasts": {
-    "title": "পডকাস্ট",
+    "title": "Podcast",
     "episodes": "পর্ব",
     "noPodcasts": "কোনো পডকাস্ট নেই",
     "categories": {
       "all": "সব",
       "general": "সাধারণ",
-      "news": "সংবাদ",
+      "news": "খবর",
       "politics": "রাজনীতি",
       "tech": "প্রযুক্তি",
       "business": "ব্যবসা",
@@ -3636,7 +3762,11 @@
       "entertainment": "বিনোদন",
       "sports": "খেলাধুলা",
       "history": "ইতিহাস",
-      "educational": "শিক্ষামূলক"
+      "educational": "শিক্ষামূলক",
+      "technology": "প্রযুক্তি",
+      "culture": "সংস্কৃতি",
+      "education": "শিক্ষা",
+      "comedy": "কমেডি"
     },
     "tryLater": "পরে আবার চেষ্টা করুন",
     "selectLanguage": "অডিও ভাষা",
@@ -3680,7 +3810,10 @@
       "downloadDescription": "ইন্টারনেট সংযোগ ছাড়া শুনতে পর্ব ডাউনলোড করুন।",
       "gotIt": "বুঝেছি"
     },
-    "loadingShows": "পডকাস্ট শো লোড হচ্ছে..."
+    "loadingShows": "পডকাস্ট শো লোড হচ্ছে...",
+    "loadError": "Podcast লোড করতে ব্যর্থ। দয়া করে আপনার সংযোগ পরীক্ষা করুন।",
+    "loading": "Podcast লোড হচ্ছে...",
+    "noPodcastsFound": "কোনো Podcast পাওয়া যায়নি"
   },
   "profile": {
     "title": "আমার প্রোফাইল",
@@ -4099,10 +4232,10 @@
   "search": {
     "title": "খুঁজুন",
     "subtitle": "সিনেমা, সিরিজ, চ্যানেল, রেডিও এবং পডকাস্ট খুঁজুন",
-    "placeholder": "কন্টেন্ট খুঁজুন...",
-    "searching": "খুঁজছে...",
+    "placeholder": "খুঁজুন...",
+    "searching": "খুঁজছি...",
     "listening": "শুনছে...",
-    "noResults": "কোনো ফলাফল নেই",
+    "noResults": "কোনো ফলাফল পাওয়া যায়নি",
     "recentSearches": "সাম্প্রতিক অনুসন্ধান",
     "clearAll": "সব মুছুন",
     "filters": {
@@ -4113,7 +4246,24 @@
       "podcast": "পডকাস্ট",
       "moviesAndSeries": "সিনেমা ও সিরিজ",
       "channels": "চ্যানেল",
-      "podcasts": "পডকাস্ট"
+      "podcasts": "পডকাস্ট",
+      "loading": "ফিল্টার লোড হচ্ছে...",
+      "title": "উন্নত ফিল্টার",
+      "clearAll": "সব মুছুন",
+      "genres": "ধরন",
+      "yearRange": "বছরের সীমা",
+      "decade1990s": "১৯৯০-এর দশক",
+      "decade2000s": "২০০০-এর দশক",
+      "decade2010s": "২০১০-এর দশক",
+      "decade2020s": "২০২০-এর দশক",
+      "minimumRating": "সর্বনিম্ন রেটিং",
+      "subtitleLanguages": "সাবটাইটেল ভাষা",
+      "searchOptions": "অনুসন্ধান বিকল্প",
+      "searchInSubtitles": "সাবটাইটেল পাঠ্য (সংলাপ) এ অনুসন্ধান করুন",
+      "contentRating": "কন্টেন্ট রেটিং",
+      "kidsOnly": "শুধুমাত্র শিশুদের কন্টেন্ট",
+      "excludeKids": "শিশুদের কন্টেন্ট বাদ দিন",
+      "allContent": "সব কন্টেন্ট"
     },
     "controls": {
       "placeholder": "Search for content...",
@@ -4180,7 +4330,32 @@
       "retrySearch": "আবার খুঁজুন",
       "somethingWrong": "কিছু ভুল হয়েছে"
     },
-    "resultsTitle": "সার্চ ফলাফল"
+    "resultsTitle": "সার্চ ফলাফল",
+    "tryDifferentKeywords": "ভিন্ন কীওয়ার্ড বা ফিল্টার চেষ্টা করুন",
+    "stopReading": "পড়া বন্ধ করুন",
+    "readAllResults": "সব ফলাফল পড়ুন",
+    "featured": "⭐ বৈশিষ্ট্যযুক্ত",
+    "closedCaptions": "CC",
+    "kids": "👶 শিশুরা",
+    "readAloud": "জোরে পড়ুন",
+    "smartSearch": "Smart Search",
+    "premiumRequired": "Smart Search এর জন্য Premium সাবস্ক্রিপশন প্রয়োজন",
+    "searchFailed": "অনুসন্ধান ব্যর্থ হয়েছে",
+    "premiumFeature": "Premium বৈশিষ্ট্য",
+    "smartSearchDescription": "Smart Search স্বাভাবিক ভাষার প্রশ্ন বুঝতে এবং আপনি যা খুঁজছেন তা সঠিকভাবে খুঁজে পেতে AI ব্যবহার করে।",
+    "upgradeToPremium": "Premium এ আপগ্রেড করুন",
+    "maybeLater": "হয়তো পরে",
+    "smartSearchHint": "স্বাভাবিক ভাষায় জিজ্ঞাসা করুন এবং AI আপনার জন্য খুঁজে পাবে",
+    "smartSearchPlaceholder": "যেমন, '৯০-এর দশকের ইজরায়েলি কমেডি সাবটাইটেল সহ'",
+    "searchWithAI": "AI দিয়ে খুঁজুন",
+    "aiInterpretation": "AI ব্যাখ্যা:",
+    "confidence": "আত্মবিশ্বাস:",
+    "exampleQueries": "উদাহরণ প্রশ্ন:",
+    "exampleQuery1": "আমাকে ১৯৮০-এর দশকের হিব্রু সিনেমা ইংরেজি সাবটাইটেল সহ দেখান",
+    "exampleQuery2": "Sacha Baron Cohen অভিনীত কমেডি খুঁজুন",
+    "exampleQuery3": "Holocaust সম্পর্কে কোন ডকুমেন্টারি উপলব্ধ?",
+    "exampleQuery4": "৫-৭ বছর বয়সীদের জন্য হিব্রুতে শিশুদের শো",
+    "poweredByAI": "🤖 Claude AI দ্বারা চালিত। ফলাফল প্রশ্ন ব্যাখ্যার উপর ভিত্তি করে পরিবর্তিত হতে পারে।"
   },
   "settings": {
     "title": "সেটিংস",
@@ -5003,7 +5178,8 @@
       "radio": "রেডিও",
       "vod": "ভিডিও",
       "custom": "কাস্টম",
-      "widget": "উইজেট"
+      "widget": "উইজেট",
+      "liveStream": "লাইভ স্ট্রিম"
     },
     "form": {
       "title": "উইজেট তৈরি করুন",
@@ -5031,12 +5207,12 @@
       "cancel": "বাতিল",
       "change": "পরিবর্তন",
       "errors": {
-        "contentRequired": "অনুগ্রহ করে বিষয়বস্তু নির্বাচন করুন",
+        "contentRequired": "দয়া করে কন্টেন্ট নির্বাচন করুন",
         "iframeUrlRequired": "iFrame URL প্রয়োজন",
-        "nameExists": "এই নামে একটি উইজেট ইতিমধ্যে বিদ্যমান",
+        "nameExists": "এই নামের একটি উইজেট ইতিমধ্যে বিদ্যমান",
         "titleRequired": "শিরোনাম প্রয়োজন"
       },
-      "validating": "যাচাই হচ্ছে..."
+      "validating": "যাচাই করা হচ্ছে..."
     },
     "intro": {
       "title": "উইজেটে স্বাগতম",
@@ -5992,7 +6168,9 @@
     "connected": "সংযুক্ত",
     "connecting": "সংযোগ হচ্ছে",
     "connectionFailed": "সংযোগ ব্যর্থ",
-    "pleaseWait": "অনুগ্রহ করে অপেক্ষা করুন"
+    "pleaseWait": "অনুগ্রহ করে অপেক্ষা করুন",
+    "connect": "Audible সংযুক্ত করুন",
+    "disconnect": "Audible সংযোগ বিচ্ছিন্ন করুন"
   },
   "cancelled": {
     "description": "আপনার পেমেন্ট বাতিল করা হয়েছে।",

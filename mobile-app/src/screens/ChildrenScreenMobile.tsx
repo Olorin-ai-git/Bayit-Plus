@@ -249,9 +249,9 @@ export const ChildrenScreenMobile: React.FC = () => {
           <Text className="text-2xl">👶</Text>
         </View>
         <View className="flex-1">
-          <Text style={{ textAlign }} className="text-3xl font-bold text-[#ffd93d]">{t('children.title', 'ילדים')}</Text>
+          <Text style={{ textAlign }} className="text-3xl font-bold text-[#ffd93d]">{t('children.title')}</Text>
           <Text style={{ textAlign }} className="text-sm text-[#ffd93d]/70 mt-0.5">
-            {content.length} {t('children.items', 'פריטים')}
+            {content.length} {t('children.items')}
           </Text>
         </View>
       </View>
@@ -283,10 +283,10 @@ export const ChildrenScreenMobile: React.FC = () => {
       <View className="p-6 items-center bg-[#ffd93d]/10 rounded-lg">
         <Text className="text-5xl mb-4">🌈</Text>
         <Text style={{ textAlign }} className="text-lg font-semibold text-[#ffd93d] mb-2">
-          {t('children.empty', 'אין תוכן זמין')}
+          {t('children.empty')}
         </Text>
         <Text style={{ textAlign }} className="text-sm text-[#ffd93d]/70">
-          {t('children.emptyHint', 'נסה קטגוריה אחרת')}
+          {t('children.emptyHint')}
         </Text>
       </View>
     </View>

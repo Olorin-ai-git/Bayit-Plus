@@ -172,6 +172,9 @@ export default function RightControls({
       {renderSubtitleControls && renderSubtitleControls()}
       {renderRecordButton && renderRecordButton()}
 
+      {/* Channel Chat button for VOD */}
+      {renderChannelChatButton && renderChannelChatButton()}
+
       {/* Regular Settings button for VOD */}
       {onSettingsToggle && (
         <Pressable

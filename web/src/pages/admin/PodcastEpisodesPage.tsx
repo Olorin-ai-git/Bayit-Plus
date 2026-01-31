@@ -116,11 +116,11 @@ export default function PodcastEpisodesPage() {
 
   const handleSaveEdit = async () => {
     if (!editData.title) {
-      setError(t('admin.content.validation.titleRequired', { defaultValue: 'Title is required' }))
+      setError(t('admin.podcasts.titleRequired'))
       return
     }
     if (!editData.audio_url) {
-      setError(t('admin.content.validation.audioUrlRequired', { defaultValue: 'Audio URL is required' }))
+      setError(t('admin.podcasts.audioUrlRequired'))
       return
     }
     try {
@@ -358,14 +358,14 @@ export default function PodcastEpisodesPage() {
           <GlassInput
             label={t('admin.podcasts.episodes.form.title', 'Episode title')}
             containerStyle={styles.input}
-            placeholder="Episode title"
+            placeholder={t('admin.podcasts.episodeTitlePlaceholder')}
             value={editData.title || ''}
             onChangeText={(value) => setEditData({ ...editData, title: value })}
           />
           <GlassInput
             label={t('admin.podcasts.episodes.form.description', 'Description')}
             containerStyle={styles.input}
-            placeholder="Description"
+            placeholder={t('admin.podcasts.descriptionPlaceholder')}
             value={editData.description || ''}
             onChangeText={(value) => setEditData({ ...editData, description: value })}
             multiline
@@ -373,7 +373,7 @@ export default function PodcastEpisodesPage() {
           <GlassInput
             label={t('admin.podcasts.episodes.form.episodeNumber', 'Episode number')}
             containerStyle={styles.input}
-            placeholder="Episode number"
+            placeholder={t('admin.podcasts.episodeNumberPlaceholder')}
             value={String(editData.episode_number || '')}
             onChangeText={(value) => setEditData({ ...editData, episode_number: parseInt(value) || 0 })}
             keyboardType="number-pad"
@@ -381,21 +381,21 @@ export default function PodcastEpisodesPage() {
           <GlassInput
             label={t('admin.podcasts.episodes.form.duration', 'Duration')}
             containerStyle={styles.input}
-            placeholder="Duration (e.g., 45:30)"
+            placeholder={t('admin.podcasts.durationPlaceholder')}
             value={editData.duration || ''}
             onChangeText={(value) => setEditData({ ...editData, duration: value })}
           />
           <GlassInput
             label={t('admin.podcasts.episodes.form.audioUrl', 'Audio URL (required)')}
             containerStyle={styles.input}
-            placeholder="Audio URL (required)"
+            placeholder={t('admin.podcasts.audioUrlPlaceholder')}
             value={editData.audio_url || ''}
             onChangeText={(value) => setEditData({ ...editData, audio_url: value })}
           />
           <GlassInput
             label={t('admin.podcasts.episodes.form.publishedDate', 'Published Date (YYYY-MM-DD)')}
             containerStyle={styles.input}
-            placeholder="Published Date (YYYY-MM-DD)"
+            placeholder={t('admin.podcasts.publishedDatePlaceholder')}
             value={editData.published_at ? editData.published_at.split('T')[0] : ''}
             onChangeText={(value) => setEditData({ ...editData, published_at: value ? `${value}T00:00:00Z` : undefined })}
           />

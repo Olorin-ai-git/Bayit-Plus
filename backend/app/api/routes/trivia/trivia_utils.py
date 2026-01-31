@@ -135,6 +135,11 @@ def format_trivia_response(
         if fact.related_person:
             fact_data["related_person"] = fact.related_person
 
+        # Chain fields (always included, null/false for standalone facts)
+        fact_data["chain_id"] = fact.chain_id
+        fact_data["chain_order"] = fact.chain_order
+        fact_data["has_follow_up"] = fact.has_follow_up
+
         facts.append(fact_data)
 
     response = {

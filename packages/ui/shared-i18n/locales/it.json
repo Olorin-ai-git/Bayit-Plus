@@ -71,7 +71,8 @@
       "subscriptions": "Abbonamenti",
       "recentActivity": "Attività recente",
       "quickActions": "Azioni rapide",
-      "noRecentActivity": "Nessuna attività recente"
+      "noRecentActivity": "Nessuna attività recente",
+      "loadError": "Errore nel caricamento dei dati della dashboard"
     },
     "content": {
       "noEpisodes": "Nessun Episodio",
@@ -617,7 +618,21 @@
       },
       "editTitle": "Modifica titolo",
       "newTitle": "Nuovo titolo",
-      "toggleFeatured": "Attiva/disattiva in evidenza"
+      "toggleFeatured": "Attiva/disattiva in evidenza",
+      "titleRequired": "Il titolo è obbligatorio",
+      "audioUrlRequired": "L'URL audio è obbligatorio",
+      "episodeTitlePlaceholder": "Titolo episodio",
+      "descriptionPlaceholder": "Descrizione",
+      "episodeNumberPlaceholder": "Numero episodio",
+      "durationPlaceholder": "Durata (es. 45:30)",
+      "audioUrlPlaceholder": "URL Audio (obbligatorio)",
+      "publishedDatePlaceholder": "Data di Pubblicazione (AAAA-MM-GG)",
+      "pasteImageUrl": "Oppure incolla URL immagine",
+      "podcastTitlePlaceholder": "Titolo podcast",
+      "authorPlaceholder": "Autore",
+      "categoryPlaceholder": "Categoria",
+      "rssFeedUrlPlaceholder": "URL Feed RSS",
+      "websiteUrlPlaceholder": "URL Sito Web (facoltativo)"
     },
     "diagnostics": {
       "title": "Diagnostica di Sistema",
@@ -831,7 +846,9 @@
       },
       "testFailed": "Impossibile inviare l'email di prova",
       "testSent": "Email di prova inviata",
-      "title": "Campagne email"
+      "title": "Campagne email",
+      "loadError": "Errore nel caricamento delle campagne email",
+      "comingSoon": "Creazione campagna email in arrivo"
     },
     "campaignEdit": {
       "subtitle": "Modifica dettagli e impostazioni campagna"
@@ -1019,7 +1036,15 @@
       "notesLabel": "Note dell'amministratore",
       "subtitleDayInput": "Minuti di sottotitoli al giorno",
       "subtitleHourInput": "Minuti di sottotitoli all'ora",
-      "subtitleMonthInput": "Minuti di sottotitoli al mese"
+      "subtitleMonthInput": "Minuti di sottotitoli al mese",
+      "hour": "Ora",
+      "day": "Giorno",
+      "month": "Mese",
+      "minutes": "min",
+      "saved": "salvato",
+      "loadError": "Errore nel caricamento dei dati quota",
+      "saveError": "Errore nel salvataggio dei limiti",
+      "resetError": "Errore nel ripristino della quota"
     },
     "categories": {
       "subtitle": "Gestisci le categorie di contenuti",
@@ -1041,7 +1066,9 @@
       "createSuccess": "Categoria creata",
       "deleteCategory": "Elimina categoria",
       "editCategory": "Modifica categoria",
-      "updateSuccess": "Categoria aggiornata"
+      "updateSuccess": "Categoria aggiornata",
+      "active": "Attivo",
+      "inactive": "Inattivo"
     },
     "recordings": {
       "title": "Gestione registrazioni",
@@ -1058,7 +1085,9 @@
       "deleteFailed": "Impossibile eliminare la registrazione",
       "loadFailed": "Impossibile caricare le registrazioni",
       "noRecordings": "Nessuna registrazione trovata",
-      "noRecordingsHint": "Nessuna registrazione utente nel sistema ancora."
+      "noRecordingsHint": "Nessuna registrazione utente nel sistema ancora.",
+      "live": "IN DIRETTA",
+      "offline": "OFFLINE"
     },
     "uploads": {
       "title": "Gestione caricamenti",
@@ -1185,7 +1214,9 @@
         "totalFiles": "File totali",
         "uploadCancelled": "Caricamento annullato",
         "uploadMode": "Modalità caricamento",
-        "validFiles": "File validi"
+        "validFiles": "File validi",
+        "folderNamePlaceholder": "es., Importa film",
+        "folderPathPlaceholder": "/percorso/alla/cartella"
       },
       "urlUpload": {
         "title": "Caricamento da URL",
@@ -1449,7 +1480,10 @@
       "recentCompleted": "Completati di recente",
       "resumeQueue": "Riprendi",
       "skipped": "Saltato",
-      "totalJobs": "Totale"
+      "totalJobs": "Totale",
+      "dropZone": {
+        "filesRejected": "{{count}} file rifiutati"
+      }
     },
     "librarian": {
       "title": "Agente bibliotecario",
@@ -1702,7 +1736,16 @@
         "search": "Cerca report...",
         "showing": "Visualizzando",
         "status": "STATO",
-        "type": "TIPO"
+        "type": "TIPO",
+        "scheduled": "Programmato",
+        "manual": "Manuale",
+        "recent": "Recenti",
+        "titles": "Titoli",
+        "tmdb": "TMDB",
+        "subtitles": "Sottotitoli",
+        "classification": "Classificazione",
+        "duplicates": "Duplicati",
+        "noResults": "Nessun rapporto corrispondente trovato"
       },
       "logs": {
         "title": "Log",
@@ -1912,7 +1955,19 @@
         "subtitles": "Sottotitoli",
         "duplicates": "Duplicati",
         "daily_incremental": "Incrementale Giornaliero",
-        "ai_agent": "Agente IA"
+        "ai_agent": "Agente IA",
+        "contentValidation": {
+          "name": "Validazione contenuto",
+          "description": "Verifica metadati e integrità del contenuto"
+        },
+        "posterEnrichment": {
+          "name": "Arricchimento poster",
+          "description": "Aggiorna poster e artwork mancanti"
+        },
+        "classificationAudit": {
+          "name": "Audit classificazione",
+          "description": "Revisione delle classificazioni del contenuto"
+        }
       },
       "kidsAudit": {
         "ageDistribution": "Distribuzione per fascia d'età",
@@ -1925,12 +1980,13 @@
         "subtitle": "Stato della moderazione dei contenuti",
         "title": "Salute contenuti bambini",
         "totalItems": "Elementi totali"
-      }
+      },
+      "itemsChecked": "elementi verificati"
     },
     "widgets": {
       "title": "Widget",
       "subtitle": "Gestisci widget fluttuanti per stream live e embed",
-      "newWidget": "Nuovo widget",
+      "newWidget": "Crea nuovo widget",
       "editWidget": "Modifica widget",
       "emptyMessage": "Nessun widget trovato. Creane uno per iniziare.",
       "columns": {
@@ -2051,7 +2107,8 @@
       "total": "Totale",
       "viewAll": "Vedi tutto",
       "viewAllTransactions": "Vedi tutte le transazioni",
-      "viewTransactions": "Transazioni"
+      "viewTransactions": "Transazioni",
+      "loadError": "Errore nel caricamento dei dati di fatturazione"
     },
     "marketing": {
       "recentCampaigns": "Campagne recenti",
@@ -2224,7 +2281,13 @@
       },
       "subtitleSettings": "Impostazioni Sottotitoli",
       "deleteChannel": "Elimina canale",
-      "editChannel": "Modifica canale"
+      "editChannel": "Modifica canale in diretta",
+      "newChannel": "Nuovo canale in diretta",
+      "channelName": "Nome canale",
+      "streamUrl": "URL Stream (HLS/DASH)",
+      "epgSourceUrl": "URL Sorgente EPG (facoltativo)",
+      "currentShow": "Programma Corrente (facoltativo)",
+      "order": "Ordine"
     },
     "radioStations": {
       "subtitle": "Gestisci stazioni radio",
@@ -2252,7 +2315,9 @@
       }
     },
     "podcastEpisodes": {
-      "subtitle": "Gestisci episodi e metadati podcast"
+      "subtitle": "Gestisci episodi e metadati podcast",
+      "newEpisode": "Nuovo episodio",
+      "editEpisode": "Modifica episodio"
     },
     "userDetail": {
       "subtitle": "Dettagli account utente e cronologia attività"
@@ -2350,7 +2415,7 @@
       "firstPurchaseDesc": "Si applica solo agli utenti al primo acquisto",
       "firstPurchaseOnly": "Solo primo acquisto",
       "generate": "Genera",
-      "loadError": "Impossibile caricare la campagna",
+      "loadError": "Errore nel caricamento delle campagne",
       "maxDiscount": "Importo sconto massimo ($)",
       "minimumPurchase": "Importo minimo d'acquisto ($)",
       "name": "Nome campagna",
@@ -2627,7 +2692,8 @@
       "send": "Invia",
       "confirmSend": "Sei sicuro di voler inviare questa notifica?",
       "confirmDelete": "Sei sicuro di voler eliminare questa notifica?",
-      "fillRequired": "Compila tutti i campi obbligatori"
+      "fillRequired": "Compila tutti i campi obbligatori",
+      "editNotification": "Modifica notifica"
     },
     "audiobooks": {
       "confirmDelete": "Eliminare questo audiolibro?",
@@ -2652,7 +2718,15 @@
         "quality": "Qualità audio",
         "streamUrl": "URL stream",
         "subscription": "Livello abbonamento",
-        "title": "Titolo"
+        "title": "Titolo",
+        "titlePlaceholder": "Titolo dell'audiolibro",
+        "authorPlaceholder": "Nome dell'autore",
+        "narratorPlaceholder": "Nome del narratore",
+        "descriptionPlaceholder": "Descrizione dell'audiolibro",
+        "durationPlaceholder": "HH:MM:SS",
+        "isbnPlaceholder": "Numero ISBN",
+        "publisherPlaceholder": "Nome dell'editore",
+        "streamUrlPlaceholder": "https://..."
       },
       "loadError": "Impossibile caricare gli audiolibri",
       "publish": {
@@ -2660,7 +2734,9 @@
         "publishConfirm": "La pubblicazione di questo audiolibro lo renderà visibile a tutti gli utenti.",
         "publishTitle": "Pubblica audiolibro",
         "unpublishTitle": "Annulla pubblicazione",
-        "unpublishWarning": "Questo audiolibro è attualmente pubblicato e visibile agli utenti. L'annullamento della pubblicazione lo nasconderà immediatamente."
+        "unpublishWarning": "Questo audiolibro è attualmente pubblicato e visibile agli utenti. L'annullamento della pubblicazione lo nasconderà immediatamente.",
+        "missingFieldsFull": "Campi obbligatori mancanti: titolo, autore, URL streaming",
+        "missingFieldsShort": "Campi obbligatori mancanti"
       },
       "subtitle": "Gestisci la libreria di audiolibri",
       "upload": {
@@ -2670,8 +2746,20 @@
         "selectFile": "Seleziona file audio",
         "streamUrl": "URL stream generato",
         "title": "Carica file audio",
-        "tooLarge": "La dimensione del file supera il limite di 500MB"
-      }
+        "tooLarge": "La dimensione del file supera il limite di 500MB",
+        "fileTooLarge": "La dimensione del file supera il limite di 500MB",
+        "selectionRequired": "File e selezione audiolibro richiesti",
+        "urlCopied": "URL copiato negli appunti"
+      },
+      "deleteError": "Errore nell'eliminazione dell'audiolibro",
+      "sections": {
+        "audiobooks": "Audiolibri",
+        "recommended": "Consigliati",
+        "newReleases": "Nuove uscite",
+        "topRated": "Più votati",
+        "trending": "Di tendenza"
+      },
+      "selectSection": "Seleziona una sezione"
     },
     "columns": {
       "author": "Autore",
@@ -2875,7 +2963,12 @@
         "sttProvider": "Provider STT",
         "supportVoice": "Voce di supporto",
         "translationProvider": "Provider traduzione",
-        "voiceIds": "ID voci"
+        "voiceIds": "ID voci",
+        "saveSuccess": "Configurazione vocale salvata con successo",
+        "saveError": "Errore nel salvataggio della configurazione",
+        "testText": "Ciao, questo è un test vocale.",
+        "testSuccess": "Test vocale riprodotto con successo",
+        "testError": "Errore nel test vocale"
       },
       "quotas": {
         "dubbingLimits": "Limiti doppiaggio",
@@ -2889,7 +2982,10 @@
       "settings": {
         "apiKeys": "Chiavi API",
         "webhookInfo": "Info webhook",
-        "webhooks": "Webhook"
+        "webhooks": "Webhook",
+        "check": "Verifica",
+        "healthy": "Funzionante",
+        "unhealthy": "Non funzionante"
       },
       "subtitle": "Sottotitolo",
       "tabs": {
@@ -2899,7 +2995,13 @@
         "quotas": "Quote",
         "settings": "Impostazioni"
       },
-      "title": "Gestione vocale"
+      "title": "Gestione vocale",
+      "library": {
+        "previewText": "Ciao, questa è un'anteprima di questa voce.",
+        "assignSuccess": "Voce assegnata al ruolo {{role}}",
+        "language": "Lingua",
+        "assign": "Assegna"
+      }
     },
     "accessDenied": "Accesso negato",
     "costDashboard": {
@@ -2931,7 +3033,24 @@
       },
       "title": "Procedura guidata di importazione"
     },
-    "noPermission": "Nessun permesso"
+    "noPermission": "Nessun permesso",
+    "kids": {
+      "loadingStats": "Caricamento statistiche contenuti per bambini...",
+      "subtitle": "Gestisci fonti di contenuti per bambini e moderazione",
+      "seeded": "Inseriti",
+      "imported": "Importati",
+      "skipped": "Saltati",
+      "totalContent": "Totale Contenuti per Bambini",
+      "kidsPodcasts": "Podcast per Bambini",
+      "pendingReview": "In Attesa di Revisione",
+      "approved": "Approvati",
+      "contentByCategory": "Contenuti per Categoria",
+      "contentActions": "Azioni Contenuti",
+      "noCategory": "Nessuna categoria",
+      "age": "Età",
+      "approve": "Approva",
+      "reject": "Rifiuta"
+    }
   },
   "chatbot": {
     "title": "Assistente Bayit+",
@@ -3026,7 +3145,7 @@
     "moreInfo": "Altre info",
     "seeAll": "Vedi tutto",
     "new": "Nuovo",
-    "live": "LIVE",
+    "live": "DIRETTA",
     "recommended": "Consigliato",
     "edit": "Modifica",
     "delete": "Elimina",
@@ -3120,7 +3239,10 @@
     "signIn": "Accedi",
     "thisContent": "Questo contenuto",
     "website": "Sito web",
-    "yesterday": "Ieri"
+    "yesterday": "Ieri",
+    "more": "altro",
+    "minutesShort": "min",
+    "notAvailable": "N/D"
   },
   "content": {
     "play": "Riproduci",
@@ -3369,10 +3491,13 @@
     "exampleQuery2": "Quali commedie vanno in onda questa settimana?",
     "exampleQuery3": "Trova documentari sulla storia su Canale 11",
     "exampleQuery4": "Mostrami tutti i telegiornali domani mattina",
-    "noProgramsScheduled": "Nessun programma in palinsesto",
+    "noProgramsScheduled": "Nessun programma in programma",
     "noProgramsFound": "Nessun programma trovato",
     "noDataAvailable": "Dati guida TV non disponibili",
-    "live": "LIVE"
+    "live": "LIVE",
+    "scheduleUnavailable": "Il palinsesto TV non è attualmente disponibile. Riprova più tardi o contatta l'assistenza se il problema persiste.",
+    "noProgramsAvailable": "Nessun programma disponibile per l'intervallo di tempo selezionato. Prova a modificare i filtri o riprova più tardi.",
+    "loading": "Caricamento guida TV..."
   },
   "errors": {
     "networkError": "Errore di rete",
@@ -3667,7 +3792,7 @@
   },
   "liveTV": {
     "title": "TV in diretta",
-    "channels": "Canali",
+    "channels": "Canali TV in Diretta",
     "nowPlaying": "In onda",
     "loadError": "Impossibile caricare i canali",
     "categories": {
@@ -3677,7 +3802,8 @@
       "entertainment": "Intrattenimento",
       "kids": "Bambini",
       "documentary": "Documentari"
-    }
+    },
+    "loadingChannels": "Caricamento canali..."
   },
   "login": {
     "title": "Bentornato",
@@ -3940,7 +4066,7 @@
     "title": "Podcast",
     "episodes": "episodi",
     "categories": {
-      "all": "Tutto",
+      "all": "Tutti",
       "general": "Generale",
       "news": "Notizie",
       "politics": "Politica",
@@ -3950,7 +4076,11 @@
       "entertainment": "Intrattenimento",
       "sports": "Sport",
       "history": "Storia",
-      "educational": "Educativo"
+      "educational": "Educativo",
+      "technology": "Tecnologia",
+      "culture": "Cultura",
+      "education": "Educazione",
+      "comedy": "Commedia"
     },
     "noPodcasts": "Nessun podcast disponibile",
     "tryLater": "Riprova più tardi",
@@ -3995,7 +4125,10 @@
       "downloadDescription": "Scarica gli episodi per ascoltarli senza connessione internet.",
       "gotIt": "Capito"
     },
-    "loadingShows": "Caricamento podcast..."
+    "loadingShows": "Caricamento podcast...",
+    "loadError": "Impossibile caricare i podcast. Controlla la tua connessione.",
+    "loading": "Caricamento podcast...",
+    "noPodcastsFound": "Nessun podcast trovato"
   },
   "profile": {
     "complimentaryPremium": "ACCESSO PREMIUM GRATUITO",
@@ -4343,7 +4476,7 @@
   "search": {
     "title": "Cerca",
     "subtitle": "Trova film, serie, canali, radio e podcast",
-    "placeholder": "Cerca contenuti...",
+    "placeholder": "Cerca...",
     "voicePlaceholder": "Parla ora...",
     "searching": "Ricerca in corso...",
     "listening": "In ascolto...",
@@ -4365,7 +4498,24 @@
       "podcast": "Podcast",
       "moviesAndSeries": "Film e Serie",
       "channels": "Canali",
-      "podcasts": "Podcast"
+      "podcasts": "Podcast",
+      "loading": "Caricamento filtri...",
+      "title": "Filtri Avanzati",
+      "clearAll": "Cancella Tutto",
+      "genres": "Generi",
+      "yearRange": "Anno",
+      "decade1990s": "Anni '90",
+      "decade2000s": "Anni 2000",
+      "decade2010s": "Anni 2010",
+      "decade2020s": "Anni 2020",
+      "minimumRating": "Valutazione Minima",
+      "subtitleLanguages": "Lingue Sottotitoli",
+      "searchOptions": "Opzioni di Ricerca",
+      "searchInSubtitles": "Cerca nel testo dei sottotitoli (dialoghi)",
+      "contentRating": "Classificazione Contenuti",
+      "kidsOnly": "Solo contenuti per bambini",
+      "excludeKids": "Escludi contenuti per bambini",
+      "allContent": "Tutti i contenuti"
     },
     "suggestions": {
       "trendingTitle": "Trending Searches",
@@ -4430,7 +4580,32 @@
       "retrySearch": "Riprova la ricerca",
       "somethingWrong": "Qualcosa è andato storto"
     },
-    "resultsTitle": "Risultati della ricerca"
+    "resultsTitle": "Risultati della ricerca",
+    "tryDifferentKeywords": "Prova parole chiave o filtri diversi",
+    "stopReading": "Interrompi Lettura",
+    "readAllResults": "Leggi Tutti i Risultati",
+    "featured": "⭐ In Evidenza",
+    "closedCaptions": "CC",
+    "kids": "👶 Bambini",
+    "readAloud": "Leggi ad Alta Voce",
+    "smartSearch": "Ricerca Intelligente",
+    "premiumRequired": "Abbonamento Premium richiesto per Ricerca Intelligente",
+    "searchFailed": "Ricerca fallita",
+    "premiumFeature": "Funzione Premium",
+    "smartSearchDescription": "La Ricerca Intelligente utilizza l'AI per comprendere query in linguaggio naturale e trovare esattamente ciò che stai cercando.",
+    "upgradeToPremium": "Passa a Premium",
+    "maybeLater": "Forse Dopo",
+    "smartSearchHint": "Chiedi in linguaggio naturale e l'AI troverà ciò che cerchi",
+    "smartSearchPlaceholder": "es. 'Commedie israeliane degli anni '90 con sottotitoli'",
+    "searchWithAI": "Cerca con AI",
+    "aiInterpretation": "Interpretazione AI:",
+    "confidence": "Affidabilità:",
+    "exampleQueries": "Esempi di Query:",
+    "exampleQuery1": "Mostrami film in ebraico degli anni '80 con sottotitoli in inglese",
+    "exampleQuery2": "Trova commedie con Sacha Baron Cohen",
+    "exampleQuery3": "Quali documentari sull'Olocausto sono disponibili?",
+    "exampleQuery4": "Programmi per bambini in ebraico per età 5-7 anni",
+    "poweredByAI": "🤖 Powered by Claude AI. I risultati possono variare in base all'interpretazione della query."
   },
   "settings": {
     "title": "Impostazioni",
@@ -4706,6 +4881,8 @@
   "trivia": {
     "didYouKnow": "Lo Sapevi?",
     "dismissHint": "Chiudi curiosità",
+    "wantToKnowMore": "Vuoi saperne di più?",
+    "followUpHint": "Tocca per vedere un fatto aggiuntivo che approfondisce questa storia",
     "settings": {
       "displayLanguages": "Lingue di Visualizzazione",
       "languageHint": "Seleziona 1-3 lingue da visualizzare per ogni fatto",
@@ -5326,7 +5503,8 @@
       "radio": "Radio",
       "vod": "Video",
       "custom": "Personalizzato",
-      "widget": "Widget"
+      "widget": "Widget",
+      "liveStream": "Stream in Diretta"
     },
     "form": {
       "title": "Crea widget",
@@ -5356,7 +5534,7 @@
       "errors": {
         "contentRequired": "Seleziona un contenuto",
         "iframeUrlRequired": "L'URL iFrame è obbligatorio",
-        "nameExists": "Un widget con questo nome esiste già",
+        "nameExists": "Esiste già un widget con questo nome",
         "titleRequired": "Il titolo è obbligatorio"
       },
       "validating": "Validazione in corso..."
@@ -6254,7 +6432,9 @@
     "connected": "Connesso",
     "connecting": "Connessione in corso",
     "connectionFailed": "Connessione fallita",
-    "pleaseWait": "Attendere prego"
+    "pleaseWait": "Attendere prego",
+    "connect": "Connetti Audible",
+    "disconnect": "Disconnetti Audible"
   },
   "cancelled": {
     "description": "Il tuo pagamento è stato annullato.",

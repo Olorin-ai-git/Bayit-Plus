@@ -1,13 +1,13 @@
 /**
  * TriviaCard Component
- * Card content for trivia facts - header, category, text, related person
+ * Card content for trivia facts - header, category, text, follow-up, related person
  * Uses Glass design system with proper touch targets and tvOS support
  */
 
 import React from 'react'
 import { View, Text, Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { X, Lightbulb, ChevronRight } from 'lucide-react-native'
+import { X, Lightbulb, ChevronRight, Sparkles } from 'lucide-react-native'
 import { GlassButton } from '@bayit/shared/components/ui/GlassButton'
 import { TriviaFact, getCategoryInfo } from '@bayit/shared-types/trivia'
 import { useTriviaStore } from '@bayit/shared/stores/trivia'
@@ -17,21 +17,22 @@ import { triviaStyles as styles, getTvStyles } from './triviaStyles'
 interface TriviaCardProps {
   fact: TriviaFact
   onDismiss: () => void
+  onFollowUp?: () => void
   isRTL?: boolean
 }
 
-export function TriviaCard({ fact, onDismiss, isRTL = false }: TriviaCardProps) {
+export function TriviaCard({ fact, onDismiss, onFollowUp, isRTL = false }: TriviaCardProps) {
   const { t, i18n } = useTranslation()
   const isTV = Platform.isTV || Platform.OS === 'tvos'
   const tvStyles = getTvStyles(isTV)
 
-  // NEW: Get user's language display preferences
   const displayLanguages = useTriviaStore(state =>
     state.preferences.display_languages || ['he', 'en']
   )
 
   const categoryInfo = getCategoryInfo(fact.category)
   const isHebrew = i18n.language === 'he' || isRTL
+  const showFollowUp = fact.has_follow_up && onFollowUp
 
   return (
     <View style={[styles.glassCard, isTV && styles.glassCardTV]}>
@@ -65,12 +66,28 @@ export function TriviaCard({ fact, onDismiss, isRTL = false }: TriviaCardProps) 
         </View>
       )}
 
-      {/* UPDATED: Multilingual Fact Text */}
+      {/* Multilingual Fact Text */}
       <MultilingualTextDisplay
         fact={fact}
         displayLanguages={displayLanguages}
         isTV={isTV}
       />
+
+      {/* Follow-Up Button */}
+      {showFollowUp && (
+        <View style={styles.followUpContainer}>
+          <GlassButton
+            title={t('trivia.wantToKnowMore')}
+            icon={<Sparkles size={isTV ? 20 : 14} color="#FCD34D" />}
+            onPress={onFollowUp}
+            variant="ghost"
+            size={isTV ? 'md' : 'sm'}
+            style={[styles.followUpButton, isHebrew && styles.followUpButtonRTL]}
+            accessibilityLabel={t('trivia.wantToKnowMore')}
+            accessibilityHint={t('trivia.followUpHint')}
+          />
+        </View>
+      )}
 
       {/* Related Person */}
       {fact.related_person && (

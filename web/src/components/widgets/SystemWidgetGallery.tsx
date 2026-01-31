@@ -67,19 +67,19 @@ function SystemWidgetCard({
     switch (contentType) {
       case 'live_channel':
       case 'live':
-        return t('widgets.contentTypes.liveChannel') || 'Live Channel';
+        return t('widgets.contentTypes.liveChannel');
       case 'iframe':
-        return t('widgets.contentTypes.iframe') || 'Web Content';
+        return t('widgets.contentTypes.iframe');
       case 'podcast':
-        return t('widgets.contentTypes.podcast') || 'Podcast';
+        return t('widgets.contentTypes.podcast');
       case 'radio':
-        return t('widgets.contentTypes.radio') || 'Radio';
+        return t('widgets.contentTypes.radio');
       case 'vod':
-        return t('widgets.contentTypes.vod') || 'Video';
+        return t('widgets.contentTypes.vod');
       case 'custom':
-        return t('widgets.contentTypes.custom') || 'Custom';
+        return t('widgets.contentTypes.custom');
       default:
-        return t('widgets.contentTypes.widget') || 'Widget';
+        return t('widgets.contentTypes.widget');
     }
   };
 
@@ -154,10 +154,10 @@ function SystemWidgetCard({
             actionLoading
               ? '...'
               : isHidden
-                ? t('widgets.show') || 'Show'
+                ? t('widgets.show')
                 : widget.is_added
-                  ? t('widgets.added') || 'Added'
-                  : t('widgets.add') || 'Add'
+                  ? t('widgets.added')
+                  : t('widgets.add')
           }
           onPress={handleAction}
           disabled={actionLoading || isLoading}
@@ -243,7 +243,7 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
       setWidgets(data?.items || []);
     } catch (err) {
       logger.error('Failed to load available system widgets', 'SystemWidgetGallery', err);
-      setError(t('common.error') || 'Failed to load widgets');
+      setError(t('common.error'));
     } finally {
       setLoading(false);
     }
@@ -285,7 +285,7 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>{t('common.loading') || 'Loading...'}</Text>
+        <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );
   }
@@ -295,7 +295,7 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
       <View style={styles.errorContainer}>
         <Text style={styles.errorText}>{error}</Text>
         <GlassButton
-          title={t('common.retry') || 'Retry'}
+          title={t('common.retry')}
           onPress={loadWidgets}
           variant="ghost"
           size="sm"
@@ -309,7 +309,7 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>
-          {t('widgets.noSystemWidgets') || 'No system widgets available'}
+          {t('widgets.noSystemWidgets')}
         </Text>
       </View>
     );
@@ -319,10 +319,10 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={[styles.headerTitle, { textAlign }]}>
-          {t('widgets.systemWidgets') || 'System Widgets'}
+          {t('widgets.systemWidgets')}
         </Text>
         <Text style={[styles.headerSubtitle, { textAlign }]}>
-          {t('widgets.systemWidgetsHint') || 'Browse and add widgets to your collection'}
+          {t('widgets.systemWidgetsHint')}
         </Text>
       </View>
 

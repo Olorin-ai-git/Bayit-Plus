@@ -20,7 +20,9 @@ from app.api.router_registry import (register_all_routers,
                                      register_upload_serving)
 from app.core.config import settings
 from app.core.config_validation import log_configuration_warnings
-from app.core.database import close_mongo_connection, connect_to_mongo
+from app.core.database import (close_mongo_connection, connect_to_mongo,
+                                    ensure_ttl_indexes_background,
+                                    get_database)
 from app.core.database_olorin import (close_olorin_mongo_connection,
                                       connect_to_olorin_mongo)
 from app.core.logging_config import setup_logging
@@ -86,45 +88,6 @@ def _validate_configuration() -> None:
         logger.info("All critical configuration validated")
 
 
-async def _verify_collections_initialized() -> None:
-    """
-    Verify that Beanie collections are initialized and ready.
-
-    Checks if Widget and Culture collections can be accessed by attempting
-    simple count queries. Includes retry logic to handle race conditions.
-    """
-    import asyncio
-    from app.models.widget import Widget
-    from app.models.culture import Culture
-    from app.models.tel_aviv_content import TelAvivContentSource
-    from app.models.jerusalem_content import JerusalemContentSource
-
-    max_retries = 3
-    retry_delay = 0.5  # seconds
-
-    for attempt in range(max_retries):
-        try:
-            # Attempt to count documents in critical collections
-            # This will fail with CollectionWasNotInitialized if not ready
-            await Widget.count()
-            await Culture.count()
-            await TelAvivContentSource.count()
-            await JerusalemContentSource.count()
-            logger.debug(f"Collection verification successful (attempt {attempt + 1})")
-            return
-        except Exception as e:
-            if attempt < max_retries - 1:
-                logger.debug(
-                    f"Collections not ready yet (attempt {attempt + 1}/{max_retries}), "
-                    f"retrying in {retry_delay}s..."
-                )
-                await asyncio.sleep(retry_delay)
-            else:
-                logger.warning(
-                    f"Collection verification failed after {max_retries} attempts: {e}"
-                )
-                raise
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -153,7 +116,12 @@ async def lifespan(app: FastAPI):
     # Connect to MongoDB (CRITICAL - will retry on failure)
     try:
         await connect_to_mongo()
-        logger.info("✅ MongoDB connection established")
+        # Warm up the connection pool with a ping to pre-establish TCP connections.
+        # Motor creates connections lazily; without this, the first real requests
+        # suffer 7-18s cold-start latency while the pool spins up.
+        database = get_database()
+        await database.command("ping")
+        logger.info("✅ MongoDB connection established (pool warmed)")
     except Exception as e:
         logger.error(f"❌ MongoDB connection failed: {e}", exc_info=True)
         logger.error("Server will start in DEGRADED mode - database operations will fail")
@@ -191,14 +159,6 @@ async def lifespan(app: FastAPI):
     upload_dir.mkdir(parents=True, exist_ok=True)
     logger.info(f"Upload directory ready: {upload_dir}")
 
-    # Wait for Beanie collections to be fully initialized
-    try:
-        await _verify_collections_initialized()
-        logger.info("✅ Database collections verified and ready")
-    except Exception as e:
-        logger.warning(f"Collection verification failed: {e}")
-        # Continue anyway - seeders will handle errors gracefully
-
     # Start background tasks
     start_background_tasks()
 
@@ -208,26 +168,8 @@ async def lifespan(app: FastAPI):
 
     async def _background_seeding():
         """Background task to seed default data after server startup."""
-        # Wait for Beanie collections to be fully initialized
-        # In development with skip_indexes=True, collections need extra time to initialize
-        max_wait = 30  # Maximum 30 seconds
-        wait_interval = 1  # Check every second
-
-        for attempt in range(max_wait):
-            try:
-                # Check if Widget collection is ready by attempting a simple query
-                from app.models.widget import Widget
-
-                await Widget.find_one({"_id": "test"})  # Non-existent ID, just tests collection
-                break  # Collection is ready
-            except Exception:
-                if attempt < max_wait - 1:
-                    await asyncio.sleep(wait_interval)
-                else:
-                    logger.warning(
-                        f"Background seeding: Collections not ready after {max_wait}s, "
-                        "proceeding anyway"
-                    )
+        # Collections are ready immediately after init_beanie() with skip_indexes=True
+        # (Beanie registers models synchronously; no async index creation to wait for)
 
         # Initialize default widgets
         try:
@@ -243,9 +185,10 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             logger.warning(f"Background seeding: Failed to initialize default cultures: {e}")
 
-    # Launch seeding in background without blocking startup
+    # Launch background tasks without blocking startup
     asyncio.create_task(_background_seeding())
-    logger.info("Default data seeding scheduled for background execution")
+    asyncio.create_task(ensure_ttl_indexes_background())
+    logger.info("Background tasks scheduled: data seeding, TTL index creation")
 
     # Upload queue processor is now manual-only (triggered from UI)
     from app.services.upload_service import upload_service  # noqa: F401
@@ -282,7 +225,8 @@ async def lifespan(app: FastAPI):
     logger.info("Server startup complete - Ready to accept connections")
     logger.info(
         "Startup optimizations enabled: "
-        "index creation deferred (dev), data seeding in background, parallel service init"
+        "index creation skipped (managed via migration scripts), "
+        "data seeding in background, parallel service init"
     )
 
     yield

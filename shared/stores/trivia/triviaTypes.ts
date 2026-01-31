@@ -25,6 +25,8 @@ export interface TriviaState {
   lastShownAt: number | null
   shownFactIds: string[]
   triviaCache: Record<string, CachedTrivia>
+  activeChainId: string | null
+  chainEngagementCount: number
 }
 
 export interface TriviaComputedActions {
@@ -48,6 +50,7 @@ export interface TriviaLoadActions {
 export interface TriviaDisplayActions {
   showNextFact: (currentTime?: number) => TriviaFact | null
   dismissFact: () => void
+  followUpFact: () => TriviaFact | null
   markFactShown: (factId: string) => void
   resetShownFacts: () => void
 }

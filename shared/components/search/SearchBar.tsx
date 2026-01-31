@@ -7,6 +7,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, FlatList } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface SearchBarProps {
   value: string;
@@ -37,6 +38,7 @@ export function SearchBar({
   isRTL = false,
   className = ''
 }: SearchBarProps) {
+  const { t } = useTranslation();
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<TextInput>(null);
 
@@ -78,7 +80,7 @@ export function SearchBar({
           onSubmitEditing={onSubmit}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setTimeout(() => setIsFocused(false), 200)}
-          placeholder={placeholder}
+          placeholder={placeholder || t('search.placeholder')}
           placeholderTextColor="rgba(255, 255, 255, 0.4)"
           autoFocus={autoFocus}
           returnKeyType="search"

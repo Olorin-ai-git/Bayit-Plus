@@ -1,7 +1,4 @@
-"""
-Trivia Models.
-Stores trivia facts and fun facts for content during video playback.
-"""
+"""Trivia Models - facts and fun facts for content during video playback."""
 
 from datetime import datetime
 from typing import List, Optional
@@ -13,8 +10,7 @@ from pymongo import ReturnDocument
 
 
 class TriviaFactModel(BaseModel):
-    """Individual trivia fact with multilingual support."""
-
+    """Individual trivia fact with multilingual support and chain linking."""
     fact_id: str = Field(default_factory=lambda: str(uuid4()))
     text: str = Field(..., min_length=1, description="Hebrew text (required)")
     text_en: str = Field(..., min_length=1, description="English text (required)")
@@ -31,12 +27,34 @@ class TriviaFactModel(BaseModel):
     priority: int = Field(default=5, ge=1, le=10)
     related_person: Optional[str] = None
 
+    # Chain fields for follow-up fact linking
+    chain_id: Optional[str] = Field(
+        None, description="Groups related facts (UUID, null = standalone)"
+    )
+    chain_order: Optional[int] = Field(
+        None, ge=0, description="0-indexed position in chain (0 = hook/root)"
+    )
+    has_follow_up: bool = Field(
+        default=False, description="True if next fact in chain exists"
+    )
+
     @field_validator("text", "text_en", "text_es")
     @classmethod
     def validate_text_not_empty(cls, v: str) -> str:
         if not v or not v.strip():
             raise ValueError("Text field cannot be empty or whitespace")
         return v.strip()
+
+    @model_validator(mode="after")
+    def validate_chain_consistency(self) -> "TriviaFactModel":
+        """Ensure chain_id and chain_order are both set or both null."""
+        has_id = self.chain_id is not None
+        has_order = self.chain_order is not None
+        if has_id != has_order:
+            raise ValueError(
+                "chain_id and chain_order must both be set or both be null"
+            )
+        return self
 
 
 class ContentTrivia(Document):
@@ -125,7 +143,7 @@ class TriviaFactResponse(BaseModel):
     fact_id: str
     text: str  # Kept for backward compatibility (Hebrew)
 
-    # NEW: Optional multilingual fields
+    # Optional multilingual fields
     text_he: Optional[str] = None
     text_en: Optional[str] = None
     text_es: Optional[str] = None
@@ -134,6 +152,11 @@ class TriviaFactResponse(BaseModel):
     category: str
     display_duration: int
     priority: int
+
+    # Chain fields for follow-up linking
+    chain_id: Optional[str] = None
+    chain_order: Optional[int] = None
+    has_follow_up: bool = False
 
     class Config:
         from_attributes = True

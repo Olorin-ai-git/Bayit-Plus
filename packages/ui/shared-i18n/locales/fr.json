@@ -71,7 +71,8 @@
       },
       "recentActivity": "Activité récente",
       "quickActions": "Actions rapides",
-      "noRecentActivity": "Aucune activité récente"
+      "noRecentActivity": "Aucune activité récente",
+      "loadError": "Erreur de chargement des données du tableau de bord"
     },
     "content": {
       "noEpisodes": "Aucun Épisode",
@@ -607,7 +608,21 @@
       },
       "editTitle": "Modifier le titre",
       "newTitle": "Nouveau titre",
-      "toggleFeatured": "Basculer en vedette"
+      "toggleFeatured": "Basculer en vedette",
+      "titleRequired": "Le titre est obligatoire",
+      "audioUrlRequired": "L'URL audio est obligatoire",
+      "episodeTitlePlaceholder": "Titre de l'épisode",
+      "descriptionPlaceholder": "Description",
+      "episodeNumberPlaceholder": "Numéro de l'épisode",
+      "durationPlaceholder": "Durée (ex., 45:30)",
+      "audioUrlPlaceholder": "URL audio (obligatoire)",
+      "publishedDatePlaceholder": "Date de publication (YYYY-MM-DD)",
+      "pasteImageUrl": "Ou collez l'URL de l'image",
+      "podcastTitlePlaceholder": "Titre du podcast",
+      "authorPlaceholder": "Auteur",
+      "categoryPlaceholder": "Catégorie",
+      "rssFeedUrlPlaceholder": "URL du flux RSS",
+      "websiteUrlPlaceholder": "URL du site web (optionnel)"
     },
     "diagnostics": {
       "title": "Diagnostics Système",
@@ -821,7 +836,9 @@
         "total": "Total"
       },
       "testFailed": "Échec de l'envoi de l'e-mail de test",
-      "testSent": "E-mail de test envoyé"
+      "testSent": "E-mail de test envoyé",
+      "loadError": "Erreur de chargement des campagnes e-mail",
+      "comingSoon": "Création de campagne e-mail bientôt disponible"
     },
     "campaignEdit": {
       "subtitle": "Modifier les détails et paramètres de la campagne"
@@ -1009,7 +1026,15 @@
       "notesLabel": "Notes administrateur",
       "subtitleDayInput": "Minutes de sous-titrage par jour",
       "subtitleHourInput": "Minutes de sous-titrage par heure",
-      "subtitleMonthInput": "Minutes de sous-titrage par mois"
+      "subtitleMonthInput": "Minutes de sous-titrage par mois",
+      "hour": "Heure",
+      "day": "Jour",
+      "month": "Mois",
+      "minutes": "min",
+      "saved": "enregistré",
+      "loadError": "Erreur de chargement des données de quota",
+      "saveError": "Erreur lors de l'enregistrement des limites",
+      "resetError": "Erreur lors de la réinitialisation du quota"
     },
     "categories": {
       "subtitle": "Gérer les catégories de contenu",
@@ -1031,7 +1056,9 @@
       "createSuccess": "Catégorie créée",
       "deleteCategory": "Supprimer la catégorie",
       "editCategory": "Modifier la catégorie",
-      "updateSuccess": "Catégorie mise à jour"
+      "updateSuccess": "Catégorie mise à jour",
+      "active": "Actif",
+      "inactive": "Inactif"
     },
     "recordings": {
       "title": "Gestion des enregistrements",
@@ -1048,7 +1075,9 @@
       "deleteFailed": "Échec de la suppression de l'enregistrement",
       "loadFailed": "Échec du chargement des enregistrements",
       "noRecordings": "Aucun enregistrement trouvé",
-      "noRecordingsHint": "Aucun enregistrement utilisateur dans le système pour l'instant."
+      "noRecordingsHint": "Aucun enregistrement utilisateur dans le système pour l'instant.",
+      "live": "EN DIRECT",
+      "offline": "HORS LIGNE"
     },
     "uploads": {
       "title": "Gestion des téléversements",
@@ -1144,7 +1173,9 @@
         "totalFiles": "Fichiers totaux",
         "uploadCancelled": "Téléversement annulé",
         "uploadMode": "Mode de téléversement",
-        "validFiles": "Fichiers valides"
+        "validFiles": "Fichiers valides",
+        "folderNamePlaceholder": "ex., Import de films",
+        "folderPathPlaceholder": "/chemin/vers/dossier"
       },
       "urlUpload": {
         "title": "Importer depuis URL",
@@ -1393,7 +1424,10 @@
       "recentCompleted": "Récemment terminés",
       "resumeQueue": "Reprendre",
       "skipped": "Ignoré",
-      "totalJobs": "Total"
+      "totalJobs": "Total",
+      "dropZone": {
+        "filesRejected": "{{count}} fichier(s) rejeté(s)"
+      }
     },
     "librarian": {
       "title": "Agent bibliothécaire",
@@ -1599,7 +1633,16 @@
         "search": "Rechercher des rapports...",
         "showing": "Affichage",
         "status": "STATUT",
-        "type": "TYPE"
+        "type": "TYPE",
+        "scheduled": "Planifié",
+        "manual": "Manuel",
+        "recent": "Récents",
+        "titles": "Titres",
+        "tmdb": "TMDB",
+        "subtitles": "Sous-titres",
+        "classification": "Classification",
+        "duplicates": "Doublons",
+        "noResults": "Aucun rapport correspondant trouvé"
       },
       "logs": {
         "title": "Logs d'exécution",
@@ -1745,7 +1788,19 @@
       },
       "auditTypes": {
         "daily_incremental": "quotidien incrémental",
-        "ai_agent": "Agent IA"
+        "ai_agent": "Agent IA",
+        "contentValidation": {
+          "name": "Validation du contenu",
+          "description": "Vérifier les métadonnées et l'intégrité du contenu"
+        },
+        "posterEnrichment": {
+          "name": "Enrichissement des affiches",
+          "description": "Mettre à jour les affiches et illustrations manquantes"
+        },
+        "classificationAudit": {
+          "name": "Audit de classification",
+          "description": "Examiner les classifications du contenu"
+        }
       },
       "kidsAudit": {
         "ageDistribution": "Répartition par âge",
@@ -1758,12 +1813,13 @@
         "subtitle": "Statut de modération du contenu",
         "title": "Santé du contenu enfants",
         "totalItems": "Total des éléments"
-      }
+      },
+      "itemsChecked": "éléments vérifiés"
     },
     "widgets": {
       "title": "Widgets",
       "subtitle": "Gérer les widgets flottants pour les flux en direct et les intégrations",
-      "newWidget": "Nouveau widget",
+      "newWidget": "Créer un nouveau widget",
       "editWidget": "Modifier le widget",
       "columns": {
         "title": "Titre",
@@ -1851,7 +1907,8 @@
       "total": "Total",
       "viewAll": "Voir tout",
       "viewAllTransactions": "Voir toutes les transactions",
-      "viewTransactions": "Transactions"
+      "viewTransactions": "Transactions",
+      "loadError": "Erreur de chargement des données de facturation"
     },
     "marketing": {
       "recentCampaigns": "Campagnes récentes",
@@ -2011,7 +2068,13 @@
         "targetLanguagesHelp": "Sélectionnez les langues vers lesquelles les utilisateurs peuvent traduire en temps réel"
       },
       "deleteChannel": "Supprimer la chaîne",
-      "editChannel": "Modifier la chaîne"
+      "editChannel": "Modifier la chaîne en direct",
+      "newChannel": "Nouvelle chaîne en direct",
+      "channelName": "Nom de la chaîne",
+      "streamUrl": "URL du flux (HLS/DASH)",
+      "epgSourceUrl": "URL de la source EPG (optionnel)",
+      "currentShow": "Émission Actuelle (optionnel)",
+      "order": "Ordre"
     },
     "radioStations": {
       "subtitle": "Gérer les stations radio",
@@ -2039,7 +2102,9 @@
       }
     },
     "podcastEpisodes": {
-      "subtitle": "Gérer les épisodes de podcast et métadonnées"
+      "subtitle": "Gérer les épisodes de podcast et métadonnées",
+      "newEpisode": "Nouvel épisode",
+      "editEpisode": "Modifier l'épisode"
     },
     "userDetail": {
       "subtitle": "Détails du compte utilisateur et historique d'activité"
@@ -2126,7 +2191,7 @@
       "firstPurchaseDesc": "S'applique uniquement aux utilisateurs effectuant leur premier achat",
       "firstPurchaseOnly": "Premier achat uniquement",
       "generate": "Générer",
-      "loadError": "Impossible de charger la campagne",
+      "loadError": "Erreur de chargement des campagnes",
       "maxDiscount": "Montant maximum de réduction ($)",
       "minimumPurchase": "Montant minimum d'achat ($)",
       "name": "Nom de la campagne",
@@ -2383,7 +2448,8 @@
       "send": "Envoyer maintenant",
       "confirmSend": "Envoyer la notification \"{{title}}\" ?",
       "confirmDelete": "Supprimer la notification \"{{title}}\" ?",
-      "fillRequired": "Veuillez remplir le titre et le corps"
+      "fillRequired": "Veuillez remplir le titre et le corps",
+      "editNotification": "Modifier la notification"
     },
     "audiobooks": {
       "confirmDelete": "Supprimer ce livre audio ?",
@@ -2408,7 +2474,15 @@
         "quality": "Qualité audio",
         "streamUrl": "URL de diffusion",
         "subscription": "Niveau d'abonnement",
-        "title": "Titre"
+        "title": "Titre",
+        "titlePlaceholder": "Titre du livre audio",
+        "authorPlaceholder": "Nom de l'auteur",
+        "narratorPlaceholder": "Nom du narrateur",
+        "descriptionPlaceholder": "Description du livre audio",
+        "durationPlaceholder": "HH:MM:SS",
+        "isbnPlaceholder": "Numéro ISBN",
+        "publisherPlaceholder": "Nom de l'éditeur",
+        "streamUrlPlaceholder": "https://..."
       },
       "loadError": "Impossible de charger les livres audio",
       "publish": {
@@ -2416,7 +2490,9 @@
         "publishConfirm": "La publication de ce livre audio le rendra visible à tous les utilisateurs.",
         "publishTitle": "Publier le livre audio",
         "unpublishTitle": "Dépublier",
-        "unpublishWarning": "Ce livre audio est actuellement publié et visible par les utilisateurs. La dépublication le masquera immédiatement."
+        "unpublishWarning": "Ce livre audio est actuellement publié et visible par les utilisateurs. La dépublication le masquera immédiatement.",
+        "missingFieldsFull": "Champs obligatoires manquants : titre, auteur, URL de streaming",
+        "missingFieldsShort": "Champs obligatoires manquants"
       },
       "subtitle": "Gérer la bibliothèque de livres audio",
       "upload": {
@@ -2426,8 +2502,20 @@
         "selectFile": "Sélectionner un fichier audio",
         "streamUrl": "URL de diffusion générée",
         "title": "Télécharger un fichier audio",
-        "tooLarge": "La taille du fichier dépasse la limite de 500 Mo"
-      }
+        "tooLarge": "La taille du fichier dépasse la limite de 500 Mo",
+        "fileTooLarge": "La taille du fichier dépasse la limite de 500 Mo",
+        "selectionRequired": "Fichier et sélection de livre audio requis",
+        "urlCopied": "URL copiée dans le presse-papiers"
+      },
+      "deleteError": "Erreur lors de la suppression du livre audio",
+      "sections": {
+        "audiobooks": "Livres audio",
+        "recommended": "Recommandés",
+        "newReleases": "Nouveautés",
+        "topRated": "Mieux notés",
+        "trending": "Tendances"
+      },
+      "selectSection": "Veuillez sélectionner une section"
     },
     "columns": {
       "author": "Auteur",
@@ -2631,7 +2719,12 @@
         "sttProvider": "Fournisseur de reconnaissance vocale",
         "supportVoice": "Voix du support",
         "translationProvider": "Fournisseur de traduction",
-        "voiceIds": "Identifiants de voix"
+        "voiceIds": "Identifiants de voix",
+        "saveSuccess": "Configuration vocale enregistrée avec succès",
+        "saveError": "Erreur lors de l'enregistrement de la configuration",
+        "testText": "Bonjour, ceci est un test vocal.",
+        "testSuccess": "Test vocal joué avec succès",
+        "testError": "Erreur lors du test vocal"
       },
       "quotas": {
         "dubbingLimits": "Limites de doublage",
@@ -2645,7 +2738,10 @@
       "settings": {
         "apiKeys": "Clés API",
         "webhookInfo": "Informations sur les webhooks",
-        "webhooks": "Webhooks"
+        "webhooks": "Webhooks",
+        "check": "Vérifier",
+        "healthy": "Fonctionnel",
+        "unhealthy": "Non fonctionnel"
       },
       "subtitle": "Sous-titre",
       "tabs": {
@@ -2655,7 +2751,13 @@
         "quotas": "Quotas",
         "settings": "Paramètres"
       },
-      "title": "Gestion vocale"
+      "title": "Gestion vocale",
+      "library": {
+        "previewText": "Bonjour, ceci est un aperçu de cette voix.",
+        "assignSuccess": "Voix assignée au rôle {{role}}",
+        "language": "Langue",
+        "assign": "Assigner"
+      }
     },
     "accessDenied": "Accès refusé",
     "costDashboard": {
@@ -2687,7 +2789,24 @@
       },
       "title": "Assistant d'importation"
     },
-    "noPermission": "Aucune autorisation"
+    "noPermission": "Aucune autorisation",
+    "kids": {
+      "loadingStats": "Chargement des statistiques du contenu enfants...",
+      "subtitle": "Gérer les sources de contenu enfants et la modération",
+      "seeded": "Initialisés",
+      "imported": "Importés",
+      "skipped": "Ignorés",
+      "totalContent": "Total Contenu Enfants",
+      "kidsPodcasts": "Podcasts Enfants",
+      "pendingReview": "En Attente de Révision",
+      "approved": "Approuvés",
+      "contentByCategory": "Contenu par Catégorie",
+      "contentActions": "Actions de Contenu",
+      "noCategory": "Sans catégorie",
+      "age": "Âge",
+      "approve": "Approuver",
+      "reject": "Rejeter"
+    }
   },
   "chatbot": {
     "title": "Assistant Bayit+",
@@ -2904,7 +3023,10 @@
     "signIn": "Se connecter",
     "thisContent": "Ce contenu",
     "website": "Site web",
-    "yesterday": "Hier"
+    "yesterday": "Hier",
+    "more": "plus",
+    "minutesShort": "min",
+    "notAvailable": "N/D"
   },
   "content": {
     "play": "Lire",
@@ -3171,9 +3293,12 @@
     "upcoming": "À venir",
     "previous": "Précédent",
     "now": "Maintenant",
-    "noProgramsScheduled": "Aucun programme prévu",
+    "noProgramsScheduled": "Aucun programme programmé",
     "noProgramsFound": "Aucun programme trouvé",
-    "noDataAvailable": "Aucune donnée du guide TV disponible"
+    "noDataAvailable": "Aucune donnée du guide TV disponible",
+    "scheduleUnavailable": "Le guide des programmes TV n'est actuellement pas disponible. Veuillez réessayer plus tard ou contacter le support si le problème persiste.",
+    "noProgramsAvailable": "Aucun programme disponible pour la plage horaire sélectionnée. Essayez d'ajuster vos filtres ou revenez plus tard.",
+    "loading": "Chargement du guide TV..."
   },
   "errors": {
     "networkError": "Erreur réseau",
@@ -3494,7 +3619,7 @@
   },
   "liveTV": {
     "title": "TV en direct",
-    "channels": "Chaînes",
+    "channels": "Chaînes TV en Direct",
     "nowPlaying": "En cours",
     "loadError": "Échec du chargement des chaînes",
     "categories": {
@@ -3504,7 +3629,8 @@
       "entertainment": "Divertissement",
       "kids": "Enfants",
       "documentary": "Documentaire"
-    }
+    },
+    "loadingChannels": "Chargement des chaînes..."
   },
   "login": {
     "title": "Bon retour",
@@ -3785,17 +3911,21 @@
     "title": "Podcasts",
     "episodes": "épisodes",
     "categories": {
-      "all": "Tout",
+      "all": "Tous",
       "general": "Général",
       "news": "Actualités",
       "politics": "Politique",
       "tech": "Tech",
-      "business": "Business",
+      "business": "Affaires",
       "jewish": "Juif",
       "entertainment": "Divertissement",
       "sports": "Sports",
       "history": "Histoire",
-      "educational": "Éducatif"
+      "educational": "Éducatif",
+      "technology": "Technologie",
+      "culture": "Culture",
+      "education": "Éducation",
+      "comedy": "Comédie"
     },
     "noPodcasts": "Aucun podcast disponible",
     "tryLater": "Réessayez plus tard",
@@ -3872,7 +4002,10 @@
       "downloadDescription": "Téléchargez des épisodes pour écouter sans connexion Internet.",
       "gotIt": "Compris"
     },
-    "loadingShows": "Chargement des émissions de podcast..."
+    "loadingShows": "Chargement des émissions de podcast...",
+    "loadError": "Échec du chargement des podcasts. Veuillez vérifier votre connexion.",
+    "loading": "Chargement des podcasts...",
+    "noPodcastsFound": "Aucun podcast trouvé"
   },
   "profile": {
     "complimentaryPremium": "ACCÈS PREMIUM GRATUIT",
@@ -4282,7 +4415,7 @@
   "search": {
     "title": "Rechercher",
     "subtitle": "Trouvez des films, séries, chaînes, radios et podcasts",
-    "placeholder": "Rechercher du contenu...",
+    "placeholder": "Rechercher...",
     "voicePlaceholder": "Parlez maintenant...",
     "searching": "Recherche en cours...",
     "listening": "Écoute...",
@@ -4304,7 +4437,24 @@
       "podcast": "Podcasts",
       "moviesAndSeries": "Films et Séries",
       "channels": "Chaînes",
-      "podcasts": "Podcasts"
+      "podcasts": "Podcasts",
+      "loading": "Chargement des filtres...",
+      "title": "Filtres Avancés",
+      "clearAll": "Tout Effacer",
+      "genres": "Genres",
+      "yearRange": "Période",
+      "decade1990s": "Années 90",
+      "decade2000s": "Années 2000",
+      "decade2010s": "Années 2010",
+      "decade2020s": "Années 2020",
+      "minimumRating": "Note Minimale",
+      "subtitleLanguages": "Langues des Sous-titres",
+      "searchOptions": "Options de Recherche",
+      "searchInSubtitles": "Rechercher dans le texte des sous-titres (dialogues)",
+      "contentRating": "Classification du Contenu",
+      "kidsOnly": "Contenu enfants uniquement",
+      "excludeKids": "Exclure le contenu enfants",
+      "allContent": "Tout le contenu"
     },
     "suggestions": {
       "trendingTitle": "Trending Searches",
@@ -4370,7 +4520,32 @@
       "retrySearch": "Réessayer la recherche",
       "somethingWrong": "Une erreur est survenue"
     },
-    "resultsTitle": "Résultats de recherche"
+    "resultsTitle": "Résultats de recherche",
+    "tryDifferentKeywords": "Essayez des mots-clés ou filtres différents",
+    "stopReading": "Arrêter la Lecture",
+    "readAllResults": "Lire Tous les Résultats",
+    "featured": "⭐ En Vedette",
+    "closedCaptions": "CC",
+    "kids": "👶 Enfants",
+    "readAloud": "Lire à Voix Haute",
+    "smartSearch": "Recherche Intelligente",
+    "premiumRequired": "Abonnement Premium requis pour la Recherche Intelligente",
+    "searchFailed": "La recherche a échoué",
+    "premiumFeature": "Fonctionnalité Premium",
+    "smartSearchDescription": "La Recherche Intelligente utilise l'IA pour comprendre les requêtes en langage naturel et trouver exactement ce que vous cherchez.",
+    "upgradeToPremium": "Passer à Premium",
+    "maybeLater": "Peut-être Plus Tard",
+    "smartSearchHint": "Posez votre question en langage naturel et l'IA trouvera ce que vous cherchez",
+    "smartSearchPlaceholder": "ex., 'Comédies israéliennes des années 90 avec sous-titres'",
+    "searchWithAI": "Rechercher avec l'IA",
+    "aiInterpretation": "Interprétation de l'IA :",
+    "confidence": "Confiance :",
+    "exampleQueries": "Exemples de Requêtes :",
+    "exampleQuery1": "Montrez-moi des films hébreux des années 80 avec sous-titres anglais",
+    "exampleQuery2": "Trouvez des comédies avec Sacha Baron Cohen",
+    "exampleQuery3": "Quels documentaires sur l'Holocauste sont disponibles ?",
+    "exampleQuery4": "Émissions pour enfants en hébreu pour les 5-7 ans",
+    "poweredByAI": "🤖 Propulsé par Claude AI. Les résultats peuvent varier selon l'interprétation de la requête."
   },
   "settings": {
     "title": "Paramètres",
@@ -4727,6 +4902,8 @@
   "trivia": {
     "didYouKnow": "Le Saviez-Vous?",
     "dismissHint": "Fermer l'anecdote",
+    "wantToKnowMore": "Vous voulez en savoir plus ?",
+    "followUpHint": "Appuyez pour voir un fait complémentaire qui approfondit cette histoire",
     "settings": {
       "displayLanguages": "Langues d'Affichage",
       "languageHint": "Sélectionnez 1-3 langues à afficher pour chaque fait",
@@ -6476,7 +6653,8 @@
       "radio": "Radio",
       "vod": "Vidéo",
       "custom": "Personnalisé",
-      "widget": "Widget"
+      "widget": "Widget",
+      "liveStream": "Flux en Direct"
     },
     "form": {
       "title": "Créer un widget",
@@ -6504,12 +6682,12 @@
       "cancel": "Annuler",
       "change": "Modifier",
       "errors": {
-        "contentRequired": "Veuillez sélectionner un contenu",
-        "iframeUrlRequired": "L'URL de l'iFrame est requise",
+        "contentRequired": "Veuillez sélectionner du contenu",
+        "iframeUrlRequired": "L'URL de l'iFrame est obligatoire",
         "nameExists": "Un widget avec ce nom existe déjà",
-        "titleRequired": "Le titre est requis"
+        "titleRequired": "Le titre est obligatoire"
       },
-      "validating": "Validation en cours..."
+      "validating": "Validation..."
     },
     "contentPicker": {
       "noContent": "Aucun contenu disponible",
@@ -6940,7 +7118,9 @@
     "connected": "Connecté",
     "connecting": "Connexion en cours",
     "connectionFailed": "Échec de la connexion",
-    "pleaseWait": "Veuillez patienter"
+    "pleaseWait": "Veuillez patienter",
+    "connect": "Connecter Audible",
+    "disconnect": "Déconnecter Audible"
   },
   "cancelled": {
     "description": "Votre paiement a été annulé.",

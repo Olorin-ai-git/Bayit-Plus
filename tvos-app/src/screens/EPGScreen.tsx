@@ -11,6 +11,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet, Image } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Clock, Tv } from 'lucide-react-native';
 import { api } from '@bayit/shared-services';
 import { TVHeader } from '../components/TVHeader';
@@ -40,6 +41,7 @@ const TIME_SLOTS = Array.from({ length: 24 }, (_, i) => {
 });
 
 export const EPGScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const { t } = useTranslation();
   const [selectedHour, setSelectedHour] = useState<string>('');
   const [focusedProgram, setFocusedProgram] = useState<string | null>(null);
 
@@ -120,7 +122,7 @@ export const EPGScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
                 {' - '}
                 {endTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
               </Text>
-              <Text style={styles.durationLabel}>{duration} min</Text>
+              <Text style={styles.durationLabel}>{duration} {t('common.minutesShort')}</Text>
             </View>
             {item.description && (
               <Text style={styles.programDescription} numberOfLines={2}>
@@ -133,7 +135,7 @@ export const EPGScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           {item.is_live && (
             <View style={styles.liveBadgeContainer}>
               <View style={styles.liveBadge} />
-              <Text style={styles.liveText}>LIVE</Text>
+              <Text style={styles.liveText}>{t('common.live')}</Text>
             </View>
           )}
         </View>
@@ -146,7 +148,7 @@ export const EPGScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <TVHeader currentScreen="epg" navigation={navigation} />
 
       <View style={styles.content}>
-        <Text style={styles.title}>TV Guide</Text>
+        <Text style={styles.title}>{t('epg.title')}</Text>
 
         {/* Time Slots */}
         <FlatList
@@ -161,7 +163,7 @@ export const EPGScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         {/* Program Grid */}
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Loading TV guide...</Text>
+            <Text style={styles.loadingText}>{t('epg.loading')}</Text>
           </View>
         ) : epgData && epgData.length > 0 ? (
           <FlatList
@@ -176,7 +178,7 @@ export const EPGScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         ) : (
           <View style={styles.emptyContainer}>
             <Tv size={64} color="rgba(255,255,255,0.3)" />
-            <Text style={styles.emptyText}>No programs scheduled</Text>
+            <Text style={styles.emptyText}>{t('epg.noProgramsScheduled')}</Text>
           </View>
         )}
       </View>

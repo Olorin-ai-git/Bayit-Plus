@@ -24,6 +24,8 @@ const initialState: TriviaState = {
   lastShownAt: null,
   shownFactIds: [],
   triviaCache: {},
+  activeChainId: null,
+  chainEngagementCount: 0,
 }
 
 export const useTriviaStore = create<TriviaStore>()(

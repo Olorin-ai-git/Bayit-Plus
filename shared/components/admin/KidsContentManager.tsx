@@ -144,7 +144,7 @@ export const KidsContentManager: React.FC = () => {
     return (
       <View className="flex-1 items-center justify-center bg-black/20 backdrop-blur-xl rounded-2xl p-6">
         <ActivityIndicator size="large" color="#3b82f6" />
-        <Text className="text-white mt-4">Loading kids content stats...</Text>
+        <Text className="text-white mt-4">{t('admin.kids.loadingStats')}</Text>
       </View>
     );
   }
@@ -158,7 +158,7 @@ export const KidsContentManager: React.FC = () => {
             {t('children.admin.stats', 'Kids Content Manager')}
           </Text>
           <Text className="text-gray-400 mt-2">
-            Manage kids content sources and moderation
+            {t('admin.kids.subtitle')}
           </Text>
         </View>
 
@@ -174,13 +174,13 @@ export const KidsContentManager: React.FC = () => {
           <View className="bg-green-500/20 border border-green-500 rounded-xl p-4 mb-4">
             <Text className="text-green-400 font-semibold">{actionResult.message}</Text>
             {actionResult.seeded !== undefined && (
-              <Text className="text-green-300 mt-1">Seeded: {actionResult.seeded}</Text>
+              <Text className="text-green-300 mt-1">{t('admin.kids.seeded')}: {actionResult.seeded}</Text>
             )}
             {actionResult.imported !== undefined && (
-              <Text className="text-green-300 mt-1">Imported: {actionResult.imported}</Text>
+              <Text className="text-green-300 mt-1">{t('admin.kids.imported')}: {actionResult.imported}</Text>
             )}
             {actionResult.skipped !== undefined && (
-              <Text className="text-green-300 mt-1">Skipped: {actionResult.skipped}</Text>
+              <Text className="text-green-300 mt-1">{t('admin.kids.skipped')}: {actionResult.skipped}</Text>
             )}
           </View>
         )}
@@ -189,28 +189,28 @@ export const KidsContentManager: React.FC = () => {
         {stats && (
           <View className="flex-row flex-wrap gap-4 mb-6">
             <View className="bg-black/20 backdrop-blur-xl rounded-xl p-4 min-w-[150px]">
-              <Text className="text-gray-400 text-sm">Total Kids Content</Text>
+              <Text className="text-gray-400 text-sm">{t('admin.kids.totalContent')}</Text>
               <Text className="text-3xl font-bold text-blue-400">
                 {stats.content_stats.total_kids_content}
               </Text>
             </View>
 
             <View className="bg-black/20 backdrop-blur-xl rounded-xl p-4 min-w-[150px]">
-              <Text className="text-gray-400 text-sm">Kids Podcasts</Text>
+              <Text className="text-gray-400 text-sm">{t('admin.kids.kidsPodcasts')}</Text>
               <Text className="text-3xl font-bold text-purple-400">
                 {stats.podcast_stats.total_kids_podcasts}
               </Text>
             </View>
 
             <View className="bg-black/20 backdrop-blur-xl rounded-xl p-4 min-w-[150px]">
-              <Text className="text-gray-400 text-sm">Pending Review</Text>
+              <Text className="text-gray-400 text-sm">{t('admin.kids.pendingReview')}</Text>
               <Text className="text-3xl font-bold text-yellow-400">
                 {stats.moderation.pending_review}
               </Text>
             </View>
 
             <View className="bg-black/20 backdrop-blur-xl rounded-xl p-4 min-w-[150px]">
-              <Text className="text-gray-400 text-sm">Approved</Text>
+              <Text className="text-gray-400 text-sm">{t('admin.kids.approved')}</Text>
               <Text className="text-3xl font-bold text-green-400">
                 {stats.moderation.approved}
               </Text>
@@ -221,7 +221,7 @@ export const KidsContentManager: React.FC = () => {
         {/* Category Distribution */}
         {stats && (
           <View className="bg-black/20 backdrop-blur-xl rounded-xl p-4 mb-6">
-            <Text className="text-white font-semibold mb-4">Content by Category</Text>
+            <Text className="text-white font-semibold mb-4">{t('admin.kids.contentByCategory')}</Text>
             <View className="flex-row flex-wrap gap-2">
               {Object.entries(stats.content_stats.by_category).map(([category, count]) => (
                 <View key={category} className="bg-black/30 rounded-lg px-3 py-2">
@@ -235,7 +235,7 @@ export const KidsContentManager: React.FC = () => {
 
         {/* Action Buttons */}
         <View className="bg-black/20 backdrop-blur-xl rounded-xl p-4 mb-6">
-          <Text className="text-white font-semibold mb-4">Content Actions</Text>
+          <Text className="text-white font-semibold mb-4">{t('admin.kids.contentActions')}</Text>
           <View className="flex-row flex-wrap gap-3">
             <TouchableOpacity
               className={`bg-blue-600 rounded-lg px-4 py-3 ${actionLoading === 'seed' ? 'opacity-50' : ''}`}
@@ -325,10 +325,10 @@ export const KidsContentManager: React.FC = () => {
                     <Text className="text-white font-medium">{item.title}</Text>
                     <View className="flex-row gap-2 mt-1">
                       <Text className="text-gray-400 text-xs">
-                        {item.category_name || 'No category'}
+                        {item.category_name || t('admin.kids.noCategory')}
                       </Text>
                       <Text className="text-gray-400 text-xs">
-                        Age: {item.age_rating || 'N/A'}
+                        {t('admin.kids.age')}: {item.age_rating || t('common.notAvailable')}
                       </Text>
                     </View>
                     {item.educational_tags && item.educational_tags.length > 0 && (
@@ -346,13 +346,13 @@ export const KidsContentManager: React.FC = () => {
                       className="bg-green-600 rounded-lg px-3 py-2"
                       onPress={() => handleApprove(item.id)}
                     >
-                      <Text className="text-white text-sm">Approve</Text>
+                      <Text className="text-white text-sm">{t('admin.kids.approve')}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       className="bg-red-600 rounded-lg px-3 py-2"
                       onPress={() => handleReject(item.id)}
                     >
-                      <Text className="text-white text-sm">Reject</Text>
+                      <Text className="text-white text-sm">{t('admin.kids.reject')}</Text>
                     </TouchableOpacity>
                   </View>
                 </View>

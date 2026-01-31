@@ -7,6 +7,7 @@
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Modal, ActivityIndicator } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface LLMSearchModalProps {
   visible: boolean;
@@ -15,11 +16,12 @@ interface LLMSearchModalProps {
   isPremium: boolean;
 }
 
-const EXAMPLE_QUERIES = [
-  "Show me Hebrew movies from the 1980s with English subtitles",
-  "Find comedies starring Sacha Baron Cohen",
-  "What documentaries about the Holocaust are available?",
-  "Kids shows in Hebrew for ages 5-7"
+// Example queries are now translated via t() keys
+const getExampleQueries = (t: any) => [
+  t('search.exampleQuery1'),
+  t('search.exampleQuery2'),
+  t('search.exampleQuery3'),
+  t('search.exampleQuery4')
 ];
 
 export function LLMSearchModal({
@@ -28,6 +30,7 @@ export function LLMSearchModal({
   onSearch,
   isPremium
 }: LLMSearchModalProps) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [interpretation, setInterpretation] = useState<any>(null);
@@ -55,9 +58,9 @@ export function LLMSearchModal({
 
       if (!response.ok) {
         if (response.status === 403) {
-          throw new Error('Premium subscription required for Smart Search');
+          throw new Error(t('search.premiumRequired'));
         }
-        throw new Error('Search failed');
+        throw new Error(t('search.searchFailed'));
       }
 
       const data = await response.json();
@@ -66,10 +69,10 @@ export function LLMSearchModal({
         setInterpretation(data.interpretation);
         onSearch(query, data);
       } else {
-        throw new Error(data.error || 'Search failed');
+        throw new Error(data.error || t('search.searchFailed'));
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to search');
+      setError(err.message || t('search.searchFailed'));
     } finally {
       setLoading(false);
     }
@@ -93,24 +96,24 @@ export function LLMSearchModal({
           <View className="bg-black/40 backdrop-blur-xl rounded-3xl border border-white/20 p-8 max-w-md">
             <Text className="text-6xl text-center mb-4">🔒</Text>
             <Text className="text-white text-2xl font-bold text-center mb-4">
-              Premium Feature
+              {t('search.premiumFeature')}
             </Text>
             <Text className="text-white/80 text-center mb-6">
-              Smart Search uses AI to understand natural language queries and find exactly what you're looking for.
+              {t('search.smartSearchDescription')}
             </Text>
             <TouchableOpacity
               onPress={handleClose}
               className="bg-yellow-500 px-6 py-4 rounded-full"
               activeOpacity={0.8}
             >
-              <Text className="text-black font-bold text-center text-lg">Upgrade to Premium</Text>
+              <Text className="text-black font-bold text-center text-lg">{t('search.upgradeToPremium')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleClose}
               className="mt-4"
               activeOpacity={0.7}
             >
-              <Text className="text-white/60 text-center">Maybe Later</Text>
+              <Text className="text-white/60 text-center">{t('search.maybeLater')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -126,7 +129,7 @@ export function LLMSearchModal({
           <View className="flex-row items-center justify-between px-6 py-4 border-b border-white/10">
             <View className="flex-row items-center gap-2">
               <Text className="text-2xl">🤖</Text>
-              <Text className="text-white text-xl font-bold">Smart Search</Text>
+              <Text className="text-white text-xl font-bold">{t('search.smartSearch')}</Text>
             </View>
             <TouchableOpacity
               onPress={handleClose}
@@ -140,7 +143,7 @@ export function LLMSearchModal({
           <ScrollView className="flex-1 px-6 py-4">
             {/* Description */}
             <Text className="text-white/80 text-base mb-4">
-              Ask in natural language and AI will find what you're looking for
+              {t('search.smartSearchHint')}
             </Text>
 
             {/* Query Input */}
@@ -148,7 +151,7 @@ export function LLMSearchModal({
               <TextInput
                 value={query}
                 onChangeText={setQuery}
-                placeholder="e.g., 'Israeli comedies from the 90s with subtitles'"
+                placeholder={t('search.smartSearchPlaceholder')}
                 placeholderTextColor="rgba(255, 255, 255, 0.4)"
                 multiline
                 numberOfLines={3}
@@ -170,7 +173,7 @@ export function LLMSearchModal({
               {loading ? (
                 <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text className="text-white font-bold text-center text-lg">Search with AI</Text>
+                <Text className="text-white font-bold text-center text-lg">{t('search.searchWithAI')}</Text>
               )}
             </TouchableOpacity>
 
@@ -184,10 +187,10 @@ export function LLMSearchModal({
             {/* Interpretation Display */}
             {interpretation && (
               <View className="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-4 mb-6">
-                <Text className="text-blue-300 font-semibold mb-2">AI Interpretation:</Text>
+                <Text className="text-blue-300 font-semibold mb-2">{t('search.aiInterpretation')}</Text>
                 <Text className="text-white/80 mb-3">{interpretation.text}</Text>
                 <View className="flex-row items-center gap-2">
-                  <Text className="text-white/60 text-sm">Confidence:</Text>
+                  <Text className="text-white/60 text-sm">{t('search.confidence')}</Text>
                   <View className="flex-1 h-2 bg-white/10 rounded-full overflow-hidden">
                     <View
                       className="h-full bg-blue-500"
@@ -200,8 +203,8 @@ export function LLMSearchModal({
             )}
 
             {/* Example Queries */}
-            <Text className="text-white font-semibold mb-3">Example Queries:</Text>
-            {EXAMPLE_QUERIES.map((example, idx) => (
+            <Text className="text-white font-semibold mb-3">{t('search.exampleQueries')}</Text>
+            {getExampleQueries(t).map((example, idx) => (
               <TouchableOpacity
                 key={idx}
                 onPress={() => handleExampleClick(example)}
@@ -215,7 +218,7 @@ export function LLMSearchModal({
             {/* Disclaimer */}
             <View className="bg-white/5 rounded-2xl p-4 mt-6">
               <Text className="text-white/60 text-xs text-center">
-                🤖 Powered by Claude AI. Results may vary based on query interpretation.
+                {t('search.poweredByAI')}
               </Text>
             </View>
           </ScrollView>

@@ -22,6 +22,7 @@ import { triviaStyles as styles } from './triviaStyles'
 interface TriviaOverlayProps {
   fact: TriviaFact | null
   onDismiss: () => void
+  onFollowUp?: () => void
   isRTL?: boolean
   accessibilityLabel?: string
   isTTSPlaying?: boolean
@@ -33,6 +34,7 @@ const useNativeDriver = Platform.OS !== 'web'
 export function TriviaOverlay({
   fact,
   onDismiss,
+  onFollowUp,
   isRTL = false,
   accessibilityLabel,
   isTTSPlaying = false,
@@ -133,7 +135,7 @@ export function TriviaOverlay({
       // @ts-ignore - Web-specific prop for keyboard focus
       {...(Platform.OS === 'web' ? { tabIndex: 0 } : {})}
     >
-      <TriviaCard fact={fact} onDismiss={onDismiss} isRTL={isRTL} />
+      <TriviaCard fact={fact} onDismiss={onDismiss} onFollowUp={onFollowUp} isRTL={isRTL} />
     </Animated.View>
   )
 }

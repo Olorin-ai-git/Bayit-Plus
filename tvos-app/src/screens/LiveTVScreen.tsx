@@ -12,6 +12,7 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet, Image } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { api } from '@bayit/shared-services';
 import { TVHeader } from '../components/TVHeader';
 import { queryKeys } from '../config/queryClient';
@@ -35,6 +36,7 @@ interface LiveTVScreenProps {
 }
 
 export const LiveTVScreen: React.FC<LiveTVScreenProps> = ({ navigation }) => {
+  const { t } = useTranslation();
   const [focusedChannel, setFocusedChannel] = useState<string | null>(null);
 
   // Fetch live channels
@@ -113,11 +115,11 @@ export const LiveTVScreen: React.FC<LiveTVScreenProps> = ({ navigation }) => {
 
       {/* Channel Grid */}
       <View style={styles.content}>
-        <Text style={styles.title}>Live TV Channels</Text>
+        <Text style={styles.title}>{t('liveTV.channels')}</Text>
 
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Loading channels...</Text>
+            <Text style={styles.loadingText}>{t('liveTV.loadingChannels')}</Text>
           </View>
         ) : (
           <FlatList

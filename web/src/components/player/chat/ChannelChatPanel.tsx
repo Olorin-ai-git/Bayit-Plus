@@ -104,6 +104,21 @@ export default function ChannelChatPanel({
     [sendMessage, resetAutoHide],
   )
 
+  // Prevent click events from propagating to video player
+  // But allow clicks on input elements to work normally
+  const handlePanelClick = useCallback((e: any) => {
+    // Don't stop propagation if clicking on input, textarea, or button elements
+    const target = e?.target
+    if (target && (
+      target.tagName === 'INPUT' ||
+      target.tagName === 'TEXTAREA' ||
+      target.tagName === 'BUTTON'
+    )) {
+      return
+    }
+    e?.stopPropagation?.()
+  }, [])
+
   if (!isChatVisible) return null
 
   if (error && !isConnected) {
@@ -112,6 +127,7 @@ export default function ChannelChatPanel({
         style={styles.panel}
         role="complementary"
         aria-label={t('channelChat.title')}
+        onClick={handlePanelClick}
       >
         <View style={styles.errorContainer}>
           <AlertTriangle size={24} color={colors.error.DEFAULT} />
@@ -131,7 +147,10 @@ export default function ChannelChatPanel({
   if (!isChatExpanded) {
     return (
       <Pressable
-        onPress={toggleChatExpanded}
+        onPress={(e) => {
+          e?.stopPropagation?.()
+          toggleChatExpanded()
+        }}
         style={styles.miniBar}
         accessibilityRole="button"
         accessibilityLabel={t('channelChat.title')}
@@ -151,6 +170,7 @@ export default function ChannelChatPanel({
       role="complementary"
       aria-label={t('channelChat.title')}
       onPointerMove={resetAutoHide}
+      onClick={handlePanelClick}
     >
       <ChannelChatHeader
         userCount={userCount}

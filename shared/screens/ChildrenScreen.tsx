@@ -224,9 +224,9 @@ export const ChildrenScreen: React.FC = () => {
           <Text className="text-[28px]">👶</Text>
         </View>
         <View>
-          <Text className="text-[42px] font-bold text-[#ffd93d]" style={{ textAlign }}>{t('children.title', 'ילדים')}</Text>
+          <Text className="text-[42px] font-bold text-[#ffd93d]" style={{ textAlign }}>{t('children.title')}</Text>
           <Text className="text-lg text-[#ffd93d]/70 mt-0.5" style={{ textAlign }}>
-            {content.length} {t('children.items', 'פריטים')}
+            {content.length} {t('children.items')}
           </Text>
         </View>
       </View>
@@ -269,8 +269,8 @@ export const ChildrenScreen: React.FC = () => {
           <View className="flex-1 justify-center items-center py-[60px]">
             <GlassView className="p-12 items-center bg-[#ffd93d]/10">
               <Text className="text-[64px] mb-4">🌈</Text>
-              <Text className="text-xl font-semibold text-[#ffd93d] mb-2" style={{ textAlign }}>{t('children.empty', 'אין תוכן זמין')}</Text>
-              <Text className="text-base text-[#ffd93d]/70" style={{ textAlign }}>{t('children.emptyHint', 'נסה קטגוריה אחרת')}</Text>
+              <Text className="text-xl font-semibold text-[#ffd93d] mb-2" style={{ textAlign }}>{t('children.empty')}</Text>
+              <Text className="text-base text-[#ffd93d]/70" style={{ textAlign }}>{t('children.emptyHint')}</Text>
             </GlassView>
           </View>
         }

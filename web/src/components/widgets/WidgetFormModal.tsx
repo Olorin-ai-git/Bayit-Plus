@@ -135,7 +135,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
         );
 
         if (result.exists) {
-          setError(t('widgets.form.errors.nameExists', 'A widget with this name already exists'));
+          setError(t('widgets.form.errors.nameExists'));
         }
       } catch (err) {
         logger.error('Failed to check widget name on blur', 'WidgetFormModal', err);
@@ -173,7 +173,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
   const validateForm = async (): Promise<boolean> => {
     // Check if title is provided
     if (!formState.title.trim()) {
-      setError(t('widgets.form.errors.titleRequired', 'Title is required'));
+      setError(t('widgets.form.errors.titleRequired'));
       return false;
     }
 
@@ -199,12 +199,12 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
 
     if (formState.content_type === 'iframe') {
       if (!formState.iframe_url.trim()) {
-        setError(t('widgets.form.errors.iframeUrlRequired', 'iFrame URL is required'));
+        setError(t('widgets.form.errors.iframeUrlRequired'));
         return false;
       }
     } else {
       if (!formState.content_id) {
-        setError(t('widgets.form.errors.contentRequired', 'Please select content'));
+        setError(t('widgets.form.errors.contentRequired'));
         return false;
       }
     }
@@ -331,7 +331,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                 {selectedContent ? (
                   <View style={[styles.selectedContent, { flexDirection }]}>
                     <Text style={styles.selectedContentText}>
-                      {t('common.selected', 'Selected')}: {selectedContent.title}
+                      {t('common.selected')}: {selectedContent.title}
                     </Text>
                     <Pressable
                       style={styles.changeButton}
@@ -486,7 +486,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
               saving
                 ? t('widgets.form.saving')
                 : validatingName
-                ? t('widgets.form.validating', 'Validating...')
+                ? t('widgets.form.validating')
                 : t('widgets.form.saveWidget')
             }
             variant="primary"

@@ -80,6 +80,21 @@ export default function GlassChatSidebar({
 
   const positionStyle = isRTL ? { left: 0 } : { right: 0 }
 
+  // Prevent click events from propagating to video player
+  // But allow clicks on input elements to work normally
+  const handleSidebarClick = useCallback((e: any) => {
+    // Don't stop propagation if clicking on input, textarea, or button elements
+    const target = e?.target
+    if (target && (
+      target.tagName === 'INPUT' ||
+      target.tagName === 'TEXTAREA' ||
+      target.tagName === 'BUTTON'
+    )) {
+      return
+    }
+    e?.stopPropagation?.()
+  }, [])
+
   return (
     <>
       {/* Semi-transparent backdrop */}
@@ -101,6 +116,7 @@ export default function GlassChatSidebar({
           positionStyle,
           translateStyle,
         ]}
+        onClick={handleSidebarClick}
       >
         {/* Close button */}
         <Pressable

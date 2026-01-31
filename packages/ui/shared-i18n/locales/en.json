@@ -210,7 +210,9 @@
       },
       "testFailed": "Failed to send test email",
       "testSent": "Test email sent",
-      "title": "Email Campaigns"
+      "title": "Email Campaigns",
+      "loadError": "Failed to load email campaigns",
+      "comingSoon": "Create email campaign coming soon"
     },
     "campaignEdit": {
       "subtitle": "Edit campaign details and settings"
@@ -228,7 +230,8 @@
       "subscriptions": "Subscriptions",
       "recentActivity": "Recent Activity",
       "quickActions": "Quick Actions",
-      "noRecentActivity": "No recent activity"
+      "noRecentActivity": "No recent activity",
+      "loadError": "Failed to load dashboard data"
     },
     "common": {
       "all": "All",
@@ -449,7 +452,15 @@
       "notesLabel": "Admin notes",
       "subtitleDayInput": "Subtitle minutes per day",
       "subtitleHourInput": "Subtitle minutes per hour",
-      "subtitleMonthInput": "Subtitle minutes per month"
+      "subtitleMonthInput": "Subtitle minutes per month",
+      "hour": "Hour",
+      "day": "Day",
+      "month": "Month",
+      "minutes": "min",
+      "saved": "saved",
+      "loadError": "Failed to load quota data",
+      "saveError": "Failed to save limits",
+      "resetError": "Failed to reset quota"
     },
     "featured": {
       "title": "Featured Content",
@@ -824,7 +835,9 @@
       "createSuccess": "Category created",
       "deleteCategory": "Delete Category",
       "editCategory": "Edit Category",
-      "updateSuccess": "Category updated"
+      "updateSuccess": "Category updated",
+      "active": "Active",
+      "inactive": "Inactive"
     },
     "recordings": {
       "title": "Recordings Management",
@@ -841,7 +854,9 @@
       "deleteFailed": "Failed to delete recording",
       "loadFailed": "Failed to load recordings",
       "noRecordings": "No Recordings Found",
-      "noRecordingsHint": "No user recordings in the system yet."
+      "noRecordingsHint": "No user recordings in the system yet.",
+      "live": "LIVE",
+      "offline": "OFFLINE"
     },
     "uploads": {
       "title": "Upload Management",
@@ -946,7 +961,9 @@
         "status": "Status",
         "successful": "Successful",
         "total": "Total",
-        "uploadCancelled": "Upload Cancelled"
+        "uploadCancelled": "Upload Cancelled",
+        "folderNamePlaceholder": "e.g., Movies Import",
+        "folderPathPlaceholder": "/path/to/folder"
       },
       "urlUpload": {
         "title": "Import from URL",
@@ -1256,6 +1273,9 @@
         "contentType": "Content Type",
         "enabled": "Enabled",
         "autoUpload": "Auto Upload"
+      },
+      "dropZone": {
+        "filesRejected": "{{count}} file(s) rejected"
       }
     },
     "librarian": {
@@ -1463,7 +1483,16 @@
         "search": "Search reports...",
         "showing": "Showing",
         "status": "STATUS",
-        "type": "TYPE"
+        "type": "TYPE",
+        "scheduled": "Scheduled",
+        "manual": "Manual",
+        "recent": "Recent",
+        "titles": "Titles",
+        "tmdb": "TMDB",
+        "subtitles": "Subtitles",
+        "classification": "Classification",
+        "duplicates": "Duplicates",
+        "noResults": "No matching reports found"
       },
       "logs": {
         "title": "Execution Logs",
@@ -1609,7 +1638,19 @@
       },
       "auditTypes": {
         "daily_incremental": "daily incremental",
-        "ai_agent": "AI Agent"
+        "ai_agent": "AI Agent",
+        "contentValidation": {
+          "name": "Content Validation",
+          "description": "Verify metadata and content integrity"
+        },
+        "posterEnrichment": {
+          "name": "Poster Enrichment",
+          "description": "Update missing posters and artwork"
+        },
+        "classificationAudit": {
+          "name": "Classification Audit",
+          "description": "Review content classifications"
+        }
       },
       "kidsAudit": {
         "ageDistribution": "Age Rating Distribution",
@@ -1622,12 +1663,13 @@
         "subtitle": "Content moderation status",
         "title": "Kids Content Health",
         "totalItems": "Total Items"
-      }
+      },
+      "itemsChecked": "items checked"
     },
     "widgets": {
       "title": "Widgets",
       "subtitle": "Manage floating overlay widgets for live streams and embeds",
-      "newWidget": "New Widget",
+      "newWidget": "Create new widget",
       "editWidget": "Edit Widget",
       "columns": {
         "title": "Title",
@@ -1715,7 +1757,8 @@
       "total": "Total",
       "viewAll": "View All",
       "viewAllTransactions": "View all transactions",
-      "viewTransactions": "Transactions"
+      "viewTransactions": "Transactions",
+      "loadError": "Failed to load billing data"
     },
     "marketing": {
       "recentCampaigns": "Recent Campaigns",
@@ -1875,7 +1918,13 @@
         "targetLanguagesHelp": "Select which languages users can translate to in real-time"
       },
       "deleteChannel": "Delete Channel",
-      "editChannel": "Edit Channel"
+      "editChannel": "Edit Live Channel",
+      "newChannel": "New Live Channel",
+      "channelName": "Channel name",
+      "streamUrl": "Stream URL (HLS/DASH)",
+      "epgSourceUrl": "EPG Source URL (optional)",
+      "currentShow": "Current Show (optional)",
+      "order": "Order"
     },
     "radioStations": {
       "subtitle": "Manage radio stations",
@@ -1942,10 +1991,26 @@
       "translate": "Translate",
       "editTitle": "Edit Title",
       "newTitle": "New Title",
-      "toggleFeatured": "Toggle Featured"
+      "toggleFeatured": "Toggle Featured",
+      "titleRequired": "Title is required",
+      "audioUrlRequired": "Audio URL is required",
+      "episodeTitlePlaceholder": "Episode title",
+      "descriptionPlaceholder": "Description",
+      "episodeNumberPlaceholder": "Episode number",
+      "durationPlaceholder": "Duration (e.g., 45:30)",
+      "audioUrlPlaceholder": "Audio URL (required)",
+      "publishedDatePlaceholder": "Published Date (YYYY-MM-DD)",
+      "pasteImageUrl": "Or paste image URL",
+      "podcastTitlePlaceholder": "Podcast title",
+      "authorPlaceholder": "Author",
+      "categoryPlaceholder": "Category",
+      "rssFeedUrlPlaceholder": "RSS Feed URL",
+      "websiteUrlPlaceholder": "Website URL (optional)"
     },
     "podcastEpisodes": {
-      "subtitle": "Manage podcast episodes and metadata"
+      "subtitle": "Manage podcast episodes and metadata",
+      "newEpisode": "New Episode",
+      "editEpisode": "Edit Episode"
     },
     "translation": {
       "title": "Translation Dashboard",
@@ -2186,7 +2251,7 @@
       "firstPurchaseDesc": "Only applies to users making their first purchase",
       "firstPurchaseOnly": "First Purchase Only",
       "generate": "Generate",
-      "loadError": "Failed to load campaign",
+      "loadError": "Failed to load campaigns",
       "maxDiscount": "Maximum Discount Amount ($)",
       "minimumPurchase": "Minimum Purchase Amount ($)",
       "name": "Campaign Name",
@@ -2443,7 +2508,8 @@
       "send": "Send Now",
       "confirmSend": "Send notification \"{{title}}\"?",
       "confirmDelete": "Delete notification \"{{title}}\"?",
-      "fillRequired": "Please fill in title and body"
+      "fillRequired": "Please fill in title and body",
+      "editNotification": "Edit Notification"
     },
     "diagnostics": {
       "title": "System Diagnostics",
@@ -2494,7 +2560,15 @@
         "quality": "Audio Quality",
         "streamUrl": "Stream URL",
         "subscription": "Subscription Tier",
-        "title": "Title"
+        "title": "Title",
+        "titlePlaceholder": "Audiobook title",
+        "authorPlaceholder": "Author name",
+        "narratorPlaceholder": "Narrator name",
+        "descriptionPlaceholder": "Audiobook description",
+        "durationPlaceholder": "HH:MM:SS",
+        "isbnPlaceholder": "ISBN number",
+        "publisherPlaceholder": "Publisher name",
+        "streamUrlPlaceholder": "https://..."
       },
       "loadError": "Failed to load audiobooks",
       "publish": {
@@ -2502,7 +2576,9 @@
         "publishConfirm": "Publishing this audiobook will make it visible to all users.",
         "publishTitle": "Publish Audiobook",
         "unpublishTitle": "Unpublish",
-        "unpublishWarning": "This audiobook is currently published and visible to users. Unpublishing will hide it immediately."
+        "unpublishWarning": "This audiobook is currently published and visible to users. Unpublishing will hide it immediately.",
+        "missingFieldsFull": "Missing required fields: title, author, stream URL",
+        "missingFieldsShort": "Missing required fields"
       },
       "subtitle": "Manage audiobook library",
       "upload": {
@@ -2512,8 +2588,20 @@
         "selectFile": "Select Audio File",
         "streamUrl": "Stream URL Generated",
         "title": "Upload Audio File",
-        "tooLarge": "File size exceeds 500MB limit"
-      }
+        "tooLarge": "File size exceeds 500MB limit",
+        "fileTooLarge": "File size exceeds 500MB limit",
+        "selectionRequired": "File and audiobook selection required",
+        "urlCopied": "URL copied to clipboard"
+      },
+      "deleteError": "Failed to delete audiobook",
+      "sections": {
+        "audiobooks": "Audiobooks",
+        "recommended": "Recommended",
+        "newReleases": "New Releases",
+        "topRated": "Top Rated",
+        "trending": "Trending"
+      },
+      "selectSection": "Please select a section"
     },
     "columns": {
       "author": "Author",
@@ -2717,7 +2805,12 @@
         "sttProvider": "STT Provider",
         "supportVoice": "Support Voice",
         "translationProvider": "Translation Provider",
-        "voiceIds": "Voice IDs"
+        "voiceIds": "Voice IDs",
+        "saveSuccess": "Voice configuration saved successfully",
+        "saveError": "Failed to save configuration",
+        "testText": "Hello, this is a voice test.",
+        "testSuccess": "Voice test played successfully",
+        "testError": "Failed to test voice"
       },
       "quotas": {
         "dubbingLimits": "Dubbing Limits",
@@ -2731,7 +2824,10 @@
       "settings": {
         "apiKeys": "API Keys",
         "webhookInfo": "Webhook Information",
-        "webhooks": "Webhooks"
+        "webhooks": "Webhooks",
+        "check": "Check",
+        "healthy": "Healthy",
+        "unhealthy": "Unhealthy"
       },
       "subtitle": "Manage voice synthesis, analytics, quotas and settings",
       "tabs": {
@@ -2741,7 +2837,13 @@
         "quotas": "Quotas",
         "settings": "Settings"
       },
-      "title": "Voice Management"
+      "title": "Voice Management",
+      "library": {
+        "previewText": "Hello, this is a preview of this voice.",
+        "assignSuccess": "Voice assigned to {{role}} role",
+        "language": "Language",
+        "assign": "Assign"
+      }
     },
     "accessDenied": "Access Denied",
     "costDashboard": {
@@ -2773,7 +2875,24 @@
       },
       "title": "Title"
     },
-    "noPermission": "No Permission"
+    "noPermission": "No Permission",
+    "kids": {
+      "loadingStats": "Loading kids content stats...",
+      "subtitle": "Manage kids content sources and moderation",
+      "seeded": "Seeded",
+      "imported": "Imported",
+      "skipped": "Skipped",
+      "totalContent": "Total Kids Content",
+      "kidsPodcasts": "Kids Podcasts",
+      "pendingReview": "Pending Review",
+      "approved": "Approved",
+      "contentByCategory": "Content by Category",
+      "contentActions": "Content Actions",
+      "noCategory": "No category",
+      "age": "Age",
+      "approve": "Approve",
+      "reject": "Reject"
+    }
   },
   "audiobooks": {
     "audiobook": "Audiobook",
@@ -3427,7 +3546,10 @@
     "series": "Series",
     "signIn": "Sign In",
     "website": "Website",
-    "yesterday": "Yesterday"
+    "yesterday": "Yesterday",
+    "more": "more",
+    "minutesShort": "min",
+    "notAvailable": "N/A"
   },
   "components": {
     "select": {
@@ -3783,7 +3905,10 @@
     "noProgramsScheduled": "No programs scheduled",
     "noProgramsFound": "No Programs Found",
     "noDataAvailable": "No TV Guide Data Available",
-    "live": "LIVE"
+    "live": "LIVE",
+    "scheduleUnavailable": "The TV programming schedule is currently unavailable. Please check back later or contact support if this persists.",
+    "noProgramsAvailable": "No programs are available for the selected time range. Try adjusting your filters or check back later.",
+    "loading": "Loading TV guide..."
   },
   "errors": {
     "networkError": "Network Error",
@@ -4383,7 +4508,7 @@
   },
   "liveTV": {
     "title": "Live TV",
-    "channels": "Channels",
+    "channels": "Live TV Channels",
     "nowPlaying": "Now Playing",
     "loadError": "Failed to load channels",
     "categories": {
@@ -4393,7 +4518,8 @@
       "entertainment": "Entertainment",
       "kids": "Kids",
       "documentary": "Documentary"
-    }
+    },
+    "loadingChannels": "Loading channels..."
   },
   "login": {
     "title": "Welcome Back",
@@ -4796,7 +4922,11 @@
       "entertainment": "Entertainment",
       "sports": "Sports",
       "history": "History",
-      "educational": "Educational"
+      "educational": "Educational",
+      "technology": "Technology",
+      "culture": "Culture",
+      "education": "Education",
+      "comedy": "Comedy"
     },
     "noPodcasts": "No podcasts available",
     "tryLater": "Try again later",
@@ -4841,7 +4971,10 @@
       "downloadDescription": "Download episodes to listen without internet connection.",
       "gotIt": "Got it"
     },
-    "loadingShows": "Loading podcast shows..."
+    "loadingShows": "Loading podcast shows...",
+    "loadError": "Failed to load podcasts. Please check your connection.",
+    "loading": "Loading podcasts...",
+    "noPodcastsFound": "No podcasts found"
   },
   "profile": {
     "title": "My Profile",
@@ -5286,7 +5419,7 @@
   "search": {
     "title": "Search",
     "subtitle": "Find movies, series, channels, radio stations and podcasts",
-    "placeholder": "Search for content...",
+    "placeholder": "Search...",
     "voicePlaceholder": "Speak now...",
     "searching": "Searching...",
     "listening": "Listening...",
@@ -5308,7 +5441,24 @@
       "podcast": "Podcasts",
       "moviesAndSeries": "Movies & Series",
       "channels": "Channels",
-      "podcasts": "Podcasts"
+      "podcasts": "Podcasts",
+      "loading": "Loading filters...",
+      "title": "Advanced Filters",
+      "clearAll": "Clear All",
+      "genres": "Genres",
+      "yearRange": "Year Range",
+      "decade1990s": "1990s",
+      "decade2000s": "2000s",
+      "decade2010s": "2010s",
+      "decade2020s": "2020s",
+      "minimumRating": "Minimum Rating",
+      "subtitleLanguages": "Subtitle Languages",
+      "searchOptions": "Search Options",
+      "searchInSubtitles": "Search in subtitle text (dialogue)",
+      "contentRating": "Content Rating",
+      "kidsOnly": "Kids content only",
+      "excludeKids": "Exclude kids content",
+      "allContent": "All content"
     },
     "suggestions": {
       "trendingTitle": "Trending Searches",
@@ -5373,7 +5523,32 @@
       "retrySearch": "Retry Search",
       "somethingWrong": "Something Wrong"
     },
-    "resultsTitle": "Search Results"
+    "resultsTitle": "Search Results",
+    "tryDifferentKeywords": "Try different keywords or filters",
+    "stopReading": "Stop Reading",
+    "readAllResults": "Read All Results",
+    "featured": "⭐ Featured",
+    "closedCaptions": "CC",
+    "kids": "👶 Kids",
+    "readAloud": "Read Aloud",
+    "smartSearch": "Smart Search",
+    "premiumRequired": "Premium subscription required for Smart Search",
+    "searchFailed": "Search failed",
+    "premiumFeature": "Premium Feature",
+    "smartSearchDescription": "Smart Search uses AI to understand natural language queries and find exactly what you're looking for.",
+    "upgradeToPremium": "Upgrade to Premium",
+    "maybeLater": "Maybe Later",
+    "smartSearchHint": "Ask in natural language and AI will find what you're looking for",
+    "smartSearchPlaceholder": "e.g., 'Israeli comedies from the 90s with subtitles'",
+    "searchWithAI": "Search with AI",
+    "aiInterpretation": "AI Interpretation:",
+    "confidence": "Confidence:",
+    "exampleQueries": "Example Queries:",
+    "exampleQuery1": "Show me Hebrew movies from the 1980s with English subtitles",
+    "exampleQuery2": "Find comedies starring Sacha Baron Cohen",
+    "exampleQuery3": "What documentaries about the Holocaust are available?",
+    "exampleQuery4": "Kids shows in Hebrew for ages 5-7",
+    "poweredByAI": "🤖 Powered by Claude AI. Results may vary based on query interpretation."
   },
   "settings": {
     "title": "Settings",
@@ -5802,6 +5977,8 @@
   "trivia": {
     "didYouKnow": "Did You Know?",
     "dismissHint": "Tap to dismiss this trivia fact",
+    "wantToKnowMore": "Want to know more?",
+    "followUpHint": "Tap to see a follow-up fact that dives deeper into this story",
     "settings": {
       "title": "Trivia & Fun Facts",
       "enabled": "Show Trivia",
@@ -6124,7 +6301,8 @@
       "radio": "Radio",
       "vod": "Video",
       "custom": "Custom",
-      "widget": "Widget"
+      "widget": "Widget",
+      "liveStream": "Live Stream"
     },
     "form": {
       "title": "Create Widget",
@@ -6175,7 +6353,7 @@
     },
     "delete": "Delete",
     "hide": "Hide",
-    "resetPosition": "Reset Position"
+    "resetPosition": "Reset position"
   },
   "youngsters": {
     "title": "Youngsters",
@@ -6275,7 +6453,9 @@
     "connected": "Connected",
     "connecting": "Connecting",
     "connectionFailed": "Connection Failed",
-    "pleaseWait": "Please Wait"
+    "pleaseWait": "Please Wait",
+    "connect": "Connect Audible",
+    "disconnect": "Disconnect Audible"
   },
   "beta": {
     "credits": {

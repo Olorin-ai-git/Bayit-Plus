@@ -57,7 +57,9 @@
   "admin": {
     "title": "管理者",
     "subtitle": "管理パネル",
-    "dashboard": "ダッシュボード",
+    "dashboard": {
+      "loadError": "ダッシュボードデータの読み込みに失敗しました"
+    },
     "users": "ユーザー",
     "content": {
       "title": "コンテンツ",
@@ -416,14 +418,18 @@
     "broadcasts": "配信",
     "moderation": "モデレーション",
     "support": "サポート",
-    "billing": "請求",
+    "billing": {
+      "loadError": "請求データの読み込みに失敗しました"
+    },
     "subscriptions": "サブスクリプション",
     "payments": "支払い",
     "invoices": "請求書",
     "refunds": "返金",
     "promotions": "プロモーション",
     "coupons": "クーポン",
-    "campaigns": "キャンペーン",
+    "campaigns": {
+      "loadError": "キャンペーンの読み込みに失敗しました"
+    },
     "integrations": "統合",
     "api": "API",
     "webhooks": "Webhook",
@@ -519,7 +525,21 @@
       },
       "editTitle": "タイトルを編集",
       "newTitle": "新しいタイトル",
-      "toggleFeatured": "おすすめを切り替え"
+      "toggleFeatured": "おすすめを切り替え",
+      "titleRequired": "タイトルは必須です",
+      "audioUrlRequired": "音声URLは必須です",
+      "episodeTitlePlaceholder": "エピソードタイトル",
+      "descriptionPlaceholder": "説明",
+      "episodeNumberPlaceholder": "エピソード番号",
+      "durationPlaceholder": "再生時間（例：45:30）",
+      "audioUrlPlaceholder": "音声URL（必須）",
+      "publishedDatePlaceholder": "公開日（YYYY-MM-DD）",
+      "pasteImageUrl": "または画像URLを貼り付け",
+      "podcastTitlePlaceholder": "ポッドキャストタイトル",
+      "authorPlaceholder": "著者",
+      "categoryPlaceholder": "カテゴリー",
+      "rssFeedUrlPlaceholder": "RSSフィードURL",
+      "websiteUrlPlaceholder": "ウェブサイトURL（オプション）"
     },
     "nav": {
       "diagnostics": "システム診断",
@@ -798,7 +818,9 @@
         "totalFiles": "ファイル合計",
         "uploadCancelled": "アップロードがキャンセルされました",
         "uploadMode": "アップロードモード",
-        "validFiles": "有効なファイル"
+        "validFiles": "有効なファイル",
+        "folderNamePlaceholder": "例：映画インポート",
+        "folderPathPlaceholder": "/パス/フォルダ"
       },
       "urlUpload": {
         "title": "URLからインポート",
@@ -1017,7 +1039,10 @@
       "recentCompleted": "最近の完了",
       "resumeQueue": "再開",
       "skipped": "スキップ",
-      "totalJobs": "合計"
+      "totalJobs": "合計",
+      "dropZone": {
+        "filesRejected": "{{count}}件のファイルが拒否されました"
+      }
     },
     "librarian": {
       "title": "ライブラリアンエージェント",
@@ -1223,7 +1248,16 @@
         "search": "レポートを検索...",
         "showing": "表示中",
         "status": "ステータス",
-        "type": "タイプ"
+        "type": "タイプ",
+        "scheduled": "スケジュール済み",
+        "manual": "手動",
+        "recent": "最近",
+        "titles": "タイトル",
+        "tmdb": "TMDB",
+        "subtitles": "字幕",
+        "classification": "分類",
+        "duplicates": "重複",
+        "noResults": "一致するレポートが見つかりません"
       },
       "logs": {
         "title": "実行ログ",
@@ -1369,7 +1403,19 @@
       },
       "auditTypes": {
         "daily_incremental": "デイリー増分",
-        "ai_agent": "AIエージェント"
+        "ai_agent": "AIエージェント",
+        "contentValidation": {
+          "name": "コンテンツ検証",
+          "description": "メタデータとコンテンツの整合性を確認"
+        },
+        "posterEnrichment": {
+          "name": "ポスター補強",
+          "description": "不足しているポスターとアートワークを更新"
+        },
+        "classificationAudit": {
+          "name": "分類監査",
+          "description": "コンテンツ分類を確認"
+        }
       },
       "kidsAudit": {
         "ageDistribution": "年齢レーティング分布",
@@ -1382,12 +1428,13 @@
         "subtitle": "コンテンツモデレーションステータス",
         "title": "キッズコンテンツ健全性",
         "totalItems": "合計アイテム数"
-      }
+      },
+      "itemsChecked": "確認済みアイテム"
     },
     "widgets": {
       "title": "ウィジェット",
       "subtitle": "ライブストリームと埋め込み用のフローティングオーバーレイウィジェットを管理",
-      "newWidget": "新規ウィジェット",
+      "newWidget": "新しいウィジェットを作成",
       "editWidget": "ウィジェットを編集",
       "columns": {
         "title": "タイトル",
@@ -1550,7 +1597,9 @@
       "createSuccess": "カテゴリが作成されました",
       "deleteCategory": "カテゴリを削除",
       "editCategory": "カテゴリを編集",
-      "updateSuccess": "カテゴリが更新されました"
+      "updateSuccess": "カテゴリが更新されました",
+      "active": "アクティブ",
+      "inactive": "非アクティブ"
     },
     "recordings": {
       "title": "録画管理",
@@ -1567,7 +1616,9 @@
       "deleteFailed": "録画の削除に失敗しました",
       "loadFailed": "録画の読み込みに失敗しました",
       "noRecordings": "録画が見つかりません",
-      "noRecordingsHint": "システムにユーザー録画はまだありません。"
+      "noRecordingsHint": "システムにユーザー録画はまだありません。",
+      "live": "ライブ",
+      "offline": "オフライン"
     },
     "contentEditor": {
       "subtitle": "コンテンツのメタデータと情報を編集",
@@ -1613,7 +1664,13 @@
         "targetLanguagesHelp": "ユーザーがリアルタイムで翻訳できる言語を選択"
       },
       "deleteChannel": "チャンネルを削除",
-      "editChannel": "チャンネルを編集"
+      "editChannel": "ライブチャンネルを編集",
+      "newChannel": "新しいライブチャンネル",
+      "channelName": "チャンネル名",
+      "streamUrl": "ストリームURL（HLS/DASH）",
+      "epgSourceUrl": "EPGソースURL（オプション）",
+      "currentShow": "現在の番組（オプション）",
+      "order": "順序"
     },
     "radioStations": {
       "subtitle": "ラジオ局を管理",
@@ -1641,7 +1698,9 @@
       }
     },
     "podcastEpisodes": {
-      "subtitle": "ポッドキャストエピソードとメタデータを管理"
+      "subtitle": "ポッドキャストエピソードとメタデータを管理",
+      "newEpisode": "新しいエピソード",
+      "editEpisode": "エピソードを編集"
     },
     "userDetail": {
       "subtitle": "ユーザーアカウントの詳細とアクティビティ履歴"
@@ -1771,7 +1830,8 @@
       "send": "今すぐ送信",
       "confirmSend": "通知\"{{title}}\"を送信しますか？",
       "confirmDelete": "通知\"{{title}}\"を削除しますか？",
-      "fillRequired": "タイトルと本文を入力してください"
+      "fillRequired": "タイトルと本文を入力してください",
+      "editNotification": "通知を編集"
     },
     "backToApp": "アプリに戻る",
     "emailCampaigns": {
@@ -1844,7 +1904,9 @@
         "total": "合計"
       },
       "testFailed": "テストメールの送信に失敗しました",
-      "testSent": "テストメールが送信されました"
+      "testSent": "テストメールが送信されました",
+      "loadError": "メールキャンペーンの読み込みに失敗しました",
+      "comingSoon": "メールキャンペーン作成は近日公開"
     },
     "campaignEdit": {
       "title": "キャンペーンを編集",
@@ -2047,7 +2109,15 @@
       "notesLabel": "管理者メモ",
       "subtitleDayInput": "1日あたりの字幕分数",
       "subtitleHourInput": "1時間あたりの字幕分数",
-      "subtitleMonthInput": "1ヶ月あたりの字幕分数"
+      "subtitleMonthInput": "1ヶ月あたりの字幕分数",
+      "hour": "時間",
+      "day": "日",
+      "month": "月",
+      "minutes": "分",
+      "saved": "保存済み",
+      "loadError": "クォータデータの読み込みに失敗しました",
+      "saveError": "制限の保存に失敗しました",
+      "resetError": "クォータのリセットに失敗しました"
     },
     "brand": {
       "title": "Bayit+ 管理画面",
@@ -2076,7 +2146,15 @@
         "quality": "音質",
         "streamUrl": "ストリームURL",
         "subscription": "サブスクリプションティア",
-        "title": "タイトル"
+        "title": "タイトル",
+        "titlePlaceholder": "オーディオブックのタイトル",
+        "authorPlaceholder": "著者名",
+        "narratorPlaceholder": "ナレーター名",
+        "descriptionPlaceholder": "オーディオブックの説明",
+        "durationPlaceholder": "時:分:秒",
+        "isbnPlaceholder": "ISBN番号",
+        "publisherPlaceholder": "出版社名",
+        "streamUrlPlaceholder": "https://..."
       },
       "loadError": "オーディオブックの読み込みに失敗しました",
       "publish": {
@@ -2084,7 +2162,9 @@
         "publishConfirm": "このオーディオブックを公開すると、すべてのユーザーに表示されます。",
         "publishTitle": "オーディオブックを公開",
         "unpublishTitle": "非公開にする",
-        "unpublishWarning": "このオーディオブックは現在公開中でユーザーに表示されています。非公開にすると即座に非表示になります。"
+        "unpublishWarning": "このオーディオブックは現在公開中でユーザーに表示されています。非公開にすると即座に非表示になります。",
+        "missingFieldsFull": "必須フィールドが不足：タイトル、著者、ストリーミングURL",
+        "missingFieldsShort": "必須フィールドが不足しています"
       },
       "subtitle": "オーディオブックライブラリを管理",
       "upload": {
@@ -2094,8 +2174,20 @@
         "selectFile": "オーディオファイルを選択",
         "streamUrl": "ストリームURLが生成されました",
         "title": "オーディオファイルをアップロード",
-        "tooLarge": "ファイルサイズが500MBの制限を超えています"
-      }
+        "tooLarge": "ファイルサイズが500MBの制限を超えています",
+        "fileTooLarge": "ファイルサイズが500MBの制限を超えています",
+        "selectionRequired": "ファイルとオーディオブックの選択が必要です",
+        "urlCopied": "URLがクリップボードにコピーされました"
+      },
+      "deleteError": "オーディオブックの削除に失敗しました",
+      "sections": {
+        "audiobooks": "オーディオブック",
+        "recommended": "おすすめ",
+        "newReleases": "新着",
+        "topRated": "高評価",
+        "trending": "トレンド"
+      },
+      "selectSection": "セクションを選択してください"
     },
     "columns": {
       "author": "著者",
@@ -2218,7 +2310,12 @@
         "sttProvider": "STTプロバイダー",
         "supportVoice": "サポート音声",
         "translationProvider": "翻訳プロバイダー",
-        "voiceIds": "音声ID"
+        "voiceIds": "音声ID",
+        "saveSuccess": "音声設定が正常に保存されました",
+        "saveError": "設定の保存に失敗しました",
+        "testText": "こんにちは、音声テストです。",
+        "testSuccess": "音声テストが正常に再生されました",
+        "testError": "音声テストに失敗しました"
       },
       "quotas": {
         "dubbingLimits": "吹き替え制限",
@@ -2232,7 +2329,10 @@
       "settings": {
         "apiKeys": "APIキー",
         "webhookInfo": "Webhook情報",
-        "webhooks": "Webhooks"
+        "webhooks": "Webhooks",
+        "check": "確認",
+        "healthy": "正常",
+        "unhealthy": "異常"
       },
       "subtitle": "字幕",
       "tabs": {
@@ -2242,7 +2342,13 @@
         "quotas": "クォータ",
         "settings": "設定"
       },
-      "title": "音声管理"
+      "title": "音声管理",
+      "library": {
+        "previewText": "こんにちは、この音声のプレビューです。",
+        "assignSuccess": "音声が{{role}}ロールに割り当てられました",
+        "language": "言語",
+        "assign": "割り当て"
+      }
     },
     "accessDenied": "アクセスが拒否されました",
     "costDashboard": {
@@ -2274,7 +2380,24 @@
       },
       "title": "インポートウィザード"
     },
-    "noPermission": "権限がありません"
+    "noPermission": "権限がありません",
+    "kids": {
+      "loadingStats": "キッズコンテンツ統計を読み込み中...",
+      "subtitle": "キッズコンテンツソースとモデレーションを管理",
+      "seeded": "シード済み",
+      "imported": "インポート済み",
+      "skipped": "スキップ済み",
+      "totalContent": "キッズコンテンツ合計",
+      "kidsPodcasts": "キッズポッドキャスト",
+      "pendingReview": "審査待ち",
+      "approved": "承認済み",
+      "contentByCategory": "カテゴリー別コンテンツ",
+      "contentActions": "コンテンツアクション",
+      "noCategory": "カテゴリーなし",
+      "age": "年齢",
+      "approve": "承認",
+      "reject": "却下"
+    }
   },
   "chatbot": {
     "title": "アシスタント",
@@ -2830,8 +2953,8 @@
     "pending": "保留中",
     "approved": "承認済み",
     "rejected": "却下",
-    "active": "有効",
-    "inactive": "無効",
+    "active": "アクティブ",
+    "inactive": "非アクティブ",
     "online": "オンライン",
     "offline": "オフライン",
     "available": "利用可能",
@@ -2933,7 +3056,9 @@
     "saved": "保存しました！",
     "selectRegion": "地域を選択",
     "signIn": "ログイン",
-    "thisContent": "このコンテンツ"
+    "thisContent": "このコンテンツ",
+    "minutesShort": "分",
+    "notAvailable": "N/A"
   },
   "content": {
     "title": "タイトル",
@@ -3159,7 +3284,7 @@
     "title": "結果なし"
   },
   "epg": {
-    "title": "番組表",
+    "title": "番組ガイド",
     "subtitle": "番組ガイド",
     "now": "現在",
     "next": "次",
@@ -3243,7 +3368,10 @@
     "noProgramsScheduled": "予定されている番組はありません",
     "noProgramsFound": "番組が見つかりません",
     "noDataAvailable": "番組表データがありません",
-    "live": "ライブ"
+    "live": "ライブ",
+    "scheduleUnavailable": "テレビ番組スケジュールは現在利用できません。後でもう一度お試しいただくか、問題が続く場合はサポートにお問い合わせください。",
+    "noProgramsAvailable": "選択した時間範囲に利用可能な番組がありません。フィルターを調整するか、後でもう一度お試しください。",
+    "loading": "番組ガイドを読み込み中..."
   },
   "errors": {
     "generic": "問題が発生しました",
@@ -3703,7 +3831,8 @@
       "kids": "キッズ",
       "documentary": "ドキュメンタリー"
     },
-    "channels": "チャンネル"
+    "channels": "ライブTVチャンネル",
+    "loadingChannels": "チャンネルを読み込み中..."
   },
   "login": {
     "title": "ログイン",
@@ -4060,7 +4189,17 @@
     "newEpisodes": "新エピソード",
     "subscribed": "登録済み",
     "downloaded": "ダウンロード済み",
-    "categories": "カテゴリー",
+    "categories": {
+      "all": "すべて",
+      "news": "ニュース",
+      "technology": "テクノロジー",
+      "business": "ビジネス",
+      "culture": "文化",
+      "sports": "スポーツ",
+      "education": "教育",
+      "comedy": "コメディ",
+      "general": "一般"
+    },
     "episodes": "エピソード",
     "episode": "エピソード",
     "season": "シーズン",
@@ -4139,7 +4278,10 @@
       "downloadDescription": "インターネット接続なしで聴くためにエピソードをダウンロードしてください。",
       "gotIt": "了解"
     },
-    "loadingShows": "ポッドキャスト番組を読み込み中..."
+    "loadingShows": "ポッドキャスト番組を読み込み中...",
+    "loadError": "ポッドキャストの読み込みに失敗しました。接続を確認してください。",
+    "loading": "ポッドキャストを読み込み中...",
+    "noPodcastsFound": "ポッドキャストが見つかりません"
   },
   "profile": {
     "title": "プロフィール",
@@ -4647,7 +4789,7 @@
     "searchFor": "検索:",
     "recentSearches": "最近の検索",
     "clearHistory": "履歴をクリア",
-    "noResults": "結果が見つかりませんでした",
+    "noResults": "結果が見つかりません",
     "tryDifferent": "別のキーワードをお試しください",
     "suggestions": {
       "trendingTitle": "Trending Searches",
@@ -4727,7 +4869,24 @@
       "podcast": "ポッドキャスト",
       "moviesAndSeries": "映画＆シリーズ",
       "channels": "チャンネル",
-      "podcasts": "ポッドキャスト"
+      "podcasts": "ポッドキャスト",
+      "loading": "フィルターを読み込み中...",
+      "title": "詳細フィルター",
+      "clearAll": "すべてクリア",
+      "genres": "ジャンル",
+      "yearRange": "年範囲",
+      "decade1990s": "1990年代",
+      "decade2000s": "2000年代",
+      "decade2010s": "2010年代",
+      "decade2020s": "2020年代",
+      "minimumRating": "最低評価",
+      "subtitleLanguages": "字幕言語",
+      "searchOptions": "検索オプション",
+      "searchInSubtitles": "字幕テキスト（会話）で検索",
+      "contentRating": "コンテンツレーティング",
+      "kidsOnly": "キッズコンテンツのみ",
+      "excludeKids": "キッズコンテンツを除外",
+      "allContent": "すべてのコンテンツ"
     },
     "loadingMore": "さらに読み込み中...",
     "viewMode": {
@@ -4746,7 +4905,32 @@
       "retrySearch": "検索を再試行",
       "somethingWrong": "問題が発生しました"
     },
-    "resultsTitle": "検索結果"
+    "resultsTitle": "検索結果",
+    "tryDifferentKeywords": "別のキーワードまたはフィルターをお試しください",
+    "stopReading": "読み上げ停止",
+    "readAllResults": "すべての結果を読み上げ",
+    "featured": "⭐ 注目",
+    "closedCaptions": "CC",
+    "kids": "👶 キッズ",
+    "readAloud": "読み上げ",
+    "smartSearch": "スマート検索",
+    "premiumRequired": "スマート検索にはプレミアムサブスクリプションが必要です",
+    "searchFailed": "検索に失敗しました",
+    "premiumFeature": "プレミアム機能",
+    "smartSearchDescription": "スマート検索はAIを使用して自然言語クエリを理解し、お探しのものを正確に見つけます。",
+    "upgradeToPremium": "プレミアムにアップグレード",
+    "maybeLater": "後で",
+    "smartSearchHint": "自然言語で質問すると、AIが探しているものを見つけます",
+    "smartSearchPlaceholder": "例：「字幕付きの90年代のイスラエルコメディ」",
+    "searchWithAI": "AIで検索",
+    "aiInterpretation": "AI解釈：",
+    "confidence": "信頼度：",
+    "exampleQueries": "クエリ例：",
+    "exampleQuery1": "英語字幕付きの1980年代のヘブライ語映画を表示",
+    "exampleQuery2": "サシャ・バロン・コーエン主演のコメディを検索",
+    "exampleQuery3": "ホロコーストに関するドキュメンタリーは何がありますか？",
+    "exampleQuery4": "5-7歳向けのヘブライ語キッズ番組",
+    "poweredByAI": "🤖 Claude AIを搭載。結果はクエリの解釈によって異なる場合があります。"
   },
   "settings": {
     "title": "設定",
@@ -5129,6 +5313,8 @@
   "trivia": {
     "didYouKnow": "知っていますか？",
     "dismissHint": "トリビアを閉じる",
+    "wantToKnowMore": "もっと知りたい？",
+    "followUpHint": "タップすると、この話をさらに掘り下げる追加の事実が表示されます",
     "settings": {
       "displayLanguages": "表示言語",
       "languageHint": "各トリビアに表示する1〜3つの言語を選択",
@@ -5778,7 +5964,8 @@
       "radio": "ラジオ",
       "vod": "ビデオ",
       "custom": "カスタム",
-      "widget": "ウィジェット"
+      "widget": "ウィジェット",
+      "liveStream": "ライブストリーム"
     },
     "form": {
       "title": "ウィジェットを作成",
@@ -6773,7 +6960,9 @@
     "connected": "接続済み",
     "connecting": "接続中",
     "connectionFailed": "接続に失敗しました",
-    "pleaseWait": "お待ちください"
+    "pleaseWait": "お待ちください",
+    "connect": "Audible に接続",
+    "disconnect": "Audible を切断"
   },
   "cancelled": {
     "description": "お支払いがキャンセルされました。",

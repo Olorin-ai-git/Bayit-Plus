@@ -7,6 +7,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { SearchFilters as SearchFiltersType } from '../../hooks/useSearch';
 
 interface FilterOption {
@@ -24,6 +25,7 @@ interface SearchFiltersProps {
 }
 
 export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFiltersProps) {
+  const { t } = useTranslation();
   const [filterOptions, setFilterOptions] = useState<FilterOption | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -100,7 +102,7 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-black/30 backdrop-blur-xl rounded-2xl p-6">
-        <Text className="text-white text-lg">Loading filters...</Text>
+        <Text className="text-white text-lg">{t('search.filters.loading')}</Text>
       </View>
     );
   }
@@ -109,7 +111,7 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
     <View className="flex-1 bg-black/30 backdrop-blur-xl rounded-2xl border border-white/10">
       {/* Header */}
       <View className="flex-row items-center justify-between px-6 py-4 border-b border-white/10">
-        <Text className="text-white text-xl font-bold">Advanced Filters</Text>
+        <Text className="text-white text-xl font-bold">{t('search.filters.title')}</Text>
         <View className="flex-row items-center gap-3">
           {hasActiveFilters() && (
             <TouchableOpacity
@@ -117,7 +119,7 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
               className="px-4 py-2 bg-red-500/20 rounded-full"
               activeOpacity={0.7}
             >
-              <Text className="text-red-400 text-sm font-medium">Clear All</Text>
+              <Text className="text-red-400 text-sm font-medium">{t('search.filters.clearAll')}</Text>
             </TouchableOpacity>
           )}
           {onClose && (
@@ -134,7 +136,7 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
 
       <ScrollView className="flex-1 px-6 py-4">
         {/* Genres */}
-        <FilterSection title="Genres">
+        <FilterSection title={t('search.filters.genres')}>
           <View className="flex-row flex-wrap gap-2">
             {filterOptions?.genres.map((genre) => (
               <TouchableOpacity
@@ -160,7 +162,7 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
         </FilterSection>
 
         {/* Year Range */}
-        <FilterSection title="Year Range">
+        <FilterSection title={t('search.filters.yearRange')}>
           <View className="gap-4">
             <View className="flex-row items-center justify-between">
               <Text className="text-white/60 text-sm">
@@ -173,35 +175,35 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
                 className="flex-1 px-4 py-2 bg-white/5 rounded-full border border-white/20"
                 activeOpacity={0.7}
               >
-                <Text className="text-white/80 text-sm text-center">1990s</Text>
+                <Text className="text-white/80 text-sm text-center">{t('search.filters.decade1990s')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setYearRange(2000, 2009)}
                 className="flex-1 px-4 py-2 bg-white/5 rounded-full border border-white/20"
                 activeOpacity={0.7}
               >
-                <Text className="text-white/80 text-sm text-center">2000s</Text>
+                <Text className="text-white/80 text-sm text-center">{t('search.filters.decade2000s')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setYearRange(2010, 2019)}
                 className="flex-1 px-4 py-2 bg-white/5 rounded-full border border-white/20"
                 activeOpacity={0.7}
               >
-                <Text className="text-white/80 text-sm text-center">2010s</Text>
+                <Text className="text-white/80 text-sm text-center">{t('search.filters.decade2010s')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => setYearRange(2020, new Date().getFullYear())}
                 className="flex-1 px-4 py-2 bg-white/5 rounded-full border border-white/20"
                 activeOpacity={0.7}
               >
-                <Text className="text-white/80 text-sm text-center">2020s</Text>
+                <Text className="text-white/80 text-sm text-center">{t('search.filters.decade2020s')}</Text>
               </TouchableOpacity>
             </View>
           </View>
         </FilterSection>
 
         {/* Rating */}
-        <FilterSection title="Minimum Rating">
+        <FilterSection title={t('search.filters.minimumRating')}>
           <View className="flex-row gap-2">
             {[7, 8, 9].map((rating) => (
               <TouchableOpacity
@@ -227,7 +229,7 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
         </FilterSection>
 
         {/* Subtitle Languages */}
-        <FilterSection title="Subtitle Languages">
+        <FilterSection title={t('search.filters.subtitleLanguages')}>
           <View className="flex-row flex-wrap gap-2">
             {filterOptions?.subtitle_languages.map((lang) => (
               <TouchableOpacity
@@ -253,7 +255,7 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
         </FilterSection>
 
         {/* Search in Subtitles Toggle */}
-        <FilterSection title="Search Options">
+        <FilterSection title={t('search.filters.searchOptions')}>
           <TouchableOpacity
             onPress={toggleSearchInSubtitles}
             className={`
@@ -268,14 +270,14 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
               font-medium
               ${filters.searchInSubtitles ? 'text-green-300' : 'text-white/80'}
             `}>
-              Search in subtitle text (dialogue)
+              {t('search.filters.searchInSubtitles')}
             </Text>
             <Text className="text-xl">{filters.searchInSubtitles ? '✓' : '○'}</Text>
           </TouchableOpacity>
         </FilterSection>
 
         {/* Kids Content Filter */}
-        <FilterSection title="Content Rating">
+        <FilterSection title={t('search.filters.contentRating')}>
           <TouchableOpacity
             onPress={toggleKidsContent}
             className={`
@@ -296,7 +298,7 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
                 ? 'text-gray-300'
                 : 'text-white/80'}
             `}>
-              {filters.isKidsContent === true ? 'Kids content only' : filters.isKidsContent === false ? 'Exclude kids content' : 'All content'}
+              {filters.isKidsContent === true ? t('search.filters.kidsOnly') : filters.isKidsContent === false ? t('search.filters.excludeKids') : t('search.filters.allContent')}
             </Text>
             <Text className="text-xl">
               {filters.isKidsContent === true ? '👶' : filters.isKidsContent === false ? '🚫' : '🌍'}

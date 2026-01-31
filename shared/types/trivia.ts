@@ -9,7 +9,7 @@ export interface TriviaFact {
   fact_id: string
   text: string  // Kept for backward compatibility
 
-  // NEW: Multilingual text fields (optional)
+  // Multilingual text fields (optional)
   text_he?: string
   text_en?: string
   text_es?: string
@@ -20,6 +20,11 @@ export interface TriviaFact {
   display_duration: number
   priority: number
   related_person?: string
+
+  // Chain fields for follow-up linking
+  chain_id?: string | null
+  chain_order?: number | null
+  has_follow_up?: boolean
 }
 
 export type TriviaCategory = 'cast' | 'production' | 'location' | 'cultural' | 'historical'

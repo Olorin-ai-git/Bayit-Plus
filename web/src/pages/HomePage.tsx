@@ -109,7 +109,7 @@ function HeroSkeleton() {
     <View style={styles.skeletonHero}>
       <img
         src={placeholderImage}
-        alt="Loading..."
+        alt={t('common.loading')}
         style={{
           width: '100%',
           height: '100%',

@@ -210,7 +210,9 @@
         "total": "סה\"כ"
       },
       "testFailed": "שליחת אימייל הבדיקה נכשלה",
-      "testSent": "אימייל בדיקה נשלח"
+      "testSent": "אימייל בדיקה נשלח",
+      "loadError": "שגיאה בטעינת קמפיינים בדוא\"ל",
+      "comingSoon": "יצירת קמפיין דוא\"ל בקרוב"
     },
     "dashboard": {
       "subtitle": "סקירה כללית של המערכת",
@@ -225,7 +227,8 @@
       "subscriptions": "מנויים",
       "recentActivity": "פעילות אחרונה",
       "quickActions": "פעולות מהירות",
-      "noRecentActivity": "אין פעילות אחרונה"
+      "noRecentActivity": "אין פעילות אחרונה",
+      "loadError": "שגיאה בטעינת נתוני לוח הבקרה"
     },
     "common": {
       "all": "הכל",
@@ -446,7 +449,15 @@
       "notesLabel": "הערות מנהל",
       "subtitleDayInput": "דקות כתוביות ליום",
       "subtitleHourInput": "דקות כתוביות לשעה",
-      "subtitleMonthInput": "דקות כתוביות לחודש"
+      "subtitleMonthInput": "דקות כתוביות לחודש",
+      "hour": "שעה",
+      "day": "יום",
+      "month": "חודש",
+      "minutes": "דק׳",
+      "saved": "נשמר",
+      "loadError": "שגיאה בטעינת נתוני מכסה",
+      "saveError": "שגיאה בשמירת מגבלות",
+      "resetError": "שגיאה באיפוס מכסה"
     },
     "featured": {
       "title": "תוכן מובחר",
@@ -821,7 +832,9 @@
       "createSuccess": "הקטגוריה נוצרה",
       "deleteCategory": "מחק קטגוריה",
       "editCategory": "ערוך קטגוריה",
-      "updateSuccess": "הקטגוריה עודכנה"
+      "updateSuccess": "הקטגוריה עודכנה",
+      "active": "פעיל",
+      "inactive": "לא פעיל"
     },
     "recordings": {
       "title": "ניהול הקלטות",
@@ -838,7 +851,9 @@
       "deleteFailed": "מחיקת ההקלטה נכשלה",
       "loadFailed": "טעינת ההקלטות נכשלה",
       "noRecordings": "לא נמצאו הקלטות",
-      "noRecordingsHint": "אין עדיין הקלטות משתמשים במערכת."
+      "noRecordingsHint": "אין עדיין הקלטות משתמשים במערכת.",
+      "live": "שידור חי",
+      "offline": "לא מחובר"
     },
     "uploads": {
       "title": "ניהול העלאות",
@@ -943,7 +958,9 @@
         "status": "סטטוס",
         "successful": "הצליח",
         "total": "סה\"כ",
-        "uploadCancelled": "ההעלאה בוטלה"
+        "uploadCancelled": "ההעלאה בוטלה",
+        "folderNamePlaceholder": "לדוגמה, ייבוא סרטים",
+        "folderPathPlaceholder": "/נתיב/לתיקייה"
       },
       "urlUpload": {
         "title": "ייבוא מכתובת URL",
@@ -1253,6 +1270,9 @@
         "contentType": "סוג תוכן",
         "enabled": "מופעל",
         "autoUpload": "העלאה אוטומטית"
+      },
+      "dropZone": {
+        "filesRejected": "{{count}} קבצים נדחו"
       }
     },
     "librarian": {
@@ -1460,7 +1480,16 @@
         "search": "חיפוש דוחות...",
         "showing": "מציג",
         "status": "סטטוס",
-        "type": "סוג"
+        "type": "סוג",
+        "scheduled": "מתוזמן",
+        "manual": "ידני",
+        "recent": "אחרונים",
+        "titles": "כותרות",
+        "tmdb": "TMDB",
+        "subtitles": "כתוביות",
+        "classification": "סיווג",
+        "duplicates": "כפילויות",
+        "noResults": "לא נמצאו דוחות תואמים"
       },
       "logs": {
         "title": "לוגים של ביצוע",
@@ -1610,7 +1639,19 @@
       },
       "auditTypes": {
         "daily_incremental": "יומי הדרגתי",
-        "ai_agent": "סוכן AI"
+        "ai_agent": "סוכן AI",
+        "contentValidation": {
+          "name": "אימות תוכן",
+          "description": "אימות מטא-נתונים ושלמות התוכן"
+        },
+        "posterEnrichment": {
+          "name": "העשרת פוסטרים",
+          "description": "עדכון פוסטרים וגרפיקה חסרים"
+        },
+        "classificationAudit": {
+          "name": "ביקורת סיווג",
+          "description": "סקירת סיווגי תוכן"
+        }
       },
       "kidsAudit": {
         "ageDistribution": "התפלגות דירוג גיל",
@@ -1623,12 +1664,13 @@
         "subtitle": "מצב פיקוח תוכן",
         "title": "בריאות תוכן ילדים",
         "totalItems": "סה\"כ פריטים"
-      }
+      },
+      "itemsChecked": "פריטים שנבדקו"
     },
     "widgets": {
       "title": "ווידג'טים",
       "subtitle": "ניהול ווידג'טים צפים לשידורים חיים ותוכן מוטמע",
-      "newWidget": "ווידג'ט חדש",
+      "newWidget": "צור ווידג'ט חדש",
       "editWidget": "עריכת ווידג'ט",
       "columns": {
         "title": "כותרת",
@@ -1716,7 +1758,8 @@
       "total": "סה\"כ",
       "viewAll": "הצג הכל",
       "viewAllTransactions": "הצג את כל העסקאות",
-      "viewTransactions": "עסקאות"
+      "viewTransactions": "עסקאות",
+      "loadError": "שגיאה בטעינת נתוני חיוב"
     },
     "marketing": {
       "recentCampaigns": "קמפיינים אחרונים",
@@ -1873,7 +1916,13 @@
       },
       "subtitleSettings": "הגדרות כתוביות שידור חי",
       "deleteChannel": "מחק ערוץ",
-      "editChannel": "ערוך ערוץ"
+      "editChannel": "עריכת ערוץ שידור חי",
+      "newChannel": "ערוץ שידור חי חדש",
+      "channelName": "שם הערוץ",
+      "streamUrl": "כתובת URL של הזרם (HLS/DASH)",
+      "epgSourceUrl": "כתובת URL של מקור EPG (אופציונלי)",
+      "currentShow": "תוכנית נוכחית (אופציונלי)",
+      "order": "סדר"
     },
     "radioStations": {
       "subtitle": "ניהול תחנות רדיו",
@@ -1940,7 +1989,21 @@
       "translate": "תרגם",
       "editTitle": "ערוך כותרת",
       "newTitle": "כותרת חדשה",
-      "toggleFeatured": "הפעל/בטל מומלץ"
+      "toggleFeatured": "הפעל/בטל מומלץ",
+      "titleRequired": "כותרת נדרשת",
+      "audioUrlRequired": "כתובת URL של אודיו נדרשת",
+      "episodeTitlePlaceholder": "כותרת הפרק",
+      "descriptionPlaceholder": "תיאור",
+      "episodeNumberPlaceholder": "מספר הפרק",
+      "durationPlaceholder": "משך זמן (לדוגמה, 45:30)",
+      "audioUrlPlaceholder": "כתובת URL של אודיו (נדרש)",
+      "publishedDatePlaceholder": "תאריך פרסום (YYYY-MM-DD)",
+      "pasteImageUrl": "או הדבק כתובת URL של תמונה",
+      "podcastTitlePlaceholder": "כותרת הפודקאסט",
+      "authorPlaceholder": "מחבר",
+      "categoryPlaceholder": "קטגוריה",
+      "rssFeedUrlPlaceholder": "כתובת URL של הזנת RSS",
+      "websiteUrlPlaceholder": "כתובת URL של אתר (אופציונלי)"
     },
     "translation": {
       "title": "לוח בקרת תרגומים",
@@ -2178,7 +2241,7 @@
       "firstPurchaseDesc": "חל רק על משתמשים שמבצעים רכישה ראשונה",
       "firstPurchaseOnly": "רכישה ראשונה בלבד",
       "generate": "צור",
-      "loadError": "טעינת הקמפיין נכשלה",
+      "loadError": "שגיאה בטעינת קמפיינים",
       "maxDiscount": "סכום הנחה מרבי ($)",
       "minimumPurchase": "סכום רכישה מינימלי ($)",
       "name": "שם קמפיין",
@@ -2435,7 +2498,8 @@
       "send": "שלח עכשיו",
       "confirmSend": "שלח את ההתראה \"{{title}}\"?",
       "confirmDelete": "מחק את ההתראה \"{{title}}\"?",
-      "fillRequired": "נא למלא כותרת ותוכן"
+      "fillRequired": "נא למלא כותרת ותוכן",
+      "editNotification": "עריכת התראה"
     },
     "diagnostics": {
       "title": "אבחון מערכת",
@@ -2470,7 +2534,9 @@
       "subtitle": "עריכת מטאדטה ומידע של תוכן"
     },
     "podcastEpisodes": {
-      "subtitle": "ניהול פרקי פודקאסט ומטאדטה"
+      "subtitle": "ניהול פרקי פודקאסט ומטאדטה",
+      "newEpisode": "פרק חדש",
+      "editEpisode": "עריכת פרק"
     },
     "userDetail": {
       "subtitle": "פרטי חשבון משתמש והיסטוריית פעילות"
@@ -2498,7 +2564,15 @@
         "quality": "איכות שמע",
         "streamUrl": "כתובת שידור",
         "subscription": "דרגת מנוי",
-        "title": "כותרת"
+        "title": "כותרת",
+        "titlePlaceholder": "שם הספר",
+        "authorPlaceholder": "שם המחבר",
+        "narratorPlaceholder": "שם הקריין",
+        "descriptionPlaceholder": "תיאור הספר",
+        "durationPlaceholder": "שש:דד:שש",
+        "isbnPlaceholder": "מספר ISBN",
+        "publisherPlaceholder": "שם המוציא לאור",
+        "streamUrlPlaceholder": "https://..."
       },
       "loadError": "טעינת ספרי השמע נכשלה",
       "publish": {
@@ -2506,18 +2580,32 @@
         "publishConfirm": "פרסום ספר שמע זה יהפוך אותו לגלוי לכל המשתמשים.",
         "publishTitle": "פרסם ספר שמע",
         "unpublishTitle": "הסר פרסום",
-        "unpublishWarning": "ספר שמע זה מפורסם כרגע וגלוי למשתמשים. הסרת הפרסום תסתיר אותו מיד."
+        "unpublishWarning": "ספר שמע זה מפורסם כרגע וגלוי למשתמשים. הסרת הפרסום תסתיר אותו מיד.",
+        "missingFieldsFull": "שדות חובה חסרים: כותרת, מחבר, כתובת סטרימינג",
+        "missingFieldsShort": "שדות חובה חסרים"
       },
       "subtitle": "ניהול ספריית ספרי שמע",
       "upload": {
         "button": "העלה",
         "dragDrop": "לחץ לבחירת קובץ שמע",
-        "invalidType": "סוג קובץ לא תקין. מותר: MP3, AAC, M4A, FLAC",
+        "invalidType": "סוג קובץ לא חוקי. מותר: MP3, AAC, M4A, FLAC",
         "selectFile": "בחר קובץ שמע",
         "streamUrl": "כתובת שידור נוצרה",
         "title": "העלאת קובץ שמע",
-        "tooLarge": "גודל הקובץ חורג ממגבלת 500MB"
-      }
+        "tooLarge": "גודל הקובץ חורג ממגבלת 500MB",
+        "fileTooLarge": "גודל הקובץ חורג ממגבלת 500MB",
+        "selectionRequired": "נדרש קובץ ובחירת ספר שמע",
+        "urlCopied": "הכתובת הועתקה ללוח"
+      },
+      "deleteError": "שגיאה במחיקת ספר שמע",
+      "sections": {
+        "audiobooks": "ספרי שמע",
+        "recommended": "מומלצים",
+        "newReleases": "חדשים",
+        "topRated": "מדורגים גבוה",
+        "trending": "פופולריים"
+      },
+      "selectSection": "אנא בחר מדור"
     },
     "columns": {
       "author": "מחבר",
@@ -2721,7 +2809,12 @@
         "sttProvider": "ספק זיהוי דיבור",
         "supportVoice": "קול תמיכה",
         "translationProvider": "ספק תרגום",
-        "voiceIds": "מזהי קול"
+        "voiceIds": "מזהי קול",
+        "saveSuccess": "תצורת הקול נשמרה בהצלחה",
+        "saveError": "שגיאה בשמירת התצורה",
+        "testText": "שלום, זהו מבחן קול.",
+        "testSuccess": "מבחן הקול הושמע בהצלחה",
+        "testError": "שגיאה בבדיקת הקול"
       },
       "quotas": {
         "dubbingLimits": "מגבלות דיבוב",
@@ -2735,7 +2828,10 @@
       "settings": {
         "apiKeys": "מפתחות API",
         "webhookInfo": "מידע על Webhook",
-        "webhooks": "Webhooks"
+        "webhooks": "Webhooks",
+        "check": "בדיקה",
+        "healthy": "תקין",
+        "unhealthy": "לא תקין"
       },
       "subtitle": "ניהול סינתזת קול, ניתוח, מכסות והגדרות",
       "tabs": {
@@ -2745,7 +2841,13 @@
         "quotas": "מכסות",
         "settings": "הגדרות מערכת"
       },
-      "title": "ניהול קול"
+      "title": "ניהול קול",
+      "library": {
+        "previewText": "שלום, זוהי תצוגה מקדימה של קול זה.",
+        "assignSuccess": "הקול הוקצה לתפקיד {{role}}",
+        "language": "שפה",
+        "assign": "הקצה"
+      }
     },
     "accessDenied": "הגישה נדחתה",
     "costDashboard": {
@@ -2777,7 +2879,24 @@
       },
       "title": "אשף ייבוא"
     },
-    "noPermission": "אין הרשאה"
+    "noPermission": "אין הרשאה",
+    "kids": {
+      "loadingStats": "טוען סטטיסטיקות תוכן לילדים...",
+      "subtitle": "ניהול מקורות תוכן לילדים ופיקוח",
+      "seeded": "נוספו בזריעה",
+      "imported": "יובאו",
+      "skipped": "דולגו",
+      "totalContent": "סה\"כ תוכן לילדים",
+      "kidsPodcasts": "פודקאסטים לילדים",
+      "pendingReview": "ממתינים לבדיקה",
+      "approved": "אושרו",
+      "contentByCategory": "תוכן לפי קטגוריה",
+      "contentActions": "פעולות תוכן",
+      "noCategory": "ללא קטגוריה",
+      "age": "גיל",
+      "approve": "אשר",
+      "reject": "דחה"
+    }
   },
   "audiobooks": {
     "audiobook": "ספר שמע",
@@ -3378,7 +3497,10 @@
     "series": "סדרה",
     "signIn": "התחבר",
     "website": "אתר",
-    "yesterday": "אתמול"
+    "yesterday": "אתמול",
+    "more": "עוד",
+    "minutesShort": "דק'",
+    "notAvailable": "לא זמין"
   },
   "components": {
     "select": {
@@ -3688,7 +3810,7 @@
     "title": "אין תוצאות"
   },
   "epg": {
-    "title": "מדריך תוכניות",
+    "title": "מדריך טלוויזיה",
     "subtitle": "דפדף בלוח השידורים של הטלוויזיה",
     "gridView": "תצוגת רשת",
     "listView": "תצוגת רשימה",
@@ -3731,10 +3853,13 @@
     "aiDisclaimer": "מופעל על ידי Claude AI. התוצאות עשויות להשתנות בהתאם לזמינות נתוני התוכניות.",
     "interpretationTitle": "מה הבנתי",
     "noResultsFound": "לא נמצאו תוכניות התואמות לשאילתה שלך",
-    "noProgramsScheduled": "אין תוכניות מתוכננות",
+    "noProgramsScheduled": "אין תוכניות מתוזמנות",
     "noProgramsFound": "לא נמצאו תוכניות",
     "noDataAvailable": "אין נתוני מדריך טלוויזיה זמינים",
-    "live": "שידור חי"
+    "live": "שידור חי",
+    "scheduleUnavailable": "לוח השידורים לא זמין כרגע. אנא בדוק שוב מאוחר יותר או פנה לתמיכה אם הבעיה נמשכת.",
+    "noProgramsAvailable": "אין תוכניות זמינות עבור טווח הזמן שנבחר. נסה להתאים את המסננים או בדוק שוב מאוחר יותר.",
+    "loading": "טוען מדריך טלוויזיה..."
   },
   "errors": {
     "networkError": "שגיאת רשת",
@@ -4344,7 +4469,7 @@
   },
   "liveTV": {
     "title": "טלוויזיה חיה",
-    "channels": "ערוצים",
+    "channels": "ערוצי טלוויזיה בשידור חי",
     "nowPlaying": "עכשיו בשידור",
     "loadError": "שגיאה בטעינת הערוצים",
     "categories": {
@@ -4354,7 +4479,8 @@
       "entertainment": "בידור",
       "kids": "ילדים",
       "documentary": "דוקומנטרי"
-    }
+    },
+    "loadingChannels": "טוען ערוצים..."
   },
   "login": {
     "title": "ברוך שובך",
@@ -4741,7 +4867,11 @@
       "entertainment": "בידור",
       "sports": "ספורט",
       "history": "היסטוריה",
-      "educational": "חינוכי"
+      "educational": "חינוכי",
+      "technology": "טכנולוגיה",
+      "culture": "תרבות",
+      "education": "חינוך",
+      "comedy": "קומדיה"
     },
     "noPodcasts": "אין פודקאסטים זמינים",
     "tryLater": "נסה שוב מאוחר יותר",
@@ -4786,7 +4916,10 @@
       "downloadDescription": "הורד פרקים להאזנה ללא חיבור לאינטרנט.",
       "gotIt": "הבנתי"
     },
-    "loadingShows": "טוען תוכניות פודקאסט..."
+    "loadingShows": "טוען תוכניות פודקאסט...",
+    "loadError": "טעינת הפודקאסטים נכשלה. אנא בדוק את החיבור שלך.",
+    "loading": "טוען פודקאסטים...",
+    "noPodcastsFound": "לא נמצאו פודקאסטים"
   },
   "profile": {
     "title": "הפרופיל שלי",
@@ -5231,7 +5364,7 @@
   "search": {
     "title": "חיפוש",
     "subtitle": "מצא סרטים, סדרות, ערוצים, תחנות רדיו ופודקאסטים",
-    "placeholder": "חפש תוכן...",
+    "placeholder": "חיפוש...",
     "voicePlaceholder": "דבר עכשיו...",
     "searching": "מחפש...",
     "listening": "מאזין...",
@@ -5253,7 +5386,24 @@
       "podcast": "פודקאסטים",
       "moviesAndSeries": "סרטים וסדרות",
       "channels": "ערוצים",
-      "podcasts": "פודקאסטים"
+      "podcasts": "פודקאסטים",
+      "loading": "טוען מסננים...",
+      "title": "מסננים מתקדמים",
+      "clearAll": "נקה הכל",
+      "genres": "ז'אנרים",
+      "yearRange": "טווח שנים",
+      "decade1990s": "שנות ה-90",
+      "decade2000s": "שנות ה-2000",
+      "decade2010s": "שנות ה-2010",
+      "decade2020s": "שנות ה-2020",
+      "minimumRating": "דירוג מינימלי",
+      "subtitleLanguages": "שפות כתוביות",
+      "searchOptions": "אפשרויות חיפוש",
+      "searchInSubtitles": "חיפוש בטקסט הכתוביות (דיאלוגים)",
+      "contentRating": "דירוג תוכן",
+      "kidsOnly": "תוכן לילדים בלבד",
+      "excludeKids": "ללא תוכן לילדים",
+      "allContent": "כל התוכן"
     },
     "suggestions": {
       "trendingTitle": "חיפושים פופולריים",
@@ -5318,7 +5468,32 @@
       "retrySearch": "נסה שוב",
       "somethingWrong": "משהו השתבש"
     },
-    "resultsTitle": "תוצאות חיפוש"
+    "resultsTitle": "תוצאות חיפוש",
+    "tryDifferentKeywords": "נסה מילות חיפוש או מסננים אחרים",
+    "stopReading": "עצור קריאה",
+    "readAllResults": "קרא את כל התוצאות",
+    "featured": "⭐ מומלץ",
+    "closedCaptions": "CC",
+    "kids": "👶 ילדים",
+    "readAloud": "קרא בקול",
+    "smartSearch": "חיפוש חכם",
+    "premiumRequired": "נדרש מנוי פרמיום לחיפוש חכם",
+    "searchFailed": "החיפוש נכשל",
+    "premiumFeature": "תכונת פרמיום",
+    "smartSearchDescription": "חיפוש חכם משתמש בבינה מלאכותית כדי להבין שאילתות בשפה טבעית ולמצוא בדיוק מה שאתה מחפש.",
+    "upgradeToPremium": "שדרג לפרמיום",
+    "maybeLater": "אולי מאוחר יותר",
+    "smartSearchHint": "שאל בשפה טבעית והבינה המלאכותית תמצא מה שאתה מחפש",
+    "smartSearchPlaceholder": "לדוגמה: 'קומדיות ישראליות משנות ה-90 עם כתוביות'",
+    "searchWithAI": "חיפוש עם בינה מלאכותית",
+    "aiInterpretation": "פרשנות הבינה המלאכותית:",
+    "confidence": "רמת ביטחון:",
+    "exampleQueries": "דוגמאות לשאילתות:",
+    "exampleQuery1": "הצג לי סרטים בעברית משנות ה-80 עם כתוביות באנגלית",
+    "exampleQuery2": "מצא קומדיות בהשתתפות סאשה ברון כהן",
+    "exampleQuery3": "אילו סרטים תיעודיים על השואה זמינים?",
+    "exampleQuery4": "תוכניות לילדים בעברית לגילאי 5-7",
+    "poweredByAI": "🤖 מופעל על ידי Claude AI. התוצאות עשויות להשתנות בהתאם לפרשנות השאילתה."
   },
   "settings": {
     "title": "הגדרות",
@@ -5746,6 +5921,8 @@
   "trivia": {
     "didYouKnow": "הידעת?",
     "dismissHint": "הקש לסגירת הטריוויה",
+    "wantToKnowMore": "רוצה לדעת עוד?",
+    "followUpHint": "הקש כדי לראות עובדה נוספת שמעמיקה בסיפור",
     "settings": {
       "title": "טריוויה ועובדות מעניינות",
       "enabled": "הצג טריוויה",
@@ -6068,7 +6245,8 @@
       "radio": "רדיו",
       "vod": "וידאו",
       "custom": "מותאם אישית",
-      "widget": "וידג'ט"
+      "widget": "ווידג'ט",
+      "liveStream": "שידור חי"
     },
     "form": {
       "title": "יצירת וידג'ט",
@@ -6097,8 +6275,8 @@
       "change": "שנה",
       "errors": {
         "contentRequired": "אנא בחר תוכן",
-        "iframeUrlRequired": "כתובת iFrame נדרשת",
-        "nameExists": "וידג'ט עם שם זה כבר קיים",
+        "iframeUrlRequired": "כתובת URL של iFrame נדרשת",
+        "nameExists": "ווידג'ט עם שם זה כבר קיים",
         "titleRequired": "כותרת נדרשת"
       },
       "validating": "מאמת..."
@@ -6241,7 +6419,9 @@
     "connected": "מחובר",
     "connecting": "מתחבר",
     "connectionFailed": "החיבור נכשל",
-    "pleaseWait": "אנא המתן"
+    "pleaseWait": "אנא המתן",
+    "connect": "חיבור Audible",
+    "disconnect": "ניתוק Audible"
   },
   "beta": {
     "credits": {

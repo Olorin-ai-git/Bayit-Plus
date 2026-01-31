@@ -1290,6 +1290,24 @@ class Settings(BaseSettings):
         le=500,
         description="Max length for other field sanitization",
     )
+    TRIVIA_AI_MAX_CHAIN_DEPTH: int = Field(
+        default=3,
+        ge=1,
+        le=5,
+        description="Maximum follow-up depth per trivia chain",
+    )
+    TRIVIA_AI_MAX_CHAINS_PER_CONTENT: int = Field(
+        default=3,
+        ge=1,
+        le=10,
+        description="Maximum number of fact chains per content item",
+    )
+    TRIVIA_AI_CONTEXT_MAX_CAST: int = Field(
+        default=10,
+        ge=3,
+        le=20,
+        description="Maximum cast members to include in TMDB context for AI prompt",
+    )
 
     @field_validator("TRIVIA_MIN_INTERVAL_SECONDS")
     @classmethod

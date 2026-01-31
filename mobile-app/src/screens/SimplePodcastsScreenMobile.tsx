@@ -14,10 +14,9 @@ import {
   Image,
   ActivityIndicator,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { Mic, Play, Clock, Calendar, AlertCircle } from 'lucide-react-native';
 import { podcastService, Podcast } from '../services/api';
-
-const CATEGORIES = ['All', 'News', 'Technology', 'Business', 'Culture', 'Sports', 'Education', 'Comedy'];
 
 function PodcastCard({ podcast }: { podcast: Podcast }) {
   return (
@@ -34,7 +33,7 @@ function PodcastCard({ podcast }: { podcast: Podcast }) {
         {podcast.author && <Text style={styles.podcastHost}>{podcast.author}</Text>}
         <View style={styles.podcastMeta}>
           {podcast.episodeCount !== undefined && (
-            <Text style={styles.episodeCount}>{podcast.episodeCount} episodes</Text>
+            <Text style={styles.episodeCount}>{podcast.episodeCount} {t('podcasts.episodes')}</Text>
           )}
           {podcast.category && (
             <View style={styles.categoryBadge}>
@@ -51,11 +50,23 @@ function PodcastCard({ podcast }: { podcast: Podcast }) {
 }
 
 export function PodcastsScreenMobile() {
+  const { t } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [podcasts, setPodcasts] = useState<Podcast[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
+
+  const CATEGORIES = [
+    t('podcasts.categories.all'),
+    t('podcasts.categories.news'),
+    t('podcasts.categories.technology'),
+    t('podcasts.categories.business'),
+    t('podcasts.categories.culture'),
+    t('podcasts.categories.sports'),
+    t('podcasts.categories.education'),
+    t('podcasts.categories.comedy')
+  ];
 
   const loadPodcasts = async () => {
     try {
@@ -64,7 +75,7 @@ export function PodcastsScreenMobile() {
       const data = await podcastService.getShows(params);
       setPodcasts(data.shows || []);
     } catch (err) {
-      setError('Failed to load podcasts. Please check your connection.');
+      setError(t('podcasts.loadError'));
       setPodcasts([]);
     } finally {
       setLoading(false);
@@ -92,7 +103,7 @@ export function PodcastsScreenMobile() {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Mic size={24} color="#4a9eff" strokeWidth={2} />
-          <Text style={styles.headerTitle}>Podcasts</Text>
+          <Text style={styles.headerTitle}>{t('podcasts.title')}</Text>
         </View>
         {podcasts.length > 0 && (
           <View style={styles.countBadge}>
@@ -133,7 +144,7 @@ export function PodcastsScreenMobile() {
       {loading && (
         <View style={styles.centerContent}>
           <ActivityIndicator size="large" color="#4a9eff" />
-          <Text style={styles.loadingText}>Loading podcasts...</Text>
+          <Text style={styles.loadingText}>{t('podcasts.loading')}</Text>
         </View>
       )}
 
@@ -143,7 +154,7 @@ export function PodcastsScreenMobile() {
           <AlertCircle size={48} color="#e53935" />
           <Text style={styles.errorText}>{error}</Text>
           <Pressable style={styles.retryButton} onPress={loadPodcasts}>
-            <Text style={styles.retryText}>Retry</Text>
+            <Text style={styles.retryText}>{t('common.retry')}</Text>
           </Pressable>
         </View>
       )}
@@ -160,7 +171,7 @@ export function PodcastsScreenMobile() {
           {filteredPodcasts.length === 0 ? (
             <View style={styles.emptyState}>
               <Mic size={48} color="rgba(255, 255, 255, 0.3)" />
-              <Text style={styles.emptyText}>No podcasts found</Text>
+              <Text style={styles.emptyText}>{t('podcasts.noPodcastsFound')}</Text>
             </View>
           ) : (
             filteredPodcasts.map((podcast) => (

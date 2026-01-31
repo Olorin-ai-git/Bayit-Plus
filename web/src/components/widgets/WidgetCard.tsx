@@ -15,17 +15,17 @@ interface WidgetCardProps {
   onResetPosition: (id: string) => void;
 }
 
-function getContentTypeLabel(contentType?: string): string {
+function getContentTypeLabel(contentType: string | undefined, t: any): string {
   const labels: Record<string, string> = {
-    live_channel: 'Live Channel',
-    iframe: 'iFrame',
-    live: 'Live Stream',
-    vod: 'Video',
-    podcast: 'Podcast',
-    radio: 'Radio',
-    custom: 'Custom',
+    live_channel: t('widgets.contentTypes.liveChannel'),
+    iframe: t('widgets.contentTypes.iframe'),
+    live: t('widgets.contentTypes.liveStream'),
+    vod: t('widgets.contentTypes.vod'),
+    podcast: t('widgets.contentTypes.podcast'),
+    radio: t('widgets.contentTypes.radio'),
+    custom: t('widgets.contentTypes.custom'),
   };
-  return labels[contentType || ''] || 'Widget';
+  return labels[contentType || ''] || t('widgets.contentTypes.widget');
 }
 
 function getWidgetIcon(widget: Widget): React.ReactNode {
@@ -117,16 +117,16 @@ export default function WidgetCard({
           <View style={styles.badgeContainer}>
             <View style={styles.badge}>
               <Text style={styles.badgeText}>
-                {getContentTypeLabel(widget.content?.content_type)}
+                {getContentTypeLabel(widget.content?.content_type, t)}
               </Text>
             </View>
             <Text style={[styles.statusBadge, widget.is_active ? styles.statusActive : styles.statusInactive]}>
-              {widget.is_active ? '● Active' : '● Inactive'}
+              {widget.is_active ? `● ${t('common.active')}` : `● ${t('common.inactive')}`}
             </Text>
             {isHidden && (
               <View style={styles.hiddenBadge}>
                 <Text style={styles.hiddenBadgeText}>
-                  {t('widgets.hidden') || 'Hidden'}
+                  {t('widgets.hidden')}
                 </Text>
               </View>
             )}
@@ -145,7 +145,7 @@ export default function WidgetCard({
               size="sm"
               icon={<RotateCcw size={16} color={colors.text} />}
               style={styles.iconButton}
-              accessibilityLabel={t('widgets.resetPosition') || 'Reset position'}
+              accessibilityLabel={t('widgets.resetPosition')}
             />
             <GlassButton
               title=""
@@ -157,7 +157,7 @@ export default function WidgetCard({
               size="sm"
               icon={isHidden ? <Eye size={16} color={colors.text} /> : <EyeOff size={16} color={colors.text} />}
               style={styles.iconButton}
-              accessibilityLabel={isHidden ? t('widgets.show') || 'Show' : t('widgets.hide') || 'Hide'}
+              accessibilityLabel={isHidden ? t('widgets.show') : t('widgets.hide')}
             />
             <GlassButton
               title=""
@@ -169,7 +169,7 @@ export default function WidgetCard({
               size="sm"
               icon={<Trash2 size={16} color={colors.text} />}
               style={styles.iconButton}
-              accessibilityLabel={t('widgets.delete') || 'Delete'}
+              accessibilityLabel={t('widgets.delete')}
             />
           </View>
         )}

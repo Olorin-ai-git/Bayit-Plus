@@ -72,7 +72,8 @@
       "subscriptions": "订阅",
       "recentActivity": "最近活动",
       "quickActions": "快捷操作",
-      "noRecentActivity": "暂无最近活动"
+      "noRecentActivity": "暂无最近活动",
+      "loadError": "加载仪表板数据失败"
     },
     "common": {
       "all": "全部",
@@ -482,7 +483,9 @@
       "createSuccess": "分类已创建",
       "deleteCategory": "删除分类",
       "editCategory": "编辑分类",
-      "updateSuccess": "分类已更新"
+      "updateSuccess": "分类已更新",
+      "active": "活跃",
+      "inactive": "未活跃"
     },
     "users": {
       "roles": {
@@ -717,7 +720,9 @@
         "status": "状态",
         "successful": "成功",
         "total": "总计",
-        "uploadCancelled": "上传已取消"
+        "uploadCancelled": "上传已取消",
+        "folderNamePlaceholder": "例如，电影导入",
+        "folderPathPlaceholder": "/路径/到/文件夹"
       },
       "subtitle": "监控文件夹并管理内容上传",
       "queueDashboard": {
@@ -982,7 +987,10 @@
       "recentCompleted": "最近完成",
       "resumeQueue": "恢复",
       "skipped": "已跳过",
-      "totalJobs": "总计"
+      "totalJobs": "总计",
+      "dropZone": {
+        "filesRejected": "{{count}}个文件被拒绝"
+      }
     },
     "translation": {
       "status": {
@@ -1052,7 +1060,21 @@
       },
       "editTitle": "编辑标题",
       "newTitle": "新建标题",
-      "toggleFeatured": "切换推荐"
+      "toggleFeatured": "切换推荐",
+      "titleRequired": "标题为必填项",
+      "audioUrlRequired": "音频URL为必填项",
+      "episodeTitlePlaceholder": "集标题",
+      "descriptionPlaceholder": "描述",
+      "episodeNumberPlaceholder": "集号",
+      "durationPlaceholder": "时长（例如：45:30）",
+      "audioUrlPlaceholder": "音频URL（必填）",
+      "publishedDatePlaceholder": "发布日期（YYYY-MM-DD）",
+      "pasteImageUrl": "或粘贴图片URL",
+      "podcastTitlePlaceholder": "播客标题",
+      "authorPlaceholder": "作者",
+      "categoryPlaceholder": "类别",
+      "rssFeedUrlPlaceholder": "RSS订阅URL",
+      "websiteUrlPlaceholder": "网站URL（可选）"
     },
     "diagnostics": {
       "title": "系统诊断",
@@ -1266,7 +1288,9 @@
       },
       "testFailed": "发送测试邮件失败",
       "testSent": "测试邮件已发送",
-      "title": "邮件活动"
+      "title": "邮件活动",
+      "loadError": "加载邮件活动失败",
+      "comingSoon": "创建邮件活动即将推出"
     },
     "campaignEdit": {
       "subtitle": "编辑活动详情和设置"
@@ -1393,7 +1417,15 @@
       "notesLabel": "管理员备注",
       "subtitleDayInput": "每日字幕分钟数",
       "subtitleHourInput": "每小时字幕分钟数",
-      "subtitleMonthInput": "每月字幕分钟数"
+      "subtitleMonthInput": "每月字幕分钟数",
+      "hour": "小时",
+      "day": "天",
+      "month": "月",
+      "minutes": "分钟",
+      "saved": "已保存",
+      "loadError": "加载配额数据失败",
+      "saveError": "保存限制失败",
+      "resetError": "重置配额失败"
     },
     "recordings": {
       "title": "录制管理",
@@ -1410,7 +1442,9 @@
       "deleteFailed": "删除录制失败",
       "loadFailed": "加载录制失败",
       "noRecordings": "未找到录制",
-      "noRecordingsHint": "系统中暂无用户录制。"
+      "noRecordingsHint": "系统中暂无用户录制。",
+      "live": "直播中",
+      "offline": "离线"
     },
     "billing": {
       "subtitle": "跟踪收入和付款",
@@ -1445,7 +1479,8 @@
       "total": "总计",
       "viewAll": "查看全部",
       "viewAllTransactions": "查看所有交易",
-      "viewTransactions": "交易"
+      "viewTransactions": "交易",
+      "loadError": "加载账单数据失败"
     },
     "marketing": {
       "recentCampaigns": "最近活动",
@@ -1605,7 +1640,13 @@
         "targetLanguagesHelp": "选择用户可以实时翻译的语言"
       },
       "deleteChannel": "删除频道",
-      "editChannel": "编辑频道"
+      "editChannel": "编辑直播频道",
+      "newChannel": "新直播频道",
+      "channelName": "频道名称",
+      "streamUrl": "流媒体URL（HLS/DASH）",
+      "epgSourceUrl": "EPG源URL（可选）",
+      "currentShow": "当前节目（可选）",
+      "order": "顺序"
     },
     "radioStations": {
       "subtitle": "管理电台",
@@ -1633,7 +1674,9 @@
       }
     },
     "podcastEpisodes": {
-      "subtitle": "管理播客剧集和元数据"
+      "subtitle": "管理播客剧集和元数据",
+      "newEpisode": "新剧集",
+      "editEpisode": "编辑剧集"
     },
     "userDetail": {
       "subtitle": "用户账户详情和活动历史"
@@ -1977,12 +2020,13 @@
       "send": "立即发送",
       "confirmSend": "发送通知\"{{title}}\"？",
       "confirmDelete": "删除通知\"{{title}}\"？",
-      "fillRequired": "请填写标题和内容"
+      "fillRequired": "请填写标题和内容",
+      "editNotification": "编辑通知"
     },
     "widgets": {
       "title": "小组件",
       "subtitle": "管理直播流和嵌入的浮动覆盖小组件",
-      "newWidget": "新小组件",
+      "newWidget": "创建新小部件",
       "editWidget": "编辑小组件",
       "columns": {
         "title": "标题",
@@ -2241,7 +2285,16 @@
         "search": "搜索报告...",
         "showing": "显示",
         "status": "状态",
-        "type": "类型"
+        "type": "类型",
+        "scheduled": "已计划",
+        "manual": "手动",
+        "recent": "最近",
+        "titles": "标题",
+        "tmdb": "TMDB",
+        "subtitles": "字幕",
+        "classification": "分类",
+        "duplicates": "重复项",
+        "noResults": "未找到匹配的报告"
       },
       "logs": {
         "title": "执行日志",
@@ -2387,7 +2440,19 @@
       },
       "auditTypes": {
         "daily_incremental": "每日增量",
-        "ai_agent": "AI代理"
+        "ai_agent": "AI代理",
+        "contentValidation": {
+          "name": "内容验证",
+          "description": "验证元数据和内容完整性"
+        },
+        "posterEnrichment": {
+          "name": "海报丰富",
+          "description": "更新缺失的海报和封面"
+        },
+        "classificationAudit": {
+          "name": "分类审核",
+          "description": "审查内容分类"
+        }
       },
       "kidsAudit": {
         "ageDistribution": "年龄分级分布",
@@ -2400,7 +2465,8 @@
         "subtitle": "内容审核状态",
         "title": "儿童内容健康",
         "totalItems": "总项目数"
-      }
+      },
+      "itemsChecked": "已检查项目"
     },
     "audiobooks": {
       "confirmDelete": "确定删除此有声书？",
@@ -2425,7 +2491,15 @@
         "quality": "音频质量",
         "streamUrl": "流媒体URL",
         "subscription": "订阅等级",
-        "title": "标题"
+        "title": "标题",
+        "titlePlaceholder": "有声书标题",
+        "authorPlaceholder": "作者姓名",
+        "narratorPlaceholder": "朗读者姓名",
+        "descriptionPlaceholder": "有声书描述",
+        "durationPlaceholder": "时:分:秒",
+        "isbnPlaceholder": "ISBN编号",
+        "publisherPlaceholder": "出版社名称",
+        "streamUrlPlaceholder": "https://..."
       },
       "loadError": "加载有声书失败",
       "publish": {
@@ -2433,18 +2507,32 @@
         "publishConfirm": "发布此有声书将使其对所有用户可见。",
         "publishTitle": "发布有声书",
         "unpublishTitle": "取消发布",
-        "unpublishWarning": "此有声书目前已发布并对用户可见。取消发布将立即隐藏。"
+        "unpublishWarning": "此有声书目前已发布并对用户可见。取消发布将立即隐藏。",
+        "missingFieldsFull": "缺少必填字段：标题、作者、流媒体URL",
+        "missingFieldsShort": "缺少必填字段"
       },
       "subtitle": "管理有声书库",
       "upload": {
         "button": "上传",
         "dragDrop": "点击选择音频文件",
-        "invalidType": "文件类型无效。支持格式：MP3、AAC、M4A、FLAC",
+        "invalidType": "无效的文件类型。允许：MP3、AAC、M4A、FLAC",
         "selectFile": "选择音频文件",
         "streamUrl": "已生成流媒体URL",
         "title": "上传音频文件",
-        "tooLarge": "文件大小超过500MB限制"
-      }
+        "tooLarge": "文件大小超过500MB限制",
+        "fileTooLarge": "文件大小超过500MB限制",
+        "selectionRequired": "需要选择文件和有声书",
+        "urlCopied": "URL已复制到剪贴板"
+      },
+      "deleteError": "删除有声书失败",
+      "sections": {
+        "audiobooks": "有声书",
+        "recommended": "推荐",
+        "newReleases": "新发布",
+        "topRated": "最高评分",
+        "trending": "热门"
+      },
+      "selectSection": "请选择一个分类"
     },
     "columns": {
       "author": "作者",
@@ -2648,7 +2736,12 @@
         "sttProvider": "STT服务商",
         "supportVoice": "支持语音",
         "translationProvider": "翻译服务商",
-        "voiceIds": "语音ID"
+        "voiceIds": "语音ID",
+        "saveSuccess": "语音配置保存成功",
+        "saveError": "保存配置失败",
+        "testText": "您好，这是语音测试。",
+        "testSuccess": "语音测试播放成功",
+        "testError": "语音测试失败"
       },
       "quotas": {
         "dubbingLimits": "配音限额",
@@ -2662,7 +2755,10 @@
       "settings": {
         "apiKeys": "API密钥",
         "webhookInfo": "Webhook信息",
-        "webhooks": "Webhooks"
+        "webhooks": "Webhooks",
+        "check": "检查",
+        "healthy": "正常",
+        "unhealthy": "异常"
       },
       "subtitle": "字幕",
       "tabs": {
@@ -2672,7 +2768,13 @@
         "quotas": "配额",
         "settings": "设置"
       },
-      "title": "语音管理"
+      "title": "语音管理",
+      "library": {
+        "previewText": "您好，这是此语音的预览。",
+        "assignSuccess": "语音已分配到{{role}}角色",
+        "language": "语言",
+        "assign": "分配"
+      }
     },
     "accessDenied": "访问被拒绝",
     "costDashboard": {
@@ -2704,7 +2806,24 @@
       },
       "title": "导入向导"
     },
-    "noPermission": "无权限"
+    "noPermission": "无权限",
+    "kids": {
+      "loadingStats": "加载儿童内容统计...",
+      "subtitle": "管理儿童内容来源和审核",
+      "seeded": "已预设",
+      "imported": "已导入",
+      "skipped": "已跳过",
+      "totalContent": "儿童内容总数",
+      "kidsPodcasts": "儿童播客",
+      "pendingReview": "待审核",
+      "approved": "已批准",
+      "contentByCategory": "按类别分类的内容",
+      "contentActions": "内容操作",
+      "noCategory": "无类别",
+      "age": "年龄",
+      "approve": "批准",
+      "reject": "拒绝"
+    }
   },
   "breadcrumbs": {
     "series": "剧集",
@@ -2988,7 +3107,10 @@
     "signIn": "登录",
     "thisContent": "此内容",
     "website": "网站",
-    "yesterday": "昨天"
+    "yesterday": "昨天",
+    "more": "更多",
+    "minutesShort": "分钟",
+    "notAvailable": "N/A"
   },
   "components": {
     "select": {
@@ -3193,7 +3315,7 @@
     "title": "无结果"
   },
   "epg": {
-    "title": "电视指南",
+    "title": "节目指南",
     "subtitle": "浏览直播电视节目时间表",
     "gridView": "网格视图",
     "listView": "列表视图",
@@ -3236,10 +3358,13 @@
     "aiDisclaimer": "由 Claude AI 提供支持。结果可能因节目数据可用性而异。",
     "interpretationTitle": "我理解的内容",
     "noResultsFound": "未找到匹配您查询的节目",
-    "noProgramsScheduled": "无定时节目",
+    "noProgramsScheduled": "未安排节目",
     "noProgramsFound": "未找到节目",
     "noDataAvailable": "无可用电视指南数据",
-    "live": "直播"
+    "live": "直播",
+    "scheduleUnavailable": "电视节目时间表当前不可用。请稍后再试或联系客服。",
+    "noProgramsAvailable": "所选时间范围内没有可用节目。请尝试调整筛选器或稍后再试。",
+    "loading": "加载节目指南..."
   },
   "errors": {
     "networkError": "网络错误",
@@ -3837,7 +3962,7 @@
   },
   "liveTV": {
     "title": "直播电视",
-    "channels": "频道",
+    "channels": "直播电视频道",
     "nowPlaying": "正在播放",
     "loadError": "加载频道失败",
     "categories": {
@@ -3847,7 +3972,8 @@
       "entertainment": "娱乐",
       "kids": "儿童",
       "documentary": "纪录片"
-    }
+    },
+    "loadingChannels": "加载频道..."
   },
   "login": {
     "title": "欢迎回来",
@@ -4149,7 +4275,7 @@
     "episodes": "集",
     "categories": {
       "all": "全部",
-      "general": "综合",
+      "general": "一般",
       "news": "新闻",
       "politics": "政治",
       "tech": "科技",
@@ -4158,7 +4284,11 @@
       "entertainment": "娱乐",
       "sports": "体育",
       "history": "历史",
-      "educational": "教育"
+      "educational": "教育",
+      "technology": "科技",
+      "culture": "文化",
+      "education": "教育",
+      "comedy": "喜剧"
     },
     "noPodcasts": "无可用播客",
     "tryLater": "请稍后重试",
@@ -4203,7 +4333,10 @@
       "downloadDescription": "下载剧集以在无网络时收听。",
       "gotIt": "知道了"
     },
-    "loadingShows": "正在加载播客节目..."
+    "loadingShows": "正在加载播客节目...",
+    "loadError": "加载播客失败。请检查您的连接。",
+    "loading": "加载播客...",
+    "noPodcastsFound": "未找到播客"
   },
   "profile": {
     "title": "我的资料",
@@ -4648,7 +4781,7 @@
   "search": {
     "title": "搜索",
     "subtitle": "查找电影、剧集、频道、电台和播客",
-    "placeholder": "搜索内容...",
+    "placeholder": "搜索...",
     "voicePlaceholder": "请说话...",
     "searching": "搜索中...",
     "listening": "正在听...",
@@ -4670,7 +4803,24 @@
       "podcast": "播客",
       "moviesAndSeries": "电影与剧集",
       "channels": "频道",
-      "podcasts": "播客"
+      "podcasts": "播客",
+      "loading": "加载筛选器...",
+      "title": "高级筛选器",
+      "clearAll": "清除全部",
+      "genres": "类型",
+      "yearRange": "年份范围",
+      "decade1990s": "90年代",
+      "decade2000s": "2000年代",
+      "decade2010s": "2010年代",
+      "decade2020s": "2020年代",
+      "minimumRating": "最低评分",
+      "subtitleLanguages": "字幕语言",
+      "searchOptions": "搜索选项",
+      "searchInSubtitles": "在字幕文本中搜索（对话）",
+      "contentRating": "内容分级",
+      "kidsOnly": "仅儿童内容",
+      "excludeKids": "排除儿童内容",
+      "allContent": "所有内容"
     },
     "suggestions": {
       "trendingTitle": "Trending Searches",
@@ -4735,7 +4885,32 @@
       "retrySearch": "重试搜索",
       "somethingWrong": "出了点问题"
     },
-    "resultsTitle": "搜索结果"
+    "resultsTitle": "搜索结果",
+    "tryDifferentKeywords": "尝试不同的关键词或筛选器",
+    "stopReading": "停止朗读",
+    "readAllResults": "朗读所有结果",
+    "featured": "⭐ 精选",
+    "closedCaptions": "CC",
+    "kids": "👶 儿童",
+    "readAloud": "朗读",
+    "smartSearch": "智能搜索",
+    "premiumRequired": "智能搜索需要高级订阅",
+    "searchFailed": "搜索失败",
+    "premiumFeature": "高级功能",
+    "smartSearchDescription": "智能搜索使用AI理解自然语言查询，准确找到您要查找的内容。",
+    "upgradeToPremium": "升级至高级版",
+    "maybeLater": "稍后再说",
+    "smartSearchHint": "用自然语言提问，AI将帮您找到所需内容",
+    "smartSearchPlaceholder": "例如：'90年代带字幕的以色列喜剧'",
+    "searchWithAI": "使用AI搜索",
+    "aiInterpretation": "AI解读：",
+    "confidence": "置信度：",
+    "exampleQueries": "示例查询：",
+    "exampleQuery1": "显示80年代带英文字幕的希伯来语电影",
+    "exampleQuery2": "查找萨莎·巴伦·科恩主演的喜剧",
+    "exampleQuery3": "有哪些关于大屠杀的纪录片？",
+    "exampleQuery4": "适合5-7岁的希伯来语儿童节目",
+    "poweredByAI": "🤖 由Claude AI提供支持。结果可能因查询解读而异。"
   },
   "settings": {
     "title": "设置",
@@ -5076,6 +5251,8 @@
   "trivia": {
     "didYouKnow": "你知道吗？",
     "dismissHint": "关闭小知识",
+    "wantToKnowMore": "想了解更多吗？",
+    "followUpHint": "点击查看更深入的后续趣事",
     "settings": {
       "displayLanguages": "显示语言",
       "languageHint": "选择1-3种语言显示每个事实",
@@ -5390,7 +5567,7 @@
     "add": "添加",
     "remove": "移除",
     "show": "显示",
-    "hidden": "隐藏",
+    "hidden": "已隐藏",
     "addToCollection": "添加到我的小组件",
     "removeFromCollection": "从我的小组件移除",
     "contentTypes": {
@@ -5400,8 +5577,9 @@
       "radio": "广播",
       "vod": "视频",
       "custom": "自定义",
-      "widget": "小组件",
-      "audiobook": "有声书"
+      "widget": "小部件",
+      "audiobook": "有声书",
+      "liveStream": "直播流"
     },
     "form": {
       "title": "创建小组件",
@@ -5431,7 +5609,7 @@
       "errors": {
         "contentRequired": "请选择内容",
         "iframeUrlRequired": "iFrame URL为必填项",
-        "nameExists": "已存在同名小组件",
+        "nameExists": "已存在同名小部件",
         "titleRequired": "标题为必填项"
       },
       "validating": "验证中..."
@@ -6024,7 +6202,9 @@
     "connected": "已连接",
     "connecting": "连接中",
     "connectionFailed": "连接失败",
-    "pleaseWait": "请稍候"
+    "pleaseWait": "请稍候",
+    "connect": "连接 Audible",
+    "disconnect": "断开 Audible"
   },
   "cancelled": {
     "description": "您的付款已被取消。",

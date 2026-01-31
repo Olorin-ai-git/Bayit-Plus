@@ -5,7 +5,7 @@
  */
 
 import { useState, useCallback } from 'react'
-import { View, Text, Pressable, StyleSheet, TextInput } from 'react-native'
+import { View, Text, Pressable, StyleSheet, TextInput, Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { Send } from 'lucide-react'
@@ -66,8 +66,9 @@ export default function ChannelChatInput({
           multiline
           editable={!disabled}
           accessibilityLabel={t('channelChat.inputLabel')}
-          // @ts-expect-error -- onKeyDown supported on React Native Web
+          // @ts-expect-error -- onKeyDown and onClick supported on React Native Web
           onKeyDown={handleKeyDown}
+          onClick={(e: any) => e?.stopPropagation?.()}
         />
         <Pressable
           onPress={handleSend}
@@ -120,7 +121,12 @@ const styles = StyleSheet.create({
     color: colors.inputText,
     fontSize: 13,
     maxHeight: 80,
-  },
+    // @ts-ignore - Web-specific styles to ensure text is visible
+    ...(Platform.OS === 'web' && {
+      outlineStyle: 'none', // Remove default outline
+      caretColor: colors.primary.DEFAULT, // Purple cursor
+    }),
+  } as any,
   sendButton: {
     backgroundColor: colors.buttonPrimary,
     width: 36,

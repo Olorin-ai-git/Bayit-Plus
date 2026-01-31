@@ -7,6 +7,7 @@
 
 import React from 'react';
 import { TouchableOpacity, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 interface LLMSearchButtonProps {
   onPress: () => void;
@@ -19,6 +20,8 @@ export function LLMSearchButton({
   isPremium = false,
   disabled = false
 }: LLMSearchButtonProps) {
+  const { t } = useTranslation();
+
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -36,12 +39,12 @@ export function LLMSearchButton({
       <Text className="text-xl">🤖</Text>
 
       {/* Label */}
-      <Text className="text-white font-semibold">Smart Search</Text>
+      <Text className="text-white font-semibold">{t('search.smartSearch')}</Text>
 
       {/* Premium Badge */}
       {!isPremium && (
         <View className="px-2 py-1 bg-yellow-500/30 rounded-full">
-          <Text className="text-yellow-300 text-xs font-bold">PREMIUM</Text>
+          <Text className="text-yellow-300 text-xs font-bold">{t('common.premium')}</Text>
         </View>
       )}
     </TouchableOpacity>

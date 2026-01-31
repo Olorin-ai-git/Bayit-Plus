@@ -40,7 +40,7 @@ export function SearchResults({
   numColumns = 2,
   enableTTS = true,
 }: SearchResultsProps) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isSpeaking, setIsSpeaking] = useState(false);
 
   const handleReadAll = () => {
@@ -72,6 +72,7 @@ export function SearchResults({
         onPress={() => onResultPress(item, index)}
         onReadAloud={() => speakSearchResult(item, i18n.language, 'high')}
         enableTTS={enableTTS}
+        t={t}
       />
     );
   };
@@ -93,7 +94,7 @@ export function SearchResults({
         className="my-4 mx-auto px-6 py-3 bg-white/10 rounded-full"
         activeOpacity={0.7}
       >
-        <Text className="text-white font-medium">Load More</Text>
+        <Text className="text-white font-medium">{t('common.loadMore')}</Text>
       </TouchableOpacity>
     );
   };
@@ -103,7 +104,7 @@ export function SearchResults({
       return (
         <View className="flex-1 items-center justify-center py-20">
           <ActivityIndicator size="large" color="#ffffff" />
-          <Text className="text-white/60 mt-4">Searching...</Text>
+          <Text className="text-white/60 mt-4">{t('search.searching')}</Text>
         </View>
       );
     }
@@ -111,8 +112,8 @@ export function SearchResults({
     return (
       <View className="flex-1 items-center justify-center py-20">
         <Text className="text-6xl mb-4">🔍</Text>
-        <Text className="text-white text-lg">{emptyMessage}</Text>
-        <Text className="text-white/60 text-sm mt-2">Try different keywords or filters</Text>
+        <Text className="text-white text-lg">{emptyMessage || t('search.noResults')}</Text>
+        <Text className="text-white/60 text-sm mt-2">{t('search.tryDifferentKeywords')}</Text>
       </View>
     );
   };
@@ -129,7 +130,7 @@ export function SearchResults({
         >
           <Text className="text-2xl">{isSpeaking ? '⏸️' : '🔊'}</Text>
           <Text className="text-white font-medium">
-            {isSpeaking ? 'Stop Reading' : 'Read All Results'}
+            {isSpeaking ? t('search.stopReading') : t('search.readAllResults')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -160,12 +161,14 @@ function ContentCard({
   onPress,
   onReadAloud,
   enableTTS = true,
+  t,
 }: {
   result: SearchResult;
   index: number;
   onPress: () => void;
   onReadAloud?: () => void;
   enableTTS?: boolean;
+  t: any;
 }) {
   return (
     <TouchableOpacity
@@ -225,17 +228,17 @@ function ContentCard({
         <View className="flex-row gap-2 mt-2">
           {result.is_featured && (
             <View className="px-2 py-1 bg-yellow-500/20 rounded">
-              <Text className="text-yellow-400 text-xs">⭐ Featured</Text>
+              <Text className="text-yellow-400 text-xs">{t('search.featured')}</Text>
             </View>
           )}
           {result.has_subtitles && (
             <View className="px-2 py-1 bg-purple-500/20 rounded">
-              <Text className="text-purple-300 text-xs">CC</Text>
+              <Text className="text-purple-300 text-xs">{t('search.closedCaptions')}</Text>
             </View>
           )}
           {result.is_kids_content && (
             <View className="px-2 py-1 bg-pink-500/20 rounded">
-              <Text className="text-pink-300 text-xs">👶 Kids</Text>
+              <Text className="text-pink-300 text-xs">{t('search.kids')}</Text>
             </View>
           )}
         </View>
@@ -251,7 +254,7 @@ function ContentCard({
             activeOpacity={0.7}
           >
             <Text className="text-lg">🔊</Text>
-            <Text className="text-purple-200 text-xs font-medium">Read Aloud</Text>
+            <Text className="text-purple-200 text-xs font-medium">{t('search.readAloud')}</Text>
           </TouchableOpacity>
         )}
       </View>

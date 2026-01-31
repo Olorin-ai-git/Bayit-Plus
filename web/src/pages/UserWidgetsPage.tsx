@@ -95,10 +95,10 @@ export default function UserWidgetsPage() {
       {/* Personal Widgets Section */}
       <View style={styles.sectionHeader}>
         <Text style={[styles.sectionTitle, { textAlign }]}>
-          {t('widgets.myWidgets') || 'My Personal Widgets'}
+          {t('widgets.myWidgets')}
         </Text>
         <Text style={[styles.sectionDescription, { textAlign }]}>
-          {t('widgets.myWidgetsHint') || 'Widgets you have created'}
+          {t('widgets.myWidgetsHint')}
         </Text>
       </View>
 
@@ -124,9 +124,9 @@ export default function UserWidgetsPage() {
         <View style={styles.emptyState}>
           <GlassCard style={styles.emptyCard}>
             <Text style={styles.emptyIcon}>⊞</Text>
-            <Text style={styles.emptyTitle}>{t('widgets.emptyPersonal') || 'No personal widgets yet'}</Text>
+            <Text style={styles.emptyTitle}>{t('widgets.emptyPersonal')}</Text>
             <Text style={styles.emptyDescription}>
-              {t('widgets.emptyPersonalHint') || 'Create your first personal widget or add system widgets above'}
+              {t('widgets.emptyPersonalHint')}
             </Text>
           </GlassCard>
         </View>

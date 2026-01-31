@@ -25,6 +25,7 @@ interface UseTriviaReturn {
   error: string | null
   toggleTrivia: () => void
   dismissFact: () => void
+  followUpFact: () => void
   updateSettings: (updates: Partial<TriviaPreferences>) => Promise<void>
 }
 
@@ -49,6 +50,7 @@ export function useTrivia({
     updatePreferences,
     showNextFact,
     dismissFact: storeDismissFact,
+    followUpFact: storeFollowUpFact,
     clearError,
   } = useTriviaStore()
 
@@ -156,6 +158,15 @@ export function useTrivia({
     storeDismissFact()
   }, [storeDismissFact])
 
+  const handleFollowUpFact = useCallback(() => {
+    // Reset auto-dismiss timer when following up
+    if (autoDismissRef.current) {
+      clearTimeout(autoDismissRef.current)
+      autoDismissRef.current = null
+    }
+    storeFollowUpFact()
+  }, [storeFollowUpFact])
+
   const handleUpdateSettings = useCallback(
     async (updates: Partial<TriviaPreferences>) => {
       try {
@@ -176,6 +187,7 @@ export function useTrivia({
     error,
     toggleTrivia: handleToggleTrivia,
     dismissFact: handleDismissFact,
+    followUpFact: handleFollowUpFact,
     updateSettings: handleUpdateSettings,
   }
 }

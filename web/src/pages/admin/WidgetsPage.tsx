@@ -104,7 +104,7 @@ export default function WidgetsPage() {
       message: t('admin.widgets.confirmDelete'),
       dismissable: true,
       action: {
-        label: t('common.delete', 'Delete'),
+        label: t('common.delete'),
         type: 'action',
         onPress: async () => {
           try {
@@ -270,9 +270,9 @@ export default function WidgetsPage() {
               onPress={handleCreate}
               variant="primary"
               icon={<Plus size={18} color={colors.text} />}
-              accessibilityLabel={t('admin.widgets.newWidget', { defaultValue: 'Create new widget' })}
+              accessibilityLabel={t('admin.widgets.newWidget')}
             >
-              {t('admin.actions.new', { defaultValue: 'New' })}
+              {t('admin.actions.new')}
             </GlassButton>
           }
         />

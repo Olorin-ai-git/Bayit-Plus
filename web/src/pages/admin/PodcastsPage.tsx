@@ -388,7 +388,7 @@ export default function PodcastsPage() {
             <GlassInput
               label={t('admin.podcasts.form.coverUrl', 'Cover URL')}
               containerStyle={styles.input}
-              placeholder="Or paste image URL"
+              placeholder={t('admin.podcasts.pasteImageUrl')}
               value={editData.cover || ''}
               onChangeText={(value) => setEditData({ ...editData, cover: value })}
             />
@@ -396,21 +396,21 @@ export default function PodcastsPage() {
           <GlassInput
             label={t('admin.podcasts.form.title', 'Podcast title')}
             containerStyle={styles.input}
-            placeholder="Podcast title"
+            placeholder={t('admin.podcasts.podcastTitlePlaceholder')}
             value={editData.title || ''}
             onChangeText={(value) => setEditData({ ...editData, title: value })}
           />
           <GlassInput
             label={t('admin.podcasts.form.author', 'Author')}
             containerStyle={styles.input}
-            placeholder="Author"
+            placeholder={t('admin.podcasts.authorPlaceholder')}
             value={editData.author || ''}
             onChangeText={(value) => setEditData({ ...editData, author: value })}
           />
           <GlassInput
             label={t('admin.podcasts.form.description', 'Description')}
             containerStyle={styles.input}
-            placeholder="Description"
+            placeholder={t('admin.podcasts.descriptionPlaceholder')}
             value={editData.description || ''}
             onChangeText={(value) => setEditData({ ...editData, description: value })}
             multiline
@@ -418,21 +418,21 @@ export default function PodcastsPage() {
           <GlassInput
             label={t('admin.podcasts.form.category', 'Category')}
             containerStyle={styles.input}
-            placeholder="Category"
+            placeholder={t('admin.podcasts.categoryPlaceholder')}
             value={editData.category || ''}
             onChangeText={(value) => setEditData({ ...editData, category: value })}
           />
           <GlassInput
             label={t('admin.podcasts.form.rssFeed', 'RSS Feed URL')}
             containerStyle={styles.input}
-            placeholder="RSS Feed URL"
+            placeholder={t('admin.podcasts.rssFeedUrlPlaceholder')}
             value={editData.rss_feed || ''}
             onChangeText={(value) => setEditData({ ...editData, rss_feed: value })}
           />
           <GlassInput
             label={t('admin.podcasts.form.website', 'Website URL (optional)')}
             containerStyle={styles.input}
-            placeholder="Website URL (optional)"
+            placeholder={t('admin.podcasts.websiteUrlPlaceholder')}
             value={editData.website || ''}
             onChangeText={(value) => setEditData({ ...editData, website: value })}
           />

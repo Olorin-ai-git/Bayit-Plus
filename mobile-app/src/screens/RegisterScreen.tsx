@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export const RegisterScreen: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Register Screen</Text>
+      <Text style={styles.text}>{t('register.title')}</Text>
     </View>
   );
 };

@@ -148,14 +148,14 @@ export default function PodcastsPage() {
       // Add "general" category for uncategorized podcasts
       const allCategories = [
         ...cats,
-        { id: 'general', name: 'General' }
+        { id: 'general', name: t('podcasts.categories.general') }
       ];
 
       setCategories(allCategories);
     } catch (error) {
       logger.error('Failed to load podcast categories', 'PodcastsPage', error);
       // Set default categories on error
-      setCategories([{ id: 'general', name: 'General' }]);
+      setCategories([{ id: 'general', name: t('podcasts.categories.general') }]);
     }
   };
 

@@ -274,35 +274,35 @@ export default function LiveChannelsPage() {
           <GlassInput
             label={t('admin.liveChannels.form.name', 'Channel name')}
             containerStyle={styles.input}
-            placeholder="Channel name"
+            placeholder={t('admin.liveChannels.channelName')}
             value={editData.name || ''}
             onChangeText={(value) => setEditData({ ...editData, name: value })}
           />
           <GlassInput
             label={t('admin.liveChannels.form.streamUrl', 'Stream URL')}
             containerStyle={styles.input}
-            placeholder="Stream URL (HLS/DASH)"
+            placeholder={t('admin.liveChannels.streamUrl')}
             value={editData.stream_url || ''}
             onChangeText={(value) => setEditData({ ...editData, stream_url: value })}
           />
           <GlassInput
             label={t('admin.liveChannels.form.epgSource', 'EPG Source URL (optional)')}
             containerStyle={styles.input}
-            placeholder="EPG Source URL (optional)"
+            placeholder={t('admin.liveChannels.epgSourceUrl')}
             value={editData.epg_source || ''}
             onChangeText={(value) => setEditData({ ...editData, epg_source: value })}
           />
           <GlassInput
             label={t('admin.liveChannels.form.currentShow', 'Current Show')}
             containerStyle={styles.input}
-            placeholder="Current Show (optional)"
+            placeholder={t('admin.liveChannels.currentShow')}
             value={editData.current_show || ''}
             onChangeText={(value) => setEditData({ ...editData, current_show: value })}
           />
           <GlassInput
             label={t('admin.liveChannels.form.order', 'Order')}
             containerStyle={styles.input}
-            placeholder="Order"
+            placeholder={t('admin.liveChannels.order')}
             value={String(editData.order || '')}
             onChangeText={(value) => setEditData({ ...editData, order: parseInt(value) || 0 })}
             keyboardType="number-pad"

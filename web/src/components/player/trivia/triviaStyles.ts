@@ -143,7 +143,31 @@ export const triviaStyles = StyleSheet.create({
     borderRadius: 1,
     width: '100%',
   },
-  // NEW: Multilingual display styles
+  // Follow-up button styles
+  followUpContainer: {
+    marginTop: 4,
+    marginBottom: 8,
+  },
+  followUpButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    backgroundColor: 'rgba(252, 211, 77, 0.15)',
+    alignSelf: 'flex-start',
+  },
+  followUpButtonRTL: {
+    flexDirection: 'row-reverse',
+    alignSelf: 'flex-end',
+  },
+  followUpText: {
+    color: '#FCD34D',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  // Multilingual display styles
   multilingualContainer: {
     marginBottom: 8,
     gap: 6,

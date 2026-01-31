@@ -37,7 +37,8 @@
       },
       "recentActivity": "சமீபத்திய செயல்பாடு",
       "quickActions": "விரைவு செயல்கள்",
-      "noRecentActivity": "சமீபத்திய செயல்பாடு இல்லை"
+      "noRecentActivity": "சமீபத்திய செயல்பாடு இல்லை",
+      "loadError": "டாஷ்போர்டு தரவை ஏற்ற இயலவில்லை"
     },
     "nav": {
       "dashboard": "டாஷ்போர்டு",
@@ -634,7 +635,21 @@
       },
       "editTitle": "தலைப்பைத் திருத்து",
       "newTitle": "புதிய தலைப்பு",
-      "toggleFeatured": "சிறப்பு நிலை மாற்று"
+      "toggleFeatured": "சிறப்பு நிலை மாற்று",
+      "titleRequired": "தலைப்பு தேவை",
+      "audioUrlRequired": "Audio URL தேவை",
+      "episodeTitlePlaceholder": "அத்தியாய தலைப்பு",
+      "descriptionPlaceholder": "விளக்கம்",
+      "episodeNumberPlaceholder": "அத்தியாய எண்",
+      "durationPlaceholder": "கால அளவு (எ.கா., 45:30)",
+      "audioUrlPlaceholder": "Audio URL (தேவை)",
+      "publishedDatePlaceholder": "வெளியிடப்பட்ட தேதி (YYYY-MM-DD)",
+      "pasteImageUrl": "அல்லது படம் URL ஐ ஒட்டவும்",
+      "podcastTitlePlaceholder": "Podcast தலைப்பு",
+      "authorPlaceholder": "ஆசிரியர்",
+      "categoryPlaceholder": "வகை",
+      "rssFeedUrlPlaceholder": "RSS Feed URL",
+      "websiteUrlPlaceholder": "Website URL (விருப்பத்தேர்வு)"
     },
     "diagnostics": {
       "title": "அமைப்பு நோயறிதல்",
@@ -848,7 +863,9 @@
       },
       "testFailed": "சோதனை மின்னஞ்சல் அனுப்ப முடியவில்லை",
       "testSent": "சோதனை மின்னஞ்சல் அனுப்பப்பட்டது",
-      "title": "மின்னஞ்சல் பிரச்சாரங்கள்"
+      "title": "மின்னஞ்சல் பிரச்சாரங்கள்",
+      "loadError": "மின்னஞ்சல் பிரச்சாரங்களை ஏற்ற இயலவில்லை",
+      "comingSoon": "மின்னஞ்சல் பிரச்சாரம் உருவாக்கம் விரைவில்"
     },
     "campaignEdit": {
       "subtitle": "பிரச்சார விவரங்கள் மற்றும் அமைப்புகளை திருத்து"
@@ -886,7 +903,7 @@
       "churnRate": "இழப்பு விகிதம்"
     },
     "actions": {
-      "new": "புதிய",
+      "new": "புதியது",
       "addUser": "பயனர் சேர்",
       "newCampaign": "புதிய பிரச்சாரம்",
       "sendEmail": "மின்னஞ்சல் அனுப்பு",
@@ -1036,7 +1053,15 @@
       "notesLabel": "நிர்வாக குறிப்புகள்",
       "subtitleDayInput": "நாளுக்கு வசன நிமிடங்கள்",
       "subtitleHourInput": "மணிநேரத்திற்கு வசன நிமிடங்கள்",
-      "subtitleMonthInput": "மாதத்திற்கு வசன நிமிடங்கள்"
+      "subtitleMonthInput": "மாதத்திற்கு வசன நிமிடங்கள்",
+      "hour": "மணி",
+      "day": "நாள்",
+      "month": "மாதம்",
+      "minutes": "நிமி",
+      "saved": "சேமிக்கப்பட்டது",
+      "loadError": "ஒதுக்கீடு தரவை ஏற்ற இயலவில்லை",
+      "saveError": "வரம்புகளைச் சேமிக்க இயலவில்லை",
+      "resetError": "ஒதுக்கீட்டை மீட்டமைக்க இயலவில்லை"
     },
     "categories": {
       "subtitle": "உள்ளடக்க வகைகளை நிர்வகிக்க",
@@ -1058,7 +1083,9 @@
       "createSuccess": "வகை உருவாக்கப்பட்டது",
       "deleteCategory": "வகையை நீக்கு",
       "editCategory": "வகையைத் திருத்து",
-      "updateSuccess": "வகை புதுப்பிக்கப்பட்டது"
+      "updateSuccess": "வகை புதுப்பிக்கப்பட்டது",
+      "active": "செயலில்",
+      "inactive": "செயலற்றது"
     },
     "recordings": {
       "title": "பதிவுகள் மேலாண்மை",
@@ -1075,7 +1102,9 @@
       "deleteFailed": "பதிவை நீக்க முடியவில்லை",
       "loadFailed": "பதிவுகளை ஏற்ற முடியவில்லை",
       "noRecordings": "பதிவுகள் இல்லை",
-      "noRecordingsHint": "அமைப்பில் பயனர் பதிவுகள் இன்னும் இல்லை."
+      "noRecordingsHint": "அமைப்பில் பயனர் பதிவுகள் இன்னும் இல்லை.",
+      "live": "நேரடி",
+      "offline": "ஆஃப்லைன்"
     },
     "uploads": {
       "mobile": {
@@ -1208,7 +1237,9 @@
         "totalFiles": "மொத்த கோப்புகள்",
         "uploadCancelled": "பதிவேற்றம் ரத்து",
         "uploadMode": "பதிவேற்ற முறை",
-        "validFiles": "செல்லுபடியான கோப்புகள்"
+        "validFiles": "செல்லுபடியான கோப்புகள்",
+        "folderNamePlaceholder": "எ.கா., திரைப்படங்கள் இறக்குமதி",
+        "folderPathPlaceholder": "/பாதை/கோப்புறை"
       },
       "urlUpload": {
         "title": "URL இலிருந்து இறக்குமதி",
@@ -1420,7 +1451,10 @@
       "recentCompleted": "சமீபத்தில் முடிந்தவை",
       "resumeQueue": "மீண்டும் தொடங்கு",
       "skipped": "தவிர்க்கப்பட்டது",
-      "totalJobs": "மொத்தம்"
+      "totalJobs": "மொத்தம்",
+      "dropZone": {
+        "filesRejected": "{{count}} கோப்பு(கள்) நிராகரிக்கப்பட்டன"
+      }
     },
     "librarian": {
       "title": "நூலகர் முகவர்",
@@ -1626,7 +1660,16 @@
         "search": "அறிக்கைகளைத் தேடு...",
         "showing": "காட்டுகிறது",
         "status": "நிலை",
-        "type": "வகை"
+        "type": "வகை",
+        "scheduled": "திட்டமிடப்பட்டது",
+        "manual": "கைமுறை",
+        "recent": "சமீபத்திய",
+        "titles": "தலைப்புகள்",
+        "tmdb": "TMDB",
+        "subtitles": "வசனங்கள்",
+        "classification": "வகைப்பாடு",
+        "duplicates": "நகல்கள்",
+        "noResults": "பொருந்தும் அறிக்கைகள் கிடைக்கவில்லை"
       },
       "logs": {
         "title": "செயல்படுத்தல் பதிவுகள்",
@@ -1772,7 +1815,19 @@
       },
       "auditTypes": {
         "daily_incremental": "தினசரி அதிகரிப்பு",
-        "ai_agent": "AI முகவர்"
+        "ai_agent": "AI முகவர்",
+        "contentValidation": {
+          "name": "உள்ளடக்க சரிபார்ப்பு",
+          "description": "மெட்டாடேட்டா மற்றும் உள்ளடக்க ஒருமைப்பாட்டைச் சரிபார்"
+        },
+        "posterEnrichment": {
+          "name": "போஸ்டர் செறிவூட்டல்",
+          "description": "காணாத போஸ்டர்கள் மற்றும் கலைப்படைப்புகளைப் புதுப்பி"
+        },
+        "classificationAudit": {
+          "name": "வகைப்பாடு தணிக்கை",
+          "description": "உள்ளடக்க வகைப்பாடுகளை மதிப்பாய்வு செய்"
+        }
       },
       "kidsAudit": {
         "ageDistribution": "வயது மதிப்பீட்டு விநியோகம்",
@@ -1785,12 +1840,13 @@
         "subtitle": "உள்ளடக்க மதிப்பாய்வு நிலை",
         "title": "குழந்தைகள் உள்ளடக்க ஆரோக்கியம்",
         "totalItems": "மொத்த உருப்படிகள்"
-      }
+      },
+      "itemsChecked": "சரிபார்க்கப்பட்ட உருப்படிகள்"
     },
     "widgets": {
       "title": "விட்ஜெட்கள்",
       "subtitle": "நேரலை ஸ்ட்ரீம்கள் மற்றும் உட்பொதிவுகளுக்கான மிதக்கும் மேலடுக்கு விட்ஜெட்களை நிர்வகிக்கவும்",
-      "newWidget": "புதிய விட்ஜெட்",
+      "newWidget": "புதிய விட்ஜெட்டை உருவாக்கவும்",
       "editWidget": "விட்ஜெட்டை திருத்து",
       "columns": {
         "title": "தலைப்பு",
@@ -1878,7 +1934,8 @@
       "total": "மொத்தம்",
       "viewAll": "அனைத்தையும் காண்",
       "viewAllTransactions": "அனைத்து பரிவர்த்தனைகளையும் காண்",
-      "viewTransactions": "பரிவர்த்தனைகள்"
+      "viewTransactions": "பரிவர்த்தனைகள்",
+      "loadError": "பில்லிங் தரவை ஏற்ற இயலவில்லை"
     },
     "marketing": {
       "recentCampaigns": "சமீபத்திய பிரச்சாரங்கள்",
@@ -2027,7 +2084,7 @@
       "title": "நேரலை சேனல்கள்",
       "subtitle": "நேரலை டிவி சேனல்களை நிர்வகிக்க",
       "searchPlaceholder": "சேனல்களை தேடு...",
-      "newChannel": "புதிய சேனல்",
+      "newChannel": "புதிய நேரடி சேனல்",
       "emptyMessage": "நேரலை சேனல்கள் இல்லை",
       "confirmDelete": "இந்த சேனலை நீக்கவா?",
       "subtitleSettings": "வசன அமைப்புகள்",
@@ -2048,7 +2105,12 @@
         "targetLanguagesHelp": "பயனர்கள் நிகழ்நேரத்தில் எந்த மொழிகளுக்கு மொழிபெயர்க்கலாம் என்பதைத் தேர்ந்தெடுக்கவும்"
       },
       "deleteChannel": "சேனலை நீக்கு",
-      "editChannel": "சேனலைத் திருத்து"
+      "editChannel": "நேரடி சேனலைத் திருத்து",
+      "channelName": "சேனல் பெயர்",
+      "streamUrl": "Stream URL (HLS/DASH)",
+      "epgSourceUrl": "EPG Source URL (விருப்பத்தேர்வு)",
+      "currentShow": "தற்போதைய நிகழ்ச்சி (விருப்பத்தேர்வு)",
+      "order": "வரிசை"
     },
     "radioStations": {
       "title": "வானொலி நிலையங்கள்",
@@ -2086,9 +2148,10 @@
     "podcastEpisodes": {
       "title": "போட்காஸ்ட் எபிசோட்கள்",
       "subtitle": "போட்காஸ்ட் எபிசோட்களை நிர்வகிக்க",
-      "newEpisode": "புதிய எபிசோட்",
+      "newEpisode": "புதிய அத்தியாயம்",
       "emptyMessage": "எபிசோட்கள் இல்லை",
-      "confirmDelete": "இந்த எபிசோடை நீக்கவா?"
+      "confirmDelete": "இந்த எபிசோடை நீக்கவா?",
+      "editEpisode": "அத்தியாயத்தைத் திருத்து"
     },
     "userDetail": {
       "title": "பயனர் விவரங்கள்",
@@ -2196,7 +2259,7 @@
       "firstPurchaseDesc": "முதல் வாங்குதல் செய்யும் பயனர்களுக்கு மட்டும் பொருந்தும்",
       "firstPurchaseOnly": "முதல் வாங்குதல் மட்டும்",
       "generate": "உருவாக்கு",
-      "loadError": "பிரச்சாரத்தை ஏற்ற முடியவில்லை",
+      "loadError": "பிரச்சாரங்களை ஏற்ற இயலவில்லை",
       "maxDiscount": "அதிகபட்ச தள்ளுபடி தொகை ($)",
       "minimumPurchase": "குறைந்தபட்ச வாங்குதல் தொகை ($)",
       "name": "பிரச்சார பெயர்",
@@ -2473,7 +2536,8 @@
       "create": "உருவாக்கு",
       "confirmSend": "இந்த அறிவிப்பை அனுப்ப விரும்புகிறீர்களா?",
       "confirmDelete": "இந்த அறிவிப்பை நீக்க விரும்புகிறீர்களா?",
-      "fillRequired": "தேவையான புலங்களை நிரப்பவும்"
+      "fillRequired": "தேவையான புலங்களை நிரப்பவும்",
+      "editNotification": "அறிவிப்பைத் திருத்து"
     },
     "audiobooks": {
       "confirmDelete": "இந்த ஆடியோபுக்கை நீக்கவா?",
@@ -2498,7 +2562,15 @@
         "quality": "ஆடியோ தரம்",
         "streamUrl": "ஸ்ட்ரீம் URL",
         "subscription": "சந்தா நிலை",
-        "title": "தலைப்பு"
+        "title": "தலைப்பு",
+        "titlePlaceholder": "ஒலிப்புத்தக தலைப்பு",
+        "authorPlaceholder": "ஆசிரியர் பெயர்",
+        "narratorPlaceholder": "விவரிப்பாளர் பெயர்",
+        "descriptionPlaceholder": "ஒலிப்புத்தக விளக்கம்",
+        "durationPlaceholder": "மணி:நிமி:வி",
+        "isbnPlaceholder": "ISBN எண்",
+        "publisherPlaceholder": "பதிப்பகம் பெயர்",
+        "streamUrlPlaceholder": "https://..."
       },
       "loadError": "ஆடியோபுக்குகளை ஏற்ற முடியவில்லை",
       "publish": {
@@ -2506,18 +2578,32 @@
         "publishConfirm": "இந்த ஆடியோபுக்கை வெளியிடுவது அனைத்து பயனர்களுக்கும் தெரியும்.",
         "publishTitle": "ஆடியோபுக்கை வெளியிடு",
         "unpublishTitle": "வெளியிடலை நீக்கு",
-        "unpublishWarning": "இந்த ஆடியோபுக் தற்போது வெளியிடப்பட்டு பயனர்களுக்கு தெரிகிறது. வெளியிடலை நீக்குவது உடனடியாக மறைக்கும்."
+        "unpublishWarning": "இந்த ஆடியோபுக் தற்போது வெளியிடப்பட்டு பயனர்களுக்கு தெரிகிறது. வெளியிடலை நீக்குவது உடனடியாக மறைக்கும்.",
+        "missingFieldsFull": "தேவையான புலங்கள் இல்லை: தலைப்பு, ஆசிரியர், ஸ்ட்ரீம் URL",
+        "missingFieldsShort": "தேவையான புலங்கள் இல்லை"
       },
       "subtitle": "ஆடியோபுக் நூலகத்தை நிர்வகி",
       "upload": {
         "button": "பதிவேற்று",
         "dragDrop": "ஆடியோ கோப்பைத் தேர்வு செய்ய கிளிக் செய்யவும்",
-        "invalidType": "தவறான கோப்பு வகை. அனுமதிக்கப்படுவது: MP3, AAC, M4A, FLAC",
+        "invalidType": "தவறான கோப்பு வகை. அனுமதிக்கப்பட்டவை: MP3, AAC, M4A, FLAC",
         "selectFile": "ஆடியோ கோப்பைத் தேர்வு செய்",
         "streamUrl": "ஸ்ட்ரீம் URL உருவாக்கப்பட்டது",
         "title": "ஆடியோ கோப்பைப் பதிவேற்று",
-        "tooLarge": "கோப்பு அளவு 500MB வரம்பை மீறுகிறது"
-      }
+        "tooLarge": "கோப்பு அளவு 500MB வரம்பை மீறுகிறது",
+        "fileTooLarge": "கோப்பு அளவு 500MB வரம்பை மீறுகிறது",
+        "selectionRequired": "கோப்பு மற்றும் ஒலிப்புத்தக தேர்வு தேவை",
+        "urlCopied": "URL கிளிப்போர்டுக்கு நகலெடுக்கப்பட்டது"
+      },
+      "deleteError": "ஒலிப்புத்தகத்தை நீக்க இயலவில்லை",
+      "sections": {
+        "audiobooks": "ஒலிப்புத்தகங்கள்",
+        "recommended": "பரிந்துரைக்கப்பட்டவை",
+        "newReleases": "புதிய வெளியீடுகள்",
+        "topRated": "சிறந்த மதிப்பீடு",
+        "trending": "பிரபலமானவை"
+      },
+      "selectSection": "ஒரு பிரிவைத் தேர்ந்தெடுக்கவும்"
     },
     "columns": {
       "author": "ஆசிரியர்",
@@ -2721,7 +2807,12 @@
         "sttProvider": "STT வழங்குநர்",
         "supportVoice": "ஆதரவு குரல்",
         "translationProvider": "மொழிபெயர்ப்பு வழங்குநர்",
-        "voiceIds": "குரல் ஐடிகள்"
+        "voiceIds": "குரல் ஐடிகள்",
+        "saveSuccess": "குரல் உள்ளமைவு வெற்றிகரமாக சேமிக்கப்பட்டது",
+        "saveError": "உள்ளமைவைச் சேமிக்க இயலவில்லை",
+        "testText": "வணக்கம், இது ஒரு குரல் சோதனை.",
+        "testSuccess": "குரல் சோதனை வெற்றிகரமாக இயக்கப்பட்டது",
+        "testError": "குரல் சோதனை தோல்வியடைந்தது"
       },
       "quotas": {
         "dubbingLimits": "டப்பிங் வரம்புகள்",
@@ -2735,7 +2826,10 @@
       "settings": {
         "apiKeys": "API சாவிகள்",
         "webhookInfo": "வெப்ஹூக் தகவல்",
-        "webhooks": "வெப்ஹூக்குகள்"
+        "webhooks": "வெப்ஹூக்குகள்",
+        "check": "சரிபார்",
+        "healthy": "இயல்பு",
+        "unhealthy": "சிக்கல்"
       },
       "subtitle": "வசனம்",
       "tabs": {
@@ -2745,7 +2839,13 @@
         "quotas": "ஒதுக்கீடுகள்",
         "settings": "அமைப்புகள்"
       },
-      "title": "தலைப்பு"
+      "title": "தலைப்பு",
+      "library": {
+        "previewText": "வணக்கம், இது இந்தக் குரலின் முன்னோட்டம்.",
+        "assignSuccess": "குரல் {{role}} பங்குக்கு ஒதுக்கப்பட்டது",
+        "language": "மொழி",
+        "assign": "ஒதுக்கு"
+      }
     },
     "accessDenied": "அணுகல் மறுக்கப்பட்டது",
     "costDashboard": {
@@ -2777,7 +2877,24 @@
       },
       "title": "தலைப்பு"
     },
-    "noPermission": "அனுமதி இல்லை"
+    "noPermission": "அனுமதி இல்லை",
+    "kids": {
+      "loadingStats": "குழந்தைகள் உள்ளடக்க புள்ளிவிவரங்கள் ஏற்றப்படுகின்றன...",
+      "subtitle": "குழந்தைகள் உள்ளடக்க ஆதாரங்கள் மற்றும் மதிப்பீட்டை நிர்வகிக்கவும்",
+      "seeded": "விதைக்கப்பட்டது",
+      "imported": "இறக்குமதி செய்யப்பட்டது",
+      "skipped": "தவிர்க்கப்பட்டது",
+      "totalContent": "மொத்த குழந்தைகள் உள்ளடக்கம்",
+      "kidsPodcasts": "குழந்தைகள் Podcast கள்",
+      "pendingReview": "மதிப்பீடு நிலுவையில்",
+      "approved": "அனுமதிக்கப்பட்டது",
+      "contentByCategory": "வகையின்படி உள்ளடக்கம்",
+      "contentActions": "உள்ளடக்க செயல்கள்",
+      "noCategory": "வகை இல்லை",
+      "age": "வயது",
+      "approve": "அனுமதி",
+      "reject": "நிராகரி"
+    }
   },
   "chatbot": {
     "title": "Bayit+ உதவியாளர்",
@@ -2873,7 +2990,7 @@
     "moreInfo": "மேலும் தகவல்",
     "seeAll": "அனைத்தையும் காண்",
     "new": "புதிய",
-    "live": "நேரலை",
+    "live": "நேரடி",
     "recommended": "பரிந்துரைக்கப்பட்டது",
     "edit": "திருத்து",
     "delete": "நீக்கு",
@@ -2967,7 +3084,10 @@
     "signIn": "உள்நுழை",
     "thisContent": "இந்த உள்ளடக்கம்",
     "website": "இணையதளம்",
-    "yesterday": "நேற்று"
+    "yesterday": "நேற்று",
+    "more": "மேலும்",
+    "minutesShort": "நிமி",
+    "notAvailable": "N/A"
   },
   "content": {
     "play": "இயக்கு",
@@ -3095,7 +3215,7 @@
     "title": "முடிவுகள் இல்லை"
   },
   "epg": {
-    "title": "TV வழிகாட்டி",
+    "title": "தொலைக்காட்சி வழிகாட்டி",
     "subtitle": "நேரலை TV நிரல் அட்டவணை",
     "gridView": "கிரிட் பார்வை",
     "listView": "பட்டியல் பார்வை",
@@ -3138,10 +3258,13 @@
     "aiDisclaimer": "Claude AI மூலம் இயக்கப்படுகிறது. நிகழ்ச்சி தரவு கிடைக்கும் தன்மையின் அடிப்படையில் முடிவுகள் மாறுபடலாம்.",
     "interpretationTitle": "நான் புரிந்துகொண்டது",
     "noResultsFound": "உங்கள் வினவலுக்கு பொருந்தும் நிகழ்ச்சிகள் இல்லை",
-    "noProgramsScheduled": "நிகழ்ச்சிகள் திட்டமிடப்படவில்லை",
+    "noProgramsScheduled": "நிகழ்ச்சிகள் ஏதும் திட்டமிடப்படவில்லை",
     "noProgramsFound": "நிகழ்ச்சிகள் இல்லை",
     "noDataAvailable": "TV வழிகாட்டி தரவு இல்லை",
-    "live": "நேரலை"
+    "live": "நேரலை",
+    "scheduleUnavailable": "தொலைக்காட்சி நிகழ்ச்சி அட்டவணை தற்போது கிடைக்கவில்லை. தயவுசெய்து பின்னர் சரிபார்க்கவும் அல்லது இது தொடர்ந்தால் ஆதரவை தொடர்பு கொள்ளவும்.",
+    "noProgramsAvailable": "தேர்ந்தெடுக்கப்பட்ட நேர வரம்புக்கு நிகழ்ச்சிகள் ஏதும் இல்லை. உங்கள் வடிகட்டிகளை சரிசெய்யவும் அல்லது பின்னர் சரிபார்க்கவும்.",
+    "loading": "தொலைக்காட்சி வழிகாட்டி ஏற்றப்படுகிறது..."
   },
   "errors": {
     "networkError": "நெட்வொர்க் பிழை",
@@ -3436,7 +3559,7 @@
   },
   "liveTV": {
     "title": "நேரலை TV",
-    "channels": "சேனல்கள்",
+    "channels": "நேரடி தொலைக்காட்சி சேனல்கள்",
     "nowPlaying": "இப்போது இயங்குகிறது",
     "loadError": "சேனல்களை ஏற்ற முடியவில்லை",
     "categories": {
@@ -3446,7 +3569,8 @@
       "entertainment": "பொழுதுபோக்கு",
       "kids": "குழந்தைகள்",
       "documentary": "ஆவணப்படம்"
-    }
+    },
+    "loadingChannels": "சேனல்கள் ஏற்றப்படுகின்றன..."
   },
   "login": {
     "title": "மீண்டும் வரவேற்கிறோம்",
@@ -3713,12 +3837,12 @@
     "selectOutputLanguage": "வெளியீட்டு மொழியைத் தேர்வுசெய்"
   },
   "podcasts": {
-    "title": "பாட்காஸ்ட்கள்",
+    "title": "Podcast கள்",
     "episodes": "அத்தியாயங்கள்",
     "noPodcasts": "பாட்காஸ்ட்கள் இல்லை",
     "categories": {
       "all": "அனைத்தும்",
-      "general": "பொது",
+      "general": "பொதுவானது",
       "news": "செய்திகள்",
       "politics": "அரசியல்",
       "tech": "தொழில்நுட்பம்",
@@ -3727,7 +3851,11 @@
       "entertainment": "பொழுதுபோக்கு",
       "sports": "விளையாட்டு",
       "history": "வரலாறு",
-      "educational": "கல்வி"
+      "educational": "கல்வி",
+      "technology": "தொழில்நுட்பம்",
+      "culture": "கலாச்சாரம்",
+      "education": "கல்வி",
+      "comedy": "நகைச்சுவை"
     },
     "selectLanguage": "ஆடியோ மொழி",
     "switchToLanguage": "{{language}} க்கு மாறு",
@@ -3776,7 +3904,10 @@
       "totalEpisodes": "மொத்த எபிசோட்கள்"
     },
     "tryLater": "பின்னர் முயற்சிக்கவும்",
-    "loadingShows": "பாட்காஸ்ட் நிகழ்ச்சிகள் ஏற்றப்படுகின்றன..."
+    "loadingShows": "பாட்காஸ்ட் நிகழ்ச்சிகள் ஏற்றப்படுகின்றன...",
+    "loadError": "Podcast களை ஏற்ற முடியவில்லை. உங்கள் இணைப்பைச் சரிபார்க்கவும்.",
+    "loading": "Podcast கள் ஏற்றப்படுகின்றன...",
+    "noPodcastsFound": "Podcast கள் எதுவும் இல்லை"
   },
   "profile": {
     "title": "என் சுயவிவரம்",
@@ -4195,10 +4326,10 @@
   "search": {
     "title": "தேடு",
     "subtitle": "திரைப்படங்கள், தொடர்கள், சேனல்கள், வானொலி மற்றும் பாட்காஸ்ட்களைத் தேடுங்கள்",
-    "placeholder": "உள்ளடக்கத்தைத் தேடு...",
+    "placeholder": "தேடுங்கள்...",
     "searching": "தேடுகிறது...",
     "listening": "கேட்கிறது...",
-    "noResults": "முடிவுகள் இல்லை",
+    "noResults": "முடிவுகள் எதுவும் இல்லை",
     "recentSearches": "சமீபத்திய தேடல்கள்",
     "clearAll": "அனைத்தையும் அழி",
     "filters": {
@@ -4209,7 +4340,24 @@
       "podcast": "பாட்காஸ்ட்",
       "moviesAndSeries": "திரைப்படங்கள் & தொடர்கள்",
       "channels": "சேனல்கள்",
-      "podcasts": "பாட்காஸ்ட்கள்"
+      "podcasts": "பாட்காஸ்ட்கள்",
+      "loading": "வடிகட்டிகள் ஏற்றப்படுகின்றன...",
+      "title": "மேம்பட்ட வடிகட்டிகள்",
+      "clearAll": "அனைத்தையும் அழி",
+      "genres": "வகைகள்",
+      "yearRange": "ஆண்டு வரம்பு",
+      "decade1990s": "1990களின்",
+      "decade2000s": "2000களின்",
+      "decade2010s": "2010களின்",
+      "decade2020s": "2020களின்",
+      "minimumRating": "குறைந்தபட்ச மதிப்பீடு",
+      "subtitleLanguages": "துணைத்தலைப்பு மொழிகள்",
+      "searchOptions": "தேடல் விருப்பங்கள்",
+      "searchInSubtitles": "துணைத்தலைப்பு உரை (உரையாடல்) இல் தேடு",
+      "contentRating": "உள்ளடக்க மதிப்பீடு",
+      "kidsOnly": "குழந்தைகள் உள்ளடக்கம் மட்டும்",
+      "excludeKids": "குழந்தைகள் உள்ளடக்கத்தை விலக்கு",
+      "allContent": "அனைத்து உள்ளடக்கமும்"
     },
     "controls": {
       "placeholder": "Search for content...",
@@ -4276,7 +4424,32 @@
       "retrySearch": "மீண்டும் தேடு",
       "somethingWrong": "ஏதோ தவறு"
     },
-    "resultsTitle": "தேடல் முடிவுகள்"
+    "resultsTitle": "தேடல் முடிவுகள்",
+    "tryDifferentKeywords": "வெவ்வேறு முக்கியச் சொற்கள் அல்லது வடிகட்டிகளை முயற்சிக்கவும்",
+    "stopReading": "வாசிப்பை நிறுத்து",
+    "readAllResults": "அனைத்து முடிவுகளையும் வாசி",
+    "featured": "⭐ சிறப்பம்சம்",
+    "closedCaptions": "CC",
+    "kids": "👶 குழந்தைகள்",
+    "readAloud": "சத்தமாக வாசி",
+    "smartSearch": "Smart Search",
+    "premiumRequired": "Smart Search க்கு Premium சந்தா தேவை",
+    "searchFailed": "தேடல் தோல்வியடைந்தது",
+    "premiumFeature": "Premium அம்சம்",
+    "smartSearchDescription": "Smart Search இயற்கை மொழி வினவல்களைப் புரிந்துகொள்ளவும், நீங்கள் தேடுவதைத் துல்லியமாகக் கண்டறியவும் AI ஐப் பயன்படுத்துகிறது.",
+    "upgradeToPremium": "Premium இற்கு மேம்படுத்துங்கள்",
+    "maybeLater": "பின்னர் பார்க்கலாம்",
+    "smartSearchHint": "இயற்கை மொழியில் கேளுங்கள், AI உங்களுக்காக கண்டுபிடிக்கும்",
+    "smartSearchPlaceholder": "எ.கா., '90களின் இஸ்ரேலிய காமெடிகள் துணைத்தலைப்புகளுடன்'",
+    "searchWithAI": "AI உடன் தேடுங்கள்",
+    "aiInterpretation": "AI விளக்கம்:",
+    "confidence": "நம்பிக்கை:",
+    "exampleQueries": "உதாரண வினவல்கள்:",
+    "exampleQuery1": "1980களின் ஹீப்ரு திரைப்படங்களை ஆங்கில துணைத்தலைப்புகளுடன் காட்டுங்கள்",
+    "exampleQuery2": "Sacha Baron Cohen நடித்த காமெடிகளைக் கண்டறியவும்",
+    "exampleQuery3": "Holocaust பற்றிய ஆவணப்படங்கள் எவை கிடைக்கின்றன?",
+    "exampleQuery4": "5-7 வயதுக்கான ஹீப்ருவில் குழந்தைகள் நிகழ்ச்சிகள்",
+    "poweredByAI": "🤖 Claude AI ஆல் இயக்கப்படுகிறது. வினவல் விளக்கத்தின் அடிப்படையில் முடிவுகள் மாறுபடலாம்."
   },
   "settings": {
     "title": "அமைப்புகள்",
@@ -5099,7 +5272,8 @@
       "radio": "வானொலி",
       "vod": "வீடியோ",
       "custom": "தனிப்பயன்",
-      "widget": "விட்ஜெட்"
+      "widget": "விட்ஜெட்",
+      "liveStream": "நேரடி ஒளிபரப்பு"
     },
     "form": {
       "title": "விட்ஜெட்டை உருவாக்கு",
@@ -5127,9 +5301,9 @@
       "cancel": "ரத்து செய்",
       "change": "மாற்று",
       "errors": {
-        "contentRequired": "உள்ளடக்கத்தைத் தேர்வுசெய்யவும்",
+        "contentRequired": "தயவுசெய்து உள்ளடக்கத்தைத் தேர்ந்தெடுக்கவும்",
         "iframeUrlRequired": "iFrame URL தேவை",
-        "nameExists": "இந்தப் பெயரில் ஏற்கனவே ஒரு விட்ஜெட் உள்ளது",
+        "nameExists": "இந்த பெயரில் ஒரு விட்ஜெட் ஏற்கனவே உள்ளது",
         "titleRequired": "தலைப்பு தேவை"
       },
       "validating": "சரிபார்க்கிறது..."
@@ -5156,7 +5330,7 @@
       "noContent": "உள்ளடக்கம் கிடைக்கவில்லை",
       "tryAnotherTab": "வேறொரு வகையைத் தேர்வுசெய்"
     },
-    "delete": "நீக்கு",
+    "delete": "அழி",
     "hide": "மறை",
     "resetPosition": "நிலையை மீட்டமை"
   },
@@ -6092,7 +6266,9 @@
     "connected": "இணைக்கப்பட்டது",
     "connecting": "இணைக்கிறது",
     "connectionFailed": "இணைப்பு தோல்வி",
-    "pleaseWait": "காத்திருக்கவும்"
+    "pleaseWait": "காத்திருக்கவும்",
+    "connect": "Audible இணைக்க",
+    "disconnect": "Audible துண்டிக்க"
   },
   "cancelled": {
     "description": "உங்கள் கட்டணம் ரத்து செய்யப்பட்டது.",

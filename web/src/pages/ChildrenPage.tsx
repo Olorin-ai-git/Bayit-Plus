@@ -112,7 +112,7 @@ function KidsContentCard({ item }: { item: KidsContentItem }) {
                 aspectRatio="16:9"
                 size="medium"
                 icon={<NativeIcon name={categoryIconName} size="xl" color={colors.textMuted} />}
-                label={item.category || 'Kids'}
+                label={item.category || t('children.title')}
               />
             )}
             <View style={styles.categoryBadge}>

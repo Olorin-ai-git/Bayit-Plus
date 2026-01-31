@@ -1,11 +1,11 @@
 """
 Trivia Fact Generation Helpers.
 Generates facts from TMDB and AI sources.
+Re-exports chained generation from chained_fact_generator module.
 """
 
 import json
 import logging
-from typing import Optional
 from uuid import uuid4
 
 from anthropic import AsyncAnthropic
@@ -15,6 +15,11 @@ from app.models.content import Content
 from app.models.trivia import TriviaFactModel
 from app.services.security_utils import sanitize_ai_output, sanitize_for_prompt
 from app.services.tmdb_service import TMDBService
+from app.services.trivia.chained_fact_generator import (  # noqa: F401
+    ChainedFactInput,
+    fetch_tmdb_context,
+    generate_chained_facts,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +27,7 @@ logger = logging.getLogger(__name__)
 async def fetch_tmdb_facts(
     content: Content, tmdb_service: TMDBService
 ) -> list[TriviaFactModel]:
-    """Fetch trivia from TMDB using get_movie_details."""
+    """Fetch basic trivia from TMDB (fallback when AI is unavailable)."""
     facts = []
 
     try:
@@ -70,7 +75,10 @@ async def fetch_tmdb_facts(
                     )
 
     except Exception as e:
-        logger.warning(f"Failed to fetch TMDB facts for {content.id}: {e}")
+        logger.warning(
+            "Failed to fetch TMDB facts",
+            extra={"content_id": str(content.id), "error": str(e)},
+        )
 
     return facts
 
@@ -80,7 +88,7 @@ async def generate_ai_facts(
     anthropic_client: AsyncAnthropic,
     existing_count: int = 0,
 ) -> list[TriviaFactModel]:
-    """Generate AI facts using Anthropic client with security fixes."""
+    """Generate standalone AI facts (legacy, non-chained)."""
     facts = []
     max_to_generate = min(5, settings.TRIVIA_MAX_FACTS_PER_CONTENT - existing_count)
 
@@ -117,7 +125,7 @@ For each fact, provide a JSON object with:
 Return ONLY a JSON array, no other text."""
 
         response = await anthropic_client.messages.create(
-            model=settings.CLAUDE_MODEL or "claude-3-haiku-20240307",
+            model=settings.CLAUDE_MODEL,
             max_tokens=settings.TRIVIA_AI_MAX_TOKENS,
             messages=[{"role": "user", "content": prompt}],
         )
@@ -146,7 +154,10 @@ Return ONLY a JSON array, no other text."""
                 )
 
     except Exception as e:
-        logger.warning(f"Failed to generate AI facts for {content.id}: {e}")
+        logger.warning(
+            "Failed to generate AI facts",
+            extra={"content_id": str(content.id), "error": str(e)},
+        )
 
     return facts
 

@@ -46,7 +46,7 @@ const EPGChannelRow: React.FC<EPGChannelRowProps> = ({
         <View style={styles.channelDetails}>
           <Text style={styles.channelName} numberOfLines={1}>{channel.name}</Text>
           {channel.requires_subscription === 'premium' && (
-            <Text style={styles.premiumBadge}>⭐ Premium</Text>
+            <Text style={styles.premiumBadge}>⭐ {t('common.premium')}</Text>
           )}
         </View>
       </View>

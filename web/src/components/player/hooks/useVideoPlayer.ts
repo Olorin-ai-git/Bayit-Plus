@@ -253,6 +253,41 @@ export function useVideoPlayer({
     onHideControls: () => setState((prev) => ({ ...prev, showControls: false })),
   })
 
+  // Synchronize fullscreen state with browser fullscreen API
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      const isCurrentlyFullscreen = !!document.fullscreenElement
+      const video = videoRef.current
+
+      setState((prev) => {
+        // Only update if state has changed to avoid unnecessary re-renders
+        if (prev.isFullscreen !== isCurrentlyFullscreen) {
+          logger.info('Fullscreen state changed', 'useVideoPlayer', {
+            from: prev.isFullscreen,
+            to: isCurrentlyFullscreen,
+            wasPlaying: prev.isPlaying,
+          })
+
+          // When exiting fullscreen, ensure video continues playing if it was playing
+          if (!isCurrentlyFullscreen && prev.isPlaying && video && video.paused) {
+            logger.info('Resuming playback after fullscreen exit', 'useVideoPlayer')
+            video.play().catch((err) => {
+              logger.warn('Failed to resume playback after fullscreen exit', 'useVideoPlayer', err)
+            })
+          }
+
+          return { ...prev, isFullscreen: isCurrentlyFullscreen }
+        }
+        return prev
+      })
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+    }
+  }, [])
+
   // Callback for seeking in transcoded streams - reloads stream with new start time
   const handleTranscodedSeek = useCallback((seekTime: number) => {
     if (!src) return

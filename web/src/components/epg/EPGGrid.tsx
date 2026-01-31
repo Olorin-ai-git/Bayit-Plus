@@ -55,7 +55,7 @@ const EPGGrid: React.FC<EPGGridProps> = ({
           </View>
           <Text style={styles.emptyStateTitle}>{t('epg.noDataAvailable')}</Text>
           <Text style={styles.emptyStateMessage}>
-            The TV programming schedule is currently unavailable. Please check back later or contact support if this persists.
+            {t('epg.scheduleUnavailable')}
           </Text>
         </View>
       </View>

@@ -52,7 +52,7 @@ const EPGList: React.FC<EPGListProps> = ({
           </View>
           <Text style={styles.emptyStateTitle}>{t('epg.noProgramsFound')}</Text>
           <Text style={styles.emptyStateMessage}>
-            No programs are available for the selected time range. Try adjusting your filters or check back later.
+            {t('epg.noProgramsAvailable')}
           </Text>
         </View>
       </View>
