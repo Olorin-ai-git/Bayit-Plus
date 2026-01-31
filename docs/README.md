@@ -1,7 +1,7 @@
 # Bayit+ Documentation
 
-**Last Updated:** 2026-01-30
-**Total Documents:** 249 files
+**Last Updated:** 2026-01-31
+**Total Documents:** 252 files
 **Documentation Portal:** https://docs.bayitplus.com
 
 ---
@@ -71,6 +71,13 @@ System design and architecture documents:
 Feature specifications and implementation guides:
 
 - [AI Features Overview](features/AI_FEATURES_OVERVIEW.md) - Complete AI catalog ⭐ **NEW**
+- [Subtitle System Enhancements](features/SUBTITLE_SYSTEM_ENHANCEMENTS.md) - 21 accessibility, UX, and performance fixes ⭐ **NEW**
+  - Error categorization (network/server/client)
+  - WCAG AA accessibility compliance
+  - iOS Dynamic Type & VoiceOver support
+  - tvOS focus navigation
+  - Zod validation for localStorage
+  - LRU cache with concurrency control
 - Live Translation & Dubbing
 - Subscription & Payment Features
 - Content Import & Management
@@ -136,9 +143,21 @@ Deployment guides and infrastructure:
 - [Deployment Guide](deployment/DEPLOYMENT_GUIDE.md) - Production deployment
 - [CI/CD Pipeline](deployment/CI_CD_PIPELINE.md) - GitHub Actions workflows
 - [Secrets Management](deployment/SECRETS_MANAGEMENT.md) - Google Cloud secrets
+- [GCloud Secrets API Configuration](deployment/GCLOUD_SECRETS_API_CONFIGURATION.md) - API retry and subtitle config ⭐ **NEW**
 - [LLM Configuration](deployment/LLM_CONFIGURATION.md) - AI model setup and cost optimization ⭐ **NEW**
 - Firebase Hosting configuration
 - Google Cloud Run setup
+
+---
+
+### Design Documentation (`/design/`)
+
+Design system, accessibility, and UI/UX standards:
+
+- [WCAG AA Color Tokens](design/COLOR_TOKENS_WCAG.md) - Contrast-safe color palette with 40+ compliant combinations ⭐ **NEW**
+- Glass UI design system guidelines
+- Component design patterns
+- Accessibility standards (WCAG AA compliance)
 
 ---
 
