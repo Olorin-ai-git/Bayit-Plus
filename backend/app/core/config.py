@@ -837,7 +837,7 @@ class Settings(BaseSettings):
     CHAT_TRANSLATION_ENABLED: bool = True
     CHAT_TRANSLATION_TIMEOUT_SECONDS: float = 2.0
     CHAT_TRANSLATION_CACHE_TTL_DAYS: int = 7
-    TRANSLATION_MEMORY_CACHE_SIZE: int = 1000
+    TRANSLATION_MEMORY_CACHE_SIZE: int = 10000  # Increased for production load (was 1000)
 
     # Podcast Translation Configuration
     PODCAST_TRANSLATION_ENABLED: bool = Field(

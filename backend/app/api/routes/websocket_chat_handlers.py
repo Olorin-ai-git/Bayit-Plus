@@ -9,6 +9,7 @@ from app.core.logging_config import get_logger
 from app.models.channel_chat import ChatReaction
 from app.services.channel_chat_service import ChannelChatService
 from app.services.chat_translation_service import ChatTranslationService
+from app.services.profanity_filter import censor_profanity, contains_profanity
 
 logger = get_logger(__name__)
 
@@ -101,6 +102,10 @@ async def handle_chat_message(
         await send_error(ws, "invalid_message", "Message cannot be empty")
         return
 
+    if contains_profanity(message_text):
+        message_text = censor_profanity(message_text)
+        logger.info("Profanity censored in message", extra={"user_id": user_id, "channel_id": channel_id})
+
     detected_lang = "he"
     try:
         detection_result = await ChatTranslationService.detect_language(message_text)
@@ -143,11 +148,18 @@ async def handle_reaction(
         return
 
     try:
-        reaction = ChatReaction(message_id=message_id, channel_id=channel_id, user_id=user_id, reaction_type=reaction_type)
-        await reaction.insert()
+        existing = await ChatReaction.find_one({"message_id": message_id, "user_id": user_id})
+        if existing:
+            existing.reaction_type = reaction_type
+            await existing.save()
+            logger.info("Reaction updated", extra={"user_id": user_id, "channel_id": channel_id, "message_id": message_id, "reaction": reaction_type})
+        else:
+            reaction = ChatReaction(message_id=message_id, channel_id=channel_id, user_id=user_id, reaction_type=reaction_type)
+            await reaction.insert()
+            logger.info("Reaction added", extra={"user_id": user_id, "channel_id": channel_id, "message_id": message_id, "reaction": reaction_type})
+
         await chat_service.broadcast_message(channel_id, {
             "type": "reaction_update", "message_id": message_id, "user_id": user_id, "reaction": reaction_type,
         })
-        logger.info("Reaction added", extra={"user_id": user_id, "channel_id": channel_id, "message_id": message_id, "reaction": reaction_type})
     except Exception as e:
         logger.error("Failed to save reaction", extra={"user_id": user_id, "channel_id": channel_id, "message_id": message_id, "error": str(e)})

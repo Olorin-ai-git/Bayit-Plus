@@ -399,9 +399,25 @@ class LiveDubbingService:
                         continue
 
                     segment_start = time.time()
-                    stt_latency = 0  # STT latency is handled by the provider
+                    # Calculate STT latency from transcript creation timestamp
+                    stt_latency = max(
+                        0.0,
+                        (time.time() * 1000) - transcript_msg.timestamp_ms,
+                    )
 
                     self._metrics.segments_transcribed += 1
+
+                    # Send transcript message to client
+                    await self._output_queue.put(
+                        DubbingMessage(
+                            type="transcript",
+                            data={
+                                "text": transcript,
+                                "language": detected_lang,
+                                "sequence": self._sequence + 1,
+                            },
+                        )
+                    )
 
                     # Step 2: Translation
                     translation_start = time.time()
@@ -420,6 +436,20 @@ class LiveDubbingService:
 
                     translation_latency = (time.time() - translation_start) * 1000
                     self._metrics.segments_translated += 1
+
+                    # Send translation message to client
+                    await self._output_queue.put(
+                        DubbingMessage(
+                            type="translation",
+                            data={
+                                "original_text": transcript,
+                                "translated_text": translated,
+                                "source_language": actual_source,
+                                "target_language": self.target_language,
+                                "sequence": self._sequence + 1,
+                            },
+                        )
+                    )
 
                     logger.info(
                         f"Translated [{actual_source}→{self.target_language}]: "
@@ -522,21 +552,75 @@ class LiveDubbingService:
         """
         # Create fresh TTS connection for this transcript (avoids 20s timeout)
         tts = get_tts_provider()
+        safety_task = None
         try:
             await tts.connect(self.voice_id)
             await tts.send_text_chunk(text, flush=True)
+            # Signal end of input
+            await tts.finish_stream()
+
+            # Safety stop: ElevenLabs may not send isFinal for short text,
+            # causing receive_audio to hang for 20s. Stop after a generous
+            # timeout - audio typically arrives within 500ms for single segments.
+            async def _safety_stop():
+                await asyncio.sleep(
+                    settings.olorin.dubbing.live_dubbing_tts_safety_timeout_seconds
+                )
+                tts._running = False
+
+            safety_task = asyncio.create_task(_safety_stop())
 
             async for audio_chunk in tts.receive_audio():
                 audio_chunks.append(audio_chunk)
         finally:
-            # Close TTS connection after receiving audio
+            if safety_task and not safety_task.done():
+                safety_task.cancel()
             await tts.close()
 
+    def _calculate_percentile(self, values: list[float], percentile: int) -> float:
+        """
+        Calculate percentile from a list of values.
+
+        Args:
+            values: List of numeric values
+            percentile: Percentile to calculate (0-100)
+
+        Returns:
+            Percentile value
+        """
+        if not values:
+            return 0.0
+
+        sorted_values = sorted(values)
+        index = (percentile / 100) * (len(sorted_values) - 1)
+        lower = int(index)
+        upper = min(lower + 1, len(sorted_values) - 1)
+        fraction = index - lower
+
+        return sorted_values[lower] + fraction * (
+            sorted_values[upper] - sorted_values[lower]
+        )
+
     def _update_latency_metrics(
-        self, stt_ms: float, translation_ms: float, tts_ms: float
+        self,
+        stt_ms: float,
+        translation_ms: float,
+        tts_ms: float,
+        network_upload_ms: float = 0.0,
+        network_download_ms: float = 0.0,
     ) -> None:
-        """Update running average latency metrics."""
+        """
+        Update latency metrics with averages and percentiles.
+
+        Args:
+            stt_ms: Speech-to-text latency
+            translation_ms: Translation latency
+            tts_ms: Text-to-speech latency
+            network_upload_ms: Network upload latency estimate
+            network_download_ms: Network download latency estimate
+        """
         total_ms = stt_ms + translation_ms + tts_ms
+        network_roundtrip_ms = network_upload_ms + network_download_ms
 
         self._latency_samples.append(
             {
@@ -544,6 +628,9 @@ class LiveDubbingService:
                 "translation": translation_ms,
                 "tts": tts_ms,
                 "total": total_ms,
+                "network_upload": network_upload_ms,
+                "network_download": network_download_ms,
+                "network_roundtrip": network_roundtrip_ms,
             }
         )
 
@@ -565,6 +652,45 @@ class LiveDubbingService:
         self._metrics.avg_total_latency_ms = (
             sum(s["total"] for s in self._latency_samples) / n
         )
+        self._metrics.avg_network_upload_latency_ms = (
+            sum(s["network_upload"] for s in self._latency_samples) / n
+        )
+        self._metrics.avg_network_download_latency_ms = (
+            sum(s["network_download"] for s in self._latency_samples) / n
+        )
+        self._metrics.avg_network_roundtrip_latency_ms = (
+            sum(s["network_roundtrip"] for s in self._latency_samples) / n
+        )
+
+        # Calculate percentiles (p50, p95, p99)
+        if n >= 10:  # Only calculate percentiles with sufficient samples
+            stt_values = [s["stt"] for s in self._latency_samples]
+            translation_values = [s["translation"] for s in self._latency_samples]
+            tts_values = [s["tts"] for s in self._latency_samples]
+
+            self._metrics.p50_stt_latency_ms = self._calculate_percentile(
+                stt_values, 50
+            )
+            self._metrics.p95_stt_latency_ms = self._calculate_percentile(
+                stt_values, 95
+            )
+            self._metrics.p99_stt_latency_ms = self._calculate_percentile(
+                stt_values, 99
+            )
+
+            self._metrics.p50_translation_latency_ms = self._calculate_percentile(
+                translation_values, 50
+            )
+            self._metrics.p95_translation_latency_ms = self._calculate_percentile(
+                translation_values, 95
+            )
+            self._metrics.p99_translation_latency_ms = self._calculate_percentile(
+                translation_values, 99
+            )
+
+            self._metrics.p50_tts_latency_ms = self._calculate_percentile(tts_values, 50)
+            self._metrics.p95_tts_latency_ms = self._calculate_percentile(tts_values, 95)
+            self._metrics.p99_tts_latency_ms = self._calculate_percentile(tts_values, 99)
 
     async def receive_messages(self) -> AsyncIterator[DubbingMessage]:
         """
@@ -585,14 +711,74 @@ class LiveDubbingService:
                 break
 
     def get_latency_report(self) -> LatencyReport:
-        """Get current latency statistics."""
-        return LatencyReport(
-            avg_stt_ms=int(self._metrics.avg_stt_latency_ms),
-            avg_translation_ms=int(self._metrics.avg_translation_latency_ms),
-            avg_tts_ms=int(self._metrics.avg_tts_latency_ms),
-            avg_total_ms=int(self._metrics.avg_total_latency_ms),
-            segments_processed=self._metrics.segments_synthesized,
+        """
+        Get current latency statistics with enhanced metrics.
+
+        Returns:
+            LatencyReport with averages, percentiles, and network metrics
+        """
+        # Calculate cache hit rate
+        total_translations = (
+            self._metrics.translation_cache_hits + self._metrics.translation_cache_misses
         )
+        cache_hit_rate = (
+            self._metrics.translation_cache_hits / total_translations
+            if total_translations > 0
+            else 0.0
+        )
+
+        # Build report (all new fields are optional for backward compatibility)
+        report_data = {
+            # Required fields (backward compatible)
+            "avg_stt_ms": int(self._metrics.avg_stt_latency_ms),
+            "avg_translation_ms": int(self._metrics.avg_translation_latency_ms),
+            "avg_tts_ms": int(self._metrics.avg_tts_latency_ms),
+            "avg_total_ms": int(self._metrics.avg_total_latency_ms),
+            "segments_processed": self._metrics.segments_synthesized,
+        }
+
+        # Add percentiles if available (10+ samples)
+        if len(self._latency_samples) >= 10:
+            report_data.update(
+                {
+                    "p50_stt_ms": int(self._metrics.p50_stt_latency_ms),
+                    "p95_stt_ms": int(self._metrics.p95_stt_latency_ms),
+                    "p99_stt_ms": int(self._metrics.p99_stt_latency_ms),
+                    "p50_translation_ms": int(self._metrics.p50_translation_latency_ms),
+                    "p95_translation_ms": int(self._metrics.p95_translation_latency_ms),
+                    "p99_translation_ms": int(self._metrics.p99_translation_latency_ms),
+                    "p50_tts_ms": int(self._metrics.p50_tts_latency_ms),
+                    "p95_tts_ms": int(self._metrics.p95_tts_latency_ms),
+                    "p99_tts_ms": int(self._metrics.p99_tts_latency_ms),
+                }
+            )
+
+        # Add network metrics
+        report_data.update(
+            {
+                "avg_network_upload_ms": int(
+                    self._metrics.avg_network_upload_latency_ms
+                ),
+                "avg_network_download_ms": int(
+                    self._metrics.avg_network_download_latency_ms
+                ),
+                "avg_network_roundtrip_ms": int(
+                    self._metrics.avg_network_roundtrip_latency_ms
+                ),
+            }
+        )
+
+        # Add provider information
+        report_data.update(
+            {
+                "translation_provider": self._translation_provider.translation_provider
+                if hasattr(self._translation_provider, "translation_provider")
+                else None,
+                "translation_cache_hit_rate": round(cache_hit_rate, 3),
+            }
+        )
+
+        return LatencyReport(**report_data)
 
     def _get_connection_info(self) -> Dict[str, Any]:
         """Get connection info for client."""

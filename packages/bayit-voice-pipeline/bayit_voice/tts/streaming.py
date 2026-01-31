@@ -146,6 +146,8 @@ class ElevenLabsTTSStreamingService:
                         error_msg = data.get("error", "Unknown TTS error")
                         logger.error(f"ElevenLabs TTS error: {error_msg}")
                         await self._error_queue.put({"type": "error", "message": error_msg})
+                        # Signal end of stream on error
+                        await self._audio_queue.put(None)
 
                 except json.JSONDecodeError:
                     await self._audio_queue.put(message)
@@ -161,6 +163,8 @@ class ElevenLabsTTSStreamingService:
             logger.error(f"Error in TTS receive loop: {str(e)}")
         finally:
             self._connected = False
+            # Signal end of stream so receive_audio() doesn't hang
+            await self._audio_queue.put(None)
 
     async def send_text_chunk(self, text: str, flush: bool = False) -> None:
         """Send a text chunk to be synthesized."""

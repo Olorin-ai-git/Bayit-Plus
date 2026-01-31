@@ -8,7 +8,14 @@ from pydantic import BaseModel, Field
 
 
 class ChatTranslationCacheDoc(Document):
-    """Cached translation for chat messages."""
+    """
+    Cached translation for chat messages.
+
+    TTL (Time To Live) Index:
+    MongoDB automatically deletes documents when `expires_at` is reached.
+    The TTL index is created manually via migration script or database.py init.
+    See: scripts/create_ttl_indexes.py for setup.
+    """
 
     message_hash: str = Field(..., index=True)
     source_lang: str
@@ -17,14 +24,14 @@ class ChatTranslationCacheDoc(Document):
     translated_text: str
     hit_count: int = 0
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    expires_at: datetime
+    expires_at: datetime = Field(..., description="Document auto-deleted when this time is reached")
 
     class Settings:
         name = "chat_translation_cache"
         indexes = [
             "message_hash",
             [("source_lang", 1), ("target_lang", 1)],
-            "expires_at",
+            "expires_at",  # Regular index (TTL created separately via ensure_ttl_index)
         ]
 
 

@@ -20,7 +20,7 @@ interface ChannelChatMessageProps {
 
 const RTL_LANGUAGES = ['he', 'ar', 'fa', 'ur']
 
-const formatTimestamp = (ts: number): string => {
+const formatTimestamp = (ts: string): string => {
   const date = new Date(ts)
   const hours = String(date.getHours()).padStart(2, '0')
   const minutes = String(date.getMinutes()).padStart(2, '0')
@@ -34,7 +34,7 @@ export default function ChannelChatMessage({
   onToggleTranslation,
 }: ChannelChatMessageProps) {
   const { t } = useTranslation()
-  const isRTL = RTL_LANGUAGES.includes(message.originalLanguage)
+  const isRTL = RTL_LANGUAGES.includes(message.original_language)
   const displayText = showTranslation && translatedText
     ? translatedText
     : message.message
@@ -43,14 +43,14 @@ export default function ChannelChatMessage({
     <View
       style={[
         styles.container,
-        message.isPinned && styles.pinnedContainer,
+        message.is_pinned && styles.pinnedContainer,
         isRTL && styles.rtlContainer,
       ]}
     >
       <View style={[styles.headerRow, isRTL && styles.rtlRow]}>
-        <Text style={styles.userName}>{message.userName}</Text>
+        <Text style={styles.userName}>{message.user_name}</Text>
         <Text style={styles.timestamp}>{formatTimestamp(message.timestamp)}</Text>
-        {message.isPinned && (
+        {message.is_pinned && (
           <Pin size={10} color={colors.gold} />
         )}
       </View>

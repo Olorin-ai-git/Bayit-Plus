@@ -5,7 +5,7 @@
  */
 
 import { useRef, useEffect, useState } from 'react'
-import { View, Text, Pressable, Animated, StyleSheet, Modal } from 'react-native'
+import { View, Text, Pressable, Animated, StyleSheet, Modal, Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Maximize, Minimize, Sparkles, X } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -89,6 +89,9 @@ export function GlassLiveControlsPanel({
   const dragHandleRef = useRef<View>(null)
 
   useEffect(() => {
+    // Drag handle only works on web platform
+    if (Platform.OS !== 'web') return
+
     const node = dragHandleRef.current as unknown as HTMLElement | null
     if (!node) return
 
@@ -386,13 +389,14 @@ const styles = StyleSheet.create({
   panelContainer: {
     height: isTV ? 56 : 48,
     position: 'relative',
+    overflow: 'visible',
   },
   glassBackground: {
     flex: 1,
     flexDirection: 'row',
     borderRadius: borderRadius.xl,
     backgroundColor: 'rgba(17, 17, 34, 0.95)',
-    backdropFilter: 'blur(20px)',
+    ...(Platform.OS === 'web' && { backdropFilter: 'blur(20px)' as any }),
     borderWidth: 1.5,
     borderColor: 'rgba(139, 92, 246, 0.4)',
     shadowColor: colors.primary,
@@ -400,12 +404,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 4,
-    overflow: 'hidden',
+    overflow: 'visible',
   },
   dragHandle: {
     width: 6,
     alignSelf: 'stretch',
-    cursor: 'ew-resize',
+    ...(Platform.OS === 'web' && { cursor: 'ew-resize' as any }),
     backgroundColor: 'transparent',
   },
   contentRow: {
@@ -568,7 +572,7 @@ const styles = StyleSheet.create({
     fontSize: isTV ? 14 : 12,
     fontWeight: '600',
     textAlign: 'center',
-    whiteSpace: 'nowrap',
+    ...(Platform.OS === 'web' && { whiteSpace: 'nowrap' as any }),
   },
 })
 

@@ -99,6 +99,31 @@ class Database:
 db = Database()
 
 
+async def ensure_ttl_indexes(database):
+    """
+    Create TTL (Time To Live) indexes for automatic document expiration.
+
+    TTL indexes cannot be defined in Beanie model Settings because they require
+    the `expireAfterSeconds` parameter. We create them manually during startup.
+    """
+    try:
+        # Translation cache: Expire documents based on expires_at field
+        # expireAfterSeconds=0 means expire exactly at the expires_at time
+        chat_translation_cache = database["chat_translation_cache"]
+        await chat_translation_cache.create_index(
+            [("expires_at", 1)],
+            expireAfterSeconds=0,
+            name="ttl_expires_at"
+        )
+        logger.info("Created TTL index on chat_translation_cache.expires_at")
+    except Exception as e:
+        # Index may already exist, log warning but don't fail startup
+        if "already exists" in str(e) or "IndexOptionsConflict" in str(e):
+            logger.debug(f"TTL index already exists on chat_translation_cache: {e}")
+        else:
+            logger.warning(f"Failed to create TTL index on chat_translation_cache: {e}")
+
+
 async def connect_to_mongo():
     """Create database connection using centralized olorin-shared MongoDB connection."""
     # Initialize centralized MongoDB connection from olorin-shared
@@ -274,10 +299,10 @@ async def connect_to_mongo():
                 CulturalReference,
             ]
         )
-        print("Olorin models included in main database (Phase 1)")
+        logger.info("Olorin models included in main database (Phase 1)")
     else:
         # Phase 2: Olorin models in separate database
-        print("Olorin models excluded from main database (Phase 2 - separate database)")
+        logger.info("Olorin models excluded from main database (Phase 2 - separate database)")
 
     # Initialize Beanie with document models using centralized database
     # Note: allow_index_dropping disabled to prevent errors on missing indexes
@@ -304,12 +329,15 @@ async def connect_to_mongo():
         )
     logger.info(f"Connected to MongoDB via olorin-shared: {database.name}")
 
+    # Create TTL indexes for automatic document expiration
+    await ensure_ttl_indexes(database)
+
 
 async def close_mongo_connection():
     """Close database connection using centralized olorin-shared connection."""
     await close_mongodb_connection()
     db.client = None
-    print("Closed MongoDB connection via olorin-shared")
+    logger.info("Closed MongoDB connection via olorin-shared")
 
 
 def get_database():

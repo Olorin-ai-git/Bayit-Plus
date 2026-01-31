@@ -8,6 +8,17 @@
 
 import logger from '@/utils/logger'
 import { SharedAudioCapture } from './audio/sharedAudioCapture'
+import {
+  useDubbingSettingsStore,
+  useLatencyHistoryStore,
+  type LatencyDataPoint,
+} from '@/stores/dubbingSettingsStore'
+import {
+  VideoBufferManager,
+  createSyncedStream,
+  type VideoBufferConfig,
+  type SyncedStreamResponse,
+} from './VideoBufferManager'
 
 // API configuration from environment - no fallback allowed per coding standards
 const API_BASE_URL = import.meta.env.VITE_API_URL
@@ -69,6 +80,24 @@ export interface LatencyReport {
   avg_tts_ms: number
   avg_total_ms: number
   segments_processed: number
+  // Enhanced metrics (optional - backward compatible)
+  p50_stt_ms?: number
+  p95_stt_ms?: number
+  p99_stt_ms?: number
+  p50_translation_ms?: number
+  p95_translation_ms?: number
+  p99_translation_ms?: number
+  p50_tts_ms?: number
+  p95_tts_ms?: number
+  p99_tts_ms?: number
+  p50_total_ms?: number
+  p95_total_ms?: number
+  p99_total_ms?: number
+  avg_network_upload_ms?: number
+  avg_network_download_ms?: number
+  avg_network_roundtrip_ms?: number
+  translation_provider?: string
+  translation_cache_hit_rate?: number
 }
 
 export interface DubbingConnectionInfo {
@@ -108,12 +137,117 @@ class LiveDubbingService {
   private syncDelayMs = AUDIO_CONFIG.defaultSyncDelayMs
   private bufferedMode = false // Disable immediate playback for buffered mode
   private chunkCount = 0
+  private channelId: string | null = null // Track current channel for settings
 
   // Audio mixing
   private originalGain: GainNode | null = null
   private dubbedGain: GainNode | null = null
   private originalVolume = AUDIO_CONFIG.defaultOriginalVolume
   private dubbedVolume = AUDIO_CONFIG.defaultDubbedVolume
+
+  // Video buffering for perfect sync
+  private videoBufferManager: VideoBufferManager | null = null
+  private syncedStreamInfo: SyncedStreamResponse | null = null
+  private firstAudioChunkSent = false
+  private firstDubbedAudioReceived = false
+
+  /**
+   * Validate buffer size (must be power of 2).
+   * Returns valid buffer size or default if invalid.
+   */
+  private validateBufferSize(size: number): number {
+    const validSizes = [256, 512, 1024, 2048, 4096, 8192, 16384]
+
+    if (validSizes.includes(size)) {
+      return size
+    }
+
+    logger.warn(
+      `Invalid buffer size ${size}, must be power of 2. Using default: ${AUDIO_CONFIG.bufferSize}`,
+      'liveDubbingService'
+    )
+    return AUDIO_CONFIG.bufferSize
+  }
+
+  /**
+   * Calculate buffer latency in milliseconds.
+   */
+  private calculateBufferLatency(bufferSize: number): number {
+    return (bufferSize / AUDIO_CONFIG.sampleRate) * 1000
+  }
+
+  /**
+   * Calculate optimal sync delay based on latency history.
+   * Uses p95 latency to account for variability.
+   */
+  private calculateAdaptiveSyncDelay(channelId: string): number {
+    const settings = useDubbingSettingsStore.getState().getChannelSettings(channelId)
+
+    // If auto-adaptive is disabled, use manual setting
+    if (!settings.autoAdaptiveSync) {
+      return settings.syncDelayMs
+    }
+
+    // Get latency history
+    const avgLatency = useLatencyHistoryStore.getState().getAverageLatency(channelId)
+
+    if (!avgLatency) {
+      // No history yet, use default
+      return settings.syncDelayMs
+    }
+
+    // Use p95 total latency if available, otherwise use average
+    // Add 200-300ms buffer for network variability and processing
+    const baseLatency = avgLatency.totalMs
+    const adaptiveDelay = Math.round(baseLatency * 1.2) // 20% buffer
+
+    // Clamp to reasonable range (100ms - 1000ms)
+    const clampedDelay = Math.max(100, Math.min(1000, adaptiveDelay))
+
+    // Apply manual adjustment from settings
+    const finalDelay = clampedDelay + settings.syncDelayMs
+
+    logger.debug(
+      `Adaptive sync: ${baseLatency}ms → ${clampedDelay}ms (+ ${settings.syncDelayMs}ms manual) = ${finalDelay}ms`,
+      'liveDubbingService'
+    )
+
+    return finalDelay
+  }
+
+  /**
+   * Process latency report and update history.
+   */
+  private processLatencyReport(report: LatencyReport, channelId: string): void {
+    // Extract buffer latency from audio config
+    const bufferMs = (AUDIO_CONFIG.bufferSize / AUDIO_CONFIG.sampleRate) * 1000
+
+    // Create latency data point
+    const dataPoint: LatencyDataPoint = {
+      timestamp: Date.now(),
+      totalMs: report.avg_total_ms,
+      sttMs: report.avg_stt_ms,
+      translationMs: report.avg_translation_ms,
+      ttsMs: report.avg_tts_ms,
+      networkMs: report.avg_network_roundtrip_ms || 40, // Estimate if not available
+      bufferMs: bufferMs,
+      syncMs: this.syncDelayMs,
+    }
+
+    // Add to latency history
+    useLatencyHistoryStore.getState().addDataPoint(channelId, dataPoint)
+
+    // Update adaptive sync delay if enabled
+    const settings = useDubbingSettingsStore.getState().getChannelSettings(channelId)
+    if (settings.autoAdaptiveSync) {
+      const newSyncDelay = this.calculateAdaptiveSyncDelay(channelId)
+      if (Math.abs(newSyncDelay - this.syncDelayMs) > 50) {
+        // Only update if change is significant (>50ms)
+        this.syncDelayMs = newSyncDelay
+        logger.info(`Adaptive sync updated: ${newSyncDelay}ms`, 'liveDubbingService')
+      }
+    }
+  }
 
   /**
    * Connect to live dubbing WebSocket and start audio capture.
@@ -131,12 +265,60 @@ class LiveDubbingService {
     bufferedMode = false // Disable immediate playback for buffered video sync
   ): Promise<void> {
     this.bufferedMode = bufferedMode
+    this.channelId = channelId
+    this.firstAudioChunkSent = false
+    this.firstDubbedAudioReceived = false
+
+    // Load settings from store
+    const settings = useDubbingSettingsStore.getState().getChannelSettings(channelId)
+    this.originalVolume = settings.originalVolume
+    this.dubbedVolume = settings.dubbedVolume
+
+    // Calculate initial sync delay (adaptive or manual)
+    this.syncDelayMs = this.calculateAdaptiveSyncDelay(channelId)
     // Fail-fast: validate configuration before attempting to connect
     try {
       validateConfiguration()
     } catch (error) {
       onError(error instanceof Error ? error.message : 'Configuration error', false)
       return
+    }
+
+    // Request synced stream from backend (server-side or client-side buffering)
+    try {
+      logger.info(`Requesting synced stream for channel ${channelId}`, 'liveDubbingService')
+      this.syncedStreamInfo = await createSyncedStream({
+        channelId,
+        targetLang,
+        enableDubbing: true,
+        enableSubtitles: false, // Dubbing only
+      })
+
+      logger.info(
+        `Synced stream created: mode=${this.syncedStreamInfo.mode}, delay=${this.syncedStreamInfo.video_delay_ms}ms`,
+        'liveDubbingService'
+      )
+
+      // If client-side buffering is needed, initialize VideoBufferManager
+      if (this.syncedStreamInfo.mode === 'client-side') {
+        const bufferConfig: VideoBufferConfig = {
+          channelId,
+          targetLang,
+          enableDubbing: true,
+          enableSubtitles: false,
+          videoElement,
+        }
+        this.videoBufferManager = new VideoBufferManager(bufferConfig)
+        logger.info('Client-side video buffering initialized', 'liveDubbingService')
+      } else {
+        logger.info('Server-side video buffering active', 'liveDubbingService')
+      }
+    } catch (error) {
+      logger.warn(
+        `Failed to create synced stream: ${error instanceof Error ? error.message : 'Unknown error'}. Continuing without video sync.`,
+        'liveDubbingService'
+      )
+      // Continue without video buffering - not critical for dubbing to work
     }
 
     try {
@@ -185,6 +367,13 @@ class LiveDubbingService {
             const audioMsg = msg.data as DubbedAudioMessage
             logger.debug(`Dubbed audio #${audioMsg?.sequence}: "${audioMsg?.translated_text?.substring(0, 30)}..."`, 'liveDubbingService')
 
+            // Complete latency measurement on first dubbed audio (for client-side buffering)
+            if (!this.firstDubbedAudioReceived && this.videoBufferManager) {
+              this.videoBufferManager.completeMeasurement('dubbing')
+              this.firstDubbedAudioReceived = true
+              logger.debug('Completed latency measurement (first dubbed audio)', 'liveDubbingService')
+            }
+
             // Only play audio immediately if not in buffered mode
             if (!this.bufferedMode) {
               await this.playDubbedAudio(audioMsg?.data)
@@ -192,8 +381,18 @@ class LiveDubbingService {
 
             onDubbedAudio(audioMsg)
           } else if (msg.type === 'latency_report') {
-            logger.debug(`Latency: ${msg.avg_total_ms}ms (STT: ${msg.avg_stt_ms}ms, Trans: ${msg.avg_translation_ms}ms, TTS: ${msg.avg_tts_ms}ms)`, 'liveDubbingService')
-            onLatency(msg as LatencyReport)
+            const report = msg as LatencyReport
+            logger.debug(
+              `Latency: ${report.avg_total_ms}ms (STT: ${report.avg_stt_ms}ms, Trans: ${report.avg_translation_ms}ms, TTS: ${report.avg_tts_ms}ms)`,
+              'liveDubbingService'
+            )
+
+            // Process latency report and update adaptive sync
+            if (this.channelId) {
+              this.processLatencyReport(report, this.channelId)
+            }
+
+            onLatency(report)
           } else if (msg.type === 'error') {
             logger.error(`Server error: ${msg.error || msg.message}`, 'liveDubbingService')
             onError(msg.error || msg.message, msg.recoverable ?? true)
@@ -245,15 +444,37 @@ class LiveDubbingService {
 
       logger.debug('Gain nodes created and connected', 'liveDubbingService')
 
+      // Get buffer size from settings (with validation)
+      const settings = this.channelId
+        ? useDubbingSettingsStore.getState().getChannelSettings(this.channelId)
+        : null
+      const bufferSize = this.validateBufferSize(
+        settings?.bufferSize || AUDIO_CONFIG.bufferSize
+      )
+
+      // Calculate buffer latency
+      const bufferLatencyMs = (bufferSize / AUDIO_CONFIG.sampleRate) * 1000
+      logger.info(
+        `Audio buffer: ${bufferSize} samples = ${bufferLatencyMs.toFixed(1)}ms latency`,
+        'liveDubbingService'
+      )
+
       // Create shared audio capture service (pass existing AudioContext)
       this.audioCapture = new SharedAudioCapture(
         this.audioContext,
-        AUDIO_CONFIG.bufferSize,
+        bufferSize,
         AUDIO_CONFIG.chunkLogInterval,
         {
           onAudioData: (audioBuffer: ArrayBuffer) => {
             // Send captured audio to WebSocket for STT -> Translation
             if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+              // Start latency measurement on first audio chunk (for client-side buffering)
+              if (!this.firstAudioChunkSent && this.videoBufferManager) {
+                this.videoBufferManager.startMeasurement()
+                this.firstAudioChunkSent = true
+                logger.debug('Started latency measurement (first audio chunk)', 'liveDubbingService')
+              }
+
               this.ws.send(audioBuffer)
             } else {
               logger.warn('WebSocket not ready, skipping audio chunk', 'liveDubbingService')
@@ -348,6 +569,48 @@ class LiveDubbingService {
   }
 
   /**
+   * Set the sync delay for video synchronization (ms).
+   * Can be used for manual adjustment (-500 to +500ms).
+   */
+  setSyncDelay(delayMs: number): void {
+    this.syncDelayMs = Math.max(-500, Math.min(500, delayMs))
+    logger.debug(`Sync delay: ${this.syncDelayMs}ms`, 'liveDubbingService')
+
+    // Update settings store if channel is known
+    if (this.channelId) {
+      useDubbingSettingsStore.getState().updateChannelSettings(this.channelId, {
+        syncDelayMs: this.syncDelayMs,
+      })
+    }
+  }
+
+  /**
+   * Toggle auto-adaptive sync delay.
+   */
+  setAutoAdaptiveSync(enabled: boolean): void {
+    if (this.channelId) {
+      useDubbingSettingsStore.getState().updateChannelSettings(this.channelId, {
+        autoAdaptiveSync: enabled,
+      })
+
+      // Recalculate sync delay if enabled
+      if (enabled) {
+        this.syncDelayMs = this.calculateAdaptiveSyncDelay(this.channelId)
+        logger.info(`Auto-adaptive sync enabled: ${this.syncDelayMs}ms`, 'liveDubbingService')
+      } else {
+        logger.info('Auto-adaptive sync disabled', 'liveDubbingService')
+      }
+    }
+  }
+
+  /**
+   * Get current sync delay.
+   */
+  getSyncDelay(): number {
+    return this.syncDelayMs
+  }
+
+  /**
    * Get the sync delay in milliseconds.
    */
   getSyncDelayMs(): number {
@@ -365,6 +628,15 @@ class LiveDubbingService {
       this.ws = null
     }
 
+    // Clean up video buffer manager
+    if (this.videoBufferManager) {
+      this.videoBufferManager.reset()
+      this.videoBufferManager = null
+    }
+
+    this.syncedStreamInfo = null
+    this.firstAudioChunkSent = false
+    this.firstDubbedAudioReceived = false
     this.isConnected = false
     this.chunkCount = 0
     logger.debug('Disconnected', 'liveDubbingService')
@@ -403,6 +675,34 @@ class LiveDubbingService {
    */
   isServiceConnected(): boolean {
     return this.isConnected && this.ws !== null && this.ws.readyState === WebSocket.OPEN
+  }
+
+  /**
+   * Get synced stream information (video buffering mode and delay).
+   */
+  getSyncedStreamInfo(): SyncedStreamResponse | null {
+    return this.syncedStreamInfo
+  }
+
+  /**
+   * Get video buffer manager (for client-side buffering).
+   */
+  getVideoBufferManager(): VideoBufferManager | null {
+    return this.videoBufferManager
+  }
+
+  /**
+   * Check if video delay is active.
+   */
+  isVideoDelayActive(): boolean {
+    return this.videoBufferManager?.isDelayActive() ?? false
+  }
+
+  /**
+   * Get applied video delay in milliseconds.
+   */
+  getAppliedVideoDelay(): number {
+    return this.videoBufferManager?.getAppliedDelay() ?? this.syncedStreamInfo?.video_delay_ms ?? 0
   }
 
   /**

@@ -16,12 +16,12 @@ import { persist } from 'zustand/middleware';
 
 export interface ChatMessage {
   id: string;
-  userId: string;
-  userName: string;
+  user_id: string;
+  user_name: string;
   message: string;
-  originalLanguage: string;
+  original_language: string;
   timestamp: string;
-  isPinned: boolean;
+  is_pinned: boolean;
 }
 
 interface ChannelChatState {

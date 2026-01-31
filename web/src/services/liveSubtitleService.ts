@@ -4,6 +4,12 @@
  */
 
 import logger from '@/utils/logger'
+import {
+  VideoBufferManager,
+  createSyncedStream,
+  type VideoBufferConfig,
+  type SyncedStreamResponse,
+} from './VideoBufferManager'
 
 // API configuration
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
@@ -27,6 +33,12 @@ class LiveSubtitleService {
   private processor: ScriptProcessorNode | null = null
   private isConnected: boolean = false
 
+  // Video buffering for perfect sync
+  private videoBufferManager: VideoBufferManager | null = null
+  private syncedStreamInfo: SyncedStreamResponse | null = null
+  private firstAudioChunkSent = false
+  private firstSubtitleReceived = false
+
   /**
    * Connect to live subtitle WebSocket and start audio capture.
    */
@@ -37,6 +49,46 @@ class LiveSubtitleService {
     onSubtitle: SubtitleCallback,
     onError: ErrorCallback
   ): Promise<void> {
+    this.firstAudioChunkSent = false
+    this.firstSubtitleReceived = false
+
+    // Request synced stream from backend (server-side or client-side buffering)
+    try {
+      logger.info(`Requesting synced stream for channel ${channelId}`, 'liveSubtitleService')
+      this.syncedStreamInfo = await createSyncedStream({
+        channelId,
+        targetLang,
+        enableDubbing: false, // Subtitles only
+        enableSubtitles: true,
+      })
+
+      logger.info(
+        `Synced stream created: mode=${this.syncedStreamInfo.mode}, delay=${this.syncedStreamInfo.video_delay_ms}ms`,
+        'liveSubtitleService'
+      )
+
+      // If client-side buffering is needed, initialize VideoBufferManager
+      if (this.syncedStreamInfo.mode === 'client-side') {
+        const bufferConfig: VideoBufferConfig = {
+          channelId,
+          targetLang,
+          enableDubbing: false,
+          enableSubtitles: true,
+          videoElement,
+        }
+        this.videoBufferManager = new VideoBufferManager(bufferConfig)
+        logger.info('Client-side video buffering initialized', 'liveSubtitleService')
+      } else {
+        logger.info('Server-side video buffering active', 'liveSubtitleService')
+      }
+    } catch (error) {
+      logger.warn(
+        `Failed to create synced stream: ${error instanceof Error ? error.message : 'Unknown error'}. Continuing without video sync.`,
+        'liveSubtitleService'
+      )
+      // Continue without video buffering - not critical for subtitles to work
+    }
+
     return new Promise((resolve, reject) => {
       try {
         const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
@@ -75,10 +127,28 @@ class LiveSubtitleService {
               logger.debug(`Authenticated - Source: ${msg.source_lang}, Target: ${msg.target_lang}`, 'liveSubtitleService')
               this.isConnected = true
               clearTimeout(connectionTimeout)
-              await this.startAudioCapture(videoElement)
-              resolve() // Connection successful
+              try {
+                await this.startAudioCapture(videoElement)
+                resolve()
+              } catch (audioCaptureError) {
+                const errorMsg = audioCaptureError instanceof Error
+                  ? audioCaptureError.message
+                  : 'Audio capture failed'
+                logger.error('Audio capture failed after authentication', 'liveSubtitleService', { error: errorMsg })
+                onError(errorMsg)
+                this.disconnect()
+                reject(audioCaptureError)
+              }
             } else if (msg.type === 'subtitle') {
               logger.debug('Subtitle received', 'liveSubtitleService', { text: msg.data.text, data: msg.data })
+
+              // Complete latency measurement on first subtitle (for client-side buffering)
+              if (!this.firstSubtitleReceived && this.videoBufferManager) {
+                this.videoBufferManager.completeMeasurement('subtitle')
+                this.firstSubtitleReceived = true
+                logger.debug('Completed latency measurement (first subtitle)', 'liveSubtitleService')
+              }
+
               logger.debug('Calling onSubtitle callback', 'liveSubtitleService', msg.data)
               onSubtitle(msg.data)
               logger.debug('onSubtitle callback completed', 'liveSubtitleService')
@@ -95,7 +165,9 @@ class LiveSubtitleService {
               reject(new Error(msg.message))
             }
           } catch (error) {
-            logger.error('WebSocket parse error', 'liveSubtitleService', error)
+            const errorMsg = error instanceof Error ? error.message : 'Unexpected error'
+            logger.error('WebSocket message handling error', 'liveSubtitleService', error)
+            onError(errorMsg)
           }
         }
 
@@ -176,6 +248,13 @@ class LiveSubtitleService {
           return
         }
 
+        // Start latency measurement on first audio chunk (for client-side buffering)
+        if (!this.firstAudioChunkSent && this.videoBufferManager) {
+          this.videoBufferManager.startMeasurement()
+          this.firstAudioChunkSent = true
+          logger.debug('Started latency measurement (first audio chunk)', 'liveSubtitleService')
+        }
+
         const inputData = e.inputBuffer.getChannelData(0)
 
         // Check if audio is silent (all zeros = likely CORS blocked or muted)
@@ -231,6 +310,15 @@ class LiveSubtitleService {
       this.ws = null
     }
 
+    // Clean up video buffer manager
+    if (this.videoBufferManager) {
+      this.videoBufferManager.reset()
+      this.videoBufferManager = null
+    }
+
+    this.syncedStreamInfo = null
+    this.firstAudioChunkSent = false
+    this.firstSubtitleReceived = false
     this.isConnected = false
   }
 
@@ -259,6 +347,34 @@ class LiveSubtitleService {
    */
   isServiceConnected(): boolean {
     return this.isConnected && this.ws !== null && this.ws.readyState === WebSocket.OPEN
+  }
+
+  /**
+   * Get synced stream information (video buffering mode and delay).
+   */
+  getSyncedStreamInfo(): SyncedStreamResponse | null {
+    return this.syncedStreamInfo
+  }
+
+  /**
+   * Get video buffer manager (for client-side buffering).
+   */
+  getVideoBufferManager(): VideoBufferManager | null {
+    return this.videoBufferManager
+  }
+
+  /**
+   * Check if video delay is active.
+   */
+  isVideoDelayActive(): boolean {
+    return this.videoBufferManager?.isDelayActive() ?? false
+  }
+
+  /**
+   * Get applied video delay in milliseconds.
+   */
+  getAppliedVideoDelay(): number {
+    return this.videoBufferManager?.getAppliedDelay() ?? this.syncedStreamInfo?.video_delay_ms ?? 0
   }
 
   /**

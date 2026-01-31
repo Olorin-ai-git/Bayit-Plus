@@ -1,43 +1,60 @@
 /**
  * Type definitions for Channel Chat Service
+ * Field names use snake_case to match the backend WebSocket protocol.
  */
 
 export interface ConnectedData {
-  channelId: string
-  userCount: number
-  isBetaUser: boolean
-  translationEnabled: boolean
-  sessionToken: string
-  recentMessages: ChatMessageData[]
+  channel_id: string
+  user_count: number
+  is_beta_user: boolean
+  translation_enabled: boolean
+  session_token: string
+  recent_messages: ChatMessageData[]
 }
 
 export interface ChatMessageData {
   id: string
-  userId: string
-  userName: string
+  user_id: string
+  user_name: string
   message: string
-  originalLanguage: string
-  timestamp: number
-  isPinned: boolean
+  original_language: string
+  timestamp: string
+  is_pinned: boolean
   reactions?: Record<string, number>
 }
 
 export interface UserJoinData {
-  userId: string
-  userName: string
-  userCount: number
+  user_id: string
+  user_name: string
+  user_count: number
 }
 
 export interface UserLeftData {
-  userId: string
-  userCount: number
+  user_id: string
+  user_count: number
 }
 
 export interface ReactionUpdateData {
-  messageId: string
+  message_id: string
+  user_id: string
   reaction: string
-  count: number
-  totalReactions: Record<string, number>
+}
+
+export interface MessageDeletedData {
+  message_id: string
+  deleted_by: string
+  reason?: string
+}
+
+export interface UserMutedData {
+  user_id: string
+  muted_by: string
+  reason?: string
+}
+
+export interface UserUnmutedData {
+  user_id: string
+  unmuted_by: string
 }
 
 export interface ChannelChatCallbacks {
@@ -46,6 +63,9 @@ export interface ChannelChatCallbacks {
   onUserJoined: (data: UserJoinData) => void
   onUserLeft: (data: UserLeftData) => void
   onReactionUpdate: (data: ReactionUpdateData) => void
+  onMessageDeleted?: (data: MessageDeletedData) => void
+  onUserMuted?: (data: UserMutedData) => void
+  onUserUnmuted?: (data: UserUnmutedData) => void
   onError: (code: string, message: string, recoverable: boolean) => void
   onDisconnect: () => void
 }

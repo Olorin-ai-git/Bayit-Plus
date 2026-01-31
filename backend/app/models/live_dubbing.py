@@ -20,12 +20,36 @@ class DubbingMetrics(BaseModel):
     segments_transcribed: int = 0
     segments_translated: int = 0
     segments_synthesized: int = 0
+
+    # Average latencies
     avg_stt_latency_ms: float = 0.0
     avg_translation_latency_ms: float = 0.0
     avg_tts_latency_ms: float = 0.0
     avg_total_latency_ms: float = 0.0
+
+    # Percentile latencies (p50, p95, p99)
+    p50_stt_latency_ms: float = 0.0
+    p95_stt_latency_ms: float = 0.0
+    p99_stt_latency_ms: float = 0.0
+    p50_translation_latency_ms: float = 0.0
+    p95_translation_latency_ms: float = 0.0
+    p99_translation_latency_ms: float = 0.0
+    p50_tts_latency_ms: float = 0.0
+    p95_tts_latency_ms: float = 0.0
+    p99_tts_latency_ms: float = 0.0
+
+    # Network latency estimates
+    avg_network_upload_latency_ms: float = 0.0
+    avg_network_download_latency_ms: float = 0.0
+    avg_network_roundtrip_latency_ms: float = 0.0
+
+    # Error tracking
     errors_count: int = 0
     reconnections_count: int = 0
+
+    # Cache performance
+    translation_cache_hits: int = 0
+    translation_cache_misses: int = 0
 
 
 class LiveDubbingSession(Document):
@@ -127,11 +151,43 @@ class DubbedAudioMessage(BaseModel):
 
 
 class LatencyReport(BaseModel):
-    """Periodic latency report message."""
+    """
+    Enhanced periodic latency report message.
+
+    Includes averages, percentiles, and network metrics for comprehensive monitoring.
+    All new fields are optional for backward compatibility with existing clients.
+    """
 
     type: str = "latency_report"
+
+    # Average latencies (existing fields - required for backward compatibility)
     avg_stt_ms: int
     avg_translation_ms: int
     avg_tts_ms: int
     avg_total_ms: int
     segments_processed: int
+
+    # Percentile latencies (p50, p95, p99) - NEW (optional)
+    p50_stt_ms: Optional[int] = None
+    p95_stt_ms: Optional[int] = None
+    p99_stt_ms: Optional[int] = None
+    p50_translation_ms: Optional[int] = None
+    p95_translation_ms: Optional[int] = None
+    p99_translation_ms: Optional[int] = None
+    p50_tts_ms: Optional[int] = None
+    p95_tts_ms: Optional[int] = None
+    p99_tts_ms: Optional[int] = None
+    p50_total_ms: Optional[int] = None
+    p95_total_ms: Optional[int] = None
+    p99_total_ms: Optional[int] = None
+
+    # Network latency estimates (upload/download/roundtrip) - NEW (optional)
+    avg_network_upload_ms: Optional[int] = None
+    avg_network_download_ms: Optional[int] = None
+    avg_network_roundtrip_ms: Optional[int] = None
+
+    # Provider information - NEW (optional)
+    translation_provider: Optional[str] = None  # "google", "openai", "claude"
+    translation_cache_hit_rate: Optional[float] = (
+        None  # Cache hit rate (0.0 - 1.0)
+    )

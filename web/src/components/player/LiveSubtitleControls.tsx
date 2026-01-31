@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from 'react'
 import { View, Text, Pressable, Modal, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Languages } from 'lucide-react'
+import { useNotifications } from '@olorin/glass-ui/hooks'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassLiveControlButton } from './controls/GlassLiveControlButton'
 import { GlassView } from '@bayit/shared/ui'
@@ -63,6 +64,7 @@ export default function LiveSubtitleControls({
   isDubbingActive = false,
 }: LiveSubtitleControlsProps) {
   const { t } = useTranslation()
+  const notifications = useNotifications()
   // Initialize enabled state by checking actual service connection
   const [enabled, setEnabled] = useState(() => liveSubtitleService.isServiceConnected())
   const [status, setStatus] = useState<ConnectionStatus>(() =>
@@ -115,6 +117,7 @@ export default function LiveSubtitleControls({
           setError(err)
           setStatus('error')
           setEnabled(false)
+          notifications.showError(err, t('subtitles.connectionError', 'Live Translation Error'))
         })
         .then(() => {
           logger.debug('Language change reconnection successful', 'LiveSubtitleControls')
@@ -122,10 +125,12 @@ export default function LiveSubtitleControls({
           setEnabled(true)
         })
         .catch((err) => {
+          const errorMsg = err instanceof Error ? err.message : 'Reconnection failed'
           logger.error('Language change reconnection failed', 'LiveSubtitleControls', err)
-          setError(err instanceof Error ? err.message : 'Reconnection failed')
+          setError(errorMsg)
           setStatus('error')
           setEnabled(false)
+          notifications.showError(errorMsg, t('subtitles.connectionError', 'Live Translation Error'))
         })
     } else {
       prevLangRef.current = targetLang
@@ -180,6 +185,7 @@ export default function LiveSubtitleControls({
             setError(err)
             setStatus('error')
             setEnabled(false)
+            notifications.showError(err, t('subtitles.connectionError', 'Live Translation Error'))
           }
         )
 
@@ -189,10 +195,12 @@ export default function LiveSubtitleControls({
         setEnabled(true)
         logger.debug('Live subtitle connection successful', 'LiveSubtitleControls')
       } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : 'Connection failed'
         logger.error('Live subtitle connection failed', 'LiveSubtitleControls', err)
-        setError(err instanceof Error ? err.message : 'Connection failed')
+        setError(errorMsg)
         setStatus('error')
         setEnabled(false)
+        notifications.showError(errorMsg, t('subtitles.connectionError', 'Live Translation Error'))
       }
     }
   }

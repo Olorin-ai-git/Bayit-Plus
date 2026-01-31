@@ -274,6 +274,13 @@ class DubbingConfig(BaseSettings):
         le=120.0,
         description="Timeout for TTS WebSocket receive loop (Security #8)",
     )
+    live_dubbing_tts_safety_timeout_seconds: float = Field(
+        default=2.0,
+        ge=1.0,
+        le=30.0,
+        description="Safety timeout for per-transcript TTS receive in live dubbing. "
+        "ElevenLabs may not send isFinal for short segments, causing 20s hang.",
+    )
     tts_chunk_schedule_1: int = Field(
         default=100,
         ge=50,
@@ -640,6 +647,64 @@ class DatabaseConfig(BaseSettings):
         env_prefix = "OLORIN_"
 
 
+class ChannelChatConfig(BaseSettings):
+    """Channel live chat configuration for WebSocket chat on live TV channels."""
+
+    heartbeat_interval_seconds: int = Field(
+        default=30,
+        ge=5,
+        le=120,
+        description="Interval between heartbeat pings to clients (seconds)",
+    )
+    heartbeat_timeout_seconds: int = Field(
+        default=90,
+        ge=15,
+        le=300,
+        description="Timeout before disconnecting unresponsive client (seconds)",
+    )
+    history_limit: int = Field(
+        default=50,
+        ge=10,
+        le=500,
+        description="Maximum recent messages returned on join",
+    )
+    max_messages_per_minute: int = Field(
+        default=10,
+        ge=1,
+        le=60,
+        description="Rate limit: maximum messages per user per minute",
+    )
+    max_global_connections: int = Field(
+        default=5000,
+        ge=100,
+        le=100000,
+        description="Maximum total WebSocket connections across all channels",
+    )
+    max_connections_per_ip: int = Field(
+        default=10,
+        ge=1,
+        le=100,
+        description="Maximum WebSocket connections per IP address",
+    )
+    max_connections_per_user: int = Field(
+        default=3,
+        ge=1,
+        le=10,
+        description="Maximum WebSocket connections per user",
+    )
+    translation_enabled: bool = Field(
+        default=True,
+        description="Enable on-demand message translation for beta users",
+    )
+    profanity_filter_enabled: bool = Field(
+        default=True,
+        description="Enable multi-language profanity filtering on chat messages",
+    )
+
+    class Config:
+        env_prefix = "CHANNEL_CHAT_"
+
+
 class OlorinSettings(BaseSettings):
     """
     Olorin.ai Platform Configuration.
@@ -739,6 +804,10 @@ class OlorinSettings(BaseSettings):
     i18n: I18nConfig = Field(
         default_factory=I18nConfig,
         description="Internationalization configuration for multilingual support",
+    )
+    channel_chat: ChannelChatConfig = Field(
+        default_factory=ChannelChatConfig,
+        description="Channel live chat WebSocket configuration",
     )
 
     class Config:

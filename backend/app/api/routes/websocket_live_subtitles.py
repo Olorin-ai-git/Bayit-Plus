@@ -69,6 +69,9 @@ async def websocket_live_subtitles(
     websocket: WebSocket,
     channel_id: str,
     target_lang: str = Query("en"),
+    enable_predictive: bool = Query(
+        True, description="Enable predictive subtitles (partial + final)"
+    ),
 ):
     """
     Live subtitle translation. Client sends: auth message + binary audio chunks.
@@ -201,9 +204,13 @@ async def websocket_live_subtitles(
                 "channel_id": channel_id,
                 "stt_provider": translation_service.provider,
                 "translation_provider": translation_service.translation_provider,
+                "enable_predictive": enable_predictive,
             }
         )
-        logger.info(f"Translation service initialized for channel {channel_id}")
+        logger.info(
+            f"Translation service initialized for channel {channel_id} "
+            f"(predictive: {enable_predictive})"
+        )
 
         # Process audio and stream subtitles
         try:
@@ -213,8 +220,13 @@ async def websocket_live_subtitles(
                 create_audio_stream_with_quota_updates(websocket, session, user),
                 source_lang=source_lang,
                 target_lang=target_lang,
+                enable_predictive_subtitles=enable_predictive,
             ):
-                await websocket.send_json({"type": "subtitle", "data": subtitle_cue})
+                # Send subtitle with appropriate type
+                subtitle_type = subtitle_cue.get("subtitle_type", "final")
+                await websocket.send_json(
+                    {"type": f"{subtitle_type}_subtitle", "data": subtitle_cue}
+                )
 
         except WebSocketDisconnect:
             logger.info(

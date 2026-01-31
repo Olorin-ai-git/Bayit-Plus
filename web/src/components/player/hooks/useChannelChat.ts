@@ -3,7 +3,8 @@
  */
 import { useState, useCallback, useRef, useEffect } from 'react'
 import channelChatService, {
-  ChatMessageData, ConnectedData, UserJoinData, UserLeftData, ReactionUpdateData,
+  ChatMessageData, ConnectedData, UserJoinData, UserLeftData,
+  ReactionUpdateData, MessageDeletedData, UserMutedData, UserUnmutedData,
 } from '@/services/channelChatService'
 
 const MAX_MESSAGES = 200
@@ -34,11 +35,11 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
   const messageQueueRef = useRef<string[]>([])
 
   const handleConnected = useCallback((data: ConnectedData) => {
-    sessionTokenRef.current = data.sessionToken
+    sessionTokenRef.current = data.session_token
     setState((prev) => ({
-      ...prev, isConnected: true, isConnecting: false, userCount: data.userCount,
-      isBetaUser: data.isBetaUser, translationEnabled: data.translationEnabled,
-      messages: data.recentMessages || [], error: null, connectionState: 'connected',
+      ...prev, isConnected: true, isConnecting: false, userCount: data.user_count,
+      isBetaUser: data.is_beta_user, translationEnabled: data.translation_enabled,
+      messages: data.recent_messages || [], error: null, connectionState: 'connected',
     }))
     retryCountRef.current = 0
     while (messageQueueRef.current.length > 0) {
@@ -52,20 +53,38 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
   }, [])
 
   const handleUserJoined = useCallback((data: UserJoinData) => {
-    setState((prev) => ({ ...prev, userCount: data.userCount }))
+    setState((prev) => ({ ...prev, userCount: data.user_count }))
   }, [])
 
   const handleUserLeft = useCallback((data: UserLeftData) => {
-    setState((prev) => ({ ...prev, userCount: data.userCount }))
+    setState((prev) => ({ ...prev, userCount: data.user_count }))
   }, [])
 
   const handleReactionUpdate = useCallback((data: ReactionUpdateData) => {
     setState((prev) => ({
       ...prev,
-      messages: prev.messages.map((msg) =>
-        msg.id === data.messageId ? { ...msg, reactions: data.totalReactions } : msg
-      ),
+      messages: prev.messages.map((msg) => {
+        if (msg.id !== data.message_id) return msg
+        const reactions = { ...(msg.reactions || {}) }
+        reactions[data.reaction] = (reactions[data.reaction] || 0) + 1
+        return { ...msg, reactions }
+      }),
     }))
+  }, [])
+
+  const handleMessageDeleted = useCallback((data: MessageDeletedData) => {
+    setState((prev) => ({
+      ...prev,
+      messages: prev.messages.filter((msg) => msg.id !== data.message_id),
+    }))
+  }, [])
+
+  const handleUserMuted = useCallback((_data: UserMutedData) => {
+    // Could show a notification; for now just log via service
+  }, [])
+
+  const handleUserUnmuted = useCallback((_data: UserUnmutedData) => {
+    // Could show a notification; for now just log via service
   }, [])
 
   const handleError = useCallback((_code: string, message: string, recoverable: boolean) => {
@@ -80,7 +99,11 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
   const buildCallbacks = useCallback(() => ({
     onConnected: handleConnected, onMessage: handleMessage,
     onUserJoined: handleUserJoined, onUserLeft: handleUserLeft,
-    onReactionUpdate: handleReactionUpdate, onError: handleError,
+    onReactionUpdate: handleReactionUpdate,
+    onMessageDeleted: handleMessageDeleted,
+    onUserMuted: handleUserMuted,
+    onUserUnmuted: handleUserUnmuted,
+    onError: handleError,
     onDisconnect: () => {
       setState((prev) => ({ ...prev, isConnected: false, isConnecting: false, connectionState: 'disconnected' }))
       if (retryCountRef.current < MAX_RETRIES) {
@@ -90,7 +113,8 @@ export function useChannelChat({ channelId, autoConnect = false }: UseChannelCha
         setTimeout(() => channelChatService.connect(channelId, buildCallbacks()), delay)
       }
     },
-  }), [channelId, handleConnected, handleMessage, handleUserJoined, handleUserLeft, handleReactionUpdate, handleError])
+  }), [channelId, handleConnected, handleMessage, handleUserJoined, handleUserLeft,
+    handleReactionUpdate, handleMessageDeleted, handleUserMuted, handleUserUnmuted, handleError])
 
   const connect = useCallback(() => {
     if (state.isConnecting || state.isConnected) return

@@ -65,7 +65,8 @@ dependencies = [
     "pydub (>=0.25.1,<0.26.0)",
     "google-cloud-texttospeech (>=2.34.0,<3.0.0)",
     "tavily-python (>=0.7.20,<0.8.0)",
-    "exa-py (>=2.2.0,<3.0.0)"
+    "exa-py (>=2.2.0,<3.0.0)",
+    "better-profanity (>=0.7.0,<0.8.0)"
 ]
 
 

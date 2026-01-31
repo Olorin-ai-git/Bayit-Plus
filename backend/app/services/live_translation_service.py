@@ -474,26 +474,29 @@ class LiveTranslationService:
             logger.error(f"Transcription error ({self.provider}): {str(e)}")
             raise
 
-    async def translate_text(
+    async def _translate_with_provider(
         self,
         text: str,
         source_lang: str,
         target_lang: str,
-        timeout_seconds: float = 0.250,
+        provider: str,
+        timeout_seconds: float,
     ) -> str:
         """
-        Translate text using configured translation provider.
-
-        Supports: Google Cloud Translate, OpenAI GPT-4o-mini, or Claude.
+        Internal method to translate with a specific provider.
 
         Args:
             text: Text to translate
-            source_lang: Source language code (e.g., "he")
-            target_lang: Target language code (e.g., "en")
-            timeout_seconds: Timeout for translation (default 250ms for live dubbing)
+            source_lang: Source language code
+            target_lang: Target language code
+            provider: Provider name ("google", "openai", or "claude")
+            timeout_seconds: Timeout for translation
 
         Returns:
-            Translated text, or original text if translation times out or fails
+            Translated text
+
+        Raises:
+            Exception if translation fails
         """
         language_names = {
             "he": "Hebrew",
@@ -511,88 +514,170 @@ class LiveTranslationService:
         source_name = language_names.get(source_lang, source_lang)
         target_name = language_names.get(target_lang, target_lang)
 
+        if provider == "google" and self.translate_client:
+            # Google Cloud Translate (synchronous, fast ~30ms)
+            result = self.translate_client.translate(
+                text, source_language=source_lang, target_language=target_lang
+            )
+            translated = html.unescape(result["translatedText"])
+            logger.debug(f"Google Translate: {text[:30]}... → {translated[:30]}...")
+            return translated
+
+        elif provider == "openai" and self.openai_client:
+            # OpenAI GPT-4o-mini translation (async with timeout)
+            response = await asyncio.wait_for(
+                self.openai_client.chat.completions.create(
+                    model="gpt-4o-mini",
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": (
+                                f"You are a professional translator. "
+                                f"Translate the following text from {source_name} to {target_name}. "
+                                f"Return ONLY the translated text, nothing else."
+                            ),
+                        },
+                        {"role": "user", "content": text},
+                    ],
+                    temperature=0.3,
+                    max_tokens=500,
+                ),
+                timeout=timeout_seconds,
+            )
+            translated = response.choices[0].message.content.strip()
+            logger.debug(f"OpenAI Translate: {text[:30]}... → {translated[:30]}...")
+            return translated
+
+        elif provider == "claude" and self.anthropic_client:
+            # Claude translation (async with timeout)
+            response = await asyncio.wait_for(
+                self.anthropic_client.messages.create(
+                    model=settings.CLAUDE_MODEL,
+                    max_tokens=500,
+                    messages=[
+                        {
+                            "role": "user",
+                            "content": (
+                                f"Translate the following text from {source_name} to {target_name}. "
+                                f"Return ONLY the translated text, nothing else.\n\n"
+                                f"Text to translate: {text}"
+                            ),
+                        }
+                    ],
+                ),
+                timeout=timeout_seconds,
+            )
+            translated = response.content[0].text.strip()
+            logger.debug(f"Claude Translate: {text[:30]}... → {translated[:30]}...")
+            return translated
+
+        else:
+            raise ValueError(f"Provider {provider} not available or not initialized")
+
+    async def translate_text(
+        self,
+        text: str,
+        source_lang: str,
+        target_lang: str,
+        timeout_seconds: float = 0.100,
+        enable_fallback: bool = True,
+        channel_id: Optional[str] = None,
+        cache_ttl_seconds: int = 300,
+    ) -> str:
+        """
+        Translate text using configured translation provider with automatic fallback.
+
+        Provider fallback chain: Google → OpenAI → Claude
+        Uses translation cache for improved performance.
+
+        Args:
+            text: Text to translate
+            source_lang: Source language code (e.g., "he")
+            target_lang: Target language code (e.g., "en")
+            timeout_seconds: Timeout for translation (default 100ms for live dubbing)
+            enable_fallback: Enable fallback to alternative providers (default True)
+            channel_id: Optional channel ID for channel-specific caching (live features)
+            cache_ttl_seconds: Cache TTL in seconds (default 300s = 5min for live)
+
+        Returns:
+            Translated text, or original text if all providers fail
+        """
+        from app.services.translation_cache_service import translation_cache_service
+
+        # Check cache first
+        cache_hit = False
         try:
-            if self.translation_provider == "google" and self.translate_client:
-                # Google Cloud Translate (synchronous, fast - no timeout needed)
-                result = self.translate_client.translate(
-                    text, source_language=source_lang, target_language=target_lang
+            cached = await translation_cache_service.get_cached_translation(
+                text, source_lang, target_lang, channel_id=channel_id
+            )
+            if cached is not None:
+                cache_hit = True
+                logger.debug(
+                    f"Translation cache hit: {text[:30]}... → {cached[:30]}..."
                 )
-                # Decode HTML entities (Google Translate returns &#39; for apostrophes, etc.)
-                translated = html.unescape(result["translatedText"])
-                logger.debug(f"Google Translate: {text} → {translated}")
+                return cached
+        except Exception as e:
+            logger.warning(f"Cache lookup error: {e}")
+
+        # Define fallback chain based on configured provider
+        providers = []
+        if self.translation_provider == "google":
+            providers = ["google", "openai", "claude"]
+        elif self.translation_provider == "openai":
+            providers = ["openai", "google", "claude"]
+        else:  # claude
+            providers = ["claude", "google", "openai"]
+
+        # Try each provider in fallback chain
+        for i, provider in enumerate(providers):
+            try:
+                start_time = time.time()
+                translated = await self._translate_with_provider(
+                    text, source_lang, target_lang, provider, timeout_seconds
+                )
+                latency_ms = (time.time() - start_time) * 1000
+
+                # Cache successful translation
+                try:
+                    await translation_cache_service.store_translation(
+                        text,
+                        source_lang,
+                        target_lang,
+                        translated,
+                        channel_id=channel_id,
+                        ttl_seconds=cache_ttl_seconds,
+                    )
+                except Exception as e:
+                    logger.warning(f"Cache store error: {e}")
+
+                if i > 0:
+                    logger.warning(
+                        f"Translation fallback to {provider} succeeded "
+                        f"(latency: {latency_ms:.0f}ms)"
+                    )
+                else:
+                    logger.debug(f"Translation latency ({provider}): {latency_ms:.0f}ms")
+
                 return translated
 
-            elif self.translation_provider == "openai" and self.openai_client:
-                # OpenAI GPT-4o-mini translation (async with timeout for live dubbing)
-                try:
-                    response = await asyncio.wait_for(
-                        self.openai_client.chat.completions.create(
-                            model="gpt-4o-mini",
-                            messages=[
-                                {
-                                    "role": "system",
-                                    "content": (
-                                        f"You are a professional translator. "
-                                        f"Translate the following text from {source_name} to {target_name}. "
-                                        f"Return ONLY the translated text, nothing else."
-                                    ),
-                                },
-                                {"role": "user", "content": text},
-                            ],
-                            temperature=0.3,
-                            max_tokens=500,
-                        ),
-                        timeout=timeout_seconds,
-                    )
-
-                    translated = response.choices[0].message.content.strip()
-                    logger.debug(f"OpenAI Translate: {text} → {translated}")
-                    return translated
-                except asyncio.TimeoutError:
-                    logger.warning(
-                        f"OpenAI translation timeout after {timeout_seconds*1000:.0f}ms, returning original"
-                    )
-                    return text
-
-            elif self.translation_provider == "claude" and self.anthropic_client:
-                # Claude translation (async with timeout for live dubbing)
-                try:
-                    response = await asyncio.wait_for(
-                        self.anthropic_client.messages.create(
-                            model=settings.CLAUDE_MODEL,
-                            max_tokens=500,
-                            messages=[
-                                {
-                                    "role": "user",
-                                    "content": (
-                                        f"Translate the following text from {source_name} to {target_name}. "
-                                        f"Return ONLY the translated text, nothing else.\n\n"
-                                        f"Text to translate: {text}"
-                                    ),
-                                }
-                            ],
-                        ),
-                        timeout=timeout_seconds,
-                    )
-
-                    translated = response.content[0].text.strip()
-                    logger.debug(f"Claude Translate: {text} → {translated}")
-                    return translated
-                except asyncio.TimeoutError:
-                    logger.warning(
-                        f"Claude translation timeout after {timeout_seconds*1000:.0f}ms, returning original"
-                    )
-                    return text
-
-            else:
+            except asyncio.TimeoutError:
                 logger.warning(
-                    f"No translation client available for provider: {self.translation_provider}"
+                    f"{provider.capitalize()} translation timeout "
+                    f"after {timeout_seconds*1000:.0f}ms"
                 )
-                return text
+                if not enable_fallback or i == len(providers) - 1:
+                    return text
+                continue
 
-        except Exception as e:
-            logger.error(f"Translation error ({self.translation_provider}): {str(e)}")
-            return text
+            except Exception as e:
+                logger.error(f"{provider.capitalize()} translation error: {str(e)}")
+                if not enable_fallback or i == len(providers) - 1:
+                    return text
+                continue
+
+        # All providers failed
+        logger.error("All translation providers failed, returning original text")
+        return text
 
     async def process_live_audio_to_subtitles(
         self,
@@ -600,6 +685,7 @@ class LiveTranslationService:
         source_lang: str,
         target_lang: str,
         start_timestamp: float = 0.0,
+        enable_predictive_subtitles: bool = True,
     ) -> AsyncIterator[Dict[str, Any]]:
         """
         Complete pipeline: Audio → Transcription → Translation → Subtitle cues.
@@ -609,6 +695,10 @@ class LiveTranslationService:
 
         Yields subtitle cues with format:
         {"text": "...", "original_text": "...", "timestamp": 123.45, ...}
+
+        With predictive subtitles enabled, emits:
+        1. Partial subtitle (type: "partial_subtitle") - immediately after STT
+        2. Final subtitle (type: "final_subtitle") - after translation (~80ms later)
         """
         session_start = time.time()
 
@@ -630,26 +720,52 @@ class LiveTranslationService:
                 if not transcript.strip():
                     continue
 
+                # Calculate base timestamp
+                current_time = time.time() - session_start + start_timestamp
+                stt_complete_time = time.time()
+
+                # PREDICTIVE SUBTITLE: Emit partial subtitle immediately after STT
+                if enable_predictive_subtitles and actual_source_lang != target_lang:
+                    original_chunks = chunk_text_for_subtitles(transcript)
+                    for i, orig_chunk in enumerate(original_chunks):
+                        chunk_timestamp = current_time + (i * 0.3)
+                        yield {
+                            "text": orig_chunk,  # Original language text
+                            "original_text": orig_chunk,
+                            "timestamp": chunk_timestamp,
+                            "source_lang": actual_source_lang,
+                            "target_lang": actual_source_lang,  # Same as source (not translated yet)
+                            "confidence": 0.95,
+                            "chunk_index": i,
+                            "total_chunks": len(original_chunks),
+                            "is_partial": True,  # Flag for partial subtitle
+                            "subtitle_type": "partial",  # For client filtering
+                        }
+
                 # Translate (skip if same language)
                 if actual_source_lang == target_lang:
                     translated = transcript
                 else:
+                    # Use optimized timeout and caching for live subtitles
                     translated = await self.translate_text(
-                        transcript, actual_source_lang, target_lang
+                        transcript,
+                        actual_source_lang,
+                        target_lang,
+                        timeout_seconds=0.100,  # Reduced from 250ms to 100ms
+                        enable_fallback=True,  # Enable provider fallback
+                        cache_ttl_seconds=300,  # 5 minutes for live features
                     )
+                    translation_latency_ms = (time.time() - stt_complete_time) * 1000
                     logger.info(
-                        f"🌍 Translated [{actual_source_lang}→{target_lang}]: {translated[:50]}..."
+                        f"🌍 Translated [{actual_source_lang}→{target_lang}] "
+                        f"in {translation_latency_ms:.0f}ms: {translated[:50]}..."
                     )
-
-                # Calculate base timestamp
-                current_time = time.time() - session_start + start_timestamp
 
                 # Chunk long transcripts for better subtitle readability
-                # This prevents large blocks of text from appearing all at once
                 translated_chunks = chunk_text_for_subtitles(translated)
                 original_chunks = chunk_text_for_subtitles(transcript)
 
-                # Yield each chunk as a separate subtitle cue with slight time offset
+                # FINAL SUBTITLE: Yield translated subtitle
                 for i, trans_chunk in enumerate(translated_chunks):
                     orig_chunk = original_chunks[i] if i < len(original_chunks) else ""
                     # Stagger chunks by 0.3 seconds each for natural reading
@@ -664,6 +780,8 @@ class LiveTranslationService:
                         "confidence": 0.95,
                         "chunk_index": i,
                         "total_chunks": len(translated_chunks),
+                        "is_partial": False,  # Flag for final subtitle
+                        "subtitle_type": "final",  # For client filtering
                     }
 
         except Exception as e:

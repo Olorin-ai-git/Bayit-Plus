@@ -176,3 +176,55 @@ async def mute_chat_user(
             exc_info=True,
         )
         raise HTTPException(status_code=500, detail="Failed to mute user")
+
+
+@router.delete("/live/{channel_id}/chat/{user_id}/mute", response_model=ModerationResponse)
+async def unmute_chat_user(
+    channel_id: str,
+    user_id: str,
+    request: Request,
+    admin: User = Depends(get_current_admin_user),
+) -> ModerationResponse:
+    """Unmute a user in channel chat (Admin only)."""
+    validate_id(channel_id, "channel_id")
+    validate_id(user_id, "user_id")
+
+    client_ip = request.client.host if request.client else "unknown"
+
+    logger.info(
+        "Unmute user requested",
+        extra={
+            "channel_id": channel_id,
+            "target_user_id": user_id,
+            "admin_id": str(admin.id),
+            "client_ip": client_ip,
+        },
+    )
+
+    try:
+        chat_service = get_channel_chat_service()
+        success = await chat_service.unmute_user(
+            channel_id=channel_id,
+            target_user_id=user_id,
+            actor_id=str(admin.id),
+            actor_role="admin",
+            actor_ip=client_ip,
+        )
+
+        if not success:
+            raise ValueError("Failed to unmute user")
+
+        logger.info("User unmuted", extra={"channel_id": channel_id, "target_user_id": user_id, "admin_id": str(admin.id)})
+        return ModerationResponse(
+            success=True, message="User unmuted successfully", action="unmute", target=user_id
+        )
+
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        logger.error(
+            "Unmute user failed",
+            extra={"channel_id": channel_id, "user_id": user_id, "error": str(e)},
+            exc_info=True,
+        )
+        raise HTTPException(status_code=500, detail="Failed to unmute user")

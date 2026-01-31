@@ -695,6 +695,14 @@ class ChannelChatService:
             )
             await audit_log.insert()
 
+            # Broadcast deletion to all connected clients
+            await self.broadcast_message(channel_id, {
+                "type": "message_deleted",
+                "message_id": message_id,
+                "deleted_by": actor_id,
+                "reason": reason,
+            })
+
             logger.info(
                 f"Message {message_id} deleted by {actor_id}",
                 extra={
@@ -762,6 +770,14 @@ class ChannelChatService:
             )
             await audit_log.insert()
 
+            # Broadcast mute to all connected clients
+            await self.broadcast_message(channel_id, {
+                "type": "user_muted",
+                "user_id": target_user_id,
+                "muted_by": actor_id,
+                "reason": reason,
+            })
+
             logger.info(
                 f"User {target_user_id} muted in channel {channel_id} by {actor_id}",
                 extra={
@@ -827,6 +843,13 @@ class ChannelChatService:
                 target_user_id=target_user_id,
             )
             await audit_log.insert()
+
+            # Broadcast unmute to all connected clients
+            await self.broadcast_message(channel_id, {
+                "type": "user_unmuted",
+                "user_id": target_user_id,
+                "unmuted_by": actor_id,
+            })
 
             logger.info(
                 f"User {target_user_id} unmuted in channel {channel_id} by {actor_id}",

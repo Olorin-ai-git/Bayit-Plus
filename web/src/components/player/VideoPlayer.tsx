@@ -7,7 +7,7 @@ import VideoPlayerPanels from './VideoPlayerPanels'
 import VideoPlayerControlsOverlay from './VideoPlayerControlsOverlay'
 import VideoPlayerWatchParty from './VideoPlayerWatchParty'
 import VideoPlayerCatchUp from './VideoPlayerCatchUp'
-import ChannelChatPanel from './chat/ChannelChatPanel'
+import GlassChatSidebar from './chat/GlassChatSidebar'
 import { BufferedLiveDubbingPlayer } from '../BufferedLiveDubbingPlayer'
 import { StreamLimitExceededModal } from './StreamLimitExceededModal'
 import {
@@ -491,9 +491,11 @@ export default function VideoPlayer({
 
       {/* Channel Live Chat for Live TV */}
       {isLive && contentId && (
-        <ChannelChatPanel
+        <GlassChatSidebar
           channelId={contentId}
           isLiveChannel={isLive}
+          isVisible={isChatVisible}
+          onClose={toggleChatVisibility}
         />
       )}
 
