@@ -66,8 +66,14 @@ export function useRecordingSession({ channelId, onRecordingStateChange }: UseRe
   }, [channelId, startDurationTimer, notifications, t])
 
   const stopRecording = useCallback(async () => {
-    if (!session) return
+    logger.debug('stopRecording called', 'RecordButton', { session, isRecording })
+    if (!session) {
+      logger.warn('stopRecording called but session is null', 'RecordButton', { isRecording })
+      notifications.showError(t('recordings.stopFailed'), t('recordings.error'))
+      return
+    }
     try {
+      logger.debug('Calling API to stop recording', 'RecordButton', { sessionId: session.id })
       const recording = await recordingApi.stopRecording(session.id)
       if (durationInterval.current) {
         clearInterval(durationInterval.current)
@@ -85,7 +91,7 @@ export function useRecordingSession({ channelId, onRecordingStateChange }: UseRe
       logger.error('Failed to stop recording', 'RecordButton', { error: err })
       notifications.showError(err?.detail || err?.message || t('recordings.stopFailed'), t('recordings.error'))
     }
-  }, [session, notifications, t])
+  }, [session, isRecording, notifications, t])
 
   return {
     isRecording, session, duration, recordingOptions,

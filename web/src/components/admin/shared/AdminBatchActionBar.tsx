@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { X } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { GlassButton } from '@bayit/shared/ui'
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens'
 
@@ -23,17 +24,19 @@ export default function AdminBatchActionBar({
   actions,
   isRTL = false,
 }: AdminBatchActionBarProps) {
+  const { t } = useTranslation()
+
   if (selectedCount === 0) return null
 
   return (
     <View style={[styles.container, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       <View style={[styles.leftSection, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <Text style={styles.countText}>
-          {selectedCount} selected
+          {t('admin.batchActions.selectedCount', { count: selectedCount })}
         </Text>
 
         <GlassButton
-          title="Clear"
+          title={t('admin.batchActions.clear')}
           onPress={onClearSelection}
           variant="ghost"
           icon={<X size={16} />}
@@ -78,7 +81,7 @@ const styles = StyleSheet.create({
   countText: {
     fontSize: fontSize.md,
     fontWeight: '600',
-    color: colors.text.primary,
+    color: colors.textPrimary,
   },
   actionsSection: {
     flexDirection: 'row',

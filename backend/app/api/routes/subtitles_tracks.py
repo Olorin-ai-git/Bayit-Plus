@@ -43,6 +43,7 @@ async def get_subtitle_tracks(content_id: str, language: Optional[str] = None) -
                 "format": track.format,
                 "has_nikud_version": track.has_nikud_version,
                 "has_shoresh_version": track.has_shoresh_version,
+                "has_heblish_version": track.has_heblish_version,
                 "is_default": track.is_default,
                 "is_auto_generated": getattr(track, "is_auto_generated", False),
                 "cue_count": len(track.cues),

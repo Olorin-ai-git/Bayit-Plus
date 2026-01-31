@@ -471,24 +471,22 @@ const apiSubtitlesService = {
   getLanguages: () => api.get('/subtitles/languages'),
   getTracks: (contentId, language) =>
     api.get(`/subtitles/${contentId}`, { params: { language } }),
-  getCues: (contentId, language = 'he', hebrewMode = 'regular', startTime, endTime) => {
-    // Convert hebrewMode string to API parameters
-    const withNikud = hebrewMode === 'nikud'
-    const withShoresh = hebrewMode === 'shoresh'
-    return api.get(`/subtitles/${contentId}/cues`, {
+  getCues: (contentId, language = 'he', hebrewMode = 'regular', englishMode = 'regular', startTime, endTime) =>
+    api.get(`/subtitles/${contentId}/cues`, {
       params: {
         language,
-        with_nikud: withNikud,
-        with_shoresh: withShoresh,
+        hebrew_mode: hebrewMode,
+        english_mode: englishMode,
         start_time: startTime,
         end_time: endTime
       }
-    })
-  },
+    }),
   generateNikud: (contentId, language = 'he', force = false) =>
     api.post(`/subtitles/${contentId}/nikud`, null, { params: { language, force } }),
   generateShoresh: (contentId, language = 'he', force = false) =>
     api.post(`/subtitles/${contentId}/shoresh`, null, { params: { language, force } }),
+  generateHeblish: (contentId, language = 'en', force = false) =>
+    api.post(`/subtitles/${contentId}/heblish`, null, { params: { language, force } }),
   // Job status polling
   getJobStatus: (jobId) => api.get(`/subtitles/job/${jobId}`),
   getActiveJobs: (contentId) => api.get(`/subtitles/${contentId}/job/active`),
@@ -517,10 +515,12 @@ const apiSubtitlesService = {
 const apiSubtitlePreferencesService = {
   getPreference: (contentId) =>
     api.get(`/subtitles/preferences/${contentId}`),
-  setPreference: (contentId, language) =>
-    api.post(`/subtitles/preferences/${contentId}`, null, { params: { language } }),
+  setPreference: (contentId, language, hebrewMode = 'regular', englishMode = 'regular') =>
+    api.post(`/subtitles/preferences/${contentId}`, null, { params: { language, hebrew_mode: hebrewMode, english_mode: englishMode } }),
   setHebrewMode: (contentId, mode) =>
-    api.post(`/subtitles/preferences/${contentId}/hebrew-mode`, null, { params: { mode } }),
+    api.patch(`/subtitles/preferences/${contentId}/hebrew-mode`, null, { params: { hebrew_mode: mode } }),
+  setEnglishMode: (contentId, mode) =>
+    api.patch(`/subtitles/preferences/${contentId}/english-mode`, null, { params: { english_mode: mode } }),
   deletePreference: (contentId) =>
     api.delete(`/subtitles/preferences/${contentId}`),
   getAllPreferences: () =>

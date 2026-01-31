@@ -25,6 +25,7 @@ export interface SubtitleTrack {
   cues: SubtitleCue[]
   has_nikud_version: boolean  // Hebrew vocalization available
   has_shoresh_version?: boolean // Hebrew root word highlighting available
+  has_heblish_version?: boolean // English with Hebrew injections available
   is_default: boolean
   is_auto_generated: boolean
   created_at: string
@@ -45,12 +46,17 @@ export interface SubtitleSettings {
 
 export type HebrewMode = 'regular' | 'nikud' | 'shoresh'
 
+// ============ ENGLISH MODE ============
+
+export type EnglishMode = 'regular' | 'heblish'
+
 // ============ SUBTITLE PREFERENCES ============
 
 export interface SubtitlePreferences {
   enabled: boolean
   language: string | null  // Selected language code
   hebrew_mode?: HebrewMode  // Hebrew subtitle display mode
+  english_mode?: EnglishMode  // English subtitle display mode
   settings: SubtitleSettings
 }
 

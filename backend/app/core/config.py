@@ -325,6 +325,11 @@ class Settings(BaseSettings):
         env="SUBTITLE_SHORESH_CACHE_MAX_SIZE",
         description="Maximum in-memory cache entries for shoresh text"
     )
+    SUBTITLE_HEBLISH_CACHE_MAX_SIZE: int = Field(
+        default=10000,
+        env="SUBTITLE_HEBLISH_CACHE_MAX_SIZE",
+        description="Maximum in-memory cache entries for heblish text"
+    )
     SUBTITLE_AI_MAX_TOKENS: int = Field(
         default=4096,
         env="SUBTITLE_AI_MAX_TOKENS",

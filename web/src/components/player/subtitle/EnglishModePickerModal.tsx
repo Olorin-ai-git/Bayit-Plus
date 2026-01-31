@@ -1,6 +1,6 @@
 /**
- * HebrewModePickerModal Component (Web)
- * Modal for selecting Hebrew subtitle display mode (regular, nikud, shoresh)
+ * EnglishModePickerModal Component (Web)
+ * Modal for selecting English subtitle display mode (regular, heblish)
  * Uses TailwindCSS for styling and web-native modal implementation
  */
 
@@ -9,8 +9,8 @@ import { useTranslation } from 'react-i18next'
 import { createPortal } from 'react-dom'
 import { Icon } from '@olorin/shared-icons/web'
 import { Sparkles } from 'lucide-react'
-import { HebrewMode } from '@/types/subtitle'
-import { storageHelpers, STORAGE_KEYS } from '@/utils/storage'
+import { EnglishMode } from '@/types/subtitle'
+import { storageHelpers } from '@/utils/storage'
 import { subtitlesService } from '@/services/api'
 import { useAuthStore } from '@/stores/authStore'
 import logger from '@/utils/logger'
@@ -22,78 +22,67 @@ interface JobStatus {
   error_message?: string
 }
 
-interface HebrewModePickerModalProps {
+interface EnglishModePickerModalProps {
   visible: boolean
-  currentMode: HebrewMode
-  hasNikud: boolean
-  hasShoresh: boolean
+  currentMode: EnglishMode
+  hasHeblish: boolean
   contentId?: string
-  portalContainer?: HTMLElement | null  // Container for portal (for fullscreen support)
+  portalContainer?: HTMLElement | null
   onClose: () => void
-  onModeSelect: (mode: HebrewMode) => void
+  onModeSelect: (mode: EnglishMode) => void
   onGenerationComplete?: () => void
 }
 
 interface ModeOption {
-  mode: HebrewMode
+  mode: EnglishMode
   icon: string
   titleKey: string
   descriptionKey: string
   example: string
-  isAI: boolean  // Whether this mode uses AI
+  isAI: boolean
 }
 
-const HEBREW_MODE_OPTIONS: ModeOption[] = [
+const ENGLISH_MODE_OPTIONS: ModeOption[] = [
   {
     mode: 'regular',
     icon: 'settings',
-    titleKey: 'subtitles.hebrewMode.regular.title',
-    descriptionKey: 'subtitles.hebrewMode.regular.description',
-    example: 'הילדים הולכים לבית הספר',
+    titleKey: 'subtitles.englishMode.regular.title',
+    descriptionKey: 'subtitles.englishMode.regular.description',
+    example: 'Hello friends! Today we watch a great show.',
     isAI: false,
   },
   {
-    mode: 'nikud',
-    icon: 'א׳',
-    titleKey: 'subtitles.hebrewMode.nikud.title',
-    descriptionKey: 'subtitles.hebrewMode.nikud.description',
-    example: 'הַיְלָדִים הוֹלְכִים לְבֵית הַסֵּפֶר',
-    isAI: true,
-  },
-  {
-    mode: 'shoresh',
-    icon: 'stories',
-    titleKey: 'subtitles.hebrewMode.shoresh.title',
-    descriptionKey: 'subtitles.hebrewMode.shoresh.description',
-    example: 'הילדים [ילד] הולכים [הלך] לבית [בית] הספר [ספר]',
+    mode: 'heblish',
+    icon: 'translate',
+    titleKey: 'subtitles.englishMode.heblish.title',
+    descriptionKey: 'subtitles.englishMode.heblish.description',
+    example: 'Shalom chaverim! Today we watch a sababa show.',
     isAI: true,
   },
 ]
 
-const HEBREW_MODE_FIRST_TIME_KEY = 'hebrew_mode_first_time_seen'
+const ENGLISH_MODE_FIRST_TIME_KEY = 'english_mode_first_time_seen'
 
-export default function HebrewModePickerModal({
+export default function EnglishModePickerModal({
   visible,
   currentMode,
-  hasNikud,
-  hasShoresh,
+  hasHeblish,
   contentId,
   portalContainer,
   onClose,
   onModeSelect,
   onGenerationComplete,
-}: HebrewModePickerModalProps) {
+}: EnglishModePickerModalProps) {
   const { t } = useTranslation()
   const modalRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const pollingRef = useRef<NodeJS.Timeout | null>(null)
   const [showFirstTimeHint, setShowFirstTimeHint] = useState(false)
-  const [generatingMode, setGeneratingMode] = useState<'nikud' | 'shoresh' | null>(null)
+  const [generatingMode, setGeneratingMode] = useState<'heblish' | null>(null)
   const [generationError, setGenerationError] = useState<string | null>(null)
   const [jobProgress, setJobProgress] = useState<number>(0)
   const isAdmin = useAuthStore((s) => s.isAdmin())
 
-  // Cleanup polling on unmount
   useEffect(() => {
     return () => {
       if (pollingRef.current) {
@@ -102,21 +91,19 @@ export default function HebrewModePickerModal({
     }
   }, [])
 
-  // Check if this is the user's first time seeing the Hebrew mode picker
   useEffect(() => {
     if (visible) {
       const checkFirstTime = async () => {
-        const hasSeenBefore = await storageHelpers.getBoolean(HEBREW_MODE_FIRST_TIME_KEY, false)
+        const hasSeenBefore = await storageHelpers.getBoolean(ENGLISH_MODE_FIRST_TIME_KEY, false)
         if (!hasSeenBefore) {
           setShowFirstTimeHint(true)
-          await storageHelpers.setBoolean(HEBREW_MODE_FIRST_TIME_KEY, true)
+          await storageHelpers.setBoolean(ENGLISH_MODE_FIRST_TIME_KEY, true)
         }
       }
       checkFirstTime()
     }
   }, [visible])
 
-  // Close on Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && visible) {
@@ -135,10 +122,8 @@ export default function HebrewModePickerModal({
     }
   }, [visible, onClose])
 
-  // Focus trap with focus restoration
   useEffect(() => {
     if (visible && modalRef.current) {
-      // Store previous focus
       previousFocusRef.current = document.activeElement as HTMLElement
 
       const focusableElements = modalRef.current.querySelectorAll(
@@ -168,28 +153,26 @@ export default function HebrewModePickerModal({
 
       return () => {
         document.removeEventListener('keydown', handleTab)
-        // Restore previous focus when modal closes
         previousFocusRef.current?.focus()
       }
     }
   }, [visible])
 
-  const handleModePress = (mode: HebrewMode) => {
+  const handleModePress = (mode: EnglishMode) => {
     onModeSelect(mode)
     onClose()
   }
 
-  const isModeAvailable = (mode: HebrewMode): boolean => {
+  const isModeAvailable = (mode: EnglishMode): boolean => {
     if (mode === 'regular') return true
-    if (mode === 'nikud') return hasNikud
-    if (mode === 'shoresh') return hasShoresh
+    if (mode === 'heblish') return hasHeblish
     return false
   }
 
-  const pollJobStatus = useCallback(async (jobId: string, mode: 'nikud' | 'shoresh') => {
+  const pollJobStatus = useCallback(async (jobId: string) => {
     try {
       const status = await subtitlesService.getJobStatus(jobId) as JobStatus
-      logger.info(`Job status: ${status.status}`, 'HebrewModePickerModal', { jobId, progress: status.progress })
+      logger.info(`Job status: ${status.status}`, 'EnglishModePickerModal', { jobId, progress: status.progress })
 
       setJobProgress(status.progress)
 
@@ -197,79 +180,73 @@ export default function HebrewModePickerModal({
         if (pollingRef.current) clearInterval(pollingRef.current)
         setGeneratingMode(null)
         setJobProgress(0)
-        logger.info(`${mode} generation completed`, 'HebrewModePickerModal', { contentId })
+        logger.info('Heblish generation completed', 'EnglishModePickerModal', { contentId })
         onGenerationComplete?.()
       } else if (status.status === 'failed') {
         if (pollingRef.current) clearInterval(pollingRef.current)
         setGeneratingMode(null)
         setJobProgress(0)
-        setGenerationError(status.error_message || `${mode} generation failed`)
-        logger.error(`${mode} generation failed`, 'HebrewModePickerModal', { contentId, error: status.error_message })
+        setGenerationError(status.error_message || 'Heblish generation failed')
+        logger.error('Heblish generation failed', 'EnglishModePickerModal', { contentId, error: status.error_message })
       }
     } catch (error) {
-      logger.error('Failed to poll job status', 'HebrewModePickerModal', { jobId, error })
+      logger.error('Failed to poll job status', 'EnglishModePickerModal', { jobId, error })
     }
   }, [contentId, onGenerationComplete])
 
-  const handleGenerateMode = async (mode: 'nikud' | 'shoresh', e: React.MouseEvent) => {
+  const handleGenerateHeblish = async (e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
 
-    logger.info(`Generate ${mode} clicked`, 'HebrewModePickerModal', { contentId, isAdmin, generatingMode })
+    logger.info('Generate heblish clicked', 'EnglishModePickerModal', { contentId, isAdmin, generatingMode })
 
     if (!contentId) {
-      logger.error('No contentId provided', 'HebrewModePickerModal')
+      logger.error('No contentId provided', 'EnglishModePickerModal')
       setGenerationError('Content ID is missing')
       return
     }
 
     if (generatingMode) {
-      logger.info('Generation already in progress', 'HebrewModePickerModal')
+      logger.info('Generation already in progress', 'EnglishModePickerModal')
       return
     }
 
-    setGeneratingMode(mode)
+    setGeneratingMode('heblish')
     setGenerationError(null)
     setJobProgress(0)
 
     try {
-      logger.info(`Starting ${mode} generation`, 'HebrewModePickerModal', { contentId })
+      logger.info('Starting heblish generation', 'EnglishModePickerModal', { contentId })
 
-      const result = mode === 'nikud'
-        ? await subtitlesService.generateNikud(contentId, 'he', false)
-        : await subtitlesService.generateShoresh(contentId, 'he', false)
+      const result = await subtitlesService.generateHeblish(contentId, 'en', false)
 
-      logger.info(`${mode} job started`, 'HebrewModePickerModal', { contentId, result })
+      logger.info('Heblish job started', 'EnglishModePickerModal', { contentId, result })
 
-      // Check if already completed (e.g., was already generated)
       if (result.status === 'completed') {
         setGeneratingMode(null)
         onGenerationComplete?.()
         return
       }
 
-      // Start polling for job status
       const jobId = result.job_id
       if (jobId) {
         pollingRef.current = setInterval(() => {
-          pollJobStatus(jobId, mode)
-        }, 2000) // Poll every 2 seconds
+          pollJobStatus(jobId)
+        }, 2000)
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Generation failed'
-      logger.error(`Failed to start ${mode} generation`, 'HebrewModePickerModal', { contentId, error: errorMessage })
-      setGenerationError(`Failed to start ${mode} generation: ${errorMessage}`)
+      logger.error('Failed to start heblish generation', 'EnglishModePickerModal', { contentId, error: errorMessage })
+      setGenerationError(`Failed to start heblish generation: ${errorMessage}`)
       setGeneratingMode(null)
     }
   }
 
-  // Memoize options to avoid re-rendering on every state change
   const memoizedOptions = useMemo(
-    () => HEBREW_MODE_OPTIONS,
-    [] // Static options, never change
+    () => ENGLISH_MODE_OPTIONS,
+    []
   )
 
-  // Determine portal target - use provided container (for fullscreen) or document.body
   const portalTarget = portalContainer || document.body
 
   if (!visible) return null
@@ -280,7 +257,7 @@ export default function HebrewModePickerModal({
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-labelledby="hebrew-mode-modal-title"
+      aria-labelledby="english-mode-modal-title"
     >
       <div
         ref={modalRef}
@@ -290,10 +267,10 @@ export default function HebrewModePickerModal({
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <h2
-            id="hebrew-mode-modal-title"
+            id="english-mode-modal-title"
             className="text-xl font-bold text-white"
           >
-            {t('subtitles.hebrewMode.title', 'Hebrew Display Mode')}
+            {t('subtitles.englishMode.title', 'English Display Mode')}
           </h2>
           <button
             onClick={onClose}
@@ -310,7 +287,7 @@ export default function HebrewModePickerModal({
             <div className="flex items-start gap-2">
               <Icon name="info" size="md" color="#818cf8" className="flex-shrink-0" />
               <p className="text-sm text-indigo-200">
-                {t('subtitles.hebrewMode.firstTimeHint', 'Choose how you want Hebrew subtitles displayed. Nikud adds vowel marks for easier reading, while Shoresh shows root words for language learning.')}
+                {t('subtitles.englishMode.firstTimeHint', 'Heblish mode injects Hebrew words into English subtitles for immersive language learning. Example: "Hello friends!" becomes "Shalom chaverim!"')}
               </p>
               <button
                 onClick={() => setShowFirstTimeHint(false)}
@@ -345,7 +322,7 @@ export default function HebrewModePickerModal({
           {memoizedOptions.map((option) => {
             const isAvailable = isModeAvailable(option.mode)
             const isSelected = option.mode === currentMode
-            const canShowGenerateButton = !isAvailable && option.mode !== 'regular' && isAdmin && contentId
+            const canShowGenerateButton = !isAvailable && option.mode === 'heblish' && isAdmin && contentId
 
             return (
               <div
@@ -376,11 +353,7 @@ export default function HebrewModePickerModal({
                 <div className="flex items-center gap-5">
                   {/* Icon */}
                   <div className="w-12 flex-shrink-0 flex items-center justify-center">
-                    {option.mode === 'nikud' ? (
-                      <span className="text-4xl">{option.icon}</span>
-                    ) : (
-                      <Icon name={option.icon} size="xl" color="#FFFFFF" />
-                    )}
+                    <Icon name={option.icon} size="xl" color="#FFFFFF" />
                   </div>
 
                   {/* Title */}
@@ -406,29 +379,22 @@ export default function HebrewModePickerModal({
                   </div>
 
                   {/* Warning - only show when not available AND not currently generating */}
-                  {!isAvailable && generatingMode !== option.mode && option.mode !== 'regular' && (
+                  {!isAvailable && generatingMode !== 'heblish' && option.mode === 'heblish' && (
                     <div className="w-32 flex-shrink-0">
                       <p className="text-xs text-amber-500/90 italic">
-                        {option.mode === 'nikud'
-                          ? t('subtitles.hebrewMode.nikud.unavailableReason', 'AI processing not available for this content')
-                          : t('subtitles.hebrewMode.shoresh.unavailableReason', 'Root word analysis not available for this content')
-                        }
+                        {t('subtitles.englishMode.heblish.unavailableReason', 'Heblish processing not available for this content')}
                       </p>
                     </div>
                   )}
 
                   {/* Example */}
-                  <div className="w-36 flex-shrink-0">
-                    <p
-                      className="text-sm text-gray-500 font-mono text-right"
-                      dir="rtl"
-                      lang="he"
-                    >
+                  <div className="w-48 flex-shrink-0">
+                    <p className="text-sm text-gray-500 font-mono text-left">
                       {option.example}
                     </p>
                   </div>
 
-                  {/* Status indicator - sparkle for AI modes, check for regular */}
+                  {/* Status indicator */}
                   {isSelected && (
                     <div
                       className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
@@ -443,23 +409,22 @@ export default function HebrewModePickerModal({
                       )}
                     </div>
                   )}
-                  {!isAvailable && option.mode !== 'regular' && (
+                  {!isAvailable && option.mode === 'heblish' && (
                     <div className="flex flex-col items-end gap-1 flex-shrink-0">
                       {isAdmin && contentId ? (
                         <button
                           type="button"
-                          onClick={(e) => handleGenerateMode(option.mode as 'nikud' | 'shoresh', e)}
-                          disabled={generatingMode !== null && generatingMode !== option.mode}
+                          onClick={handleGenerateHeblish}
+                          disabled={generatingMode !== null}
                           className="px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white cursor-pointer"
                           style={{
-                            backgroundColor: generatingMode === option.mode ? 'rgba(168, 85, 247, 0.7)' : '#a855f7',
-                            cursor: generatingMode === option.mode ? 'wait' :
-                              (generatingMode !== null && generatingMode !== option.mode) ? 'not-allowed' : 'pointer',
-                            opacity: (generatingMode !== null && generatingMode !== option.mode) ? 0.5 : 1,
+                            backgroundColor: generatingMode === 'heblish' ? 'rgba(168, 85, 247, 0.7)' : '#a855f7',
+                            cursor: generatingMode === 'heblish' ? 'wait' : 'pointer',
+                            opacity: generatingMode !== null && generatingMode !== 'heblish' ? 0.5 : 1,
                           }}
-                          aria-label={`Generate ${option.mode}`}
+                          aria-label="Generate heblish"
                         >
-                          {generatingMode === option.mode ? (
+                          {generatingMode === 'heblish' ? (
                             <span className="flex items-center justify-center gap-1.5">
                               <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                               {jobProgress > 0
@@ -468,7 +433,7 @@ export default function HebrewModePickerModal({
                               }
                             </span>
                           ) : (
-                            t('subtitles.hebrewMode.generate', 'Generate')
+                            t('subtitles.englishMode.generate', 'Generate')
                           )}
                         </button>
                       ) : (
@@ -477,7 +442,7 @@ export default function HebrewModePickerModal({
                           aria-hidden="true"
                         >
                           <span className="text-xs text-red-400 font-semibold">
-                            {t('subtitles.hebrewMode.unavailable', 'Unavailable')}
+                            {t('subtitles.englishMode.unavailable', 'Unavailable')}
                           </span>
                         </div>
                       )}
@@ -492,6 +457,5 @@ export default function HebrewModePickerModal({
     </div>
   )
 
-  // Render modal in portal (to container for fullscreen support)
   return createPortal(modalContent, portalTarget)
 }

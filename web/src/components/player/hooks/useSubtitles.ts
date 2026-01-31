@@ -221,10 +221,27 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
   const handleHebrewModeChange = async (mode: HebrewMode) => {
     setHebrewMode(mode)
 
-    // Save to backend if we have a contentId and current language is Hebrew
-    if (contentId && currentSubtitleLang === 'he') {
+    // Auto-select Hebrew and enable subtitles when choosing nikud or shoresh mode
+    if (mode === 'nikud' || mode === 'shoresh') {
+      if (currentSubtitleLang !== 'he') {
+        setCurrentSubtitleLang('he')
+        logger.info('Auto-selected Hebrew subtitles for AI mode', 'useSubtitles', { mode })
+      }
+      if (!subtitlesEnabled) {
+        setSubtitlesEnabled(true)
+        logger.info('Auto-enabled subtitles for AI mode', 'useSubtitles', { mode })
+      }
+    }
+
+    // Save to backend if we have a contentId
+    if (contentId) {
       try {
-        await subtitlePreferencesService.setHebrewMode(contentId, mode)
+        // For nikud/shoresh, also save Hebrew as the language preference
+        if (mode === 'nikud' || mode === 'shoresh') {
+          await subtitlePreferencesService.setPreference(contentId, 'he', mode)
+        } else if (currentSubtitleLang === 'he') {
+          await subtitlePreferencesService.setHebrewMode(contentId, mode)
+        }
       } catch (error) {
         logger.error('Failed to save Hebrew mode preference', 'useSubtitles', error)
         addNotification({

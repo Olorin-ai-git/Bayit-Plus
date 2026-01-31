@@ -3,14 +3,12 @@
  * List of available subtitle languages
  */
 
-import { useState } from 'react'
 import { View, Text, Pressable, ActivityIndicator, StyleSheet, Platform, PixelRatio } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { Icon } from '@olorin/shared-icons/web'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { SubtitleTrack, getLanguageInfo, HebrewMode } from '@/types/subtitle'
-import HebrewModePickerModal from './HebrewModePickerModal'
 
 const isTV = Platform.isTV || Platform.OS === 'tvos'
 const isIOS = Platform.OS === 'ios'
@@ -30,6 +28,7 @@ const SubtitleLanguageListPropsSchema = z.object({
   onHebrewModeChange: z.function().args(z.enum(['regular', 'nikud', 'shoresh'])).returns(z.void()).optional(),
   onDisable: z.function().args().returns(z.void()),
   onSubtitlesRefresh: z.function().args().returns(z.void()).optional(),
+  onOpenHebrewModePicker: z.function().args().returns(z.void()).optional(),
 })
 
 export type SubtitleLanguageListProps = z.infer<typeof SubtitleLanguageListPropsSchema>
@@ -45,9 +44,9 @@ export default function SubtitleLanguageList({
   onHebrewModeChange,
   onDisable,
   onSubtitlesRefresh,
+  onOpenHebrewModePicker,
 }: SubtitleLanguageListProps) {
   const { t } = useTranslation()
-  const [showHebrewModePicker, setShowHebrewModePicker] = useState(false)
 
   // Validate props in development
   if (process.env.NODE_ENV === 'development') {
@@ -62,6 +61,7 @@ export default function SubtitleLanguageList({
       onHebrewModeChange,
       onDisable,
       onSubtitlesRefresh,
+      onOpenHebrewModePicker,
     })
   }
 
@@ -196,29 +196,35 @@ export default function SubtitleLanguageList({
                   {isActive && <View style={styles.activeIndicator} />}
                 </Pressable>
 
-                {/* Mode picker button (right side) */}
-                <Pressable
-                  onPress={(e) => {
-                    e?.stopPropagation?.()
-                    setShowHebrewModePicker(true)
+                {/* Mode picker button (right side) - using native button for web */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    e.preventDefault()
+                    onOpenHebrewModePicker?.()
                   }}
-                  onClick={stopPropagation}
-                  onMouseDown={stopPropagation}
-                  tvParallaxProperties={{
-                    enabled: true,
-                    magnification: 1.05,
-                    pressMagnification: 0.95,
+                  aria-label={`${t('subtitles.hebrewMode.title', 'Hebrew mode')}: ${t(`subtitles.hebrewMode.${hebrewMode}.title`, hebrewMode)}`}
+                  style={{
+                    minWidth: 44,
+                    minHeight: 44,
+                    width: 52,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingLeft: 8,
+                    paddingRight: 8,
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                    borderRadius: 12,
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                    borderColor: isActive ? colors.primaryLight : colors.glassBorderWhite,
+                    backgroundColor: isActive ? colors.glassPurpleLight : colors.glass,
+                    gap: 2,
+                    cursor: 'pointer',
                   }}
-                  accessible={true}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${t('subtitles.hebrewMode.title', 'Hebrew mode')}: ${t(`subtitles.hebrewMode.${hebrewMode}.title`, hebrewMode)}`}
-                  accessibilityHint={t('subtitles.changeHebrewMode', 'Double tap to change Hebrew display mode')}
-                  style={({ pressed, focused }) => [
-                    styles.splitButtonRight,
-                    isActive ? styles.optionActive : styles.optionInactive,
-                    focused && isTV && styles.tvFocused,
-                    { opacity: pressed ? 0.7 : 1 },
-                  ]}
                 >
                   {(() => {
                     const modeIcon = getHebrewModeIcon(hebrewMode)
@@ -229,26 +235,7 @@ export default function SubtitleLanguageList({
                     )
                   })()}
                   <Icon name="chevronDown" size="sm" color={colors.textSecondary} />
-                </Pressable>
-
-                {/* Hebrew Mode Picker Modal */}
-                {showHebrewModePicker && (
-                  <HebrewModePickerModal
-                    visible={showHebrewModePicker}
-                    currentMode={hebrewMode}
-                    hasNikud={track.has_nikud_version || false}
-                    hasShoresh={track.has_shoresh_version || false}
-                    contentId={contentId}
-                    onClose={() => setShowHebrewModePicker(false)}
-                    onModeSelect={(mode) => {
-                      onHebrewModeChange(mode)
-                      setShowHebrewModePicker(false)
-                    }}
-                    onGenerationComplete={() => {
-                      onSubtitlesRefresh?.()
-                    }}
-                  />
-                )}
+                </button>
               </View>
             )
           }
@@ -366,9 +353,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   flagBadge: {
-    width: 48,
-    height: 48,
-    borderRadius: borderRadius.lg,
+    width: 32,
+    height: 32,
+    borderRadius: borderRadius.md,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)',
@@ -381,7 +368,7 @@ const styles = StyleSheet.create({
     borderColor: colors.primary.DEFAULT,
   },
   flagText: {
-    fontSize: 24,
+    fontSize: 18,
   },
   languageInfo: {
     flex: 1,
@@ -422,12 +409,12 @@ const styles = StyleSheet.create({
   splitButtonRight: {
     minWidth: 44,  // iOS HIG minimum touch target
     minHeight: 44,  // iOS HIG minimum touch target
-    width: 60,
+    width: 52,
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: spacing.md,  // Increased from spacing.sm for better touch area
-    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
     borderRadius: borderRadius.lg,
     borderWidth: 1,
     backgroundColor: colors.glass,
@@ -435,6 +422,7 @@ const styles = StyleSheet.create({
   },
   modeIcon: {
     fontSize: 18,
+    color: '#FFFFFF',
   },
   tvFocused: {
     borderColor: colors.primary.DEFAULT,

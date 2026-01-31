@@ -8,6 +8,7 @@ from enum import Enum
 from typing import Optional
 
 from beanie import Document, Indexed
+from beanie.operators import In
 from pydantic import Field
 
 
@@ -23,6 +24,7 @@ class JobType(str, Enum):
     """Type of AI generation job"""
     NIKUD = "nikud"
     SHORESH = "shoresh"
+    HEBLISH = "heblish"
 
 
 class AIGenerationJob(Document):
@@ -65,7 +67,7 @@ class AIGenerationJob(Document):
         return await cls.find_one(
             cls.content_id == content_id,
             cls.job_type == job_type,
-            cls.status.in_([JobStatus.PENDING, JobStatus.PROCESSING]),
+            In(cls.status, [JobStatus.PENDING, JobStatus.PROCESSING]),
         )
 
     @classmethod

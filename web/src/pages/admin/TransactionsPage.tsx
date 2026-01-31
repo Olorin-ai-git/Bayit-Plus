@@ -272,7 +272,7 @@ export default function TransactionsPage() {
       <GlassCard style={styles.tableCard}>
         {/* Table Header */}
         <View style={[styles.tableHeader, { flexDirection }]}>
-          <Text style={[styles.tableHeaderText, styles.colId]}>ID</Text>
+          <Text style={[styles.tableHeaderText, styles.colId]}>{t('admin.transactions.columns.id')}</Text>
           <Text style={[styles.tableHeaderText, styles.colUser]}>
             {t('admin.transactions.columns.user', 'User')}
           </Text>

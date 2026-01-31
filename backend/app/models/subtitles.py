@@ -20,6 +20,7 @@ class SubtitleCueModel(BaseModel):
     text: str
     text_nikud: Optional[str] = None
     text_shoresh: Optional[str] = None
+    text_heblish: Optional[str] = None  # English with Hebrew word injections
 
 
 class SubtitleTrackDoc(Document):
@@ -45,6 +46,10 @@ class SubtitleTrackDoc(Document):
     # Shoresh version
     has_shoresh_version: bool = False
     shoresh_generated_at: Optional[datetime] = None
+
+    # Heblish version (English subtitles only)
+    has_heblish_version: bool = False
+    heblish_generated_at: Optional[datetime] = None
 
     # Metadata
     is_default: bool = False

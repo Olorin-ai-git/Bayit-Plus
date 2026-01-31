@@ -1,6 +1,7 @@
 // Overview tab - displays cost breakdown pie chart
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
 import { GlassCard } from "@olorin/glass-ui";
 
@@ -15,29 +16,31 @@ const COLORS = {
 };
 
 export default function OverviewTab({ dashboard }: OverviewTabProps) {
+  const { t } = useTranslation();
+
   const categoryData = [
-    { name: "AI Costs", value: dashboard?.data?.breakdown?.ai_cost || 5230, color: COLORS.ai },
-    { name: "Infrastructure", value: dashboard?.data?.breakdown?.infrastructure_cost || 4120, color: COLORS.infrastructure },
-    { name: "Third-party", value: dashboard?.data?.breakdown?.thirdparty_cost || 2390, color: COLORS.thirdparty },
+    { name: t('admin.costDashboard.aiCosts'), value: dashboard?.data?.breakdown?.ai_cost || 5230, color: COLORS.ai },
+    { name: t('admin.costDashboard.infrastructure'), value: dashboard?.data?.breakdown?.infrastructure_cost || 4120, color: COLORS.infrastructure },
+    { name: t('admin.costDashboard.thirdParty'), value: dashboard?.data?.breakdown?.thirdparty_cost || 2390, color: COLORS.thirdparty },
   ];
 
   const categories = [
     {
-      label: "AI Costs",
+      label: t('admin.costDashboard.aiCosts'),
       value: dashboard?.data?.breakdown?.ai_cost || 5230,
       percentage: 45,
       color: COLORS.ai,
-      items: ["STT", "TTS", "Translation", "LLM", "Search"],
+      items: ["STT", "TTS", t('admin.costDashboard.translation'), "LLM", t('admin.costDashboard.search')],
     },
     {
-      label: "Infrastructure",
+      label: t('admin.costDashboard.infrastructure'),
       value: dashboard?.data?.breakdown?.infrastructure_cost || 4120,
       percentage: 35,
       color: COLORS.infrastructure,
       items: ["GCP", "MongoDB", "Firebase", "Sentry", "CDN"],
     },
     {
-      label: "Third-party",
+      label: t('admin.costDashboard.thirdParty'),
       value: dashboard?.data?.breakdown?.thirdparty_cost || 2390,
       percentage: 20,
       color: COLORS.thirdparty,
@@ -61,12 +64,12 @@ export default function OverviewTab({ dashboard }: OverviewTabProps) {
   return (
     <div className="space-y-6">
       <GlassCard className="p-6 backdrop-blur-xl rounded-lg bg-black/30 border border-purple-500/20">
-        <h3 className="text-lg font-semibold text-white mb-4">Cost Breakdown</h3>
+        <h3 className="text-lg font-semibold text-white mb-4">{t('admin.costDashboard.costBreakdown')}</h3>
         <div className="space-y-3">
           {dashboard?.loading?.breakdown ? (
-            <p className="text-gray-400">Loading breakdown...</p>
+            <p className="text-gray-400">{t('admin.costDashboard.loadingBreakdown')}</p>
           ) : dashboard?.errors?.breakdown ? (
-            <p className="text-red-400">Error: {dashboard.errors.breakdown}</p>
+            <p className="text-red-400">{t('common.error')}: {dashboard.errors.breakdown}</p>
           ) : (
             <div className="flex justify-center py-8">
               <ResponsiveContainer width="100%" height={300}>
@@ -101,9 +104,9 @@ export default function OverviewTab({ dashboard }: OverviewTabProps) {
             <p className="text-2xl font-bold" style={{ color: category.color }}>
               ${category.value.toLocaleString()}
             </p>
-            <p className="text-xs text-gray-500 mt-1">{category.percentage}% of total</p>
+            <p className="text-xs text-gray-500 mt-1">{category.percentage}{t('admin.costDashboard.percentOfTotal')}</p>
             <div className="mt-3 pt-3 border-t border-purple-500/10">
-              <p className="text-xs text-gray-400 font-medium mb-2">Components:</p>
+              <p className="text-xs text-gray-400 font-medium mb-2">{t('admin.costDashboard.components')}:</p>
               <ul className="text-xs space-y-1">
                 {category.items.map((item) => (
                   <li key={item} className="text-gray-500">

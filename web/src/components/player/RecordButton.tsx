@@ -34,9 +34,15 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
   } = useRecordingSession({ channelId, onRecordingStateChange })
 
   const handlePress = async () => {
+    console.log('[RecordButton] handlePress called', { isRecording, isPremium })
     if (!isPremium) { onShowUpgrade(); return }
-    if (isRecording) await stopRecording()
-    else await startRecording(recordingOptions)
+    if (isRecording) {
+      console.log('[RecordButton] Stopping recording...')
+      await stopRecording()
+    } else {
+      console.log('[RecordButton] Starting recording...')
+      await startRecording(recordingOptions)
+    }
   }
 
   const handleLongPressIn = useCallback(() => {

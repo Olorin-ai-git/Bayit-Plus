@@ -8,6 +8,7 @@ import React, { ReactNode } from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { Film, Tv, Star, Eye, Edit2, Trash2 } from 'lucide-react';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
+import { GlassTooltip } from './GlassTooltip';
 
 // ============================================
 // Thumbnail Cell
@@ -155,11 +156,13 @@ interface ActionButton {
 interface ActionsCellProps {
   actions: ActionButton[];
   align?: 'left' | 'center' | 'right';
+  showTooltips?: boolean;
 }
 
 export const ActionsCell: React.FC<ActionsCellProps> = ({
   actions,
   align = 'right',
+  showTooltips = false,
 }) => {
   const variantColors = {
     view: 'rgba(16, 185, 129, 0.15)',
@@ -167,6 +170,35 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({
     delete: 'rgba(239, 68, 68, 0.15)',
     star: 'rgba(245, 158, 11, 0.15)',
     default: 'rgba(255, 255, 255, 0.05)',
+  };
+
+  const renderButton = (action: ActionButton, index: number) => {
+    const button = (
+      <Pressable
+        key={index}
+        onPress={action.onPress}
+        disabled={action.disabled}
+        style={[
+          styles.actionButton,
+          {
+            backgroundColor: variantColors[action.variant || 'default'],
+          },
+          action.disabled && styles.actionButtonDisabled,
+        ]}
+      >
+        {action.icon}
+      </Pressable>
+    );
+
+    if (showTooltips && action.tooltip) {
+      return (
+        <GlassTooltip key={index} content={action.tooltip}>
+          {button}
+        </GlassTooltip>
+      );
+    }
+
+    return button;
   };
 
   return (
@@ -177,22 +209,7 @@ export const ActionsCell: React.FC<ActionsCellProps> = ({
         align === 'right' && styles.justifyEnd,
       ]}
     >
-      {actions.map((action, index) => (
-        <Pressable
-          key={index}
-          onPress={action.onPress}
-          disabled={action.disabled}
-          style={[
-            styles.actionButton,
-            {
-              backgroundColor: variantColors[action.variant || 'default'],
-            },
-            action.disabled && styles.actionButtonDisabled,
-          ]}
-        >
-          {action.icon}
-        </Pressable>
-      ))}
+      {actions.map(renderButton)}
     </View>
   );
 };
@@ -239,32 +256,32 @@ export const TextCell: React.FC<TextCellProps> = ({
 // Pre-built Action Buttons
 // ============================================
 
-export const createViewAction = (onPress: () => void): ActionButton => ({
+export const createViewAction = (onPress: () => void, tooltip?: string): ActionButton => ({
   icon: <Eye size={18} color={colors.success.DEFAULT} />,
   onPress,
   variant: 'view',
-  tooltip: 'View',
+  tooltip: tooltip || 'View',
 });
 
-export const createEditAction = (onPress: () => void): ActionButton => ({
+export const createEditAction = (onPress: () => void, tooltip?: string): ActionButton => ({
   icon: <Edit2 size={18} color={colors.primary.DEFAULT} />,
   onPress,
   variant: 'edit',
-  tooltip: 'Edit',
+  tooltip: tooltip || 'Edit',
 });
 
-export const createDeleteAction = (onPress: () => void): ActionButton => ({
+export const createDeleteAction = (onPress: () => void, tooltip?: string): ActionButton => ({
   icon: <Trash2 size={18} color={colors.error.DEFAULT} />,
   onPress,
   variant: 'delete',
-  tooltip: 'Delete',
+  tooltip: tooltip || 'Delete',
 });
 
-export const createStarAction = (onPress: () => void, filled: boolean = false): ActionButton => ({
+export const createStarAction = (onPress: () => void, filled: boolean = false, tooltip?: string): ActionButton => ({
   icon: <Star size={18} color={colors.warning.DEFAULT} fill={filled ? colors.warning.DEFAULT : 'none'} />,
   onPress,
   variant: 'star',
-  tooltip: filled ? 'Unfavorite' : 'Favorite',
+  tooltip: tooltip || (filled ? 'Unfavorite' : 'Favorite'),
 });
 
 // ============================================

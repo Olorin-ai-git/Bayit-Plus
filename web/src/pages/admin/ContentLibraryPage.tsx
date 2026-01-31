@@ -79,6 +79,16 @@ export default function ContentLibraryPage() {
     }
   }
 
+  const handleToggleBeta = async (id: string) => {
+    try {
+      const updatedContent = await adminContentService.toggleBetaContent(id)
+      refresh()
+      logger.info('Content beta status toggled', { id, beta: updatedContent.is_beta_content })
+    } catch (err) {
+      logger.error('Failed to toggle beta', { error: err, id })
+    }
+  }
+
   const handleDeleteContent = (id: string) => {
     setDeleteItemId(id)
   }
@@ -122,7 +132,7 @@ export default function ContentLibraryPage() {
   }
 
   const columns = useMemo(
-    () => getContentTableColumns(t, handleToggleFeatured, handleDeleteContent, handleHebrewAI),
+    () => getContentTableColumns(t, handleToggleFeatured, handleDeleteContent, handleHebrewAI, handleToggleBeta),
     [t]
   )
 

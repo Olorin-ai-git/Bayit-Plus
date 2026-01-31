@@ -1,6 +1,7 @@
 // Hero P&L Summary card for dashboard
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { GlassCard } from "@olorin/glass-ui";
 
@@ -14,6 +15,7 @@ interface PLSummaryProps {
 }
 
 export default function PLSummary({ data }: PLSummaryProps) {
+  const { t } = useTranslation();
   const isProfit = data.profit_loss >= 0;
   const Icon = isProfit ? TrendingUp : TrendingDown;
   const bgColor = isProfit ? "from-green-500/20 to-transparent" : "from-red-500/20 to-transparent";
@@ -31,7 +33,7 @@ export default function PLSummary({ data }: PLSummaryProps) {
             <Icon size={32} className={textColor} />
           </div>
           <div>
-            <p className="text-gray-400 text-sm font-medium">Net Profit/Loss</p>
+            <p className="text-gray-400 text-sm font-medium">{t('admin.costDashboard.plSummary.netProfitLoss')}</p>
             <p className={`text-4xl font-bold ${textColor}`}>
               ${Math.abs(data.profit_loss).toLocaleString("en-US", {
                 minimumFractionDigits: 2,
@@ -39,14 +41,14 @@ export default function PLSummary({ data }: PLSummaryProps) {
               })}
             </p>
             <p className="text-xs text-gray-500 mt-1">
-              {data.profit_margin.toFixed(2)}% margin
+              {data.profit_margin.toFixed(2)}% {t('admin.costDashboard.plSummary.margin')}
             </p>
           </div>
         </div>
 
         {/* Secondary Metrics */}
         <div>
-          <p className="text-gray-500 text-xs font-medium mb-1">REVENUE</p>
+          <p className="text-gray-500 text-xs font-medium mb-1">{t('admin.costDashboard.plSummary.revenue')}</p>
           <p className="text-xl font-bold text-green-400">
             ${data.revenue.toLocaleString("en-US", {
               minimumFractionDigits: 0,
@@ -56,7 +58,7 @@ export default function PLSummary({ data }: PLSummaryProps) {
         </div>
 
         <div>
-          <p className="text-gray-500 text-xs font-medium mb-1">TOTAL COSTS</p>
+          <p className="text-gray-500 text-xs font-medium mb-1">{t('admin.costDashboard.plSummary.totalCosts')}</p>
           <p className="text-xl font-bold text-red-400">
             ${data.total_costs.toLocaleString("en-US", {
               minimumFractionDigits: 0,

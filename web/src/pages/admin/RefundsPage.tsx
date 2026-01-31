@@ -258,7 +258,7 @@ export default function RefundsPage() {
       <GlassCard style={styles.tableCard}>
         {/* Table Header */}
         <View style={[styles.tableHeader, { flexDirection }]}>
-          <Text style={[styles.tableHeaderText, styles.colId]}>ID</Text>
+          <Text style={[styles.tableHeaderText, styles.colId]}>{t('admin.refunds.columns.id')}</Text>
           <Text style={[styles.tableHeaderText, styles.colUser]}>
             {t('admin.refunds.columns.user', 'User')}
           </Text>

@@ -1,12 +1,12 @@
 import { View, Text, Pressable } from 'react-native'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, FlaskConical } from 'lucide-react'
 import { colors, fontSize, spacing } from '@olorin/design-tokens'
 import {
   ThumbnailCell,
   TitleCell,
   TextCell,
-  BadgeCell,
   ActionsCell,
+  GlassTooltip,
   createStarAction,
   createViewAction,
   createEditAction,
@@ -60,29 +60,60 @@ const getLanguageName = (lang: string): string => {
 // Custom action creator for Hebrew AI features
 const createHebrewAIAction = (
   onClick: () => void,
-  hasHebrew: boolean = false
+  hasHebrew: boolean = false,
+  tooltip: string = 'Hebrew AI'
 ) => ({
   icon: (
-    <Pressable
-      onPress={onClick}
-      style={{
-        padding: 6,
-        borderRadius: 6,
-        backgroundColor: 'rgba(139, 92, 246, 0.15)',
-      }}
-    >
-      <Sparkles size={16} color={hasHebrew ? colors.primary.DEFAULT : colors.textSecondary} />
-    </Pressable>
+    <GlassTooltip content={tooltip}>
+      <Pressable
+        onPress={onClick}
+        style={{
+          padding: 6,
+          borderRadius: 6,
+          backgroundColor: 'rgba(139, 92, 246, 0.15)',
+        }}
+      >
+        <Sparkles size={16} color={hasHebrew ? colors.primary.DEFAULT : colors.textSecondary} />
+      </Pressable>
+    </GlassTooltip>
   ),
-  label: 'Hebrew AI',
+  label: tooltip,
   onClick,
 })
+
+// Custom action creator for Beta toggle
+const createBetaAction = (
+  onClick: () => void,
+  isBeta: boolean = false,
+  tooltip?: string
+) => {
+  const label = tooltip || (isBeta ? 'Remove from Beta' : 'Add to Beta')
+  return {
+    icon: (
+      <GlassTooltip content={label}>
+        <Pressable
+          onPress={onClick}
+          style={{
+            padding: 6,
+            borderRadius: 6,
+            backgroundColor: isBeta ? 'rgba(59, 130, 246, 0.25)' : 'rgba(59, 130, 246, 0.1)',
+          }}
+        >
+          <FlaskConical size={16} color={isBeta ? colors.info.DEFAULT : colors.textSecondary} />
+        </Pressable>
+      </GlassTooltip>
+    ),
+    label,
+    onClick,
+  }
+}
 
 export function getContentTableColumns(
   t: (key: string, fallback?: string) => string,
   onToggleFeatured: (id: string) => void,
   onDelete: (id: string) => void,
-  onHebrewAI?: (id: string, title: string) => void
+  onHebrewAI?: (id: string, title: string) => void,
+  onToggleBeta?: (id: string) => void
 ): HierarchicalTableColumn<ContentItem | Episode>[] {
   return [
     {
@@ -112,6 +143,9 @@ export function getContentTableColumns(
     {
       key: 'title',
       label: t('admin.content.columns.title', 'Title'),
+      width: 280,
+      minWidth: 200,
+      maxWidth: 400,
       render: (value, row) => {
         const content = row as ContentItem
 
@@ -158,26 +192,26 @@ export function getContentTableColumns(
     {
       key: 'category_name',
       label: t('admin.content.columns.category', 'Category'),
-      width: 150,
-      minWidth: 100,
-      maxWidth: 250,
+      width: 100,
+      minWidth: 80,
+      maxWidth: 150,
       render: (value) => <TextCell text={value || '-'} align="left" />,
     },
     {
       key: 'year',
       label: t('admin.content.columns.year', 'Year'),
-      width: 100,
-      minWidth: 80,
-      maxWidth: 150,
+      width: 70,
+      minWidth: 60,
+      maxWidth: 100,
       align: 'center',
       render: (value) => <TextCell text={value || '-'} align="center" />,
     },
     {
       key: 'available_subtitles',
       label: t('admin.content.columns.subtitles', 'Subtitles'),
-      width: 150,
-      minWidth: 120,
-      maxWidth: 250,
+      width: 200,
+      minWidth: 150,
+      maxWidth: 300,
       render: (value) => {
         const subtitles = value as string[] | undefined
         if (!subtitles || subtitles.length === 0) {
@@ -200,38 +234,6 @@ export function getContentTableColumns(
       },
     },
     {
-      key: 'is_published',
-      label: t('admin.content.columns.status', 'Status'),
-      width: 120,
-      minWidth: 100,
-      maxWidth: 180,
-      render: (value) => (
-        <BadgeCell
-          label={value ? t('admin.content.status.published', 'Published') : t('admin.content.status.draft', 'Draft')}
-          variant={value ? 'success' : 'warning'}
-        />
-      ),
-      renderChild: (value) => (
-        <BadgeCell
-          label={value ? t('admin.content.status.published', 'Published') : t('admin.content.status.draft', 'Draft')}
-          variant={value ? 'success' : 'warning'}
-        />
-      ),
-    },
-    {
-      key: 'is_beta_content',
-      label: t('admin.content.columns.beta', 'Beta'),
-      width: 100,
-      minWidth: 80,
-      maxWidth: 140,
-      render: (value) => (
-        <BadgeCell
-          label={value ? t('admin.content.beta', 'Beta') : '-'}
-          variant={value ? 'info' : 'default'}
-        />
-      ),
-    },
-    {
       key: 'actions',
       label: t('common.actions'),
       width: 220,
@@ -242,23 +244,47 @@ export function getContentTableColumns(
       render: (_, row) => {
         const content = row as ContentItem
         const hasHebrew = content.available_subtitles?.includes('he') || false
+        const isBeta = content.is_beta_content || false
         const actions = [
-          createStarAction(() => onToggleFeatured(content.id), content.is_featured),
-          createViewAction(() => { window.location.href = `/admin/content/${content.id}` }),
-          createEditAction(() => { window.location.href = `/admin/content/${content.id}/edit` }),
-          createDeleteAction(() => onDelete(content.id)),
+          createStarAction(
+            () => onToggleFeatured(content.id),
+            content.is_featured,
+            content.is_featured ? t('admin.content.unfeature', 'Remove from Featured') : t('admin.content.feature', 'Add to Featured')
+          ),
+          createViewAction(
+            () => { window.location.href = `/admin/content/${content.id}` },
+            t('common.view', 'View')
+          ),
+          createEditAction(
+            () => { window.location.href = `/admin/content/${content.id}/edit` },
+            t('common.edit', 'Edit')
+          ),
+          createDeleteAction(
+            () => onDelete(content.id),
+            t('common.delete', 'Delete')
+          ),
         ]
+        // Add Beta toggle action if handler is provided
+        if (onToggleBeta) {
+          actions.splice(1, 0, createBetaAction(
+            () => onToggleBeta(content.id),
+            isBeta,
+            isBeta ? t('admin.content.removeFromBeta', 'Remove from Beta') : t('admin.content.markAsBeta', 'Add to Beta')
+          ))
+        }
         // Add Hebrew AI action if handler is provided
         if (onHebrewAI) {
-          actions.splice(1, 0, createHebrewAIAction(
+          actions.splice(onToggleBeta ? 2 : 1, 0, createHebrewAIAction(
             () => onHebrewAI(content.id, content.title),
-            hasHebrew
+            hasHebrew,
+            t('admin.content.hebrewAI', 'Hebrew AI')
           ))
         }
         return (
           <ActionsCell
             actions={actions}
             align="right"
+            showTooltips
           />
         )
       },
@@ -267,12 +293,26 @@ export function getContentTableColumns(
         return (
           <ActionsCell
             actions={[
-              createStarAction(() => onToggleFeatured(ep.id), ep.is_featured),
-              createViewAction(() => { window.location.href = `/admin/episodes/${ep.id}` }),
-              createEditAction(() => { window.location.href = `/admin/episodes/${ep.id}/edit` }),
-              createDeleteAction(() => onDelete(ep.id)),
+              createStarAction(
+                () => onToggleFeatured(ep.id),
+                ep.is_featured,
+                ep.is_featured ? t('admin.content.unfeature', 'Remove from Featured') : t('admin.content.feature', 'Add to Featured')
+              ),
+              createViewAction(
+                () => { window.location.href = `/admin/episodes/${ep.id}` },
+                t('common.view', 'View')
+              ),
+              createEditAction(
+                () => { window.location.href = `/admin/episodes/${ep.id}/edit` },
+                t('common.edit', 'Edit')
+              ),
+              createDeleteAction(
+                () => onDelete(ep.id),
+                t('common.delete', 'Delete')
+              ),
             ]}
             align="right"
+            showTooltips
           />
         )
       },

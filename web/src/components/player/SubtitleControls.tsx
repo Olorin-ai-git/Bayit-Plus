@@ -3,7 +3,7 @@
  * Provides UI controls for subtitle selection and customization
  */
 
-import { useState, RefObject } from 'react'
+import { useState, useRef, useCallback, RefObject } from 'react'
 import { createPortal } from 'react-dom'
 import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
@@ -21,6 +21,7 @@ import { GlassView } from '@bayit/shared/ui'
 import { subtitlesService } from '@/services/api'
 import logger from '@/utils/logger'
 import SubtitleLanguageList from './subtitle/SubtitleLanguageList'
+import HebrewModePickerModal from './subtitle/HebrewModePickerModal'
 
 interface SubtitleControlsProps {
   contentId: string
@@ -56,7 +57,11 @@ export default function SubtitleControls({
   const { t } = useTranslation()
   const [showLanguageMenu, setShowLanguageMenu] = useState(false)
   const [showSettingsPanel, setShowSettingsPanel] = useState(false)
+  const [showHebrewModePicker, setShowHebrewModePicker] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
+
+  // Guard against multiple modal openings
+  const hebrewPickerOpeningRef = useRef(false)
   const [downloadResult, setDownloadResult] = useState<{
     type: 'success' | 'error' | 'partial'
     message: string
@@ -143,6 +148,20 @@ export default function SubtitleControls({
 
   // Get current language info
   const currentLangInfo = currentLanguage ? getLanguageInfo(currentLanguage) : null
+
+  // Find Hebrew track for modal props
+  const hebrewTrack = availableLanguages.find((t) => t.language === 'he')
+
+  // Handler to open Hebrew mode picker with guard against multiple opens
+  const handleOpenHebrewModePicker = useCallback(() => {
+    if (hebrewPickerOpeningRef.current || showHebrewModePicker) return
+    hebrewPickerOpeningRef.current = true
+    setShowHebrewModePicker(true)
+    // Reset guard after a short delay
+    setTimeout(() => {
+      hebrewPickerOpeningRef.current = false
+    }, 100)
+  }, [showHebrewModePicker])
 
   // Render menu in a portal at document.body level to avoid z-index issues
   const renderMenu = () => {
@@ -237,6 +256,7 @@ export default function SubtitleControls({
               hebrewMode={hebrewMode}
               onHebrewModeChange={onHebrewModeChange}
               onSubtitlesRefresh={onSubtitlesRefresh}
+              onOpenHebrewModePicker={handleOpenHebrewModePicker}
             />
 
             {/* Divider */}
@@ -335,6 +355,26 @@ export default function SubtitleControls({
 
       {/* Language Selection Menu - Rendered via Portal to video container */}
       {containerRef?.current && createPortal(renderMenu(), containerRef.current)}
+
+      {/* Hebrew Mode Picker Modal */}
+      {showHebrewModePicker && (
+        <HebrewModePickerModal
+          visible={showHebrewModePicker}
+          currentMode={hebrewMode}
+          hasNikud={hebrewTrack?.has_nikud_version || false}
+          hasShoresh={hebrewTrack?.has_shoresh_version || false}
+          contentId={contentId}
+          portalContainer={containerRef?.current}
+          onClose={() => setShowHebrewModePicker(false)}
+          onModeSelect={(mode) => {
+            onHebrewModeChange?.(mode)
+            setShowHebrewModePicker(false)
+          }}
+          onGenerationComplete={() => {
+            onSubtitlesRefresh?.()
+          }}
+        />
+      )}
     </>
   )
 }

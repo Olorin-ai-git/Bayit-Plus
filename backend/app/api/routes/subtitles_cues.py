@@ -16,6 +16,7 @@ from app.models.ai_generation_job import AIGenerationJob, JobStatus, JobType
 from app.models.subtitles import SubtitleTrackDoc
 from app.services.nikud_service import add_nikud, add_nikud_batch, get_cache_stats
 from app.services.shoresh_service import extract_shoresh_batch
+from app.services.heblish_service import convert_to_heblish_batch
 from app.services.subtitle_service import extract_words, format_time
 
 router = APIRouter(prefix="/subtitles", tags=["subtitles"])
@@ -27,22 +28,24 @@ async def get_subtitle_cues(
     content_id: str,
     language: str = "he",
     hebrew_mode: str = Query("regular", description="Hebrew display mode: regular, nikud, or shoresh"),
+    english_mode: str = Query("regular", description="English display mode: regular or heblish"),
     with_nikud: bool = False,
     start_time: Optional[float] = None,
     end_time: Optional[float] = None,
 ) -> dict:
     """
-    Get subtitle cues for content with Hebrew mode support.
+    Get subtitle cues for content with Hebrew and English mode support.
 
     Args:
         content_id: Content identifier
         language: Language code (default: "he")
         hebrew_mode: Display mode for Hebrew - "regular", "nikud", or "shoresh"
+        english_mode: Display mode for English - "regular" or "heblish"
         with_nikud: (Deprecated) Use hebrew_mode="nikud" instead
         start_time: Optional start time filter (seconds)
         end_time: Optional end time filter (seconds)
 
-    Returns subtitle cues with appropriate text field based on hebrew_mode.
+    Returns subtitle cues with appropriate text field based on language mode.
     """
     tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
 
@@ -70,11 +73,16 @@ async def get_subtitle_cues(
     # Format cues for response
     result_cues = []
     for cue in cues:
-        # Determine text based on hebrew_mode
-        if hebrew_mode == "nikud" and cue.text_nikud:
-            display_text = cue.text_nikud
-        elif hebrew_mode == "shoresh" and cue.text_shoresh:
-            display_text = cue.text_shoresh
+        # Determine text based on language and mode
+        if language == "en" and english_mode == "heblish" and cue.text_heblish:
+            display_text = cue.text_heblish
+        elif language == "he":
+            if hebrew_mode == "nikud" and cue.text_nikud:
+                display_text = cue.text_nikud
+            elif hebrew_mode == "shoresh" and cue.text_shoresh:
+                display_text = cue.text_shoresh
+            else:
+                display_text = cue.text
         else:
             display_text = cue.text
 
@@ -86,6 +94,7 @@ async def get_subtitle_cues(
                 "text": display_text,
                 "text_nikud": cue.text_nikud,
                 "text_shoresh": cue.text_shoresh,
+                "text_heblish": cue.text_heblish,
                 "formatted_start": format_time(cue.start_time),
                 "formatted_end": format_time(cue.end_time),
                 "words": extract_words(display_text),
@@ -98,13 +107,15 @@ async def get_subtitle_cues(
         "language_name": track.language_name,
         "has_nikud": track.has_nikud_version,
         "has_shoresh": track.has_shoresh_version,
+        "has_heblish": track.has_heblish_version,
         "hebrew_mode": hebrew_mode,
+        "english_mode": english_mode,
         "cues": result_cues,
     }
 
 
 async def _process_nikud_job(job_id: str, content_id: str, language: str) -> None:
-    """Background task to process nikud generation"""
+    """Background task to process nikud generation with resume support"""
     job = await AIGenerationJob.get(PydanticObjectId(job_id))
     if not job:
         logger.error("Job not found", extra={"job_id": job_id})
@@ -119,19 +130,37 @@ async def _process_nikud_job(job_id: str, content_id: str, language: str) -> Non
             return
 
         track = tracks[0]
-        texts_to_process = [cue.text for cue in track.cues]
 
-        # Process in batches and update progress
+        # Resume support: find cues that still need processing
+        cues_to_process = [(i, cue) for i, cue in enumerate(track.cues) if not cue.text_nikud]
+        already_processed = len(track.cues) - len(cues_to_process)
+
+        if already_processed > 0:
+            logger.info(
+                "Resuming nikud generation",
+                extra={"content_id": content_id, "already_processed": already_processed, "remaining": len(cues_to_process)},
+            )
+            await job.update_progress(already_processed)
+
+        # Process remaining cues in batches
         batch_size = 10
-        nikud_texts = []
-        for i in range(0, len(texts_to_process), batch_size):
-            batch = texts_to_process[i : i + batch_size]
-            batch_results = await add_nikud_batch(batch)
-            nikud_texts.extend(batch_results)
-            await job.update_progress(len(nikud_texts))
+        processed_count = already_processed
+        for batch_start in range(0, len(cues_to_process), batch_size):
+            batch_items = cues_to_process[batch_start : batch_start + batch_size]
+            batch_texts = [cue.text for _, cue in batch_items]
+            batch_results = await add_nikud_batch(batch_texts)
 
-        for i, cue in enumerate(track.cues):
-            cue.text_nikud = nikud_texts[i]
+            # Update cues with nikud
+            for (idx, cue), nikud_text in zip(batch_items, batch_results):
+                track.cues[idx].text_nikud = nikud_text
+
+            processed_count += len(batch_items)
+            await job.update_progress(processed_count)
+
+            # Save progress periodically (every 50 cues) for resume capability
+            if processed_count % 50 == 0:
+                track.updated_at = datetime.utcnow()
+                await track.save()
 
         track.has_nikud_version = True
         track.nikud_generated_at = datetime.utcnow()
@@ -146,6 +175,15 @@ async def _process_nikud_job(job_id: str, content_id: str, language: str) -> Non
 
     except Exception as e:
         logger.error("Nikud generation failed", extra={"job_id": job_id, "error": str(e)})
+        # Save partial progress before marking as failed
+        try:
+            tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
+            if tracks:
+                tracks[0].updated_at = datetime.utcnow()
+                await tracks[0].save()
+                logger.info("Partial nikud progress saved for resume", extra={"content_id": content_id})
+        except Exception:
+            pass
         await job.fail(str(e))
 
 
@@ -202,7 +240,7 @@ async def generate_nikud_for_track(
 
 
 async def _process_shoresh_job(job_id: str, content_id: str, language: str) -> None:
-    """Background task to process shoresh generation"""
+    """Background task to process shoresh generation with resume support"""
     job = await AIGenerationJob.get(PydanticObjectId(job_id))
     if not job:
         logger.error("Job not found", extra={"job_id": job_id})
@@ -217,19 +255,37 @@ async def _process_shoresh_job(job_id: str, content_id: str, language: str) -> N
             return
 
         track = tracks[0]
-        texts_to_process = [cue.text for cue in track.cues]
 
-        # Process in batches and update progress
+        # Resume support: find cues that still need processing
+        cues_to_process = [(i, cue) for i, cue in enumerate(track.cues) if not cue.text_shoresh]
+        already_processed = len(track.cues) - len(cues_to_process)
+
+        if already_processed > 0:
+            logger.info(
+                "Resuming shoresh generation",
+                extra={"content_id": content_id, "already_processed": already_processed, "remaining": len(cues_to_process)},
+            )
+            await job.update_progress(already_processed)
+
+        # Process remaining cues in batches
         batch_size = 10
-        shoresh_texts = []
-        for i in range(0, len(texts_to_process), batch_size):
-            batch = texts_to_process[i : i + batch_size]
-            batch_results = await extract_shoresh_batch(batch)
-            shoresh_texts.extend(batch_results)
-            await job.update_progress(len(shoresh_texts))
+        processed_count = already_processed
+        for batch_start in range(0, len(cues_to_process), batch_size):
+            batch_items = cues_to_process[batch_start : batch_start + batch_size]
+            batch_texts = [cue.text for _, cue in batch_items]
+            batch_results = await extract_shoresh_batch(batch_texts)
 
-        for i, cue in enumerate(track.cues):
-            cue.text_shoresh = shoresh_texts[i]
+            # Update cues with shoresh
+            for (idx, cue), shoresh_text in zip(batch_items, batch_results):
+                track.cues[idx].text_shoresh = shoresh_text
+
+            processed_count += len(batch_items)
+            await job.update_progress(processed_count)
+
+            # Save progress periodically (every 50 cues) for resume capability
+            if processed_count % 50 == 0:
+                track.updated_at = datetime.utcnow()
+                await track.save()
 
         track.has_shoresh_version = True
         track.shoresh_generated_at = datetime.utcnow()
@@ -244,6 +300,15 @@ async def _process_shoresh_job(job_id: str, content_id: str, language: str) -> N
 
     except Exception as e:
         logger.error("Shoresh generation failed", extra={"job_id": job_id, "error": str(e)})
+        # Save partial progress before marking as failed
+        try:
+            tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
+            if tracks:
+                tracks[0].updated_at = datetime.utcnow()
+                await tracks[0].save()
+                logger.info("Partial shoresh progress saved for resume", extra={"content_id": content_id})
+        except Exception:
+            pass
         await job.fail(str(e))
 
 
@@ -299,10 +364,140 @@ async def generate_shoresh_for_track(
     return job.to_response()
 
 
+async def _process_heblish_job(job_id: str, content_id: str, language: str) -> None:
+    """Background task to process heblish generation with resume support"""
+    job = await AIGenerationJob.get(PydanticObjectId(job_id))
+    if not job:
+        logger.error("Job not found", extra={"job_id": job_id})
+        return
+
+    try:
+        await job.start_processing()
+
+        tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
+        if not tracks:
+            await job.fail("Subtitle track not found")
+            return
+
+        track = tracks[0]
+
+        # Resume support: find cues that still need processing
+        cues_to_process = [(i, cue) for i, cue in enumerate(track.cues) if not cue.text_heblish]
+        already_processed = len(track.cues) - len(cues_to_process)
+
+        if already_processed > 0:
+            logger.info(
+                "Resuming heblish generation",
+                extra={"content_id": content_id, "already_processed": already_processed, "remaining": len(cues_to_process)},
+            )
+            await job.update_progress(already_processed)
+
+        # Process remaining cues in batches
+        batch_size = 10
+        processed_count = already_processed
+        for batch_start in range(0, len(cues_to_process), batch_size):
+            batch_items = cues_to_process[batch_start : batch_start + batch_size]
+            batch_texts = [cue.text for _, cue in batch_items]
+            batch_results = await convert_to_heblish_batch(batch_texts)
+
+            # Update cues with heblish
+            for (idx, cue), heblish_text in zip(batch_items, batch_results):
+                track.cues[idx].text_heblish = heblish_text
+
+            processed_count += len(batch_items)
+            await job.update_progress(processed_count)
+
+            # Save progress periodically (every 50 cues) for resume capability
+            if processed_count % 50 == 0:
+                track.updated_at = datetime.utcnow()
+                await track.save()
+
+        track.has_heblish_version = True
+        track.heblish_generated_at = datetime.utcnow()
+        track.updated_at = datetime.utcnow()
+        await track.save()
+
+        await job.complete()
+        logger.info(
+            "Heblish generated",
+            extra={"content_id": content_id, "language": language, "cues_processed": len(track.cues)},
+        )
+
+    except Exception as e:
+        logger.error("Heblish generation failed", extra={"job_id": job_id, "error": str(e)})
+        # Save partial progress before marking as failed
+        try:
+            tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
+            if tracks:
+                tracks[0].updated_at = datetime.utcnow()
+                await tracks[0].save()
+                logger.info("Partial heblish progress saved for resume", extra={"content_id": content_id})
+        except Exception:
+            pass
+        await job.fail(str(e))
+
+
+@router.post("/{content_id}/heblish")
+@limiter.limit(RATE_LIMITS["subtitle_heblish"])
+async def generate_heblish_for_track(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    content_id: str,
+    language: str = "en",
+    force: bool = False,
+) -> dict:
+    """
+    Start async heblish (English with Hebrew injections) generation for a subtitle track.
+    Returns a job_id to poll for status.
+
+    Heblish converts English text to a synthesis with Hebrew word injections,
+    enabling language learning "by osmosis" and creating an authentic Israeli experience.
+
+    Example: "Hello friends!" -> "Shalom chaverim!"
+    """
+    tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
+
+    if not tracks:
+        raise HTTPException(status_code=404, detail="Subtitle track not found")
+
+    track = tracks[0]
+
+    if track.has_heblish_version and not force:
+        return {
+            "message": "Heblish already generated",
+            "status": "completed",
+            "content_id": content_id,
+            "generated_at": track.heblish_generated_at.isoformat() if track.heblish_generated_at else None,
+        }
+
+    # Check for existing active job
+    existing_job = await AIGenerationJob.get_active_job(content_id, JobType.HEBLISH)
+    if existing_job:
+        return existing_job.to_response()
+
+    # Create new job
+    job = await AIGenerationJob.create_job(
+        content_id=content_id,
+        job_type=JobType.HEBLISH,
+        language=language,
+        total_cues=len(track.cues),
+    )
+
+    # Start background processing
+    background_tasks.add_task(_process_heblish_job, str(job.id), content_id, language)
+
+    logger.info(
+        "Heblish generation started",
+        extra={"content_id": content_id, "job_id": str(job.id), "total_cues": len(track.cues)},
+    )
+
+    return job.to_response()
+
+
 @router.get("/job/{job_id}")
 async def get_generation_job_status(job_id: str) -> dict:
     """
-    Get status of a nikud/shoresh generation job.
+    Get status of a nikud/shoresh/heblish generation job.
     Poll this endpoint to track progress.
     """
     try:
@@ -320,15 +515,17 @@ async def get_generation_job_status(job_id: str) -> dict:
 async def get_active_generation_jobs(content_id: str) -> dict:
     """
     Get any active generation jobs for content.
-    Returns both nikud and shoresh job status if active.
+    Returns nikud, shoresh, and heblish job status if active.
     """
     nikud_job = await AIGenerationJob.get_active_job(content_id, JobType.NIKUD)
     shoresh_job = await AIGenerationJob.get_active_job(content_id, JobType.SHORESH)
+    heblish_job = await AIGenerationJob.get_active_job(content_id, JobType.HEBLISH)
 
     return {
         "content_id": content_id,
         "nikud_job": nikud_job.to_response() if nikud_job else None,
         "shoresh_job": shoresh_job.to_response() if shoresh_job else None,
+        "heblish_job": heblish_job.to_response() if heblish_job else None,
     }
 
 
@@ -355,13 +552,16 @@ async def add_nikud_to_text(
 
 @router.get("/cache/stats")
 async def get_subtitle_cache_stats() -> dict:
-    """Get cache statistics for nikud and shoresh services"""
+    """Get cache statistics for nikud, shoresh, and heblish services"""
     from app.services.shoresh_service import get_cache_stats as get_shoresh_stats
+    from app.services.heblish_service import get_cache_stats as get_heblish_stats
 
     nikud_stats = get_cache_stats()
     shoresh_stats = get_shoresh_stats()
+    heblish_stats = get_heblish_stats()
 
     return {
         "nikud": nikud_stats,
         "shoresh": shoresh_stats,
+        "heblish": heblish_stats,
     }
