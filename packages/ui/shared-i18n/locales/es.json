@@ -5629,7 +5629,7 @@
       "title": "Modo de visualización inglesa",
       "unavailable": "No disponible",
       "generate": "Generar",
-      "firstTimeHint": "El modo Heblish inserta palabras hebreas en subtítulos en inglés para un aprendizaje inmersivo. Ejemplo: \"Hello friends!\" se convierte en \"Shalom chaverim!\"",
+      "firstTimeHint": "Estos modos con IA ayudan a mantener el hebreo mientras se aprende la estructura de oraciones en inglés. Cada modo ofrece una experiencia de aprendizaje única.",
       "regular": {
         "title": "Inglés regular",
         "description": "Subtítulos en inglés estándar"
@@ -5638,6 +5638,16 @@
         "title": "Heblish",
         "description": "Inglés con inyecciones de palabras hebreas para aprendizaje inmersivo",
         "unavailableReason": "Procesamiento de Heblish no disponible para este contenido"
+      },
+      "grammarFlip": {
+        "title": "Inversión Gramatical",
+        "description": "Palabras hebreas con estructura de oración inglesa (Sujeto-Verbo-Objeto)",
+        "unavailableReason": "Procesamiento de Inversión Gramatical no disponible para este contenido"
+      },
+      "slangSynthesis": {
+        "title": "Síntesis de Jerga",
+        "description": "Mezcla de jerga israelí y americana moderna para contenido atractivo",
+        "unavailableReason": "Procesamiento de Síntesis de Jerga no disponible para este contenido"
       }
     },
     "loading": "Cargando subtítulos...",

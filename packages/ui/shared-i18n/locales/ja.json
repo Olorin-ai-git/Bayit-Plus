@@ -5202,6 +5202,16 @@
         "title": "Heblish",
         "description": "没入型学習のためのヘブライ語単語注入付き英語",
         "unavailableReason": "このコンテンツではHeblish処理は利用できません"
+      },
+      "grammarFlip": {
+        "title": "グラマー・フリップ",
+        "description": "英語の文構造を持つヘブライ語単語（主語-動詞-目的語）",
+        "unavailableReason": "このコンテンツではグラマー・フリップ処理は利用できません"
+      },
+      "slangSynthesis": {
+        "title": "スラング・シンセシス",
+        "description": "魅力的なコンテンツのための現代イスラエルとアメリカのスラングの融合",
+        "unavailableReason": "このコンテンツではスラング・シンセシス処理は利用できません"
       }
     }
   },

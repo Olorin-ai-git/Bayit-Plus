@@ -266,23 +266,24 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
   const handleEnglishModeChange = async (mode: EnglishMode) => {
     setEnglishMode(mode)
 
-    // Auto-select English and enable subtitles when choosing heblish mode
-    if (mode === 'heblish') {
+    // Auto-select English and enable subtitles when choosing any AI English mode
+    const isAIEnglishMode = mode === 'heblish' || mode === 'grammarFlip' || mode === 'slangSynthesis'
+    if (isAIEnglishMode) {
       if (currentSubtitleLang !== 'en') {
         setCurrentSubtitleLang('en')
-        logger.info('Auto-selected English subtitles for Heblish mode', 'useSubtitles', { mode })
+        logger.info(`Auto-selected English subtitles for ${mode} mode`, 'useSubtitles', { mode })
       }
       if (!subtitlesEnabled) {
         setSubtitlesEnabled(true)
-        logger.info('Auto-enabled subtitles for Heblish mode', 'useSubtitles', { mode })
+        logger.info(`Auto-enabled subtitles for ${mode} mode`, 'useSubtitles', { mode })
       }
     }
 
     // Save to backend if we have a contentId
     if (contentId) {
       try {
-        // For heblish, also save English as the language preference
-        if (mode === 'heblish') {
+        // For AI English modes, also save English as the language preference
+        if (isAIEnglishMode) {
           await subtitlePreferencesService.setPreference(contentId, 'en', 'regular', mode)
         } else if (currentSubtitleLang === 'en') {
           await subtitlePreferencesService.setEnglishMode(contentId, mode)

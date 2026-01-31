@@ -487,6 +487,10 @@ const apiSubtitlesService = {
     api.post(`/subtitles/${contentId}/shoresh`, null, { params: { language, force } }),
   generateHeblish: (contentId, language = 'en', force = false) =>
     api.post(`/subtitles/${contentId}/heblish`, null, { params: { language, force } }),
+  generateGrammarFlip: (contentId, language = 'en', force = false) =>
+    api.post(`/subtitles/${contentId}/grammar-flip`, null, { params: { language, force } }),
+  generateSlangSynthesis: (contentId, language = 'en', force = false) =>
+    api.post(`/subtitles/${contentId}/slang-synthesis`, null, { params: { language, force } }),
   // Job status polling
   getJobStatus: (jobId) => api.get(`/subtitles/job/${jobId}`),
   getActiveJobs: (contentId) => api.get(`/subtitles/${contentId}/job/active`),

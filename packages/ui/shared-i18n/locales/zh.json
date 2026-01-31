@@ -5119,7 +5119,7 @@
       "title": "英语显示模式",
       "unavailable": "不可用",
       "generate": "生成",
-      "firstTimeHint": "Heblish模式将希伯来语单词注入英语字幕，实现沉浸式语言学习。希伯来语单词采用音译以便发音。",
+      "firstTimeHint": "这些AI驱动的模式有助于在学习英语句子结构的同时保持希伯来语。每种模式都提供独特的学习体验。",
       "regular": {
         "title": "标准英语",
         "description": "标准英语字幕"
@@ -5128,6 +5128,16 @@
         "title": "Heblish",
         "description": "带希伯来语单词注入的英语，实现沉浸式学习",
         "unavailableReason": "此内容暂不支持Heblish处理"
+      },
+      "grammarFlip": {
+        "title": "语法翻转",
+        "description": "希伯来语单词配合英语句子结构（主语-动词-宾语）",
+        "unavailableReason": "此内容暂不支持语法翻转处理"
+      },
+      "slangSynthesis": {
+        "title": "俚语融合",
+        "description": "以色列和美国现代俚语的融合，打造引人入胜的内容",
+        "unavailableReason": "此内容暂不支持俚语融合处理"
       }
     }
   },

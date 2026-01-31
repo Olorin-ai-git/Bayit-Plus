@@ -4784,7 +4784,7 @@
       "title": "Modalità di visualizzazione inglese",
       "unavailable": "Non disponibile",
       "generate": "Genera",
-      "firstTimeHint": "La modalità Heblish inserisce parole ebraiche nei sottotitoli inglesi per un apprendimento linguistico immersivo. Le parole ebraiche sono traslitterate foneticamente per facilità di pronuncia.",
+      "firstTimeHint": "Queste modalità basate su IA aiutano a mantenere l'ebraico mentre si impara la struttura delle frasi in inglese. Ogni modalità offre un'esperienza di apprendimento unica.",
       "regular": {
         "title": "Inglese standard",
         "description": "Sottotitoli in inglese standard"
@@ -4793,6 +4793,16 @@
         "title": "Heblish",
         "description": "Inglese con inserimenti di parole ebraiche per apprendimento immersivo",
         "unavailableReason": "L'elaborazione Heblish non è disponibile per questo contenuto"
+      },
+      "grammarFlip": {
+        "title": "Inversione Grammaticale",
+        "description": "Parole ebraiche con struttura frasale inglese (Soggetto-Verbo-Oggetto)",
+        "unavailableReason": "L'elaborazione dell'inversione grammaticale non è disponibile per questo contenuto"
+      },
+      "slangSynthesis": {
+        "title": "Sintesi dello Slang",
+        "description": "Miscela di slang israeliano e americano moderno per contenuti coinvolgenti",
+        "unavailableReason": "L'elaborazione della sintesi dello slang non è disponibile per questo contenuto"
       }
     },
     "loading": "Caricamento sottotitoli...",

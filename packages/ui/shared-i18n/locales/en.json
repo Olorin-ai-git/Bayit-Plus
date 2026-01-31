@@ -552,6 +552,7 @@
       "beta": "Beta",
       "markAsBeta": "Mark as Beta",
       "removeFromBeta": "Remove from Beta",
+      "subtitleAI": "Subtitle AI (Hebrew & English)",
       "status": {
         "published": "Published",
         "draft": "Draft"
@@ -5779,6 +5780,7 @@
     "premiumRequired": "Premium subscription required",
     "selectInputLanguage": "Select input language",
     "translateActive": "Live Translation Active",
+    "noEnglishSubtitles": "No English subtitles available for this content.",
     "hebrewMode": {
       "title": "Hebrew Display Mode",
       "unavailable": "Unavailable",
@@ -5802,7 +5804,7 @@
       "title": "English Display Mode",
       "unavailable": "Unavailable",
       "generate": "Generate",
-      "firstTimeHint": "Heblish mode injects Hebrew words into English subtitles for immersive language learning. Example: \"Hello friends!\" becomes \"Shalom chaverim!\"",
+      "firstTimeHint": "These AI-powered modes help maintain Hebrew while learning English sentence structure. Each mode offers a unique learning experience.",
       "regular": {
         "title": "Regular English",
         "description": "Standard English subtitles"
@@ -5811,6 +5813,16 @@
         "title": "Heblish",
         "description": "English with Hebrew word injections for immersive learning",
         "unavailableReason": "Heblish processing not available for this content"
+      },
+      "grammarFlip": {
+        "title": "Grammar-Flip",
+        "description": "Hebrew words with English sentence structure (Subject-Verb-Object)",
+        "unavailableReason": "Grammar-Flip processing not available for this content"
+      },
+      "slangSynthesis": {
+        "title": "Slang Synthesis",
+        "description": "Modern Israeli and American slang blend for engaging content",
+        "unavailableReason": "Slang Synthesis processing not available for this content"
       }
     },
     "loading": "Loading subtitles...",

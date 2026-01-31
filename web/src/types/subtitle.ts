@@ -26,6 +26,8 @@ export interface SubtitleTrack {
   has_nikud_version: boolean  // Hebrew vocalization available
   has_shoresh_version?: boolean // Hebrew root word highlighting available
   has_heblish_version?: boolean // English with Hebrew injections available
+  has_grammar_flip_version?: boolean // Hebrew words with English syntax available
+  has_slang_synthesis_version?: boolean // Israeli/American slang blend available
   is_default: boolean
   is_auto_generated: boolean
   created_at: string
@@ -48,7 +50,14 @@ export type HebrewMode = 'regular' | 'nikud' | 'shoresh'
 
 // ============ ENGLISH MODE ============
 
-export type EnglishMode = 'regular' | 'heblish'
+/**
+ * English subtitle display modes:
+ * - regular: Standard English subtitles
+ * - heblish: English with Hebrew word injections (e.g., "Shalom chaverim!")
+ * - grammarFlip: Hebrew words with English syntax/word order (e.g., "The yeled ate the tapuach")
+ * - slangSynthesis: Modern Israeli/American slang blend (e.g., "That was totally al hapane!")
+ */
+export type EnglishMode = 'regular' | 'heblish' | 'grammarFlip' | 'slangSynthesis'
 
 // ============ SUBTITLE PREFERENCES ============
 

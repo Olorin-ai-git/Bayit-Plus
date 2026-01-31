@@ -28,6 +28,8 @@ interface EnglishModePickerModalProps {
   isLoading?: boolean  // Whether subtitle track info is being loaded
   hasEnglish?: boolean // Whether English subtitles exist at all
   hasHeblish: boolean
+  hasGrammarFlip?: boolean  // Hebrew words with English syntax available
+  hasSlangSynthesis?: boolean  // Israeli/American slang blend available
   contentId?: string
   portalContainer?: HTMLElement | null
   onClose: () => void
@@ -62,6 +64,22 @@ const ENGLISH_MODE_OPTIONS: ModeOption[] = [
     example: 'Shalom chaverim! Today we watch a sababa show.',
     isAI: true,
   },
+  {
+    mode: 'grammarFlip',
+    icon: 'book',
+    titleKey: 'subtitles.englishMode.grammarFlip.title',
+    descriptionKey: 'subtitles.englishMode.grammarFlip.description',
+    example: 'The yeled (boy) ate the tapuach (apple).',
+    isAI: true,
+  },
+  {
+    mode: 'slangSynthesis',
+    icon: 'sparkles',
+    titleKey: 'subtitles.englishMode.slangSynthesis.title',
+    descriptionKey: 'subtitles.englishMode.slangSynthesis.description',
+    example: 'That show was totally al hapane (terrible) but the ending was esh (fire)!',
+    isAI: true,
+  },
 ]
 
 const ENGLISH_MODE_FIRST_TIME_KEY = 'english_mode_first_time_seen'
@@ -72,6 +90,8 @@ export default function EnglishModePickerModal({
   isLoading = false,
   hasEnglish = true,
   hasHeblish,
+  hasGrammarFlip = false,
+  hasSlangSynthesis = false,
   contentId,
   portalContainer,
   onClose,
@@ -84,7 +104,7 @@ export default function EnglishModePickerModal({
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const pollingRef = useRef<NodeJS.Timeout | null>(null)
   const [showFirstTimeHint, setShowFirstTimeHint] = useState(false)
-  const [generatingMode, setGeneratingMode] = useState<'heblish' | null>(null)
+  const [generatingMode, setGeneratingMode] = useState<EnglishMode | null>(null)
   const [generationError, setGenerationError] = useState<string | null>(null)
   const [jobProgress, setJobProgress] = useState<number>(0)
   const isAdmin = useAuthStore((s) => s.isAdmin())
@@ -172,6 +192,8 @@ export default function EnglishModePickerModal({
   const isModeAvailable = (mode: EnglishMode): boolean => {
     if (mode === 'regular') return true
     if (mode === 'heblish') return hasHeblish
+    if (mode === 'grammarFlip') return hasGrammarFlip
+    if (mode === 'slangSynthesis') return hasSlangSynthesis
     return false
   }
 
@@ -200,11 +222,11 @@ export default function EnglishModePickerModal({
     }
   }, [contentId, onGenerationComplete])
 
-  const handleGenerateHeblish = async (e: React.MouseEvent) => {
+  const handleGenerate = async (e: React.MouseEvent, mode: EnglishMode) => {
     e.stopPropagation()
     e.preventDefault()
 
-    logger.info('Generate heblish clicked', 'EnglishModePickerModal', { contentId, isAdmin, generatingMode })
+    logger.info(`Generate ${mode} clicked`, 'EnglishModePickerModal', { contentId, isAdmin, generatingMode, mode })
 
     if (!contentId) {
       logger.error('No contentId provided', 'EnglishModePickerModal')
@@ -217,16 +239,26 @@ export default function EnglishModePickerModal({
       return
     }
 
-    setGeneratingMode('heblish')
+    setGeneratingMode(mode)
     setGenerationError(null)
     setJobProgress(0)
 
     try {
-      logger.info('Starting heblish generation', 'EnglishModePickerModal', { contentId })
+      logger.info(`Starting ${mode} generation`, 'EnglishModePickerModal', { contentId, mode })
 
-      const result = await subtitlesService.generateHeblish(contentId, 'en', false)
+      // Call appropriate API based on mode
+      let result
+      if (mode === 'heblish') {
+        result = await subtitlesService.generateHeblish(contentId, 'en', false)
+      } else if (mode === 'grammarFlip') {
+        result = await subtitlesService.generateGrammarFlip(contentId, 'en', false)
+      } else if (mode === 'slangSynthesis') {
+        result = await subtitlesService.generateSlangSynthesis(contentId, 'en', false)
+      } else {
+        throw new Error(`Unknown mode: ${mode}`)
+      }
 
-      logger.info('Heblish job started', 'EnglishModePickerModal', { contentId, result })
+      logger.info(`${mode} job started`, 'EnglishModePickerModal', { contentId, result })
 
       if (result.status === 'completed') {
         setGeneratingMode(null)
@@ -242,8 +274,8 @@ export default function EnglishModePickerModal({
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Generation failed'
-      logger.error('Failed to start heblish generation', 'EnglishModePickerModal', { contentId, error: errorMessage })
-      setGenerationError(`Failed to start heblish generation: ${errorMessage}`)
+      logger.error(`Failed to start ${mode} generation`, 'EnglishModePickerModal', { contentId, error: errorMessage })
+      setGenerationError(`Failed to start ${mode} generation: ${errorMessage}`)
       setGeneratingMode(null)
     }
   }
@@ -354,7 +386,8 @@ export default function EnglishModePickerModal({
           {memoizedOptions.map((option) => {
             const isAvailable = isModeAvailable(option.mode)
             const isSelected = option.mode === currentMode
-            const canShowGenerateButton = !isAvailable && option.mode === 'heblish' && isAdmin && contentId
+            const isAIMode = option.mode === 'heblish' || option.mode === 'grammarFlip' || option.mode === 'slangSynthesis'
+            const canShowGenerateButton = !isAvailable && isAIMode && isAdmin && contentId
 
             return (
               <div
@@ -402,7 +435,7 @@ export default function EnglishModePickerModal({
                   {/* Description */}
                   <div className="flex-1 min-w-0">
                     <p
-                      className={`text-sm ${
+                      className={`text-sm whitespace-normal break-words ${
                         isAvailable ? 'text-gray-400' : 'text-gray-500'
                       }`}
                     >
@@ -411,10 +444,10 @@ export default function EnglishModePickerModal({
                   </div>
 
                   {/* Warning - only show when not available AND not currently generating */}
-                  {!isAvailable && generatingMode !== 'heblish' && option.mode === 'heblish' && (
+                  {!isAvailable && generatingMode !== option.mode && isAIMode && (
                     <div className="w-32 flex-shrink-0">
                       <p className="text-xs text-amber-500/90 italic">
-                        {t('subtitles.englishMode.heblish.unavailableReason', 'Heblish processing not available for this content')}
+                        {t(`subtitles.englishMode.${option.mode}.unavailableReason`, `${option.mode} processing not available for this content`)}
                       </p>
                     </div>
                   )}
@@ -441,22 +474,22 @@ export default function EnglishModePickerModal({
                       )}
                     </div>
                   )}
-                  {!isAvailable && option.mode === 'heblish' && (
+                  {!isAvailable && isAIMode && (
                     <div className="flex flex-col items-end gap-1 flex-shrink-0">
                       {isAdmin && contentId ? (
                         <button
                           type="button"
-                          onClick={handleGenerateHeblish}
+                          onClick={(e) => handleGenerate(e, option.mode)}
                           disabled={generatingMode !== null}
                           className="px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white cursor-pointer"
                           style={{
-                            backgroundColor: generatingMode === 'heblish' ? 'rgba(168, 85, 247, 0.7)' : '#a855f7',
-                            cursor: generatingMode === 'heblish' ? 'wait' : 'pointer',
-                            opacity: generatingMode !== null && generatingMode !== 'heblish' ? 0.5 : 1,
+                            backgroundColor: generatingMode === option.mode ? 'rgba(168, 85, 247, 0.7)' : '#a855f7',
+                            cursor: generatingMode === option.mode ? 'wait' : 'pointer',
+                            opacity: generatingMode !== null && generatingMode !== option.mode ? 0.5 : 1,
                           }}
-                          aria-label="Generate heblish"
+                          aria-label={`Generate ${option.mode}`}
                         >
-                          {generatingMode === 'heblish' ? (
+                          {generatingMode === option.mode ? (
                             <span className="flex items-center justify-center gap-1.5">
                               <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                               {jobProgress > 0

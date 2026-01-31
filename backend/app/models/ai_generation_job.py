@@ -25,6 +25,8 @@ class JobType(str, Enum):
     NIKUD = "nikud"
     SHORESH = "shoresh"
     HEBLISH = "heblish"
+    GRAMMAR_FLIP = "grammar_flip"  # Hebrew words with English syntax
+    SLANG_SYNTHESIS = "slang_synthesis"  # Israeli/American slang blend
 
 
 class AIGenerationJob(Document):

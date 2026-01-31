@@ -4737,7 +4737,7 @@
       "title": "Mode d'affichage de l'anglais",
       "unavailable": "Indisponible",
       "generate": "Générer",
-      "firstTimeHint": "Le mode Heblish insère des mots hébreux dans les sous-titres anglais pour un apprentissage immersif. Exemple : \"Hello friends!\" devient \"Shalom chaverim!\"",
+      "firstTimeHint": "Ces modes alimentés par l'IA aident à maintenir l'hébreu tout en apprenant la structure des phrases en anglais. Chaque mode offre une expérience d'apprentissage unique.",
       "regular": {
         "title": "Anglais standard",
         "description": "Sous-titres anglais standards"
@@ -4746,6 +4746,16 @@
         "title": "Heblish",
         "description": "Anglais avec injections de mots hébreux pour un apprentissage immersif",
         "unavailableReason": "Traitement Heblish non disponible pour ce contenu"
+      },
+      "grammarFlip": {
+        "title": "Inversion Grammaticale",
+        "description": "Mots hébreux avec structure de phrase anglaise (Sujet-Verbe-Objet)",
+        "unavailableReason": "Traitement d'inversion grammaticale non disponible pour ce contenu"
+      },
+      "slangSynthesis": {
+        "title": "Synthèse d'Argot",
+        "description": "Mélange d'argot israélien et américain moderne pour un contenu engageant",
+        "unavailableReason": "Traitement de synthèse d'argot non disponible pour ce contenu"
       }
     },
     "loading": "Chargement des sous-titres...",

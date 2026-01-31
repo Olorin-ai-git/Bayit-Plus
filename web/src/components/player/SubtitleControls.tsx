@@ -405,6 +405,8 @@ export default function SubtitleControls({
           visible={showEnglishModePicker}
           currentMode={englishMode}
           hasHeblish={englishTrack?.has_heblish_version || false}
+          hasGrammarFlip={englishTrack?.has_grammar_flip_version || false}
+          hasSlangSynthesis={englishTrack?.has_slang_synthesis_version || false}
           contentId={contentId}
           portalContainer={containerRef?.current}
           onClose={() => setShowEnglishModePicker(false)}

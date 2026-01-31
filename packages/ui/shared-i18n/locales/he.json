@@ -549,6 +549,7 @@
       "beta": "בטא",
       "markAsBeta": "סמן כבטא",
       "removeFromBeta": "הסר מבטא",
+      "subtitleAI": "AI כתוביות (עברית ואנגלית)",
       "status": {
         "published": "פורסם",
         "draft": "טיוטה"
@@ -5724,6 +5725,7 @@
     "premiumRequired": "נדרש מנוי פרימיום",
     "selectInputLanguage": "בחר שפת קלט",
     "translateActive": "תרגום חי פעיל",
+    "noEnglishSubtitles": "אין כתוביות באנגלית לתוכן זה.",
     "hebrewMode": {
       "title": "מצב תצוגת עברית",
       "unavailable": "לא זמין",
@@ -5747,7 +5749,7 @@
       "title": "מצב תצוגת אנגלית",
       "unavailable": "לא זמין",
       "generate": "יצירה",
-      "firstTimeHint": "מצב היבליש מכניס מילים עבריות לכתוביות באנגלית ללמידת שפה סוחפת. דוגמה: \"Hello friends!\" הופך ל-\"Shalom chaverim!\"",
+      "firstTimeHint": "מצבי AI אלה עוזרים לשמור על עברית תוך לימוד מבנה משפטים באנגלית. כל מצב מציע חוויית למידה ייחודית.",
       "regular": {
         "title": "אנגלית רגילה",
         "description": "כתוביות אנגלית סטנדרטיות"
@@ -5756,6 +5758,16 @@
         "title": "היבליש",
         "description": "אנגלית עם הזרקת מילים עבריות ללמידה סוחפת",
         "unavailableReason": "עיבוד היבליש לא זמין עבור תוכן זה"
+      },
+      "grammarFlip": {
+        "title": "היפוך דקדוקי",
+        "description": "מילים עבריות במבנה משפט אנגלי (נושא-פועל-מושא)",
+        "unavailableReason": "עיבוד היפוך דקדוקי לא זמין עבור תוכן זה"
+      },
+      "slangSynthesis": {
+        "title": "סינתזת סלנג",
+        "description": "שילוב סלנג ישראלי ואמריקאי מודרני לתוכן מעורר",
+        "unavailableReason": "עיבוד סינתזת סלנג לא זמין עבור תוכן זה"
       }
     },
     "loading": "טוען כתוביות...",
