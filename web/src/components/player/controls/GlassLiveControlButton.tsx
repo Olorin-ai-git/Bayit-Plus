@@ -7,6 +7,7 @@ import { useState, useEffect, useRef, ReactNode } from 'react'
 import { View, Text, Pressable, ActivityIndicator, Animated, StyleSheet } from 'react-native'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
+import { GlassTooltip } from '@bayit/shared/components/ui/GlassTooltip'
 
 interface GlassLiveControlButtonProps {
   icon: ReactNode
@@ -16,6 +17,13 @@ interface GlassLiveControlButtonProps {
   isPremium: boolean
   onPress: () => void
   premiumLabel?: string
+  quotaExceeded?: boolean
+  tooltip?: string
+  /** Optional split button: shows a secondary action section (like Record's chevron) */
+  splitIcon?: ReactNode
+  onSplitPress?: () => void
+  splitAccessibilityLabel?: string
+  splitTooltip?: string
 }
 
 export function GlassLiveControlButton({
@@ -26,11 +34,19 @@ export function GlassLiveControlButton({
   isPremium,
   onPress,
   premiumLabel = '⭐ Premium',
+  quotaExceeded = false,
+  tooltip,
+  splitIcon,
+  onSplitPress,
+  splitAccessibilityLabel,
+  splitTooltip,
 }: GlassLiveControlButtonProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const [isSplitHovered, setIsSplitHovered] = useState(false)
   const pulseAnim = useRef(new Animated.Value(1)).current
+  const hasSplit = !!(splitIcon && onSplitPress && isEnabled && !isConnecting)
 
-  // Pulsing animation for the connected indicator
+  // Pulsing animation for active/connected indicator
   useEffect(() => {
     if (isEnabled && !isConnecting) {
       const pulse = Animated.loop(
@@ -55,23 +71,25 @@ export function GlassLiveControlButton({
   }, [isEnabled, isConnecting, pulseAnim])
 
   const displayLabel = isPremium ? label : premiumLabel
+  const isDisabled = isConnecting || quotaExceeded
 
-  return (
+  const mainButton = (
     <Pressable
-      onPress={isConnecting ? undefined : onPress}
-      disabled={isConnecting}
-      onHoverIn={() => !isConnecting && setIsHovered(true)}
+      onPress={isDisabled ? undefined : onPress}
+      disabled={isDisabled}
+      onHoverIn={() => !isDisabled && setIsHovered(true)}
       onHoverOut={() => setIsHovered(false)}
       style={[
         styles.button,
         isEnabled && styles.buttonEnabled,
         !isPremium && styles.buttonPremium,
-        isHovered && !isConnecting && styles.buttonHovered,
-        isConnecting && styles.buttonDisabled,
+        isHovered && !isDisabled && styles.buttonHovered,
+        isDisabled && styles.buttonDisabled,
+        hasSplit && styles.buttonSplitLeft,
       ]}
       accessibilityRole="button"
       accessibilityLabel={displayLabel}
-      accessibilityState={{ pressed: isEnabled, disabled: isConnecting }}
+      accessibilityState={{ pressed: isEnabled, disabled: isDisabled }}
     >
       {/* Icon */}
       <View style={styles.iconContainer}>{icon}</View>
@@ -97,7 +115,7 @@ export function GlassLiveControlButton({
         />
       )}
 
-      {/* Connected indicator - Blinking green dot */}
+      {/* Active indicator - Pulsing green dot */}
       {isEnabled && !isConnecting && (
         <Animated.View
           style={[
@@ -108,9 +126,46 @@ export function GlassLiveControlButton({
       )}
     </Pressable>
   )
+
+  return (
+    <View style={[styles.splitGroup, hasSplit && styles.splitGroupActive]}>
+      {tooltip ? (
+        <GlassTooltip content={tooltip} position="top">
+          {mainButton}
+        </GlassTooltip>
+      ) : mainButton}
+
+      {/* Split section - secondary action button */}
+      {hasSplit && (
+        <GlassTooltip content={splitTooltip || ''} position="top" disabled={!splitTooltip}>
+          <Pressable
+            onPress={onSplitPress}
+            onHoverIn={() => setIsSplitHovered(true)}
+            onHoverOut={() => setIsSplitHovered(false)}
+            style={[
+              styles.splitButton,
+              isEnabled && styles.splitButtonEnabled,
+              isSplitHovered && styles.splitButtonHovered,
+            ]}
+            accessibilityRole="button"
+            accessibilityLabel={splitAccessibilityLabel}
+          >
+            {splitIcon}
+          </Pressable>
+        </GlassTooltip>
+      )}
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
+  splitGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  splitGroupActive: {
+    gap: 1,
+  },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -179,6 +234,33 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: colors.success.DEFAULT,
     marginLeft: spacing.xs,
+  },
+  buttonSplitLeft: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  splitButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: isTV ? spacing.md : spacing.sm,
+    paddingVertical: isTV ? spacing.sm + 2 : spacing.sm,
+    backgroundColor: 'rgba(17, 17, 34, 0.85)',
+    backdropFilter: 'blur(20px)',
+    borderTopRightRadius: borderRadius.xl,
+    borderBottomRightRadius: borderRadius.xl,
+    borderWidth: 1.5,
+    borderColor: 'rgba(139, 92, 246, 0.3)',
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(139, 92, 246, 0.3)',
+    minHeight: isTV ? 44 : 40,
+  },
+  splitButtonEnabled: {
+    backgroundColor: 'rgba(139, 92, 246, 0.25)',
+    borderColor: 'rgba(139, 92, 246, 0.6)',
+    borderLeftColor: 'rgba(139, 92, 246, 0.4)',
+  },
+  splitButtonHovered: {
+    backgroundColor: 'rgba(139, 92, 246, 0.45)',
   },
 })
 

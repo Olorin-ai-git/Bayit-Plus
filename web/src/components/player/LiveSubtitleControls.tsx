@@ -5,13 +5,27 @@
  */
 
 import { useState, useEffect, useRef } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, Pressable, Modal, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Languages } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassLiveControlButton } from './controls/GlassLiveControlButton'
+import { GlassView } from '@bayit/shared/ui'
 import liveSubtitleService, { LiveSubtitleCue } from '@/services/liveSubtitleService'
 import logger from '@/utils/logger'
+
+const LANG_FLAGS: Record<string, string> = {
+  he: '\u{1F1EE}\u{1F1F1}',
+  en: '\u{1F1FA}\u{1F1F8}',
+  ar: '\u{1F1F8}\u{1F1E6}',
+  es: '\u{1F1EA}\u{1F1F8}',
+  ru: '\u{1F1F7}\u{1F1FA}',
+  fr: '\u{1F1EB}\u{1F1F7}',
+  de: '\u{1F1E9}\u{1F1EA}',
+  it: '\u{1F1EE}\u{1F1F9}',
+  pt: '\u{1F1F5}\u{1F1F9}',
+  yi: '\u{1F54D}',
+}
 
 interface LiveSubtitleControlsProps {
   channelId: string
@@ -22,8 +36,12 @@ interface LiveSubtitleControlsProps {
   onShowUpgrade?: () => void
   targetLang: string
   onLanguageChange: (lang: string) => void
+  availableLanguages?: string[]
+  sourceLanguage?: string
   onDisableDubbing?: () => void
   onHoveredButtonChange?: (button: string | null) => void
+  quotaExceeded?: boolean
+  isDubbingActive?: boolean
 }
 
 type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error'
@@ -37,8 +55,12 @@ export default function LiveSubtitleControls({
   onShowUpgrade,
   targetLang,
   onLanguageChange,
+  availableLanguages = [],
+  sourceLanguage = 'he',
   onDisableDubbing,
   onHoveredButtonChange,
+  quotaExceeded = false,
+  isDubbingActive = false,
 }: LiveSubtitleControlsProps) {
   const { t } = useTranslation()
   // Initialize enabled state by checking actual service connection
@@ -47,7 +69,23 @@ export default function LiveSubtitleControls({
     liveSubtitleService.isServiceConnected() ? 'connected' : 'disconnected'
   )
   const [error, setError] = useState<string | null>(null)
+  const [showLangPicker, setShowLangPicker] = useState(false)
+  const [inputLang, setInputLang] = useState(sourceLanguage)
   const prevLangRef = useRef<string>(targetLang)
+
+  // Sync inputLang when sourceLanguage prop changes (e.g. channel switch)
+  useEffect(() => {
+    setInputLang(sourceLanguage)
+  }, [sourceLanguage])
+
+  // Sync UI when dubbing activates (mutual exclusivity - subtitles get disconnected externally)
+  useEffect(() => {
+    if (isDubbingActive && enabled) {
+      setEnabled(false)
+      setStatus('disconnected')
+      setError(null)
+    }
+  }, [isDubbingActive])
 
   if (!isLive) return null
 
@@ -98,6 +136,11 @@ export default function LiveSubtitleControls({
     // Prevent toggling while connection is in progress
     if (status === 'connecting') {
       logger.debug('Toggle ignored - connection in progress', 'LiveSubtitleControls')
+      return
+    }
+
+    if (quotaExceeded) {
+      logger.debug('Toggle ignored - quota exceeded', 'LiveSubtitleControls')
       return
     }
 
@@ -171,15 +214,78 @@ export default function LiveSubtitleControls({
         isEnabled={enabled}
         isConnecting={status === 'connecting'}
         isPremium={isPremium}
+        quotaExceeded={quotaExceeded}
         onPress={handleToggle}
         tooltip={
-          enabled
+          quotaExceeded
+            ? t('quota.subtitleExceeded', 'Subtitle quota exceeded. Please try again later.')
+            : enabled
             ? t('subtitles.translateActive', 'Live Translation Active')
             : isPremium
             ? t('subtitles.clickToEnable', 'Click to enable live translation')
             : t('subtitles.premiumRequired', 'Premium subscription required')
         }
+        splitIcon={<Text style={styles.splitFlag}>{LANG_FLAGS[inputLang] || inputLang.toUpperCase()}</Text>}
+        onSplitPress={() => setShowLangPicker(true)}
+        splitAccessibilityLabel={t('subtitles.selectInputLanguage', 'Select input language')}
+        splitTooltip={t('subtitles.inputLanguageTooltip', 'Input language (audio source)')}
       />
+
+      {/* Language Picker Modal */}
+      {showLangPicker && availableLanguages.length > 0 && (
+        <Modal
+          visible={showLangPicker}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowLangPicker(false)}
+        >
+          <Pressable
+            style={styles.modalOverlay}
+            onPress={() => setShowLangPicker(false)}
+          >
+            <Pressable
+              style={styles.modalContent}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <GlassView style={styles.langPickerContainer} intensity="high">
+                <Text style={styles.langPickerTitle}>
+                  {t('subtitles.selectInputLanguage', 'Select Input Language')}
+                </Text>
+                <View style={styles.langList}>
+                  {availableLanguages.map((lang) => {
+                    const flag = LANG_FLAGS[lang] || lang.toUpperCase()
+                    const isSelected = lang === inputLang
+                    return (
+                      <Pressable
+                        key={lang}
+                        onPress={() => {
+                          setInputLang(lang)
+                          setShowLangPicker(false)
+                        }}
+                        style={[
+                          styles.langItem,
+                          isSelected && styles.langItemSelected,
+                        ]}
+                        accessibilityRole="button"
+                        accessibilityLabel={t(`languages.${lang}`, lang.toUpperCase())}
+                        accessibilityState={{ selected: isSelected }}
+                      >
+                        <Text style={styles.langFlag}>{flag}</Text>
+                        <Text style={styles.langName}>
+                          {t(`languages.${lang}`, lang.toUpperCase())}
+                        </Text>
+                        {isSelected && (
+                          <Text style={styles.langCheck}>{'\u2713'}</Text>
+                        )}
+                      </Pressable>
+                    )
+                  })}
+                </View>
+              </GlassView>
+            </Pressable>
+          </Pressable>
+        </Modal>
+      )}
 
       {error && (
         <View style={styles.errorContainer}>
@@ -193,6 +299,67 @@ export default function LiveSubtitleControls({
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
+  },
+  splitFlag: {
+    fontSize: 14,
+    lineHeight: 18,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    maxWidth: 360,
+    maxHeight: '80%',
+  },
+  langPickerContainer: {
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    maxHeight: 500,
+  },
+  langPickerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: spacing.md,
+    paddingBottom: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(139, 92, 246, 0.3)',
+  },
+  langList: {
+    gap: spacing.xs,
+  },
+  langItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.2)',
+  },
+  langItemSelected: {
+    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+    borderColor: 'rgba(139, 92, 246, 0.5)',
+  },
+  langFlag: {
+    fontSize: 24,
+  },
+  langName: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  langCheck: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: colors.primary.DEFAULT,
   },
   errorContainer: {
     position: 'absolute',

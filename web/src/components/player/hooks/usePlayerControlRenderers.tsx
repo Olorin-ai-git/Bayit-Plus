@@ -16,11 +16,14 @@ import { UseLiveDubbingState } from './useLiveDubbing'
 import { WatchParty } from '@/types/watchparty'
 import { SubtitleCue } from '../types'
 import { CastSession } from '../types/cast'
+import { UsageStats } from '@/services/liveQuotaApi'
 
 interface UsePlayerControlRenderersParams {
   // User and content
   user: any
   contentId?: string
+  usageStats?: UsageStats | null
+  isAdmin?: boolean
   isLive: boolean
   containerRef: React.RefObject<HTMLDivElement>
   videoRef: React.RefObject<HTMLVideoElement>
@@ -92,6 +95,8 @@ export function usePlayerControlRenderers({
   containerRef,
   videoRef,
   isWidget = false,
+  usageStats,
+  isAdmin = false,
   party,
   showPartyPanel,
   setShowCreateModal,
@@ -121,6 +126,18 @@ export function usePlayerControlRenderers({
 }: UsePlayerControlRenderersParams) {
   const { t } = useTranslation()
   const isPremium = user?.subscription?.plan === 'premium' || user?.subscription?.plan === 'family'
+
+  const subtitleQuotaExceeded = !isAdmin && !!usageStats && (
+    usageStats.subtitle_available_hour <= 0 ||
+    usageStats.subtitle_available_day <= 0 ||
+    usageStats.subtitle_available_month <= 0
+  )
+
+  const dubbingQuotaExceeded = !isAdmin && !!usageStats && (
+    usageStats.dubbing_available_hour <= 0 ||
+    usageStats.dubbing_available_day <= 0 ||
+    usageStats.dubbing_available_month <= 0
+  )
 
   const renderWatchPartyButton = useCallback(() => null
   , [])
@@ -156,12 +173,16 @@ export function usePlayerControlRenderers({
         onShowUpgrade={onShowUpgrade}
         targetLang={liveSubtitleLang}
         onLanguageChange={setLiveSubtitleLang}
+        availableLanguages={dubbing.availableLanguages}
+        sourceLanguage={dubbing.availability?.source_language}
         onDisableDubbing={dubbing.disconnect}
         onHoveredButtonChange={onHoveredButtonChange}
+        quotaExceeded={subtitleQuotaExceeded}
+        isDubbingActive={dubbing.isConnected}
       />
     ) : null
   , [isLive, contentId, isWidget, isPremium, videoRef, handleLiveSubtitleCue, onShowUpgrade,
-     liveSubtitleLang, setLiveSubtitleLang, dubbing.disconnect, onHoveredButtonChange])
+     liveSubtitleLang, setLiveSubtitleLang, dubbing.disconnect, dubbing.isConnected, onHoveredButtonChange, subtitleQuotaExceeded])
 
   const renderDubbingControls = useCallback(() =>
     isLive && contentId && !isWidget ? (
@@ -170,6 +191,7 @@ export function usePlayerControlRenderers({
         isConnecting={dubbing.isConnecting}
         isAvailable={dubbing.isAvailable}
         isPremium={isPremium}
+        quotaExceeded={dubbingQuotaExceeded}
         targetLanguage={dubbing.targetLanguage}
         availableLanguages={dubbing.availableLanguages}
         availableVoices={dubbing.availableVoices}
@@ -200,9 +222,10 @@ export function usePlayerControlRenderers({
         }}
         onShowUpgrade={onShowUpgrade}
         onHoveredButtonChange={onHoveredButtonChange}
+        sourceLanguage={dubbing.availability?.source_language}
       />
     ) : null
-  , [isLive, contentId, isWidget, isPremium, dubbing, onShowUpgrade, onHoveredButtonChange])
+  , [isLive, contentId, isWidget, isPremium, dubbing, onShowUpgrade, onHoveredButtonChange, dubbingQuotaExceeded])
 
   const renderRecordButton = useCallback(() =>
     isLive && contentId ? (

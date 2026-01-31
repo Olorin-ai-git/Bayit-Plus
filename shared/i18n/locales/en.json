@@ -4580,5 +4580,9 @@
       "retry": "Try Again",
       "insufficientCredits": "Not enough credits"
     }
+  },
+  "quota": {
+    "subtitleExceeded": "Subtitle quota exceeded. Please try again later.",
+    "dubbingExceeded": "Dubbing quota exceeded. Please try again later."
   }
 }

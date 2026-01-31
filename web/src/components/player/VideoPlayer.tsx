@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@/stores/authStore'
 import { ttsService } from '@bayit/shared/services/ttsService'
@@ -54,6 +54,7 @@ export default function VideoPlayer({
   const user = useAuthStore((s) => s.user)
 
   const { usageStats } = useLiveFeatureQuota()
+  const isAdmin = useAuthStore((s) => s.isAdmin())
   const [hoveredButton, setHoveredButton] = useState<string | null>(null)
   const [showStreamLimitModal, setShowStreamLimitModal] = useState(false)
   const [streamLimitError, setStreamLimitError] = useState<{
@@ -214,6 +215,31 @@ export default function VideoPlayer({
     ((audio: ArrayBuffer, text: string) => void) | null
   >(null)
 
+  // Collect live feature errors for unified banner display
+  const [dismissedError, setDismissedError] = useState<string | null>(null)
+  const liveFeatureError = useMemo(() => {
+    const errors = [
+      dubbing.error,
+      channelChat.error,
+      catchUp.error,
+    ].filter(Boolean)
+    const activeError = errors[0] || null
+    if (activeError === dismissedError) return null
+    return activeError
+  }, [dubbing.error, channelChat.error, catchUp.error, dismissedError])
+
+  const handleDismissLiveFeatureError = useCallback(() => {
+    setDismissedError(liveFeatureError)
+  }, [liveFeatureError])
+
+  // Reset dismissed error when a new error appears
+  useEffect(() => {
+    const currentError = [dubbing.error, channelChat.error, catchUp.error].filter(Boolean)[0] || null
+    if (currentError && currentError !== dismissedError) {
+      setDismissedError(null)
+    }
+  }, [dubbing.error, channelChat.error, catchUp.error])
+
   // Clear buffered player callback when dubbing disconnects
   useEffect(() => {
     if (!dubbing.isConnected) {
@@ -289,6 +315,8 @@ export default function VideoPlayer({
     containerRef,
     videoRef,
     isWidget,
+    usageStats,
+    isAdmin,
     party,
     showPartyPanel,
     setShowCreateModal,
@@ -435,6 +463,8 @@ export default function VideoPlayer({
         renderChannelChatButton={renderChannelChatButton}
         renderLiveTriviaButton={renderLiveTriviaButton}
         renderCatchUpButton={renderCatchUpButton}
+        liveFeatureError={liveFeatureError}
+        onDismissLiveFeatureError={handleDismissLiveFeatureError}
       />
 
       <VideoPlayerWatchParty
