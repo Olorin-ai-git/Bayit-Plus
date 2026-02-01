@@ -3,46 +3,7 @@
  * API calls for upload management
  */
 
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
-
-// Create uploads API instance
-const uploadsApi = axios.create({
-  baseURL: API_BASE_URL,
-  timeout: 15000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
-
-// Add auth token to requests and handle FormData properly
-uploadsApi.interceptors.request.use((config) => {
-  const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}');
-  if (authData?.state?.token) {
-    config.headers.Authorization = `Bearer ${authData.state.token}`;
-  }
-
-  // When uploading FormData, delete Content-Type header so axios sets it
-  // automatically with the correct multipart boundary
-  if (config.data instanceof FormData) {
-    delete config.headers['Content-Type'];
-  }
-
-  return config;
-});
-
-// Handle response
-uploadsApi.interceptors.response.use(
-  (response) => response.data,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('bayit-auth');
-      window.location.href = '/login';
-    }
-    return Promise.reject(error.response?.data || error);
-  }
-);
+import api from './api';
 
 export interface MonitoredFolder {
   id: string;
@@ -121,21 +82,21 @@ export interface UploadQueueResponse {
  * Get upload queue status
  */
 export const getUploadQueue = async (): Promise<UploadQueueResponse> => {
-  return uploadsApi.get('/admin/uploads/queue');
+  return api.get('/admin/uploads/queue');
 };
 
 /**
  * Resume a paused upload queue
  */
 export const resumeUploadQueue = async (): Promise<{ success: boolean; message: string }> => {
-  return uploadsApi.post('/admin/uploads/queue/resume');
+  return api.post('/admin/uploads/queue/resume');
 };
 
 /**
  * Clear the upload queue (cancel all queued and processing jobs)
  */
 export const clearUploadQueue = async (): Promise<{ success: boolean; cancelled_count: number; message: string }> => {
-  return uploadsApi.post('/admin/uploads/queue/clear');
+  return api.post('/admin/uploads/queue/clear');
 };
 
 /**
@@ -143,7 +104,7 @@ export const clearUploadQueue = async (): Promise<{ success: boolean; cancelled_
  * Removes all completed, failed, and cancelled jobs
  */
 export const clearCompletedJobs = async (): Promise<{ success: boolean; cleared_count: number; message: string }> => {
-  return uploadsApi.post('/admin/uploads/queue/clear-completed');
+  return api.post('/admin/uploads/queue/clear-completed');
 };
 
 /**
@@ -151,21 +112,21 @@ export const clearCompletedJobs = async (): Promise<{ success: boolean; cleared_
  * Works for both active (processing) and queued jobs
  */
 export const cancelUploadJob = async (jobId: string): Promise<{ status: string; job_id: string }> => {
-  return uploadsApi.delete(`/admin/uploads/job/${jobId}`);
+  return api.delete(`/admin/uploads/job/${jobId}`);
 };
 
 /**
  * Get monitored folders
  */
 export const getMonitoredFolders = async (): Promise<MonitoredFolder[]> => {
-  return uploadsApi.get('/admin/uploads/monitored-folders');
+  return api.get('/admin/uploads/monitored-folders');
 };
 
 /**
  * Add a monitored folder
  */
 export const addMonitoredFolder = async (folder: Omit<MonitoredFolder, 'id'>): Promise<MonitoredFolder> => {
-  return uploadsApi.post('/admin/uploads/monitored-folders', folder);
+  return api.post('/admin/uploads/monitored-folders', folder);
 };
 
 /**
@@ -175,14 +136,14 @@ export const updateMonitoredFolder = async (
   folderId: string,
   folder: Partial<MonitoredFolder>
 ): Promise<MonitoredFolder> => {
-  return uploadsApi.put(`/admin/uploads/monitored-folders/${folderId}`, folder);
+  return api.put(`/admin/uploads/monitored-folders/${folderId}`, folder);
 };
 
 /**
  * Delete a monitored folder
  */
 export const deleteMonitoredFolder = async (folderId: string): Promise<void> => {
-  return uploadsApi.delete(`/admin/uploads/monitored-folders/${folderId}`);
+  return api.delete(`/admin/uploads/monitored-folders/${folderId}`);
 };
 
 /**
@@ -200,7 +161,7 @@ export const triggerUploadScan = async (
     if (options.audiobooksOnly) params.audiobooks_only = true;
   }
   
-  return uploadsApi.post('/admin/uploads/scan-now', null, { params });
+  return api.post('/admin/uploads/scan-now', null, { params });
 };
 
 /**
@@ -209,7 +170,7 @@ export const triggerUploadScan = async (
  */
 export const resetFolderCache = async (folderId?: string): Promise<{ success: boolean; message: string; files_cleared: number }> => {
   const params = folderId ? { folder_id: folderId } : {};
-  return uploadsApi.post('/admin/uploads/reset-cache', null, { params });
+  return api.post('/admin/uploads/reset-cache', null, { params });
 };
 
 /**
@@ -236,7 +197,7 @@ export interface ActiveBrowserSession {
  * Used to reconnect to in-progress uploads after page refresh
  */
 export const getActiveBrowserSessions = async (): Promise<{ sessions: ActiveBrowserSession[]; count: number }> => {
-  return uploadsApi.get('/admin/uploads/browser-upload/active');
+  return api.get('/admin/uploads/browser-upload/active');
 };
 
 /**
@@ -256,7 +217,7 @@ export const getUploadResumeInfo = async (uploadId: string): Promise<{
   started_at: string;
   last_activity: string;
 }> => {
-  return uploadsApi.get(`/admin/uploads/browser-upload/${uploadId}/resume-info`);
+  return api.get(`/admin/uploads/browser-upload/${uploadId}/resume-info`);
 };
 
 const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
@@ -286,7 +247,7 @@ const initUploadSession = async (
   fileSize: number,
   contentType: string
 ): Promise<UploadSession> => {
-  return uploadsApi.post('/admin/uploads/browser-upload/init', null, {
+  return api.post('/admin/uploads/browser-upload/init', null, {
     params: { filename, file_size: fileSize, content_type: contentType },
   });
 };
@@ -304,7 +265,7 @@ const uploadChunk = async (
   const formData = new FormData();
   formData.append('chunk', chunkData);
 
-  return uploadsApi.post(`/admin/uploads/browser-upload/${uploadId}/chunk`, formData, {
+  return api.post(`/admin/uploads/browser-upload/${uploadId}/chunk`, formData, {
     params: { chunk_index: chunkIndex },
     timeout: 60000, // 60s timeout per chunk
   });
@@ -315,7 +276,7 @@ const uploadChunk = async (
  * Uses extended timeout since the server needs to assemble all chunks
  */
 const completeUpload = async (uploadId: string): Promise<UploadJob> => {
-  return uploadsApi.post(`/admin/uploads/browser-upload/${uploadId}/complete`, null, {
+  return api.post(`/admin/uploads/browser-upload/${uploadId}/complete`, null, {
     timeout: 300000, // 5 minutes - assembling large files can take a while
   });
 };

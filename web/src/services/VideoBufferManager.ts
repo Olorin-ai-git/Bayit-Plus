@@ -11,7 +11,7 @@
  * 4. Report measurements back to server
  */
 
-import axios from 'axios'
+import api from './api'
 import logger from '@/utils/logger'
 
 export interface LatencyMeasurement {
@@ -151,7 +151,7 @@ export class VideoBufferManager {
     if (!this.measuredLatency) return
 
     try {
-      await axios.post('/api/v1/synced-streams/update-latency', {
+      await api.post('/synced-streams/update-latency', {
         channel_id: this.channelId,
         target_lang: this.targetLang,
         measured_dubbing_ms: this.measuredLatency.dubbing_ms || undefined,
@@ -233,22 +233,22 @@ export async function createSyncedStream(
   request: SyncedStreamRequest
 ): Promise<SyncedStreamResponse> {
   try {
-    const response = await axios.post<SyncedStreamResponse>(
-      '/api/v1/synced-streams/create',
+    const data = await api.post<SyncedStreamResponse>(
+      '/synced-streams/create',
       {
         channel_id: request.channelId,
         target_lang: request.targetLang,
         enable_dubbing: request.enableDubbing,
         enable_subtitles: request.enableSubtitles,
       }
-    )
+    ) as SyncedStreamResponse
 
     logger.info('Synced stream created successfully', 'createSyncedStream', {
-      channel_id: response.data.channel_id,
-      mode: response.data.mode,
-      video_delay_ms: response.data.video_delay_ms,
+      channel_id: data.channel_id,
+      mode: data.mode,
+      video_delay_ms: data.video_delay_ms,
     })
-    return response.data
+    return data
   } catch (error) {
     logger.error('Failed to create synced stream', 'createSyncedStream', error)
     throw error

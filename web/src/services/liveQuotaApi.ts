@@ -3,43 +3,10 @@
  * Provides methods for checking and monitoring live feature usage
  */
 
-import axios from 'axios'
+import api from './api'
 import logger from '@/utils/logger'
 
 const quotaLogger = logger.scope('QuotaAPI')
-
-// Get base URL from environment
-const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
-
-// Create axios instance with auth interceptor
-const quotaApi = axios.create({
-  baseURL: API_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
-
-// Add auth token to requests
-quotaApi.interceptors.request.use((config) => {
-  const authData = JSON.parse(localStorage.getItem('bayit-auth') || '{}')
-  if (authData?.state?.token) {
-    config.headers.Authorization = `Bearer ${authData.state.token}`
-  }
-  return config
-})
-
-// Response interceptor
-quotaApi.interceptors.response.use(
-  (response) => response.data,
-  (error) => {
-    quotaLogger.error('Quota API error', {
-      url: error.config?.url,
-      status: error.response?.status,
-      error: error.response?.data || error.message,
-    })
-    throw error
-  }
-)
 
 export interface UsageStats {
   subtitle_usage_current_hour: number
@@ -79,7 +46,7 @@ export const liveQuotaApi = {
   async getMyUsage(): Promise<UsageStats> {
     try {
       quotaLogger.debug('Fetching usage stats')
-      const stats = await quotaApi.get<UsageStats>('/live/quota/my-usage')
+      const stats = await api.get<UsageStats>('/live/quota/my-usage')
       return stats as UsageStats
     } catch (error) {
       quotaLogger.error('Failed to fetch usage stats', { error })
@@ -94,7 +61,7 @@ export const liveQuotaApi = {
   async checkAvailability(featureType: 'subtitle' | 'dubbing'): Promise<AvailabilityCheck> {
     try {
       quotaLogger.debug('Checking availability', { featureType })
-      const result = await quotaApi.get<AvailabilityCheck>(
+      const result = await api.get<AvailabilityCheck>(
         `/live/quota/check/${featureType}`
       )
       return result as AvailabilityCheck
@@ -117,7 +84,7 @@ export const liveQuotaApi = {
   async getSessionHistory(limit: number = 20, offset: number = 0) {
     try {
       quotaLogger.debug('Fetching session history', { limit, offset })
-      return await quotaApi.get('/live/quota/session-history', {
+      return await api.get('/live/quota/session-history', {
         params: { limit, offset },
       })
     } catch (error) {
