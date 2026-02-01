@@ -309,8 +309,8 @@ Detox: [X] passed, [Y] failed
 
 1. **Backend Deployment:**
    ```bash
-   gcloud run deploy bayit-plus-backend \
-     --image=gcr.io/PROJECT_ID/bayit-plus-backend:TAG \
+   gcloud run deploy bayit-backend-production \
+     --image=gcr.io/PROJECT_ID/bayit-backend-production:TAG \
      --region=us-central1
    ```
 
@@ -337,7 +337,7 @@ Detox: [X] passed, [Y] failed
 
 ```bash
 # Rollback backend
-gcloud run services update bayit-plus-backend --image=PREVIOUS_IMAGE
+gcloud run services update bayit-backend-production --image=PREVIOUS_IMAGE
 
 # Rollback frontend
 firebase hosting:clone SOURCE_SITE_ID:CHANNEL_ID TARGET_SITE_ID:live

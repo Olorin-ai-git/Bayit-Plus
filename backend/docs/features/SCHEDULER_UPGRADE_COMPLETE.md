@@ -61,7 +61,7 @@
 Current Cloud Scheduler setup:
 - **Project:** bayit-plus
 - **Region:** us-east1
-- **Service URL:** https://bayit-plus-backend-znfki37vbq-ue.a.run.app
+- **Service URL:** https://bayit-backend-production-znfki37vbq-ue.a.run.app
 - **Service Account:** 624470113582-compute@developer.gserviceaccount.com
 
 ### **Step 2: Deploy New Jobs**
@@ -100,7 +100,7 @@ gcloud scheduler jobs list --location=us-east1
 gcloud scheduler jobs executions list librarian-daily-maintenance --location=us-east1
 
 # Monitor Cloud Run logs
-gcloud run logs read bayit-plus-backend --region=us-east1 --limit=100 | grep -i librarian
+gcloud run logs read bayit-backend-production --region=us-east1 --limit=100 | grep -i librarian
 ```
 
 ### **Step 5: Verify Results**
@@ -225,7 +225,7 @@ gcloud scheduler jobs list --location=us-east1
 gcloud scheduler jobs executions list librarian-daily-maintenance --location=us-east1
 
 # Check logs
-gcloud run logs read bayit-plus-backend --region=us-east1 --limit=100
+gcloud run logs read bayit-backend-production --region=us-east1 --limit=100
 ```
 
 ### **Test:**
@@ -288,7 +288,7 @@ gcloud scheduler jobs resume librarian-daily-maintenance --location=us-east1
 - Check `scripts/README_AUDITS.md` for script usage
 
 **Issues?**
-- Check logs: `gcloud run logs read bayit-plus-backend --region=us-east1`
+- Check logs: `gcloud run logs read bayit-backend-production --region=us-east1`
 - View status: `poetry run python scripts/view_audit_results.py`
 - Test locally: `./scripts/test_scheduler_strategy.sh`
 

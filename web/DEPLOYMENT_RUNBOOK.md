@@ -112,7 +112,7 @@ cat .env | grep -v "^#" | grep -v "^$"
 **Required Variables for Production**:
 ```bash
 VITE_APP_MODE=production
-VITE_API_URL=https://bayit-plus-backend-[hash]-ue.a.run.app/api/v1
+VITE_API_URL=https://bayit-backend-production-[hash]-ue.a.run.app/api/v1
 VITE_STRIPE_PUBLIC_KEY=pk_live_...
 VITE_PICOVOICE_ACCESS_KEY=[key]
 VITE_SENTRY_DSN=https://...
@@ -134,10 +134,10 @@ VITE_LOG_LEVEL=warn
 
 ```bash
 # Check backend deployment status
-gcloud run services describe bayit-plus-backend --region=us-east1 --format="value(status.url)"
+gcloud run services describe bayit-backend-production --region=us-east1 --format="value(status.url)"
 
 # Test backend health endpoint
-curl -I $(gcloud run services describe bayit-plus-backend --region=us-east1 --format="value(status.url)")/health
+curl -I $(gcloud run services describe bayit-backend-production --region=us-east1 --format="value(status.url)")/health
 
 # Expected: HTTP/2 200
 ```
@@ -204,7 +204,7 @@ npm run dev
 ```bash
 # Staging .env (or .env.staging)
 VITE_APP_MODE=production
-VITE_API_URL=https://bayit-plus-backend-staging-[hash]-ue.a.run.app/api/v1
+VITE_API_URL=https://bayit-backend-production-staging-[hash]-ue.a.run.app/api/v1
 VITE_STRIPE_PUBLIC_KEY=pk_test_...  # Use test key for staging
 VITE_PICOVOICE_ACCESS_KEY=[key]
 VITE_SENTRY_DSN=[dsn]
@@ -232,7 +232,7 @@ firebase hosting:channel:deploy staging --only web
 ```bash
 # Production .env
 VITE_APP_MODE=production
-VITE_API_URL=https://bayit-plus-backend-[hash]-ue.a.run.app/api/v1
+VITE_API_URL=https://bayit-backend-production-[hash]-ue.a.run.app/api/v1
 VITE_STRIPE_PUBLIC_KEY=pk_live_51SotiEPvIqPxCVRtIv5wA0yZCGzAvXynXMnRR4cn7qLaiJrzL2YytoP1QKTjs3cLcJGgFGWJGlIn4etYqiWoF7N0009kuzqNUY
 VITE_PICOVOICE_ACCESS_KEY=Iiy+q/LvJfsreqidNuIdjQoJXHtkNUhh9HAABKR7jVxJVwObYbEpYA==
 VITE_SENTRY_DSN=https://cf75c674a6980b83e7eed8ee5e227a2a@o4510740497367040.ingest.us.sentry.io/4510740503265280
@@ -397,7 +397,7 @@ cat .env | grep -E "VITE_APP_MODE|VITE_API_URL|VITE_SENTRY_ENVIRONMENT"
 **Expected Output**:
 ```
 VITE_APP_MODE=production
-VITE_API_URL=https://bayit-plus-backend-[hash]-ue.a.run.app/api/v1
+VITE_API_URL=https://bayit-backend-production-[hash]-ue.a.run.app/api/v1
 VITE_SENTRY_ENVIRONMENT=production
 ```
 
@@ -463,7 +463,7 @@ curl -I https://bayit-plus.web.app/
 # Filter: environment:production, last 15 minutes
 
 # 4. Check backend logs
-gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=bayit-plus-backend" --limit 50 --format json
+gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=bayit-backend-production" --limit 50 --format json
 
 # 5. Monitor Firebase Hosting dashboard
 # Navigate to: https://console.firebase.google.com/project/bayit-plus/hosting
@@ -655,7 +655,7 @@ Metrics:
 **Cloud Run (Backend) Dashboard**:
 ```
 URL: https://console.cloud.google.com/run
-Service: bayit-plus-backend
+Service: bayit-backend-production
 Metrics:
   - Request count
   - Request latency
@@ -837,7 +837,7 @@ Metrics:
 
 **Cloud Run Backend Monitoring**:
 ```
-URL: https://console.cloud.google.com/run/detail/us-east1/bayit-plus-backend
+URL: https://console.cloud.google.com/run/detail/us-east1/bayit-backend-production
 
 Metrics:
   - Request latency (p50, p95, p99)
@@ -984,7 +984,7 @@ grep VITE_API_URL .env
 cat ../firebase.json | grep -A5 "rewrites"
 
 # Test API directly
-curl -I https://bayit-plus-backend-[hash]-ue.a.run.app/api/health
+curl -I https://bayit-backend-production-[hash]-ue.a.run.app/api/health
 ```
 
 #### Issue 5: Page Loads Blank (White Screen)

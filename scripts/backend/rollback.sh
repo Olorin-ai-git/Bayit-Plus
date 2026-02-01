@@ -18,7 +18,7 @@
 # Examples:
 #   ./scripts/rollback.sh                          # Rollback production to previous revision
 #   ./scripts/rollback.sh -n 2                     # Rollback 2 revisions back
-#   ./scripts/rollback.sh -r bayit-plus-backend-00005-abc  # Rollback to specific revision
+#   ./scripts/rollback.sh -r bayit-backend-production-00005-abc  # Rollback to specific revision
 #   ./scripts/rollback.sh -e staging -l            # List staging revisions
 #
 
@@ -35,8 +35,8 @@ LIST_ONLY=false
 
 # Service names by environment
 declare -A SERVICES
-SERVICES["production"]="bayit-plus-backend"
-SERVICES["staging"]="bayit-plus-backend-staging"
+SERVICES["production"]="bayit-backend-production"
+SERVICES["staging"]="bayit-backend-production-staging"
 
 # Colors
 RED='\033[0;31m'

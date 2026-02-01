@@ -5203,7 +5203,43 @@
     "channel": "Chaîne",
     "dateFilter": "Date",
     "today": "Aujourd'hui",
-    "yesterday": "Hier"
+    "yesterday": "Hier",
+    "timeline": {
+      "title": "Chronologie des transcriptions",
+      "segmentCount": "{{count}} segments",
+      "count": "{{count}} segments",
+      "window": "Dernières {{minutes}} min",
+      "buttonLabel": "Afficher la chronologie des transcriptions",
+      "buttonTitle": "Chronologie",
+      "empty": "Pas encore de transcriptions disponibles",
+      "loading": "Chargement des transcriptions..."
+    }
+  },
+  "highlights": {
+    "title": "Moments forts",
+    "noHighlights": "Aucun moment fort détecté pour l'instant",
+    "fetchError": "Impossible de charger les moments forts",
+    "types": {
+      "emotional": "Émotionnel",
+      "entity": "Entité",
+      "keyword": "Mot-clé",
+      "dramatic": "Dramatique"
+    },
+    "button": {
+      "label": "Afficher les moments forts",
+      "title": "Moments forts"
+    }
+  },
+  "liveSearch": {
+    "liveTitle": "Recherche en direct",
+    "placeholder": "Rechercher des transcriptions...",
+    "enterQuery": "Entrez un terme de recherche",
+    "noResults": "Aucune transcription correspondante",
+    "resultsCount": "{{count}} résultats",
+    "button": {
+      "label": "Rechercher des transcriptions",
+      "title": "Recherche"
+    }
   },
   "recordings": {
     "title": "Mes Enregistrements",

@@ -627,8 +627,8 @@ class Settings(BaseSettings):
     # Video Buffering Configuration (for perfect audio-video synchronization)
     # Conservative latency estimates for dubbing and subtitle processing
     DEFAULT_DUBBING_LATENCY_MS: int = Field(
-        default=800,
-        description="Default dubbing latency estimate in milliseconds (before measurement)"
+        default=10000,
+        description="Default dubbing latency in milliseconds - matches ContinuousPlaybackController 10s buffer"
     )
     DEFAULT_SUBTITLE_LATENCY_MS: int = Field(
         default=400,

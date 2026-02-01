@@ -45,7 +45,7 @@ This checklist ensures safe, reliable production deployments with proper verific
   ```bash
   # Check last staging deployment
   gcloud run revisions list \
-    --service bayit-plus-backend-staging \
+    --service bayit-backend-production-staging \
     --region us-east1 \
     --limit 1
   ```
@@ -130,7 +130,7 @@ This checklist ensures safe, reliable production deployments with proper verific
 - [ ] **Watch Cloud Run logs in real-time**
   ```bash
   gcloud run logs tail \
-    --service bayit-plus-backend \
+    --service bayit-backend-production \
     --region us-east1
   ```
   **Watch for**:
@@ -139,7 +139,7 @@ This checklist ensures safe, reliable production deployments with proper verific
   - No ERROR level logs
 
 - [ ] **Monitor Cloud Run metrics**
-  - Go to: Cloud Run console → bayit-plus-backend → Metrics
+  - Go to: Cloud Run console → bayit-backend-production → Metrics
   - Watch: Request count, latency, error rate
   - Expected: Smooth transition, no error spike
 
@@ -150,8 +150,8 @@ This checklist ensures safe, reliable production deployments with proper verific
 
 - [ ] **Note revision numbers**
   - Check GitHub Actions summary for:
-    - Previous revision: `bayit-plus-backend-XXXXX-yyy`
-    - Current revision: `bayit-plus-backend-XXXXX-zzz`
+    - Previous revision: `bayit-backend-production-XXXXX-yyy`
+    - Current revision: `bayit-backend-production-XXXXX-zzz`
   - Save for potential rollback
 
 ---
@@ -275,10 +275,10 @@ curl https://api.bayit.plus/health
 #### Option 3: gcloud CLI (Emergency)
 ```bash
 # Get previous revision name (from deployment notes or list)
-PREVIOUS_REVISION="bayit-plus-backend-XXXXX-yyy"
+PREVIOUS_REVISION="bayit-backend-production-XXXXX-yyy"
 
 # Route 100% traffic to previous revision
-gcloud run services update-traffic bayit-plus-backend \
+gcloud run services update-traffic bayit-backend-production \
   --region us-east1 \
   --to-revisions=$PREVIOUS_REVISION=100
 
@@ -465,7 +465,7 @@ sleep 30
 curl https://api.bayit.plus/health
 
 # If still fails, check logs
-gcloud run logs tail --service bayit-plus-backend --region us-east1
+gcloud run logs tail --service bayit-backend-production --region us-east1
 ```
 
 ### Issue: MongoDB Connection Timeout
@@ -488,7 +488,7 @@ gcloud secrets versions access latest --secret=mongodb-url
 **Solution**:
 ```bash
 # Scale up memory
-gcloud run services update bayit-plus-backend \
+gcloud run services update bayit-backend-production \
   --region us-east1 \
   --memory 4Gi
 ```

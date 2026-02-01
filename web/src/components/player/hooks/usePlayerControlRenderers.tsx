@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { WatchPartyButton } from '@/components/watchparty'
 import SubtitleControls from '../SubtitleControls'
 import LiveSubtitleControls from '../LiveSubtitleControls'
+import LiveSplitSubtitleControls from '../LiveSplitSubtitleControls'
 import { DubbingControls } from '../dubbing'
 import { RecordButton } from '../RecordButton'
 import CastButton from '../controls/CastButton'
@@ -60,6 +61,14 @@ interface UsePlayerControlRenderersParams {
   liveSubtitleLang: string
   setLiveSubtitleLang: (lang: string) => void
   handleLiveSubtitleCue: (cue: SubtitleCue) => void
+
+  // Live Split Subtitles
+  liveSplitMode?: boolean
+  handleLiveSplitModeToggle?: (enabled: boolean) => void
+  liveSplitLanguages?: SplitLanguages | null
+  handleLiveSplitLanguagesChange?: (languages: SplitLanguages) => void
+  liveSplitConnected?: boolean
+  liveSplitConnecting?: boolean
 
   // Dubbing
   dubbing: UseLiveDubbingState
@@ -131,6 +140,12 @@ export function usePlayerControlRenderers({
   liveSubtitleLang,
   setLiveSubtitleLang,
   handleLiveSubtitleCue,
+  liveSplitMode,
+  handleLiveSplitModeToggle,
+  liveSplitLanguages,
+  handleLiveSplitLanguagesChange,
+  liveSplitConnected,
+  liveSplitConnecting,
   dubbing,
   cast,
   setIsRecording,
@@ -210,6 +225,28 @@ export function usePlayerControlRenderers({
     ) : null
   , [isLive, contentId, isWidget, isPremium, videoRef, handleLiveSubtitleCue, onShowUpgrade,
      liveSubtitleLang, setLiveSubtitleLang, dubbing.disconnect, dubbing.isConnected, onHoveredButtonChange, subtitleQuotaExceeded])
+
+  const renderLiveSplitSubtitleControls = useCallback(() =>
+    isLive && contentId && !isWidget && handleLiveSplitModeToggle && handleLiveSplitLanguagesChange ? (
+      <LiveSplitSubtitleControls
+        isLive={isLive}
+        isPremium={isPremium}
+        splitMode={liveSplitMode ?? false}
+        splitLanguages={liveSplitLanguages ?? null}
+        onSplitModeToggle={handleLiveSplitModeToggle}
+        onSplitLanguagesChange={handleLiveSplitLanguagesChange}
+        isConnected={liveSplitConnected ?? false}
+        isConnecting={liveSplitConnecting ?? false}
+        availableLanguages={dubbing.availableLanguages}
+        sourceLanguage={dubbing.availability?.source_language}
+        onShowUpgrade={onShowUpgrade}
+        onHoveredButtonChange={onHoveredButtonChange}
+        quotaExceeded={subtitleQuotaExceeded}
+      />
+    ) : null
+  , [isLive, contentId, isWidget, isPremium, liveSplitMode, liveSplitLanguages,
+     handleLiveSplitModeToggle, handleLiveSplitLanguagesChange, liveSplitConnected, liveSplitConnecting,
+     dubbing.availableLanguages, dubbing.availability?.source_language, onShowUpgrade, onHoveredButtonChange, subtitleQuotaExceeded])
 
   const renderDubbingControls = useCallback(() =>
     isLive && contentId && !isWidget ? (
@@ -318,6 +355,7 @@ export function usePlayerControlRenderers({
     renderWatchPartyButton,
     renderSubtitleControls,
     renderLiveSubtitleControls,
+    renderLiveSplitSubtitleControls,
     renderDubbingControls,
     renderRecordButton,
     renderCastButton,
@@ -328,6 +366,7 @@ export function usePlayerControlRenderers({
     renderWatchPartyButton,
     renderSubtitleControls,
     renderLiveSubtitleControls,
+    renderLiveSplitSubtitleControls,
     renderDubbingControls,
     renderRecordButton,
     renderCastButton,

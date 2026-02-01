@@ -66,8 +66,8 @@
 | Schema Fix | 00008-9zk | ✅ Live |
 | Direct Cleanup | Script executed | ✅ Complete |
 
-**Current Production Revision:** `bayit-plus-backend-00008-9zk`
-**Service URL:** https://bayit-plus-backend-624470113582.us-east1.run.app
+**Current Production Revision:** `bayit-backend-production-00008-9zk`
+**Service URL:** https://bayit-backend-production-624470113582.us-east1.run.app
 
 ---
 

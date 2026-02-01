@@ -139,7 +139,7 @@ RUN apt-get install -y ffmpeg  # Line 35
 
 **Manual rollback:**
 ```bash
-gcloud run services update-traffic bayit-plus-backend \
+gcloud run services update-traffic bayit-backend-production \
   --region us-east1 \
   --to-revisions=PREVIOUS_REVISION=100
 ```

@@ -25,7 +25,7 @@ on:
 env:
   GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   GCP_REGION: us-central1
-  BACKEND_IMAGE: gcr.io/${{ secrets.GCP_PROJECT_ID }}/bayit-plus-backend
+  BACKEND_IMAGE: gcr.io/${{ secrets.GCP_PROJECT_ID }}/bayit-backend-production
   FRONTEND_IMAGE: gcr.io/${{ secrets.GCP_PROJECT_ID }}/bayit-plus-frontend
 
 jobs:
@@ -246,7 +246,7 @@ jobs:
 
       - name: Deploy Backend to Cloud Run (Staging)
         run: |
-          gcloud run deploy bayit-plus-backend-staging \
+          gcloud run deploy bayit-backend-production-staging \
             --image ${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
             --platform managed \
             --region ${{ env.GCP_REGION }} \
@@ -298,7 +298,7 @@ OPENAI_API_KEY=OPENAI_API_KEY:latest
       - name: Deploy Backend GREEN (New Version)
         id: deploy-green
         run: |
-          gcloud run deploy bayit-plus-backend-green \
+          gcloud run deploy bayit-backend-production-green \
             --image ${{ env.BACKEND_IMAGE }}:${{ github.sha }} \
             --platform managed \
             --region ${{ env.GCP_REGION }} \
@@ -310,7 +310,7 @@ OPENAI_API_KEY=OPENAI_API_KEY:latest
 
       - name: Run Smoke Tests on GREEN
         run: |
-          GREEN_URL=$(gcloud run services describe bayit-plus-backend-green \
+          GREEN_URL=$(gcloud run services describe bayit-backend-production-green \
             --region ${{ env.GCP_REGION }} \
             --format 'value(status.url)')
           curl --fail $GREEN_URL/health || exit 1
@@ -319,22 +319,22 @@ OPENAI_API_KEY=OPENAI_API_KEY:latest
       - name: Gradual Traffic Migration (0% → 10% → 50% → 100%)
         run: |
           # Send 10% traffic to GREEN
-          gcloud run services update-traffic bayit-plus-backend \
-            --to-revisions bayit-plus-backend-green=10 \
+          gcloud run services update-traffic bayit-backend-production \
+            --to-revisions bayit-backend-production-green=10 \
             --region ${{ env.GCP_REGION }}
 
           sleep 60  # Monitor for 1 minute
 
           # Send 50% traffic to GREEN
-          gcloud run services update-traffic bayit-plus-backend \
-            --to-revisions bayit-plus-backend-green=50 \
+          gcloud run services update-traffic bayit-backend-production \
+            --to-revisions bayit-backend-production-green=50 \
             --region ${{ env.GCP_REGION }}
 
           sleep 120  # Monitor for 2 minutes
 
           # Send 100% traffic to GREEN
-          gcloud run services update-traffic bayit-plus-backend \
-            --to-revisions bayit-plus-backend-green=100 \
+          gcloud run services update-traffic bayit-backend-production \
+            --to-revisions bayit-backend-production-green=100 \
             --region ${{ env.GCP_REGION }}
 
       - name: Deploy Frontend to Firebase Hosting (Production)
@@ -351,7 +351,7 @@ OPENAI_API_KEY=OPENAI_API_KEY:latest
       - name: Cleanup Old Revisions (Keep Last 3)
         run: |
           gcloud run revisions list \
-            --service bayit-plus-backend \
+            --service bayit-backend-production \
             --region ${{ env.GCP_REGION }} \
             --format="value(name)" \
             --sort-by="~metadata.creationTimestamp" \
@@ -379,13 +379,13 @@ OPENAI_API_KEY=OPENAI_API_KEY:latest
       - name: Rollback to Previous Revision
         run: |
           PREVIOUS_REVISION=$(gcloud run revisions list \
-            --service bayit-plus-backend \
+            --service bayit-backend-production \
             --region ${{ env.GCP_REGION }} \
             --format="value(name)" \
             --sort-by="~metadata.creationTimestamp" \
             --limit=2 | tail -1)
 
-          gcloud run services update-traffic bayit-plus-backend \
+          gcloud run services update-traffic bayit-backend-production \
             --to-revisions $PREVIOUS_REVISION=100 \
             --region ${{ env.GCP_REGION }}
 

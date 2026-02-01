@@ -1389,7 +1389,7 @@ gh workflow run deploy-staging.yml
 gh workflow run deploy-production.yml --field staging_verification=true
 
 # Rollback to previous revision
-gh workflow run deploy-production.yml --field rollback_revision=bayit-plus-backend-00042-xyz
+gh workflow run deploy-production.yml --field rollback_revision=bayit-backend-production-00042-xyz
 ```
 
 ### Monitor Deployments
@@ -1399,22 +1399,22 @@ gh workflow run deploy-production.yml --field rollback_revision=bayit-plus-backe
 gh run watch
 
 # Check Cloud Run status
-gcloud run services describe bayit-plus-backend --region us-east1
+gcloud run services describe bayit-backend-production --region us-east1
 
 # View logs
-gcloud run services logs read bayit-plus-backend --region us-east1
+gcloud run services logs read bayit-backend-production --region us-east1
 ```
 
 ### Emergency Rollback
 
 ```bash
 # List revisions
-gcloud run revisions list --service bayit-plus-backend --region us-east1
+gcloud run revisions list --service bayit-backend-production --region us-east1
 
 # Rollback
-gcloud run services update-traffic bayit-plus-backend \
+gcloud run services update-traffic bayit-backend-production \
   --region us-east1 \
-  --to-revisions=bayit-plus-backend-00041-abc=100
+  --to-revisions=bayit-backend-production-00041-abc=100
 ```
 
 ---

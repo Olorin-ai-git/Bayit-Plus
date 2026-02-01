@@ -199,7 +199,7 @@ poetry run pytest --cov=app.services --cov=app.api.routes tests/
 
 1. **Build Docker Image**
    ```bash
-   docker build -t bayit-plus-backend:latest .
+   docker build -t bayit-backend-production:latest .
    ```
 
 2. **Test in Staging**
@@ -211,8 +211,8 @@ poetry run pytest --cov=app.services --cov=app.api.routes tests/
 3. **Deploy to Production**
    ```bash
    # Cloud Run example
-   gcloud run deploy bayit-plus-backend \
-     --image gcr.io/project/bayit-plus-backend:latest \
+   gcloud run deploy bayit-backend-production \
+     --image gcr.io/project/bayit-backend-production:latest \
      --set-env-vars AUDIBLE_CLIENT_ID=$(gcloud secrets versions access latest --secret=AUDIBLE_CLIENT_ID),... \
      --region us-central1
    ```
@@ -371,8 +371,8 @@ If deployment encounters issues:
 ### Immediate Rollback
 ```bash
 # Revert to previous image
-gcloud run deploy bayit-plus-backend \
-  --image gcr.io/project/bayit-plus-backend:previous-stable
+gcloud run deploy bayit-backend-production \
+  --image gcr.io/project/bayit-backend-production:previous-stable
 ```
 
 ### Configuration Rollback

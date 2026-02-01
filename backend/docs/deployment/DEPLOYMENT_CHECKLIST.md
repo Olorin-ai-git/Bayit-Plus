@@ -118,7 +118,7 @@ poetry run python scripts/check_library_status.py
 
 - [ ] **No execution errors**
   ```bash
-  gcloud run logs read bayit-plus-backend --region=us-east1 --limit=100 | grep -i error
+  gcloud run logs read bayit-backend-production --region=us-east1 --limit=100 | grep -i error
   ```
 
 - [ ] **Audit reports in database**
@@ -204,7 +204,7 @@ gcloud scheduler jobs resume librarian-daily-maintenance --location=us-east1
 **Check:**
 ```bash
 gcloud scheduler jobs executions list librarian-daily-maintenance --location=us-east1 --limit=10
-gcloud run logs read bayit-plus-backend --region=us-east1 --limit=200 | grep -i error
+gcloud run logs read bayit-backend-production --region=us-east1 --limit=200 | grep -i error
 ```
 
 **Common causes:**
@@ -258,24 +258,24 @@ gcloud scheduler jobs create http librarian-daily-audit \
   --location=us-east1 \
   --schedule="0 2 * * *" \
   --time-zone="Asia/Jerusalem" \
-  --uri="https://bayit-plus-backend-znfki37vbq-ue.a.run.app/api/v1/internal/librarian/scheduled-audit" \
+  --uri="https://bayit-backend-production-znfki37vbq-ue.a.run.app/api/v1/internal/librarian/scheduled-audit" \
   --http-method=POST \
   --headers="Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" \
   --message-body='{"audit_type":"daily_incremental","dry_run":false}' \
   --oidc-service-account-email="624470113582-compute@developer.gserviceaccount.com" \
-  --oidc-token-audience="https://bayit-plus-backend-znfki37vbq-ue.a.run.app"
+  --oidc-token-audience="https://bayit-backend-production-znfki37vbq-ue.a.run.app"
 
 # Recreate old weekly audit
 gcloud scheduler jobs create http librarian-weekly-ai-audit \
   --location=us-east1 \
   --schedule="0 3 * * 0" \
   --time-zone="Asia/Jerusalem" \
-  --uri="https://bayit-plus-backend-znfki37vbq-ue.a.run.app/api/v1/internal/librarian/scheduled-audit" \
+  --uri="https://bayit-backend-production-znfki37vbq-ue.a.run.app/api/v1/internal/librarian/scheduled-audit" \
   --http-method=POST \
   --headers="Content-Type=application/json,User-Agent=Google-Cloud-Scheduler" \
   --message-body='{"use_ai_agent":true,"dry_run":false,"max_iterations":50,"budget_limit_usd":1.0}' \
   --oidc-service-account-email="624470113582-compute@developer.gserviceaccount.com" \
-  --oidc-token-audience="https://bayit-plus-backend-znfki37vbq-ue.a.run.app"
+  --oidc-token-audience="https://bayit-backend-production-znfki37vbq-ue.a.run.app"
 ```
 
 - [ ] Rollback completed (if needed)

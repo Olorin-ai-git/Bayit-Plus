@@ -235,7 +235,7 @@ gsutil iam get gs://bayit-plus-media-new
 ### 3. Test from Cloud Run
 ```bash
 # Get Cloud Run service URL
-SERVICE_URL=$(gcloud run services describe bayit-plus-backend \
+SERVICE_URL=$(gcloud run services describe bayit-backend-production \
     --region=us-east1 \
     --format='value(status.url)')
 
@@ -243,7 +243,7 @@ SERVICE_URL=$(gcloud run services describe bayit-plus-backend \
 curl $SERVICE_URL/api/v1/health
 
 # Check logs for GCS operations
-gcloud run logs read bayit-plus-backend --region=us-east1 --limit=50
+gcloud run logs read bayit-backend-production --region=us-east1 --limit=50
 ```
 
 ### 4. Test Upload
@@ -263,7 +263,7 @@ curl -X POST $SERVICE_URL/api/v1/upload/queue \
 
 **Fix:**
 ```bash
-gcloud run services update bayit-plus-backend \
+gcloud run services update bayit-backend-production \
     --service-account=624470113582-compute@developer.gserviceaccount.com \
     --region=us-east1
 ```
@@ -366,7 +366,7 @@ After setting up GCS:
 
 2. **Verify Deployment**
    ```bash
-   gcloud run services describe bayit-plus-backend --region=us-east1
+   gcloud run services describe bayit-backend-production --region=us-east1
    ```
 
 3. **Test Upload Flow**

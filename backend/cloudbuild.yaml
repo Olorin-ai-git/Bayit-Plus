@@ -145,7 +145,7 @@ images:
 timeout: '1800s'
 
 substitutions:
-  _SERVICE_NAME: 'bayit-plus-backend'
+  _SERVICE_NAME: 'bayit-backend-production'
   _REGION: 'us-east1'
   _MEMORY: '2Gi'
   _CPU: '2'

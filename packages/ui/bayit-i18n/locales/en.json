@@ -6643,6 +6643,42 @@
       "failed": "Could not generate summary",
       "retry": "Try Again",
       "insufficientCredits": "Not enough credits"
+    },
+    "timeline": {
+      "title": "Transcript Timeline",
+      "segmentCount": "{{count}} segments",
+      "count": "{{count}} segments",
+      "window": "Last {{minutes}} min",
+      "buttonLabel": "Show transcript timeline",
+      "buttonTitle": "Timeline",
+      "empty": "No transcripts available yet",
+      "loading": "Loading transcripts..."
+    }
+  },
+  "highlights": {
+    "title": "Highlights",
+    "noHighlights": "No highlights detected yet",
+    "fetchError": "Failed to load highlights",
+    "types": {
+      "emotional": "Emotional",
+      "entity": "Entity",
+      "keyword": "Keyword",
+      "dramatic": "Dramatic"
+    },
+    "button": {
+      "label": "Show Highlights",
+      "title": "Highlights"
+    }
+  },
+  "liveSearch": {
+    "liveTitle": "Live Search",
+    "placeholder": "Search transcripts...",
+    "enterQuery": "Enter a search term",
+    "noResults": "No matching transcripts",
+    "resultsCount": "{{count}} results",
+    "button": {
+      "label": "Search Transcripts",
+      "title": "Search"
     }
   },
   "quota": {

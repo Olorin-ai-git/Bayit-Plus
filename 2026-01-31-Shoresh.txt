@@ -973,7 +973,7 @@
 
 ⏺ Bash(cd .. && PYTHONPATH=backend poetry run python -c "from app.main import
       app; print('Backend imports successful')" 2>&1 | head -30)
-  ⎿ /Users/olorin/Library/Caches/pypoetry/virtualenvs/bayit-plus-backend-6a
+  ⎿ /Users/olorin/Library/Caches/pypoetry/virtualenvs/bayit-backend-production-6a
     UZR_Td-py3.13/lib/python3.13/site-packages/google/cloud/translate_v2/__
     init__.py:18: UserWarning: pkg_resources is deprecated as an API. See h
     … +142 lines (ctrl+o to expand)

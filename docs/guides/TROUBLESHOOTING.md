@@ -718,7 +718,7 @@ async for content in Content.find():
 
 ```bash
 # Cloud Run
-gcloud run services update bayit-plus-backend \
+gcloud run services update bayit-backend-production \
   --memory=4Gi
 ```
 
@@ -760,7 +760,7 @@ tail -f logs/backend.log
 
 # Cloud Run
 gcloud logging read "resource.type=cloud_run_revision AND \
-  resource.labels.service_name=bayit-plus-backend" \
+  resource.labels.service_name=bayit-backend-production" \
   --limit=50 --format=json
 ```
 

@@ -47,15 +47,15 @@ gcloud secrets create LLM_RATE_LIMITS \
 ```bash
 # Backend service account
 gcloud secrets add-iam-policy-binding ANTHROPIC_API_KEY \
-  --member="serviceAccount:bayit-plus-backend@PROJECT_ID.iam.gserviceaccount.com" \
+  --member="serviceAccount:bayit-backend-production@PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 
 gcloud secrets add-iam-policy-binding OPENAI_API_KEY \
-  --member="serviceAccount:bayit-plus-backend@PROJECT_ID.iam.gserviceaccount.com" \
+  --member="serviceAccount:bayit-backend-production@PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 
 gcloud secrets add-iam-policy-binding LLM_MODEL_CONFIG \
-  --member="serviceAccount:bayit-plus-backend@PROJECT_ID.iam.gserviceaccount.com" \
+  --member="serviceAccount:bayit-backend-production@PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 ```
 

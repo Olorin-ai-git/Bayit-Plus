@@ -34,6 +34,7 @@ interface RightControlsProps {
   renderCastButton?: () => React.ReactNode
   renderSubtitleControls?: () => React.ReactNode
   renderLiveSubtitleControls?: () => React.ReactNode
+  renderLiveSplitSubtitleControls?: () => React.ReactNode
   renderDubbingControls?: () => React.ReactNode
   renderRecordButton?: () => React.ReactNode
   renderChannelChatButton?: () => React.ReactNode
@@ -63,6 +64,7 @@ export default function RightControls({
   renderCastButton,
   renderSubtitleControls,
   renderLiveSubtitleControls,
+  renderLiveSplitSubtitleControls,
   renderDubbingControls,
   renderRecordButton,
   renderChannelChatButton,
@@ -99,6 +101,7 @@ export default function RightControls({
           onToggleFullscreen={toggleFullscreen}
           isDubbingActive={isDubbingActive}
           renderLiveSubtitleControls={renderLiveSubtitleControls}
+          renderLiveSplitSubtitleControls={renderLiveSplitSubtitleControls}
           renderDubbingControls={renderDubbingControls}
           renderCatchUpButton={renderCatchUpButton}
           renderChannelChatButton={renderChannelChatButton}

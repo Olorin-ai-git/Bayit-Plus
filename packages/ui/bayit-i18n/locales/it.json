@@ -5139,6 +5139,42 @@
       "failed": "Impossibile generare il riepilogo",
       "retry": "Riprova",
       "insufficientCredits": "Crediti insufficienti"
+    },
+    "timeline": {
+      "title": "Cronologia delle trascrizioni",
+      "segmentCount": "{{count}} segmenti",
+      "count": "{{count}} segmenti",
+      "window": "Ultimi {{minutes}} min",
+      "buttonLabel": "Mostra cronologia trascrizioni",
+      "buttonTitle": "Cronologia",
+      "empty": "Nessuna trascrizione ancora disponibile",
+      "loading": "Caricamento trascrizioni..."
+    }
+  },
+  "highlights": {
+    "title": "Momenti salienti",
+    "noHighlights": "Nessun momento saliente rilevato ancora",
+    "fetchError": "Impossibile caricare i momenti salienti",
+    "types": {
+      "emotional": "Emotivo",
+      "entity": "Entità",
+      "keyword": "Parola chiave",
+      "dramatic": "Drammatico"
+    },
+    "button": {
+      "label": "Mostra momenti salienti",
+      "title": "Momenti salienti"
+    }
+  },
+  "liveSearch": {
+    "liveTitle": "Ricerca dal vivo",
+    "placeholder": "Cerca nelle trascrizioni...",
+    "enterQuery": "Inserisci un termine di ricerca",
+    "noResults": "Nessuna trascrizione corrispondente",
+    "resultsCount": "{{count}} risultati",
+    "button": {
+      "label": "Cerca trascrizioni",
+      "title": "Cerca"
     }
   },
   "recordings": {

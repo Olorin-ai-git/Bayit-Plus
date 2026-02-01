@@ -9,17 +9,54 @@ Security considerations:
 - Codec whitelist (h264, h265, aac only)
 - Maximum file size checks
 - Secure temporary file handling with restricted permissions
+- URL validation for HLS streams (prevents command injection)
 """
 
 import asyncio
 import hashlib
 import logging
 import os
+import re
 import tempfile
 from pathlib import Path
 from typing import Optional, Tuple
+from urllib.parse import urlparse
 
 logger = logging.getLogger(__name__)
+
+# Allowed URL schemes for streaming
+ALLOWED_SCHEMES = {"http", "https"}
+
+# Allowed domains for HLS streams
+ALLOWED_DOMAINS = {
+    # CDN domains
+    "cloudfront.net",
+    "akamaized.net",
+    "fastly.net",
+    "cdn.bayit.plus",
+    "stream.bayit.plus",
+    # Israeli TV networks
+    "mako.co.il",
+    "reshet.tv",
+    "kan.org.il",
+    "keshet-d.akamaized.net",
+    "keshetlive-keshetinternational.akamaized.net",
+    "kan-live.akamaized.net",
+    "i24news.tv",
+    # Development/testing
+    "localhost",
+    "127.0.0.1",
+}
+
+# Dangerous characters that could lead to command injection
+DANGEROUS_PATTERNS = [
+    r"[;&|`$]",  # Shell metacharacters
+    r"\.\./",  # Path traversal
+    r"file://",  # Local file access
+    r"data:",  # Data URLs
+    r"javascript:",  # JavaScript URLs
+    r"\x00",  # Null bytes
+]
 
 # FFmpeg codec whitelist for audio extraction
 ALLOWED_AUDIO_CODECS = {"aac", "libfdk_aac", "ac3", "flac"}
@@ -35,6 +72,90 @@ MAX_VIDEO_SEGMENT_SIZE = 10 * 1024 * 1024  # 10MB
 
 class FFmpegInputValidator:
     """Validates and secures FFmpeg input processing."""
+
+    def __init__(self, additional_domains: list[str] | None = None):
+        """
+        Initialize validator.
+
+        Args:
+            additional_domains: Extra domains to allow (optional)
+        """
+        self.allowed_domains = ALLOWED_DOMAINS.copy()
+        if additional_domains:
+            self.allowed_domains.update(additional_domains)
+
+    def validate_url(self, url: str) -> bool:
+        """
+        Validate a URL is safe for FFmpeg input.
+
+        Prevents command injection and unauthorized domain access.
+
+        Args:
+            url: The URL to validate
+
+        Returns:
+            True if URL is safe, False otherwise
+        """
+        if not url or not isinstance(url, str):
+            logger.warning("Invalid URL: empty or not a string")
+            return False
+
+        # Check for dangerous patterns
+        for pattern in DANGEROUS_PATTERNS:
+            if re.search(pattern, url):
+                logger.warning(
+                    f"URL contains dangerous pattern: {url[:100]}"
+                )
+                return False
+
+        # Parse URL
+        try:
+            parsed = urlparse(url)
+        except Exception as e:
+            logger.warning(f"Failed to parse URL: {url[:100]}, error: {e}")
+            return False
+
+        # Validate scheme
+        if parsed.scheme.lower() not in ALLOWED_SCHEMES:
+            logger.warning(f"URL scheme not allowed: {parsed.scheme}")
+            return False
+
+        # Validate hostname exists
+        if not parsed.hostname:
+            logger.warning(f"URL has no hostname: {url[:100]}")
+            return False
+
+        # Validate domain is allowed
+        hostname = parsed.hostname.lower()
+        if not self._is_domain_allowed(hostname):
+            logger.warning(f"URL domain not in allowlist: {hostname}")
+            return False
+
+        logger.debug(f"URL validated successfully: {url[:100]}")
+        return True
+
+    def _is_domain_allowed(self, hostname: str) -> bool:
+        """
+        Check if hostname is in allowed domains list.
+
+        Supports subdomain matching (e.g., foo.cloudfront.net matches cloudfront.net).
+
+        Args:
+            hostname: The hostname to check
+
+        Returns:
+            True if allowed, False otherwise
+        """
+        # Direct match
+        if hostname in self.allowed_domains:
+            return True
+
+        # Subdomain match (e.g., d1234.cloudfront.net matches cloudfront.net)
+        for domain in self.allowed_domains:
+            if hostname.endswith(f".{domain}"):
+                return True
+
+        return False
 
     @staticmethod
     def validate_magic_bytes(data: bytes) -> bool:

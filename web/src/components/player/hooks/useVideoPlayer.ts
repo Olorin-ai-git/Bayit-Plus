@@ -21,6 +21,8 @@ interface UseVideoPlayerOptions {
   isTranscoded?: boolean
   /** Known content duration in seconds (used for transcoded streams) */
   contentDuration?: number
+  /** Target latency in seconds for live streams (for dubbing sync). Default: 3s */
+  targetLatencySeconds?: number
 }
 
 export function useVideoPlayer({
@@ -33,6 +35,7 @@ export function useVideoPlayer({
   contentId,
   isTranscoded = false,
   contentDuration,
+  targetLatencySeconds = 3,
 }: UseVideoPlayerOptions) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -125,6 +128,7 @@ export function useVideoPlayer({
     onReady: handleReady,
     onAutoplayMuted: handleAutoplayMuted,
     onFatalError: handleFatalError,
+    targetLatencySeconds,
   })
 
   const { currentQuality, availableQualities, changeQuality } = useQualityManagement({

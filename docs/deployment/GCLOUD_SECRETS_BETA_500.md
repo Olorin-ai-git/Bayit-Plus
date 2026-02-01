@@ -43,7 +43,7 @@ echo "500" | gcloud secrets create BETA_MAX_USERS \
 ```bash
 # Backend service account
 gcloud secrets add-iam-policy-binding BETA_MAX_USERS \
-  --member="serviceAccount:bayit-plus-backend@bayit-plus.iam.gserviceaccount.com" \
+  --member="serviceAccount:bayit-backend-production@bayit-plus.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 
 # CI/CD service account
@@ -72,7 +72,7 @@ echo "5000" | gcloud secrets create BETA_AI_CREDITS \
 **Grant Access**:
 ```bash
 gcloud secrets add-iam-policy-binding BETA_AI_CREDITS \
-  --member="serviceAccount:bayit-plus-backend@bayit-plus.iam.gserviceaccount.com" \
+  --member="serviceAccount:bayit-backend-production@bayit-plus.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 ```
 
@@ -273,7 +273,7 @@ echo "$SECRET_KEY" | gcloud secrets create EMAIL_VERIFICATION_SECRET_KEY \
 
 # Grant access
 gcloud secrets add-iam-policy-binding EMAIL_VERIFICATION_SECRET_KEY \
-  --member="serviceAccount:bayit-plus-backend@bayit-plus.iam.gserviceaccount.com" \
+  --member="serviceAccount:bayit-backend-production@bayit-plus.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 ```
 
@@ -316,7 +316,7 @@ echo "YOUR_TWILIO_AUTH_TOKEN" | gcloud secrets create TWILIO_AUTH_TOKEN \
 
 # Grant access
 gcloud secrets add-iam-policy-binding TWILIO_AUTH_TOKEN \
-  --member="serviceAccount:bayit-plus-backend@bayit-plus.iam.gserviceaccount.com" \
+  --member="serviceAccount:bayit-backend-production@bayit-plus.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 ```
 
@@ -386,7 +386,7 @@ Create all secrets at once using this script:
 set -e
 
 PROJECT_ID="bayit-plus"
-SERVICE_ACCOUNT="bayit-plus-backend@bayit-plus.iam.gserviceaccount.com"
+SERVICE_ACCOUNT="bayit-backend-production@bayit-plus.iam.gserviceaccount.com"
 
 echo "Creating Beta 500 secrets in Google Cloud Secret Manager..."
 
@@ -540,7 +540,7 @@ gcloud secrets get-iam-policy BETA_MAX_USERS
 
 # Grant access if needed
 gcloud secrets add-iam-policy-binding BETA_MAX_USERS \
-  --member="serviceAccount:bayit-plus-backend@bayit-plus.iam.gserviceaccount.com" \
+  --member="serviceAccount:bayit-backend-production@bayit-plus.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 ```
 

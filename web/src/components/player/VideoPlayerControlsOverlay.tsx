@@ -31,6 +31,7 @@ interface VideoPlayerControlsOverlayProps {
   renderWatchPartyButton: () => React.ReactNode
   renderSubtitleControls: () => React.ReactNode
   renderLiveSubtitleControls: () => React.ReactNode
+  renderLiveSplitSubtitleControls?: () => React.ReactNode
   renderDubbingControls: () => React.ReactNode
   renderRecordButton: () => React.ReactNode
   renderCastButton?: () => React.ReactNode
@@ -62,6 +63,7 @@ export default function VideoPlayerControlsOverlay({
   renderWatchPartyButton,
   renderSubtitleControls,
   renderLiveSubtitleControls,
+  renderLiveSplitSubtitleControls,
   renderDubbingControls,
   renderRecordButton,
   renderCastButton,
@@ -155,6 +157,7 @@ export default function VideoPlayerControlsOverlay({
             renderWatchPartyButton={renderWatchPartyButton}
             renderSubtitleControls={renderSubtitleControls}
             renderLiveSubtitleControls={renderLiveSubtitleControls}
+            renderLiveSplitSubtitleControls={renderLiveSplitSubtitleControls}
             renderDubbingControls={renderDubbingControls}
             renderRecordButton={renderRecordButton}
             renderCastButton={renderCastButton}

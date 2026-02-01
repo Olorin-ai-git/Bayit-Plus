@@ -99,6 +99,9 @@ from app.models.migration import MigrationRecord, RollbackData
 from app.models.nlp_session import NLPConversationSession
 from app.models.user_audible_account import UserAudibleAccount
 from app.models.diagnostics import ClientHeartbeat, ClientHealthHistory, ClientAlert
+# Transcript Event Bus models (highlights, search index)
+from app.models.highlight import LiveHighlight
+from app.models.live_transcript_index import LiveTranscriptIndex
 
 
 class Database:
@@ -342,6 +345,9 @@ async def connect_to_mongo():
         UserAudibleAccount,
         # Location cache model
         LocationCache,
+        # Transcript Event Bus models (highlights, search index)
+        LiveHighlight,
+        LiveTranscriptIndex,
     ]
 
     # Conditionally add Olorin models based on database separation setting

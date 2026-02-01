@@ -16,7 +16,7 @@
 
 ## New Secrets to Add to Google Cloud Secret Manager
 
-### Backend Secrets (bayit-plus-backend)
+### Backend Secrets (bayit-backend-production)
 
 #### Payment Flow Feature Flags
 
@@ -153,7 +153,7 @@ gcloud secrets create REACT_APP_PAYMENT_STATUS_POLL_INTERVAL_MS \
 ```bash
 # Backend service account
 gcloud secrets add-iam-policy-binding REQUIRE_PAYMENT_ON_SIGNUP \
-  --member="serviceAccount:bayit-plus-backend@PROJECT_ID.iam.gserviceaccount.com" \
+  --member="serviceAccount:bayit-backend-production@PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 
 # Repeat for all secrets...
@@ -174,7 +174,7 @@ gcloud secrets versions access latest --secret="REQUIRE_PAYMENT_ON_SIGNUP" >> ba
 
 ```bash
 # Backend
-kubectl rollout restart deployment/bayit-plus-backend
+kubectl rollout restart deployment/bayit-backend-production
 
 # Frontend
 kubectl rollout restart deployment/bayit-plus-web
@@ -225,7 +225,7 @@ gcloud secrets versions add REQUIRE_PAYMENT_ON_SIGNUP --data-file=- <<< "false"
 
 # Regenerate .env and restart
 ./scripts/sync-gcloud-secrets.sh
-kubectl rollout restart deployment/bayit-plus-backend
+kubectl rollout restart deployment/bayit-backend-production
 ```
 
 ### Revert Users to Viewer

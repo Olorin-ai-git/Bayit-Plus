@@ -6587,6 +6587,42 @@
       "failed": "לא ניתן לייצר סיכום",
       "retry": "נסה שוב",
       "insufficientCredits": "אין מספיק קרדיטים"
+    },
+    "timeline": {
+      "title": "ציר זמן תמלילים",
+      "segmentCount": "{{count}} קטעים",
+      "count": "{{count}} קטעים",
+      "window": "{{minutes}} דקות אחרונות",
+      "buttonLabel": "הצג ציר זמן תמלילים",
+      "buttonTitle": "ציר זמן",
+      "empty": "אין עדיין תמלילים זמינים",
+      "loading": "טוען תמלילים..."
+    }
+  },
+  "highlights": {
+    "title": "רגעים מרכזיים",
+    "noHighlights": "עדיין לא זוהו רגעים מרכזיים",
+    "fetchError": "טעינת הרגעים נכשלה",
+    "types": {
+      "emotional": "רגשי",
+      "entity": "ישות",
+      "keyword": "מילת מפתח",
+      "dramatic": "דרמטי"
+    },
+    "button": {
+      "label": "הצג רגעים מרכזיים",
+      "title": "רגעים מרכזיים"
+    }
+  },
+  "liveSearch": {
+    "liveTitle": "חיפוש חי",
+    "placeholder": "חפש בתמלילים...",
+    "enterQuery": "הזן מונח לחיפוש",
+    "noResults": "לא נמצאו תמלילים תואמים",
+    "resultsCount": "{{count}} תוצאות",
+    "button": {
+      "label": "חפש בתמלילים",
+      "title": "חיפוש"
     }
   },
   "quota": {

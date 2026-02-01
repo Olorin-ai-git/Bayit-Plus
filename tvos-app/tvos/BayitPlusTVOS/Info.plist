@@ -60,17 +60,7 @@
 	<key>CFBundleIcons</key>
 	<dict>
 		<key>CFBundlePrimaryIcon</key>
-		<dict>
-			<key>CFBundleIconFiles</key>
-			<array>
-				<string>App Icon - Small</string>
-				<string>App Icon - Large</string>
-			</array>
-			<key>CFBundleIconName</key>
-			<string>AppIcon</string>
-			<key>UIPrerenderedIcon</key>
-			<false/>
-		</dict>
+		<string>AppIcon</string>
 	</dict>
 	<key>TVTopShelfImage</key>
 	<dict>

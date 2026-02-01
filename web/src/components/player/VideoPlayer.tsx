@@ -10,12 +10,12 @@ import VideoPlayerControlsOverlay from './VideoPlayerControlsOverlay'
 import VideoPlayerWatchParty from './VideoPlayerWatchParty'
 import VideoPlayerCatchUp from './VideoPlayerCatchUp'
 import GlassChatSidebar from './chat/GlassChatSidebar'
-import { BufferedLiveDubbingPlayer } from '../BufferedLiveDubbingPlayer'
 import { StreamLimitExceededModal } from './StreamLimitExceededModal'
 import {
   useVideoPlayer,
   useSubtitles,
   useLiveSubtitles,
+  useLiveSplitSubtitles,
   useWatchParty,
   useLiveDubbing,
   useTrivia,
@@ -26,6 +26,7 @@ import {
   useCastSession,
   usePlaybackSession,
 } from './hooks'
+import { SplitLanguages } from '@/types/subtitle'
 import { useChannelChatStore } from '@/stores/channelChatSlice'
 import { castConfig } from '@/config/castConfig'
 import { useLiveFeatureQuota } from '@/hooks/useLiveFeatureQuota'
@@ -108,16 +109,44 @@ export default function VideoPlayer({
     handleLiveSubtitleCue,
   } = useLiveSubtitles()
 
+  // Live split subtitles state
+  const [liveSplitMode, setLiveSplitMode] = useState(false)
+  const [liveSplitLanguages, setLiveSplitLanguages] = useState<SplitLanguages | null>(null)
+
+  // Live split subtitles hook
+  const liveSplit = useLiveSplitSubtitles({
+    channelId: contentId || '',
+    splitMode: liveSplitMode,
+    splitLanguages: liveSplitLanguages,
+    videoElement: videoRef.current,
+    sourceLanguage: 'he',
+    hebrewMode: 'regular',
+    onError: (error) => {
+      logger.error('Live split subtitle error', 'VideoPlayer', { error })
+    },
+  })
+
+  // Handle live split mode toggle
+  const handleLiveSplitModeToggle = useCallback((enabled: boolean) => {
+    setLiveSplitMode(enabled)
+    if (!enabled) {
+      setLiveSplitLanguages(null)
+    }
+    logger.info('Live split mode toggled', 'VideoPlayer', { enabled })
+  }, [])
+
+  // Handle live split languages change
+  const handleLiveSplitLanguagesChange = useCallback((languages: SplitLanguages) => {
+    setLiveSplitLanguages(languages)
+    setLiveSplitMode(true)
+    logger.info('Live split languages selected', 'VideoPlayer', { languages })
+  }, [])
+
   const dubbing = useLiveDubbing({
     channelId: contentId || '',
     videoElement: videoRef.current,
-    // Forward dubbed audio to buffered player if active
-    onRawDubbedAudio: (audio, text) => {
-      if (bufferedPlayerAddSegment) {
-        bufferedPlayerAddSegment(audio, text)
-      }
-    },
   })
+
 
   const cast = useCastSession({
     videoRef,
@@ -259,9 +288,6 @@ export default function VideoPlayer({
   const [isRecording, setIsRecording] = useState(false)
   const [recordingDuration, setRecordingDuration] = useState(0)
   const [isTTSPlaying, setIsTTSPlaying] = useState(false)
-  const [bufferedPlayerAddSegment, setBufferedPlayerAddSegment] = useState<
-    ((audio: ArrayBuffer, text: string) => void) | null
-  >(null)
 
   // Collect live feature errors for unified banner display
   const [dismissedError, setDismissedError] = useState<string | null>(null)
@@ -287,12 +313,6 @@ export default function VideoPlayer({
     }
   }, [dubbing.error, catchUp.error])
 
-  // Clear buffered player callback when dubbing disconnects
-  useEffect(() => {
-    if (!dubbing.isConnected) {
-      setBufferedPlayerAddSegment(null)
-    }
-  }, [dubbing.isConnected])
 
   // Update cast metadata when content changes
   useEffect(() => {
@@ -349,6 +369,7 @@ export default function VideoPlayer({
     renderWatchPartyButton,
     renderSubtitleControls,
     renderLiveSubtitleControls,
+    renderLiveSplitSubtitleControls,
     renderDubbingControls,
     renderRecordButton,
     renderCastButton,
@@ -389,6 +410,12 @@ export default function VideoPlayer({
     liveSubtitleLang,
     setLiveSubtitleLang,
     handleLiveSubtitleCue: handleLiveSubtitleCueWithTrivia,
+    liveSplitMode,
+    handleLiveSplitModeToggle,
+    liveSplitLanguages,
+    handleLiveSplitLanguagesChange,
+    liveSplitConnected: liveSplit.isConnected,
+    liveSplitConnecting: liveSplit.isConnecting,
     dubbing,
     cast,
     setIsRecording,
@@ -412,16 +439,6 @@ export default function VideoPlayer({
     onHoveredButtonChange: setHoveredButton,
   })
 
-  // Stable callbacks for BufferedLiveDubbingPlayer to prevent re-render loops
-  const handleBufferedPlayerReady = useCallback((addSegment: (audio: ArrayBuffer, text: string) => void) => {
-    logger.info('Buffered player ready', 'VideoPlayer')
-    setBufferedPlayerAddSegment(() => addSegment)
-  }, [])
-
-  const handleBufferedPlayerError = useCallback((error: string) => {
-    logger.error('Buffered dubbing error', 'VideoPlayer', error)
-    dubbing.disconnect()
-  }, [dubbing])
 
   return (
     <div
@@ -429,24 +446,13 @@ export default function VideoPlayer({
       style={webStyles.container}
       onClick={controls.togglePlay}
     >
-      {isLive && dubbing.isConnected ? (
-        // Buffered live dubbing player for synchronized video+audio
-        // Pass videoRef so liveDubbingService can capture audio from it
-        <BufferedLiveDubbingPlayer
-          streamUrl={src}
-          videoRef={videoRef}
-          onPlayerReady={handleBufferedPlayerReady}
-          onError={handleBufferedPlayerError}
-        />
-      ) : (
-        // Regular video element
-        <video
-          ref={videoRef}
-          poster={poster}
-          style={webStyles.video}
-          playsInline
-        />
-      )}
+      {/* Video element - always rendered, dubbing handled by ContinuousPlaybackController */}
+      <video
+        ref={videoRef}
+        poster={poster}
+        style={webStyles.video}
+        playsInline
+      />
 
       <VideoPlayerOverlays
         isRecording={isRecording}
@@ -462,6 +468,10 @@ export default function VideoPlayer({
         splitLanguages={splitLanguages}
         splitCues={splitCues}
         visibleLiveSubtitles={visibleLiveSubtitles}
+        liveSplitMode={liveSplitMode}
+        liveSplitLanguages={liveSplitLanguages}
+        liveSplitPrimaryCues={liveSplit.primaryCues}
+        liveSplitSecondaryCues={liveSplit.secondaryCues}
         dubbingIsConnected={dubbing.isConnected}
         dubbingLastTranscript={dubbing.lastTranscript}
         dubbingLastTranslation={dubbing.lastTranslation}
@@ -527,6 +537,7 @@ export default function VideoPlayer({
         renderWatchPartyButton={renderWatchPartyButton}
         renderSubtitleControls={renderSubtitleControls}
         renderLiveSubtitleControls={renderLiveSubtitleControls}
+        renderLiveSplitSubtitleControls={renderLiveSplitSubtitleControls}
         renderDubbingControls={renderDubbingControls}
         renderRecordButton={renderRecordButton}
         renderChannelChatButton={renderChannelChatButton}

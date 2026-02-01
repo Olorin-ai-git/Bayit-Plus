@@ -7,6 +7,7 @@ import logging
 from typing import Optional
 
 from fastapi import WebSocket
+from starlette.websockets import WebSocketDisconnect
 
 from app.models.content import LiveChannel
 from app.models.user import User
@@ -25,6 +26,7 @@ async def initialize_dubbing_session(
     target_lang: str,
     voice_id: Optional[str],
     platform: str,
+    enable_continuous_flow: bool = True,
 ) -> tuple[
     Optional[LiveDubbingService],
     Optional[asyncio.Task],
@@ -33,6 +35,15 @@ async def initialize_dubbing_session(
 ]:
     """
     Initialize dubbing service and start background tasks.
+
+    Args:
+        websocket: WebSocket connection
+        channel: Live channel being dubbed
+        user: User requesting dubbing
+        target_lang: Target language for dubbing
+        voice_id: Optional voice ID override
+        platform: Client platform
+        enable_continuous_flow: Enable continuous flow architecture
 
     Returns:
         (dubbing_service, pipeline_task, latency_task, sender_task)
@@ -47,6 +58,7 @@ async def initialize_dubbing_session(
             target_language=target_lang,
             voice_id=effective_voice_id,
             platform=platform,
+            enable_continuous_flow=enable_continuous_flow,
         )
 
         # Start dubbing session
@@ -75,7 +87,14 @@ async def initialize_dubbing_session(
                 if dubbing_service.is_running:
                     report = dubbing_service.get_latency_report()
                     try:
-                        await websocket.send_json(report.model_dump())
+                        report_data = report.model_dump()
+
+                        # Include buffer status if continuous flow is enabled
+                        buffer_status = dubbing_service.get_buffer_status()
+                        if buffer_status:
+                            report_data["buffer_status"] = buffer_status
+
+                        await websocket.send_json(report_data)
                     except Exception:
                         break
 
@@ -93,8 +112,14 @@ async def initialize_dubbing_session(
 
         return dubbing_service, pipeline_task, latency_task, sender_task
 
+    except WebSocketDisconnect as e:
+        logger.warning(
+            f"WebSocket disconnected during session initialization "
+            f"(code={e.code}, reason={e.reason or 'none'})"
+        )
+        raise
     except Exception as e:
-        logger.error(f"Error initializing dubbing session: {e}")
+        logger.error(f"Error initializing dubbing session: {type(e).__name__}: {e}")
         raise
 
 

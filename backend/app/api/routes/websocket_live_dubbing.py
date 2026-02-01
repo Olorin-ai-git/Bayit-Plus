@@ -1,9 +1,15 @@
 """
 WebSocket endpoint for live channel dubbing (Premium feature)
 Real-time audio → transcription → translation → dubbed audio streaming
+
+Supports continuous flow architecture for zero-interruption playback:
+- sync_status messages from client to update playback position
+- buffer_status messages to client with buffer health
+- Rate limiting on sync_status to prevent client flooding
 """
 
 import logging
+import time
 
 from beanie import PydanticObjectId
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
@@ -27,6 +33,42 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 
+class SyncStatusRateLimiter:
+    """Rate limiter for sync_status messages per session."""
+
+    def __init__(self, max_per_second: float):
+        self._max_per_second = max_per_second
+        self._min_interval_ms = 1000 / max_per_second
+        self._last_sync_time_ms: float = 0
+
+    def check_allowed(self) -> bool:
+        """Check if sync_status is allowed (rate limiting)."""
+        now_ms = time.time() * 1000
+        if now_ms - self._last_sync_time_ms >= self._min_interval_ms:
+            self._last_sync_time_ms = now_ms
+            return True
+        return False
+
+
+def validate_video_timestamp(value: int) -> bool:
+    """
+    Validate video timestamp is within acceptable range.
+
+    Args:
+        value: Video timestamp in milliseconds
+
+    Returns:
+        True if valid, False otherwise
+    """
+    if not isinstance(value, int):
+        return False
+    if value < 0:
+        return False
+    if value > settings.olorin.dubbing.max_video_timestamp_ms:
+        return False
+    return True
+
+
 @router.websocket("/ws/live/{channel_id}/dubbing")
 async def websocket_live_dubbing(
     websocket: WebSocket,
@@ -34,6 +76,7 @@ async def websocket_live_dubbing(
     target_lang: str = Query("en"),
     voice_id: str | None = Query(None),
     platform: str = Query("web"),
+    continuous_flow: bool = Query(True),
 ):
     """
     WebSocket endpoint for live channel dubbing (Premium feature).
@@ -42,11 +85,15 @@ async def websocket_live_dubbing(
     - Enforces wss:// (secure WebSocket) in production
     - Validates JWT token from authentication message
     - Rate limits connections and audio chunks per user
+    - Rate limits sync_status messages to prevent flooding
     - Validates channel and subscription tier
 
     Auth: {"type": "authenticate", "token": "..."} as first message (SECURITY: not in URL)
-    Client sends: JSON auth + binary audio chunks (16kHz mono LINEAR16 PCM)
-    Server sends: connected, dubbed_audio, transcript, latency_report, error
+    Client sends:
+    - JSON auth message first
+    - Binary audio chunks (16kHz mono LINEAR16 PCM)
+    - JSON sync_status: {"type": "sync_status", "current_video_time_ms": 45000}
+    Server sends: connected, dubbed_audio, transcript, latency_report, buffer_status, error
     """
     # SECURITY: Step 0 - Enforce wss:// in production (allow ws:// for localhost)
     is_localhost = websocket.client and websocket.client.host in ("127.0.0.1", "::1", "localhost")
@@ -142,23 +189,74 @@ async def websocket_live_dubbing(
     last_usage_update = 0.0
     usage_update_interval = 10.0
 
+    # Rate limiter for sync_status messages
+    sync_rate_limiter = SyncStatusRateLimiter(
+        settings.olorin.dubbing.sync_status_max_per_second
+    )
+
     try:
-        # Initialize session and start tasks
+        # Initialize session and start tasks with continuous flow parameter
         dubbing_service, pipeline_task, latency_task, sender_task = (
             await initialize_dubbing_session(
-                websocket, channel, user, target_lang, voice_id, platform
+                websocket, channel, user, target_lang, voice_id, platform,
+                enable_continuous_flow=continuous_flow
             )
         )
 
         import asyncio
+        import json
 
         last_usage_update = asyncio.get_event_loop().time()
 
-        # Process incoming audio chunks
+        # Process incoming messages (binary audio or JSON sync_status)
         try:
             while True:
-                audio_chunk = await websocket.receive_bytes()
-                await dubbing_service.process_audio_chunk(audio_chunk)
+                # Receive message (can be binary or text)
+                message = await websocket.receive()
+
+                if "bytes" in message:
+                    # Binary audio chunk
+                    audio_chunk = message["bytes"]
+                    await dubbing_service.process_audio_chunk(audio_chunk)
+
+                elif "text" in message:
+                    # JSON message (sync_status or other)
+                    try:
+                        msg_data = json.loads(message["text"])
+                        msg_type = msg_data.get("type")
+
+                        if msg_type == "sync_status":
+                            # Rate limit sync_status messages
+                            if not sync_rate_limiter.check_allowed():
+                                logger.debug(
+                                    f"sync_status rate limited: session={dubbing_service.session_id}"
+                                )
+                                continue
+
+                            # Validate video timestamp
+                            video_time_ms = msg_data.get("current_video_time_ms")
+                            if not validate_video_timestamp(video_time_ms):
+                                logger.warning(
+                                    f"Invalid video timestamp: {video_time_ms}, "
+                                    f"session={dubbing_service.session_id}"
+                                )
+                                continue
+
+                            # Update playback position for continuous flow
+                            dubbing_service.update_video_timestamp(video_time_ms)
+
+                            # Send buffer status back to client
+                            buffer_status = dubbing_service.get_buffer_status()
+                            if buffer_status:
+                                await websocket.send_json({
+                                    "type": "buffer_status",
+                                    **buffer_status
+                                })
+
+                    except json.JSONDecodeError:
+                        logger.warning(
+                            f"Invalid JSON message: session={dubbing_service.session_id}"
+                        )
 
                 # Update quota periodically
                 quota_ok, last_usage_update = await update_quota_during_session(
@@ -179,8 +277,14 @@ async def websocket_live_dubbing(
             )
             await end_quota_session(quota_session, UsageSessionStatus.COMPLETED)
 
+    except WebSocketDisconnect as e:
+        logger.info(
+            f"Live dubbing WebSocket disconnected: user={user.id}, "
+            f"code={e.code}, reason={e.reason or 'none'}"
+        )
+        await end_quota_session(quota_session, UsageSessionStatus.COMPLETED)
     except Exception as e:
-        logger.error(f"Error in live dubbing stream: {str(e)}")
+        logger.error(f"Error in live dubbing stream: {type(e).__name__}: {str(e)}")
         await end_quota_session(quota_session, UsageSessionStatus.ERROR)
         try:
             await websocket.send_json(

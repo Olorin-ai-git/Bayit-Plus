@@ -1,6 +1,7 @@
 /**
  * Custom hook for live dubbing management
  * Manages WebSocket connection, audio mixing, and dubbing state for live channels
+ * Uses ContinuousPlaybackController for zero-interruption dubbed audio playback
  */
 
 import { useState, useCallback, useRef, useEffect } from 'react'
@@ -11,6 +12,7 @@ import liveDubbingService, {
   DubbingConnectionInfo,
   DubbingAvailability,
 } from '@/services/liveDubbingService'
+import { BufferStatus } from '@/services/audio/ContinuousPlaybackController'
 import {
   getPersistedSessionForChannel,
   saveLiveDubbingState,
@@ -32,8 +34,6 @@ export interface UseLiveDubbingOptions {
   channelId: string
   videoElement: HTMLVideoElement | null
   autoConnect?: boolean
-  // Callback for raw audio data (for buffered playback mode)
-  onRawDubbedAudio?: (audio: ArrayBuffer, text: string) => void
 }
 
 export interface UseLiveDubbingState {
@@ -50,9 +50,13 @@ export interface UseLiveDubbingState {
   lastTranslation: string
   error: string | null
   syncDelayMs: number
+  // Continuous flow state
+  bufferHealth: 'healthy' | 'warning' | 'critical' | 'emergency' | null
+  bufferAheadSeconds: number
+  playbackStarted: boolean
 }
 
-export function useLiveDubbing({ channelId, videoElement, autoConnect = false, onRawDubbedAudio }: UseLiveDubbingOptions) {
+export function useLiveDubbing({ channelId, videoElement, autoConnect = false }: UseLiveDubbingOptions) {
   const [state, setState] = useState<UseLiveDubbingState>({
     isConnected: false,
     isConnecting: false,
@@ -67,6 +71,10 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false, o
     lastTranslation: '',
     error: null,
     syncDelayMs: 600,
+    // Continuous flow state
+    bufferHealth: null,
+    bufferAheadSeconds: 0,
+    playbackStarted: false,
   })
 
   const [availability, setAvailability] = useState<DubbingAvailability | null>(null)
@@ -101,59 +109,7 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false, o
     })
   }, [channelId])
 
-  // Auto-restore session from persistence (e.g., after browser refresh)
-  useEffect(() => {
-    if (hasAttemptedRestoreRef.current) return
-    if (!channelId || !videoElement) return
-    if (liveDubbingService.isServiceConnected()) return // Already connected
-    if (!availability?.available) return // Not available yet
-
-    const session = getPersistedSessionForChannel(channelId)
-    if (!session?.liveDubbing?.enabled) return
-
-    hasAttemptedRestoreRef.current = true
-    logger.info('Restoring live dubbing session from persistence', 'useLiveDubbing', {
-      channelId,
-      targetLang: session.liveDubbing.targetLang,
-      voiceId: session.liveDubbing.voiceId,
-    })
-
-    // Restore the session
-    setState((prev) => ({ ...prev, isConnecting: true, error: null }))
-
-    liveDubbingService
-      .connect(
-        channelId,
-        session.liveDubbing.targetLang,
-        videoElement,
-        handleDubbedAudio,
-        handleLatency,
-        handleConnected,
-        handleError,
-        session.liveDubbing.voiceId,
-        'web',
-        !!onRawDubbedAudio
-      )
-      .then(() => {
-        logger.info('Live dubbing session restored successfully', 'useLiveDubbing')
-        setState((prev) => ({
-          ...prev,
-          targetLanguage: session.liveDubbing?.targetLang || prev.targetLanguage,
-        }))
-      })
-      .catch((err) => {
-        logger.error('Session restore failed', 'useLiveDubbing', err)
-        setState((prev) => ({
-          ...prev,
-          isConnecting: false,
-          error: err instanceof Error ? err.message : 'Session restore failed',
-        }))
-        // Clear persisted session on error
-        saveLiveDubbingState(channelId, false, '')
-      })
-  }, [channelId, videoElement, availability, handleDubbedAudio, handleLatency, handleConnected, handleError, onRawDubbedAudio])
-
-  // Dubbed audio callback
+  // Dubbed audio callback - updates state with latest transcript/translation
   const handleDubbedAudio = useCallback((message: DubbedAudioMessage) => {
     setState((prev) => ({
       ...prev,
@@ -162,21 +118,7 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false, o
       lastTranslation: message.translated_text,
       latencyMs: message.latency_ms,
     }))
-
-    // If onRawDubbedAudio callback provided, decode and pass raw audio
-    if (onRawDubbedAudio && message.data) {
-      try {
-        const binaryString = atob(message.data)
-        const bytes = new Uint8Array(binaryString.length)
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i)
-        }
-        onRawDubbedAudio(bytes.buffer, message.translated_text)
-      } catch (error) {
-        console.error('[useLiveDubbing] Failed to decode audio for buffered playback:', error)
-      }
-    }
-  }, [onRawDubbedAudio])
+  }, [])
 
   // Latency report callback
   const handleLatency = useCallback((report: LatencyReport) => {
@@ -215,7 +157,26 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false, o
     }))
   }, [])
 
-  // Connect to dubbing service
+  // Buffer status callback - continuous flow architecture
+  const handleBufferStatus = useCallback((status: BufferStatus) => {
+    setState((prev) => ({
+      ...prev,
+      bufferHealth: status.bufferHealth,
+      bufferAheadSeconds: status.bufferAheadSeconds,
+      playbackStarted: status.playbackStarted,
+    }))
+  }, [])
+
+  // Playback started callback - continuous flow architecture
+  const handlePlaybackStarted = useCallback(() => {
+    logger.info('Continuous flow playback started', 'useLiveDubbing')
+    setState((prev) => ({
+      ...prev,
+      playbackStarted: true,
+    }))
+  }, [])
+
+  // Connect to dubbing service with continuous flow enabled
   const connect = useCallback(
     async (targetLang?: string, voiceId?: string) => {
       if (!videoElement || !channelId) {
@@ -242,7 +203,10 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false, o
           handleError,
           voiceId,
           'web',
-          !!onRawDubbedAudio // Enable buffered mode if onRawDubbedAudio callback provided
+          false, // bufferedMode - disabled, using continuous flow instead
+          true,  // enableContinuousFlow - the new architecture
+          handleBufferStatus,
+          handlePlaybackStarted
         )
       } catch (err) {
         setState((prev) => ({
@@ -252,8 +216,63 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false, o
         }))
       }
     },
-    [channelId, videoElement, handleDubbedAudio, handleLatency, handleConnected, handleError]
+    [channelId, videoElement, handleDubbedAudio, handleLatency, handleConnected, handleError, handleBufferStatus, handlePlaybackStarted]
   )
+
+  // Auto-restore session from persistence (e.g., after browser refresh)
+  useEffect(() => {
+    if (hasAttemptedRestoreRef.current) return
+    if (!channelId || !videoElement) return
+    if (liveDubbingService.isServiceConnected()) return // Already connected
+    if (!availability?.available) return // Not available yet
+
+    const session = getPersistedSessionForChannel(channelId)
+    if (!session?.liveDubbing?.enabled) return
+
+    hasAttemptedRestoreRef.current = true
+    logger.info('Restoring live dubbing session from persistence', 'useLiveDubbing', {
+      channelId,
+      targetLang: session.liveDubbing.targetLang,
+      voiceId: session.liveDubbing.voiceId,
+    })
+
+    // Restore the session
+    setState((prev) => ({ ...prev, isConnecting: true, error: null }))
+
+    liveDubbingService
+      .connect(
+        channelId,
+        session.liveDubbing.targetLang,
+        videoElement,
+        handleDubbedAudio,
+        handleLatency,
+        handleConnected,
+        handleError,
+        session.liveDubbing.voiceId,
+        'web',
+        false, // bufferedMode
+        true,  // enableContinuousFlow
+        handleBufferStatus,
+        handlePlaybackStarted
+      )
+      .then(() => {
+        logger.info('Live dubbing session restored successfully', 'useLiveDubbing')
+        setState((prev) => ({
+          ...prev,
+          targetLanguage: session.liveDubbing?.targetLang || prev.targetLanguage,
+        }))
+      })
+      .catch((err) => {
+        logger.error('Session restore failed', 'useLiveDubbing', err)
+        setState((prev) => ({
+          ...prev,
+          isConnecting: false,
+          error: err instanceof Error ? err.message : 'Session restore failed',
+        }))
+        // Clear persisted session on error
+        saveLiveDubbingState(channelId, false, '')
+      })
+  }, [channelId, videoElement, availability, handleDubbedAudio, handleLatency, handleConnected, handleError, handleBufferStatus, handlePlaybackStarted])
 
   // Disconnect from dubbing service
   const disconnect = useCallback(() => {
@@ -270,6 +289,9 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false, o
       segmentsProcessed: 0,
       lastTranscript: '',
       lastTranslation: '',
+      bufferHealth: null,
+      bufferAheadSeconds: 0,
+      playbackStarted: false,
     }))
   }, [channelId])
 

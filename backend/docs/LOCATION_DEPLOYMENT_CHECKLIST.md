@@ -70,7 +70,7 @@ python3 -m py_compile \
 
 ```bash
 # 1. Stop existing service
-systemctl stop bayit-plus-backend
+systemctl stop bayit-backend-production
 
 # 2. Deploy new code
 git pull origin main
@@ -80,7 +80,7 @@ poetry install --no-dev
 [[ -z "$LOCATION_ENCRYPTION_KEY" ]] && echo "ERROR: LOCATION_ENCRYPTION_KEY not set" && exit 1
 
 # 4. Start service
-systemctl start bayit-plus-backend
+systemctl start bayit-backend-production
 
 # 5. Verify startup
 sleep 5
@@ -291,7 +291,7 @@ If deployment fails:
 
 ```bash
 # 1. Stop current service
-systemctl stop bayit-plus-backend
+systemctl stop bayit-backend-production
 
 # 2. Revert to previous code
 git revert HEAD
@@ -301,13 +301,13 @@ git push origin main
 poetry install --no-dev
 
 # 4. Start previous version
-systemctl start bayit-plus-backend
+systemctl start bayit-backend-production
 
 # 5. Verify
 curl http://localhost:8090/health
 
 # 6. Check logs for errors
-journalctl -u bayit-plus-backend -n 50
+journalctl -u bayit-backend-production -n 50
 ```
 
 ---
@@ -328,7 +328,7 @@ export LOCATION_ENCRYPTION_KEY=<generated_key>
 echo $LOCATION_ENCRYPTION_KEY
 
 # Restart service
-systemctl restart bayit-plus-backend
+systemctl restart bayit-backend-production
 ```
 
 ### Issue: "No location found by GeoNames"
@@ -355,7 +355,7 @@ export LOCATION_REVERSE_GEOCODE_RATE_LIMIT=60  # Double from 30
 export LOCATION_CONTENT_RATE_LIMIT=120         # Double from 60
 
 # Restart
-systemctl restart bayit-plus-backend
+systemctl restart bayit-backend-production
 ```
 
 ### Issue: Cache documents not expiring

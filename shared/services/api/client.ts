@@ -25,7 +25,7 @@ const CORRELATION_ID_HEADER = "X-Correlation-ID";
 
 // Cloud Run production API URL
 const CLOUD_RUN_API_URL =
-  "https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1";
+  "https://bayit-backend-production-534446777606.us-east1.run.app/api/v1";
 
 // Detect platform and environment
 const isWeb = isWebPlatform();

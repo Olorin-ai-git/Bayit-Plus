@@ -5098,7 +5098,43 @@
     "expiresIn": "में समाप्त होता है",
     "available": "कैचअप उपलब्ध",
     "expired": "समाप्त",
-    "hoursLeft": "{{count}} घंटे शेष"
+    "hoursLeft": "{{count}} घंटे शेष",
+    "timeline": {
+      "title": "ट्रांसक्रिप्ट टाइमलाइन",
+      "segmentCount": "{{count}} सेगमेंट",
+      "count": "{{count}} सेगमेंट",
+      "window": "पिछले {{minutes}} मिनट",
+      "buttonLabel": "ट्रांसक्रिप्ट टाइमलाइन दिखाएं",
+      "buttonTitle": "टाइमलाइन",
+      "empty": "अभी तक कोई ट्रांसक्रिप्ट उपलब्ध नहीं",
+      "loading": "ट्रांसक्रिप्ट लोड हो रहे हैं..."
+    }
+  },
+  "highlights": {
+    "title": "हाइलाइट्स",
+    "noHighlights": "अभी तक कोई हाइलाइट नहीं मिली",
+    "fetchError": "हाइलाइट्स लोड करने में विफल",
+    "types": {
+      "emotional": "भावनात्मक",
+      "entity": "इकाई",
+      "keyword": "कीवर्ड",
+      "dramatic": "नाटकीय"
+    },
+    "button": {
+      "label": "हाइलाइट्स दिखाएं",
+      "title": "हाइलाइट्स"
+    }
+  },
+  "liveSearch": {
+    "liveTitle": "लाइव खोज",
+    "placeholder": "ट्रांसक्रिप्ट खोजें...",
+    "enterQuery": "खोज शब्द दर्ज करें",
+    "noResults": "कोई मिलान ट्रांसक्रिप्ट नहीं",
+    "resultsCount": "{{count}} परिणाम",
+    "button": {
+      "label": "ट्रांसक्रिप्ट खोजें",
+      "title": "खोजें"
+    }
   },
   "googleLogin": {
     "cancelledError": "Google साइन-इन रद्द कर दिया गया",

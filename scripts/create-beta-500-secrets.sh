@@ -28,7 +28,7 @@ NC='\033[0m' # No Color
 
 # Default values
 PROJECT_ID="${GCP_PROJECT_ID:-bayit-plus}"
-SERVICE_ACCOUNT="${SERVICE_ACCOUNT:-bayit-plus-backend@bayit-plus.iam.gserviceaccount.com}"
+SERVICE_ACCOUNT="${SERVICE_ACCOUNT:-bayit-backend-production@bayit-plus.iam.gserviceaccount.com}"
 GITHUB_SA="${GITHUB_SA:-github-actions@bayit-plus.iam.gserviceaccount.com}"
 
 # Parse command line arguments
@@ -297,7 +297,7 @@ echo "  2. Regenerate .env files from secrets:"
 echo "     ./scripts/sync-gcloud-secrets.sh"
 echo ""
 echo "  3. Restart backend services to pick up new configuration:"
-echo "     kubectl rollout restart deployment/bayit-plus-backend"
+echo "     kubectl rollout restart deployment/bayit-backend-production"
 echo ""
 
 if [[ -z "${TWILIO_ACCOUNT_SID:-}" ]]; then

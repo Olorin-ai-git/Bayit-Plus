@@ -3,7 +3,7 @@
 **Feature:** Intelligent Title Cleanup for Content Library
 **Implementation Date:** 2026-01-11
 **Status:** ✅ DEPLOYED AND TESTED
-**Revision:** bayit-plus-backend-00007 (pending)
+**Revision:** bayit-backend-production-00007 (pending)
 
 ---
 
@@ -220,7 +220,7 @@ Every title cleanup is logged:
 
 **To rollback a cleanup:**
 ```bash
-curl -X POST https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/admin/librarian/actions/{action_id}/rollback \
+curl -X POST https://bayit-backend-production-624470113582.us-east1.run.app/api/v1/admin/librarian/actions/{action_id}/rollback \
   -H "Authorization: Bearer $TOKEN"
 ```
 

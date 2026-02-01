@@ -8,7 +8,7 @@ Bayit+ Backend is deployed to Google Cloud with dedicated MongoDB infrastructure
 
 ### Infrastructure:
 ✅ **GCP Project:** `bayit-plus`
-✅ **Cloud Run Service:** `bayit-plus-backend`
+✅ **Cloud Run Service:** `bayit-backend-production`
 ✅ **MongoDB Cluster:** `cluster0.fnjp1v.mongodb.net` (NEW - dedicated cluster)
 ✅ **Database:** `bayit_plus`
 ✅ **GCS Bucket:** `bayit-plus-media-new`

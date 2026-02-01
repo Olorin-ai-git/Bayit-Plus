@@ -10,20 +10,28 @@ Cost Impact: 99% reduction in STT connections
 
 Each channel:
 - Maintains ONE active STT connection
+- Captures audio from HLS stream server-side (no CORS issues)
 - Broadcasts transcripts to all subscribers
 - Auto-starts on first subscriber
 - Auto-stops when no subscribers remain
+- Publishes to TranscriptEventBus for downstream consumers
 """
 
 import asyncio
-import logging
+import time
 from dataclasses import dataclass
 from datetime import datetime
-from typing import AsyncIterator, Dict, Optional
+from typing import Dict, Optional
 
+from app.core.logging_config import get_logger
+from app.services.live_dubbing.stream_audio_capture import (
+    StreamAudioCapture,
+    StreamAudioCaptureError,
+)
 from app.services.olorin.dubbing.stt_provider import get_stt_provider
+from app.services.transcript_bus import TranscriptEvent, get_transcript_bus
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @dataclass
@@ -39,20 +47,23 @@ class ChannelSTTManager:
     """
     Manages a single STT connection per live channel.
 
+    Uses backend-side audio capture from HLS streams (no CORS issues).
     Broadcasts transcripts to all subscribed user sessions.
     Automatically starts/stops STT connection based on subscriber count.
     """
 
-    def __init__(self, channel_id: str, source_language: str):
+    def __init__(self, channel_id: str, source_language: str, stream_url: str):
         """
         Initialize STT manager for a channel.
 
         Args:
             channel_id: Unique identifier for the live channel
             source_language: Source audio language (e.g., "he", "en")
+            stream_url: HLS stream URL for audio capture
         """
         self.channel_id = channel_id
         self.source_language = source_language
+        self.stream_url = stream_url
 
         # Subscribers: session_id -> transcript queue
         self._subscribers: Dict[str, asyncio.Queue[TranscriptMessage]] = {}
@@ -62,10 +73,12 @@ class ChannelSTTManager:
         self._stt_provider = None
         self._is_running = False
         self._broadcast_task: Optional[asyncio.Task] = None
+        self._audio_capture_task: Optional[asyncio.Task] = None
+        self._audio_capture: Optional[StreamAudioCapture] = None
 
         logger.info(
             f"ChannelSTTManager initialized: channel={channel_id}, "
-            f"source_lang={source_language}"
+            f"source_lang={source_language}, stream_url={stream_url[:50]}..."
         )
 
     async def subscribe(self, session_id: str) -> asyncio.Queue[TranscriptMessage]:
@@ -138,52 +151,148 @@ class ChannelSTTManager:
                 )
                 await self._stop_stt_broadcast()
 
-    async def send_audio_chunk(self, audio_data: bytes) -> None:
-        """
-        Send audio chunk to STT provider.
-
-        Args:
-            audio_data: Binary audio data (16kHz mono PCM)
-        """
-        if not self._is_running or not self._stt_provider:
-            logger.debug(
-                f"STT not running for channel {self.channel_id}, "
-                f"ignoring audio chunk"
-            )
-            return
-
-        try:
-            await self._stt_provider.send_audio_chunk(audio_data)
-        except Exception as e:
-            logger.error(f"Error sending audio to STT: {e}")
-
     async def _start_stt_broadcast(self) -> None:
-        """Start STT connection and broadcast loop."""
+        """Start audio capture, STT connection, and broadcast loop."""
         try:
             # Initialize STT provider
             self._stt_provider = get_stt_provider()
 
             # Connect to STT service
             await self._stt_provider.connect(self.source_language)
+
+            # Start backend audio capture from HLS stream
+            self._audio_capture = StreamAudioCapture(
+                stream_url=self.stream_url,
+                channel_id=self.channel_id,
+            )
+            await self._audio_capture.start()
+
             self._is_running = True
 
-            # Start broadcast task
+            # Create channel on transcript event bus
+            transcript_bus = get_transcript_bus()
+            await transcript_bus.create_channel(self.channel_id)
+
+            # Start audio capture task (feeds audio to STT)
+            self._audio_capture_task = asyncio.create_task(
+                self._audio_capture_loop()
+            )
+
+            # Start broadcast task (receives transcripts from STT)
             self._broadcast_task = asyncio.create_task(self._broadcast_loop())
 
             logger.info(
-                f"STT broadcast started for channel {self.channel_id} "
-                f"(source_lang={self.source_language})"
+                "STT broadcast started with backend audio capture",
+                extra={
+                    "channel_id": self.channel_id,
+                    "source_lang": self.source_language,
+                    "stream_url": self.stream_url[:50],
+                },
             )
 
-        except Exception as e:
+        except StreamAudioCaptureError as e:
             logger.error(
-                f"Failed to start STT broadcast for channel {self.channel_id}: {e}"
+                "Failed to start audio capture",
+                extra={"channel_id": self.channel_id, "error": str(e)},
             )
             self._is_running = False
+            await self._cleanup_resources()
+        except Exception as e:
+            logger.error(
+                "Failed to start STT broadcast",
+                extra={"channel_id": self.channel_id, "error": str(e)},
+            )
+            self._is_running = False
+            await self._cleanup_resources()
+
+    async def _audio_capture_loop(self) -> None:
+        """Read audio chunks from stream and send to STT provider."""
+        if not self._audio_capture or not self._stt_provider:
+            return
+
+        chunk_count = 0
+        try:
+            async for chunk in self._audio_capture.read_chunks():
+                if not self._is_running:
+                    break
+
+                try:
+                    await self._stt_provider.send_audio_chunk(chunk)
+                    chunk_count += 1
+
+                    # Log progress every 100 chunks (~10 seconds)
+                    if chunk_count % 100 == 0:
+                        logger.debug(
+                            f"Audio capture progress: {chunk_count} chunks sent",
+                            extra={"channel_id": self.channel_id},
+                        )
+
+                except Exception as e:
+                    logger.error(
+                        "Error sending audio to STT",
+                        extra={
+                            "channel_id": self.channel_id,
+                            "error": str(e),
+                            "chunk_count": chunk_count,
+                        },
+                    )
+                    # Continue trying - STT might recover
+
+        except asyncio.CancelledError:
+            logger.info(
+                "Audio capture loop cancelled",
+                extra={"channel_id": self.channel_id, "chunks_sent": chunk_count},
+            )
+        except Exception as e:
+            logger.error(
+                "Audio capture loop error",
+                extra={
+                    "channel_id": self.channel_id,
+                    "error": str(e),
+                    "chunks_sent": chunk_count,
+                },
+            )
+
+    async def _cleanup_resources(self) -> None:
+        """Cleanup audio capture and STT resources."""
+        # Stop audio capture
+        if self._audio_capture:
+            try:
+                await self._audio_capture.stop()
+            except Exception as e:
+                logger.warning(
+                    "Error stopping audio capture",
+                    extra={"channel_id": self.channel_id, "error": str(e)},
+                )
+            self._audio_capture = None
+
+        # Close STT provider
+        if self._stt_provider:
+            try:
+                await self._stt_provider.close()
+            except Exception as e:
+                logger.warning(
+                    "Error closing STT provider",
+                    extra={"channel_id": self.channel_id, "error": str(e)},
+                )
+            self._stt_provider = None
 
     async def _stop_stt_broadcast(self) -> None:
-        """Stop STT connection and broadcast loop."""
+        """Stop audio capture, STT connection, and broadcast loop."""
         self._is_running = False
+
+        # End channel on transcript event bus (broadcasts channel_end event)
+        transcript_bus = get_transcript_bus()
+        await transcript_bus.end_channel(self.channel_id)
+
+        # Cancel audio capture task
+        if self._audio_capture_task:
+            self._audio_capture_task.cancel()
+            try:
+                await self._audio_capture_task
+            except asyncio.CancelledError:
+                pass
+            self._audio_capture_task = None
 
         # Cancel broadcast task
         if self._broadcast_task:
@@ -194,50 +303,82 @@ class ChannelSTTManager:
                 pass
             self._broadcast_task = None
 
-        # Close STT provider
-        if self._stt_provider:
-            try:
-                await self._stt_provider.close()
-            except Exception as e:
-                logger.warning(f"Error closing STT provider: {e}")
-            self._stt_provider = None
+        # Cleanup resources
+        await self._cleanup_resources()
 
-        logger.info(f"STT broadcast stopped for channel {self.channel_id}")
+        logger.info(
+            "STT broadcast stopped",
+            extra={"channel_id": self.channel_id},
+        )
 
     async def _broadcast_loop(self) -> None:
         """Receive transcripts from STT and broadcast to all subscribers."""
         if not self._stt_provider:
-            logger.error(f"STT provider not initialized for channel {self.channel_id}")
+            logger.error(
+                "STT provider not initialized",
+                extra={"channel_id": self.channel_id},
+            )
             return
+
+        transcript_bus = get_transcript_bus()
 
         try:
             async for text, language in self._stt_provider.receive_transcripts():
                 if not self._is_running:
                     break
 
+                current_time = time.time()
+                timestamp_ms = int(current_time * 1000)
+
                 # Create transcript message with timestamp
                 message = TranscriptMessage(
                     text=text,
                     language=language,
-                    timestamp_ms=int(datetime.utcnow().timestamp() * 1000),
+                    timestamp_ms=timestamp_ms,
                 )
 
-                # Broadcast to all subscribers
+                logger.debug(
+                    f"Transcript received: {text[:50]}...",
+                    extra={"channel_id": self.channel_id},
+                )
+
+                # Publish to TranscriptEventBus for downstream consumers
+                event = TranscriptEvent(
+                    channel_id=self.channel_id,
+                    session_id="stt_source",
+                    text=text,
+                    text_translated=None,
+                    source_lang=language,
+                    target_lang="",
+                    timestamp=current_time,
+                    is_partial=False,
+                    confidence=1.0,
+                )
+                transcript_bus.publish_nowait(self.channel_id, event)
+
+                # Broadcast to all dubbing subscribers
                 async with self._subscriber_lock:
                     dead_subscribers = []
 
                     for session_id, queue in self._subscribers.items():
                         try:
-                            # Non-blocking put (drop if queue full)
                             queue.put_nowait(message)
                         except asyncio.QueueFull:
                             logger.warning(
-                                f"Queue full for session {session_id}, "
-                                f"dropping transcript"
+                                "Queue full, dropping transcript",
+                                extra={
+                                    "channel_id": self.channel_id,
+                                    "session_id": session_id,
+                                },
                             )
                         except Exception as e:
                             logger.error(
-                                f"Error broadcasting to session {session_id}: {e}"
+                                "Error broadcasting to session",
+                                extra={
+                                    "channel_id": self.channel_id,
+                                    "session_id": session_id,
+                                    "error": str(e),
+                                },
                             )
                             dead_subscribers.append(session_id)
 
@@ -245,23 +386,32 @@ class ChannelSTTManager:
                     for session_id in dead_subscribers:
                         del self._subscribers[session_id]
                         logger.warning(
-                            f"Removed dead subscriber {session_id} "
-                            f"from channel {self.channel_id}"
+                            "Removed dead subscriber",
+                            extra={
+                                "channel_id": self.channel_id,
+                                "session_id": session_id,
+                            },
                         )
 
                     # Stop if no subscribers left
                     if not self._subscribers and self._is_running:
                         logger.info(
-                            f"All subscribers disconnected from channel {self.channel_id}, "
-                            f"stopping broadcast"
+                            "All subscribers disconnected, stopping broadcast",
+                            extra={"channel_id": self.channel_id},
                         )
                         await self._stop_stt_broadcast()
                         break
 
         except asyncio.CancelledError:
-            logger.info(f"Broadcast loop cancelled for channel {self.channel_id}")
+            logger.info(
+                "Broadcast loop cancelled",
+                extra={"channel_id": self.channel_id},
+            )
         except Exception as e:
-            logger.error(f"Broadcast loop error for channel {self.channel_id}: {e}")
+            logger.error(
+                "Broadcast loop error",
+                extra={"channel_id": self.channel_id, "error": str(e)},
+            )
             self._is_running = False
 
     def get_subscriber_count(self) -> int:
@@ -279,7 +429,7 @@ _manager_lock = asyncio.Lock()
 
 
 async def get_channel_stt_manager(
-    channel_id: str, source_language: str
+    channel_id: str, source_language: str, stream_url: Optional[str] = None
 ) -> ChannelSTTManager:
     """
     Get or create a ChannelSTTManager for a live channel.
@@ -287,16 +437,41 @@ async def get_channel_stt_manager(
     Args:
         channel_id: Unique channel identifier
         source_language: Source audio language
+        stream_url: HLS stream URL for audio capture (required for new managers)
 
     Returns:
         ChannelSTTManager instance
+
+    Raises:
+        ValueError: If stream_url not provided for new channel
     """
     async with _manager_lock:
         if channel_id not in _channel_managers:
+            if not stream_url:
+                # Try to get stream URL from channel
+                from app.models.content import LiveChannel
+                from beanie import PydanticObjectId
+
+                try:
+                    channel = await LiveChannel.get(PydanticObjectId(channel_id))
+                    if channel and channel.stream_url:
+                        stream_url = channel.stream_url
+                    else:
+                        raise ValueError(
+                            f"No stream URL available for channel {channel_id}"
+                        )
+                except Exception as e:
+                    raise ValueError(
+                        f"Cannot get stream URL for channel {channel_id}: {e}"
+                    )
+
             _channel_managers[channel_id] = ChannelSTTManager(
-                channel_id, source_language
+                channel_id, source_language, stream_url
             )
-            logger.info(f"Created new ChannelSTTManager for channel {channel_id}")
+            logger.info(
+                "Created new ChannelSTTManager with backend audio capture",
+                extra={"channel_id": channel_id, "stream_url": stream_url[:50]},
+            )
 
         return _channel_managers[channel_id]
 
@@ -314,7 +489,10 @@ async def cleanup_channel_manager(channel_id: str) -> None:
             if manager.is_running():
                 await manager._stop_stt_broadcast()
             del _channel_managers[channel_id]
-            logger.info(f"Cleaned up ChannelSTTManager for channel {channel_id}")
+            logger.info(
+                "Cleaned up ChannelSTTManager",
+                extra={"channel_id": channel_id},
+            )
 
 
 def get_channel_manager_stats() -> Dict[str, dict]:

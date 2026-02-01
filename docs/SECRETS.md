@@ -117,7 +117,7 @@ If a secret may have been exposed:
    gcloud secrets versions add SECRET_NAME --data-file=<(echo -n "new-value")
 
    # Force redeploy to pick up new secret
-   gcloud run deploy bayit-plus-backend --region=us-central1
+   gcloud run deploy bayit-backend-production --region=us-central1
    ```
 
 2. **Investigation (Within 24 hours):**
@@ -319,7 +319,7 @@ gcloud secrets versions access latest \
   --project=bayit-plus
 
 # Test Cloud Run deployment with secrets
-gcloud run deploy bayit-plus-backend-test \
+gcloud run deploy bayit-backend-production-test \
   --image=gcr.io/bayit-plus/backend:test \
   --set-secrets=SECRET_KEY=bayit-secret-key:latest
 ```

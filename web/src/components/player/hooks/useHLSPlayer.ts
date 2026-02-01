@@ -78,6 +78,8 @@ interface UseHLSPlayerOptions {
   onReady: () => void
   onAutoplayMuted?: () => void
   onFatalError?: (error: { type: string; details: string; fatal: boolean }) => void
+  /** Target latency in seconds for live streams (for dubbing sync). Default: 3s */
+  targetLatencySeconds?: number
 }
 
 /**
@@ -99,6 +101,7 @@ export function useHLSPlayer({
   onReady,
   onAutoplayMuted,
   onFatalError,
+  targetLatencySeconds = 3,
 }: UseHLSPlayerOptions) {
   const hlsRef = useRef<Hls | null>(null)
   const networkErrorCountRef = useRef(0)
@@ -157,7 +160,7 @@ export function useHLSPlayer({
     if (Hls.isSupported() && streamUrl.includes('.m3u8')) {
       const hls = new Hls({
         enableWorker: true,
-        lowLatencyMode: isLive,
+        lowLatencyMode: isLive && targetLatencySeconds <= 3, // Only low latency if not delayed for dubbing
         // Aggressive settings to fail fast on stale streams
         manifestLoadingTimeOut: 5000,
         manifestLoadingMaxRetry: 1,
@@ -170,9 +173,14 @@ export function useHLSPlayer({
         fragLoadingRetryDelay: 500,
         // Disable automatic level switching on error
         startLevel: -1,
-        // Don't cache anything
-        maxBufferLength: 10,
-        maxMaxBufferLength: 30,
+        // Buffer settings - increase for dubbing delay
+        maxBufferLength: Math.max(10, targetLatencySeconds + 5),
+        maxMaxBufferLength: Math.max(30, targetLatencySeconds + 20),
+        // Live sync settings - control how far behind live edge we play
+        // For dubbing, we want to be ~10s behind to match dubbed audio buffer
+        liveSyncDuration: isLive ? targetLatencySeconds : undefined,
+        liveMaxLatencyDuration: isLive ? targetLatencySeconds + 5 : undefined,
+        liveDurationInfinity: isLive,
       })
       hlsRef.current = hls
       activeHlsInstances.add(hls) // Track for cleanup
@@ -397,7 +405,126 @@ export function useHLSPlayer({
         hlsRef.current = null
       }
     }
-  }, [streamUrl, isLive, autoPlay, videoRef, onReady, onAutoplayMuted, handleFatalError])
+  }, [streamUrl, isLive, autoPlay, videoRef, onReady, onAutoplayMuted, handleFatalError, targetLatencySeconds])
+
+  // Listen for dubbing stream switch events to reconfigure HLS.js with delayed latency
+  useEffect(() => {
+    if (!isLive) return
+
+    const handleDubbingSwitch = (event: CustomEvent<{ url: string; delay_ms: number }>) => {
+      const video = videoRef.current
+      if (!video || !hlsRef.current) return
+
+      const delaySeconds = Math.ceil(event.detail.delay_ms / 1000)
+      logger.info(`Reconfiguring HLS for dubbing: ${delaySeconds}s latency`, 'useHLSPlayer')
+
+      // Store current playback position
+      const currentTime = video.currentTime
+      const wasPlaying = !video.paused
+
+      // Destroy current instance
+      activeHlsInstances.delete(hlsRef.current)
+      hlsRef.current.stopLoad()
+      hlsRef.current.detachMedia()
+      hlsRef.current.destroy()
+
+      // Create new instance with dubbing latency
+      const hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: false, // Disable for dubbing
+        manifestLoadingTimeOut: 5000,
+        manifestLoadingMaxRetry: 1,
+        manifestLoadingRetryDelay: 500,
+        levelLoadingTimeOut: 5000,
+        levelLoadingMaxRetry: 1,
+        levelLoadingRetryDelay: 500,
+        fragLoadingTimeOut: 5000,
+        fragLoadingMaxRetry: 1,
+        fragLoadingRetryDelay: 500,
+        startLevel: -1,
+        maxBufferLength: delaySeconds + 10,
+        maxMaxBufferLength: delaySeconds + 30,
+        liveSyncDuration: delaySeconds,
+        liveMaxLatencyDuration: delaySeconds + 5,
+        liveDurationInfinity: true,
+      })
+
+      hlsRef.current = hls
+      activeHlsInstances.add(hls)
+
+      hls.loadSource(event.detail.url)
+      hls.attachMedia(video)
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        logger.info('HLS reconfigured for dubbing, manifest parsed', 'useHLSPlayer')
+        if (wasPlaying) {
+          video.play().catch((err) => {
+            logger.warn('Failed to resume after dubbing switch', 'useHLSPlayer', err)
+          })
+        }
+      })
+    }
+
+    const handleDubbingRestore = (event: CustomEvent<{ url: string }>) => {
+      const video = videoRef.current
+      if (!video || !hlsRef.current) return
+
+      logger.info('Restoring HLS to normal latency', 'useHLSPlayer')
+
+      // Store current state
+      const wasPlaying = !video.paused
+
+      // Destroy current instance
+      activeHlsInstances.delete(hlsRef.current)
+      hlsRef.current.stopLoad()
+      hlsRef.current.detachMedia()
+      hlsRef.current.destroy()
+
+      // Create new instance with normal latency
+      const hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: true,
+        manifestLoadingTimeOut: 5000,
+        manifestLoadingMaxRetry: 1,
+        manifestLoadingRetryDelay: 500,
+        levelLoadingTimeOut: 5000,
+        levelLoadingMaxRetry: 1,
+        levelLoadingRetryDelay: 500,
+        fragLoadingTimeOut: 5000,
+        fragLoadingMaxRetry: 1,
+        fragLoadingRetryDelay: 500,
+        startLevel: -1,
+        maxBufferLength: 10,
+        maxMaxBufferLength: 30,
+        liveSyncDuration: 3,
+        liveMaxLatencyDuration: 8,
+        liveDurationInfinity: true,
+      })
+
+      hlsRef.current = hls
+      activeHlsInstances.add(hls)
+
+      hls.loadSource(event.detail.url)
+      hls.attachMedia(video)
+
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        logger.info('HLS restored to normal latency', 'useHLSPlayer')
+        if (wasPlaying) {
+          video.play().catch((err) => {
+            logger.warn('Failed to resume after dubbing restore', 'useHLSPlayer', err)
+          })
+        }
+      })
+    }
+
+    window.addEventListener('dubbing-stream-switch', handleDubbingSwitch as EventListener)
+    window.addEventListener('dubbing-stream-restore', handleDubbingRestore as EventListener)
+
+    return () => {
+      window.removeEventListener('dubbing-stream-switch', handleDubbingSwitch as EventListener)
+      window.removeEventListener('dubbing-stream-restore', handleDubbingRestore as EventListener)
+    }
+  }, [isLive, videoRef])
 
   return { hlsRef }
 }

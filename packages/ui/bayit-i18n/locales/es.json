@@ -6473,7 +6473,43 @@
     "channel": "Canal",
     "dateFilter": "Fecha",
     "today": "Hoy",
-    "yesterday": "Ayer"
+    "yesterday": "Ayer",
+    "timeline": {
+      "title": "Línea de tiempo de transcripciones",
+      "segmentCount": "{{count}} segmentos",
+      "count": "{{count}} segmentos",
+      "window": "Últimos {{minutes}} min",
+      "buttonLabel": "Mostrar línea de tiempo de transcripciones",
+      "buttonTitle": "Línea de tiempo",
+      "empty": "Aún no hay transcripciones disponibles",
+      "loading": "Cargando transcripciones..."
+    }
+  },
+  "highlights": {
+    "title": "Destacados",
+    "noHighlights": "Aún no se han detectado destacados",
+    "fetchError": "Error al cargar destacados",
+    "types": {
+      "emotional": "Emocional",
+      "entity": "Entidad",
+      "keyword": "Palabra clave",
+      "dramatic": "Dramático"
+    },
+    "button": {
+      "label": "Mostrar destacados",
+      "title": "Destacados"
+    }
+  },
+  "liveSearch": {
+    "liveTitle": "Búsqueda en vivo",
+    "placeholder": "Buscar transcripciones...",
+    "enterQuery": "Ingrese un término de búsqueda",
+    "noResults": "No hay transcripciones coincidentes",
+    "resultsCount": "{{count}} resultados",
+    "button": {
+      "label": "Buscar transcripciones",
+      "title": "Buscar"
+    }
   },
   "audiobooks": {
     "narrator": "Narrador",

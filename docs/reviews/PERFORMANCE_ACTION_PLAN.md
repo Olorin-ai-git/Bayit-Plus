@@ -454,13 +454,13 @@ git push origin develop
 
 ```bash
 # Use Cloud Run revision rollback
-gcloud run services update-traffic bayit-plus-backend-staging \
+gcloud run services update-traffic bayit-backend-production-staging \
     --region us-east1 \
     --to-revisions=PREVIOUS_REVISION=100
 
 # Check previous revisions
 gcloud run revisions list \
-    --service bayit-plus-backend-staging \
+    --service bayit-backend-production-staging \
     --region us-east1 \
     --limit 5
 ```

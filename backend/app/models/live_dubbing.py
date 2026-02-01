@@ -137,7 +137,7 @@ class DubbingMessage(BaseModel):
 
 
 class DubbedAudioMessage(BaseModel):
-    """Dubbed audio chunk message."""
+    """Dubbed audio chunk message with continuous flow fields."""
 
     type: str = "dubbed_audio"
     data: str = Field(..., description="Base64-encoded audio data")
@@ -148,6 +148,34 @@ class DubbedAudioMessage(BaseModel):
         default_factory=lambda: int(datetime.utcnow().timestamp() * 1000)
     )
     latency_ms: int = Field(..., description="Total pipeline latency")
+
+    # Continuous flow fields for sync-focused playback
+    video_timestamp_ms: Optional[int] = Field(
+        default=None, description="Video timeline position for playback sync"
+    )
+    duration_ms: Optional[int] = Field(
+        default=None, description="Audio duration for queue management"
+    )
+    processing_time_ms: Optional[int] = Field(
+        default=None, description="Pipeline processing time"
+    )
+
+
+class BufferStatusMessage(BaseModel):
+    """Buffer health status message for continuous flow."""
+
+    type: str = "buffer_status"
+    buffer_ahead_seconds: float = Field(
+        ..., description="How far ahead processing is from playback"
+    )
+    buffer_health: str = Field(
+        ..., description="Buffer state: healthy, warning, critical, emergency"
+    )
+    playback_started: bool = Field(
+        ..., description="Whether initial buffer is filled and playback started"
+    )
+    playback_time_ms: int = Field(..., description="Current playback position")
+    processed_time_ms: int = Field(..., description="Latest processed position")
 
 
 class LatencyReport(BaseModel):

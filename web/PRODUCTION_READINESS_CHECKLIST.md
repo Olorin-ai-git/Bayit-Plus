@@ -233,7 +233,7 @@ This checklist ensures the Bayit+ web platform meets all production readiness cr
 - [x] Third-party integrations working (Stripe, Sentry)
 
 **Status**: ✅ PASSED
-**Backend**: bayit-plus-backend (Cloud Run, us-east1)
+**Backend**: bayit-backend-production (Cloud Run, us-east1)
 
 ### 5.3 CI/CD Pipeline
 - [ ] Automated build pipeline configured
@@ -388,7 +388,7 @@ This checklist ensures the Bayit+ web platform meets all production readiness cr
 - [x] CORS origins configured
 
 **Status**: ✅ PASSED
-**Backend Service**: bayit-plus-backend (us-east1)
+**Backend Service**: bayit-backend-production (us-east1)
 
 ---
 

@@ -2,7 +2,7 @@
 package-mode = false
 
 [project]
-name = "bayit-plus-backend"
+name = "bayit-backend-production"
 version = "0.1.0"
 description = "Bayit+ Hebrew streaming platform API"
 authors = [

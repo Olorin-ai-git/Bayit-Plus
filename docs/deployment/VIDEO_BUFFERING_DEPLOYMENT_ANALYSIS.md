@@ -178,7 +178,7 @@ resource "google_monitoring_alert_policy" "ffmpeg_processing_latency" {
     condition_threshold {
       filter          = <<-EOT
         resource.type="cloud_run_revision"
-        AND resource.labels.service_name="bayit-plus-backend"
+        AND resource.labels.service_name="bayit-backend-production"
         AND metric.type="custom.googleapis.com/ffmpeg/segment_processing_duration_ms"
         AND metric.labels.percentile="p95"
       EOT
@@ -207,7 +207,7 @@ resource "google_monitoring_alert_policy" "ffmpeg_error_rate" {
     condition_threshold {
       filter          = <<-EOT
         resource.type="cloud_run_revision"
-        AND resource.labels.service_name="bayit-plus-backend"
+        AND resource.labels.service_name="bayit-backend-production"
         AND metric.type="custom.googleapis.com/ffmpeg/error_rate"
       EOT
       duration        = "300s"
@@ -235,7 +235,7 @@ resource "google_monitoring_alert_policy" "websocket_message_size" {
     condition_threshold {
       filter          = <<-EOT
         resource.type="cloud_run_revision"
-        AND resource.labels.service_name="bayit-plus-backend"
+        AND resource.labels.service_name="bayit-backend-production"
         AND metric.type="custom.googleapis.com/websocket/message_size_bytes"
         AND metric.labels.percentile="p95"
       EOT
@@ -571,7 +571,7 @@ substitutions:
   _MAX_INSTANCES: "30"
   _MIN_INSTANCES: "2"
   _ENVIRONMENT: "production"
-  _SERVICE_NAME: "bayit-plus-backend"
+  _SERVICE_NAME: "bayit-backend-production"
 
 options:
   machineType: "E2_HIGHCPU_8"
@@ -647,7 +647,7 @@ timeout: "2400s"  # Increased for load testing
 
 **Configuration:**
 ```bash
-gcloud run services update-traffic bayit-plus-backend \
+gcloud run services update-traffic bayit-backend-production \
   --region us-east1 \
   --to-revisions=NEW_REVISION=10,PREVIOUS_REVISION=90
 ```
@@ -668,7 +668,7 @@ gcloud run services update-traffic bayit-plus-backend \
 
 **Configuration:**
 ```bash
-gcloud run services update-traffic bayit-plus-backend \
+gcloud run services update-traffic bayit-backend-production \
   --region us-east1 \
   --to-revisions=NEW_REVISION=50,PREVIOUS_REVISION=50
 ```
@@ -681,7 +681,7 @@ gcloud run services update-traffic bayit-plus-backend \
 
 **Configuration:**
 ```bash
-gcloud run services update-traffic bayit-plus-backend \
+gcloud run services update-traffic bayit-backend-production \
   --region us-east1 \
   --to-revisions=NEW_REVISION=100
 ```
@@ -709,21 +709,21 @@ gcloud run services update-traffic bayit-plus-backend \
 set -e
 
 PREVIOUS_REVISION=$(gcloud run revisions list \
-  --service=bayit-plus-backend \
+  --service=bayit-backend-production \
   --region=us-east1 \
   --format='value(name)' \
   --limit=2 | tail -1)
 
 if [ -n "$PREVIOUS_REVISION" ]; then
   echo "Rolling back to: $PREVIOUS_REVISION"
-  gcloud run services update-traffic bayit-plus-backend \
+  gcloud run services update-traffic bayit-backend-production \
     --region=us-east1 \
     --to-revisions=$PREVIOUS_REVISION=100
 
   echo "Rollback completed. Verifying health..."
   sleep 20
 
-  SERVICE_URL=$(gcloud run services describe bayit-plus-backend \
+  SERVICE_URL=$(gcloud run services describe bayit-backend-production \
     --region=us-east1 \
     --format='value(status.url)')
 

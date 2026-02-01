@@ -13,7 +13,7 @@ on:
 env:
   PROJECT_ID: ${{ vars.GCP_PROJECT_ID || 'bayit-plus' }}
   REGION: ${{ vars.GCP_REGION || 'us-east1' }}
-  SERVICE_NAME: ${{ vars.STAGING_SERVICE_NAME || 'bayit-plus-backend-staging' }}
+  SERVICE_NAME: ${{ vars.STAGING_SERVICE_NAME || 'bayit-backend-production-staging' }}
   ARTIFACT_REGISTRY: ${{ vars.GCP_REGION || 'us-east1' }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID || 'bayit-plus' }}/bayit-plus
   IMAGE_NAME: backend
 

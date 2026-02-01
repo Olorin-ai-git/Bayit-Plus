@@ -9,6 +9,11 @@
 import logger from '@/utils/logger'
 import { SharedAudioCapture } from './audio/sharedAudioCapture'
 import {
+  ContinuousPlaybackController,
+  type DubbedAudioSegment,
+  type BufferStatus,
+} from './audio/ContinuousPlaybackController'
+import {
   useDubbingSettingsStore,
   useLatencyHistoryStore,
   type LatencyDataPoint,
@@ -50,6 +55,10 @@ export interface DubbedAudioMessage {
   sequence: number
   timestamp_ms: number
   latency_ms: number
+  // Continuous flow fields
+  video_timestamp_ms?: number
+  duration_ms?: number
+  processing_time_ms?: number
 }
 
 export interface LatencyReport {
@@ -107,6 +116,8 @@ type DubbedAudioCallback = (message: DubbedAudioMessage) => void
 type LatencyCallback = (report: LatencyReport) => void
 type ConnectionCallback = (info: DubbingConnectionInfo) => void
 type ErrorCallback = (error: string, recoverable: boolean) => void
+type BufferStatusCallback = (status: BufferStatus) => void
+type PlaybackStartedCallback = () => void
 
 class LiveDubbingService {
   private ws: WebSocket | null = null
@@ -115,6 +126,10 @@ class LiveDubbingService {
   // Separate AudioContexts for optimal audio quality
   private captureContext: AudioContext | null = null  // 16kHz for STT (capture from video)
   private playbackContext: AudioContext | null = null // 48kHz for TTS (playback dubbed audio)
+
+  // Continuous flow playback controller
+  private continuousPlaybackController: ContinuousPlaybackController | null = null
+  private enableContinuousFlow = false
 
   private isConnected = false
   private syncDelayMs = AUDIO_CONFIG.defaultSyncDelayMs
@@ -133,6 +148,8 @@ class LiveDubbingService {
   private syncedStreamInfo: SyncedStreamResponse | null = null
   private firstAudioChunkSent = false
   private firstDubbedAudioReceived = false
+  private originalVideoSrc: string | null = null // Store original video source for restoration
+  private videoElementRef: HTMLVideoElement | null = null // Reference to video element
 
   /**
    * Validate buffer size (must be power of 2).
@@ -245,12 +262,18 @@ class LiveDubbingService {
     onError: ErrorCallback,
     voiceId?: string,
     platform = 'web',
-    bufferedMode = false // Disable immediate playback for buffered video sync
+    bufferedMode = false, // Disable immediate playback for buffered video sync
+    enableContinuousFlow = true, // Enable continuous flow architecture
+    onBufferStatus?: BufferStatusCallback,
+    onPlaybackStarted?: PlaybackStartedCallback
   ): Promise<void> {
     this.bufferedMode = bufferedMode
+    this.enableContinuousFlow = enableContinuousFlow
     this.channelId = channelId
     this.firstAudioChunkSent = false
     this.firstDubbedAudioReceived = false
+    this.videoElementRef = videoElement
+    this.originalVideoSrc = null // Will be set when switching to delayed stream
 
     // Load settings from store
     const settings = useDubbingSettingsStore.getState().getChannelSettings(channelId)
@@ -275,8 +298,36 @@ class LiveDubbingService {
         'liveDubbingService'
       )
 
-      // If client-side buffering is needed, initialize VideoBufferManager
-      if (this.syncedStreamInfo.mode === 'client-side') {
+      // Apply video delay based on mode
+      if (this.syncedStreamInfo.mode === 'server-side' && this.syncedStreamInfo.video_url) {
+        // Server-side: Switch video to delayed stream URL
+        const delayedUrl = this.syncedStreamInfo.video_url
+        logger.info(
+          `Switching to delayed stream: ${this.syncedStreamInfo.video_delay_ms}ms delay`,
+          'liveDubbingService'
+        )
+
+        // Store original source for restoration on disconnect
+        this.originalVideoSrc = videoElement.src
+
+        // Switch to delayed stream - HLS.js or native HLS will handle the new URL
+        if ((window as any).Hls && (window as any).Hls.isSupported()) {
+          // If using HLS.js, we need to reload with new source
+          // The VideoPlayer component manages HLS.js, so we emit an event
+          const event = new CustomEvent('dubbing-stream-switch', {
+            detail: { url: delayedUrl, delay_ms: this.syncedStreamInfo.video_delay_ms }
+          })
+          window.dispatchEvent(event)
+        } else {
+          // Native HLS (Safari) - direct source change
+          videoElement.src = delayedUrl
+          videoElement.load()
+          videoElement.play().catch((err) => {
+            logger.warn('Failed to play delayed stream', 'liveDubbingService', err)
+          })
+        }
+      } else if (this.syncedStreamInfo.mode === 'client-side') {
+        // Client-side: Use VideoBufferManager to pause-delay video
         const bufferConfig: VideoBufferConfig = {
           channelId,
           targetLang,
@@ -286,8 +337,6 @@ class LiveDubbingService {
         }
         this.videoBufferManager = new VideoBufferManager(bufferConfig)
         logger.info('Client-side video buffering initialized', 'liveDubbingService')
-      } else {
-        logger.info('Server-side video buffering active', 'liveDubbingService')
       }
     } catch (error) {
       logger.warn(
@@ -306,12 +355,21 @@ class LiveDubbingService {
       // Token is sent securely via first message after WebSocket connection is established
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
       // Use window.location.host for WebSocket connections (Vite proxy handles it in dev)
-      let wsUrl = `${wsProtocol}//${window.location.host}/api/v1/ws/live/${channelId}/dubbing?target_lang=${targetLang}&platform=${platform}`
+      let wsUrl = `${wsProtocol}//${window.location.host}/api/v1/ws/live/${channelId}/dubbing?target_lang=${targetLang}&platform=${platform}&continuous_flow=${enableContinuousFlow}`
       if (voiceId) {
         wsUrl += `&voice_id=${voiceId}`
       }
 
       this.ws = new WebSocket(wsUrl)
+
+      // Create continuous playback controller if enabled
+      if (enableContinuousFlow && this.ws) {
+        this.continuousPlaybackController = new ContinuousPlaybackController(
+          this.ws,
+          onBufferStatus,
+          onPlaybackStarted
+        )
+      }
 
       this.ws.onopen = async () => {
         logger.debug('WebSocket connected, authenticating', 'liveDubbingService')
@@ -350,12 +408,28 @@ class LiveDubbingService {
               logger.debug('Completed latency measurement (first dubbed audio)', 'liveDubbingService')
             }
 
-            // Only play audio immediately if not in buffered mode
-            if (!this.bufferedMode) {
+            // Use continuous playback controller if enabled
+            if (this.enableContinuousFlow && this.continuousPlaybackController) {
+              const segment: DubbedAudioSegment = {
+                audioData: audioMsg?.data || '',
+                videoTimestampMs: audioMsg?.video_timestamp_ms || 0,
+                durationMs: audioMsg?.duration_ms || 0,
+                sequence: audioMsg?.sequence || 0,
+                originalText: audioMsg?.original_text || '',
+                translatedText: audioMsg?.translated_text || '',
+              }
+              this.continuousPlaybackController.onDubbedAudioReceived(segment)
+            } else if (!this.bufferedMode) {
+              // Legacy mode: play audio immediately
               await this.playDubbedAudio(audioMsg?.data)
             }
 
             onDubbedAudio(audioMsg)
+          } else if (msg.type === 'buffer_status') {
+            // Handle buffer status from server
+            if (this.continuousPlaybackController) {
+              this.continuousPlaybackController.onBufferStatusReceived(msg as BufferStatus)
+            }
           } else if (msg.type === 'latency_report') {
             const report = msg as LatencyReport
             logger.debug(
@@ -469,6 +543,9 @@ class LiveDubbingService {
         }
       )
 
+      // Wait for video to have audio tracks ready (important after HLS stream switch)
+      await this.waitForVideoReady(videoElement)
+
       // Start capturing audio from video (uses proven Live Subtitles approach)
       await this.audioCapture.start(videoElement)
 
@@ -487,6 +564,40 @@ class LiveDubbingService {
     }
   }
 
+  /**
+   * Wait for video element to be ready for audio capture.
+   * This is important after HLS stream switch, as the video needs time to load.
+   */
+  private waitForVideoReady(videoElement: HTMLVideoElement, timeoutMs = 5000): Promise<void> {
+    return new Promise((resolve, reject) => {
+      // If video is already ready (has audio), resolve immediately
+      if (videoElement.readyState >= 2) {
+        logger.debug('Video already ready for audio capture', 'liveDubbingService')
+        resolve()
+        return
+      }
+
+      logger.debug('Waiting for video to be ready for audio capture', 'liveDubbingService')
+
+      const timeout = setTimeout(() => {
+        videoElement.removeEventListener('loadeddata', onReady)
+        videoElement.removeEventListener('canplay', onReady)
+        logger.warn('Video ready timeout - proceeding anyway', 'liveDubbingService')
+        resolve() // Don't reject, try anyway
+      }, timeoutMs)
+
+      const onReady = () => {
+        clearTimeout(timeout)
+        videoElement.removeEventListener('loadeddata', onReady)
+        videoElement.removeEventListener('canplay', onReady)
+        logger.debug('Video ready for audio capture', 'liveDubbingService')
+        resolve()
+      }
+
+      videoElement.addEventListener('loadeddata', onReady)
+      videoElement.addEventListener('canplay', onReady)
+    })
+  }
 
   /**
    * Play dubbed audio through the dubbed gain node using playback context.
@@ -605,6 +716,12 @@ class LiveDubbingService {
   disconnect(): void {
     this.stopAudioCapture()
 
+    // Stop continuous playback controller
+    if (this.continuousPlaybackController) {
+      this.continuousPlaybackController.stop()
+      this.continuousPlaybackController = null
+    }
+
     if (this.ws) {
       this.ws.close()
       this.ws = null
@@ -616,10 +733,32 @@ class LiveDubbingService {
       this.videoBufferManager = null
     }
 
+    // Restore original video source if we switched to delayed stream
+    if (this.originalVideoSrc && this.videoElementRef) {
+      logger.info('Restoring original video stream', 'liveDubbingService')
+      if ((window as any).Hls && (window as any).Hls.isSupported()) {
+        // Emit event for HLS.js managed video
+        const event = new CustomEvent('dubbing-stream-restore', {
+          detail: { url: this.originalVideoSrc }
+        })
+        window.dispatchEvent(event)
+      } else {
+        // Native HLS - direct source restore
+        this.videoElementRef.src = this.originalVideoSrc
+        this.videoElementRef.load()
+        this.videoElementRef.play().catch((err) => {
+          logger.warn('Failed to play restored stream', 'liveDubbingService', err)
+        })
+      }
+    }
+
     this.syncedStreamInfo = null
     this.firstAudioChunkSent = false
     this.firstDubbedAudioReceived = false
+    this.originalVideoSrc = null
+    this.videoElementRef = null
     this.isConnected = false
+    this.enableContinuousFlow = false
     this.chunkCount = 0
     logger.debug('Disconnected', 'liveDubbingService')
   }

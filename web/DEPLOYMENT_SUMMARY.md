@@ -53,7 +53,7 @@ firebase hosting:rollback
 - **Production**: https://bayit-plus.web.app
 - **Firebase Console**: https://console.firebase.google.com/project/bayit-plus/hosting
 - **Sentry Dashboard**: https://sentry.io/organizations/[org]/issues/
-- **Backend Service**: bayit-plus-backend (Cloud Run, us-east1)
+- **Backend Service**: bayit-backend-production (Cloud Run, us-east1)
 
 ### Key Metrics to Monitor (First 24 Hours)
 - **Error Rate**: Target <1% (monitor Sentry)

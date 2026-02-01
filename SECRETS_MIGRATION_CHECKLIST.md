@@ -149,7 +149,7 @@ gcloud builds list --limit=5
 **Check Cloud Run service**:
 ```bash
 # Get service URL
-gcloud run services describe bayit-plus-backend --region=us-east1 --format='value(status.url)'
+gcloud run services describe bayit-backend-production --region=us-east1 --format='value(status.url)'
 
 # Check health endpoint
 curl https://[SERVICE-URL]/health
@@ -160,7 +160,7 @@ curl https://[SERVICE-URL]/health
 
 **Check logs for issues**:
 ```bash
-gcloud run services logs read bayit-plus-backend --region=us-east1 --limit=50
+gcloud run services logs read bayit-backend-production --region=us-east1 --limit=50
 
 # Look for:
 # ✓ "Configuration validation passed"
@@ -320,7 +320,7 @@ Migration is complete when:
 ## 📞 Support
 
 If issues persist:
-1. Check application logs: `gcloud run services logs read bayit-plus-backend --region=us-east1 --limit=100`
+1. Check application logs: `gcloud run services logs read bayit-backend-production --region=us-east1 --limit=100`
 2. Review SECRET_MANAGEMENT_GUIDE.md troubleshooting section
 3. Contact platform team
 

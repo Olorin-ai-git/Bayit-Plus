@@ -46,7 +46,7 @@ deploy_backend() {
 
   # Deploy to Cloud Run
   log "Deploying to Cloud Run..."
-  gcloud run deploy bayit-plus-backend \
+  gcloud run deploy bayit-backend-production \
     --region=us-east1 \
     --source=. \
     --set-env-vars="ENV=production" \

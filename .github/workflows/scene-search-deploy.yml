@@ -355,14 +355,14 @@ jobs:
         id: env
         run: |
           if [[ "${{ github.event.inputs.environment }}" == "production" ]]; then
-            echo "service_name=bayit-plus-backend" >> $GITHUB_OUTPUT
+            echo "service_name=bayit-backend-production" >> $GITHUB_OUTPUT
             echo "tag_prefix=prod" >> $GITHUB_OUTPUT
             echo "sentry_env=production" >> $GITHUB_OUTPUT
             echo "log_level=INFO" >> $GITHUB_OUTPUT
             echo "min_instances=1" >> $GITHUB_OUTPUT
             echo "max_instances=10" >> $GITHUB_OUTPUT
           else
-            echo "service_name=bayit-plus-backend-staging" >> $GITHUB_OUTPUT
+            echo "service_name=bayit-backend-production-staging" >> $GITHUB_OUTPUT
             echo "tag_prefix=staging" >> $GITHUB_OUTPUT
             echo "sentry_env=staging" >> $GITHUB_OUTPUT
             echo "log_level=DEBUG" >> $GITHUB_OUTPUT

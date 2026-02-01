@@ -162,7 +162,7 @@
 
 ## Secrets Used by Cloud Run Service (60+)
 
-**Service**: `bayit-plus-backend` (us-east1)
+**Service**: `bayit-backend-production` (us-east1)
 
 ### Secrets Referenced by Cloud Run:
 1. `bayit-secret-key` (SECRET_KEY)

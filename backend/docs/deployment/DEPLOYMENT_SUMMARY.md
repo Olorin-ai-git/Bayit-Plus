@@ -2,7 +2,7 @@
 
 ## ✅ Deployment Successful
 
-**Service URL**: `https://bayit-plus-backend-624470113582.us-east1.run.app`
+**Service URL**: `https://bayit-backend-production-624470113582.us-east1.run.app`
 
 **Deployment Date**: January 11, 2026
 
@@ -11,12 +11,12 @@
 ## Infrastructure Details
 
 ### Google Cloud Run
-- **Service Name**: `bayit-plus-backend`
+- **Service Name**: `bayit-backend-production`
 - **Region**: `us-east1`
 - **Project**: `israeli-radio-475c9`
 - **Image**: `us-east1-docker.pkg.dev/israeli-radio-475c9/bayit-plus/backend:latest`
 - **Service Account**: `israeli-radio-auth@israeli-radio-475c9.iam.gserviceaccount.com`
-- **Current Revision**: `bayit-plus-backend-00002-7m4`
+- **Current Revision**: `bayit-backend-production-00002-7m4`
 
 ### Resources
 - **Memory**: 2Gi
@@ -63,17 +63,17 @@
 
 ### ✅ Health Check
 ```bash
-curl https://bayit-plus-backend-624470113582.us-east1.run.app/health
+curl https://bayit-backend-production-624470113582.us-east1.run.app/health
 # Response: {"status":"healthy","app":"Bayit+ API"}
 ```
 
 ### ✅ API Documentation
-- **Swagger UI**: https://bayit-plus-backend-624470113582.us-east1.run.app/docs
-- **OpenAPI JSON**: https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/openapi.json
+- **Swagger UI**: https://bayit-backend-production-624470113582.us-east1.run.app/docs
+- **OpenAPI JSON**: https://bayit-backend-production-624470113582.us-east1.run.app/api/v1/openapi.json
 
 ### ✅ Content API
 ```bash
-curl https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/content/featured
+curl https://bayit-backend-production-624470113582.us-east1.run.app/api/v1/content/featured
 # Response: {"hero":null,"spotlight":[],"categories":[]}
 # (Empty because database is new - working correctly)
 ```
@@ -88,12 +88,12 @@ Update the API base URL in all frontend apps to point to the new Cloud Run servi
 
 **Web App** (`web/src/config/appConfig.js`):
 ```javascript
-export const API_BASE_URL = 'https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1';
+export const API_BASE_URL = 'https://bayit-backend-production-624470113582.us-east1.run.app/api/v1';
 ```
 
 **Tizen TV App**:
 ```javascript
-const API_BASE_URL = 'https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1';
+const API_BASE_URL = 'https://bayit-backend-production-624470113582.us-east1.run.app/api/v1';
 ```
 
 **Mobile Apps** (if applicable):
@@ -128,7 +128,7 @@ Access the admin panel through the web app to manually add content.
 #### Google OAuth Console
 Add the new redirect URI:
 ```
-https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/auth/google/callback
+https://bayit-backend-production-624470113582.us-east1.run.app/api/v1/auth/google/callback
 ```
 
 **Steps**:
@@ -139,7 +139,7 @@ https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/auth/google/call
 #### Stripe Webhooks (When Ready)
 1. Go to https://dashboard.stripe.com/webhooks
 2. Create new webhook endpoint:
-   - URL: `https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1/subscriptions/webhook`
+   - URL: `https://bayit-backend-production-624470113582.us-east1.run.app/api/v1/subscriptions/webhook`
    - Events: `checkout.session.completed`, `customer.subscription.*`
 3. Update `stripe-webhook-secret` in Secret Manager with the signing secret
 4. Update `stripe-secret-key`, `stripe-price-basic`, `stripe-price-premium`, `stripe-price-family` secrets
@@ -150,7 +150,7 @@ If you want to use `api.bayit.tv` instead of the Cloud Run URL:
 
 ```bash
 gcloud run domain-mappings create \
-  --service bayit-plus-backend \
+  --service bayit-backend-production \
   --domain api.bayit.tv \
   --region us-east1 \
   --project israeli-radio-475c9
@@ -165,7 +165,7 @@ Create a Cloud Build trigger for automatic deployments:
 1. Go to https://console.cloud.google.com/cloud-build/triggers?project=israeli-radio-475c9
 2. Click "CREATE TRIGGER"
 3. Configure:
-   - **Name**: `deploy-bayit-plus-backend`
+   - **Name**: `deploy-bayit-backend-production`
    - **Repository**: Connect your GitHub repo
    - **Branch**: `^main$`
    - **Build configuration**: `backend/cloudbuild.yaml`
@@ -179,7 +179,7 @@ Now every push to `main` will automatically build and deploy the backend.
 1. Go to https://console.cloud.google.com/monitoring/uptime?project=israeli-radio-475c9
 2. Create uptime check:
    - **Protocol**: HTTPS
-   - **URL**: `https://bayit-plus-backend-624470113582.us-east1.run.app/health`
+   - **URL**: `https://bayit-backend-production-624470113582.us-east1.run.app/health`
    - **Frequency**: 1 minute
 
 #### Create Alert Policies
@@ -225,12 +225,12 @@ If you need to rollback to a previous version:
 ```bash
 # List revisions
 gcloud run revisions list \
-  --service bayit-plus-backend \
+  --service bayit-backend-production \
   --region us-east1 \
   --project israeli-radio-475c9
 
 # Rollback to specific revision
-gcloud run services update-traffic bayit-plus-backend \
+gcloud run services update-traffic bayit-backend-production \
   --region us-east1 \
   --to-revisions [REVISION-NAME]=100
 ```
@@ -239,11 +239,11 @@ gcloud run services update-traffic bayit-plus-backend \
 
 ## Support & Documentation
 
-- **Cloud Run Console**: https://console.cloud.google.com/run/detail/us-east1/bayit-plus-backend?project=israeli-radio-475c9
+- **Cloud Run Console**: https://console.cloud.google.com/run/detail/us-east1/bayit-backend-production?project=israeli-radio-475c9
 - **Logs**: https://console.cloud.google.com/logs/query?project=israeli-radio-475c9
 - **Secrets**: https://console.cloud.google.com/security/secret-manager?project=israeli-radio-475c9
 - **GCS Bucket**: https://console.cloud.google.com/storage/browser/bayit-plus-media?project=israeli-radio-475c9
-- **API Docs**: https://bayit-plus-backend-624470113582.us-east1.run.app/docs
+- **API Docs**: https://bayit-backend-production-624470113582.us-east1.run.app/docs
 
 ---
 

@@ -5691,7 +5691,43 @@
       "insufficientCredits": "クレジットが不足しています"
     },
     "title": "見逃し視聴",
-    "description": "見逃した番組を視聴"
+    "description": "見逃した番組を視聴",
+    "timeline": {
+      "title": "字幕タイムライン",
+      "segmentCount": "{{count}} セグメント",
+      "count": "{{count}} セグメント",
+      "window": "直近 {{minutes}} 分",
+      "buttonLabel": "字幕タイムラインを表示",
+      "buttonTitle": "タイムライン",
+      "empty": "まだ字幕がありません",
+      "loading": "字幕を読み込み中..."
+    }
+  },
+  "highlights": {
+    "title": "ハイライト",
+    "noHighlights": "まだハイライトが検出されていません",
+    "fetchError": "ハイライトの読み込みに失敗しました",
+    "types": {
+      "emotional": "感情的",
+      "entity": "エンティティ",
+      "keyword": "キーワード",
+      "dramatic": "ドラマチック"
+    },
+    "button": {
+      "label": "ハイライトを表示",
+      "title": "ハイライト"
+    }
+  },
+  "liveSearch": {
+    "liveTitle": "ライブ検索",
+    "placeholder": "字幕を検索...",
+    "enterQuery": "検索語を入力",
+    "noResults": "一致する字幕がありません",
+    "resultsCount": "{{count}} 件の結果",
+    "button": {
+      "label": "字幕を検索",
+      "title": "検索"
+    }
   },
   "tvLogin": {
     "invalidQR": "無効なQRコードです。TVから再度スキャンしてください。",

@@ -147,7 +147,7 @@ Grant the backend Cloud Run service account access to these secrets:
 
 ```bash
 # Get the service account email
-SA_EMAIL=$(gcloud run services describe bayit-plus-backend \
+SA_EMAIL=$(gcloud run services describe bayit-backend-production \
   --region=us-central1 \
   --format='value(spec.template.spec.serviceAccountName)')
 

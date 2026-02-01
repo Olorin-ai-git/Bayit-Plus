@@ -5759,6 +5759,42 @@
       "failed": "无法生成摘要",
       "retry": "重试",
       "insufficientCredits": "积分不足"
+    },
+    "timeline": {
+      "title": "字幕时间线",
+      "segmentCount": "{{count}} 个片段",
+      "count": "{{count}} 个片段",
+      "window": "最近 {{minutes}} 分钟",
+      "buttonLabel": "显示字幕时间线",
+      "buttonTitle": "时间线",
+      "empty": "暂无可用字幕",
+      "loading": "正在加载字幕..."
+    }
+  },
+  "highlights": {
+    "title": "精彩片段",
+    "noHighlights": "暂未检测到精彩片段",
+    "fetchError": "无法加载精彩片段",
+    "types": {
+      "emotional": "情感",
+      "entity": "实体",
+      "keyword": "关键词",
+      "dramatic": "戏剧性"
+    },
+    "button": {
+      "label": "显示精彩片段",
+      "title": "精彩片段"
+    }
+  },
+  "liveSearch": {
+    "liveTitle": "实时搜索",
+    "placeholder": "搜索字幕...",
+    "enterQuery": "输入搜索词",
+    "noResults": "无匹配字幕",
+    "resultsCount": "{{count}} 个结果",
+    "button": {
+      "label": "搜索字幕",
+      "title": "搜索"
     }
   },
   "audiobooks": {

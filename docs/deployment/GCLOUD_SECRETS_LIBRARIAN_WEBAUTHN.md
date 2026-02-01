@@ -215,7 +215,7 @@ gcloud secrets create WEBAUTHN_ORIGIN \
 
 ```bash
 # Grant access to Cloud Run service account (replace with your service account)
-SERVICE_ACCOUNT="bayit-plus-backend@bayit-plus-production.iam.gserviceaccount.com"
+SERVICE_ACCOUNT="bayit-backend-production@bayit-plus-production.iam.gserviceaccount.com"
 
 # Librarian secrets
 for SECRET in LIBRARIAN_DAILY_AUDIT_CRON LIBRARIAN_DAILY_AUDIT_TIME LIBRARIAN_DAILY_AUDIT_MODE \

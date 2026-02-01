@@ -4908,6 +4908,42 @@
       "failed": "সারসংক্ষেপ তৈরি করা যায়নি",
       "retry": "আবার চেষ্টা করুন",
       "insufficientCredits": "অপর্যাপ্ত ক্রেডিট"
+    },
+    "timeline": {
+      "title": "ট্রান্সক্রিপ্ট টাইমলাইন",
+      "segmentCount": "{{count}} সেগমেন্ট",
+      "count": "{{count}} সেগমেন্ট",
+      "window": "শেষ {{minutes}} মিনিট",
+      "buttonLabel": "ট্রান্সক্রিপ্ট টাইমলাইন দেখান",
+      "buttonTitle": "টাইমলাইন",
+      "empty": "এখনো কোনো ট্রান্সক্রিপ্ট নেই",
+      "loading": "ট্রান্সক্রিপ্ট লোড হচ্ছে..."
+    }
+  },
+  "highlights": {
+    "title": "হাইলাইটস",
+    "noHighlights": "এখনো কোনো হাইলাইট সনাক্ত হয়নি",
+    "fetchError": "হাইলাইট লোড করা যায়নি",
+    "types": {
+      "emotional": "আবেগপূর্ণ",
+      "entity": "সত্তা",
+      "keyword": "কীওয়ার্ড",
+      "dramatic": "নাটকীয়"
+    },
+    "button": {
+      "label": "হাইলাইট দেখান",
+      "title": "হাইলাইটস"
+    }
+  },
+  "liveSearch": {
+    "liveTitle": "লাইভ সার্চ",
+    "placeholder": "ট্রান্সক্রিপ্ট খুঁজুন...",
+    "enterQuery": "সার্চ টার্ম লিখুন",
+    "noResults": "কোনো মিলের ট্রান্সক্রিপ্ট নেই",
+    "resultsCount": "{{count}} ফলাফল",
+    "button": {
+      "label": "ট্রান্সক্রিপ্ট খুঁজুন",
+      "title": "খুঁজুন"
     }
   },
   "tvLogin": {

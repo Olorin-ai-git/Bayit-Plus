@@ -9,7 +9,7 @@ Usage:
     pytest tests/smoke/ -v
 
     # Against deployed service
-    SERVICE_URL=https://bayit-plus-backend-xxx.run.app pytest tests/smoke/ -v
+    SERVICE_URL=https://bayit-backend-production-xxx.run.app pytest tests/smoke/ -v
 
 Environment variables:
     SERVICE_URL: Base URL of the service (default: http://localhost:8080)

@@ -169,7 +169,7 @@ The `rollback.sh` script provides excellent operational capabilities:
 **Usage**:
 ```bash
 ./scripts/rollback.sh -e production -n 1  # Rollback 1 revision
-./scripts/rollback.sh -r bayit-plus-backend-00005-abc  # Specific revision
+./scripts/rollback.sh -r bayit-backend-production-00005-abc  # Specific revision
 ./scripts/rollback.sh -l  # List revisions
 ```
 
@@ -316,7 +316,7 @@ auto-rollback:
 
 # Investigate what went wrong
 ./scripts/rollback.sh -l  # List revisions
-./scripts/rollback.sh -r bayit-plus-backend-00042-xyz -d  # Dry-run
+./scripts/rollback.sh -r bayit-backend-production-00042-xyz -d  # Dry-run
 ```
 
 #### 4.2 Smoke Tests (`smoke_tests.sh`)
@@ -352,7 +352,7 @@ auto-rollback:
 ## Response Procedures
 
 ### P0: Service Down
-1. Check Cloud Run service status: `gcloud run services describe bayit-plus-backend`
+1. Check Cloud Run service status: `gcloud run services describe bayit-backend-production`
 2. Check health endpoints: `curl https://api.bayit.plus/health/deep`
 3. Review recent deployments: `./scripts/rollback.sh -l`
 4. If recent deployment, rollback: `./scripts/rollback.sh -n 1`
@@ -747,17 +747,17 @@ test_endpoint "Protected profile endpoint" "GET" "/api/v1/users/me" "401"
 
 ```promql
 # Request latency P95
-cloudrun.googleapis.com/request_latencies{service_name="bayit-plus-backend",percentile="95"}
+cloudrun.googleapis.com/request_latencies{service_name="bayit-backend-production",percentile="95"}
 
 # Error rate
-rate(cloudrun.googleapis.com/request_count{service_name="bayit-plus-backend",response_code_class="5xx"}[5m]) /
-rate(cloudrun.googleapis.com/request_count{service_name="bayit-plus-backend"}[5m])
+rate(cloudrun.googleapis.com/request_count{service_name="bayit-backend-production",response_code_class="5xx"}[5m]) /
+rate(cloudrun.googleapis.com/request_count{service_name="bayit-backend-production"}[5m])
 
 # Container CPU utilization
-cloudrun.googleapis.com/container/cpu/utilizations{service_name="bayit-plus-backend"}
+cloudrun.googleapis.com/container/cpu/utilizations{service_name="bayit-backend-production"}
 
 # Active instances
-cloudrun.googleapis.com/container/instance_count{service_name="bayit-plus-backend"}
+cloudrun.googleapis.com/container/instance_count{service_name="bayit-backend-production"}
 ```
 
 ### Health Check Metrics (Custom)

@@ -42,7 +42,7 @@
 #### Step 1: Initial Assessment (0-2 minutes)
 ```bash
 # Check Cloud Run service status
-gcloud run services describe bayit-plus-backend \
+gcloud run services describe bayit-backend-production \
   --region us-east1 \
   --format="value(status.conditions)"
 
@@ -73,7 +73,7 @@ curl -s https://api.bayit.plus/health/ready | jq '.services'
 
 # Check last 5 revisions
 gcloud run revisions list \
-  --service bayit-plus-backend \
+  --service bayit-backend-production \
   --region us-east1 \
   --limit 5
 ```
@@ -96,13 +96,13 @@ curl https://api.bayit.plus/health
 ```bash
 # Tail Cloud Run logs
 gcloud run logs tail \
-  --service bayit-plus-backend \
+  --service bayit-backend-production \
   --region us-east1 \
   --limit 100
 
 # Filter errors
 gcloud run logs read \
-  --service bayit-plus-backend \
+  --service bayit-backend-production \
   --region us-east1 \
   --filter "severity>=ERROR" \
   --limit 50
@@ -128,7 +128,7 @@ gcloud secrets versions access latest --secret=mongodb-url
 **Out of Memory**:
 ```bash
 # Scale up memory immediately
-gcloud run services update bayit-plus-backend \
+gcloud run services update bayit-backend-production \
   --region us-east1 \
   --memory 4Gi
 ```
@@ -136,7 +136,7 @@ gcloud run services update bayit-plus-backend \
 **Too few instances**:
 ```bash
 # Increase min instances
-gcloud run services update bayit-plus-backend \
+gcloud run services update bayit-backend-production \
   --region us-east1 \
   --min-instances 3
 ```
@@ -178,7 +178,7 @@ curl -s https://api.bayit.plus/health/deep | jq '.services.mongodb.latency_ms'
 **If CPU/Memory high**:
 ```bash
 # Scale up
-gcloud run services update bayit-plus-backend \
+gcloud run services update bayit-backend-production \
   --region us-east1 \
   --cpu 4 \
   --memory 4Gi \
@@ -321,7 +321,7 @@ client = AsyncIOMotorClient(
    echo -n "new-mongodb-url" | gcloud secrets versions add mongodb-url --data-file=-
 
    # Redeploy to pick up new secret
-   gcloud run deploy bayit-plus-backend --region us-east1
+   gcloud run deploy bayit-backend-production --region us-east1
    ```
 
 2. Review access logs in MongoDB Atlas
@@ -348,7 +348,7 @@ If API keys leaked (e.g., in logs, public repo):
 
 3. **Redeploy**:
    ```bash
-   gcloud run deploy bayit-plus-backend --region us-east1
+   gcloud run deploy bayit-backend-production --region us-east1
    ```
 
 4. Monitor for unauthorized usage
@@ -433,13 +433,13 @@ curl https://api.bayit.plus/health/deep | jq .
 ./scripts/rollback.sh -e production -n 1
 
 # View logs
-gcloud run logs tail --service bayit-plus-backend --region us-east1
+gcloud run logs tail --service bayit-backend-production --region us-east1
 
 # Scale resources
-gcloud run services update bayit-plus-backend --region us-east1 --memory 4Gi --cpu 4
+gcloud run services update bayit-backend-production --region us-east1 --memory 4Gi --cpu 4
 
 # Check current deployment
-gcloud run services describe bayit-plus-backend --region us-east1
+gcloud run services describe bayit-backend-production --region us-east1
 
 # Update secret
 echo -n "new-value" | gcloud secrets versions add secret-name --data-file=-

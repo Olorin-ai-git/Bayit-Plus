@@ -5,12 +5,14 @@ import { GlassView } from '@bayit/shared/ui'
 import { RecordingStatusIndicator } from './RecordingStatusIndicator'
 import SubtitleOverlay from './SubtitleOverlay'
 import LiveSubtitleOverlay from './LiveSubtitleOverlay'
+import LiveSplitSubtitleOverlay from './subtitle/LiveSplitSubtitleOverlay'
 import { DubbingOverlay } from './dubbing'
 import TriviaOverlay from './TriviaOverlay'
 import LiveFeatureUsageIndicator from './LiveFeatureUsageIndicator'
 import liveSubtitleService from '@/services/liveSubtitleService'
+import liveSplitSubtitleService from '@/services/liveSplitSubtitleService'
 import { SubtitleCue } from './types'
-import { SubtitleSettings, SplitLanguages } from '@/types/subtitle'
+import { SubtitleSettings, SplitLanguages, LiveSubtitleCue } from '@/types/subtitle'
 import { UsageStat } from '@/types/quota'
 import { TriviaFact } from '../../../../shared/types/trivia'
 
@@ -38,6 +40,12 @@ interface VideoPlayerOverlaysProps {
 
   // Live Subtitles
   visibleLiveSubtitles: SubtitleCue[]
+
+  // Live Split Subtitles
+  liveSplitMode?: boolean
+  liveSplitLanguages?: SplitLanguages | null
+  liveSplitPrimaryCues?: LiveSubtitleCue[]
+  liveSplitSecondaryCues?: LiveSubtitleCue[]
 
   // Dubbing
   dubbingIsConnected: boolean
@@ -80,6 +88,10 @@ export default function VideoPlayerOverlays({
   splitLanguages = null,
   splitCues = { primary: [], secondary: [] },
   visibleLiveSubtitles,
+  liveSplitMode = false,
+  liveSplitLanguages = null,
+  liveSplitPrimaryCues = [],
+  liveSplitSecondaryCues = [],
   dubbingIsConnected,
   dubbingLastTranscript,
   dubbingLastTranslation,
@@ -120,7 +132,20 @@ export default function VideoPlayerOverlays({
       )}
 
       {/* Live Subtitle Overlay (Premium) - Hidden in widget mode */}
-      {isLive && !isWidget && <LiveSubtitleOverlay cues={visibleLiveSubtitles} />}
+      {isLive && !isWidget && !liveSplitMode && (
+        <LiveSubtitleOverlay cues={visibleLiveSubtitles} />
+      )}
+
+      {/* Live Split Subtitle Overlay (Premium) - Hidden in widget mode */}
+      {isLive && !isWidget && liveSplitMode && liveSplitLanguages && (
+        <LiveSplitSubtitleOverlay
+          primaryCues={liveSplitPrimaryCues}
+          secondaryCues={liveSplitSecondaryCues}
+          primaryLanguage={liveSplitLanguages[0]}
+          secondaryLanguage={liveSplitLanguages[1]}
+          enabled={liveSplitMode}
+        />
+      )}
 
       {/* Live Dubbing Overlay (Premium) - Hidden in widget mode */}
       {isLive && !isWidget && (
@@ -145,7 +170,7 @@ export default function VideoPlayerOverlays({
       )}
 
       {/* Live Subtitle Usage Indicator (Premium) - Hidden in widget mode */}
-      {isLive && !isWidget && usageStats && liveSubtitleService.isServiceConnected() && (
+      {isLive && !isWidget && usageStats && (liveSubtitleService.isServiceConnected() || liveSplitSubtitleService.isPartiallyConnected()) && (
         <LiveFeatureUsageIndicator
           featureType="subtitle"
           usageStats={usageStats}

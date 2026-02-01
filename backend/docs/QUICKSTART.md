@@ -95,7 +95,7 @@ export const API_BASE_URL = 'https://api.bayit.tv';
 
 ```bash
 # Get your service URL
-export SERVICE_URL=$(gcloud run services describe bayit-plus-backend \
+export SERVICE_URL=$(gcloud run services describe bayit-backend-production \
   --region us-central1 --format 'value(status.url)')
 
 # Health check
@@ -106,7 +106,7 @@ curl $SERVICE_URL/health
 curl $SERVICE_URL/api/v1/docs
 
 # View logs
-gcloud run services logs read bayit-plus-backend \
+gcloud run services logs read bayit-backend-production \
   --region us-central1 --limit 50
 ```
 
@@ -127,12 +127,12 @@ If something goes wrong, rollback instantly:
 ```bash
 # List recent revisions
 gcloud run revisions list \
-  --service bayit-plus-backend \
+  --service bayit-backend-production \
   --region us-central1 \
   --limit 5
 
 # Rollback to previous
-gcloud run services update-traffic bayit-plus-backend \
+gcloud run services update-traffic bayit-backend-production \
   --region us-central1 \
   --to-revisions [REVISION-NAME]=100
 ```
@@ -144,7 +144,7 @@ gcloud run services update-traffic bayit-plus-backend \
 echo -n "new-value" | gcloud secrets versions add secret-name --data-file=-
 
 # Trigger new deployment to use updated secret
-gcloud run services update bayit-plus-backend --region us-central1
+gcloud run services update bayit-backend-production --region us-central1
 ```
 
 ## Monitoring
@@ -152,16 +152,16 @@ gcloud run services update bayit-plus-backend --region us-central1
 ### View Logs
 ```bash
 # Recent logs
-gcloud run services logs read bayit-plus-backend \
+gcloud run services logs read bayit-backend-production \
   --region us-central1 \
   --limit 100
 
 # Follow logs in real-time
-gcloud run services logs tail bayit-plus-backend \
+gcloud run services logs tail bayit-backend-production \
   --region us-central1
 
 # Search logs
-gcloud run services logs read bayit-plus-backend \
+gcloud run services logs read bayit-backend-production \
   --region us-central1 \
   --limit 100 \
   | grep "error"
@@ -191,10 +191,10 @@ gcloud run services logs read bayit-plus-backend \
 ### Service won't start
 ```bash
 # Check logs
-gcloud run services logs read bayit-plus-backend --region us-central1 --limit 100
+gcloud run services logs read bayit-backend-production --region us-central1 --limit 100
 
 # Check service details
-gcloud run services describe bayit-plus-backend --region us-central1
+gcloud run services describe bayit-backend-production --region us-central1
 ```
 
 ### MongoDB connection fails

@@ -17,7 +17,7 @@ This guide covers deploying the Bayit+ backend to Google Cloud Run with all nece
 export PROJECT_ID="your-gcp-project-id"
 export REGION="us-central1"
 export BUCKET_NAME="bayit-plus-media"
-export SERVICE_ACCOUNT="bayit-plus-backend@${PROJECT_ID}.iam.gserviceaccount.com"
+export SERVICE_ACCOUNT="bayit-backend-production@${PROJECT_ID}.iam.gserviceaccount.com"
 
 # Configure gcloud
 gcloud config set project $PROJECT_ID
@@ -87,7 +87,7 @@ echo "✓ GCS bucket created: gs://$BUCKET_NAME"
 
 ```bash
 # Create dedicated service account
-gcloud iam service-accounts create bayit-plus-backend \
+gcloud iam service-accounts create bayit-backend-production \
     --display-name="Bayit Plus Backend Service" \
     --description="Service account for Bayit+ FastAPI backend on Cloud Run"
 
@@ -211,11 +211,11 @@ echo "✓ Database URLs updated"
 cd /Users/olorin/Documents/olorin/backend
 
 # Build the container image
-gcloud builds submit --tag gcr.io/$PROJECT_ID/bayit-plus-backend:v1
+gcloud builds submit --tag gcr.io/$PROJECT_ID/bayit-backend-production:v1
 
 # Deploy to Cloud Run
-gcloud run deploy bayit-plus-backend \
-  --image gcr.io/$PROJECT_ID/bayit-plus-backend:v1 \
+gcloud run deploy bayit-backend-production \
+  --image gcr.io/$PROJECT_ID/bayit-backend-production:v1 \
   --region $REGION \
   --platform managed \
   --allow-unauthenticated \
@@ -231,7 +231,7 @@ gcloud run deploy bayit-plus-backend \
   --set-secrets "SECRET_KEY=bayit-secret-key:latest,MONGODB_URL=mongodb-url:latest,MONGODB_DB_NAME=mongodb-db-name:latest,STRIPE_SECRET_KEY=stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=stripe-webhook-secret:latest,STRIPE_PRICE_BASIC=stripe-price-basic:latest,STRIPE_PRICE_PREMIUM=stripe-price-premium:latest,STRIPE_PRICE_FAMILY=stripe-price-family:latest,ANTHROPIC_API_KEY=anthropic-api-key:latest,GOOGLE_CLIENT_ID=google-client-id:latest,GOOGLE_CLIENT_SECRET=google-client-secret:latest,GOOGLE_REDIRECT_URI=google-redirect-uri:latest,ELEVENLABS_API_KEY=elevenlabs-api-key:latest,OPENAI_API_KEY=openai-api-key:latest,GCS_BUCKET_NAME=gcs-bucket-name:latest,BACKEND_CORS_ORIGINS=backend-cors-origins:latest"
 
 # Get the service URL
-SERVICE_URL=$(gcloud run services describe bayit-plus-backend --region $REGION --format 'value(status.url)')
+SERVICE_URL=$(gcloud run services describe bayit-backend-production --region $REGION --format 'value(status.url)')
 echo ""
 echo "✓ Deployment successful!"
 echo "Service URL: $SERVICE_URL"
@@ -245,7 +245,7 @@ echo "curl $SERVICE_URL/health"
 ```bash
 # Map your custom domain to Cloud Run
 gcloud run domain-mappings create \
-  --service bayit-plus-backend \
+  --service bayit-backend-production \
   --domain api.bayit.tv \
   --region $REGION
 
@@ -285,14 +285,14 @@ gcloud iam service-accounts add-iam-policy-binding $SERVICE_ACCOUNT \
 # Create Cloud Build trigger (requires GitHub connection)
 # Option 1: Via Console (recommended for first-time setup)
 echo "Create trigger at: https://console.cloud.google.com/cloud-build/triggers"
-echo "  - Name: bayit-plus-backend-deploy"
+echo "  - Name: bayit-backend-production-deploy"
 echo "  - Repository: Connect your GitHub repo"
 echo "  - Branch: ^main$"
 echo "  - Build config: backend/cloudbuild.yaml"
 
 # Option 2: Via CLI (if GitHub already connected)
 # gcloud builds triggers create github \
-#     --name="bayit-plus-backend-deploy" \
+#     --name="bayit-backend-production-deploy" \
 #     --repo-name="Bayit-Plus" \
 #     --repo-owner="your-github-username" \
 #     --branch-pattern="^main$" \
@@ -336,12 +336,12 @@ curl https://api.bayit.tv/api/v1/docs
 # Should return OpenAPI JSON
 
 # Check logs
-gcloud run services logs read bayit-plus-backend \
+gcloud run services logs read bayit-backend-production \
   --region $REGION \
   --limit 50
 
 # Check MongoDB connection in logs
-gcloud run services logs read bayit-plus-backend \
+gcloud run services logs read bayit-backend-production \
   --region $REGION \
   --limit 50 | grep -i "mongo"
 ```
@@ -362,13 +362,13 @@ echo "  - Check frequency: 1 minute"
 gcloud logging metrics create backend_error_rate \
   --description="Rate of 5xx errors in backend" \
   --log-filter='resource.type="cloud_run_revision"
-                resource.labels.service_name="bayit-plus-backend"
+                resource.labels.service_name="bayit-backend-production"
                 httpRequest.status>=500'
 
 gcloud logging metrics create backend_slow_requests \
   --description="Requests taking >3s" \
   --log-filter='resource.type="cloud_run_revision"
-                resource.labels.service_name="bayit-plus-backend"
+                resource.labels.service_name="bayit-backend-production"
                 httpRequest.latency>"3s"'
 
 echo "✓ Monitoring configured"
@@ -381,12 +381,12 @@ If you need to rollback to a previous version:
 ```bash
 # List recent revisions
 gcloud run revisions list \
-  --service bayit-plus-backend \
+  --service bayit-backend-production \
   --region $REGION \
   --limit 5
 
 # Rollback to previous revision
-gcloud run services update-traffic bayit-plus-backend \
+gcloud run services update-traffic bayit-backend-production \
   --region $REGION \
   --to-revisions [previous-revision-name]=100
 
@@ -401,7 +401,7 @@ echo -n "new-secret-value" | gcloud secrets versions add secret-name --data-file
 
 # Cloud Run will automatically use the latest version
 # Or trigger a new deployment to pick up the change immediately
-gcloud run services update bayit-plus-backend --region $REGION
+gcloud run services update bayit-backend-production --region $REGION
 ```
 
 ## Cost Optimization Tips
@@ -427,10 +427,10 @@ gcloud run services update bayit-plus-backend --region $REGION
 ### Service won't start
 ```bash
 # Check logs for errors
-gcloud run services logs read bayit-plus-backend --region $REGION --limit 100
+gcloud run services logs read bayit-backend-production --region $REGION --limit 100
 
 # Check service details
-gcloud run services describe bayit-plus-backend --region $REGION
+gcloud run services describe bayit-backend-production --region $REGION
 ```
 
 ### MongoDB connection fails
@@ -446,7 +446,7 @@ gcloud run services describe bayit-plus-backend --region $REGION
 ### Stripe webhooks not working
 - Verify webhook URL is correct
 - Check webhook secret in Secret Manager
-- View logs: `gcloud run services logs read bayit-plus-backend --region $REGION | grep stripe`
+- View logs: `gcloud run services logs read bayit-backend-production --region $REGION | grep stripe`
 
 ## Next Steps
 

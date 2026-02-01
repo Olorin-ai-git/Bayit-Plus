@@ -10,6 +10,27 @@ from typing import Dict, List, Literal, Optional
 
 
 @dataclass
+class TimestampedSegment:
+    """Audio segment with video timestamp for sync-focused processing."""
+
+    audio_data: bytes
+    video_timestamp_ms: int  # When this segment plays in video timeline
+    duration_ms: float  # Expected audio duration
+
+
+@dataclass
+class DubbedSegment:
+    """Processed dubbed audio segment with timestamp for playback sync."""
+
+    audio_data: bytes
+    video_timestamp_ms: int  # When to play in video timeline
+    duration_ms: float  # Audio duration for queue management
+    original_text: str
+    translated_text: str
+    processing_time_ms: float  # Time taken to process
+
+
+@dataclass
 class DubbingMessage:
     """Message type for dubbing pipeline communication."""
 
@@ -21,6 +42,7 @@ class DubbingMessage:
         "session_ended",
         "error",
         "latency_report",
+        "buffer_status",  # New: continuous flow buffer health
     ]
     data: Optional[str] = None  # Base64 audio data
     original_text: Optional[str] = None
@@ -31,6 +53,13 @@ class DubbingMessage:
     latency_ms: Optional[float] = None
     message: Optional[str] = None
     session_id: Optional[str] = None
+
+    # Continuous flow fields
+    video_timestamp_ms: Optional[int] = None  # Video timeline position
+    duration_ms: Optional[float] = None  # Audio duration
+    buffer_ahead_seconds: Optional[float] = None  # How far ahead processing is
+    buffer_health: Optional[str] = None  # healthy/warning/critical/emergency
+    processing_time_ms: Optional[float] = None  # Pipeline processing time
 
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
@@ -45,6 +74,11 @@ class DubbingMessage:
             "latency_ms",
             "message",
             "session_id",
+            "video_timestamp_ms",
+            "duration_ms",
+            "buffer_ahead_seconds",
+            "buffer_health",
+            "processing_time_ms",
         ]:
             value = getattr(self, key)
             if value is not None:

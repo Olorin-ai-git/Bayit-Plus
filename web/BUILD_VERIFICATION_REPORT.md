@@ -149,7 +149,7 @@ Status: ⚠️ PARTIAL COMPLIANCE
 ```bash
 # Must be set for production deployment
 VITE_APP_MODE=production
-VITE_API_URL=https://bayit-plus-backend-[hash]-ue.a.run.app/api/v1
+VITE_API_URL=https://bayit-backend-production-[hash]-ue.a.run.app/api/v1
 VITE_SENTRY_ENVIRONMENT=production
 VITE_SENTRY_RELEASE=[git-sha-or-version]
 ```
@@ -213,8 +213,8 @@ Fix: npm audit fix
   "site": "bayit-plus",
   "public": "web/dist",
   "rewrites": [
-    { "source": "/api/**", "run": { "serviceId": "bayit-plus-backend" } },
-    { "source": "/uploads/**", "run": { "serviceId": "bayit-plus-backend" } },
+    { "source": "/api/**", "run": { "serviceId": "bayit-backend-production" } },
+    { "source": "/uploads/**", "run": { "serviceId": "bayit-backend-production" } },
     { "source": "**", "destination": "/index.html" }
   ]
 }

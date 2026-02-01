@@ -4,15 +4,72 @@
  * Contains Live Language Magic (premium), Live Translate, and Live Dubbing buttons
  */
 
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import { View, Text, Pressable, Animated, StyleSheet, Modal, Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { Maximize, Minimize, Sparkles, X } from 'lucide-react'
+import { Maximize, Minimize, Sparkles, X, ChevronLeft, ChevronRight } from 'lucide-react'
 import { Icon } from '@olorin/shared-icons/web'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import { GlassView, GlassErrorBanner } from '@bayit/shared/ui'
+
+// Minimum drag distance to trigger navigation
+const DRAG_THRESHOLD = 30
+
+// Carousel item wrapper with focus animation
+interface CarouselItemProps {
+  children: React.ReactNode
+  isFocused: boolean
+  index: number
+}
+
+function CarouselItem({ children, isFocused, index }: CarouselItemProps) {
+  const scaleAnim = useRef(new Animated.Value(1)).current
+  const glowAnim = useRef(new Animated.Value(0)).current
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: isFocused ? 1.08 : 1,
+        friction: 8,
+        tension: 100,
+        useNativeDriver: false,
+      }),
+      Animated.timing(glowAnim, {
+        toValue: isFocused ? 1 : 0,
+        duration: 200,
+        useNativeDriver: false,
+      }),
+    ]).start()
+  }, [isFocused, scaleAnim, glowAnim])
+
+  const borderColor = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['rgba(139, 92, 246, 0.3)', 'rgba(139, 92, 246, 0.9)'],
+  })
+
+  const shadowOpacity = glowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.15, 0.6],
+  })
+
+  return (
+    <Animated.View
+      style={[
+        styles.carouselItem,
+        {
+          transform: [{ scale: scaleAnim }],
+          borderColor,
+          shadowOpacity,
+          zIndex: isFocused ? 10 : 1,
+        },
+      ]}
+    >
+      {children}
+    </Animated.View>
+  )
+}
 
 // Language flag emoji map
 const LANG_FLAGS: Record<string, { isIconName: boolean; value: string }> = {
@@ -39,6 +96,7 @@ interface GlassLiveControlsPanelProps {
   isDubbingActive?: boolean
   onHoveredButtonChange?: (button: string | null) => void
   renderLiveSubtitleControls?: () => React.ReactNode
+  renderLiveSplitSubtitleControls?: () => React.ReactNode
   renderDubbingControls?: () => React.ReactNode
   renderCatchUpButton?: () => React.ReactNode
   renderChannelChatButton?: () => React.ReactNode
@@ -58,6 +116,7 @@ export function GlassLiveControlsPanel({
   isDubbingActive = false,
   onHoveredButtonChange,
   renderLiveSubtitleControls,
+  renderLiveSplitSubtitleControls,
   renderDubbingControls,
   renderCatchUpButton,
   renderChannelChatButton,
@@ -77,6 +136,184 @@ export function GlassLiveControlsPanel({
   const isDragging = useRef(false)
   const dragStartX = useRef(0)
   const dragStartWidth = useRef(0)
+
+  // Carousel state
+  const [focusedIndex, setFocusedIndex] = useState(0)
+  const panelRef = useRef<View>(null)
+  const [isCarouselHovered, setIsCarouselHovered] = useState(false)
+
+  // Drag state for carousel navigation
+  const carouselDragState = useRef({
+    isDragging: false,
+    startX: 0,
+    currentX: 0,
+  })
+
+  // Build list of available carousel items
+  const carouselItems = useMemo(() => {
+    const items: { key: string; render: () => React.ReactNode }[] = []
+    if (renderLiveSubtitleControls) {
+      items.push({ key: 'liveSubtitle', render: renderLiveSubtitleControls })
+    }
+    if (renderLiveSplitSubtitleControls) {
+      items.push({ key: 'liveSplitSubtitle', render: renderLiveSplitSubtitleControls })
+    }
+    if (renderDubbingControls) {
+      items.push({ key: 'dubbing', render: renderDubbingControls })
+    }
+    if (renderCatchUpButton) {
+      items.push({ key: 'catchUp', render: renderCatchUpButton })
+    }
+    if (renderChannelChatButton) {
+      items.push({ key: 'channelChat', render: renderChannelChatButton })
+    }
+    if (renderLiveTriviaButton) {
+      items.push({ key: 'liveTrivia', render: renderLiveTriviaButton })
+    }
+    return items
+  }, [renderLiveSubtitleControls, renderLiveSplitSubtitleControls, renderDubbingControls, renderCatchUpButton, renderChannelChatButton, renderLiveTriviaButton])
+
+  // Carousel navigation - wrap around
+  const navigateCarousel = useCallback((direction: 'left' | 'right') => {
+    if (!isExpanded || carouselItems.length === 0) return
+
+    setFocusedIndex((prev) => {
+      if (direction === 'right') {
+        return (prev + 1) % carouselItems.length
+      } else {
+        return prev === 0 ? carouselItems.length - 1 : prev - 1
+      }
+    })
+  }, [isExpanded, carouselItems.length])
+
+  // Drag handlers for carousel
+  const handleCarouselDragStart = useCallback((clientX: number) => {
+    carouselDragState.current = {
+      isDragging: true,
+      startX: clientX,
+      currentX: clientX,
+    }
+  }, [])
+
+  const handleCarouselDragMove = useCallback((clientX: number) => {
+    if (!carouselDragState.current.isDragging) return
+    carouselDragState.current.currentX = clientX
+  }, [])
+
+  const handleCarouselDragEnd = useCallback(() => {
+    if (!carouselDragState.current.isDragging) return
+
+    const { startX, currentX } = carouselDragState.current
+    const deltaX = currentX - startX
+
+    // Only navigate if drag exceeds threshold
+    if (Math.abs(deltaX) >= DRAG_THRESHOLD) {
+      // Drag right = go left (previous), drag left = go right (next)
+      navigateCarousel(deltaX > 0 ? 'left' : 'right')
+    }
+
+    carouselDragState.current = {
+      isDragging: false,
+      startX: 0,
+      currentX: 0,
+    }
+  }, [navigateCarousel])
+
+  // Set up drag event listeners on carousel container
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !isExpanded) return
+
+    const panel = panelRef.current as unknown as HTMLElement | null
+    if (!panel) return
+
+    const onMouseDown = (e: MouseEvent) => {
+      handleCarouselDragStart(e.clientX)
+    }
+
+    const onMouseMove = (e: MouseEvent) => {
+      handleCarouselDragMove(e.clientX)
+    }
+
+    const onMouseUp = () => {
+      handleCarouselDragEnd()
+    }
+
+    const onMouseLeave = () => {
+      handleCarouselDragEnd()
+    }
+
+    // Touch support
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        handleCarouselDragStart(e.touches[0].clientX)
+      }
+    }
+
+    const onTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 1) {
+        handleCarouselDragMove(e.touches[0].clientX)
+      }
+    }
+
+    const onTouchEnd = () => {
+      handleCarouselDragEnd()
+    }
+
+    panel.addEventListener('mousedown', onMouseDown)
+    panel.addEventListener('mousemove', onMouseMove)
+    panel.addEventListener('mouseup', onMouseUp)
+    panel.addEventListener('mouseleave', onMouseLeave)
+    panel.addEventListener('touchstart', onTouchStart)
+    panel.addEventListener('touchmove', onTouchMove)
+    panel.addEventListener('touchend', onTouchEnd)
+
+    return () => {
+      panel.removeEventListener('mousedown', onMouseDown)
+      panel.removeEventListener('mousemove', onMouseMove)
+      panel.removeEventListener('mouseup', onMouseUp)
+      panel.removeEventListener('mouseleave', onMouseLeave)
+      panel.removeEventListener('touchstart', onTouchStart)
+      panel.removeEventListener('touchmove', onTouchMove)
+      panel.removeEventListener('touchend', onTouchEnd)
+    }
+  }, [isExpanded, handleCarouselDragStart, handleCarouselDragMove, handleCarouselDragEnd])
+
+  // Keyboard navigation for carousel
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !isExpanded) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only handle if panel or its children are focused
+      const panel = panelRef.current as unknown as HTMLElement | null
+      if (!panel) return
+
+      // Check if focus is within the panel
+      const activeElement = document.activeElement
+      const isPanelFocused = panel.contains(activeElement) || panel === activeElement
+
+      if (!isPanelFocused) return
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault()
+        navigateCarousel('right')
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault()
+        navigateCarousel('left')
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [isExpanded, navigateCarousel])
+
+  // Reset focus index when panel collapses or items change
+  useEffect(() => {
+    if (!isExpanded) {
+      setFocusedIndex(0)
+    } else if (focusedIndex >= carouselItems.length) {
+      setFocusedIndex(Math.max(0, carouselItems.length - 1))
+    }
+  }, [isExpanded, carouselItems.length, focusedIndex])
 
   useEffect(() => {
     setDragWidth(null)
@@ -225,47 +462,94 @@ export function GlassLiveControlsPanel({
               </Pressable>
             </View>
 
-            {/* Expanded Controls */}
+            {/* Expanded Controls - Carousel */}
             {isExpanded && (
-              <Animated.View style={[styles.expandedControls, { opacity: contentOpacity }]}>
+              <Pressable
+                ref={panelRef as any}
+                onHoverIn={() => setIsCarouselHovered(true)}
+                onHoverOut={() => setIsCarouselHovered(false)}
+                style={({ pressed }: { pressed?: boolean }) => [
+                  styles.carouselContainer,
+                  pressed && styles.carouselContainerDragging,
+                ]}
+              >
+                <Animated.View
+                  style={[styles.expandedControls, { opacity: contentOpacity }]}
+                  tabIndex={0}
+                  accessibilityRole="toolbar"
+                  accessibilityLabel={t('player.liveControls', 'Live Controls')}
+                >
                 {/* Divider */}
                 <View style={styles.divider} />
 
-                {/* Live Translate */}
-                {renderLiveSubtitleControls && (
-                  <View style={styles.controlItem}>
-                    {renderLiveSubtitleControls()}
-                  </View>
+                {/* Left Arrow - visible on hover when not at first item or when wrap is possible */}
+                {isCarouselHovered && carouselItems.length > 1 && (
+                  <Pressable
+                    onPress={() => navigateCarousel('left')}
+                    style={({ hovered }: { hovered?: boolean }) => [
+                      styles.carouselArrow,
+                      styles.carouselArrowLeft,
+                      hovered && styles.carouselArrowHovered,
+                    ]}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('player.previousControl', 'Previous control')}
+                  >
+                    <ChevronLeft size={16} color={colors.text} />
+                  </Pressable>
                 )}
 
-                {/* Live Dubbing */}
-                {renderDubbingControls && (
-                  <View style={styles.controlItem}>
-                    {renderDubbingControls()}
-                  </View>
+                {/* Carousel Items */}
+                {carouselItems.map((item, index) => (
+                  <CarouselItem
+                    key={item.key}
+                    index={index}
+                    isFocused={focusedIndex === index}
+                  >
+                    <Pressable
+                      onFocus={() => setFocusedIndex(index)}
+                      onHoverIn={() => setFocusedIndex(index)}
+                      style={styles.controlItem}
+                    >
+                      {item.render()}
+                    </Pressable>
+                  </CarouselItem>
+                ))}
+
+                {/* Right Arrow - visible on hover */}
+                {isCarouselHovered && carouselItems.length > 1 && (
+                  <Pressable
+                    onPress={() => navigateCarousel('right')}
+                    style={({ hovered }: { hovered?: boolean }) => [
+                      styles.carouselArrow,
+                      styles.carouselArrowRight,
+                      hovered && styles.carouselArrowHovered,
+                    ]}
+                    accessibilityRole="button"
+                    accessibilityLabel={t('player.nextControl', 'Next control')}
+                  >
+                    <ChevronRight size={16} color={colors.text} />
+                  </Pressable>
                 )}
 
-                {/* Catch-Up AI Summary (Beta 500) */}
-                {renderCatchUpButton && (
-                  <View style={styles.controlItem}>
-                    {renderCatchUpButton()}
+                {/* Carousel navigation indicators */}
+                {carouselItems.length > 1 && (
+                  <View style={styles.carouselIndicators}>
+                    {carouselItems.map((item, index) => (
+                      <Pressable
+                        key={`indicator-${item.key}`}
+                        onPress={() => setFocusedIndex(index)}
+                        style={[
+                          styles.carouselDot,
+                          focusedIndex === index && styles.carouselDotActive,
+                        ]}
+                        accessibilityRole="button"
+                        accessibilityLabel={t('player.goToControl', 'Go to control {{index}}', { index: index + 1 })}
+                      />
+                    ))}
                   </View>
                 )}
-
-                {/* Channel Chat (Live TV) */}
-                {renderChannelChatButton && (
-                  <View style={styles.controlItem}>
-                    {renderChannelChatButton()}
-                  </View>
-                )}
-
-                {/* Live Trivia */}
-                {renderLiveTriviaButton && (
-                  <View style={styles.controlItem}>
-                    {renderLiveTriviaButton()}
-                  </View>
-                )}
-              </Animated.View>
+                </Animated.View>
+              </Pressable>
             )}
           </View>
           {/* Right-edge drag handle for resizing */}
@@ -462,6 +746,14 @@ const styles = StyleSheet.create({
   flagText: {
     fontSize: 18,
   },
+  carouselContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    ...(Platform.OS === 'web' && { cursor: 'grab' as any }),
+  },
+  carouselContainerDragging: {
+    ...(Platform.OS === 'web' && { cursor: 'grabbing' as any }),
+  },
   expandedControls: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -477,6 +769,58 @@ const styles = StyleSheet.create({
   },
   controlItem: {
     flexShrink: 0,
+  },
+  carouselItem: {
+    borderRadius: borderRadius.xl,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  carouselIndicators: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginLeft: spacing.md,
+    paddingLeft: spacing.sm,
+    borderLeftWidth: 1,
+    borderLeftColor: 'rgba(139, 92, 246, 0.25)',
+  },
+  carouselDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+  },
+  carouselDotActive: {
+    backgroundColor: colors.primary.DEFAULT,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  carouselArrow: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.5)',
+    ...(Platform.OS === 'web' && { cursor: 'pointer' as any }),
+  },
+  carouselArrowLeft: {
+    marginRight: spacing.xs,
+  },
+  carouselArrowRight: {
+    marginLeft: spacing.xs,
+  },
+  carouselArrowHovered: {
+    backgroundColor: 'rgba(139, 92, 246, 0.5)',
+    borderColor: 'rgba(139, 92, 246, 0.8)',
+    transform: [{ scale: 1.1 }],
   },
   fullscreenButton: {
     width: isTV ? 56 : 44,

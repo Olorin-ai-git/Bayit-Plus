@@ -11,7 +11,7 @@
 ✅ **gcloud CLI** installed and authenticated
 ✅ **Appropriate IAM permissions** to create secrets
 ✅ **Service accounts** exist:
-- `bayit-plus-backend@YOUR_PROJECT_ID.iam.gserviceaccount.com`
+- `bayit-backend-production@YOUR_PROJECT_ID.iam.gserviceaccount.com`
 - `bayit-plus-web@YOUR_PROJECT_ID.iam.gserviceaccount.com`
 
 Check authentication:
@@ -102,8 +102,8 @@ npm start
 
 **Backend:**
 ```bash
-kubectl rollout restart deployment/bayit-plus-backend
-kubectl rollout status deployment/bayit-plus-backend
+kubectl rollout restart deployment/bayit-backend-production
+kubectl rollout status deployment/bayit-backend-production
 ```
 
 **Frontend:**
@@ -294,7 +294,7 @@ gcloud secrets versions add REQUIRE_PAYMENT_ON_SIGNUP \
 ./scripts/sync-gcloud-secrets.sh all
 
 # 3. Restart services
-kubectl rollout restart deployment/bayit-plus-backend
+kubectl rollout restart deployment/bayit-backend-production
 kubectl rollout restart deployment/bayit-plus-web
 
 # 4. Revert existing payment_pending users

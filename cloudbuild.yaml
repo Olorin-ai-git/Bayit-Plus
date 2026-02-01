@@ -1,10 +1,10 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     dir: '.'
-    args: ['build', '--no-cache', '-f', './backend/Dockerfile', '-t', 'gcr.io/$PROJECT_ID/bayit-backend:$BUILD_ID', '-t', 'gcr.io/$PROJECT_ID/bayit-backend:latest', '.']
+    args: ['build', '--no-cache', '-f', './backend/Dockerfile', '-t', 'gcr.io/$PROJECT_ID/bayit-backend:${_BUILD_ID}', '-t', 'gcr.io/$PROJECT_ID/bayit-backend:latest', '.']
 
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/bayit-backend:$BUILD_ID']
+    args: ['push', 'gcr.io/$PROJECT_ID/bayit-backend:${_BUILD_ID}']
 
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/bayit-backend:latest']
@@ -14,7 +14,7 @@ steps:
       - 'run'
       - 'deploy'
       - 'bayit-backend-production'
-      - '--image=gcr.io/$PROJECT_ID/bayit-backend:$BUILD_ID'
+      - '--image=gcr.io/$PROJECT_ID/bayit-backend:${_BUILD_ID}'
       - '--region=${_REGION}'
       - '--platform=managed'
       - '--allow-unauthenticated'
@@ -77,7 +77,7 @@ steps:
       - '--update-secrets=SECRET_KEY=bayit-backend-secret-key:latest,CSRF_ENABLED=csrf-enabled:latest,ADMIN_PASSWORD=bayit-admin-password:latest,ADMIN_EMAIL=bayit-admin-email:latest,WEBAUTHN_ORIGIN=bayit-webauthn-origin:latest,MONGODB_URI=bayit-mongodb-uri:latest,OLORIN_MONGODB_URI=olorin-fraud-mongodb-uri:latest,CVPLUS_MONGODB_URI=cvplus-mongodb-uri:latest,STATION_AI_MONGODB_URI=station-ai-mongodb-uri:latest,STRIPE_API_KEY=bayit-stripe-api-key:latest,STRIPE_SECRET_KEY=bayit-stripe-secret-key:latest,STRIPE_WEBHOOK_SECRET=bayit-stripe-webhook-secret:latest,STRIPE_PRICE_BASIC=bayit-stripe-price-basic:latest,STRIPE_PRICE_PREMIUM=bayit-stripe-price-premium:latest,STRIPE_PRICE_FAMILY=bayit-stripe-price-family:latest'
 
       # AI Services, Content, OAuth (consolidated)
-      - '--update-secrets=ANTHROPIC_API_KEY=bayit-anthropic-api-key:latest,OPENAI_API_KEY=bayit-openai-api-key:latest,ELEVENLABS_API_KEY=bayit-elevenlabs-api-key:latest,ELEVENLABS_WEBHOOK_SECRET=bayit-elevenlabs-webhook-secret:latest,TMDB_API_KEY=bayit-tmdb-api-key:latest,TMDB_API_TOKEN=bayit-tmdb-api-token:latest,OPENSUBTITLES_API_KEY=opensubtitles-api-key:latest,PICOVOICE_ACCESS_KEY=picovoice-access-key:latest,GOOGLE_CLIENT_ID=bayit-google-client-id:latest,GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest,GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:latest,CHROMECAST_RECEIVER_APP_ID=bayit-chromecast-receiver-id:latest,TWILIO_ACCOUNT_SID=bayit-twilio-account-sid:latest,TWILIO_AUTH_TOKEN=bayit-twilio-auth-token:latest,TWILIO_PHONE_NUMBER=bayit-twilio-phone-number:latest'
+      - '--update-secrets=ANTHROPIC_API_KEY=bayit-anthropic-api-key:latest,OPENAI_API_KEY=bayit-openai-api-key:latest,ELEVENLABS_API_KEY=bayit-elevenlabs-api-key:latest,ELEVENLABS_WEBHOOK_SECRET=bayit-elevenlabs-webhook-secret:latest,TMDB_API_KEY=bayit-tmdb-api-key:latest,TMDB_API_TOKEN=bayit-tmdb-api-token:latest,OPENSUBTITLES_API_KEY=opensubtitles-api-key:latest,PICOVOICE_ACCESS_KEY=picovoice-access-key:latest,GOOGLE_CLIENT_ID=bayit-google-client-id:latest,GOOGLE_CLIENT_SECRET=bayit-google-client-secret:latest,GOOGLE_REDIRECT_URI=bayit-google-redirect-uri:latest,CHROMECAST_RECEIVER_APP_ID=bayit-chromecast-receiver-id:latest,TWILIO_ACCOUNT_SID=bayit-twilio-account-sid:latest,TWILIO_AUTH_TOKEN=bayit-twilio-auth-token:latest,TWILIO_PHONE_NUMBER=bayit-twilio-phone-number:latest,EXA_API_KEY=bayit-exa-api-key:latest'
 
       # Storage, CDN, Monitoring, Feature Flags (consolidated)
       - '--update-secrets=GCS_BUCKET_NAME=bayit-gcs-bucket-name:latest,BACKEND_CORS_ORIGINS=bayit-backend-cors-origins:latest,FRONTEND_URL=bayit-frontend-url:latest,FRONTEND_WEB_URL=bayit-frontend-web-url:latest,SENTRY_DSN=bayit-sentry-dsn:latest,PODCAST_TRANSLATION_ENABLED=podcast-translation-enabled:latest,PODCAST_TRANSLATION_AUTO_START=podcast-translation-auto-start:latest,FEATURE_SCENE_SEARCH_ENABLED=bayit-feature-scene-search-enabled:latest'
@@ -111,10 +111,11 @@ steps:
       - '--set-env-vars=I18N_LOCALES_PATH=/app/packages/ui/shared-i18n/locales'
 
 images:
-  - 'gcr.io/$PROJECT_ID/bayit-backend:$BUILD_ID'
+  - 'gcr.io/$PROJECT_ID/bayit-backend:${_BUILD_ID}'
   - 'gcr.io/$PROJECT_ID/bayit-backend:latest'
 
 substitutions:
+  _BUILD_ID: 'latest'
   _REGION: 'us-east1'
   _MEMORY: '2Gi'
   _CPU: '2'

@@ -336,6 +336,99 @@ class DubbingConfig(BaseSettings):
         description="Enable Prometheus metrics export for dubbing",
     )
 
+    # Continuous Flow Architecture Settings
+    # Enables 10-second initial buffer with zero interruptions after
+    continuous_flow_enabled: bool = Field(
+        default=True,
+        description="Enable continuous flow architecture (10s buffer, zero interruptions)",
+    )
+    initial_buffer_seconds: int = Field(
+        default=10,
+        ge=3,
+        le=30,
+        description="Initial buffer to fill before playback starts (seconds)",
+    )
+    min_buffer_seconds: int = Field(
+        default=5,
+        ge=2,
+        le=15,
+        description="Minimum buffer before entering warning state (seconds)",
+    )
+    healthy_buffer_seconds: int = Field(
+        default=8,
+        ge=5,
+        le=20,
+        description="Buffer threshold for healthy state (seconds)",
+    )
+    critical_buffer_seconds: int = Field(
+        default=3,
+        ge=1,
+        le=10,
+        description="Buffer threshold for critical state (seconds)",
+    )
+    sync_tolerance_ms: int = Field(
+        default=50,
+        ge=10,
+        le=200,
+        description="Maximum allowed sync drift before correction (ms)",
+    )
+
+    # Quality settings for continuous flow
+    prefer_claude_translation: bool = Field(
+        default=True,
+        description="Use Claude for translation when buffer is healthy (higher quality)",
+    )
+    enable_speaker_boost: bool = Field(
+        default=True,
+        description="Enable TTS speaker boost when buffer is healthy (better clarity)",
+    )
+    tts_stability_healthy: float = Field(
+        default=0.7,
+        ge=0.0,
+        le=1.0,
+        description="TTS stability setting when buffer is healthy (higher = consistent)",
+    )
+    tts_stability_warning: float = Field(
+        default=0.5,
+        ge=0.0,
+        le=1.0,
+        description="TTS stability setting when buffer is in warning state",
+    )
+    tts_stability_critical: float = Field(
+        default=0.3,
+        ge=0.0,
+        le=1.0,
+        description="TTS stability setting when buffer is critical (faster generation)",
+    )
+
+    # Sync status rate limiting (prevent client flooding)
+    sync_status_max_per_second: float = Field(
+        default=2.0,
+        ge=0.5,
+        le=10.0,
+        description="Maximum sync_status messages per second per session",
+    )
+    max_video_timestamp_ms: int = Field(
+        default=86400000,
+        ge=3600000,
+        le=604800000,
+        description="Maximum valid video timestamp (24h default, up to 7 days)",
+    )
+
+    # Audio format for duration calculation (ElevenLabs output)
+    tts_output_sample_rate: int = Field(
+        default=44100,
+        ge=16000,
+        le=48000,
+        description="TTS output sample rate in Hz (ElevenLabs default is 44.1kHz)",
+    )
+    tts_output_bytes_per_sample: int = Field(
+        default=2,
+        ge=1,
+        le=4,
+        description="Bytes per sample in TTS output (16-bit = 2 bytes)",
+    )
+
     class Config:
         env_prefix = "DUBBING_"
 
@@ -836,9 +929,169 @@ class ChannelChatConfig(BaseSettings):
         env_prefix = "CHANNEL_CHAT_"
 
 
+class TranscriptEventBusConfig(BaseSettings):
+    """Transcript event bus configuration for real-time transcript distribution."""
+
+    default_queue_size: int = Field(
+        default=100,
+        ge=10,
+        le=1000,
+        description="Default queue size for transcript bus subscribers",
+    )
+    cleanup_interval_seconds: int = Field(
+        default=60,
+        ge=10,
+        le=600,
+        description="Interval for dead subscriber cleanup (seconds)",
+    )
+    replay_buffer_size: int = Field(
+        default=20,
+        ge=0,
+        le=100,
+        description="Number of recent events to keep for late joiner replay",
+    )
+    max_total_events: int = Field(
+        default=10000,
+        ge=1000,
+        le=100000,
+        description="Memory circuit breaker: max buffered events across all channels",
+    )
+
+    class Config:
+        env_prefix = "TRANSCRIPT_BUS_"
+
+
+class HighlightsConfig(BaseSettings):
+    """Highlights service configuration for live moment detection."""
+
+    enabled: bool = Field(
+        default=True,
+        description="Enable highlights detection service",
+    )
+    min_confidence: float = Field(
+        default=0.7,
+        ge=0.0,
+        le=1.0,
+        description="Minimum confidence threshold for highlight detection",
+    )
+    window_size: int = Field(
+        default=10,
+        ge=3,
+        le=50,
+        description="Sliding window size (number of transcripts) for analysis",
+    )
+    max_per_hour: int = Field(
+        default=20,
+        ge=1,
+        le=100,
+        description="Maximum highlights per hour per channel",
+    )
+    queue_size: int = Field(
+        default=200,
+        ge=50,
+        le=1000,
+        description="Queue size for highlights consumer",
+    )
+    emotional_keywords: list[str] = Field(
+        default=["!", "?!", "wow", "amazing", "incredible", "unbelievable"],
+        description="Keywords indicating emotional intensity",
+    )
+    entity_density_threshold: int = Field(
+        default=3,
+        ge=2,
+        le=10,
+        description="Minimum named entities in window for entity highlight",
+    )
+
+    class Config:
+        env_prefix = "HIGHLIGHTS_"
+
+
+class SearchIndexConfig(BaseSettings):
+    """Search index service configuration for live transcript indexing."""
+
+    enabled: bool = Field(
+        default=True,
+        description="Enable search index service",
+    )
+    batch_size: int = Field(
+        default=10,
+        ge=1,
+        le=100,
+        description="Number of transcripts to batch before indexing",
+    )
+    flush_interval_seconds: float = Field(
+        default=5.0,
+        ge=1.0,
+        le=60.0,
+        description="Maximum time between index flushes (seconds)",
+    )
+    ttl_hours: int = Field(
+        default=24,
+        ge=1,
+        le=168,
+        description="Time-to-live for indexed transcripts (hours)",
+    )
+    queue_size: int = Field(
+        default=500,
+        ge=100,
+        le=2000,
+        description="Queue size for search index consumer",
+    )
+
+    class Config:
+        env_prefix = "SEARCH_INDEX_"
+
+
+class CatchupConfig(BaseSettings):
+    """Catchup service configuration for live transcript accumulation."""
+
+    use_transcript_bus: bool = Field(
+        default=True,
+        description="Use transcript event bus instead of direct STT subscription",
+    )
+    queue_size: int = Field(
+        default=500,
+        ge=100,
+        le=2000,
+        description="Queue size for catchup bus consumer",
+    )
+    transcript_buffer_max_minutes: int = Field(
+        default=30,
+        ge=5,
+        le=120,
+        description="Maximum transcript buffer duration (minutes)",
+    )
+    min_data_seconds: int = Field(
+        default=60,
+        ge=10,
+        le=600,
+        description="Minimum data duration required for catchup generation",
+    )
+
+    class Config:
+        env_prefix = "CATCHUP_"
+
+
 class LiveTriviaConfig(BaseSettings):
     """Live trivia overlay configuration for topic detection and fact extraction."""
 
+    use_transcript_bus: bool = Field(
+        default=True,
+        description="Use transcript event bus instead of client-sent transcripts",
+    )
+    queue_size: int = Field(
+        default=50,
+        ge=10,
+        le=200,
+        description="Queue size for trivia bus consumer (can drop if behind)",
+    )
+    replay_count: int = Field(
+        default=5,
+        ge=0,
+        le=20,
+        description="Number of recent transcripts to replay on session start",
+    )
     claude_model: str = Field(
         default="claude-sonnet-4-20250514",
         description="Anthropic model for topic validation and fact extraction",
@@ -1069,6 +1322,22 @@ class OlorinSettings(BaseSettings):
     live_trivia: LiveTriviaConfig = Field(
         default_factory=LiveTriviaConfig,
         description="Live trivia overlay configuration for topic detection and facts",
+    )
+    transcript_bus: TranscriptEventBusConfig = Field(
+        default_factory=TranscriptEventBusConfig,
+        description="Transcript event bus for real-time transcript distribution",
+    )
+    highlights: HighlightsConfig = Field(
+        default_factory=HighlightsConfig,
+        description="Highlights service for live moment detection",
+    )
+    search_index: SearchIndexConfig = Field(
+        default_factory=SearchIndexConfig,
+        description="Search index service for live transcript search",
+    )
+    catchup: CatchupConfig = Field(
+        default_factory=CatchupConfig,
+        description="Catchup service for transcript accumulation",
     )
 
     class Config:

@@ -48,7 +48,7 @@ The backend now allows requests from the Firebase hosting URLs:
 
 The web app is configured to use:
 ```
-https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1
+https://bayit-backend-production-624470113582.us-east1.run.app/api/v1
 ```
 
 ---
@@ -94,7 +94,7 @@ Check:
 
 **Cloud Run Logs:**
 ```bash
-gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=bayit-plus-backend" --limit=50 --project=israeli-radio-475c9
+gcloud logging read "resource.type=cloud_run_revision AND resource.labels.service_name=bayit-backend-production" --limit=50 --project=israeli-radio-475c9
 ```
 
 ---
@@ -102,9 +102,9 @@ gcloud logging read "resource.type=cloud_run_revision AND resource.labels.servic
 ## 🌐 All Deployment URLs
 
 ### Backend (Cloud Run)
-- **API:** https://bayit-plus-backend-624470113582.us-east1.run.app/api/v1
-- **Health:** https://bayit-plus-backend-624470113582.us-east1.run.app/health
-- **API Docs:** https://bayit-plus-backend-624470113582.us-east1.run.app/docs
+- **API:** https://bayit-backend-production-624470113582.us-east1.run.app/api/v1
+- **Health:** https://bayit-backend-production-624470113582.us-east1.run.app/health
+- **API Docs:** https://bayit-backend-production-624470113582.us-east1.run.app/docs
 
 ### Frontend (Firebase Hosting)
 - **Web App:** https://bayit-plus-web.web.app
@@ -112,7 +112,7 @@ gcloud logging read "resource.type=cloud_run_revision AND resource.labels.servic
 
 ### Admin Consoles
 - **Firebase:** https://console.firebase.google.com/project/bayit-plus
-- **Cloud Run:** https://console.cloud.google.com/run/detail/us-east1/bayit-plus-backend?project=israeli-radio-475c9
+- **Cloud Run:** https://console.cloud.google.com/run/detail/us-east1/bayit-backend-production?project=israeli-radio-475c9
 - **MongoDB Atlas:** https://cloud.mongodb.com/
 - **Google OAuth:** https://console.cloud.google.com/apis/credentials?project=israeli-radio-475c9
 
@@ -192,7 +192,7 @@ Frontend (Firebase Hosting)
 └─ TV App: (Ready to deploy)
 
 Backend (Google Cloud Run)
-├─ API: bayit-plus-backend
+├─ API: bayit-backend-production
 ├─ Region: us-east1
 ├─ Memory: 2Gi, CPU: 2
 └─ Instances: 1-10 (auto-scaling)
@@ -236,7 +236,7 @@ Secrets (Secret Manager)
 
 ### App doesn't load
 - Check browser console for errors
-- Verify API is accessible: https://bayit-plus-backend-624470113582.us-east1.run.app/health
+- Verify API is accessible: https://bayit-backend-production-624470113582.us-east1.run.app/health
 - Check CORS settings in Cloud Run
 
 ### Google login fails

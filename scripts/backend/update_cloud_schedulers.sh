@@ -10,7 +10,7 @@ set -e
 # Configuration
 PROJECT_ID="${GCLOUD_PROJECT:-bayit-plus}"
 REGION="${GCLOUD_REGION:-us-east1}"
-SERVICE_URL="${SERVICE_URL:-https://bayit-plus-backend-znfki37vbq-ue.a.run.app}"
+SERVICE_URL="${SERVICE_URL:-https://bayit-backend-production-znfki37vbq-ue.a.run.app}"
 SERVICE_ACCOUNT="${SERVICE_ACCOUNT:-624470113582-compute@developer.gserviceaccount.com}"
 TIMEZONE="Asia/Jerusalem"
 
@@ -171,6 +171,6 @@ echo "   1. Verify jobs are enabled: gcloud scheduler jobs list --location=$REGI
 echo "   2. Test manually:"
 echo "      gcloud scheduler jobs run librarian-daily-maintenance --location=$REGION"
 echo "   3. Monitor logs:"
-echo "      gcloud run logs read bayit-plus-backend --region=us-east1 --limit=100"
+echo "      gcloud run logs read bayit-backend-production --region=us-east1 --limit=100"
 echo ""
 echo "📖 See SCHEDULER_STRATEGY_UPDATED.md for full documentation"

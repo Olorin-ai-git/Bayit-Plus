@@ -125,10 +125,10 @@ class BufferedChannelService:
                 f"subtitles={enable_subtitles})"
             )
 
-            # 3. Use client-side buffering (primary approach for live streams)
-            # Server-side HLS manifest manipulation requires CDN infrastructure
-            video_url = await self.get_original_stream_url(channel_id)
-            mode = "client-side"
+            # 3. Use server-side timeshift for video delay
+            # CDN applies delay via timeshift parameter - video is delayed to match dubbed audio
+            video_url = await self.get_delayed_stream_url(channel_id, video_delay_ms)
+            mode = "server-side"
 
             # 4. Create WebSocket URLs for dubbing/subtitles
             dubbing_ws = None
@@ -285,6 +285,51 @@ class BufferedChannelService:
         """Get original (non-delayed) stream URL for a channel."""
         # Construct stream URL from configured base URL
         return f"{settings.LIVE_STREAM_BASE_URL}/{channel_id}/master.m3u8"
+
+    async def get_delayed_stream_url(self, channel_id: str, delay_ms: int) -> str:
+        """
+        Get time-shifted stream URL for a channel.
+
+        Adds timeshift parameter to HLS URL for server-side video delay.
+        Most CDN providers (Cloudflare, AWS MediaLive, Mux) support DVR timeshift.
+
+        Args:
+            channel_id: Live channel ID
+            delay_ms: Delay in milliseconds (will be converted to seconds)
+
+        Returns:
+            Stream URL with timeshift parameter
+        """
+        from app.models.content import LiveChannel
+        from beanie import PydanticObjectId
+
+        # Get channel to access its stream URL
+        try:
+            channel = await LiveChannel.get(PydanticObjectId(channel_id))
+            if channel and channel.stream_url:
+                base_url = channel.stream_url
+            else:
+                base_url = f"{settings.LIVE_STREAM_BASE_URL}/{channel_id}/master.m3u8"
+        except Exception:
+            base_url = f"{settings.LIVE_STREAM_BASE_URL}/{channel_id}/master.m3u8"
+
+        # Convert delay to seconds
+        delay_seconds = delay_ms / 1000
+
+        # Add timeshift parameter (common CDN convention)
+        # Different CDNs use different parameters:
+        # - Cloudflare Stream: ?time_shift=10
+        # - AWS MediaLive: ?timeShift=10
+        # - Generic: #EXT-X-START:TIME-OFFSET=-10
+        separator = "&" if "?" in base_url else "?"
+        delayed_url = f"{base_url}{separator}time_shift={delay_seconds}"
+
+        logger.info(
+            f"Created delayed stream URL for {channel_id}: {delay_seconds}s delay",
+            extra={"channel_id": channel_id, "delay_ms": delay_ms}
+        )
+
+        return delayed_url
 
 
 # Global singleton instance

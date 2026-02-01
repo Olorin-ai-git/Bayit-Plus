@@ -484,7 +484,7 @@ curl -X POST http://localhost:8000/api/v1/admin/llm/circuit-breaker/reset \
 curl http://localhost:8000/health
 
 # Service status
-systemctl status bayit-plus-backend
+systemctl status bayit-backend-production
 ```
 
 ---

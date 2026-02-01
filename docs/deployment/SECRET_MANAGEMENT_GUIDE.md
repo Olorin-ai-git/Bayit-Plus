@@ -35,7 +35,7 @@ Bayit+ uses **Google Cloud Secret Manager** as the single source of truth for al
                            ▼
           ┌────────────────────────────────┐
           │   Cloud Run Service            │
-          │   bayit-plus-backend           │
+          │   bayit-backend-production           │
           │                                │
           │   Receives ALL secrets as      │
           │   environment variables        │
@@ -376,7 +376,7 @@ ERROR: Secret bayit-secret-name not found
 
 **Solutions**:
 1. Verify secret is referenced in cloudbuild.yaml
-2. Check Cloud Run service logs: `gcloud run services logs read bayit-plus-backend --region=us-east1 --limit=50`
+2. Check Cloud Run service logs: `gcloud run services logs read bayit-backend-production --region=us-east1 --limit=50`
 3. Verify secret value is correct: `gcloud secrets versions access latest --secret=bayit-secret-name`
 
 ### Placeholder in Production

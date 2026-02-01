@@ -97,6 +97,11 @@ class LiveDubbingService:
 
     Pipeline: Audio → STT (ElevenLabs Scribe v2) → Translation → TTS (ElevenLabs)
 
+    Supports continuous flow architecture for zero-interruption playback:
+    - 10-second initial buffer before playback starts
+    - Adaptive quality based on buffer health
+    - Video timestamp sync for perfect audio-video alignment
+
     Reuses existing infrastructure:
     - ElevenLabsRealtimeService (STT) from bayit_voice
     - LiveTranslationService (Translation)
@@ -113,6 +118,7 @@ class LiveDubbingService:
         stt_provider: Optional[STTProvider] = None,
         tts_provider: Optional[TTSProvider] = None,
         translation_provider: Optional[TranslationProvider] = None,
+        enable_continuous_flow: bool = True,
     ):
         """
         Initialize live dubbing service.
@@ -126,6 +132,7 @@ class LiveDubbingService:
             stt_provider: Optional STT provider (for testing)
             tts_provider: Optional TTS provider (for testing)
             translation_provider: Optional translation provider (for testing)
+            enable_continuous_flow: Enable continuous flow architecture
         """
         self.channel = channel
         self.user = user
@@ -171,11 +178,23 @@ class LiveDubbingService:
         self._pipeline_task: Optional[asyncio.Task] = None
         self._audio_buffer: list[bytes] = []
 
+        # Continuous flow architecture
+        self._enable_continuous_flow = (
+            enable_continuous_flow and settings.olorin.dubbing.continuous_flow_enabled
+        )
+        self._buffer_manager = None
+        if self._enable_continuous_flow:
+            from app.services.olorin.dubbing.buffer_manager import BufferManager
+            self._buffer_manager = BufferManager(self.session_id)
+
+        # Video timestamp tracking for continuous flow
+        self._current_video_timestamp_ms: int = 0
+
         logger.info(
             f"LiveDubbingService initialized: session={self.session_id}, "
             f"channel={channel.id}, source={self.source_language}, "
             f"target={target_language}, voice={self.voice_id}, "
-            f"platform={platform}"
+            f"platform={platform}, continuous_flow={self._enable_continuous_flow}"
         )
 
     async def start(self) -> Dict[str, Any]:
@@ -208,12 +227,15 @@ class LiveDubbingService:
 
             # Step 1: Get channel STT manager (creates if needed)
             # This is the key optimization: ONE STT connection per channel
+            # Audio is captured server-side via FFmpeg (no CORS issues)
             logger.info(
                 f"Getting ChannelSTTManager for channel {self.channel.id} "
-                f"(shared STT, 99% cost reduction)"
+                f"(shared STT via backend FFmpeg capture, 99% cost reduction)"
             )
             self._channel_stt_manager = await get_channel_stt_manager(
-                str(self.channel.id), self.source_language
+                str(self.channel.id),
+                self.source_language,
+                stream_url=self.channel.stream_url,
             )
 
             # Step 2: Subscribe to channel's STT broadcast
@@ -328,13 +350,18 @@ class LiveDubbingService:
 
     async def process_audio_chunk(self, audio_data: bytes) -> None:
         """
-        Process incoming audio chunk through the dubbing pipeline.
+        Process incoming audio chunk - LEGACY METHOD.
 
-        Audio is sent to ChannelSTTManager for shared STT processing.
-        All sessions on the same channel share the same STT transcription.
+        NOTE: Audio capture is now handled server-side via FFmpeg.
+        The ChannelSTTManager captures audio directly from the HLS stream,
+        solving CORS limitations with cross-origin media elements.
+
+        This method now only updates session activity tracking.
+        Frontend clients may still send audio chunks (for backward compatibility),
+        but they are no longer processed for STT.
 
         Args:
-            audio_data: Binary audio data (16kHz mono LINEAR16 PCM)
+            audio_data: Binary audio data (ignored - server-side capture active)
         """
         if not self._running:
             logger.warning(f"Session {self.session_id} not running, ignoring audio")
@@ -350,23 +377,6 @@ class LiveDubbingService:
             await session_store.update_session_activity(self.session_id)
         except Exception as e:
             logger.warning(f"Error updating Redis session activity: {e}")
-
-        # Track audio processing
-        # 16kHz sample rate, 2 bytes per sample (16-bit) = 32KB per second
-        self._metrics.audio_seconds_processed += len(audio_data) / (16000 * 2)
-
-        # Send to ChannelSTTManager (shared STT, not direct to provider)
-        if self._channel_stt_manager:
-            try:
-                await self._channel_stt_manager.send_audio_chunk(audio_data)
-            except Exception as e:
-                logger.error(f"Error sending audio to channel STT manager: {e}")
-                self._metrics.errors_count += 1
-        else:
-            logger.error(
-                f"ChannelSTTManager not initialized for session {self.session_id}"
-            )
-            self._metrics.errors_count += 1
 
     async def run_pipeline(self) -> None:
         """
@@ -484,7 +494,16 @@ class LiveDubbingService:
 
                         total_latency = (time.time() - segment_start) * 1000
 
-                        # Create dubbed audio message
+                        # Calculate audio duration for continuous flow
+                        audio_duration_ms = self._calculate_audio_duration_ms(combined_audio)
+
+                        # Calculate video timestamp for this segment
+                        # Use current video position + sync delay as the target timestamp
+                        video_timestamp_ms = (
+                            self._current_video_timestamp_ms + self.sync_delay_ms
+                        )
+
+                        # Create dubbed audio message with continuous flow fields
                         self._sequence += 1
                         message = DubbedAudioMessage(
                             data=audio_b64,
@@ -492,6 +511,9 @@ class LiveDubbingService:
                             translated_text=translated,
                             sequence=self._sequence,
                             latency_ms=int(total_latency),
+                            video_timestamp_ms=video_timestamp_ms,
+                            duration_ms=audio_duration_ms,
+                            processing_time_ms=int(total_latency),
                         )
 
                         await self._output_queue.put(
@@ -501,6 +523,11 @@ class LiveDubbingService:
                         )
 
                         self._metrics.segments_synthesized += 1
+
+                        # Update processed timestamp for continuous flow
+                        self._update_processed_timestamp(
+                            video_timestamp_ms + audio_duration_ms
+                        )
 
                         # Update latency metrics
                         self._update_latency_metrics(
@@ -795,3 +822,59 @@ class LiveDubbingService:
     def is_running(self) -> bool:
         """Check if session is currently running."""
         return self._running
+
+    def update_video_timestamp(self, video_time_ms: int) -> None:
+        """
+        Update current video playback position from client sync_status.
+
+        Used by continuous flow architecture to track buffer health.
+
+        Args:
+            video_time_ms: Current video playback position in milliseconds
+        """
+        self._current_video_timestamp_ms = video_time_ms
+
+        if self._buffer_manager:
+            self._buffer_manager.update_playback_position(video_time_ms)
+
+    def get_buffer_status(self) -> Optional[Dict[str, Any]]:
+        """
+        Get current buffer status for continuous flow.
+
+        Returns:
+            Dict with buffer health and metrics, or None if not using continuous flow
+        """
+        if not self._buffer_manager:
+            return None
+
+        return self._buffer_manager.get_buffer_status()
+
+    def _update_processed_timestamp(self, video_timestamp_ms: int) -> None:
+        """
+        Update latest processed timestamp after dubbing a segment.
+
+        Args:
+            video_timestamp_ms: Video timestamp of the processed segment
+        """
+        if self._buffer_manager:
+            self._buffer_manager.update_processed_position(video_timestamp_ms)
+
+    def _calculate_audio_duration_ms(self, audio_data: bytes) -> int:
+        """
+        Calculate audio duration from raw audio bytes.
+
+        Uses configured TTS output format (ElevenLabs default: 44.1kHz, 16-bit).
+
+        Args:
+            audio_data: Raw audio bytes
+
+        Returns:
+            Duration in milliseconds
+        """
+        config = settings.olorin.dubbing
+        sample_rate = config.tts_output_sample_rate
+        bytes_per_sample = config.tts_output_bytes_per_sample
+
+        # Duration = bytes / (sample_rate * bytes_per_sample)
+        duration_seconds = len(audio_data) / (sample_rate * bytes_per_sample)
+        return int(duration_seconds * 1000)

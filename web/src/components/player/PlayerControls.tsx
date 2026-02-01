@@ -28,6 +28,7 @@ interface PlayerControlsProps {
   renderWatchPartyButton?: () => React.ReactNode
   renderSubtitleControls?: () => React.ReactNode
   renderLiveSubtitleControls?: () => React.ReactNode
+  renderLiveSplitSubtitleControls?: () => React.ReactNode
   renderDubbingControls?: () => React.ReactNode
   renderRecordButton?: () => React.ReactNode
   renderCastButton?: () => React.ReactNode
@@ -58,6 +59,7 @@ export default function PlayerControls({
   renderWatchPartyButton,
   renderSubtitleControls,
   renderLiveSubtitleControls,
+  renderLiveSplitSubtitleControls,
   renderDubbingControls,
   renderRecordButton,
   renderCastButton,
@@ -96,6 +98,7 @@ export default function PlayerControls({
         renderCastButton={renderCastButton}
         renderSubtitleControls={renderSubtitleControls}
         renderLiveSubtitleControls={renderLiveSubtitleControls}
+        renderLiveSplitSubtitleControls={renderLiveSplitSubtitleControls}
         renderDubbingControls={renderDubbingControls}
         renderRecordButton={renderRecordButton}
         renderChannelChatButton={renderChannelChatButton}

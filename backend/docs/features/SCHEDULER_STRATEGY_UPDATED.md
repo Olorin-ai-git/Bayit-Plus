@@ -183,7 +183,7 @@ gcloud scheduler jobs list --location=us-east1
 gcloud scheduler jobs run librarian-daily-maintenance --location=us-east1
 
 # Monitor logs
-gcloud run logs read bayit-plus-backend --region=us-east1 --limit=100 --format=json | jq -r '.textPayload' | grep -i librarian
+gcloud run logs read bayit-backend-production --region=us-east1 --limit=100 --format=json | jq -r '.textPayload' | grep -i librarian
 ```
 
 ### **Step 4: Monitor First Week**
@@ -191,7 +191,7 @@ gcloud run logs read bayit-plus-backend --region=us-east1 --limit=100 --format=j
 ```bash
 # Check audit results
 curl -H "Authorization: Bearer $TOKEN" \
-  https://bayit-plus-backend-znfki37vbq-ue.a.run.app/api/v1/admin/librarian/status
+  https://bayit-backend-production-znfki37vbq-ue.a.run.app/api/v1/admin/librarian/status
 
 # View latest audit report
 cd /Users/olorin/Documents/olorin/backend
@@ -336,7 +336,7 @@ gcloud scheduler jobs resume librarian-daily-maintenance --location=us-east1
 gcloud scheduler jobs executions list librarian-daily-maintenance --location=us-east1
 
 # Check Cloud Run logs
-gcloud run logs read bayit-plus-backend --region=us-east1 --limit=200 | grep -i error
+gcloud run logs read bayit-backend-production --region=us-east1 --limit=200 | grep -i error
 ```
 
 ### **Quota Exhausted:**
@@ -359,7 +359,7 @@ If the AI agent hits the budget limit before completing the audit:
 
 **Questions or Issues?**
 
-1. **Check logs:** `gcloud run logs read bayit-plus-backend --region=us-east1`
+1. **Check logs:** `gcloud run logs read bayit-backend-production --region=us-east1`
 2. **View audit status:** `poetry run python scripts/view_audit_results.py`
 3. **Check library health:** `poetry run python scripts/check_library_status.py`
 4. **Review this document:** `backend/SCHEDULER_STRATEGY_UPDATED.md`

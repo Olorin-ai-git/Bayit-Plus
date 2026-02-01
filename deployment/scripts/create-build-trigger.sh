@@ -8,7 +8,7 @@ set -e
 
 PROJECT_ID="bayit-plus"
 REGION="us-east1"
-TRIGGER_NAME="bayit-plus-backend-auto-deploy"
+TRIGGER_NAME="bayit-backend-production-auto-deploy"
 
 echo "=================================="
 echo "Cloud Build Trigger Setup"

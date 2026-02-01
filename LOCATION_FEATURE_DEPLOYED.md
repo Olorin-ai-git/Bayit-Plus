@@ -277,7 +277,7 @@ Before going live, test these scenarios:
 2. ✅ Security features active
 3. ⏳ Restart backend server to load new config:
    ```bash
-   systemctl restart bayit-plus-backend
+   systemctl restart bayit-backend-production
    # OR
    poetry run python -m app.local_server
    ```

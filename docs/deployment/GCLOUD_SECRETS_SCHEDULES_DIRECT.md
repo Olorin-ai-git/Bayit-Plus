@@ -49,12 +49,12 @@ After creating the secrets, grant access to the backend service account:
 # Grant access to backend service account
 gcloud secrets add-iam-policy-binding SCHEDULES_DIRECT_USERNAME \
   --project=bayit-plus \
-  --member="serviceAccount:bayit-plus-backend@bayit-plus.iam.gserviceaccount.com" \
+  --member="serviceAccount:bayit-backend-production@bayit-plus.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 
 gcloud secrets add-iam-policy-binding SCHEDULES_DIRECT_PASSWORD \
   --project=bayit-plus \
-  --member="serviceAccount:bayit-plus-backend@bayit-plus.iam.gserviceaccount.com" \
+  --member="serviceAccount:bayit-backend-production@bayit-plus.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 ```
 

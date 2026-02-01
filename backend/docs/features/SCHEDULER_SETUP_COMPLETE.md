@@ -46,7 +46,7 @@
 ## 🔧 Configuration Details
 
 ### Cloud Run Service
-- **URL:** https://bayit-plus-backend-znfki37vbq-ue.a.run.app
+- **URL:** https://bayit-backend-production-znfki37vbq-ue.a.run.app
 - **Region:** us-east1
 - **Service Account:** 624470113582-compute@developer.gserviceaccount.com
 
@@ -120,11 +120,11 @@ gcloud scheduler jobs executions list librarian-weekly-ai-audit \
 ### Check Audit Reports via API
 ```bash
 # Get latest reports
-curl 'https://bayit-plus-backend-znfki37vbq-ue.a.run.app/api/v1/admin/librarian/reports?limit=10' \
+curl 'https://bayit-backend-production-znfki37vbq-ue.a.run.app/api/v1/admin/librarian/reports?limit=10' \
   -H "Authorization: Bearer $TOKEN"
 
 # Check system status
-curl 'https://bayit-plus-backend-znfki37vbq-ue.a.run.app/api/v1/admin/librarian/status' \
+curl 'https://bayit-backend-production-znfki37vbq-ue.a.run.app/api/v1/admin/librarian/status' \
   -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -145,13 +145,13 @@ gcloud scheduler jobs run librarian-weekly-ai-audit --location=us-east1
 ### Trigger via API (requires admin token)
 ```bash
 # Rule-based audit
-curl -X POST https://bayit-plus-backend-znfki37vbq-ue.a.run.app/api/v1/admin/librarian/run-audit \
+curl -X POST https://bayit-backend-production-znfki37vbq-ue.a.run.app/api/v1/admin/librarian/run-audit \
   -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' \
   -d '{"audit_type":"manual","dry_run":false}'
 
 # AI Agent audit
-curl -X POST https://bayit-plus-backend-znfki37vbq-ue.a.run.app/api/v1/admin/librarian/run-audit \
+curl -X POST https://bayit-backend-production-znfki37vbq-ue.a.run.app/api/v1/admin/librarian/run-audit \
   -H "Authorization: Bearer $TOKEN" \
   -H 'Content-Type: application/json' \
   -d '{"use_ai_agent":true,"dry_run":false}'
@@ -246,7 +246,7 @@ Current configuration:
    ```bash
    # Get API key from SendGrid
    # Add to Cloud Run environment variables
-   gcloud run services update bayit-plus-backend \
+   gcloud run services update bayit-backend-production \
      --region=us-east1 \
      --set-env-vars=SENDGRID_API_KEY=SG.your-key-here
    ```
@@ -254,7 +254,7 @@ Current configuration:
 ### Optional Enhancements
 1. **Add more email recipients:**
    ```bash
-   gcloud run services update bayit-plus-backend \
+   gcloud run services update bayit-backend-production \
      --region=us-east1 \
      --set-env-vars=ADMIN_EMAIL_ADDRESSES=admin@olorin.ai,team@bayitplus.com
    ```
@@ -335,7 +335,7 @@ Current configuration:
 gcloud scheduler jobs executions list librarian-daily-audit --location=us-east1
 
 # Check Cloud Run logs
-gcloud run logs read bayit-plus-backend --region=us-east1 --limit=50
+gcloud run logs read bayit-backend-production --region=us-east1 --limit=50
 ```
 
 ### Common Issues
@@ -346,7 +346,7 @@ gcloud run logs read bayit-plus-backend --region=us-east1 --limit=50
 
 **Issue:** Jobs failing with 401 Unauthorized
 - **Solution:** Check service account has Cloud Run Invoker role
-- **Command:** `gcloud run services get-iam-policy bayit-plus-backend --region=us-east1`
+- **Command:** `gcloud run services get-iam-policy bayit-backend-production --region=us-east1`
 
 **Issue:** No emails received
 - **Solution:** Configure SENDGRID_API_KEY environment variable

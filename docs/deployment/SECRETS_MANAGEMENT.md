@@ -38,7 +38,7 @@ gcloud secrets create NEW_SECRET --data-file=- <<< "value"
 ./scripts/sync-gcloud-secrets.sh
 
 # 3. Restart services
-kubectl rollout restart deployment/bayit-plus-backend
+kubectl rollout restart deployment/bayit-backend-production
 ```
 
 ---
@@ -95,7 +95,7 @@ gcloud secrets add-iam-policy-binding SECRET_NAME \
 ./scripts/sync-gcloud-secrets.sh backend
 
 # 4. Restart service
-kubectl rollout restart deployment/bayit-plus-backend
+kubectl rollout restart deployment/bayit-backend-production
 ```
 
 ### Update Existing Secret
@@ -109,7 +109,7 @@ gcloud secrets versions add SECRET_NAME \
 ./scripts/sync-gcloud-secrets.sh backend
 
 # 3. Restart service
-kubectl rollout restart deployment/bayit-plus-backend
+kubectl rollout restart deployment/bayit-backend-production
 ```
 
 ### View Secret Value
@@ -359,7 +359,7 @@ gcloud secrets versions add SECRET_NAME --data-file=- <<< "$NEW_VALUE"
 ./scripts/sync-gcloud-secrets.sh all
 
 # 5. Rolling restart all services
-kubectl rollout restart deployment/bayit-plus-backend
+kubectl rollout restart deployment/bayit-backend-production
 kubectl rollout restart deployment/bayit-plus-web
 
 # 6. Verify old version disabled

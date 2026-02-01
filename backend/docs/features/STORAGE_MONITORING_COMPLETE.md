@@ -3,7 +3,7 @@
 **Feature:** Intelligent Storage Monitoring & Cost Warnings for AI Librarian
 **Implementation Date:** 2026-01-11
 **Status:** ✅ DEPLOYED TO PRODUCTION
-**Revision:** bayit-plus-backend-00004-fz9
+**Revision:** bayit-backend-production-00004-fz9
 
 ---
 
@@ -117,12 +117,12 @@ The AI Librarian can now autonomously monitor Google Cloud Storage, identify lar
 
 ### Deployment
 
-**Method:** `gcloud run deploy bayit-plus-backend`
+**Method:** `gcloud run deploy bayit-backend-production`
 **Build Time:** ~3 minutes
 **Container:** Built from Dockerfile
 **Region:** us-east1
-**Service URL:** https://bayit-plus-backend-624470113582.us-east1.run.app
-**Revision:** bayit-plus-backend-00004-fz9
+**Service URL:** https://bayit-backend-production-624470113582.us-east1.run.app
+**Revision:** bayit-backend-production-00004-fz9
 **Traffic:** 100% to new revision
 
 ---

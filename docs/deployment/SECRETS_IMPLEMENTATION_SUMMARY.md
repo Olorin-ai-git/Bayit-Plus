@@ -318,14 +318,14 @@ If issues occur:
 
 2. **Redeploy Previous Version**:
    ```bash
-   gcloud run services update bayit-plus-backend \
+   gcloud run services update bayit-backend-production \
        --image=gcr.io/bayit-plus/bayit-backend:LAST_WORKING_BUILD_ID \
        --region=us-east1
    ```
 
 3. **Investigate Logs**:
    ```bash
-   gcloud run services logs read bayit-plus-backend --region=us-east1 --limit=100
+   gcloud run services logs read bayit-backend-production --region=us-east1 --limit=100
    ```
 
 ## Related Issues Resolved

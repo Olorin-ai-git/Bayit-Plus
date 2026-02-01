@@ -152,7 +152,7 @@ rule_files:
 # Scrape configurations
 scrape_configs:
   # Backend application metrics
-  - job_name: 'bayit-plus-backend'
+  - job_name: 'bayit-backend-production'
     static_configs:
       - targets: ['backend:8090']
     metrics_path: '/metrics'

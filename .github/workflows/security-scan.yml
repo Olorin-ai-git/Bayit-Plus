@@ -245,7 +245,7 @@ jobs:
       - name: Check Cloud Run secret bindings
         run: |
           echo "Checking Cloud Run service secret bindings:"
-          gcloud run services describe bayit-plus-backend \
+          gcloud run services describe bayit-backend-production \
             --region=us-central1 \
             --format="yaml(spec.template.spec.containers[0].env)" \
             || echo "Failed to describe service (may not exist yet)"

@@ -190,7 +190,7 @@ class Settings(BaseSettings):
 **Secret Manager Integration:**
 ```yaml
 # backend/cloudbuild.yaml
-gcloud run deploy bayit-plus-backend \
+gcloud run deploy bayit-backend-production \
   --set-secrets=\
     SECRET_KEY=bayit-secret-key:latest,\
     MONGODB_URL=bayit-mongodb-url:latest,\

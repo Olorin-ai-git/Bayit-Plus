@@ -275,7 +275,7 @@ firebase hosting:releases:list
 **Production**:
 - Website: https://bayit-plus.web.app
 - Firebase Console: https://console.firebase.google.com/project/bayit-plus/hosting
-- Cloud Run Backend: https://console.cloud.google.com/run/detail/us-east1/bayit-plus-backend
+- Cloud Run Backend: https://console.cloud.google.com/run/detail/us-east1/bayit-backend-production
 
 **Monitoring**:
 - Sentry: https://sentry.io/organizations/[org]/issues/

@@ -25,7 +25,7 @@ NC='\033[0m' # No Color
 
 # Configuration
 PROJECT_ID="${1:-$(gcloud config get-value project 2>/dev/null)}"
-BACKEND_SA="bayit-plus-backend@${PROJECT_ID}.iam.gserviceaccount.com"
+BACKEND_SA="bayit-backend-production@${PROJECT_ID}.iam.gserviceaccount.com"
 WEB_SA="bayit-plus-web@${PROJECT_ID}.iam.gserviceaccount.com"
 
 echo -e "${BLUE}============================================${NC}"
@@ -231,7 +231,7 @@ echo ""
 echo -e "3. ${YELLOW}Restart backend:${NC}"
 echo -e "   ${GREEN}cd backend && poetry run python -m app.local_server${NC}"
 echo -e "   ${GREEN}# Or in production:${NC}"
-echo -e "   ${GREEN}kubectl rollout restart deployment/bayit-plus-backend${NC}"
+echo -e "   ${GREEN}kubectl rollout restart deployment/bayit-backend-production${NC}"
 echo ""
 echo -e "4. ${YELLOW}Restart frontend:${NC}"
 echo -e "   ${GREEN}cd web && npm start${NC}"

@@ -27,7 +27,7 @@ MONGODB_USERNAME=admin_db_user
 # ================================================
 
 # Cloud Run Service Name
-CLOUD_RUN_SERVICE=bayit-plus-backend
+CLOUD_RUN_SERVICE=bayit-backend-production
 
 # GCS Bucket Name
 GCS_BUCKET_NAME=bayit-plus-media-new
@@ -62,7 +62,7 @@ MONGODB_DB_NAME=bayit_plus
 # ================================================
 # 1. Use same GCP project: israeli-radio-475c9
 # 2. Deploy to same region: us-east1 (proven working)
-# 3. Create new Cloud Run service: bayit-plus-backend
+# 3. Create new Cloud Run service: bayit-backend-production
 # 4. Create new GCS bucket: bayit-plus-media-new
 # 5. Use new database on existing MongoDB cluster: bayit_plus
 # 6. Reuse existing service account and OAuth credentials

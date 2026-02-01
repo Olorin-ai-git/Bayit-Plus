@@ -12,7 +12,7 @@ Set up automatic Cloud Build triggers so that every push to `main` branch automa
 ## 📋 **Current Status**
 
 ✅ Cloud Build configuration exists (`backend/cloudbuild.yaml`)  
-✅ Cloud Run service is running (`bayit-plus-backend`)  
+✅ Cloud Run service is running (`bayit-backend-production`)  
 ❌ GitHub connection to Cloud Build: **NOT CONFIGURED**  
 ❌ Build trigger: **NOT CONFIGURED**
 
@@ -70,7 +70,7 @@ gcloud alpha builds repositories create \
 
 ```bash
 gcloud builds triggers create github \
-  --name="bayit-plus-backend-auto-deploy" \
+  --name="bayit-backend-production-auto-deploy" \
   --description="Auto-deploy backend on push to main" \
   --repo-name="Bayit-Plus" \
   --repo-owner="Olorin-ai-git" \
@@ -138,7 +138,7 @@ gcloud builds list --project=bayit-plus --limit=5
 
 ### **Check Current Deployment**
 ```bash
-gcloud run services describe bayit-plus-backend \
+gcloud run services describe bayit-backend-production \
   --project=bayit-plus \
   --region=us-east1 \
   --format="table(metadata.name,status.url,status.latestReadyRevisionName,metadata.creationTimestamp)"
@@ -165,7 +165,7 @@ Every push to `main` will:
    - Tags: `$BUILD_ID` and `latest`
 
 2. **Deploy to Cloud Run**
-   - Service: `bayit-plus-backend`
+   - Service: `bayit-backend-production`
    - Region: `us-east1`
    - Memory: 2Gi
    - CPU: 2
@@ -207,14 +207,14 @@ If a deployment fails, rollback to previous revision:
 ```bash
 # List revisions
 gcloud run revisions list \
-  --service=bayit-plus-backend \
+  --service=bayit-backend-production \
   --project=bayit-plus \
   --region=us-east1 \
   --limit=5
 
 # Rollback to previous revision
-gcloud run services update-traffic bayit-plus-backend \
-  --to-revisions=bayit-plus-backend-00050-45q=100 \
+gcloud run services update-traffic bayit-backend-production \
+  --to-revisions=bayit-backend-production-00050-45q=100 \
   --project=bayit-plus \
   --region=us-east1
 ```
@@ -238,7 +238,7 @@ After auto-deploy is set up:
 ### **Email Notifications**
 ```bash
 # Enable Cloud Build notifications
-gcloud builds triggers update bayit-plus-backend-auto-deploy \
+gcloud builds triggers update bayit-backend-production-auto-deploy \
   --project=bayit-plus \
   --region=us-east1 \
   --subscription=projects/bayit-plus/topics/cloud-builds

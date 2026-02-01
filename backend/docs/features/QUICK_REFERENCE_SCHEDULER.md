@@ -91,13 +91,13 @@ gcloud scheduler jobs update http librarian-weekly-comprehensive \
 
 ```bash
 # View Cloud Run logs
-gcloud run logs read bayit-plus-backend --region=us-east1 --limit=100
+gcloud run logs read bayit-backend-production --region=us-east1 --limit=100
 
 # Filter for librarian logs
-gcloud run logs read bayit-plus-backend --region=us-east1 --limit=200 | grep -i librarian
+gcloud run logs read bayit-backend-production --region=us-east1 --limit=200 | grep -i librarian
 
 # View errors only
-gcloud run logs read bayit-plus-backend --region=us-east1 --limit=200 | grep -i error
+gcloud run logs read bayit-backend-production --region=us-east1 --limit=200 | grep -i error
 ```
 
 ---
@@ -157,7 +157,7 @@ gcloud scheduler jobs list --location=us-east1
 
 **Jobs failing?**
 ```bash
-gcloud run logs read bayit-plus-backend --region=us-east1 --limit=200 | grep -i error
+gcloud run logs read bayit-backend-production --region=us-east1 --limit=200 | grep -i error
 ```
 
 **Want to change config?**

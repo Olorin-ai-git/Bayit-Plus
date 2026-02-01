@@ -174,16 +174,16 @@ mongo
 
 ```bash
 # 1. Build Docker image (if using containers)
-docker build -t bayit-plus-backend:latest .
+docker build -t bayit-backend-production:latest .
 
 # 2. Deploy to Cloud Run
-gcloud run deploy bayit-plus-backend \
-  --image bayit-plus-backend:latest \
+gcloud run deploy bayit-backend-production \
+  --image bayit-backend-production:latest \
   --region us-central1 \
   --env-vars-file .env.prod
 
 # 3. Verify deployment
-curl https://bayit-plus-backend-service/health
+curl https://bayit-backend-production-service/health
 ```
 
 ### Frontend Deployment
@@ -402,8 +402,8 @@ If issues occur during deployment:
 ### Backend Rollback
 ```bash
 # 1. Revert Cloud Run to previous version
-gcloud run deploy bayit-plus-backend \
-  --image bayit-plus-backend:previous-tag
+gcloud run deploy bayit-backend-production \
+  --image bayit-backend-production:previous-tag
 
 # 2. Disable background jobs (comment out in background_tasks.py)
 # 3. Clear failed cost records if needed

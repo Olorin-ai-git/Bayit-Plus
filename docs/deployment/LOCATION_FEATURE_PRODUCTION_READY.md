@@ -132,7 +132,7 @@ db.location_cache.getIndexes()
 cd backend
 git pull origin main
 poetry install --no-dev
-systemctl restart bayit-plus-backend
+systemctl restart bayit-backend-production
 
 # Verify startup
 curl http://localhost:8090/health
@@ -345,7 +345,7 @@ If issues arise post-deployment:
 ```bash
 # Remove GEONAMES_USERNAME
 unset GEONAMES_USERNAME
-systemctl restart bayit-plus-backend
+systemctl restart bayit-backend-production
 ```
 
 Effect: Location endpoints return 404, feature silently disabled
@@ -366,7 +366,7 @@ Effect: All location endpoints return 404
 ```bash
 git revert <commit_hash>
 poetry install
-systemctl restart bayit-plus-backend
+systemctl restart bayit-backend-production
 ```
 :::
 
