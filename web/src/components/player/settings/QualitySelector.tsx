@@ -129,7 +129,7 @@ const styles = StyleSheet.create({
   },
   resolutionText: {
     fontSize: 12,
-    color: '#6b7280',
+    color: 'rgba(255, 255, 255, 0.5)',
     marginLeft: spacing[3],
   },
   autoButton: {

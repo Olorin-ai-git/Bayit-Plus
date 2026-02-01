@@ -7,6 +7,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { AvatarMode, VoiceIntent, VoiceCommand } from '../types/voiceAvatar';
+import { getPlatformStorage } from '../utils/storage';
 import { AvatarCoreState, AvatarVisualForm } from '../constants/avatarStates';
 import { GestureType } from '../constants/avatarGestures';
 import { DialogueLine } from '../constants/avatarDialogues';
@@ -545,7 +546,7 @@ export const useSupportStore = create<SupportStore>()(
     }),
     {
       name: 'bayit-support',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => getPlatformStorage()),
       // Only persist user preferences, not transient state like modal visibility
       partialize: (state) => ({
         isWakeWordEnabled: state.isWakeWordEnabled,

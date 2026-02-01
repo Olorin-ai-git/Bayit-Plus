@@ -67,6 +67,6 @@ const styles = StyleSheet.create({
   },
   status: {
     fontSize: 11,
-    color: '#6b7280',
+    color: 'rgba(255, 255, 255, 0.5)',
   },
 });

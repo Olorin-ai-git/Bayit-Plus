@@ -100,7 +100,7 @@ export const triviaSettingsStyles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   sectionHint: {
-    color: '#6B7280',
+    color: 'rgba(255, 255, 255, 0.5)',
     fontSize: 11,
     fontStyle: 'italic',
     marginTop: -4,

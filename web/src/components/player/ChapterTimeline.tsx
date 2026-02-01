@@ -14,7 +14,7 @@ const categoryColors: Record<string, string> = {
   sports: '#EAB308',     // yellow-500
   weather: '#06B6D4',    // cyan-500
   culture: '#EC4899',    // pink-500
-  conclusion: '#6B7280', // gray-500
+  conclusion: '#9CA3AF', // gray-400 (lighter for dark theme)
   flashback: '#6366F1',  // indigo-500
   journey: '#14B8A6',    // teal-500
   climax: '#F43F5E',     // rose-500

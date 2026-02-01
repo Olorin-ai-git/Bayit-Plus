@@ -453,7 +453,7 @@ export default function HierarchicalContentTable({
                 >
                   <Star
                     size={buttonSize}
-                    color={row.is_featured ? '#f59e0b' : '#6b7280'}
+                    color={row.is_featured ? '#f59e0b' : 'rgba(255, 255, 255, 0.5)'}
                     fill={row.is_featured ? '#f59e0b' : 'transparent'}
                   />
                 </Pressable>
@@ -462,7 +462,7 @@ export default function HierarchicalContentTable({
                 onPress={() => onTogglePublish(row.id)}
                 style={[buttonStyle, row.is_published ? styles.actionButtonPublished : styles.actionButtonUnpublished]}
               >
-                <Eye size={buttonSize} color={row.is_published ? '#10b981' : '#6b7280'} />
+                <Eye size={buttonSize} color={row.is_published ? '#10b981' : 'rgba(255, 255, 255, 0.5)'} />
               </Pressable>
               <Link to={`/admin/content/${row.id}/edit`} style={{ textDecoration: 'none' }}>
                 <Pressable style={[buttonStyle, styles.actionButtonEdit]}>

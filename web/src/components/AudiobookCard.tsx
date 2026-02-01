@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   },
   metaText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: 'rgba(255, 255, 255, 0.5)',
   },
 })
 
@@ -149,7 +149,7 @@ export function AudiobookCard({ audiobook, onAudiblePlay }: AudiobookCardProps) 
           <Text style={styles.metaText}>{audiobook.duration || 'N/A'}</Text>
           {audiobook.view_count > 0 && (
             <View style={styles.metaItem}>
-              <Icon name="vod" size="xs" color="#6B7280" />
+              <Icon name="vod" size="xs" color="rgba(255, 255, 255, 0.5)" />
               <Text style={styles.metaText}>{viewCountDisplay}</Text>
             </View>
           )}

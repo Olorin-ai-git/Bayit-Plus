@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   confirmMessage: {
     fontSize: fontSize.md,
-    color: colors.text,
+    color: '#ffffff',
     textAlign: 'center',
     marginBottom: spacing.lg,
   },

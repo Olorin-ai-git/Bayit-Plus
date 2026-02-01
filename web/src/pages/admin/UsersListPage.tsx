@@ -38,7 +38,7 @@ interface ModalState {
 
 const STATUS_COLORS: Record<string, { bg: string; text: string; labelKey: string }> = {
   active: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.users.status.active' },
-  inactive: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', labelKey: 'admin.users.status.inactive' },
+  inactive: { bg: 'rgba(107, 114, 128, 0.2)', text: 'rgba(255, 255, 255, 0.5)', labelKey: 'admin.users.status.inactive' },
   banned: { bg: 'rgba(239, 68, 68, 0.2)', text: '#EF4444', labelKey: 'admin.users.status.blocked' },
 };
 

@@ -46,10 +46,10 @@ const styles = StyleSheet.create({
   label: {
     fontSize: fontSize.md,
     fontWeight: '600',
-    color: colors.text,
+    color: '#ffffff',
   },
   description: {
     fontSize: fontSize.sm,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
 });

@@ -39,6 +39,14 @@ import {
   gold,
 } from './colors';
 
+// Re-export semantic text colors for easy access
+export const textColors = {
+  text: '#ffffff',
+  textSecondary: 'rgba(255, 255, 255, 0.7)',
+  textMuted: 'rgba(255, 255, 255, 0.5)',
+  textDisabled: 'rgba(255, 255, 255, 0.3)',
+};
+
 import { spacing, spacingAliases, borderRadius, extendedSpacing } from './spacing';
 
 import {
@@ -79,6 +87,11 @@ export const theme = {
     current: 'currentColor',
     white: '#ffffff',
     black: '#000000',
+    // Semantic text colors for dark theme
+    text: '#ffffff',
+    textSecondary: 'rgba(255, 255, 255, 0.7)',
+    textMuted: 'rgba(255, 255, 255, 0.5)',
+    textDisabled: 'rgba(255, 255, 255, 0.3)',
   },
   spacing,
   spacingAliases,

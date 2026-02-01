@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   },
   exampleText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: 'rgba(255, 255, 255, 0.5)',
     fontStyle: 'italic',
     paddingTop: 16,
     borderTopWidth: 1,

@@ -153,8 +153,8 @@ export default function RadioStationsPage() {
       key: 'is_active',
       label: t('admin.content.columns.status', 'Status'),
       render: (isActive: boolean) => (
-        <View style={[styles.badge, { backgroundColor: isActive ? '#10b98120' : '#6b728020' }]}>
-          <Text style={[styles.badgeText, { color: isActive ? '#10b981' : '#6b7280' }]}>
+        <View style={[styles.badge, { backgroundColor: isActive ? '#10b98120' : 'rgba(107, 114, 128, 0.12)' }]}>
+          <Text style={[styles.badgeText, { color: isActive ? '#10b981' : 'rgba(255, 255, 255, 0.5)' }]}>
             {isActive ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
           </Text>
         </View>

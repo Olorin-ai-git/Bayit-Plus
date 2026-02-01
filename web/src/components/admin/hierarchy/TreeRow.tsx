@@ -203,7 +203,7 @@ export function ActionButtons({
         >
           <Star
             size={buttonSize}
-            color={is_featured ? '#f59e0b' : '#6b7280'}
+            color={is_featured ? '#f59e0b' : 'rgba(255, 255, 255, 0.5)'}
             fill={is_featured ? '#f59e0b' : 'transparent'}
           />
         </Pressable>
@@ -212,7 +212,7 @@ export function ActionButtons({
         onPress={() => onTogglePublish(id)}
         style={[buttonStyle, is_published ? styles.publishActive : styles.publishInactive]}
       >
-        <Eye size={buttonSize} color={is_published ? '#10b981' : '#6b7280'} />
+        <Eye size={buttonSize} color={is_published ? '#10b981' : 'rgba(255, 255, 255, 0.5)'} />
       </Pressable>
       <Link to={`/admin/content/${id}/edit`} style={{ textDecoration: 'none' }}>
         <Pressable style={[buttonStyle, styles.editButton]}>

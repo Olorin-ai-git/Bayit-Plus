@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: fontSize.md,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   headerRow: {
     flexDirection: 'row',
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   headerCell: {
     fontSize: fontSize.sm,
     fontWeight: '600',
-    color: colors.text,
+    color: '#ffffff',
   },
   fileNameHeader: {
     flex: 3,

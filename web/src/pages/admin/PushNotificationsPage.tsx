@@ -29,7 +29,7 @@ interface Pagination {
 }
 
 const statusColors: Record<string, { bg: string; text: string; labelKey: string }> = {
-  draft: { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', labelKey: 'admin.pushNotifications.status.draft' },
+  draft: { bg: 'rgba(107, 114, 128, 0.2)', text: 'rgba(255, 255, 255, 0.5)', labelKey: 'admin.pushNotifications.status.draft' },
   sent: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.pushNotifications.status.sent' },
   scheduled: { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B', labelKey: 'admin.pushNotifications.status.scheduled' },
 };

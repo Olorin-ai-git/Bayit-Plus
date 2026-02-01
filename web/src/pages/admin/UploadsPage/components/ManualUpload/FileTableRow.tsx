@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   },
   fileName: {
     fontSize: fontSize.sm,
-    color: colors.text,
+    color: '#ffffff',
     flex: 1,
   },
   sizeCell: {
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   },
   cellText: {
     fontSize: fontSize.sm,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   progressWrapper: {
     gap: spacing.xs,
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   progressText: {
     fontSize: fontSize.xs,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'right',
   },
   removeButton: {

@@ -160,7 +160,7 @@ export function LiveSearchPanel({
           onFocus={() => setInputFocused(true)}
           onBlur={() => setInputFocused(false)}
           placeholder={t('liveSearch.placeholder')}
-          placeholderTextColor="#6B7280"
+          placeholderTextColor="rgba(255, 255, 255, 0.5)"
           autoCapitalize="none"
           autoCorrect={false}
         />

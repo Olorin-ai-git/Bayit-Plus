@@ -35,7 +35,7 @@ const getStatusInfo = (user: User | any) => {
   if (user?.is_active) {
     return { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E', labelKey: 'admin.users.status.active', status: 'active' };
   }
-  return { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280', labelKey: 'admin.users.status.inactive', status: 'inactive' };
+  return { bg: 'rgba(107, 114, 128, 0.2)', text: 'rgba(255, 255, 255, 0.5)', labelKey: 'admin.users.status.inactive', status: 'inactive' };
 };
 
 const formatDate = (dateStr: string) => {

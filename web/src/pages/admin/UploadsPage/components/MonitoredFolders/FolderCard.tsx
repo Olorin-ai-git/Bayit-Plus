@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: fontSize.md,
     fontWeight: '600',
-    color: colors.text,
+    color: '#ffffff',
   },
   actions: {
     flexDirection: 'row',
@@ -104,11 +104,11 @@ const styles = StyleSheet.create({
   },
   path: {
     fontSize: fontSize.sm,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
     fontFamily: 'monospace',
   },
   meta: {
     fontSize: fontSize.xs,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
 });

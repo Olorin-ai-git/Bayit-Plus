@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.lg,
     fontWeight: '600',
-    color: colors.text,
+    color: '#ffffff',
   },
   statsRow: {
     flexDirection: 'row',
@@ -94,10 +94,10 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: fontSize.xl,
     fontWeight: '700',
-    color: colors.text,
+    color: '#ffffff',
   },
   statLabel: {
     fontSize: fontSize.sm,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
 });

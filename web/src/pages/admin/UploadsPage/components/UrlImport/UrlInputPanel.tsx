@@ -88,11 +88,11 @@ const styles = StyleSheet.create({
   label: {
     fontSize: fontSize.sm,
     fontWeight: '600',
-    color: colors.text,
+    color: '#ffffff',
   },
   hint: {
     fontSize: fontSize.xs,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   actions: {
     flexDirection: 'row',

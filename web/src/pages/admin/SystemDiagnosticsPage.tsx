@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   statusBannerSubtitle: {
-    color: colors.dark[400],
+    color: 'rgba(255, 255, 255, 0.7)',
     fontSize: fontSize.md,
     marginTop: spacing.xs,
   },

@@ -253,7 +253,7 @@ export default function PodcastsPage() {
           >
             <Star
               size={18}
-              color={item.is_featured ? '#f59e0b' : '#6b7280'}
+              color={item.is_featured ? '#f59e0b' : 'rgba(255, 255, 255, 0.5)'}
               fill={item.is_featured ? '#f59e0b' : 'transparent'}
             />
           </Pressable>

@@ -13,24 +13,16 @@ import { GestureType } from './avatarGestures';
 
 /**
  * Spritesheet type mapping for animated gestures
+ * Only includes spritesheets that are available in the assets
  */
 export type SpritesheetType =
-  | 'greeting'
-  | 'listening'
-  | 'thinking'
-  | 'presenting'
-  | 'conjuring'
-  | 'browsing'
-  | 'confused'
-  | 'shrugging'
-  | 'farewell'
-  | 'cheering'
   | 'clapping'
+  | 'conjuring'
   | 'crying'
-  | 'facepalm'
-  | 'emphatic'
-  | 'reading'
-  | 'confirmation';
+  | 'listening'
+  | 'smacking'
+  | 'speaking'
+  | 'thinking';
 
 /**
  * Wizard avatar images for voice states
@@ -92,71 +84,51 @@ export const GESTURE_TYPE_AVATARS: Record<GestureType, unknown> = {
 };
 
 /**
- * Animated gestures that use spritesheets for animation
- * These gestures have multi-frame animations defined in GESTURE_LIBRARY
+ * Animated gestures that have spritesheets available
+ * Only includes gestures with verified spritesheet files
+ * Other gestures defined in GESTURE_LIBRARY will use static images
  */
 export const ANIMATED_GESTURES = new Set<GestureType>([
-  'greeting',
+  'clapping',
+  'conjuring',
+  'crying',
+  'facepalm', // Uses 'smacking' spritesheet
   'listening',
   'thinking',
-  'presenting',
-  'conjuring',
-  'browsing',
-  'confused',
-  'shrugging',
-  'farewell',
-  'cheering',
-  'clapping',
-  'crying',
-  'facepalm',
-  'emphatic',
-  'reading',
-  'confirmation',
 ]);
 
 /**
  * Spritesheet paths for animated gestures
  * Maps gesture types to their spritesheet asset paths
+ *
+ * Available spritesheets: clapping, conjuring, crying, facepalm (smacking), listening, thinking
+ * Gestures without spritesheets will use static images via getGestureAvatar()
  */
 export const GESTURE_SPRITESHEETS: Partial<Record<GestureType, unknown>> = {
-  greeting: require('../assets/images/characters/wizard/spritesheets/greeting.png'),
-  listening: require('../assets/images/characters/wizard/spritesheets/listening.png'),
-  thinking: require('../assets/images/characters/wizard/spritesheets/thinking.png'),
-  presenting: require('../assets/images/characters/wizard/spritesheets/presenting.png'),
-  conjuring: require('../assets/images/characters/wizard/spritesheets/conjuring.png'),
-  browsing: require('../assets/images/characters/wizard/spritesheets/browsing.png'),
-  confused: require('../assets/images/characters/wizard/spritesheets/confused.png'),
-  shrugging: require('../assets/images/characters/wizard/spritesheets/shrugging.png'),
-  farewell: require('../assets/images/characters/wizard/spritesheets/farewell.png'),
-  cheering: require('../assets/images/characters/wizard/spritesheets/cheering.png'),
-  clapping: require('../assets/images/characters/wizard/spritesheets/clapping.png'),
-  crying: require('../assets/images/characters/wizard/spritesheets/crying.png'),
-  facepalm: require('../assets/images/characters/wizard/spritesheets/facepalm.png'),
-  emphatic: require('../assets/images/characters/wizard/spritesheets/emphatic.png'),
-  reading: require('../assets/images/characters/wizard/spritesheets/reading.png'),
-  confirmation: require('../assets/images/characters/wizard/spritesheets/confirmation.png'),
+  // Available spritesheets (verified in filesystem)
+  clapping: require('../assets/images/characters/wizard/spritesheets/clapping/spritesheet.png'),
+  conjuring: require('../assets/images/characters/wizard/spritesheets/conjuring/spritesheet.png'),
+  crying: require('../assets/images/characters/wizard/spritesheets/crying/spritesheet.png'),
+  facepalm: require('../assets/images/characters/wizard/spritesheets/smacking/spritesheet.png'),
+  listening: require('../assets/images/characters/wizard/spritesheets/listening/spritesheet.png'),
+  thinking: require('../assets/images/characters/wizard/spritesheets/thinking/spritesheet.png'),
+  // Note: 'speaking' spritesheet exists but is used for voice state, not gesture
+  // Note: greeting, presenting, browsing, confused, shrugging, farewell,
+  // cheering, emphatic, reading, confirmation spritesheets
+  // are pending creation. Use static images via getGestureAvatar() for these.
 };
 
 /**
  * Map gesture type to spritesheet type for animation system
+ * Only includes gestures with available spritesheets
  */
 export const GESTURE_TO_SPRITESHEET: Partial<Record<GestureType, SpritesheetType>> = {
-  greeting: 'greeting',
+  clapping: 'clapping',
+  conjuring: 'conjuring',
+  crying: 'crying',
+  facepalm: 'smacking',
   listening: 'listening',
   thinking: 'thinking',
-  presenting: 'presenting',
-  conjuring: 'conjuring',
-  browsing: 'browsing',
-  confused: 'confused',
-  shrugging: 'shrugging',
-  farewell: 'farewell',
-  cheering: 'cheering',
-  clapping: 'clapping',
-  crying: 'crying',
-  facepalm: 'facepalm',
-  emphatic: 'emphatic',
-  reading: 'reading',
-  confirmation: 'confirmation',
 };
 
 /**

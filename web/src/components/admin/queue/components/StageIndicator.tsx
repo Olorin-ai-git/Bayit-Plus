@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#6b7280',
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
   },
   stageButton: {
     alignItems: 'center',

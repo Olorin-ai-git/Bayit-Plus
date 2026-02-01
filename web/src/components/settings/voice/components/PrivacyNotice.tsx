@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 12,
-    color: '#6B7280',
+    color: 'rgba(255, 255, 255, 0.5)',
     flex: 1,
   },
   rtlText: {

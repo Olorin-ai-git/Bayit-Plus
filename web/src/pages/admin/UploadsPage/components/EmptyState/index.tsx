@@ -22,7 +22,7 @@ interface EmptyStateProps {
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
   icon: Icon,
-  iconColor = colors.textMuted,
+  iconColor = 'rgba(255, 255, 255, 0.4)',
   title,
   description,
   actionLabel,
@@ -44,7 +44,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           variant="primary"
           onPress={onAction}
           style={styles.actionButton}
-          icon={ActionIcon ? <ActionIcon size={18} color={colors.text} /> : undefined}
+          icon={ActionIcon ? <ActionIcon size={18} color="#ffffff" /> : undefined}
           iconPosition="left"
           accessibilityLabel={actionLabel}
         />
@@ -65,14 +65,14 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   title: {
-    color: colors.text,
+    color: '#ffffff',
     fontSize: fontSize.lg,
     fontWeight: '600',
     marginBottom: spacing.sm,
     textAlign: 'center',
   },
   description: {
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
     fontSize: fontSize.md,
     lineHeight: 22,
     textAlign: 'center',

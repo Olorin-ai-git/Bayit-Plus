@@ -66,7 +66,7 @@ const getLogLevelColor = (level: LogEntry['level']): string => {
     case 'success': return colors.success.DEFAULT;
     case 'info': return colors.info.DEFAULT;
     case 'debug': return colors.textMuted;
-    case 'trace': return '#6b7280';
+    case 'trace': return 'rgba(255, 255, 255, 0.5)';
     default: return colors.text;
   }
 };

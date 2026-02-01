@@ -105,7 +105,7 @@ export default function AuditLogsPage() {
 
   const getActionBadge = (action: string) => {
     const type = action.split('.')[0];
-    const style = actionColors[type] || { bg: 'rgba(107, 114, 128, 0.2)', text: '#6B7280' };
+    const style = actionColors[type] || { bg: 'rgba(107, 114, 128, 0.2)', text: 'rgba(255, 255, 255, 0.5)' };
     const iconName = getActionIconName(action);
     return (
       <View style={[styles.badge, { backgroundColor: style.bg }]}>

@@ -76,7 +76,7 @@ export function HighlightCard({ highlight, onDismiss, isRTL = false }: Highlight
 
       {/* Timestamp */}
       <View style={[styles.timestampContainer, isHebrew && styles.timestampContainerRTL]}>
-        <Clock size={isTV ? 14 : 10} color="#6B7280" />
+        <Clock size={isTV ? 14 : 10} color="rgba(255, 255, 255, 0.5)" />
         <Text style={[styles.timestampText, tvStyles.timestampText]}>
           {formatISOTimestamp(highlight.created_at, isHebrew, false)}
         </Text>

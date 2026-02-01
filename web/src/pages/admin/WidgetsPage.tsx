@@ -202,7 +202,7 @@ export default function WidgetsPage() {
             {isActive ? (
               <Eye size={12} color="#10b981" />
             ) : (
-              <EyeOff size={12} color="#6b7280" />
+              <EyeOff size={12} color="rgba(255, 255, 255, 0.5)" />
             )}
             <Text style={[
               styles.statusBadgeText,
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
     color: '#22c55e',
   },
   statusBadgeTextInactive: {
-    color: '#6b7280',
+    color: 'rgba(255, 255, 255, 0.5)',
   },
   actionsContainer: {
     flexDirection: 'row',

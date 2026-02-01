@@ -4,7 +4,7 @@
  * Manages dialogue selection, TTS integration, and speech synchronization
  */
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   DialogueLine,
   DialogueCategory,
@@ -84,6 +84,20 @@ export function useAvatarDialogue(
   const speechTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const gestureTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const queueProcessingRef = useRef<boolean>(false);
+
+  /**
+   * Cleanup timeouts on unmount to prevent memory leaks
+   */
+  useEffect(() => {
+    return () => {
+      if (speechTimeoutRef.current) {
+        clearTimeout(speechTimeoutRef.current);
+      }
+      if (gestureTimeoutRef.current) {
+        clearTimeout(gestureTimeoutRef.current);
+      }
+    };
+  }, []);
 
   /**
    * Set current gesture

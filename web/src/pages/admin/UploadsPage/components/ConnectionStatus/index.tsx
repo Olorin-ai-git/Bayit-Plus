@@ -89,7 +89,7 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
             variant="secondary"
             size="sm"
             onPress={onRefresh}
-            icon={<RefreshCw size={16} color={colors.text} />}
+            icon={<RefreshCw size={16} color="#ffffff" />}
             iconPosition="left"
             accessibilityLabel={t('admin.uploads.connectionStatus.manualRefresh')}
             accessibilityHint={t('admin.uploads.connectionStatus.manualRefreshHint')}
@@ -136,12 +136,12 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   title: {
-    color: colors.text,
+    color: '#ffffff',
     fontSize: fontSize.md,
     fontWeight: '600',
   },
   message: {
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
     fontSize: fontSize.sm,
   },
   srOnly: {

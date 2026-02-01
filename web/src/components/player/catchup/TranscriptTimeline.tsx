@@ -81,7 +81,7 @@ export function TranscriptTimeline({
 
     return (
       <View style={styles.emptyContainer}>
-        <FileText size={isTV ? 48 : 32} color="#6B7280" />
+        <FileText size={isTV ? 48 : 32} color="rgba(255, 255, 255, 0.5)" />
         <Text style={styles.emptyText}>
           {t('catchup.timeline.empty')}
         </Text>

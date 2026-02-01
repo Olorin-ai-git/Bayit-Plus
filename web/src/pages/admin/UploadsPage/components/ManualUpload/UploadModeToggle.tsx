@@ -38,7 +38,7 @@ export const UploadModeToggle: React.FC<UploadModeToggleProps> = ({
         >
           <File
             size={16}
-            color={mode === 'files' ? colors.buttonText : colors.text}
+            color={mode === 'files' ? '#ffffff' : 'rgba(255, 255, 255, 0.8)'}
           />
           <Text
             style={[
@@ -60,7 +60,7 @@ export const UploadModeToggle: React.FC<UploadModeToggleProps> = ({
         >
           <Folder
             size={16}
-            color={mode === 'folder' ? colors.buttonText : colors.text}
+            color={mode === 'folder' ? '#ffffff' : 'rgba(255, 255, 255, 0.8)'}
           />
           <Text
             style={[
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: fontSize.sm,
     fontWeight: '500',
-    color: colors.text,
+    color: '#ffffff',
   },
   toggleContainer: {
     flexDirection: 'row',
@@ -111,10 +111,10 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: fontSize.sm,
-    color: colors.text,
+    color: 'rgba(255, 255, 255, 0.8)',
   },
   activeButtonText: {
-    color: colors.buttonText,
+    color: '#ffffff',
     fontWeight: '500',
   },
 });

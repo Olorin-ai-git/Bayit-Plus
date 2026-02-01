@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
   },
   summaryLabel: {
     fontSize: fontSize.sm,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   resultsList: {
     maxHeight: 300,
@@ -139,11 +139,11 @@ const styles = StyleSheet.create({
   filename: {
     fontSize: fontSize.md,
     fontWeight: '600',
-    color: colors.text,
+    color: '#ffffff',
   },
   fileSize: {
     fontSize: fontSize.sm,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
     marginTop: spacing.xs,
   },
   reason: {
