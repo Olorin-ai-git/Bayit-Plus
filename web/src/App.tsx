@@ -12,7 +12,11 @@ import PaymentPendingGuard from './components/auth/PaymentPendingGuard'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { useAuthStore } from '@/stores/authStore'
 import { logger } from '@/utils/logger'
+import { killStaleHLS } from '@/components/player/hooks/useHLSPlayer'
 import './styles/layout-fix.css'
+
+// Clear stale HLS sessions on app startup to prevent 404 errors from previous sessions
+killStaleHLS()
 
 // Loading fallback component
 const LoadingFallback = () => {

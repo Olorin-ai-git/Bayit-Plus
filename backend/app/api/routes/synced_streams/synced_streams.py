@@ -12,7 +12,7 @@ from typing import Optional, Set
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel, Field, field_validator, constr
 
-from app.core.rate_limiter import limiter
+from app.core.rate_limiter import limiter, RATE_LIMITS
 from app.core.security import get_current_user
 from app.models.user import User
 from app.services.buffered_channel_service import (
@@ -90,7 +90,7 @@ class SyncedStreamResponse(BaseModel):
 
 
 @router.post("/create", response_model=SyncedStreamResponse)
-@limiter.limit("30/minute")  # Limit synced stream creation to prevent abuse
+@limiter.limit(RATE_LIMITS.get("synced_streams_create", "30/minute"))
 async def create_synced_stream(
     request: Request,
     request_data: SyncedStreamRequest,
@@ -177,7 +177,7 @@ async def create_synced_stream(
 
 
 @router.post("/update-latency")
-@limiter.limit("60/minute")  # Allow frequent latency updates during active streaming
+@limiter.limit(RATE_LIMITS.get("synced_streams_latency", "60/minute"))
 async def update_latency_measurement(
     request: Request,
     request_data: LatencyUpdateRequest,
@@ -226,7 +226,7 @@ async def update_latency_measurement(
 
 
 @router.get("/latency-profile")
-@limiter.limit("30/minute")  # Limit latency profile queries
+@limiter.limit(RATE_LIMITS.get("synced_streams_create", "30/minute"))
 async def get_latency_profile(
     request: Request,
     channel_id: constr(min_length=1, max_length=100, pattern=r'^[a-zA-Z0-9_-]+$') = Query(..., description="Channel ID"),

@@ -11,6 +11,22 @@ import liveDubbingService, {
   DubbingConnectionInfo,
   DubbingAvailability,
 } from '@/services/liveDubbingService'
+import {
+  getPersistedSessionForChannel,
+  saveLiveDubbingState,
+  clearPersistedSession,
+} from '@/services/liveSessionPersistence'
+import logger from '@/utils/logger'
+
+/**
+ * Check if a channelId looks like a valid MongoDB ObjectId
+ * Prevents API calls with obviously stale/invalid IDs
+ */
+function isValidChannelId(channelId: string | undefined): boolean {
+  if (!channelId) return false
+  // MongoDB ObjectId: 24-character lowercase hex
+  return /^[a-f0-9]{24}$/i.test(channelId)
+}
 
 export interface UseLiveDubbingOptions {
   channelId: string
@@ -55,10 +71,18 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false, o
 
   const [availability, setAvailability] = useState<DubbingAvailability | null>(null)
   const sessionIdRef = useRef<string | null>(null)
+  const hasAttemptedRestoreRef = useRef(false)
 
   // Check availability when channelId changes
   useEffect(() => {
     if (!channelId) return
+
+    // Validate channelId before making API call
+    if (!isValidChannelId(channelId)) {
+      logger.warn('Invalid channelId, skipping availability check', 'useLiveDubbing', { channelId })
+      clearPersistedSession()
+      return
+    }
 
     LiveDubbingService.checkAvailability(channelId).then((avail: DubbingAvailability) => {
       setAvailability(avail)
@@ -70,8 +94,64 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false, o
           syncDelayMs: avail.default_sync_delay_ms || 600,
         }))
       }
+    }).catch((err) => {
+      // If availability check fails (404), clear any stale session
+      logger.warn('Availability check failed, clearing session', 'useLiveDubbing', err)
+      clearPersistedSession()
     })
   }, [channelId])
+
+  // Auto-restore session from persistence (e.g., after browser refresh)
+  useEffect(() => {
+    if (hasAttemptedRestoreRef.current) return
+    if (!channelId || !videoElement) return
+    if (liveDubbingService.isServiceConnected()) return // Already connected
+    if (!availability?.available) return // Not available yet
+
+    const session = getPersistedSessionForChannel(channelId)
+    if (!session?.liveDubbing?.enabled) return
+
+    hasAttemptedRestoreRef.current = true
+    logger.info('Restoring live dubbing session from persistence', 'useLiveDubbing', {
+      channelId,
+      targetLang: session.liveDubbing.targetLang,
+      voiceId: session.liveDubbing.voiceId,
+    })
+
+    // Restore the session
+    setState((prev) => ({ ...prev, isConnecting: true, error: null }))
+
+    liveDubbingService
+      .connect(
+        channelId,
+        session.liveDubbing.targetLang,
+        videoElement,
+        handleDubbedAudio,
+        handleLatency,
+        handleConnected,
+        handleError,
+        session.liveDubbing.voiceId,
+        'web',
+        !!onRawDubbedAudio
+      )
+      .then(() => {
+        logger.info('Live dubbing session restored successfully', 'useLiveDubbing')
+        setState((prev) => ({
+          ...prev,
+          targetLanguage: session.liveDubbing?.targetLang || prev.targetLanguage,
+        }))
+      })
+      .catch((err) => {
+        logger.error('Session restore failed', 'useLiveDubbing', err)
+        setState((prev) => ({
+          ...prev,
+          isConnecting: false,
+          error: err instanceof Error ? err.message : 'Session restore failed',
+        }))
+        // Clear persisted session on error
+        saveLiveDubbingState(channelId, false, '')
+      })
+  }, [channelId, videoElement, availability, handleDubbedAudio, handleLatency, handleConnected, handleError, onRawDubbedAudio])
 
   // Dubbed audio callback
   const handleDubbedAudio = useCallback((message: DubbedAudioMessage) => {
@@ -110,14 +190,20 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false, o
   // Connection callback
   const handleConnected = useCallback((info: DubbingConnectionInfo) => {
     sessionIdRef.current = info.session_id
-    setState((prev) => ({
-      ...prev,
-      isConnected: true,
-      isConnecting: false,
-      syncDelayMs: info.sync_delay_ms,
-      error: null,
-    }))
-  }, [])
+    setState((prev) => {
+      // Save session for persistence across refresh
+      if (channelId) {
+        saveLiveDubbingState(channelId, true, info.target_lang)
+      }
+      return {
+        ...prev,
+        isConnected: true,
+        isConnecting: false,
+        syncDelayMs: info.sync_delay_ms,
+        error: null,
+      }
+    })
+  }, [channelId])
 
   // Error callback
   const handleError = useCallback((error: string, recoverable: boolean) => {
@@ -173,6 +259,10 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false, o
   const disconnect = useCallback(() => {
     liveDubbingService.disconnect()
     sessionIdRef.current = null
+    // Clear persisted session
+    if (channelId) {
+      saveLiveDubbingState(channelId, false, '')
+    }
     setState((prev) => ({
       ...prev,
       isConnected: false,
@@ -181,7 +271,7 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false, o
       lastTranscript: '',
       lastTranslation: '',
     }))
-  }, [])
+  }, [channelId])
 
   // Set target language (requires reconnect if connected)
   const setTargetLanguage = useCallback(

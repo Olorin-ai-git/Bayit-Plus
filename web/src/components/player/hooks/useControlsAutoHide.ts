@@ -73,7 +73,9 @@ export function useControlsAutoHide({
     }
 
     const handleMouseLeave = () => {
-      if (isPlaying) {
+      // Only hide controls on mouse leave when in fullscreen mode
+      // In windowed mode, keep controls visible
+      if (isPlaying && isFullscreen) {
         hideControls()
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current)

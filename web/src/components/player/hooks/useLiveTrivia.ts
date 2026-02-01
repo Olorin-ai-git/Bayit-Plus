@@ -16,9 +16,24 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import liveTriviaService from '@/services/liveTriviaService'
+import {
+  getPersistedSessionForChannel,
+  saveLiveTriviaState,
+  clearPersistedSession,
+} from '@/services/liveSessionPersistence'
 import logger from '@/utils/logger'
 
 const LOG_CONTEXT = 'useLiveTrivia'
+
+/**
+ * Check if a channelId looks like a valid MongoDB ObjectId
+ * Prevents API calls with obviously stale/invalid IDs
+ */
+function isValidChannelId(channelId: string | undefined): boolean {
+  if (!channelId) return false
+  // MongoDB ObjectId: 24-character lowercase hex
+  return /^[a-f0-9]{24}$/i.test(channelId)
+}
 
 /** Default number of facts to retain in history */
 const DEFAULT_MAX_HISTORY_SIZE = 20
@@ -71,7 +86,16 @@ export function useLiveTrivia(
     maxHistorySize = DEFAULT_MAX_HISTORY_SIZE,
   } = options
 
-  const [isEnabled, setEnabled] = useState(initialEnabled)
+  // Initialize from persisted state if available
+  const [isEnabled, setEnabled] = useState(() => {
+    if (!channelId) return initialEnabled
+    const session = getPersistedSessionForChannel(channelId)
+    if (session?.liveTrivia?.enabled) {
+      logger.debug('Restoring live trivia enabled state from persistence', LOG_CONTEXT)
+      return true
+    }
+    return initialEnabled
+  })
   const [currentFact, setCurrentFact] = useState<LiveTriviaFact | null>(null)
   const [factHistory, setFactHistory] = useState<LiveTriviaFact[]>([])
   const [isConnected, setIsConnected] = useState(false)
@@ -156,12 +180,35 @@ export function useLiveTrivia(
    * always invoked without triggering a reconnect cycle.
    */
   useEffect(() => {
+    // Validate channelId before attempting connection
+    if (!isValidChannelId(channelId)) {
+      liveTriviaService.disconnect()
+      setIsConnected(false)
+      setConnectionError(null)
+      setWaitingForTranscript(false)
+      hasReceivedFactRef.current = false
+      // Clear any stale persisted session
+      if (channelId) {
+        logger.warn('Invalid channelId detected, clearing session', LOG_CONTEXT, { channelId })
+        clearPersistedSession()
+      }
+      if (waitingTimerRef.current) {
+        clearTimeout(waitingTimerRef.current)
+        waitingTimerRef.current = null
+      }
+      return
+    }
+
     if (!isEnabled || !channelId) {
       liveTriviaService.disconnect()
       setIsConnected(false)
       setConnectionError(null)
       setWaitingForTranscript(false)
       hasReceivedFactRef.current = false
+      // Clear persisted session when disabling
+      if (channelId) {
+        saveLiveTriviaState(channelId, false)
+      }
       if (waitingTimerRef.current) {
         clearTimeout(waitingTimerRef.current)
         waitingTimerRef.current = null
@@ -182,6 +229,8 @@ export function useLiveTrivia(
         )
         setIsConnected(true)
         setConnectionError(null)
+        // Save session for persistence across refresh
+        saveLiveTriviaState(channelId, true)
 
         waitingTimerRef.current = setTimeout(() => {
           if (!hasReceivedFactRef.current) {
@@ -194,6 +243,8 @@ export function useLiveTrivia(
         setConnectionError(error.message)
         if (!error.recoverable) {
           setIsConnected(false)
+          // Clear persisted session on non-recoverable error
+          saveLiveTriviaState(channelId, false)
         }
       },
     )
@@ -203,6 +254,10 @@ export function useLiveTrivia(
       setIsConnected(false)
       setWaitingForTranscript(false)
       hasReceivedFactRef.current = false
+      // Clear persisted session when disabling
+      if (channelId) {
+        saveLiveTriviaState(channelId, false)
+      }
       if (waitingTimerRef.current) {
         clearTimeout(waitingTimerRef.current)
         waitingTimerRef.current = null

@@ -15,7 +15,22 @@ import { GlassLiveControlButton } from './controls/GlassLiveControlButton'
 import { GlassView } from '@bayit/shared/ui'
 import liveSubtitleService, { LiveSubtitleCue } from '@/services/liveSubtitleService'
 import { liveSubtitleConfig } from '@/config/liveSubtitleConfig'
+import {
+  getPersistedSessionForChannel,
+  saveLiveTranslationState,
+  clearPersistedSession,
+} from '@/services/liveSessionPersistence'
 import logger from '@/utils/logger'
+
+/**
+ * Check if a channelId looks like a valid MongoDB ObjectId
+ * Prevents API calls with obviously stale/invalid IDs
+ */
+function isValidChannelId(channelId: string | undefined): boolean {
+  if (!channelId) return false
+  // MongoDB ObjectId: 24-character lowercase hex
+  return /^[a-f0-9]{24}$/i.test(channelId)
+}
 
 const LANG_FLAGS: Record<string, string> = {
   he: '\u{1F1EE}\u{1F1F1}',
@@ -76,6 +91,7 @@ export default function LiveSubtitleControls({
   const [showLangPicker, setShowLangPicker] = useState(false)
   const [inputLang, setInputLang] = useState(sourceLanguage)
   const prevLangRef = useRef<string>(targetLang)
+  const hasAttemptedRestoreRef = useRef(false)
 
   // Sync inputLang when sourceLanguage prop changes (e.g. channel switch)
   useEffect(() => {
@@ -102,6 +118,69 @@ export default function LiveSubtitleControls({
     // Note: We don't set to disconnected if not connected, because the user
     // may have just clicked to connect and we don't want to override their intent
   }, [])
+
+  // Auto-restore session from persistence (e.g., after browser refresh)
+  useEffect(() => {
+    if (hasAttemptedRestoreRef.current) return
+    if (!channelId || !videoElement || !isPremium) return
+    if (liveSubtitleService.isServiceConnected()) return // Already connected
+
+    // Validate channelId before attempting restoration
+    if (!isValidChannelId(channelId)) {
+      logger.warn('Invalid channelId, clearing stale session', 'LiveSubtitleControls', { channelId })
+      clearPersistedSession()
+      return
+    }
+
+    const session = getPersistedSessionForChannel(channelId)
+    if (!session?.liveTranslation?.enabled) return
+
+    hasAttemptedRestoreRef.current = true
+    logger.info('Restoring live translation session from persistence', 'LiveSubtitleControls', {
+      channelId,
+      targetLang: session.liveTranslation.targetLang,
+      sourceLang: session.liveTranslation.sourceLang,
+    })
+
+    // Restore the session
+    setStatus('connecting')
+    setError(null)
+
+    liveSubtitleService
+      .connect(
+        channelId,
+        session.liveTranslation.targetLang,
+        videoElement,
+        onSubtitleCue,
+        (err) => {
+          logger.error('Session restore failed', 'LiveSubtitleControls', err)
+          setError(err)
+          setStatus('error')
+          setEnabled(false)
+          // Clear persisted session on error
+          saveLiveTranslationState(channelId, false, '', '')
+        },
+        session.liveTranslation.sourceLang
+      )
+      .then(() => {
+        logger.info('Live translation session restored successfully', 'LiveSubtitleControls')
+        setStatus('connected')
+        setEnabled(true)
+        // Update language state to match restored session
+        if (session.liveTranslation?.targetLang) {
+          onLanguageChange(session.liveTranslation.targetLang)
+        }
+      })
+      .catch((err) => {
+        const errorMsg = err instanceof Error ? err.message : 'Session restore failed'
+        logger.error('Session restore failed', 'LiveSubtitleControls', err)
+        setError(errorMsg)
+        setStatus('error')
+        setEnabled(false)
+        // Clear persisted session on error
+        saveLiveTranslationState(channelId, false, '', '')
+      })
+  }, [channelId, videoElement, isPremium, onSubtitleCue, onLanguageChange])
 
   // Detect external connections (e.g., auto-enabled by trivia)
   // Poll at configured interval to sync UI when service is connected externally
@@ -218,6 +297,8 @@ export default function LiveSubtitleControls({
       setStatus('disconnected')
       setEnabled(false)
       setError(null)
+      // Clear persisted session
+      saveLiveTranslationState(channelId, false, '', '')
     } else {
       if (!videoElement) {
         setError(i18n.t('errors.player.notReady'))
@@ -253,6 +334,8 @@ export default function LiveSubtitleControls({
         prevLangRef.current = targetLang
         setStatus('connected')
         setEnabled(true)
+        // Save session for persistence across refresh
+        saveLiveTranslationState(channelId, true, targetLang, inputLang)
         logger.debug('Live subtitle connection successful', 'LiveSubtitleControls')
       } catch (err) {
         const errorMsg = err instanceof Error ? err.message : 'Connection failed'

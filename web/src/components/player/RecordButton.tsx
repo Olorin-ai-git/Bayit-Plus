@@ -10,7 +10,8 @@ import { useTranslation } from 'react-i18next'
 import { RecordOptionsPopover, RecordingOptions } from './RecordOptionsPopover'
 import { useRecordingSession } from './useRecordingSession'
 import { formatDuration } from '@/utils/formatters'
-import { styles } from './RecordButton.styles'
+import { styles, getButtonIdleStyle, getOptionsToggleStyle } from './RecordButton.styles'
+import { useRTL } from '@/hooks/useRTL'
 
 interface RecordButtonProps {
   channelId: string
@@ -24,6 +25,7 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
   channelId, isLive, isPremium, onShowUpgrade, onRecordingStateChange,
 }) => {
   const { t } = useTranslation()
+  const { isRTL } = useRTL()
   const [isHovered, setIsHovered] = useState(false)
   const [showOptions, setShowOptions] = useState(false)
   const longPressTimer = useRef<NodeJS.Timeout | null>(null)
@@ -82,7 +84,7 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
         onStartRecording={handleStartWithOptions}
       />
 
-      <View style={[styles.buttonGroup, { flexDirection: 'row' }]}>
+      <View style={[styles.buttonGroup, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         <Pressable
           onPress={handlePress}
           onPressIn={handleLongPressIn}
@@ -92,7 +94,7 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
           onHoverOut={() => setIsHovered(false)}
           style={[
             styles.button,
-            isRecording ? styles.buttonRecording : styles.buttonIdle,
+            isRecording ? styles.buttonRecording : getButtonIdleStyle(isRTL),
             isHovered && !isRecording && styles.buttonHovered,
           ]}
         >
@@ -112,7 +114,7 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
         {!isRecording && isPremium && (
           <Pressable
             onPress={() => setShowOptions(!showOptions)}
-            style={[styles.optionsToggle, isHovered && styles.buttonHovered]}
+            style={[getOptionsToggleStyle(isRTL), isHovered && styles.buttonHovered]}
           >
             <ChevronUp size={14} color="white" />
           </Pressable>

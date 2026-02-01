@@ -49,6 +49,7 @@ export function useVideoPlayer({
     currentQuality: undefined,
     availableQualities: [],
     playbackSpeed: 1,
+    error: null,
   })
   const [currentStreamUrl, setCurrentStreamUrl] = useState(src)
   // For transcoded streams, track the seek offset (stream starts from this time)
@@ -97,6 +98,25 @@ export function useVideoPlayer({
     setState((prev) => ({ ...prev, isMuted: true }))
   }, [])
 
+  // Called when HLS encounters a fatal error (stale stream, network failure, etc.)
+  const handleFatalError = useCallback((error: { type: string; details: string; fatal: boolean }) => {
+    logger.error('HLS fatal error received', 'useVideoPlayer', error)
+    // Set user-friendly error message based on error type
+    let errorMessage = 'Stream unavailable'
+    if (error.details === 'STALE_STREAM_DETECTED') {
+      errorMessage = isLive
+        ? 'Channel is currently offline. The broadcast may have ended or is temporarily unavailable.'
+        : 'Stream connection lost'
+    } else if (error.details === 'PREVIOUSLY_FAILED_STREAM') {
+      errorMessage = isLive
+        ? 'Channel offline. Try again later or select a different channel.'
+        : 'Stream unavailable. Please try again later.'
+    } else if (error.type === 'networkError') {
+      errorMessage = 'Network error - please check your connection'
+    }
+    setState((prev) => ({ ...prev, error: errorMessage, loading: false }))
+  }, [isLive])
+
   const { hlsRef } = useHLSPlayer({
     videoRef,
     streamUrl: currentStreamUrl,
@@ -104,6 +124,7 @@ export function useVideoPlayer({
     autoPlay,
     onReady: handleReady,
     onAutoplayMuted: handleAutoplayMuted,
+    onFatalError: handleFatalError,
   })
 
   const { currentQuality, availableQualities, changeQuality } = useQualityManagement({

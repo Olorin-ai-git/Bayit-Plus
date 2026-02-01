@@ -12,7 +12,7 @@ import liveSubtitleService from '@/services/liveSubtitleService'
 import { SubtitleCue } from './types'
 import { SubtitleSettings, SplitLanguages } from '@/types/subtitle'
 import { UsageStat } from '@/types/quota'
-import { TriviaFact } from '@/services/triviaService'
+import { TriviaFact } from '../../../../shared/types/trivia'
 
 interface VideoPlayerOverlaysProps {
   // Recording
@@ -59,6 +59,9 @@ interface VideoPlayerOverlaysProps {
   // Loading
   loading: boolean
 
+  // Error state
+  error?: string | null
+
   // Widget mode
   isWidget?: boolean
 }
@@ -89,6 +92,7 @@ export default function VideoPlayerOverlays({
   isTTSPlaying,
   usageStats,
   loading,
+  error = null,
   isWidget = false,
 }: VideoPlayerOverlaysProps) {
   const { t, i18n } = useTranslation()
@@ -159,13 +163,24 @@ export default function VideoPlayerOverlays({
       )}
 
       {/* Loading Spinner */}
-      {loading && (
+      {loading && !error && (
         <View style={styles.loadingOverlay}>
           <GlassView style={styles.loadingCard} intensity="high">
             <View style={styles.spinnerContainer}>
               <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
             </View>
             <Text style={styles.loadingText}>{t('player.loading', 'Loading...')}</Text>
+          </GlassView>
+        </View>
+      )}
+
+      {/* Error Overlay */}
+      {error && (
+        <View style={styles.loadingOverlay}>
+          <GlassView style={styles.errorCard} intensity="high">
+            <Text style={styles.errorIcon}>!</Text>
+            <Text style={styles.errorTitle}>{t('player.error.title', 'Stream Unavailable')}</Text>
+            <Text style={styles.errorText}>{error}</Text>
           </GlassView>
         </View>
       )}
@@ -199,5 +214,39 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  errorCard: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: spacing.xl,
+    paddingHorizontal: spacing.xxl,
+    borderRadius: borderRadius.xl,
+    minWidth: 280,
+    maxWidth: 400,
+  },
+  errorIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.error,
+    color: colors.text,
+    fontSize: 28,
+    fontWeight: '700',
+    textAlign: 'center',
+    lineHeight: 48,
+    marginBottom: spacing.md,
+  },
+  errorTitle: {
+    color: colors.text,
+    fontSize: 18,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: spacing.sm,
+  },
+  errorText: {
+    color: colors.textMuted,
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
   },
 })

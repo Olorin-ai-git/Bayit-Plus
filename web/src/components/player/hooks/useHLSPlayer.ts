@@ -1,6 +1,74 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useCallback } from 'react'
 import Hls from 'hls.js'
 import logger from '@/utils/logger'
+import { clearPersistedSession } from '@/services/liveSessionPersistence'
+
+// Track all active HLS instances for cleanup
+const activeHlsInstances = new Set<Hls>()
+
+// Track failed stream URLs to prevent retry loops (cleared on page reload or manual reset)
+const failedStreamUrls = new Set<string>()
+
+/**
+ * Kill all stale HLS instances and clear persisted sessions.
+ * Call this on app startup or when detecting stale streams.
+ */
+export function killStaleHLS(): void {
+  logger.info(`Killing ${activeHlsInstances.size} stale HLS instances`, 'killStaleHLS')
+
+  activeHlsInstances.forEach((hls) => {
+    try {
+      hls.stopLoad()
+      hls.detachMedia()
+      hls.destroy()
+    } catch (e) {
+      logger.warn('Error destroying HLS instance', 'killStaleHLS', e)
+    }
+  })
+  activeHlsInstances.clear()
+
+  // Clear failed streams cache to allow retrying
+  failedStreamUrls.clear()
+
+  // Clear persisted live session to prevent auto-restore of stale streams
+  clearPersistedSession()
+
+  // Also clear any dubbing/translation/trivia settings that might cause auto-connect
+  try {
+    // Clear all live session related storage
+    const keysToRemove = [
+      'bayit-live-session',
+      'bayit-dubbing-settings',
+      'bayit-translation-settings',
+      'bayit-trivia-settings',
+      'bayit-live-trivia',
+    ]
+    keysToRemove.forEach(key => {
+      sessionStorage.removeItem(key)
+      localStorage.removeItem(key) // Also check localStorage
+    })
+  } catch (e) {
+    logger.warn('Error clearing storage', 'killStaleHLS', e)
+  }
+
+  logger.info('Cleared all live session data', 'killStaleHLS')
+}
+
+/**
+ * Clear the failed streams list to allow retrying previously failed streams.
+ */
+export function clearFailedStreams(): void {
+  const count = failedStreamUrls.size
+  failedStreamUrls.clear()
+  logger.info(`Cleared ${count} failed streams from blocklist`, 'clearFailedStreams')
+}
+
+// Expose for debugging in browser console
+if (typeof window !== 'undefined') {
+  (window as any).killStaleHLS = killStaleHLS
+  ;(window as any).clearFailedStreams = clearFailedStreams
+  ;(window as any).getFailedStreams = () => Array.from(failedStreamUrls)
+}
 
 interface UseHLSPlayerOptions {
   videoRef: React.RefObject<HTMLVideoElement>
@@ -9,6 +77,18 @@ interface UseHLSPlayerOptions {
   autoPlay: boolean
   onReady: () => void
   onAutoplayMuted?: () => void
+  onFatalError?: (error: { type: string; details: string; fatal: boolean }) => void
+}
+
+/**
+ * Add cache-busting parameter to HLS stream URL to prevent stale manifest issues.
+ * For live streams, the master.m3u8 and chunklist references can become stale
+ * after session ends. Adding a timestamp ensures fresh manifests on page load.
+ */
+function addCacheBuster(url: string): string {
+  if (!url.includes('.m3u8')) return url
+  const separator = url.includes('?') ? '&' : '?'
+  return `${url}${separator}_cb=${Date.now()}`
 }
 
 export function useHLSPlayer({
@@ -18,21 +98,85 @@ export function useHLSPlayer({
   autoPlay,
   onReady,
   onAutoplayMuted,
+  onFatalError,
 }: UseHLSPlayerOptions) {
   const hlsRef = useRef<Hls | null>(null)
+  const networkErrorCountRef = useRef(0)
+  const maxNetworkErrors = 3 // Clear session after 3 consecutive 404s
+
+  /**
+   * Handle fatal HLS errors - clear session if stream is stale
+   */
+  const handleFatalError = useCallback((data: { type: string; details: string; fatal: boolean }) => {
+    // Track network errors (likely 404s on chunklists)
+    if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+      networkErrorCountRef.current++
+      logger.warn('HLS network error', 'useHLSPlayer', {
+        details: data.details,
+        errorCount: networkErrorCountRef.current,
+      })
+
+      // After multiple network errors, clear the session to prevent auto-restore of stale streams
+      if (networkErrorCountRef.current >= maxNetworkErrors && isLive) {
+        logger.error('Multiple network errors detected, clearing live session', 'useHLSPlayer')
+        clearPersistedSession()
+        networkErrorCountRef.current = 0
+      }
+    }
+
+    // Notify parent component of fatal error
+    if (onFatalError) {
+      onFatalError(data)
+    }
+  }, [isLive, onFatalError])
 
   useEffect(() => {
     if (!streamUrl || !videoRef.current) return
 
+    // Check if this stream URL has already failed - don't retry
+    if (failedStreamUrls.has(streamUrl)) {
+      logger.warn('Stream URL previously failed, not retrying', 'useHLSPlayer', { streamUrl })
+      // Notify parent component immediately
+      if (onFatalError) {
+        onFatalError({
+          type: 'STREAM_BLOCKED',
+          details: 'PREVIOUSLY_FAILED_STREAM',
+          fatal: true,
+        })
+      }
+      return
+    }
+
+    // Reset error count on new stream
+    networkErrorCountRef.current = 0
+
     const video = videoRef.current
+    // Add cache-buster for live streams to prevent stale manifest issues
+    const effectiveStreamUrl = isLive ? addCacheBuster(streamUrl) : streamUrl
 
     if (Hls.isSupported() && streamUrl.includes('.m3u8')) {
       const hls = new Hls({
         enableWorker: true,
         lowLatencyMode: isLive,
+        // Aggressive settings to fail fast on stale streams
+        manifestLoadingTimeOut: 5000,
+        manifestLoadingMaxRetry: 1,
+        manifestLoadingRetryDelay: 500,
+        levelLoadingTimeOut: 5000,
+        levelLoadingMaxRetry: 1,
+        levelLoadingRetryDelay: 500,
+        fragLoadingTimeOut: 5000,
+        fragLoadingMaxRetry: 1,
+        fragLoadingRetryDelay: 500,
+        // Disable automatic level switching on error
+        startLevel: -1,
+        // Don't cache anything
+        maxBufferLength: 10,
+        maxMaxBufferLength: 30,
       })
       hlsRef.current = hls
-      hls.loadSource(streamUrl)
+      activeHlsInstances.add(hls) // Track for cleanup
+      hls.loadSource(effectiveStreamUrl)
       hls.attachMedia(video)
       hls.on(Hls.Events.MANIFEST_PARSED, (_, data) => {
         onReady()
@@ -100,13 +244,63 @@ export function useHLSPlayer({
         }
       })
       hls.on(Hls.Events.ERROR, (event, data) => {
+        // Track ALL network errors (fatal or not)
+        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+          networkErrorCountRef.current++
+          logger.warn('HLS network error', 'useHLSPlayer', {
+            details: data.details,
+            url: data.url,
+            fatal: data.fatal,
+            errorCount: networkErrorCountRef.current,
+          })
+
+          // Stop HLS immediately on network errors for live streams (likely stale)
+          if (isLive && networkErrorCountRef.current >= maxNetworkErrors) {
+            logger.error('Stale stream detected - stopping HLS player', 'useHLSPlayer', { streamUrl })
+            hls.stopLoad()
+            hls.detachMedia()
+            clearPersistedSession()
+            networkErrorCountRef.current = 0
+
+            // Add to failed streams to prevent retry loops
+            failedStreamUrls.add(streamUrl)
+            logger.info('Added stream to failed list, will not retry', 'useHLSPlayer', { streamUrl })
+
+            handleFatalError({
+              type: data.type,
+              details: 'STALE_STREAM_DETECTED',
+              fatal: true,
+            })
+            return
+          }
+        }
+
         if (data.fatal) {
-          logger.error('HLS error', 'useHLSPlayer', data)
+          logger.error('HLS fatal error', 'useHLSPlayer', {
+            type: data.type,
+            details: data.details,
+            fatal: data.fatal,
+            url: data.url,
+          })
+
+          // Stop HLS completely on fatal errors
+          hls.stopLoad()
+          hls.detachMedia()
+
+          if (isLive) {
+            clearPersistedSession()
+          }
+
+          handleFatalError({
+            type: data.type,
+            details: data.details,
+            fatal: data.fatal,
+          })
         }
       })
     } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      // Safari native HLS support
-      video.src = streamUrl
+      // Safari native HLS support - use cache-busted URL for live streams
+      video.src = effectiveStreamUrl
       video.addEventListener('loadedmetadata', () => {
         onReady()
         const audioTracksCount = (video as any).audioTracks?.length ?? 'not supported'
@@ -196,10 +390,14 @@ export function useHLSPlayer({
 
     return () => {
       if (hlsRef.current) {
+        activeHlsInstances.delete(hlsRef.current)
+        hlsRef.current.stopLoad()
+        hlsRef.current.detachMedia()
         hlsRef.current.destroy()
+        hlsRef.current = null
       }
     }
-  }, [streamUrl, isLive, autoPlay, videoRef, onReady, onAutoplayMuted])
+  }, [streamUrl, isLive, autoPlay, videoRef, onReady, onAutoplayMuted, handleFatalError])
 
   return { hlsRef }
 }

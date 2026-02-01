@@ -229,8 +229,23 @@ async def translate_phrase(
     if not phrase or not phrase.strip():
         return ""
 
+    # Language names in Hebrew for Hebrew-sourced prompts
+    target_lang_names_he = {
+        "en": "אנגלית",
+        "es": "ספרדית",
+        "fr": "צרפתית",
+        "de": "גרמנית",
+        "ru": "רוסית",
+        "ar": "ערבית",
+        "zh": "סינית",
+        "ja": "יפנית",
+        "it": "איטלקית",
+        "pt": "פורטוגזית",
+    }
+    target_lang_name = target_lang_names_he.get(target_lang, target_lang)
+
     if source_lang == "he":
-        prompt = f"תרגם את המשפט הבא לאנגלית. החזר רק את התרגום:\n\n{phrase}"
+        prompt = f"תרגם את המשפט הבא ל{target_lang_name}. החזר רק את התרגום:\n\n{phrase}"
     else:
         prompt = f"Translate to {target_lang}:\n\n{phrase}"
 

@@ -151,8 +151,9 @@ export default function VideoPlayer({
     },
   })
 
+  // VOD trivia - only pass contentId for non-live content to prevent API calls
   const trivia = useTrivia({
-    contentId,
+    contentId: isLive ? undefined : contentId,
     language: i18n.language,
     currentTime: state.currentTime,
     isPlaying: state.isPlaying && !isLive,
@@ -473,6 +474,7 @@ export default function VideoPlayer({
         isTTSPlaying={isTTSPlaying}
         usageStats={usageStats}
         loading={state.loading}
+        error={state.error}
         isWidget={isWidget}
       />
 

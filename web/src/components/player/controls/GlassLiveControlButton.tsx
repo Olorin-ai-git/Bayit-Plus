@@ -49,9 +49,10 @@ export function GlassLiveControlButton({
   const pulseAnim = useRef(new Animated.Value(1)).current
   const hasSplit = !!(splitIcon && onSplitPress && isEnabled && !isConnecting)
 
-  // Pulsing animation for active/connected indicator
+  // Pulsing animation for connecting/connected indicator
+  // Shows immediately when connecting AND continues while connected
   useEffect(() => {
-    if (isEnabled && !isConnecting) {
+    if (isEnabled || isConnecting) {
       const pulse = Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
@@ -75,6 +76,8 @@ export function GlassLiveControlButton({
 
   const displayLabel = isPremium ? label : premiumLabel
   const isDisabled = isConnecting || quotaExceeded
+  // Show pressed/enabled style immediately when connecting (optimistic UI)
+  const showActiveStyle = isEnabled || isConnecting
 
   const mainButton = (
     <Pressable
@@ -84,7 +87,7 @@ export function GlassLiveControlButton({
       onHoverOut={() => setIsHovered(false)}
       style={[
         styles.button,
-        isEnabled && styles.buttonEnabled,
+        showActiveStyle && styles.buttonEnabled,
         !isPremium && styles.buttonPremium,
         isHovered && !isDisabled && styles.buttonHovered,
         isDisabled && styles.buttonDisabled,
@@ -103,7 +106,7 @@ export function GlassLiveControlButton({
         <Text
           style={[
             styles.buttonText,
-            isEnabled && styles.textEnabled,
+            showActiveStyle && styles.textEnabled,
             !isPremium && styles.textPremium,
           ]}
           numberOfLines={1}
@@ -121,8 +124,8 @@ export function GlassLiveControlButton({
         />
       )}
 
-      {/* Active indicator - Pulsing green dot */}
-      {isEnabled && !isConnecting && (
+      {/* Active indicator - Pulsing green dot (shows during connecting AND connected) */}
+      {(isEnabled || isConnecting) && (
         <Animated.View
           style={[
             styles.connectedDot,

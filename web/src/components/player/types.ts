@@ -52,6 +52,8 @@ export interface PlayerState {
   currentQuality?: string
   availableQualities?: QualityOption[]
   playbackSpeed: number
+  /** Error message when stream fails to load (e.g., stale stream, network error) */
+  error?: string | null
 }
 
 export interface PlayerControls {
