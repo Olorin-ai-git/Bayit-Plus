@@ -19,31 +19,10 @@ import {
   type VideoBufferConfig,
   type SyncedStreamResponse,
 } from './VideoBufferManager'
-
-// API configuration from environment - no fallback allowed per coding standards
-const API_BASE_URL = import.meta.env.VITE_API_URL
+import api from './api'
 
 // Auth storage key - centralized for DRY principle
 const AUTH_STORAGE_KEY = 'bayit-auth'
-
-/**
- * Validates configuration and throws if required values are missing.
- * Called before any operation that requires the API.
- */
-function validateConfiguration(): void {
-  if (!API_BASE_URL) {
-    throw new Error(
-      '[LiveDubbing] VITE_API_URL environment variable is required. ' +
-      'Live dubbing cannot function without API configuration.'
-    )
-  }
-}
-
-// Log warning at load time for development feedback, but don't crash
-// (fail-fast happens when attempting to use the service)
-if (!API_BASE_URL) {
-  logger.warn('VITE_API_URL not configured - dubbing features will fail', 'liveDubbingService')
-}
 
 // Audio configuration - can be overridden via environment variables
 const AUDIO_CONFIG = {
@@ -280,13 +259,6 @@ class LiveDubbingService {
 
     // Calculate initial sync delay (adaptive or manual)
     this.syncDelayMs = this.calculateAdaptiveSyncDelay(channelId)
-    // Fail-fast: validate configuration before attempting to connect
-    try {
-      validateConfiguration()
-    } catch (error) {
-      onError(error instanceof Error ? error.message : 'Configuration error', false)
-      return
-    }
 
     // Request synced stream from backend (server-side or client-side buffering)
     try {
@@ -333,12 +305,8 @@ class LiveDubbingService {
       // SECURITY: Do NOT pass JWT token in URL query parameters (visible in logs, history, referer headers)
       // Token is sent securely via first message after WebSocket connection is established
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      // Handle both absolute URLs (https://api.example.com/api/v1) and relative paths (/api/v1)
-      const isRelativePath = API_BASE_URL.startsWith('/')
-      const wsHost = isRelativePath
-        ? window.location.host
-        : API_BASE_URL.replace(/^https?:\/\//, '').replace(/\/api\/v1\/?$/, '')
-      let wsUrl = `${wsProtocol}//${wsHost}/api/v1/ws/live/${channelId}/dubbing?target_lang=${targetLang}&platform=${platform}`
+      // Use window.location.host for WebSocket connections (Vite proxy handles it in dev)
+      let wsUrl = `${wsProtocol}//${window.location.host}/api/v1/ws/live/${channelId}/dubbing?target_lang=${targetLang}&platform=${platform}`
       if (voiceId) {
         wsUrl += `&voice_id=${voiceId}`
       }
@@ -726,29 +694,13 @@ class LiveDubbingService {
 
   /**
    * Check if live dubbing is available for a channel.
-   * @throws Error if API URL is not configured
+   * Uses centralized api for auth token injection.
    */
   static async checkAvailability(channelId: string): Promise<DubbingAvailability> {
-    // Fail-fast: validate configuration
-    validateConfiguration()
-
     try {
-      const authData = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || '{}')
-      const token = authData?.state?.token
-      const response = await fetch(
-        `${API_BASE_URL}/live/${channelId}/dubbing/availability`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-
-      if (!response.ok) {
-        throw new Error('Failed to check availability')
-      }
-
-      return await response.json()
+      // Use centralized api - auth token is automatically injected
+      const data = await api.get(`/live/${channelId}/dubbing/availability`)
+      return data as DubbingAvailability
     } catch (error) {
       logger.error('Error checking dubbing availability', 'liveDubbingService', error)
       return { available: false, error: 'Check failed' }
@@ -757,26 +709,13 @@ class LiveDubbingService {
 
   /**
    * Get available voices for dubbing.
-   * @throws Error if API URL is not configured
+   * Uses centralized api for auth token injection.
    */
   static async getVoices(): Promise<Array<{ id: string; name: string; language: string; description?: string }>> {
-    // Fail-fast: validate configuration
-    validateConfiguration()
-
     try {
-      const authData = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || '{}')
-      const token = authData?.state?.token
-      const response = await fetch(`${API_BASE_URL}/live/dubbing/voices`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch voices')
-      }
-
-      return await response.json()
+      // Use centralized api - auth token is automatically injected
+      const data = await api.get('/live/dubbing/voices')
+      return data as Array<{ id: string; name: string; language: string; description?: string }>
     } catch (error) {
       logger.error('Error fetching dubbing voices', 'liveDubbingService', error)
       return []

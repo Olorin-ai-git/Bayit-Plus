@@ -1,9 +1,13 @@
+/**
+ * Unified Auth Store - Single Source of Truth
+ * Works across web, iOS, Android, and tvOS platforms
+ */
+
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Platform } from 'react-native';
 import { authService } from '../services/api';
 import { Role, Permission, ROLE_PERMISSIONS } from '../types/rbac';
+import { getPlatformStorage, isWebPlatform } from '../utils/storage';
 
 interface User {
   id: string;
@@ -12,7 +16,7 @@ interface User {
   avatar?: string;
   is_active: boolean;
   role: Role;
-  permissions?: Permission[];  // Custom permission overrides
+  permissions?: Permission[];
   subscription?: {
     plan: string;
     status: string;
@@ -20,6 +24,7 @@ interface User {
   };
   created_at?: string;
   last_login?: string;
+  is_verified?: boolean;
 }
 
 interface RegisterData {
@@ -36,18 +41,20 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   isHydrated: boolean;
+  refreshTimeout: ReturnType<typeof setTimeout> | null;
   // Passkey session state
   passkeySessionToken: string | null;
   passkeySessionExpires: string | null;
   // Actions
   login: (email: string, password: string) => Promise<void>;
   register: (data: RegisterData) => Promise<void>;
-  loginWithGoogle: () => Promise<string | void>;
+  loginWithGoogle: (redirectUri?: string) => Promise<string | void>;
   handleGoogleCallback: (code: string, state?: string) => Promise<any>;
   logout: () => void;
   setUser: (user: User | null) => void;
   clearError: () => void;
   refreshAccessToken: () => Promise<boolean>;
+  scheduleTokenRefresh: () => void;
   // Passkey session actions
   setPasskeySession: (token: string, expiresAt: string) => void;
   clearPasskeySession: () => void;
@@ -67,6 +74,36 @@ interface AuthState {
   isPremium: () => boolean;
 }
 
+// Helper function to decode JWT and check expiration
+const decodeToken = (token: string): { exp?: number } | null => {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(atob(parts[1]));
+    return payload;
+  } catch {
+    return null;
+  }
+};
+
+// Check if token will expire within 5 minutes
+const willExpireSoon = (token: string): boolean => {
+  const payload = decodeToken(token);
+  if (!payload || !payload.exp) return true;
+  const expirationTime = payload.exp * 1000;
+  const now = Date.now();
+  const fiveMinutes = 5 * 60 * 1000;
+  return expirationTime - now < fiveMinutes;
+};
+
+// Get redirect URI for current platform
+const getRedirectUri = (): string | undefined => {
+  if (isWebPlatform() && typeof window !== 'undefined') {
+    return `${window.location.origin}/auth/google/callback`;
+  }
+  return undefined;
+};
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -77,6 +114,7 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       error: null,
       isHydrated: false,
+      refreshTimeout: null,
       // Passkey session state
       passkeySessionToken: null,
       passkeySessionExpires: null,
@@ -85,16 +123,21 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         try {
           const response: any = await authService.login(email, password);
+          const token = response.token || response.access_token;
+
           set({
             user: response.user,
-            token: response.access_token,
+            token,
             refreshToken: response.refresh_token || null,
             isAuthenticated: true,
             isLoading: false,
           });
+
+          // Schedule token refresh
+          get().scheduleTokenRefresh();
         } catch (error: any) {
           set({
-            error: error.detail || 'Login failed',
+            error: error.detail || error.message || 'Login failed',
             isLoading: false,
           });
           throw error;
@@ -105,36 +148,44 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         try {
           const response: any = await authService.register(data);
+          const token = response.token || response.access_token;
+
           set({
             user: response.user,
-            token: response.access_token,
+            token,
             refreshToken: response.refresh_token || null,
             isAuthenticated: true,
             isLoading: false,
           });
+
+          // Schedule token refresh
+          get().scheduleTokenRefresh();
         } catch (error: any) {
           set({
-            error: error.detail || 'Registration failed',
+            error: error.detail || error.message || 'Registration failed',
             isLoading: false,
           });
           throw error;
         }
       },
 
-      loginWithGoogle: async () => {
+      loginWithGoogle: async (redirectUri?: string) => {
         set({ isLoading: true, error: null });
         try {
-          // Get Google OAuth URL from backend
-          const response: any = await authService.getGoogleAuthUrl();
+          const uri = redirectUri || getRedirectUri();
+          const response: any = await authService.getGoogleAuthUrl(uri);
+
           // For web, redirect to Google OAuth URL
-          if (Platform.OS === 'web' && typeof window !== 'undefined') {
+          if (isWebPlatform() && typeof window !== 'undefined') {
             window.location.href = response.url;
+            return;
           }
+
           // For native apps, return the URL (caller handles deep linking)
           return response.url;
         } catch (error: any) {
           set({
-            error: error.detail || 'Google login failed',
+            error: error.detail || error.message || 'Google login failed',
             isLoading: false,
           });
           throw error;
@@ -144,11 +195,9 @@ export const useAuthStore = create<AuthState>()(
       handleGoogleCallback: async (code: string, state?: string) => {
         set({ isLoading: true, error: null });
         try {
-          // Pass redirect_uri to match what was sent to Google
-          const redirectUri = Platform.OS === 'web' && typeof window !== 'undefined'
-            ? `${window.location.origin}/auth/google/callback`
-            : undefined;
+          const redirectUri = getRedirectUri();
           const response: any = await authService.googleCallback(code, redirectUri, state);
+
           set({
             user: response.user,
             token: response.access_token,
@@ -156,10 +205,13 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
           });
+
+          // Schedule token refresh
+          get().scheduleTokenRefresh();
           return response;
         } catch (error: any) {
           set({
-            error: error.detail || 'Google login failed',
+            error: error.detail || error.message || 'Google login failed',
             isLoading: false,
           });
           throw error;
@@ -167,12 +219,20 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: () => {
+        const { refreshTimeout } = get();
+
+        // Clear refresh timeout
+        if (refreshTimeout) {
+          clearTimeout(refreshTimeout);
+        }
+
         set({
           user: null,
           token: null,
           refreshToken: null,
           isAuthenticated: false,
           error: null,
+          refreshTimeout: null,
           passkeySessionToken: null,
           passkeySessionExpires: null,
         });
@@ -182,19 +242,17 @@ export const useAuthStore = create<AuthState>()(
 
       clearError: () => set({ error: null }),
 
-      // Refresh access token using refresh token
       refreshAccessToken: async () => {
         const { refreshToken, logout } = get();
 
         if (!refreshToken) {
-          console.warn('[AuthStore] No refresh token available');
+          logout();
           return false;
         }
 
         try {
           const response: any = await authService.refreshToken(refreshToken);
 
-          // Update state with new tokens
           set({
             token: response.access_token,
             refreshToken: response.refresh_token || refreshToken,
@@ -202,13 +260,45 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
           });
 
+          // Schedule next refresh
+          get().scheduleTokenRefresh();
           return true;
-        } catch (error) {
-          console.error('[AuthStore] Failed to refresh token', error);
-          // Refresh failed - log out user
+        } catch {
           logout();
           return false;
         }
+      },
+
+      scheduleTokenRefresh: () => {
+        const { token, refreshToken, refreshTimeout } = get();
+
+        // Clear any existing timeout
+        if (refreshTimeout) {
+          clearTimeout(refreshTimeout);
+        }
+
+        if (!token || !refreshToken) {
+          return;
+        }
+
+        const payload = decodeToken(token);
+        if (!payload || !payload.exp) {
+          return;
+        }
+
+        // Calculate time until token expires
+        const expirationTime = payload.exp * 1000;
+        const now = Date.now();
+        const timeUntilExpiry = expirationTime - now;
+
+        // Refresh 5 minutes before expiration
+        const refreshTime = Math.max(0, timeUntilExpiry - (5 * 60 * 1000));
+
+        const timeout = setTimeout(() => {
+          get().refreshAccessToken();
+        }, refreshTime);
+
+        set({ refreshTimeout: timeout });
       },
 
       // Passkey session actions
@@ -231,26 +321,21 @@ export const useAuthStore = create<AuthState>()(
         if (!passkeySessionToken || !passkeySessionExpires) {
           return false;
         }
-        // Check if session has expired
         const expiresDate = new Date(passkeySessionExpires);
         return expiresDate > new Date();
       },
 
-      // RBAC helper implementations
+      // RBAC helpers
       getPermissions: () => {
         const { user } = get();
         if (!user) return [];
-        // Get base permissions from role
         const rolePermissions = ROLE_PERMISSIONS[user.role] || [];
-        // Merge with custom permissions if any
         const customPermissions = user.permissions || [];
-        // Return unique permissions
         return [...new Set([...rolePermissions, ...customPermissions])];
       },
 
       hasPermission: (permission: Permission) => {
-        const permissions = get().getPermissions();
-        return permissions.includes(permission);
+        return get().getPermissions().includes(permission);
       },
 
       hasAnyPermission: (permissions: Permission[]) => {
@@ -281,36 +366,28 @@ export const useAuthStore = create<AuthState>()(
       isVerified: () => {
         const { user } = get();
         if (!user) return false;
-        // Admins are always verified
         if (get().isAdminRole()) return true;
-        // Check if user has is_verified field (new field)
-        return (user as any).is_verified === true;
+        return user.is_verified === true;
       },
 
       needsVerification: () => {
         const { user } = get();
         if (!user) return false;
-        // Admins don't need verification
         if (get().isAdminRole()) return false;
-        // Regular users need verification
         return !get().isVerified();
       },
 
       canWatchVOD: () => {
         const { user } = get();
         if (!user) return false;
-        // Admins always can
         if (get().isAdminRole()) return true;
-        // Regular users need verification AND subscription
         return get().isVerified() && !!user.subscription?.plan;
       },
 
       canCreateWidgets: () => {
         const { user } = get();
         if (!user) return false;
-        // Admins always can
         if (get().isAdminRole()) return true;
-        // Regular users need verification AND premium/family subscription
         const premiumPlans = ['premium', 'family'];
         return get().isVerified() && premiumPlans.includes(user.subscription?.plan || '');
       },
@@ -318,16 +395,14 @@ export const useAuthStore = create<AuthState>()(
       isPremium: () => {
         const { user } = get();
         if (!user) return false;
-        // Admins are always considered premium
         if (get().isAdminRole()) return true;
-        // Check for premium or family subscription
         const premiumPlans = ['premium', 'family'];
         return get().isVerified() && premiumPlans.includes(user.subscription?.plan || '');
       },
     }),
     {
       name: 'bayit-auth',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => getPlatformStorage()),
       partialize: (state) => ({
         user: state.user,
         token: state.token,
@@ -338,15 +413,24 @@ export const useAuthStore = create<AuthState>()(
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {
-          // Data integrity check: if authenticated but no user, reset auth state
+          // Data integrity check
           if (state.isAuthenticated && !state.user) {
-            console.warn('[AuthStore] Data integrity issue: authenticated but no user. Resetting auth state.');
             state.isAuthenticated = false;
             state.token = null;
             state.passkeySessionToken = null;
             state.passkeySessionExpires = null;
           }
+
           state.isHydrated = true;
+
+          // Schedule token refresh if needed
+          if (state.token && state.refreshToken) {
+            if (willExpireSoon(state.token)) {
+              state.refreshAccessToken();
+            } else {
+              state.scheduleTokenRefresh();
+            }
+          }
         }
       },
     }

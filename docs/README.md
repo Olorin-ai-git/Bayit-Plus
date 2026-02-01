@@ -143,8 +143,9 @@ Deployment guides and infrastructure:
 - [Deployment Guide](deployment/DEPLOYMENT_GUIDE.md) - Production deployment
 - [CI/CD Pipeline](deployment/CI_CD_PIPELINE.md) - GitHub Actions workflows
 - [Secrets Management](deployment/SECRETS_MANAGEMENT.md) - Google Cloud secrets
-- [GCloud Secrets API Configuration](deployment/GCLOUD_SECRETS_API_CONFIGURATION.md) - API retry and subtitle config ⭐ **NEW**
-- [LLM Configuration](deployment/LLM_CONFIGURATION.md) - AI model setup and cost optimization ⭐ **NEW**
+- [GCloud Secrets API Configuration](deployment/GCLOUD_SECRETS_API_CONFIGURATION.md) - API retry and subtitle config
+- [GCloud Secrets Schedules Direct](deployment/GCLOUD_SECRETS_SCHEDULES_DIRECT.md) - EPG integration config ⭐ **NEW**
+- [LLM Configuration](deployment/LLM_CONFIGURATION.md) - AI model setup and cost optimization
 - Firebase Hosting configuration
 - Google Cloud Run setup
 
@@ -398,6 +399,15 @@ Bayit+ runs on 4 platforms with unified documentation:
 ---
 
 ## 📅 Recent Updates
+
+**2026-02-01: Real EPG Integration (Schedules Direct)**
+- Added Schedules Direct API integration for real TV schedule data
+- Israel Plus channel now has 146 real EPG entries
+- Total 739 EPG entries across 6 channels from real sources:
+  - TVmaze API: CNN, ABC News, King 5 News (NBC)
+  - i24news API: i24NEWS Hebrew, i24NEWS English
+  - Schedules Direct: Israel Plus
+- Created ingest scripts for automated EPG updates
 
 **2026-01-31: Emoji to Icons Migration Plan**
 - Comprehensive migration plan to replace 306+ emojis with @olorin/shared-icons

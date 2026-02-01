@@ -1,8 +1,9 @@
 /**
  * API Client Configuration
  *
- * Axios client setup, interceptors, authentication handling,
+ * Platform-agnostic axios client setup, interceptors, authentication handling,
  * and correlation ID propagation for end-to-end request tracing.
+ * Works on web, iOS, Android, and tvOS.
  */
 
 import axios, {
@@ -10,7 +11,6 @@ import axios, {
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from "axios";
-import { Platform } from "react-native";
 import { useAuthStore } from "../../stores/authStore";
 import {
   getCorrelationId,
@@ -18,6 +18,7 @@ import {
   setCorrelationId,
 } from "../../utils/logger";
 import logger from "../../utils/logger";
+import { isWebPlatform } from "../../utils/storage";
 
 // Correlation ID header name (matches backend)
 const CORRELATION_ID_HEADER = "X-Correlation-ID";
@@ -26,12 +27,24 @@ const CORRELATION_ID_HEADER = "X-Correlation-ID";
 const CLOUD_RUN_API_URL =
   "https://bayit-plus-backend-534446777606.us-east1.run.app/api/v1";
 
+// Detect platform and environment
+const isWeb = isWebPlatform();
+const isDev = typeof process !== 'undefined'
+  ? process.env?.NODE_ENV === 'development'
+  : typeof __DEV__ !== 'undefined' ? __DEV__ : false;
+
+// Detect Android (React Native specific)
+const isAndroid = typeof navigator !== 'undefined' &&
+  navigator.product === 'ReactNative' &&
+  typeof global !== 'undefined' &&
+  (global as any).nativeModuleProxy?.Platform?.OS === 'android';
+
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {
   // Production builds
-  if (!__DEV__) {
+  if (!isDev) {
     // Web uses relative path (Firebase Hosting rewrites to Cloud Run)
-    if (Platform.OS === "web") {
+    if (isWeb) {
       return "/api/v1";
     }
     // Native apps use api.bayit.tv
@@ -40,17 +53,17 @@ const getApiBaseUrl = () => {
 
   // In development:
   // Web and iOS simulator can use localhost
-  if (Platform.OS === "web" || Platform.OS === "ios") {
+  if (isWeb) {
     return "http://localhost:8000/api/v1";
   }
 
   // Android emulator uses special address for localhost
-  if (Platform.OS === "android") {
+  if (isAndroid) {
     return "http://10.0.2.2:8000/api/v1";
   }
 
-  // tvOS and other platforms use Cloud Run API in development
-  return CLOUD_RUN_API_URL;
+  // iOS and tvOS use localhost in development
+  return "http://localhost:8000/api/v1";
 };
 
 export const API_BASE_URL = getApiBaseUrl();
@@ -111,7 +124,7 @@ const CSRF_CLIENT_COOKIE_NAME = "csrf_token_client"; // Client-readable cookie (
  * - SameSite attribute prevents CSRF attacks from other origins
  */
 const getCsrfToken = (): string | null => {
-  if (Platform.OS === "web") {
+  if (isWeb && typeof document !== 'undefined') {
     const cookies = document.cookie.split(";");
     for (const cookie of cookies) {
       const [name, value] = cookie.trim().split("=");
@@ -148,14 +161,14 @@ const validateRequestUrl = (url: string): boolean => {
     const parsedUrl = new URL(url, API_BASE_URL);
 
     // Only allow HTTPS in production
-    if (!__DEV__ && parsedUrl.protocol !== "https:") {
+    if (!isDev && parsedUrl.protocol !== "https:") {
       apiLogger.warn(`Non-HTTPS URL blocked in production: ${url}`);
       return false;
     }
 
     // Block requests to localhost in production
     if (
-      !__DEV__ &&
+      !isDev &&
       (parsedUrl.hostname === "localhost" || parsedUrl.hostname === "127.0.0.1")
     ) {
       apiLogger.warn(`Localhost URL blocked in production: ${url}`);

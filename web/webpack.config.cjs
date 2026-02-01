@@ -345,6 +345,7 @@ module.exports = (env, argv) => {
           context: ['/api', '/uploads'],
           target: 'http://localhost:8000',
           changeOrigin: true,
+          ws: true, // Enable WebSocket proxying for /api/v1/ws/* endpoints
         },
         {
           // Proxy GCS images to add CORP headers for COEP compatibility

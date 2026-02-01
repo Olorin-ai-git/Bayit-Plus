@@ -1,9 +1,10 @@
 /**
  * Auth Services - Authentication and verification API endpoints
+ * Platform-agnostic: works on web, iOS, Android, and tvOS
  */
 
-import { Platform } from 'react-native';
 import { api } from './client';
+import { isWebPlatform } from '../../utils/storage';
 
 // Auth Service (API)
 export const apiAuthService = {
@@ -14,13 +15,13 @@ export const apiAuthService = {
   me: () => api.get('/auth/me'),
   refreshToken: (refreshToken: string) =>
     api.post('/auth/refresh', { refresh_token: refreshToken }),
-  getGoogleAuthUrl: async () => {
-    const redirectUri = Platform.OS === 'web' && typeof window !== 'undefined'
+  getGoogleAuthUrl: async (redirectUri?: string) => {
+    const uri = redirectUri || (isWebPlatform() && typeof window !== 'undefined'
       ? `${window.location.origin}/auth/google/callback`
-      : undefined;
-    const response: any = await api.get('/auth/google/url', { params: { redirect_uri: redirectUri } });
+      : undefined);
+    const response: any = await api.get('/auth/google/url', { params: { redirect_uri: uri } });
 
-    if (Platform.OS === 'web' && typeof window !== 'undefined' && response.state) {
+    if (isWebPlatform() && typeof window !== 'undefined' && response.state) {
       sessionStorage.setItem('oauth_state', response.state);
     }
 
@@ -28,7 +29,7 @@ export const apiAuthService = {
   },
   googleCallback: (code: string, redirectUri?: string, state?: string) => {
     let finalState = state;
-    if (!finalState && Platform.OS === 'web' && typeof window !== 'undefined') {
+    if (!finalState && isWebPlatform() && typeof window !== 'undefined') {
       finalState = sessionStorage.getItem('oauth_state') || undefined;
       if (finalState) {
         sessionStorage.removeItem('oauth_state');

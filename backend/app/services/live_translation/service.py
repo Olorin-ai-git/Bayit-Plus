@@ -130,7 +130,7 @@ class LiveTranslationService:
             cache_ttl_seconds,
         )
 
-    async def process_live_audio_to_subtitles(
+    def process_live_audio_to_subtitles(
         self,
         audio_stream: AsyncIterator[bytes],
         source_lang: str,

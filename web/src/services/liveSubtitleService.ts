@@ -55,6 +55,12 @@ class LiveSubtitleService {
     sourceLang: string = 'he',
     hebrewMode: 'regular' | 'nikud' | 'shoresh' = 'regular'
   ): Promise<void> {
+    // Clean up any existing connection first
+    if (this.ws) {
+      logger.debug('Cleaning up existing WebSocket before new connection', 'liveSubtitleService')
+      this.disconnect()
+    }
+
     this.firstAudioChunkSent = false
     this.firstSubtitleReceived = false
 
@@ -128,10 +134,17 @@ class LiveSubtitleService {
           }
         }, liveSubtitleConfig.connectionTimeoutMs)
 
-        this.ws.onopen = async () => {
+        this.ws.onopen = () => {
           logger.debug('WebSocket connected, sending authentication', 'liveSubtitleService')
           // Send authentication message (SECURITY: token via message, not URL)
-          this.ws?.send(JSON.stringify({ type: 'authenticate', token }))
+          // Defensive check - ensure WebSocket is truly open before sending
+          if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+            this.ws.send(JSON.stringify({ type: 'authenticate', token }))
+          } else {
+            logger.error('WebSocket not in OPEN state during onopen', 'liveSubtitleService', {
+              readyState: this.ws?.readyState
+            })
+          }
         }
 
         this.ws.onmessage = async (event) => {

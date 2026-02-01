@@ -173,7 +173,7 @@ export function GlassLiveControlsPanel({
   const tooltipText = getTooltipText()
 
   return (
-    <View style={styles.wrapper}>
+    <View style={styles.wrapper} data-controls-panel="true">
       {/* Error Banner - appears above the panel */}
       {error && onDismissError && (
         <GlassErrorBanner

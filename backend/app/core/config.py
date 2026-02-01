@@ -849,6 +849,19 @@ class Settings(BaseSettings):
     EPG_CACHE_TTL_SECONDS: int = 300
     EPG_INGESTION_INTERVAL_HOURS: int = 6
 
+    # Schedules Direct EPG Service (for US and Israeli channels)
+    # Signup at: https://www.schedulesdirect.org/
+    SCHEDULES_DIRECT_USERNAME: str = Field(
+        default="",
+        env="SCHEDULES_DIRECT_USERNAME",
+        description="Schedules Direct username for EPG data"
+    )
+    SCHEDULES_DIRECT_PASSWORD: str = Field(
+        default="",
+        env="SCHEDULES_DIRECT_PASSWORD",
+        description="Schedules Direct password (will be SHA1 hashed)"
+    )
+
     # Recording Storage
     RECORDING_GCS_PATH_PREFIX: str = Field(
         default="recordings",

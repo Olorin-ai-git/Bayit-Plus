@@ -39,16 +39,23 @@ export function useControlsAutoHide({
     const isMouseOverPanel = (): boolean => {
       const panels = container.querySelectorAll('[data-controls-panel="true"]')
       return isOverPanelRef.current || panels.length > 0 && Array.from(panels).some(panel => {
-        const rect = panel.getBoundingClientRect()
         // Check if any panel is being hovered (has :hover pseudo-class)
         return panel.matches(':hover')
       })
+    }
+
+    // Check if a modal/dialog is open (rendered via portal outside container)
+    // React Native Web Modals have role="dialog"
+    const isModalOpen = (): boolean => {
+      return document.querySelector('[role="dialog"]') !== null
     }
 
     const hideControls = () => {
       if (!isPlaying) return
       // Don't hide if mouse is over a control panel (like subtitle menu)
       if (isMouseOverPanel()) return
+      // Don't hide if a modal/dialog is open (like language picker)
+      if (isModalOpen()) return
       onHideRef.current()
       container.style.cursor = 'none'
     }

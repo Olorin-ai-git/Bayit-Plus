@@ -232,40 +232,69 @@ class EPGIngestionService:
 
     async def ingest_all_channels(self) -> Dict[str, int]:
         """
-        Ingest EPG data for all active channels
+        Ingest EPG data for all active channels using real EPG sources.
+
+        Data sources:
+        - TVmaze API: US channels (CNN, ABC News, NBC affiliates)
+        - i24news API: Israeli news channels (Hebrew & English)
+        - Schedules Direct: Israel Plus and other satellite channels
+        - XMLTV: Other Israeli channels (when available)
 
         Returns:
             Dictionary mapping channel names to number of programs ingested
         """
         results = {}
 
-        # Get all active channels
-        channels = await LiveChannel.find({"is_active": True}).to_list()
+        # Import real EPG services
+        from app.services.tvmaze_epg_service import tvmaze_epg_service
+        from app.services.israeli_epg_service import israeli_epg_service
 
-        # Channel mapping to EPG IDs used in XMLTV feeds
+        logger.info("Ingesting EPG from real sources...")
+
+        # Ingest US channels from TVmaze
+        logger.info("Fetching from TVmaze API...")
+        tvmaze_results = await tvmaze_epg_service.ingest_all_us_channels()
+        results.update(tvmaze_results)
+
+        # Ingest Israeli channels from i24news API
+        logger.info("Fetching from Israeli sources...")
+        israeli_results = await israeli_epg_service.ingest_all_israeli_channels()
+        results.update(israeli_results)
+
+        # Ingest from Schedules Direct (Israel Plus and other satellite channels)
+        logger.info("Fetching from Schedules Direct...")
+        try:
+            sd_results = await self._ingest_from_schedules_direct()
+            results.update(sd_results)
+        except Exception as e:
+            logger.warning(f"Schedules Direct ingestion failed: {e}")
+
+        # For channels without real EPG sources, try XMLTV fallback
+        channels = await LiveChannel.find({"is_active": True}).to_list()
         channel_mapping = {
             "כאן 11": "kan11.il",
             "קשת 12": "keshet12.il",
             "רשת 13": "reshet13.il",
             "ערוץ 14": "channel14.il",
-            "i24NEWS Hebrew": "i24news.il",
             "כאן חינוכית": "kanhinuchit.il",
         }
 
         for channel in channels:
-            logger.info(f"Fetching EPG for {channel.name}")
+            channel_name = channel.name_en or channel.name
+            if channel_name in results:
+                continue  # Already processed
 
             xmltv_id = channel_mapping.get(channel.name)
             if not xmltv_id:
-                logger.warning(f"No XMLTV ID mapping for {channel.name}")
-                results[channel.name] = 0
+                logger.debug(f"No XMLTV ID mapping for {channel_name}")
                 continue
 
-            # Try to fetch from multiple sources
+            # Try XMLTV sources for remaining channels
+            logger.info(f"Trying XMLTV for {channel_name}")
             count = await self._fetch_channel_epg(
                 str(channel.id), channel.name, xmltv_id
             )
-            results[channel.name] = count
+            results[channel_name] = count
 
         logger.info(f"EPG ingestion complete: {results}")
 
@@ -471,6 +500,140 @@ class EPGIngestionService:
                 continue
 
         return programs_created
+
+    async def _ingest_from_schedules_direct(self) -> Dict[str, int]:
+        """
+        Ingest EPG from Schedules Direct for channels with station IDs.
+
+        Currently supports:
+        - Israel Plus (Station ID: 27549) from DISH lineup
+
+        Returns:
+            Dictionary mapping channel names to ingestion counts
+        """
+        from datetime import timezone
+        from app.services.schedules_direct_service import SchedulesDirectService
+
+        # Channel mapping: channel name -> station ID
+        sd_channel_map = {
+            "Israel Plus": "27549",
+        }
+
+        results = {}
+        service = SchedulesDirectService()
+
+        try:
+            # Authenticate
+            if not await service.authenticate():
+                logger.warning("Schedules Direct authentication failed - skipping")
+                return {}
+
+            for channel_name, station_id in sd_channel_map.items():
+                # Find channel in database
+                channel = await LiveChannel.find_one({"name_en": channel_name})
+                if not channel:
+                    channel = await LiveChannel.find_one({"name": channel_name})
+                if not channel:
+                    logger.debug(f"Channel {channel_name} not in database")
+                    continue
+
+                channel_id = str(channel.id)
+
+                # Get schedules
+                schedules = await service.get_schedules([station_id], days=7)
+                station_schedules = schedules.get(station_id, [])
+
+                if not station_schedules:
+                    results[channel_name] = 0
+                    continue
+
+                # Get program IDs and details
+                program_ids = [s.get("programID") for s in station_schedules if s.get("programID")]
+                programs = await service.get_programs(program_ids)
+
+                # Create EPG entries
+                created = 0
+                for schedule in station_schedules:
+                    try:
+                        program_id = schedule.get("programID")
+                        if not program_id:
+                            continue
+
+                        program = programs.get(program_id, {})
+
+                        air_datetime = schedule.get("airDateTime")
+                        duration = schedule.get("duration", 3600)
+
+                        if not air_datetime:
+                            continue
+
+                        start_time = datetime.fromisoformat(air_datetime.replace("Z", "+00:00"))
+                        end_time = start_time + timedelta(seconds=duration)
+
+                        # Skip past entries
+                        if end_time < datetime.now(timezone.utc):
+                            continue
+
+                        # Check if exists
+                        existing = await EPGEntry.find_one({
+                            "channel_id": channel_id,
+                            "start_time": start_time,
+                        })
+                        if existing:
+                            continue
+
+                        # Extract details
+                        titles = program.get("titles", [])
+                        title = titles[0].get("title120") if titles else "Unknown"
+
+                        descriptions = program.get("descriptions", {})
+                        desc_list = descriptions.get("description1000", []) or descriptions.get("description100", [])
+                        description = desc_list[0].get("description") if desc_list else ""
+
+                        genres = program.get("genres", [])
+
+                        # Cast handling
+                        cast_list = []
+                        for cast_member in program.get("cast", []):
+                            if isinstance(cast_member, dict) and cast_member.get("name"):
+                                cast_list.append(cast_member["name"])
+
+                        # Rating
+                        content_ratings = program.get("contentRating", [])
+                        rating = content_ratings[0].get("code") if content_ratings else None
+
+                        entry = EPGEntry(
+                            channel_id=channel_id,
+                            title=title,
+                            description=description,
+                            start_time=start_time,
+                            end_time=end_time,
+                            category=genres[0] if genres else "Entertainment",
+                            thumbnail=None,
+                            cast=cast_list,
+                            genres=genres,
+                            rating=rating,
+                            director=None,
+                            recording_id=None,
+                        )
+
+                        await entry.insert()
+                        created += 1
+
+                    except Exception as e:
+                        logger.error(f"SD EPG entry error: {e}")
+                        continue
+
+                results[channel_name] = created
+                logger.info(f"SD: Created {created} EPG entries for {channel_name}")
+
+        except Exception as e:
+            logger.error(f"Schedules Direct error: {e}")
+
+        finally:
+            await service.close()
+
+        return results
 
     async def cleanup_old_epg(self, days_to_keep: int = 7):
         """Remove EPG entries older than specified days"""

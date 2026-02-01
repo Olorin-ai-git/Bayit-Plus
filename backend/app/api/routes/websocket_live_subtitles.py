@@ -482,8 +482,8 @@ async def websocket_live_subtitles(
                 "source_lang": source_lang,
                 "target_lang": target_lang,
                 "channel_id": channel_id,
-                "stt_provider": translation_service.provider,
-                "translation_provider": translation_service.translation_provider,
+                "stt_provider": translation_service.stt_manager.provider,
+                "translation_provider": translation_service.translation_manager.provider,
                 "enable_predictive": enable_predictive,
             }
         )
