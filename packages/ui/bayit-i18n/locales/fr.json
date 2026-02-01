@@ -8263,5 +8263,162 @@
     "placeholder": "Envoyer un message...",
     "send": "Envoyer",
     "translationBeta": "Traduction (Bêta)"
+  },
+  "avatar": {
+    "dialogue": {
+      "wake": {
+        "here": "Je suis là.",
+        "service": "À votre service.",
+        "listening": "J'écoute.",
+        "hmm": "Hmm ?",
+        "yes": "Oui ?"
+      },
+      "listening": {
+        "see": "Hmm, laissez-moi voir...",
+        "interesting": "Intéressant...",
+        "let": "Laissez-moi y réfléchir..."
+      },
+      "processing": {
+        "vast": "Les parchemins sont vastes... patience.",
+        "seek": "Je cherche dans la bibliothèque...",
+        "moment": "Un moment...",
+        "consulting": "Je consulte les archives..."
+      },
+      "presenting": {
+        "here": "Voici.",
+        "found": "J'ai trouvé ceci pour vous.",
+        "behold": "Contemplez.",
+        "exactly": "Exactement ce que vous avez demandé."
+      },
+      "presentingList": {
+        "found": "J'ai trouvé {{count}} qui pourraient vous intéresser...",
+        "gathered": "J'ai rassemblé {{count}} options.",
+        "choices": "Voici {{count}} choix."
+      },
+      "nothingFound": {
+        "rephrase": "Hmm. Les archives ne révèlent rien. Peut-être reformuler ?",
+        "elsewhere": "Rien trouvé ici. Chercher ailleurs ?",
+        "sorry": "Désolé, ce n'est pas dans mes parchemins."
+      },
+      "interruption": {
+        "got": "Compris — que souhaitez-vous à la place ?",
+        "speak": "Parlez, et j'écouterai.",
+        "course": "Bien sûr, quelle est la nouvelle demande ?"
+      },
+      "clarification": {
+        "didYouMean": "Vouliez-vous dire {{guess}} ?",
+        "unclear": "Votre demande n'est pas claire. Pouvez-vous clarifier ?",
+        "whichOne": "Lequel de ceux-ci vous intéresse ?"
+      },
+      "confirmation": {
+        "done": "Fait.",
+        "completed": "Terminé.",
+        "understood": "Compris."
+      },
+      "dismissal": {
+        "rest": "Je me reposerai ici si vous avez besoin de moi.",
+        "return": "Appelez, et je reviendrai.",
+        "farewell": "Au revoir."
+      },
+      "error": {
+        "technical": "Quelque chose s'est mal passé. Réessayez.",
+        "apologies": "Mes excuses, j'ai rencontré une erreur.",
+        "failed": "L'opération a échoué. Un autre essai ?"
+      },
+      "idleTimeout": {
+        "still": "Vous êtes toujours là ?",
+        "anything": "Autre chose ?",
+        "resting": "Je me reposerai jusqu'à ce que vous ayez besoin de moi."
+      },
+      "personality": {
+        "wisdom": "Rappelez-vous, même le mage le plus sage a commencé comme apprenti.",
+        "patience": "La patience révèle ce que la hâte cache.",
+        "magic": "La magie coule partout — il suffit de savoir où chercher."
+      },
+      "greeting": {
+        "morning": "Bonjour. Que cherchez-vous ?",
+        "afternoon": "Bon après-midi. Comment puis-je vous aider ?",
+        "evening": "Bonsoir. Qu'est-ce qui vous intéresse ?",
+        "night": "Bonne nuit. Comment puis-je vous aider ?"
+      },
+      "waiting": {
+        "moment": "Un moment, s'il vous plaît...",
+        "patience": "Patience... les parchemins sont vastes.",
+        "searching": "Je cherche dans les archives..."
+      },
+      "success": {
+        "aha": "Aha ! Trouvé !",
+        "found": "Succès ! Le voici.",
+        "excellent": "Excellent ! Comme je le pensais."
+      },
+      "warning": {
+        "caution": "Un moment de prudence...",
+        "careful": "Attention maintenant...",
+        "wait": "Attendez — laissez-moi d'abord expliquer quelque chose."
+      },
+      "magicalReveal": {
+        "behold": "Contemplez ce que la magie révèle !",
+        "witness": "Soyez témoin de ceci...",
+        "observe": "Observez attentivement maintenant..."
+      },
+      "agreement": {
+        "yes": "Oui, en effet.",
+        "indeed": "En effet, vous avez raison.",
+        "certainly": "Certainement. Comme vous le souhaitez."
+      },
+      "disagreement": {
+        "no": "J'ai bien peur que non.",
+        "afraid": "Cela ne semble pas correct.",
+        "unfortunately": "Malheureusement, cela ne fonctionnera pas."
+      },
+      "clarificationNeeded": {
+        "pardon": "Pardon ? Répétez cela.",
+        "didntCatch": "Je n'ai pas bien compris.",
+        "sayAgain": "Pourriez-vous répéter ?"
+      }
+    },
+    "states": {
+      "dormant": "Au repos",
+      "listening": "À l'écoute",
+      "processing": "En cours de traitement",
+      "responding": "En train de répondre",
+      "confused": "Confus",
+      "interrupted": "Interrompu"
+    },
+    "gestures": {
+      "idle": "Inactif",
+      "greeting": "Salutation",
+      "listening": "À l'écoute",
+      "attentive": "Attentif",
+      "thinking": "Réfléchissant",
+      "presenting": "Présentant",
+      "conjuring": "Invoquant",
+      "browsing": "Parcourant",
+      "confused": "Confus",
+      "shrugging": "Haussement d'épaules",
+      "farewell": "Adieu",
+      "cheering": "Acclamant",
+      "clapping": "Applaudissant",
+      "crying": "Pleurant",
+      "facepalm": "Facepalm",
+      "emphatic": "Emphatique",
+      "reading": "Lisant",
+      "confirmation": "Confirmation",
+      "single_result": "Pointant",
+      "waiting": "En attente",
+      "success": "Succès",
+      "clarification": "Clarifiant",
+      "warning": "Avertissement",
+      "magical_reveal": "Révélant",
+      "agreement": "Accord",
+      "disagreement": "Désaccord"
+    },
+    "accessibility": {
+      "avatarLabel": "Assistant mage Olorin",
+      "speakingLabel": "Olorin parle",
+      "listeningLabel": "Olorin écoute",
+      "processingLabel": "Olorin traite",
+      "gestureLabel": "Olorin {{gesture}}"
+    }
   }
 }

@@ -1,6 +1,6 @@
 # Bayit+ Documentation
 
-**Last Updated:** 2026-01-31
+**Last Updated:** 2026-02-01
 **Total Documents:** 252 files
 **Documentation Portal:** https://docs.bayitplus.com
 
@@ -398,7 +398,17 @@ Bayit+ runs on 4 platforms with unified documentation:
 
 ---
 
-## 📅 Recent Updates
+## Recent Updates
+
+**2026-02-01: Beta 500 User Manual v2.0**
+- Complete rewrite of Beta 500 User Manual with accurate information
+- Corrected credit allocation (5,000 credits, not 500)
+- Added comprehensive testing guidelines for beta testers
+- Documented all 4 AI features: AI Search, AI Recommendations, Live Dubbing, Auto Catch-Up
+- Added credit acquisition methods (bonuses, milestones, referrals, emergency requests)
+- Included features not available in beta
+- Added troubleshooting guide with error codes
+- Privacy and data handling documentation
 
 **2026-02-01: Real EPG Integration (Schedules Direct)**
 - Added Schedules Direct API integration for real TV schedule data
@@ -448,7 +458,7 @@ MIT License - Copyright © 2026 Bayit+
 
 ---
 
-**Document Status:** ✅ Production Ready
-**Last Updated:** 2026-01-31
+**Document Status:** Production Ready
+**Last Updated:** 2026-02-01
 **Maintained by:** Documentation Team
 **Next Review:** 2026-02-15

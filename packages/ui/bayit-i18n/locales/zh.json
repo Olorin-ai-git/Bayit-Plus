@@ -7339,5 +7339,162 @@
     "placeholder": "发送消息...",
     "send": "发送",
     "translationBeta": "翻译（测试版）"
+  },
+  "avatar": {
+    "dialogue": {
+      "wake": {
+        "here": "我在这里。",
+        "service": "随时为您服务。",
+        "listening": "正在聆听。",
+        "hmm": "嗯？",
+        "yes": "是的？"
+      },
+      "listening": {
+        "see": "嗯，让我看看...",
+        "interesting": "有趣...",
+        "let": "让我想想..."
+      },
+      "processing": {
+        "vast": "卷轴浩瀚...请耐心等待。",
+        "seek": "正在搜索图书馆...",
+        "moment": "请稍等...",
+        "consulting": "正在查阅档案..."
+      },
+      "presenting": {
+        "here": "给你。",
+        "found": "我为你找到了这个。",
+        "behold": "请看。",
+        "exactly": "正是你要求的。"
+      },
+      "presentingList": {
+        "found": "我找到了 {{count}} 个可能感兴趣的...",
+        "gathered": "我收集了 {{count}} 个选项。",
+        "choices": "这里有 {{count}} 个选择。"
+      },
+      "nothingFound": {
+        "rephrase": "嗯。档案中没有发现任何东西。也许换个说法？",
+        "elsewhere": "这里没有找到。要在别处搜索吗？",
+        "sorry": "抱歉，这不在我的卷轴中。"
+      },
+      "interruption": {
+        "got": "明白了——你想要什么？",
+        "speak": "请说，我在听。",
+        "course": "当然，有什么新的请求？"
+      },
+      "clarification": {
+        "didYouMean": "你是指 {{guess}} 吗？",
+        "unclear": "你的请求不太清楚。能说明一下吗？",
+        "whichOne": "这些中哪个是你感兴趣的？"
+      },
+      "confirmation": {
+        "done": "完成。",
+        "completed": "已完成。",
+        "understood": "明白了。"
+      },
+      "dismissal": {
+        "rest": "如果需要我，我会在这里。",
+        "return": "呼唤我，我就会回来。",
+        "farewell": "再见。"
+      },
+      "error": {
+        "technical": "出了点问题。请重试。",
+        "apologies": "抱歉，遇到了一个错误。",
+        "failed": "操作失败。再试一次？"
+      },
+      "idleTimeout": {
+        "still": "你还在吗？",
+        "anything": "还有别的吗？",
+        "resting": "我会休息，直到你再次需要我。"
+      },
+      "personality": {
+        "wisdom": "记住，即使是最聪明的法师也曾是学徒。",
+        "patience": "耐心能揭示急躁所隐藏的东西。",
+        "magic": "魔法无处不在——只需知道去哪里寻找。"
+      },
+      "greeting": {
+        "morning": "早上好。你在寻找什么？",
+        "afternoon": "下午好。我能帮你什么？",
+        "evening": "晚上好。你对什么感兴趣？",
+        "night": "晚安。我能帮你什么？"
+      },
+      "waiting": {
+        "moment": "请稍等...",
+        "patience": "耐心...卷轴浩瀚。",
+        "searching": "正在搜索档案..."
+      },
+      "success": {
+        "aha": "啊哈！找到了！",
+        "found": "成功！就是这个。",
+        "excellent": "太好了！正如我所料。"
+      },
+      "warning": {
+        "caution": "请注意一下...",
+        "careful": "小心点...",
+        "wait": "等等——让我先解释一下。"
+      },
+      "magicalReveal": {
+        "behold": "看看魔法揭示了什么！",
+        "witness": "见证这一刻...",
+        "observe": "仔细观察..."
+      },
+      "agreement": {
+        "yes": "是的，确实如此。",
+        "indeed": "的确，你说得对。",
+        "certainly": "当然。如你所愿。"
+      },
+      "disagreement": {
+        "no": "恐怕不行。",
+        "afraid": "那似乎不对。",
+        "unfortunately": "不幸的是，那行不通。"
+      },
+      "clarificationNeeded": {
+        "pardon": "什么？请再说一遍。",
+        "didntCatch": "我没听清楚。",
+        "sayAgain": "能再说一遍吗？"
+      }
+    },
+    "states": {
+      "dormant": "休息中",
+      "listening": "正在聆听",
+      "processing": "正在处理",
+      "responding": "正在回应",
+      "confused": "困惑中",
+      "interrupted": "已中断"
+    },
+    "gestures": {
+      "idle": "空闲",
+      "greeting": "问候",
+      "listening": "聆听",
+      "attentive": "专注",
+      "thinking": "思考",
+      "presenting": "展示",
+      "conjuring": "施法",
+      "browsing": "浏览",
+      "confused": "困惑",
+      "shrugging": "耸肩",
+      "farewell": "告别",
+      "cheering": "欢呼",
+      "clapping": "鼓掌",
+      "crying": "哭泣",
+      "facepalm": "捂脸",
+      "emphatic": "强调",
+      "reading": "阅读",
+      "confirmation": "确认",
+      "single_result": "指向",
+      "waiting": "等待",
+      "success": "成功",
+      "clarification": "澄清",
+      "warning": "警告",
+      "magical_reveal": "揭示",
+      "agreement": "同意",
+      "disagreement": "不同意"
+    },
+    "accessibility": {
+      "avatarLabel": "奥洛林巫师助手",
+      "speakingLabel": "奥洛林正在说话",
+      "listeningLabel": "奥洛林正在聆听",
+      "processingLabel": "奥洛林正在处理",
+      "gestureLabel": "奥洛林 {{gesture}}"
+    }
   }
 }

@@ -28,6 +28,7 @@ export {
   type GestureType,
   type GestureDefinition,
   type IdleBehavior,
+  type IdleBehaviorType,
   // Gesture Data
   GESTURE_LIBRARY,
   IDLE_BEHAVIORS,
@@ -63,6 +64,7 @@ export {
 export {
   // Wizard Avatar Types
   type SpritesheetType,
+  type SpritesheetConfig,
   // Wizard Avatar Data
   WIZARD_AVATARS,
   GESTURE_AVATARS,
@@ -70,10 +72,15 @@ export {
   ANIMATED_GESTURES,
   GESTURE_SPRITESHEETS,
   GESTURE_TO_SPRITESHEET,
+  SPRITESHEET_CONFIGS,
+  IDLE_BEHAVIOR_SPRITESHEETS,
   // Wizard Avatar Functions
   getGestureAvatar,
   isAnimatedGesture,
   getGestureSpritesheet,
+  getSpritesheetConfig,
+  getIdleBehaviorSpritesheet,
+  getIdleBehaviorConfig,
 } from '../constants/wizardAvatars';
 
 // Hooks
@@ -90,6 +97,15 @@ export {
   type UseAvatarStateMachineOptions,
   type UseAvatarStateMachineReturn,
 } from '../hooks/useAvatarStateMachine';
+
+// tvOS Focus Hook
+export {
+  useTVAvatarFocus,
+  type AvatarFocusZone,
+  AVATAR_FOCUS_ZONES,
+  getTVOSAvatarSize,
+  getTVOSFocusRingStyle,
+} from '../hooks/useTVAvatarFocus';
 
 // Services
 export {

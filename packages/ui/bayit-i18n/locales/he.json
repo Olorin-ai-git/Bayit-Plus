@@ -7638,5 +7638,162 @@
         "queueRefreshed": "התור רוענן ידנית."
       }
     }
+  },
+  "avatar": {
+    "dialogue": {
+      "wake": {
+        "here": "אני כאן.",
+        "service": "לשירותך.",
+        "listening": "מקשיב.",
+        "hmm": "הממ?",
+        "yes": "כן?"
+      },
+      "listening": {
+        "see": "הממ, תן לי לראות...",
+        "interesting": "מעניין...",
+        "let": "תן לי לחשוב על זה..."
+      },
+      "processing": {
+        "vast": "המגילות עצומות... סבלנות.",
+        "seek": "אני מחפש בספרייה...",
+        "moment": "רגע...",
+        "consulting": "מתייעץ עם הארכיונים..."
+      },
+      "presenting": {
+        "here": "הנה.",
+        "found": "מצאתי את זה בשבילך.",
+        "behold": "הנה, צפה.",
+        "exactly": "בדיוק מה שביקשת."
+      },
+      "presentingList": {
+        "found": "מצאתי {{count}} שעשויים לעניין אותך...",
+        "gathered": "אספתי {{count}} אפשרויות.",
+        "choices": "הנה {{count}} בחירות."
+      },
+      "nothingFound": {
+        "rephrase": "הממ. הארכיונים לא חושפים דבר. אולי לנסח מחדש?",
+        "elsewhere": "לא מצאתי דבר כאן. אולי לחפש במקום אחר?",
+        "sorry": "סליחה, זה לא במגילות שלי."
+      },
+      "interruption": {
+        "got": "הבנתי — מה תרצה במקום?",
+        "speak": "דבר, ואקשיב.",
+        "course": "כמובן, מה הדרישה החדשה?"
+      },
+      "clarification": {
+        "didYouMean": "התכוונת ל-{{guess}}?",
+        "unclear": "הבקשה שלך אינה ברורה. תוכל להבהיר?",
+        "whichOne": "מי מאלה מעניין אותך?"
+      },
+      "confirmation": {
+        "done": "בוצע.",
+        "completed": "הושלם.",
+        "understood": "הבנתי."
+      },
+      "dismissal": {
+        "rest": "אנוח כאן אם תצטרך אותי.",
+        "return": "קרא, ואחזור.",
+        "farewell": "להתראות."
+      },
+      "error": {
+        "technical": "משהו השתבש. נסה שוב.",
+        "apologies": "סליחתי, נתקלתי בשגיאה.",
+        "failed": "הפעולה נכשלה. אולי ניסיון נוסף?"
+      },
+      "idleTimeout": {
+        "still": "עדיין כאן?",
+        "anything": "עוד משהו?",
+        "resting": "אנוח עד שתצטרך אותי שוב."
+      },
+      "personality": {
+        "wisdom": "זכור, אפילו הקוסם החכם ביותר פעם התחיל כתלמיד.",
+        "patience": "סבלנות מגלה מה שמהירות מסתירה.",
+        "magic": "קסם זורם בכל מקום — רק צריך לדעת היכן לחפש."
+      },
+      "greeting": {
+        "morning": "בוקר טוב. מה אתה מחפש?",
+        "afternoon": "צהריים טובים. איך אוכל לסייע?",
+        "evening": "ערב טוב. מה מעניין אותך?",
+        "night": "לילה טוב. איך אוכל לעזור?"
+      },
+      "waiting": {
+        "moment": "רגע אחד, בבקשה...",
+        "patience": "סבלנות... המגילות עצומות.",
+        "searching": "מחפש בארכיונים..."
+      },
+      "success": {
+        "aha": "אהה! מצאתי!",
+        "found": "הצלחה! הנה זה.",
+        "excellent": "מצוין! בדיוק כמו שחשדתי."
+      },
+      "warning": {
+        "caution": "רגע של זהירות...",
+        "careful": "היזהר עכשיו...",
+        "wait": "רגע — תן לי להסביר משהו קודם."
+      },
+      "magicalReveal": {
+        "behold": "הנה מה שהקסם חושף!",
+        "witness": "היה עד לזה...",
+        "observe": "התבונן היטב עכשיו..."
+      },
+      "agreement": {
+        "yes": "כן, אכן.",
+        "indeed": "אכן, אתה צודק.",
+        "certainly": "בהחלט. כרצונך."
+      },
+      "disagreement": {
+        "no": "אני חושש שלא.",
+        "afraid": "זה לא נראה נכון.",
+        "unfortunately": "לצערי, זה לא יעבוד."
+      },
+      "clarificationNeeded": {
+        "pardon": "סליחה? אמור את זה שוב.",
+        "didntCatch": "לא ממש תפסתי את זה.",
+        "sayAgain": "תוכל לומר את זה שוב?"
+      }
+    },
+    "states": {
+      "dormant": "נח",
+      "listening": "מקשיב",
+      "processing": "מעבד",
+      "responding": "מגיב",
+      "confused": "מבולבל",
+      "interrupted": "הופסק"
+    },
+    "gestures": {
+      "idle": "בטל",
+      "greeting": "ברכה",
+      "listening": "מקשיב",
+      "attentive": "קשוב",
+      "thinking": "חושב",
+      "presenting": "מציג",
+      "conjuring": "מכשף",
+      "browsing": "גולש",
+      "confused": "מבולבל",
+      "shrugging": "משיכת כתפיים",
+      "farewell": "פרידה",
+      "cheering": "מעודד",
+      "clapping": "מוחא כפיים",
+      "crying": "בוכה",
+      "facepalm": "פנים בכף יד",
+      "emphatic": "נמרץ",
+      "reading": "קורא",
+      "confirmation": "אישור",
+      "single_result": "מצביע",
+      "waiting": "ממתין",
+      "success": "הצלחה",
+      "clarification": "מבהיר",
+      "warning": "אזהרה",
+      "magical_reveal": "חושף",
+      "agreement": "מסכים",
+      "disagreement": "לא מסכים"
+    },
+    "accessibility": {
+      "avatarLabel": "עוזר הקוסם אולורין",
+      "speakingLabel": "אולורין מדבר",
+      "listeningLabel": "אולורין מקשיב",
+      "processingLabel": "אולורין מעבד",
+      "gestureLabel": "אולורין {{gesture}}"
+    }
   }
 }

@@ -8096,5 +8096,162 @@
     "placeholder": "メッセージを送信...",
     "send": "送信",
     "translationBeta": "翻訳（ベータ版）"
+  },
+  "avatar": {
+    "dialogue": {
+      "wake": {
+        "here": "ここにいます。",
+        "service": "お役に立ちます。",
+        "listening": "聞いています。",
+        "hmm": "うーん？",
+        "yes": "はい？"
+      },
+      "listening": {
+        "see": "うーん、見てみましょう...",
+        "interesting": "興味深い...",
+        "let": "考えさせてください..."
+      },
+      "processing": {
+        "vast": "巻物は膨大です...お待ちください。",
+        "seek": "図書館を検索しています...",
+        "moment": "少々お待ちを...",
+        "consulting": "アーカイブを参照しています..."
+      },
+      "presenting": {
+        "here": "こちらです。",
+        "found": "これを見つけました。",
+        "behold": "ご覧ください。",
+        "exactly": "まさにお求めのものです。"
+      },
+      "presentingList": {
+        "found": "興味を持たれそうな{{count}}件を見つけました...",
+        "gathered": "{{count}}件のオプションを集めました。",
+        "choices": "{{count}}件の選択肢があります。"
+      },
+      "nothingFound": {
+        "rephrase": "うーん。アーカイブに何も見つかりません。言い換えてみますか？",
+        "elsewhere": "ここでは見つかりませんでした。他の場所を探しますか？",
+        "sorry": "申し訳ありません、私の巻物にはありません。"
+      },
+      "interruption": {
+        "got": "了解しました — 代わりに何をお望みですか？",
+        "speak": "どうぞ、聞いています。",
+        "course": "もちろん、新しいご要望は何ですか？"
+      },
+      "clarification": {
+        "didYouMean": "{{guess}}のことですか？",
+        "unclear": "ご要望が不明確です。明確にしていただけますか？",
+        "whichOne": "これらのうちどれに興味がありますか？"
+      },
+      "confirmation": {
+        "done": "完了しました。",
+        "completed": "完了。",
+        "understood": "了解しました。"
+      },
+      "dismissal": {
+        "rest": "必要なときはここで休んでいます。",
+        "return": "呼んでいただければ戻ります。",
+        "farewell": "さようなら。"
+      },
+      "error": {
+        "technical": "問題が発生しました。もう一度お試しください。",
+        "apologies": "申し訳ありません、エラーが発生しました。",
+        "failed": "操作が失敗しました。再試行しますか？"
+      },
+      "idleTimeout": {
+        "still": "まだいらっしゃいますか？",
+        "anything": "他に何かありますか？",
+        "resting": "また必要になるまで休んでいます。"
+      },
+      "personality": {
+        "wisdom": "覚えておいてください、最も賢い魔法使いもかつては見習いでした。",
+        "patience": "忍耐は急ぎが隠すものを明らかにします。",
+        "magic": "魔法はどこにでも流れています — どこを見ればいいか知っていればいいのです。"
+      },
+      "greeting": {
+        "morning": "おはようございます。何をお探しですか？",
+        "afternoon": "こんにちは。どのようにお手伝いしましょうか？",
+        "evening": "こんばんは。何に興味がありますか？",
+        "night": "おやすみなさい。どのようにお手伝いしましょうか？"
+      },
+      "waiting": {
+        "moment": "少々お待ちください...",
+        "patience": "お待ちください...巻物は膨大です。",
+        "searching": "アーカイブを検索しています..."
+      },
+      "success": {
+        "aha": "あっ！見つけました！",
+        "found": "成功！こちらです。",
+        "excellent": "素晴らしい！予想通りでした。"
+      },
+      "warning": {
+        "caution": "注意が必要です...",
+        "careful": "気をつけてください...",
+        "wait": "お待ちください — まず説明させてください。"
+      },
+      "magicalReveal": {
+        "behold": "魔法が明かすものをご覧ください！",
+        "witness": "これを目撃してください...",
+        "observe": "よく観察してください..."
+      },
+      "agreement": {
+        "yes": "はい、確かに。",
+        "indeed": "確かに、おっしゃる通りです。",
+        "certainly": "もちろんです。お望みのままに。"
+      },
+      "disagreement": {
+        "no": "残念ながら違います。",
+        "afraid": "それは正しくないようです。",
+        "unfortunately": "残念ながら、それは機能しません。"
+      },
+      "clarificationNeeded": {
+        "pardon": "何ですか？もう一度お願いします。",
+        "didntCatch": "よく聞き取れませんでした。",
+        "sayAgain": "もう一度おっしゃっていただけますか？"
+      }
+    },
+    "states": {
+      "dormant": "休息中",
+      "listening": "聞いています",
+      "processing": "処理中",
+      "responding": "応答中",
+      "confused": "混乱",
+      "interrupted": "中断"
+    },
+    "gestures": {
+      "idle": "待機",
+      "greeting": "挨拶",
+      "listening": "聞いている",
+      "attentive": "注目",
+      "thinking": "考え中",
+      "presenting": "提示",
+      "conjuring": "魔法を使う",
+      "browsing": "閲覧",
+      "confused": "混乱",
+      "shrugging": "肩をすくめる",
+      "farewell": "お別れ",
+      "cheering": "応援",
+      "clapping": "拍手",
+      "crying": "泣いている",
+      "facepalm": "フェイスパーム",
+      "emphatic": "強調",
+      "reading": "読書",
+      "confirmation": "確認",
+      "single_result": "指差し",
+      "waiting": "待機中",
+      "success": "成功",
+      "clarification": "説明",
+      "warning": "警告",
+      "magical_reveal": "お披露目",
+      "agreement": "同意",
+      "disagreement": "不同意"
+    },
+    "accessibility": {
+      "avatarLabel": "オロリン魔法使いアシスタント",
+      "speakingLabel": "オロリンが話しています",
+      "listeningLabel": "オロリンが聞いています",
+      "processingLabel": "オロリンが処理しています",
+      "gestureLabel": "オロリン {{gesture}}"
+    }
   }
 }

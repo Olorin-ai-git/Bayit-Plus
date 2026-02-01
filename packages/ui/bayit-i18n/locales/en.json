@@ -7396,5 +7396,196 @@
     "placeholder": "Send a message...",
     "send": "Send",
     "translationBeta": "Translation (Beta)"
+  },
+  "avatar": {
+    "dialogue": {
+      "wake": {
+        "here": "I am here.",
+        "service": "At your service.",
+        "speak": "Speak, and I shall listen.",
+        "yes": "Yes?",
+        "seek": "What do you seek?",
+        "listening": "I'm listening.",
+        "awaits": "The wizard awaits."
+      },
+      "listening": {
+        "see": "Hmm, let me see...",
+        "moment": "One moment...",
+        "archives": "Consulting the archives...",
+        "yes": "Ah, yes...",
+        "find": "Let me find that..."
+      },
+      "processing": {
+        "vast": "The scrolls are vast... patience.",
+        "depths": "Searching the depths...",
+        "deeper": "This requires a deeper look...",
+        "ancient": "Consulting ancient knowledge..."
+      },
+      "presenting": {
+        "here": "Here you are.",
+        "channels": "As you wish. Your channels.",
+        "behold": "Behold.",
+        "summoned": "I've summoned them for you.",
+        "exactly": "Here — exactly as requested."
+      },
+      "presentingList": {
+        "found": "I found {{count}} that may interest you...",
+        "podcasts": "Your podcasts have new tales to tell.",
+        "treasures": "Several treasures match your request...",
+        "archives": "The archives reveal these...",
+        "results": "Here is what I found..."
+      },
+      "presentingSingle": {
+        "seek": "This is what you seek.",
+        "found": "Found it.",
+        "exactly": "Here — exactly as you described.",
+        "this": "Ah! This one."
+      },
+      "fuzzySearch": {
+        "said": "You said '{{query}}'... I found these in your collection.",
+        "possibilities": "Ah — '{{query}}.' Several possibilities here.",
+        "appears": "The word '{{query}}' appears in these titles...",
+        "matches": "Searching for '{{query}}'... here are the matches."
+      },
+      "nothingFound": {
+        "rephrase": "Hmm. The archives reveal nothing. Perhaps rephrase?",
+        "another": "I searched, but found no match. Shall we try another way?",
+        "describe": "Nothing by that name. Could you describe it differently?",
+        "limits": "Even wizards have limits. I couldn't find that.",
+        "silent": "The scrolls are silent on this matter."
+      },
+      "clarification": {
+        "catch": "I didn't quite catch that. Once more?",
+        "hearing": "My hearing isn't what it was. Again?",
+        "again": "Say that again for me.",
+        "uncertain": "I'm uncertain what you mean. Could you clarify?",
+        "guess": "Did you say '{{guess}}', or something else?"
+      },
+      "confirmation": {
+        "play": "Shall I play it?",
+        "continue": "Want me to continue?",
+        "list": "Should I read through the list?",
+        "details": "Would you like more details?"
+      },
+      "dismissal": {
+        "rests": "The wizard rests. Call when you need me.",
+        "next": "Until next time.",
+        "here": "I'll be here.",
+        "farewell": "Farewell for now.",
+        "word": "I am but a word away."
+      },
+      "dismissalLate": {
+        "late": "The hour grows late. Sweet dreams.",
+        "goodnight": "Goodnight. May your dreams be peaceful.",
+        "rest": "Rest well. The wizard watches over you."
+      },
+      "interruption": {
+        "got": "Got it — what would you like instead?",
+        "understood": "Understood. I await your new command.",
+        "well": "Very well. What now?",
+        "stopped": "Stopped. What do you seek?"
+      },
+      "error": {
+        "awry": "Something went awry. Shall we try again?",
+        "faltered": "The magic faltered. Once more?",
+        "obstacle": "An unexpected obstacle. Let me try differently."
+      },
+      "personality": {
+        "deliver": "You ask much... but I deliver.",
+        "hidden": "Ah! Hidden, but not from me.",
+        "manners": "Manners. I appreciate that.",
+        "already": "You already asked me this, but very well...",
+        "worthy": "A worthy challenge for a wizard."
+      },
+      "idleTimeout": {
+        "there": "Still there? Or shall I rest?",
+        "awaits": "The wizard awaits your command...",
+        "remain": "I remain at your service."
+      },
+      "greeting": {
+        "morning": "Good morning. What do you seek?",
+        "afternoon": "Good afternoon. How may I help?",
+        "evening": "Good evening. I am at your service.",
+        "night": "The hour grows late. What do you need?"
+      },
+      "waiting": {
+        "moment": "One moment, please...",
+        "patience": "Patience... the scrolls are vast.",
+        "searching": "Searching through the archives..."
+      },
+      "success": {
+        "aha": "Aha! Found it!",
+        "found": "Success! Here it is.",
+        "excellent": "Excellent! Just as I suspected."
+      },
+      "warning": {
+        "caution": "A moment of caution...",
+        "careful": "Careful now...",
+        "wait": "Wait — let me explain something first."
+      },
+      "magicalReveal": {
+        "behold": "Behold what the magic reveals!",
+        "witness": "Witness this...",
+        "observe": "Observe closely now..."
+      },
+      "agreement": {
+        "yes": "Yes, indeed.",
+        "indeed": "Indeed, you are correct.",
+        "certainly": "Certainly. As you wish."
+      },
+      "disagreement": {
+        "no": "I'm afraid not.",
+        "afraid": "That doesn't seem right.",
+        "unfortunately": "Unfortunately, that won't work."
+      },
+      "clarificationNeeded": {
+        "pardon": "Pardon? Say that again.",
+        "didntCatch": "I didn't quite catch that.",
+        "sayAgain": "Could you say that once more?"
+      }
+    },
+    "states": {
+      "dormant": "Resting",
+      "listening": "Listening",
+      "processing": "Thinking",
+      "responding": "Speaking",
+      "confused": "Confused",
+      "interrupted": "Interrupted"
+    },
+    "gestures": {
+      "idle": "Idle",
+      "greeting": "Greeting",
+      "listening": "Listening",
+      "attentive": "Attentive",
+      "thinking": "Thinking",
+      "presenting": "Presenting",
+      "conjuring": "Conjuring",
+      "browsing": "Browsing",
+      "confused": "Confused",
+      "shrugging": "Shrugging",
+      "farewell": "Farewell",
+      "cheering": "Cheering",
+      "clapping": "Clapping",
+      "crying": "Crying",
+      "facepalm": "Facepalm",
+      "emphatic": "Emphatic",
+      "reading": "Reading",
+      "confirmation": "Confirming",
+      "single_result": "Pointing",
+      "waiting": "Waiting",
+      "success": "Success",
+      "clarification": "Clarifying",
+      "warning": "Warning",
+      "magical_reveal": "Revealing",
+      "agreement": "Agreeing",
+      "disagreement": "Disagreeing"
+    },
+    "accessibility": {
+      "avatarLabel": "Olorin wizard assistant",
+      "speakingLabel": "Wizard is speaking",
+      "listeningLabel": "Wizard is listening",
+      "processingLabel": "Wizard is processing your request",
+      "focusHint": "Press select to interact with the wizard"
+    }
   }
 }

@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from app.services.docs_search_service import docs_search_service
+from app.services.olorin.search.docs_indexer import search_documentation
 from app.services.unified_search_service import (SearchFilters,
                                                  UnifiedSearchService)
 
@@ -135,6 +136,65 @@ CHAT_TOOLS = [
         },
     },
 ]
+
+# Admin-only tools - require admin role to access
+ADMIN_CHAT_TOOLS = [
+    {
+        "name": "search_knowledge_base",
+        "description": (
+            "Semantic search across the Bayit+ knowledge base using AI-powered vector search. "
+            "Use this for complex questions about system capabilities, avatar features, voice commands, "
+            "gesture types, animation details, and technical documentation. This tool understands natural "
+            "language queries and finds relevant information even if exact keywords don't match.\n\n"
+            "Topics covered:\n"
+            "- Avatar gestures (26 types: greeting, thinking, conjuring, etc.)\n"
+            "- Voice commands and wake words\n"
+            "- Avatar states and transitions\n"
+            "- Dialogue categories and responses\n"
+            "- Animation configurations\n"
+            "- tvOS/Apple TV focus navigation\n"
+            "- Interruption handling\n"
+            "- Idle behaviors\n\n"
+            "Use this when users ask 'how does the avatar work', 'what gestures are available', "
+            "'how do I use voice commands', or similar system capability questions."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "Natural language question or search query",
+                },
+                "category": {
+                    "type": "string",
+                    "enum": ["avatar", "voice", "documentation", "all"],
+                    "description": "Optional category filter (default: all)",
+                },
+                "language": {
+                    "type": "string",
+                    "enum": ["en", "he", "es"],
+                    "description": "Language preference (default: en)",
+                },
+            },
+            "required": ["query"],
+        },
+    },
+]
+
+
+def get_chat_tools(is_admin: bool = False) -> list[dict[str, Any]]:
+    """
+    Get available chat tools based on user role.
+
+    Args:
+        is_admin: Whether the user has admin privileges
+
+    Returns:
+        List of available tool definitions
+    """
+    if is_admin:
+        return CHAT_TOOLS + ADMIN_CHAT_TOOLS
+    return CHAT_TOOLS
 
 
 async def execute_search_content(
@@ -324,6 +384,58 @@ async def execute_lookup_user_guide(
     }
 
 
+async def execute_search_knowledge_base(
+    query: str,
+    category: str | None = None,
+    language: str = "en",
+) -> dict[str, Any]:
+    """
+    Execute semantic search across the knowledge base using vector search.
+
+    Args:
+        query: Natural language search query
+        category: Optional category filter
+        language: Language code
+
+    Returns:
+        Dict with search results from vector database
+    """
+    logger.info(
+        f"[ChatTool] Knowledge base search: query='{query}', "
+        f"category={category}, lang={language}"
+    )
+
+    # Search using vector/semantic search
+    results = await search_documentation(
+        query=query,
+        language=language,
+        category=category if category != "all" else None,
+        limit=5,
+    )
+
+    # Format results for Claude
+    formatted_results = []
+    for result in results:
+        formatted_results.append({
+            "title": result.get("title", ""),
+            "category": result.get("category", ""),
+            "excerpt": result.get("excerpt", ""),
+            "keywords": result.get("keywords", []),
+            "relevance_score": round(result.get("score", 0), 3),
+        })
+
+    logger.info(f"[ChatTool] Found {len(formatted_results)} knowledge base results")
+
+    return {
+        "results": formatted_results,
+        "query": query,
+        "language": language,
+        "category_filter": category,
+        "total_found": len(formatted_results),
+        "search_type": "semantic_vector",
+    }
+
+
 async def execute_chat_tool(
     tool_name: str, tool_input: dict[str, Any]
 ) -> dict[str, Any]:
@@ -355,6 +467,12 @@ async def execute_chat_tool(
             topic=tool_input.get("topic", ""),
             category=tool_input.get("category"),
             audience=tool_input.get("audience"),
+            language=tool_input.get("language", "en"),
+        )
+    elif tool_name == "search_knowledge_base":
+        return await execute_search_knowledge_base(
+            query=tool_input.get("query", ""),
+            category=tool_input.get("category"),
             language=tool_input.get("language", "en"),
         )
     else:

@@ -1,174 +1,349 @@
 # Beta 500 User Manual
 
-**Program:** Beta 500 - AI Features Closed Beta
-**Credits:** 500 AI credits per user
+**Program:** Beta 500 - AI-Powered Features Closed Beta
+**Credits Per User:** 5,000 AI credits
+**Program Duration:** 90 days
 **Status:** Active
-**Last Updated:** 2026-01-30
+**Last Updated:** 2026-02-01
 
-## Welcome to Beta 500!
+---
 
-Thank you for participating in the Bayit+ Beta 500 program! You've been selected to test our cutting-edge AI features powered by Anthropic Claude and OpenAI. This manual will help you get the most out of your 500 AI credits.
+## Welcome to Beta 500
+
+Thank you for joining the Bayit+ Beta 500 program! You are one of 500 exclusive users selected to test our cutting-edge AI features powered by Anthropic Claude, OpenAI, and ElevenLabs.
+
+This comprehensive guide covers everything you need to know as a beta tester.
+
+---
+
+## Table of Contents
+
+1. [Program Overview](#program-overview)
+2. [Getting Started](#getting-started)
+3. [Credit System](#credit-system)
+4. [AI Features to Test](#ai-features-to-test)
+5. [Features Not Available](#features-not-available)
+6. [Testing Guidelines](#testing-guidelines)
+7. [Acquiring More Credits](#acquiring-more-credits)
+8. [Troubleshooting](#troubleshooting)
+9. [Privacy & Data](#privacy--data)
+10. [Feedback & Support](#feedback--support)
+
+---
+
+## Program Overview
+
+### What is Beta 500?
+
+Beta 500 is a closed beta program limited to 500 users who receive exclusive early access to Bayit+'s AI-powered features. Your participation helps us refine these features before public launch.
+
+### Program Details
+
+| Detail | Value |
+|--------|-------|
+| **Total Beta Slots** | 500 users |
+| **Credits Per User** | 5,000 AI credits |
+| **Program Duration** | 90 days from enrollment |
+| **Platforms** | Web, iOS, Android, tvOS (Apple TV) |
+| **AI Providers** | Anthropic Claude, OpenAI, ElevenLabs |
+
+### What You're Testing
+
+Your feedback directly shapes these AI features:
+
+1. **AI Search** - Natural language content discovery
+2. **AI Recommendations** - Personalized content suggestions
+3. **Live Dubbing** - Real-time audio translation
+4. **Auto Catch-Up** - AI-generated summaries of missed content
+
+### Your Responsibilities as a Beta Tester
+
+- Use AI features regularly across different platforms
+- Report bugs, errors, and unexpected behavior
+- Provide feedback on feature quality and usefulness
+- Complete periodic feedback surveys
+- Respect the beta NDA (no public screenshots of unreleased features)
 
 ---
 
 ## Getting Started
 
-### Enrollment
+### How to Join
 
-**Automatic Enrollment:**
-1. Receive beta invitation email
-2. Sign up with Google OAuth at https://bayitplus.com
-3. Automatically enrolled with 500 credits granted
-4. Start using AI features immediately
+**Automatic Enrollment via OAuth:**
+1. Receive beta invitation email from beta@bayitplus.com
+2. Click the invitation link
+3. Sign up or log in with Google OAuth at https://bayitplus.com
+4. Your account is automatically enrolled with 5,000 credits
+5. Start using AI features immediately
 
-**Checking Your Status:**
-Navigate to Settings → Beta Program to see:
-- Beta enrollment status: ✅ Enrolled
-- Credit balance: 500 credits
-- Features unlocked: AI Search, AI Recommendations, Auto Catch-Up
+### Verifying Your Beta Status
 
-### Credit Balance
+**Web App:**
+Navigate to Settings (gear icon) > Beta Program
+- Status: "Beta 500 - Active"
+- Credits: "5,000 AI Credits"
+- Expiration: Your 90-day end date
 
-**View Balance:**
-- Web: Top-right corner shows credit icon with balance
-- Mobile/tvOS: Settings → Credits → Balance
+**Mobile App (iOS/Android):**
+Profile tab > Settings > Beta Program
 
-**Low Credit Warnings:**
-- 50 credits remaining: Yellow badge
-- 20 credits remaining: Orange warning
-- 10 credits remaining: Red alert
+**tvOS (Apple TV):**
+Settings > Account > Beta Program Status
+
+### Your Credit Balance
+
+Your credit balance is always visible:
+
+| Platform | Location |
+|----------|----------|
+| **Web** | Top navigation bar - credit icon with number |
+| **iOS/Android** | Profile tab - credit badge |
+| **tvOS** | Main menu - "AI Credits: X,XXX" |
 
 ---
 
-## AI Features
+## Credit System
+
+### How Credits Work
+
+Credits are your AI currency. Each AI action consumes credits based on its computational cost and complexity.
+
+### Credit Allocation
+
+| Metric | Value |
+|--------|-------|
+| **Initial Allocation** | 5,000 credits |
+| **Refill Schedule** | One-time grant (see "Acquiring More Credits") |
+| **Expiration** | Credits do not expire during beta period |
+| **Transferability** | Non-transferable between accounts |
+
+### Credit Costs by Feature
+
+| Feature | Cost | Unit |
+|---------|------|------|
+| **AI Search** | 10 credits | Per search query |
+| **AI Recommendations** | 5 credits | Per recommendation request |
+| **Live Dubbing** | 1 credit | Per second of dubbing |
+| **Auto Catch-Up** | 15 credits | Per summary generated |
+
+### Usage Examples
+
+**Light User (30 days):**
+```
+2 AI searches/day = 20 credits
+1 recommendation/day = 5 credits
+10 min dubbing/day = 600 credits
+Daily total: ~625 credits
+
+30-day total: ~18,750 credits (exceeds allocation)
+Recommendation: Use dubbing sparingly
+```
+
+**Moderate User (30 days):**
+```
+1 AI search/day = 10 credits
+1 recommendation every 2 days = 2.5 credits
+5 min dubbing/day = 300 credits
+Daily total: ~312 credits
+
+30-day total: ~9,375 credits (use allocation wisely)
+```
+
+**Conservative User (90 days):**
+```
+1 AI search every 2 days = 5 credits
+1 recommendation every 3 days = 1.7 credits
+2 min dubbing/day = 120 credits
+1 catch-up/week = 2.1 credits
+Daily total: ~129 credits
+
+90-day total: ~11,600 credits (may need top-up)
+```
+
+### Balance Thresholds & Warnings
+
+| Threshold | Credits Remaining | Visual Indicator | Action |
+|-----------|-------------------|------------------|--------|
+| **Healthy** | > 500 | Green badge | None needed |
+| **Low** | 100-500 | Amber/Yellow badge | Consider conserving |
+| **Critical** | < 100 | Red badge | Immediate attention |
+| **Depleted** | 0 | Gray badge | AI features disabled |
+
+### What Happens at Zero Credits
+
+When credits are depleted:
+- AI features show "Insufficient Credits" message
+- AI Search falls back to regular keyword search
+- AI Recommendations switch to algorithmic (non-AI) suggestions
+- Live Dubbing unavailable
+- Auto Catch-Up unavailable
+- All non-AI features continue working normally
+
+---
+
+## AI Features to Test
 
 ### 1. AI Search
 
 **What It Does:**
-Search content using natural language instead of keywords. Just type what you're looking for as if talking to a person.
+Search the Bayit+ content library using natural language instead of rigid keywords.
 
 **Cost:** 10 credits per search
 
 **How to Use:**
 
 **Web:**
-1. Click search icon (🔍) or press Cmd/Ctrl+K
-2. Type your query naturally
-3. Press Enter
-4. Review AI-powered results
+1. Press `Cmd+K` (Mac) or `Ctrl+K` (Windows) or click search icon
+2. Toggle "AI Search" on
+3. Type your query naturally
+4. Press Enter to search
 
-**Mobile/tvOS:**
-1. Navigate to Search tab
-2. Select "AI Search" toggle
-3. Enter your query
-4. View results
+**Mobile (iOS/Android):**
+1. Tap Search tab
+2. Enable "AI Search" toggle
+3. Type or speak your query
+4. View AI-powered results
+
+**tvOS:**
+1. Navigate to Search using Siri Remote
+2. Select "AI Search" option
+3. Use dictation or on-screen keyboard
+4. Browse results
 
 **Example Queries:**
 
-✅ **Good:**
-- "Show me Israeli comedy movies from the 2020s"
-- "I want to watch something funny for kids"
-- "Find documentaries about Jewish history"
-- "Movies with family reunions in Tel Aviv"
-- "Shows similar to Shtisel"
+| Query Type | Example |
+|------------|---------|
+| **Mood-based** | "Something relaxing to watch before bed" |
+| **Contextual** | "Family movies for Shabbat evening" |
+| **Comparative** | "Shows like Shtisel but lighter" |
+| **Specific** | "Israeli comedy movies from 2020-2025" |
+| **Thematic** | "Documentaries about Jewish immigration" |
 
-❌ **Not Good:**
-- Single keywords like "comedy" (use regular search)
-- Very vague queries like "something good"
-- Queries about non-content topics
-
-**Tips for Best Results:**
-
-1. **Be Specific:**
-   - ✅ "Israeli comedy movies from 2020-2025"
-   - ❌ "movies"
-
-2. **Use Natural Language:**
-   - ✅ "Shows about family dynamics in religious communities"
-   - ❌ "family religion show"
-
-3. **Include Context:**
-   - ✅ "Something relaxing to watch before bed"
-   - ❌ "relaxing"
-
-4. **Mention Preferences:**
-   - ✅ "Movies like Fauda but less intense"
-   - ❌ "action movies"
-
-**Understanding Results:**
-
-Each result shows:
-- **Title:** Original and English titles
-- **Relevance Score:** How well it matches your query (0.0-1.0)
-- **AI Insight:** Why this content was recommended
-- **Metadata:** Genre, year, rating, language
+**What to Test:**
+- Query accuracy and relevance
+- Response time (should be 2-5 seconds)
+- Result diversity
+- Multi-language queries (10 supported languages)
+- Edge cases (vague queries, typos, mixed languages)
 
 ---
 
 ### 2. AI Recommendations
 
 **What It Does:**
-Get personalized content suggestions based on your viewing history, time of day, and preferences.
+Generates personalized content suggestions based on your viewing history, preferences, time of day, and cultural context.
 
 **Cost:** 5 credits per request
 
 **How to Use:**
 
 **Web:**
-1. Navigate to Home → AI Recommendations
-2. Click "Get Recommendations"
-3. View personalized suggestions
+1. Navigate to Home
+2. Find "AI Picks for You" section
+3. Click "Get New Recommendations"
 
-**Mobile/tvOS:**
-1. Home tab → "AI Picks for You"
-2. Tap to load recommendations
-3. Browse suggestions
+**Mobile:**
+1. Home tab > "AI Picks for You"
+2. Pull down to refresh recommendations
+
+**tvOS:**
+1. Navigate to "For You" row on Home
+2. Select "Refresh AI Picks"
 
 **Personalization Factors:**
 
-- **Viewing History:** What you've watched recently
-- **Time of Day:** Morning, afternoon, evening preferences
-- **Day of Week:** Weekday vs. weekend content
-- **Mood Context:** Detected from recent activity
-- **Cultural Events:** Jewish holidays, Israeli events
-- **User Preferences:** Explicitly set preferences
+| Factor | Description |
+|--------|-------------|
+| **Viewing History** | Last 30 days of watched content |
+| **Time of Day** | Morning, afternoon, evening preferences |
+| **Day of Week** | Weekday vs. weekend content |
+| **Cultural Events** | Jewish holidays, Israeli events |
+| **Explicit Preferences** | Settings > Preferences selections |
+| **Mood Context** | Detected from recent activity patterns |
 
 **Context Modes:**
 
-| Context | When | Recommended For |
-|---------|------|----------------|
-| **Morning** | 6am-12pm | News, educational, light content |
-| **Evening** | 6pm-11pm | Entertainment, movies, series |
-| **Weekend** | Sat-Sun | Family content, longer format |
-| **Holiday** | Jewish holidays | Holiday-appropriate content |
+| Mode | When Active | Content Type |
+|------|-------------|--------------|
+| **Morning** | 6:00 AM - 12:00 PM | News, educational, light |
+| **Afternoon** | 12:00 PM - 6:00 PM | Varied, documentaries |
+| **Evening** | 6:00 PM - 11:00 PM | Entertainment, movies |
+| **Late Night** | 11:00 PM - 6:00 AM | Relaxing, shorter content |
+| **Weekend** | Saturday - Sunday | Family, longer format |
+| **Holiday** | Jewish holidays | Holiday-appropriate |
 
-**How to Get Better Recommendations:**
-
-1. **Watch More Content:**
-   AI learns from your viewing patterns
-
-2. **Set Preferences:**
-   Settings → Preferences → Content Types
-
-3. **Use Feedback:**
-   Thumbs up/down on recommendations
-
-4. **Update Context:**
-   Select mood/context before requesting
-
-**Example Use Cases:**
-
-- "What should I watch tonight?" → Evening recommendations
-- "Family movie for Shabbat" → Weekend + family context
-- "Educational content for kids" → Morning + educational
-- "Something to relax after work" → Evening + relaxing
+**What to Test:**
+- Recommendation relevance to your preferences
+- Diversity of suggestions (not repetitive)
+- Context awareness (time, day, holidays)
+- Refresh frequency and new content discovery
+- Cross-platform consistency
 
 ---
 
-### 3. Auto Catch-Up
+### 3. Live Dubbing (Real-Time Translation)
 
 **What It Does:**
-AI-generated summaries of missed live TV content so you can quickly understand what happened.
+Translates live TV audio in real-time, allowing you to watch Hebrew content with dubbed audio in your preferred language.
+
+**Cost:** 1 credit per second (60 credits per minute)
+
+**Supported Languages:**
+- Hebrew to English
+- Hebrew to Spanish
+- Hebrew to French
+- Hebrew to Russian
+- Hebrew to Arabic
+- Additional languages in testing
+
+**How to Use:**
+
+**Web:**
+1. Start watching Live TV
+2. Click the dubbing icon (speech bubble)
+3. Select target language
+4. Dubbing begins automatically
+
+**Mobile:**
+1. Open Live TV player
+2. Tap screen for controls
+3. Tap dubbing icon
+4. Choose language
+
+**tvOS:**
+1. During live TV, press and hold Select
+2. Navigate to "Audio" options
+3. Select "AI Dubbing"
+4. Choose language
+
+**Session Management:**
+- Sessions checkpoint every 30 seconds
+- Pausing stops credit consumption
+- Switching channels ends current session
+- Maximum session length: 1 hour (auto-ends)
+
+**What to Test:**
+- Audio quality and naturalness
+- Sync with video (lip sync)
+- Latency (should be < 3 seconds)
+- Handling of rapid speech
+- Background noise handling
+- Multiple speakers detection
+- Credit tracking accuracy
+
+**Important Notes:**
+- Live dubbing is credit-intensive
+- 30 minutes = 1,800 credits (36% of your allocation)
+- Use strategically for important content
+
+---
+
+### 4. Auto Catch-Up
+
+**What It Does:**
+Generates AI summaries of live TV content you missed, so you can quickly understand what happened.
 
 **Cost:** 15 credits per summary
 
@@ -178,376 +353,402 @@ AI-generated summaries of missed live TV content so you can quickly understand w
 1. Navigate to Live TV
 2. Select a channel
 3. Click "Catch Me Up" button
-4. Review summary and key moments
+4. Specify time range (default: 30 minutes)
+5. View generated summary
 
-**Mobile/tvOS:**
+**Mobile:**
 1. Go to channel guide
-2. Long-press on channel
+2. Long-press on a channel
 3. Select "Auto Catch-Up"
-4. Read summary
+4. Choose time range
+
+**tvOS:**
+1. On channel, press and hold Select
+2. Choose "What Did I Miss?"
+3. Select time period
+
+**Summary Options:**
+
+| Type | Description | Best For |
+|------|-------------|----------|
+| **Brief** | 2-3 sentence overview | Quick updates |
+| **Detailed** | Full summary with timeline | In-depth understanding |
 
 **What You Get:**
-
-- **Summary:** 2-3 paragraph overview of content
-- **Key Moments:** Timeline of important events
-- **Topics:** Main subjects discussed
-- **Speakers:** Who said what (when available)
-- **Duration:** Time period covered (default: 30 minutes)
-
-**Summary Lengths:**
-
-| Length | Use Case | Credits |
-|--------|----------|---------|
-| **Brief** | Quick update (2-3 sentences) | 15 |
-| **Detailed** | Full summary with context | 15 |
+- Summary paragraph (2-3 paragraphs)
+- Key moments timeline
+- Main topics discussed
+- Speaker identification (when available)
+- Duration covered
 
 **Best Use Cases:**
-
-✅ **Good:**
-- News programs you missed
+- News programs
 - Sports events in progress
-- Live debates or discussions
+- Live debates and discussions
 - Breaking news coverage
 
-❌ **Not Ideal:**
-- Entertainment shows (spoilers!)
-- Movies or series (use regular search)
-- Very recent content (<5 minutes)
-
-**Tips:**
-
-1. **Optimal Timing:**
-   Best for content 10-60 minutes old
-
-2. **Check Topics First:**
-   Summary shows topics before you spend credits
-
-3. **Use for News:**
-   Most effective for news and current events
-
-4. **Save Credits:**
-   Don't use for entertainment content you plan to watch fully
+**What to Test:**
+- Summary accuracy
+- Key moment identification
+- Topic extraction quality
+- Speaker attribution
+- Multi-language support
+- Generation time (should be < 10 seconds)
 
 ---
 
-## Credit Management
+## Features Not Available
 
-### Understanding Credits
+The following features are **NOT** included in Beta 500:
 
-**Initial Grant:** 500 credits (one-time)
+### Not Available in Beta
 
-**Credit Costs:**
-- AI Search: 10 credits
-- AI Recommendations: 5 credits
-- Auto Catch-Up: 15 credits
+| Feature | Status | Notes |
+|---------|--------|-------|
+| **VOD Dubbing** | Coming Q2 2026 | Movies/series full dubbing |
+| **AI Subtitles** | In development | Auto-generated captions |
+| **Voice Commands** | Planned | "Show me comedies" via voice |
+| **AI Chat Assistant** | Planned | Conversational help |
+| **Personalized Trailers** | Planned | AI-edited preview clips |
+| **Content Summarization** | Limited | Only live TV, not VOD |
 
-**Example Usage:**
-- 50 AI searches = 500 credits
-- 100 recommendations = 500 credits
-- 33 catch-up summaries = 495 credits
-- Mix: 20 searches + 40 recommendations + 10 catch-ups = 550 credits
+### Standard Features (Always Available)
 
-### Checking Balance
+These features do NOT require credits:
 
-**Real-Time Balance:**
-```
-Web: Top-right icon shows "🪙 450"
-Mobile: Settings → Credits → "450 credits remaining"
-tvOS: Main menu → "450 AI Credits"
-```
+- Regular search (keyword-based)
+- All content playback (VOD, Live TV, Radio)
+- Standard recommendations (algorithmic)
+- User profiles and settings
+- Watchlist and favorites
+- Download for offline (mobile)
+- Parental controls
+- Multi-language UI (10 languages)
+- Standard subtitles
+- Audio tracks selection
 
-**Balance Notifications:**
-- 50 credits: "You have 50 AI credits remaining"
-- 20 credits: "Low on credits! Only 20 left"
-- 10 credits: "Critical: Only 10 credits remaining"
-- 0 credits: "No credits available. AI features disabled."
+---
 
-### Credit Optimization Strategies
+## Testing Guidelines
 
-**1. Use AI Search Strategically:**
-- Use for complex queries only
-- Use regular search for simple keyword searches
-- Save 10 credits per avoided AI search
+### Priority Testing Areas
 
-**2. Request Recommendations Wisely:**
-- Request once per session, not repeatedly
-- Save previous recommendations
-- Use context modes to get better results
+**High Priority (Test Daily):**
+1. AI Search - Different query styles
+2. Live Dubbing - Various content types
+3. Credit tracking accuracy
 
-**3. Catch-Up Selectively:**
-- Use for news and important events only
-- Skip for entertainment content
-- Most expensive feature (15 credits)
+**Medium Priority (Test Weekly):**
+1. AI Recommendations - All context modes
+2. Auto Catch-Up - Different time ranges
+3. Cross-platform consistency
 
-**4. Cache Results:**
-- Web app caches search results locally
-- Avoid re-searching the same query
+**Low Priority (Test Occasionally):**
+1. Edge cases (no results, errors)
+2. Unusual queries
+3. Rapid consecutive requests
 
-**Example Budget:**
-```
-Daily usage (moderate):
-- 2 AI searches/day = 20 credits
-- 1 recommendation/day = 5 credits
-- 1 catch-up/week ≈ 2 credits/day
-Total: ~27 credits/day
+### What to Report
 
-500 credits ÷ 27 credits/day = ~18 days
-```
+**Always Report:**
+- Crashes or app freezes
+- Incorrect credit deductions
+- AI errors or hallucinations
+- Offensive or inappropriate AI responses
+- Security concerns
+- Performance issues (slow responses)
 
-### What Happens When Credits Run Out?
+**Include in Reports:**
+- Date and time
+- Platform (Web/iOS/Android/tvOS)
+- Steps to reproduce
+- Expected vs. actual behavior
+- Screenshots or screen recordings
+- Credit balance before/after
 
-**Graceful Degradation:**
-1. AI features show "Insufficient Credits" message
-2. Fallback to regular search automatically
-3. Recommendations switch to algorithmic (non-AI)
-4. Catch-up feature unavailable
+### Quality Metrics We're Tracking
 
-**No Impact On:**
-- Regular content browsing
-- Standard search
-- Video playback
-- All non-AI features
+| Metric | Target | How You Help |
+|--------|--------|--------------|
+| **Search Relevance** | > 85% relevant results | Rate search results |
+| **Dubbing Quality** | < 3 sec latency | Report sync issues |
+| **Recommendation Accuracy** | > 70% useful | Use thumbs up/down |
+| **System Uptime** | 99.5% | Report outages |
+| **Credit Accuracy** | 100% correct | Report discrepancies |
+
+---
+
+## Acquiring More Credits
+
+### Current Options
+
+**1. Feedback Bonuses:**
+- Complete feedback survey: +100 credits
+- Report confirmed bug: +50 credits
+- Submit feature suggestion: +25 credits
+
+**2. Testing Milestones:**
+- First 100 AI searches: +200 credits
+- First 50 recommendations: +100 credits
+- First 30 minutes dubbing: +300 credits
+- First 10 catch-ups: +150 credits
+
+**3. Referral Program:**
+- Refer another beta user: +500 credits (upon their activation)
+- Limited to 3 referrals
+
+### Planned Options (Coming Soon)
+
+**Credit Packs (Expected Q2 2026):**
+- 1,000 credits - $4.99
+- 5,000 credits - $19.99
+- 10,000 credits - $34.99
+
+**Subscription Credit Allowance:**
+- Future subscription tiers will include monthly credit allocations
+
+### Request Emergency Credits
+
+If you've depleted credits but have critical testing to complete:
+
+1. Email beta@bayitplus.com
+2. Subject: "Beta 500 Credit Request - [Your Email]"
+3. Include: Current balance, testing completed, specific testing needs
+4. Requests reviewed within 24-48 hours
+5. Emergency grants: Up to 1,000 credits (one-time)
 
 ---
 
 ## Troubleshooting
 
-### AI Search Issues
+### Common Issues
 
-**Problem:** Search returns no results
+**"Insufficient Credits" Error:**
+- Check your balance (Settings > Beta Program)
+- Verify you have enough for the action
+- Use non-AI alternatives as fallback
 
-**Solutions:**
-- Try rephrasing your query
-- Be more specific
-- Check spelling
+**AI Search Returns No Results:**
+- Rephrase your query with more specifics
+- Try different language
+- Check for typos
 - Use fewer filters
 
-**Problem:** Results not relevant
-
-**Solutions:**
-- Add more context to query
-- Specify content type (movies, series, etc.)
-- Include time period (2020s, recent, etc.)
-- Mention specific attributes (genre, origin)
-
-**Problem:** "Insufficient Credits" error
-
-**Solutions:**
-- Check balance (must have ≥10 credits)
-- Use regular search as fallback
-- Wait for credit refill (future feature)
-
-### AI Recommendations Issues
-
-**Problem:** Recommendations not personalized
-
-**Solutions:**
-- Watch more content to build history
-- Set preferences in Settings
-- Use feedback (thumbs up/down)
-- Select appropriate context mode
-
-**Problem:** Same recommendations repeated
-
-**Solutions:**
-- Clear recommendation cache
-- Change context mode
-- Update preferences
-- Wait for new content to be added
-
-### Auto Catch-Up Issues
-
-**Problem:** "No content available"
-
-**Solutions:**
-- Wait for more content (needs ≥5 minutes)
-- Check channel is live
-- Try different channel
-
-**Problem:** Summary too brief
-
-**Solutions:**
-- Request "detailed" summary mode
-- Wait for more content to accumulate
-- Check if channel has transcript available
-
-### General AI Feature Issues
-
-**Problem:** Features loading slowly
-
-**Solutions:**
+**Live Dubbing Not Starting:**
+- Verify credits > 60 (1 minute minimum)
 - Check internet connection
-- AI requests take 2-5 seconds (normal)
-- Avoid rapid successive requests
+- Try refreshing the stream
+- Ensure channel supports dubbing
 
-**Problem:** "Service Unavailable" error
+**Recommendations Not Personalized:**
+- Build more viewing history
+- Update preferences in Settings
+- Use feedback (thumbs up/down)
+- Try different context modes
 
-**Solutions:**
-- AI service temporarily down
+**Catch-Up "No Content Available":**
+- Content needs > 5 minutes of history
+- Verify channel is live
+- Some channels may not support catch-up
+
+**Service Unavailable:**
+- AI services may have temporary outages
 - Try again in 1-2 minutes
-- Fallback features still work
+- Check status.bayitplus.com
+- Non-AI features still work
+
+### Error Codes
+
+| Code | Meaning | Action |
+|------|---------|--------|
+| `BETA_001` | Insufficient credits | Check balance |
+| `BETA_002` | Not enrolled in beta | Contact support |
+| `BETA_003` | Beta expired | Program ended |
+| `AI_001` | AI service unavailable | Retry later |
+| `AI_002` | Query too long | Shorten query |
+| `AI_003` | Content not supported | Try different content |
+| `DUB_001` | Dubbing unavailable | Channel not supported |
+| `DUB_002` | Session timeout | Start new session |
 
 ---
 
-## Best Practices
-
-### 1. Start with AI Search
-
-**First Week:**
-- Experiment with different query styles
-- Learn what works best
-- Build understanding of AI capabilities
-
-### 2. Use Recommendations Daily
-
-**Morning Routine:**
-- Check "Morning Picks"
-- Quick 5-credit investment
-- Discover new content
-
-### 3. Catch-Up Strategically
-
-**News-Focused:**
-- Use primarily for news programs
-- Skip entertainment content
-- Most valuable for current events
-
-### 4. Monitor Credits
-
-**Weekly Check-In:**
-- Review balance every few days
-- Adjust usage based on remaining credits
-- Plan for credit longevity
-
-### 5. Provide Feedback
-
-**Help Improve:**
-- Use thumbs up/down on results
-- Report issues via Settings → Feedback
-- Share suggestions for improvement
-
----
-
-## Privacy and Data
+## Privacy & Data
 
 ### What AI Features Access
 
-**Search Queries:**
-- Query text (not stored permanently)
+**AI Search:**
+- Your search query text
 - Selected filters
-- Result interactions (clicks)
+- Result click behavior
+- Query language
 
-**Recommendations:**
+**AI Recommendations:**
 - Viewing history (last 30 days)
-- Explicitly set preferences
-- Time-based context
+- Explicit preferences
+- Time and context data
+- Feedback (thumbs up/down)
 
-**Catch-Up:**
-- Channel selection
-- Requested time range
+**Live Dubbing:**
+- Audio stream (processed in real-time, not stored)
+- Selected language
+- Session duration
+
+**Auto Catch-Up:**
+- Channel and time selection
 - Summary preferences
+- Generated summaries (cached 24 hours)
 
-### What AI Features DON'T Access
+### What We DON'T Access
 
-- Personal messages or chats
-- Payment information
-- Device location (beyond time zone)
+- Personal messages or communications
+- Payment card details (handled by Stripe)
+- Precise location (only timezone)
 - Contact lists
 - Other apps' data
+- Microphone (except for voice search, if enabled)
 
 ### Data Retention
 
-- **Queries:** 7 days (for optimization)
-- **Results:** Not stored server-side
-- **Interactions:** 30 days (analytics)
-- **Credit History:** Permanent (billing)
+| Data Type | Retention | Purpose |
+|-----------|-----------|---------|
+| Search queries | 7 days | Optimization |
+| Recommendations | Session only | Personalization |
+| Dubbing audio | Not stored | Real-time only |
+| Credit transactions | Permanent | Billing audit |
+| Feedback | Permanent | Product improvement |
 
-### Opt-Out
+### Opt-Out Options
 
 **Disable AI Features:**
-Settings → Privacy → AI Features → Disable
+Settings > Privacy > AI Features > Disable All
 
-**Note:** Credits remain but features inaccessible.
+**Disable Specific Features:**
+Settings > Privacy > AI Features > [Feature Toggle]
+
+**Delete AI Data:**
+Settings > Privacy > Delete My AI Data
+(Removes history used for personalization)
+
+---
+
+## Feedback & Support
+
+### How to Provide Feedback
+
+**In-App (Recommended):**
+1. Settings > Beta Program > Send Feedback
+2. Rate features (1-5 stars)
+3. Write detailed comments
+4. Attach screenshots (optional)
+
+**Email:**
+beta@bayitplus.com
+
+**Monthly Surveys:**
+Watch for survey invitations via email
+
+### What to Include
+
+**Bug Reports:**
+- Platform and app version
+- Steps to reproduce
+- Expected vs. actual behavior
+- Screenshots/recordings
+- Credit balance before/after
+
+**Feature Feedback:**
+- Which feature
+- What worked well
+- What didn't work
+- Suggestions for improvement
+- Use case examples
+
+### Support Channels
+
+| Channel | Use For | Response Time |
+|---------|---------|---------------|
+| **In-App Feedback** | General feedback | 2-3 days |
+| **beta@bayitplus.com** | Detailed issues, credit requests | 24-48 hours |
+| **support@bayitplus.com** | Account issues | 24 hours |
+| **community.bayitplus.com** | Discussions | Community-driven |
+| **status.bayitplus.com** | Service status | Real-time |
+
+### Beta Tester Community
+
+Join fellow beta testers:
+- Community forum: community.bayitplus.com/beta500
+- Discord: discord.gg/bayitplus-beta
+- Monthly beta tester calls (optional)
 
 ---
 
 ## FAQ
 
-**Q: Can I get more credits when I run out?**
-A: Currently, Beta 500 is a one-time grant. Future credit refills may be available.
+**Q: Why is it called "Beta 500"?**
+A: Limited to 500 users, each receiving 5,000 credits.
 
-**Q: Do credits expire?**
-A: No, credits don't expire during Beta 500 program.
+**Q: Can I get more than 5,000 credits?**
+A: Yes, through feedback bonuses, milestones, and referrals. Emergency requests also available.
 
-**Q: Can I share credits with family members?**
-A: No, credits are per-user and non-transferable.
+**Q: Do unused credits roll over?**
+A: Credits don't expire during the 90-day beta period.
 
-**Q: What happens after Beta 500 ends?**
-A: AI features will transition to subscription or pay-per-use model. Beta participants will receive priority access and special pricing.
+**Q: Can I share my account with family?**
+A: No, beta accounts are individual. Family sharing planned for public launch.
 
-**Q: How accurate is AI Search?**
-A: AI Search has 85-90% relevance accuracy based on internal testing. Results improve with more specific queries.
+**Q: What happens when Beta 500 ends?**
+A: AI features transition to subscription/pay-per-use model. Beta participants receive priority access and special pricing.
 
-**Q: Can AI Search find content in all languages?**
-A: Yes, AI Search supports queries in all 10 platform languages and can find content in any language.
-
-**Q: Do I need internet for AI features?**
-A: Yes, AI features require active internet connection.
+**Q: Is AI dubbing available for all content?**
+A: Currently only Live TV. VOD dubbing coming Q2 2026.
 
 **Q: Can I use AI features offline?**
-A: No, AI processing happens server-side and requires connectivity.
+A: No, AI features require internet connection.
 
-**Q: Are AI features available on all platforms?**
-A: Yes - Web, iOS, Android, and tvOS all support Beta 500 features.
+**Q: Are AI features available in all countries?**
+A: Yes, but some content may have regional restrictions.
 
-**Q: How do I report AI errors or inappropriate results?**
-A: Settings → Feedback → Report Issue. Include query and result details.
+**Q: How accurate is AI Search?**
+A: ~85-90% relevance accuracy. Results improve with specific queries.
 
----
-
-## Feedback and Support
-
-### How to Provide Feedback
-
-**In-App:**
-1. Settings → Beta Program → Send Feedback
-2. Rate features (1-5 stars)
-3. Write detailed feedback
-
-**Email:**
-beta@bayitplus.com
-
-**What to Include:**
-- Feature used (Search, Recommendations, Catch-Up)
-- What worked well
-- What didn't work
-- Suggestions for improvement
-- Example queries (if applicable)
-
-### Getting Help
-
-**Documentation:**
-- [AI Features Overview](../features/AI_FEATURES_OVERVIEW.md)
-- [AI API Reference](../api/AI_API_REFERENCE.md)
-- [AI Troubleshooting](AI_TROUBLESHOOTING.md)
-
-**Support Channels:**
-- Email: support@bayitplus.com
-- Community: community.bayitplus.com
-- GitHub Issues (for developers)
+**Q: Why is Live Dubbing so expensive in credits?**
+A: Real-time AI translation is computationally intensive, requiring continuous processing.
 
 ---
 
-## Related Documentation
+## Important Dates
 
-- [AI Features Overview](../features/AI_FEATURES_OVERVIEW.md) - Technical overview
-- [AI API Reference](../api/AI_API_REFERENCE.md) - Developer documentation
-- [Credit System](../technical/CREDIT_SYSTEM.md) - Architecture details
-- [AI Troubleshooting](AI_TROUBLESHOOTING.md) - Common issues
+| Date | Event |
+|------|-------|
+| **Your Enrollment** | Check Settings > Beta Program |
+| **90 Days Later** | Your beta period ends |
+| **Monthly** | Feedback survey sent |
+| **Q2 2026** | Expected public launch |
 
 ---
 
-**Document Status:** ✅ Complete
-**Last Updated:** 2026-01-30
+## Quick Reference Card
+
+### Credit Costs
+- AI Search: **10 credits** per query
+- AI Recommendations: **5 credits** per request
+- Live Dubbing: **1 credit** per second
+- Auto Catch-Up: **15 credits** per summary
+
+### Balance Thresholds
+- Healthy: **> 500 credits** (Green)
+- Low: **100-500 credits** (Yellow)
+- Critical: **< 100 credits** (Red)
+
+### Support
+- Email: **beta@bayitplus.com**
+- Status: **status.bayitplus.com**
+- Community: **community.bayitplus.com**
+
+---
+
+**Document Status:** Complete
+**Last Updated:** 2026-02-01
+**Version:** 2.0
 **Maintained by:** Beta Program Team
 **Next Review:** 2026-02-15
