@@ -252,8 +252,22 @@ async def create_audio_stream_with_quota_updates(websocket, session, user):
 
     try:
         while True:
-            audio_chunk = await websocket.receive_bytes()
+            # Use receive() to handle both binary (audio) and text (pong) messages
+            message = await websocket.receive()
             current = asyncio.get_event_loop().time()
+
+            # Handle text messages (e.g., pong responses) - skip them
+            if message.get("type") == "websocket.receive":
+                if "text" in message:
+                    # Text message (pong response) - just ignore it
+                    continue
+                elif "bytes" in message:
+                    audio_chunk = message["bytes"]
+                else:
+                    continue
+            else:
+                # Disconnect or other message type
+                break
 
             # Send heartbeat ping at configured interval
             if current - last_ping >= heartbeat_interval:
