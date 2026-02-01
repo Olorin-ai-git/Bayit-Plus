@@ -340,6 +340,11 @@ class Settings(BaseSettings):
         env="SUBTITLE_SLANG_SYNTHESIS_CACHE_MAX_SIZE",
         description="Maximum in-memory cache entries for slang synthesis text"
     )
+    SUBTITLE_ENGREW_CACHE_MAX_SIZE: int = Field(
+        default=10000,
+        env="SUBTITLE_ENGREW_CACHE_MAX_SIZE",
+        description="Maximum in-memory cache entries for engrew text"
+    )
     SUBTITLE_AI_MAX_TOKENS: int = Field(
         default=4096,
         env="SUBTITLE_AI_MAX_TOKENS",

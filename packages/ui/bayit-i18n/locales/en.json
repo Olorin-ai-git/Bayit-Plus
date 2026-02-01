@@ -507,7 +507,10 @@
       "emptyMessage": "No content found",
       "confirmDelete": "Delete this content?",
       "confirmDeleteSingle": "Are you sure you want to delete this content? This action cannot be undone.",
+      "confirmDeleteById": "Are you sure you want to delete content with ID {{id}}? This will delete the content, all associated files from storage, and all episodes if this is a series. This action cannot be undone.",
       "confirmBatchDelete": "Are you sure you want to delete {{count}} item(s)? This action cannot be undone.",
+      "deleteByIdPlaceholder": "Enter content ID to delete...",
+      "deleteById": "Delete by ID",
       "batchDeleteSuccess": "Successfully deleted {{count}} item(s)",
       "batchDeletePartial": "Deleted {{success}} item(s), but {{failed}} item(s) failed",
       "selectedItems": "{{count}} item(s) selected",
@@ -6053,8 +6056,13 @@
       },
       "shoresh": {
         "title": "Shoresh (Root Words)",
-        "description": "Hebrew words with root analysis: word [root]",
+        "description": "Hebrew words with root letters highlighted in bold",
         "unavailableReason": "Root word analysis not available for this content"
+      },
+      "engrew": {
+        "title": "Engrew (English+Hebrew)",
+        "description": "Hebrew with English word injections in Hebrew letters",
+        "unavailableReason": "Engrew processing not available for this content"
       }
     },
     "englishMode": {

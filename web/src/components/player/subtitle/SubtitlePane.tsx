@@ -6,6 +6,8 @@
 import { View, Text, StyleSheet, Platform } from 'react-native'
 import { SubtitleCue, SubtitleSettings, getLanguageInfo } from '@/types/subtitle'
 import { colors, borderRadius } from '@olorin/design-tokens'
+import { isShoreshJson } from '@/utils/shoreshHighlight'
+import ShoreshText from './ShoreshText'
 
 interface SubtitlePaneProps {
   cues: SubtitleCue[]
@@ -29,34 +31,51 @@ export default function SubtitlePane({
   return (
     <View style={[styles.pane, isLeft ? styles.leftPane : styles.rightPane]}>
       {cues.length > 0 ? (
-        cues.map((cue) => (
-          <View
-            key={`${position}-${cue.index}-${cue.start_time}`}
-            style={[
-              styles.cueContainer,
-              isLeft ? styles.leftCueContainer : styles.rightCueContainer,
-              {
-                backgroundColor: settings.backgroundColor,
-                opacity: settings.opacity ?? 1,
-              },
-            ]}
-          >
-            <Text
+        cues.map((cue) => {
+          const isShoresh = isShoreshJson(cue.text)
+          return (
+            <View
+              key={`${position}-${cue.index}-${cue.start_time}`}
               style={[
-                styles.cueText,
+                styles.cueContainer,
+                isLeft ? styles.leftCueContainer : styles.rightCueContainer,
                 {
-                  color: settings.textColor,
-                  fontSize,
-                  fontFamily: settings.fontFamily,
-                  textAlign: isRTL ? 'right' : 'left',
-                  writingDirection: isRTL ? 'rtl' : 'ltr',
+                  backgroundColor: settings.backgroundColor,
+                  opacity: settings.opacity ?? 1,
                 },
               ]}
             >
-              {cue.text}
-            </Text>
-          </View>
-        ))
+              {isShoresh ? (
+                <ShoreshText
+                  text={cue.text}
+                  color={settings.textColor}
+                  style={{
+                    fontSize,
+                    fontFamily: settings.fontFamily,
+                    textAlign: isRTL ? 'right' : 'left',
+                    writingDirection: isRTL ? 'rtl' : 'ltr',
+                    lineHeight: 24,
+                  }}
+                />
+              ) : (
+                <Text
+                  style={[
+                    styles.cueText,
+                    {
+                      color: settings.textColor,
+                      fontSize,
+                      fontFamily: settings.fontFamily,
+                      textAlign: isRTL ? 'right' : 'left',
+                      writingDirection: isRTL ? 'rtl' : 'ltr',
+                    },
+                  ]}
+                >
+                  {cue.text}
+                </Text>
+              )}
+            </View>
+          )
+        })
       ) : (
         <View
           style={styles.emptyPane}

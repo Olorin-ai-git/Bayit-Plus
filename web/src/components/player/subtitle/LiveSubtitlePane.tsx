@@ -6,6 +6,8 @@
 import { View, Text, StyleSheet, Platform } from 'react-native'
 import { LiveSubtitleCue, getLanguageInfo } from '@/types/subtitle'
 import { colors, borderRadius } from '@olorin/design-tokens'
+import { isShoreshJson } from '@/utils/shoreshHighlight'
+import ShoreshText from './ShoreshText'
 
 interface LiveSubtitlePaneProps {
   cues: LiveSubtitleCue[]
@@ -27,6 +29,9 @@ export default function LiveSubtitlePane({
   // Show only the most recent cue to avoid stacking
   const visibleCue = cues.length > 0 ? cues[cues.length - 1] : null
 
+  // Check if the text is shoresh JSON format
+  const isShoresh = visibleCue?.text ? isShoreshJson(visibleCue.text) : false
+
   return (
     <View style={[styles.pane, isLeft ? styles.leftPane : styles.rightPane]}>
       {visibleCue ? (
@@ -36,18 +41,30 @@ export default function LiveSubtitlePane({
             isLeft ? styles.leftCueContainer : styles.rightCueContainer,
           ]}
         >
-          <Text
-            style={[
-              styles.cueText,
-              {
+          {isShoresh ? (
+            <ShoreshText
+              text={visibleCue.text}
+              style={{
                 fontSize,
                 textAlign: isRTL ? 'right' : 'left',
                 writingDirection: isRTL ? 'rtl' : 'ltr',
-              },
-            ]}
-          >
-            {visibleCue.text}
-          </Text>
+                lineHeight: 26,
+              }}
+            />
+          ) : (
+            <Text
+              style={[
+                styles.cueText,
+                {
+                  fontSize,
+                  textAlign: isRTL ? 'right' : 'left',
+                  writingDirection: isRTL ? 'rtl' : 'ltr',
+                },
+              ]}
+            >
+              {visibleCue.text}
+            </Text>
+          )}
         </View>
       ) : (
         <View

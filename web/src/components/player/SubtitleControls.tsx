@@ -480,6 +480,7 @@ export default function SubtitleControls({
           currentMode={hebrewMode}
           hasNikud={hebrewTrack?.has_nikud_version || false}
           hasShoresh={hebrewTrack?.has_shoresh_version || false}
+          hasEngrew={hebrewTrack?.has_engrew_version || false}
           contentId={contentId}
           portalContainer={containerRef?.current}
           onClose={() => setShowHebrewModePicker(false)}

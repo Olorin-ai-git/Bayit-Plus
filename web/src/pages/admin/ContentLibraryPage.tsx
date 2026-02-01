@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react'
 import { View, StyleSheet, ScrollView, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { RefreshCw, Search, Filter, Merge } from 'lucide-react'
+import { RefreshCw, Search, Filter, Merge, Trash2 } from 'lucide-react'
 import MergeWizard from '@/components/admin/content/MergeWizard'
 import AISubtitlesPicker from '@/components/player/subtitle/AISubtitlesPicker'
 import EnglishModePickerModal from '@/components/player/subtitle/EnglishModePickerModal'
@@ -65,6 +65,8 @@ export default function ContentLibraryPage() {
   const [showMergeModal, setShowMergeModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [deleteItemId, setDeleteItemId] = useState<string | null>(null)
+  const [deleteByIdInput, setDeleteByIdInput] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
   const [subtitleAIContent, setSubtitleAIContent] = useState<{
     id: string
     title: string
@@ -126,6 +128,34 @@ export default function ContentLibraryPage() {
     setDeleteItemId(null)
   }
 
+  const handleDeleteById = () => {
+    const trimmedId = deleteByIdInput.trim()
+    if (!trimmedId) return
+    // Set the delete item ID to trigger the confirmation modal
+    setDeleteItemId(trimmedId)
+  }
+
+  const confirmDeleteById = async () => {
+    if (!deleteItemId) return
+
+    setIsDeleting(true)
+    try {
+      const result = await adminContentService.deleteContent(deleteItemId)
+      setDeleteItemId(null)
+      setDeleteByIdInput('')
+      refresh()
+      logger.info('Content deleted by ID', {
+        id: deleteItemId,
+        gcsFilesDeleted: result?.gcs_files_deleted,
+        episodesDeleted: result?.episodes_deleted,
+      })
+    } catch (err) {
+      logger.error('Failed to delete content by ID', { error: err, id: deleteItemId })
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   const openMergeWizard = async () => {
     if (selectedIds.length < 2) return
 
@@ -152,6 +182,7 @@ export default function ContentLibraryPage() {
       hasHebrew: false,
       hasNikud: false,
       hasShoresh: false,
+      hasEngrew: false,
       hasEnglish: false,
       hasHeblish: false,
       hasGrammarFlip: false,
@@ -169,6 +200,7 @@ export default function ContentLibraryPage() {
           hasHebrew: !!hebrewTrack,
           hasNikud: hebrewTrack?.has_nikud_version || false,
           hasShoresh: hebrewTrack?.has_shoresh_version || false,
+          hasEngrew: hebrewTrack?.has_engrew_version || false,
           hasEnglish: !!englishTrack,
           hasHeblish: englishTrack?.has_heblish_version || false,
           hasGrammarFlip: englishTrack?.has_grammar_flip_version || false,
@@ -256,6 +288,25 @@ export default function ContentLibraryPage() {
                   showOnlyBetaContent,
                 ].filter(Boolean).length || undefined
               }
+            />
+          </View>
+
+          {/* Delete by ID */}
+          <View style={[styles.deleteByIdRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
+            <View style={styles.deleteByIdInputWrapper}>
+              <GlassInput
+                placeholder={t('admin.content.deleteByIdPlaceholder', 'Enter content ID to delete...')}
+                value={deleteByIdInput}
+                onChangeText={setDeleteByIdInput}
+                icon={<Trash2 size={18} />}
+              />
+            </View>
+            <GlassButton
+              title={t('admin.content.deleteById', 'Delete by ID')}
+              onPress={handleDeleteById}
+              variant="destructive"
+              icon={<Trash2 size={16} />}
+              disabled={!deleteByIdInput.trim() || isDeleting}
             />
           </View>
 
@@ -347,7 +398,11 @@ export default function ContentLibraryPage() {
         visible={!!deleteItemId}
         type="confirm"
         title={t('common.confirmDelete')}
-        message={t('admin.content.confirmDeleteSingle')}
+        message={
+          deleteByIdInput.trim() === deleteItemId
+            ? t('admin.content.confirmDeleteById', { id: deleteItemId })
+            : t('admin.content.confirmDeleteSingle')
+        }
         buttons={[
           {
             text: t('common.cancel'),
@@ -355,9 +410,9 @@ export default function ContentLibraryPage() {
             onPress: cancelSingleDelete,
           },
           {
-            text: t('common.delete'),
+            text: isDeleting ? t('common.deleting', 'Deleting...') : t('common.delete'),
             style: 'destructive',
-            onPress: confirmSingleDelete,
+            onPress: deleteByIdInput.trim() === deleteItemId ? confirmDeleteById : confirmSingleDelete,
           },
         ]}
         onClose={cancelSingleDelete}
@@ -372,6 +427,7 @@ export default function ContentLibraryPage() {
           hasHebrew={subtitleAIContent.hasHebrew}
           hasNikud={subtitleAIContent.hasNikud}
           hasShoresh={subtitleAIContent.hasShoresh}
+          hasEngrew={subtitleAIContent.hasEngrew}
           contentId={subtitleAIContent.id}
           onClose={() => setSubtitleAIContent(null)}
           onModeSelect={() => {
@@ -390,6 +446,7 @@ export default function ContentLibraryPage() {
                 hasHebrew: !!hebrewTrack,
                 hasNikud: hebrewTrack?.has_nikud_version || false,
                 hasShoresh: hebrewTrack?.has_shoresh_version || false,
+                hasEngrew: hebrewTrack?.has_engrew_version || false,
                 hasEnglish: !!englishTrack,
                 hasHeblish: englishTrack?.has_heblish_version || false,
                 hasGrammarFlip: englishTrack?.has_grammar_flip_version || false,
@@ -450,6 +507,7 @@ export default function ContentLibraryPage() {
                 hasHebrew: !!hebrewTrack,
                 hasNikud: hebrewTrack?.has_nikud_version || false,
                 hasShoresh: hebrewTrack?.has_shoresh_version || false,
+                hasEngrew: hebrewTrack?.has_engrew_version || false,
                 hasEnglish: !!englishTrack,
                 hasHeblish: englishTrack?.has_heblish_version || false,
                 hasGrammarFlip: englishTrack?.has_grammar_flip_version || false,
@@ -500,6 +558,16 @@ const styles = StyleSheet.create({
   },
   searchWrapper: {
     flex: 1,
+  },
+  deleteByIdRow: {
+    flexDirection: 'row',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+    alignItems: 'center',
+  },
+  deleteByIdInputWrapper: {
+    flex: 1,
+    maxWidth: 400,
   },
   tabContainer: {
     flexDirection: 'row',

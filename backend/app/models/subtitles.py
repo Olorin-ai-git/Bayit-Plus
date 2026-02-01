@@ -23,6 +23,7 @@ class SubtitleCueModel(BaseModel):
     text_heblish: Optional[str] = None  # English with Hebrew word injections
     text_grammar_flip: Optional[str] = None  # Hebrew words with English syntax
     text_slang_synthesis: Optional[str] = None  # Israeli/American slang blend
+    text_engrew: Optional[str] = None  # Hebrew with English words in Hebrew letters
 
 
 class SubtitleTrackDoc(Document):
@@ -60,6 +61,10 @@ class SubtitleTrackDoc(Document):
     # Slang Synthesis version (Israeli/American slang blend)
     has_slang_synthesis_version: bool = False
     slang_synthesis_generated_at: Optional[datetime] = None
+
+    # Engrew version (Hebrew with English in Hebrew letters)
+    has_engrew_version: bool = False
+    engrew_generated_at: Optional[datetime] = None
 
     # Metadata
     is_default: bool = False

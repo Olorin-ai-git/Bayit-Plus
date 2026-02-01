@@ -33,6 +33,7 @@ interface ActiveJobsResponse {
   heblish_job: JobResponse | null
   grammar_flip_job: JobResponse | null
   slang_synthesis_job: JobResponse | null
+  engrew_job: JobResponse | null
 }
 
 interface CancelJobResponse {
@@ -84,6 +85,9 @@ export const subtitlesService = {
 
   generateSlangSynthesis: (contentId: string, language: string = 'en', force: boolean = false): Promise<JobResponse> =>
     api.post(`/subtitles/${contentId}/slang-synthesis`, null, { params: { language, force } }),
+
+  generateEngrew: (contentId: string, language: string = 'he', force: boolean = false): Promise<JobResponse> =>
+    api.post(`/subtitles/${contentId}/engrew`, null, { params: { language, force } }),
 
   // Job management
   getJobStatus: (jobId: string): Promise<JobResponse> =>

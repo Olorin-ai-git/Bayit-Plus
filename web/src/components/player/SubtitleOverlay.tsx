@@ -8,6 +8,8 @@ import { View, Text, StyleSheet, Platform } from 'react-native'
 import { SubtitleCue, SubtitleSettings, getLanguageInfo, SplitLanguages } from '@/types/subtitle'
 import { useSafeAreaInsets } from '@bayit/shared-hooks/useSafeArea'
 import SplitSubtitleOverlay from './subtitle/SplitSubtitleOverlay'
+import { isShoreshJson } from '@/utils/shoreshHighlight'
+import ShoreshText from './subtitle/ShoreshText'
 
 interface SubtitleOverlayProps {
   currentTime: number
@@ -97,33 +99,50 @@ export default function SubtitleOverlay({
       ]}
       pointerEvents="none"
     >
-      {activeCues.map((cue) => (
-        <View
-          key={cue.index}
-          style={[
-            styles.cueContainer,
-            {
-              backgroundColor: settings.backgroundColor,
-              opacity: settings.opacity ?? 1,
-            }
-          ]}
-        >
-          <Text
+      {activeCues.map((cue) => {
+        const isShoresh = isShoreshJson(cue.text)
+        return (
+          <View
+            key={cue.index}
             style={[
-              styles.cueText,
+              styles.cueContainer,
               {
-                color: settings.textColor,
-                fontSize: getFontSize(),
-                fontFamily: settings.fontFamily,
-                textAlign: isRTL ? 'right' : 'center',
-                writingDirection: isRTL ? 'rtl' : 'ltr',
+                backgroundColor: settings.backgroundColor,
+                opacity: settings.opacity ?? 1,
               }
             ]}
           >
-            {cue.text}
-          </Text>
-        </View>
-      ))}
+            {isShoresh ? (
+              <ShoreshText
+                text={cue.text}
+                color={settings.textColor}
+                style={{
+                  fontSize: getFontSize(),
+                  fontFamily: settings.fontFamily,
+                  textAlign: isRTL ? 'right' : 'center',
+                  writingDirection: isRTL ? 'rtl' : 'ltr',
+                  lineHeight: 28,
+                }}
+              />
+            ) : (
+              <Text
+                style={[
+                  styles.cueText,
+                  {
+                    color: settings.textColor,
+                    fontSize: getFontSize(),
+                    fontFamily: settings.fontFamily,
+                    textAlign: isRTL ? 'right' : 'center',
+                    writingDirection: isRTL ? 'rtl' : 'ltr',
+                  }
+                ]}
+              >
+                {cue.text}
+              </Text>
+            )}
+          </View>
+        )
+      })}
     </View>
   )
 }

@@ -27,6 +27,7 @@ interface ActiveJobsResponse {
   nikud_job: JobStatus | null
   shoresh_job: JobStatus | null
   heblish_job: JobStatus | null
+  engrew_job: JobStatus | null
 }
 
 interface AISubtitlesPickerProps {
@@ -36,6 +37,7 @@ interface AISubtitlesPickerProps {
   hasHebrew?: boolean  // Whether Hebrew subtitles exist at all
   hasNikud: boolean
   hasShoresh: boolean
+  hasEngrew: boolean
   contentId?: string
   portalContainer?: HTMLElement | null  // Container for portal (for fullscreen support)
   onClose: () => void
@@ -75,7 +77,15 @@ const HEBREW_MODE_OPTIONS: ModeOption[] = [
     icon: 'stories',
     titleKey: 'subtitles.hebrewMode.shoresh.title',
     descriptionKey: 'subtitles.hebrewMode.shoresh.description',
-    example: 'הילדים [ילד] הולכים [הלך] לבית [בית] הספר [ספר]',
+    example: 'הי**ל**דים הו**ל**כים לבית הספר',
+    isAI: true,
+  },
+  {
+    mode: 'engrew',
+    icon: 'translate',
+    titleKey: 'subtitles.hebrewMode.engrew.title',
+    descriptionKey: 'subtitles.hebrewMode.engrew.description',
+    example: 'אני הולך לסרף (Surf) על הווייבס (Waves)',
     isAI: true,
   },
 ]
@@ -89,6 +99,7 @@ export default function AISubtitlesPicker({
   hasHebrew = true,  // Default true for player context where modal only shows if Hebrew exists
   hasNikud,
   hasShoresh,
+  hasEngrew,
   contentId,
   portalContainer,
   onClose,
@@ -101,7 +112,7 @@ export default function AISubtitlesPicker({
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const pollingRef = useRef<NodeJS.Timeout | null>(null)
   const [showFirstTimeHint, setShowFirstTimeHint] = useState(false)
-  const [generatingMode, setGeneratingMode] = useState<'nikud' | 'shoresh' | null>(null)
+  const [generatingMode, setGeneratingMode] = useState<'nikud' | 'shoresh' | 'engrew' | null>(null)
   const [generationError, setGenerationError] = useState<string | null>(null)
   const [jobProgress, setJobProgress] = useState<number>(0)
   const [currentJobId, setCurrentJobId] = useState<string | null>(null)
@@ -117,7 +128,7 @@ export default function AISubtitlesPicker({
   }, [])
 
   // Poll job status callback - defined early since it's used by useEffects
-  const pollJobStatus = useCallback(async (jobId: string, mode: 'nikud' | 'shoresh') => {
+  const pollJobStatus = useCallback(async (jobId: string, mode: 'nikud' | 'shoresh' | 'engrew') => {
     try {
       const status = await subtitlesService.getJobStatus(jobId) as JobStatus
       logger.debug(`Job status: ${status.status}`, 'AISubtitlesPicker', { jobId, progress: status.progress })
@@ -172,7 +183,7 @@ export default function AISubtitlesPicker({
   }, [currentJobId, isCancelling, clearPolling])
 
   // Restart a stuck job (cancel and regenerate)
-  const handleRestartJob = useCallback(async (mode: 'nikud' | 'shoresh') => {
+  const handleRestartJob = useCallback(async (mode: 'nikud' | 'shoresh' | 'engrew') => {
     if (!contentId || isCancelling) return
 
     // Stop any existing polling FIRST
@@ -201,9 +212,14 @@ export default function AISubtitlesPicker({
     // Regenerate with force flag
     try {
       setGeneratingMode(mode)
-      const result = mode === 'nikud'
-        ? await subtitlesService.generateNikud(contentId, 'he', true)
-        : await subtitlesService.generateShoresh(contentId, 'he', true)
+      let result
+      if (mode === 'nikud') {
+        result = await subtitlesService.generateNikud(contentId, 'he', true)
+      } else if (mode === 'shoresh') {
+        result = await subtitlesService.generateShoresh(contentId, 'he', true)
+      } else {
+        result = await subtitlesService.generateEngrew(contentId, 'he', true)
+      }
 
       if (result.status === 'completed') {
         setGeneratingMode(null)
@@ -309,6 +325,32 @@ export default function AISubtitlesPicker({
             pollingRef.current = setInterval(() => {
               pollJobStatus(job.job_id, 'shoresh')
             }, 2000)
+            return
+          }
+        }
+
+        // Check for engrew job (only if no other job is being tracked)
+        if (activeJobs.engrew_job) {
+          const job = activeJobs.engrew_job
+          if (job.status === 'failed') {
+            // Show error from failed job - but DON'T start polling
+            setGenerationError(job.error_message || 'Engrew generation failed')
+            setGeneratingMode(null)
+            setCurrentJobId(null)
+          } else if (job.status === 'completed') {
+            // Job completed - don't poll
+            setGeneratingMode(null)
+            setCurrentJobId(null)
+          } else if (['pending', 'processing'].includes(job.status)) {
+            // Resume tracking in-progress job
+            setGeneratingMode('engrew')
+            setJobProgress(job.progress || 0)
+            setCurrentJobId(job.job_id)
+            // Clear again to be safe before setting new interval
+            clearPolling()
+            pollingRef.current = setInterval(() => {
+              pollJobStatus(job.job_id, 'engrew')
+            }, 2000)
           }
         }
       } catch (error) {
@@ -391,10 +433,11 @@ export default function AISubtitlesPicker({
     if (mode === 'regular') return true
     if (mode === 'nikud') return hasNikud
     if (mode === 'shoresh') return hasShoresh
+    if (mode === 'engrew') return hasEngrew
     return false
   }
 
-  const handleGenerateMode = async (mode: 'nikud' | 'shoresh', e: React.MouseEvent) => {
+  const handleGenerateMode = async (mode: 'nikud' | 'shoresh' | 'engrew', e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
 
@@ -418,9 +461,14 @@ export default function AISubtitlesPicker({
     try {
       logger.info(`Starting ${mode} generation`, 'AISubtitlesPicker', { contentId })
 
-      const result = mode === 'nikud'
-        ? await subtitlesService.generateNikud(contentId, 'he', false)
-        : await subtitlesService.generateShoresh(contentId, 'he', false)
+      let result
+      if (mode === 'nikud') {
+        result = await subtitlesService.generateNikud(contentId, 'he', false)
+      } else if (mode === 'shoresh') {
+        result = await subtitlesService.generateShoresh(contentId, 'he', false)
+      } else {
+        result = await subtitlesService.generateEngrew(contentId, 'he', false)
+      }
 
       logger.info(`${mode} job started`, 'AISubtitlesPicker', { contentId, result })
 
@@ -632,7 +680,9 @@ export default function AISubtitlesPicker({
                       <p className="text-xs text-amber-500/90 italic">
                         {option.mode === 'nikud'
                           ? t('subtitles.hebrewMode.nikud.unavailableReason', 'AI processing not available for this content')
-                          : t('subtitles.hebrewMode.shoresh.unavailableReason', 'Root word analysis not available for this content')
+                          : option.mode === 'shoresh'
+                            ? t('subtitles.hebrewMode.shoresh.unavailableReason', 'Root word analysis not available for this content')
+                            : t('subtitles.hebrewMode.engrew.unavailableReason', 'Engrew not available for this content')
                         }
                       </p>
                     </div>
@@ -693,7 +743,7 @@ export default function AISubtitlesPicker({
                               {jobProgress > 50 && (
                                 <button
                                   type="button"
-                                  onClick={(e) => { e.stopPropagation(); handleRestartJob(option.mode as 'nikud' | 'shoresh'); }}
+                                  onClick={(e) => { e.stopPropagation(); handleRestartJob(option.mode as 'nikud' | 'shoresh' | 'engrew'); }}
                                   disabled={isCancelling}
                                   className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-amber-500 hover:bg-amber-600 disabled:opacity-50"
                                   aria-label={t('common.restart', 'Restart')}
@@ -705,7 +755,7 @@ export default function AISubtitlesPicker({
                           ) : (
                             <button
                               type="button"
-                              onClick={(e) => handleGenerateMode(option.mode as 'nikud' | 'shoresh', e)}
+                              onClick={(e) => handleGenerateMode(option.mode as 'nikud' | 'shoresh' | 'engrew', e)}
                               disabled={generatingMode !== null}
                               className="px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white cursor-pointer"
                               style={{

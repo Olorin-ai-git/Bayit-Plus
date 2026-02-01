@@ -5,6 +5,8 @@
 
 import { View, Text, StyleSheet } from 'react-native'
 import { LiveSubtitleCue } from '@/services/liveSubtitleService'
+import { isShoreshJson } from '@/utils/shoreshHighlight'
+import ShoreshText from './subtitle/ShoreshText'
 
 interface LiveSubtitleOverlayProps {
   cues: LiveSubtitleCue[]
@@ -17,13 +19,20 @@ export default function LiveSubtitleOverlay({ cues }: LiveSubtitleOverlayProps) 
 
   return (
     <View style={styles.container}>
-      {cues.map((cue, idx) => (
-        <View key={`${cue.timestamp}-${idx}`} style={styles.cueContainer}>
-          <Text style={styles.cueText}>
-            {cue.text}
-          </Text>
-        </View>
-      ))}
+      {cues.map((cue, idx) => {
+        const isShoresh = isShoreshJson(cue.text)
+        return (
+          <View key={`${cue.timestamp}-${idx}`} style={styles.cueContainer}>
+            {isShoresh ? (
+              <ShoreshText text={cue.text} style={styles.cueText} />
+            ) : (
+              <Text style={styles.cueText}>
+                {cue.text}
+              </Text>
+            )}
+          </View>
+        )
+      })}
     </View>
   )
 }

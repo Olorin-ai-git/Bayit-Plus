@@ -1,10 +1,12 @@
 """
 Shoresh (Root Word) Service.
 Uses Claude AI to extract Hebrew root words (שורש) from words.
-Format: "הולך [הלך]" - word followed by root in brackets.
+Returns structured data for frontend to render with bold shoresh letters.
 """
 
-from typing import List
+import json
+import re
+from typing import List, TypedDict
 
 from app.core.ai_clients import get_anthropic_client
 from app.core.config import settings
@@ -12,6 +14,17 @@ from app.core.logging_config import get_logger
 from app.services.ai_text_transform_service import AITextTransformService
 
 logger = get_logger(__name__)
+
+
+class ShoreshSegment(TypedDict):
+    """A word with its shoresh (root)"""
+    word: str
+    shoresh: str
+
+
+class ShoreshResult(TypedDict):
+    """Structured shoresh extraction result"""
+    segments: List[ShoreshSegment]
 
 
 class ShoreshService(AITextTransformService[str]):
@@ -24,20 +37,25 @@ class ShoreshService(AITextTransformService[str]):
         )
 
     async def _transform_single(self, text: str) -> str:
-        """Extract shoresh from a single Hebrew text"""
-        prompt = f"""חלץ שורש מכל מילה בטקסט העברי הבא. החזר את הטקסט בפורמט: 'מילה [שורש]' לכל מילה.
+        """Extract shoresh from a single Hebrew text, return as JSON"""
+        prompt = f"""Extract the shoresh (Hebrew root, typically 3 consonants) from each Hebrew word.
+Return ONLY valid JSON in this exact format:
+{{"segments":[{{"word":"מילה","shoresh":"שורש"}}]}}
 
-דוגמה:
-טקסט: "הילדים הולכים לבית הספר"
-תשובה: "הילדים [ילד] הולכים [הלך] לבית [בית] הספר [ספר]"
+Rules:
+- Include punctuation and spaces with the preceding word
+- For non-Hebrew words or particles without roots, use empty string for shoresh
+- Keep the original word exactly as written
 
-טקסט: {text}
+Example:
+Input: "הילדים הולכים לבית"
+Output: {{"segments":[{{"word":"הילדים","shoresh":"ילד"}},{{"word":" הולכים","shoresh":"הלך"}},{{"word":" לבית","shoresh":"בית"}}]}}
 
-תשובה:"""
+Input: {text}
+Output:"""
 
         client = get_anthropic_client()
-        # Cap max_tokens to prevent unbounded requests
-        max_tokens = min(len(text) * 4, settings.SUBTITLE_AI_MAX_TOKENS)
+        max_tokens = min(len(text) * 6, settings.SUBTITLE_AI_MAX_TOKENS)
 
         response = await client.messages.create(
             model=settings.SUBTITLE_AI_MODEL,
@@ -45,64 +63,79 @@ class ShoreshService(AITextTransformService[str]):
             messages=[{"role": "user", "content": prompt}],
         )
 
-        return response.content[0].text.strip()
+        result_text = response.content[0].text.strip()
+
+        # Validate JSON and return
+        try:
+            parsed = json.loads(result_text)
+            if "segments" in parsed:
+                return result_text
+        except json.JSONDecodeError:
+            pass
+
+        # Fallback: return original text as single segment
+        return json.dumps({"segments": [{"word": text, "shoresh": ""}]})
 
     def _create_batch_prompt(self, texts: List[str]) -> str:
         """Create batch prompt for shoresh extraction"""
-        texts_formatted = "\n---\n".join(
-            [f"[{i+1}] {t}" for i, t in enumerate(texts)]
-        )
+        texts_formatted = "\n".join([f"[{i+1}] {t}" for i, t in enumerate(texts)])
 
-        return f"""חלץ שורש מכל מילה בכל אחד מהטקסטים הבאים. החזר כל טקסט בשורה נפרדת עם המספור המקורי, בפורמט 'מילה [שורש]'.
+        return f"""Extract shoresh (Hebrew root) from each word in each text.
+Return each result on a new line with the index, as valid JSON.
 
-דוגמה:
-[1] הילדים הולכים
-תשובה:
-[1] הילדים [ילד] הולכים [הלך]
+Format per line:
+[N] {{"segments":[{{"word":"מילה","shoresh":"שורש"}}]}}
 
-טקסטים:
+Rules:
+- Include spaces/punctuation with preceding word
+- Empty shoresh for non-Hebrew words or particles
+- Keep original words exactly as written
+
+Texts:
 {texts_formatted}
 
-תשובות:"""
+Results:"""
 
     def _parse_batch_response(
         self, response_text: str, original_texts: List[str]
     ) -> List[str]:
         """Parse batch shoresh extraction response"""
-        results = []
+        results: List[str | None] = [None] * len(original_texts)
         parsed_count = 0
 
         for line in response_text.split("\n"):
             line = line.strip()
-            if line.startswith("[") and "]" in line:
-                try:
-                    bracket_end = line.index("]")
-                    idx = int(line[1:bracket_end]) - 1
-                    shoresh_text = line[bracket_end + 1 :].strip()
+            if not line.startswith("["):
+                continue
 
-                    if 0 <= idx < len(original_texts):
-                        # Extend results list if needed
-                        while len(results) <= idx:
-                            results.append(None)
-                        results[idx] = shoresh_text
+            match = re.match(r"\[(\d+)\]\s*(.+)", line)
+            if not match:
+                continue
+
+            try:
+                idx = int(match.group(1)) - 1
+                json_str = match.group(2).strip()
+
+                if 0 <= idx < len(original_texts):
+                    # Validate JSON
+                    parsed = json.loads(json_str)
+                    if "segments" in parsed:
+                        results[idx] = json_str
                         parsed_count += 1
-                except (ValueError, IndexError):
-                    continue
+            except (ValueError, json.JSONDecodeError):
+                continue
 
-        # Fill any missing results with original text
-        for i in range(len(original_texts)):
-            if i >= len(results) or results[i] is None:
-                if i >= len(results):
-                    results.append(original_texts[i])
-                else:
-                    results[i] = original_texts[i]
+        # Fill missing with fallback
+        for i, text in enumerate(original_texts):
+            if results[i] is None:
+                results[i] = json.dumps({"segments": [{"word": text, "shoresh": ""}]})
 
         self._logger.info(
             "Shoresh batch parsed",
             extra={"total_texts": len(original_texts), "parsed_count": parsed_count},
         )
 
-        return results
+        return results  # type: ignore
 
 
 # Singleton instance
@@ -112,8 +145,8 @@ _shoresh_service = ShoreshService()
 async def extract_shoresh(text: str, use_cache: bool = True) -> str:
     """
     Extract shoresh (root words) from Hebrew text using Claude.
-    Returns text in format: "word [root]" for each word.
-    Example: "הולך [הלך]", "כותבים [כתב]"
+    Returns JSON with word-shoresh pairs for frontend rendering.
+    Format: {"segments": [{"word": "הולכים", "shoresh": "הלך"}, ...]}
     """
     return await _shoresh_service.transform(text, use_cache)
 
@@ -122,7 +155,7 @@ async def extract_shoresh_batch(texts: List[str], use_cache: bool = True) -> Lis
     """
     Extract shoresh from multiple texts efficiently.
     Batches uncached texts into single API call.
-    Returns list of texts with shoresh in same order as input.
+    Returns list of JSON strings with shoresh data in same order as input.
     """
     return await _shoresh_service.transform_batch(texts, use_cache)
 

@@ -19,6 +19,7 @@ from app.services.shoresh_service import extract_shoresh_batch
 from app.services.heblish_service import convert_to_heblish_batch
 from app.services.grammar_flip_service import convert_to_grammar_flip_batch
 from app.services.slang_synthesis_service import convert_to_slang_synthesis_batch
+from app.services.engrew_service import convert_to_engrew_batch
 from app.services.subtitle_service import extract_words, format_time
 
 router = APIRouter(prefix="/subtitles", tags=["subtitles"])
@@ -29,7 +30,7 @@ logger = get_logger(__name__)
 async def get_subtitle_cues(
     content_id: str,
     language: str = "he",
-    hebrew_mode: str = Query("regular", description="Hebrew display mode: regular, nikud, or shoresh"),
+    hebrew_mode: str = Query("regular", description="Hebrew display mode: regular, nikud, shoresh, or engrew"),
     english_mode: str = Query("regular", description="English display mode: regular, heblish, grammarFlip, or slangSynthesis"),
     with_nikud: bool = False,
     start_time: Optional[float] = None,
@@ -90,6 +91,8 @@ async def get_subtitle_cues(
                 display_text = cue.text_nikud
             elif hebrew_mode == "shoresh" and cue.text_shoresh:
                 display_text = cue.text_shoresh
+            elif hebrew_mode == "engrew" and cue.text_engrew:
+                display_text = cue.text_engrew
             else:
                 display_text = cue.text
         else:
@@ -106,6 +109,7 @@ async def get_subtitle_cues(
                 "text_heblish": cue.text_heblish,
                 "text_grammar_flip": cue.text_grammar_flip,
                 "text_slang_synthesis": cue.text_slang_synthesis,
+                "text_engrew": cue.text_engrew,
                 "formatted_start": format_time(cue.start_time),
                 "formatted_end": format_time(cue.end_time),
                 "words": extract_words(display_text),
@@ -121,6 +125,7 @@ async def get_subtitle_cues(
         "has_heblish": track.has_heblish_version,
         "has_grammar_flip": track.has_grammar_flip_version,
         "has_slang_synthesis": track.has_slang_synthesis_version,
+        "has_engrew": track.has_engrew_version,
         "hebrew_mode": hebrew_mode,
         "english_mode": english_mode,
         "cues": result_cues,
@@ -768,6 +773,137 @@ async def generate_slang_synthesis_for_track(
     return job.to_response()
 
 
+async def _process_engrew_job(job_id: str, content_id: str, language: str) -> None:
+    """Background task to process engrew generation with resume support"""
+    job = await AIGenerationJob.get(PydanticObjectId(job_id))
+    if not job:
+        logger.error("Job not found", extra={"job_id": job_id})
+        return
+
+    try:
+        await job.start_processing()
+
+        tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
+        if not tracks:
+            await job.fail("Subtitle track not found")
+            return
+
+        track = tracks[0]
+
+        # Resume support: find cues that still need processing
+        cues_to_process = [(i, cue) for i, cue in enumerate(track.cues) if not cue.text_engrew]
+        already_processed = len(track.cues) - len(cues_to_process)
+
+        if already_processed > 0:
+            logger.info(
+                "Resuming engrew generation",
+                extra={"content_id": content_id, "already_processed": already_processed, "remaining": len(cues_to_process)},
+            )
+            await job.update_progress(already_processed)
+
+        # Process remaining cues in batches
+        batch_size = 10
+        processed_count = already_processed
+        for batch_start in range(0, len(cues_to_process), batch_size):
+            batch_items = cues_to_process[batch_start : batch_start + batch_size]
+            batch_texts = [cue.text for _, cue in batch_items]
+            batch_results = await convert_to_engrew_batch(batch_texts)
+
+            # Update cues with engrew
+            for (idx, cue), engrew_text in zip(batch_items, batch_results):
+                track.cues[idx].text_engrew = engrew_text
+
+            processed_count += len(batch_items)
+            await job.update_progress(processed_count)
+
+            # Save progress periodically (every 50 cues) for resume capability
+            if processed_count % 50 == 0:
+                track.updated_at = datetime.utcnow()
+                await track.save()
+
+        track.has_engrew_version = True
+        track.engrew_generated_at = datetime.utcnow()
+        track.updated_at = datetime.utcnow()
+        await track.save()
+
+        await job.complete()
+        logger.info(
+            "Engrew generated",
+            extra={"content_id": content_id, "language": language, "cues_processed": len(track.cues)},
+        )
+
+    except Exception as e:
+        logger.error("Engrew generation failed", extra={"job_id": job_id, "error": str(e)})
+        # Save partial progress before marking as failed
+        try:
+            tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
+            if tracks:
+                tracks[0].updated_at = datetime.utcnow()
+                await tracks[0].save()
+                logger.info("Partial engrew progress saved for resume", extra={"content_id": content_id})
+        except Exception:
+            pass
+        await job.fail(str(e))
+
+
+@router.post("/{content_id}/engrew")
+@limiter.limit(RATE_LIMITS["subtitle_engrew"])
+async def generate_engrew_for_track(
+    request: Request,
+    background_tasks: BackgroundTasks,
+    content_id: str,
+    language: str = "he",
+    force: bool = False,
+) -> dict:
+    """
+    Start async Engrew generation for a subtitle track.
+    Returns a job_id to poll for status.
+
+    Engrew is Hebrew with English word injections written in Hebrew letters,
+    with the original English in parentheses for language learning.
+
+    Example: "אני הולך לגלוש על הגלים"
+          -> "אני הולך לסרף (Surf) על הווייבס (Waves)"
+    """
+    tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
+
+    if not tracks:
+        raise HTTPException(status_code=404, detail="Subtitle track not found")
+
+    track = tracks[0]
+
+    if track.has_engrew_version and not force:
+        return {
+            "message": "Engrew already generated",
+            "status": "completed",
+            "content_id": content_id,
+            "generated_at": track.engrew_generated_at.isoformat() if track.engrew_generated_at else None,
+        }
+
+    # Check for existing active job
+    existing_job = await AIGenerationJob.get_active_job(content_id, JobType.ENGREW)
+    if existing_job:
+        return existing_job.to_response()
+
+    # Create new job
+    job = await AIGenerationJob.create_job(
+        content_id=content_id,
+        job_type=JobType.ENGREW,
+        language=language,
+        total_cues=len(track.cues),
+    )
+
+    # Start background processing
+    background_tasks.add_task(_process_engrew_job, str(job.id), content_id, language)
+
+    logger.info(
+        "Engrew generation started",
+        extra={"content_id": content_id, "job_id": str(job.id), "total_cues": len(track.cues)},
+    )
+
+    return job.to_response()
+
+
 @router.get("/job/{job_id}")
 async def get_generation_job_status(job_id: str) -> dict:
     """
@@ -829,6 +965,7 @@ async def get_active_generation_jobs(content_id: str) -> dict:
     heblish_job = await AIGenerationJob.get_active_job(content_id, JobType.HEBLISH)
     grammar_flip_job = await AIGenerationJob.get_active_job(content_id, JobType.GRAMMAR_FLIP)
     slang_synthesis_job = await AIGenerationJob.get_active_job(content_id, JobType.SLANG_SYNTHESIS)
+    engrew_job = await AIGenerationJob.get_active_job(content_id, JobType.ENGREW)
 
     return {
         "content_id": content_id,
@@ -837,6 +974,7 @@ async def get_active_generation_jobs(content_id: str) -> dict:
         "heblish_job": heblish_job.to_response() if heblish_job else None,
         "grammar_flip_job": grammar_flip_job.to_response() if grammar_flip_job else None,
         "slang_synthesis_job": slang_synthesis_job.to_response() if slang_synthesis_job else None,
+        "engrew_job": engrew_job.to_response() if engrew_job else None,
     }
 
 
@@ -868,12 +1006,14 @@ async def get_subtitle_cache_stats() -> dict:
     from app.services.heblish_service import get_cache_stats as get_heblish_stats
     from app.services.grammar_flip_service import get_cache_stats as get_grammar_flip_stats
     from app.services.slang_synthesis_service import get_cache_stats as get_slang_synthesis_stats
+    from app.services.engrew_service import get_cache_stats as get_engrew_stats
 
     nikud_stats = get_cache_stats()
     shoresh_stats = get_shoresh_stats()
     heblish_stats = get_heblish_stats()
     grammar_flip_stats = get_grammar_flip_stats()
     slang_synthesis_stats = get_slang_synthesis_stats()
+    engrew_stats = get_engrew_stats()
 
     return {
         "nikud": nikud_stats,
@@ -881,4 +1021,5 @@ async def get_subtitle_cache_stats() -> dict:
         "heblish": heblish_stats,
         "grammar_flip": grammar_flip_stats,
         "slang_synthesis": slang_synthesis_stats,
+        "engrew": engrew_stats,
     }

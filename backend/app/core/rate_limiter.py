@@ -45,6 +45,7 @@ try:
         "subtitle_heblish": _dev_limit("5/hour"),  # Expensive AI operations (Claude API English-Hebrew synthesis)
         "subtitle_grammar_flip": _dev_limit("5/hour"),  # Expensive AI operations (Claude API Grammar-Flip transformation)
         "subtitle_slang_synthesis": _dev_limit("5/hour"),  # Expensive AI operations (Claude API Slang Synthesis)
+        "subtitle_engrew": _dev_limit("5/hour"),  # Expensive AI operations (Claude API Engrew)
         "subtitle_translate_word": _dev_limit("20/minute"),  # AI translation with database caching
         "subtitle_translate_phrase": _dev_limit("10/minute"),  # AI translation for phrases (no caching)
         "subtitle_fetch_external": _dev_limit("3/hour"),  # External API quota protection (OpenSubtitles)

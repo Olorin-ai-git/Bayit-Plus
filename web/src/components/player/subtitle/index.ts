@@ -14,6 +14,7 @@ export { default as SplitSubtitleOverlay } from './SplitSubtitleOverlay'
 export { default as SubtitlePane } from './SubtitlePane'
 export { default as LiveSplitSubtitleOverlay } from './LiveSplitSubtitleOverlay'
 export { default as LiveSubtitlePane } from './LiveSubtitlePane'
+export { default as ShoreshText } from './ShoreshText'
 
 export type { SubtitleButtonProps } from './SubtitleButton'
 export type { SubtitleLanguageMenuProps } from './SubtitleLanguageMenu'

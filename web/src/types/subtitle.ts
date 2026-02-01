@@ -28,6 +28,7 @@ export interface SubtitleTrack {
   has_heblish_version?: boolean // English with Hebrew injections available
   has_grammar_flip_version?: boolean // Hebrew words with English syntax available
   has_slang_synthesis_version?: boolean // Israeli/American slang blend available
+  has_engrew_version?: boolean // Hebrew with English word injections in Hebrew letters
   is_default: boolean
   is_auto_generated: boolean
   created_at: string
@@ -46,7 +47,14 @@ export interface SubtitleSettings {
 
 // ============ HEBREW MODE ============
 
-export type HebrewMode = 'regular' | 'nikud' | 'shoresh'
+/**
+ * Hebrew subtitle display modes:
+ * - regular: Standard Hebrew subtitles
+ * - nikud: Hebrew with vowel marks (vocalization)
+ * - shoresh: Hebrew with root letters highlighted in bold
+ * - engrew: Hebrew with English word injections in Hebrew letters (e.g., "אני הולך לסרף (Surf)")
+ */
+export type HebrewMode = 'regular' | 'nikud' | 'shoresh' | 'engrew'
 
 // ============ ENGLISH MODE ============
 
