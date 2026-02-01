@@ -59,7 +59,7 @@ export default function SplitModeToggle({
     >
       <View style={styles.iconContainer}>
         <Icon
-          name="viewColumn"
+          name="splitScreen"
           size="md"
           color={enabled ? colors.primary.DEFAULT : colors.textSecondary}
         />
@@ -101,11 +101,12 @@ const styles = StyleSheet.create({
     opacity: 0.8,
   },
   containerFocused: {
-    borderColor: colors.glassBorderFocus,
+    borderColor: colors.primary.DEFAULT,
     borderWidth: 2,
     ...Platform.select({
       web: {
-        boxShadow: `0 0 0 3px ${colors.primary[400]}40`,
+        boxShadow: `0 0 0 3px ${colors.primary[400]}80`,
+        outline: 'none',
       },
     }),
   },

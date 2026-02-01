@@ -71,7 +71,7 @@ is_builtin_command() {
         start|stop|build|test|lint|status|health|help|--help|-h|--version|-v)
             return 0
             ;;
-        ai|upload|upload-movies|upload-series|script|agent|skill|deploy|config)
+        ai|upload|upload-movies|upload-series|transcode-mkv|script|agent|skill|deploy|config)
             return 0
             ;;
         *)
@@ -279,6 +279,11 @@ case "$COMMAND" in
     upload-series)
         log_info "Launching series upload script..."
         exec "$SCRIPT_DIR/backend/upload_series.sh" "$@"
+        ;;
+
+    transcode-mkv)
+        log_info "Launching MKV to MP4 transcode script..."
+        exec "$SCRIPT_DIR/backend/bayit-transcode-mkv.sh" "$@"
         ;;
 
     upload)

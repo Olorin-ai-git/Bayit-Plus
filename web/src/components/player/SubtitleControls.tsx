@@ -155,6 +155,16 @@ export default function SubtitleControls({
 
   // Handle subtitle button click - always opens language selector
   const handleSubtitleButtonClick = () => {
+    // Initialize temp selection when opening menu in split mode
+    if (!showLanguageMenu && splitMode) {
+      if (splitLanguages) {
+        // Restore confirmed split selection
+        setTempSelectedLanguages([...splitLanguages])
+      } else if (currentLanguage) {
+        // Pre-select current single language
+        setTempSelectedLanguages([currentLanguage])
+      }
+    }
     // Always toggle the language menu, regardless of available languages
     setShowLanguageMenu(!showLanguageMenu)
   }
@@ -200,16 +210,23 @@ export default function SubtitleControls({
   }, [showEnglishModePicker])
 
   // Split mode handlers
-  const handleSplitModeToggleLocal = useCallback((enabled: boolean) => {
-    onSplitModeToggle?.(enabled)
-    if (enabled) {
-      // Initialize temp selection from existing split languages or empty
-      setTempSelectedLanguages(splitLanguages ? [...splitLanguages] : [])
+  const handleSplitModeToggleLocal = useCallback((enableSplit: boolean) => {
+    onSplitModeToggle?.(enableSplit)
+    if (enableSplit) {
+      // Initialize temp selection from existing split languages, or pre-select current single language
+      if (splitLanguages) {
+        setTempSelectedLanguages([...splitLanguages])
+      } else if (currentLanguage) {
+        // Pre-select the current single language so user only needs to pick the second one
+        setTempSelectedLanguages([currentLanguage])
+      } else {
+        setTempSelectedLanguages([])
+      }
     } else {
       // Clear temp selection when disabling
       setTempSelectedLanguages([])
     }
-  }, [onSplitModeToggle, splitLanguages])
+  }, [onSplitModeToggle, splitLanguages, currentLanguage])
 
   const handleMultiSelect = useCallback((languages: string[]) => {
     setTempSelectedLanguages(languages)
@@ -242,6 +259,7 @@ export default function SubtitleControls({
         <GlassView
           intensity="high"
           style={styles.menu}
+          data-controls-panel="true"
           onClick={(e: any) => {
             // Stop event propagation to prevent clicks from reaching video controls
             e.stopPropagation()
@@ -277,6 +295,14 @@ export default function SubtitleControls({
                 onToggle={handleSplitModeToggleLocal}
                 disabled={isLoading}
               />
+              {/* Split Mode Confirm Button - shown in split mode section */}
+              {splitMode && (
+                <SplitModeConfirmButton
+                  selectedLanguages={tempSelectedLanguages}
+                  onConfirm={handleSplitConfirm}
+                  disabled={isLoading}
+                />
+              )}
             </View>
           )}
 
@@ -343,15 +369,6 @@ export default function SubtitleControls({
               selectedLanguages={tempSelectedLanguages}
               onMultiSelect={handleMultiSelect}
             />
-
-            {/* Split Mode Confirm Button */}
-            {splitMode && (
-              <SplitModeConfirmButton
-                selectedLanguages={tempSelectedLanguages}
-                onConfirm={handleSplitConfirm}
-                disabled={isLoading}
-              />
-            )}
 
             {/* Divider */}
             <View style={styles.menuDivider} />
@@ -440,11 +457,17 @@ export default function SubtitleControls({
         ]}
       >
         <Subtitles size={22} color={enabled ? colors.primary.DEFAULT : colors.textSecondary} />
-        {currentLanguage && enabled && (
+        {/* Split mode: show both flags stacked */}
+        {splitMode && splitLanguages && enabled ? (
+          <View style={styles.splitFlagBadge}>
+            <Text style={styles.splitFlagText}>{getLanguageFlag(splitLanguages[0])}</Text>
+            <Text style={styles.splitFlagText}>{getLanguageFlag(splitLanguages[1])}</Text>
+          </View>
+        ) : currentLanguage && enabled ? (
           <View style={styles.flagBadge}>
             <Text style={styles.flagText}>{getLanguageFlag(currentLanguage)}</Text>
           </View>
-        )}
+        ) : null}
       </Pressable>
 
       {/* Language Selection Menu - Rendered via Portal to video container */}
@@ -531,6 +554,25 @@ const styles = StyleSheet.create({
   flagText: {
     fontSize: 11,
     lineHeight: 13,
+  },
+  splitFlagBadge: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(139, 92, 246, 0.5)',
+    paddingVertical: 2,
+    paddingHorizontal: 3,
+  },
+  splitFlagText: {
+    fontSize: 9,
+    lineHeight: 10,
   },
   langText: {
     fontSize: 20,

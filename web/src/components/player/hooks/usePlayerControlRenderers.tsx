@@ -11,7 +11,7 @@ import LiveFeatureButton from '../controls/LiveFeatureButton'
 import { MessageCircle, Lightbulb } from 'lucide-react'
 import { colors } from '@olorin/design-tokens'
 import liveSubtitleService from '@/services/liveSubtitleService'
-import { SubtitleTrack, SubtitleSettings, HebrewMode, EnglishMode } from '@/types/subtitle'
+import { SubtitleTrack, SubtitleSettings, HebrewMode, EnglishMode, SplitLanguages } from '@/types/subtitle'
 import { UseLiveDubbingState } from './useLiveDubbing'
 import { WatchParty } from '@/types/watchparty'
 import { SubtitleCue } from '../types'
@@ -50,6 +50,11 @@ interface UsePlayerControlRenderersParams {
   handleHebrewModeChange: (mode: HebrewMode) => void
   englishMode: EnglishMode
   handleEnglishModeChange: (mode: EnglishMode) => void
+  // Split mode (dual subtitles)
+  splitMode?: boolean
+  handleSplitModeToggle?: (enabled: boolean) => void
+  splitLanguages?: SplitLanguages | null
+  handleSplitLanguagesChange?: (languages: SplitLanguages | null) => void
 
   // Live Subtitles
   liveSubtitleLang: string
@@ -119,6 +124,10 @@ export function usePlayerControlRenderers({
   handleHebrewModeChange,
   englishMode,
   handleEnglishModeChange,
+  splitMode,
+  handleSplitModeToggle,
+  splitLanguages,
+  handleSplitLanguagesChange,
   liveSubtitleLang,
   setLiveSubtitleLang,
   handleLiveSubtitleCue,
@@ -168,12 +177,17 @@ export function usePlayerControlRenderers({
         onHebrewModeChange={handleHebrewModeChange}
         englishMode={englishMode}
         onEnglishModeChange={handleEnglishModeChange}
+        splitMode={splitMode}
+        onSplitModeToggle={handleSplitModeToggle}
+        splitLanguages={splitLanguages}
+        onSplitLanguagesChange={handleSplitLanguagesChange}
       />
     ) : null
   , [isLive, contentId, availableSubtitles, currentSubtitleLang, subtitlesEnabled, subtitleSettings,
      handleSubtitleLanguageChange, handleSubtitleToggle, handleSubtitleSettingsChange,
      fetchAvailableSubtitles, subtitlesLoading, containerRef, hebrewMode, handleHebrewModeChange,
-     englishMode, handleEnglishModeChange])
+     englishMode, handleEnglishModeChange, splitMode, handleSplitModeToggle, splitLanguages,
+     handleSplitLanguagesChange])
 
   const renderLiveSubtitleControls = useCallback(() =>
     isLive && contentId && !isWidget ? (

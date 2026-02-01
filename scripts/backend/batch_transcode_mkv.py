@@ -11,7 +11,12 @@ import tempfile
 from datetime import datetime
 
 # Add backend to path
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Script is at: scripts/backend/batch_transcode_mkv.py
+# Need to add: backend/ to sys.path
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(os.path.dirname(script_dir))
+backend_dir = os.path.join(project_root, "backend")
+sys.path.insert(0, backend_dir)
 
 from beanie import init_beanie
 from bson import ObjectId

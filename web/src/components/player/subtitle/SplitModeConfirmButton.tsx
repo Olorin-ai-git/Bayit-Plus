@@ -24,15 +24,7 @@ export default function SplitModeConfirmButton({
   const { t } = useTranslation()
   const [isFocused, setIsFocused] = useState(false)
 
-  // Only show when exactly 2 languages are selected
-  if (selectedLanguages.length !== 2) {
-    return null
-  }
-
-  const [leftLang, rightLang] = selectedLanguages
-  const leftInfo = getLanguageInfo(leftLang)
-  const rightInfo = getLanguageInfo(rightLang)
-
+  // useCallback must be called before any early returns (Rules of Hooks)
   const handleKeyDown = useCallback((event: any) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault()
@@ -41,6 +33,15 @@ export default function SplitModeConfirmButton({
       }
     }
   }, [disabled, onConfirm])
+
+  // Only show when exactly 2 languages are selected
+  if (selectedLanguages.length !== 2) {
+    return null
+  }
+
+  const [leftLang, rightLang] = selectedLanguages
+  const leftInfo = getLanguageInfo(leftLang)
+  const rightInfo = getLanguageInfo(rightLang)
 
   return (
     <View style={styles.container}>

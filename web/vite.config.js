@@ -28,7 +28,7 @@ export default defineConfig({
       '@olorin/shared-icons': path.resolve(__dirname, '../packages/ui/shared-icons/src'),
       '@olorin/glass-ui/stores': path.resolve(__dirname, '../packages/ui/glass-components/src/stores'),
       '@bayit/glass': path.resolve(__dirname, '../packages/ui/glass-components/src'),
-      '@bayit/shared-hooks/useSafeArea': path.resolve(__dirname, '../packages/ui/shared-hooks/src/useSafeArea'),
+      '@bayit/shared-hooks/useSafeArea': path.resolve(__dirname, '../shared/hooks/useSafeArea'),
     },
   },
   server: {

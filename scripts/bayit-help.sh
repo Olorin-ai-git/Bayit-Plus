@@ -75,6 +75,16 @@ ${BOLD}${CYAN}CONTENT MANAGEMENT:${NC}
   ${GREEN}upload${NC}                         Show upload menu
                                  Example: olorin bayit upload
 
+  ${GREEN}transcode-mkv${NC} [options]         Transcode MKV files to MP4 with faststart
+                                 Examples:
+                                   olorin bayit transcode-mkv --dry-run
+                                   olorin bayit transcode-mkv --limit 5
+                                   olorin bayit transcode-mkv
+                                 Options:
+                                   --dry-run               Preview without changes
+                                   --limit <num>           Limit number of files
+                                   --help                  Show detailed help
+
 ${BOLD}${CYAN}BUILD & TESTING:${NC}
   ${GREEN}build${NC} [platform]                Build platform for production
                                  Platforms: bayit (all), web, mobile, tv, tvos, partner, backend

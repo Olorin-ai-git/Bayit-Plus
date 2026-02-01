@@ -60,12 +60,12 @@ export default function SubtitlePane({
       ) : (
         <View
           style={styles.emptyPane}
-          accessibilityElementsHidden={true}
-          importantForAccessibility="no-hide-descendants"
+          accessibilityLabel={`No ${langInfo?.nativeName || language} subtitles available`}
+          accessibilityRole="status"
         />
       )}
       <View style={styles.languageIndicator}>
-        <Text style={styles.languageFlag}>{langInfo?.flag || ''}</Text>
+        <Text style={styles.languageFlag} importantForAccessibility="no">{langInfo?.flag || ''}</Text>
         <Text style={styles.languageName}>{langInfo?.nativeName || language}</Text>
       </View>
     </View>
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   cueContainer: {
     paddingVertical: 4,
     paddingHorizontal: 12,
-    borderRadius: 8,
+    borderRadius: borderRadius.md,
     marginVertical: 2,
     shadowColor: colors.black,
     shadowOffset: { width: 0, height: 0 },
@@ -101,8 +101,8 @@ const styles = StyleSheet.create({
     borderLeftColor: colors.splitScreenLeft,
   },
   rightCueContainer: {
-    borderLeftWidth: 3,
-    borderLeftColor: colors.splitScreenRight,
+    borderRightWidth: 3,
+    borderRightColor: colors.splitScreenRight,
   },
   cueText: {
     fontWeight: '600',

@@ -1099,6 +1099,20 @@ export const ICON_REGISTRY: Record<string, IconDefinition> = {
     description: 'AI / Bot / Artificial Intelligence',
     usage: ['ai_features', 'chatbot', 'automation'],
   },
+  columns: {
+    name: 'columns',
+    lucideName: 'Columns2',
+    category: 'ui',
+    description: 'Columns / Split View',
+    usage: ['split_screen', 'layout', 'subtitles'],
+  },
+  splitScreen: {
+    name: 'splitScreen',
+    lucideName: 'Columns2',
+    category: 'ui',
+    description: 'Split Screen / Dual Pane',
+    usage: ['split_screen', 'subtitles', 'side_by_side'],
+  },
 };
 
 /**

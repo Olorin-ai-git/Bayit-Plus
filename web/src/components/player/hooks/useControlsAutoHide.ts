@@ -19,6 +19,8 @@ export function useControlsAutoHide({
   const onShowRef = useRef(onShowControls)
   const onHideRef = useRef(onHideControls)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  // Track if mouse is over a control panel that should keep controls visible
+  const isOverPanelRef = useRef(false)
 
   // Keep refs updated
   useEffect(() => {
@@ -32,8 +34,21 @@ export function useControlsAutoHide({
 
     const hideDelay = isFullscreen ? 2000 : 3000
 
+    // Check if mouse is currently over a panel that should keep controls visible
+    // Panels should have data-controls-panel="true" attribute
+    const isMouseOverPanel = (): boolean => {
+      const panels = container.querySelectorAll('[data-controls-panel="true"]')
+      return isOverPanelRef.current || panels.length > 0 && Array.from(panels).some(panel => {
+        const rect = panel.getBoundingClientRect()
+        // Check if any panel is being hovered (has :hover pseudo-class)
+        return panel.matches(':hover')
+      })
+    }
+
     const hideControls = () => {
       if (!isPlaying) return
+      // Don't hide if mouse is over a control panel (like subtitle menu)
+      if (isMouseOverPanel()) return
       onHideRef.current()
       container.style.cursor = 'none'
     }

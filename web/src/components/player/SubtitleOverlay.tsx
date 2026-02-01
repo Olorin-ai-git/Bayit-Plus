@@ -42,6 +42,16 @@ export default function SubtitleOverlay({
     bottom: safeAreaInsets.bottom + 96, // Original padding + safe area
   }), [safeAreaInsets.bottom])
 
+  // Find active subtitle cue(s) for current time
+  // NOTE: This hook must be called before any early returns to follow Rules of Hooks
+  const activeCues = useMemo(() => {
+    if (!enabled || !subtitles.length) return []
+
+    return subtitles.filter(
+      (cue) => currentTime >= cue.start_time && currentTime <= cue.end_time
+    )
+  }, [currentTime, subtitles, enabled])
+
   // Render split mode overlay if active
   if (splitMode && splitLanguages && enabled) {
     return (
@@ -56,15 +66,6 @@ export default function SubtitleOverlay({
       />
     )
   }
-
-  // Find active subtitle cue(s) for current time
-  const activeCues = useMemo(() => {
-    if (!enabled || !subtitles.length) return []
-
-    return subtitles.filter(
-      (cue) => currentTime >= cue.start_time && currentTime <= cue.end_time
-    )
-  }, [currentTime, subtitles, enabled])
 
   // Don't render if disabled or no active cues
   if (!enabled || activeCues.length === 0) {
