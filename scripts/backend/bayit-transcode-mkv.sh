@@ -194,7 +194,7 @@ run_transcode() {
         log_info "Limiting to $LIMIT items"
     fi
 
-    poetry run python "../scripts/backend/batch_transcode_mkv.py"
+    PYTHONUNBUFFERED=1 poetry run python "../scripts/backend/batch_transcode_mkv.py"
 }
 
 # Parse arguments
