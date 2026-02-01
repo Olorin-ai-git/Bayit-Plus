@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, ScrollView, useWindowDimensions, Pressable, ActivityIndicator } from 'react-native';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -72,42 +72,47 @@ export default function VODPage() {
   const numColumns = width >= 1280 ? 6 : width >= 1024 ? 5 : width >= 768 ? 4 : width >= 640 ? 3 : 2;
   const itemsPerPage = 24; // Reduced from 100 for better UX and smaller batches
 
-  // Filter movies and series by search query and subtitle filter
+  // Debounced search query for API calls
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Debounce search query to avoid excessive API calls
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    searchTimeoutRef.current = setTimeout(() => {
+      setDebouncedSearch(searchQuery.trim());
+    }, 300);
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery]);
+
+  // Filter movies and series by subtitle filter (search is now server-side)
   const filteredMovies = useMemo(() => {
-    let filtered = movies;
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.category?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    if (showOnlyWithSubtitles) {
-      filtered = filtered.filter(item =>
-        item.available_subtitle_languages && item.available_subtitle_languages.length > 0
-      );
-    }
-    return filtered;
-  }, [movies, searchQuery, showOnlyWithSubtitles]);
+    if (!showOnlyWithSubtitles) return movies;
+    return movies.filter(item =>
+      item.available_subtitle_languages && item.available_subtitle_languages.length > 0
+    );
+  }, [movies, showOnlyWithSubtitles]);
 
   const filteredSeries = useMemo(() => {
-    let filtered = series;
-    if (searchQuery.trim()) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.category?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-    if (showOnlyWithSubtitles) {
-      filtered = filtered.filter(item =>
-        item.available_subtitle_languages && item.available_subtitle_languages.length > 0
-      );
-    }
-    return filtered;
-  }, [series, searchQuery, showOnlyWithSubtitles]);
+    if (!showOnlyWithSubtitles) return series;
+    return series.filter(item =>
+      item.available_subtitle_languages && item.available_subtitle_languages.length > 0
+    );
+  }, [series, showOnlyWithSubtitles]);
+
+  // Track previous search to detect changes
+  const prevSearchRef = useRef(debouncedSearch);
 
   // Combined useEffect to prevent duplicate API calls
   useEffect(() => {
     const categoryChanged = prevCategoryRef.current !== selectedCategory;
+    const searchChanged = prevSearchRef.current !== debouncedSearch;
 
     if (categoryChanged) {
       prevCategoryRef.current = selectedCategory;
@@ -115,18 +120,25 @@ export default function VODPage() {
       setSeriesPage(1);
     }
 
+    if (searchChanged) {
+      prevSearchRef.current = debouncedSearch;
+      setMoviesPage(1);
+      setSeriesPage(1);
+    }
+
     loadContent();
-  }, [selectedCategory, moviesPage, seriesPage]);
+  }, [selectedCategory, moviesPage, seriesPage, debouncedSearch]);
 
   const loadContent = async () => {
     setLoading(true);
     try {
       const categoryParam = selectedCategory === 'all' ? undefined : selectedCategory;
+      const searchParam = debouncedSearch || undefined;
 
       const [categoriesData, moviesData, seriesData] = await Promise.all([
         contentService.getCategories(),
-        contentService.getAllMovies({ page: moviesPage, limit: itemsPerPage, category_id: categoryParam }),
-        contentService.getAllSeries({ page: seriesPage, limit: itemsPerPage, category_id: categoryParam }),
+        contentService.getAllMovies({ page: moviesPage, limit: itemsPerPage, category_id: categoryParam, search: searchParam }),
+        contentService.getAllSeries({ page: seriesPage, limit: itemsPerPage, category_id: categoryParam, search: searchParam }),
       ]);
 
       setCategories(categoriesData.categories || []);
@@ -323,7 +335,7 @@ export default function VODPage() {
               </View>
               {renderContentGrid(filteredMovies, t('vod.noMovies'))}
               {/* Movies Pagination */}
-              {!searchQuery && moviesTotalPages > 1 && (
+              {moviesTotalPages > 1 && (
                 <View style={styles.sectionPagination}>
                   <Pressable
                     onPress={() => setMoviesPage(p => Math.max(1, p - 1))}
@@ -357,7 +369,7 @@ export default function VODPage() {
               </View>
               {renderContentGrid(filteredSeries, t('vod.noSeries'))}
               {/* Series Pagination */}
-              {!searchQuery && seriesTotalPages > 1 && (
+              {seriesTotalPages > 1 && (
                 <View style={styles.sectionPagination}>
                   <Pressable
                     onPress={() => setSeriesPage(p => Math.max(1, p - 1))}

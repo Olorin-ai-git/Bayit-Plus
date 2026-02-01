@@ -86,11 +86,18 @@ export default function VideoPlayer({
     subtitlesLoading,
     currentCues,
     subtitleSettings,
+    // Split mode state
+    splitMode,
+    splitLanguages,
+    splitCues,
+    // Handlers
     handleSubtitleToggle,
     handleSubtitleLanguageChange,
     handleHebrewModeChange,
     handleEnglishModeChange,
     handleSubtitleSettingsChange,
+    handleSplitModeToggle,
+    handleSplitLanguagesChange,
     fetchAvailableSubtitles,
   } = useSubtitles({ contentId, isLive })
 
@@ -446,6 +453,9 @@ export default function VideoPlayer({
         currentSubtitleLang={currentSubtitleLang}
         currentCues={currentCues}
         subtitleSettings={subtitleSettings}
+        splitMode={splitMode}
+        splitLanguages={splitLanguages}
+        splitCues={splitCues}
         visibleLiveSubtitles={visibleLiveSubtitles}
         dubbingIsConnected={dubbing.isConnected}
         dubbingLastTranscript={dubbing.lastTranscript}
@@ -584,6 +594,8 @@ const webStyles: Record<string, React.CSSProperties> = {
     backgroundColor: '#000',
     width: '100%',
     height: '100%',
+    cursor: 'default',
+    overflow: 'hidden',
   },
   video: {
     width: '100%',

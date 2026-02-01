@@ -74,45 +74,47 @@ export default function VideoPlayerControlsOverlay({
 }: VideoPlayerControlsOverlayProps) {
   const { t } = useTranslation()
 
+  // Don't render overlay at all when controls are hidden
+  if (!state.showControls) {
+    return null
+  }
+
   return (
     <View
-      style={[
-        styles.controlsOverlay,
-        !state.showControls && styles.controlsHidden,
-      ]}
-      pointerEvents={state.showControls ? 'auto' : 'none'}
+      style={styles.controlsOverlay}
+      pointerEvents="auto"
     >
       {/* Top Bar */}
       <View style={styles.topBar}>
-        <View style={styles.topBarLeft}>
-          <Text style={styles.title} numberOfLines={1}>{title}</Text>
-          {!isLive && availableSubtitles.length > 0 && (
-            <View style={styles.subtitleFlagsRow}>
-              {availableSubtitles.slice(0, 6).map((track) => {
-                const langInfo = getLanguageInfo(track.language)
-                return langInfo?.flag ? (
-                  <Text key={track.id} style={styles.subtitleFlag}>
-                    {langInfo.flag}
-                  </Text>
-                ) : (
-                  <Icon
-                    key={track.id}
-                    name="globe"
-                    size="md"
-                    color="#FFFFFF"
-                  />
-                )
-              })}
-              {availableSubtitles.length > 6 && (
-                <Text style={styles.subtitleFlagMore}>+{availableSubtitles.length - 6}</Text>
-              )}
-            </View>
+          <View style={styles.topBarLeft}>
+            <Text style={styles.title} numberOfLines={1}>{title}</Text>
+            {!isLive && availableSubtitles.length > 0 && (
+              <View style={styles.subtitleFlagsRow}>
+                {availableSubtitles.slice(0, 6).map((track) => {
+                  const langInfo = getLanguageInfo(track.language)
+                  return langInfo?.flag ? (
+                    <Text key={track.id} style={styles.subtitleFlag}>
+                      {langInfo.flag}
+                    </Text>
+                  ) : (
+                    <Icon
+                      key={track.id}
+                      name="globe"
+                      size="md"
+                      color="#FFFFFF"
+                    />
+                  )
+                })}
+                {availableSubtitles.length > 6 && (
+                  <Text style={styles.subtitleFlagMore}>+{availableSubtitles.length - 6}</Text>
+                )}
+              </View>
+            )}
+          </View>
+          {isLive && (
+            <GlassBadge variant="danger" size="sm">{t('common.live')}</GlassBadge>
           )}
         </View>
-        {isLive && (
-          <GlassBadge variant="danger" size="sm">{t('common.live')}</GlassBadge>
-        )}
-      </View>
 
       {/* Center Controls - Play/Pause with Skip Buttons */}
       <VideoPlayerCenterControls
@@ -123,46 +125,46 @@ export default function VideoPlayerControlsOverlay({
 
       {/* Bottom Controls */}
       <GlassView style={styles.bottomControls} intensity="high" noBorder>
-        {!isLive && (
-          <ProgressBar
-            currentTime={state.currentTime}
-            duration={state.duration}
-            chapters={chapters}
-            onSeek={controls.handleSeek}
-            onChapterSeek={controls.seekToTime}
-          />
-        )}
+          {!isLive && (
+            <ProgressBar
+              currentTime={state.currentTime}
+              duration={state.duration}
+              chapters={chapters}
+              onSeek={controls.handleSeek}
+              onChapterSeek={controls.seekToTime}
+            />
+          )}
 
-        <PlayerControls
-          state={state}
-          controls={controls}
-          isLive={isLive}
-          liveSubtitleLang={liveSubtitleLang}
-          availableLanguages={availableLanguages}
-          onLanguageChange={onLanguageChange}
-          isDubbingActive={isDubbingActive}
-          showChaptersPanel={showChaptersPanel}
-          showSceneSearchPanel={showSceneSearchPanel}
-          showSettings={showSettings}
-          hasChapters={chapters.length > 0}
-          hasSceneSearch={!isLive && !!contentId}
-          chapters={chapters}
-          onChaptersPanelToggle={toggleChaptersPanel}
-          onSceneSearchToggle={toggleSceneSearchPanel}
-          onSettingsToggle={toggleSettings}
-          renderWatchPartyButton={renderWatchPartyButton}
-          renderSubtitleControls={renderSubtitleControls}
-          renderLiveSubtitleControls={renderLiveSubtitleControls}
-          renderDubbingControls={renderDubbingControls}
-          renderRecordButton={renderRecordButton}
-          renderCastButton={renderCastButton}
-          renderChannelChatButton={renderChannelChatButton}
-          renderLiveTriviaButton={renderLiveTriviaButton}
-          renderCatchUpButton={renderCatchUpButton}
-          liveFeatureError={liveFeatureError}
-          onDismissLiveFeatureError={onDismissLiveFeatureError}
-        />
-      </GlassView>
+          <PlayerControls
+            state={state}
+            controls={controls}
+            isLive={isLive}
+            liveSubtitleLang={liveSubtitleLang}
+            availableLanguages={availableLanguages}
+            onLanguageChange={onLanguageChange}
+            isDubbingActive={isDubbingActive}
+            showChaptersPanel={showChaptersPanel}
+            showSceneSearchPanel={showSceneSearchPanel}
+            showSettings={showSettings}
+            hasChapters={chapters.length > 0}
+            hasSceneSearch={!isLive && !!contentId}
+            chapters={chapters}
+            onChaptersPanelToggle={toggleChaptersPanel}
+            onSceneSearchToggle={toggleSceneSearchPanel}
+            onSettingsToggle={toggleSettings}
+            renderWatchPartyButton={renderWatchPartyButton}
+            renderSubtitleControls={renderSubtitleControls}
+            renderLiveSubtitleControls={renderLiveSubtitleControls}
+            renderDubbingControls={renderDubbingControls}
+            renderRecordButton={renderRecordButton}
+            renderCastButton={renderCastButton}
+            renderChannelChatButton={renderChannelChatButton}
+            renderLiveTriviaButton={renderLiveTriviaButton}
+            renderCatchUpButton={renderCatchUpButton}
+            liveFeatureError={liveFeatureError}
+            onDismissLiveFeatureError={onDismissLiveFeatureError}
+          />
+        </GlassView>
     </View>
   )
 }
@@ -172,9 +174,11 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundImage: 'linear-gradient(to top, rgba(17, 17, 34, 0.9), transparent 40%, transparent 60%, rgba(17, 17, 34, 0.4))' as any,
     zIndex: 10,
+    transition: 'opacity 0.3s ease-in-out' as any,
   },
   controlsHidden: {
     opacity: 0,
+    transition: 'opacity 0.5s ease-in-out' as any,
   },
   topBar: {
     position: 'absolute',

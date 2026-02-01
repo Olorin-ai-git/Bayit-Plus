@@ -2538,6 +2538,8 @@
     "error": "エラー",
     "retry": "再試行",
     "cancel": "キャンセル",
+    "restart": "再開",
+    "generating": "生成中...",
     "save": "保存",
     "delete": "削除",
     "edit": "編集",
@@ -5223,6 +5225,25 @@
         "description": "魅力的なコンテンツのための現代イスラエルとアメリカのスラングの融合",
         "unavailableReason": "このコンテンツではスラング・シンセシス処理は利用できません"
       }
+    },
+    "splitScreen": {
+      "title": "分割画面",
+      "toggle": "分割画面",
+      "description": "2つの言語を並べて表示",
+      "selectLanguages": "2言語を選択",
+      "selectTwoLanguages": "分割表示用に2言語を選択してください",
+      "confirm": "分割画面を適用",
+      "cancel": "キャンセル",
+      "left": "左",
+      "right": "右",
+      "maxLanguagesReached": "選択できるのは最大2言語です",
+      "enabled": "分割画面が有効になりました",
+      "disabled": "分割画面が無効になりました"
+    },
+    "error": {
+      "title": "字幕エラー",
+      "defaultMessage": "字幕を表示できません。もう一度お試しください。",
+      "retry": "再試行"
     }
   },
   "support": {

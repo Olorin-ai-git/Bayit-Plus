@@ -14,6 +14,7 @@ import {
   SubtitleSettings,
   HebrewMode,
   EnglishMode,
+  SplitLanguages,
 } from '@/types/subtitle'
 import { FlagWithSparkle, getLanguageFlag } from '@/components/common/FlagWithSparkle'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -21,8 +22,10 @@ import { GlassView } from '@bayit/shared/ui'
 import { subtitlesService } from '@/services/api'
 import logger from '@/utils/logger'
 import SubtitleLanguageList from './subtitle/SubtitleLanguageList'
-import HebrewModePickerModal from './subtitle/HebrewModePickerModal'
+import AISubtitlesPicker from './subtitle/AISubtitlesPicker'
 import EnglishModePickerModal from './subtitle/EnglishModePickerModal'
+import SplitModeToggle from './subtitle/SplitModeToggle'
+import SplitModeConfirmButton from './subtitle/SplitModeConfirmButton'
 
 interface SubtitleControlsProps {
   contentId: string
@@ -40,6 +43,11 @@ interface SubtitleControlsProps {
   onHebrewModeChange?: (mode: HebrewMode) => void
   englishMode?: EnglishMode
   onEnglishModeChange?: (mode: EnglishMode) => void
+  // Split mode props
+  splitMode?: boolean
+  onSplitModeToggle?: (enabled: boolean) => void
+  splitLanguages?: SplitLanguages | null
+  onSplitLanguagesChange?: (languages: SplitLanguages | null) => void
 }
 
 export default function SubtitleControls({
@@ -58,6 +66,10 @@ export default function SubtitleControls({
   onHebrewModeChange,
   englishMode = 'regular',
   onEnglishModeChange,
+  splitMode = false,
+  onSplitModeToggle,
+  splitLanguages = null,
+  onSplitLanguagesChange,
 }: SubtitleControlsProps) {
   const { t } = useTranslation()
   const [showLanguageMenu, setShowLanguageMenu] = useState(false)
@@ -65,6 +77,9 @@ export default function SubtitleControls({
   const [showHebrewModePicker, setShowHebrewModePicker] = useState(false)
   const [showEnglishModePicker, setShowEnglishModePicker] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
+
+  // Split mode temporary selection state
+  const [tempSelectedLanguages, setTempSelectedLanguages] = useState<string[]>([])
 
   // Guard against multiple modal openings
   const hebrewPickerOpeningRef = useRef(false)
@@ -184,6 +199,29 @@ export default function SubtitleControls({
     }, 100)
   }, [showEnglishModePicker])
 
+  // Split mode handlers
+  const handleSplitModeToggleLocal = useCallback((enabled: boolean) => {
+    onSplitModeToggle?.(enabled)
+    if (enabled) {
+      // Initialize temp selection from existing split languages or empty
+      setTempSelectedLanguages(splitLanguages ? [...splitLanguages] : [])
+    } else {
+      // Clear temp selection when disabling
+      setTempSelectedLanguages([])
+    }
+  }, [onSplitModeToggle, splitLanguages])
+
+  const handleMultiSelect = useCallback((languages: string[]) => {
+    setTempSelectedLanguages(languages)
+  }, [])
+
+  const handleSplitConfirm = useCallback(() => {
+    if (tempSelectedLanguages.length === 2) {
+      onSplitLanguagesChange?.(tempSelectedLanguages as SplitLanguages)
+      setShowLanguageMenu(false)
+    }
+  }, [tempSelectedLanguages, onSplitLanguagesChange])
+
   // Render menu in a portal at document.body level to avoid z-index issues
   const renderMenu = () => {
     if (!showLanguageMenu) return null
@@ -231,8 +269,19 @@ export default function SubtitleControls({
             </Pressable>
           </View>
 
-          {/* Available Languages Flags Preview - Deduplicated */}
-          {deduplicatedLanguages.length > 0 && (
+          {/* Split Mode Toggle - shown when at least 2 languages available */}
+          {deduplicatedLanguages.length >= 2 && onSplitModeToggle && (
+            <View style={styles.splitModeSection}>
+              <SplitModeToggle
+                enabled={splitMode}
+                onToggle={handleSplitModeToggleLocal}
+                disabled={isLoading}
+              />
+            </View>
+          )}
+
+          {/* Available Languages Flags Preview - Deduplicated (hidden in split mode) */}
+          {!splitMode && deduplicatedLanguages.length > 0 && (
             <View style={styles.flagsPreview}>
               {deduplicatedLanguages.map((track) => {
                 const isActive = track.language === currentLanguage && enabled
@@ -289,7 +338,20 @@ export default function SubtitleControls({
               onSubtitlesRefresh={onSubtitlesRefresh}
               onOpenHebrewModePicker={handleOpenHebrewModePicker}
               onOpenEnglishModePicker={handleOpenEnglishModePicker}
+              // Split mode props
+              selectionMode={splitMode ? 'multi' : 'single'}
+              selectedLanguages={tempSelectedLanguages}
+              onMultiSelect={handleMultiSelect}
             />
+
+            {/* Split Mode Confirm Button */}
+            {splitMode && (
+              <SplitModeConfirmButton
+                selectedLanguages={tempSelectedLanguages}
+                onConfirm={handleSplitConfirm}
+                disabled={isLoading}
+              />
+            )}
 
             {/* Divider */}
             <View style={styles.menuDivider} />
@@ -390,7 +452,7 @@ export default function SubtitleControls({
 
       {/* Hebrew Mode Picker Modal */}
       {showHebrewModePicker && (
-        <HebrewModePickerModal
+        <AISubtitlesPicker
           visible={showHebrewModePicker}
           currentMode={hebrewMode}
           hasNikud={hebrewTrack?.has_nikud_version || false}
@@ -509,6 +571,11 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     padding: spacing.xs,
+  },
+  splitModeSection: {
+    padding: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   flagsPreview: {
     flexDirection: 'row',

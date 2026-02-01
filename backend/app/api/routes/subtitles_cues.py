@@ -785,6 +785,39 @@ async def get_generation_job_status(job_id: str) -> dict:
     return job.to_response()
 
 
+@router.post("/job/{job_id}/cancel")
+async def cancel_generation_job(job_id: str) -> dict:
+    """
+    Cancel an in-progress subtitle AI generation job.
+    Only pending or processing jobs can be cancelled.
+    """
+    try:
+        job = await AIGenerationJob.get(PydanticObjectId(job_id))
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid job ID format")
+
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    if job.status not in [JobStatus.PENDING, JobStatus.PROCESSING]:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot cancel job with status '{job.status.value}'. Only pending or processing jobs can be cancelled."
+        )
+
+    await job.cancel()
+
+    logger.info(
+        "Job cancelled",
+        extra={"job_id": job_id, "job_type": job.job_type.value, "content_id": job.content_id},
+    )
+
+    return {
+        "message": "Job cancelled successfully",
+        "job": job.to_response(),
+    }
+
+
 @router.get("/{content_id}/job/active")
 async def get_active_generation_jobs(content_id: str) -> dict:
     """

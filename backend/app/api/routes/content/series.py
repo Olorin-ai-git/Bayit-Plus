@@ -62,6 +62,7 @@ async def list_all_series(
     page: int = 1,
     limit: int = 50,
     category_id: Optional[str] = None,
+    search: Optional[str] = None,
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """Get all series (parent series, not episodes)."""
@@ -100,6 +101,18 @@ async def list_all_series(
     }
     if category_id:
         filters["category_id"] = category_id
+
+    # Apply search filter if provided
+    if search and search.strip():
+        search_regex = {"$regex": search.strip(), "$options": "i"}
+        filters["$and"] = filters.get("$and", []) + [
+            {
+                "$or": [
+                    {"title": search_regex},
+                    {"description": search_regex},
+                ]
+            }
+        ]
 
     items = await Content.find(filters).skip(skip).limit(limit).to_list()
     total = await Content.find(filters).count()

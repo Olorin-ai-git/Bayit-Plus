@@ -3012,6 +3012,8 @@
     "error": "错误",
     "retry": "重试",
     "cancel": "取消",
+    "restart": "重新开始",
+    "generating": "生成中...",
     "save": "保存",
     "saving": "保存中...",
     "close": "关闭",
@@ -5150,6 +5152,25 @@
         "description": "以色列和美国现代俚语的融合，打造引人入胜的内容",
         "unavailableReason": "此内容暂不支持俚语融合处理"
       }
+    },
+    "splitScreen": {
+      "title": "分屏显示",
+      "toggle": "分屏显示",
+      "description": "并排显示两种语言",
+      "selectLanguages": "选择2种语言",
+      "selectTwoLanguages": "请选择正好2种语言进行分屏显示",
+      "confirm": "应用分屏显示",
+      "cancel": "取消",
+      "left": "左侧",
+      "right": "右侧",
+      "maxLanguagesReached": "最多只能选择2种语言",
+      "enabled": "分屏显示已启用",
+      "disabled": "分屏显示已禁用"
+    },
+    "error": {
+      "title": "字幕错误",
+      "defaultMessage": "无法显示字幕。请重试。",
+      "retry": "重试"
     }
   },
   "support": {

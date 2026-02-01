@@ -117,6 +117,13 @@ class AIGenerationJob(Document):
         self.error_message = error
         await self.save()
 
+    async def cancel(self) -> None:
+        """Mark job as cancelled (failed with cancellation message)"""
+        self.status = JobStatus.FAILED
+        self.completed_at = datetime.utcnow()
+        self.error_message = "Job cancelled by user"
+        await self.save()
+
     @property
     def progress_percent(self) -> int:
         """Get progress as percentage"""

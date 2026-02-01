@@ -244,6 +244,12 @@ export const colors = {
   glassOverlayPurple: 'rgba(88, 28, 135, 0.4)',  // Purple-tinted overlay
   glassWhiteSubtle: 'rgba(255, 255, 255, 0.06)',  // Subtle white overlay for badges/pills
   glassWhiteFaint: 'rgba(255, 255, 255, 0.03)',   // Faint white overlay for secondary surfaces
+
+  // Split screen subtitle colors (solid for WCAG AA contrast compliance)
+  splitScreenLeft: '#3b82f6',     // Solid blue for left pane border
+  splitScreenRight: '#8b5cf6',    // Solid purple for right pane border
+  splitScreenLeftBg: 'rgba(59, 130, 246, 0.15)',  // Light blue background
+  splitScreenRightBg: 'rgba(139, 92, 246, 0.15)', // Light purple background
 };
 
 export default colors;

@@ -316,16 +316,91 @@ class TranslationResponse(BaseModel):
         from_attributes = True
 
 
-# Language options
+# Language options - Complete list matching frontend support
 SUBTITLE_LANGUAGES = [
+    # Middle East & Hebrew
     {"code": "he", "name": "עברית", "name_en": "Hebrew", "rtl": True},
-    {"code": "en", "name": "English", "name_en": "English", "rtl": False},
+    {"code": "yi", "name": "ייִדיש", "name_en": "Yiddish", "rtl": True},
     {"code": "ar", "name": "العربية", "name_en": "Arabic", "rtl": True},
-    {"code": "ru", "name": "Русский", "name_en": "Russian", "rtl": False},
-    {"code": "fr", "name": "Français", "name_en": "French", "rtl": False},
+    {"code": "fa", "name": "فارسی", "name_en": "Persian", "rtl": True},
+    {"code": "tr", "name": "Türkçe", "name_en": "Turkish", "rtl": False},
+
+    # Major European
+    {"code": "en", "name": "English", "name_en": "English", "rtl": False},
     {"code": "es", "name": "Español", "name_en": "Spanish", "rtl": False},
+    {"code": "fr", "name": "Français", "name_en": "French", "rtl": False},
     {"code": "de", "name": "Deutsch", "name_en": "German", "rtl": False},
     {"code": "it", "name": "Italiano", "name_en": "Italian", "rtl": False},
     {"code": "pt", "name": "Português", "name_en": "Portuguese", "rtl": False},
-    {"code": "yi", "name": "ייִדיש", "name_en": "Yiddish", "rtl": True},
+    {"code": "ru", "name": "Русский", "name_en": "Russian", "rtl": False},
+
+    # Northern European
+    {"code": "nl", "name": "Nederlands", "name_en": "Dutch", "rtl": False},
+    {"code": "sv", "name": "Svenska", "name_en": "Swedish", "rtl": False},
+    {"code": "no", "name": "Norsk", "name_en": "Norwegian", "rtl": False},
+    {"code": "da", "name": "Dansk", "name_en": "Danish", "rtl": False},
+    {"code": "fi", "name": "Suomi", "name_en": "Finnish", "rtl": False},
+    {"code": "is", "name": "Íslenska", "name_en": "Icelandic", "rtl": False},
+
+    # Central & Eastern European
+    {"code": "pl", "name": "Polski", "name_en": "Polish", "rtl": False},
+    {"code": "cs", "name": "Čeština", "name_en": "Czech", "rtl": False},
+    {"code": "sk", "name": "Slovenčina", "name_en": "Slovak", "rtl": False},
+    {"code": "hu", "name": "Magyar", "name_en": "Hungarian", "rtl": False},
+    {"code": "ro", "name": "Română", "name_en": "Romanian", "rtl": False},
+    {"code": "bg", "name": "Български", "name_en": "Bulgarian", "rtl": False},
+    {"code": "uk", "name": "Українська", "name_en": "Ukrainian", "rtl": False},
+    {"code": "hr", "name": "Hrvatski", "name_en": "Croatian", "rtl": False},
+    {"code": "sr", "name": "Српски", "name_en": "Serbian", "rtl": False},
+    {"code": "sl", "name": "Slovenščina", "name_en": "Slovenian", "rtl": False},
+    {"code": "el", "name": "Ελληνικά", "name_en": "Greek", "rtl": False},
+    {"code": "lt", "name": "Lietuvių", "name_en": "Lithuanian", "rtl": False},
+    {"code": "lv", "name": "Latviešu", "name_en": "Latvian", "rtl": False},
+    {"code": "et", "name": "Eesti", "name_en": "Estonian", "rtl": False},
+
+    # Asian
+    {"code": "zh", "name": "中文", "name_en": "Chinese", "rtl": False},
+    {"code": "ja", "name": "日本語", "name_en": "Japanese", "rtl": False},
+    {"code": "ko", "name": "한국어", "name_en": "Korean", "rtl": False},
+    {"code": "th", "name": "ไทย", "name_en": "Thai", "rtl": False},
+    {"code": "vi", "name": "Tiếng Việt", "name_en": "Vietnamese", "rtl": False},
+    {"code": "id", "name": "Bahasa Indonesia", "name_en": "Indonesian", "rtl": False},
+    {"code": "ms", "name": "Bahasa Melayu", "name_en": "Malay", "rtl": False},
+    {"code": "tl", "name": "Tagalog", "name_en": "Filipino", "rtl": False},
+
+    # South Asian
+    {"code": "hi", "name": "हिन्दी", "name_en": "Hindi", "rtl": False},
+    {"code": "bn", "name": "বাংলা", "name_en": "Bengali", "rtl": False},
+    {"code": "ta", "name": "தமிழ்", "name_en": "Tamil", "rtl": False},
+    {"code": "te", "name": "తెలుగు", "name_en": "Telugu", "rtl": False},
+    {"code": "mr", "name": "मराठी", "name_en": "Marathi", "rtl": False},
+    {"code": "pa", "name": "ਪੰਜਾਬੀ", "name_en": "Punjabi", "rtl": False},
+    {"code": "ur", "name": "اردو", "name_en": "Urdu", "rtl": True},
+
+    # Other
+    {"code": "af", "name": "Afrikaans", "name_en": "Afrikaans", "rtl": False},
+    {"code": "sw", "name": "Kiswahili", "name_en": "Swahili", "rtl": False},
+    {"code": "am", "name": "አማርኛ", "name_en": "Amharic", "rtl": False},
 ]
+
+
+def get_language_name(code: str) -> str:
+    """
+    Get language name (English) for a language code.
+    Falls back to uppercase code if language not found.
+    """
+    for lang in SUBTITLE_LANGUAGES:
+        if lang["code"] == code:
+            return lang["name_en"]
+    return code.upper()
+
+
+def get_language_native_name(code: str) -> str:
+    """
+    Get native language name for a language code.
+    Falls back to uppercase code if language not found.
+    """
+    for lang in SUBTITLE_LANGUAGES:
+        if lang["code"] == code:
+            return lang["name"]
+    return code.upper()

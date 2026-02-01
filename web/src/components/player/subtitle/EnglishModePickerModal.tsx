@@ -107,15 +107,24 @@ export default function EnglishModePickerModal({
   const [generatingMode, setGeneratingMode] = useState<EnglishMode | null>(null)
   const [generationError, setGenerationError] = useState<string | null>(null)
   const [jobProgress, setJobProgress] = useState<number>(0)
+  const [currentJobId, setCurrentJobId] = useState<string | null>(null)
+  const [isCancelling, setIsCancelling] = useState(false)
   const isAdmin = useAuthStore((s) => s.isAdmin())
 
-  useEffect(() => {
-    return () => {
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current)
-      }
+  // Helper to safely clear polling interval
+  const clearPolling = useCallback(() => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current)
+      pollingRef.current = null
     }
   }, [])
+
+  // Cleanup polling on unmount
+  useEffect(() => {
+    return () => {
+      clearPolling()
+    }
+  }, [clearPolling])
 
   useEffect(() => {
     if (visible) {
@@ -197,30 +206,123 @@ export default function EnglishModePickerModal({
     return false
   }
 
-  const pollJobStatus = useCallback(async (jobId: string) => {
+  const pollJobStatus = useCallback(async (jobId: string, mode: EnglishMode) => {
     try {
       const status = await subtitlesService.getJobStatus(jobId) as JobStatus
-      logger.info(`Job status: ${status.status}`, 'EnglishModePickerModal', { jobId, progress: status.progress })
+      logger.debug(`Job status: ${status.status}`, 'EnglishModePickerModal', { jobId, progress: status.progress })
+
+      // CRITICAL: Stop polling immediately for terminal states
+      if (status.status === 'completed' || status.status === 'failed') {
+        clearPolling()
+        setGeneratingMode(null)
+        setJobProgress(0)
+        setCurrentJobId(null)
+
+        if (status.status === 'completed') {
+          logger.info(`${mode} generation completed`, 'EnglishModePickerModal', { contentId })
+          onGenerationComplete?.()
+        } else {
+          setGenerationError(status.error_message || `${mode} generation failed`)
+          logger.error(`${mode} generation failed`, 'EnglishModePickerModal', { contentId, error: status.error_message })
+        }
+        return // Exit early - don't update progress for terminal states
+      }
 
       setJobProgress(status.progress)
-
-      if (status.status === 'completed') {
-        if (pollingRef.current) clearInterval(pollingRef.current)
-        setGeneratingMode(null)
-        setJobProgress(0)
-        logger.info('Heblish generation completed', 'EnglishModePickerModal', { contentId })
-        onGenerationComplete?.()
-      } else if (status.status === 'failed') {
-        if (pollingRef.current) clearInterval(pollingRef.current)
-        setGeneratingMode(null)
-        setJobProgress(0)
-        setGenerationError(status.error_message || 'Heblish generation failed')
-        logger.error('Heblish generation failed', 'EnglishModePickerModal', { contentId, error: status.error_message })
-      }
     } catch (error) {
       logger.error('Failed to poll job status', 'EnglishModePickerModal', { jobId, error })
+      // On error, stop polling to prevent infinite error loops
+      clearPolling()
+      setGeneratingMode(null)
+      setCurrentJobId(null)
     }
-  }, [contentId, onGenerationComplete])
+  }, [contentId, onGenerationComplete, clearPolling])
+
+  // Cancel current job
+  const handleCancelJob = useCallback(async () => {
+    if (!currentJobId || isCancelling) return
+
+    setIsCancelling(true)
+    // Stop polling FIRST before any async operations
+    clearPolling()
+
+    try {
+      await subtitlesService.cancelJob(currentJobId)
+      setGeneratingMode(null)
+      setJobProgress(0)
+      setCurrentJobId(null)
+      logger.info('Job cancelled', 'EnglishModePickerModal', { jobId: currentJobId })
+    } catch (error) {
+      logger.error('Failed to cancel job', 'EnglishModePickerModal', { jobId: currentJobId, error })
+      setGenerationError('Failed to cancel job')
+    } finally {
+      setIsCancelling(false)
+    }
+  }, [currentJobId, isCancelling, clearPolling])
+
+  // Restart a stuck job (cancel and regenerate)
+  const handleRestartJob = useCallback(async (mode: EnglishMode) => {
+    if (!contentId || isCancelling) return
+
+    // Stop any existing polling FIRST
+    clearPolling()
+
+    // First cancel the current job if exists
+    if (currentJobId) {
+      setIsCancelling(true)
+      try {
+        await subtitlesService.cancelJob(currentJobId)
+      } catch (error) {
+        logger.error('Failed to cancel job for restart', 'EnglishModePickerModal', { error })
+      }
+      setIsCancelling(false)
+    }
+
+    // Reset state
+    setGeneratingMode(null)
+    setJobProgress(0)
+    setCurrentJobId(null)
+    setGenerationError(null)
+
+    // Small delay before restarting
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    // Regenerate with force flag
+    try {
+      setGeneratingMode(mode)
+      let result
+      if (mode === 'heblish') {
+        result = await subtitlesService.generateHeblish(contentId, 'en', true)
+      } else if (mode === 'grammarFlip') {
+        result = await subtitlesService.generateGrammarFlip(contentId, 'en', true)
+      } else if (mode === 'slangSynthesis') {
+        result = await subtitlesService.generateSlangSynthesis(contentId, 'en', true)
+      } else {
+        throw new Error(`Unknown mode: ${mode}`)
+      }
+
+      if (result.status === 'completed') {
+        setGeneratingMode(null)
+        onGenerationComplete?.()
+        return
+      }
+
+      const jobId = result.job_id
+      if (jobId) {
+        setCurrentJobId(jobId)
+        // Clear any stale interval before creating new one
+        clearPolling()
+        pollingRef.current = setInterval(() => {
+          pollJobStatus(jobId, mode)
+        }, 2000)
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Restart failed'
+      logger.error(`Failed to restart ${mode} generation`, 'EnglishModePickerModal', { contentId, error: errorMessage })
+      setGenerationError(`Failed to restart: ${errorMessage}`)
+      setGeneratingMode(null)
+    }
+  }, [contentId, currentJobId, isCancelling, onGenerationComplete, pollJobStatus, clearPolling])
 
   const handleGenerate = async (e: React.MouseEvent, mode: EnglishMode) => {
     e.stopPropagation()
@@ -268,8 +370,11 @@ export default function EnglishModePickerModal({
 
       const jobId = result.job_id
       if (jobId) {
+        setCurrentJobId(jobId)
+        // Clear any existing polling before starting new one
+        clearPolling()
         pollingRef.current = setInterval(() => {
-          pollJobStatus(jobId)
+          pollJobStatus(jobId, mode)
         }, 2000)
       }
     } catch (error: unknown) {
@@ -277,6 +382,7 @@ export default function EnglishModePickerModal({
       logger.error(`Failed to start ${mode} generation`, 'EnglishModePickerModal', { contentId, error: errorMessage })
       setGenerationError(`Failed to start ${mode} generation: ${errorMessage}`)
       setGeneratingMode(null)
+      setCurrentJobId(null)
     }
   }
 
@@ -477,30 +583,58 @@ export default function EnglishModePickerModal({
                   {!isAvailable && isAIMode && (
                     <div className="flex flex-col items-end gap-1 flex-shrink-0">
                       {isAdmin && contentId ? (
-                        <button
-                          type="button"
-                          onClick={(e) => handleGenerate(e, option.mode)}
-                          disabled={generatingMode !== null}
-                          className="px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white cursor-pointer"
-                          style={{
-                            backgroundColor: generatingMode === option.mode ? 'rgba(168, 85, 247, 0.7)' : '#a855f7',
-                            cursor: generatingMode === option.mode ? 'wait' : 'pointer',
-                            opacity: generatingMode !== null && generatingMode !== option.mode ? 0.5 : 1,
-                          }}
-                          aria-label={`Generate ${option.mode}`}
-                        >
+                        <div className="flex items-center gap-2">
                           {generatingMode === option.mode ? (
-                            <span className="flex items-center justify-center gap-1.5">
-                              <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              {jobProgress > 0
-                                ? `${jobProgress}%`
-                                : t('common.generating', 'Generating...')
-                              }
-                            </span>
+                            <>
+                              {/* Progress display */}
+                              <span className="flex items-center gap-1.5 px-3 py-2 bg-purple-500/70 rounded-xl text-sm font-semibold text-white">
+                                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                {jobProgress > 0 ? `${jobProgress}%` : t('common.generating', 'Generating...')}
+                              </span>
+                              {/* Cancel button */}
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); handleCancelJob(); }}
+                                disabled={isCancelling}
+                                className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-red-500 hover:bg-red-600 disabled:opacity-50"
+                                aria-label={t('common.cancel', 'Cancel')}
+                              >
+                                {isCancelling ? (
+                                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+                                ) : (
+                                  t('common.cancel', 'Cancel')
+                                )}
+                              </button>
+                              {/* Restart button (shown when job seems stuck - progress > 50%) */}
+                              {jobProgress > 50 && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); handleRestartJob(option.mode); }}
+                                  disabled={isCancelling}
+                                  className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-amber-500 hover:bg-amber-600 disabled:opacity-50"
+                                  aria-label={t('common.restart', 'Restart')}
+                                >
+                                  {t('common.restart', 'Restart')}
+                                </button>
+                              )}
+                            </>
                           ) : (
-                            t('subtitles.englishMode.generate', 'Generate')
+                            <button
+                              type="button"
+                              onClick={(e) => handleGenerate(e, option.mode)}
+                              disabled={generatingMode !== null}
+                              className="px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white cursor-pointer"
+                              style={{
+                                backgroundColor: '#a855f7',
+                                cursor: generatingMode !== null ? 'not-allowed' : 'pointer',
+                                opacity: generatingMode !== null ? 0.5 : 1,
+                              }}
+                              aria-label={`Generate ${option.mode}`}
+                            >
+                              {t('subtitles.englishMode.generate', 'Generate')}
+                            </button>
                           )}
-                        </button>
+                        </div>
                       ) : (
                         <div
                           className="bg-red-500/20 rounded px-2 py-1"

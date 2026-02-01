@@ -4816,9 +4816,24 @@
         "unavailableReason": "L'elaborazione della sintesi dello slang non è disponibile per questo contenuto"
       }
     },
+    "splitScreen": {
+      "title": "Schermo Diviso",
+      "toggle": "Schermo Diviso",
+      "description": "Mostra due lingue affiancate",
+      "selectLanguages": "Seleziona 2 Lingue",
+      "selectTwoLanguages": "Seleziona esattamente 2 lingue per la visualizzazione divisa",
+      "confirm": "Applica Schermo Diviso",
+      "cancel": "Annulla",
+      "left": "Sinistra",
+      "right": "Destra",
+      "maxLanguagesReached": "È possibile selezionare al massimo 2 lingue",
+      "enabled": "Schermo diviso attivato",
+      "disabled": "Schermo diviso disattivato"
+    },
     "loading": "Caricamento sottotitoli...",
     "error": {
-      "title": "Errore Sottotitoli",
+      "title": "Errore sottotitoli",
+      "defaultMessage": "Impossibile visualizzare i sottotitoli. Riprova.",
       "retry": "Riprova",
       "loadFailed": "Caricamento sottotitoli non riuscito",
       "cuesFailed": "Caricamento testo sottotitoli non riuscito",

@@ -2,7 +2,7 @@
  * Custom hook for subtitle management
  */
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   SubtitleTrack,
   SubtitleCue,
@@ -10,6 +10,7 @@ import {
   SubtitlePreferences,
   HebrewMode,
   EnglishMode,
+  SplitLanguages,
 } from '@/types/subtitle'
 import { subtitlesService, subtitlePreferencesService } from '@/services/api'
 import logger from '@/utils/logger'
@@ -42,6 +43,15 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     textColor: '#ffffff',
   })
 
+  // Split mode state
+  const [splitMode, setSplitMode] = useState(false)
+  const [splitLanguages, setSplitLanguages] = useState<SplitLanguages | null>(null)
+  const [splitCues, setSplitCues] = useState<{
+    primary: SubtitleCue[]
+    secondary: SubtitleCue[]
+  }>({ primary: [], secondary: [] })
+  const [splitCuesLoading, setSplitCuesLoading] = useState(false)
+
   // Load subtitle preferences from storage with validation
   useEffect(() => {
     const loadPreferences = async () => {
@@ -56,6 +66,8 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
           setHebrewMode(prefs.hebrew_mode || 'regular')
           setEnglishMode(prefs.english_mode || 'regular')
           setSubtitleSettings(prefs.settings)
+          setSplitMode(prefs.split_mode || false)
+          setSplitLanguages(prefs.split_languages || null)
         }
       } catch (error) {
         logger.error('Failed to load subtitle preferences', 'useSubtitles', error)
@@ -65,18 +77,35 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
   }, [])
 
   // Function to fetch available subtitles
-  const fetchAvailableSubtitles = async () => {
+  const fetchAvailableSubtitles = useCallback(async () => {
     if (!contentId || isLive) return
 
     setSubtitlesLoading(true)
     setSubtitlesError(null)
     try {
+      logger.debug('Fetching available subtitle tracks', 'useSubtitles', { contentId })
       const response = await subtitlesService.getTracks(contentId)
-      setAvailableSubtitles(response.tracks || [])
+
+      // Check for API error responses
+      if (!response || response.detail) {
+        logger.warn('Subtitle tracks API error response', 'useSubtitles', {
+          contentId,
+          response,
+        })
+        throw new Error(response?.detail || 'Failed to load subtitle tracks')
+      }
+
+      const tracks = Array.isArray(response.tracks) ? response.tracks : []
+      logger.debug('Subtitle tracks loaded', 'useSubtitles', {
+        contentId,
+        trackCount: tracks.length,
+        languages: tracks.map((t: any) => t.language),
+      })
+      setAvailableSubtitles(tracks)
 
       // Auto-select subtitle language if enabled and not already set
-      if (subtitlesEnabled && !currentSubtitleLang && response.tracks?.length > 0) {
-        const availableLanguages = response.tracks.map((t: any) => t.language)
+      if (subtitlesEnabled && !currentSubtitleLang && tracks.length > 0) {
+        const availableLanguages = tracks.map((t: any) => t.language)
 
         // Priority: 1. User preference, 2. Hebrew, 3. English, 4. Default, 5. First available
         let selectedLanguage: string | null = null
@@ -99,7 +128,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
             selectedLanguage = 'en'
           } else {
             // Fallback to default or first available
-            const defaultTrack = response.tracks.find((t: any) => t.is_default) || response.tracks[0]
+            const defaultTrack = tracks.find((t: any) => t.is_default) || tracks[0]
             selectedLanguage = defaultTrack.language
           }
         }
@@ -120,12 +149,12 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     } finally {
       setSubtitlesLoading(false)
     }
-  }
+  }, [contentId, isLive, subtitlesEnabled, currentSubtitleLang])
 
   // Fetch available subtitles when contentId changes
   useEffect(() => {
     fetchAvailableSubtitles()
-  }, [contentId, isLive])
+  }, [fetchAvailableSubtitles])
 
   // Fetch subtitle cues when language or mode changes
   useEffect(() => {
@@ -139,6 +168,13 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
       setCuesLoading(true)
       setCuesError(null)
       try {
+        logger.debug('Fetching subtitle cues', 'useSubtitles', {
+          contentId,
+          language: currentSubtitleLang,
+          hebrewMode: currentSubtitleLang === 'he' ? hebrewMode : 'regular',
+          englishMode: currentSubtitleLang === 'en' ? englishMode : 'regular',
+        })
+
         // Pass appropriate mode based on language
         const response = await subtitlesService.getCues(
           contentId,
@@ -146,7 +182,24 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
           currentSubtitleLang === 'he' ? hebrewMode : 'regular',
           currentSubtitleLang === 'en' ? englishMode : 'regular'
         )
-        setCurrentCues(response.cues || [])
+
+        // Check for API error responses (4xx errors don't throw with current axios config)
+        if (!response || response.detail || !Array.isArray(response.cues)) {
+          const errorMessage = response?.detail || 'Subtitle track not found'
+          logger.warn('Subtitle cues API error response', 'useSubtitles', {
+            contentId,
+            language: currentSubtitleLang,
+            response,
+          })
+          throw new Error(errorMessage)
+        }
+
+        logger.debug('Subtitle cues loaded successfully', 'useSubtitles', {
+          contentId,
+          language: currentSubtitleLang,
+          cueCount: response.cues.length,
+        })
+        setCurrentCues(response.cues)
       } catch (error) {
         const errorObj = error instanceof Error ? error : new Error(String(error))
         setCuesError(errorObj)
@@ -167,6 +220,67 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     fetchCues()
   }, [contentId, currentSubtitleLang, hebrewMode, englishMode, subtitlesEnabled])
 
+  // Fetch split mode cues when split mode is active
+  useEffect(() => {
+    if (!contentId || !splitMode || !splitLanguages || !subtitlesEnabled) {
+      setSplitCues({ primary: [], secondary: [] })
+      return
+    }
+
+    const fetchSplitCues = async () => {
+      setSplitCuesLoading(true)
+      try {
+        const [primaryLang, secondaryLang] = splitLanguages
+
+        // Fetch both languages in parallel
+        const [primaryResponse, secondaryResponse] = await Promise.all([
+          subtitlesService.getCues(
+            contentId,
+            primaryLang,
+            primaryLang === 'he' ? hebrewMode : 'regular',
+            primaryLang === 'en' ? englishMode : 'regular'
+          ),
+          subtitlesService.getCues(
+            contentId,
+            secondaryLang,
+            secondaryLang === 'he' ? hebrewMode : 'regular',
+            secondaryLang === 'en' ? englishMode : 'regular'
+          ),
+        ])
+
+        // Check for API error responses
+        const primaryCues = Array.isArray(primaryResponse?.cues) ? primaryResponse.cues : []
+        const secondaryCues = Array.isArray(secondaryResponse?.cues) ? secondaryResponse.cues : []
+
+        if (primaryResponse?.detail || secondaryResponse?.detail) {
+          logger.warn('Split cues API error response', 'useSubtitles', {
+            contentId,
+            primaryError: primaryResponse?.detail,
+            secondaryError: secondaryResponse?.detail,
+          })
+        }
+
+        setSplitCues({
+          primary: primaryCues,
+          secondary: secondaryCues,
+        })
+      } catch (error) {
+        logger.error('Failed to fetch split subtitle cues', 'useSubtitles', error)
+        setSplitCues({ primary: [], secondary: [] })
+
+        addNotification({
+          message: 'Failed to load split screen subtitles. Please try again.',
+          level: 'error',
+          duration: 5000,
+        })
+      } finally {
+        setSplitCuesLoading(false)
+      }
+    }
+
+    fetchSplitCues()
+  }, [contentId, splitMode, splitLanguages, hebrewMode, englishMode, subtitlesEnabled])
+
   // Save subtitle preferences to storage
   useEffect(() => {
     const savePreferences = async () => {
@@ -177,6 +291,8 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
           hebrew_mode: hebrewMode,
           english_mode: englishMode,
           settings: subtitleSettings,
+          split_mode: splitMode,
+          split_languages: splitLanguages,
         }
         await storageHelpers.setJSON(STORAGE_KEYS.SUBTITLE_PREFERENCES, prefs)
       } catch (error) {
@@ -191,7 +307,7 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
       }
     }
     savePreferences()
-  }, [subtitlesEnabled, currentSubtitleLang, hebrewMode, englishMode, subtitleSettings])
+  }, [subtitlesEnabled, currentSubtitleLang, hebrewMode, englishMode, subtitleSettings, splitMode, splitLanguages])
 
   // Subtitle handlers
   const handleSubtitleToggle = (enabled: boolean) => {
@@ -203,6 +319,12 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
   }
 
   const handleSubtitleLanguageChange = async (language: string | null) => {
+    logger.info('Subtitle language change requested', 'useSubtitles', {
+      from: currentSubtitleLang,
+      to: language,
+      contentId,
+    })
+
     setCurrentSubtitleLang(language)
     // Enable subtitles when selecting a language
     if (language) {
@@ -299,6 +421,27 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     }
   }
 
+  // Split mode handlers
+  const handleSplitModeToggle = (enabled: boolean) => {
+    setSplitMode(enabled)
+    if (!enabled) {
+      // Clear split languages when disabling
+      setSplitLanguages(null)
+      setSplitCues({ primary: [], secondary: [] })
+    }
+    logger.info('Split mode toggled', 'useSubtitles', { enabled })
+  }
+
+  const handleSplitLanguagesChange = (languages: SplitLanguages | null) => {
+    setSplitLanguages(languages)
+    if (languages) {
+      // Enable subtitles and split mode when languages are selected
+      setSubtitlesEnabled(true)
+      setSplitMode(true)
+      logger.info('Split languages selected', 'useSubtitles', { languages })
+    }
+  }
+
   // Retry handlers
   const retryFetchSubtitles = () => {
     setSubtitlesError(null)
@@ -319,7 +462,14 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
             currentSubtitleLang === 'he' ? hebrewMode : 'regular',
             currentSubtitleLang === 'en' ? englishMode : 'regular'
           )
-          setCurrentCues(response.cues || [])
+
+          // Check for API error responses
+          if (!response || response.detail || !Array.isArray(response.cues)) {
+            const errorMessage = response?.detail || 'Subtitle track not found'
+            throw new Error(errorMessage)
+          }
+
+          setCurrentCues(response.cues)
         } catch (error) {
           const errorObj = error instanceof Error ? error : new Error(String(error))
           setCuesError(errorObj)
@@ -345,11 +495,19 @@ export function useSubtitles({ contentId, isLive = false }: UseSubtitlesOptions)
     cuesError,
     currentCues,
     subtitleSettings,
+    // Split mode state
+    splitMode,
+    splitLanguages,
+    splitCues,
+    splitCuesLoading,
+    // Handlers
     handleSubtitleToggle,
     handleSubtitleLanguageChange,
     handleHebrewModeChange,
     handleEnglishModeChange,
     handleSubtitleSettingsChange,
+    handleSplitModeToggle,
+    handleSplitLanguagesChange,
     fetchAvailableSubtitles,
     retryFetchSubtitles,
     retryFetchCues,

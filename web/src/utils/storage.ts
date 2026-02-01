@@ -252,12 +252,15 @@ export const StorageSchemas = {
     enabled: z.boolean(),
     language: z.string().nullable(),
     hebrew_mode: z.enum(['regular', 'nikud', 'shoresh']).optional(),
+    english_mode: z.enum(['regular', 'heblish', 'grammarFlip', 'slangSynthesis']).optional(),
     settings: z.object({
       fontSize: z.enum(['small', 'medium', 'large']),
       position: z.enum(['top', 'bottom']),
       backgroundColor: z.string(),
       textColor: z.string(),
     }),
+    split_mode: z.boolean().optional(),
+    split_languages: z.tuple([z.string(), z.string()]).nullable().optional(),
   }),
 
   UserLocation: z.object({

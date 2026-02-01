@@ -59,6 +59,14 @@ export type HebrewMode = 'regular' | 'nikud' | 'shoresh'
  */
 export type EnglishMode = 'regular' | 'heblish' | 'grammarFlip' | 'slangSynthesis'
 
+// ============ SPLIT MODE ============
+
+/**
+ * Split languages tuple: [leftLanguage, rightLanguage]
+ * First selection = left pane, second selection = right pane
+ */
+export type SplitLanguages = [string, string]
+
 // ============ SUBTITLE PREFERENCES ============
 
 export interface SubtitlePreferences {
@@ -67,6 +75,8 @@ export interface SubtitlePreferences {
   hebrew_mode?: HebrewMode  // Hebrew subtitle display mode
   english_mode?: EnglishMode  // English subtitle display mode
   settings: SubtitleSettings
+  split_mode?: boolean  // Whether split screen is enabled
+  split_languages?: SplitLanguages | null  // Two languages for split view
 }
 
 // ============ LIVE SUBTITLE CUE ============

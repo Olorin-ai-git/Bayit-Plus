@@ -8,26 +8,11 @@ from datetime import datetime
 from typing import List
 
 from app.models.content import Content
-from app.models.subtitles import SubtitleCueModel, SubtitleTrackDoc
+from app.models.subtitles import SubtitleCueModel, SubtitleTrackDoc, get_language_name
 from app.services.ffmpeg_service import FFmpegService
 from app.services.subtitle_service import parse_subtitles
 
 logger = logging.getLogger(__name__)
-
-# Language name mapping
-LANGUAGE_NAMES = {
-    "en": "English",
-    "he": "עברית",
-    "es": "Español",
-    "ar": "العربية",
-    "ru": "Русский",
-    "fr": "Français",
-}
-
-
-def get_language_name(code: str) -> str:
-    """Get language name from code."""
-    return LANGUAGE_NAMES.get(code, code.upper())
 
 
 async def analyze_and_extract_subtitles(content_id: str, stream_url: str):

@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView, Text, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { RefreshCw, Search, Filter, Merge } from 'lucide-react'
 import MergeWizard from '@/components/admin/content/MergeWizard'
-import HebrewModePickerModal from '@/components/player/subtitle/HebrewModePickerModal'
+import AISubtitlesPicker from '@/components/player/subtitle/AISubtitlesPicker'
 import EnglishModePickerModal from '@/components/player/subtitle/EnglishModePickerModal'
 import { adminContentService } from '@/services/adminApi'
 import { subtitlesService } from '@/services/api'
@@ -365,7 +365,7 @@ export default function ContentLibraryPage() {
 
       {/* Subtitle AI Modal - Hebrew Mode */}
       {subtitleAIContent && subtitleAITab === 'hebrew' && (
-        <HebrewModePickerModal
+        <AISubtitlesPicker
           visible={!!subtitleAIContent}
           currentMode="regular"
           isLoading={subtitleAIContent.isLoading}

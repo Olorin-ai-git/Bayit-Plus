@@ -5,8 +5,9 @@
 
 import { useMemo } from 'react'
 import { View, Text, StyleSheet, Platform } from 'react-native'
-import { SubtitleCue, SubtitleSettings, getLanguageInfo } from '@/types/subtitle'
+import { SubtitleCue, SubtitleSettings, getLanguageInfo, SplitLanguages } from '@/types/subtitle'
 import { useSafeAreaInsets } from '@bayit/shared-hooks/useSafeArea'
+import SplitSubtitleOverlay from './subtitle/SplitSubtitleOverlay'
 
 interface SubtitleOverlayProps {
   currentTime: number
@@ -14,6 +15,13 @@ interface SubtitleOverlayProps {
   language: string
   enabled: boolean
   settings: SubtitleSettings
+  // Split mode props
+  splitMode?: boolean
+  splitLanguages?: SplitLanguages | null
+  splitCues?: {
+    primary: SubtitleCue[]
+    secondary: SubtitleCue[]
+  }
 }
 
 export default function SubtitleOverlay({
@@ -22,6 +30,9 @@ export default function SubtitleOverlay({
   language,
   enabled,
   settings,
+  splitMode = false,
+  splitLanguages = null,
+  splitCues = { primary: [], secondary: [] },
 }: SubtitleOverlayProps) {
   // Get safe area insets for dynamic positioning
   const safeAreaInsets = useSafeAreaInsets()
@@ -30,6 +41,21 @@ export default function SubtitleOverlay({
   const bottomPosition = useMemo(() => ({
     bottom: safeAreaInsets.bottom + 96, // Original padding + safe area
   }), [safeAreaInsets.bottom])
+
+  // Render split mode overlay if active
+  if (splitMode && splitLanguages && enabled) {
+    return (
+      <SplitSubtitleOverlay
+        currentTime={currentTime}
+        primaryCues={splitCues.primary}
+        secondaryCues={splitCues.secondary}
+        primaryLanguage={splitLanguages[0]}
+        secondaryLanguage={splitLanguages[1]}
+        enabled={enabled}
+        settings={settings}
+      />
+    )
+  }
 
   // Find active subtitle cue(s) for current time
   const activeCues = useMemo(() => {

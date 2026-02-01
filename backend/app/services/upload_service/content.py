@@ -294,20 +294,22 @@ class ContentEntryCreator:
         if not (subs := m.get("extracted_subtitles", [])):
             return
 
-        from app.models.subtitles import SubtitleCueModel, SubtitleTrackDoc
+        from app.models.subtitles import SubtitleCueModel, SubtitleTrackDoc, get_language_name
         from app.services.subtitle_service import parse_srt
 
         for sub in subs:
             try:
                 cues = parse_srt(sub["content"])
+                lang_code = sub["language"]
                 track = SubtitleTrackDoc(
                     content_id=str(content.id),
-                    language=sub["language"],
+                    language=lang_code,
+                    language_name=get_language_name(lang_code),
                     source="embedded",
                     format=sub.get("format", "srt"),
                     codec=sub.get("codec", "unknown"),
                     cues=[SubtitleCueModel(**c) for c in cues],
-                    is_default=sub["language"] == "en",
+                    is_default=lang_code == "en",
                 )
                 await track.insert()
                 logger.info(f"Saved {sub['language']} subtitles ({len(cues)} cues)")

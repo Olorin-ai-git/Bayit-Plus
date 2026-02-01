@@ -249,6 +249,7 @@ export function useVideoPlayer({
   useControlsAutoHide({
     containerRef,
     isPlaying: state.isPlaying,
+    isFullscreen: state.isFullscreen,
     onShowControls: () => setState((prev) => ({ ...prev, showControls: true })),
     onHideControls: () => setState((prev) => ({ ...prev, showControls: false })),
   })

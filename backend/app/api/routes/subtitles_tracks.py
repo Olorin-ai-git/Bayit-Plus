@@ -13,6 +13,7 @@ from app.models.subtitles import (
     SUBTITLE_LANGUAGES,
     SubtitleCueModel,
     SubtitleTrackDoc,
+    get_language_name,
 )
 from app.services.subtitle_service import fetch_subtitles
 
@@ -30,8 +31,20 @@ async def get_subtitle_tracks(content_id: str, language: Optional[str] = None) -
     """
     Get available subtitle tracks for content.
     Optionally filter by language.
+    Hebrew and English subtitles are prioritized at the top.
     """
     tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
+
+    # Sort tracks: Hebrew first, English second, then others
+    def sort_key(track):
+        if track.language == "he":
+            return (0, track.language)
+        elif track.language == "en":
+            return (1, track.language)
+        else:
+            return (2, track.language)
+
+    sorted_tracks = sorted(tracks, key=sort_key)
 
     return {
         "tracks": [
@@ -50,7 +63,7 @@ async def get_subtitle_tracks(content_id: str, language: Optional[str] = None) -
                 "is_auto_generated": getattr(track, "is_auto_generated", False),
                 "cue_count": len(track.cues),
             }
-            for track in tracks
+            for track in sorted_tracks
         ]
     }
 
@@ -214,18 +227,6 @@ async def fetch_external_subtitles(
     if not languages:
         languages = ["en", "he", "es", "ar", "ru", "fr", "de", "pt", "it"]
 
-    language_names = {
-        "en": "English",
-        "he": "עברית",
-        "es": "Español",
-        "ar": "العربية",
-        "ru": "Русский",
-        "fr": "Français",
-        "de": "Deutsch",
-        "pt": "Português",
-        "it": "Italiano",
-    }
-
     existing_tracks = await SubtitleTrackDoc.get_for_content(content_id)
     existing_languages = {t.language for t in existing_tracks}
     languages_to_fetch = [lang for lang in languages if lang not in existing_languages]
@@ -289,7 +290,7 @@ async def fetch_external_subtitles(
                 content_id=content_id,
                 content_type="vod",
                 language=lang,
-                language_name=language_names.get(lang, lang.upper()),
+                language_name=get_language_name(lang),
                 format="srt",
                 source="opensubtitles",
                 external_id=file_id,
@@ -308,7 +309,7 @@ async def fetch_external_subtitles(
             imported.append(
                 {
                     "language": lang,
-                    "language_name": language_names.get(lang, lang.upper()),
+                    "language_name": get_language_name(lang),
                     "cue_count": len(parsed.cues),
                     "track_id": str(track.id),
                 }

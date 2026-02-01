@@ -3267,6 +3267,8 @@
     "error": "Error",
     "retry": "Reintentar",
     "cancel": "Cancelar",
+    "restart": "Reiniciar",
+    "generating": "Generando...",
     "save": "Guardar",
     "saving": "Guardando...",
     "close": "Cerrar",
@@ -5896,10 +5898,25 @@
         "unavailableReason": "Procesamiento de Síntesis de Jerga no disponible para este contenido"
       }
     },
+    "splitScreen": {
+      "title": "Pantalla Dividida",
+      "toggle": "Pantalla Dividida",
+      "description": "Mostrar dos idiomas lado a lado",
+      "selectLanguages": "Seleccionar 2 Idiomas",
+      "selectTwoLanguages": "Selecciona exactamente 2 idiomas para vista dividida",
+      "confirm": "Aplicar Pantalla Dividida",
+      "cancel": "Cancelar",
+      "left": "Izquierda",
+      "right": "Derecha",
+      "maxLanguagesReached": "Se pueden seleccionar máximo 2 idiomas",
+      "enabled": "Pantalla dividida activada",
+      "disabled": "Pantalla dividida desactivada"
+    },
     "loading": "Cargando subtítulos...",
     "error": {
-      "title": "Error de Subtítulos",
-      "retry": "Intentar de Nuevo",
+      "title": "Error de subtítulos",
+      "defaultMessage": "No se pueden mostrar los subtítulos. Por favor, inténtalo de nuevo.",
+      "retry": "Reintentar",
       "loadFailed": "Error al cargar subtítulos",
       "cuesFailed": "Error al cargar texto de subtítulos",
       "networkError": "Error de red - verifica tu conexión",

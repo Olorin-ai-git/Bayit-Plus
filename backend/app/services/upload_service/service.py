@@ -32,6 +32,7 @@ from .gcs import gcs_uploader
 from .hls import hls_service
 from .lock import upload_lock_manager
 from .metadata import metadata_extractor
+from .mp4_transcode import mp4_transcode_service
 from .transaction import UploadTransaction
 
 logger = logging.getLogger(__name__)
@@ -248,13 +249,13 @@ class UploadService:
                 action_name="gcs_upload",
             )
 
-            # Stage 2.5: HLS conversion for video files (if enabled and needed)
-            if settings.HLS_CONVERSION_ENABLED and job.type == ContentType.MOVIE:
-                if hls_service.needs_conversion(job.filename):
+            # Stage 2.5: MP4 transcode for non-web-compatible formats (MKV, AVI, etc)
+            if job.type in (ContentType.MOVIE, ContentType.SERIES):
+                if mp4_transcode_service.needs_transcode(job.filename):
                     await transaction.execute_with_compensation(
-                        action=lambda: self._process_hls_conversion_stage(job),
-                        compensation=lambda: self._compensate_hls_conversion(job),
-                        action_name="hls_conversion",
+                        action=lambda: self._process_mp4_transcode_stage(job),
+                        compensation=lambda: self._compensate_mp4_transcode(job),
+                        action_name="mp4_transcode",
                     )
 
             # Stage 3: Create content entry in database with compensation
@@ -508,6 +509,74 @@ class UploadService:
             f"HLS conversion completed for {job.filename}: {hls_url} "
             f"(took {hls_duration:.1f}s)"
         )
+
+    async def _process_mp4_transcode_stage(self, job: UploadJob):
+        """Transcode video to MP4 with faststart for web seeking."""
+        job.stages["mp4_transcode"] = "in_progress"
+        job.stage_timings["mp4_transcode"] = {
+            "started": datetime.utcnow().isoformat()
+        }
+        job.progress = 75.0
+        await job.save()
+        await self._broadcast_queue_update()
+
+        logger.info(f"Starting MP4 transcode for {job.filename}")
+
+        async def on_progress(message: str, progress: float):
+            job.metadata["transcode_status"] = message
+            job.progress = 75.0 + (progress * 0.2)
+            await job.save()
+            await self._broadcast_queue_update()
+
+        transcode_start = datetime.utcnow()
+
+        parts = job.destination_url.replace(
+            "https://storage.googleapis.com/", ""
+        ).split("/", 1)
+        gcs_path = parts[1] if len(parts) > 1 else job.filename
+
+        mp4_url = await mp4_transcode_service.transcode_and_upload(
+            source_path=job.source_path,
+            gcs_destination_path=gcs_path,
+            on_progress=on_progress,
+        )
+
+        transcode_duration = (datetime.utcnow() - transcode_start).total_seconds()
+
+        if not mp4_url:
+            raise Exception("MP4 transcode failed")
+
+        job.metadata["original_stream_url"] = job.destination_url
+        job.metadata["transcoded"] = True
+        job.metadata["transcode_format"] = "mp4_faststart"
+        job.destination_url = mp4_url
+
+        job.stages["mp4_transcode"] = "completed"
+        job.stage_timings["mp4_transcode"]["completed"] = (
+            datetime.utcnow().isoformat()
+        )
+        job.stage_timings["mp4_transcode"]["duration_seconds"] = round(
+            transcode_duration, 2
+        )
+        job.progress = 95.0
+        await job.save()
+        await self._broadcast_queue_update()
+
+        logger.info(
+            f"MP4 transcode completed for {job.filename}: {mp4_url} "
+            f"(took {transcode_duration:.1f}s)"
+        )
+
+    async def _compensate_mp4_transcode(self, job: UploadJob) -> bool:
+        """Compensation: Delete transcoded MP4 from GCS."""
+        if job.destination_url and "_web.mp4" in job.destination_url:
+            try:
+                logger.info(f"Compensating: Deleting {job.destination_url}")
+                return await gcs_uploader.delete_file(job.destination_url)
+            except Exception as e:
+                logger.error(f"Failed to delete transcoded file: {e}")
+                return False
+        return True
 
     async def _process_database_stage(self, job: UploadJob):
         """Create content entry in database."""

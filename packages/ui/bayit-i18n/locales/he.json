@@ -3413,6 +3413,8 @@
     "error": "שגיאה",
     "retry": "נסה שוב",
     "cancel": "ביטול",
+    "restart": "התחל מחדש",
+    "generating": "מייצר...",
     "save": "שמור",
     "saving": "שומר...",
     "close": "סגור",
@@ -6024,9 +6026,24 @@
         "unavailableReason": "עיבוד סינתזת סלנג לא זמין עבור תוכן זה"
       }
     },
+    "splitScreen": {
+      "title": "מסך מפוצל",
+      "toggle": "מסך מפוצל",
+      "description": "הצג שתי שפות זו לצד זו",
+      "selectLanguages": "בחר 2 שפות",
+      "selectTwoLanguages": "בחר בדיוק 2 שפות לתצוגה מפוצלת",
+      "confirm": "החל מסך מפוצל",
+      "cancel": "ביטול",
+      "left": "שמאל",
+      "right": "ימין",
+      "maxLanguagesReached": "ניתן לבחור מקסימום 2 שפות",
+      "enabled": "מסך מפוצל פעיל",
+      "disabled": "מסך מפוצל כבוי"
+    },
     "loading": "טוען כתוביות...",
     "error": {
-      "title": "שגיאת כתוביות",
+      "title": "שגיאה בכתוביות",
+      "defaultMessage": "לא ניתן להציג כתוביות. נסה שוב.",
       "retry": "נסה שוב",
       "loadFailed": "טעינת כתוביות נכשלה",
       "cuesFailed": "טעינת טקסט כתוביות נכשלה",

@@ -1,6 +1,6 @@
 /**
- * HebrewModePickerModal Component (Web)
- * Modal for selecting Hebrew subtitle display mode (regular, nikud, shoresh)
+ * AISubtitlesPicker Component (Web)
+ * Modal for selecting Hebrew AI subtitle display modes (regular, nikud, shoresh)
  * Uses TailwindCSS for styling and web-native modal implementation
  */
 
@@ -29,7 +29,7 @@ interface ActiveJobsResponse {
   heblish_job: JobStatus | null
 }
 
-interface HebrewModePickerModalProps {
+interface AISubtitlesPickerProps {
   visible: boolean
   currentMode: HebrewMode
   isLoading?: boolean  // Whether subtitle track info is being loaded
@@ -82,7 +82,7 @@ const HEBREW_MODE_OPTIONS: ModeOption[] = [
 
 const HEBREW_MODE_FIRST_TIME_KEY = 'hebrew_mode_first_time_seen'
 
-export default function HebrewModePickerModal({
+export default function AISubtitlesPicker({
   visible,
   currentMode,
   isLoading = false,
@@ -95,7 +95,7 @@ export default function HebrewModePickerModal({
   onModeSelect,
   onGenerationComplete,
   adminTabSwitcher,
-}: HebrewModePickerModalProps) {
+}: AISubtitlesPickerProps) {
   const { t } = useTranslation()
   const modalRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
@@ -104,42 +104,136 @@ export default function HebrewModePickerModal({
   const [generatingMode, setGeneratingMode] = useState<'nikud' | 'shoresh' | null>(null)
   const [generationError, setGenerationError] = useState<string | null>(null)
   const [jobProgress, setJobProgress] = useState<number>(0)
+  const [currentJobId, setCurrentJobId] = useState<string | null>(null)
+  const [isCancelling, setIsCancelling] = useState(false)
   const isAdmin = useAuthStore((s) => s.isAdmin())
+
+  // Helper to safely clear polling interval
+  const clearPolling = useCallback(() => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current)
+      pollingRef.current = null
+    }
+  }, [])
 
   // Poll job status callback - defined early since it's used by useEffects
   const pollJobStatus = useCallback(async (jobId: string, mode: 'nikud' | 'shoresh') => {
     try {
       const status = await subtitlesService.getJobStatus(jobId) as JobStatus
-      logger.info(`Job status: ${status.status}`, 'HebrewModePickerModal', { jobId, progress: status.progress })
+      logger.debug(`Job status: ${status.status}`, 'AISubtitlesPicker', { jobId, progress: status.progress })
+
+      // CRITICAL: Stop polling immediately for terminal states
+      if (status.status === 'completed' || status.status === 'failed') {
+        clearPolling()
+        setGeneratingMode(null)
+        setJobProgress(0)
+        setCurrentJobId(null)
+
+        if (status.status === 'completed') {
+          logger.info(`${mode} generation completed`, 'AISubtitlesPicker', { contentId })
+          onGenerationComplete?.()
+        } else {
+          setGenerationError(status.error_message || `${mode} generation failed`)
+          logger.error(`${mode} generation failed`, 'AISubtitlesPicker', { contentId, error: status.error_message })
+        }
+        return // Exit early - don't update progress for terminal states
+      }
 
       setJobProgress(status.progress)
+    } catch (error) {
+      logger.error('Failed to poll job status', 'AISubtitlesPicker', { jobId, error })
+      // On error, stop polling to prevent infinite error loops
+      clearPolling()
+      setGeneratingMode(null)
+      setCurrentJobId(null)
+    }
+  }, [contentId, onGenerationComplete, clearPolling])
 
-      if (status.status === 'completed') {
-        if (pollingRef.current) clearInterval(pollingRef.current)
+  // Cancel current job
+  const handleCancelJob = useCallback(async () => {
+    if (!currentJobId || isCancelling) return
+
+    setIsCancelling(true)
+    // Stop polling FIRST before any async operations
+    clearPolling()
+
+    try {
+      await subtitlesService.cancelJob(currentJobId)
+      setGeneratingMode(null)
+      setJobProgress(0)
+      setCurrentJobId(null)
+      logger.info('Job cancelled', 'AISubtitlesPicker', { jobId: currentJobId })
+    } catch (error) {
+      logger.error('Failed to cancel job', 'AISubtitlesPicker', { jobId: currentJobId, error })
+      setGenerationError('Failed to cancel job')
+    } finally {
+      setIsCancelling(false)
+    }
+  }, [currentJobId, isCancelling, clearPolling])
+
+  // Restart a stuck job (cancel and regenerate)
+  const handleRestartJob = useCallback(async (mode: 'nikud' | 'shoresh') => {
+    if (!contentId || isCancelling) return
+
+    // Stop any existing polling FIRST
+    clearPolling()
+
+    // First cancel the current job if exists
+    if (currentJobId) {
+      setIsCancelling(true)
+      try {
+        await subtitlesService.cancelJob(currentJobId)
+      } catch (error) {
+        logger.error('Failed to cancel job for restart', 'AISubtitlesPicker', { error })
+      }
+      setIsCancelling(false)
+    }
+
+    // Reset state
+    setGeneratingMode(null)
+    setJobProgress(0)
+    setCurrentJobId(null)
+    setGenerationError(null)
+
+    // Small delay before restarting
+    await new Promise(resolve => setTimeout(resolve, 500))
+
+    // Regenerate with force flag
+    try {
+      setGeneratingMode(mode)
+      const result = mode === 'nikud'
+        ? await subtitlesService.generateNikud(contentId, 'he', true)
+        : await subtitlesService.generateShoresh(contentId, 'he', true)
+
+      if (result.status === 'completed') {
         setGeneratingMode(null)
-        setJobProgress(0)
-        logger.info(`${mode} generation completed`, 'HebrewModePickerModal', { contentId })
         onGenerationComplete?.()
-      } else if (status.status === 'failed') {
-        if (pollingRef.current) clearInterval(pollingRef.current)
-        setGeneratingMode(null)
-        setJobProgress(0)
-        setGenerationError(status.error_message || `${mode} generation failed`)
-        logger.error(`${mode} generation failed`, 'HebrewModePickerModal', { contentId, error: status.error_message })
+        return
+      }
+
+      const jobId = result.job_id
+      if (jobId) {
+        setCurrentJobId(jobId)
+        // Clear any stale interval before creating new one
+        clearPolling()
+        pollingRef.current = setInterval(() => {
+          pollJobStatus(jobId, mode)
+        }, 2000)
       }
     } catch (error) {
-      logger.error('Failed to poll job status', 'HebrewModePickerModal', { jobId, error })
+      const errorMessage = error instanceof Error ? error.message : 'Restart failed'
+      logger.error(`Failed to restart ${mode} generation`, 'AISubtitlesPicker', { contentId, error: errorMessage })
+      setGenerationError(`Failed to restart: ${errorMessage}`)
+      setGeneratingMode(null)
     }
-  }, [contentId, onGenerationComplete])
+  }, [contentId, currentJobId, isCancelling, onGenerationComplete, pollJobStatus, clearPolling])
 
   // Cleanup polling on unmount
   useEffect(() => {
     return () => {
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current)
-      }
+      clearPolling()
     }
-  }, [])
+  }, [clearPolling])
 
   // Check if this is the user's first time seeing the Hebrew mode picker
   useEffect(() => {
@@ -161,58 +255,74 @@ export default function HebrewModePickerModal({
 
     const checkActiveJobs = async () => {
       try {
+        // Always clear existing polling before checking for new jobs
+        clearPolling()
+
         const activeJobs = await subtitlesService.getActiveJobs(contentId) as ActiveJobsResponse
-        logger.info('Checked active jobs', 'HebrewModePickerModal', { contentId, activeJobs })
+        logger.debug('Checked active jobs', 'AISubtitlesPicker', { contentId, activeJobs })
 
         // Check for nikud job
         if (activeJobs.nikud_job) {
           const job = activeJobs.nikud_job
           if (job.status === 'failed') {
-            // Show error from failed job
+            // Show error from failed job - but DON'T start polling
             setGenerationError(job.error_message || 'Nikud generation failed')
+            setGeneratingMode(null)
+            setCurrentJobId(null)
+          } else if (job.status === 'completed') {
+            // Job completed - don't poll
+            setGeneratingMode(null)
+            setCurrentJobId(null)
           } else if (['pending', 'processing'].includes(job.status)) {
             // Resume tracking in-progress job
             setGeneratingMode('nikud')
             setJobProgress(job.progress || 0)
+            setCurrentJobId(job.job_id)
+            // Clear again to be safe before setting new interval
+            clearPolling()
             pollingRef.current = setInterval(() => {
               pollJobStatus(job.job_id, 'nikud')
             }, 2000)
             return
           }
-          // If completed, do nothing - hasNikud should already be true
         }
 
         // Check for shoresh job (only if no nikud job is being tracked)
         if (activeJobs.shoresh_job) {
           const job = activeJobs.shoresh_job
           if (job.status === 'failed') {
-            // Show error from failed job
+            // Show error from failed job - but DON'T start polling
             setGenerationError(job.error_message || 'Shoresh generation failed')
+            setGeneratingMode(null)
+            setCurrentJobId(null)
+          } else if (job.status === 'completed') {
+            // Job completed - don't poll
+            setGeneratingMode(null)
+            setCurrentJobId(null)
           } else if (['pending', 'processing'].includes(job.status)) {
             // Resume tracking in-progress job
             setGeneratingMode('shoresh')
             setJobProgress(job.progress || 0)
+            setCurrentJobId(job.job_id)
+            // Clear again to be safe before setting new interval
+            clearPolling()
             pollingRef.current = setInterval(() => {
               pollJobStatus(job.job_id, 'shoresh')
             }, 2000)
           }
-          // If completed, do nothing - hasShoresh should already be true
         }
       } catch (error) {
-        logger.error('Failed to check active jobs', 'HebrewModePickerModal', { contentId, error })
+        logger.error('Failed to check active jobs', 'AISubtitlesPicker', { contentId, error })
       }
     }
 
     checkActiveJobs()
 
-    // Cleanup polling when modal closes
+    // Cleanup polling when modal closes or dependencies change
     return () => {
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current)
-        pollingRef.current = null
-      }
+      clearPolling()
     }
-  }, [visible, contentId, isLoading, pollJobStatus])
+  }, [visible, contentId, isLoading, pollJobStatus, clearPolling])
 
   // Close on Escape key
   useEffect(() => {
@@ -288,16 +398,16 @@ export default function HebrewModePickerModal({
     e.stopPropagation()
     e.preventDefault()
 
-    logger.info(`Generate ${mode} clicked`, 'HebrewModePickerModal', { contentId, isAdmin, generatingMode })
+    logger.info(`Generate ${mode} clicked`, 'AISubtitlesPicker', { contentId, isAdmin, generatingMode })
 
     if (!contentId) {
-      logger.error('No contentId provided', 'HebrewModePickerModal')
+      logger.error('No contentId provided', 'AISubtitlesPicker')
       setGenerationError('Content ID is missing')
       return
     }
 
     if (generatingMode) {
-      logger.info('Generation already in progress', 'HebrewModePickerModal')
+      logger.info('Generation already in progress', 'AISubtitlesPicker')
       return
     }
 
@@ -306,13 +416,13 @@ export default function HebrewModePickerModal({
     setJobProgress(0)
 
     try {
-      logger.info(`Starting ${mode} generation`, 'HebrewModePickerModal', { contentId })
+      logger.info(`Starting ${mode} generation`, 'AISubtitlesPicker', { contentId })
 
       const result = mode === 'nikud'
         ? await subtitlesService.generateNikud(contentId, 'he', false)
         : await subtitlesService.generateShoresh(contentId, 'he', false)
 
-      logger.info(`${mode} job started`, 'HebrewModePickerModal', { contentId, result })
+      logger.info(`${mode} job started`, 'AISubtitlesPicker', { contentId, result })
 
       // Check if already completed (e.g., was already generated)
       if (result.status === 'completed') {
@@ -324,15 +434,19 @@ export default function HebrewModePickerModal({
       // Start polling for job status
       const jobId = result.job_id
       if (jobId) {
+        setCurrentJobId(jobId)
+        // Clear any existing polling before starting new one
+        clearPolling()
         pollingRef.current = setInterval(() => {
           pollJobStatus(jobId, mode)
         }, 2000) // Poll every 2 seconds
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Generation failed'
-      logger.error(`Failed to start ${mode} generation`, 'HebrewModePickerModal', { contentId, error: errorMessage })
+      logger.error(`Failed to start ${mode} generation`, 'AISubtitlesPicker', { contentId, error: errorMessage })
       setGenerationError(`Failed to start ${mode} generation: ${errorMessage}`)
       setGeneratingMode(null)
+      setCurrentJobId(null)
     }
   }
 
@@ -553,31 +667,58 @@ export default function HebrewModePickerModal({
                   {!isAvailable && option.mode !== 'regular' && (
                     <div className="flex flex-col items-end gap-1 flex-shrink-0">
                       {isAdmin && contentId ? (
-                        <button
-                          type="button"
-                          onClick={(e) => handleGenerateMode(option.mode as 'nikud' | 'shoresh', e)}
-                          disabled={generatingMode !== null && generatingMode !== option.mode}
-                          className="px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white cursor-pointer"
-                          style={{
-                            backgroundColor: generatingMode === option.mode ? 'rgba(168, 85, 247, 0.7)' : '#a855f7',
-                            cursor: generatingMode === option.mode ? 'wait' :
-                              (generatingMode !== null && generatingMode !== option.mode) ? 'not-allowed' : 'pointer',
-                            opacity: (generatingMode !== null && generatingMode !== option.mode) ? 0.5 : 1,
-                          }}
-                          aria-label={`Generate ${option.mode}`}
-                        >
+                        <div className="flex items-center gap-2">
                           {generatingMode === option.mode ? (
-                            <span className="flex items-center justify-center gap-1.5">
-                              <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              {jobProgress > 0
-                                ? `${jobProgress}%`
-                                : t('common.generating', 'Generating...')
-                              }
-                            </span>
+                            <>
+                              {/* Progress display */}
+                              <span className="flex items-center gap-1.5 px-3 py-2 bg-purple-500/70 rounded-xl text-sm font-semibold text-white">
+                                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                {jobProgress > 0 ? `${jobProgress}%` : t('common.generating', 'Generating...')}
+                              </span>
+                              {/* Cancel button */}
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); handleCancelJob(); }}
+                                disabled={isCancelling}
+                                className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-red-500 hover:bg-red-600 disabled:opacity-50"
+                                aria-label={t('common.cancel', 'Cancel')}
+                              >
+                                {isCancelling ? (
+                                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block" />
+                                ) : (
+                                  t('common.cancel', 'Cancel')
+                                )}
+                              </button>
+                              {/* Restart button (shown when job seems stuck - progress > 50% and job has been running) */}
+                              {jobProgress > 50 && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); handleRestartJob(option.mode as 'nikud' | 'shoresh'); }}
+                                  disabled={isCancelling}
+                                  className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-amber-500 hover:bg-amber-600 disabled:opacity-50"
+                                  aria-label={t('common.restart', 'Restart')}
+                                >
+                                  {t('common.restart', 'Restart')}
+                                </button>
+                              )}
+                            </>
                           ) : (
-                            t('subtitles.hebrewMode.generate', 'Generate')
+                            <button
+                              type="button"
+                              onClick={(e) => handleGenerateMode(option.mode as 'nikud' | 'shoresh', e)}
+                              disabled={generatingMode !== null}
+                              className="px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white cursor-pointer"
+                              style={{
+                                backgroundColor: '#a855f7',
+                                cursor: generatingMode !== null ? 'not-allowed' : 'pointer',
+                                opacity: generatingMode !== null ? 0.5 : 1,
+                              }}
+                              aria-label={`Generate ${option.mode}`}
+                            >
+                              {t('subtitles.hebrewMode.generate', 'Generate')}
+                            </button>
                           )}
-                        </button>
+                        </div>
                       ) : (
                         <div
                           className="bg-red-500/20 rounded px-2 py-1"

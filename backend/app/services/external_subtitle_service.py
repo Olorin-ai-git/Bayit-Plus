@@ -11,22 +11,12 @@ from beanie import PydanticObjectId
 
 from app.models.content import Content
 from app.models.subtitles import (SubtitleCueModel, SubtitleSearchCacheDoc,
-                                  SubtitleTrackDoc)
+                                  SubtitleTrackDoc, get_language_name)
 from app.services.opensubtitles_service import get_opensubtitles_service
 from app.services.subtitle_service import parse_subtitles
 from app.services.tmdb_service import TMDBService
 
 logger = logging.getLogger(__name__)
-
-# Language name mapping
-LANGUAGE_NAMES = {
-    "en": "English",
-    "he": "עברית",
-    "es": "Español",
-    "ar": "العربية",
-    "ru": "Русский",
-    "fr": "Français",
-}
 
 
 class ExternalSubtitleService:

@@ -2920,6 +2920,8 @@
     "error": "Erreur",
     "retry": "Réessayer",
     "cancel": "Annuler",
+    "restart": "Redémarrer",
+    "generating": "Génération...",
     "save": "Enregistrer",
     "saving": "Enregistrement...",
     "close": "Fermer",
@@ -4769,9 +4771,24 @@
         "unavailableReason": "Traitement de synthèse d'argot non disponible pour ce contenu"
       }
     },
+    "splitScreen": {
+      "title": "Écran Partagé",
+      "toggle": "Écran Partagé",
+      "description": "Afficher deux langues côte à côte",
+      "selectLanguages": "Sélectionner 2 Langues",
+      "selectTwoLanguages": "Sélectionnez exactement 2 langues pour la vue partagée",
+      "confirm": "Appliquer l'Écran Partagé",
+      "cancel": "Annuler",
+      "left": "Gauche",
+      "right": "Droite",
+      "maxLanguagesReached": "Maximum 2 langues peuvent être sélectionnées",
+      "enabled": "Écran partagé activé",
+      "disabled": "Écran partagé désactivé"
+    },
     "loading": "Chargement des sous-titres...",
     "error": {
-      "title": "Erreur de Sous-titres",
+      "title": "Erreur de sous-titres",
+      "defaultMessage": "Impossible d'afficher les sous-titres. Veuillez réessayer.",
       "retry": "Réessayer",
       "loadFailed": "Échec du chargement des sous-titres",
       "cuesFailed": "Échec du chargement du texte des sous-titres",

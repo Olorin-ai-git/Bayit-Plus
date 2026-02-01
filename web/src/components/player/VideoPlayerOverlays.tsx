@@ -10,7 +10,7 @@ import TriviaOverlay from './TriviaOverlay'
 import LiveFeatureUsageIndicator from './LiveFeatureUsageIndicator'
 import liveSubtitleService from '@/services/liveSubtitleService'
 import { SubtitleCue } from './types'
-import { SubtitleSettings } from '@/types/subtitle'
+import { SubtitleSettings, SplitLanguages } from '@/types/subtitle'
 import { UsageStat } from '@/types/quota'
 import { TriviaFact } from '@/services/triviaService'
 
@@ -27,6 +27,14 @@ interface VideoPlayerOverlaysProps {
   currentSubtitleLang: string | null
   currentCues: SubtitleCue[]
   subtitleSettings: SubtitleSettings
+
+  // Split Mode Subtitles
+  splitMode?: boolean
+  splitLanguages?: SplitLanguages | null
+  splitCues?: {
+    primary: SubtitleCue[]
+    secondary: SubtitleCue[]
+  }
 
   // Live Subtitles
   visibleLiveSubtitles: SubtitleCue[]
@@ -65,6 +73,9 @@ export default function VideoPlayerOverlays({
   currentSubtitleLang,
   currentCues,
   subtitleSettings,
+  splitMode = false,
+  splitLanguages = null,
+  splitCues = { primary: [], secondary: [] },
   visibleLiveSubtitles,
   dubbingIsConnected,
   dubbingLastTranscript,
@@ -98,6 +109,9 @@ export default function VideoPlayerOverlays({
           language={currentSubtitleLang || 'he'}
           enabled={subtitlesEnabled}
           settings={subtitleSettings}
+          splitMode={splitMode}
+          splitLanguages={splitLanguages}
+          splitCues={splitCues}
         />
       )}
 
