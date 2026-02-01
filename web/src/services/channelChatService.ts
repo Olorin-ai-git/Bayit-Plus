@@ -51,7 +51,11 @@ class ChannelChatService {
       this.currentChannelId = channelId
       this.callbacks = callbacks
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const wsHost = API_BASE_URL.replace(/^https?:\/\//, '').replace(/\/api\/v1\/?$/, '')
+      // Handle both absolute URLs (https://api.example.com/api/v1) and relative paths (/api/v1)
+      const isRelativePath = API_BASE_URL.startsWith('/')
+      const wsHost = isRelativePath
+        ? window.location.host
+        : API_BASE_URL.replace(/^https?:\/\//, '').replace(/\/api\/v1\/?$/, '')
       const wsPathPrefix = isLive ? 'live' : 'content'
       const wsUrl = `${wsProtocol}//${wsHost}/api/v1/ws/${wsPathPrefix}/${channelId}/chat`
 

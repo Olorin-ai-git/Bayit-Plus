@@ -3,7 +3,17 @@ import { partyService } from '../services/api'
 import logger from '@/utils/logger'
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1'
-const WS_BASE_URL = API_BASE_URL.replace('http', 'ws')
+
+// Build WebSocket base URL - handle both absolute URLs and relative paths
+const getWsBaseUrl = () => {
+  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
+  if (API_BASE_URL.startsWith('/')) {
+    // Relative path - use current host
+    return `${wsProtocol}//${window.location.host}/api/v1`
+  }
+  // Absolute URL - replace http with ws
+  return API_BASE_URL.replace(/^https?/, wsProtocol.replace(':', ''))
+}
 
 /**
  * Watch Party Store
@@ -81,7 +91,7 @@ export const useWatchPartyStore = create((set, get) => ({
     set({ isConnecting: true, error: null })
 
     const ws = new WebSocket(
-      `${WS_BASE_URL}/ws/party/${partyId}?token=${token}`
+      `${getWsBaseUrl()}/ws/party/${partyId}?token=${token}`
     )
 
     ws.onopen = () => {

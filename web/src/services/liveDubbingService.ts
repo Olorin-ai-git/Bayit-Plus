@@ -333,7 +333,11 @@ class LiveDubbingService {
       // SECURITY: Do NOT pass JWT token in URL query parameters (visible in logs, history, referer headers)
       // Token is sent securely via first message after WebSocket connection is established
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const wsHost = API_BASE_URL.replace(/^https?:\/\//, '').replace(/\/api\/v1\/?$/, '')
+      // Handle both absolute URLs (https://api.example.com/api/v1) and relative paths (/api/v1)
+      const isRelativePath = API_BASE_URL.startsWith('/')
+      const wsHost = isRelativePath
+        ? window.location.host
+        : API_BASE_URL.replace(/^https?:\/\//, '').replace(/\/api\/v1\/?$/, '')
       let wsUrl = `${wsProtocol}//${wsHost}/api/v1/ws/live/${channelId}/dubbing?target_lang=${targetLang}&platform=${platform}`
       if (voiceId) {
         wsUrl += `&voice_id=${voiceId}`

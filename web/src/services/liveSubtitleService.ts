@@ -110,8 +110,12 @@ class LiveSubtitleService {
         }
 
         const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-        const wsHost = API_BASE_URL.replace(/^https?:\/\//, '')
-        const wsUrl = `${wsProtocol}//${wsHost}/ws/live/${channelId}/subtitles?source_lang=${sourceLang}&target_lang=${targetLang}&hebrew_mode=${hebrewMode}`
+        // Handle both absolute URLs (https://api.example.com/api/v1) and relative paths (/api/v1)
+        const isRelativePath = API_BASE_URL.startsWith('/')
+        const wsHost = isRelativePath
+          ? window.location.host
+          : API_BASE_URL.replace(/^https?:\/\//, '').replace(/\/api\/v1\/?$/, '')
+        const wsUrl = `${wsProtocol}//${wsHost}/api/v1/ws/live/${channelId}/subtitles?source_lang=${sourceLang}&target_lang=${targetLang}&hebrew_mode=${hebrewMode}`
 
         this.ws = new WebSocket(wsUrl)
 

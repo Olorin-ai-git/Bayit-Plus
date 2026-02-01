@@ -37,6 +37,7 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
+        ws: true, // Enable WebSocket proxying for /api/v1/ws/* endpoints
       },
       '/uploads': {
         target: 'http://localhost:8000',
