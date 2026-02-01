@@ -141,6 +141,7 @@ export function GlassLiveControlsPanel({
   const [focusedIndex, setFocusedIndex] = useState(0)
   const panelRef = useRef<View>(null)
   const [isCarouselHovered, setIsCarouselHovered] = useState(false)
+  const [isAnyItemFocused, setIsAnyItemFocused] = useState(false)
 
   // Drag state for carousel navigation
   const carouselDragState = useRef({
@@ -482,8 +483,8 @@ export function GlassLiveControlsPanel({
                 {/* Divider */}
                 <View style={styles.divider} />
 
-                {/* Left Arrow - visible on hover when not at first item or when wrap is possible */}
-                {isCarouselHovered && carouselItems.length > 1 && (
+                {/* Left Arrow - visible when carousel or any item is hovered/focused */}
+                {(isCarouselHovered || isAnyItemFocused) && carouselItems.length > 1 && (
                   <Pressable
                     onPress={() => navigateCarousel('left')}
                     style={({ hovered }: { hovered?: boolean }) => [
@@ -506,8 +507,10 @@ export function GlassLiveControlsPanel({
                     isFocused={focusedIndex === index}
                   >
                     <Pressable
-                      onFocus={() => setFocusedIndex(index)}
-                      onHoverIn={() => setFocusedIndex(index)}
+                      onFocus={() => { setFocusedIndex(index); setIsAnyItemFocused(true) }}
+                      onBlur={() => setIsAnyItemFocused(false)}
+                      onHoverIn={() => { setFocusedIndex(index); setIsAnyItemFocused(true) }}
+                      onHoverOut={() => setIsAnyItemFocused(false)}
                       style={styles.controlItem}
                     >
                       {item.render()}
@@ -515,8 +518,8 @@ export function GlassLiveControlsPanel({
                   </CarouselItem>
                 ))}
 
-                {/* Right Arrow - visible on hover */}
-                {isCarouselHovered && carouselItems.length > 1 && (
+                {/* Right Arrow - visible when carousel or any item is hovered/focused */}
+                {(isCarouselHovered || isAnyItemFocused) && carouselItems.length > 1 && (
                   <Pressable
                     onPress={() => navigateCarousel('right')}
                     style={({ hovered }: { hovered?: boolean }) => [

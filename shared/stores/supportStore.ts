@@ -7,6 +7,9 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { AvatarMode, VoiceIntent, VoiceCommand } from '../types/voiceAvatar';
+import { AvatarCoreState, AvatarVisualForm } from '../constants/avatarStates';
+import { GestureType } from '../constants/avatarGestures';
+import { DialogueLine } from '../constants/avatarDialogues';
 
 /**
  * Voice interaction states following the state machine:
@@ -28,7 +31,16 @@ export type GestureState =
   | 'conjuring'  // Processing magic, loading
   | 'crying'     // Sad response, error, not found
   | 'shrugging'  // Don't know, can't help, uncertain
-  | 'facepalm';  // Frustration, mistake
+  | 'facepalm'   // Frustration, mistake
+  | 'greeting'   // Slight bow, hand to chest
+  | 'attentive'  // Head tilt, eyebrows raised
+  | 'thinking'   // Strokes beard, looks upward
+  | 'presenting' // Open palm toward content
+  | 'confused'   // Quizzical expression
+  | 'farewell'   // Tips hat, nod
+  | 'emphatic'   // Hand raised for emphasis
+  | 'reading'    // Looks at content, then back to user
+  | 'confirmation'; // Slight nod, awaiting response
 
 /**
  * Support portal tabs
@@ -158,6 +170,20 @@ interface SupportStore {
   /** Command history for context */
   commandHistory: VoiceCommand[];
 
+  // Enhanced Avatar State Machine
+  /** Current avatar core state (dormant, listening, processing, responding, confused, interrupted) */
+  avatarCoreState: AvatarCoreState;
+  /** Current avatar visual form (hat or wizard) */
+  avatarVisualForm: AvatarVisualForm;
+  /** Current dialogue being spoken */
+  currentDialogue: DialogueLine | null;
+  /** Whether avatar is currently interrupted */
+  isInterrupted: boolean;
+  /** Pending command after interruption */
+  pendingCommand: string | null;
+  /** Frozen content during interruption */
+  frozenContent: unknown | null;
+
   // Voice actions
   setVoiceState: (state: VoiceState) => void;
   setCurrentTranscript: (transcript: string) => void;
@@ -236,6 +262,20 @@ interface SupportStore {
   /** Clear command history */
   clearCommandHistory: () => void;
 
+  // Enhanced Avatar State Machine Actions
+  /** Set avatar core state (dormant, listening, processing, responding, confused, interrupted) */
+  setAvatarCoreState: (state: AvatarCoreState) => void;
+  /** Set avatar visual form (hat or wizard) */
+  setAvatarVisualForm: (form: AvatarVisualForm) => void;
+  /** Set current dialogue being spoken */
+  setCurrentDialogue: (dialogue: DialogueLine | null) => void;
+  /** Handle user interruption, returns recovery dialogue */
+  handleInterruption: (transcript: string) => DialogueLine;
+  /** Resume from interruption state */
+  resumeFromInterruption: () => void;
+  /** Clear interruption state and frozen content */
+  clearInterruption: () => void;
+
   // Reset
   reset: () => void;
 }
@@ -291,6 +331,14 @@ const initialState = {
   currentInteractionType: null as VoiceIntent | null,
   lastIntentConfidence: 0,
   commandHistory: [] as VoiceCommand[],
+
+  // Enhanced Avatar State Machine
+  avatarCoreState: 'dormant' as AvatarCoreState,
+  avatarVisualForm: 'hat' as AvatarVisualForm,
+  currentDialogue: null as DialogueLine | null,
+  isInterrupted: false,
+  pendingCommand: null as string | null,
+  frozenContent: null as unknown | null,
 };
 
 export const useSupportStore = create<SupportStore>()(
@@ -435,6 +483,62 @@ export const useSupportStore = create<SupportStore>()(
         })),
 
       clearCommandHistory: () => set({ commandHistory: [] }),
+
+      // Enhanced Avatar State Machine Actions
+      setAvatarCoreState: (state: AvatarCoreState) => set({ avatarCoreState: state }),
+
+      setAvatarVisualForm: (form: AvatarVisualForm) => set({ avatarVisualForm: form }),
+
+      setCurrentDialogue: (dialogue: DialogueLine | null) => set({ currentDialogue: dialogue }),
+
+      handleInterruption: (transcript: string): DialogueLine => {
+        const { isInterrupted } = get();
+        if (isInterrupted) {
+          return { text: 'Got it — what would you like instead?', gesture: 'attentive' };
+        }
+
+        // Extract pending command from interruption patterns
+        const patterns = [
+          /actually\s+(.+)/i,
+          /instead\s+(.+)/i,
+          /no,?\s+(.+)/i,
+          /wait,?\s+(.+)/i,
+          /בעצם\s+(.+)/i,
+        ];
+
+        let pendingCommand: string | null = null;
+        for (const pattern of patterns) {
+          const match = transcript.match(pattern);
+          if (match && match[1]) {
+            pendingCommand = match[1].trim();
+            break;
+          }
+        }
+
+        set({
+          isInterrupted: true,
+          pendingCommand,
+          avatarCoreState: 'interrupted',
+        });
+
+        return { text: 'Got it — what would you like instead?', gesture: 'attentive' };
+      },
+
+      resumeFromInterruption: () => {
+        set({
+          isInterrupted: false,
+          avatarCoreState: 'listening',
+        });
+      },
+
+      clearInterruption: () => {
+        set({
+          isInterrupted: false,
+          pendingCommand: null,
+          frozenContent: null,
+          avatarCoreState: 'dormant',
+        });
+      },
 
       // Reset
       reset: () => set(initialState),

@@ -263,11 +263,14 @@ const uploadChunk = async (
   chunkData: Blob
 ): Promise<ChunkResponse> => {
   const formData = new FormData();
-  formData.append('chunk', chunkData);
+  formData.append('chunk', chunkData, 'chunk.bin');
 
   return api.post(`/admin/uploads/browser-upload/${uploadId}/chunk`, formData, {
     params: { chunk_index: chunkIndex },
     timeout: 60000, // 60s timeout per chunk
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
 };
 

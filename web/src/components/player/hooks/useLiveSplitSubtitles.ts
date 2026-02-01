@@ -127,6 +127,9 @@ export function useLiveSplitSubtitles({
     return () => {
       liveSplitSubtitleService.disconnect()
     }
+    // Note: onError is intentionally excluded to prevent infinite loops
+    // The callback is captured in handleError which is stable
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     channelId,
     splitMode,
@@ -137,7 +140,6 @@ export function useLiveSplitSubtitles({
     handleSubtitleCue,
     handleError,
     handleStatus,
-    onError,
   ])
 
   // Aggressive cleanup: Poll every 500ms to remove expired subtitles

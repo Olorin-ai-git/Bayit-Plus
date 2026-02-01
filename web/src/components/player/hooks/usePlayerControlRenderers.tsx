@@ -224,7 +224,8 @@ export function usePlayerControlRenderers({
       />
     ) : null
   , [isLive, contentId, isWidget, isPremium, videoRef, handleLiveSubtitleCue, onShowUpgrade,
-     liveSubtitleLang, setLiveSubtitleLang, dubbing.disconnect, dubbing.isConnected, onHoveredButtonChange, subtitleQuotaExceeded])
+     liveSubtitleLang, setLiveSubtitleLang, dubbing.availableLanguages, dubbing.availability?.source_language,
+     dubbing.disconnect, dubbing.isConnected, onHoveredButtonChange, subtitleQuotaExceeded])
 
   const renderLiveSplitSubtitleControls = useCallback(() =>
     isLive && contentId && !isWidget && handleLiveSplitModeToggle && handleLiveSplitLanguagesChange ? (
@@ -289,7 +290,11 @@ export function usePlayerControlRenderers({
         sourceLanguage={dubbing.availability?.source_language}
       />
     ) : null
-  , [isLive, contentId, isWidget, isPremium, dubbing, onShowUpgrade, onHoveredButtonChange, dubbingQuotaExceeded])
+  , [isLive, contentId, isWidget, isPremium, dubbingQuotaExceeded, onShowUpgrade, onHoveredButtonChange,
+     dubbing.isConnected, dubbing.isConnecting, dubbing.isAvailable, dubbing.targetLanguage,
+     dubbing.availableLanguages, dubbing.availableVoices, dubbing.latencyMs, dubbing.error,
+     dubbing.disconnect, dubbing.connect, dubbing.setTargetLanguage, dubbing.setOriginalVolume,
+     dubbing.setDubbedVolume, dubbing.availability?.source_language])
 
   const renderRecordButton = useCallback(() =>
     isLive && contentId ? (
@@ -313,7 +318,10 @@ export function usePlayerControlRenderers({
         onHoveredButtonChange={onHoveredButtonChange}
       />
     ) : null
-  , [cast, onHoveredButtonChange])
+    // Note: Using only cast.isAvailable as dep since the full cast object
+    // is passed to CastButton anyway and causes unnecessary re-renders
+  , [cast.isAvailable, cast.isConnected, cast.isConnecting, cast.deviceName, cast.castType,
+     cast.startCast, cast.stopCast, onHoveredButtonChange])
 
   const renderChannelChatButton = useCallback(() => {
     if (!channelChat) return null

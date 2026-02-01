@@ -1,0 +1,55 @@
+flowchart TB
+    subgraph VoiceSystem["Voice System Components"]
+        direction TB
+        V1[Wake Word Detection<br/>Picovoice Porcupine]
+        V2[Speech-to-Text<br/>ElevenLabs Scribe v2]
+        V3[Text-to-Speech<br/>ElevenLabs v2]
+        V4[Voice Pipeline<br/>WebSocket]
+        V5[Intent Router<br/>Pattern-based]
+    end
+
+    subgraph AISystem["AI/Assistant Components"]
+        direction TB
+        A1[Chat Assistant<br/>Claude]
+        A2[AI Librarian<br/>Claude Sonnet]
+        A3[Content Search<br/>UnifiedSearchService]
+        A4[NLP Service<br/>Hebronics + Intent]
+    end
+
+    subgraph WidgetSystem["Widget System"]
+        direction TB
+        W1[Widget Model<br/>8 Types]
+        W2[Widget Store<br/>Zustand]
+        W3[Widget Manager<br/>React]
+        W4[Voice Widgets<br/>Auto-grid]
+    end
+
+    subgraph AvatarSystem["Avatar System"]
+        direction TB
+        AV1[Avatar Modes<br/>4 Modes]
+        AV2[Avatar States<br/>5 States]
+        AV3[Wizard Assets<br/>Static + Sprites]
+    end
+
+    V1 --> V2
+    V2 --> V4
+    V4 --> V5
+    V5 --> A1
+    A1 --> A3
+    A1 --> V3
+
+    A1 -.-> W2
+    W2 --> W3
+    W3 --> W4
+
+    V4 -.-> AV2
+    AV2 --> AV1
+    AV1 --> AV3
+
+    style V1 fill:#10b981
+    style V2 fill:#10b981
+    style V3 fill:#10b981
+    style A1 fill:#10b981
+    style A3 fill:#10b981
+    style W1 fill:#10b981
+    style AV1 fill:#10b981

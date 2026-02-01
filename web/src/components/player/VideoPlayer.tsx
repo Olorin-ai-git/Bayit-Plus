@@ -113,6 +113,11 @@ export default function VideoPlayer({
   const [liveSplitMode, setLiveSplitMode] = useState(false)
   const [liveSplitLanguages, setLiveSplitLanguages] = useState<SplitLanguages | null>(null)
 
+  // Live split subtitles error handler - memoized to prevent infinite loops
+  const handleLiveSplitError = useCallback((error: string) => {
+    logger.error('Live split subtitle error', 'VideoPlayer', { error })
+  }, [])
+
   // Live split subtitles hook
   const liveSplit = useLiveSplitSubtitles({
     channelId: contentId || '',
@@ -121,9 +126,7 @@ export default function VideoPlayer({
     videoElement: videoRef.current,
     sourceLanguage: 'he',
     hebrewMode: 'regular',
-    onError: (error) => {
-      logger.error('Live split subtitle error', 'VideoPlayer', { error })
-    },
+    onError: handleLiveSplitError,
   })
 
   // Handle live split mode toggle
@@ -311,10 +314,12 @@ export default function VideoPlayer({
     if (currentError && currentError !== dismissedError) {
       setDismissedError(null)
     }
-  }, [dubbing.error, catchUp.error])
+  }, [dubbing.error, catchUp.error, dismissedError])
 
 
   // Update cast metadata when content changes
+  // Note: cast.updateMetadata is intentionally excluded from deps to prevent infinite loops
+  // The function reference may change but its behavior is stable
   useEffect(() => {
     if (cast.isConnected) {
       cast.updateMetadata({
@@ -325,9 +330,11 @@ export default function VideoPlayer({
         duration: state.duration,
       })
     }
-  }, [title, poster, contentId, src, state.duration, cast.isConnected, cast.updateMetadata])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [title, poster, contentId, src, state.duration, cast.isConnected])
 
   // Sync playback state to cast device
+  // Note: cast.syncPlaybackState is intentionally excluded from deps to prevent infinite loops
   useEffect(() => {
     if (cast.isConnected && castConfig.autoSync) {
       const interval = setInterval(() => {
@@ -339,7 +346,8 @@ export default function VideoPlayer({
       }, castConfig.syncIntervalMs)
       return () => clearInterval(interval)
     }
-  }, [cast.isConnected, state.currentTime, state.isPlaying, state.volume, cast.syncPlaybackState])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cast.isConnected, state.currentTime, state.isPlaying, state.volume])
 
   useEffect(() => {
     const handleTTSPlaying = () => setIsTTSPlaying(true)

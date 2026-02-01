@@ -108,7 +108,7 @@ export const FolderPreview: React.FC<FolderPreviewProps> = ({
       {/* Actions */}
       <View style={styles.actions}>
         <GlassButton variant="secondary" onPress={onClear} disabled={disabled}>
-          <Trash2 size={16} color={colors.text} />
+          <Trash2 size={16} color="#ffffff" />
           <Text style={styles.buttonText}>{t('common.clear')}</Text>
         </GlassButton>
         <GlassButton
@@ -116,8 +116,8 @@ export const FolderPreview: React.FC<FolderPreviewProps> = ({
           onPress={onUpload}
           disabled={disabled || summary.validCount === 0}
         >
-          <Upload size={16} color={colors.buttonText} />
-          <Text style={[styles.buttonText, styles.primaryButtonText]}>
+          <Upload size={16} color="#ffffff" />
+          <Text style={styles.buttonText}>
             {t('admin.uploads.manualUpload.proceedUpload', { count: summary.validCount })}
           </Text>
         </GlassButton>
@@ -172,11 +172,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.base,
     fontWeight: '600',
-    color: colors.text,
+    color: '#ffffff',
   },
   summaryText: {
     fontSize: fontSize.sm,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.8)',
   },
   stats: {
     flexDirection: 'row',
@@ -191,14 +191,14 @@ const styles = StyleSheet.create({
   },
   statText: {
     fontSize: fontSize.sm,
-    color: colors.text,
+    color: '#ffffff',
   },
   errorText: {
     color: colors.error.DEFAULT,
   },
   sizeText: {
     fontSize: fontSize.sm,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.8)',
     marginLeft: 'auto',
   },
   fileList: {
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
-    backgroundColor: colors.glass.bgLight,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: borderRadius.sm,
   },
   invalidRow: {
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   },
   fileName: {
     fontSize: fontSize.sm,
-    color: colors.text,
+    color: '#ffffff',
   },
   reason: {
     fontSize: fontSize.xs,
@@ -245,11 +245,11 @@ const styles = StyleSheet.create({
   },
   fileSize: {
     fontSize: fontSize.xs,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
   },
   moreText: {
     fontSize: fontSize.sm,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
     paddingVertical: spacing.xs,
   },
@@ -261,10 +261,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: fontSize.sm,
-    color: colors.text,
+    color: '#ffffff',
     marginLeft: spacing.xs,
-  },
-  primaryButtonText: {
-    color: colors.buttonText,
   },
 });

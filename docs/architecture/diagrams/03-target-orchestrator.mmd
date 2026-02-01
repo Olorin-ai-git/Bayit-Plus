@@ -1,0 +1,61 @@
+flowchart TB
+    subgraph Trigger["Activation"]
+        WW[Wake Word]
+        BTN[Voice Button]
+    end
+
+    subgraph Orchestrator["VOICE ORCHESTRATOR - New Component"]
+        direction TB
+        VO[Voice Orchestrator Service]
+
+        subgraph States["State Machine"]
+            S1[Idle]
+            S2[Listening]
+            S3[Processing]
+            S4[Responding]
+        end
+
+        subgraph Actions["Action Handlers"]
+            A1[Content Query]
+            A2[Playback Control]
+            A3[Channel Display]
+            A4[Web Search]
+        end
+    end
+
+    subgraph Output["Coordinated Output"]
+        TTS[TTS Response]
+        WDG[Widget Creation]
+        ACT[Action Execution]
+        AVT[Avatar Animation]
+    end
+
+    WW --> VO
+    BTN --> VO
+
+    VO --> S1
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S1
+
+    S3 --> A1
+    S3 --> A2
+    S3 --> A3
+    S3 --> A4
+
+    A1 --> TTS
+    A1 --> WDG
+    A2 --> TTS
+    A2 --> ACT
+    A3 --> TTS
+    A3 --> WDG
+    A4 --> TTS
+    A4 --> WDG
+
+    S2 --> AVT
+    S3 --> AVT
+    S4 --> AVT
+
+    style VO fill:#8b5cf6
+    style A4 fill:#ef4444

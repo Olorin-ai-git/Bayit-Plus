@@ -16,7 +16,7 @@ from app.models.content_taxonomy import ContentSection
 from app.models.user import User
 from app.services.culture_content_service import culture_content_service
 from app.services.location_content_service import LocationContentService
-from app.api.routes.content.beta_filter import build_beta_content_filter
+from app.api.routes.content.beta_filter import build_beta_content_filter, build_beta_only_filter
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -70,6 +70,8 @@ async def get_featured(
     has_passkey = passkey_session is not None
     visibility_match = build_visibility_match(has_passkey)
     beta_filter = build_beta_content_filter(current_user)
+    # Separate filter for podcasts/audiobooks - only beta filtering, no content type filter
+    beta_only_filter = build_beta_only_filter(current_user)
 
     async def get_hero():
         """Get hero content, with fallback to recently published if none marked as featured."""
@@ -204,8 +206,8 @@ async def get_featured(
 
     async def get_podcasts():
         """Get featured podcasts for homepage, with fallback to recently created."""
-        # Try featured podcasts first
-        podcast_beta = beta_filter if beta_filter else {}
+        # Try featured podcasts first - use beta_only_filter (no content type restriction)
+        podcast_beta = beta_only_filter if beta_only_filter else {}
         podcasts = await Podcast.find(
             Podcast.is_active == True, Podcast.is_featured == True, podcast_beta
         ).sort("-order").limit(10).to_list()
@@ -223,7 +225,7 @@ async def get_featured(
         """Get featured audiobooks from Content collection, with fallback to recently published."""
         collection = Content.get_settings().pymongo_collection
 
-        # Try featured audiobooks first
+        # Try featured audiobooks first - use beta_only_filter (no content type restriction)
         pipeline = [
             {
                 "$match": {
@@ -235,7 +237,7 @@ async def get_featured(
                             "is_quality_variant": {"$ne": True},
                         },
                         visibility_match,
-                        beta_filter,
+                        beta_only_filter,
                     ]
                 }
             },
@@ -271,7 +273,7 @@ async def get_featured(
                                 "is_quality_variant": {"$ne": True},
                             },
                             visibility_match,
-                            beta_filter,
+                            beta_only_filter,
                         ]
                     }
                 },

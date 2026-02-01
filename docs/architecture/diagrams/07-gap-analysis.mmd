@@ -1,0 +1,36 @@
+flowchart TB
+    subgraph Target["Target Scenarios"]
+        T1[Wake Word → Avatar]
+        T2[Content Query → Widgets]
+        T3[Podcast Playback]
+        T4[Multi-Channel Display]
+        T5[Web Article → iFrame]
+    end
+
+    subgraph Status["Current Status"]
+        S1[Components Exist]
+        S2[Search Works]
+        S3[Resolution Works]
+        S4[Widgets Work]
+        S5[iFrame Exists]
+    end
+
+    subgraph Gap["Gap Level"]
+        G1[Integration<br/>Small]
+        G2[Orchestration<br/>Medium]
+        G3[Episode Logic<br/>Small]
+        G4[Channel #<br/>Small]
+        G5[Web Search<br/>Medium]
+    end
+
+    T1 --> S1 --> G1
+    T2 --> S2 --> G2
+    T3 --> S3 --> G3
+    T4 --> S4 --> G4
+    T5 --> S5 --> G5
+
+    style G1 fill:#10b981
+    style G2 fill:#f59e0b
+    style G3 fill:#10b981
+    style G4 fill:#10b981
+    style G5 fill:#ef4444

@@ -33,8 +33,10 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
   loading = false,
   onResumeQueue,
   onClearCompleted,
+  onClearQueue,
   onCancelJob,
   clearingCompleted = false,
+  clearingQueue = false,
   cancellingJob = false,
   noCard = false,
   hideHeader = false,
@@ -73,6 +75,8 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
           directionFlex={directionFlex}
           skippedCount={skippedCount}
           actualFailures={actualFailures}
+          onClearQueue={onClearQueue}
+          clearingQueue={clearingQueue}
         />
       )}
 
@@ -94,7 +98,7 @@ const GlassQueue: React.FC<GlassQueueProps> = ({
         />
       ) : (
         <View style={styles.activeJobSection}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+          <Text style={[styles.sectionTitle, { color: '#ffffff' }]}>
             {t('admin.uploads.queueDashboard.activeJob')}
           </Text>
           <EmptyState

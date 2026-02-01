@@ -29,6 +29,11 @@ export function useRecordingSession({ channelId, onRecordingStateChange }: UseRe
     dubbingTargetLanguage: 'en',
   })
   const durationInterval = useRef<NodeJS.Timeout | null>(null)
+  // Use ref for callback to avoid infinite loop when callback changes on every render
+  const onRecordingStateChangeRef = useRef(onRecordingStateChange)
+  onRecordingStateChangeRef.current = onRecordingStateChange
+  // Track if we've had a real state change (skip initial mount with default values)
+  const hasStateChanged = useRef(false)
 
   useEffect(() => {
     return () => {
@@ -37,8 +42,14 @@ export function useRecordingSession({ channelId, onRecordingStateChange }: UseRe
   }, [])
 
   useEffect(() => {
-    onRecordingStateChange?.(isRecording, duration)
-  }, [isRecording, duration, onRecordingStateChange])
+    // Skip notifying on initial mount with default values (false, 0)
+    // Only notify when recording actually starts or stops
+    if (!hasStateChanged.current && !isRecording && duration === 0) {
+      return
+    }
+    hasStateChanged.current = true
+    onRecordingStateChangeRef.current?.(isRecording, duration)
+  }, [isRecording, duration])
 
   const startDurationTimer = useCallback(() => {
     if (durationInterval.current) clearInterval(durationInterval.current)

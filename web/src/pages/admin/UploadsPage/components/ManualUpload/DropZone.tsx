@@ -174,12 +174,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.lg,
     fontWeight: '600',
-    color: colors.text,
+    color: '#ffffff',
     textAlign: 'center',
   },
   subtitle: {
     fontSize: fontSize.sm,
-    color: colors.textSecondary,
+    color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
   },
 });

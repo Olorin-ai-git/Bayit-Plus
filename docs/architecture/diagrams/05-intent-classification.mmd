@@ -1,0 +1,40 @@
+flowchart TB
+    subgraph Intents["Current Intent Types"]
+        direction LR
+        I1[CHAT]
+        I2[SEARCH]
+        I3[NAVIGATION]
+        I4[PLAYBACK]
+        I5[SCROLL]
+        I6[CONTROL]
+    end
+
+    subgraph Current["Current Coverage"]
+        C1[General Conversation]
+        C2[Content Search]
+        C3[App Navigation]
+        C4[Play/Pause/Stop]
+        C5[Screen Scroll]
+        C6[System Controls]
+    end
+
+    subgraph Needed["New Intents Needed"]
+        N1[CONTENT_QUERY]
+        N2[DISPLAY_CHANNELS]
+        N3[WEB_SEARCH]
+    end
+
+    I1 --> C1
+    I2 --> C2
+    I3 --> C3
+    I4 --> C4
+    I5 --> C5
+    I6 --> C6
+
+    N1 -.->|Enhancement| I2
+    N2 -.->|New| I3
+    N3 -.->|New| I2
+
+    style N1 fill:#f59e0b
+    style N2 fill:#f59e0b
+    style N3 fill:#ef4444

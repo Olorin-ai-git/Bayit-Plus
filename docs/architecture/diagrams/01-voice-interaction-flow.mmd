@@ -1,0 +1,27 @@
+sequenceDiagram
+    participant U as User
+    participant W as Wake Word
+    participant A as Avatar
+    participant S as STT
+    participant AI as AI Assistant
+    participant T as TTS
+    participant WG as Widgets
+
+    U->>W: "Hey Bayit"
+    W->>A: Activate (listening state)
+    A-->>U: Avatar appears
+
+    U->>S: "Movies with Ice?"
+    S->>AI: Transcript
+    AI->>AI: Search content
+    AI->>T: "Here are 3 movies..."
+    AI->>WG: Create movie widgets
+    T-->>U: Voice response
+    WG-->>U: Movie list displayed
+
+    U->>S: "Play Berko & Segal"
+    S->>AI: Transcript
+    AI->>AI: Resolve podcast
+    AI->>WG: Create podcast widget
+    AI->>WG: Auto-play episode
+    T-->>U: "Playing latest episode"

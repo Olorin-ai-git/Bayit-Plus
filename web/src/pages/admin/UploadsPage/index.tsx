@@ -33,7 +33,7 @@ const UploadsPage: React.FC = () => {
   const [uploadMode, setUploadMode] = useState<UploadMode>('browser');
 
   // Queue management
-  const { queueState, connected, loading, refreshQueue, reconnecting, reconnectAttempt } = useUploadQueue();
+  const { queueState, connected, loading, refreshQueue, clearQueue, clearingQueue, reconnecting, reconnectAttempt } = useUploadQueue();
 
   // Dry run functionality
   const { dryRunEnabled, results, showPreview, toggleDryRun, reset, setShowPreview } = useDryRun();
@@ -82,7 +82,13 @@ const UploadsPage: React.FC = () => {
             maxHeight={1200}
           >
             <View style={styles.section}>
-              <QueueDashboard queueState={queueState} onRefresh={refreshQueue} loading={loading} />
+              <QueueDashboard
+                queueState={queueState}
+                onRefresh={refreshQueue}
+                onClearQueue={clearQueue}
+                clearingQueue={clearingQueue}
+                loading={loading}
+              />
             </View>
           </GlassDraggableExpander>
         </View>

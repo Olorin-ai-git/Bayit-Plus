@@ -17,12 +17,16 @@ import type { QueueState } from '../../types';
 interface QueueDashboardProps {
   queueState: QueueState;
   onRefresh: () => void;
+  onClearQueue?: () => Promise<void>;
+  clearingQueue?: boolean;
   loading?: boolean;
 }
 
 export const QueueDashboard: React.FC<QueueDashboardProps> = ({
   queueState,
   onRefresh,
+  onClearQueue,
+  clearingQueue = false,
   loading = false,
 }) => {
   const { t } = useTranslation();
@@ -89,6 +93,8 @@ export const QueueDashboard: React.FC<QueueDashboardProps> = ({
           queuePaused={queueState.queuePaused}
           pauseReason={queueState.pauseReason}
           loading={loading}
+          onClearQueue={onClearQueue}
+          clearingQueue={clearingQueue}
         />
       </View>
     </View>

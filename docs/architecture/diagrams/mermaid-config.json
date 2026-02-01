@@ -1,0 +1,25 @@
+{
+  "theme": "dark",
+  "themeVariables": {
+    "primaryColor": "#8b5cf6",
+    "primaryTextColor": "#ffffff",
+    "primaryBorderColor": "#6d28d9",
+    "lineColor": "#00d4ff",
+    "secondaryColor": "#1a1a25",
+    "tertiaryColor": "#12121a",
+    "background": "#0a0a0f",
+    "mainBkg": "#1a1a25",
+    "secondBkg": "#12121a",
+    "textColor": "#ffffff",
+    "nodeBorder": "#2a2a3a"
+  },
+  "flowchart": {
+    "curve": "basis",
+    "padding": 20
+  },
+  "sequence": {
+    "mirrorActors": false,
+    "bottomMarginAdj": 10,
+    "messageMargin": 35
+  }
+}

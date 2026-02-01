@@ -1,12 +1,14 @@
 /**
  * QueueHeader Component
- * Displays queue statistics and title
+ * Displays queue statistics and title with clear queue action
  */
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Trash2 } from 'lucide-react';
 import { colors, spacing } from '@olorin/design-tokens';
+import { useGlassAlert } from '@bayit/shared/ui';
 import { QueueStats } from '../types';
 
 interface QueueHeaderProps {
@@ -16,6 +18,8 @@ interface QueueHeaderProps {
   directionFlex: 'row' | 'row-reverse';
   skippedCount: number;
   actualFailures: number;
+  onClearQueue?: () => Promise<void>;
+  clearingQueue?: boolean;
 }
 
 export const QueueHeader: React.FC<QueueHeaderProps> = ({
@@ -25,42 +29,79 @@ export const QueueHeader: React.FC<QueueHeaderProps> = ({
   directionFlex,
   skippedCount,
   actualFailures,
+  onClearQueue,
+  clearingQueue = false,
 }) => {
   const { t } = useTranslation();
+  const { confirm } = useGlassAlert();
+
+  const handleClearQueue = () => {
+    if (!onClearQueue || clearingQueue || stats.queued === 0) return;
+
+    confirm(
+      t('admin.uploads.clearQueue.title', 'Clear Upload Queue?'),
+      t('admin.uploads.clearQueue.message', `This will cancel all ${stats.queued} queued uploads. This action cannot be undone.`),
+      async () => {
+        try {
+          await onClearQueue();
+        } catch (err) {
+          // Error handling is done in the hook
+        }
+      }
+    );
+  };
 
   return (
     <View style={styles.container}>
       <View style={[styles.headerRow, { flexDirection: directionFlex }]}>
-        <Text style={[styles.title, { textAlign, color: colors.text }]}>
-          {t('admin.uploads.queueStatus', 'Upload Queue')}
-        </Text>
+        <View style={[styles.titleRow, isRTL && styles.rowReverse]}>
+          <Text style={[styles.title, { textAlign, color: '#ffffff' }]}>
+            {t('admin.uploads.queueStatus', 'Upload Queue')}
+          </Text>
+          {onClearQueue && stats.queued > 0 && (
+            <Pressable
+              onPress={handleClearQueue}
+              style={[styles.clearButton, { backgroundColor: colors.error.DEFAULT + '15' }]}
+              disabled={clearingQueue}
+            >
+              {clearingQueue ? (
+                <ActivityIndicator size="small" color={colors.error.DEFAULT} />
+              ) : (
+                <Trash2 size={16} color={colors.error.DEFAULT} />
+              )}
+              <Text style={[styles.clearButtonText, { color: colors.error.DEFAULT }]}>
+                {t('admin.uploads.clearQueue.button', 'Clear Queue')}
+              </Text>
+            </Pressable>
+          )}
+        </View>
         <View style={[styles.statsRow, isRTL && styles.rowReverse]}>
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.text }]}>{stats.total_jobs}</Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.totalJobs', 'Total')}</Text>
+            <Text style={[styles.statValue, { color: '#ffffff' }]}>{stats.total_jobs}</Text>
+            <Text style={[styles.statLabel, { color: 'rgba(255, 255, 255, 0.75)' }]}>{t('admin.uploads.totalJobs', 'Total')}</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.warning }]}>{stats.queued}</Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.queued', 'Queued')}</Text>
+            <Text style={[styles.statValue, { color: colors.warning.DEFAULT }]}>{stats.queued}</Text>
+            <Text style={[styles.statLabel, { color: 'rgba(255, 255, 255, 0.75)' }]}>{t('admin.uploads.queued', 'Queued')}</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={[styles.statValue, { color: colors.primary.DEFAULT }]}>{stats.processing}</Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.processing', 'Active')}</Text>
+            <Text style={[styles.statLabel, { color: 'rgba(255, 255, 255, 0.75)' }]}>{t('admin.uploads.processing', 'Active')}</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={[styles.statValue, { color: colors.success }]}>{stats.completed}</Text>
-            <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.completed', 'Done')}</Text>
+            <Text style={[styles.statValue, { color: colors.success.DEFAULT }]}>{stats.completed}</Text>
+            <Text style={[styles.statLabel, { color: 'rgba(255, 255, 255, 0.75)' }]}>{t('admin.uploads.completed', 'Done')}</Text>
           </View>
           {skippedCount > 0 && (
             <View style={styles.statItem}>
-              <Text style={[styles.statValue, { color: colors.info }]}>{skippedCount}</Text>
-              <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.skipped', 'Skipped')}</Text>
+              <Text style={[styles.statValue, { color: colors.info.DEFAULT }]}>{skippedCount}</Text>
+              <Text style={[styles.statLabel, { color: 'rgba(255, 255, 255, 0.75)' }]}>{t('admin.uploads.skipped', 'Skipped')}</Text>
             </View>
           )}
           {actualFailures > 0 && (
             <View style={styles.statItem}>
-              <Text style={[styles.statValue, { color: colors.error }]}>{actualFailures}</Text>
-              <Text style={[styles.statLabel, { color: colors.textMuted }]}>{t('admin.uploads.failed', 'Failed')}</Text>
+              <Text style={[styles.statValue, { color: colors.error.DEFAULT }]}>{actualFailures}</Text>
+              <Text style={[styles.statLabel, { color: 'rgba(255, 255, 255, 0.75)' }]}>{t('admin.uploads.failed', 'Failed')}</Text>
             </View>
           )}
         </View>
@@ -80,9 +121,26 @@ const styles = StyleSheet.create({
     gap: 24,
     marginBottom: 16,
   },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+  },
+  clearButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+  clearButtonText: {
+    fontSize: 13,
+    fontWeight: '600',
   },
   statsRow: {
     flexDirection: 'row',

@@ -51,8 +51,10 @@ export interface GlassQueueProps {
   loading?: boolean;
   onResumeQueue?: () => void;
   onClearCompleted?: () => void;
+  onClearQueue?: () => Promise<void>;
   onCancelJob?: (jobId: string) => void;
   clearingCompleted?: boolean;
+  clearingQueue?: boolean;
   cancellingJob?: boolean;
   noCard?: boolean;
   hideHeader?: boolean;

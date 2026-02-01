@@ -41,7 +41,7 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
   return (
     <View style={[styles.container, { borderTopColor: colors.glassBorder }]}>
       <View style={[styles.headerRow, isRTL && styles.rowReverse]}>
-        <Text style={[styles.headerText, { textAlign, color: colors.text }]}>
+        <Text style={[styles.headerText, { textAlign, color: '#ffffff' }]}>
           {t('admin.uploads.activeUpload', 'Active Upload')}
         </Text>
         {onCancelJob && (
@@ -64,7 +64,7 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
       <View style={[styles.jobCard, { backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }]}>
         <View style={[styles.jobRow, isRTL && styles.rowReverse]}>
           <StatusIcon status={job.status} job={job} />
-          <Text style={[styles.filename, { textAlign, color: colors.text }]} numberOfLines={1}>
+          <Text style={[styles.filename, { textAlign, color: '#ffffff' }]} numberOfLines={1}>
             {job.filename}
           </Text>
           <GlassBadge
@@ -94,16 +94,16 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
         <StageError job={job} />
 
         <View style={[styles.statsRow, isRTL && styles.rowReverse]}>
-          <Text style={[styles.statsText, { color: colors.textSecondary }]}>
+          <Text style={[styles.statsText, { color: 'rgba(255, 255, 255, 0.8)' }]}>
             {formatFileSize(job.bytes_uploaded)} / {formatFileSize(job.file_size)}
           </Text>
           {job.upload_speed && job.upload_speed > 0 && (
-            <Text style={[styles.statsText, { color: colors.textSecondary }]}>
+            <Text style={[styles.statsText, { color: 'rgba(255, 255, 255, 0.8)' }]}>
               {formatSpeed(job.upload_speed)}
             </Text>
           )}
           {job.eta_seconds && job.eta_seconds > 0 && (
-            <Text style={[styles.statsText, { color: colors.textSecondary }]}>
+            <Text style={[styles.statsText, { color: 'rgba(255, 255, 255, 0.8)' }]}>
               ETA: {formatETA(job.eta_seconds)}
             </Text>
           )}

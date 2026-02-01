@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayit+ Voice & Assistant System Analysis</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --accent-cyan: #00d4ff;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --accent-red: #ef4444;
+            --border-color: #2a2a3a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 3rem 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .date {
+            color: var(--accent-cyan);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        section {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        h2 {
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent-cyan);
+        }
+
+        h3 {
+            color: var(--accent-purple);
+            font-size: 1.2rem;
+            margin: 1.5rem 0 1rem;
+        }
+
+        h4 {
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin: 1rem 0 0.5rem;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            color: var(--text-secondary);
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background: var(--bg-tertiary);
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: var(--bg-tertiary);
+        }
+
+        .status-production {
+            color: var(--accent-green);
+        }
+
+        .status-partial {
+            color: var(--accent-yellow);
+        }
+
+        .status-missing {
+            color: var(--accent-red);
+        }
+
+        .diagram-container {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+
+        .diagram-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .diagram-title {
+            color: var(--accent-purple);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        code {
+            background: var(--bg-tertiary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+        }
+
+        pre {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .card {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            color: var(--accent-purple);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: var(--text-secondary);
+        }
+
+        .metric-value {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .gap-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+        }
+
+        .gap-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .gap-content h4 {
+            margin: 0 0 0.25rem;
+        }
+
+        .gap-content p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .phase {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .phase::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-purple));
+            border-radius: 2px;
+        }
+
+        .phase-number {
+            position: absolute;
+            left: -8px;
+            top: 0;
+            width: 24px;
+            height: 24px;
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .badge-small { background: rgba(16, 185, 129, 0.2); color: var(--accent-green); }
+        .badge-medium { background: rgba(245, 158, 11, 0.2); color: var(--accent-yellow); }
+        .badge-large { background: rgba(139, 92, 246, 0.2); color: var(--accent-purple); }
+
+        .file-list {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .file-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+        }
+
+        .file-list li:last-child {
+            border-bottom: none;
+        }
+
+        .file-path {
+            color: var(--accent-cyan);
+        }
+
+        .file-desc {
+            color: var(--text-secondary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin-left: 1rem;
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--accent-cyan);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .summary-box h3 {
+            margin-top: 0;
+        }
+
+        .toc {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .toc-title {
+            color: var(--accent-cyan);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .toc-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 0.5rem;
+            margin-left: 0;
+        }
+
+        .toc-list a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .toc-list a:hover {
+            color: var(--accent-cyan);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: 3rem;
+            color: var(--text-secondary);
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            section {
+                background: #f5f5f5;
+                break-inside: avoid;
+            }
+            .diagram-container {
+                background: white;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Voice & Assistant System Analysis</h1>
+            <p class="subtitle">Comprehensive Scan, Cataloging, Classification & Gap Analysis</p>
+            <p class="date">Bayit+ Streaming Platform | Analysis Date: February 1, 2026</p>
+        </header>
+
+        <nav class="toc">
+            <div class="toc-title">Table of Contents</div>
+            <ul class="toc-list">
+                <li><a href="#target-state">1. Target State Vision</a></li>
+                <li><a href="#system-inventory">2. Current System Inventory</a></li>
+                <li><a href="#architecture">3. Architecture Diagrams</a></li>
+                <li><a href="#gap-analysis">4. Gap Analysis</a></li>
+                <li><a href="#metrics">5. System Metrics</a></li>
+                <li><a href="#implementation">6. Implementation Plan</a></li>
+                <li><a href="#files">7. Critical Files Reference</a></li>
+                <li><a href="#summary">8. Executive Summary</a></li>
+            </ul>
+        </nav>
+
+        <!-- Section 1: Target State -->
+        <section id="target-state">
+            <h2>1. Target State Vision</h2>
+            <p>The target user experience for the Voice Assistant interaction:</p>
+
+            <div class="diagram-container">
+                <div class="diagram-title">Voice Interaction Flow</div>
+                <img src="diagrams/png/01-voice-interaction-flow.png" alt="Voice Interaction Flow Diagram">
+            </div>
+
+            <h3>Target Scenarios</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User Command</th>
+                        <th>Expected Response</th>
+                        <th>Visual Output</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>"Do you have any movies with Ice?"</code></td>
+                        <td>Avatar speaks: "Sure, here are three movies"</td>
+                        <td>Movie list widgets (Ice Age, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td><code>"Play last episode from Berko And Segal"</code></td>
+                        <td>Avatar speaks: "Playing the latest episode"</td>
+                        <td>Podcast widget + auto-play</td>
+                    </tr>
+                    <tr>
+                        <td><code>"Show me channels 11 and 13"</code></td>
+                        <td>Avatar speaks: "Here are channels 11 and 13"</td>
+                        <td>Two channel widgets displayed</td>
+                    </tr>
+                    <tr>
+                        <td><code>"Show me latest update on H1B Visas"</code></td>
+                        <td>Avatar speaks: "Here's a recent article"</td>
+                        <td>iFrame widget with news article</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Section 2: System Inventory -->
+        <section id="system-inventory">
+            <h2>2. Current System Inventory</h2>
+
+            <h3>2.1 Voice System Components</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Provider</th>
+                        <th>Status</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Wake Word Detection</td>
+                        <td>Picovoice Porcupine</td>
+                        <td class="status-production">Production</td>
+                        <td><code>backend/app/api/endpoints/wake_word_proxy.py</code></td>
+                    </tr>
+                    <tr>
+                        <td>Speech-to-Text (STT)</td>
+                        <td>ElevenLabs Scribe v2</td>
+                        <td class="status-production">Production</td>
+                        <td><code>backend/app/services/elevenlabs_realtime_service.py</code></td>
+                    </tr>
+                    <tr>
+                        <td>Text-to-Speech (TTS)</td>
+                        <td>ElevenLabs v2</td>
+                        <td class="status-production">Production</td>
+                        <td><code>backend/app/services/elevenlabs_tts_streaming_service.py</code></td>
+                    </tr>
+                    <tr>
+                        <td>Voice Pipeline</td>
+                        <td>Custom WebSocket</td>
+                        <td class="status-production">Production</td>
+                        <td><code>backend/app/services/voice_pipeline_service.py</code></td>
+                    </tr>
+                    <tr>
+                        <td>Intent Router</td>
+                        <td>Custom (pattern-based)</td>
+                        <td class="status-production">Production</td>
+                        <td><code>backend/app/services/voice/intent_router.py</code></td>
+                    </tr>
+                    <tr>
+                        <td>Unified Voice Endpoint</td>
+                        <td>FastAPI</td>
+                        <td class="status-production">Production</td>
+                        <td><code>backend/app/api/routes/voice/unified.py</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.2 Assistant/AI System Components</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Component</th>
+                        <th>Provider</th>
+                        <th>Status</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Chat Assistant</td>
+                        <td>Claude (Anthropic)</td>
+                        <td class="status-production">Production</td>
+                        <td><code>backend/app/api/routes/chat/</code></td>
+                    </tr>
+                    <tr>
+                        <td>AI Librarian</td>
+                        <td>Claude Sonnet</td>
+                        <td class="status-production">Production</td>
+                        <td><code>backend/app/services/ai_agent/</code></td>
+                    </tr>
+                    <tr>
+                        <td>Content Search</td>
+                        <td>UnifiedSearchService</td>
+                        <td class="status-production">Production</td>
+                        <td><code>backend/app/services/unified_search_service.py</code></td>
+                    </tr>
+                    <tr>
+                        <td>Intent Recognition</td>
+                        <td>Custom NLP</td>
+                        <td class="status-production">Production</td>
+                        <td><code>backend/app/services/nlp/</code></td>
+                    </tr>
+                    <tr>
+                        <td>Content Resolution</td>
+                        <td>Fuzzy Matching</td>
+                        <td class="status-production">Production</td>
+                        <td><code>backend/app/api/routes/chat/content_resolution.py</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>2.3 Widget & Avatar Systems</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title">Widget Types (8)</div>
+                    <div class="metric"><span class="metric-label">live_channel</span><span class="metric-value">Live TV</span></div>
+                    <div class="metric"><span class="metric-label">vod</span><span class="metric-value">Movies/Series</span></div>
+                    <div class="metric"><span class="metric-label">podcast</span><span class="metric-value">Podcast Episodes</span></div>
+                    <div class="metric"><span class="metric-label">radio</span><span class="metric-value">Radio Stations</span></div>
+                    <div class="metric"><span class="metric-label">iframe</span><span class="metric-value">External Content</span></div>
+                    <div class="metric"><span class="metric-label">custom</span><span class="metric-value">React Components</span></div>
+                    <div class="metric"><span class="metric-label">audiobook</span><span class="metric-value">Audiobooks</span></div>
+                    <div class="metric"><span class="metric-label">live</span><span class="metric-value">Generic Live</span></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Widget Capabilities</div>
+                    <div class="metric"><span class="metric-label">Drag & Drop</span><span class="metric-value">Yes</span></div>
+                    <div class="metric"><span class="metric-label">8-Direction Resize</span><span class="metric-value">Yes</span></div>
+                    <div class="metric"><span class="metric-label">Minimize/Restore</span><span class="metric-value">Yes</span></div>
+                    <div class="metric"><span class="metric-label">TV Remote Control</span><span class="metric-value">Yes</span></div>
+                    <div class="metric"><span class="metric-label">Voice Creation</span><span class="metric-value">Yes</span></div>
+                    <div class="metric"><span class="metric-label">Auto-Grid Position</span><span class="metric-value">Yes</span></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Avatar Modes (4)</div>
+                    <div class="metric"><span class="metric-label">full</span><span class="metric-value">320x480</span></div>
+                    <div class="metric"><span class="metric-label">compact</span><span class="metric-value">160x160</span></div>
+                    <div class="metric"><span class="metric-label">minimal</span><span class="metric-value">240x80</span></div>
+                    <div class="metric"><span class="metric-label">icon_only</span><span class="metric-value">64x64</span></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Avatar States (5)</div>
+                    <div class="metric"><span class="metric-label">idle</span><span class="metric-value">512x512</span></div>
+                    <div class="metric"><span class="metric-label">listening</span><span class="metric-value">256x256</span></div>
+                    <div class="metric"><span class="metric-label">speaking</span><span class="metric-value">256x256</span></div>
+                    <div class="metric"><span class="metric-label">processing</span><span class="metric-value">256x256</span></div>
+                    <div class="metric"><span class="metric-label">error</span><span class="metric-value">512x512</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Architecture -->
+        <section id="architecture">
+            <h2>3. Architecture Diagrams</h2>
+
+            <h3>3.1 Current Voice Pipeline Architecture</h3>
+            <div class="diagram-container">
+                <div class="diagram-title">Current System Architecture</div>
+                <img src="diagrams/png/02-current-architecture.png" alt="Current Architecture Diagram">
+            </div>
+
+            <h3>3.2 Target Unified Voice Orchestrator</h3>
+            <div class="diagram-container">
+                <div class="diagram-title">Target Voice Orchestrator (New Component)</div>
+                <img src="diagrams/png/03-target-orchestrator.png" alt="Target Orchestrator Diagram">
+            </div>
+
+            <h3>3.3 Widget Creation Flow</h3>
+            <div class="diagram-container">
+                <div class="diagram-title">Voice Command to Widget Display Flow</div>
+                <img src="diagrams/png/04-widget-creation-flow.png" alt="Widget Creation Flow Diagram">
+            </div>
+
+            <h3>3.4 Voice Intent Classification</h3>
+            <div class="diagram-container">
+                <div class="diagram-title">Intent Types: Current vs Required</div>
+                <img src="diagrams/png/05-intent-classification.png" alt="Intent Classification Diagram">
+            </div>
+
+            <h3>3.5 Component Inventory</h3>
+            <div class="diagram-container">
+                <div class="diagram-title">All System Components and Connections</div>
+                <img src="diagrams/png/06-component-inventory.png" alt="Component Inventory Diagram">
+            </div>
+        </section>
+
+        <!-- Section 4: Gap Analysis -->
+        <section id="gap-analysis">
+            <h2>4. Gap Analysis</h2>
+
+            <div class="diagram-container">
+                <div class="diagram-title">Gap Analysis Overview</div>
+                <img src="diagrams/png/07-gap-analysis.png" alt="Gap Analysis Diagram">
+            </div>
+
+            <h3>4.1 Capability Status Matrix</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Target Scenario</th>
+                        <th>Current State</th>
+                        <th>Gap</th>
+                        <th>Effort</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Wake word triggers Avatar appearance</td>
+                        <td class="status-partial">Components exist</td>
+                        <td>Integration wiring</td>
+                        <td><span class="badge badge-small">Small</span></td>
+                    </tr>
+                    <tr>
+                        <td>"Movies with Ice" displays content list</td>
+                        <td class="status-partial">Search works independently</td>
+                        <td>Orchestration layer</td>
+                        <td><span class="badge badge-medium">Medium</span></td>
+                    </tr>
+                    <tr>
+                        <td>Podcast episode playback with widget</td>
+                        <td class="status-partial">Resolution + widgets work</td>
+                        <td>Episode logic + auto-play</td>
+                        <td><span class="badge badge-small">Small</span></td>
+                    </tr>
+                    <tr>
+                        <td>Multi-channel widget display</td>
+                        <td class="status-partial">Multi-widget works</td>
+                        <td>Channel # resolution</td>
+                        <td><span class="badge badge-small">Small</span></td>
+                    </tr>
+                    <tr>
+                        <td>Web article in iFrame widget</td>
+                        <td class="status-missing">Widget exists, search missing</td>
+                        <td>Web search integration</td>
+                        <td><span class="badge badge-medium">Medium</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>4.2 Detailed Gap Breakdown</h3>
+
+            <div class="gap-item">
+                <div class="gap-icon">1</div>
+                <div class="gap-content">
+                    <h4>Wake Word + Avatar Integration</h4>
+                    <p>Wake word detection and Avatar states both exist. Missing: frontend event listener that triggers Avatar visibility and listening state when wake word is detected.</p>
+                </div>
+            </div>
+
+            <div class="gap-item">
+                <div class="gap-icon">2</div>
+                <div class="gap-content">
+                    <h4>Voice Response + Widget Coordination</h4>
+                    <p>TTS and widget creation work independently. Missing: orchestration layer that generates spoken response while simultaneously creating and displaying widgets with search results.</p>
+                </div>
+            </div>
+
+            <div class="gap-item">
+                <div class="gap-icon">3</div>
+                <div class="gap-content">
+                    <h4>Podcast Episode Resolution</h4>
+                    <p>Podcast resolution works, episodes can be fetched. Missing: LLM interpretation of "last episode" as "latest by date" and auto-play action trigger.</p>
+                </div>
+            </div>
+
+            <div class="gap-item">
+                <div class="gap-icon">4</div>
+                <div class="gap-content">
+                    <h4>Channel Number Resolution</h4>
+                    <p>Content resolution uses fuzzy name matching. Missing: "Channel 11" to channel ID mapping (e.g., Kan 11, Hot Channel 11).</p>
+                </div>
+            </div>
+
+            <div class="gap-item">
+                <div class="gap-icon">5</div>
+                <div class="gap-content">
+                    <h4>Web Search Integration (Major Gap)</h4>
+                    <p>iFrame widget type exists with proper sandboxing. Missing: web search API integration, URL extraction from search results, LLM-driven "find article about X" workflow.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Metrics -->
+        <section id="metrics">
+            <h2>5. System Metrics</h2>
+
+            <h3>5.1 Voice Pipeline Latencies</h3>
+            <div class="card-grid">
+                <div class="card">
+                    <div class="card-title">Processing Stages</div>
+                    <div class="metric"><span class="metric-label">Wake Word Detection</span><span class="metric-value">&lt;100ms</span></div>
+                    <div class="metric"><span class="metric-label">STT Processing</span><span class="metric-value">~150ms</span></div>
+                    <div class="metric"><span class="metric-label">Intent Classification</span><span class="metric-value">&lt;50ms</span></div>
+                    <div class="metric"><span class="metric-label">Content Search</span><span class="metric-value">200-500ms</span></div>
+                    <div class="metric"><span class="metric-label">LLM Response</span><span class="metric-value">100-300ms</span></div>
+                    <div class="metric"><span class="metric-label">TTS First Chunk</span><span class="metric-value">300-500ms</span></div>
+                    <div class="metric"><span class="metric-label">Widget Creation</span><span class="metric-value">&lt;100ms</span></div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Total End-to-End</div>
+                    <div class="metric"><span class="metric-label">Current</span><span class="metric-value">600-1000ms</span></div>
+                    <div class="metric"><span class="metric-label">Target</span><span class="metric-value">&lt;1500ms</span></div>
+                    <div class="metric"><span class="metric-label">Status</span><span class="metric-value" style="color: #10b981;">Within Target</span></div>
+                </div>
+            </div>
+
+            <h3>5.2 Language Support</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>System</th>
+                        <th>Languages</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Wake Word</td>
+                        <td>3 (en, he, es)</td>
+                        <td>Picovoice language models</td>
+                    </tr>
+                    <tr>
+                        <td>STT</td>
+                        <td>30+</td>
+                        <td>ElevenLabs multilingual</td>
+                    </tr>
+                    <tr>
+                        <td>TTS</td>
+                        <td>30+</td>
+                        <td>ElevenLabs multilingual v2</td>
+                    </tr>
+                    <tr>
+                        <td>Intent Router</td>
+                        <td>2 (en, he)</td>
+                        <td>Pattern matching</td>
+                    </tr>
+                    <tr>
+                        <td>UI</td>
+                        <td>10</td>
+                        <td>@bayit/shared-i18n</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>5.3 Content Coverage</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Content Type</th>
+                        <th>Searchable</th>
+                        <th>Widget Support</th>
+                        <th>Voice Resolution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Movies</td>
+                        <td class="status-production">Yes</td>
+                        <td class="status-production">vod</td>
+                        <td class="status-production">Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Series</td>
+                        <td class="status-production">Yes</td>
+                        <td class="status-production">vod</td>
+                        <td class="status-production">Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Live Channels</td>
+                        <td class="status-production">Yes</td>
+                        <td class="status-production">live_channel</td>
+                        <td class="status-partial">Needs channel #</td>
+                    </tr>
+                    <tr>
+                        <td>Radio</td>
+                        <td class="status-production">Yes</td>
+                        <td class="status-production">radio</td>
+                        <td class="status-production">Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Podcasts</td>
+                        <td class="status-production">Yes</td>
+                        <td class="status-production">podcast</td>
+                        <td class="status-production">Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Audiobooks</td>
+                        <td class="status-production">Yes</td>
+                        <td class="status-production">audiobook</td>
+                        <td class="status-production">Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Web Content</td>
+                        <td class="status-missing">No</td>
+                        <td class="status-production">iframe</td>
+                        <td class="status-missing">No</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Section 6: Implementation -->
+        <section id="implementation">
+            <h2>6. Implementation Plan</h2>
+
+            <div class="phase">
+                <div class="phase-number">1</div>
+                <h3>Voice Orchestrator Service</h3>
+                <p><span class="badge badge-large">Large Effort</span></p>
+                <p>Create a unified Voice Orchestrator that coordinates all voice interaction components:</p>
+                <ul class="file-list">
+                    <li><span class="file-path">backend/app/services/voice_orchestrator.py</span><span class="file-desc">- Central orchestration service</span></li>
+                    <li><span class="file-path">web/src/services/voiceOrchestrator.ts</span><span class="file-desc">- Frontend orchestration client</span></li>
+                </ul>
+                <p>Responsibilities: Avatar state management, STT to Intent to Action to TTS flow, Widget coordination, Action execution</p>
+            </div>
+
+            <div class="phase">
+                <div class="phase-number">2</div>
+                <h3>Enhanced Intent Routing</h3>
+                <p><span class="badge badge-medium">Medium Effort</span></p>
+                <p>Extend intent router with new intent types for target scenarios:</p>
+                <ul class="file-list">
+                    <li><span class="file-path">CONTENT_QUERY</span><span class="file-desc">- "Do you have movies about X?"</span></li>
+                    <li><span class="file-path">PLAY_CONTENT</span><span class="file-desc">- "Play X"</span></li>
+                    <li><span class="file-path">DISPLAY_CHANNELS</span><span class="file-desc">- "Show me channel X and Y"</span></li>
+                    <li><span class="file-path">WEB_SEARCH</span><span class="file-desc">- "Show me latest news about X"</span></li>
+                </ul>
+            </div>
+
+            <div class="phase">
+                <div class="phase-number">3</div>
+                <h3>Content Resolution Enhancements</h3>
+                <p><span class="badge badge-small">Small Effort</span></p>
+                <p>Add channel number resolution and podcast episode logic:</p>
+                <ul class="file-list">
+                    <li><span class="file-path">Channel # mapping</span><span class="file-desc">- "Channel 11" resolves to Kan 11</span></li>
+                    <li><span class="file-path">Episode interpretation</span><span class="file-desc">- "last episode" resolves to latest by date</span></li>
+                </ul>
+            </div>
+
+            <div class="phase">
+                <div class="phase-number">4</div>
+                <h3>Web Search Integration</h3>
+                <p><span class="badge badge-medium">Medium Effort</span></p>
+                <p>Add web search capability for iFrame widget creation:</p>
+                <ul class="file-list">
+                    <li><span class="file-path">backend/app/services/web_search_service.py</span><span class="file-desc">- Search API integration</span></li>
+                    <li><span class="file-path">backend/app/api/routes/voice/web_search.py</span><span class="file-desc">- Web search endpoint</span></li>
+                    <li><span class="file-path">web_search tool</span><span class="file-desc">- Claude tool for URL selection</span></li>
+                </ul>
+            </div>
+
+            <div class="phase">
+                <div class="phase-number">5</div>
+                <h3>Frontend Integration</h3>
+                <p><span class="badge badge-small">Small Effort</span></p>
+                <p>Wire up Avatar appearance and widget coordination:</p>
+                <ul class="file-list">
+                    <li><span class="file-path">Wake word to Avatar visible</span><span class="file-desc">- Event listener integration</span></li>
+                    <li><span class="file-path">Response to Avatar speaking</span><span class="file-desc">- State synchronization</span></li>
+                    <li><span class="file-path">Widgets appearing during TTS</span><span class="file-desc">- Coordinated display</span></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Section 7: Files Reference -->
+        <section id="files">
+            <h2>7. Critical Files Reference</h2>
+
+            <h3>Backend Voice System</h3>
+            <ul class="file-list">
+                <li><span class="file-path">backend/app/api/endpoints/wake_word_proxy.py</span><span class="file-desc">- Wake word detection (191 lines)</span></li>
+                <li><span class="file-path">backend/app/services/voice_pipeline_service.py</span><span class="file-desc">- Voice pipeline (427 lines)</span></li>
+                <li><span class="file-path">backend/app/services/voice/intent_router.py</span><span class="file-desc">- Intent routing (100+ lines)</span></li>
+                <li><span class="file-path">backend/app/api/routes/voice/unified.py</span><span class="file-desc">- Unified endpoint (150+ lines)</span></li>
+                <li><span class="file-path">backend/app/services/elevenlabs_realtime_service.py</span><span class="file-desc">- STT service (51 lines)</span></li>
+                <li><span class="file-path">backend/app/services/elevenlabs_tts_streaming_service.py</span><span class="file-desc">- TTS service (43 lines)</span></li>
+            </ul>
+
+            <h3>Backend Chat/Assistant</h3>
+            <ul class="file-list">
+                <li><span class="file-path">backend/app/api/routes/chat/messaging.py</span><span class="file-desc">- Chat messages (160+ lines)</span></li>
+                <li><span class="file-path">backend/app/api/routes/chat/content_resolution.py</span><span class="file-desc">- Content resolution (149 lines)</span></li>
+                <li><span class="file-path">backend/app/api/routes/chat/services.py</span><span class="file-desc">- Business logic (250+ lines)</span></li>
+                <li><span class="file-path">backend/app/services/chat_search_tool.py</span><span class="file-desc">- Search tools</span></li>
+            </ul>
+
+            <h3>Frontend Widget System</h3>
+            <ul class="file-list">
+                <li><span class="file-path">web/src/stores/widgetStore.ts</span><span class="file-desc">- Widget state management</span></li>
+                <li><span class="file-path">web/src/components/widgets/WidgetManager.tsx</span><span class="file-desc">- Widget orchestration</span></li>
+                <li><span class="file-path">web/src/components/widgets/WidgetContainer.tsx</span><span class="file-desc">- Widget UI</span></li>
+            </ul>
+
+            <h3>Frontend Voice/Avatar</h3>
+            <ul class="file-list">
+                <li><span class="file-path">web/src/stores/voiceSettingsStore.ts</span><span class="file-desc">- Voice preferences</span></li>
+                <li><span class="file-path">shared/constants/voiceAvatarModes.ts</span><span class="file-desc">- Avatar mode definitions</span></li>
+                <li><span class="file-path">shared/constants/wizardAvatars.ts</span><span class="file-desc">- Avatar assets</span></li>
+            </ul>
+
+            <h3>Configuration</h3>
+            <ul class="file-list">
+                <li><span class="file-path">backend/app/core/config.py</span><span class="file-desc">- Voice settings, API keys</span></li>
+            </ul>
+        </section>
+
+        <!-- Section 8: Summary -->
+        <section id="summary">
+            <h2>8. Executive Summary</h2>
+
+            <div class="summary-box">
+                <h3>Current State</h3>
+                <p>The Bayit+ platform has <strong>robust individual components</strong> for voice interaction:</p>
+                <ul>
+                    <li>Wake word detection (Picovoice) - Production ready</li>
+                    <li>Speech-to-text (ElevenLabs) - Production ready</li>
+                    <li>Text-to-speech (ElevenLabs) - Production ready</li>
+                    <li>Chat/Assistant (Claude) - Production ready</li>
+                    <li>Content search (UnifiedSearchService) - Production ready</li>
+                    <li>Widget system (8 types, voice creation) - Production ready</li>
+                    <li>Avatar system (4 modes, 5 states) - Production ready</li>
+                </ul>
+            </div>
+
+            <div class="summary-box">
+                <h3>Primary Gap</h3>
+                <p>The core issue is <strong>lack of unified orchestration</strong>:</p>
+                <ul>
+                    <li>Components operate independently</li>
+                    <li>No single flow from wake to respond to display</li>
+                    <li>Web search capability missing entirely</li>
+                    <li>Channel number resolution needs enhancement</li>
+                </ul>
+            </div>
+
+            <div class="summary-box">
+                <h3>Recommendation</h3>
+                <p>Create a <strong>Voice Orchestrator</strong> service that acts as the central coordinator, connecting all existing components into the seamless experience described in the target state.</p>
+                <table>
+                    <tr>
+                        <td>Phase 1-2 (Orchestrator + Intent)</td>
+                        <td><span class="badge badge-medium">Medium</span></td>
+                    </tr>
+                    <tr>
+                        <td>Phase 3 (Content Resolution)</td>
+                        <td><span class="badge badge-small">Small</span></td>
+                    </tr>
+                    <tr>
+                        <td>Phase 4 (Web Search)</td>
+                        <td><span class="badge badge-medium">Medium</span></td>
+                    </tr>
+                    <tr>
+                        <td>Phase 5 (Frontend Integration)</td>
+                        <td><span class="badge badge-small">Small</span></td>
+                    </tr>
+                </table>
+            </div>
+        </section>
+
+        <footer>
+            <p>Voice & Assistant System Analysis | Bayit+ Streaming Platform</p>
+            <p>Generated by Claude Opus 4.5 | February 1, 2026</p>
+            <p style="margin-top: 1rem; font-size: 0.8rem;">
+                Diagrams available in: <code>docs/architecture/diagrams/png/</code>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

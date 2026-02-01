@@ -32,13 +32,13 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue = [], is
         style={[styles.headerRow, isRTL && styles.rowReverse]}
         onPress={() => setShowQueue(!showQueue)}
       >
-        <Text style={[styles.headerText, { textAlign, color: colors.text }]}>
+        <Text style={[styles.headerText, { textAlign, color: '#ffffff' }]}>
           {t('admin.uploads.queuedItems', 'Queued')} ({queueItems.length})
         </Text>
         {showQueue ? (
-          <ChevronUp size={20} color={colors.textMuted} />
+          <ChevronUp size={20} color="rgba(255, 255, 255, 0.7)" />
         ) : (
-          <ChevronDown size={20} color={colors.textMuted} />
+          <ChevronDown size={20} color="rgba(255, 255, 255, 0.7)" />
         )}
       </Pressable>
 
@@ -57,15 +57,15 @@ export const QueuedItemsList: React.FC<QueuedItemsListProps> = ({ queue = [], is
             />
           ) : (
             queueItems.map((job) => (
-              <View key={job.job_id} style={[styles.jobCard, { backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }]}>
+              <View key={job.job_id} style={[styles.jobCard, { backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: colors.glassBorder }]}>
                 <View style={[styles.jobRow, isRTL && styles.rowReverse]}>
                   <StatusIcon status={job.status} job={job} />
-                  <Text style={[styles.filename, { textAlign, color: colors.text }]} numberOfLines={1}>
+                  <Text style={[styles.filename, { textAlign, color: '#ffffff' }]} numberOfLines={1}>
                     {job.filename}
                   </Text>
-                  <Text style={[styles.fileSize, { color: colors.textMuted }]}>{formatFileSize(job.file_size)}</Text>
+                  <Text style={[styles.fileSize, { color: 'rgba(255, 255, 255, 0.7)' }]}>{formatFileSize(job.file_size)}</Text>
                 </View>
-                <Text style={[styles.timestamp, { textAlign, color: colors.textMuted }]}>
+                <Text style={[styles.timestamp, { textAlign, color: 'rgba(255, 255, 255, 0.6)' }]}>
                   {t('admin.uploads.addedAt', 'Added')}: {format(new Date(job.created_at), 'MMM d, HH:mm')}
                 </Text>
               </View>

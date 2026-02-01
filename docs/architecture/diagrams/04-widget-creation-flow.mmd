@@ -1,0 +1,36 @@
+flowchart LR
+    subgraph Input["Voice Input"]
+        Q1["'Movies with Ice'"]
+        Q2["'Play Berko podcast'"]
+        Q3["'Show channels 11, 13'"]
+        Q4["'H1B visa news'"]
+    end
+
+    subgraph Resolution["Content Resolution"]
+        R1[Search Movies]
+        R2[Resolve Podcast]
+        R3[Resolve Channels]
+        R4[Web Search]
+    end
+
+    subgraph Creation["Widget Creation"]
+        W1[VOD Widgets]
+        W2[Podcast Widget]
+        W3[Channel Widgets]
+        W4[iFrame Widget]
+    end
+
+    subgraph Display["Auto-Grid Display"]
+        D1[2-Column Layout]
+        D2[Single + Play]
+        D3[Side-by-Side]
+        D4[Full Width]
+    end
+
+    Q1 --> R1 --> W1 --> D1
+    Q2 --> R2 --> W2 --> D2
+    Q3 --> R3 --> W3 --> D3
+    Q4 --> R4 --> W4 --> D4
+
+    style R4 fill:#ef4444
+    style W4 fill:#ef4444

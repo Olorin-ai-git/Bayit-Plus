@@ -5,6 +5,7 @@ import { initBayitI18nWeb } from '@bayit/i18n/web'
 import { useDirection } from '@/hooks/useDirection'
 import { VoiceListeningProvider } from '@bayit/shared-contexts'
 import { NotificationProvider } from '@olorin/glass-ui/contexts'
+import { GlassAlertRoot } from '@bayit/shared/ui'
 import Layout from './components/layout/Layout'
 import FullscreenVideoOverlay from './components/player/FullscreenVideoOverlay'
 import LocationManager from './components/location/LocationManager'
@@ -320,17 +321,19 @@ function App() {
   }, [])
 
   return (
-    <NotificationProvider position="top" maxVisible={3}>
-      <Suspense fallback={<LoadingFallback />}>
-        <AppContent />
-      </Suspense>
+    <GlassAlertRoot>
+      <NotificationProvider position="top" maxVisible={3}>
+        <Suspense fallback={<LoadingFallback />}>
+          <AppContent />
+        </Suspense>
 
-      {/* Fullscreen Video Player Overlay - can be triggered from anywhere */}
-      <FullscreenVideoOverlay />
+        {/* Fullscreen Video Player Overlay - can be triggered from anywhere */}
+        <FullscreenVideoOverlay />
 
-      {/* Location Services - GDPR-compliant geolocation with consent modal */}
-      <LocationManager />
-    </NotificationProvider>
+        {/* Location Services - GDPR-compliant geolocation with consent modal */}
+        <LocationManager />
+      </NotificationProvider>
+    </GlassAlertRoot>
   )
 }
 

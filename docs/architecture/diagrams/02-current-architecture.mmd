@@ -1,0 +1,58 @@
+flowchart TB
+    subgraph Client["Client Layer"]
+        MIC[Microphone]
+        SPK[Speaker]
+        UI[UI Components]
+    end
+
+    subgraph Voice["Voice Services"]
+        WW[Wake Word<br/>Picovoice]
+        STT[STT<br/>ElevenLabs]
+        TTS[TTS<br/>ElevenLabs]
+        VP[Voice Pipeline<br/>WebSocket]
+    end
+
+    subgraph AI["AI Layer"]
+        IR[Intent Router]
+        CHAT[Chat Assistant<br/>Claude]
+        SEARCH[Content Search]
+    end
+
+    subgraph Widget["Widget System"]
+        WS[Widget Store<br/>Zustand]
+        WM[Widget Manager]
+        WC[Widget Components]
+    end
+
+    subgraph Avatar["Avatar System"]
+        AS[Avatar State]
+        AM[Avatar Modes]
+        AG[Avatar Gestures]
+    end
+
+    MIC --> WW
+    WW --> STT
+    STT --> VP
+    VP --> IR
+    IR --> CHAT
+    CHAT --> SEARCH
+    CHAT --> TTS
+    TTS --> SPK
+
+    CHAT -.-> WS
+    WS --> WM
+    WM --> WC
+    WC --> UI
+
+    VP -.-> AS
+    AS --> AM
+    AM --> AG
+    AG --> UI
+
+    style WW fill:#10b981
+    style STT fill:#10b981
+    style TTS fill:#10b981
+    style CHAT fill:#10b981
+    style SEARCH fill:#10b981
+    style WS fill:#10b981
+    style WM fill:#10b981

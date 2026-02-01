@@ -5,9 +5,9 @@ Builds MongoDB query conditions for beta content filtering.
 After backfill, all documents have is_beta_content field set.
 
 Rules:
-- Admin users: See all content (no filter)
-- Beta users: See ONLY beta-tagged content
-- Non-beta / anonymous users: See ONLY non-beta content
+- Admin users: See only movies and series (no audiobooks/podcasts/clips)
+- Beta users: See ONLY beta-tagged content (all types)
+- Non-beta / anonymous users: See only non-beta movies and series
 """
 
 from typing import Optional
@@ -15,8 +15,18 @@ from typing import Optional
 from app.models.user import User
 
 
+# Filter to include only movies and series (excludes audiobooks, podcasts, clips, articles)
+MOVIES_SERIES_FILTER = {
+    "$or": [
+        {"content_format": {"$in": ["movie", "series", None]}},
+        {"content_format": {"$exists": False}},
+        {"is_series": True},
+    ]
+}
+
+
 def build_beta_content_filter(user: Optional[User]) -> dict:
-    """Return MongoDB $match condition for beta content filtering.
+    """Return MongoDB $match condition for beta content and content type filtering.
 
     After backfill, all documents have is_beta_content field set,
     so we use simple equality (no $or/$exists needed).
@@ -25,10 +35,43 @@ def build_beta_content_filter(user: Optional[User]) -> dict:
         user: The current user, or None for anonymous access.
 
     Returns:
-        A dict to inject into MongoDB queries. Empty dict for admins.
+        A dict to inject into MongoDB queries.
+        - Admin: Movies and series only
+        - Beta user: Beta content only (all types)
+        - Non-beta/anonymous: Non-beta movies and series only
     """
     if user and user.is_admin_user():
-        return {}
+        # Admin sees only movies and series in featured
+        return MOVIES_SERIES_FILTER
+    if user and getattr(user, "is_beta_user", False):
+        # Beta users see only beta content (all types)
+        return {"is_beta_content": True}
+    # Non-beta users: non-beta content AND movies/series only
+    return {
+        "$and": [
+            {"is_beta_content": False},
+            MOVIES_SERIES_FILTER,
+        ]
+    }
+
+
+def build_beta_only_filter(user: Optional[User]) -> dict:
+    """Return MongoDB $match condition for beta content filtering ONLY.
+
+    Use this for podcasts and audiobooks sections where we don't want
+    to apply the movies/series content type filter.
+
+    Args:
+        user: The current user, or None for anonymous access.
+
+    Returns:
+        A dict to inject into MongoDB queries.
+        - Admin: No filter (sees all)
+        - Beta user: Beta content only
+        - Non-beta/anonymous: Non-beta content only
+    """
+    if user and user.is_admin_user():
+        return {}  # Admin sees all podcasts/audiobooks
     if user and getattr(user, "is_beta_user", False):
         return {"is_beta_content": True}
     return {"is_beta_content": False}

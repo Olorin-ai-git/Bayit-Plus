@@ -43,13 +43,13 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
           style={[styles.headerButton, isRTL && styles.rowReverse]}
           onPress={() => setShowCompleted(!showCompleted)}
         >
-          <Text style={[styles.headerText, { textAlign, color: colors.text }]}>
+          <Text style={[styles.headerText, { textAlign, color: '#ffffff' }]}>
             {t('admin.uploads.recentCompleted', 'Recently Completed')} ({completedItems.length})
           </Text>
           {showCompleted ? (
-            <ChevronUp size={20} color={colors.textMuted} />
+            <ChevronUp size={20} color="rgba(255, 255, 255, 0.7)" />
           ) : (
-            <ChevronDown size={20} color={colors.textMuted} />
+            <ChevronDown size={20} color="rgba(255, 255, 255, 0.7)" />
           )}
         </Pressable>
         {onClearCompleted && showCompleted && (
@@ -82,10 +82,10 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
                 : 'danger';
 
             return (
-              <View key={job.job_id} style={[styles.jobCard, { backgroundColor: colors.backgroundLight, borderColor: colors.glassBorder }]}>
+              <View key={job.job_id} style={[styles.jobCard, { backgroundColor: 'rgba(255, 255, 255, 0.05)', borderColor: colors.glassBorder }]}>
                 <View style={[styles.jobRow, isRTL && styles.rowReverse]}>
                   <StatusIcon status={job.status} job={job} />
-                  <Text style={[styles.filename, { textAlign, color: colors.text }]} numberOfLines={1}>
+                  <Text style={[styles.filename, { textAlign, color: '#ffffff' }]} numberOfLines={1}>
                     {job.filename}
                   </Text>
                   <GlassBadge
@@ -105,7 +105,7 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
                   </Text>
                 )}
                 {job.completed_at && (
-                  <Text style={[styles.timestamp, { textAlign, color: colors.textMuted }]}>
+                  <Text style={[styles.timestamp, { textAlign, color: 'rgba(255, 255, 255, 0.6)' }]}>
                     {format(new Date(job.completed_at), 'MMM d, HH:mm:ss')}
                   </Text>
                 )}

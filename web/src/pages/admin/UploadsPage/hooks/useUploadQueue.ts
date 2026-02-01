@@ -37,6 +37,7 @@ export const useUploadQueue = () => {
   const [reconnectAttempt, setReconnectAttempt] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [clearingQueue, setClearingQueue] = useState(false);
 
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -192,6 +193,24 @@ export const useUploadQueue = () => {
     setConnected(false);
   }, []);
 
+  /**
+   * Clears all queued jobs (cancels them)
+   */
+  const clearQueue = useCallback(async () => {
+    setClearingQueue(true);
+    try {
+      const result = await uploadsService.clearUploadQueue();
+      logger.info(`Cleared ${result.cancelled_count} jobs from queue`, 'useUploadQueue');
+      await refreshQueue();
+      return result;
+    } catch (err: any) {
+      logger.error('Failed to clear queue', 'useUploadQueue', err);
+      throw err;
+    } finally {
+      setClearingQueue(false);
+    }
+  }, [refreshQueue]);
+
   // Initialize: fetch queue and connect WebSocket
   useEffect(() => {
     refreshQueue();
@@ -209,7 +228,9 @@ export const useUploadQueue = () => {
     reconnectAttempt,
     loading,
     error,
+    clearingQueue,
     refreshQueue,
+    clearQueue,
     connectWebSocket,
     disconnectWebSocket,
   };

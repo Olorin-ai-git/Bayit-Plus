@@ -14,6 +14,7 @@ from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
 from app.models.user import User
 from app.services.image_storage import download_and_encode_image
+from app.services.content_deletion_service import content_deletion_service
 from app.services.subtitle_extraction_service import \
     analyze_and_extract_subtitles
 
@@ -235,9 +236,18 @@ async def update_content(
 async def delete_content(
     content_id: str,
     request: Request,
+    delete_files: bool = True,
+    delete_episodes: bool = True,
     current_user: User = Depends(has_permission(Permission.CONTENT_DELETE)),
 ):
-    """Delete VOD content."""
+    """
+    Delete VOD content completely.
+
+    Args:
+        content_id: The content ID to delete
+        delete_files: If True, also delete GCS files (default: True)
+        delete_episodes: If True and content is a series, delete all episodes
+    """
     try:
         content = await Content.get(content_id)
     except Exception:
@@ -245,16 +255,39 @@ async def delete_content(
     if not content:
         raise HTTPException(status_code=404, detail="Content not found")
 
+    content_title = content.title
+    is_series = content.is_series
+
+    # Use the deletion service for complete cleanup
+    if delete_files:
+        result = await content_deletion_service.delete_content_complete(
+            content_id, delete_episodes=delete_episodes
+        )
+    else:
+        # Just delete from DB (legacy behavior)
+        await content.delete()
+        result = {"content_deleted": True, "gcs_files_deleted": 0, "episodes_deleted": 0}
+
     await log_audit(
         str(current_user.id),
         AuditAction.CONTENT_DELETED,
         "content",
         content_id,
-        {"title": content.title},
+        {
+            "title": content_title,
+            "is_series": is_series,
+            "gcs_files_deleted": result.get("gcs_files_deleted", 0),
+            "episodes_deleted": result.get("episodes_deleted", 0),
+        },
         request,
     )
-    await content.delete()
-    return {"message": "Content deleted"}
+
+    return {
+        "message": "Content deleted",
+        "gcs_files_deleted": result.get("gcs_files_deleted", 0),
+        "episodes_deleted": result.get("episodes_deleted", 0),
+        "errors": result.get("errors", []),
+    }
 
 
 @router.post("/content/batch/delete")
@@ -263,38 +296,62 @@ async def batch_delete_content(
     request: Request,
     current_user: User = Depends(has_permission(Permission.CONTENT_DELETE)),
 ):
-    """Batch delete multiple content items."""
+    """Batch delete multiple content items with GCS file cleanup."""
     content_ids = data.get("content_ids", [])
+    delete_files = data.get("delete_files", True)
+    delete_episodes = data.get("delete_episodes", True)
 
     if not content_ids:
         raise HTTPException(status_code=400, detail="No content IDs provided")
 
-    deleted_count = 0
-    errors = []
+    # Use the deletion service for complete cleanup
+    if delete_files:
+        result = await content_deletion_service.batch_delete_content_complete(
+            content_ids, delete_episodes=delete_episodes
+        )
+        deleted_count = result["content_deleted"]
+        errors = result["errors"]
+        gcs_files_deleted = result["gcs_files_deleted"]
+        episodes_deleted = result["episodes_deleted"]
+    else:
+        # Legacy behavior - just delete from DB
+        deleted_count = 0
+        errors = []
+        gcs_files_deleted = 0
+        episodes_deleted = 0
 
-    for content_id in content_ids:
-        try:
-            content = await Content.get(content_id)
-            if content:
-                await log_audit(
-                    str(current_user.id),
-                    AuditAction.CONTENT_DELETED,
-                    "content",
-                    content_id,
-                    {"title": content.title},
-                    request,
-                )
-                await content.delete()
-                deleted_count += 1
-            else:
-                errors.append(f"Content {content_id} not found")
-        except Exception as e:
-            logger.error(f"Failed to delete content {content_id}: {e}")
-            errors.append(f"Failed to delete {content_id}: {str(e)}")
+        for content_id in content_ids:
+            try:
+                content = await Content.get(content_id)
+                if content:
+                    await content.delete()
+                    deleted_count += 1
+                else:
+                    errors.append(f"Content {content_id} not found")
+            except Exception as e:
+                logger.error(f"Failed to delete content {content_id}: {e}")
+                errors.append(f"Failed to delete {content_id}: {str(e)}")
+
+    # Log audit for batch operation
+    await log_audit(
+        str(current_user.id),
+        AuditAction.CONTENT_DELETED,
+        "content",
+        "batch",
+        {
+            "content_ids": content_ids,
+            "deleted_count": deleted_count,
+            "gcs_files_deleted": gcs_files_deleted,
+            "episodes_deleted": episodes_deleted,
+        },
+        request,
+    )
 
     return {
         "deleted_count": deleted_count,
-        "errors": errors
+        "gcs_files_deleted": gcs_files_deleted,
+        "episodes_deleted": episodes_deleted,
+        "errors": errors,
     }
 
 
