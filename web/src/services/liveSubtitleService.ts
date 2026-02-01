@@ -211,6 +211,13 @@ class LiveSubtitleService {
                 logger.debug('Completed latency measurement (first subtitle)', 'liveSubtitleService')
               }
 
+              // Skip partial subtitles (untranslated) - only show final translated subtitles
+              // Partial subtitles show original Hebrew before translation completes
+              if (msg.type === 'partial_subtitle' || msg.data?.is_partial === true) {
+                logger.debug('Skipping partial subtitle (awaiting translation)', 'liveSubtitleService')
+                return
+              }
+
               logger.debug('Calling onSubtitle callback', 'liveSubtitleService', msg.data)
               onSubtitle(msg.data)
               logger.debug('onSubtitle callback completed', 'liveSubtitleService')
