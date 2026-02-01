@@ -502,6 +502,13 @@ export const ICON_REGISTRY: Record<string, IconDefinition> = {
     description: 'Globe / International',
     usage: ['language_selector', 'localization'],
   },
+  translate: {
+    name: 'translate',
+    lucideName: 'Languages',
+    category: 'navigation',
+    description: 'Translate / Languages',
+    usage: ['translation', 'language_selector', 'subtitles'],
+  },
   location: {
     name: 'location',
     lucideName: 'MapPin',

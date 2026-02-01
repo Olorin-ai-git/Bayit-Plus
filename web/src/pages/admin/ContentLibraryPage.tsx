@@ -74,6 +74,8 @@ export default function ContentLibraryPage() {
     hasShoresh: boolean
     hasEnglish: boolean
     hasHeblish: boolean
+    hasGrammarFlip: boolean
+    hasSlangSynthesis: boolean
   } | null>(null)
   const [subtitleAITab, setSubtitleAITab] = useState<'hebrew' | 'english'>('hebrew')
 
@@ -152,6 +154,8 @@ export default function ContentLibraryPage() {
       hasShoresh: false,
       hasEnglish: false,
       hasHeblish: false,
+      hasGrammarFlip: false,
+      hasSlangSynthesis: false,
     })
 
     // Fetch subtitle tracks in background
@@ -167,6 +171,8 @@ export default function ContentLibraryPage() {
           hasShoresh: hebrewTrack?.has_shoresh_version || false,
           hasEnglish: !!englishTrack,
           hasHeblish: englishTrack?.has_heblish_version || false,
+          hasGrammarFlip: englishTrack?.has_grammar_flip_version || false,
+          hasSlangSynthesis: englishTrack?.has_slang_synthesis_version || false,
         } : prev)
         // Auto-select tab based on available tracks
         if (!hebrewTrack && englishTrack) {
@@ -185,6 +191,8 @@ export default function ContentLibraryPage() {
           hasShoresh: false,
           hasEnglish: false,
           hasHeblish: false,
+          hasGrammarFlip: false,
+          hasSlangSynthesis: false,
         } : prev)
       })
   }, [])
@@ -384,6 +392,8 @@ export default function ContentLibraryPage() {
                 hasShoresh: hebrewTrack?.has_shoresh_version || false,
                 hasEnglish: !!englishTrack,
                 hasHeblish: englishTrack?.has_heblish_version || false,
+                hasGrammarFlip: englishTrack?.has_grammar_flip_version || false,
+                hasSlangSynthesis: englishTrack?.has_slang_synthesis_version || false,
               } : null)
             } catch (err) {
               logger.error('Failed to refresh subtitle tracks', 'ContentLibraryPage', { error: err })
@@ -420,6 +430,8 @@ export default function ContentLibraryPage() {
           isLoading={subtitleAIContent.isLoading}
           hasEnglish={subtitleAIContent.hasEnglish}
           hasHeblish={subtitleAIContent.hasHeblish}
+          hasGrammarFlip={subtitleAIContent.hasGrammarFlip}
+          hasSlangSynthesis={subtitleAIContent.hasSlangSynthesis}
           contentId={subtitleAIContent.id}
           onClose={() => setSubtitleAIContent(null)}
           onModeSelect={() => {
@@ -440,6 +452,8 @@ export default function ContentLibraryPage() {
                 hasShoresh: hebrewTrack?.has_shoresh_version || false,
                 hasEnglish: !!englishTrack,
                 hasHeblish: englishTrack?.has_heblish_version || false,
+                hasGrammarFlip: englishTrack?.has_grammar_flip_version || false,
+                hasSlangSynthesis: englishTrack?.has_slang_synthesis_version || false,
               } : null)
             } catch (err) {
               logger.error('Failed to refresh subtitle tracks', 'ContentLibraryPage', { error: err })

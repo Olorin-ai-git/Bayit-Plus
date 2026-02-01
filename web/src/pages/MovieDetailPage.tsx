@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, ScrollView, Image, Dimensions, StyleSheet } from 'react-native';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Play, Plus, Check, Share2, Star, Globe } from 'lucide-react';
+import { Play, Plus, Check, Share2, Star } from 'lucide-react';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import Hls from 'hls.js';
 import LinearGradient from 'react-native-linear-gradient';
@@ -10,7 +10,8 @@ import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import { contentService, watchlistService, favoritesService, subtitlesService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
-import { getLanguageInfo, SubtitleTrack } from '@/types/subtitle';
+import { SubtitleTrack } from '@/types/subtitle';
+import { FlagWithSparkle } from '@/components/common/FlagWithSparkle';
 import { GlassCard, GlassButton, GlassView, GlassBadge, GlassTooltip } from '@bayit/shared/ui';
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
 import logger from '@/utils/logger';
@@ -375,18 +376,31 @@ export default function MovieDetailPage() {
             <View style={styles.subtitlesContainer}>
               <Text style={styles.subtitlesLabel}>{t('subtitles.available', 'Subtitles')}:</Text>
               <View style={styles.subtitlesFlagRow}>
-                {availableSubtitles.map((track) => {
-                  const langInfo = getLanguageInfo(track.language);
-                  return (
-                    <View key={track.id} style={styles.subtitleFlag}>
-                      {langInfo?.flag ? (
-                        <Text>{langInfo.flag}</Text>
-                      ) : (
-                        <Globe size={18} color={colors.textMuted} />
-                      )}
-                    </View>
-                  );
-                })}
+                {/* Deduplicate tracks by language, keeping first occurrence */}
+                {availableSubtitles
+                  .filter((track, index, self) =>
+                    self.findIndex(t => t.language === track.language) === index
+                  )
+                  .map((track) => {
+                    // Check if track has any AI-enhanced versions
+                    const hasAI = !!(
+                      track.has_nikud_version ||
+                      track.has_shoresh_version ||
+                      track.has_heblish_version ||
+                      track.has_grammar_flip_version ||
+                      track.has_slang_synthesis_version
+                    );
+                    return (
+                      <View key={track.id} style={styles.subtitleFlag}>
+                        <FlagWithSparkle
+                          language={track.language}
+                          hasAI={hasAI}
+                          size="large"
+                          showTooltip={true}
+                        />
+                      </View>
+                    );
+                  })}
               </View>
             </View>
           )}

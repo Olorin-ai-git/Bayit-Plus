@@ -9,38 +9,138 @@ import { Sparkles } from 'lucide-react'
 import { colors, borderRadius } from '@olorin/design-tokens'
 import { GlassTooltip } from '@bayit/shared/ui'
 
-// Language flag mapping
+// Language flag mapping (ISO 639-1 codes)
 const LANGUAGE_FLAGS: Record<string, string> = {
+  // Middle East & Hebrew
   'he': '🇮🇱',
-  'en': '🇺🇸',
+  'yi': '🕍',
   'ar': '🇸🇦',
-  'ru': '🇷🇺',
+  'fa': '🇮🇷',  // Persian/Farsi
+  'tr': '🇹🇷',  // Turkish
+
+  // Major European
+  'en': '🇺🇸',
   'es': '🇪🇸',
   'fr': '🇫🇷',
   'de': '🇩🇪',
   'it': '🇮🇹',
   'pt': '🇵🇹',
-  'zh': '🇨🇳',
-  'ja': '🇯🇵',
-  'ko': '🇰🇷',
-  'yi': '🕍',
+  'ru': '🇷🇺',
+
+  // Northern European
+  'nl': '🇳🇱',  // Dutch
+  'sv': '🇸🇪',  // Swedish
+  'no': '🇳🇴',  // Norwegian
+  'da': '🇩🇰',  // Danish
+  'fi': '🇫🇮',  // Finnish
+  'is': '🇮🇸',  // Icelandic
+
+  // Central & Eastern European
+  'pl': '🇵🇱',  // Polish
+  'cs': '🇨🇿',  // Czech
+  'sk': '🇸🇰',  // Slovak
+  'hu': '🇭🇺',  // Hungarian
+  'ro': '🇷🇴',  // Romanian
+  'bg': '🇧🇬',  // Bulgarian
+  'uk': '🇺🇦',  // Ukrainian
+  'hr': '🇭🇷',  // Croatian
+  'sr': '🇷🇸',  // Serbian
+  'sl': '🇸🇮',  // Slovenian
+  'el': '🇬🇷',  // Greek
+  'lt': '🇱🇹',  // Lithuanian
+  'lv': '🇱🇻',  // Latvian
+  'et': '🇪🇪',  // Estonian
+
+  // Asian
+  'zh': '🇨🇳',  // Chinese
+  'ja': '🇯🇵',  // Japanese
+  'ko': '🇰🇷',  // Korean
+  'th': '🇹🇭',  // Thai
+  'vi': '🇻🇳',  // Vietnamese
+  'id': '🇮🇩',  // Indonesian
+  'ms': '🇲🇾',  // Malay
+  'tl': '🇵🇭',  // Tagalog/Filipino
+
+  // South Asian
+  'hi': '🇮🇳',  // Hindi
+  'bn': '🇧🇩',  // Bengali
+  'ta': '🇮🇳',  // Tamil
+  'te': '🇮🇳',  // Telugu
+  'mr': '🇮🇳',  // Marathi
+  'pa': '🇮🇳',  // Punjabi
+  'ur': '🇵🇰',  // Urdu
+
+  // Other
+  'af': '🇿🇦',  // Afrikaans
+  'sw': '🇰🇪',  // Swahili
+  'am': '🇪🇹',  // Amharic
 }
 
 // Language name mapping
 const LANGUAGE_NAMES: Record<string, string> = {
+  // Middle East & Hebrew
   'he': 'Hebrew',
-  'en': 'English',
+  'yi': 'Yiddish',
   'ar': 'Arabic',
-  'ru': 'Russian',
+  'fa': 'Persian',
+  'tr': 'Turkish',
+
+  // Major European
+  'en': 'English',
   'es': 'Spanish',
   'fr': 'French',
   'de': 'German',
   'it': 'Italian',
   'pt': 'Portuguese',
+  'ru': 'Russian',
+
+  // Northern European
+  'nl': 'Dutch',
+  'sv': 'Swedish',
+  'no': 'Norwegian',
+  'da': 'Danish',
+  'fi': 'Finnish',
+  'is': 'Icelandic',
+
+  // Central & Eastern European
+  'pl': 'Polish',
+  'cs': 'Czech',
+  'sk': 'Slovak',
+  'hu': 'Hungarian',
+  'ro': 'Romanian',
+  'bg': 'Bulgarian',
+  'uk': 'Ukrainian',
+  'hr': 'Croatian',
+  'sr': 'Serbian',
+  'sl': 'Slovenian',
+  'el': 'Greek',
+  'lt': 'Lithuanian',
+  'lv': 'Latvian',
+  'et': 'Estonian',
+
+  // Asian
   'zh': 'Chinese',
   'ja': 'Japanese',
   'ko': 'Korean',
-  'yi': 'Yiddish',
+  'th': 'Thai',
+  'vi': 'Vietnamese',
+  'id': 'Indonesian',
+  'ms': 'Malay',
+  'tl': 'Filipino',
+
+  // South Asian
+  'hi': 'Hindi',
+  'bn': 'Bengali',
+  'ta': 'Tamil',
+  'te': 'Telugu',
+  'mr': 'Marathi',
+  'pa': 'Punjabi',
+  'ur': 'Urdu',
+
+  // Other
+  'af': 'Afrikaans',
+  'sw': 'Swahili',
+  'am': 'Amharic',
 }
 
 export interface FlagWithSparkleProps {

@@ -235,6 +235,25 @@ export function getContentTableColumns(
         const content = row as ContentItem
         const hasHebrew = content.available_subtitles?.includes('he') || false
         const isBeta = content.is_beta_content || false
+
+        // Determine the correct view URL based on content type
+        const getViewUrl = () => {
+          switch (content.content_type) {
+            case 'series':
+              return `/vod/series/${content.id}`
+            case 'podcast':
+              return `/podcasts/${content.id}`
+            case 'radio':
+              return `/radio/${content.id}`
+            case 'audiobook':
+              return `/audiobooks/${content.id}`
+            case 'movie':
+            default:
+              // Also check is_series for backwards compatibility
+              return content.is_series ? `/vod/series/${content.id}` : `/vod/movie/${content.id}`
+          }
+        }
+
         const actions = [
           createStarAction(
             () => onToggleFeatured(content.id),
@@ -242,7 +261,7 @@ export function getContentTableColumns(
             content.is_featured ? t('admin.content.unfeature', 'Remove from Featured') : t('admin.content.feature', 'Add to Featured')
           ),
           createViewAction(
-            () => { window.open(`/vod/${content.is_series ? 'series' : 'movie'}/${content.id}`, '_blank') },
+            () => { window.open(getViewUrl(), '_blank') },
             t('common.view', 'View')
           ),
           createEditAction(
@@ -291,7 +310,7 @@ export function getContentTableColumns(
                 ep.is_featured ? t('admin.content.unfeature', 'Remove from Featured') : t('admin.content.feature', 'Add to Featured')
               ),
               createViewAction(
-                () => { window.open(`/vod/episode/${ep.id}`, '_blank') },
+                () => { window.open(`/vod/${ep.id}`, '_blank') },
                 t('common.view', 'View')
               ),
               createEditAction(

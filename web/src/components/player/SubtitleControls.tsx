@@ -14,9 +14,8 @@ import {
   SubtitleSettings,
   HebrewMode,
   EnglishMode,
-  SUBTITLE_LANGUAGES,
-  getLanguageInfo,
 } from '@/types/subtitle'
+import { FlagWithSparkle, getLanguageFlag } from '@/components/common/FlagWithSparkle'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView } from '@bayit/shared/ui'
 import { subtitlesService } from '@/services/api'
@@ -154,12 +153,14 @@ export default function SubtitleControls({
     }
   }
 
-  // Get current language info
-  const currentLangInfo = currentLanguage ? getLanguageInfo(currentLanguage) : null
+  // Deduplicate tracks by language, keeping the first occurrence (which has most metadata)
+  const deduplicatedLanguages = availableLanguages.filter(
+    (track, index, self) => self.findIndex((t) => t.language === track.language) === index
+  )
 
-  // Find Hebrew and English tracks for modal props
-  const hebrewTrack = availableLanguages.find((t) => t.language === 'he')
-  const englishTrack = availableLanguages.find((t) => t.language === 'en')
+  // Find Hebrew and English tracks for modal props (from deduplicated list)
+  const hebrewTrack = deduplicatedLanguages.find((t) => t.language === 'he')
+  const englishTrack = deduplicatedLanguages.find((t) => t.language === 'en')
 
   // Handler to open Hebrew mode picker with guard against multiple opens
   const handleOpenHebrewModePicker = useCallback(() => {
@@ -230,12 +231,19 @@ export default function SubtitleControls({
             </Pressable>
           </View>
 
-          {/* Available Languages Flags Preview */}
-          {availableLanguages.length > 0 && (
+          {/* Available Languages Flags Preview - Deduplicated */}
+          {deduplicatedLanguages.length > 0 && (
             <View style={styles.flagsPreview}>
-              {availableLanguages.map((track) => {
-                const langInfo = getLanguageInfo(track.language)
+              {deduplicatedLanguages.map((track) => {
                 const isActive = track.language === currentLanguage && enabled
+                // Check if track has any AI-enhanced versions
+                const hasAI = !!(
+                  track.has_nikud_version ||
+                  track.has_shoresh_version ||
+                  track.has_heblish_version ||
+                  track.has_grammar_flip_version ||
+                  track.has_slang_synthesis_version
+                )
                 return (
                   <Pressable
                     key={track.id}
@@ -249,11 +257,12 @@ export default function SubtitleControls({
                       isActive && styles.flagButtonActive,
                     ]}
                   >
-                    {langInfo?.flag ? (
-                      <Text style={styles.flagLarge}>{langInfo.flag}</Text>
-                    ) : (
-                      <Icon name="globe" size="lg" color="#FFFFFF" />
-                    )}
+                    <FlagWithSparkle
+                      language={track.language}
+                      hasAI={hasAI}
+                      size="large"
+                      showTooltip={true}
+                    />
                   </Pressable>
                 )
               })}
@@ -263,7 +272,7 @@ export default function SubtitleControls({
           <ScrollView style={styles.menuContent}>
             {/* Language list with Hebrew and English mode split button support */}
             <SubtitleLanguageList
-              availableLanguages={availableLanguages}
+              availableLanguages={deduplicatedLanguages}
               currentLanguage={currentLanguage}
               enabled={enabled}
               isLoading={isLoading}
@@ -369,9 +378,9 @@ export default function SubtitleControls({
         ]}
       >
         <Subtitles size={22} color={enabled ? colors.primary.DEFAULT : colors.textSecondary} />
-        {currentLangInfo && enabled && (
+        {currentLanguage && enabled && (
           <View style={styles.flagBadge}>
-            <Text style={styles.flagText}>{currentLangInfo.flag}</Text>
+            <Text style={styles.flagText}>{getLanguageFlag(currentLanguage)}</Text>
           </View>
         )}
       </Pressable>
