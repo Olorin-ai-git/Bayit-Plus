@@ -201,8 +201,8 @@ class LiveSubtitleService {
                 this.disconnect()
                 reject(audioCaptureError)
               }
-            } else if (msg.type === 'subtitle') {
-              logger.debug('Subtitle received', 'liveSubtitleService', { text: msg.data.text, data: msg.data })
+            } else if (msg.type === 'subtitle' || msg.type === 'final_subtitle' || msg.type === 'partial_subtitle') {
+              logger.debug('Subtitle received', 'liveSubtitleService', { type: msg.type, text: msg.data.text, data: msg.data })
 
               // Complete latency measurement on first subtitle (for client-side buffering)
               if (!this.firstSubtitleReceived && this.videoBufferManager) {
