@@ -55,6 +55,13 @@ interface ModeOption {
   isAI: boolean  // Whether this mode uses AI
 }
 
+/** Type guard for AI-generatable Hebrew modes */
+type GeneratableMode = 'nikud' | 'shoresh' | 'engrew'
+
+function isGeneratableMode(mode: HebrewMode): mode is GeneratableMode {
+  return mode === 'nikud' || mode === 'shoresh' || mode === 'engrew'
+}
+
 const HEBREW_MODE_OPTIONS: ModeOption[] = [
   {
     mode: 'regular',
@@ -77,7 +84,7 @@ const HEBREW_MODE_OPTIONS: ModeOption[] = [
     icon: 'stories',
     titleKey: 'subtitles.hebrewMode.shoresh.title',
     descriptionKey: 'subtitles.hebrewMode.shoresh.description',
-    example: 'הי**ל**דים הו**ל**כים לבית הספר',
+    example: 'הי⟨ל⟩דים הו⟨ל⟩כים לבית הספר',  // Angle brackets indicate bold root letters
     isAI: true,
   },
   {
@@ -638,9 +645,9 @@ export default function AISubtitlesPicker({
                   ${!isAvailable && !canShowGenerateButton ? 'opacity-50 cursor-not-allowed' : ''}
                   ${isAvailable ? 'cursor-pointer' : ''}
                 `}
-                aria-label={`${t(option.titleKey)} mode${!isAvailable ? ' (unavailable)' : ''}${isSelected ? ' (selected)' : ''}`}
+                aria-label={`${t(option.titleKey)} mode${!isAvailable ? ', currently unavailable - requires AI generation' : ''}${isSelected ? ', currently selected' : ''}`}
                 aria-pressed={isSelected}
-                aria-disabled={!isAvailable}
+                aria-disabled={!isAvailable && !canShowGenerateButton}
               >
                 <div className="flex items-center gap-5">
                   {/* Icon */}
@@ -740,10 +747,10 @@ export default function AISubtitlesPicker({
                                 )}
                               </button>
                               {/* Restart button (shown when job seems stuck - progress > 50% and job has been running) */}
-                              {jobProgress > 50 && (
+                              {jobProgress > 50 && isGeneratableMode(option.mode) && (
                                 <button
                                   type="button"
-                                  onClick={(e) => { e.stopPropagation(); handleRestartJob(option.mode as 'nikud' | 'shoresh' | 'engrew'); }}
+                                  onClick={(e) => { e.stopPropagation(); handleRestartJob(option.mode); }}
                                   disabled={isCancelling}
                                   className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-amber-500 hover:bg-amber-600 disabled:opacity-50"
                                   aria-label={t('common.restart', 'Restart')}
@@ -752,10 +759,10 @@ export default function AISubtitlesPicker({
                                 </button>
                               )}
                             </>
-                          ) : (
+                          ) : isGeneratableMode(option.mode) ? (
                             <button
                               type="button"
-                              onClick={(e) => handleGenerateMode(option.mode as 'nikud' | 'shoresh' | 'engrew', e)}
+                              onClick={(e) => handleGenerateMode(option.mode, e)}
                               disabled={generatingMode !== null}
                               className="px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white cursor-pointer"
                               style={{
@@ -763,11 +770,11 @@ export default function AISubtitlesPicker({
                                 cursor: generatingMode !== null ? 'not-allowed' : 'pointer',
                                 opacity: generatingMode !== null ? 0.5 : 1,
                               }}
-                              aria-label={`Generate ${option.mode}`}
+                              aria-label={`Generate ${option.mode} subtitles for this content`}
                             >
                               {t('subtitles.hebrewMode.generate', 'Generate')}
                             </button>
-                          )}
+                          ) : null}
                         </div>
                       ) : (
                         <div

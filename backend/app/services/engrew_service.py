@@ -17,6 +17,7 @@ from app.core.ai_clients import get_anthropic_client
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.services.ai_text_transform_service import AITextTransformService
+from app.services.security_utils import sanitize_for_prompt
 
 logger = get_logger(__name__)
 
@@ -52,7 +53,9 @@ class EngrewService(AITextTransformService[str]):
 
     async def _transform_single(self, text: str) -> str:
         """Transform a single Hebrew text to Engrew"""
-        prompt = ENGREW_PROMPT.format(text=text)
+        # Sanitize input to prevent prompt injection
+        sanitized_text = sanitize_for_prompt(text, max_len=2000)
+        prompt = ENGREW_PROMPT.format(text=sanitized_text)
 
         client = get_anthropic_client()
         max_tokens = min(len(text) * 4, settings.SUBTITLE_AI_MAX_TOKENS)

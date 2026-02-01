@@ -128,7 +128,7 @@ async def get_content_hierarchical(
     db = get_database()
     all_subtitle_tracks = await db.subtitle_tracks.find(
         {"content_id": {"$in": content_ids}},
-        {"content_id": 1, "language": 1, "has_nikud_version": 1, "has_shoresh_version": 1, "has_heblish_version": 1, "has_grammar_flip_version": 1, "has_slang_synthesis_version": 1}
+        {"content_id": 1, "language": 1, "has_nikud_version": 1, "has_shoresh_version": 1, "has_heblish_version": 1, "has_grammar_flip_version": 1, "has_slang_synthesis_version": 1, "has_engrew_version": 1}
     ).to_list(None)
     print(f"[admin_content_vod_read] Subtitle query took: {(time.time() - subtitle_start) * 1000:.0f}ms")
 
@@ -148,7 +148,8 @@ async def get_content_hierarchical(
             track.get("has_shoresh_version", False) or
             track.get("has_heblish_version", False) or
             track.get("has_grammar_flip_version", False) or
-            track.get("has_slang_synthesis_version", False)
+            track.get("has_slang_synthesis_version", False) or
+            track.get("has_engrew_version", False)
         )
         if has_ai:
             subtitle_map[content_id]["ai_languages"].add(language)

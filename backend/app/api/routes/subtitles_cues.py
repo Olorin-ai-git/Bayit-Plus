@@ -13,6 +13,7 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request
 from app.core.logging_config import get_logger
 from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.models.ai_generation_job import AIGenerationJob, JobStatus, JobType
+from app.services.security_utils import validate_object_id
 from app.models.subtitles import SubtitleTrackDoc
 from app.services.nikud_service import add_nikud, add_nikud_batch, get_cache_stats
 from app.services.shoresh_service import extract_shoresh_batch
@@ -865,6 +866,9 @@ async def generate_engrew_for_track(
     Example: "אני הולך לגלוש על הגלים"
           -> "אני הולך לסרף (Surf) על הווייבס (Waves)"
     """
+    # Validate content_id to prevent NoSQL injection
+    validate_object_id(content_id)
+
     tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
 
     if not tracks:
