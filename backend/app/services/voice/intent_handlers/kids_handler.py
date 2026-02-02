@@ -10,6 +10,7 @@ from app.core.logging_config import get_logger
 from app.services.kids_content_service import kids_content_service
 from ..context import VoiceContext
 from ..error_messages import get_error_message
+from ..voice_formatters import format_kids_response as _format_kids_response
 
 logger = get_logger(__name__)
 
@@ -170,24 +171,4 @@ def _detect_age_from_transcript(transcript: str, language: str) -> Tuple[int, st
     return 8, "elementary", False
 
 
-def _format_kids_response(items: List, age: int, language: str) -> str:
-    """Format kids content response for voice (3 languages)."""
-    count = len(items)
-
-    if language == "he":
-        if count == 0:
-            return "לא מצאתי תוכן מתאים לגיל זה"
-        else:
-            return f"מצאתי {count} פריטי תוכן לגיל {age}"
-
-    elif language == "en":
-        if count == 0:
-            return "No content found for that age"
-        else:
-            return f"Found {count} items for age {age}"
-
-    else:  # Spanish
-        if count == 0:
-            return "No se encontró contenido para esa edad"
-        else:
-            return f"Encontré {count} elementos para edad {age}"
+# Formatter imported from voice_formatters module

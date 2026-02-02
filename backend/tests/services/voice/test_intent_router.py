@@ -4,7 +4,8 @@ Test intent router
 
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock
-from app.services.voice.intent_router import IntentRouter, KIDS_KEYWORDS
+from app.services.voice.intent_router import IntentRouter
+from app.services.voice.intent_keywords import KIDS_KEYWORDS
 from app.services.voice.models import VoiceIntent
 
 

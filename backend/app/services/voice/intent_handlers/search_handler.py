@@ -12,6 +12,7 @@ from app.services.vod_llm_search_service import VODLLMSearchService
 from app.services.llm_search_service import LLMSearchService
 from ..context import VoiceContext
 from ..error_messages import get_error_message
+from ..voice_formatters import format_voice_search_results as _format_voice_search_results
 
 logger = get_logger(__name__)
 
@@ -173,39 +174,4 @@ async def _execute_simple_vod_search(query: str, context: VoiceContext) -> List[
         return []
 
 
-def _format_voice_search_results(results: List[Dict], language: str) -> str:
-    """Format search results for voice output (3 languages)."""
-    total = len(results)
-
-    if language == "he":
-        if total == 0:
-            return "מצטער, לא מצאתי תוצאות"
-        elif total == 1:
-            title = results[0].get("title", "")
-            year = results[0].get("year", "")
-            return f"מצאתי: {title}" + (f" משנת {year}" if year else "")
-        else:
-            titles = ", ".join([r.get("title", "") for r in results[:3]])
-            return f"מצאתי {total} תוצאות. הנה 3 הראשונות: {titles}"
-
-    elif language == "en":
-        if total == 0:
-            return "Sorry, I found no results"
-        elif total == 1:
-            title = results[0].get("title", "")
-            year = results[0].get("year", "")
-            return f"Found: {title}" + (f" from {year}" if year else "")
-        else:
-            titles = ", ".join([r.get("title", "") for r in results[:3]])
-            return f"Found {total} results. Here are the top 3: {titles}"
-
-    else:  # Spanish
-        if total == 0:
-            return "Lo siento, no encontré resultados"
-        elif total == 1:
-            title = results[0].get("title", "")
-            year = results[0].get("year", "")
-            return f"Encontré: {title}" + (f" del año {year}" if year else "")
-        else:
-            titles = ", ".join([r.get("title", "") for r in results[:3]])
-            return f"Encontré {total} resultados. Aquí están los 3 mejores: {titles}"
+# Formatter imported from voice_formatters module

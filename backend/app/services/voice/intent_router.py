@@ -18,6 +18,14 @@ import uuid
 from app.core.logging_config import get_logger
 from .models import VoiceResponse, VoiceAction, VoiceGesture, VoiceIntent
 from .context import VoiceContext
+from .intent_keywords import (
+    KIDS_KEYWORDS,
+    NAVIGATION_KEYWORDS,
+    SEARCH_KEYWORDS,
+    PLAYBACK_KEYWORDS,
+    SCROLL_KEYWORDS,
+    CONTROL_KEYWORDS,
+)
 from .intent_handlers import (
     handle_chat,
     handle_search,
@@ -30,14 +38,6 @@ from .intent_handlers import (
 )
 
 logger = get_logger(__name__)
-
-
-# Kids keywords for 3 languages
-KIDS_KEYWORDS = {
-    "he": ["ילדים", "לילדים", "ילד", "קטנים", "קרטון", "מצויר", "אנימציה"],
-    "en": ["kids", "children", "child", "cartoons", "animated", "for kids"],
-    "es": ["niños", "infantil", "dibujos", "animados", "para niños"]
-}
 
 
 class IntentRouter:
@@ -132,53 +132,23 @@ class IntentRouter:
             return VoiceIntent.KIDS, 0.9
 
         # Navigation patterns
-        navigation_keywords = [
-            'בית', 'חזור הביתה', 'עמוד ראשי',
-            'ערוצים', 'שידור חי', 'טלוויזיה',
-            'סרטים', 'סדרות', 'תוכן', 'וידאו',
-            'רדיו', 'פודקאסטים', 'מועדפים',
-            'home', 'back', 'channels', 'movies', 'series', 'radio', 'podcasts',
-            'inicio', 'canales', 'películas', 'series'
-        ]
-        if any(kw in transcript_lower for kw in navigation_keywords):
+        if any(kw in transcript_lower for kw in NAVIGATION_KEYWORDS):
             return VoiceIntent.NAVIGATION, 0.95
 
         # Search patterns
-        search_keywords = [
-            'חפש', 'מצא', 'איפה', 'הצג',
-            'אקשן', 'קומדיה', 'דרמה', 'דוקומנטרים',
-            'search', 'find', 'show', 'where',
-            'action', 'comedy', 'drama', 'documentary',
-            'buscar', 'encontrar', 'mostrar'
-        ]
-        if any(kw in transcript_lower for kw in search_keywords):
+        if any(kw in transcript_lower for kw in SEARCH_KEYWORDS):
             return VoiceIntent.SEARCH, 0.8
 
         # Playback patterns
-        playback_keywords = [
-            'נגן', 'הפעל', 'התחל', 'השהה', 'עצור', 'המשך',
-            'play', 'start', 'pause', 'stop', 'resume',
-            'reproducir', 'pausar', 'detener'
-        ]
-        if any(kw in transcript_lower for kw in playback_keywords):
+        if any(kw in transcript_lower for kw in PLAYBACK_KEYWORDS):
             return VoiceIntent.PLAYBACK, 0.9
 
         # Scroll patterns
-        scroll_keywords = [
-            'גלול', 'למטה', 'למעלה', 'עוד', 'הבא', 'הקודם',
-            'scroll', 'down', 'up', 'next', 'previous',
-            'desplazar', 'abajo', 'arriba'
-        ]
-        if any(kw in transcript_lower for kw in scroll_keywords):
+        if any(kw in transcript_lower for kw in SCROLL_KEYWORDS):
             return VoiceIntent.SCROLL, 0.85
 
         # Control patterns
-        control_keywords = [
-            'חזק', 'שקט', 'השתק', 'שפה', 'עזרה',
-            'loud', 'quiet', 'mute', 'language', 'help',
-            'volumen', 'silencio', 'idioma', 'ayuda'
-        ]
-        if any(kw in transcript_lower for kw in control_keywords):
+        if any(kw in transcript_lower for kw in CONTROL_KEYWORDS):
             return VoiceIntent.CONTROL, 0.9
 
         # Default to CHAT for natural language
