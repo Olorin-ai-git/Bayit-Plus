@@ -722,7 +722,7 @@ Redirect to edit page
 
 #### Environment Setup
 ```bash
-cd /Users/olorin/Documents/olorin/web
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web
 npm install
 npm run dev
 ```

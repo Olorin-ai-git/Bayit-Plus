@@ -320,7 +320,7 @@
 All documents located in:
 
 ```
-/Users/olorin/Documents/olorin/mobile-app/
+/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/
 ├── SECURITY_OVERVIEW.txt (This index)
 ├── SECURITY_AUDIT_SUMMARY.md
 ├── SECURITY_AUDIT_COMPREHENSIVE.md

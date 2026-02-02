@@ -38,7 +38,7 @@ grep MONGODB_URI backend/.env > mongodb-uris-backup.txt
 ### Step 2: Create Critical Secrets (10 minutes)
 ```bash
 # Navigate to project root
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Run critical secrets creation script
 ./scripts/deployment/bayit-plus/create_critical_secrets.sh

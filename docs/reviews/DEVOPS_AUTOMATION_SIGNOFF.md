@@ -1351,14 +1351,14 @@ The Bayit Plus CI/CD pipeline is **production-ready** with the following assessm
 
 **Reviewed Files:**
 
-- `/Users/olorin/Documents/olorin/.github/workflows/pr-validation.yml`
-- `/Users/olorin/Documents/olorin/.github/workflows/deploy-staging.yml`
-- `/Users/olorin/Documents/olorin/.github/workflows/deploy-production.yml`
-- `/Users/olorin/Documents/olorin/.github/workflows/security-scan.yml`
-- `/Users/olorin/Documents/olorin/cloudbuild.yaml`
-- `/Users/olorin/Documents/olorin/backend/Dockerfile`
-- `/Users/olorin/Documents/olorin/backend/.gcloudignore`
-- `/Users/olorin/Documents/olorin/backend/pyproject.toml`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/.github/workflows/pr-validation.yml`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/.github/workflows/deploy-staging.yml`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/.github/workflows/deploy-production.yml`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/.github/workflows/security-scan.yml`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/cloudbuild.yaml`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/Dockerfile`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/.gcloudignore`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/pyproject.toml`
 
 **Documentation:**
 

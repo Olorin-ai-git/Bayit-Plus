@@ -45,7 +45,7 @@
 
 **Command**:
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 rm -rf .pytest_cache/ .coverage .coverage.* htmlcov/
 poetry run pytest tests/ --cov=app --cov-report=html --cov-report=term-missing -q
 ```
@@ -95,7 +95,7 @@ poetry run pytest tests/ --cov=app --cov-report=html --cov-report=term-missing -
 
 ### 1️⃣ **PATH A FIRST** (10 minutes)
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 rm -rf .pytest_cache/ .coverage .coverage.* htmlcov/
 poetry run pytest tests/ --cov=app --cov-report=html --cov-report=term-missing -q
 ls -la htmlcov/index.html  # Check if generated
@@ -127,7 +127,7 @@ You can:
 **Commands for Phase 4C** (can do now):
 ::: v-pre
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Edit .github/workflows/pr-validation.yml
 # Find: --cov-fail-under=70
@@ -190,7 +190,7 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>"
 ### RIGHT NOW - Execute This Command:
 
 ```bash
-cd /Users/olorin/Documents/olorin/backend && \
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend && \
 rm -rf .pytest_cache/ .coverage .coverage.* htmlcov/ && \
 poetry run pytest tests/ \
   --cov=app \

@@ -9,7 +9,7 @@
  * - RTL support
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -75,7 +75,12 @@ export const QuizOverlay: React.FC<QuizOverlayProps> = ({
   // Animation for overlay entrance
   const slideAnim = React.useRef(new Animated.Value(height)).current;
 
+  // Prevent race conditions with answer submission
+  const isSubmittingRef = useRef(false);
+
   useEffect(() => {
+    let animationRef: Animated.CompositeAnimation | null = null;
+
     if (visible) {
       // Fetch quiz when overlay becomes visible
       fetchQuiz(contentId, profileId).then((quiz) => {
@@ -85,29 +90,46 @@ export const QuizOverlay: React.FC<QuizOverlayProps> = ({
       });
 
       // Animate in
-      Animated.spring(slideAnim, {
+      animationRef = Animated.spring(slideAnim, {
         toValue: 0,
         friction: 8,
         tension: 40,
         useNativeDriver: true,
-      }).start();
+      });
+      animationRef.start();
     } else {
       // Animate out
-      Animated.timing(slideAnim, {
+      animationRef = Animated.timing(slideAnim, {
         toValue: height,
         duration: 300,
         useNativeDriver: true,
-      }).start();
+      });
+      animationRef.start();
     }
-  }, [visible, contentId, profileId]);
+
+    // Cleanup animation on unmount or visibility change
+    return () => {
+      if (animationRef) {
+        animationRef.stop();
+      }
+    };
+  }, [visible, contentId, profileId, fetchQuiz, startQuiz, slideAnim, height]);
 
   const handleAnswer = useCallback(async (optionIndex: number) => {
+    // Prevent race conditions with rapid submissions
+    if (isSubmittingRef.current) return;
+
     selectAnswer(optionIndex);
 
     // Check if this was the last question
     if (currentQuiz && currentQuestionIndex >= currentQuiz.questions.length - 1) {
-      // Submit quiz
-      await submitQuiz(currentQuiz.quiz_id, profileId);
+      // Lock to prevent double submission
+      isSubmittingRef.current = true;
+      try {
+        await submitQuiz(currentQuiz.quiz_id, profileId);
+      } finally {
+        isSubmittingRef.current = false;
+      }
     } else {
       // Move to next question after feedback delay
       setTimeout(() => {

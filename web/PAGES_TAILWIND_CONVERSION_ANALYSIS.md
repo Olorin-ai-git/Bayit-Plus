@@ -1,7 +1,7 @@
 # BAYIT+ WEB PAGES - TAILWIND TO STYLESHEET CONVERSION ANALYSIS
 
 **Generated:** 2026-01-22
-**Scope:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/src/pages`
+**Scope:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/pages`
 **Analyst:** Claude Code (Frontend Developer Agent)
 
 ---
@@ -1055,7 +1055,7 @@ If entire phase needs rollback:
 ### Related Documentation
 
 - Global CLAUDE.md: `/Users/olorin/.claude/CLAUDE.md`
-- Project CLAUDE.md: `/Users/olorin/Documents/olorin/CLAUDE.md`
+- Project CLAUDE.md: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/CLAUDE.md`
 - Glass Design System: `@bayit/glass` package
 - Migration guides in `/web/docs/`
 

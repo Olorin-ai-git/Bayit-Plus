@@ -56,7 +56,7 @@ With Phase 4A tests committed and Phase 4C already at 87%, we need to:
 
 **Option A: Create a PR (Recommended)**
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Create feature branch
 git checkout -b phase-4-coverage-verification
@@ -74,7 +74,7 @@ git push origin phase-4-coverage-verification
 
 **Option B: Push directly to develop**
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Verify Phase 4A tests are committed
 git log --oneline | grep -i "test" | head -5
@@ -164,7 +164,7 @@ Gap: 11% to target
 ## COMMAND TO EXECUTE NOW
 
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Verify Phase 4A tests are committed
 git log --oneline | head -3

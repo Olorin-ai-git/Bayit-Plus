@@ -105,7 +105,7 @@ Total: 594 tests
 
 ::: v-pre
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Edit the file (change one line)
 # Commit the change
@@ -224,7 +224,7 @@ FF.F...EEEEEEE..E.EEF.EE.F.FFFFF.................F..........F..FF.F.F.... [ 36%]
 
 **EXECUTE Phase 4C NOW**:
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Edit file and change one line
 # .github/workflows/pr-validation.yml
@@ -290,7 +290,7 @@ git commit -m "Phase 4C: Update CI/CD coverage threshold to 85%"
 Execute this to proceed:
 
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Edit .github/workflows/pr-validation.yml (one line change)
 # Change line: --cov-fail-under=70

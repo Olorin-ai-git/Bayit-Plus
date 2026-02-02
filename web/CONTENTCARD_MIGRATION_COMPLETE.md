@@ -232,7 +232,7 @@ grep "StyleSheet" ContentCard.tsx card/*.tsx
 If issues arise, restore the legacy version:
 
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/src/components/content
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/content
 
 # Backup new version
 mv ContentCard.tsx ContentCard.new.tsx

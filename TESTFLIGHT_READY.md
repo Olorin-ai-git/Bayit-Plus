@@ -53,7 +53,7 @@
 
 ```bash
 # Open Xcode project
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/ios
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/ios
 open BayitPlus.xcworkspace
 ```
 

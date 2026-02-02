@@ -63,7 +63,7 @@ gcloud secrets add-iam-policy-binding SCHEDULES_DIRECT_PASSWORD \
 After adding secrets to Google Cloud:
 
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 ./scripts/sync-gcloud-secrets.sh
 ```
 

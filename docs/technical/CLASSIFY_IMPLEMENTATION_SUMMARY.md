@@ -169,7 +169,7 @@ After completion, check:
 ### Immediate Testing:
 1. **Restart backend server** (appears unresponsive currently):
    ```bash
-   cd /Users/olorin/Documents/olorin/backend
+   cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
    # Kill existing process
    lsof -ti:8000 | xargs kill
    # Start fresh

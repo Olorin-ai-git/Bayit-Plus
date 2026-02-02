@@ -10,7 +10,7 @@
 ### Unified Service Package: `olorin-shared`
 
 Created foundational unified services package at:  
-**Location:** `/Users/olorin/Documents/olorin/packages/olorin-shared/`
+**Location:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/packages/olorin-shared/`
 
 **Components:**
 

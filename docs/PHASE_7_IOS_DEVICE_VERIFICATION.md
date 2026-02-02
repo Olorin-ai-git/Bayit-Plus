@@ -128,7 +128,7 @@ Bash script that automatically:
 
 **Usage:**
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 ./scripts/verify-ios-build.sh
 
 # Output saved to: iOS_BUILD_VERIFICATION_REPORT.md

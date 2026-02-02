@@ -2,7 +2,7 @@
 
 **Date**: January 26, 2026
 **Status**: Complete
-**Location**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/`
+**Location**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/`
 
 ## Overview
 

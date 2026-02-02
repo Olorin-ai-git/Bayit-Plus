@@ -7,7 +7,7 @@ Make the Olorin CLI accessible from any directory.
 Run the installation script:
 
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/scripts
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/scripts
 ./install-olorin-cli.sh
 ```
 
@@ -22,7 +22,7 @@ This will:
 
 ```bash
 # Create symlink in /usr/local/bin
-sudo ln -sf /Users/olorin/Documents/olorin/olorin-media/bayit-plus/scripts/olorin.sh /usr/local/bin/olorin
+sudo ln -sf /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/scripts/olorin.sh /usr/local/bin/olorin
 
 # Verify
 olorin --version
@@ -43,7 +43,7 @@ olorin --version
 mkdir -p ~/.local/bin
 
 # Create symlink
-ln -sf /Users/olorin/Documents/olorin/olorin-media/bayit-plus/scripts/olorin.sh ~/.local/bin/olorin
+ln -sf /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/scripts/olorin.sh ~/.local/bin/olorin
 
 # Add to PATH (choose your shell)
 # For Zsh:
@@ -73,11 +73,11 @@ Instead of creating a symlink, add the scripts directory to PATH:
 
 ```bash
 # For Zsh:
-echo 'export PATH="/Users/olorin/Documents/olorin/olorin-media/bayit-plus/scripts:$PATH"' >> ~/.zshrc
+echo 'export PATH="/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/scripts:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 
 # For Bash:
-echo 'export PATH="/Users/olorin/Documents/olorin/olorin-media/bayit-plus/scripts:$PATH"' >> ~/.bashrc
+echo 'export PATH="/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/scripts:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 
 # Use with full name
@@ -228,14 +228,14 @@ echo $PATH | grep -o '/usr/local/bin'
 
 # Reinstall
 sudo rm /usr/local/bin/olorin
-sudo ln -sf /Users/olorin/Documents/olorin/olorin-media/bayit-plus/scripts/olorin.sh /usr/local/bin/olorin
+sudo ln -sf /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/scripts/olorin.sh /usr/local/bin/olorin
 ```
 
 ### Permission Denied
 
 ```bash
 # Make script executable
-chmod +x /Users/olorin/Documents/olorin/olorin-media/bayit-plus/scripts/olorin.sh
+chmod +x /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/scripts/olorin.sh
 
 # Check symlink permissions
 ls -l /usr/local/bin/olorin
@@ -248,7 +248,7 @@ ls -l /usr/local/bin/olorin
 sudo rm /usr/local/bin/olorin
 
 # Create new symlink with correct path
-sudo ln -sf /Users/olorin/Documents/olorin/olorin-media/bayit-plus/scripts/olorin.sh /usr/local/bin/olorin
+sudo ln -sf /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/scripts/olorin.sh /usr/local/bin/olorin
 ```
 
 ## Uninstallation
@@ -272,7 +272,7 @@ rm ~/.local/bin/olorin
 The symlink points to the script file, so pulling updates automatically applies:
 
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 git pull
 
 # CLI is automatically updated (no reinstallation needed)

@@ -36,7 +36,7 @@ from app.models.content_taxonomy import ContentSection
 **File:** `backend/start.sh` → `backend/scripts/deprecated/start.sh`
 
 **Issues:**
-- Hardcoded user-specific path: `/Users/olorin/Documents/olorin/backend`
+- Hardcoded user-specific path: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend`
 - No configuration support
 - Located in wrong directory (root `/backend/` instead of organized structure)
 

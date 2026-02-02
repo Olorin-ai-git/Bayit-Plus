@@ -3,7 +3,7 @@
 ## 🚀 Deploy New Strategy
 
 ```bash
-cd /Users/olorin/Documents/olorin/backend/scripts
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/scripts
 ./update_cloud_schedulers.sh
 ```
 
@@ -48,7 +48,7 @@ gcloud scheduler jobs run librarian-daily-maintenance --location=us-east1
 ## 📊 View Results
 
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 
 # View latest audit report
 poetry run python scripts/view_audit_results.py
@@ -105,7 +105,7 @@ gcloud run logs read bayit-backend-production --region=us-east1 --limit=200 | gr
 ## 🧪 Test Locally
 
 ```bash
-cd /Users/olorin/Documents/olorin/backend/scripts
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/scripts
 
 # Interactive test
 ./test_scheduler_strategy.sh

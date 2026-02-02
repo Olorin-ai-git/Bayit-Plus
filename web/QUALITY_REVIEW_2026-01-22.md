@@ -1,6 +1,6 @@
 # BAYIT+ WEB - FINAL CODE QUALITY & STYLE GUIDE COMPLIANCE REPORT
 **Date:** 2026-01-22
-**Project:** /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web
+**Project:** /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web
 **Review Type:** Final Architectural & Style Compliance Review
 
 ---

@@ -289,7 +289,7 @@ Create hook: `src/hooks/useReducedMotion.ts`
 
 ### Setup
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 npm install
 cd ios && pod install && cd ..
 ```

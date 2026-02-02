@@ -3,7 +3,6 @@ Series-specific endpoints.
 """
 
 import logging
-import re
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -12,6 +11,7 @@ from app.api.routes.content.beta_filter import (
     build_beta_content_filter,
     check_beta_access,
 )
+from app.api.routes.content.utils import is_native_app
 from app.core.security import get_optional_user
 from app.models.content import Content
 from app.models.user import User
@@ -20,24 +20,6 @@ from app.services.ffmpeg.realtime_transcode import needs_transcode_by_extension
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
-# User-Agent patterns for native iOS/tvOS apps
-_NATIVE_APP_PATTERNS = [
-    r"Bayit\+/.*CFNetwork",
-    r"Darwin/",
-    r"AppleTV",
-    r"com\.bayit\.plus",
-]
-
-
-def _is_native_app(user_agent: str) -> bool:
-    """Check if request is from native iOS/tvOS app."""
-    if not user_agent:
-        return False
-    for pattern in _NATIVE_APP_PATTERNS:
-        if re.search(pattern, user_agent, re.IGNORECASE):
-            return True
-    return False
-
 
 def _get_stream_url_for_platform(
     content_id: str,
@@ -45,7 +27,7 @@ def _get_stream_url_for_platform(
     user_agent: str,
 ) -> tuple[str, bool]:
     """Get appropriate stream URL based on platform (fast extension-based check)."""
-    is_native = _is_native_app(user_agent)
+    is_native = is_native_app(user_agent)
 
     if is_native or not stream_url:
         return stream_url, False

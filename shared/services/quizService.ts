@@ -1,68 +1,93 @@
 /**
  * Quiz Service
  * API service for kids quiz feature.
- * This service is platform-agnostic and handles quiz API calls.
+ *
+ * Note: This service provides a platform-agnostic interface.
+ * For web, it uses the centralized api instance.
+ * For native, it uses fetch with AsyncStorage token retrieval.
  */
 
 import type { Quiz, QuizResult } from '../stores/quizStore';
 
-// Platform-specific base URL resolution
-const getBaseUrl = (): string => {
-  // In web environment, use relative URLs (handled by proxy)
-  // In native, this should be configured via environment
-  if (typeof window !== 'undefined') {
-    return '/api/v1';
-  }
-  // For native apps, this would be set via config
-  return process.env.API_BASE_URL || '/api/v1';
-};
+// Platform detection
+const isWeb = typeof window !== 'undefined' && !('ReactNativeWebView' in window);
 
-// Get auth token from storage
-const getAuthToken = async (): Promise<string | null> => {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    return localStorage.getItem('auth_token');
-  }
-  // For native, would use AsyncStorage
-  return null;
-};
-
-interface FetchOptions {
-  method?: string;
-  body?: object;
-  params?: Record<string, string>;
-}
-
-async function fetchApi<T>(endpoint: string, options: FetchOptions = {}): Promise<T> {
-  const baseUrl = getBaseUrl();
-  let url = `${baseUrl}${endpoint}`;
-
-  // Add query params
-  if (options.params) {
-    const searchParams = new URLSearchParams(options.params);
-    url += `?${searchParams.toString()}`;
+/**
+ * Get the API module dynamically based on platform
+ * Web uses centralized api.js, native uses direct fetch
+ */
+async function getApiClient() {
+  if (isWeb) {
+    // Use centralized api instance for web (includes auth, retry, correlation IDs)
+    const { default: api } = await import('../../web/src/services/api');
+    return {
+      get: async <T>(url: string, params?: Record<string, string>): Promise<T> => {
+        return api.get(url, { params });
+      },
+      post: async <T>(url: string, data: object): Promise<T> => {
+        return api.post(url, data);
+      },
+    };
   }
 
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+  // Native platform - use fetch with AsyncStorage
+  const AsyncStorage = await import('@react-native-async-storage/async-storage')
+    .then(m => m.default)
+    .catch(() => null);
+
+  const getToken = async (): Promise<string | null> => {
+    if (AsyncStorage) {
+      return AsyncStorage.getItem('auth_token');
+    }
+    return null;
   };
 
-  const token = await getAuthToken();
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
+  const baseUrl = process.env.API_BASE_URL || '/api/v1';
 
-  const response = await fetch(url, {
-    method: options.method || 'GET',
-    headers,
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  });
+  return {
+    get: async <T>(url: string, params?: Record<string, string>): Promise<T> => {
+      let fullUrl = `${baseUrl}${url}`;
+      if (params) {
+        const searchParams = new URLSearchParams(params);
+        fullUrl += `?${searchParams.toString()}`;
+      }
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ detail: 'Request failed' }));
-    throw new Error(error.detail || `HTTP ${response.status}`);
-  }
+      const token = await getToken();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
-  return response.json();
+      const response = await fetch(fullUrl, { headers });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ detail: 'Request failed' }));
+        throw new Error(error.detail || `HTTP ${response.status}`);
+      }
+      return response.json();
+    },
+    post: async <T>(url: string, data: object): Promise<T> => {
+      const token = await getToken();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${baseUrl}${url}`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ detail: 'Request failed' }));
+        throw new Error(error.detail || `HTTP ${response.status}`);
+      }
+      return response.json();
+    },
+  };
 }
 
 export const quizService = {
@@ -70,9 +95,8 @@ export const quizService = {
    * Get or generate a quiz for the given content
    */
   getQuiz: async (contentId: string, profileId: string): Promise<Quiz> => {
-    return fetchApi<Quiz>(`/quiz/${contentId}`, {
-      params: { profile_id: profileId },
-    });
+    const api = await getApiClient();
+    return api.get<Quiz>(`/quiz/${contentId}`, { profile_id: profileId });
   },
 
   /**
@@ -84,13 +108,11 @@ export const quizService = {
     profileId: string,
     timings?: number[]
   ): Promise<QuizResult> => {
-    return fetchApi<QuizResult>(`/quiz/${quizId}/submit`, {
-      method: 'POST',
-      body: {
-        answers,
-        profile_id: profileId,
-        timings,
-      },
+    const api = await getApiClient();
+    return api.post<QuizResult>(`/quiz/${quizId}/submit`, {
+      answers,
+      profile_id: profileId,
+      timings,
     });
   },
 
@@ -102,12 +124,11 @@ export const quizService = {
     limit: number = 20,
     skip: number = 0
   ): Promise<{ items: QuizResult[]; total: number }> => {
-    return fetchApi(`/quiz/history/me`, {
-      params: {
-        profile_id: profileId,
-        limit: limit.toString(),
-        skip: skip.toString(),
-      },
+    const api = await getApiClient();
+    return api.get(`/quiz/history/me`, {
+      profile_id: profileId,
+      limit: limit.toString(),
+      skip: skip.toString(),
     });
   },
 };

@@ -51,8 +51,8 @@ npx playwright show-report
 
 ## Documentation
 
-- **Full Testing Report:** [docs/IOS_TESTING_REPORT.md](/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/docs/IOS_TESTING_REPORT.md)
-- **Testing Guide:** [docs/IOS_VISUAL_REGRESSION_TESTING.md](/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/docs/IOS_VISUAL_REGRESSION_TESTING.md)
+- **Full Testing Report:** [docs/IOS_TESTING_REPORT.md](/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/docs/IOS_TESTING_REPORT.md)
+- **Testing Guide:** [docs/IOS_VISUAL_REGRESSION_TESTING.md](/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/docs/IOS_VISUAL_REGRESSION_TESTING.md)
 - **Screenshots:** `test-results/screenshots/ios/`
 
 ## Test Files
@@ -71,4 +71,4 @@ npx playwright show-report
 
 ## Support
 
-See [docs/IOS_VISUAL_REGRESSION_TESTING.md](/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/docs/IOS_VISUAL_REGRESSION_TESTING.md) for detailed troubleshooting and best practices.
+See [docs/IOS_VISUAL_REGRESSION_TESTING.md](/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/docs/IOS_VISUAL_REGRESSION_TESTING.md) for detailed troubleshooting and best practices.

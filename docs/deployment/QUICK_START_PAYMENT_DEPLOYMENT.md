@@ -27,7 +27,7 @@ gcloud config get-value project
 ### Step 1: Deploy Secrets to Google Cloud (2 minutes)
 
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Deploy all payment flow secrets
 ./scripts/deploy-payment-flow-config.sh

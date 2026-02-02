@@ -257,7 +257,7 @@ From test results:
 ## 🧪 How to Run the Test
 
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 
 # Run standalone test (no GCS, no DB required)
 poetry run python scripts/test_hash_cache_standalone.py

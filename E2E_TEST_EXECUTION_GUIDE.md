@@ -26,7 +26,7 @@ node --version
 
 ### One-Command E2E Test Run
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 
 # Install dependencies (first time only)
 npm install
@@ -78,7 +78,7 @@ adb devices
 ### Step 3: Build App (5-10 minutes)
 
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 
 # Option A: React Native build
 npm run android
@@ -102,7 +102,7 @@ adb shell pm list packages | grep bayitplus
 ### Step 5: Run E2E Tests (30-180 minutes)
 
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 
 # Run all tests (2-3 hours)
 detox test-runner configuration android.emu.debug --cleanup
@@ -422,7 +422,7 @@ Save as `run_e2e_tests.sh`:
 export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$ANDROID_HOME/tools:$ANDROID_HOME/tools/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/emulator:$PATH
 
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 
 echo "======================================"
 echo "BAYIT+ E2E TEST EXECUTION"

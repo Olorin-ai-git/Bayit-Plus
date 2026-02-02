@@ -3,7 +3,6 @@ Movie-specific endpoints.
 """
 
 import logging
-import re
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -12,6 +11,7 @@ from app.api.routes.content.beta_filter import (
     build_beta_content_filter,
     check_beta_access,
 )
+from app.api.routes.content.utils import is_native_app
 from app.core.config import settings
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.content import Content
@@ -21,24 +21,6 @@ from app.services.tmdb_service import tmdb_service
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
-
-# User-Agent patterns for native iOS/tvOS apps
-_NATIVE_APP_PATTERNS = [
-    r"Bayit\+/.*CFNetwork",
-    r"Darwin/",
-    r"AppleTV",
-    r"com\.bayit\.plus",
-]
-
-
-def _is_native_app(user_agent: str) -> bool:
-    """Check if request is from native iOS/tvOS app."""
-    if not user_agent:
-        return False
-    for pattern in _NATIVE_APP_PATTERNS:
-        if re.search(pattern, user_agent, re.IGNORECASE):
-            return True
-    return False
 
 
 @router.get("/movies")
@@ -162,7 +144,7 @@ async def get_movie_details(
 
     # Determine stream URL based on platform
     user_agent = request.headers.get("User-Agent", "")
-    is_native = _is_native_app(user_agent)
+    is_native = is_native_app(user_agent)
     stream_url = movie.stream_url
     use_transcode = False
 

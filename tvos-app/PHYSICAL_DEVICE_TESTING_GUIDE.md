@@ -30,7 +30,7 @@ This guide walks you through testing the Bayit+ tvOS app on a physical Apple TV 
 
 3. **Verify Connection:**
    ```bash
-   cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus
+   cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
    ./tvos-app/scripts/check-devices.sh
    ```
 

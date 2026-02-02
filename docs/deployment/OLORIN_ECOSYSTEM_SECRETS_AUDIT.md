@@ -32,7 +32,7 @@ This audit reveals **SEVERE security issues** affecting ALL Olorin platforms due
 
 **🔴 SEVERITY: CRITICAL - Affects ALL platforms**
 
-**Location**: `/Users/olorin/Documents/olorin/olorin-infra/.env`
+**Location**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/olorin-infra/.env`
 
 **Hardcoded Secrets Found**:
 
@@ -89,7 +89,7 @@ This audit reveals **SEVERE security issues** affecting ALL Olorin platforms due
 
 **🔴 SEVERITY: CRITICAL**
 
-**Location**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/.env`
+**Location**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/.env`
 
 **Hardcoded Secrets**:
 
@@ -109,7 +109,7 @@ This audit reveals **SEVERE security issues** affecting ALL Olorin platforms due
 
 **🔴 SEVERITY: CRITICAL**
 
-**Location**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/tvos-app/.env`
+**Location**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/tvos-app/.env`
 
 **Hardcoded Secrets**: Same as mobile app (shared configuration)
 
@@ -119,7 +119,7 @@ This audit reveals **SEVERE security issues** affecting ALL Olorin platforms due
 
 **🟢 SEVERITY: LOW**
 
-**Location**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/.env`
+**Location**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/.env`
 
 **Hardcoded Values**:
 - `VITE_STRIPE_PUBLIC_KEY`: Test key placeholder (low risk)
@@ -136,7 +136,7 @@ This audit reveals **SEVERE security issues** affecting ALL Olorin platforms due
 
 **🟢 SEVERITY: LOW - Development environment only**
 
-**Location**: `/Users/olorin/Documents/olorin/olorin-fraud/backend/.env`
+**Location**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/olorin-fraud/backend/.env`
 
 **Findings**:
 - Contains only development placeholders
@@ -156,7 +156,7 @@ This audit reveals **SEVERE security issues** affecting ALL Olorin platforms due
 
 **🟢 SEVERITY: LOW - Development environment only**
 
-**Location**: `/Users/olorin/Documents/olorin/olorin-cv/cvplus/backend/functions/.env`
+**Location**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/olorin-cv/cvplus/backend/functions/.env`
 
 **Findings**:
 - Contains only development placeholders
@@ -170,7 +170,7 @@ This audit reveals **SEVERE security issues** affecting ALL Olorin platforms due
 
 **🟢 SEVERITY: LOW - Development environment only**
 
-**Location**: `/Users/olorin/Documents/olorin/olorin-cv/cvplus/frontend/.env`
+**Location**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/olorin-cv/cvplus/frontend/.env`
 
 **Findings**:
 - Contains only development placeholders

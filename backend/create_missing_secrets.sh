@@ -79,10 +79,10 @@ create_secret "bayit-admin-password" "$ADMIN_PASSWORD" "Administrator password"
 # MongoDB URIs
 echo "3. Bayit+ MongoDB URI"
 echo "Current value from .env:"
-grep "^MONGODB_URI=" /Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/.env | head -1
+grep "^MONGODB_URI=" /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/.env | head -1
 MONGODB_URI=$(read_secret "Enter Bayit+ MongoDB URI (or press Enter to use current):")
 if [ -z "$MONGODB_URI" ]; then
-    MONGODB_URI=$(grep "^MONGODB_URI=" /Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/.env | head -1 | cut -d= -f2)
+    MONGODB_URI=$(grep "^MONGODB_URI=" /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/.env | head -1 | cut -d= -f2)
 fi
 create_secret "bayit-mongodb-uri" "$MONGODB_URI" "Bayit+ MongoDB connection URI"
 

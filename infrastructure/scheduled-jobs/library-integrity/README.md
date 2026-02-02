@@ -56,7 +56,7 @@ This setup enables zero-trust verification of the complete Bayit+ media library 
    - APIs enabled: Cloud Run, Container Registry, Cloud Scheduler
    - Service account: `bayit-plus-cloud-run@bayit-plus.iam.gserviceaccount.com`
 
-2. **Environment Variables** (from `/Users/olorin/Documents/olorin/olorin-infra/.env`):
+2. **Environment Variables** (from `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/olorin-infra/.env`):
    ```bash
    GCP_PROJECT_ID=bayit-plus
    GCP_REGION=us-east1

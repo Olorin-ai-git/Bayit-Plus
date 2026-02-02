@@ -1,3 +1,8 @@
+---
+name: backend-specialist
+description: Bayit+ backend specialist for FastAPI, MongoDB (Beanie ODM), and Poetry
+---
+
 # Bayit+ Backend Specialist
 
 **Model:** claude-sonnet-4-5

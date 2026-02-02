@@ -13,7 +13,7 @@ Comprehensive iOS visual regression testing infrastructure has been successfully
 ### 1. Test Specifications
 
 #### Primary Test Suite (Comprehensive)
-**File:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/ios-visual-regression.spec.ts`
+**File:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/tests/migration/ios-visual-regression.spec.ts`
 
 Features:
 - Homepage visual regression (all iOS viewports)
@@ -27,7 +27,7 @@ Features:
 - Style guide compliance verification
 
 #### Practical Test Suite (Ready to Use)
-**File:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tests/migration/ios-layout-regression.spec.ts`
+**File:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/tests/migration/ios-layout-regression.spec.ts`
 
 Features:
 - Works with current authentication state
@@ -41,7 +41,7 @@ Features:
 
 ### 2. Automation Scripts
 
-**File:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/scripts/run-ios-tests.sh`
+**File:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/scripts/run-ios-tests.sh`
 
 Features:
 - Auto-start dev server if not running
@@ -60,7 +60,7 @@ Features:
 
 ### 3. Configuration
 
-**File:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/playwright.config.ts`
+**File:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/playwright.config.ts`
 
 Updated with iOS device projects:
 - `iphone-se` (320×568)
@@ -72,7 +72,7 @@ Updated with iOS device projects:
 ### 4. Documentation
 
 #### Comprehensive Testing Guide
-**File:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/docs/IOS_VISUAL_REGRESSION_TESTING.md`
+**File:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/docs/IOS_VISUAL_REGRESSION_TESTING.md`
 
 Contents:
 - Device matrix and iOS version coverage
@@ -86,7 +86,7 @@ Contents:
 - Best practices
 
 #### Testing Report
-**File:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/docs/IOS_TESTING_REPORT.md`
+**File:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/docs/IOS_TESTING_REPORT.md`
 
 Contents:
 - Executive summary (90% pass rate)
@@ -99,7 +99,7 @@ Contents:
 - Test infrastructure details
 
 #### Quick Start Guide
-**File:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/README_IOS_TESTING.md`
+**File:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/README_IOS_TESTING.md`
 
 Contents:
 - Quick commands
@@ -111,7 +111,7 @@ Contents:
 
 ### 5. Screenshots
 
-**Location:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/test-results/screenshots/ios/`
+**Location:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/test-results/screenshots/ios/`
 
 **Captured:** 25 screenshots across 5 devices and 5 page states
 
@@ -225,7 +225,7 @@ Contents:
 
 ```bash
 # Navigate to web directory
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web
 
 # Run all iOS tests
 ./scripts/run-ios-tests.sh

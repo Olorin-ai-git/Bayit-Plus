@@ -19,7 +19,7 @@ This document details the comprehensive implementation of missing asset fixes ac
 
 ### 1.1 Existing Assets
 
-**Location:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/shared/assets/`
+**Location:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/shared/assets/`
 
 ```
 shared/assets/
@@ -43,7 +43,7 @@ shared/assets/
 
 ### 1.2 Glass UI Component Availability
 
-**Location:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/shared/components/ui/`
+**Location:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/shared/components/ui/`
 
 **Existing Components (31 total):**
 - ✅ GlassCard, GlassView, GlassButton, GlassFAB

@@ -23,7 +23,7 @@ pip install detect-secrets
 ### 2. Initialize Pre-commit Hooks (1 minute)
 
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Install pre-commit hooks
 pre-commit install

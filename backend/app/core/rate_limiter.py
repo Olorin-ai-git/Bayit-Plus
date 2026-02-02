@@ -57,6 +57,10 @@ try:
         "trivia_enriched": _dev_limit("3/hour"),  # AI-enriched bundle (expensive operation)
         "trivia_preferences": _dev_limit("10/minute"),  # Preference updates
         "trivia_generate": _dev_limit("5/hour"),  # Admin force regenerate
+        # Quiz - Protection for kids quiz feature (AI-generated questions)
+        "quiz_get": _dev_limit("30/minute"),  # Quiz retrieval/generation
+        "quiz_submit": _dev_limit("10/minute"),  # Quiz answer submission
+        "quiz_history": _dev_limit("30/minute"),  # Quiz history queries
         # Live Dubbing - Protection for admin configuration endpoints
         "dubbing_config_update": _dev_limit("10/hour"),  # Channel dubbing configuration updates
         "dubbing_stats": _dev_limit("30/minute"),  # Dubbing statistics queries

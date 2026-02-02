@@ -534,7 +534,7 @@ The WizardAvatar component represents **production-grade cross-platform developm
 
 All component files are located at:
 ```
-/Users/olorin/Documents/olorin/Bayit-Plus/shared/
+/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/shared/
 ```
 
 ### Appendix B: Related Documentation

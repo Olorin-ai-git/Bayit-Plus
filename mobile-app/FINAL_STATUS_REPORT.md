@@ -339,7 +339,7 @@ None. The app is fully functional and production-ready.
 ### To Launch App
 
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 npm start                    # Terminal 1: Metro bundler
 npm run ios                  # Terminal 2: Launch simulator
 ```

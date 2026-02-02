@@ -85,7 +85,7 @@ All platforms access these videos via symlinks:
 **To Add Videos:**
 ```bash
 # Navigate to intro directory
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/shared/assets/video/intro/
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/shared/assets/video/intro/
 
 # Add your video files
 # Example: Bayit_Intro_English.mp4, Bayit_Intro_Hebrew.mp4

@@ -27,9 +27,23 @@ export const QuizProgress: React.FC<QuizProgressProps> = ({
   const labelText = t('quiz.questionOf', { current: current + 1, total });
 
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      accessible={true}
+      accessibilityRole="progressbar"
+      accessibilityLabel={labelText}
+      accessibilityValue={{
+        min: 1,
+        max: total,
+        now: current + 1,
+        text: labelText,
+      }}
+    >
       {showLabel && (
-        <Text style={[styles.label, isRTL && styles.labelRTL]}>
+        <Text
+          style={[styles.label, isRTL && styles.labelRTL]}
+          accessibilityElementsHidden={true}
+        >
           {labelText}
         </Text>
       )}

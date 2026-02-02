@@ -19,7 +19,7 @@ The CI/CD pipeline has been successfully optimized with multi-stage Docker build
 
 ### Implementation Review
 
-**File**: `/Users/olorin/Documents/olorin/backend/Dockerfile`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/Dockerfile`
 
 #### Stage 1: Builder (Lines 9-23)
 ```dockerfile
@@ -75,7 +75,7 @@ FROM python:3.11-slim AS runtime
 
 ### Implementation Review
 
-**File**: `/Users/olorin/Documents/olorin/backend/.dockerignore`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/.dockerignore`
 **Total Lines**: 85 comprehensive exclusion rules
 
 #### Category Breakdown
@@ -140,7 +140,7 @@ FROM python:3.11-slim AS runtime
 
 ### Staging Deployment Workflow
 
-**File**: `/Users/olorin/Documents/olorin/.github/workflows/deploy-staging.yml`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/.github/workflows/deploy-staging.yml`
 
 #### Performance Optimizations Identified
 
@@ -169,7 +169,7 @@ cache-to: type=inline
 
 ### Production Deployment Workflow
 
-**File**: `/Users/olorin/Documents/olorin/.github/workflows/deploy-production.yml`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/.github/workflows/deploy-production.yml`
 
 **Line 176: CPU Boost Enabled**
 ```yaml
@@ -222,10 +222,10 @@ cache-to: type=inline
 
 **Issue Identified** (pyproject.toml lines 55-58):
 ```toml
-"bayit-voice-pipeline @ file:///Users/olorin/Documents/olorin/packages/bayit-voice-pipeline",
-"bayit-translation @ file:///Users/olorin/Documents/olorin/packages/bayit-translation",
-"olorin-core @ file:///Users/olorin/Documents/olorin/packages/olorin-core",
-"olorin-shared @ file:///Users/olorin/Documents/olorin/packages/olorin-shared"
+"bayit-voice-pipeline @ file:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/packages/bayit-voice-pipeline",
+"bayit-translation @ file:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/packages/bayit-translation",
+"olorin-core @ file:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/packages/olorin-core",
+"olorin-shared @ file:///Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/packages/olorin-shared"
 ```
 
 ### Impact Assessment
@@ -240,7 +240,7 @@ cache-to: type=inline
 **Status**: 🔴 **REQUIRES IMMEDIATE ATTENTION**
 
 **Why This Works Locally**:
-- Local Poetry can access `/Users/olorin/Documents/olorin/packages/`
+- Local Poetry can access `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/packages/`
 - Development environment has full monorepo structure
 
 **Why This Will Fail in Docker**:
@@ -436,7 +436,7 @@ Update Dockerfile COPY commands to account for new context paths.
 1. **Resolve Package Dependencies** (BLOCKING)
    ```bash
    # Test build locally first
-   cd /Users/olorin/Documents/olorin
+   cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
    docker build -t bayit-backend-test -f backend/Dockerfile .
 
    # Verify all packages resolve

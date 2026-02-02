@@ -92,7 +92,7 @@
 
 **Execute this command**:
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 rm -rf .pytest_cache/ .coverage .coverage.* htmlcov/
 poetry run pytest tests/ --cov=app --cov-report=html --cov-report=term-missing -q
 ```
@@ -141,7 +141,7 @@ poetry run pytest tests/ --cov=app --cov-report=html --cov-report=term-missing -
 
 ::: v-pre
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Edit the file
 # Change line in .github/workflows/pr-validation.yml from --cov-fail-under=70 to --cov-fail-under=85
@@ -312,7 +312,7 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>"
 
 **1. Run Phase 4B.5 Diagnostic** (10 min)
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 rm -rf .pytest_cache/ .coverage .coverage.* htmlcov/
 poetry run pytest tests/ --cov=app --cov-report=html --cov-report=term-missing -q
 ```

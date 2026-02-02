@@ -12,6 +12,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from datetime import datetime, timezone
 
+import pytest
+
 from app.core.database import close_mongo_connection, connect_to_mongo
 from app.models.security_audit import SecurityAuditLog
 from app.models.user import User, UserCreate
@@ -33,6 +35,7 @@ def print_test(name: str, passed: bool, details: str = ""):
         print(f"   {details}")
 
 
+@pytest.mark.asyncio
 async def test_password_strength_validation():
     """Test password strength validation in User model."""
     print_header("TEST 1: Password Strength Validation")
@@ -94,6 +97,7 @@ async def test_password_strength_validation():
     return tests_passed == total_tests
 
 
+@pytest.mark.asyncio
 async def test_account_lockout_fields():
     """Test that User model has account lockout fields."""
     print_header("TEST 2: Account Lockout Fields")
@@ -126,6 +130,7 @@ async def test_account_lockout_fields():
     return tests_passed == total_tests
 
 
+@pytest.mark.asyncio
 async def test_password_reset_fields():
     """Test that User model has password reset fields."""
     print_header("TEST 3: Password Reset Fields")
@@ -151,6 +156,7 @@ async def test_password_reset_fields():
     return tests_passed == total_tests
 
 
+@pytest.mark.asyncio
 async def test_security_audit_log_model():
     """Test that SecurityAuditLog model exists and has correct fields."""
     print_header("TEST 4: Security Audit Log Model")
@@ -172,6 +178,7 @@ async def test_security_audit_log_model():
     return tests_passed == total_tests
 
 
+@pytest.mark.asyncio
 async def test_audit_logging_integration():
     """Test that audit logging is integrated into the database."""
     print_header("TEST 5: Audit Logging Integration")
@@ -192,6 +199,7 @@ async def test_audit_logging_integration():
         return False
 
 
+@pytest.mark.asyncio
 async def test_input_sanitization_middleware():
     """Test that input sanitization middleware exists."""
     print_header("TEST 6: Input Sanitization Middleware")
@@ -217,6 +225,7 @@ async def test_input_sanitization_middleware():
         return False
 
 
+@pytest.mark.asyncio
 async def test_rate_limiter_configuration():
     """Test that rate limiter is configured."""
     print_header("TEST 7: Rate Limiter Configuration")
@@ -244,6 +253,7 @@ async def test_rate_limiter_configuration():
         return False
 
 
+@pytest.mark.asyncio
 async def test_password_reset_routes():
     """Test that password reset routes exist."""
     print_header("TEST 8: Password Reset Routes")

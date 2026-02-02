@@ -61,10 +61,10 @@ These are not "hardcoded" in source but are exposed in the `.env` file which exi
 **Verification Steps**:
 ```bash
 # Check for credentials in .env
-cat /Users/olorin/Documents/olorin/mobile-app/.env
+cat /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/.env
 
 # Check if .env is in gitignore
-grep "\.env" /Users/olorin/Documents/olorin/mobile-app/.gitignore
+grep "\.env" /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/.gitignore
 # RESULT: Not in .gitignore - .env file found but no .gitignore in root
 ```
 

@@ -30,7 +30,7 @@
 
 #### 3. Build and Run on Device
 ```bash
-cd /Users/olorin/Documents/olorin/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 
 # Method 1: React Native CLI (easiest)
 npm run ios:device
@@ -152,7 +152,7 @@ Common causes:
 
 ### Open in Xcode
 ```bash
-cd /Users/olorin/Documents/olorin/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 open ios/BayitPlus.xcworkspace  # Use .xcworkspace, NOT .xcodeproj
 ```
 

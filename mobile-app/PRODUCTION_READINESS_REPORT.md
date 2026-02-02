@@ -499,7 +499,7 @@ Post-launch:
 
 ```bash
 # Navigate to project
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 
 # Install dependencies (if first time)
 npm install

@@ -187,6 +187,19 @@ export const shadowColors: ShadowColors = {
   'glow-secondary': '0 0 20px rgba(134, 25, 143, 0.35)',
 };
 
+/** Quiz answer button colors (child-friendly palette) */
+export interface QuizAnswerColor {
+  bg: string;
+  border: string;
+}
+
+export const quizAnswerColors: QuizAnswerColor[] = [
+  { bg: 'rgba(255, 127, 80, 0.3)', border: 'rgba(255, 127, 80, 0.6)' },   // Coral
+  { bg: 'rgba(32, 178, 170, 0.3)', border: 'rgba(32, 178, 170, 0.6)' },   // Teal
+  { bg: 'rgba(255, 215, 0, 0.3)', border: 'rgba(255, 215, 0, 0.6)' },     // Yellow
+  { bg: 'rgba(152, 251, 152, 0.3)', border: 'rgba(152, 251, 152, 0.6)' }, // Mint
+];
+
 /** Complete colors object for Tailwind config */
 export const colors = {
   primary,

@@ -69,7 +69,7 @@ def fix_markdown_file(filepath):
 
 def main():
     """Process all markdown files in the docs directory."""
-    docs_dir = Path('/Users/olorin/Documents/olorin/olorin-media/bayit-plus/docs')
+    docs_dir = Path('/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/docs')
 
     # Find all markdown files
     md_files = list(docs_dir.rglob('*.md'))

@@ -93,7 +93,7 @@ For continuous testing without unlocking:
 ### 3.1 Prepare Build Environment
 
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 # Clean all caches
 npm run clean:all
 cd mobile-app

@@ -629,7 +629,7 @@ async def create_audiobook(...):
 
 #### 1.1 Add SSRF Validation to Create Endpoint
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks.py`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks.py`
 
 **Change Required**: Add validation before audiobook insertion
 
@@ -693,7 +693,7 @@ async def update_audiobook(
 
 #### 1.3 Add DRM Key ID Validation
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks.py`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks.py`
 
 ```python
 from pydantic import Field
@@ -750,7 +750,7 @@ class AudiobookCreateRequest(BaseModel):
 
 #### 2.2 Add Rate Limiting
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/core/rate_limiter.py`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/core/rate_limiter.py`
 
 ```python
 RATE_LIMITS = {
@@ -764,7 +764,7 @@ RATE_LIMITS = {
 }
 ```
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks.py`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks.py`
 
 ```python
 from app.core.rate_limiter import limiter, RATE_LIMITS
@@ -794,7 +794,7 @@ async def delete_audiobook(...):
 
 #### 3.1 Add Security Tests
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/tests/test_audiobooks.py`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/tests/test_audiobooks.py`
 
 ```python
 class TestAudiobooksSecurityValidation:
@@ -995,12 +995,12 @@ class Settings:
 
 ## Appendix: File Locations
 
-- **User Routes**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobooks.py`
-- **Admin Routes**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks.py`
-- **Security Module**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/core/security.py`
-- **Admin Models**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/models/admin.py`
-- **Content Model**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/models/content.py`
-- **Test Suite**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/tests/test_audiobooks.py`
-- **SSRF Protection**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/core/ssrf_protection.py`
-- **Rate Limiter Config**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/core/rate_limiter.py`
+- **User Routes**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobooks.py`
+- **Admin Routes**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks.py`
+- **Security Module**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/core/security.py`
+- **Admin Models**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/models/admin.py`
+- **Content Model**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/models/content.py`
+- **Test Suite**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/tests/test_audiobooks.py`
+- **SSRF Protection**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/core/ssrf_protection.py`
+- **Rate Limiter Config**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/core/rate_limiter.py`
 

@@ -2,7 +2,7 @@
 
 **Date:** January 26, 2026
 **Status:** ✓ Complete and Production Ready
-**Location:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/tvos-app/src/components/voice/`
+**Location:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/tvos-app/src/components/voice/`
 
 ## Overview
 

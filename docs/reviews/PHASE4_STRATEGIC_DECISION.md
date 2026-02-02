@@ -42,7 +42,7 @@
 
 **Command**:
 ```bash
-cd /Users/olorin/Documents/olorin/backend && \
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend && \
 rm -rf .pytest_cache/ .coverage* htmlcov/ && \
 poetry run pytest tests/ --cov=app --cov-report=html --cov-report=term-missing -v
 ```
@@ -96,7 +96,7 @@ poetry run pytest tests/ --cov=app --cov-report=html --cov-report=term-missing -
 
 **Phase 4B.5 - Diagnostic Retry**:
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 
 # Clean cache
 rm -rf .pytest_cache/ .coverage .coverage.* htmlcov/
@@ -151,7 +151,7 @@ If Report Still Fails ⚠️
 **Command**:
 ```bash
 # Update threshold
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 # Edit .github/workflows/pr-validation.yml
 # Change: --cov-fail-under=70 → --cov-fail-under=85
 
@@ -194,7 +194,7 @@ git commit -m "Phase 4C: Update CI/CD coverage threshold to 85%"
 
 **Step 1**: Attempt Phase 4B Diagnostic (10 min)
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 rm -rf .pytest_cache/ .coverage .coverage.* htmlcov/
 poetry run pytest tests/ --cov=app --cov-report=html --cov-report=term-missing -q
 ```
@@ -315,7 +315,7 @@ ls -la htmlcov/index.html && echo "✅ Report generated"
 
 **Command to Execute**:
 ```bash
-cd /Users/olorin/Documents/olorin/backend && \
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend && \
 echo "=== Cleaning cache ===" && \
 rm -rf .pytest_cache/ .coverage .coverage.* htmlcov/ && \
 echo "=== Running coverage analysis ===" && \

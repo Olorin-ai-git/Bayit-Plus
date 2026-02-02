@@ -51,7 +51,7 @@
 
 ### 1. App Entry Point (App.tsx)
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/App.tsx`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/App.tsx`
 
 **Status**: 🔴 **CRITICAL - MINIMAL STUB**
 
@@ -96,7 +96,7 @@ export default App;
 
 ### 2. AppContent Component (EXISTS - NOT USED)
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/components/AppContent.tsx`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/components/AppContent.tsx`
 
 **Status**: ✅ **FULLY IMPLEMENTED** (120 lines)
 
@@ -153,7 +153,7 @@ export const AppContent: React.FC = () => {
 
 ### 3. Navigation Hierarchy
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/navigation/RootNavigator.tsx`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/navigation/RootNavigator.tsx`
 
 **Status**: ✅ **FULLY IMPLEMENTED** (244 lines)
 
@@ -221,7 +221,7 @@ Legend:
 
 ### 4. Screen Components (27 Total)
 
-**Location**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/screens/`
+**Location**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/screens/`
 
 **Status**: ✅ **ALL 27 SCREENS IMPLEMENTED**
 
@@ -290,7 +290,7 @@ Legend:
 
 ### 5. Native iOS Modules
 
-**Location**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/ios/BayitPlus/`
+**Location**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/ios/BayitPlus/`
 
 **Status**: ✅ **ALL IMPLEMENTED** (~40,000 lines of Swift/Objective-C)
 

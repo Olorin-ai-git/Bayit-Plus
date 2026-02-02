@@ -14,7 +14,7 @@ from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.core.security import get_current_user
 from app.models.content import Content
 from app.models.profile import Profile
-from app.models.quiz import ContentQuiz, QuizResponse, QuizSubmitRequest
+from app.models.quiz import ContentQuiz, QuizQuestionPublic, QuizResponse, QuizSubmitRequest
 from app.models.quiz_attempt import (
     QuizAttempt,
     QuizAttemptResponse,
@@ -40,13 +40,16 @@ def _check_quiz_enabled():
 
 
 def _format_quiz_response(quiz: ContentQuiz) -> QuizResponse:
-    """Format quiz for API response."""
+    """Format quiz for API response (excludes correct answers for security)."""
     max_points = sum(q.points for q in quiz.questions)
+    public_questions = [
+        QuizQuestionPublic.from_question(q) for q in quiz.questions
+    ]
     return QuizResponse(
         quiz_id=str(quiz.id),
         content_id=quiz.content_id,
         content_type=quiz.content_type,
-        questions=quiz.questions,
+        questions=public_questions,
         age_group=quiz.age_group,
         language=quiz.language,
         total_questions=len(quiz.questions),

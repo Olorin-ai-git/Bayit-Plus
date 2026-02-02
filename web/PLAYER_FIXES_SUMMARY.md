@@ -96,13 +96,13 @@ Open browser console and look for:
 
 ### Check Webpack Dev Server
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web
 npm run dev
 ```
 
 ### Force Clean Rebuild
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web
 rm -rf node_modules/.cache
 rm -rf dist
 npm run dev

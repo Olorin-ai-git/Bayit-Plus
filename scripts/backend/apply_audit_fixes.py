@@ -16,7 +16,7 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 # Add parent directory to path for imports
-sys.path.insert(0, "/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend")
+sys.path.insert(0, "/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend")
 
 from app.core.config import settings
 from app.core.database import init_db

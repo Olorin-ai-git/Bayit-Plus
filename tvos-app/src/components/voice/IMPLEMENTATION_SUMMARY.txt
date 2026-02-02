@@ -393,6 +393,6 @@ All 8 TV voice UI components have been successfully created with:
 Ready for immediate integration and deployment.
 
 Created: January 26, 2026
-Location: /Users/olorin/Documents/olorin/olorin-media/bayit-plus/tvos-app/src/components/voice/
+Location: /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/tvos-app/src/components/voice/
 
 ================================================================================

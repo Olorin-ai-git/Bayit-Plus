@@ -231,7 +231,7 @@ GCP_PROJECT_ID=bayit-plus
 GCS_BUCKET_NAME=bayit-plus-media-new
 CDN_BASE_URL=https://cdn.bayit.tv
 STORAGE_TYPE=gcs
-GOOGLE_APPLICATION_CREDENTIALS=/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/credentials/bayit-plus-7c3927963c21.json
+GOOGLE_APPLICATION_CREDENTIALS=/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/credentials/bayit-plus-7c3927963c21.json
 ```
 :::
 

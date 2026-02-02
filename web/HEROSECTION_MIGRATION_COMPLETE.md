@@ -11,11 +11,11 @@ Successfully migrated `HeroSection.tsx` from StyleSheet to TailwindCSS with comp
 ## Deliverables
 
 ### 1. Backup Created
-- **File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/src/components/content/HeroSection.legacy.tsx`
+- **File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/content/HeroSection.legacy.tsx`
 - **Original Lines**: 278 lines (1.39x over 200-line limit)
 
 ### 2. Main Component
-- **File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/src/components/content/HeroSection.tsx`
+- **File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/content/HeroSection.tsx`
 - **Lines**: 104 lines (48% under 200-line limit) ✅
 - **StyleSheet Usage**: ZERO ✅
 - **TailwindCSS**: 100% ✅

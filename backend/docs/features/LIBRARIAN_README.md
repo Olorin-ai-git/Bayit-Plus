@@ -61,7 +61,7 @@ TMDB_API_KEY=your-tmdb-api-key
 ### 3. Start the Server
 
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 uvicorn app.main:app --reload
 ```
 

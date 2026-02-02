@@ -9,7 +9,7 @@
 ## 🔴 CRITICAL VIOLATION #1: Native Button Element
 
 ### Location
-**File:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/src/components/epg/EPGSmartSearch.tsx`
+**File:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/components/epg/EPGSmartSearch.tsx`
 **Line:** 86-88
 
 ### Current Code (WRONG)
@@ -54,7 +54,7 @@ const navigate = useNavigate()
 ## 🔴 CRITICAL VIOLATION #2: alert() Calls (UserDetailPage)
 
 ### Location
-**File:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/src/pages/admin/UserDetailPage.tsx`
+**File:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/src/pages/admin/UserDetailPage.tsx`
 **Lines:** 175, 191
 
 ### Current Code (WRONG)

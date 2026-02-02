@@ -161,7 +161,7 @@
 ⏺ Bash(tail -100 /tmp/metro_clean.log | grep -E
       "ERROR|error|Error|WARN|warn|Connected|loaded|bundle")
   ⎿  WARN  the transform cache was reset.
-     WARN  Attempted to import the module "/Users/olorin/Documents/olorin/o
+     WARN  Attempted to import the module "/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/o
     lorin-media/bayit-plus/mobile-app/node_modules/@babel/runtime/helpers/i
     … +40 lines (ctrl+o to expand)
 
@@ -920,7 +920,7 @@
 ⏺ Bash(tail -100 /tmp/metro_clean.log | grep -E
       "ERROR|error|Error|WARN|warn|Connected|loaded|bundle")
   ⎿  WARN  the transform cache was reset.
-     WARN  Attempted to import the module "/Users/olorin/Documents/olorin/o
+     WARN  Attempted to import the module "/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/o
     lorin-media/bayit-plus/mobile-app/node_modules/@babel/runtime/helpers/i
     … +40 lines (ctrl+o to expand)
 

@@ -280,7 +280,7 @@ Select **BayitPlus** target → **Signing & Capabilities** tab
 
 ```bash
 # Clean all artifacts
-cd /Users/olorin/Documents/olorin/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 
 # Clean build folder in Xcode
 rm -rf ios/build

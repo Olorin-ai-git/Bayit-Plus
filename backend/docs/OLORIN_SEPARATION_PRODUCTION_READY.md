@@ -662,7 +662,7 @@ PARTNER_API_KEY_SALT
 
 ```bash
 # From project root
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Deploy Olorin backend
 gcloud builds submit --config=backend-olorin/cloudbuild.yaml

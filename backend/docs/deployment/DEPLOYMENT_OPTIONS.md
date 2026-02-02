@@ -110,7 +110,7 @@ Bayit+ Backend is deployed to Google Cloud with dedicated MongoDB infrastructure
 ## Quick Start with Existing Infrastructure
 
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 
 # Review configuration
 cat .gcp-config
@@ -159,7 +159,7 @@ Start with existing infrastructure now, migrate later if needed:
    gcloud projects create bayit-plus-prod
 
    # Run fresh deployment
-   cd /Users/olorin/Documents/olorin/backend
+   cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
    ./deploy.sh
 
    # Migrate data
@@ -192,7 +192,7 @@ For most cases, **shared project with separate resources is secure and recommend
 ### Recommended Approach:
 ```bash
 # 1. Review the configuration
-cat /Users/olorin/Documents/olorin/backend/.gcp-config
+cat /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/.gcp-config
 
 # 2. Deploy using existing infrastructure
 ./deploy-with-existing-infra.sh

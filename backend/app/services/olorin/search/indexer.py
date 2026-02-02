@@ -9,8 +9,7 @@ Includes resilience patterns for external service calls.
 import logging
 from typing import List, Optional
 
-from olorin import IndexableContent
-
+from app.protocols import IndexableContent
 from app.adapters import BayitContentAdapter
 from app.core.config import settings
 from app.models.content_embedding import ContentEmbedding

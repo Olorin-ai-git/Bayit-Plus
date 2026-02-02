@@ -3,7 +3,6 @@ Content detail and streaming endpoints.
 """
 
 import logging
-import re
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
@@ -12,6 +11,7 @@ from app.api.routes.content.beta_filter import (
     build_beta_content_filter,
     check_beta_access,
 )
+from app.api.routes.content.utils import is_native_app
 from app.core.security import (get_current_active_user, get_optional_user,
                                get_passkey_session)
 from app.models.content import Content
@@ -20,24 +20,6 @@ from app.services.ffmpeg.realtime_transcode import needs_transcode_by_extension
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
-
-# User-Agent patterns for native iOS/tvOS apps that can play AC3/DTS directly
-_NATIVE_APP_PATTERNS = [
-    r"Bayit\+/.*CFNetwork",  # iOS/tvOS Bayit+ app
-    r"Darwin/",  # Generic iOS/tvOS/macOS native
-    r"AppleTV",  # tvOS
-    r"com\.bayit\.plus",  # Bundle identifier
-]
-
-
-def _is_native_app(user_agent: str) -> bool:
-    """Check if request is from native iOS/tvOS app (can play AC3/DTS directly)."""
-    if not user_agent:
-        return False
-    for pattern in _NATIVE_APP_PATTERNS:
-        if re.search(pattern, user_agent, re.IGNORECASE):
-            return True
-    return False
 
 
 async def check_visibility_access(
@@ -159,7 +141,7 @@ async def get_content(
     if current_user:
         # Determine stream URL based on platform
         user_agent = request.headers.get("User-Agent", "")
-        is_native = _is_native_app(user_agent)
+        is_native = is_native_app(user_agent)
         stream_url = content.stream_url
         use_transcode = False
 
@@ -297,7 +279,7 @@ async def get_stream_url(
 
     # Check if web client needs transcoding (default for web apps)
     user_agent = request.headers.get("User-Agent", "")
-    is_native = _is_native_app(user_agent)
+    is_native = is_native_app(user_agent)
     use_transcode = False
     transcode_url = None
 

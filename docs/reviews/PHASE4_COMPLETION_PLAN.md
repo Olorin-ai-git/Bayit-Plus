@@ -11,7 +11,7 @@
 ### Step 1: Run Full Coverage Analysis
 
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 
 # Run complete test suite with coverage report
 poetry run pytest tests/ \
@@ -143,7 +143,7 @@ If overall coverage is <85%, create tests in this priority order:
 ### Step 2: Verify Updated Threshold Locally
 
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 
 # This should FAIL if coverage <85%
 poetry run pytest tests/ \
@@ -161,7 +161,7 @@ poetry run pytest tests/ \
 
 ::: v-pre
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Stage the files
 git add -A
@@ -340,17 +340,17 @@ If Phase 4B shows <85% coverage:
 
 ```bash
 # Phase 4B: Generate coverage report
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 poetry run pytest tests/ --cov=app --cov-report=html --cov-report=term-missing -v
 
 # Phase 4C: Test new threshold
 poetry run pytest tests/ --cov=app --cov-fail-under=85 -q
 
 # View HTML coverage report
-open /Users/olorin/Documents/olorin/backend/htmlcov/index.html
+open /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/htmlcov/index.html
 
 # Commit Phase 4 work
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 git add backend/tests/*.py .github/workflows/pr-validation.yml *.md
 git commit -m "Phase 4B-C: Coverage analysis and CI/CD threshold update"
 ```

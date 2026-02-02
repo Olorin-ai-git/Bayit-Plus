@@ -39,7 +39,7 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
 
   useEffect(() => {
     // Sequential animation: score -> points -> badges
-    Animated.sequence([
+    const animation = Animated.sequence([
       Animated.spring(scoreScale, {
         toValue: 1,
         friction: 4,
@@ -57,36 +57,63 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
         tension: 40,
         useNativeDriver: true,
       }),
-    ]).start();
-  }, []);
+    ]);
+
+    animation.start();
+
+    // Cleanup animation on unmount
+    return () => {
+      animation.stop();
+      scoreScale.setValue(0);
+      pointsOpacity.setValue(0);
+      badgeScale.setValue(0);
+    };
+  }, [scoreScale, pointsOpacity, badgeScale]);
 
   const isPerfect = result.is_perfect;
   const scorePercentage = Math.round(
     (result.correct_answers / result.total_questions) * 100
   );
 
+  const scoreAccessibilityLabel = isPerfect
+    ? `${t('quiz.perfectScore')}! ${t('quiz.score', { score: result.correct_answers, total: result.total_questions })} - ${scorePercentage}%`
+    : `${t('quiz.score', { score: result.correct_answers, total: result.total_questions })} - ${scorePercentage}%`;
+
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      accessible={true}
+      accessibilityRole="summary"
+      accessibilityLabel={isRTL ? 'תוצאות החידון' : 'Quiz Results'}
+    >
       {/* Score Display */}
       <Animated.View
         style={[
           styles.scoreContainer,
           { transform: [{ scale: scoreScale }] },
         ]}
+        accessible={true}
+        accessibilityRole="text"
+        accessibilityLabel={scoreAccessibilityLabel}
       >
         <GlassView intensity="medium" style={styles.scoreCard}>
           {isPerfect && (
-            <Text style={styles.perfectLabel}>
+            <Text style={styles.perfectLabel} accessibilityElementsHidden={true}>
               {t('quiz.perfectScore')}
             </Text>
           )}
-          <Text style={[styles.scoreText, isTV && styles.scoreTextTV]}>
+          <Text
+            style={[styles.scoreText, isTV && styles.scoreTextTV]}
+            accessibilityElementsHidden={true}
+          >
             {t('quiz.score', {
               score: result.correct_answers,
               total: result.total_questions,
             })}
           </Text>
-          <Text style={styles.percentageText}>{scorePercentage}%</Text>
+          <Text style={styles.percentageText} accessibilityElementsHidden={true}>
+            {scorePercentage}%
+          </Text>
         </GlassView>
       </Animated.View>
 

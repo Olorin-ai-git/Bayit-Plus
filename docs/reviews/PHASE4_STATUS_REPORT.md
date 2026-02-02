@@ -93,7 +93,7 @@ Run full test suite with coverage analysis to:
 ### Execution Command
 
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 
 poetry run pytest tests/ \
   --cov=app \
@@ -154,7 +154,7 @@ Update GitHub Actions workflow to enforce 85% coverage threshold (up from curren
 ### Verification
 
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 
 # Test new threshold locally (should pass if coverage ≥85%)
 poetry run pytest tests/ --cov=app --cov-fail-under=85 -q
@@ -286,7 +286,7 @@ poetry run pytest tests/ --cov=app --cov-fail-under=85 -q
 
 **Command**:
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 poetry run pytest tests/ \
   --cov=app \
   --cov-report=term-missing \

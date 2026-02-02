@@ -65,7 +65,7 @@ echo "Note: This is an automated conversion. Manual review is recommended."
 echo ""
 
 for file in "${FILES[@]}"; do
-  filepath="/Users/olorin/Documents/olorin/olorin-media/bayit-plus/$file"
+  filepath="/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/$file"
 
   if [ ! -f "$filepath" ]; then
     echo "⚠️  File not found: $file"

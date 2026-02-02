@@ -144,21 +144,21 @@
 ## Files Reviewed
 
 **Component Code:**
-- `/Users/olorin/Documents/olorin/Bayit-Plus/shared/components/WizardAvatar.tsx`
-- `/Users/olorin/Documents/olorin/Bayit-Plus/shared/components/WizardAvatar.web.tsx`
-- `/Users/olorin/Documents/olorin/Bayit-Plus/shared/components/WizardAvatar.native.tsx`
-- `/Users/olorin/Documents/olorin/Bayit-Plus/shared/config/assetPaths.ts`
-- `/Users/olorin/Documents/olorin/Bayit-Plus/shared/components/WizardAvatar.md`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/shared/components/WizardAvatar.tsx`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/shared/components/WizardAvatar.web.tsx`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/shared/components/WizardAvatar.native.tsx`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/shared/config/assetPaths.ts`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/shared/components/WizardAvatar.md`
 
 **Assets:**
-- `/Users/olorin/Documents/olorin/Bayit-Plus/shared/assets/video/wizard/wizard-speaking-with-audio.mp4` (3.2 MB)
-- `/Users/olorin/Documents/olorin/Bayit-Plus/shared/assets/video/wizard/wizard-speaking-animation.mp4` (3.48 MB)
-- `/Users/olorin/Documents/olorin/Bayit-Plus/shared/assets/audio/intro/Olorin-deep.mp3` (166 KB)
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/shared/assets/video/wizard/wizard-speaking-with-audio.mp4` (3.2 MB)
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/shared/assets/video/wizard/wizard-speaking-animation.mp4` (3.48 MB)
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/shared/assets/audio/intro/Olorin-deep.mp3` (166 KB)
 
 **Configuration:**
-- `/Users/olorin/Documents/olorin/Bayit-Plus/mobile-app/ios/BayitPlus/Info.plist` (UIBackgroundModes verified)
-- `/Users/olorin/Documents/olorin/Bayit-Plus/mobile-app/package.json` (react-native-video v6.18.0)
-- `/Users/olorin/Documents/olorin/Bayit-Plus/tvos-app/package.json` (react-native-video v6.7.0)
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/mobile-app/ios/BayitPlus/Info.plist` (UIBackgroundModes verified)
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/mobile-app/package.json` (react-native-video v6.18.0)
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/tvos-app/package.json` (react-native-video v6.7.0)
 
 ---
 

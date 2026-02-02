@@ -1,3 +1,8 @@
+---
+name: localization-specialist
+description: Bayit+ localization specialist for Hebrew/English/Spanish multi-language support
+---
+
 # Bayit+ Localization Specialist
 
 **Model:** claude-sonnet-4-5

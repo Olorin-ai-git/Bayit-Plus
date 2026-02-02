@@ -160,13 +160,38 @@ class ContentQuiz(Document):
         return cls.model_validate(result)
 
 
+class QuizQuestionPublic(BaseModel):
+    """Public quiz question without correct_index (for API responses)."""
+
+    question_id: str
+    question_text: str
+    question_text_en: Optional[str] = None
+    options: List[str]
+    options_en: Optional[List[str]] = None
+    difficulty: str
+    points: int
+
+    @classmethod
+    def from_question(cls, question: QuizQuestionModel) -> "QuizQuestionPublic":
+        """Create public question from internal model, excluding correct_index."""
+        return cls(
+            question_id=question.question_id,
+            question_text=question.question_text,
+            question_text_en=question.question_text_en,
+            options=question.options,
+            options_en=question.options_en,
+            difficulty=question.difficulty,
+            points=question.points,
+        )
+
+
 class QuizResponse(BaseModel):
-    """API response for quiz."""
+    """API response for quiz (excludes correct answers for security)."""
 
     quiz_id: str
     content_id: str
     content_type: str
-    questions: List[QuizQuestionModel]
+    questions: List[QuizQuestionPublic]
     age_group: str
     language: str
     total_questions: int

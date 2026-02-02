@@ -5,8 +5,7 @@ Adapter that wraps Bayit+ Content model to implement Olorin IndexableContent pro
 
 from typing import Optional
 
-from olorin import IndexableContent, SearchableContent
-
+from app.protocols import IndexableContent, SearchableContent
 from app.core.config import settings
 from app.models.content import Content
 

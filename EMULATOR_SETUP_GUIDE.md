@@ -125,7 +125,7 @@ adb devices
 
 ### From Project Root
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/olorin-media
 
 # Install dependencies
 npm install

@@ -19,7 +19,7 @@ All reported design token issues have been **successfully fixed and verified**:
 
 ## Fix 1: GlassBreadcrumbs.tsx
 
-**File:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/shared/components/ui/GlassBreadcrumbs.tsx`
+**File:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/shared/components/ui/GlassBreadcrumbs.tsx`
 
 **Issue:** Type error - `colors.primary` used instead of `colors.primary.DEFAULT`
 
@@ -61,7 +61,7 @@ color: colors.primary.DEFAULT,
 
 ## Fix 2: GlassCategoryPill.tsx
 
-**File:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/shared/components/ui/GlassCategoryPill.tsx`
+**File:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/shared/components/ui/GlassCategoryPill.tsx`
 
 **Issue:** All colors were hardcoded rgba values instead of using design tokens
 
@@ -203,7 +203,7 @@ labelDisabled: {
 
 ## Fix 3: Tailwind Config
 
-**File:** `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/tailwind.config.js`
+**File:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/tailwind.config.js`
 
 **Issue:** Module resolution failed - incorrect path to design tokens
 

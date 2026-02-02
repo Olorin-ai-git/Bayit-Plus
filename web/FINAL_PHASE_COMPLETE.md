@@ -449,7 +449,7 @@ npm run deploy                       # Deploy to production (10-15 min)
 ## All Documentation Located At
 
 ```
-/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/
+/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/
 
 MIGRATION DOCS (Phases 0-6):
 - MIGRATION_COMPLETE.md

@@ -5,7 +5,7 @@ echo "🚀 Opening Bayit+ tvOS for device testing..."
 echo ""
 
 # Open Xcode workspace
-open /Users/olorin/Documents/olorin/olorin-media/bayit-plus/tvos-app/tvos/BayitPlusTVOS.xcworkspace
+open /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/tvos-app/tvos/BayitPlusTVOS.xcworkspace
 
 # Wait for Xcode to launch
 sleep 3

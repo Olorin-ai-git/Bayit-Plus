@@ -98,7 +98,7 @@ curl -X POST http://localhost:8090/api/v1/nlp/parse-command \
 ### 2. CLI Commands
 
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Build CLI
 cd cli && npm run build
@@ -207,7 +207,7 @@ curl -X POST http://localhost:8090/api/v1/nlp/execute-agent \
 cd backend && poetry run uvicorn app.main:app --reload
 
 # In another terminal, test MCP
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 ./cli/bin/olorin.js mcp list
 ./cli/bin/olorin.js mcp health bayit-content
 ```

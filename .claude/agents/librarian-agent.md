@@ -1,3 +1,8 @@
+---
+name: librarian-agent
+description: Autonomous content auditor and maintenance agent for Bayit+ streaming platform
+---
+
 # Librarian AI Agent
 
 **Version:** 1.0.0

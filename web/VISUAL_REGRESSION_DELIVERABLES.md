@@ -267,7 +267,7 @@ Displays:
 ### Prerequisites
 
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web
 npm install --legacy-peer-deps
 npx playwright install
 ```
@@ -377,7 +377,7 @@ Any of the following will fail the test:
 ## File Locations Summary
 
 ```
-/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/
+/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/
 
 ├── tests/visual-regression/
 │   ├── visual-regression-full.spec.ts     # Main test suite

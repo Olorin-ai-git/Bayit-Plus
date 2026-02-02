@@ -263,9 +263,9 @@ def t(key: str, lang: str = "en") -> str:
 ## 📞 Support
 
 For questions about this audit or implementation:
-- Reports location: `/Users/olorin/Documents/olorin/backend/`
-- Scripts location: `/Users/olorin/Documents/olorin/backend/`
-- i18n files: `/Users/olorin/Documents/olorin/shared/i18n/locales/`
+- Reports location: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/`
+- Scripts location: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/`
+- i18n files: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/shared/i18n/locales/`
 
 ---
 

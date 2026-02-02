@@ -5,6 +5,7 @@ import asyncio
 import os
 import sys
 
+import pytest
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -15,6 +16,7 @@ from app.core.database import connect_to_mongo
 from app.models.content import Content
 
 
+@pytest.mark.asyncio
 async def test_cache():
     # Initialize database
     await connect_to_mongo()

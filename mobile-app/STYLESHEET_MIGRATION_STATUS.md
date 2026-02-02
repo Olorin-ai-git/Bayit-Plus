@@ -10,14 +10,14 @@ Migration of React Native StyleSheet.create() to TailwindCSS (NativeWind) classN
 - **Success Rate**: 19.5%
 
 ## Completed Files ✅
-1. `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/components/AppContent.tsx`
-2. `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/components/navigation/TabBar.tsx`
-3. `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/components/player/ChapterMarkers.tsx`
-4. `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/components/player/ChapterListMobile.tsx`
-5. `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/components/player/MobileVideoPlayer.tsx`
-6. `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/components/player/MobileAudioPlayer.tsx`
-7. `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/components/voice/VoiceCommandButton.tsx`
-8. `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/components/voice/VoiceWaveform.tsx`
+1. `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/components/AppContent.tsx`
+2. `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/components/navigation/TabBar.tsx`
+3. `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/components/player/ChapterMarkers.tsx`
+4. `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/components/player/ChapterListMobile.tsx`
+5. `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/components/player/MobileVideoPlayer.tsx`
+6. `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/components/player/MobileAudioPlayer.tsx`
+7. `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/components/voice/VoiceCommandButton.tsx`
+8. `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/components/voice/VoiceWaveform.tsx`
 
 ## Remaining Files (33)
 
@@ -244,19 +244,19 @@ className={isRTL ? 'flex-row-reverse' : 'flex-row'}
 
 ### Check remaining files
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src
 find . -name "*.tsx" -exec grep -l "StyleSheet.create" {} \;
 ```
 
 ### Count remaining
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src
 find . -name "*.tsx" -exec grep -l "StyleSheet.create" {} \; | wc -l
 ```
 
 ### Verify migration
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src
 # Should return no results when complete
 grep -r "StyleSheet.create" . --include="*.tsx"
 ```

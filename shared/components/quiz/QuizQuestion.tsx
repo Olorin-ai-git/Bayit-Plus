@@ -76,8 +76,9 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
     if (selectedIndex === null) return 'default';
     if (answerState !== 'answered') return 'default';
 
-    if (index === question.correct_index) return 'correct';
-    if (index === selectedIndex) return 'incorrect';
+    // Note: correct_index is not available in API response for security
+    // Only show selected state - correct/incorrect feedback comes from server after submission
+    if (index === selectedIndex) return 'selected';
     return 'default';
   };
 
@@ -97,9 +98,14 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
         </Text>
       </View>
 
-      <View style={[styles.answersGrid, isRTL && styles.answersGridRTL]}>
+      <View
+        style={styles.answersGrid}
+        accessible={true}
+        accessibilityRole="radiogroup"
+        accessibilityLabel={isRTL ? 'אפשרויות תשובה' : 'Answer options'}
+      >
         {/* Row 1: Options 0 and 1 */}
-        <View style={styles.answerRow}>
+        <View style={[styles.answerRow, isRTL && styles.answerRowRTL]}>
           <QuizAnswerButton
             text={options[0]}
             index={0}
@@ -122,7 +128,7 @@ export const QuizQuestion: React.FC<QuizQuestionProps> = ({
         </View>
 
         {/* Row 2: Options 2 and 3 */}
-        <View style={styles.answerRow}>
+        <View style={[styles.answerRow, isRTL && styles.answerRowRTL]}>
           <QuizAnswerButton
             text={options[2]}
             index={2}
@@ -166,12 +172,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   answersGridRTL: {
-    flexDirection: 'column-reverse',
+    // RTL handled by individual button text alignment
+    // No column-reverse - keeps question order natural
   },
   answerRow: {
     flexDirection: 'row',
     gap: spacing.md,
     marginBottom: spacing.md,
+  },
+  answerRowRTL: {
+    flexDirection: 'row-reverse',
   },
 });
 

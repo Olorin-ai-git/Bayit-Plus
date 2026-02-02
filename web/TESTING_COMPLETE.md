@@ -46,7 +46,7 @@ Comprehensive visual regression testing suite for Bayit+ Web Platform has been s
 
 ```bash
 # 1. Install dependencies (first time only)
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web
 npm install --legacy-peer-deps
 npx playwright install
 
@@ -84,7 +84,7 @@ npm run test:visual:report
 ## 📁 File Structure
 
 ```
-/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/
+/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/
 
 Core Files:
 ├── tests/visual-regression/
@@ -426,7 +426,7 @@ The test suite validates:
 
 1. **Run Tests**:
    ```bash
-   cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web
+   cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web
    npm install --legacy-peer-deps
    npx playwright install
    npm run test:visual:full

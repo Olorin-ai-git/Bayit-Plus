@@ -9,6 +9,7 @@ from typing import Dict, List, Optional
 
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field, field_validator
+from pymongo import IndexModel
 
 
 class Badge(Document):
@@ -111,15 +112,12 @@ class UserReward(Document):
     class Settings:
         name = "user_rewards"
         indexes = [
-            [("user_id", 1), ("profile_id", 1)],
-            [("total_points", -1)],
-            [("quizzes_completed", -1)],
-            [("current_streak", -1)],
+            IndexModel([("user_id", 1), ("profile_id", 1)], unique=True),
+            IndexModel([("total_points", -1)]),
+            IndexModel([("quizzes_completed", -1)]),
+            IndexModel([("current_streak", -1)]),
             # Profile leaderboard index
-            [("user_id", 1), ("total_points", -1)],
-        ]
-        unique_indexes = [
-            {"keys": [("user_id", 1), ("profile_id", 1)], "unique": True}
+            IndexModel([("user_id", 1), ("total_points", -1)]),
         ]
 
     class Config:

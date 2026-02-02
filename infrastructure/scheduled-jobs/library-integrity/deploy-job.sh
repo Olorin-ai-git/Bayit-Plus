@@ -125,8 +125,8 @@ fi
 rm -f /tmp/cloudbuild-library-integrity.yaml
 
 # Load environment variables from olorin-infra
-if [ -f "/Users/olorin/Documents/olorin/olorin-infra/.env" ]; then
-    source /Users/olorin/Documents/olorin/olorin-infra/.env
+if [ -f "/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/olorin-infra/.env" ]; then
+    source /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/olorin-infra/.env
 fi
 
 # Create or update Cloud Run Job

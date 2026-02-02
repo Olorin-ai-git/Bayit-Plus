@@ -80,7 +80,7 @@
 
 ::: v-pre
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Step 1: Edit the workflow file
 # File: .github/workflows/pr-validation.yml
@@ -318,7 +318,7 @@ This is the foundation for everything that follows.
 
 **Execute This**:
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 
 # Edit .github/workflows/pr-validation.yml
 # Change: --cov-fail-under=70 → --cov-fail-under=85

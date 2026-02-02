@@ -75,7 +75,7 @@ Should show your iPhone 16 Pro in the list.
 ### 2.1 Open Project in Xcode
 
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 open ios/BayitPlus.xcworkspace
 ```
 
@@ -119,7 +119,7 @@ In Xcode:
 
 Open Terminal and run:
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 npm start
 ```
 
@@ -230,7 +230,7 @@ In Xcode (Cmd+Shift+C):
 ```bash
 # Reset Xcode signing
 rm -rf ~/Library/Developer/Xcode/DerivedData/
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 cd ios && pod install && cd ..
 open ios/BayitPlus.xcworkspace
 ```
@@ -257,7 +257,7 @@ xcode-select --install
 
 **Solution**:
 ```bash
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app
 cd ios
 rm -rf Pods Podfile.lock
 pod install

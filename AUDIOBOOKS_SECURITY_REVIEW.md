@@ -642,7 +642,7 @@ async def create_audiobook(...):
 ### Phase 1: CRITICAL - SSRF Fixes (1-2 hours)
 
 **Task 1.1**: Add SSRF validation to CREATE endpoint
-- **File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks_crud.py`
+- **File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks_crud.py`
 - **Location**: Line 35-62 (create_audiobook function)
 - **Change**: Add `validate_audio_url(request_data.stream_url)` check
 - **Impact**: Prevents SSRF on creation
@@ -656,7 +656,7 @@ async def create_audiobook(...):
 - **Test**: TestAudiobooksSecurityValidation::test_update_with_invalid_stream_url
 
 **Task 1.3**: Add DRM Key ID validation
-- **File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobook_schemas.py`
+- **File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobook_schemas.py`
 - **Location**: Line 31 (AudiobookCreateRequest)
 - **Change**: Add pattern validation: `pattern=r"^[a-zA-Z0-9\-_]{0,128}$"`
 - **Impact**: Prevents injection attacks via drm_key_id
@@ -667,7 +667,7 @@ async def create_audiobook(...):
 ### Phase 2: HIGH - Input Validation (2-3 hours)
 
 **Task 2.1**: Add AudioQuality enum
-- **File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobook_schemas.py`
+- **File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobook_schemas.py`
 - **Change**: Create AudioQuality enum and use in request models
 - **Values**: low, standard, high, high-fidelity
 
@@ -686,12 +686,12 @@ async def create_audiobook(...):
 ### Phase 3: HIGH - Rate Limiting (1 hour)
 
 **Task 3.1**: Add rate limit configuration
-- **File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/core/rate_limiter.py`
+- **File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/core/rate_limiter.py`
 - **Change**: Add audiobook limits to RATE_LIMITS dict
 - **Impact**: Protects against resource exhaustion
 
 **Task 3.2**: Apply rate limits to endpoints
-- **File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks_crud.py`
+- **File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks_crud.py`
 - **Change**: Add @limiter.limit() decorators to each endpoint
 - **Impact**: Enforces rate limiting
 
@@ -700,7 +700,7 @@ async def create_audiobook(...):
 ### Phase 4: TESTING (2-3 hours)
 
 **Task 4.1**: Add security validation tests
-- **File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/tests/test_audiobooks.py`
+- **File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/tests/test_audiobooks.py`
 - **Tests**:
   - test_create_with_invalid_stream_url
   - test_update_with_invalid_stream_url

@@ -1,3 +1,8 @@
+---
+name: localization-ui-auditor
+description: Multi-platform localization QA specialist for visual UI scanning
+---
+
 # Localization UI Auditor
 
 **Model:** claude-sonnet-4-5

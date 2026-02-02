@@ -3,7 +3,9 @@ Content utility functions.
 """
 
 import logging
+import re
 from datetime import timedelta
+from typing import List
 
 from google.cloud import storage
 
@@ -13,6 +15,32 @@ logger = logging.getLogger(__name__)
 
 # Series category indicators (Hebrew and English)
 SERIES_CATEGORY_KEYWORDS = ["series", "סדרות", "סדרה", "tv shows", "shows"]
+
+# User-Agent patterns for native iOS/tvOS apps
+_NATIVE_APP_PATTERNS: List[str] = [
+    r"Bayit\+/.*CFNetwork",
+    r"Darwin/",
+    r"AppleTV",
+    r"com\.bayit\.plus",
+]
+
+
+def is_native_app(user_agent: str) -> bool:
+    """
+    Check if request is from native iOS/tvOS app.
+
+    Args:
+        user_agent: The User-Agent header string from the request
+
+    Returns:
+        True if the request appears to be from a native iOS/tvOS app
+    """
+    if not user_agent:
+        return False
+    for pattern in _NATIVE_APP_PATTERNS:
+        if re.search(pattern, user_agent, re.IGNORECASE):
+            return True
+    return False
 
 
 def is_series_by_category(category_name: str) -> bool:

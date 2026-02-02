@@ -6,19 +6,21 @@
  * - Color-coded answers (Coral, Teal, Yellow, Mint)
  * - Haptic feedback on selection
  * - tvOS focus navigation support
+ * - Full accessibility support
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   TouchableOpacity,
   Animated,
   Text,
-  View,
   Platform,
   StyleSheet,
+  AccessibilityInfo,
+  Vibration,
 } from 'react-native';
-import { colors, borderRadius, spacing } from '@olorin/design-tokens';
-import { useTVFocus } from '../hooks/useTVFocus';
+import { colors, borderRadius, spacing, quizAnswerColors } from '@olorin/design-tokens';
+import { useTVFocus } from '../../hooks/useTVFocus';
 
 type AgeGroup = 'toddlers' | 'preschool' | 'elementary' | 'preteen';
 type AnswerState = 'default' | 'selected' | 'correct' | 'incorrect';
@@ -33,14 +35,6 @@ interface QuizAnswerButtonProps {
   hasTVPreferredFocus?: boolean;
   isRTL?: boolean;
 }
-
-// Color palette for answer buttons (Coral, Teal, Yellow, Mint)
-const ANSWER_COLORS = [
-  { bg: 'rgba(255, 127, 80, 0.3)', border: 'rgba(255, 127, 80, 0.6)' }, // Coral
-  { bg: 'rgba(32, 178, 170, 0.3)', border: 'rgba(32, 178, 170, 0.6)' }, // Teal
-  { bg: 'rgba(255, 215, 0, 0.3)', border: 'rgba(255, 215, 0, 0.6)' },   // Yellow
-  { bg: 'rgba(152, 251, 152, 0.3)', border: 'rgba(152, 251, 152, 0.6)' }, // Mint
-];
 
 // Age-adaptive sizing configuration
 const AGE_CONFIG: Record<AgeGroup, {
@@ -65,13 +59,21 @@ export const QuizAnswerButton: React.FC<QuizAnswerButtonProps> = ({
   hasTVPreferredFocus = false,
   isRTL = false,
 }) => {
-  const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
+  const { isFocused, handleFocus, handleBlur, scaleTransform } = useTVFocus({
     styleType: 'button',
   });
 
   const isTV = Platform.isTV || Platform.OS === 'tvos';
   const config = AGE_CONFIG[ageGroup];
-  const colorSet = ANSWER_COLORS[index % ANSWER_COLORS.length];
+  const colorSet = quizAnswerColors[index % quizAnswerColors.length];
+
+  const handlePressWithHaptic = useCallback(() => {
+    // Haptic feedback for mobile platforms
+    if (Platform.OS === 'ios' || Platform.OS === 'android') {
+      Vibration.vibrate(10);
+    }
+    onPress();
+  }, [onPress]);
 
   const getStateStyles = () => {
     switch (state) {
@@ -101,16 +103,28 @@ export const QuizAnswerButton: React.FC<QuizAnswerButtonProps> = ({
 
   const stateStyles = getStateStyles();
 
+  // Accessibility hint based on state
+  const getAccessibilityHint = () => {
+    if (state === 'correct') return isRTL ? 'תשובה נכונה' : 'Correct answer';
+    if (state === 'incorrect') return isRTL ? 'תשובה שגויה' : 'Incorrect answer';
+    return isRTL ? 'לחץ לבחירת תשובה' : 'Tap to select this answer';
+  };
+
   return (
     <TouchableOpacity
-      onPress={onPress}
+      onPress={handlePressWithHaptic}
       onFocus={handleFocus}
       onBlur={handleBlur}
       disabled={disabled || state === 'correct' || state === 'incorrect'}
       activeOpacity={0.8}
+      accessible={true}
       accessibilityRole="button"
-      accessibilityLabel={text}
-      accessibilityState={{ disabled, selected: state === 'selected' }}
+      accessibilityLabel={`${isRTL ? 'תשובה' : 'Answer'} ${index + 1}: ${text}`}
+      accessibilityHint={getAccessibilityHint()}
+      accessibilityState={{
+        disabled: disabled || state === 'correct' || state === 'incorrect',
+        selected: state === 'selected',
+      }}
       // @ts-ignore - TV-specific prop
       hasTVPreferredFocus={hasTVPreferredFocus}
     >

@@ -27,7 +27,7 @@ firebase deploy --only hosting:web
 Or from the project root:
 
 ```bash
-cd /Users/olorin/Documents/olorin
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 firebase deploy --only hosting:web
 ```
 

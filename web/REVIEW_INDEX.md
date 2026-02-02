@@ -173,7 +173,7 @@
 ### File Locations
 All review documents are in:
 ```
-/Users/olorin/Documents/olorin/olorin-media/bayit-plus/web/
+/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web/
 ```
 
 ### Key Files to Fix

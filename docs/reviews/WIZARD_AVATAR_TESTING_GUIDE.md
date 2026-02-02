@@ -11,7 +11,7 @@
 ### Prerequisites
 ```bash
 # Verify you're in the correct directory
-cd /Users/olorin/Documents/olorin/Bayit-Plus
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus
 
 # Verify video assets exist
 ls -lh shared/assets/video/wizard/

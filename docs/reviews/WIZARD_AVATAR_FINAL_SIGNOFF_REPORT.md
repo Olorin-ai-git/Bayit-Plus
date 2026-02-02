@@ -335,15 +335,15 @@ Before production deployment, organizational decisions needed on:
 
 **UI/UX Designer** ⚠️
 - **Status:** Component exists but file access issues
-- **Note:** Files located at `/Users/olorin/Documents/olorin/Bayit-Plus/`
+- **Note:** Files located at `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/`
 
 **UX/Localization** ⚠️
 - **Status:** Component exists but file access issues
-- **Note:** Files located at `/Users/olorin/Documents/olorin/Bayit-Plus/`
+- **Note:** Files located at `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/`
 
 **iOS Developer** ⚠️
 - **Status:** Component exists but file access issues
-- **Note:** Files located at `/Users/olorin/Documents/olorin/Bayit-Plus/`
+- **Note:** Files located at `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/`
 
 **tvOS Expert** ⚠️
 - **Status:** Basic focus support added
@@ -362,7 +362,7 @@ Before production deployment, organizational decisions needed on:
 ### Immediate (Pre-Production)
 
 1. **Verify File Locations**
-   - Component files are in `/Users/olorin/Documents/olorin/Bayit-Plus/`
+   - Component files are in `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/Bayit-Plus/`
    - Some agents looked in `/Users/olorin/Documents/Bayit-Plus/` (incorrect)
    - No action needed if git repo is correctly located
 

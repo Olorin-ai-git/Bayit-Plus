@@ -88,7 +88,7 @@ Our 44 new tests were designed to cover:
 
 **Step 1**: Verify pytest-cov cache is not corrupted
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 rm -rf .pytest_cache/ .coverage .coverage.* htmlcov/
 ```
 
@@ -115,7 +115,7 @@ cat .coverage.* 2>/dev/null || echo "Coverage file not found"
 ### Option B: Use Coverage Directly (Alternative)
 
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 
 # Run tests without pytest-cov plugin
 poetry run pytest tests/ -v
@@ -129,7 +129,7 @@ poetry run coverage html --include=app
 
 **Verify our Phase 4A tests pass**:
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 
 # Test Series Linker
 poetry run pytest tests/test_series_linker_integration.py -v
@@ -178,7 +178,7 @@ echo "Check output - should see X passed"
 
 **Command to Execute Now**:
 ```bash
-cd /Users/olorin/Documents/olorin/backend && \
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend && \
 rm -rf .pytest_cache/ .coverage .coverage.* htmlcov/ && \
 poetry run pytest tests/ \
   --cov=app \
@@ -251,7 +251,7 @@ If cleanup & retry doesn't resolve the issue:
 To confirm Phase 4A tests are in the 419 passed:
 
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 
 # Run just our new tests
 poetry run pytest tests/test_series_linker_integration.py tests/test_support_service_integration.py -v

@@ -332,22 +332,22 @@ mobile-app/
 ## Support & References
 
 ### Documentation Files
-- `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/ACCESSIBILITY_IMPLEMENTATION_SUMMARY.md`
-- `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/ACCESSIBILITY_ARCHITECTURE.md`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ACCESSIBILITY_IMPLEMENTATION_SUMMARY.md`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ACCESSIBILITY_ARCHITECTURE.md`
 
 ### Hook Source Files
-- `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/hooks/useScaledFontSize.ts`
-- `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/hooks/useReducedMotion.ts`
-- `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/hooks/useAccessibility.ts`
-- `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/hooks/useAccessibilityProps.ts`
-- `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/hooks/useSafeAreaPadding.ts`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/hooks/useScaledFontSize.ts`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/hooks/useReducedMotion.ts`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/hooks/useAccessibility.ts`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/hooks/useAccessibilityProps.ts`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/hooks/useSafeAreaPadding.ts`
 
 ### Modified Screen Files
-- `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/components/navigation/TabBar.tsx`
-- `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/screens/HomeScreenMobile.tsx`
-- `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/screens/PlayerScreenMobile.tsx`
-- `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/screens/ProfileScreenMobile.tsx`
-- `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/src/screens/SettingsScreenMobile.tsx`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/components/navigation/TabBar.tsx`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/screens/HomeScreenMobile.tsx`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/screens/PlayerScreenMobile.tsx`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/screens/ProfileScreenMobile.tsx`
+- `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/src/screens/SettingsScreenMobile.tsx`
 
 ---
 

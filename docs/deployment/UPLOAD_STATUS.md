@@ -87,7 +87,7 @@ pkill -f "upload_real_movies.py"
 
 ### Check in Database:
 ```bash
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 poetry run python -c "
 from motor.motor_asyncio import AsyncIOMotorClient
 import asyncio
@@ -121,8 +121,8 @@ curl https://bayit-backend-production-624470113582.us-east1.run.app/api/v1/conte
 ## 📝 Log File Location
 
 **Main upload log:** `/tmp/movie_upload_all.log`
-**Monitor script:** `/Users/olorin/Documents/olorin/backend/monitor_upload.sh`
-**Upload script:** `/Users/olorin/Documents/olorin/backend/scripts/upload_real_movies.py`
+**Monitor script:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/monitor_upload.sh`
+**Upload script:** `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/scripts/upload_real_movies.py`
 
 ---
 
@@ -197,7 +197,7 @@ Each movie entry includes:
 **Upload stops unexpectedly:**
 ```bash
 # Restart the upload (it will skip already uploaded movies)
-cd /Users/olorin/Documents/olorin/backend
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend
 export GOOGLE_APPLICATION_CREDENTIALS="/tmp/gcs-uploader-key.json"
 export GCS_BUCKET_NAME="bayit-plus-media"
 nohup poetry run python scripts/upload_real_movies.py > /tmp/movie_upload_all.log 2>&1 &

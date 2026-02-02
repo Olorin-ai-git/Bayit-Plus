@@ -12,7 +12,7 @@ Phase 3 completes the tvOS voice system integration by enhancing the TVHeader co
 
 ### Task 1: Enhanced TVHeader.tsx
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/tvos-app/src/components/TVHeader.tsx`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/tvos-app/src/components/TVHeader.tsx`
 
 #### Changes:
 1. **Replaced voice hook** - Removed old `useConstantListening` hook, implemented new `useVoiceTV` hook
@@ -43,7 +43,7 @@ Phase 3 completes the tvOS voice system integration by enhancing the TVHeader co
 
 ### Task 2: Enhanced App.tsx
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/tvos-app/App.tsx`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/tvos-app/App.tsx`
 
 #### Changes:
 1. **Voice manager initialization**:
@@ -70,7 +70,7 @@ Phase 3 completes the tvOS voice system integration by enhancing the TVHeader co
 
 ### Task 3: Created TVVoiceDemo.tsx
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/tvos-app/src/components/voice/TVVoiceDemo.tsx`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/tvos-app/src/components/voice/TVVoiceDemo.tsx`
 
 **Status**: DEMO-ONLY - Marked with DEMO-ONLY banner per coding standards
 

@@ -1,3 +1,8 @@
+---
+name: frontend-specialist
+description: Bayit+ frontend specialist for React Native Web, Glass UI, and localization
+---
+
 # Bayit+ Frontend Specialist
 
 **Model:** claude-sonnet-4-5

@@ -17,7 +17,7 @@
 
 ### Issue: App Entry Point Not Integrated
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/App.tsx`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/App.tsx`
 
 **Current State**:
 ```typescript
@@ -250,4 +250,4 @@ See detailed analysis: [`PHASE_1.1_TECHNICAL_TESTING_REPORT.md`](./PHASE_1.1_TEC
 **Tester**: Mobile Expert Agent
 **Date**: 2026-01-26
 **Project**: Bayit+ iOS Mobile App
-**Location**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/mobile-app/`
+**Location**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/mobile-app/`

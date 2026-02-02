@@ -10,7 +10,7 @@
 
 ### Fix 1: Add SSRF Validation to CREATE Endpoint
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks_crud.py`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks_crud.py`
 
 **Current Code** (lines 28-80):
 ```python
@@ -128,7 +128,7 @@ ALLOWED_AUDIO_DOMAINS="cdn.example.com,stream.example.com,audio.example.com"
 
 ### Fix 2: Add SSRF Validation to PATCH Endpoint
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks_crud.py`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/admin_audiobooks_crud.py`
 
 **Current Code** (lines 134-169):
 ```python
@@ -228,7 +228,7 @@ async def test_update_with_invalid_stream_url(client, admin_user, sample_audiobo
 
 ### Fix 3: Add DRM Key ID Format Validation
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobook_schemas.py`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobook_schemas.py`
 
 **Current Code** (lines 17-43):
 ```python
@@ -313,7 +313,7 @@ async def test_create_with_invalid_drm_key_id(client, admin_user, auth_token):
 
 ### Enhancement 1: Add AudioQuality Enum
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobook_schemas.py`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobook_schemas.py`
 
 **Add Before AudiobookCreateRequest**:
 ```python
@@ -341,7 +341,7 @@ audio_quality: Optional[AudioQualityEnum] = None  # ← Changed from str
 
 ### Enhancement 2: Add ISBN Format Validation
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobook_schemas.py`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobook_schemas.py`
 
 **Update AudiobookCreateRequest**:
 ```python
@@ -365,7 +365,7 @@ isbn: Optional[str] = Field(  # ← Add validation
 
 ### Enhancement 3: Add Stream URL Format Validation
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobook_schemas.py`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/api/routes/audiobook_schemas.py`
 
 **Update AudiobookCreateRequest**:
 ```python
@@ -388,7 +388,7 @@ stream_url: Optional[str] = Field(
 
 ### Enhancement 4: Add Rate Limiting
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/app/core/rate_limiter.py`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/app/core/rate_limiter.py`
 
 **Update RATE_LIMITS dictionary** (around line 14):
 ```python
@@ -444,7 +444,7 @@ async def get_audiobook_stream(...):
 
 ### Add Security Test Suite
 
-**File**: `/Users/olorin/Documents/olorin/olorin-media/bayit-plus/backend/tests/test_audiobooks.py`
+**File**: `/Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/backend/tests/test_audiobooks.py`
 
 **Add New Test Class**:
 ```python

@@ -316,7 +316,7 @@ cd backend
 pkill -f uvicorn
 
 # Step 2: Restore scripts from backup
-cd /Users/olorin/Documents/olorin/olorin-media/bayit-plus
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
 tar -xzf scripts-backup-<timestamp>.tar.gz
 
 # Step 3: Restore database (if needed)

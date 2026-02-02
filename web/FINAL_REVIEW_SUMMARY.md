@@ -2,7 +2,7 @@
 
 **Date:** 2026-01-22
 **Reviewer:** System Architect (AI Agent)
-**Project:** /Users/olorin/Documents/olorin/olorin-media/bayit-plus/web
+**Project:** /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/web
 **Review Scope:** Style Guide Compliance, Architecture, Code Quality
 
 ---

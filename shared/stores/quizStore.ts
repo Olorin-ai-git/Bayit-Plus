@@ -11,11 +11,10 @@ export interface QuizQuestion {
   question_text_en?: string;
   options: string[];
   options_en?: string[];
-  correct_index: number;
   difficulty: 'easy' | 'medium' | 'hard';
   points: number;
-  explanation?: string;
-  explanation_en?: string;
+  // Note: correct_index is not included in API response for security
+  // Correct/incorrect state is determined server-side during submission
 }
 
 export interface Quiz {
@@ -126,14 +125,14 @@ export const useQuizStore = create<QuizStore>((set, get) => ({
     const { currentQuiz, currentQuestionIndex, answers, questionStartTime } = get();
     if (!currentQuiz || currentQuestionIndex >= currentQuiz.questions.length) return;
 
-    const question = currentQuiz.questions[currentQuestionIndex];
-    const isCorrect = optionIndex === question.correct_index;
     const timeTakenMs = questionStartTime ? Date.now() - questionStartTime : 0;
 
+    // Note: isCorrect is determined server-side during submission for security
+    // correct_index is not included in API response to prevent cheating
     const record: AnswerRecord = {
       questionIndex: currentQuestionIndex,
       selectedOption: optionIndex,
-      isCorrect,
+      isCorrect: false, // Placeholder - determined server-side
       timeTakenMs,
     };
 
