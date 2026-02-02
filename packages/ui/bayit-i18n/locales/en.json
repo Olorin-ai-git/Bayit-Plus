@@ -7806,5 +7806,39 @@
     "goToHousehold": "Go to Household",
     "success": "Success!",
     "error": "Error"
+  },
+  "profileControls": {
+    "title": "Profile Family Controls",
+    "subtitle": "Manage family controls for this profile",
+    "sourceSection": {
+      "title": "Controls Source",
+      "inheritHousehold": "Inherit from Household",
+      "inheritHouseholdDesc": "Use household-wide family controls",
+      "customControls": "Custom Controls",
+      "customControlsDesc": "Use profile-specific family controls"
+    },
+    "selectControls": {
+      "title": "Select Controls",
+      "controlsLabel": "Family Controls {{id}}",
+      "kidsAge": "Kids: {{age}}",
+      "youngstersAge": "Youngsters: {{age}}",
+      "rating": "Rating: {{rating}}",
+      "noControls": "No family controls available. Create controls in Family Controls settings."
+    },
+    "effectiveControls": {
+      "title": "Active Controls",
+      "kidsEnabled": "Kids Content",
+      "youngstersEnabled": "Youngsters Content",
+      "contentRating": "Content Rating Limit",
+      "viewingHours": "Viewing Hours",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "ageLimit": "Age limit: {{age}}",
+      "noRestriction": "No restriction",
+      "noControls": "No family controls active for this profile"
+    },
+    "errors": {
+      "noControlsAvailable": "No family controls available. Create controls first."
+    }
   }
 }
