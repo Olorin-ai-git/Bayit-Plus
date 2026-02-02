@@ -127,7 +127,7 @@ export function useVideoPlayer({
     setState((prev) => ({ ...prev, error: errorMessage, loading: false }))
   }, [isLive])
 
-  const { hlsRef } = useHLSPlayer({
+  const { hlsRef, destroyHLS } = useHLSPlayer({
     videoRef,
     streamUrl: currentStreamUrl,
     isLive,
@@ -370,5 +370,6 @@ export function useVideoPlayer({
     containerRef,
     state,
     controls,
+    destroyHLS,
   }
 }

@@ -258,6 +258,9 @@ module.exports = (env, argv) => {
         'import.meta.env.VITE_CAST_SYNC_INTERVAL_MS': JSON.stringify(process.env.VITE_CAST_SYNC_INTERVAL_MS || '1000'),
         'import.meta.env.VITE_CAST_AUTO_SYNC': JSON.stringify(process.env.VITE_CAST_AUTO_SYNC || 'true'),
         'import.meta.env.VITE_CAST_SDK_URL': JSON.stringify(process.env.VITE_CAST_SDK_URL || 'https://www.gstatic.com/cv/js/sender/v1/cast_sender.js'),
+        // Cast Debug Flags
+        'import.meta.env.VITE_DEBUG_CAST': JSON.stringify(process.env.VITE_DEBUG_CAST || 'false'),
+        'import.meta.env.VITE_CAST_FORCE_SHOW': JSON.stringify(process.env.VITE_CAST_FORCE_SHOW || 'false'),
       }),
       new webpack.ProvidePlugin({
         process: 'process/browser',

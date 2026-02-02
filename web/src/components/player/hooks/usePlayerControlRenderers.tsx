@@ -18,6 +18,10 @@ import { WatchParty } from '@/types/watchparty'
 import { SubtitleCue } from '../types'
 import { CastSession } from '../types/cast'
 import { UsageStats } from '@/services/liveQuotaApi'
+import { castConfig } from '@/config/castConfig'
+
+const DEBUG_CAST = import.meta.env.VITE_DEBUG_CAST === 'true'
+const FORCE_SHOW_CAST = import.meta.env.VITE_CAST_FORCE_SHOW === 'true'
 
 interface UsePlayerControlRenderersParams {
   // User and content
@@ -311,17 +315,24 @@ export function usePlayerControlRenderers({
     ) : null
   , [isLive, contentId, isPremium, onShowUpgrade, setIsRecording, setRecordingDuration])
 
-  const renderCastButton = useCallback(() =>
-    cast.isAvailable ? (
+  const renderCastButton = useCallback(() => {
+    // Cast button is always rendered - it handles its own disabled state internally
+    return (
       <CastButton
         castSession={cast}
         onHoveredButtonChange={onHoveredButtonChange}
       />
-    ) : null
-    // Note: Using only cast.isAvailable as dep since the full cast object
-    // is passed to CastButton anyway and causes unnecessary re-renders
-  , [cast.isAvailable, cast.isConnected, cast.isConnecting, cast.deviceName, cast.castType,
-     cast.startCast, cast.stopCast, onHoveredButtonChange])
+    )
+  }, [
+    cast.isAvailable,
+    cast.isConnected,
+    cast.isConnecting,
+    cast.deviceName,
+    cast.castType,
+    cast.startCast,
+    cast.stopCast,
+    onHoveredButtonChange,
+  ])
 
   const renderChannelChatButton = useCallback(() => {
     if (!channelChat) return null

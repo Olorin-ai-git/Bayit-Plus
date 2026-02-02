@@ -26,7 +26,6 @@ import {
   useCastSession,
   usePlaybackSession,
 } from './hooks'
-import { useNativeTextTracks } from './hooks/useNativeTextTracks'
 import { SplitLanguages } from '@/types/subtitle'
 import { useChannelChatStore } from '@/stores/channelChatSlice'
 import { castConfig } from '@/config/castConfig'
@@ -71,7 +70,7 @@ export default function VideoPlayer({
     activeDevices: Array<{ device_id: string; device_name: string; content_id: string }>
   } | null>(null)
 
-  const { videoRef, containerRef, state, controls } = useVideoPlayer({
+  const { videoRef, containerRef, state, controls, destroyHLS } = useVideoPlayer({
     src,
     isLive,
     autoPlay,
@@ -168,22 +167,14 @@ export default function VideoPlayer({
       duration: state.duration,
     },
     enabled: !isWidget && castConfig.featureEnabled,
+    isHLS,
+    originalStreamUrl: src, // Pass original .m3u8 URL for AirPlay HLS fix
+    destroyHLS, // Pass HLS.js destroy callback for AirPlay source switch
   })
 
-  // Native text tracks for AirPlay/Chromecast subtitle support
-  // In split mode, use primary track for casting (native tracks don't support dual subtitles)
-  useNativeTextTracks({
-    videoRef,
-    cues: currentCues,
-    language: currentSubtitleLang,
-    enabled: subtitlesEnabled,
-    isCasting: cast.isConnected,
-    contentId,
-    splitMode,
-    splitLanguages,
-    splitCues,
-    isHLS,
-  })
+  // Subtitles are now embedded in HLS manifest (EXT-X-MEDIA)
+  // HLS.js and native players handle subtitle selection automatically
+  // No need for external VTT or native <track> elements
 
   // Playback session management for concurrent stream limit enforcement
   const { sessionId } = usePlaybackSession({
@@ -482,6 +473,8 @@ export default function VideoPlayer({
         poster={poster}
         style={webStyles.video}
         playsInline
+        preload="auto"
+        crossOrigin="anonymous"
       />
 
       <VideoPlayerOverlays

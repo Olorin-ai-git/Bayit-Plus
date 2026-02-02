@@ -9,6 +9,7 @@ import { CastMetadata, PlaybackState, ChromecastGlobal } from '../types/cast'
 import { loadCastSDK, loadChromecastMedia } from '../utils/chromecastUtils'
 
 const log = logger.scope('ChromecastWeb')
+const DEBUG_CAST = import.meta.env.VITE_DEBUG_CAST === 'true'
 
 interface UseChromecastWebOptions {
   videoRef: React.RefObject<HTMLVideoElement>
@@ -51,27 +52,43 @@ export function useChromecastWeb({
   // Load Cast SDK
   useEffect(() => {
     if (!enabled || !receiverAppId) {
+      log.info('Chromecast SDK not loading', { enabled, receiverAppId })
       return
     }
 
+    log.info('Loading Chromecast SDK', { receiverAppId })
+
     return loadCastSDK(
-      () => setSdkLoaded(true),
-      () => setSdkLoaded(false)
+      () => {
+        log.info('Chromecast SDK loaded successfully')
+        setSdkLoaded(true)
+      },
+      () => {
+        log.warn('Chromecast SDK failed to load')
+        setSdkLoaded(false)
+      }
     )
   }, [enabled, receiverAppId])
 
   // Initialize Cast context
   useEffect(() => {
     if (!sdkLoaded || !receiverAppId) {
+      log.info('Chromecast context not initializing', { sdkLoaded, receiverAppId })
       return
     }
 
     // Check if Cast SDK framework is available
     if (!window.chrome?.cast?.framework?.CastContext) {
-      log.warn('Cast framework not available - disabling Chromecast support')
+      log.warn('Cast framework not available - disabling Chromecast support', {
+        hasChromeObject: !!window.chrome,
+        hasCastObject: !!window.chrome?.cast,
+        hasFrameworkObject: !!window.chrome?.cast?.framework,
+      })
       setIsAvailable(false)
       return
     }
+
+    log.info('Initializing Chromecast context', { receiverAppId })
 
     try {
       const castContext = window.chrome.cast.framework.CastContext.getInstance()

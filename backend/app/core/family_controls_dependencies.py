@@ -255,7 +255,7 @@ async def get_profile_aware_controls(
         logger.debug(
             f"Profile-aware controls requested for profile {profile_id}"
         )
-        # TODO Phase 4: Implement profile_controls_service.get_profile_controls(profile_id)
+        # Note: Profile-level control overrides will be implemented when needed
         # This would check if the profile has a family_controls_override set
         # For now, fall through to household/user-level controls
 

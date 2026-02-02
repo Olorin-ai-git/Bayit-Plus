@@ -36,7 +36,7 @@ export default defineConfig({
   },
   server: {
     port: 3200,
-    https: true, // Enable HTTPS to avoid mixed content issues with GCS
+    https: false, // Disabled HTTPS for development (was causing TLS errors)
     proxy: {
       '/api': {
         target: 'http://localhost:8000',

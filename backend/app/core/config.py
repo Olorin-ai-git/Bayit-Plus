@@ -375,6 +375,28 @@ class Settings(BaseSettings):
     AGENT_MAX_ITERATIONS: int = Field(default=20)
     AGENT_BUDGET_LIMIT_USD: float = Field(default=0.50)
 
+    # Wizard Voice Assistant Configuration
+    WIZARD_CHAT_MAX_ITERATIONS: int = Field(
+        default=3,
+        env="WIZARD_CHAT_MAX_ITERATIONS",
+        description="Maximum tool execution iterations for wizard chat"
+    )
+    WIZARD_CHAT_TIMEOUT_SECONDS: float = Field(
+        default=10.0,
+        env="WIZARD_CHAT_TIMEOUT_SECONDS",
+        description="Timeout for wizard chat responses (seconds)"
+    )
+    WIZARD_CHAT_MAX_HISTORY: int = Field(
+        default=10,
+        env="WIZARD_CHAT_MAX_HISTORY",
+        description="Maximum conversation messages to retain"
+    )
+    WIZARD_CHAT_MEMORY_TTL_MINUTES: int = Field(
+        default=30,
+        env="WIZARD_CHAT_MEMORY_TTL_MINUTES",
+        description="Conversation memory expiry (minutes)"
+    )
+
     # NLP Session Management
     NLP_SESSION_TTL_MINUTES: int = Field(
         default=30,

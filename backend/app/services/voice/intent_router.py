@@ -5,6 +5,7 @@ Routes voice intents to appropriate handlers and generates responses
 Handlers:
 - CHAT: Natural language chat via Claude API
 - SEARCH: Content search
+- KIDS: Age-appropriate kids content
 - NAVIGATION: Page routing
 - PLAYBACK: Content playback control
 - SCROLL: UI scrolling
@@ -14,10 +15,13 @@ Handlers:
 from typing import Optional, Dict, Any
 import uuid
 
+from app.core.logging_config import get_logger
 from .models import VoiceResponse, VoiceAction, VoiceGesture, VoiceIntent
+from .context import VoiceContext
 from .intent_handlers import (
     handle_chat,
     handle_search,
+    handle_kids,
     handle_navigation,
     handle_playback,
     handle_scroll,
@@ -25,9 +29,19 @@ from .intent_handlers import (
     get_intent_gesture,
 )
 
+logger = get_logger(__name__)
+
+
+# Kids keywords for 3 languages
+KIDS_KEYWORDS = {
+    "he": ["ילדים", "לילדים", "ילד", "קטנים", "קרטון", "מצויר", "אנימציה"],
+    "en": ["kids", "children", "child", "cartoons", "animated", "for kids"],
+    "es": ["niños", "infantil", "dibujos", "animados", "para niños"]
+}
+
 
 class IntentRouter:
-    """Routes voice intents to appropriate handlers"""
+    """Routes voice intents to appropriate handlers."""
 
     def __init__(
         self,
@@ -42,7 +56,7 @@ class IntentRouter:
         self.conversation_id = conversation_id or self._generate_conversation_id()
 
     def _generate_conversation_id(self) -> str:
-        """Generate unique conversation ID"""
+        """Generate unique conversation ID."""
         return f"conv-{uuid.uuid4().hex[:12]}"
 
     async def process_and_route(
@@ -51,7 +65,7 @@ class IntentRouter:
         trigger_type: str = "manual"
     ) -> VoiceResponse:
         """
-        Process transcript and route to appropriate handler
+        Process transcript and route to appropriate handler.
 
         Args:
             transcript: Voice input text
@@ -61,11 +75,31 @@ class IntentRouter:
             Unified voice response with intent, action, and gesture
         """
 
-        # Classify intent (using Hebrew command patterns from frontend)
+        # Classify intent
         intent, confidence = self._classify_intent(transcript)
 
+        logger.info(
+            "Intent classified",
+            extra={
+                "user_id": self.user_id,
+                "intent": intent.value,
+                "confidence": confidence,
+                "language": self.language
+            }
+        )
+
+        # Build voice context
+        context = await VoiceContext.from_request(
+            user_id=self.user_id,
+            language=self.language,
+            platform=self.platform,
+            conversation_id=self.conversation_id,
+            load_user=True,
+            load_family_controls=(intent == VoiceIntent.KIDS)
+        )
+
         # Route to handler
-        response_data = await self._route_intent(intent, transcript)
+        response_data = await self._route_intent(intent, transcript, context)
 
         # Add gesture based on intent
         gesture_data = get_intent_gesture(intent.value)
@@ -83,8 +117,8 @@ class IntentRouter:
 
     def _classify_intent(self, transcript: str) -> tuple[VoiceIntent, float]:
         """
-        Classify intent from transcript
-        Uses Hebrew command patterns similar to voiceCommandProcessor.ts
+        Classify intent from transcript.
+        Uses command patterns in Hebrew, English, and Spanish.
 
         Returns:
             (intent, confidence_score)
@@ -92,12 +126,19 @@ class IntentRouter:
 
         transcript_lower = transcript.lower().strip()
 
+        # Kids content patterns (3 languages)
+        kids_keywords = KIDS_KEYWORDS.get(self.language, KIDS_KEYWORDS["en"])
+        if any(kw in transcript_lower for kw in kids_keywords):
+            return VoiceIntent.KIDS, 0.9
+
         # Navigation patterns
         navigation_keywords = [
             'בית', 'חזור הביתה', 'עמוד ראשי',
             'ערוצים', 'שידור חי', 'טלוויזיה',
             'סרטים', 'סדרות', 'תוכן', 'וידאו',
-            'רדיו', 'פודקאסטים', 'מועדפים'
+            'רדיו', 'פודקאסטים', 'מועדפים',
+            'home', 'back', 'channels', 'movies', 'series', 'radio', 'podcasts',
+            'inicio', 'canales', 'películas', 'series'
         ]
         if any(kw in transcript_lower for kw in navigation_keywords):
             return VoiceIntent.NAVIGATION, 0.95
@@ -105,28 +146,37 @@ class IntentRouter:
         # Search patterns
         search_keywords = [
             'חפש', 'מצא', 'איפה', 'הצג',
-            'אקשן', 'קומדיה', 'דרמה', 'דוקומנטרים'
+            'אקשן', 'קומדיה', 'דרמה', 'דוקומנטרים',
+            'search', 'find', 'show', 'where',
+            'action', 'comedy', 'drama', 'documentary',
+            'buscar', 'encontrar', 'mostrar'
         ]
         if any(kw in transcript_lower for kw in search_keywords):
             return VoiceIntent.SEARCH, 0.8
 
         # Playback patterns
         playback_keywords = [
-            'נגן', 'הפעל', 'התחל', 'השהה', 'עצור', 'המשך'
+            'נגן', 'הפעל', 'התחל', 'השהה', 'עצור', 'המשך',
+            'play', 'start', 'pause', 'stop', 'resume',
+            'reproducir', 'pausar', 'detener'
         ]
         if any(kw in transcript_lower for kw in playback_keywords):
             return VoiceIntent.PLAYBACK, 0.9
 
         # Scroll patterns
         scroll_keywords = [
-            'גלול', 'למטה', 'למעלה', 'עוד', 'הבא', 'הקודם'
+            'גלול', 'למטה', 'למעלה', 'עוד', 'הבא', 'הקודם',
+            'scroll', 'down', 'up', 'next', 'previous',
+            'desplazar', 'abajo', 'arriba'
         ]
         if any(kw in transcript_lower for kw in scroll_keywords):
             return VoiceIntent.SCROLL, 0.85
 
         # Control patterns
         control_keywords = [
-            'חזק', 'שקט', 'השתק', 'שפה', 'עזרה'
+            'חזק', 'שקט', 'השתק', 'שפה', 'עזרה',
+            'loud', 'quiet', 'mute', 'language', 'help',
+            'volumen', 'silencio', 'idioma', 'ayuda'
         ]
         if any(kw in transcript_lower for kw in control_keywords):
             return VoiceIntent.CONTROL, 0.9
@@ -137,14 +187,27 @@ class IntentRouter:
     async def _route_intent(
         self,
         intent: VoiceIntent,
-        transcript: str
+        transcript: str,
+        context: VoiceContext
     ) -> Dict[str, Any]:
-        """Route intent to appropriate handler"""
+        """
+        Route intent to appropriate handler with context.
+
+        Args:
+            intent: Classified voice intent
+            transcript: User voice input
+            context: Voice request context
+
+        Returns:
+            Handler response dict
+        """
 
         if intent == VoiceIntent.CHAT:
-            return await handle_chat(transcript)
+            return await handle_chat(transcript, context)
         elif intent == VoiceIntent.SEARCH:
-            return await handle_search(transcript)
+            return await handle_search(transcript, context)
+        elif intent == VoiceIntent.KIDS:
+            return await handle_kids(transcript, context)
         elif intent == VoiceIntent.NAVIGATION:
             return await handle_navigation(transcript)
         elif intent == VoiceIntent.PLAYBACK:
@@ -154,4 +217,4 @@ class IntentRouter:
         elif intent == VoiceIntent.CONTROL:
             return await handle_control(transcript)
         else:
-            return await handle_chat(transcript)
+            return await handle_chat(transcript, context)

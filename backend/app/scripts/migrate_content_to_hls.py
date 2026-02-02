@@ -182,6 +182,7 @@ async def convert_content_to_hls(
             source_path=source_path,
             content_title=content.title,
             content_type=content_type,
+            content_id=str(content.id),  # Pass content_id for embedded subtitles
             on_progress=on_progress,
         )
 

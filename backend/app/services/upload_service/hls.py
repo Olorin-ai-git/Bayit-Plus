@@ -17,6 +17,10 @@ from google.cloud import storage as gcs_storage
 
 from app.core.config import settings
 from app.services.ffmpeg.conversion import convert_to_hls
+from app.services.ffmpeg.hls_subtitle_generator import (
+    generate_vtt_files_for_content,
+    generate_master_m3u8_with_subtitles,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -49,20 +53,22 @@ class HLSConversionService:
         source_path: str,
         content_title: str,
         content_type: str = "movies",
+        content_id: Optional[str] = None,
         on_progress: Optional[callable] = None,
     ) -> Optional[str]:
         """
-        Convert a video file to HLS and upload to GCS.
+        Convert a video file to HLS and upload to GCS with embedded subtitles.
 
         Args:
             source_path: Local path OR URL to the source video file
                          FFmpeg can read directly from HTTP/HTTPS URLs
             content_title: Title for organizing in GCS (e.g., "25th Hour")
             content_type: Content type for GCS path (e.g., "movies", "series")
+            content_id: Optional content ID for fetching subtitles from database
             on_progress: Optional callback for progress updates
 
         Returns:
-            GCS URL to the M3U8 playlist, or None if conversion fails
+            GCS URL to the master M3U8 playlist, or None if conversion fails
         """
         temp_dir = None
         try:
@@ -93,10 +99,34 @@ class HLSConversionService:
 
             logger.info(f"HLS conversion complete: {segment_count} segments")
 
-            if on_progress:
-                await on_progress(f"Uploading {segment_count} HLS segments...", 50)
+            # Generate VTT subtitle files if content_id provided
+            subtitle_files = []
+            if content_id:
+                if on_progress:
+                    await on_progress("Generating subtitle files...", 45)
 
-            # Upload all HLS files to GCS
+                subtitle_files = await generate_vtt_files_for_content(
+                    content_id=content_id,
+                    output_dir=temp_dir,
+                )
+
+                if subtitle_files:
+                    logger.info(f"Generated {len(subtitle_files)} subtitle files")
+
+                    # Create master manifest with subtitle references
+                    master_playlist_path = os.path.join(temp_dir, "master.m3u8")
+                    generate_master_m3u8_with_subtitles(
+                        video_playlist_name="playlist.m3u8",
+                        subtitle_files=subtitle_files,
+                        output_path=master_playlist_path,
+                    )
+                    logger.info("Created master manifest with embedded subtitles")
+
+            if on_progress:
+                total_files = segment_count + len(subtitle_files) + (1 if subtitle_files else 0)
+                await on_progress(f"Uploading {total_files} files...", 50)
+
+            # Upload all HLS files to GCS (including subtitles and master manifest)
             safe_title = self._sanitize_title(content_title)
             gcs_hls_path = f"{content_type}/{safe_title}/hls"
 
@@ -146,6 +176,7 @@ class HLSConversionService:
         uploaded = 0
 
         playlist_url = None
+        master_playlist_url = None
 
         for file_path in files:
             if file_path.is_file():
@@ -167,24 +198,31 @@ class HLSConversionService:
 
                 uploaded += 1
 
-                # Track playlist URL
+                # Track playlist URLs (prefer master.m3u8 if it exists)
                 if file_path.suffix == ".m3u8":
-                    playlist_url = (
+                    url = (
                         f"https://storage.googleapis.com/"
                         f"{settings.GCS_BUCKET_NAME}/{blob_name}"
                     )
+                    if file_path.name == "master.m3u8":
+                        master_playlist_url = url
+                    elif file_path.name == "playlist.m3u8":
+                        playlist_url = url
 
                 # Update progress
                 if on_progress and total_files > 0:
                     progress = 50 + (uploaded / total_files) * 45
                     await on_progress(
-                        f"Uploaded {uploaded}/{total_files} segments", progress
+                        f"Uploaded {uploaded}/{total_files} files", progress
                     )
 
-        if not playlist_url:
+        # Return master playlist if it exists (has embedded subtitles), otherwise regular playlist
+        final_url = master_playlist_url or playlist_url
+
+        if not final_url:
             raise ValueError("No M3U8 playlist found in HLS output")
 
-        return playlist_url
+        return final_url
 
     def _get_hls_content_type(self, filename: str) -> str:
         """Get content type for HLS files."""
@@ -192,6 +230,7 @@ class HLSConversionService:
         content_types = {
             ".m3u8": "application/vnd.apple.mpegurl",
             ".ts": "video/MP2T",
+            ".vtt": "text/vtt",
         }
         return content_types.get(ext, "application/octet-stream")
 

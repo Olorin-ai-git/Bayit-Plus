@@ -47,13 +47,14 @@ async def main():
     # Convert to HLS
     print("Converting to HLS (this will take a while)...")
 
-    def on_progress(msg: str, progress: float):
+    async def on_progress(msg: str, progress: float):
         print(f"  {msg} ({progress:.0f}%)")
 
     hls_url = await hls_service.convert_and_upload(
         source_path=content.stream_url,
         content_title=content.title,
         content_type="movies",
+        content_id=str(content.id),  # Pass content_id for embedded subtitles
         on_progress=on_progress
     )
 

@@ -76,6 +76,10 @@ try:
         # Synced Streams - Live stream synchronization
         "synced_streams_create": _dev_limit("30/minute"),  # Synced stream creation
         "synced_streams_latency": _dev_limit("60/minute"),  # Latency updates during streaming
+        # Family Controls - PIN verification protection
+        "family_pin_verify": _dev_limit("5/minute"),  # PIN verification (brute force protection)
+        "family_pin_setup": _dev_limit("3/hour"),  # PIN setup/update
+        "family_controls_update": _dev_limit("30/minute"),  # Settings updates
     }
 
     RATE_LIMITING_ENABLED = True

@@ -17,18 +17,28 @@ interface UseCastSessionOptions {
   videoRef: React.RefObject<HTMLVideoElement>
   metadata?: CastMetadata
   enabled?: boolean
+  // HLS-specific options for AirPlay compatibility
+  isHLS?: boolean
+  originalStreamUrl?: string
+  destroyHLS?: () => void
 }
 
 export function useCastSession({
   videoRef,
   metadata,
   enabled = true,
+  isHLS = false,
+  originalStreamUrl,
+  destroyHLS,
 }: UseCastSessionOptions): CastSession {
   // Initialize AirPlay (Safari/WebKit)
   const airplay = useAirPlayWeb({
     videoRef,
     enabled: enabled && castConfig.featureEnabled && castConfig.enableAirPlay,
     metadata,
+    isHLS,
+    originalStreamUrl,
+    destroyHLS,
   })
 
   // Initialize Chromecast (Chrome/Edge)
@@ -39,27 +49,25 @@ export function useCastSession({
     metadata,
   })
 
-  // Debug logging for cast availability
+  // Cast availability logging (always on)
   useEffect(() => {
-    if (DEBUG_CAST) {
-      log.info('Cast session state', {
-        enabled,
-        featureEnabled: castConfig.featureEnabled,
-        enableAirPlay: castConfig.enableAirPlay,
-        enableChromecast: castConfig.enableChromecast,
-        receiverAppId: castConfig.receiverAppId,
-        airplayAvailable: airplay.isAvailable,
-        airplayConnected: airplay.isConnected,
-        chromecastAvailable: chromecast.isAvailable,
-        chromecastConnected: chromecast.isConnected,
-        chromecastConnecting: chromecast.isConnecting,
-        browser: {
-          isWebKit: /AppleWebKit/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent),
-          isChrome: /Chrome/.test(navigator.userAgent),
-          userAgent: navigator.userAgent.substring(0, 100),
-        },
-      })
-    }
+    log.info('Cast session state', {
+      enabled,
+      featureEnabled: castConfig.featureEnabled,
+      enableAirPlay: castConfig.enableAirPlay,
+      enableChromecast: castConfig.enableChromecast,
+      receiverAppId: castConfig.receiverAppId,
+      airplayAvailable: airplay.isAvailable,
+      airplayConnected: airplay.isConnected,
+      chromecastAvailable: chromecast.isAvailable,
+      chromecastConnected: chromecast.isConnected,
+      chromecastConnecting: chromecast.isConnecting,
+      browser: {
+        isWebKit: /AppleWebKit/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent),
+        isChrome: /Chrome/.test(navigator.userAgent),
+        userAgent: navigator.userAgent.substring(0, 100),
+      },
+    })
   }, [
     enabled,
     airplay.isAvailable,

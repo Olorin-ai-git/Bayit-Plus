@@ -87,10 +87,10 @@ export function useNativeTextTracks({
     const video = videoRef.current
     if (!video || !backendHost) return
 
-    // CRITICAL: Skip native text tracks for HLS content
+    // CRITICAL: Skip native text tracks for HLS content UNLESS casting
     // HLS streams with embedded subtitles (EXT-X-MEDIA) handle subtitles natively
-    // Adding <track> elements causes conflicts and playback failures
-    if (isHLS) {
+    // But when casting via AirPlay/Chromecast, we need explicit <track> elements
+    if (isHLS && !isCasting) {
       if (trackElementRef.current && trackElementRef.current.parentElement) {
         video.removeChild(trackElementRef.current)
         trackElementRef.current = null
@@ -196,8 +196,8 @@ export function useNativeTextTracks({
 
     if (!video || !effectiveLanguage || !backendHost) return
 
-    // Skip for HLS content (uses embedded subtitles)
-    if (isHLS) return
+    // Skip for HLS content UNLESS casting (then we need native tracks)
+    if (isHLS && !isCasting) return
 
     const textTracks = video.textTracks
     for (let i = 0; i < textTracks.length; i++) {

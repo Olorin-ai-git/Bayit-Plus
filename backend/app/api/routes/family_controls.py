@@ -10,6 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 
 from app.core.security import get_current_active_user
+from app.core.rate_limiter import limiter, RATE_LIMITS
 from app.models.family_controls import FamilyControls
 from app.models.user import User
 from app.services.family_controls_service import family_controls_service
@@ -88,6 +89,7 @@ async def get_family_controls(
 
 
 @router.post("/controls/setup")
+@limiter.limit(RATE_LIMITS["family_pin_setup"])
 async def setup_family_controls(
     request: FamilyControlsSetupRequest,
     current_user: User = Depends(get_current_active_user),
@@ -131,6 +133,7 @@ async def setup_family_controls(
 
 
 @router.patch("/controls")
+@limiter.limit(RATE_LIMITS["family_controls_update"])
 async def update_family_controls(
     request: FamilyControlsUpdateRequest,
     current_user: User = Depends(get_current_active_user),
@@ -177,6 +180,7 @@ async def update_family_controls(
 
 
 @router.post("/controls/verify-pin")
+@limiter.limit(RATE_LIMITS["family_pin_verify"])
 async def verify_family_pin(
     request: PINVerificationRequest,
     current_user: User = Depends(get_current_active_user),
@@ -217,6 +221,7 @@ async def verify_family_pin(
 
 
 @router.post("/controls/reset-pin")
+@limiter.limit(RATE_LIMITS["family_pin_setup"])
 async def reset_family_pin(
     request: PINUpdateRequest,
     current_user: User = Depends(get_current_active_user),

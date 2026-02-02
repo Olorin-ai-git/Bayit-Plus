@@ -60,12 +60,49 @@ export function useVideoEventListeners({
       }
     }
 
+    // Buffering events for diagnostics
+    const handleWaiting = () => {
+      logger.info('Video buffering (waiting)', 'useVideoEventListeners', {
+        currentTime: video.currentTime,
+        buffered: video.buffered.length > 0 ? video.buffered.end(video.buffered.length - 1) : 0,
+        readyState: video.readyState,
+        networkState: video.networkState,
+      })
+    }
+
+    const handleStalled = () => {
+      logger.warn('Video stalled', 'useVideoEventListeners', {
+        currentTime: video.currentTime,
+        readyState: video.readyState,
+        networkState: video.networkState,
+      })
+    }
+
+    const handleProgress = () => {
+      logger.debug('Video download progress', 'useVideoEventListeners', {
+        buffered: video.buffered.length > 0 ? video.buffered.end(video.buffered.length - 1) : 0,
+        duration: video.duration,
+        networkState: video.networkState,
+      })
+    }
+
+    const handlePlaying = () => {
+      logger.info('Video playing (buffering complete)', 'useVideoEventListeners', {
+        currentTime: video.currentTime,
+        readyState: video.readyState,
+      })
+    }
+
     video.addEventListener('timeupdate', handleTimeUpdate)
     video.addEventListener('play', handlePlay)
     video.addEventListener('pause', handlePause)
     video.addEventListener('ended', handleEnded)
     video.addEventListener('volumechange', handleVolumeChange)
     video.addEventListener('canplay', handleCanPlay)
+    video.addEventListener('waiting', handleWaiting)
+    video.addEventListener('stalled', handleStalled)
+    video.addEventListener('progress', handleProgress)
+    video.addEventListener('playing', handlePlaying)
 
     // Sync initial volume state when video element is ready
     if (onVolumeChange) {
@@ -79,6 +116,10 @@ export function useVideoEventListeners({
       video.removeEventListener('ended', handleEnded)
       video.removeEventListener('volumechange', handleVolumeChange)
       video.removeEventListener('canplay', handleCanPlay)
+      video.removeEventListener('waiting', handleWaiting)
+      video.removeEventListener('stalled', handleStalled)
+      video.removeEventListener('progress', handleProgress)
+      video.removeEventListener('playing', handlePlaying)
     }
   }, [videoRef, onTimeUpdate, onPlay, onPause, onEnded, onVolumeChange])
 }
