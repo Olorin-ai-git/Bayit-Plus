@@ -97,6 +97,7 @@ Platform-specific development documentation:
 - [tvOS Development Guide](guides/TVOS_DEVELOPMENT_GUIDE.md) - Apple TV development ⭐ **NEW**
 
 **Feature Guides:**
+- [HLS Subtitles for AirPlay](guides/HLS_SUBTITLES_AIRPLAY.md) - Apple TV/AirPlay subtitle compatibility implementation ⭐ **NEW**
 - [i18n Complete Guide](guides/I18N_COMPLETE_GUIDE.md) - 10-language internationalization ⭐ **NEW**
 - [Beta 500 User Manual](guides/BETA_500_USER_MANUAL.md) - AI features beta program ⭐ **NEW**
 - [Troubleshooting Guide](guides/TROUBLESHOOTING.md) - Common issues across all platforms ⭐ **NEW**
@@ -404,6 +405,14 @@ Bayit+ runs on 4 platforms with unified documentation:
 ---
 
 ## Recent Updates
+
+**2026-02-02: HLS Subtitles for Apple TV/AirPlay**
+- Comprehensive implementation guide for HLS-compatible subtitles
+- Browser playback (HLS.js) and Apple TV AirPlay casting support
+- Proper HLS subtitle playlist architecture (.m3u8 wrappers)
+- 10 languages with WebVTT format and absolute URLs
+- Google Cloud Storage deployment with CORS and caching headers
+- Testing procedures for both platforms
 
 **2026-02-02: MongoDB SSL Connection Fix**
 - Fixed MongoDB Atlas SSL connection errors on macOS with Python 3.13+

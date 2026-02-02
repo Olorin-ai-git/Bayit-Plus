@@ -16,6 +16,7 @@ from app.models.subtitles import (
     get_language_name,
 )
 from app.services.subtitle_service import fetch_subtitles
+from app.services.subtitle_sync_service import sync_content_subtitle_languages
 
 router = APIRouter(prefix="/subtitles", tags=["subtitles"])
 
@@ -135,6 +136,9 @@ async def import_subtitles(
     )
     await doc.insert()
 
+    # Sync available_subtitle_languages with actual tracks
+    await sync_content_subtitle_languages(content_id)
+
     return {
         "message": "Subtitle track imported",
         "id": str(doc.id),
@@ -158,6 +162,9 @@ async def delete_subtitle_track(
         raise HTTPException(status_code=404, detail="Subtitle track not found")
 
     await track.delete()
+
+    # Sync available_subtitle_languages with actual tracks
+    await sync_content_subtitle_languages(content_id)
 
     return {"message": "Subtitle track deleted"}
 
@@ -321,6 +328,10 @@ async def fetch_external_subtitles(
         except Exception as e:
             logger.error(f"Error fetching {lang} subtitles", extra={"error": str(e)})
             failed.append({"language": lang, "reason": str(e)})
+
+    # Sync available_subtitle_languages with actual tracks
+    if imported:
+        await sync_content_subtitle_languages(content_id)
 
     return {
         "message": f"Imported {len(imported)} subtitle tracks",

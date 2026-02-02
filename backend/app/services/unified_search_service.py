@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from pydantic import BaseModel, Field
 
 from app.core.config import settings
-from app.models.content import Content
+from app.models.content import Content, LiveChannel, RadioStation, Podcast
 from app.models.subtitles import SubtitleTrackDoc
 from app.services.search_cache import get_cache
 
@@ -168,38 +168,200 @@ class UnifiedSearchService:
         is_beta_user: Optional[bool] = None,
     ) -> List[Dict[str, Any]]:
         """
-        Execute text search with metadata filters.
+        Execute text search with metadata filters across multiple collections.
 
         Uses MongoDB $text operator with weighted fields and applies
         advanced filters for genre, year, rating, etc.
+
+        Queries appropriate collections based on content_types filter:
+        - 'vod' → Content collection
+        - 'live' → LiveChannel collection
+        - 'radio' → RadioStation collection
+        - 'podcast' → Podcast collection
         """
-        # Build MongoDB query
+        all_results = []
+
+        # Query each content type collection
+        for content_type in filters.content_types:
+            if content_type == "vod":
+                vod_results = await self._search_vod(
+                    query, filters, user_subscription_tier, is_beta_user
+                )
+                all_results.extend(vod_results)
+
+            elif content_type == "live":
+                live_results = await self._search_live_channels(
+                    query, is_beta_user
+                )
+                all_results.extend(live_results)
+
+            elif content_type == "radio":
+                radio_results = await self._search_radio_stations(
+                    query, is_beta_user
+                )
+                all_results.extend(radio_results)
+
+            elif content_type == "podcast":
+                podcast_results = await self._search_podcasts(
+                    query, is_beta_user
+                )
+                all_results.extend(podcast_results)
+
+        # If text search was performed, results already have scores
+        # Otherwise, sort by featured status and date
+        if not query.strip():
+            # Sort by featured first, then by date
+            all_results.sort(
+                key=lambda x: (
+                    -1 if x.get("is_featured", False) else 0,
+                    x.get("created_at", datetime.min)
+                ),
+                reverse=True
+            )
+
+        # Apply pagination
+        start_idx = (page - 1) * limit
+        end_idx = start_idx + limit
+        return all_results[start_idx:end_idx]
+
+    async def _search_vod(
+        self,
+        query: str,
+        filters: SearchFilters,
+        user_subscription_tier: Optional[str],
+        is_beta_user: Optional[bool],
+    ) -> List[Dict[str, Any]]:
+        """Search VOD content (movies, series, audiobooks) in Content collection."""
         mongo_query = self._build_mongo_query(
             query, filters, user_subscription_tier, is_beta_user
         )
 
-        # Execute query with text score sorting if query exists
         if query.strip():
             # Text search with scoring
             results = (
                 await Content.find(mongo_query)
                 .sort([("score", {"$meta": "textScore"})])
-                .skip((page - 1) * limit)
-                .limit(limit)
+                .limit(1000)  # Get many results for merging
                 .to_list()
             )
         else:
-            # Metadata-only search, sort by featured then date
+            # Metadata-only search
             results = (
                 await Content.find(mongo_query)
                 .sort([("is_featured", -1), ("created_at", -1)])
-                .skip((page - 1) * limit)
-                .limit(limit)
+                .limit(1000)
                 .to_list()
             )
 
-        # Convert to dict format
         return [self._content_to_dict(content) for content in results]
+
+    async def _search_live_channels(
+        self,
+        query: str,
+        is_beta_user: Optional[bool],
+    ) -> List[Dict[str, Any]]:
+        """Search live TV channels in LiveChannel collection."""
+        conditions = [{"is_active": True}]
+
+        # Text search if query exists
+        if query.strip():
+            conditions.append(
+                {
+                    "$or": [
+                        {"name": {"$regex": query, "$options": "i"}},
+                        {"name_en": {"$regex": query, "$options": "i"}},
+                        {"name_es": {"$regex": query, "$options": "i"}},
+                        {"description": {"$regex": query, "$options": "i"}},
+                        {"category": {"$regex": query, "$options": "i"}},
+                    ]
+                }
+            )
+
+        # Beta content filter
+        if is_beta_user is True:
+            conditions.append({"is_beta_content": True})
+        elif is_beta_user is False:
+            conditions.append({"is_beta_content": False})
+
+        mongo_query = {"$and": conditions} if len(conditions) > 1 else conditions[0]
+
+        results = await LiveChannel.find(mongo_query).sort([("order", 1)]).limit(1000).to_list()
+
+        return [self._live_channel_to_dict(channel) for channel in results]
+
+    async def _search_radio_stations(
+        self,
+        query: str,
+        is_beta_user: Optional[bool],
+    ) -> List[Dict[str, Any]]:
+        """Search radio stations in RadioStation collection."""
+        conditions = [{"is_active": True}]
+
+        # Text search if query exists
+        if query.strip():
+            conditions.append(
+                {
+                    "$or": [
+                        {"name": {"$regex": query, "$options": "i"}},
+                        {"name_en": {"$regex": query, "$options": "i"}},
+                        {"name_es": {"$regex": query, "$options": "i"}},
+                        {"description": {"$regex": query, "$options": "i"}},
+                        {"genre": {"$regex": query, "$options": "i"}},
+                    ]
+                }
+            )
+
+        # Beta content filter
+        if is_beta_user is True:
+            conditions.append({"is_beta_content": True})
+        elif is_beta_user is False:
+            conditions.append({"is_beta_content": False})
+
+        mongo_query = {"$and": conditions} if len(conditions) > 1 else conditions[0]
+
+        results = await RadioStation.find(mongo_query).sort([("order", 1)]).limit(1000).to_list()
+
+        return [self._radio_station_to_dict(station) for station in results]
+
+    async def _search_podcasts(
+        self,
+        query: str,
+        is_beta_user: Optional[bool],
+    ) -> List[Dict[str, Any]]:
+        """Search podcasts in Podcast collection."""
+        conditions = [{"is_active": True}]
+
+        # Text search if query exists
+        if query.strip():
+            conditions.append(
+                {
+                    "$or": [
+                        {"title": {"$regex": query, "$options": "i"}},
+                        {"title_en": {"$regex": query, "$options": "i"}},
+                        {"title_es": {"$regex": query, "$options": "i"}},
+                        {"description": {"$regex": query, "$options": "i"}},
+                        {"author": {"$regex": query, "$options": "i"}},
+                        {"category": {"$regex": query, "$options": "i"}},
+                    ]
+                }
+            )
+
+        # Beta content filter
+        if is_beta_user is True:
+            conditions.append({"is_beta_content": True})
+        elif is_beta_user is False:
+            conditions.append({"is_beta_content": False})
+
+        mongo_query = {"$and": conditions} if len(conditions) > 1 else conditions[0]
+
+        results = (
+            await Podcast.find(mongo_query)
+            .sort([("is_featured", -1), ("latest_episode_date", -1)])
+            .limit(1000)
+            .to_list()
+        )
+
+        return [self._podcast_to_dict(podcast) for podcast in results]
 
     async def _search_subtitles(
         self, query: str, filters: SearchFilters
@@ -520,6 +682,106 @@ class UnifiedSearchService:
             "view_count": content.view_count,
             "avg_rating": content.avg_rating,
             "is_featured": content.is_featured,
+            "created_at": content.created_at,
+        }
+
+    def _live_channel_to_dict(self, channel: LiveChannel) -> Dict[str, Any]:
+        """Convert LiveChannel document to dictionary for API response."""
+        return {
+            "id": str(channel.id),
+            "title": channel.name,
+            "title_en": channel.name_en,
+            "title_es": channel.name_es,
+            "description": channel.description,
+            "thumbnail": channel.thumbnail or channel.logo,
+            "backdrop": None,
+            "category_id": channel.category,
+            "category_name": channel.category,
+            "duration": None,
+            "year": None,
+            "rating": None,
+            "genres": [channel.category] if channel.category else [],
+            "cast": None,
+            "director": None,
+            "author": None,
+            "narrator": None,
+            "content_type": "live",
+            "is_series": False,
+            "requires_subscription": channel.requires_subscription,
+            "is_kids_content": channel.category == "kids" if channel.category else False,
+            "age_rating": None,
+            "available_subtitle_languages": [],
+            "has_subtitles": channel.supports_live_subtitles,
+            "view_count": 0,
+            "avg_rating": 0,
+            "is_featured": False,
+            "created_at": channel.created_at,
+        }
+
+    def _radio_station_to_dict(self, station: RadioStation) -> Dict[str, Any]:
+        """Convert RadioStation document to dictionary for API response."""
+        return {
+            "id": str(station.id),
+            "title": station.name,
+            "title_en": station.name_en,
+            "title_es": station.name_es,
+            "description": station.description,
+            "thumbnail": station.logo,
+            "backdrop": None,
+            "category_id": station.genre,
+            "category_name": station.genre,
+            "duration": None,
+            "year": None,
+            "rating": None,
+            "genres": [station.genre] if station.genre else [],
+            "cast": None,
+            "director": None,
+            "author": None,
+            "narrator": None,
+            "content_type": "radio",
+            "is_series": False,
+            "requires_subscription": "basic",
+            "is_kids_content": False,
+            "age_rating": None,
+            "available_subtitle_languages": [],
+            "has_subtitles": False,
+            "view_count": 0,
+            "avg_rating": 0,
+            "is_featured": False,
+            "created_at": station.created_at,
+        }
+
+    def _podcast_to_dict(self, podcast: Podcast) -> Dict[str, Any]:
+        """Convert Podcast document to dictionary for API response."""
+        return {
+            "id": str(podcast.id),
+            "title": podcast.title,
+            "title_en": podcast.title_en,
+            "title_es": podcast.title_es,
+            "description": podcast.description,
+            "thumbnail": podcast.cover,
+            "backdrop": None,
+            "category_id": podcast.category,
+            "category_name": podcast.category,
+            "duration": None,
+            "year": None,
+            "rating": None,
+            "genres": [podcast.category] if podcast.category else [],
+            "cast": None,
+            "director": None,
+            "author": podcast.author,
+            "narrator": None,
+            "content_type": "podcast",
+            "is_series": False,
+            "requires_subscription": "basic",
+            "is_kids_content": False,
+            "age_rating": None,
+            "available_subtitle_languages": [],
+            "has_subtitles": False,
+            "view_count": 0,
+            "avg_rating": 0,
+            "is_featured": podcast.is_featured,
+            "created_at": podcast.created_at,
         }
 
     def _highlight_text(self, text: str, query: str) -> str:

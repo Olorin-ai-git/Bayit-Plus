@@ -141,13 +141,27 @@ export default function VODPage() {
         contentService.getAllSeries({ page: seriesPage, limit: itemsPerPage, category_id: categoryParam, search: searchParam }),
       ]);
 
-      setCategories(categoriesData.categories || []);
+      // Filter categories to only include VOD-relevant sections
+      // Exclude: audiobooks, podcasts, radio, live
+      const vodCategories = (categoriesData.categories || []).filter((cat: Category) => {
+        const slug = cat.id.toLowerCase();
+        const name = (cat.name || '').toLowerCase();
+
+        // Exclude non-VOD content types
+        const nonVodSlugs = ['audiobooks', 'podcasts', 'radio', 'live', 'live-tv'];
+        const nonVodNames = ['audiobooks', 'ספרי אודיו', 'podcasts', 'פודקאסטים', 'radio', 'רדיו', 'live', 'שידור חי'];
+
+        return !nonVodSlugs.some(s => slug.includes(s)) &&
+               !nonVodNames.some(n => name.includes(n));
+      });
+
+      setCategories(vodCategories);
       setMovies(moviesData.items || []);
       setSeries(seriesData.items || []);
       setTotalMovies(moviesData.total || 0);
       setTotalSeries(seriesData.total || 0);
 
-      logger.info(`VODPage: Loaded ${moviesData.items?.length || 0} movies and ${seriesData.items?.length || 0} series`, 'VODPage');
+      logger.info(`VODPage: Loaded ${moviesData.items?.length || 0} movies and ${seriesData.items?.length || 0} series with ${vodCategories.length} categories`, 'VODPage');
     } catch (error) {
       logger.error('Failed to load content', 'VODPage', error);
     } finally {

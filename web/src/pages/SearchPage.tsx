@@ -40,7 +40,7 @@ interface SearchResult {
   description?: string;
 }
 
-type ContentTypeFilter = 'all' | 'movies' | 'series' | 'live' | 'radio' | 'podcasts';
+type ContentTypeFilter = 'all' | 'vod' | 'live' | 'radio' | 'podcasts';
 
 const TRENDING_SEARCHES = [
   'Fauda',
@@ -104,17 +104,18 @@ export default function SearchPage() {
     try {
       // Build filters based on content type
       const filters: any = {};
-      if (contentType !== 'all') {
-        if (contentType === 'movies' || contentType === 'series') {
-          filters.content_types = ['vod'];
-          filters.is_series = contentType === 'series';
-        } else if (contentType === 'live') {
-          filters.content_types = ['live'];
-        } else if (contentType === 'radio') {
-          filters.content_types = ['radio'];
-        } else if (contentType === 'podcasts') {
-          filters.content_types = ['podcast'];
-        }
+      if (contentType === 'all') {
+        // Include all content types when "All" is selected
+        filters.content_types = ['vod', 'live', 'radio', 'podcast'];
+      } else if (contentType === 'vod') {
+        filters.content_types = ['vod'];
+        // Don't filter by is_series - include both movies and series
+      } else if (contentType === 'live') {
+        filters.content_types = ['live'];
+      } else if (contentType === 'radio') {
+        filters.content_types = ['radio'];
+      } else if (contentType === 'podcasts') {
+        filters.content_types = ['podcast'];
       }
 
       // Call appropriate search API based on semantic mode
@@ -160,7 +161,7 @@ export default function SearchPage() {
     }
   }, [contentType, semanticMode, isPremium]);
 
-  // Debounced search - triggers on query or semantic mode change
+  // Debounced search - triggers on query, semantic mode, or content type change
   useEffect(() => {
     if (isInitialLoad) return;
 
@@ -178,7 +179,7 @@ export default function SearchPage() {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [query, semanticMode, performSearch, isInitialLoad]);
+  }, [query, semanticMode, contentType, performSearch, isInitialLoad]);
 
   // Handle search selection (trending/recent)
   const handleSearchSelect = (searchQuery: string) => {
@@ -299,8 +300,8 @@ export default function SearchPage() {
           />
           <GlassCategoryPill
             label={t('search.filters.vod', 'Movies & Series')}
-            isActive={contentType === 'movies' || contentType === 'series'}
-            onPress={() => setContentType('movies')}
+            isActive={contentType === 'vod'}
+            onPress={() => setContentType('vod')}
           />
           <GlassCategoryPill
             label={t('search.filters.live', 'Channels')}

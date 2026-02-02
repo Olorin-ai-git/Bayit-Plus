@@ -40,7 +40,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_content_vod_write, admin_cultures,
                                 admin_kids_content, admin_live_channels,
                                 admin_podcast_episodes, admin_podcasts,
-                                admin_radio_stations, admin_taxonomy,
+                                admin_radio_stations, admin_subtitle_sync, admin_taxonomy,
                                 admin_uploads, admin_widgets,
                                 admin_youngsters_content, audiobooks, audible_integration,
                                 auth, avatar_dialogue, chapters, chat,
@@ -345,6 +345,9 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         admin_taxonomy.router, prefix=f"{prefix}/admin", tags=["admin-taxonomy"]
+    )
+    app.include_router(
+        admin_subtitle_sync.router, prefix=prefix, tags=["admin-subtitles"]
     )
     logger.debug("Registered admin routes")
 
