@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   BackHandler,
   Platform,
+  Share,
 } from 'react-native';
 
 // TVEventHandler only exists on TV platforms
@@ -58,7 +59,7 @@ export const PlayerScreen: React.FC = () => {
   const { t } = useTranslation();
   const navigation = useNavigation();
   const route = useRoute<any>();
-  const { id, title, type } = route.params;
+  const { id, title, type, t: timestamp } = route.params;
 
   const user = useAuthStore((s) => s.user);
   const token = useAuthStore((s) => s.token);
@@ -87,6 +88,10 @@ export const PlayerScreen: React.FC = () => {
   const [showControls, setShowControls] = useState(true);
   const [progress, setProgress] = useState({ currentTime: 0, duration: 0 });
   const controlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Deep link timestamp handling
+  const initialTimestamp = useRef<number | undefined>(timestamp);
+  const hasSeenToTimestamp = useRef(false);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
@@ -222,6 +227,17 @@ export const PlayerScreen: React.FC = () => {
       duration: data.seekableDuration,
     });
 
+    // Deep link timestamp: Seek to timestamp when video is ready
+    if (
+      initialTimestamp.current !== undefined &&
+      !hasSeenToTimestamp.current &&
+      data.seekableDuration > 0 &&
+      initialTimestamp.current <= data.seekableDuration
+    ) {
+      hasSeenToTimestamp.current = true;
+      seekTo(initialTimestamp.current);
+    }
+
     // Save progress for continue watching (silently ignore errors)
     if (type !== 'live' && data.seekableDuration > 0) {
       historyService.updateProgress(id, type, data.currentTime, data.seekableDuration).catch(() => {});
@@ -292,7 +308,7 @@ export const PlayerScreen: React.FC = () => {
     setShowPartyOverlay(false);
   };
 
-  const handleChapterSeek = (time: number) => {
+  const seekTo = (time: number) => {
     if (Platform.OS === 'web') {
       const video = videoRef.current as HTMLVideoElement | null;
       if (video) {
@@ -301,7 +317,32 @@ export const PlayerScreen: React.FC = () => {
     } else if (videoRef.current && 'seek' in videoRef.current) {
       videoRef.current.seek(time);
     }
+  };
+
+  const handleChapterSeek = (time: number) => {
+    seekTo(time);
     showControlsTemporarily();
+  };
+
+  const handleShare = async () => {
+    try {
+      const currentTimestamp = Math.floor(progress.currentTime);
+      const shareUrl = `bayitplus://player/${id}/${type}?t=${currentTimestamp}`;
+      const message = t('player.shareMessage', {
+        defaultValue: 'Watch {{title}} at {{time}}',
+        title,
+        time: formatTime(currentTimestamp),
+      });
+
+      await Share.share({
+        message: `${message}\n${shareUrl}`,
+        url: shareUrl, // iOS only
+        title: t('player.shareTitle', { defaultValue: 'Share {{title}}', title }),
+      });
+      showControlsTemporarily();
+    } catch (error) {
+      console.error('Failed to share:', error);
+    }
   };
 
   const handleQualityChange = (quality: QualityLevel) => {
@@ -432,6 +473,15 @@ export const PlayerScreen: React.FC = () => {
             </TouchableOpacity>
             <Text className="text-white text-2xl font-bold ml-5">{title}</Text>
             <View className="flex-row items-center ml-auto gap-3">
+              {/* Share Button (VOD only - with timestamp) */}
+              {type !== 'live' && (
+                <TouchableOpacity
+                  className="w-11 h-11 rounded-full bg-white/10 justify-center items-center"
+                  onPress={handleShare}
+                >
+                  <Text className="text-[22px]">&#x1F517;</Text>
+                </TouchableOpacity>
+              )}
               {/* Settings Button */}
               <TouchableOpacity
                 className="w-11 h-11 rounded-full bg-white/10 justify-center items-center"

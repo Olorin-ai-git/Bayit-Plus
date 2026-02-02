@@ -4,7 +4,7 @@ ElevenLabs TTS/STT/SFX integration with configurable services.
 """
 
 from bayit_voice.config import SimpleVoiceConfig, VoiceConfig
-from bayit_voice.sfx import ElevenLabsSFXService
+from bayit_voice.sfx import ElevenLabsSFXService, WIZARD_SFX_DESCRIPTIONS
 from bayit_voice.stt import ElevenLabsRealtimeService
 from bayit_voice.tts import ElevenLabsTTSStreamingService
 
@@ -16,4 +16,5 @@ __all__ = [
     "ElevenLabsTTSStreamingService",
     "ElevenLabsRealtimeService",
     "ElevenLabsSFXService",
+    "WIZARD_SFX_DESCRIPTIONS",
 ]

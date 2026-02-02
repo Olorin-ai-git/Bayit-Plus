@@ -4,8 +4,14 @@
  */
 
 // ============ HEBREW MODE ============
-
-export type HebrewMode = 'regular' | 'nikud' | 'shoresh'
+// AI-powered subtitle display modes for Hebrew content
+export type HebrewMode =
+  | 'regular'        // Standard subtitles (free)
+  | 'nikud'          // With vowel markers (premium)
+  | 'shoresh'        // With root words highlighted (premium)
+  | 'heblish'        // Hebrew-English transliteration (premium)
+  | 'grammar_flip'   // Alternative grammar structure (premium)
+  | 'slang'          // Modern Israeli slang explained (premium)
 
 // ============ SUBTITLE CUE ============
 
@@ -14,8 +20,11 @@ export interface SubtitleCue {
   start_time: number  // seconds
   end_time: number    // seconds
   text: string
-  text_nikud?: string  // Hebrew with vocalization marks
-  text_shoresh?: string  // Hebrew with root words: "word [root]"
+  text_nikud?: string        // Hebrew with vocalization marks
+  text_shoresh?: string      // Hebrew with root words: "word [root]"
+  text_heblish?: string      // Hebrew-English transliteration
+  text_grammar_flip?: string // Alternative grammar structure
+  text_slang?: string        // Modern slang with explanations
   settings?: string   // VTT settings (position, align, etc.)
 }
 
@@ -29,8 +38,11 @@ export interface SubtitleTrack {
   language_name: string  // Human-readable name (e.g., "English", "עברית")
   format: 'vtt' | 'srt'
   cues: SubtitleCue[]
-  has_nikud_version: boolean  // Hebrew vocalization available
-  has_shoresh_version: boolean  // Hebrew root words available
+  has_nikud_version: boolean          // Hebrew vocalization available
+  has_shoresh_version: boolean        // Hebrew root words available
+  has_heblish_version?: boolean       // Transliteration available
+  has_grammar_flip_version?: boolean  // Grammar flip available
+  has_slang_version?: boolean         // Slang explanations available
   is_default: boolean
   is_auto_generated: boolean
   created_at: string
@@ -60,8 +72,11 @@ export interface SubtitlePreferences {
 
 export interface LiveSubtitleCue {
   text: string
-  text_nikud?: string  // Hebrew with vocalization marks
-  text_shoresh?: string  // Hebrew with root words
+  text_nikud?: string        // Hebrew with vocalization marks
+  text_shoresh?: string      // Hebrew with root words
+  text_heblish?: string      // Hebrew-English transliteration
+  text_grammar_flip?: string // Alternative grammar structure
+  text_slang?: string        // Modern slang with explanations
   original_text: string
   timestamp: number
   source_lang: string
@@ -113,4 +128,35 @@ export const SUBTITLE_LANGUAGES: SubtitleLanguage[] = [
 // Get language info by code
 export function getLanguageInfo(code: string): SubtitleLanguage | undefined {
   return SUBTITLE_LANGUAGES.find(lang => lang.code === code)
+}
+
+// Check if Hebrew mode requires premium subscription
+export function isHebrewModePremium(mode: HebrewMode): boolean {
+  return mode !== 'regular'; // All modes except 'regular' are premium features
+}
+
+// Get display name for Hebrew mode
+export function getHebrewModeDisplayName(mode: HebrewMode): string {
+  const names: Record<HebrewMode, string> = {
+    regular: 'Standard',
+    nikud: 'Nikud',
+    shoresh: 'Shoresh',
+    heblish: 'Heblish',
+    grammar_flip: 'Grammar Flip',
+    slang: 'Slang',
+  };
+  return names[mode] || mode;
+}
+
+// Get description for Hebrew mode
+export function getHebrewModeDescription(mode: HebrewMode): string {
+  const descriptions: Record<HebrewMode, string> = {
+    regular: 'Standard Hebrew subtitles',
+    nikud: 'Hebrew with vowel markers (נִקּוּד)',
+    shoresh: 'Root words highlighted',
+    heblish: 'Hebrew-English transliteration',
+    grammar_flip: 'Alternative grammar structure',
+    slang: 'Modern Israeli slang explained',
+  };
+  return descriptions[mode] || '';
 }

@@ -7,6 +7,7 @@ import warnings
 from typing import Optional
 
 from bayit_voice import ElevenLabsSFXService as _ExtractedService
+from bayit_voice import WIZARD_SFX_DESCRIPTIONS
 
 from app.core.config import settings
 

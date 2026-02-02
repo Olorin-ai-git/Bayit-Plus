@@ -14,6 +14,12 @@ import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { isTV, isWeb } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
+import {
+  HebrewMode,
+  isHebrewModePremium,
+  getHebrewModeDisplayName,
+  getHebrewModeDescription,
+} from '../../types/subtitle';
 
 export type SubtitleFontSize = 'small' | 'medium' | 'large' | 'extra-large';
 export type SubtitleColor = 'white' | 'yellow' | 'cyan' | 'green';
@@ -25,6 +31,7 @@ export interface SubtitlePreferences {
   backgroundOpacity: number;
   textColor: SubtitleColor;
   position: SubtitlePosition;
+  hebrewMode?: HebrewMode; // AI subtitle mode for Hebrew content
 }
 
 export interface SubtitleSettingsProps {
@@ -32,6 +39,8 @@ export interface SubtitleSettingsProps {
   onClose: () => void;
   currentPreferences: SubtitlePreferences;
   onPreferencesChange: (preferences: SubtitlePreferences) => void;
+  isPremium?: boolean; // Whether user has premium subscription
+  contentLanguage?: string; // Language of current content (e.g., 'he' for Hebrew)
 }
 
 const FONT_SIZE_OPTIONS: { value: SubtitleFontSize; label: string; px: number }[] = [
@@ -52,6 +61,15 @@ const POSITION_OPTIONS: { value: SubtitlePosition; label: string; description: s
   { value: 'bottom', label: 'Bottom', description: 'Bottom of screen' },
   { value: 'top', label: 'Top', description: 'Top of screen' },
   { value: 'custom', label: 'Custom', description: 'Custom position' },
+];
+
+const AI_MODE_OPTIONS: Array<{ value: HebrewMode; isPremium: boolean }> = [
+  { value: 'regular', isPremium: false },
+  { value: 'nikud', isPremium: true },
+  { value: 'shoresh', isPremium: true },
+  { value: 'heblish', isPremium: true },
+  { value: 'grammar_flip', isPremium: true },
+  { value: 'slang', isPremium: true },
 ];
 
 const STORAGE_KEY = 'bayit_subtitle_preferences';
@@ -159,6 +177,76 @@ const ColorOption: React.FC<{
   );
 };
 
+const AIModeOption: React.FC<{
+  mode: HebrewMode;
+  isSelected: boolean;
+  isPremium: boolean;
+  userIsPremium: boolean;
+  onPress: () => void;
+}> = ({ mode, isSelected, isPremium, userIsPremium, onPress }) => {
+  const { textAlign } = useDirection();
+  const [isFocused, setIsFocused] = useState(false);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const isLocked = isPremium && !userIsPremium;
+
+  const handleFocus = () => {
+    setIsFocused(true);
+    Animated.spring(scaleAnim, {
+      toValue: 1.03,
+      friction: 5,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleBlur = () => {
+    setIsFocused(false);
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      friction: 5,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  return (
+    <TouchableOpacity
+      onPress={isLocked ? undefined : onPress}
+      onFocus={handleFocus}
+      onBlur={handleBlur}
+      activeOpacity={isLocked ? 1 : 0.7}
+      style={styles.aiModeOptionTouchable}
+      disabled={isLocked}
+    >
+      <Animated.View
+        style={[
+          styles.aiModeOption,
+          { transform: [{ scale: scaleAnim }] },
+          isSelected && styles.optionSelected,
+          isFocused && styles.optionFocused,
+          isLocked && styles.optionLocked,
+        ]}
+      >
+        <View style={{ flexDirection: 'column', gap: 4 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, justifyContent: 'space-between' }}>
+            <Text style={[styles.aiModeLabel, { textAlign }, isLocked && styles.aiModeLabelLocked]}>
+              {getHebrewModeDisplayName(mode)}
+            </Text>
+            {isLocked && <NativeIcon name="lock" size={isTV ? 16 : 12} color="rgba(255,255,255,0.4)" />}
+            {isSelected && !isLocked && <NativeIcon name="check" size={isTV ? 18 : 14} color={colors.success.DEFAULT} />}
+          </View>
+          <Text style={[styles.aiModeDescription, isLocked && styles.aiModeDescriptionLocked]}>
+            {getHebrewModeDescription(mode)}
+          </Text>
+          {isPremium && !isLocked && (
+            <View style={styles.premiumBadge}>
+              <Text style={styles.premiumBadgeText}>PREMIUM</Text>
+            </View>
+          )}
+        </View>
+      </Animated.View>
+    </TouchableOpacity>
+  );
+};
+
 const OpacitySlider: React.FC<{
   value: number;
   onChange: (value: number) => void;
@@ -193,6 +281,8 @@ export const SubtitleSettings: React.FC<SubtitleSettingsProps> = ({
   onClose,
   currentPreferences,
   onPreferencesChange,
+  isPremium = false,
+  contentLanguage = 'he',
 }) => {
   const { t } = useTranslation();
   const { textAlign } = useDirection();
@@ -201,6 +291,10 @@ export const SubtitleSettings: React.FC<SubtitleSettingsProps> = ({
   const [opacity, setOpacity] = useState(currentPreferences.backgroundOpacity);
   const [textColor, setTextColor] = useState<SubtitleColor>(currentPreferences.textColor);
   const [position, setPosition] = useState<SubtitlePosition>(currentPreferences.position);
+  const [hebrewMode, setHebrewMode] = useState<HebrewMode>(currentPreferences.hebrewMode || 'regular');
+
+  // Check if AI modes should be shown (only for Hebrew content)
+  const showAIModes = contentLanguage === 'he' || contentLanguage === 'iw';
 
   const handleSave = async () => {
     const preferences: SubtitlePreferences = {
@@ -209,6 +303,7 @@ export const SubtitleSettings: React.FC<SubtitleSettingsProps> = ({
       backgroundOpacity: opacity,
       textColor,
       position,
+      hebrewMode,
     };
 
     // Save to storage
@@ -224,6 +319,24 @@ export const SubtitleSettings: React.FC<SubtitleSettingsProps> = ({
 
   const selectedColorHex = COLOR_OPTIONS.find((c) => c.value === textColor)?.hex || '#FFFFFF';
   const selectedFontPx = FONT_SIZE_OPTIONS.find((f) => f.value === fontSize)?.px || 18;
+
+  // Sample text based on Hebrew mode
+  const getSampleText = (): string => {
+    if (!showAIModes) {
+      return t('player.sampleSubtitle', 'Sample subtitle text');
+    }
+
+    const hebrewSamples: Record<HebrewMode, string> = {
+      regular: 'שלום עולם',
+      nikud: 'שָׁלוֹם עוֹלָם',
+      shoresh: 'שלום [שלם] עולם [עלם]',
+      heblish: 'Shalom Olam',
+      grammar_flip: 'עולם שלום',
+      slang: 'שלום עולם (סלנג: מה קורה)',
+    };
+
+    return hebrewSamples[hebrewMode] || hebrewSamples.regular;
+  };
 
   return (
     <Modal
@@ -311,6 +424,36 @@ export const SubtitleSettings: React.FC<SubtitleSettingsProps> = ({
               </View>
             </View>
 
+            {/* AI Subtitle Modes Section (Hebrew content only) */}
+            {showAIModes && (
+              <View style={styles.section}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: spacing.sm }}>
+                  <Text style={[styles.sectionTitle, { textAlign }]}>
+                    {t('player.aiSubtitleModes', 'AI Subtitle Modes')}
+                  </Text>
+                  <View style={styles.aiModeBadge}>
+                    <NativeIcon name="sparkles" size={isTV ? 14 : 12} color="#a855f7" />
+                    <Text style={styles.aiModeBadgeText}>AI</Text>
+                  </View>
+                </View>
+                <Text style={[styles.sectionDescription, { textAlign }]}>
+                  {t('player.aiModesDescription', 'Enhanced Hebrew subtitle display modes powered by AI')}
+                </Text>
+                <View style={styles.aiModesContainer}>
+                  {AI_MODE_OPTIONS.map((option) => (
+                    <AIModeOption
+                      key={option.value}
+                      mode={option.value}
+                      isSelected={hebrewMode === option.value}
+                      isPremium={option.isPremium}
+                      userIsPremium={isPremium}
+                      onPress={() => setHebrewMode(option.value)}
+                    />
+                  ))}
+                </View>
+              </View>
+            )}
+
             {/* Live Preview */}
             <View style={styles.previewSection}>
               <Text style={[styles.sectionTitle, { textAlign }]}>
@@ -335,8 +478,13 @@ export const SubtitleSettings: React.FC<SubtitleSettingsProps> = ({
                       },
                     ]}
                   >
-                    {t('player.sampleSubtitle', 'Sample subtitle text')}
+                    {getSampleText()}
                   </Text>
+                  {showAIModes && (
+                    <Text style={styles.previewModeLabel}>
+                      {getHebrewModeDisplayName(hebrewMode)}
+                    </Text>
+                  )}
                 </View>
               </View>
             </View>
@@ -380,6 +528,7 @@ export const useSubtitlePreferences = (): SubtitlePreferences => {
     backgroundOpacity: 80,
     textColor: 'white',
     position: 'bottom',
+    hebrewMode: 'regular',
   });
 
   useEffect(() => {
@@ -585,6 +734,85 @@ const styles = StyleSheet.create({
     fontSize: isTV ? 16 : 14,
     fontWeight: '600',
     color: '#fff',
+  },
+  // AI Modes styles
+  sectionDescription: {
+    fontSize: isTV ? 14 : 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginBottom: spacing.sm,
+  },
+  aiModeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    paddingHorizontal: spacing.xs,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  aiModeBadgeText: {
+    fontSize: isTV ? 12 : 10,
+    fontWeight: '700',
+    color: '#a855f7',
+    letterSpacing: 0.5,
+  },
+  aiModesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.sm,
+  },
+  aiModeOptionTouchable: {
+    width: isTV ? '31%' : '48%',
+    marginBottom: spacing.sm,
+  },
+  aiModeOption: {
+    padding: isTV ? spacing.md : spacing.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    minHeight: isTV ? 100 : 80,
+  },
+  optionLocked: {
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+    opacity: 0.6,
+  },
+  aiModeLabel: {
+    fontSize: isTV ? 16 : 14,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  aiModeLabelLocked: {
+    color: 'rgba(255, 255, 255, 0.4)',
+  },
+  aiModeDescription: {
+    fontSize: isTV ? 13 : 11,
+    color: 'rgba(255, 255, 255, 0.6)',
+    marginTop: spacing.xs,
+  },
+  aiModeDescriptionLocked: {
+    color: 'rgba(255, 255, 255, 0.3)',
+  },
+  premiumBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(251, 191, 36, 0.2)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginTop: spacing.xs,
+  },
+  premiumBadgeText: {
+    fontSize: isTV ? 10 : 8,
+    fontWeight: '700',
+    color: '#fbbf24',
+    letterSpacing: 0.5,
+  },
+  previewModeLabel: {
+    fontSize: isTV ? 12 : 10,
+    color: 'rgba(168, 85, 247, 0.8)',
+    textAlign: 'center',
+    marginTop: spacing.xs,
+    fontWeight: '600',
   },
 });
 

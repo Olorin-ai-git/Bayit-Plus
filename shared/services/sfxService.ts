@@ -102,9 +102,10 @@ class SFXService extends EventEmitter {
   /**
    * Play a wizard gesture sound effect
    * Will fetch if not cached
+   * Gracefully degrades if backend is unavailable
    */
   async play(gesture: WizardGesture): Promise<void> {
-    sfxLogger.info('Playing sound effect', {
+    sfxLogger.debug('Playing sound effect', {
       gesture,
       currentlyPlaying: this.isPlaying,
     });
@@ -131,13 +132,13 @@ class SFXService extends EventEmitter {
 
       this.emit('played', gesture);
     } catch (error) {
-      sfxLogger.error('Failed to play sound effect', {
+      // Log at warn level instead of error - SFX failures are non-critical
+      sfxLogger.warn('Sound effect unavailable, continuing without audio', {
         gesture,
         error: error instanceof Error ? error.message : String(error),
-        stack: error instanceof Error ? error.stack : undefined,
       });
       this.emit('error', { gesture, error });
-      throw error;
+      // Don't throw - SFX is a nice-to-have, not critical
     }
   }
 

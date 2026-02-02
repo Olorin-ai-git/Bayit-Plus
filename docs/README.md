@@ -203,6 +203,8 @@ Comprehensive code reviews and assessments:
 
 Implementation summaries and session reports:
 
+- [Feature Parity Implementation 2026-02-01](implementation/FEATURE_PARITY_IMPLEMENTATION_2026-02-01.md) - Complete web/shared/tvOS parity (AI modes, timestamps, preview timing) - 2026-02-01 **NEW**
+- [Split-Screen Subtitles Limitation](implementation/SPLIT_SCREEN_SUBTITLES_LIMITATION.md) - Platform limitation research and recommendations - 2026-02-01 **NEW**
 - [Emoji to Icons Migration Plan](implementation/EMOJI_TO_ICONS_MIGRATION_PLAN.md) - Replace 306+ emojis with @olorin/shared-icons - 2026-01-31 **NEW**
 - Build Summaries
 - Bug Fix Reports

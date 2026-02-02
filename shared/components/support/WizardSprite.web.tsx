@@ -121,6 +121,7 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
   const lastFrameTimeRef = useRef<number>(0);
 
   // Calculate scale factor to fit frame into display size
+  // Use the larger dimension to ensure the sprite fills the container
   const scale = size / Math.max(config.frameWidth, config.frameHeight);
   const scaledWidth = Math.round(config.frameWidth * scale);
   const scaledHeight = Math.round(config.frameHeight * scale);
@@ -128,6 +129,10 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
   // Full spritesheet dimensions when scaled
   const sheetWidth = Math.round(config.frameWidth * config.columns * scale);
   const sheetHeight = Math.round(config.frameHeight * config.rows * scale);
+
+  // Center offset to position non-square sprites in the center of the circular container
+  const offsetX = Math.round((size - scaledWidth) / 2);
+  const offsetY = Math.round((size - scaledHeight) / 2);
 
   // Frame duration in ms
   const frameDuration = 1000 / config.fps;
@@ -203,8 +208,8 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
   return (
     <div
       style={{
-        width: `${scaledWidth}px`,
-        height: `${scaledHeight}px`,
+        width: `${size}px`,
+        height: `${size}px`,
         borderRadius: '50%',
         overflow: 'hidden',
         position: 'relative',
@@ -212,17 +217,30 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
         ...style,
       }}
     >
+      {/* Spritesheet container - absolutely positioned and centered */}
       <div
         style={{
-          width: `${sheetWidth}px`,
-          height: `${sheetHeight}px`,
-          backgroundImage: `url(${config.url})`,
-          backgroundSize: `${sheetWidth}px ${sheetHeight}px`,
-          backgroundPosition: `${backgroundPositionX}px ${backgroundPositionY}px`,
-          backgroundRepeat: 'no-repeat',
-          imageRendering: 'crisp-edges',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: `${scaledWidth}px`,
+          height: `${scaledHeight}px`,
+          overflow: 'hidden',
         }}
-      />
+      >
+        <div
+          style={{
+            width: `${sheetWidth}px`,
+            height: `${sheetHeight}px`,
+            backgroundImage: `url(${config.url})`,
+            backgroundSize: `${sheetWidth}px ${sheetHeight}px`,
+            backgroundPosition: `${backgroundPositionX}px ${backgroundPositionY}px`,
+            backgroundRepeat: 'no-repeat',
+            imageRendering: 'crisp-edges',
+          }}
+        />
+      </div>
     </div>
   );
 };

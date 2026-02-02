@@ -140,7 +140,19 @@ const RippleRings: React.FC<{ size: number }> = ({ size }) => {
   };
 
   return (
-    <View className="absolute justify-center items-center" style={{ width: size * 2, height: size * 2 }}>
+    <View
+      style={{
+        position: 'absolute',
+        width: size * 2,
+        height: size * 2,
+        top: '50%',
+        left: '50%',
+        marginTop: -size,
+        marginLeft: -size,
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
       {renderRing(ring1Anim, 1)}
       {renderRing(ring2Anim, 2)}
       {renderRing(ring3Anim, 3)}
@@ -269,6 +281,7 @@ export const WizardEffects: React.FC<WizardEffectsProps> = ({
         width: size + 60,
         height: size + 60,
         transform: [{ scale: scaleAnim }],
+        position: 'absolute'
       }}
     >
       {/* Speaking: Glow pulse synced with spritesheet */}

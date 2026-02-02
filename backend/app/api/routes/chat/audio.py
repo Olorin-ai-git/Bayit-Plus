@@ -48,6 +48,17 @@ async def transcribe_audio(
     try:
         content = await audio.read()
 
+        # Check minimum audio size (very short recordings won't have meaningful speech)
+        MIN_AUDIO_SIZE = 5000  # ~5KB minimum
+        if len(content) < MIN_AUDIO_SIZE:
+            print(f"[STT] Audio too short: {len(content)} bytes (minimum: {MIN_AUDIO_SIZE})")
+            raise HTTPException(
+                status_code=400,
+                detail="Recording too short. Please hold the button longer while speaking.",
+            )
+
+        print(f"[STT] Received audio: {len(content)} bytes, type: {audio.content_type}")
+
         language_code = (language or "he").lower()
         print(f"[STT] Received language parameter from client: {language}")
         print(f"[STT] Transcribing audio with language hint: {language_code}")
@@ -99,9 +110,10 @@ async def transcribe_audio(
             print(f"[STT] Full API response: {result}")
 
             if not transcribed_text:
+                print(f"[STT] Empty transcription returned for audio size: {len(content)} bytes")
                 raise HTTPException(
                     status_code=400,
-                    detail="Could not transcribe audio. Please try again.",
+                    detail="No speech detected in audio. Please speak clearly and try again.",
                 )
 
             return TranscriptionResponse(

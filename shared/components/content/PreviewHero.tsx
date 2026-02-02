@@ -38,7 +38,7 @@ interface PreviewHeroProps {
   trailerUrl?: string;
   category?: string;
   metadata?: PreviewHeroMetadata;
-  previewDuration?: number; // in milliseconds, default 5000
+  previewDuration?: number; // in milliseconds, default 20000 (20 seconds)
   onPlay: () => void;
   onAddToList?: () => void;
   onShare?: () => void;
@@ -49,7 +49,8 @@ interface PreviewHeroProps {
 
 /**
  * PreviewHero Component
- * A hero section with 5-second auto-play video preview that stops and shows poster.
+ * A hero section with auto-play video preview (800ms delay, 20-second duration).
+ * After 20 seconds, video stops and poster returns with replay button.
  * Cross-platform support for web, TV, and mobile.
  */
 export const PreviewHero: React.FC<PreviewHeroProps> = ({
@@ -61,7 +62,7 @@ export const PreviewHero: React.FC<PreviewHeroProps> = ({
   trailerUrl,
   category,
   metadata,
-  previewDuration = 5000,
+  previewDuration = 20000,
   onPlay,
   onAddToList,
   onShare,
@@ -120,10 +121,10 @@ export const PreviewHero: React.FC<PreviewHeroProps> = ({
   // Auto-start preview on mount if preview URL exists
   useEffect(() => {
     if (previewUrl || trailerUrl) {
-      // Small delay before starting preview
+      // 800ms delay before starting preview (per requirements)
       const startTimer = setTimeout(() => {
         startPreview();
-      }, 1000);
+      }, 800);
 
       return () => {
         clearTimeout(startTimer);

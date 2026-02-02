@@ -372,8 +372,10 @@ class TTSService extends EventEmitter {
 
         // Stop current playback
         if (this.currentPlayback) {
+          // Remove event listeners before stopping to avoid error events
+          this.currentPlayback.onended = null;
+          this.currentPlayback.onerror = null;
           this.currentPlayback.pause();
-          this.currentPlayback.src = '';
         }
 
         // Create new audio element
@@ -565,8 +567,15 @@ class TTSService extends EventEmitter {
 
   stop(): void {
     if (this.currentPlayback) {
+      // Remove event listeners before clearing to avoid error events
+      this.currentPlayback.onended = null;
+      this.currentPlayback.onerror = null;
+      this.currentPlayback.oncanplay = null;
+      this.currentPlayback.onloadedmetadata = null;
+      this.currentPlayback.onplaying = null;
       this.currentPlayback.pause();
-      this.currentPlayback.src = '';
+      // Note: Setting src='' triggers MEDIA_ELEMENT_ERROR, so we skip it
+      // The garbage collector will clean up the audio element
       this.currentPlayback = null;
     }
     this.isPlaying = false;

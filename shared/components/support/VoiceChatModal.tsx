@@ -77,14 +77,14 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
-  // Play sound effects for gesture animations
+  // Play sound effects for gesture animations (non-critical - silent fail)
   useEffect(() => {
     if (gestureState && isAnimatingGesture) {
       const sfxGesture = GESTURE_SFX[gestureState];
       if (sfxGesture) {
-        // Play the gesture sound effect
-        sfxService.play(sfxGesture).catch((error) => {
-          console.warn(`[VoiceChat] Failed to play SFX for ${gestureState}:`, error);
+        // Play the gesture sound effect - fire and forget, SFX is non-critical
+        sfxService.play(sfxGesture).catch(() => {
+          // Silently ignore SFX failures - the service logs internally
         });
       }
     }
@@ -277,6 +277,7 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
           elevation: 10,
           alignItems: 'center',
           justifyContent: 'center',
+          overflow: 'hidden',
           ...(Platform.OS === 'web' ? {
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
