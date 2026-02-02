@@ -64,6 +64,7 @@ export default function FullscreenVideoOverlay() {
   const [chaptersLoading, setChaptersLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [showQuiz, setShowQuiz] = useState(false)
+  const [savedPosition, setSavedPosition] = useState<number | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const lastProgressRef = useRef<number>(0)
 
@@ -129,6 +130,43 @@ export default function FullscreenVideoOverlay() {
     fetchStream()
   }, [isOpen, content?.id, content?.type, content?.src, t, addNotification, closePlayer])
 
+  // Fetch saved watch position for VOD content
+  useEffect(() => {
+    if (!isOpen || !content || content.type === 'live') {
+      setSavedPosition(null)
+      return
+    }
+
+    logger.info('Fetching watch history for overlay', 'FullscreenVideoOverlay', {
+      contentId: content.id,
+    })
+
+    historyService
+      .getContinueWatching()
+      .then((items) => {
+        logger.info('Watch history received in overlay', 'FullscreenVideoOverlay', {
+          itemsCount: items?.length || 0,
+        })
+        const saved = items.find((i) => i.content_id === content.id)
+        if (saved?.position > 0) {
+          setSavedPosition(saved.position)
+          logger.info('Set saved watch position in overlay', 'FullscreenVideoOverlay', {
+            contentId: content.id,
+            position: saved.position,
+          })
+        } else {
+          logger.info('No saved position found in overlay', 'FullscreenVideoOverlay', {
+            contentId: content.id,
+          })
+        }
+      })
+      .catch((err) => {
+        logger.error('Failed to fetch watch history in overlay', 'FullscreenVideoOverlay', {
+          error: err instanceof Error ? err.message : 'Unknown error',
+        })
+      })
+  }, [isOpen, content?.id, content?.type])
+
   // Fetch chapters for VOD content
   useEffect(() => {
     if (!isOpen || !content || content.type === 'live') {
@@ -155,27 +193,56 @@ export default function FullscreenVideoOverlay() {
   }, [isOpen, content?.id, content?.type])
 
   // Handle progress updates for watch history
-  const handleProgress = useCallback((currentTime: number, duration: number) => {
-    if (!content) return
+  const handleProgress = useCallback(
+    async (currentTime: number, duration: number) => {
+      if (!content) return
 
-    // Update every 10 seconds
-    if (Math.abs(currentTime - lastProgressRef.current) >= 10) {
-      lastProgressRef.current = currentTime
-      historyService.updateProgress(content.id, content.type, currentTime, duration).catch(() => {})
-    }
-  }, [content?.id, content?.type])
+      try {
+        const percentage = (currentTime / duration) * 100
+
+        // Mark complete at 90% (send duration, not 0)
+        const position = percentage >= 90 ? duration : currentTime
+
+        await historyService.updateProgress(content.id, content.type, position, duration)
+
+        // Show completion notification once at 90%
+        if (percentage >= 90 && percentage < 91) {
+          addNotification({
+            level: 'success',
+            message: t('watch.markedAsWatched', 'Marked as watched'),
+            duration: 3000,
+          })
+        }
+      } catch (error) {
+        logger.error('Failed to save watch progress in overlay', 'FullscreenVideoOverlay', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          contentId: content.id,
+          currentTime,
+          duration,
+        })
+        // Silent fail - don't interrupt playback
+      }
+    },
+    [content?.id, content?.type, addNotification, t]
+  )
 
   // Handle video ended
   const handleEnded = useCallback(() => {
     if (!content) return
-    // Mark as completed (send duration as position to indicate 100% watched)
-    historyService.updateProgress(content.id, content.type, 0, 0).catch(() => {})
 
     // Show quiz for kids content if profile is a kids profile
     if (shouldShowQuiz) {
       setShowQuiz(true)
     }
   }, [content?.id, content?.type, shouldShowQuiz])
+
+  // Handle restart complete
+  const handleRestartComplete = useCallback(() => {
+    setSavedPosition(null)
+    logger.info('Watch position cleared after restart in overlay', 'FullscreenVideoOverlay', {
+      contentId: content?.id,
+    })
+  }, [content?.id])
 
   // Handle quiz close
   const handleQuizClose = useCallback(() => {
@@ -255,19 +322,31 @@ export default function FullscreenVideoOverlay() {
           </div>
         ) : (
           // Regular video content - use native player
-          <VideoPlayer
-            src={streamUrl}
-            poster={content.poster}
-            title={content.title}
-            contentId={content.id}
-            contentType={content.type}
-            isLive={content.type === 'live'}
-            autoPlay={true}
-            chapters={chapters}
-            chaptersLoading={chaptersLoading}
-            onProgress={handleProgress}
-            onEnded={handleEnded}
-          />
+          (() => {
+            logger.info('Rendering VideoPlayer with initial subtitle', 'FullscreenVideoOverlay', {
+              contentId: content.id,
+              initialSubtitleLang: content.initialSubtitleLang,
+              savedPosition,
+            });
+            return (
+              <VideoPlayer
+                src={streamUrl}
+                poster={content.poster}
+                title={content.title}
+                contentId={content.id}
+                contentType={content.type}
+                isLive={content.type === 'live'}
+                autoPlay={true}
+                chapters={chapters}
+                chaptersLoading={chaptersLoading}
+                onProgress={handleProgress}
+                onEnded={handleEnded}
+                savedPosition={savedPosition}
+                onRestartComplete={handleRestartComplete}
+                initialSubtitleLang={content.initialSubtitleLang}
+              />
+            );
+          })()
         )
       )}
 
