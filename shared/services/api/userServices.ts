@@ -133,5 +133,5 @@ export const apiYoungstersService = {
     api.get('/youngsters/trending', { params: { age_group: ageGroup, limit } }),
   getNews: (limit?: number, ageGroup?: string) =>
     api.get('/youngsters/news', { params: { limit, age_group: ageGroup } }),
-  verifyParentPin: (pin: string) => api.post('/youngsters/verify-parent-pin', { pin }),
+  verifyParentPin: (pin: string) => api.post('/family/controls/verify-pin', { pin }),
 };

@@ -12,7 +12,8 @@ Tests cover:
 - GET /age-group/{group} - Content by age group
 - POST /admin/refresh - Admin cache refresh
 - POST /parental-controls - Update parental controls
-- POST /verify-parent-pin - Verify parent PIN
+
+Note: PIN verification now uses unified family controls at /api/v1/family/controls/verify-pin
 """
 
 from datetime import datetime
@@ -546,61 +547,6 @@ async def test_parental_controls_set_both(
     assert response.status_code == 200
 
 
-# Verify Parent PIN Endpoint Tests
-
-
-@pytest.mark.asyncio
-async def test_verify_pin_requires_auth(async_client, db_client):
-    """Test POST /verify-parent-pin requires authentication."""
-    response = await async_client.post(
-        "/api/v1/children/verify-parent-pin", params={"pin": "1234"}
-    )
-
-    assert response.status_code == 401
-
-
-@pytest.mark.asyncio
-async def test_verify_pin_no_pin_set(async_client, db_client, test_user, user_token):
-    """Test POST /verify-parent-pin fails when no PIN is set."""
-    response = await async_client.post(
-        "/api/v1/children/verify-parent-pin",
-        headers={"Authorization": f"Bearer {user_token}"},
-        params={"pin": "1234"},
-    )
-
-    assert response.status_code == 400
-    data = response.json()
-    assert "No parental PIN set" in data["detail"]
-
-
-@pytest.mark.asyncio
-async def test_verify_pin_correct(async_client, db_client, user_with_pin, parent_token):
-    """Test POST /verify-parent-pin succeeds with correct PIN."""
-    response = await async_client.post(
-        "/api/v1/children/verify-parent-pin",
-        headers={"Authorization": f"Bearer {parent_token}"},
-        params={"pin": "1234"},
-    )
-
-    assert response.status_code == 200
-    data = response.json()
-    assert data["valid"] is True
-
-
-@pytest.mark.asyncio
-async def test_verify_pin_incorrect(
-    async_client, db_client, user_with_pin, parent_token
-):
-    """Test POST /verify-parent-pin fails with incorrect PIN."""
-    response = await async_client.post(
-        "/api/v1/children/verify-parent-pin",
-        headers={"Authorization": f"Bearer {parent_token}"},
-        params={"pin": "9999"},
-    )
-
-    assert response.status_code == 401
-    data = response.json()
-    assert "Incorrect PIN" in data["detail"]
 
 
 # By Category Endpoint Tests

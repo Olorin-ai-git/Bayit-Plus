@@ -607,7 +607,7 @@ const apiYoungstersService = {
     api.get('/youngsters/trending', { params: { age_group: ageGroup, limit } }),
   getNews: (limit, ageGroup) =>
     api.get('/youngsters/news', { params: { limit, age_group: ageGroup } }),
-  verifyPin: (pin) => api.post('/youngsters/verify-parent-pin', { pin }),
+  verifyPin: (pin) => api.post('/family/controls/verify-pin', { pin }),
 }
 
 // Judaism Service (API)

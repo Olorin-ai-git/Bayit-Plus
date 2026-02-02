@@ -1,8 +1,8 @@
 """
 Family Controls Service.
 
-Manages unified parental controls for kids and youngsters content.
-Handles PIN verification, settings management, and migration from legacy controls.
+Core service for managing unified parental controls.
+Handles PIN verification, settings management, and CRUD operations.
 """
 
 import logging
@@ -10,14 +10,14 @@ from datetime import datetime, timezone
 from typing import Optional
 
 from app.core.security import get_password_hash, verify_password
-from app.models.family_controls import FamilyControls, FamilyControlsResponse
-from app.models.user import User
+from app.models.family_controls import FamilyControls
+from app.models.family_controls_schemas import FamilyControlsResponse
 
 logger = logging.getLogger(__name__)
 
 
 class FamilyControlsService:
-    """Service for managing family parental controls."""
+    """Core service for managing family parental controls."""
 
     @staticmethod
     async def setup_family_controls(
@@ -112,9 +112,15 @@ class FamilyControlsService:
 
         # Check if PIN is locked
         if controls.is_pin_locked():
-            lockout_remaining = (controls.pin_locked_until - datetime.now(timezone.utc)).total_seconds() / 60
-            logger.warning(f"PIN locked for user {user_id}, {lockout_remaining:.1f} minutes remaining")
-            raise ValueError(f"Account locked due to too many failed attempts. Try again in {int(lockout_remaining)} minutes.")
+            lockout_remaining = (
+                controls.pin_locked_until - datetime.now(timezone.utc)
+            ).total_seconds() / 60
+            logger.warning(
+                f"PIN locked for user {user_id}, {lockout_remaining:.1f} minutes remaining"
+            )
+            raise ValueError(
+                f"Account locked due to too many failed attempts. Try again in {int(lockout_remaining)} minutes."
+            )
 
         # Verify PIN
         is_valid = verify_password(pin, controls.pin_hash)
@@ -127,7 +133,9 @@ class FamilyControlsService:
         else:
             # Record failed attempt (will lock after 5 attempts)
             await controls.record_failed_attempt(max_attempts=5, lockout_minutes=15)
-            logger.warning(f"Failed PIN attempt for user {user_id} (attempt #{controls.failed_pin_attempts})")
+            logger.warning(
+                f"Failed PIN attempt for user {user_id} (attempt #{controls.failed_pin_attempts})"
+            )
             return False
 
     @staticmethod
@@ -153,15 +161,23 @@ class FamilyControlsService:
 
         # Check if PIN is locked (prevent bypass via PIN reset)
         if controls.is_pin_locked():
-            lockout_remaining = (controls.pin_locked_until - datetime.now(timezone.utc)).total_seconds() / 60
-            logger.warning(f"PIN locked for user {user_id} during PIN update attempt, {lockout_remaining:.1f} minutes remaining")
-            raise ValueError(f"Account locked due to too many failed attempts. Try again in {int(lockout_remaining)} minutes.")
+            lockout_remaining = (
+                controls.pin_locked_until - datetime.now(timezone.utc)
+            ).total_seconds() / 60
+            logger.warning(
+                f"PIN locked for user {user_id} during PIN update attempt, {lockout_remaining:.1f} minutes remaining"
+            )
+            raise ValueError(
+                f"Account locked due to too many failed attempts. Try again in {int(lockout_remaining)} minutes."
+            )
 
         # Verify old PIN
         if not verify_password(old_pin, controls.pin_hash):
             # Record failed attempt (will lock after 5 attempts)
             await controls.record_failed_attempt(max_attempts=5, lockout_minutes=15)
-            logger.warning(f"Invalid old PIN for user {user_id} during PIN update (attempt #{controls.failed_pin_attempts})")
+            logger.warning(
+                f"Invalid old PIN for user {user_id} during PIN update (attempt #{controls.failed_pin_attempts})"
+            )
             return False
 
         # Hash and set new PIN
@@ -216,108 +232,6 @@ class FamilyControlsService:
         return controls
 
     @staticmethod
-    async def check_viewing_allowed(user_id: str) -> tuple[bool, Optional[str]]:
-        """
-        Check if viewing is currently allowed based on time restrictions.
-
-        Args:
-            user_id: User ID
-
-        Returns:
-            Tuple of (is_allowed, reason_if_blocked)
-        """
-        controls = await FamilyControls.find_one(FamilyControls.user_id == user_id)
-        if not controls:
-            # No controls set up - allow by default
-            return True, None
-
-        if controls.is_viewing_allowed_now():
-            return True, None
-
-        return (
-            False,
-            f"Viewing is only allowed between {controls.viewing_start_hour}:00 and {controls.viewing_end_hour}:00",
-        )
-
-    @staticmethod
-    async def check_content_allowed(
-        user_id: str, content_rating: str, is_kids: bool = False
-    ) -> tuple[bool, Optional[str]]:
-        """
-        Check if specific content is allowed based on controls.
-
-        Args:
-            user_id: User ID
-            content_rating: Content rating (G, PG, PG-13, etc.)
-            is_kids: Whether this is kids content
-
-        Returns:
-            Tuple of (is_allowed, reason_if_blocked)
-        """
-        controls = await FamilyControls.find_one(FamilyControls.user_id == user_id)
-        if not controls:
-            # No controls set up - allow by default
-            return True, None
-
-        if not controls.is_content_allowed(content_rating, is_kids):
-            section = "Kids" if is_kids else "Youngsters"
-            return (
-                False,
-                f"{section} content with rating {content_rating} is not allowed",
-            )
-
-        return True, None
-
-    @staticmethod
-    async def migrate_from_legacy_controls(user: User) -> Optional[FamilyControls]:
-        """
-        Migrate from legacy kids/youngsters PIN systems to unified family controls.
-
-        Args:
-            user: User object with legacy PIN fields
-
-        Returns:
-            Created FamilyControls instance or None if no legacy controls found
-        """
-        # Check if user has legacy kids or youngsters PINs
-        has_kids_pin = hasattr(user, "kids_pin_hash") and user.kids_pin_hash
-        has_youngsters_pin = (
-            hasattr(user, "youngsters_pin_hash") and user.youngsters_pin_hash
-        )
-
-        if not has_kids_pin and not has_youngsters_pin:
-            logger.info(f"No legacy controls to migrate for user {user.id}")
-            return None
-
-        # Check if already migrated
-        existing = await FamilyControls.find_one(FamilyControls.user_id == str(user.id))
-        if existing:
-            logger.info(f"User {user.id} already has unified family controls")
-            return existing
-
-        # Prefer kids PIN if both exist (assume it's the primary one)
-        pin_hash = user.kids_pin_hash if has_kids_pin else user.youngsters_pin_hash
-
-        # Create unified controls
-        controls = FamilyControls(
-            user_id=str(user.id),
-            pin_hash=pin_hash,
-            kids_age_limit=getattr(user, "kids_age_limit", 12),
-            youngsters_age_limit=getattr(user, "youngsters_age_limit", 17),
-            kids_enabled=True,
-            youngsters_enabled=True,
-            max_content_rating="PG-13",
-            viewing_hours_enabled=False,
-        )
-
-        await controls.save()
-        logger.info(
-            f"Migrated legacy controls to unified family controls for user {user.id}"
-        )
-
-        return controls
-
-    @staticmethod
     def format_response(controls: FamilyControls) -> dict:
         """
         Format FamilyControls for API response.
@@ -345,3 +259,18 @@ class FamilyControlsService:
 
 # Global service instance
 family_controls_service = FamilyControlsService()
+
+# Re-export services for backward compatibility
+from app.services.family_controls_viewing_service import (
+    family_controls_viewing_service,
+)
+from app.services.family_controls_migration_service import (
+    family_controls_migration_service,
+)
+
+# Legacy aliases
+check_viewing_allowed = family_controls_viewing_service.check_viewing_allowed
+check_content_allowed = family_controls_viewing_service.check_content_allowed
+migrate_from_legacy_controls = (
+    family_controls_migration_service.migrate_from_legacy_controls
+)

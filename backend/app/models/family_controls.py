@@ -5,14 +5,16 @@ Unified parental control system for kids and youngsters content.
 Provides age-based restrictions, content rating limits, and optional time-based controls.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Optional
 
 from beanie import Document
 from pydantic import Field
 
+from .family_controls_lockout import FamilyControlsLockoutMixin
 
-class FamilyControls(Document):
+
+class FamilyControls(FamilyControlsLockoutMixin, Document):
     """
     Unified family parental controls for kids and youngsters content.
 
@@ -69,7 +71,8 @@ class FamilyControls(Document):
         default=0, description="Counter for failed PIN verification attempts"
     )
     pin_locked_until: Optional[datetime] = Field(
-        default=None, description="Timestamp until which PIN is locked (None if not locked)"
+        default=None,
+        description="Timestamp until which PIN is locked (None if not locked)",
     )
 
     # Timestamps
@@ -204,90 +207,3 @@ class FamilyControls(Document):
         max_level = rating_hierarchy.get(self.max_content_rating, 2)
 
         return content_level <= max_level
-
-    def is_pin_locked(self) -> bool:
-        """
-        Check if PIN is currently locked due to failed attempts.
-
-        Returns:
-            True if PIN is locked and lockout period has not expired
-        """
-        if self.pin_locked_until is None:
-            return False
-
-        now = datetime.now(timezone.utc)
-        if now >= self.pin_locked_until:
-            # Lockout period expired, not locked anymore
-            return False
-
-        return True
-
-    async def record_failed_attempt(self, max_attempts: int = 5, lockout_minutes: int = 15) -> None:
-        """
-        Record a failed PIN verification attempt and lock if threshold exceeded.
-
-        Args:
-            max_attempts: Maximum attempts before locking (default: 5)
-            lockout_minutes: Minutes to lock account (default: 15)
-        """
-        self.failed_pin_attempts += 1
-        self.updated_at = datetime.now(timezone.utc)
-
-        if self.failed_pin_attempts >= max_attempts:
-            # Lock the PIN for the specified duration
-            self.pin_locked_until = datetime.now(timezone.utc) + timedelta(minutes=lockout_minutes)
-
-        await self.save()
-
-    async def reset_failed_attempts(self) -> None:
-        """
-        Reset failed PIN attempts counter and unlock PIN.
-
-        Called on successful PIN verification.
-        """
-        self.failed_pin_attempts = 0
-        self.pin_locked_until = None
-        self.updated_at = datetime.now(timezone.utc)
-        await self.save()
-
-    async def unlock_pin(self) -> None:
-        """
-        Manually unlock PIN and reset failed attempts.
-
-        Used for admin override or after security review.
-        """
-        await self.reset_failed_attempts()
-
-
-# Response models
-class FamilyControlsResponse(Document):
-    """API response model for family controls."""
-
-    user_id: str
-    kids_age_limit: int
-    youngsters_age_limit: int
-    kids_enabled: bool
-    youngsters_enabled: bool
-    max_content_rating: str
-    viewing_hours_enabled: bool
-    viewing_start_hour: int
-    viewing_end_hour: int
-    created_at: datetime
-    updated_at: datetime
-
-    class Config:
-        from_attributes = True
-
-
-class FamilyControlsUpdate(Document):
-    """Request model for updating family controls."""
-
-    new_pin: Optional[str] = None
-    kids_age_limit: Optional[int] = Field(None, ge=0, le=12)
-    youngsters_age_limit: Optional[int] = Field(None, ge=12, le=17)
-    kids_enabled: Optional[bool] = None
-    youngsters_enabled: Optional[bool] = None
-    max_content_rating: Optional[str] = None
-    viewing_hours_enabled: Optional[bool] = None
-    viewing_start_hour: Optional[int] = Field(None, ge=0, le=23)
-    viewing_end_hour: Optional[int] = Field(None, ge=0, le=23)
