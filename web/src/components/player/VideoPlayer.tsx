@@ -53,6 +53,8 @@ export default function VideoPlayer({
   isTranscoded = false,
   contentDuration,
   directUrl,
+  savedPosition,
+  onRestartComplete,
 }: VideoPlayerProps) {
   const { t, i18n } = useTranslation()
   const user = useAuthStore((s) => s.user)
@@ -77,6 +79,8 @@ export default function VideoPlayer({
     contentId,
     isTranscoded,
     contentDuration,
+    savedPosition,
+    onRestartComplete,
   })
 
   const {

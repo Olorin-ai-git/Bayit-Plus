@@ -8,6 +8,7 @@ import { useInitialSeek } from './useInitialSeek'
 import { useControlsAutoHide } from './useControlsAutoHide'
 import { useQualityManagement } from './useQualityManagement'
 import { useVideoControls } from './useVideoControls'
+import { useWatchHistoryResume } from './useWatchHistoryResume'
 
 interface UseVideoPlayerOptions {
   src: string
@@ -23,6 +24,10 @@ interface UseVideoPlayerOptions {
   contentDuration?: number
   /** Target latency in seconds for live streams (for dubbing sync). Default: 3s */
   targetLatencySeconds?: number
+  /** Saved watch position in seconds for auto-resume */
+  savedPosition?: number | null
+  /** Callback when restart is complete (clears saved position) */
+  onRestartComplete?: () => void
 }
 
 export function useVideoPlayer({
@@ -36,6 +41,8 @@ export function useVideoPlayer({
   isTranscoded = false,
   contentDuration,
   targetLatencySeconds = 3,
+  savedPosition,
+  onRestartComplete,
 }: UseVideoPlayerOptions) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -271,6 +278,13 @@ export function useVideoPlayer({
     duration: state.duration,
   })
 
+  // Auto-resume from saved watch position
+  useWatchHistoryResume({
+    videoRef,
+    savedPosition,
+    isLive,
+  })
+
   useControlsAutoHide({
     containerRef,
     isPlaying: state.isPlaying,
@@ -348,6 +362,7 @@ export function useVideoPlayer({
     onQualityChange: changeQuality,
     isTranscoded,
     onTranscodedSeek: isTranscoded ? handleTranscodedSeek : undefined,
+    onRestartComplete,
   })
 
   return {

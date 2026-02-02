@@ -44,6 +44,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
   const { isRTL } = useDirection();
   const notifications = useNotifications();
   const user = useAuthStore((s) => s.user);
+  const isAuthenticated = !!user;
   const params = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -125,9 +126,35 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
   const [localStreamUrl, setStreamUrl] = React.useState<string | null>(initialStreamUrl);
   const streamUrl = localStreamUrl || initialStreamUrl;
 
+  // Saved watch position for auto-resume
+  const [savedPosition, setSavedPosition] = React.useState<number | null>(null);
+
   React.useEffect(() => {
     setStreamUrl(initialStreamUrl);
   }, [initialStreamUrl]);
+
+  // Fetch saved watch position on mount
+  React.useEffect(() => {
+    if (isAuthenticated && contentId && effectiveType === 'vod') {
+      historyService
+        .getContinueWatching()
+        .then((items) => {
+          const saved = items.find((i) => i.content_id === contentId);
+          if (saved?.position > 0) {
+            setSavedPosition(saved.position);
+            logger.info('Loaded saved watch position', 'WatchPage', {
+              contentId,
+              position: saved.position,
+            });
+          }
+        })
+        .catch((err) => {
+          logger.error('Failed to fetch watch history', 'WatchPage', {
+            error: err instanceof Error ? err.message : 'Unknown error',
+          });
+        });
+    }
+  }, [contentId, isAuthenticated, effectiveType]);
 
   const { chapters, chaptersLoading, loadChapters } = useChaptersLoader();
 
@@ -145,11 +172,43 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
     }
   }, [contentId, effectiveType]);
 
-  const handleProgress = async (position: number, duration: number) => {
-    historyService
-      .updateProgress(contentId, type, position, duration)
-      .catch(() => {});
-  };
+  const handleProgress = React.useCallback(
+    async (currentTime: number, duration: number) => {
+      if (!isAuthenticated || !contentId || effectiveType !== 'vod') return;
+
+      try {
+        const percentage = (currentTime / duration) * 100;
+
+        // Mark complete at 90% (send duration, not 0)
+        const position = percentage >= 90 ? duration : currentTime;
+
+        await historyService.updateProgress(contentId, effectiveType, position, duration);
+
+        // Show completion notification once at 90%
+        if (percentage >= 90 && percentage < 91) {
+          notifications.show({
+            level: 'success',
+            title: t('watch.markedAsWatched', 'Marked as watched'),
+            dismissable: true,
+          });
+        }
+      } catch (error) {
+        logger.error('Failed to save watch progress', 'WatchPage', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          contentId,
+          currentTime,
+          duration,
+        });
+        // Silent fail - don't interrupt playback
+      }
+    },
+    [contentId, isAuthenticated, effectiveType, notifications, t]
+  );
+
+  const handleRestartComplete = React.useCallback(() => {
+    setSavedPosition(null);
+    logger.info('Watch position cleared after restart', 'WatchPage', { contentId });
+  }, [contentId]);
 
   const onPlayEpisode = (episode: any) => {
     handlePlayEpisode(episode, setStreamUrl);
@@ -243,6 +302,8 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
             chapters={chapters}
             chaptersLoading={chaptersLoading}
             initialSeekTime={initialSeekTime}
+            savedPosition={savedPosition}
+            onRestartComplete={handleRestartComplete}
             onEnded={handleContentEnded}
             onShowUpgrade={() => navigate('/subscribe')}
             isTranscoded={false}
@@ -355,6 +416,8 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
             chapters={chapters}
             chaptersLoading={chaptersLoading}
             initialSeekTime={initialSeekTime}
+            savedPosition={savedPosition}
+            onRestartComplete={handleRestartComplete}
             onEnded={handleContentEnded}
             onShowUpgrade={() => navigate('/subscribe')}
             isTranscoded={isTranscoded}

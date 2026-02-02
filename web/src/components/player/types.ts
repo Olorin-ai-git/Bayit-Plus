@@ -38,6 +38,10 @@ export interface VideoPlayerProps {
   contentDuration?: number
   /** Direct URL for fallback/seeking (used with transcoded streams) */
   directUrl?: string
+  /** Saved watch position in seconds for auto-resume */
+  savedPosition?: number | null
+  /** Callback when restart is complete (clears saved position) */
+  onRestartComplete?: () => void
 }
 
 export interface PlayerState {

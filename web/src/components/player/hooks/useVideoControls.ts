@@ -1,6 +1,8 @@
 import { RefObject } from 'react'
 import logger from '@/utils/logger'
 import { PlayerState, PlayerControls, Chapter } from '../types'
+import { historyService } from '@/services/api'
+import { useNotifications } from '@olorin/glass-ui/hooks'
 
 interface UseVideoControlsOptions {
   videoRef: RefObject<HTMLVideoElement>
@@ -14,6 +16,8 @@ interface UseVideoControlsOptions {
   isTranscoded?: boolean
   /** Callback to seek in a transcoded stream by reloading with new start time */
   onTranscodedSeek?: (seekTime: number) => void
+  /** Callback when restart is complete (clears saved position) */
+  onRestartComplete?: () => void
 }
 
 export function useVideoControls({
@@ -26,7 +30,9 @@ export function useVideoControls({
   onQualityChange,
   isTranscoded = false,
   onTranscodedSeek,
+  onRestartComplete,
 }: UseVideoControlsOptions): PlayerControls {
+  const notifications = useNotifications()
   return {
     togglePlay: () => {
       if (videoRef.current) {
@@ -189,13 +195,40 @@ export function useVideoControls({
     },
 
     handleRestart: async () => {
-      if (videoRef.current) {
+      if (!videoRef.current || !contentId) return
+
+      try {
+        // Call backend API to clear watch progress
+        await historyService.restartVideo(contentId)
+
+        // Seek to 0
         videoRef.current.currentTime = 0
         setState((prev) => ({ ...prev, currentTime: 0 }))
 
-        if (contentId && onProgress) {
-          onProgress(0, state.duration)
+        // Show success notification
+        notifications.show({
+          level: 'success',
+          title: 'Restarted from beginning',
+          dismissable: true,
+        })
+
+        // Notify parent to clear saved position
+        onRestartComplete?.()
+
+        // Resume playback if paused
+        if (videoRef.current.paused) {
+          await videoRef.current.play()
         }
+      } catch (error) {
+        logger.error('Failed to restart video', 'useVideoControls', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          contentId,
+        })
+        notifications.show({
+          level: 'error',
+          title: 'Failed to restart video',
+          dismissable: true,
+        })
       }
     },
 
