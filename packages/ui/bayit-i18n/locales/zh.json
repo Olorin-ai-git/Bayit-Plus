@@ -7496,5 +7496,64 @@
       "processingLabel": "奥洛林正在处理",
       "gestureLabel": "奥洛林 {{gesture}}"
     }
+  },
+  "quiz": {
+    "title": "答题时间",
+    "questionOf": "第 {{current}} 题，共 {{total}} 题",
+    "correct": "正确",
+    "incorrect": "不太对",
+    "score": "你答对了 {{total}} 题中的 {{score}} 题",
+    "pointsEarned": "+{{points}} 分",
+    "badgeEarned": "获得徽章",
+    "perfectScore": "满分",
+    "tryAgain": "再试一次",
+    "continue": "继续",
+    "skip": "跳过答题",
+    "loading": "正在加载答题...",
+    "error": "无法加载答题",
+    "retry": "重试",
+    "submitting": "正在检查答案...",
+    "greatJob": "做得好",
+    "keepLearning": "继续学习和玩耍",
+    "nextQuestion": "下一题",
+    "viewResults": "查看结果",
+    "answersReview": "你的答案",
+    "explanation": "解释",
+    "timeBonus": "时间奖励",
+    "streakBonus": "连胜奖励",
+    "newBadge": "新徽章",
+    "totalScore": "总分"
+  },
+  "rewards": {
+    "title": "我的奖励",
+    "totalPoints": "总积分",
+    "badges": "徽章",
+    "quizzesCompleted": "完成的答题",
+    "perfectScores": "满分次数",
+    "currentStreak": "当前连胜",
+    "longestStreak": "最长连胜",
+    "days": "天",
+    "noBadges": "完成答题以获得徽章",
+    "locked": "继续玩以解锁",
+    "earnedOn": "获得于 {{date}}",
+    "pointsBonus": "+{{points}} 奖励积分",
+    "rarity": {
+      "common": "普通",
+      "uncommon": "不常见",
+      "rare": "稀有",
+      "epic": "史诗",
+      "legendary": "传说"
+    },
+    "badgeNames": {
+      "first_quiz": "第一次答题",
+      "quiz_rookie": "答题新手",
+      "quiz_fan": "答题爱好者",
+      "quiz_master": "答题大师",
+      "perfect_start": "完美开局",
+      "perfectionist": "完美主义者",
+      "streak_3": "火力全开",
+      "streak_7": "周冠军",
+      "streak_30": "月度大师"
+    }
   }
 }

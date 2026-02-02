@@ -47,3 +47,6 @@ export type {
   DubbingVoice,
   IAudioPlayer,
 } from './liveDubbingService';
+
+// Quiz service for kids content
+export { quizService, default as quizServiceDefault } from './quizService';

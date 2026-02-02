@@ -4,6 +4,9 @@
  */
 
 import { api } from './api';
+import logger from '../utils/logger';
+
+const log = logger.scope('FeatureFlags');
 
 /**
  * Feature flags interface
@@ -58,7 +61,7 @@ export async function getFeatureFlags(): Promise<FeatureFlags> {
     cacheTimestamp = now;
     return response.data;
   } catch (error) {
-    console.warn('Failed to fetch feature flags, using cache or defaults:', error);
+    log.warn('Failed to fetch feature flags, using cache or defaults', error);
 
     // Return cache if available
     if (featureFlagsCache) {

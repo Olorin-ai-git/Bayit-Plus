@@ -14,6 +14,10 @@ interface FullscreenPlayerContent {
     end_time: number
     title?: string
   }>
+  /** Whether this is kids content (for quiz feature) */
+  is_kids_content?: boolean
+  /** Age group for kids content quiz */
+  age_group?: 'toddlers' | 'preschool' | 'elementary' | 'preteen'
 }
 
 interface FullscreenPlayerState {

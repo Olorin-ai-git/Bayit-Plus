@@ -12,6 +12,9 @@ import { useRecordingSession } from './useRecordingSession'
 import { formatDuration } from '@/utils/formatters'
 import { styles, getButtonIdleStyle, getOptionsToggleStyle } from './RecordButton.styles'
 import { useRTL } from '@/hooks/useRTL'
+import logger from '@/utils/logger'
+
+const log = logger.scope('RecordButton')
 
 interface RecordButtonProps {
   channelId: string
@@ -36,13 +39,13 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
   } = useRecordingSession({ channelId, onRecordingStateChange })
 
   const handlePress = async () => {
-    console.log('[RecordButton] handlePress called', { isRecording, isPremium })
+    log.debug('handlePress called', { isRecording, isPremium })
     if (!isPremium) { onShowUpgrade(); return }
     if (isRecording) {
-      console.log('[RecordButton] Stopping recording...')
+      log.info('Stopping recording')
       await stopRecording()
     } else {
-      console.log('[RecordButton] Starting recording...')
+      log.info('Starting recording')
       await startRecording(recordingOptions)
     }
   }

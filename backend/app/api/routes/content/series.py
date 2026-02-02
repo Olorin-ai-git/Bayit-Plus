@@ -219,6 +219,8 @@ async def get_series_details(
             series.available_subtitle_languages
             and len(series.available_subtitle_languages) > 0
         ),
+        "is_kids_content": series.is_kids_content,
+        "age_rating": series.age_rating,
         "seasons": seasons,
         "related": [
             {

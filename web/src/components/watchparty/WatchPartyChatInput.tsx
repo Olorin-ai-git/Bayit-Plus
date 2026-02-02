@@ -8,6 +8,9 @@ import { isValidChatMessage, sanitizeChatMessage } from './chatSanitizer'
 import { webSpeechService } from '@bayit/shared/services/webSpeechService'
 import type { SpeechRecognitionResult } from '@bayit/shared/services/webSpeechService'
 import { styles } from './WatchPartyChatInput.styles'
+import logger from '@/utils/logger'
+
+const log = logger.scope('WatchPartyChatInput')
 
 const QUICK_EMOJIS = ['👍', '❤️', '😂', '😮', '👏', '🔥']
 
@@ -78,7 +81,7 @@ export default function WatchPartyChatInput({
         onMicrophoneToggle?.(true)
       }
     } catch (error) {
-      console.error('Voice recognition error:', error)
+      log.error('Voice recognition error', error)
       setIsListening(false)
       onMicrophoneToggle?.(false)
     }
@@ -101,7 +104,7 @@ export default function WatchPartyChatInput({
     }
 
     const handleError = (error: { error: string }) => {
-      console.error('Speech recognition error:', error)
+      log.error('Speech recognition error', error)
       setIsListening(false)
       setInterimTranscript('')
       onMicrophoneToggle?.(false)

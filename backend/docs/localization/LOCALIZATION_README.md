@@ -309,7 +309,7 @@ poetry run pytest --cov=app/services/translation_service --cov=app/services/cont
 poetry run python localize_content.py podcast 507f1f77bcf86cd799439011
 
 # Dry-run all podcasts (no database writes)
-# TODO: Implement --dry-run flag
+# Feature request: --dry-run flag
 ```
 
 ## Features

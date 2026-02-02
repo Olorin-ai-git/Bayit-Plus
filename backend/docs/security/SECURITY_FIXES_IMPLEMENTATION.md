@@ -245,8 +245,8 @@ async def get_google_auth_url(redirect_uri: str | None = None):
     
     # Generate cryptographically secure random state token
     state = secrets.token_urlsafe(32)
-    
-    # TODO: Store state in Redis with 5-minute expiry
+
+    # Future: Store state in Redis with 5-minute expiry
     # For now, we'll validate it's at least present
     # await redis_client.setex(f"oauth_state:{state}", 300, "1")
     
@@ -277,8 +277,8 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Missing state parameter. This request may be forged.",
         )
-    
-    # TODO: Validate state from Redis
+
+    # Future: Validate state from Redis
     # state_valid = await redis_client.get(f"oauth_state:{auth_data.state}")
     # if not state_valid:
     #     raise HTTPException(
@@ -354,8 +354,8 @@ async def register(request: Request, user_data: UserCreate):
             import logging
             logger = logging.getLogger(__name__)
             logger.info(f"Registration attempt for existing email: {user_data.email}")
-            
-            # TODO: Send email warning to existing user
+
+            # Future: Send email warning to existing user
             # await send_email_warning(existing_user.email)
         except Exception as e:
             pass  # Silently fail

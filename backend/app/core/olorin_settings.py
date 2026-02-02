@@ -32,7 +32,7 @@ class OlorinMinimalSettings(BaseSettings):
     ANTHROPIC_API_KEY: str = Field(default="")
     OPENAI_API_KEY: str = Field(default="")
     ELEVENLABS_API_KEY: str = Field(default="")
-    PINECONE_API_KEY: str = Field(default="")
+    PINECONE_API_KEY: str = Field(default="", validation_alias="OLORIN_PINECONE_API_KEY")
 
     # Olorin-specific (from olorin_config.py nested settings)
     OLORIN_API_VERSION: str = Field(default="v1", alias="API_V1_PREFIX")

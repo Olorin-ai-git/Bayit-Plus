@@ -6,6 +6,9 @@
 import { useEffect, useRef } from 'react';
 import { useDevicesStore } from '../stores/devicesStore';
 import { deviceService } from '../services/deviceService';
+import logger from '../utils/logger';
+
+const log = logger.scope('DeviceRegistration');
 
 interface UseDeviceRegistrationOptions {
   enabled?: boolean; // Default: true
@@ -54,9 +57,9 @@ export const useDeviceRegistration = (options: UseDeviceRegistrationOptions = {}
           onSuccess(deviceId);
         }
 
-        console.log('Device registered successfully:', deviceId);
+        log.info('Device registered successfully', { deviceId });
       } catch (error) {
-        console.error('Failed to register device:', error);
+        log.error('Failed to register device', error);
 
         if (onError) {
           onError(error as Error);

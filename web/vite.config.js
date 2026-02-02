@@ -14,6 +14,8 @@ export default defineConfig({
       '@stores': path.resolve(__dirname, './src/stores'),
       '@utils': path.resolve(__dirname, './src/utils'),
       '@bayit/shared': path.resolve(__dirname, '../shared'),
+      '@bayit/shared-components/quiz': path.resolve(__dirname, '../shared/components/quiz'),
+      '@bayit/shared-components': path.resolve(__dirname, '../shared/components'),
       '@bayit/shared/ui': path.resolve(__dirname, '../shared/components/ui'),
       '@bayit/shared/search': path.resolve(__dirname, '../shared/components/search'),
       '@bayit/shared-hooks': path.resolve(__dirname, '../shared/hooks'),

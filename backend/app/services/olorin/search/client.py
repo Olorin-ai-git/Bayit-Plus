@@ -68,43 +68,61 @@ class SearchClientManager:
         if self._initialized:
             return True
 
+        # Initialize OpenAI first (independent of Pinecone)
         try:
-            # Initialize Pinecone
-            if PINECONE_AVAILABLE and settings.PINECONE_API_KEY:
-                self._pinecone_client = Pinecone(api_key=settings.PINECONE_API_KEY)
+            if OPENAI_AVAILABLE and settings.OPENAI_API_KEY:
+                self._openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
+                logger.info("OpenAI client initialized for embeddings")
+        except Exception as e:
+            logger.error(f"Failed to initialize OpenAI client: {e}")
+
+        # Initialize Pinecone (independent of OpenAI)
+        try:
+            if PINECONE_AVAILABLE and settings.olorin.pinecone.api_key:
+                self._pinecone_client = Pinecone(
+                    api_key=settings.olorin.pinecone.api_key
+                )
 
                 # Get or create index
-                index_name = settings.PINECONE_INDEX_NAME
+                index_name = settings.olorin.pinecone.index_name
                 existing_indexes = [
                     idx.name for idx in self._pinecone_client.list_indexes()
                 ]
 
                 if index_name not in existing_indexes:
                     logger.info(f"Creating Pinecone index: {index_name}")
+                    # Parse environment: "us-east-1-aws" -> region="us-east-1", cloud="aws"
+                    env = settings.olorin.pinecone.environment
+                    if "-aws" in env:
+                        region = env.replace("-aws", "")
+                        cloud = "aws"
+                    elif "-gcp" in env:
+                        region = env.replace("-gcp", "")
+                        cloud = "gcp"
+                    elif "-azure" in env:
+                        region = env.replace("-azure", "")
+                        cloud = "azure"
+                    else:
+                        region = env
+                        cloud = "aws"
                     self._pinecone_client.create_index(
                         name=index_name,
-                        dimension=settings.EMBEDDING_DIMENSIONS,
+                        dimension=settings.olorin.embedding.dimensions,
                         metric="cosine",
                         spec=ServerlessSpec(
-                            cloud="aws",
-                            region=settings.PINECONE_ENVIRONMENT.split("-")[0],
+                            cloud=cloud,
+                            region=region,
                         ),
                     )
 
                 self._pinecone_index = self._pinecone_client.Index(index_name)
                 logger.info(f"Connected to Pinecone index: {index_name}")
 
-            # Initialize OpenAI
-            if OPENAI_AVAILABLE and settings.OPENAI_API_KEY:
-                self._openai_client = AsyncOpenAI(api_key=settings.OPENAI_API_KEY)
-                logger.info("OpenAI client initialized for embeddings")
-
-            self._initialized = True
-            return True
-
         except Exception as e:
-            logger.error(f"Failed to initialize vector search: {e}")
-            return False
+            logger.error(f"Failed to initialize Pinecone: {e}")
+
+        self._initialized = True
+        return self._openai_client is not None or self._pinecone_index is not None
 
 
 # Singleton client manager

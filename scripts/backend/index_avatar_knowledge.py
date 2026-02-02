@@ -6,19 +6,27 @@ Indexes all avatar-related documentation into the vector database
 for semantic search by the voice assistant.
 
 Usage:
+    cd backend
     poetry run python scripts/index_avatar_knowledge.py
 """
 
-import asyncio
-import logging
 import sys
 from pathlib import Path
 
-# Add backend to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# CRITICAL: Clean sys.path BEFORE any other imports to avoid module conflicts
+# Remove ALL paths containing /scripts/ to prevent the scripts/backend/olorin
+# package from shadowing the actual olorin package
+sys.path = [p for p in sys.path if "/scripts/" not in p]
 
-from app.core.database import init_db
-from app.services.olorin.search.docs_indexer import index_custom_knowledge
+# Add backend to path at the front
+backend_path = str(Path(__file__).parent.parent)
+if backend_path not in sys.path:
+    sys.path.insert(0, backend_path)
+
+# Now safe to import other modules
+import asyncio
+import logging
+import os
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -340,13 +348,257 @@ ACCESSIBILITY:
 - Haptic feedback on state changes
 """,
     },
+    # Beta 500 Program Knowledge (Customer-Facing)
+    {
+        "id": "beta_500_overview",
+        "title": "Beta 500 Program Overview",
+        "category": "beta-program",
+        "keywords": ["beta", "500", "program", "credits", "ai", "features", "testing", "closed beta"],
+        "content": """
+Beta 500 is Bayit+'s closed beta program for AI-powered features.
+
+PROGRAM DETAILS:
+- Limited to 500 users worldwide
+- Each user receives 5,000 AI credits
+- Program duration: 90 days from enrollment
+- Available on: Web, iOS, Android, tvOS (Apple TV)
+- AI Providers: Anthropic Claude, OpenAI, ElevenLabs
+
+WHAT YOU'RE TESTING:
+1. AI Search - Natural language content discovery
+2. AI Recommendations - Personalized content suggestions
+3. Live Dubbing - Real-time audio translation
+4. Auto Catch-Up - AI-generated summaries of missed content
+
+HOW TO JOIN:
+1. Receive beta invitation email from beta@bayitplus.com
+2. Click the invitation link
+3. Sign up or log in with Google OAuth
+4. Your account is automatically enrolled with 5,000 credits
+5. Start using AI features immediately
+
+VERIFY BETA STATUS:
+- Web: Settings > Beta Program
+- Mobile: Profile > Settings > Beta Program
+- tvOS: Settings > Account > Beta Program Status
+""",
+    },
+    {
+        "id": "beta_500_credit_system",
+        "title": "Beta 500 Credit System",
+        "category": "beta-program",
+        "keywords": ["credits", "cost", "balance", "threshold", "usage", "depleted"],
+        "content": """
+Credits are your AI currency in the Beta 500 program.
+
+CREDIT COSTS BY FEATURE:
+- AI Search: 10 credits per search query
+- AI Recommendations: 5 credits per recommendation request
+- Live Dubbing: 1 credit per second (60 credits per minute)
+- Auto Catch-Up: 15 credits per summary
+
+BALANCE THRESHOLDS:
+- Healthy (Green): More than 500 credits
+- Low (Yellow): 100-500 credits remaining
+- Critical (Red): Less than 100 credits
+- Depleted (Gray): 0 credits - AI features disabled
+
+WHEN CREDITS ARE DEPLETED:
+- AI features show "Insufficient Credits" message
+- AI Search falls back to regular keyword search
+- AI Recommendations switch to algorithmic suggestions
+- Live Dubbing becomes unavailable
+- Auto Catch-Up becomes unavailable
+- All non-AI features continue working normally
+
+IMPORTANT FOR LIVE DUBBING:
+- 30 minutes of dubbing = 1,800 credits (36% of allocation)
+- Use strategically for important content
+""",
+    },
+    {
+        "id": "beta_500_acquiring_credits",
+        "title": "How to Get More Beta 500 Credits",
+        "category": "beta-program",
+        "keywords": ["credits", "bonus", "milestone", "referral", "more", "get", "earn"],
+        "content": """
+Ways to earn more credits in the Beta 500 program:
+
+FEEDBACK BONUSES:
+- Complete feedback survey: +100 credits
+- Report confirmed bug: +50 credits
+- Submit feature suggestion: +25 credits
+
+TESTING MILESTONES:
+- First 100 AI searches: +200 credits
+- First 50 recommendations: +100 credits
+- First 30 minutes dubbing: +300 credits
+- First 10 catch-ups: +150 credits
+
+REFERRAL PROGRAM:
+- Refer another beta user: +500 credits (upon their activation)
+- Limited to 3 referrals maximum
+
+EMERGENCY CREDIT REQUEST:
+If you've depleted credits but have critical testing:
+1. Email beta@bayitplus.com
+2. Subject: "Beta 500 Credit Request - [Your Email]"
+3. Include: Current balance, testing completed, specific testing needs
+4. Requests reviewed within 24-48 hours
+5. Emergency grants: Up to 1,000 credits (one-time)
+
+FUTURE OPTIONS (Coming Q2 2026):
+- Credit packs for purchase
+- Subscription credit allowances
+""",
+    },
+    {
+        "id": "beta_500_ai_features",
+        "title": "Beta 500 AI Features Guide",
+        "category": "beta-program",
+        "keywords": ["ai", "search", "recommendations", "dubbing", "catch-up", "features"],
+        "content": """
+AI features available in Beta 500:
+
+AI SEARCH (10 credits/search):
+- Use natural language instead of keywords
+- Toggle "AI Search" in search bar
+- Example queries:
+  - "Something relaxing to watch before bed"
+  - "Family movies for Shabbat evening"
+  - "Shows like Shtisel but lighter"
+  - "Israeli comedy movies from 2020-2025"
+
+AI RECOMMENDATIONS (5 credits/request):
+- Find "AI Picks for You" on Home screen
+- Personalized based on: viewing history, time of day, cultural events
+- Context modes: Morning, Afternoon, Evening, Late Night, Weekend, Holiday
+
+LIVE DUBBING (1 credit/second):
+- Real-time audio translation for live TV
+- Languages: Hebrew to English, Spanish, French, Russian, Arabic
+- Click dubbing icon during live TV playback
+- Maximum session: 1 hour (auto-ends)
+- Pausing stops credit consumption
+
+AUTO CATCH-UP (15 credits/summary):
+- AI summaries of live TV content you missed
+- Click "Catch Me Up" on any live channel
+- Options: Brief (2-3 sentences) or Detailed (full summary)
+- Best for: News, sports, live debates
+
+FEATURES NOT YET AVAILABLE:
+- VOD Dubbing (Coming Q2 2026)
+- AI Subtitles
+- Voice Commands
+- AI Chat Assistant
+""",
+    },
+    {
+        "id": "beta_500_troubleshooting",
+        "title": "Beta 500 Troubleshooting",
+        "category": "beta-program",
+        "keywords": ["error", "problem", "issue", "fix", "troubleshoot", "help"],
+        "content": """
+Common Beta 500 issues and solutions:
+
+INSUFFICIENT CREDITS ERROR:
+- Check balance in Settings > Beta Program
+- Verify you have enough credits for the action
+- Use non-AI alternatives as fallback
+
+AI SEARCH RETURNS NO RESULTS:
+- Rephrase query with more specifics
+- Try different language
+- Check for typos
+- Use fewer filters
+
+LIVE DUBBING NOT STARTING:
+- Verify credits > 60 (1 minute minimum)
+- Check internet connection
+- Try refreshing the stream
+- Ensure channel supports dubbing
+
+RECOMMENDATIONS NOT PERSONALIZED:
+- Build more viewing history
+- Update preferences in Settings
+- Use feedback (thumbs up/down)
+
+CATCH-UP "NO CONTENT AVAILABLE":
+- Content needs > 5 minutes of history
+- Verify channel is live
+- Some channels may not support catch-up
+
+ERROR CODES:
+- BETA_001: Insufficient credits
+- BETA_002: Not enrolled in beta
+- BETA_003: Beta expired
+- AI_001: AI service unavailable (retry later)
+- AI_002: Query too long
+- DUB_001: Dubbing unavailable for this channel
+
+SUPPORT:
+- Email: beta@bayitplus.com (24-48 hour response)
+- Status: status.bayitplus.com
+- Community: community.bayitplus.com/beta500
+""",
+    },
+    {
+        "id": "beta_500_faq",
+        "title": "Beta 500 Frequently Asked Questions",
+        "category": "beta-program",
+        "keywords": ["faq", "question", "answer", "help", "how", "why", "what"],
+        "content": """
+Frequently asked questions about Beta 500:
+
+Q: Why is it called "Beta 500"?
+A: Limited to 500 users, each receiving 5,000 credits.
+
+Q: Can I get more than 5,000 credits?
+A: Yes, through feedback bonuses, milestones, and referrals.
+
+Q: Do unused credits roll over?
+A: Credits don't expire during the 90-day beta period.
+
+Q: Can I share my account with family?
+A: No, beta accounts are individual. Family sharing planned for public launch.
+
+Q: What happens when Beta 500 ends?
+A: AI features transition to subscription/pay-per-use. Beta participants receive priority access and special pricing.
+
+Q: Is AI dubbing available for all content?
+A: Currently only Live TV. VOD dubbing coming Q2 2026.
+
+Q: Can I use AI features offline?
+A: No, AI features require internet connection.
+
+Q: Are AI features available in all countries?
+A: Yes, but some content may have regional restrictions.
+
+Q: How accurate is AI Search?
+A: ~85-90% relevance accuracy. Results improve with specific queries.
+
+Q: Why is Live Dubbing so expensive in credits?
+A: Real-time AI translation is computationally intensive.
+
+Q: What platforms support Beta 500?
+A: Web, iOS, Android, and tvOS (Apple TV).
+
+Q: How do I report a bug?
+A: Settings > Beta Program > Send Feedback, or email beta@bayitplus.com
+""",
+    },
 ]
 
 
 async def main():
     """Index all avatar knowledge."""
+    # Import here to avoid circular import issues
+    from app.core.database import connect_to_mongo
+    from app.services.olorin.search.docs_indexer import index_custom_knowledge
+
     logger.info("Initializing database connection...")
-    await init_db()
+    await connect_to_mongo()
 
     logger.info(f"Indexing {len(AVATAR_KNOWLEDGE)} avatar knowledge articles...")
 

@@ -205,6 +205,8 @@ async def get_movie_details(
             and len(movie.available_subtitle_languages) > 0
         ),
         "is_transcoded": use_transcode,
+        "is_kids_content": movie.is_kids_content,
+        "age_rating": movie.age_rating,
         "related": [
             {
                 "id": str(item.id),

@@ -7739,5 +7739,64 @@
       "processingLabel": "Olorin sta elaborando",
       "gestureLabel": "Olorin {{gesture}}"
     }
+  },
+  "quiz": {
+    "title": "Tempo di Quiz",
+    "questionOf": "Domanda {{current}} di {{total}}",
+    "correct": "Corretto",
+    "incorrect": "Non proprio",
+    "score": "Hai ottenuto {{score}} su {{total}}",
+    "pointsEarned": "+{{points}} punti",
+    "badgeEarned": "Badge Ottenuto",
+    "perfectScore": "Punteggio Perfetto",
+    "tryAgain": "Riprova",
+    "continue": "Continua",
+    "skip": "Salta Quiz",
+    "loading": "Caricamento quiz...",
+    "error": "Impossibile caricare il quiz",
+    "retry": "Riprova",
+    "submitting": "Verifica risposte...",
+    "greatJob": "Ottimo lavoro",
+    "keepLearning": "Continua a imparare e giocare",
+    "nextQuestion": "Prossima Domanda",
+    "viewResults": "Vedi Risultati",
+    "answersReview": "Le Tue Risposte",
+    "explanation": "Spiegazione",
+    "timeBonus": "Bonus Tempo",
+    "streakBonus": "Bonus Serie",
+    "newBadge": "Nuovo Badge",
+    "totalScore": "Punteggio Totale"
+  },
+  "rewards": {
+    "title": "I Miei Premi",
+    "totalPoints": "Punti Totali",
+    "badges": "Badge",
+    "quizzesCompleted": "Quiz Completati",
+    "perfectScores": "Punteggi Perfetti",
+    "currentStreak": "Serie Attuale",
+    "longestStreak": "Serie Piu Lunga",
+    "days": "giorni",
+    "noBadges": "Completa i quiz per guadagnare badge",
+    "locked": "Continua a giocare per sbloccare",
+    "earnedOn": "Ottenuto il {{date}}",
+    "pointsBonus": "+{{points}} punti bonus",
+    "rarity": {
+      "common": "Comune",
+      "uncommon": "Non Comune",
+      "rare": "Raro",
+      "epic": "Epico",
+      "legendary": "Leggendario"
+    },
+    "badgeNames": {
+      "first_quiz": "Primo Quiz",
+      "quiz_rookie": "Principiante Quiz",
+      "quiz_fan": "Fan dei Quiz",
+      "quiz_master": "Maestro dei Quiz",
+      "perfect_start": "Inizio Perfetto",
+      "perfectionist": "Perfezionista",
+      "streak_3": "In Fiamme",
+      "streak_7": "Guerriero della Settimana",
+      "streak_30": "Maestro del Mese"
+    }
   }
 }

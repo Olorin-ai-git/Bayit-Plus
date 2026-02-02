@@ -7486,5 +7486,64 @@
       "processingLabel": "ओलोरिन प्रसंस्करण कर रहा है",
       "gestureLabel": "ओलोरिन {{gesture}}"
     }
+  },
+  "quiz": {
+    "title": "क्विज़ का समय",
+    "questionOf": "प्रश्न {{current}} में से {{total}}",
+    "correct": "सही",
+    "incorrect": "बिल्कुल नहीं",
+    "score": "आपने {{total}} में से {{score}} सही किए",
+    "pointsEarned": "+{{points}} अंक",
+    "badgeEarned": "बैज प्राप्त",
+    "perfectScore": "पूर्ण अंक",
+    "tryAgain": "फिर से प्रयास करें",
+    "continue": "जारी रखें",
+    "skip": "क्विज़ छोड़ें",
+    "loading": "क्विज़ लोड हो रहा है...",
+    "error": "क्विज़ लोड नहीं हो सका",
+    "retry": "पुनः प्रयास करें",
+    "submitting": "उत्तर जांचे जा रहे हैं...",
+    "greatJob": "बहुत बढ़िया",
+    "keepLearning": "सीखते और खेलते रहें",
+    "nextQuestion": "अगला प्रश्न",
+    "viewResults": "परिणाम देखें",
+    "answersReview": "आपके उत्तर",
+    "explanation": "व्याख्या",
+    "timeBonus": "समय बोनस",
+    "streakBonus": "लगातार बोनस",
+    "newBadge": "नया बैज",
+    "totalScore": "कुल अंक"
+  },
+  "rewards": {
+    "title": "मेरे पुरस्कार",
+    "totalPoints": "कुल अंक",
+    "badges": "बैज",
+    "quizzesCompleted": "पूर्ण क्विज़",
+    "perfectScores": "पूर्ण अंक",
+    "currentStreak": "वर्तमान लगातार",
+    "longestStreak": "सबसे लंबी लगातार",
+    "days": "दिन",
+    "noBadges": "बैज कमाने के लिए क्विज़ पूरे करें",
+    "locked": "अनलॉक करने के लिए खेलते रहें",
+    "earnedOn": "{{date}} को प्राप्त",
+    "pointsBonus": "+{{points}} बोनस अंक",
+    "rarity": {
+      "common": "सामान्य",
+      "uncommon": "असामान्य",
+      "rare": "दुर्लभ",
+      "epic": "महाकाव्य",
+      "legendary": "पौराणिक"
+    },
+    "badgeNames": {
+      "first_quiz": "पहला क्विज़",
+      "quiz_rookie": "क्विज़ नौसिखिया",
+      "quiz_fan": "क्विज़ प्रशंसक",
+      "quiz_master": "क्विज़ मास्टर",
+      "perfect_start": "सही शुरुआत",
+      "perfectionist": "पूर्णतावादी",
+      "streak_3": "तेज़ी से",
+      "streak_7": "सप्ताह का योद्धा",
+      "streak_30": "मासिक मास्टर"
+    }
   }
 }

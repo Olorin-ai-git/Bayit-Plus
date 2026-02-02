@@ -1,6 +1,7 @@
 /**
  * FullscreenVideoOverlay Component
  * A fullscreen video player overlay that can be triggered from anywhere in the app
+ * Includes quiz feature for kids content
  */
 
 import { useState, useEffect, useRef, useCallback } from 'react'
@@ -15,6 +16,8 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import VideoPlayer from './VideoPlayer'
 import logger from '@/utils/logger'
 import { useNotificationStore } from '@olorin/glass-ui/stores'
+import { QuizOverlay } from '@bayit/shared/components/quiz'
+import { useProfileStore } from '@/stores/profileStore'
 
 interface Chapter {
   start_time: number
@@ -51,16 +54,23 @@ function getYouTubeVideoId(url: string): string | null {
 }
 
 export default function FullscreenVideoOverlay() {
-  const { t } = useTranslation()
+  const { t, i18n: i18nInstance } = useTranslation()
   const { isOpen, content, startTime, closePlayer } = useFullscreenPlayerStore()
   const addNotification = useNotificationStore((state) => state.add)
+  const activeProfile = useProfileStore((state) => state.activeProfile)
   const [streamUrl, setStreamUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [chapters, setChapters] = useState<Chapter[]>([])
   const [chaptersLoading, setChaptersLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showQuiz, setShowQuiz] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const lastProgressRef = useRef<number>(0)
+
+  // Determine if quiz should be shown after content ends
+  // Quiz shows for all kids content regardless of profile type
+  const shouldShowQuiz = content?.is_kids_content === true
+  const isRTL = i18nInstance.dir() === 'rtl'
 
   // Fetch stream URL when content changes (unless src is already provided)
   useEffect(() => {
@@ -160,7 +170,24 @@ export default function FullscreenVideoOverlay() {
     if (!content) return
     // Mark as completed (send duration as position to indicate 100% watched)
     historyService.updateProgress(content.id, content.type, 0, 0).catch(() => {})
-  }, [content?.id, content?.type])
+
+    // Show quiz for kids content if profile is a kids profile
+    if (shouldShowQuiz) {
+      setShowQuiz(true)
+    }
+  }, [content?.id, content?.type, shouldShowQuiz])
+
+  // Handle quiz close
+  const handleQuizClose = useCallback(() => {
+    setShowQuiz(false)
+    closePlayer()
+  }, [closePlayer])
+
+  // Handle quiz complete
+  const handleQuizComplete = useCallback(() => {
+    setShowQuiz(false)
+    closePlayer()
+  }, [closePlayer])
 
   // Handle close with ESC key
   useEffect(() => {
@@ -242,6 +269,20 @@ export default function FullscreenVideoOverlay() {
             onEnded={handleEnded}
           />
         )
+      )}
+
+      {/* Quiz Overlay for Kids Content */}
+      {showQuiz && activeProfile && (
+        <QuizOverlay
+          visible={showQuiz}
+          contentId={content.id}
+          profileId={activeProfile.id}
+          ageGroup={content.age_group || 'elementary'}
+          language={i18nInstance.language}
+          isRTL={isRTL}
+          onClose={handleQuizClose}
+          onComplete={handleQuizComplete}
+        />
       )}
     </div>
   )

@@ -7795,5 +7795,64 @@
       "processingLabel": "אולורין מעבד",
       "gestureLabel": "אולורין {{gesture}}"
     }
+  },
+  "quiz": {
+    "title": "זמן חידון!",
+    "questionOf": "שאלה {{current}} מתוך {{total}}",
+    "correct": "נכון!",
+    "incorrect": "לא בדיוק!",
+    "score": "ענית נכון על {{score}} מתוך {{total}}!",
+    "pointsEarned": "+{{points}} נקודות",
+    "badgeEarned": "תג חדש!",
+    "perfectScore": "ציון מושלם!",
+    "tryAgain": "נסה שוב",
+    "continue": "המשך",
+    "skip": "דלג על החידון",
+    "loading": "טוען חידון...",
+    "error": "לא ניתן לטעון את החידון",
+    "retry": "נסה שוב",
+    "submitting": "בודק תשובות...",
+    "greatJob": "כל הכבוד!",
+    "keepLearning": "המשיכו ללמוד ולשחק!",
+    "nextQuestion": "שאלה הבאה",
+    "viewResults": "צפה בתוצאות",
+    "answersReview": "התשובות שלך",
+    "explanation": "הסבר",
+    "timeBonus": "בונוס זמן",
+    "streakBonus": "בונוס רצף",
+    "newBadge": "תג חדש!",
+    "totalScore": "ציון סופי"
+  },
+  "rewards": {
+    "title": "התגים שלי",
+    "totalPoints": "סך נקודות",
+    "badges": "תגים",
+    "quizzesCompleted": "חידונים שהושלמו",
+    "perfectScores": "ציונים מושלמים",
+    "currentStreak": "רצף נוכחי",
+    "longestStreak": "רצף ארוך ביותר",
+    "days": "ימים",
+    "noBadges": "השלם חידונים כדי להרוויח תגים!",
+    "locked": "המשך לשחק כדי לפתוח!",
+    "earnedOn": "הושג ב-{{date}}",
+    "pointsBonus": "+{{points}} נקודות בונוס",
+    "rarity": {
+      "common": "רגיל",
+      "uncommon": "לא שכיח",
+      "rare": "נדיר",
+      "epic": "אפי",
+      "legendary": "אגדי"
+    },
+    "badgeNames": {
+      "first_quiz": "החידון הראשון",
+      "quiz_rookie": "טירון חידונים",
+      "quiz_fan": "חובב חידונים",
+      "quiz_master": "אלוף החידונים",
+      "perfect_start": "התחלה מושלמת",
+      "perfectionist": "שלמותן",
+      "streak_3": "בוער",
+      "streak_7": "לוחם השבוע",
+      "streak_30": "אלוף החודש"
+    }
   }
 }

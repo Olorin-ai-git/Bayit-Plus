@@ -124,6 +124,9 @@ module.exports = (env, argv) => {
         '@bayit/shared/chat': path.resolve(sharedPath, 'components/chat'),
         '@bayit/shared/admin': path.resolve(sharedPath, 'components/admin'),
         '@bayit/shared': path.resolve(sharedPath, 'components'),
+        // Quiz components (must come before @bayit/shared-components)
+        '@bayit/shared-components/quiz': path.resolve(sharedPath, 'components/quiz'),
+        '@bayit/shared-components': path.resolve(sharedPath, 'components'),
         '@bayit/shared-assets': path.resolve(sharedPath, 'assets'),
       },
       symlinks: true,

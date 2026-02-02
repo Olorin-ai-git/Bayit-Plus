@@ -48,6 +48,7 @@ interface Filters {
 export function useContentData() {
   const { t } = useTranslation()
   const notifications = useNotifications()
+  const log = logger.scope('ContentData')
 
   const [items, setItems] = useState<ContentItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -75,12 +76,12 @@ export function useContentData() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const loadContent = useCallback(async () => {
-    console.log('[useContentData] Loading content with filters:', filters)
+    log.debug('Loading content with filters', filters)
     setIsLoading(true)
     setError(null)
     try {
       if (filters.content_type === 'podcasts' || filters.content_type === 'radio' || filters.content_type === 'audiobooks') {
-        console.log('[useContentData] Loading podcasts/radio/audiobooks content')
+        log.debug('Loading podcasts/radio/audiobooks content')
 
         let response
         if (filters.content_type === 'audiobooks') {
@@ -102,7 +103,7 @@ export function useContentData() {
           })
         }
 
-        console.log('[useContentData] Podcasts/Radio/Audiobooks loaded:', response.items.length, 'items')
+        log.debug('Podcasts/Radio/Audiobooks loaded', { count: response.items.length })
 
         // Add content_type to each item for proper labeling
         const itemsWithType = response.items.map(item => ({
@@ -127,13 +128,16 @@ export function useContentData() {
           sort_by: sortBy,
           sort_direction: sortDirection,
         }
-        console.log('[useContentData] Loading VOD content with API filters:', apiFilters)
+        log.debug('Loading VOD content with API filters', apiFilters)
 
         const response = await adminContentService.getContentHierarchical(apiFilters)
 
-        console.log('[useContentData] VOD content loaded:', response.items.length, 'items, total:', response.total)
-        console.log('[useContentData] First 3 items:', response.items.slice(0, 3).map(item => ({ id: item.id, title: item.title })))
-        console.log('[useContentData] Response object:', response)
+        log.debug('VOD content loaded', {
+          count: response.items.length,
+          total: response.total,
+          firstItems: response.items.slice(0, 3).map(item => ({ id: item.id, title: item.title })),
+          response
+        })
 
         // Add content_type to each item for proper labeling
         const itemsWithType = response.items.map(item => ({
@@ -144,10 +148,10 @@ export function useContentData() {
         setItems(itemsWithType)
         setPagination(prev => ({ ...prev, total: response.total }))
 
-        console.log('[useContentData] State updated - items.length should now be:', response.items.length)
+        log.debug('State updated', { itemsLength: response.items.length })
       }
 
-      logger.info('Content loaded successfully', {
+      log.info('Content loaded successfully', {
         itemCount: items.length,
         total: pagination.total,
         filters
@@ -155,25 +159,25 @@ export function useContentData() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load content'
       setError(errorMessage)
-      logger.error('Failed to load content', { error: err, filters })
+      log.error('Failed to load content', err)
     } finally {
       setIsLoading(false)
     }
   }, [pagination.page, pagination.pageSize, filters, showOnlyBetaContent, sortBy, sortDirection])
 
   useEffect(() => {
-    console.log('[useContentData] Filters or pagination changed, reloading content')
+    log.debug('Filters or pagination changed, reloading content')
     loadContent()
   }, [loadContent])
 
   // Debug: Log when filters change
   useEffect(() => {
-    console.log('[useContentData] Filters state updated:', filters)
+    log.debug('Filters state updated', filters)
   }, [filters])
 
   // Debug: Log when showOnlyWithSubtitles changes
   useEffect(() => {
-    console.log('[useContentData] showOnlyWithSubtitles changed:', showOnlyWithSubtitles)
+    log.debug('showOnlyWithSubtitles changed', { showOnlyWithSubtitles })
   }, [showOnlyWithSubtitles])
 
   const handleExpandToggle = useCallback(async (rowId: string, expanded: boolean) => {
@@ -194,9 +198,9 @@ export function useContentData() {
             ...prev,
             [rowId]: response.episodes || [],
           }))
-          logger.info('Episodes loaded', { seriesId: rowId, count: response.episodes.length })
+          log.info('Episodes loaded', { seriesId: rowId, count: response.episodes.length })
         } catch (err) {
-          logger.error('Failed to load episodes', { error: err, seriesId: rowId })
+          log.error('Failed to load episodes', err)
         } finally {
           setLoadingEpisodes(prev => {
             const next = new Set(prev)
@@ -210,7 +214,7 @@ export function useContentData() {
 
   const handleSelectionChange = useCallback((ids: string[]) => {
     setSelectedIds(ids)
-    logger.debug('Selection changed', { count: ids.length })
+    log.debug('Selection changed', { count: ids.length })
   }, [])
 
   const handleBatchMerge = async (baseId: string, mergeIds: string[], mergeConfig: any) => {
@@ -243,7 +247,7 @@ export function useContentData() {
       }
     } catch (err: any) {
       const msg = err?.detail || err?.message || 'Failed to merge content'
-      logger.error('Merge failed', { error: err })
+      log.error('Merge failed', err)
       setError(msg)
     } finally {
       setIsBatchProcessing(false)
@@ -272,7 +276,7 @@ export function useContentData() {
               failed: result.errors.length
             })
           )
-          logger.warn('Batch delete partially succeeded', {
+          log.warn('Batch delete partially succeeded', {
             deleted: result.deleted_count,
             errors: result.errors
           })
@@ -282,7 +286,7 @@ export function useContentData() {
             t('common.error'),
             result.errors.join(', ')
           )
-          logger.error('Batch delete failed', { errors: result.errors })
+          log.error('Batch delete failed', { errors: result.errors })
         }
       } else {
         // Complete success
@@ -290,7 +294,7 @@ export function useContentData() {
           t('common.success'),
           t('admin.content.batchDeleteSuccess', { count: result.deleted_count })
         )
-        logger.info('Batch delete successful', { count: result.deleted_count })
+        log.info('Batch delete successful', { count: result.deleted_count })
       }
 
       setSelectedIds([])
@@ -298,7 +302,7 @@ export function useContentData() {
       await loadContent()
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to delete content'
-      logger.error('Batch delete request failed', { error: err })
+      log.error('Batch delete request failed', err)
       notifications.showError(t('common.error'), msg)
     } finally {
       setIsBatchProcessing(false)
@@ -318,10 +322,10 @@ export function useContentData() {
       setSelectedIds([])
       setSelectedItemsData([])
       await loadContent()
-      logger.info('Batch feature update successful', { featured, count: selectedIds.length })
+      log.info('Batch feature update successful', { featured, count: selectedIds.length })
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to update content'
-      logger.error('Batch feature failed', { error: err })
+      log.error('Batch feature failed', err)
       setError(msg)
     } finally {
       setIsBatchProcessing(false)
@@ -337,10 +341,10 @@ export function useContentData() {
       setSelectedIds([])
       setSelectedItemsData([])
       await loadContent()
-      logger.info('Batch beta update successful', { beta, count: selectedIds.length })
+      log.info('Batch beta update successful', { beta, count: selectedIds.length })
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to update content'
-      logger.error('Batch beta failed', { error: err })
+      log.error('Batch beta failed', err)
       setError(msg)
     } finally {
       setIsBatchProcessing(false)
@@ -348,7 +352,7 @@ export function useContentData() {
   }, [selectedIds, loadContent])
 
   const handleSort = useCallback((columnKey: string, direction: 'asc' | 'desc') => {
-    console.log('[useContentData] Sort changed:', { columnKey, direction })
+    log.debug('Sort changed', { columnKey, direction })
     setSortBy(columnKey)
     setSortDirection(direction)
     // Reset to first page when sorting changes
@@ -357,14 +361,16 @@ export function useContentData() {
 
   // Transform data to hierarchical table format
   const hierarchicalData = useMemo<HierarchicalTableRow<ContentItem | Episode>[]>(() => {
-    console.log('[useContentData] hierarchicalData memo running - items.length:', items.length)
+    log.debug('hierarchicalData memo running', { itemsLength: items.length })
 
     const filtered = showOnlyWithSubtitles
       ? items.filter(item => item.available_subtitles && item.available_subtitles.length > 0)
       : items
 
-    console.log('[useContentData] After subtitle filter - filtered.length:', filtered.length)
-    console.log('[useContentData] Item titles in order:', filtered.slice(0, 5).map(item => item.title))
+    log.debug('After subtitle filter', {
+      filteredLength: filtered.length,
+      itemTitles: filtered.slice(0, 5).map(item => item.title)
+    })
 
     const result = filtered.map(item => {
       let children: HierarchicalTableRow<Episode>[] | undefined = undefined
@@ -388,7 +394,7 @@ export function useContentData() {
       }
     })
 
-    console.log('[useContentData] hierarchicalData created:', result.length, 'rows')
+    log.debug('hierarchicalData created', { rowCount: result.length })
     return result
   }, [items, showOnlyWithSubtitles, expandedSeries, episodeCache])
 

@@ -42,6 +42,8 @@ export interface SeriesData {
   seasons: Season[];
   related: any[];
   available_subtitles?: string[];
+  is_kids_content?: boolean;
+  age_rating?: string;
 }
 
 export interface VideoPreviewState {

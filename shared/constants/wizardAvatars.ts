@@ -183,13 +183,22 @@ export const GESTURE_SPRITESHEETS: Partial<Record<GestureType, unknown>> = {
 
 /**
  * Idle behavior spritesheets for wizard animations during pauses
+ *
+ * ASSET STATUS: Pending extraction from master spritesheet files:
+ * - idle_behaviors_master.png contains: shifts_weight, adjusts_hat, looks_around
+ * - puffs_master.png contains: puffs_in, puffs_out
+ *
+ * When assets are available, replace null values with require() statements:
+ * shifts_weight: require('../assets/images/characters/wizard/spritesheets/idle/shifts_weight/spritesheet.png'),
+ *
+ * Animation system falls back to static idle image when spritesheet is null.
  */
 export const IDLE_BEHAVIOR_SPRITESHEETS: Record<string, unknown> = {
-  shifts_weight: require('../assets/images/characters/wizard/spritesheets/idle/shifts_weight/spritesheet.png'),
-  adjusts_hat: require('../assets/images/characters/wizard/spritesheets/idle/adjusts_hat/spritesheet.png'),
-  looks_around: require('../assets/images/characters/wizard/spritesheets/idle/looks_around/spritesheet.png'),
-  puffs_in: require('../assets/images/characters/wizard/spritesheets/idle/puffs_in/spritesheet.png'),
-  puffs_out: require('../assets/images/characters/wizard/spritesheets/idle/puffs_out/spritesheet.png'),
+  shifts_weight: null,
+  adjusts_hat: null,
+  looks_around: null,
+  puffs_in: null,
+  puffs_out: null,
 };
 
 /**
@@ -306,9 +315,12 @@ export function getGestureSpritesheet(gesture: GestureType): unknown | null {
 
 /**
  * Get spritesheet for an idle behavior
+ * Returns null if the behavior spritesheet hasn't been extracted yet
  */
 export function getIdleBehaviorSpritesheet(behavior: string): unknown | null {
-  return IDLE_BEHAVIOR_SPRITESHEETS[behavior] || null;
+  const spritesheet = IDLE_BEHAVIOR_SPRITESHEETS[behavior];
+  // Return null if behavior doesn't exist or asset is null (pending creation)
+  return spritesheet || null;
 }
 
 /**

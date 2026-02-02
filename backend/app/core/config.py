@@ -1399,6 +1399,93 @@ class Settings(BaseSettings):
             raise ValueError("TRIVIA_ROLLOUT_PERCENTAGE must be between 0 and 100")
         return v
 
+    # ============================================
+    # KIDS QUIZ FEATURE CONFIGURATION
+    # ============================================
+    # Interactive quizzes for kids content (ages 0-12)
+
+    QUIZ_ENABLED: bool = Field(
+        default=True,
+        env="QUIZ_ENABLED",
+        description="Enable kids quiz feature globally"
+    )
+    QUIZ_MIN_QUESTIONS: int = Field(
+        default=5,
+        ge=3,
+        le=10,
+        env="QUIZ_MIN_QUESTIONS",
+        description="Minimum questions per quiz"
+    )
+    QUIZ_MAX_QUESTIONS: int = Field(
+        default=10,
+        ge=5,
+        le=25,
+        env="QUIZ_MAX_QUESTIONS",
+        description="Maximum questions per quiz"
+    )
+    QUIZ_POINTS_EASY: int = Field(
+        default=10,
+        ge=1,
+        le=50,
+        env="QUIZ_POINTS_EASY",
+        description="Points awarded for easy questions"
+    )
+    QUIZ_POINTS_MEDIUM: int = Field(
+        default=20,
+        ge=1,
+        le=100,
+        env="QUIZ_POINTS_MEDIUM",
+        description="Points awarded for medium questions"
+    )
+    QUIZ_POINTS_HARD: int = Field(
+        default=30,
+        ge=1,
+        le=150,
+        env="QUIZ_POINTS_HARD",
+        description="Points awarded for hard questions"
+    )
+    QUIZ_PERFECT_BONUS: int = Field(
+        default=50,
+        ge=0,
+        le=500,
+        env="QUIZ_PERFECT_BONUS",
+        description="Bonus points for perfect score"
+    )
+    QUIZ_GENERATION_MODEL: str = Field(
+        default="claude-sonnet-4-20250514",
+        env="QUIZ_GENERATION_MODEL",
+        description="Claude model for quiz generation"
+    )
+    QUIZ_AI_MAX_TOKENS: int = Field(
+        default=2000,
+        ge=500,
+        le=4096,
+        env="QUIZ_AI_MAX_TOKENS",
+        description="Max tokens for AI quiz generation"
+    )
+    QUIZ_ROLLOUT_PERCENTAGE: int = Field(
+        default=100,
+        ge=0,
+        le=100,
+        env="QUIZ_ROLLOUT_PERCENTAGE",
+        description="Percentage of kids profiles to show quiz"
+    )
+    QUIZ_CACHE_TTL_HOURS: int = Field(
+        default=168,
+        ge=1,
+        le=720,
+        env="QUIZ_CACHE_TTL_HOURS",
+        description="Cache TTL for generated quizzes (168h = 1 week)"
+    )
+
+    @field_validator("QUIZ_ROLLOUT_PERCENTAGE")
+    @classmethod
+    def validate_quiz_rollout(cls, v: int) -> int:
+        """Validate quiz rollout percentage is valid."""
+        if v < 0 or v > 100:
+            raise ValueError("QUIZ_ROLLOUT_PERCENTAGE must be between 0 and 100")
+        return v
+
     # Kids Educational Sites Configuration (JSON mapping subcategory -> URLs)
     # Example: '{"learning-hebrew": ["https://site1.com", "https://site2.com"]}'
     KIDS_EDUCATIONAL_SITES_CONFIG: str = ""

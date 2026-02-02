@@ -8420,5 +8420,64 @@
       "processingLabel": "Olorin traite",
       "gestureLabel": "Olorin {{gesture}}"
     }
+  },
+  "quiz": {
+    "title": "L'heure du Quiz",
+    "questionOf": "Question {{current}} sur {{total}}",
+    "correct": "Correct",
+    "incorrect": "Pas tout a fait",
+    "score": "Vous avez obtenu {{score}} sur {{total}}",
+    "pointsEarned": "+{{points}} points",
+    "badgeEarned": "Badge Obtenu",
+    "perfectScore": "Score Parfait",
+    "tryAgain": "Reessayer",
+    "continue": "Continuer",
+    "skip": "Passer le Quiz",
+    "loading": "Chargement du quiz...",
+    "error": "Impossible de charger le quiz",
+    "retry": "Reessayer",
+    "submitting": "Verification des reponses...",
+    "greatJob": "Excellent travail",
+    "keepLearning": "Continuez a apprendre et a jouer",
+    "nextQuestion": "Question Suivante",
+    "viewResults": "Voir les Resultats",
+    "answersReview": "Vos Reponses",
+    "explanation": "Explication",
+    "timeBonus": "Bonus de Temps",
+    "streakBonus": "Bonus de Serie",
+    "newBadge": "Nouveau Badge",
+    "totalScore": "Score Total"
+  },
+  "rewards": {
+    "title": "Mes Recompenses",
+    "totalPoints": "Points Totaux",
+    "badges": "Badges",
+    "quizzesCompleted": "Quiz Completes",
+    "perfectScores": "Scores Parfaits",
+    "currentStreak": "Serie Actuelle",
+    "longestStreak": "Plus Longue Serie",
+    "days": "jours",
+    "noBadges": "Completez des quiz pour gagner des badges",
+    "locked": "Continuez a jouer pour debloquer",
+    "earnedOn": "Obtenu le {{date}}",
+    "pointsBonus": "+{{points}} points bonus",
+    "rarity": {
+      "common": "Commun",
+      "uncommon": "Peu Commun",
+      "rare": "Rare",
+      "epic": "Epique",
+      "legendary": "Legendaire"
+    },
+    "badgeNames": {
+      "first_quiz": "Premier Quiz",
+      "quiz_rookie": "Debutant Quiz",
+      "quiz_fan": "Fan de Quiz",
+      "quiz_master": "Maitre du Quiz",
+      "perfect_start": "Debut Parfait",
+      "perfectionist": "Perfectionniste",
+      "streak_3": "En Feu",
+      "streak_7": "Guerrier de la Semaine",
+      "streak_30": "Maitre du Mois"
+    }
   }
 }

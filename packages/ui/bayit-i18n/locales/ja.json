@@ -8253,5 +8253,64 @@
       "processingLabel": "オロリンが処理しています",
       "gestureLabel": "オロリン {{gesture}}"
     }
+  },
+  "quiz": {
+    "title": "クイズタイム",
+    "questionOf": "問題 {{current}} / {{total}}",
+    "correct": "正解",
+    "incorrect": "惜しい",
+    "score": "{{total}}問中{{score}}問正解",
+    "pointsEarned": "+{{points}}ポイント",
+    "badgeEarned": "バッジ獲得",
+    "perfectScore": "満点",
+    "tryAgain": "もう一度",
+    "continue": "続ける",
+    "skip": "クイズをスキップ",
+    "loading": "クイズを読み込み中...",
+    "error": "クイズを読み込めませんでした",
+    "retry": "再試行",
+    "submitting": "回答を確認中...",
+    "greatJob": "よくできました",
+    "keepLearning": "学び続けて遊び続けよう",
+    "nextQuestion": "次の問題",
+    "viewResults": "結果を見る",
+    "answersReview": "あなたの回答",
+    "explanation": "解説",
+    "timeBonus": "タイムボーナス",
+    "streakBonus": "連続ボーナス",
+    "newBadge": "新しいバッジ",
+    "totalScore": "合計スコア"
+  },
+  "rewards": {
+    "title": "マイリワード",
+    "totalPoints": "合計ポイント",
+    "badges": "バッジ",
+    "quizzesCompleted": "完了したクイズ",
+    "perfectScores": "満点回数",
+    "currentStreak": "現在の連続",
+    "longestStreak": "最長連続",
+    "days": "日",
+    "noBadges": "クイズを完了してバッジを獲得しよう",
+    "locked": "プレイを続けてアンロック",
+    "earnedOn": "{{date}}に獲得",
+    "pointsBonus": "+{{points}}ボーナスポイント",
+    "rarity": {
+      "common": "コモン",
+      "uncommon": "アンコモン",
+      "rare": "レア",
+      "epic": "エピック",
+      "legendary": "レジェンダリー"
+    },
+    "badgeNames": {
+      "first_quiz": "初めてのクイズ",
+      "quiz_rookie": "クイズルーキー",
+      "quiz_fan": "クイズファン",
+      "quiz_master": "クイズマスター",
+      "perfect_start": "完璧なスタート",
+      "perfectionist": "完璧主義者",
+      "streak_3": "絶好調",
+      "streak_7": "週間ウォリアー",
+      "streak_30": "月間マスター"
+    }
   }
 }

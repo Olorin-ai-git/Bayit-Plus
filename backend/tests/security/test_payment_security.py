@@ -243,7 +243,7 @@ class TestAtomicStateTransitions:
         user_id = str(viewer_user.id)
 
         # Simulate webhook activation (atomic update)
-        result = await User.get_motor_collection().update_one(
+        result = await User.get_pymongo_collection().update_one(
             {
                 "_id": ObjectId(user_id),
                 "payment_pending": True,
@@ -275,7 +275,7 @@ class TestAtomicStateTransitions:
         user_id = str(viewer_user.id)
 
         # First webhook - should succeed
-        result1 = await User.get_motor_collection().update_one(
+        result1 = await User.get_pymongo_collection().update_one(
             {
                 "_id": ObjectId(user_id),
                 "payment_pending": True,
@@ -293,7 +293,7 @@ class TestAtomicStateTransitions:
         assert result1.modified_count == 1
 
         # Second webhook (duplicate) - should fail gracefully
-        result2 = await User.get_motor_collection().update_one(
+        result2 = await User.get_pymongo_collection().update_one(
             {
                 "_id": ObjectId(user_id),
                 "payment_pending": True,  # No longer true

@@ -6,6 +6,9 @@ import { GlassModal } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 import { Icon } from '@olorin/shared-icons/web'
+import logger from '@/utils/logger'
+
+const log = logger.scope('MergeConfirmationModal')
 
 export interface ContentItem {
   id: string
@@ -39,7 +42,7 @@ const MergeConfirmationModal: React.FC<MergeConfirmationModalProps> = ({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  console.log('[MergeConfirmationModal] Rendering:', {
+  log.debug('Rendering', {
     visible,
     selectedItemsCount: selectedItems.length,
     selectedKeepId,
@@ -76,11 +79,11 @@ const MergeConfirmationModal: React.FC<MergeConfirmationModalProps> = ({
   }
 
   if (!visible) {
-    console.log('[MergeConfirmationModal] Not visible, returning null')
+    log.debug('Not visible, returning null')
     return null
   }
 
-  console.log('[MergeConfirmationModal] About to render GlassModal')
+  log.debug('About to render GlassModal')
 
   return (
     <GlassModal

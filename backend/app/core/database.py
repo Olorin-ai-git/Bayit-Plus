@@ -81,6 +81,10 @@ from app.models.trending import ContentTrendMatch, TrendingSnapshot
 from app.models.trivia import ContentTrivia
 from app.models.upload import (BrowserUploadSession, MonitoredFolder,
                                UploadHashLock, UploadJob, UploadStats)
+# Quiz feature models
+from app.models.quiz import ContentQuiz
+from app.models.quiz_attempt import QuizAttempt
+from app.models.reward import Badge, UserReward
 # Models
 from app.models.user import User
 from app.models.user_system_widget import UserSystemWidget
@@ -227,6 +231,11 @@ async def connect_to_mongo():
         VideoChapters,
         # Trivia models
         ContentTrivia,
+        # Quiz models (kids interactive quizzes)
+        ContentQuiz,
+        QuizAttempt,
+        Badge,
+        UserReward,
         # Subtitle models
         SubtitleTrackDoc,
         TranslationCacheDoc,

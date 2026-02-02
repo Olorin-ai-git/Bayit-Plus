@@ -8,8 +8,9 @@ import type { Content } from '@/types/content'
 
 export function useContentForm(contentId?: string) {
   const navigate = useNavigate()
-  const { t } = useTranslation()
+  const { t} = useTranslation()
   const notifications = useNotifications()
+  const log = logger.scope('ContentForm')
 
   const [isLoading, setIsLoading] = useState(!!contentId)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -22,14 +23,14 @@ export function useContentForm(contentId?: string) {
       if (notifications?.showError) {
         notifications.showError(message, title || 'Error')
       } else {
-        console.error('[Notification]', title, message)
+        log.error('Notification fallback', { title, message })
       }
     },
     showSuccess: (message: string, title?: string) => {
       if (notifications?.showSuccess) {
         notifications.showSuccess(message, title || 'Success')
       } else {
-        console.log('[Notification]', title, message)
+        log.info('Notification fallback', { title, message })
       }
     },
   }
@@ -51,16 +52,16 @@ export function useContentForm(contentId?: string) {
 
   useEffect(() => {
     if (contentId) {
-      console.log('[ContentForm] contentId detected, loading content...', { contentId })
+      log.debug('contentId detected, loading content', { contentId })
       loadContent()
     } else {
-      console.log('[ContentForm] No contentId, showing empty form for new content')
+      log.debug('No contentId, showing empty form for new content')
     }
   }, [contentId])
 
   // Debug: Log formData changes
   useEffect(() => {
-    console.log('[ContentForm] formData state updated:', {
+    log.debug('formData state updated', {
       title: formData.title,
       stream_url: formData.stream_url,
       thumbnail: formData.thumbnail,
@@ -73,10 +74,10 @@ export function useContentForm(contentId?: string) {
     try {
       setIsLoading(true)
       setError(null)
-      console.log('[ContentForm] Loading content for edit...', { contentId })
+      log.debug('Loading content for edit', { contentId })
       const data = await adminContentService.getContentById(contentId!)
-      console.log('[ContentForm] Content loaded from API:', data)
-      console.log('[ContentForm] Setting form data with:', {
+      log.debug('Content loaded from API', data)
+      log.debug('Setting form data', {
         title: data.title,
         stream_url: data.stream_url,
         thumbnail: data.thumbnail,
@@ -93,18 +94,17 @@ export function useContentForm(contentId?: string) {
         year: data.year != null ? Number(data.year) : undefined,
       }
 
-      console.log('[ContentForm] Sanitized data:', {
+      log.debug('Sanitized data', {
         rating: sanitizedData.rating,
         ratingType: typeof sanitizedData.rating,
       })
 
       setFormData(sanitizedData)
-      console.log('[ContentForm] Form data updated')
-      logger.info('Content loaded for editing', { contentId })
+      log.debug('Form data updated')
+      log.info('Content loaded for editing', { contentId })
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to load content'
-      console.error('[ContentForm] Failed to load content:', err)
-      logger.error('Failed to load content', { error: err, contentId })
+      log.error('Failed to load content', err)
       setError(msg)
     } finally {
       setIsLoading(false)
@@ -119,8 +119,7 @@ export function useContentForm(contentId?: string) {
   }
 
   const handleSubmit = async () => {
-    console.log('[ContentForm] ===== HANDLE SUBMIT CALLED =====')
-    logger.info('handleSubmit called', {
+    log.info('handleSubmit called', {
       formData: {
         title: formData.title,
         stream_url: formData.stream_url,
@@ -133,10 +132,9 @@ export function useContentForm(contentId?: string) {
     // For editing existing content, only require title
     if (!formData.title) {
       const msg = t('admin.content.validation.titleRequired', 'Title is required')
-      logger.warn('Validation failed - title missing', {
+      log.warn('Validation failed - title missing', {
         title: formData.title
       })
-      console.error('[ContentForm] Validation failed: title missing')
       setError(msg)
       showNotification.showError(msg, 'Validation Error')
       return
@@ -144,16 +142,15 @@ export function useContentForm(contentId?: string) {
 
     if (!contentId && !formData.stream_url) {
       const msg = t('admin.content.validation.streamUrlRequired', 'Stream URL is required for new content')
-      logger.warn('Validation failed - stream_url missing for new content', {
+      log.warn('Validation failed - stream_url missing for new content', {
         stream_url: formData.stream_url
       })
-      console.error('[ContentForm] Validation failed: stream_url missing for new content')
       setError(msg)
       showNotification.showError(msg, 'Validation Error')
       return
     }
 
-    console.log('[ContentForm] Validation passed, submitting...', { contentId, isUpdate: !!contentId })
+    log.debug('Validation passed, submitting', { contentId, isUpdate: !!contentId })
 
     try {
       setIsSubmitting(true)
@@ -177,26 +174,26 @@ export function useContentForm(contentId?: string) {
         }
       })
 
-      console.log('[ContentForm] Submitting to API...', { contentId, sanitizedPayload })
+      log.debug('Submitting to API', { contentId, sanitizedPayload })
 
       if (contentId) {
-        console.log('[ContentForm] Calling updateContent API...', { contentId })
+        log.debug('Calling updateContent API', { contentId })
         const result = await adminContentService.updateContent(contentId, sanitizedPayload)
-        console.log('[ContentForm] Update successful:', result)
+        log.debug('Update successful', result)
         showNotification.showSuccess(
           t('admin.content.updateSuccess', 'Content updated successfully'),
           'Success'
         )
-        logger.info('Content updated', { contentId })
+        log.info('Content updated', { contentId })
       } else {
-        console.log('[ContentForm] Calling createContent API...')
+        log.debug('Calling createContent API')
         const result = await adminContentService.createContent(sanitizedPayload as Content)
-        console.log('[ContentForm] Create successful:', result)
+        log.debug('Create successful', result)
         showNotification.showSuccess(
           t('admin.content.createSuccess', 'Content created successfully'),
           'Success'
         )
-        logger.info('Content created', { title: formData.title })
+        log.info('Content created', { title: formData.title })
       }
 
       setSuccess(true)
@@ -204,11 +201,13 @@ export function useContentForm(contentId?: string) {
         navigate('/admin/content')
       }, 1500)
     } catch (err: any) {
-      console.error('[ContentForm] Save failed - Full error:', err)
-      console.error('[ContentForm] Error keys:', Object.keys(err || {}))
-      console.error('[ContentForm] Error.detail:', err?.detail)
-      console.error('[ContentForm] Error.response:', err?.response)
-      console.error('[ContentForm] Error.response.data:', err?.response?.data)
+      log.error('Save failed', err)
+      log.debug('Error details', {
+        keys: Object.keys(err || {}),
+        detail: err?.detail,
+        response: err?.response,
+        responseData: err?.response?.data,
+      })
 
       let msg = 'Failed to save content'
 
@@ -233,12 +232,11 @@ export function useContentForm(contentId?: string) {
         msg = err.message
       }
 
-      console.error('[ContentForm] Final error message:', msg)
-      logger.error('Failed to save content', { error: err, contentId })
+      log.error('Final error message', { msg, contentId })
       setError(msg)
       showNotification.showError(msg, 'Error')
     } finally {
-      console.log('[ContentForm] Submission complete, setting isSubmitting to false')
+      log.debug('Submission complete, setting isSubmitting to false')
       setIsSubmitting(false)
     }
   }

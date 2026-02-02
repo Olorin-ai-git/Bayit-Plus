@@ -16,6 +16,8 @@ import { getLocalizedCategory } from '@bayit/shared-utils/contentLocalization';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
+const log = logger.scope('ContentCard');
+
 interface Content {
   id: string;
   title: string;
@@ -156,7 +158,7 @@ export default function ContentCard({ content, showProgress = false, showActions
   // Debug logging
   useEffect(() => {
     if (content.type === 'article' || (content.city && content.state)) {
-      console.log('Location/Article card rendered:', {
+      log.debug('Location/Article card rendered', {
         id: content.id,
         title: content.title.substring(0, 50),
         type: content.type,

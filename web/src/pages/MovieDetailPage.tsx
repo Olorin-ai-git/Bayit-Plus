@@ -45,6 +45,8 @@ interface MovieData {
   related: any[];
   available_subtitle_languages?: string[];
   has_subtitles?: boolean;
+  is_kids_content?: boolean;
+  age_rating?: string;
 }
 
 export default function MovieDetailPage() {
@@ -222,6 +224,7 @@ export default function MovieDetailPage() {
         src: '', // Will be fetched by the overlay
         poster: movie.backdrop || movie.thumbnail,
         type: 'movie',
+        is_kids_content: movie.is_kids_content,
       });
     }
   };

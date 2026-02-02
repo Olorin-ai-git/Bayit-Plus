@@ -6,3 +6,5 @@ export * from './voiceSettingsStore';
 export * from './chatbotStore';
 export * from './homePageConfigStore';
 export * from './triviaStore';
+export * from './quizStore';
+export * from './rewardStore';

@@ -5,6 +5,9 @@
 
 import { useState, useCallback } from 'react';
 import { pingClients } from '../services/diagnosticsApi';
+import logger from '../utils/logger';
+
+const log = logger.scope('ServiceActions');
 
 interface UseServiceActionsReturn {
   pingService: (clientType: string) => Promise<void>;
@@ -32,9 +35,9 @@ export function useServiceActions(): UseServiceActionsReturn {
 
       await pingClients(clientType);
 
-      console.log(`Ping sent to ${clientType} clients`);
+      log.info(`Ping sent to ${clientType} clients`);
     } catch (err) {
-      console.error(`Failed to ping ${clientType}:`, err);
+      log.error(`Failed to ping ${clientType}`, err);
       setError(err instanceof Error ? err.message : 'Ping failed');
       throw err;
     } finally {
@@ -51,14 +54,14 @@ export function useServiceActions(): UseServiceActionsReturn {
       setError(null);
 
       // TODO: Implement restart endpoint in backend
-      console.warn(`Restart service not yet implemented: ${serviceName}`);
+      log.warn(`Restart service not yet implemented: ${serviceName}`);
 
       // Placeholder timeout
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      console.log(`Service restart triggered: ${serviceName}`);
+      log.info(`Service restart triggered: ${serviceName}`);
     } catch (err) {
-      console.error(`Failed to restart ${serviceName}:`, err);
+      log.error(`Failed to restart ${serviceName}`, err);
       setError(err instanceof Error ? err.message : 'Restart failed');
       throw err;
     } finally {

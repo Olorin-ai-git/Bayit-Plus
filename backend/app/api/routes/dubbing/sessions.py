@@ -21,6 +21,7 @@ from app.models.dubbing.session import (
 from app.models.user import User
 from app.services.dubbing.user_dubbing_service import UserDubbingService
 from app.services.dubbing.user_quota_service import UserQuotaService
+from app.services.voice_management_service import VoiceManagementService
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -342,46 +343,53 @@ async def list_available_voices(
     current_user: User = Depends(get_current_user),
 ):
     """
-    List available voices for dubbing
+    List available voices for dubbing from ElevenLabs API
 
     **Returns**:
     - voices: List of available voices
-        - id: Voice identifier
+        - id: Voice identifier (ElevenLabs voice_id)
         - name: Voice name
-        - language: Voice language
-        - gender: male/female
-        - preview_url: Preview audio URL (optional)
+        - language: Voice language code
+        - gender: male/female (if available)
+        - preview_url: Preview audio URL
     """
-    # TODO: Integrate with ElevenLabs service to get available voices
-    return {
-        "voices": [
-            {
-                "id": "voice_en_male_1",
-                "name": "David (English)",
-                "language": "en",
-                "gender": "male",
-                "preview_url": None,
-            },
-            {
-                "id": "voice_en_female_1",
-                "name": "Sarah (English)",
-                "language": "en",
-                "gender": "female",
-                "preview_url": None,
-            },
-            {
-                "id": "voice_es_male_1",
-                "name": "Carlos (Spanish)",
-                "language": "es",
-                "gender": "male",
-                "preview_url": None,
-            },
-            {
-                "id": "voice_es_female_1",
-                "name": "Maria (Spanish)",
-                "language": "es",
-                "gender": "female",
-                "preview_url": None,
-            },
-        ]
-    }
+    try:
+        # Fetch voices from ElevenLabs API via VoiceManagementService
+        elevenlabs_voices = await VoiceManagementService.fetch_elevenlabs_voices()
+
+        if not elevenlabs_voices:
+            logger.warning("No voices returned from ElevenLabs API")
+            return {"voices": []}
+
+        # Transform ElevenLabs voice format to match our endpoint schema
+        voices = []
+        for voice in elevenlabs_voices:
+            # Extract language code from labels if available
+            labels = voice.get("labels", {})
+            language = labels.get("language", "en")  # Default to English
+
+            # Determine gender from labels or voice metadata
+            gender = labels.get("gender", "neutral")
+
+            voices.append({
+                "id": voice.get("voice_id"),
+                "name": voice.get("name", "Unknown Voice"),
+                "language": language,
+                "gender": gender,
+                "preview_url": voice.get("preview_url"),
+            })
+
+        logger.info(
+            f"Retrieved {len(voices)} voices from ElevenLabs",
+            extra={"voice_count": len(voices)}
+        )
+
+        return {"voices": voices}
+
+    except Exception as e:
+        logger.error(
+            "Failed to fetch voices from ElevenLabs",
+            extra={"error": str(e)}
+        )
+        # Return empty list on error to gracefully handle failures
+        return {"voices": []}

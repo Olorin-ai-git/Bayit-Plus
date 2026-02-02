@@ -7705,5 +7705,64 @@
       "processingLabel": "Olorin está procesando",
       "gestureLabel": "Olorin {{gesture}}"
     }
+  },
+  "quiz": {
+    "title": "Hora del Cuestionario",
+    "questionOf": "Pregunta {{current}} de {{total}}",
+    "correct": "Correcto",
+    "incorrect": "No exactamente",
+    "score": "Obtuviste {{score}} de {{total}}",
+    "pointsEarned": "+{{points}} puntos",
+    "badgeEarned": "Insignia Obtenida",
+    "perfectScore": "Puntuacion Perfecta",
+    "tryAgain": "Intentar de Nuevo",
+    "continue": "Continuar",
+    "skip": "Saltar Cuestionario",
+    "loading": "Cargando cuestionario...",
+    "error": "No se pudo cargar el cuestionario",
+    "retry": "Intentar de Nuevo",
+    "submitting": "Verificando respuestas...",
+    "greatJob": "Excelente trabajo",
+    "keepLearning": "Sigue aprendiendo y jugando",
+    "nextQuestion": "Siguiente Pregunta",
+    "viewResults": "Ver Resultados",
+    "answersReview": "Tus Respuestas",
+    "explanation": "Explicacion",
+    "timeBonus": "Bonificacion por Tiempo",
+    "streakBonus": "Bonificacion por Racha",
+    "newBadge": "Nueva Insignia",
+    "totalScore": "Puntuacion Total"
+  },
+  "rewards": {
+    "title": "Mis Recompensas",
+    "totalPoints": "Puntos Totales",
+    "badges": "Insignias",
+    "quizzesCompleted": "Cuestionarios Completados",
+    "perfectScores": "Puntuaciones Perfectas",
+    "currentStreak": "Racha Actual",
+    "longestStreak": "Racha Mas Larga",
+    "days": "dias",
+    "noBadges": "Completa cuestionarios para ganar insignias",
+    "locked": "Sigue jugando para desbloquear",
+    "earnedOn": "Obtenido el {{date}}",
+    "pointsBonus": "+{{points}} puntos de bonificacion",
+    "rarity": {
+      "common": "Comun",
+      "uncommon": "Poco Comun",
+      "rare": "Raro",
+      "epic": "Epico",
+      "legendary": "Legendario"
+    },
+    "badgeNames": {
+      "first_quiz": "Primer Cuestionario",
+      "quiz_rookie": "Novato de Cuestionarios",
+      "quiz_fan": "Aficionado de Cuestionarios",
+      "quiz_master": "Maestro de Cuestionarios",
+      "perfect_start": "Comienzo Perfecto",
+      "perfectionist": "Perfeccionista",
+      "streak_3": "En Llamas",
+      "streak_7": "Guerrero de la Semana",
+      "streak_30": "Maestro Mensual"
+    }
   }
 }

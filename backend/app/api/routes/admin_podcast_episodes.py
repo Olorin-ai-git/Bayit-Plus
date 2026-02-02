@@ -358,7 +358,10 @@ async def get_translation_status(
     # Single aggregation query for better performance
     pipeline = [{"$group": {"_id": "$translation_status", "count": {"$sum": 1}}}]
 
-    results = await PodcastEpisode.aggregate(pipeline).to_list(length=None)
+    # Use Motor collection directly to avoid Beanie aggregate cursor issues
+    collection = PodcastEpisode.get_pymongo_collection()
+    cursor = collection.aggregate(pipeline)
+    results = await cursor.to_list(length=None)
     status_map = {r["_id"]: r["count"] for r in results}
 
     return {

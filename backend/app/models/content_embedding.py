@@ -12,7 +12,13 @@ from beanie import Document, PydanticObjectId
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 EmbeddingType = Literal[
-    "title", "description", "subtitle_segment", "dialogue", "summary"
+    "title",
+    "description",
+    "subtitle_segment",
+    "dialogue",
+    "summary",
+    "documentation",
+    "knowledge",
 ]
 
 

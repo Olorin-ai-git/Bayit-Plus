@@ -31,6 +31,11 @@ try:
 except ImportError:
     TranslationService = None
 
+try:
+    from app.services.whisper_transcription_service import WhisperTranscriptionService
+except ImportError:
+    WhisperTranscriptionService = None
+
 logger = get_logger(__name__)
 router = APIRouter()
 
@@ -60,6 +65,7 @@ class DubbingWebSocketManager:
         self.session = None
         self.realtime_dubbing = None
         self.translation_service = None
+        self.whisper_transcription = None
         self.is_connected = False
         self.audio_chunks_count = 0
         self.subtitles_count = 0
@@ -92,6 +98,20 @@ class DubbingWebSocketManager:
 
             if self.session.session_type.live_subtitles and TranslationService:
                 self.translation_service = TranslationService()
+
+            # Initialize Whisper transcription for subtitle generation
+            if self.session.session_type.live_subtitles and WhisperTranscriptionService:
+                try:
+                    self.whisper_transcription = WhisperTranscriptionService()
+                    logger.info(
+                        "✅ Whisper transcription initialized for subtitles",
+                        extra={"session_id": self.session_id}
+                    )
+                except Exception as e:
+                    logger.warning(
+                        "Failed to initialize Whisper transcription",
+                        extra={"session_id": self.session_id, "error": str(e)}
+                    )
 
             # Send connection confirmation
             await self.send_status("connected", "WebSocket connection established")
@@ -185,17 +205,49 @@ class DubbingWebSocketManager:
 
     async def _transcribe_audio(self, pcm_data: bytes) -> Optional[str]:
         """
-        Transcribe audio to text
+        Transcribe audio to text using OpenAI Whisper
 
         Args:
-            pcm_data: Raw PCM audio
+            pcm_data: Raw PCM audio (16-bit signed integers, 16kHz, mono)
 
         Returns:
             Transcribed text or None
         """
-        # TODO: Implement actual transcription using ElevenLabs or OpenAI Whisper
-        # For now, return placeholder
-        return None
+        if not self.whisper_transcription:
+            logger.warning(
+                "Whisper transcription not available",
+                extra={"session_id": self.session_id}
+            )
+            return None
+
+        try:
+            # Use Whisper to transcribe audio chunk
+            transcript = await self.whisper_transcription.transcribe_audio_chunk(
+                audio_data=pcm_data,
+                source_lang=self.session.source_language,
+                format="wav"
+            )
+
+            if transcript:
+                logger.debug(
+                    "Audio transcribed successfully",
+                    extra={
+                        "session_id": self.session_id,
+                        "transcript_length": len(transcript)
+                    }
+                )
+
+            return transcript
+
+        except Exception as e:
+            logger.error(
+                "Transcription error",
+                extra={
+                    "session_id": self.session_id,
+                    "error": str(e)
+                }
+            )
+            return None
 
     async def _translate_text(
         self, text: str, source_lang: str, target_lang: str

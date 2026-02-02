@@ -7587,5 +7587,64 @@
       "processingLabel": "Wizard is processing your request",
       "focusHint": "Press select to interact with the wizard"
     }
+  },
+  "quiz": {
+    "title": "Quiz Time!",
+    "questionOf": "Question {{current}} of {{total}}",
+    "correct": "Correct!",
+    "incorrect": "Not quite!",
+    "score": "You got {{score}} out of {{total}}!",
+    "pointsEarned": "+{{points}} points",
+    "badgeEarned": "Badge Earned!",
+    "perfectScore": "Perfect Score!",
+    "tryAgain": "Try Again",
+    "continue": "Continue",
+    "skip": "Skip Quiz",
+    "loading": "Loading quiz...",
+    "error": "Could not load quiz",
+    "retry": "Try Again",
+    "submitting": "Checking answers...",
+    "greatJob": "Great job!",
+    "keepLearning": "Keep learning and playing!",
+    "nextQuestion": "Next Question",
+    "viewResults": "View Results",
+    "answersReview": "Your Answers",
+    "explanation": "Explanation",
+    "timeBonus": "Time Bonus",
+    "streakBonus": "Streak Bonus",
+    "newBadge": "New Badge!",
+    "totalScore": "Total Score"
+  },
+  "rewards": {
+    "title": "My Rewards",
+    "totalPoints": "Total Points",
+    "badges": "Badges",
+    "quizzesCompleted": "Quizzes Completed",
+    "perfectScores": "Perfect Scores",
+    "currentStreak": "Current Streak",
+    "longestStreak": "Longest Streak",
+    "days": "days",
+    "noBadges": "Complete quizzes to earn badges!",
+    "locked": "Keep playing to unlock!",
+    "earnedOn": "Earned on {{date}}",
+    "pointsBonus": "+{{points}} bonus points",
+    "rarity": {
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    },
+    "badgeNames": {
+      "first_quiz": "First Quiz",
+      "quiz_rookie": "Quiz Rookie",
+      "quiz_fan": "Quiz Fan",
+      "quiz_master": "Quiz Master",
+      "perfect_start": "Perfect Start",
+      "perfectionist": "Perfectionist",
+      "streak_3": "On Fire",
+      "streak_7": "Week Warrior",
+      "streak_30": "Monthly Master"
+    }
   }
 }

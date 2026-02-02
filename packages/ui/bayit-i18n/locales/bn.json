@@ -7462,5 +7462,64 @@
       "processingLabel": "ওলোরিন প্রক্রিয়া করছেন",
       "gestureLabel": "ওলোরিন {{gesture}}"
     }
+  },
+  "quiz": {
+    "title": "কুইজ সময়",
+    "questionOf": "প্রশ্ন {{current}} / {{total}}",
+    "correct": "সঠিক",
+    "incorrect": "ঠিক নয়",
+    "score": "আপনি {{total}} এর মধ্যে {{score}} পেয়েছেন",
+    "pointsEarned": "+{{points}} পয়েন্ট",
+    "badgeEarned": "ব্যাজ অর্জিত",
+    "perfectScore": "পূর্ণ নম্বর",
+    "tryAgain": "আবার চেষ্টা করুন",
+    "continue": "চালিয়ে যান",
+    "skip": "কুইজ এড়িয়ে যান",
+    "loading": "কুইজ লোড হচ্ছে...",
+    "error": "কুইজ লোড করা যায়নি",
+    "retry": "আবার চেষ্টা করুন",
+    "submitting": "উত্তর পরীক্ষা করা হচ্ছে...",
+    "greatJob": "দারুণ কাজ",
+    "keepLearning": "শিখতে এবং খেলতে থাকুন",
+    "nextQuestion": "পরবর্তী প্রশ্ন",
+    "viewResults": "ফলাফল দেখুন",
+    "answersReview": "আপনার উত্তর",
+    "explanation": "ব্যাখ্যা",
+    "timeBonus": "সময় বোনাস",
+    "streakBonus": "ধারাবাহিক বোনাস",
+    "newBadge": "নতুন ব্যাজ",
+    "totalScore": "মোট নম্বর"
+  },
+  "rewards": {
+    "title": "আমার পুরস্কার",
+    "totalPoints": "মোট পয়েন্ট",
+    "badges": "ব্যাজ",
+    "quizzesCompleted": "সম্পন্ন কুইজ",
+    "perfectScores": "পূর্ণ নম্বর",
+    "currentStreak": "বর্তমান ধারা",
+    "longestStreak": "দীর্ঘতম ধারা",
+    "days": "দিন",
+    "noBadges": "ব্যাজ অর্জন করতে কুইজ সম্পন্ন করুন",
+    "locked": "আনলক করতে খেলতে থাকুন",
+    "earnedOn": "{{date}} তারিখে অর্জিত",
+    "pointsBonus": "+{{points}} বোনাস পয়েন্ট",
+    "rarity": {
+      "common": "সাধারণ",
+      "uncommon": "অসাধারণ",
+      "rare": "বিরল",
+      "epic": "মহাকাব্যিক",
+      "legendary": "কিংবদন্তি"
+    },
+    "badgeNames": {
+      "first_quiz": "প্রথম কুইজ",
+      "quiz_rookie": "কুইজ নবাগত",
+      "quiz_fan": "কুইজ অনুরাগী",
+      "quiz_master": "কুইজ মাস্টার",
+      "perfect_start": "নিখুঁত শুরু",
+      "perfectionist": "পূর্ণতাবাদী",
+      "streak_3": "আগুনে",
+      "streak_7": "সপ্তাহের যোদ্ধা",
+      "streak_30": "মাসিক মাস্টার"
+    }
   }
 }

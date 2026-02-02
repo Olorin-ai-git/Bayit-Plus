@@ -9,6 +9,9 @@ import { View, Text, Pressable, StyleSheet, TextInput, Platform } from 'react-na
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { Send } from 'lucide-react'
+import logger from '@/utils/logger'
+
+const log = logger.scope('ChannelChatInput')
 
 interface ChannelChatInputProps {
   onSendMessage: (text: string) => void
@@ -27,7 +30,7 @@ export default function ChannelChatInput({
   const [text, setText] = useState('')
 
   const handleTextChange = useCallback((newText: string) => {
-    console.log('Chat input text changed:', newText) // Debug log
+    log.debug('Chat input text changed', { newText })
     setText(newText)
   }, [])
 
@@ -37,20 +40,20 @@ export default function ChannelChatInput({
   const handleSend = useCallback(() => {
     const trimmed = text.trim()
     if (trimmed.length === 0 || disabled) {
-      console.log('Cannot send message', { isEmpty: trimmed.length === 0, disabled })
+      log.debug('Cannot send message', { isEmpty: trimmed.length === 0, disabled })
       return
     }
-    console.log('Sending message:', trimmed)
+    log.info('Sending message', { trimmed })
     onSendMessage(trimmed)
     setText('')
   }, [text, disabled, onSendMessage])
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      console.log('Key pressed in chat input:', e.key, 'Shift:', e.shiftKey)
+      log.debug('Key pressed in chat input', { key: e.key, shift: e.shiftKey })
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault()
-        console.log('Enter pressed - sending message')
+        log.debug('Enter pressed - sending message')
         handleSend()
       }
     },
@@ -80,7 +83,7 @@ export default function ChannelChatInput({
           // @ts-expect-error -- onKeyDown and onClick supported on React Native Web
           onKeyDown={handleKeyDown}
           onClick={(e: any) => e?.stopPropagation?.()}
-          onFocus={() => console.log('Chat input focused')} // Debug log
+          onFocus={() => log.debug('Chat input focused')}
         />
         <Pressable
           onPress={handleSend}

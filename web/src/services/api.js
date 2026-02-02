@@ -685,6 +685,26 @@ const apiDownloadsService = {
   getDownloadProgress: (downloadId) => api.get(`/downloads/${downloadId}/progress`),
 }
 
+// Quiz Service (API) - Kids quiz feature
+const apiQuizService = {
+  getQuiz: (contentId, profileId) =>
+    api.get(`/quiz/${contentId}`, { params: { profile_id: profileId } }),
+  submitQuiz: (quizId, answers, profileId, timings) =>
+    api.post(`/quiz/${quizId}/submit`, { answers, profile_id: profileId, timings }),
+  getHistory: (profileId, limit = 20, skip = 0) =>
+    api.get('/quiz/history/me', { params: { profile_id: profileId, limit, skip } }),
+}
+
+// Rewards Service (API) - Kids quiz rewards
+const apiRewardsService = {
+  getMyRewards: (profileId) =>
+    api.get('/rewards/me', { params: { profile_id: profileId } }),
+  getRewardStats: (profileId) =>
+    api.get('/rewards/stats', { params: { profile_id: profileId } }),
+  getAllBadges: () => api.get('/rewards/badges'),
+  getBadge: (badgeId) => api.get(`/rewards/badges/${badgeId}`),
+}
+
 // Watch Party Service (API)
 const apiPartyService = {
   create: (data) => api.post('/party/create', data),
@@ -736,5 +756,7 @@ export const profilesService = apiProfilesService // No demo mode for profiles -
 export const childrenService = isDemo ? demoChildrenService : apiChildrenService
 export const youngstersService = apiYoungstersService // No demo mode - requires real content
 export const judaismService = isDemo ? demoJudaismService : apiJudaismService
+export const quizService = apiQuizService // No demo mode - requires kids profile auth
+export const rewardsService = apiRewardsService // No demo mode - requires kids profile auth
 
 export default api

@@ -53,7 +53,7 @@ class TopicTracker:
 
             if existing_topic:
                 # Update existing with atomic operations to prevent race conditions
-                await LiveTriviaTopic.get_motor_collection().update_one(
+                await LiveTriviaTopic.get_pymongo_collection().update_one(
                     {
                         "_id": existing_topic.id,
                     },

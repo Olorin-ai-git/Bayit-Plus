@@ -370,7 +370,7 @@ class LiveTriviaOrchestrator:
             await self.session_validator.deduct_quota_and_set_cooldown(
                 user_id, topic_hash, len(facts)
             )
-            await LiveTriviaSession.get_motor_collection().update_one(
+            await LiveTriviaSession.get_pymongo_collection().update_one(
                 {"_id": session.id},
                 {
                     "$addToSet": {"shown_topics": topic_hash},

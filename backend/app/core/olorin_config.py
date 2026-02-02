@@ -8,7 +8,7 @@ This module provides separation of concerns for Olorin-specific settings.
 from typing import Optional
 
 from olorin_i18n import I18nConfig
-from pydantic import Field, field_validator
+from pydantic import AliasChoices, Field, field_validator
 from pydantic_settings import BaseSettings
 
 
@@ -57,6 +57,7 @@ class PineconeConfig(BaseSettings):
     api_key: str = Field(
         default="",
         description="Pinecone API key. REQUIRED if semantic_search_enabled=true.",
+        validation_alias=AliasChoices("OLORIN_PINECONE_API_KEY", "PINECONE_API_KEY"),
     )
     environment: str = Field(
         default="us-east-1-aws",

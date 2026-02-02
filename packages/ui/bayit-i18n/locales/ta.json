@@ -7560,5 +7560,64 @@
       "processingLabel": "ஒலோரின் செயலாக்குகிறார்",
       "gestureLabel": "ஒலோரின் {{gesture}}"
     }
+  },
+  "quiz": {
+    "title": "வினாடி வினா நேரம்",
+    "questionOf": "கேள்வி {{current}} / {{total}}",
+    "correct": "சரி",
+    "incorrect": "சரியில்லை",
+    "score": "நீங்கள் {{total}} இல் {{score}} பெற்றீர்கள்",
+    "pointsEarned": "+{{points}} புள்ளிகள்",
+    "badgeEarned": "பேட்ஜ் பெறப்பட்டது",
+    "perfectScore": "முழு மதிப்பெண்",
+    "tryAgain": "மீண்டும் முயற்சிக்கவும்",
+    "continue": "தொடரவும்",
+    "skip": "வினாடி வினாவைத் தவிர்",
+    "loading": "வினாடி வினா ஏற்றப்படுகிறது...",
+    "error": "வினாடி வினா ஏற்ற முடியவில்லை",
+    "retry": "மீண்டும் முயற்சிக்கவும்",
+    "submitting": "பதில்கள் சரிபார்க்கப்படுகின்றன...",
+    "greatJob": "நல்ல வேலை",
+    "keepLearning": "கற்றுக்கொண்டும் விளையாடிக்கொண்டும் இருங்கள்",
+    "nextQuestion": "அடுத்த கேள்வி",
+    "viewResults": "முடிவுகளைப் பார்க்கவும்",
+    "answersReview": "உங்கள் பதில்கள்",
+    "explanation": "விளக்கம்",
+    "timeBonus": "நேர போனஸ்",
+    "streakBonus": "தொடர் போனஸ்",
+    "newBadge": "புதிய பேட்ஜ்",
+    "totalScore": "மொத்த மதிப்பெண்"
+  },
+  "rewards": {
+    "title": "எனது வெகுமதிகள்",
+    "totalPoints": "மொத்த புள்ளிகள்",
+    "badges": "பேட்ஜ்கள்",
+    "quizzesCompleted": "முடிக்கப்பட்ட வினாடி வினாக்கள்",
+    "perfectScores": "முழு மதிப்பெண்கள்",
+    "currentStreak": "தற்போதைய தொடர்",
+    "longestStreak": "நீண்ட தொடர்",
+    "days": "நாட்கள்",
+    "noBadges": "பேட்ஜ்கள் பெற வினாடி வினாக்களை முடிக்கவும்",
+    "locked": "திறக்க விளையாடிக்கொண்டே இருங்கள்",
+    "earnedOn": "{{date}} அன்று பெறப்பட்டது",
+    "pointsBonus": "+{{points}} போனஸ் புள்ளிகள்",
+    "rarity": {
+      "common": "சாதாரண",
+      "uncommon": "அசாதாரண",
+      "rare": "அரிதான",
+      "epic": "காப்பியம்",
+      "legendary": "புராண"
+    },
+    "badgeNames": {
+      "first_quiz": "முதல் வினாடி வினா",
+      "quiz_rookie": "வினாடி வினா புதியவர்",
+      "quiz_fan": "வினாடி வினா ரசிகர்",
+      "quiz_master": "வினாடி வினா மாஸ்டர்",
+      "perfect_start": "சரியான தொடக்கம்",
+      "perfectionist": "பூர்ணத்துவவாதி",
+      "streak_3": "சூடாக",
+      "streak_7": "வார வீரர்",
+      "streak_30": "மாத மாஸ்டர்"
+    }
   }
 }

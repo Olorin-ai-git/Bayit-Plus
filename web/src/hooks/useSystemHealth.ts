@@ -6,6 +6,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { getClients, getBackendServices, type ClientStatus, type ServiceHealth } from '../services/diagnosticsApi';
 import { useAuthStore } from '../stores/authStore';
+import logger from '../utils/logger';
 
 interface SystemMetrics {
   cpu_usage: number;
@@ -36,6 +37,7 @@ const WS_BASE_URL = import.meta.env.VITE_WS_URL || `ws://${window.location.hostn
  */
 export function useSystemHealth(): UseSystemHealthReturn {
   const token = useAuthStore((state) => state.token);
+  const log = logger.scope('SystemHealth');
   const [services, setServices] = useState<Record<string, ServiceHealth>>({});
   const [clients, setClients] = useState<Record<string, ClientStatus[]>>({});
   const [metrics, setMetrics] = useState<SystemMetrics | null>(null);
@@ -78,7 +80,7 @@ export function useSystemHealth(): UseSystemHealthReturn {
 
       setLoading(false);
     } catch (err) {
-      console.error('Failed to load diagnostics data:', err);
+      log.error('Failed to load diagnostics data', err);
       setError(err instanceof Error ? err.message : 'Failed to load data');
       setLoading(false);
     }
@@ -89,7 +91,7 @@ export function useSystemHealth(): UseSystemHealthReturn {
    */
   const connectWebSocket = useCallback(() => {
     if (!token) {
-      console.warn('No auth token available for WebSocket connection');
+      log.warn('No auth token available for WebSocket connection');
       return;
     }
 
@@ -98,7 +100,7 @@ export function useSystemHealth(): UseSystemHealthReturn {
       wsRef.current = ws;
 
       ws.onopen = () => {
-        console.log('Diagnostics WebSocket connected');
+        log.info('Diagnostics WebSocket connected');
         setIsLive(true);
         setError(null);
       };
@@ -127,32 +129,32 @@ export function useSystemHealth(): UseSystemHealthReturn {
               });
             }
           } else if (data.type === 'pong') {
-            console.log('Received pong from server');
+            log.debug('Received pong from server');
           }
         } catch (err) {
-          console.error('Failed to parse WebSocket message:', err);
+          log.error('Failed to parse WebSocket message', err);
         }
       };
 
       ws.onerror = (event) => {
-        console.error('WebSocket error:', event);
+        log.error('WebSocket error', event);
         setError('WebSocket connection error');
         setIsLive(false);
       };
 
       ws.onclose = () => {
-        console.log('Diagnostics WebSocket closed');
+        log.info('Diagnostics WebSocket closed');
         setIsLive(false);
         wsRef.current = null;
 
         // Attempt reconnection after 5 seconds
         reconnectTimeoutRef.current = setTimeout(() => {
-          console.log('Attempting WebSocket reconnection...');
+          log.info('Attempting WebSocket reconnection');
           connectWebSocket();
         }, 5000);
       };
     } catch (err) {
-      console.error('Failed to create WebSocket:', err);
+      log.error('Failed to create WebSocket', err);
       setError(err instanceof Error ? err.message : 'WebSocket connection failed');
       setIsLive(false);
     }

@@ -43,7 +43,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_radio_stations, admin_taxonomy,
                                 admin_uploads, admin_widgets,
                                 admin_youngsters_content, audiobooks, audible_integration,
-                                auth, chapters, chat,
+                                auth, avatar_dialogue, chapters, chat,
                                 channel_chat, chess, children, content, content_taxonomy,
                                 cultures, device_pairing, devices,
                                 diagnostics, direct_messages, downloads, dubbing, epg,
@@ -72,6 +72,8 @@ def register_all_routers(app: FastAPI) -> None:
                                 widgets, youngsters, zman)
     from app.api.routes.admin.recordings import \
         router as admin_recordings_router
+    # Quiz and rewards routes
+    from app.api.routes import quiz, rewards
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
     from app.api.routes.olorin import router as olorin_router
     # Subtitle routes (split into 3 files per 200-line limit)
@@ -246,12 +248,17 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(
         onboarding.router, prefix=f"{prefix}/onboarding/ai", tags=["ai-onboarding"]
     )
+    app.include_router(
+        avatar_dialogue.router, prefix=prefix, tags=["avatar-dialogue"]
+    )
     app.include_router(news.router, prefix=f"{prefix}/news", tags=["news"])
     app.include_router(support.router, prefix=f"{prefix}/support", tags=["support"])
     app.include_router(trivia.router, prefix=f"{prefix}/trivia", tags=["trivia"])
     app.include_router(
         notifications.router, prefix=f"{prefix}/notifications", tags=["notifications"]
     )
+    app.include_router(quiz.router, prefix=f"{prefix}/quiz", tags=["quiz"])
+    app.include_router(rewards.router, prefix=f"{prefix}/rewards", tags=["rewards"])
     logger.debug("Registered feature routes")
 
     # ============================================
