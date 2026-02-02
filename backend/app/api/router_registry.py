@@ -54,7 +54,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 live_dubbing, live_quota, location, location_consent, media_proxy, news, nlp,
                                 notifications,
                                 onboarding, party, password_reset,
-                                playback_session, podcasts, profile_stats,
+                                playback_session, podcasts, profile_controls, profile_stats,
                                 profiles, radio, recording_queries, recording_schedule_queries, recording_schedules, recordings,
                                 ritual, search,
                                 series_recording_rules,
@@ -201,6 +201,9 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         family_controls.router, prefix=f"{prefix}/family", tags=["family-controls"]
+    )
+    app.include_router(
+        profile_controls.router, prefix=prefix, tags=["profile-controls"]
     )
     app.include_router(
         household.router, prefix=f"{prefix}/household", tags=["household"]

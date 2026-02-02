@@ -12,6 +12,8 @@ class ProfileCreate(BaseModel):
     is_kids_profile: bool = False
     kids_age_limit: Optional[int] = None
     pin: Optional[str] = None
+    inherit_household_controls: bool = True
+    custom_controls_id: Optional[str] = None
 
 
 class ProfileUpdate(BaseModel):
@@ -22,6 +24,8 @@ class ProfileUpdate(BaseModel):
     kids_age_limit: Optional[int] = None
     pin: Optional[str] = None
     preferences: Optional[dict] = None
+    inherit_household_controls: Optional[bool] = None
+    custom_controls_id: Optional[str] = None
 
 
 class ProfileResponse(BaseModel):
@@ -35,6 +39,8 @@ class ProfileResponse(BaseModel):
     has_pin: bool = False
     preferences: dict
     favorite_categories: List[str] = []
+    inherit_household_controls: bool = True
+    custom_controls_id: Optional[str] = None
     created_at: datetime
     last_used_at: Optional[datetime] = None
 
@@ -50,6 +56,10 @@ class Profile(Document):
     is_kids_profile: bool = False  # Enables content restrictions
     kids_age_limit: Optional[int] = None  # Max age rating for kids (e.g., 3, 7, 12)
     pin: Optional[str] = None  # Hashed PIN for profile lock
+
+    # Per-Profile Family Controls
+    inherit_household_controls: bool = True  # If True, use household controls; if False, use custom
+    custom_controls_id: Optional[str] = None  # FamilyControls ID for profile-specific overrides
 
     # Profile-specific preferences
     preferences: dict = Field(
@@ -91,6 +101,8 @@ class Profile(Document):
             has_pin=self.pin is not None,
             preferences=self.preferences,
             favorite_categories=self.favorite_categories,
+            inherit_household_controls=self.inherit_household_controls,
+            custom_controls_id=self.custom_controls_id,
             created_at=self.created_at,
             last_used_at=self.last_used_at,
         )

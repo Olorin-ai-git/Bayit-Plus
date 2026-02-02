@@ -16,6 +16,7 @@ from app.models.family_controls import FamilyControls
 from app.models.user import User
 from app.services.family_controls_service import family_controls_service
 from app.services.household_service import household_service
+from app.services.profile_controls_service import profile_controls_service
 
 logger = logging.getLogger(__name__)
 
@@ -242,25 +243,27 @@ async def get_profile_aware_controls(
 
     Returns:
         FamilyControls instance or None
-
-    Note:
-        Phase 3 (household integration) is complete.
-        Phase 4 (profile-level overrides) will be implemented when needed.
     """
     if not current_user:
         return None
 
-    # Phase 4: Check profile-specific controls
+    # Check profile-specific controls (Phase 4 - now implemented)
     if profile_id:
-        logger.debug(
-            f"Profile-aware controls requested for profile {profile_id}"
-        )
-        # Note: Profile-level control overrides will be implemented when needed
-        # This would check if the profile has a family_controls_override set
-        # For now, fall through to household/user-level controls
+        try:
+            controls = await profile_controls_service.get_effective_controls(
+                profile_id
+            )
+            if controls:
+                logger.debug(
+                    f"Using profile-specific controls for profile {profile_id}"
+                )
+                return controls
+        except Exception as e:
+            logger.error(
+                f"Error getting profile controls for {profile_id}: {str(e)}"
+            )
 
-    # Phase 3: Check household shared controls (implemented)
-    # This is handled by get_family_controls_for_user which now includes household logic
+    # Fallback to household/user-level controls
     return await get_family_controls_for_user(current_user)
 
 
