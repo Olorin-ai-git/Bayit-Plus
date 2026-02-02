@@ -26,6 +26,7 @@ export * from './SecurityScreenMobile';
 export * from './SettingsScreenMobile';
 export * from './LanguageSettingsScreen';
 export * from './NotificationSettingsScreen';
+export { default as FamilyControlsScreenMobile } from './FamilyControlsScreenMobile';
 
 // User content screens
 export * from './FavoritesScreenMobile';

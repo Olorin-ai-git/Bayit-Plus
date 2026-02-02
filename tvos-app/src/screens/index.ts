@@ -16,6 +16,7 @@ export { VODScreen } from './VODScreen';
 export { RadioScreen } from './RadioScreen';
 export { EPGScreen } from './EPGScreen';
 export { SettingsScreen } from './SettingsScreen';
+export { default as FamilyControlsScreen } from './FamilyControlsScreen';
 
 // Phase 6 Tier 3 Screens
 export { ProfileScreen } from './ProfileScreen';
