@@ -10,6 +10,8 @@ from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from app.models.household import Household, HouseholdRole, PendingInvitation
+from app.models.user import User
+from app.services.email_service import send_household_invitation
 
 logger = logging.getLogger(__name__)
 
@@ -66,6 +68,18 @@ class HouseholdMembershipService:
 
         logger.info(
             f"Created invitation {invitation_id} for {invitee_email} to join household {household_id}"
+        )
+
+        inviter = await User.get(inviter_id)
+        inviter_name = inviter.name if inviter else "A Bayit+ user"
+
+        await send_household_invitation(
+            to_email=invitee_email,
+            inviter_name=inviter_name,
+            household_name=household.name,
+            invitation_code=invitation_id,
+            role=role.value,
+            expires_at=expires_at.strftime("%B %d, %Y at %I:%M %p UTC"),
         )
 
         return {
