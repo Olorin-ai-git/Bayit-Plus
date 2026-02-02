@@ -183,3 +183,40 @@ async def mock_content_metadata_service(content_db_client):
     await content_metadata_service.initialize()
 
     yield content_metadata_service
+
+
+@pytest_asyncio.fixture
+async def bayit_db_client():
+    """
+    Create Bayit+ main database client for testing.
+
+    Provides access to User, Household, Profile, and FamilyControls models.
+    Creates a separate test database for these core Bayit+ models.
+    """
+    from app.core.config import settings
+    from app.models.user import User
+    from app.models.household import Household
+    from app.models.profile import Profile
+    from app.models.family_controls import FamilyControls
+
+    # Use test database name
+    test_db_name = f"{settings.MONGODB_DB_NAME}_test"
+
+    client = AsyncIOMotorClient(settings.MONGODB_URL)
+
+    # Initialize Beanie with Bayit+ core models
+    await init_beanie(
+        database=client[test_db_name],
+        document_models=[
+            User,
+            Household,
+            Profile,
+            FamilyControls,
+        ],
+    )
+
+    yield client
+
+    # Cleanup - drop test database
+    await client.drop_database(test_db_name)
+    client.close()

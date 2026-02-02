@@ -17,11 +17,12 @@ from app.services.profile_controls_service import profile_controls_service
 class TestProfileControlsService:
     """Test suite for ProfileControlsService."""
 
-    async def test_get_effective_controls_custom(self, db_session):
+    async def test_get_effective_controls_custom(self, bayit_db_client):
         """Test getting custom profile controls."""
         # Create family controls
         controls = FamilyControls(
             user_id="user123",
+            pin_hash="test_hash",
             kids_enabled=True,
             kids_age_limit=10,
             youngsters_enabled=True,
@@ -49,11 +50,12 @@ class TestProfileControlsService:
         assert result.kids_age_limit == 10
         assert result.max_content_rating == "PG"
 
-    async def test_get_effective_controls_household(self, db_session):
+    async def test_get_effective_controls_household(self, bayit_db_client):
         """Test getting household-inherited controls."""
         # Create household shared controls
         shared_controls = FamilyControls(
             user_id="parent123",
+            pin_hash="test_hash",
             kids_enabled=True,
             kids_age_limit=12,
             max_content_rating="PG-13",
@@ -92,7 +94,7 @@ class TestProfileControlsService:
         assert result.kids_age_limit == 12
         assert result.max_content_rating == "PG-13"
 
-    async def test_get_effective_controls_none(self, db_session):
+    async def test_get_effective_controls_none(self, bayit_db_client):
         """Test getting controls when none are set."""
         profile = Profile(
             user_id="user123",
@@ -107,10 +109,11 @@ class TestProfileControlsService:
 
         assert result is None
 
-    async def test_set_custom_controls(self, db_session):
+    async def test_set_custom_controls(self, bayit_db_client):
         """Test setting custom controls for a profile."""
         controls = FamilyControls(
             user_id="user123",
+            pin_hash="test_hash",
             kids_enabled=True,
             kids_age_limit=8,
         )
@@ -131,9 +134,12 @@ class TestProfileControlsService:
         assert updated.custom_controls_id == str(controls.id)
         assert updated.inherit_household_controls is False
 
-    async def test_inherit_household_controls(self, db_session):
+    async def test_inherit_household_controls(self, bayit_db_client):
         """Test switching profile to inherit household controls."""
-        controls = FamilyControls(user_id="user123")
+        controls = FamilyControls(
+            user_id="user123",
+            pin_hash="test_hash"
+        )
         await controls.insert()
 
         profile = Profile(
@@ -152,9 +158,12 @@ class TestProfileControlsService:
         assert updated.inherit_household_controls is True
         assert updated.custom_controls_id is None
 
-    async def test_get_controls_source_custom(self, db_session):
+    async def test_get_controls_source_custom(self, bayit_db_client):
         """Test getting controls source info for custom controls."""
-        controls = FamilyControls(user_id="user123")
+        controls = FamilyControls(
+            user_id="user123",
+            pin_hash="test_hash"
+        )
         await controls.insert()
 
         profile = Profile(
@@ -173,9 +182,12 @@ class TestProfileControlsService:
         assert source["controls_id"] == str(controls.id)
         assert source["inherit_household_controls"] is False
 
-    async def test_get_controls_source_household(self, db_session):
+    async def test_get_controls_source_household(self, bayit_db_client):
         """Test getting controls source info for household controls."""
-        shared_controls = FamilyControls(user_id="parent123")
+        shared_controls = FamilyControls(
+            user_id="parent123",
+            pin_hash="test_hash"
+        )
         await shared_controls.insert()
 
         household = Household(
@@ -206,7 +218,7 @@ class TestProfileControlsService:
         assert source["controls_id"] == str(shared_controls.id)
         assert source["inherit_household_controls"] is True
 
-    async def test_get_controls_source_none(self, db_session):
+    async def test_get_controls_source_none(self, bayit_db_client):
         """Test getting controls source info when no controls."""
         profile = Profile(
             user_id="user123",

@@ -20,7 +20,7 @@ def client():
 
 
 @pytest.fixture
-async def authenticated_user(db_session):
+async def authenticated_user(bayit_db_client):
     """Create authenticated user for testing."""
     user = User(
         email="test@example.com",
@@ -36,7 +36,7 @@ class TestHouseholdAPI:
     """Integration tests for Household API endpoints."""
 
     async def test_create_household(
-        self, client, authenticated_user, db_session
+        self, client, authenticated_user, bayit_db_client
     ):
         """Test POST /api/v1/household/create."""
         with patch("app.core.security.get_current_active_user") as mock_auth:
@@ -54,7 +54,7 @@ class TestHouseholdAPI:
         assert len(data["members"]) == 1
 
     async def test_get_household(
-        self, client, authenticated_user, db_session
+        self, client, authenticated_user, bayit_db_client
     ):
         """Test GET /api/v1/household."""
         # Create household
@@ -82,7 +82,7 @@ class TestHouseholdAPI:
         assert data["household_id"] == "hh123"
 
     async def test_invite_member(
-        self, client, authenticated_user, db_session
+        self, client, authenticated_user, bayit_db_client
     ):
         """Test POST /api/v1/household/{household_id}/invite."""
         household = Household(
@@ -122,7 +122,7 @@ class TestHouseholdAPI:
         assert "expires_at" in data
 
     async def test_delete_household(
-        self, client, authenticated_user, db_session
+        self, client, authenticated_user, bayit_db_client
     ):
         """Test DELETE /api/v1/household/{household_id}."""
         household = Household(
@@ -157,7 +157,7 @@ class TestProfileControlsAPI:
     """Integration tests for Profile Controls API endpoints."""
 
     async def test_get_profile_controls(
-        self, client, authenticated_user, db_session
+        self, client, authenticated_user, bayit_db_client
     ):
         """Test GET /api/v1/profile-controls/{profile_id}."""
         from app.models.profile import Profile
@@ -193,7 +193,7 @@ class TestProfileControlsAPI:
         assert data["kids_age_limit"] == 10
 
     async def test_set_custom_controls(
-        self, client, authenticated_user, db_session
+        self, client, authenticated_user, bayit_db_client
     ):
         """Test POST /api/v1/profile-controls/{profile_id}/set-custom."""
         from app.models.profile import Profile
@@ -225,7 +225,7 @@ class TestProfileControlsAPI:
         assert data["inherit_household_controls"] is False
 
     async def test_inherit_household_controls(
-        self, client, authenticated_user, db_session
+        self, client, authenticated_user, bayit_db_client
     ):
         """Test POST /api/v1/profile-controls/{profile_id}/inherit-household."""
         from app.models.profile import Profile
@@ -257,7 +257,7 @@ class TestProfileControlsAPI:
         assert data["custom_controls_id"] is None
 
     async def test_get_controls_source(
-        self, client, authenticated_user, db_session
+        self, client, authenticated_user, bayit_db_client
     ):
         """Test GET /api/v1/profile-controls/{profile_id}/source."""
         from app.models.profile import Profile

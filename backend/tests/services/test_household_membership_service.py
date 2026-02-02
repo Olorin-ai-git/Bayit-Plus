@@ -19,7 +19,7 @@ from app.services.household_membership_service import (
 class TestHouseholdMembershipService:
     """Test suite for HouseholdMembershipService."""
 
-    async def test_invite_member_success(self, db_session):
+    async def test_invite_member_success(self, bayit_db_client):
         """Test successful member invitation."""
         household = Household(
             household_id="hh123",
@@ -66,7 +66,7 @@ class TestHouseholdMembershipService:
         assert updated.pending_invitations[0].email == "child@test.com"
         assert updated.pending_invitations[0].role == HouseholdRole.CHILD
 
-    async def test_invite_member_not_parent(self, db_session):
+    async def test_invite_member_not_parent(self, bayit_db_client):
         """Test invitation fails if inviter is not parent."""
         household = Household(
             household_id="hh123",
@@ -91,7 +91,7 @@ class TestHouseholdMembershipService:
                 role=HouseholdRole.CHILD,
             )
 
-    async def test_invite_member_already_invited(self, db_session):
+    async def test_invite_member_already_invited(self, bayit_db_client):
         """Test invitation fails if email already invited."""
         household = Household(
             household_id="hh123",
@@ -128,7 +128,7 @@ class TestHouseholdMembershipService:
                 role=HouseholdRole.CHILD,
             )
 
-    async def test_accept_invitation_success(self, db_session):
+    async def test_accept_invitation_success(self, bayit_db_client):
         """Test successful invitation acceptance."""
         household = Household(
             household_id="hh123",
@@ -171,7 +171,7 @@ class TestHouseholdMembershipService:
         assert child_member is not None
         assert child_member.role == HouseholdRole.CHILD
 
-    async def test_accept_invitation_expired(self, db_session):
+    async def test_accept_invitation_expired(self, bayit_db_client):
         """Test accepting expired invitation fails."""
         from datetime import timedelta
 
@@ -212,7 +212,7 @@ class TestHouseholdMembershipService:
                 invitation_code=invite["invitation_id"],
             )
 
-    async def test_remove_member_success(self, db_session):
+    async def test_remove_member_success(self, bayit_db_client):
         """Test successful member removal."""
         household = Household(
             household_id="hh123",
@@ -239,7 +239,7 @@ class TestHouseholdMembershipService:
         assert len(result.members) == 1
         assert result.members[0].user_id == "parent123"
 
-    async def test_remove_member_not_parent(self, db_session):
+    async def test_remove_member_not_parent(self, bayit_db_client):
         """Test removal fails if requester is not parent."""
         household = Household(
             household_id="hh123",
@@ -265,7 +265,7 @@ class TestHouseholdMembershipService:
                 member_id="parent123",
             )
 
-    async def test_remove_member_cannot_remove_owner(self, db_session):
+    async def test_remove_member_cannot_remove_owner(self, bayit_db_client):
         """Test cannot remove household owner."""
         household = Household(
             household_id="hh123",
