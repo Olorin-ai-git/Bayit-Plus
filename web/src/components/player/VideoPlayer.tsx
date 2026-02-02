@@ -26,6 +26,7 @@ import {
   useCastSession,
   usePlaybackSession,
 } from './hooks'
+import { useNativeTextTracks } from './hooks/useNativeTextTracks'
 import { SplitLanguages } from '@/types/subtitle'
 import { useChannelChatStore } from '@/stores/channelChatSlice'
 import { castConfig } from '@/config/castConfig'
@@ -161,6 +162,20 @@ export default function VideoPlayer({
       duration: state.duration,
     },
     enabled: !isWidget && castConfig.featureEnabled,
+  })
+
+  // Native text tracks for AirPlay/Chromecast subtitle support
+  // In split mode, use primary track for casting (native tracks don't support dual subtitles)
+  useNativeTextTracks({
+    videoRef,
+    cues: currentCues,
+    language: currentSubtitleLang,
+    enabled: subtitlesEnabled,
+    isCasting: cast.isConnected,
+    contentId,
+    splitMode,
+    splitLanguages,
+    splitCues,
   })
 
   // Playback session management for concurrent stream limit enforcement
@@ -494,6 +509,9 @@ export default function VideoPlayer({
         loading={state.loading}
         error={state.error}
         isWidget={isWidget}
+        isCasting={cast.isConnected}
+        userEmail={user?.email}
+        isPlaying={state.isPlaying}
       />
 
       <VideoPlayerPanels
@@ -548,6 +566,7 @@ export default function VideoPlayer({
         renderLiveSplitSubtitleControls={renderLiveSplitSubtitleControls}
         renderDubbingControls={renderDubbingControls}
         renderRecordButton={renderRecordButton}
+        renderCastButton={renderCastButton}
         renderChannelChatButton={renderChannelChatButton}
         renderLiveTriviaButton={renderLiveTriviaButton}
         renderCatchUpButton={renderCatchUpButton}

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react'
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -9,6 +10,7 @@ import LiveSplitSubtitleOverlay from './subtitle/LiveSplitSubtitleOverlay'
 import { DubbingOverlay } from './dubbing'
 import TriviaOverlay from './TriviaOverlay'
 import LiveFeatureUsageIndicator from './LiveFeatureUsageIndicator'
+import OmriOverlay from './OmriOverlay'
 import liveSubtitleService from '@/services/liveSubtitleService'
 import liveSplitSubtitleService from '@/services/liveSplitSubtitleService'
 import { SubtitleCue } from './types'
@@ -72,6 +74,13 @@ interface VideoPlayerOverlaysProps {
 
   // Widget mode
   isWidget?: boolean
+
+  // Cast state - hide HTML overlays when casting (they don't mirror to AirPlay/Chromecast)
+  isCasting?: boolean
+
+  // User info for special overlays
+  userEmail?: string | null
+  isPlaying?: boolean
 }
 
 export default function VideoPlayerOverlays({
@@ -106,8 +115,37 @@ export default function VideoPlayerOverlays({
   loading,
   error = null,
   isWidget = false,
+  isCasting = false,
+  userEmail = null,
+  isPlaying = false,
 }: VideoPlayerOverlaysProps) {
   const { t, i18n } = useTranslation()
+
+  // Omri overlay state - only for specific user and VOD content
+  const [showOmriOverlay, setShowOmriOverlay] = useState(false)
+  const [hasTriggeredOmriOverlay, setHasTriggeredOmriOverlay] = useState(false)
+
+  // Check if user should see the special overlay
+  const isSpecialUser = userEmail === 'oklainert@gmail.com'
+
+  // Trigger Omri overlay when playback starts for the first time
+  useEffect(() => {
+    if (
+      !isLive &&
+      isSpecialUser &&
+      isPlaying &&
+      !hasTriggeredOmriOverlay &&
+      !loading
+    ) {
+      setShowOmriOverlay(true)
+      setHasTriggeredOmriOverlay(true)
+    }
+  }, [isLive, isSpecialUser, isPlaying, hasTriggeredOmriOverlay, loading])
+
+  // Reset trigger when content changes
+  useEffect(() => {
+    setHasTriggeredOmriOverlay(false)
+  }, [contentId])
 
   return (
     <>
@@ -117,8 +155,8 @@ export default function VideoPlayerOverlays({
         duration={recordingDuration}
       />
 
-      {/* Subtitle Overlay (VOD) */}
-      {!isLive && contentId && (
+      {/* Subtitle Overlay (VOD) - Hidden when casting (HTML overlays don't mirror to AirPlay/Chromecast) */}
+      {!isLive && contentId && !isCasting && (
         <SubtitleOverlay
           currentTime={currentTime}
           subtitles={currentCues}
@@ -131,13 +169,13 @@ export default function VideoPlayerOverlays({
         />
       )}
 
-      {/* Live Subtitle Overlay (Premium) - Hidden in widget mode */}
-      {isLive && !isWidget && !liveSplitMode && (
+      {/* Live Subtitle Overlay (Premium) - Hidden in widget mode and when casting */}
+      {isLive && !isWidget && !isCasting && !liveSplitMode && (
         <LiveSubtitleOverlay cues={visibleLiveSubtitles} />
       )}
 
-      {/* Live Split Subtitle Overlay (Premium) - Hidden in widget mode */}
-      {isLive && !isWidget && liveSplitMode && liveSplitLanguages && (
+      {/* Live Split Subtitle Overlay (Premium) - Hidden in widget mode and when casting */}
+      {isLive && !isWidget && !isCasting && liveSplitMode && liveSplitLanguages && (
         <LiveSplitSubtitleOverlay
           primaryCues={liveSplitPrimaryCues}
           secondaryCues={liveSplitSecondaryCues}
@@ -208,6 +246,11 @@ export default function VideoPlayerOverlays({
             <Text style={styles.errorText}>{error}</Text>
           </GlassView>
         </View>
+      )}
+
+      {/* Omri Overlay - Special easter egg for special users */}
+      {!isLive && isSpecialUser && showOmriOverlay && (
+        <OmriOverlay onHide={() => setShowOmriOverlay(false)} />
       )}
     </>
   )
