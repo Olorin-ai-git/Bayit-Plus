@@ -135,24 +135,53 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
 
   // Fetch saved watch position on mount
   React.useEffect(() => {
+    logger.info('Watch position fetch effect triggered', 'WatchPage', {
+      isAuthenticated,
+      contentId,
+      effectiveType,
+    });
+
     if (isAuthenticated && contentId && effectiveType === 'vod') {
+      logger.info('Fetching watch history', 'WatchPage', { contentId });
       historyService
         .getContinueWatching()
         .then((items) => {
+          logger.info('Watch history received', 'WatchPage', {
+            itemsCount: items?.length || 0,
+            items,
+          });
           const saved = items.find((i) => i.content_id === contentId);
-          if (saved?.position > 0) {
-            setSavedPosition(saved.position);
-            logger.info('Loaded saved watch position', 'WatchPage', {
+          if (saved) {
+            logger.info('Found saved position for content', 'WatchPage', {
               contentId,
+              saved,
               position: saved.position,
+            });
+            if (saved.position > 0) {
+              setSavedPosition(saved.position);
+              logger.info('Set saved watch position', 'WatchPage', {
+                contentId,
+                position: saved.position,
+              });
+            }
+          } else {
+            logger.info('No saved position found for content', 'WatchPage', {
+              contentId,
             });
           }
         })
         .catch((err) => {
           logger.error('Failed to fetch watch history', 'WatchPage', {
             error: err instanceof Error ? err.message : 'Unknown error',
+            errorObj: err,
           });
         });
+    } else {
+      logger.info('Skipping watch history fetch', 'WatchPage', {
+        isAuthenticated,
+        hasContentId: !!contentId,
+        effectiveType,
+      });
     }
   }, [contentId, isAuthenticated, effectiveType]);
 

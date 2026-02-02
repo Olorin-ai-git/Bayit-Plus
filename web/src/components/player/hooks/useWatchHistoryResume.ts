@@ -24,8 +24,21 @@ export function useWatchHistoryResume({
   const hasResumed = useRef(false)
 
   useEffect(() => {
+    logger.info('useWatchHistoryResume effect triggered', 'useWatchHistoryResume', {
+      savedPosition,
+      isLive,
+      hasResumed: hasResumed.current,
+      hasVideoRef: !!videoRef.current,
+    })
+
     // Skip if no saved position, live content, or already resumed
     if (!savedPosition || isLive || hasResumed.current) {
+      logger.info('Skipping auto-resume', 'useWatchHistoryResume', {
+        reason: !savedPosition ? 'no saved position' : isLive ? 'live content' : 'already resumed',
+        savedPosition,
+        isLive,
+        hasResumed: hasResumed.current,
+      })
       return
     }
 
@@ -40,17 +53,33 @@ export function useWatchHistoryResume({
 
     const video = videoRef.current
     if (!video) {
+      logger.warn('No video element available', 'useWatchHistoryResume')
       return
     }
 
+    logger.info('Setting up canplay listener', 'useWatchHistoryResume', {
+      savedPosition,
+      videoReadyState: video.readyState,
+      videoNetworkState: video.networkState,
+    })
+
     const handleCanPlay = () => {
+      logger.info('canplay event fired', 'useWatchHistoryResume', {
+        hasResumed: hasResumed.current,
+        savedPosition,
+        currentTime: video.currentTime,
+        readyState: video.readyState,
+      })
+
       // Only seek once
       if (hasResumed.current) {
+        logger.info('Already resumed, skipping', 'useWatchHistoryResume')
         return
       }
 
       logger.info('Auto-resuming from saved position', 'useWatchHistoryResume', {
         savedPosition,
+        currentTime: video.currentTime,
       })
 
       try {
@@ -76,7 +105,20 @@ export function useWatchHistoryResume({
     }
 
     // Wait for video to be ready before seeking
-    video.addEventListener('canplay', handleCanPlay, { once: true })
+    // Check if video is already ready (readyState >= 3 means HAVE_FUTURE_DATA or better)
+    if (video.readyState >= 3) {
+      logger.info('Video already ready, seeking immediately', 'useWatchHistoryResume', {
+        readyState: video.readyState,
+        savedPosition,
+      })
+      handleCanPlay()
+    } else {
+      logger.info('Video not ready, waiting for canplay', 'useWatchHistoryResume', {
+        readyState: video.readyState,
+        savedPosition,
+      })
+      video.addEventListener('canplay', handleCanPlay, { once: true })
+    }
 
     return () => {
       video.removeEventListener('canplay', handleCanPlay)
