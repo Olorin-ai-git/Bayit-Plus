@@ -1,7 +1,7 @@
 # Bayit+ Documentation
 
 **Last Updated:** 2026-02-02
-**Total Documents:** 254 files
+**Total Documents:** 256 files
 **Documentation Portal:** https://docs.bayitplus.com
 
 ---
@@ -44,6 +44,7 @@ Complete API reference for all Bayit+ services:
 - [AI API Reference](api/AI_API_REFERENCE.md) - AI Search, Recommendations, Catch-Up
 - [Channel Chat API](api/CHANNEL_CHAT_API.md) - Real-time chat for live channels
 - [Catch-Up API](api/CATCH_UP_API.md) - AI-powered summaries
+- [Family Controls API](api/FAMILY_CONTROLS_API.md) - Unified parental controls (7 endpoints, lockout protection, rate limiting) ⭐ **NEW**
 - [Voice API Reference](api/VOICE_API_REFERENCE.md) - TTS/STT integration
 - [Authentication](api/AUTHENTICATION.md) - JWT, Firebase Auth, OAuth 2.0
 
@@ -98,6 +99,7 @@ Platform-specific development documentation:
 
 **Feature Guides:**
 - [HLS Subtitles for AirPlay](guides/HLS_SUBTITLES_AIRPLAY.md) - Apple TV/AirPlay subtitle compatibility implementation ⭐ **NEW**
+- [Family Controls User Guide](guides/FAMILY_CONTROLS_USER_GUIDE.md) - Parental controls for safe content (setup, PIN, age limits, viewing hours) ⭐ **NEW**
 - [i18n Complete Guide](guides/I18N_COMPLETE_GUIDE.md) - 10-language internationalization ⭐ **NEW**
 - [Beta 500 User Manual](guides/BETA_500_USER_MANUAL.md) - AI features beta program ⭐ **NEW**
 - [Troubleshooting Guide](guides/TROUBLESHOOTING.md) - Common issues across all platforms ⭐ **NEW**
