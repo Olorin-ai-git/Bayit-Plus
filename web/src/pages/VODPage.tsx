@@ -152,21 +152,25 @@ export default function VODPage() {
         if (selectedCat) {
           const subcat = selectedCat.subcategories?.find(s => s.id === selectedSubcategory);
           if (subcat) {
-            const data = await api.get(`/content/section/${selectedCat.slug}/subcategory/${subcat.slug}`, {
-              params: { page: currentPage, limit: itemsPerPage, search: searchParam }
-            });
-
-            // Filter by content type if specified
-            const allItems = data.items || [];
+            // Build content_type parameter for backend filtering
+            let contentTypeParam: string | undefined;
             if (contentTypeFilter === 'movies') {
-              items = allItems.filter((item: ContentItem) => !item.is_series);
+              contentTypeParam = 'movies';
             } else if (contentTypeFilter === 'series') {
-              items = allItems.filter((item: ContentItem) => item.is_series);
-            } else {
-              items = allItems;
+              contentTypeParam = 'series';
             }
 
-            total = items.length; // Note: This is approximate; ideally backend should support content_type filter
+            const data = await api.get(`/content/section/${selectedCat.slug}/subcategory/${subcat.slug}`, {
+              params: {
+                page: currentPage,
+                limit: itemsPerPage,
+                search: searchParam,
+                content_type: contentTypeParam  // Add content_type filter
+              }
+            });
+
+            items = data.items || [];
+            total = data.total || items.length;
           }
         }
       } else {
@@ -308,10 +312,10 @@ export default function VODPage() {
             {/* Search Input */}
             <View style={styles.searchInputWrapper}>
               <GlassInput
+                key="vod-search-input"
                 placeholder={t('vod.searchPlaceholder')}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
-                icon={<Search size={20} color={colors.textMuted} />}
                 containerStyle={styles.searchInput}
               />
             </View>

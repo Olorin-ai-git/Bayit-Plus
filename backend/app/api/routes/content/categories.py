@@ -322,10 +322,19 @@ async def get_subcategory_content(
     subcategory_slug: str,
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
+    content_type: Optional[str] = Query(None, description="Filter by content type: 'movies' or 'series'"),
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
     Get content for a specific subcategory.
+
+    Args:
+        section_slug: Section identifier (e.g., 'kids', 'judaism')
+        subcategory_slug: Subcategory identifier (e.g., 'kids-movies', 'kids-series')
+        page: Page number for pagination
+        limit: Number of items per page
+        content_type: Optional filter - 'movies' for movies only, 'series' for series only
+        current_user: Optional authenticated user
     """
     skip = (page - 1) * limit
 
@@ -353,6 +362,16 @@ async def get_subcategory_content(
         ],
         **beta_filter,
     }
+
+    # Add content type filter if specified
+    if content_type == 'movies':
+        content_filter["is_series"] = False
+        logger.info(f"Subcategory filtering: movies only for {section_slug}/{subcategory_slug}")
+    elif content_type == 'series':
+        content_filter["is_series"] = True
+        logger.info(f"Subcategory filtering: series only for {section_slug}/{subcategory_slug}")
+    else:
+        logger.info(f"Subcategory filtering: all content types for {section_slug}/{subcategory_slug}")
 
     items = await Content.find(content_filter).skip(skip).limit(limit).to_list()
     total = await Content.find(content_filter).count()
