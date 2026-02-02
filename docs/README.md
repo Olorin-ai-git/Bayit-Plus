@@ -140,6 +140,7 @@ Testing strategies and best practices:
 
 Deployment guides and infrastructure:
 
+- [Deployment Log](deployment/DEPLOYMENT_LOG.md) - Production deployment history and tracking ⭐ **NEW**
 - [Deployment Guide](deployment/DEPLOYMENT_GUIDE.md) - Production deployment
 - [CI/CD Pipeline](deployment/CI_CD_PIPELINE.md) - GitHub Actions workflows
 - [Secrets Management](deployment/SECRETS_MANAGEMENT.md) - Google Cloud secrets
