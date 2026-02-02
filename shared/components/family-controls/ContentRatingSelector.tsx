@@ -11,7 +11,7 @@
 
 import React from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
-import { useTranslation } from '@bayit/shared-i18n';
+import { useTranslation } from 'react-i18next';
 
 type ContentRating = 'G' | 'PG' | 'PG-13' | 'R' | 'TV-MA';
 
@@ -51,9 +51,9 @@ export const ContentRatingSelector: React.FC<ContentRatingSelectorProps> = ({
 
   return (
     <View style={[styles.container, disabled && styles.containerDisabled]}>
-      <Text style={styles.label}>Maximum Content Rating</Text>
+      <Text style={styles.label}>{t('familyControls.maxContentRating')}</Text>
       <Text style={styles.description}>
-        Content rated above {value} will be blocked
+        {t('familyControls.contentBlockedAbove', { rating: value })}
       </Text>
 
       <View style={styles.ratings}>

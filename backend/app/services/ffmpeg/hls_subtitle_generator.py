@@ -162,15 +162,15 @@ def generate_master_m3u8_with_subtitles(
     manifest += "#EXT-X-VERSION:3\n\n"
 
     # Add subtitle tracks
+    # CRITICAL: Set ALL subtitles to DEFAULT=NO and AUTOSELECT=NO
+    # This prevents HLS.js from auto-loading subtitles during manifest parsing
+    # The app will handle subtitle selection through the UI
     if subtitle_files:
         for idx, sub in enumerate(subtitle_files):
-            is_default = "YES" if idx == 0 else "NO"
-            is_autoselect = "YES" if idx == 0 else "NO"
-
             manifest += (
                 f'#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",'
-                f'NAME="{sub["label"]}",DEFAULT={is_default},'
-                f'AUTOSELECT={is_autoselect},FORCED=NO,'
+                f'NAME="{sub["label"]}",DEFAULT=NO,'
+                f'AUTOSELECT=NO,FORCED=NO,'
                 f'LANGUAGE="{sub["language"]}",'
                 f'URI="{sub["filename"]}"\n'
             )

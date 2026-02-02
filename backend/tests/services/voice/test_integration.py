@@ -22,7 +22,7 @@ class TestWizardIntegration:
         )
 
         with patch('app.services.voice.intent_router.VoiceContext.from_request') as mock_context, \
-             patch('app.services.voice.intent_handlers.kids_content_service') as mock_kids_service:
+             patch('app.services.voice.intent_handlers.kids_handler.kids_content_service') as mock_kids_service:
 
             # Mock context
             mock_ctx = MagicMock()
@@ -65,7 +65,7 @@ class TestWizardIntegration:
         )
 
         with patch('app.services.voice.intent_router.VoiceContext.from_request') as mock_context, \
-             patch('app.services.voice.intent_handlers.UnifiedSearchService') as mock_search_service:
+             patch('app.services.voice.intent_handlers.search_handler.UnifiedSearchService') as mock_search_service:
 
             # Mock context
             mock_ctx = MagicMock()
@@ -106,7 +106,7 @@ class TestWizardIntegration:
         )
 
         with patch('app.services.voice.intent_router.VoiceContext.from_request') as mock_context, \
-             patch('app.services.voice.intent_handlers.kids_content_service') as mock_kids_service:
+             patch('app.services.voice.intent_handlers.kids_handler.kids_content_service') as mock_kids_service:
 
             # Mock context with family controls
             mock_fc = MagicMock()
@@ -153,7 +153,7 @@ class TestWizardIntegration:
         )
 
         with patch('app.services.voice.intent_router.VoiceContext.from_request') as mock_context, \
-             patch('app.services.voice.intent_handlers.WizardChatService') as mock_chat_service:
+             patch('app.services.voice.intent_handlers.chat_handler.WizardChatService') as mock_chat_service:
 
             # Mock context
             mock_ctx = MagicMock()
@@ -213,7 +213,7 @@ class TestErrorHandling:
         router = IntentRouter(language="en", user_id="test_user_error")
 
         with patch('app.services.voice.intent_router.VoiceContext.from_request') as mock_context, \
-             patch('app.services.voice.intent_handlers.UnifiedSearchService') as mock_search:
+             patch('app.services.voice.intent_handlers.search_handler.UnifiedSearchService') as mock_search:
 
             mock_ctx = MagicMock()
             mock_ctx.user_id = "test_user_error"
@@ -237,7 +237,7 @@ class TestErrorHandling:
         router = IntentRouter(language="he", user_id="test_user_empty")
 
         with patch('app.services.voice.intent_router.VoiceContext.from_request') as mock_context, \
-             patch('app.services.voice.intent_handlers.kids_content_service') as mock_kids:
+             patch('app.services.voice.intent_handlers.kids_handler.kids_content_service') as mock_kids:
 
             mock_ctx = MagicMock()
             mock_ctx.user_id = "test_user_empty"

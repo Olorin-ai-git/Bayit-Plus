@@ -46,6 +46,21 @@ ERROR_MESSAGES: Dict[str, Dict[str, str]] = {
         "he": "לא הצלחתי לזהות את הגיל מהבקשה",
         "en": "Couldn't detect age from request",
         "es": "No pude detectar la edad de la solicitud"
+    },
+    "unauthorized": {
+        "he": "אין לך הרשאה לגשת לשיחה זו",
+        "en": "You don't have permission to access this conversation",
+        "es": "No tienes permiso para acceder a esta conversación"
+    },
+    "service_unavailable": {
+        "he": "השירות אינו זמין כרגע, נסה שוב מאוחר יותר",
+        "en": "Service is unavailable right now, please try again later",
+        "es": "El servicio no está disponible ahora, inténtalo más tarde"
+    },
+    "rate_limit": {
+        "he": "יותר מדי בקשות, נסה שוב עוד מעט",
+        "en": "Too many requests, please try again in a moment",
+        "es": "Demasiadas solicitudes, inténtalo de nuevo en un momento"
     }
 }
 

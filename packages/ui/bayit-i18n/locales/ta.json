@@ -3062,7 +3062,7 @@
     "filter": "வடிகட்டி",
     "inactive": "செயலற்றது",
     "of": "இல்",
-    "processing": "செயலாக்கம்...",
+    "processing": "செயலாக்கப்படுகிறது...",
     "showing": "காட்டுகிறது",
     "unban": "தடை நீக்கு",
     "addToLibrary": "நூலகத்தில் சேர்",
@@ -7656,9 +7656,12 @@
       "pinMismatch": "PINs do not match",
       "pinTooShort": "PIN must be at least 4 digits",
       "invalidPin": "Invalid PIN",
-      "sectionDisabled": "This section is disabled by family controls",
-      "outsideViewingHours": "Access restricted outside viewing hours",
-      "contentRatingTooHigh": "Content rating exceeds allowed limit"
+      "sectionDisabled": "இந்த பிரிவு குடும்ப கட்டுப்பாடுகளால் முடக்கப்பட்டுள்ளது",
+      "outsideViewingHours": "பார்வை நேரத்திற்கு வெளியே அணுகல் தடைசெய்யப்பட்டுள்ளது",
+      "contentRatingTooHigh": "உள்ளடக்க மதிப்பீடு அனுமதிக்கப்பட்ட வரம்பை மீறுகிறது",
+      "newPinTooShort": "புதிய PIN குறைந்தது 4 இலக்கங்களாக இருக்க வேண்டும்",
+      "failedToSetPin": "PIN அமைக்க முடியவில்லை",
+      "failedToUpdatePin": "PIN புதுப்பிக்க முடியவில்லை. பழைய PIN ஐ சரிபார்க்கவும்."
     },
     "household": {
       "title": "Household",
@@ -7692,6 +7695,13 @@
       "inheritAccount": "Inherit from Account",
       "hierarchy": "Control Hierarchy",
       "source": "Controls Source"
+    },
+    "contentBlockedAbove": "{{rating}} க்கு மேல் மதிப்பிடப்பட்ட உள்ளடக்கம் தடுக்கப்படும்",
+    "placeholders": {
+      "currentPin": "தற்போதைய PIN",
+      "enterPin": "PIN உள்ளிடவும்",
+      "enterNewPin": "புதிய PIN உள்ளிடவும்",
+      "confirmNewPin": "புதிய PIN ஐ உறுதிப்படுத்தவும்"
     }
   }
 }

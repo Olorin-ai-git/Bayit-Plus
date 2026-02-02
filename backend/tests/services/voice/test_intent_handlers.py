@@ -4,9 +4,11 @@ Test intent handlers
 
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
-from app.services.voice.intent_handlers import (
+from app.services.voice.intent_handlers.search_handler import (
     _classify_search_type,
-    _format_voice_search_results,
+    _format_voice_search_results
+)
+from app.services.voice.intent_handlers.kids_handler import (
     _detect_age_from_transcript,
     _format_kids_response,
     AGE_PATTERNS

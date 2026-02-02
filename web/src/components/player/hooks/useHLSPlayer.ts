@@ -181,19 +181,26 @@ export function useHLSPlayer({
         liveSyncDuration: isLive ? targetLatencySeconds : undefined,
         liveMaxLatencyDuration: isLive ? targetLatencySeconds + 5 : undefined,
         liveDurationInfinity: isLive,
-        // ENABLE subtitle display for embedded HLS subtitles
-        subtitleDisplay: true,
+        // DISABLE HLS.js subtitle handling - embedded subtitles handled by native video element
+        // When using native playback (AirPlay), subtitles come from master.m3u8 EXT-X-MEDIA tags
+        subtitleDisplay: false,
       })
       hlsRef.current = hls
       activeHlsInstances.add(hls) // Track for cleanup
 
-      // Don't disable subtitle tracks - let HLS.js handle embedded subtitles
-      // Subtitle selection will be controlled via hls.subtitleTrack API
+      // Disable subtitle track - HLS.js blob URLs don't preserve embedded subtitle references
+      // For AirPlay, we switch to native .m3u8 playback which reads subtitles from master manifest
+      hls.subtitleTrack = -1
 
       hls.loadSource(effectiveStreamUrl)
       hls.attachMedia(video)
 
       hls.on(Hls.Events.MANIFEST_PARSED, (_, data) => {
+        // CRITICAL: Disable subtitle tracks IMMEDIATELY before HLS.js tries to load them
+        // This prevents levelParsingError when HLS.js tries to parse VTT files as HLS manifests
+        if (hls.subtitleTrack !== -1) {
+          hls.subtitleTrack = -1
+        }
         // Manifest parsed - embedded subtitles are now available via hls.subtitleTracks
         onReady()
         // Check audio tracks in the stream
@@ -455,17 +462,22 @@ export function useHLSPlayer({
         liveSyncDuration: delaySeconds,
         liveMaxLatencyDuration: delaySeconds + 5,
         liveDurationInfinity: true,
-        // ENABLE subtitle display for embedded HLS subtitles
-        subtitleDisplay: true,
+        // DISABLE HLS.js subtitle handling
+        subtitleDisplay: false,
       })
 
       hlsRef.current = hls
+      hls.subtitleTrack = -1  // Disable subtitle tracks
       activeHlsInstances.add(hls)
 
       hls.loadSource(event.detail.url)
       hls.attachMedia(video)
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        // CRITICAL: Disable subtitle tracks IMMEDIATELY before HLS.js tries to load them
+        if (hls.subtitleTrack !== -1) {
+          hls.subtitleTrack = -1
+        }
         // Manifest parsed - embedded subtitles available
         logger.info('HLS reconfigured for dubbing, manifest parsed', 'useHLSPlayer')
         if (wasPlaying) {
@@ -510,17 +522,22 @@ export function useHLSPlayer({
         liveSyncDuration: 3,
         liveMaxLatencyDuration: 8,
         liveDurationInfinity: true,
-        // ENABLE subtitle display for embedded HLS subtitles
-        subtitleDisplay: true,
+        // DISABLE HLS.js subtitle handling
+        subtitleDisplay: false,
       })
 
       hlsRef.current = hls
+      hls.subtitleTrack = -1  // Disable subtitle tracks
       activeHlsInstances.add(hls)
 
       hls.loadSource(event.detail.url)
       hls.attachMedia(video)
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        // CRITICAL: Disable subtitle tracks IMMEDIATELY before HLS.js tries to load them
+        if (hls.subtitleTrack !== -1) {
+          hls.subtitleTrack = -1
+        }
         // Manifest parsed - embedded subtitles available
         logger.info('HLS restored to normal latency', 'useHLSPlayer')
         if (wasPlaying) {

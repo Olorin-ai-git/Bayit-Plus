@@ -2973,7 +2973,7 @@
     "filter": "फ़िल्टर",
     "inactive": "निष्क्रिय",
     "of": "का",
-    "processing": "प्रोसेसिंग...",
+    "processing": "प्रक्रिया जारी...",
     "showing": "दिखा रहे हैं",
     "unban": "प्रतिबंध हटाएं",
     "addToLibrary": "लाइब्रेरी में जोड़ें",
@@ -7582,9 +7582,12 @@
       "pinMismatch": "PINs do not match",
       "pinTooShort": "PIN must be at least 4 digits",
       "invalidPin": "Invalid PIN",
-      "sectionDisabled": "This section is disabled by family controls",
-      "outsideViewingHours": "Access restricted outside viewing hours",
-      "contentRatingTooHigh": "Content rating exceeds allowed limit"
+      "sectionDisabled": "यह अनुभाग पारिवारिक नियंत्रण द्वारा अक्षम है",
+      "outsideViewingHours": "देखने के घंटों के बाहर पहुंच प्रतिबंधित",
+      "contentRatingTooHigh": "सामग्री रेटिंग अनुमत सीमा से अधिक है",
+      "newPinTooShort": "नया PIN कम से कम 4 अंकों का होना चाहिए",
+      "failedToSetPin": "PIN सेट करने में विफल",
+      "failedToUpdatePin": "PIN अपडेट करने में विफल। पुराना PIN जांचें।"
     },
     "household": {
       "title": "Household",
@@ -7618,6 +7621,13 @@
       "inheritAccount": "Inherit from Account",
       "hierarchy": "Control Hierarchy",
       "source": "Controls Source"
+    },
+    "contentBlockedAbove": "{{rating}} से ऊपर रेट की गई सामग्री को ब्लॉक किया जाएगा",
+    "placeholders": {
+      "currentPin": "वर्तमान PIN",
+      "enterPin": "PIN दर्ज करें",
+      "enterNewPin": "नया PIN दर्ज करें",
+      "confirmNewPin": "नए PIN की पुष्टि करें"
     }
   }
 }

@@ -186,7 +186,7 @@ async def ping_clients(
 
 @router.get("/analytics", response_model=AnalyticsResponse)
 async def get_analytics(
-    time_range: str = Query("1h", regex="^(15m|1h|6h|24h)$"),
+    time_range: str = Query("1h", pattern="^(15m|1h|6h|24h)$"),
     _current_user: User = Depends(has_permission(Permission.DIAGNOSTICS_READ)),
 ):
     """

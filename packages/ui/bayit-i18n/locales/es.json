@@ -7801,9 +7801,12 @@
       "pinMismatch": "PINs do not match",
       "pinTooShort": "PIN must be at least 4 digits",
       "invalidPin": "Invalid PIN",
-      "sectionDisabled": "This section is disabled by family controls",
-      "outsideViewingHours": "Access restricted outside viewing hours",
-      "contentRatingTooHigh": "Content rating exceeds allowed limit"
+      "sectionDisabled": "Esta sección está deshabilitada por controles familiares",
+      "outsideViewingHours": "Acceso restringido fuera del horario de visualización",
+      "contentRatingTooHigh": "La clasificación del contenido supera el límite permitido",
+      "newPinTooShort": "El nuevo PIN debe tener al menos 4 dígitos",
+      "failedToSetPin": "Error al establecer PIN",
+      "failedToUpdatePin": "Error al actualizar PIN. Verifique el PIN anterior."
     },
     "household": {
       "title": "Household",
@@ -7837,6 +7840,13 @@
       "inheritAccount": "Inherit from Account",
       "hierarchy": "Control Hierarchy",
       "source": "Controls Source"
+    },
+    "contentBlockedAbove": "El contenido clasificado por encima de {{rating}} será bloqueado",
+    "placeholders": {
+      "currentPin": "PIN actual",
+      "enterPin": "Ingrese PIN",
+      "enterNewPin": "Ingrese nuevo PIN",
+      "confirmNewPin": "Confirme nuevo PIN"
     }
   }
 }

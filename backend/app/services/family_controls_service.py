@@ -93,7 +93,7 @@ class FamilyControlsService:
     @staticmethod
     async def verify_pin(user_id: str, pin: str) -> bool:
         """
-        Verify family PIN.
+        Verify family PIN with account lockout protection.
 
         Args:
             user_id: User ID
@@ -101,18 +101,39 @@ class FamilyControlsService:
 
         Returns:
             True if PIN is correct, False otherwise
+
+        Raises:
+            ValueError: If PIN is locked due to too many failed attempts
         """
         controls = await FamilyControls.find_one(FamilyControls.user_id == user_id)
         if not controls:
             logger.warning(f"No family controls found for user {user_id}")
             return False
 
-        return verify_password(pin, controls.pin_hash)
+        # Check if PIN is locked
+        if controls.is_pin_locked():
+            lockout_remaining = (controls.pin_locked_until - datetime.now(timezone.utc)).total_seconds() / 60
+            logger.warning(f"PIN locked for user {user_id}, {lockout_remaining:.1f} minutes remaining")
+            raise ValueError(f"Account locked due to too many failed attempts. Try again in {int(lockout_remaining)} minutes.")
+
+        # Verify PIN
+        is_valid = verify_password(pin, controls.pin_hash)
+
+        if is_valid:
+            # Reset failed attempts on successful verification
+            await controls.reset_failed_attempts()
+            logger.info(f"PIN verified successfully for user {user_id}")
+            return True
+        else:
+            # Record failed attempt (will lock after 5 attempts)
+            await controls.record_failed_attempt(max_attempts=5, lockout_minutes=15)
+            logger.warning(f"Failed PIN attempt for user {user_id} (attempt #{controls.failed_pin_attempts})")
+            return False
 
     @staticmethod
     async def update_pin(user_id: str, old_pin: str, new_pin: str) -> bool:
         """
-        Update family PIN.
+        Update family PIN with account lockout protection.
 
         Args:
             user_id: User ID
@@ -121,20 +142,33 @@ class FamilyControlsService:
 
         Returns:
             True if PIN was updated, False if old PIN incorrect
+
+        Raises:
+            ValueError: If PIN is locked due to too many failed attempts
         """
         controls = await FamilyControls.find_one(FamilyControls.user_id == user_id)
         if not controls:
             logger.warning(f"No family controls found for user {user_id}")
             return False
 
+        # Check if PIN is locked (prevent bypass via PIN reset)
+        if controls.is_pin_locked():
+            lockout_remaining = (controls.pin_locked_until - datetime.now(timezone.utc)).total_seconds() / 60
+            logger.warning(f"PIN locked for user {user_id} during PIN update attempt, {lockout_remaining:.1f} minutes remaining")
+            raise ValueError(f"Account locked due to too many failed attempts. Try again in {int(lockout_remaining)} minutes.")
+
         # Verify old PIN
         if not verify_password(old_pin, controls.pin_hash):
-            logger.warning(f"Invalid old PIN for user {user_id}")
+            # Record failed attempt (will lock after 5 attempts)
+            await controls.record_failed_attempt(max_attempts=5, lockout_minutes=15)
+            logger.warning(f"Invalid old PIN for user {user_id} during PIN update (attempt #{controls.failed_pin_attempts})")
             return False
 
         # Hash and set new PIN
         controls.pin_hash = get_password_hash(new_pin)
         controls.updated_at = datetime.now(timezone.utc)
+        # Reset failed attempts on successful PIN update
+        await controls.reset_failed_attempts()
         await controls.save()
 
         logger.info(f"Updated family PIN for user {user_id}")

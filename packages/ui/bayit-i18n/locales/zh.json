@@ -7592,9 +7592,12 @@
       "pinMismatch": "PINs do not match",
       "pinTooShort": "PIN must be at least 4 digits",
       "invalidPin": "Invalid PIN",
-      "sectionDisabled": "This section is disabled by family controls",
-      "outsideViewingHours": "Access restricted outside viewing hours",
-      "contentRatingTooHigh": "Content rating exceeds allowed limit"
+      "sectionDisabled": "此部分已被家长控制禁用",
+      "outsideViewingHours": "观看时间外访问受限",
+      "contentRatingTooHigh": "内容评级超出允许限制",
+      "newPinTooShort": "新PIN码至少需要4位数字",
+      "failedToSetPin": "设置PIN码失败",
+      "failedToUpdatePin": "更新PIN码失败。请检查旧PIN码。"
     },
     "household": {
       "title": "Household",
@@ -7628,6 +7631,13 @@
       "inheritAccount": "Inherit from Account",
       "hierarchy": "Control Hierarchy",
       "source": "Controls Source"
+    },
+    "contentBlockedAbove": "评级高于 {{rating}} 的内容将被屏蔽",
+    "placeholders": {
+      "currentPin": "当前PIN码",
+      "enterPin": "输入PIN码",
+      "enterNewPin": "输入新PIN码",
+      "confirmNewPin": "确认新PIN码"
     }
   }
 }

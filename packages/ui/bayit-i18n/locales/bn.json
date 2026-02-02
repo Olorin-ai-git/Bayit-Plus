@@ -7558,9 +7558,12 @@
       "pinMismatch": "PINs do not match",
       "pinTooShort": "PIN must be at least 4 digits",
       "invalidPin": "Invalid PIN",
-      "sectionDisabled": "This section is disabled by family controls",
-      "outsideViewingHours": "Access restricted outside viewing hours",
-      "contentRatingTooHigh": "Content rating exceeds allowed limit"
+      "sectionDisabled": "এই বিভাগটি পরিবার নিয়ন্ত্রণ দ্বারা নিষ্ক্রিয় করা হয়েছে",
+      "outsideViewingHours": "দেখার সময়ের বাইরে অ্যাক্সেস সীমাবদ্ধ",
+      "contentRatingTooHigh": "কন্টেন্ট রেটিং অনুমোদিত সীমা অতিক্রম করেছে",
+      "newPinTooShort": "নতুন PIN কমপক্ষে 4 সংখ্যার হতে হবে",
+      "failedToSetPin": "PIN সেট করতে ব্যর্থ",
+      "failedToUpdatePin": "PIN আপডেট করতে ব্যর্থ। পুরাতন PIN যাচাই করুন।"
     },
     "household": {
       "title": "Household",
@@ -7594,6 +7597,13 @@
       "inheritAccount": "Inherit from Account",
       "hierarchy": "Control Hierarchy",
       "source": "Controls Source"
+    },
+    "contentBlockedAbove": "{{rating}} এর উপরে রেট করা সামগ্রী ব্লক করা হবে",
+    "placeholders": {
+      "currentPin": "বর্তমান PIN",
+      "enterPin": "PIN লিখুন",
+      "enterNewPin": "নতুন PIN লিখুন",
+      "confirmNewPin": "নতুন PIN নিশ্চিত করুন"
     }
   }
 }

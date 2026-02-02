@@ -382,7 +382,7 @@ class Settings(BaseSettings):
         description="Maximum tool execution iterations for wizard chat"
     )
     WIZARD_CHAT_TIMEOUT_SECONDS: float = Field(
-        default=10.0,
+        default=30.0,
         env="WIZARD_CHAT_TIMEOUT_SECONDS",
         description="Timeout for wizard chat responses (seconds)"
     )

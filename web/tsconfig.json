@@ -33,6 +33,8 @@
       "@bayit/shared-contexts/*": ["../shared/contexts/*"],
       "@bayit/i18n": ["../packages/ui/bayit-i18n"],
       "@bayit/i18n/web": ["../packages/ui/bayit-i18n/web.ts"],
+      "@bayit/shared-i18n": ["../packages/ui/shared-i18n/src"],
+      "@bayit/shared-i18n/*": ["../packages/ui/shared-i18n/src/*"],
       "@bayit/shared-config": ["../shared/config"],
       "@bayit/shared-config/*": ["../shared/config/*"],
       "@bayit/shared-types": ["../shared/types"],

@@ -101,6 +101,7 @@ module.exports = (env, argv) => {
         '@bayit/shared-styles/globals.css': path.resolve(sharedPath, 'styles/globals.css'),
         '@bayit/shared-styles': path.resolve(sharedPath, 'styles'),
         // i18n packages (new domain split)
+        '@bayit/shared-i18n': path.resolve(packagesPath, 'shared-i18n'),
         '@olorin/shared-i18n': path.resolve(packagesPath, 'shared-i18n'),
         '@bayit/i18n': path.resolve(packagesPath, 'bayit-i18n'),
         '@bayit/i18n/web': path.resolve(packagesPath, 'bayit-i18n/web.ts'),

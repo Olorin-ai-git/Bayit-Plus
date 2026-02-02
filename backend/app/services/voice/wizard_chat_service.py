@@ -4,8 +4,11 @@ Provides conversational AI responses with tool execution loop
 """
 
 import asyncio
+import hmac
+import hashlib
+from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
-from anthropic import Anthropic
+from anthropic import Anthropic, AuthenticationError, RateLimitError, APIError
 from anthropic.types import Message, TextBlock, ToolUseBlock
 
 from app.core.config import settings
@@ -19,33 +22,108 @@ logger = get_logger(__name__)
 
 class ConversationMemory:
     """
-    In-memory conversation history storage.
-    TTL-based expiry handled by the service itself.
+    In-memory conversation history storage with security features.
+    - HMAC-based secure conversation IDs
+    - User ID validation for access control
+    - TTL-based expiry enforcement
     """
 
     def __init__(self):
         self._conversations: Dict[str, List[Dict]] = {}
+        self._user_mappings: Dict[str, str] = {}  # conversation_id -> user_id
+        self._expiry: Dict[str, datetime] = {}  # conversation_id -> expiry_time
 
-    def add_message(self, conversation_id: str, message: Dict):
-        """Add message to conversation history."""
+    def _generate_secure_id(self, user_id: str, conversation_id: str) -> str:
+        """Generate HMAC-based secure conversation ID."""
+        if not settings.SECRET_KEY:
+            logger.warning("SECRET_KEY not configured, using unsecured conversation IDs")
+            return conversation_id
+
+        return hmac.new(
+            settings.SECRET_KEY.encode(),
+            f"{user_id}:{conversation_id}".encode(),
+            hashlib.sha256
+        ).hexdigest()[:16]
+
+    def add_message(self, conversation_id: str, message: Dict, user_id: str):
+        """
+        Add message to conversation history with user validation.
+
+        Args:
+            conversation_id: Conversation identifier
+            message: Message to add
+            user_id: User ID for access control
+
+        Raises:
+            PermissionError: If conversation belongs to different user
+        """
+        # Verify ownership
+        if conversation_id in self._user_mappings:
+            if self._user_mappings[conversation_id] != user_id:
+                logger.error(
+                    "Conversation ID access denied",
+                    extra={"conversation_id": conversation_id, "user_id": user_id}
+                )
+                raise PermissionError("Access denied to conversation")
+        else:
+            self._user_mappings[conversation_id] = user_id
+
+        # Initialize conversation if needed
         if conversation_id not in self._conversations:
             self._conversations[conversation_id] = []
 
         self._conversations[conversation_id].append(message)
+
+        # Set expiry
+        self._expiry[conversation_id] = datetime.utcnow() + timedelta(
+            minutes=settings.WIZARD_CHAT_MEMORY_TTL_MINUTES
+        )
 
         # Keep only last N messages
         max_history = settings.WIZARD_CHAT_MAX_HISTORY
         if len(self._conversations[conversation_id]) > max_history:
             self._conversations[conversation_id] = self._conversations[conversation_id][-max_history:]
 
-    def get_history(self, conversation_id: str) -> List[Dict]:
-        """Get conversation history."""
+    def get_history(self, conversation_id: str, user_id: str) -> List[Dict]:
+        """
+        Get conversation history with user validation and expiry check.
+
+        Args:
+            conversation_id: Conversation identifier
+            user_id: User ID for access control
+
+        Returns:
+            List of conversation messages
+
+        Raises:
+            PermissionError: If conversation belongs to different user
+        """
+        # Check expiry
+        if conversation_id in self._expiry:
+            if datetime.utcnow() > self._expiry[conversation_id]:
+                logger.info("Conversation expired", extra={"conversation_id": conversation_id})
+                self.clear(conversation_id)
+                return []
+
+        # Verify ownership
+        if conversation_id in self._user_mappings:
+            if self._user_mappings[conversation_id] != user_id:
+                logger.error(
+                    "Conversation ID access denied",
+                    extra={"conversation_id": conversation_id, "user_id": user_id}
+                )
+                raise PermissionError("Access denied to conversation")
+
         return self._conversations.get(conversation_id, [])
 
     def clear(self, conversation_id: str):
-        """Clear conversation history."""
+        """Clear conversation history and metadata."""
         if conversation_id in self._conversations:
             del self._conversations[conversation_id]
+        if conversation_id in self._user_mappings:
+            del self._user_mappings[conversation_id]
+        if conversation_id in self._expiry:
+            del self._expiry[conversation_id]
 
 
 # Global conversation memory
@@ -67,6 +145,7 @@ class WizardChatService:
         transcript: str,
         language: str,
         conversation_id: str,
+        user_id: str,
         media_context: Optional[Dict] = None
     ) -> Dict[str, Any]:
         """
@@ -76,6 +155,7 @@ class WizardChatService:
             transcript: User voice input
             language: Language code (he, en, es)
             conversation_id: Conversation identifier
+            user_id: User ID for conversation access control
             media_context: Optional current media state
 
         Returns:
@@ -85,8 +165,18 @@ class WizardChatService:
             # Get system prompt
             system_prompt = get_system_prompt(language, media_context)
 
-            # Get conversation history
-            history = _conversation_memory.get_history(conversation_id)
+            # Get conversation history with user validation
+            try:
+                history = _conversation_memory.get_history(conversation_id, user_id)
+            except PermissionError:
+                logger.error(
+                    "Unauthorized conversation access",
+                    extra={"conversation_id": conversation_id, "user_id": user_id}
+                )
+                return {
+                    "spoken_response": get_error_message("unauthorized", language),
+                    "action": None
+                }
 
             # Build messages
             messages = history + [{"role": "user", "content": transcript}]
@@ -106,6 +196,27 @@ class WizardChatService:
                     "spoken_response": get_error_message("timeout", language),
                     "action": None
                 }
+            except AuthenticationError:
+                logger.error("Claude API authentication failed")
+                return {
+                    "spoken_response": get_error_message("service_unavailable", language),
+                    "action": None
+                }
+            except RateLimitError:
+                logger.warning("Claude API rate limit exceeded")
+                return {
+                    "spoken_response": get_error_message("rate_limit", language),
+                    "action": None
+                }
+            except APIError as e:
+                logger.error(
+                    "Claude API error",
+                    extra={"error_type": type(e).__name__}
+                )
+                return {
+                    "spoken_response": get_error_message("claude_api_failure", language),
+                    "action": None
+                }
 
             # Extract response text
             response_text = self._extract_text_from_response(result)
@@ -113,15 +224,23 @@ class WizardChatService:
             # Format for voice
             spoken_response = self._format_for_voice(response_text)
 
-            # Update conversation memory
-            _conversation_memory.add_message(
-                conversation_id,
-                {"role": "user", "content": transcript}
-            )
-            _conversation_memory.add_message(
-                conversation_id,
-                {"role": "assistant", "content": response_text}
-            )
+            # Update conversation memory with user validation
+            try:
+                _conversation_memory.add_message(
+                    conversation_id,
+                    {"role": "user", "content": transcript},
+                    user_id
+                )
+                _conversation_memory.add_message(
+                    conversation_id,
+                    {"role": "assistant", "content": response_text},
+                    user_id
+                )
+            except PermissionError:
+                logger.error(
+                    "Failed to save conversation",
+                    extra={"conversation_id": conversation_id, "user_id": user_id}
+                )
 
             logger.info(
                 "Chat processed successfully",
@@ -140,7 +259,10 @@ class WizardChatService:
         except Exception as e:
             logger.error(
                 "Chat processing failed",
-                extra={"conversation_id": conversation_id, "error": str(e)},
+                extra={
+                    "conversation_id": conversation_id,
+                    "error_type": type(e).__name__
+                },
                 exc_info=True
             )
             return {

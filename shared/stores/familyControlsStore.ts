@@ -7,7 +7,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import api from '../services/api';
+import { api } from '../services/api';
 import type { FamilyControls, FamilyControlsStore } from './familyControlsTypes';
 import { defaultControls } from './familyControlsTypes';
 
@@ -23,9 +23,9 @@ export const useFamilyControlsStore = create<FamilyControlsStore>()(
         set({ loading: true, error: null });
         try {
           const endpoint = profileId ? `/profiles/${profileId}/controls` : '/family/controls';
-          const response = await api.get(endpoint);
-          if (response) {
-            set({ controls: response as FamilyControls, hasFamilyPin: true, loading: false });
+          const data = await api.get(endpoint);
+          if (data) {
+            set({ controls: data, hasFamilyPin: true, loading: false });
           } else {
             set({ controls: defaultControls, hasFamilyPin: false, loading: false });
           }
@@ -43,8 +43,8 @@ export const useFamilyControlsStore = create<FamilyControlsStore>()(
         try {
           const currentControls = get().controls || defaultControls;
           const updatedControls = { ...currentControls, ...updates };
-          const response = await api.patch('/family/controls', updatedControls);
-          set({ controls: response as FamilyControls, loading: false });
+          const data = await api.patch('/family/controls', updatedControls);
+          set({ controls: data, loading: false });
         } catch (error: any) {
           set({ error: error.message || 'Failed to update family controls', loading: false });
           throw error;
@@ -70,8 +70,8 @@ export const useFamilyControlsStore = create<FamilyControlsStore>()(
 
       verifyFamilyPin: async (pin: string) => {
         try {
-          const response = await api.post('/family/controls/verify-pin', { pin });
-          return response?.valid === true;
+          const data = await api.post('/family/controls/verify-pin', { pin });
+          return data?.valid === true;
         } catch (error) {
           return false;
         }

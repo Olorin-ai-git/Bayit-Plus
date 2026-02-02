@@ -24,6 +24,7 @@ export default defineConfig({
       '@bayit/shared-utils': path.resolve(__dirname, '../shared/utils'),
       '@bayit/i18n': path.resolve(__dirname, '../packages/ui/bayit-i18n/dist/index.mjs'),
       '@bayit/i18n/web': path.resolve(__dirname, '../packages/ui/bayit-i18n/dist/web.mjs'),
+      '@bayit/shared-i18n': path.resolve(__dirname, '../packages/ui/shared-i18n/dist/index.mjs'),
       '@olorin/shared-i18n': path.resolve(__dirname, '../packages/ui/shared-i18n/dist/index.mjs'),
       '@olorin/design-tokens': path.resolve(__dirname, '../packages/ui/design-tokens/src'),
       '@olorin/shared-icons/web': path.resolve(__dirname, '../packages/ui/shared-icons/src/web'),

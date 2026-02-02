@@ -227,7 +227,7 @@ class HLSSubtitleMigration:
             return
 
         self.stats["has_subtitles"] += 1
-        languages = list(set(track.language for track in subtitle_tracks))
+        languages = list(set(track["language"] for track in subtitle_tracks))
         logger.info(f"✅ Has {len(subtitle_tracks)} subtitle tracks in {len(languages)} languages: {languages}")
 
         self.stats["needs_migration"] += 1

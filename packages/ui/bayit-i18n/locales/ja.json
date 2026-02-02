@@ -8349,9 +8349,12 @@
       "pinMismatch": "PINs do not match",
       "pinTooShort": "PIN must be at least 4 digits",
       "invalidPin": "Invalid PIN",
-      "sectionDisabled": "This section is disabled by family controls",
-      "outsideViewingHours": "Access restricted outside viewing hours",
-      "contentRatingTooHigh": "Content rating exceeds allowed limit"
+      "sectionDisabled": "このセクションはファミリーコントロールにより無効化されています",
+      "outsideViewingHours": "視聴時間外のアクセスは制限されています",
+      "contentRatingTooHigh": "コンテンツレーティングが許可された制限を超えています",
+      "newPinTooShort": "新しいPINは最低4桁必要です",
+      "failedToSetPin": "PINの設定に失敗しました",
+      "failedToUpdatePin": "PINの更新に失敗しました。古いPINを確認してください。"
     },
     "household": {
       "title": "Household",
@@ -8385,6 +8388,13 @@
       "inheritAccount": "Inherit from Account",
       "hierarchy": "Control Hierarchy",
       "source": "Controls Source"
+    },
+    "contentBlockedAbove": "{{rating}}より上の評価のコンテンツはブロックされます",
+    "placeholders": {
+      "currentPin": "現在のPIN",
+      "enterPin": "PINを入力",
+      "enterNewPin": "新しいPINを入力",
+      "confirmNewPin": "新しいPINを確認"
     }
   }
 }

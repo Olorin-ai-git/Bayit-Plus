@@ -6,6 +6,8 @@ Provides 5 specialized tools for content discovery and user assistance
 import logging
 from typing import Any, Dict, List, Optional
 
+from pydantic import BaseModel, Field, validator, ValidationError
+
 from app.core.logging_config import get_logger
 from app.models.content import LiveChannel
 from app.services.kids_content_service import kids_content_service
@@ -13,6 +15,54 @@ from app.services.unified_search_service import SearchFilters, UnifiedSearchServ
 from app.services.chat_search_tool import execute_search_content, execute_lookup_user_guide
 
 logger = get_logger(__name__)
+
+
+# Pydantic models for tool input validation
+class SearchContentInput(BaseModel):
+    """Input validation for search_content tool."""
+    query: str = Field(..., max_length=500)
+    content_type: Optional[str] = Field("vod", pattern=r'^(vod|live|radio|podcast)$')
+    genres: Optional[List[str]] = Field(None, max_items=10)
+    year_min: Optional[int] = Field(None, ge=1900, le=2100)
+    year_max: Optional[int] = Field(None, ge=1900, le=2100)
+    is_kids_content: Optional[bool] = None
+    limit: int = Field(5, ge=1, le=10)
+
+    @validator('query')
+    def validate_query(cls, v):
+        if len(v.strip()) == 0:
+            raise ValueError("Query cannot be empty")
+        return v.strip()
+
+
+class GetRecommendationsInput(BaseModel):
+    """Input validation for get_recommendations tool."""
+    content_type: str = Field("vod", pattern=r'^(vod|live|radio|podcast)$')
+    based_on: Optional[str] = Field(None, max_length=100)
+    limit: int = Field(10, ge=1, le=10)
+
+
+class GetLiveChannelsInput(BaseModel):
+    """Input validation for get_live_channels tool."""
+    category: Optional[str] = Field(None, pattern=r'^(news|sports|entertainment|kids)$')
+
+
+class GetKidsContentInput(BaseModel):
+    """Input validation for get_kids_content tool."""
+    age_group: str = Field(..., pattern=r'^(toddler|preschool|elementary|preteen)$')
+    category: Optional[str] = Field(None, pattern=r'^(cartoons|educational|music|hebrew|stories|jewish)$')
+    limit: int = Field(10, ge=1, le=10)
+
+
+class LookupUserGuideInput(BaseModel):
+    """Input validation for lookup_user_guide tool."""
+    query: str = Field(..., max_length=500)
+
+    @validator('query')
+    def validate_query(cls, v):
+        if len(v.strip()) == 0:
+            raise ValueError("Query cannot be empty")
+        return v.strip()
 
 
 # Tool definitions with multilingual descriptions
@@ -165,8 +215,7 @@ async def execute_get_recommendations(
                 "Finding similar content",
                 extra={"content_id": based_on, "limit": limit}
             )
-            # For now, use a simple content type search
-            # TODO: Implement true similarity search in future
+            # Use content type search (similarity search can be added later)
             filters = SearchFilters(
                 content_types=[content_type],
             )
@@ -327,7 +376,7 @@ async def execute_get_kids_content(
 # Tool execution dispatcher
 async def execute_tool(tool_name: str, tool_input: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Execute a wizard tool by name.
+    Execute a wizard tool by name with input validation.
 
     Args:
         tool_name: Name of the tool to execute
@@ -336,16 +385,35 @@ async def execute_tool(tool_name: str, tool_input: Dict[str, Any]) -> Dict[str, 
     Returns:
         Tool execution result
     """
-    if tool_name == "search_content":
-        return await execute_search_content(tool_input)
-    elif tool_name == "get_recommendations":
-        return await execute_get_recommendations(**tool_input)
-    elif tool_name == "get_live_channels":
-        return await execute_get_live_channels(**tool_input)
-    elif tool_name == "get_kids_content":
-        return await execute_get_kids_content(**tool_input)
-    elif tool_name == "lookup_user_guide":
-        return await execute_lookup_user_guide(tool_input)
-    else:
-        logger.error(f"Unknown tool: {tool_name}")
-        return {"error": f"Unknown tool: {tool_name}"}
+    try:
+        if tool_name == "search_content":
+            # Validate input using Pydantic model
+            validated_input = SearchContentInput(**tool_input)
+            return await execute_search_content(validated_input.dict())
+
+        elif tool_name == "get_recommendations":
+            validated_input = GetRecommendationsInput(**tool_input)
+            return await execute_get_recommendations(**validated_input.dict())
+
+        elif tool_name == "get_live_channels":
+            validated_input = GetLiveChannelsInput(**tool_input)
+            return await execute_get_live_channels(**validated_input.dict())
+
+        elif tool_name == "get_kids_content":
+            validated_input = GetKidsContentInput(**tool_input)
+            return await execute_get_kids_content(**validated_input.dict())
+
+        elif tool_name == "lookup_user_guide":
+            validated_input = LookupUserGuideInput(**tool_input)
+            return await execute_lookup_user_guide(validated_input.dict())
+
+        else:
+            logger.error("Unknown tool", extra={"tool_name": tool_name})
+            return {"error": "Unknown tool", "tool_name": tool_name}
+
+    except ValidationError as e:
+        logger.error(
+            "Tool input validation failed",
+            extra={"tool_name": tool_name, "errors": e.errors()}
+        )
+        return {"error": "Invalid tool input", "details": e.errors()}

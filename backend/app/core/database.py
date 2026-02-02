@@ -43,6 +43,7 @@ from app.models.documentation import (DocumentationArticle,
                                       DocumentationFeedback,
                                       DocumentationSearchLog)
 from app.models.family_controls import FamilyControls
+from app.models.household import Household
 from app.models.friendship import (FriendRequest, GameResult, PlayerStats,
                                    UserFriendship)
 # Olorin.ai Platform models
@@ -338,6 +339,7 @@ async def connect_to_mongo():
         YoungstersContentSource,
         # Family Controls models (unified parental controls)
         FamilyControls,
+        Household,
         # MCP Content Discovery models
         ContentDiscoveryQueue,
         # Live Dubbing models

@@ -7,7 +7,7 @@ Supports family invitations, role-based permissions, and shared control inherita
 
 import pymongo
 from beanie import Document, Indexed
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from pydantic import BaseModel, Field
 from typing import List, Optional
@@ -27,7 +27,7 @@ class HouseholdMember(BaseModel):
     user_id: str = Field(..., description="User ID of household member")
     role: HouseholdRole = Field(..., description="Role within household")
     joined_at: datetime = Field(
-        default_factory=datetime.utcnow, description="When member joined household"
+        default_factory=lambda: datetime.now(timezone.utc), description="When member joined household"
     )
     invited_by: Optional[str] = Field(
         None, description="User ID of member who sent invitation"
@@ -42,7 +42,7 @@ class PendingInvitation(BaseModel):
     role: HouseholdRole = Field(..., description="Role being offered")
     invited_by: str = Field(..., description="User ID of inviter")
     invited_at: datetime = Field(
-        default_factory=datetime.utcnow, description="When invitation was sent"
+        default_factory=lambda: datetime.now(timezone.utc), description="When invitation was sent"
     )
     expires_at: datetime = Field(..., description="Invitation expiration timestamp")
 
@@ -78,10 +78,10 @@ class Household(Document):
 
     # Timestamps
     created_at: datetime = Field(
-        default_factory=datetime.utcnow, description="Household creation timestamp"
+        default_factory=lambda: datetime.now(timezone.utc), description="Household creation timestamp"
     )
     updated_at: datetime = Field(
-        default_factory=datetime.utcnow, description="Last update timestamp"
+        default_factory=lambda: datetime.now(timezone.utc), description="Last update timestamp"
     )
 
     class Settings:
@@ -124,7 +124,7 @@ class Household(Document):
             self.members.append(
                 HouseholdMember(user_id=user_id, role=role, invited_by=invited_by)
             )
-            self.updated_at = datetime.utcnow()
+            self.updated_at = datetime.now(timezone.utc)
 
     def remove_member(self, user_id: str) -> bool:
         """Remove member from household. Returns True if removed."""
@@ -133,7 +133,7 @@ class Household(Document):
         initial_count = len(self.members)
         self.members = [m for m in self.members if m.user_id != user_id]
         if len(self.members) < initial_count:
-            self.updated_at = datetime.utcnow()
+            self.updated_at = datetime.now(timezone.utc)
             return True
         return False
 
@@ -162,18 +162,18 @@ class Household(Document):
             inv for inv in self.pending_invitations if inv.invitation_id != invitation_id
         ]
         if len(self.pending_invitations) < initial_count:
-            self.updated_at = datetime.utcnow()
+            self.updated_at = datetime.now(timezone.utc)
             return True
         return False
 
     def clean_expired_invitations(self) -> int:
         """Remove expired invitations. Returns count of removed invitations."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         initial_count = len(self.pending_invitations)
         self.pending_invitations = [
             inv for inv in self.pending_invitations if inv.expires_at > now
         ]
         removed_count = initial_count - len(self.pending_invitations)
         if removed_count > 0:
-            self.updated_at = datetime.utcnow()
+            self.updated_at = datetime.now(timezone.utc)
         return removed_count

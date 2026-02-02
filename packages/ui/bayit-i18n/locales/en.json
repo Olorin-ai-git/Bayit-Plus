@@ -3465,8 +3465,10 @@
     "error": "Error",
     "retry": "Retry",
     "cancel": "Cancel",
+    "confirm": "Confirm",
     "restart": "Restart",
     "generating": "Generating...",
+    "processing": "Processing...",
     "save": "Save",
     "saving": "Saving...",
     "close": "Close",
@@ -5932,6 +5934,12 @@
     "pinNotConfigured": "No Family PIN set up yet",
     "enterPin": "Enter PIN",
     "confirmPin": "Confirm PIN",
+    "placeholders": {
+      "currentPin": "Current PIN",
+      "enterPin": "Enter PIN",
+      "enterNewPin": "Enter new PIN",
+      "confirmNewPin": "Confirm new PIN"
+    },
     "kidsSection": "Kids (0-12 years)",
     "kidsEnabled": "Enable Kids Mode",
     "kidsAgeLimit": "Age Limit",
@@ -5940,6 +5948,7 @@
     "youngstersAgeLimit": "Age Limit",
     "contentRatings": "Content Ratings",
     "maxContentRating": "Maximum Content Rating",
+    "contentBlockedAbove": "Content rated above {{rating}} will be blocked",
     "viewingHours": "Viewing Hours",
     "viewingHoursEnabled": "Enable Time Restrictions",
     "startHour": "Start Hour",
@@ -5954,7 +5963,10 @@
     "errors": {
       "pinMismatch": "PINs do not match",
       "pinTooShort": "PIN must be at least 4 digits",
+      "newPinTooShort": "New PIN must be at least 4 digits",
       "invalidPin": "Invalid PIN",
+      "failedToSetPin": "Failed to set PIN",
+      "failedToUpdatePin": "Failed to update PIN. Check old PIN.",
       "sectionDisabled": "This section is disabled by family controls",
       "outsideViewingHours": "Access restricted outside viewing hours",
       "contentRatingTooHigh": "Content rating exceeds allowed limit"

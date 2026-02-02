@@ -7891,9 +7891,12 @@
       "pinMismatch": "PINs do not match",
       "pinTooShort": "PIN must be at least 4 digits",
       "invalidPin": "Invalid PIN",
-      "sectionDisabled": "This section is disabled by family controls",
-      "outsideViewingHours": "Access restricted outside viewing hours",
-      "contentRatingTooHigh": "Content rating exceeds allowed limit"
+      "sectionDisabled": "חלק זה מושבת על ידי בקרות המשפחה",
+      "outsideViewingHours": "הגישה מוגבלת מחוץ לשעות הצפייה המותרות",
+      "contentRatingTooHigh": "דירוג התוכן חורג מהמגבלה המותרת",
+      "newPinTooShort": "קוד PIN חדש חייב להיות לפחות 4 ספרות",
+      "failedToSetPin": "נכשל בהגדרת קוד PIN",
+      "failedToUpdatePin": "נכשל בעדכון קוד PIN. בדוק קוד PIN ישן."
     },
     "household": {
       "title": "Household",
@@ -7927,6 +7930,13 @@
       "inheritAccount": "Inherit from Account",
       "hierarchy": "Control Hierarchy",
       "source": "Controls Source"
+    },
+    "contentBlockedAbove": "תוכן בדירוג מעל {{rating}} יחסם",
+    "placeholders": {
+      "currentPin": "קוד PIN נוכחי",
+      "enterPin": "הזן קוד PIN",
+      "enterNewPin": "הזן קוד PIN חדש",
+      "confirmNewPin": "אשר קוד PIN חדש"
     }
   }
 }

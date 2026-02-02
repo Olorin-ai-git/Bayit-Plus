@@ -40,20 +40,20 @@ export const ContentRatingSelector: React.FC<ContentRatingSelectorProps> = ({
 
   const getRatingDescription = (rating: ContentRating): string => {
     const descriptions: Record<ContentRating, string> = {
-      G: t('familyControls.ratings.G', 'General Audiences'),
-      PG: t('familyControls.ratings.PG', 'Parental Guidance'),
-      'PG-13': t('familyControls.ratings.PG13', 'Parents Cautioned'),
-      R: t('familyControls.ratings.R', 'Restricted'),
-      'TV-MA': t('familyControls.ratings.TVMA', 'Mature Audiences'),
+      G: t('familyControls.ratings.G'),
+      PG: t('familyControls.ratings.PG'),
+      'PG-13': t('familyControls.ratings.PG13'),
+      R: t('familyControls.ratings.R'),
+      'TV-MA': t('familyControls.ratings.TVMA'),
     };
     return descriptions[rating];
   };
 
   return (
     <View style={[styles.container, disabled && styles.containerDisabled]}>
-      <Text style={styles.label}>Maximum Content Rating</Text>
+      <Text style={styles.label}>{t('familyControls.maxContentRating')}</Text>
       <Text style={styles.description}>
-        Content rated above {value} will be blocked
+        {t('familyControls.contentBlockedAbove', { rating: value })}
       </Text>
 
       <View style={styles.ratings}>

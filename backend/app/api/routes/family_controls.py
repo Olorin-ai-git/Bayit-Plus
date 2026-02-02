@@ -186,7 +186,7 @@ async def verify_family_pin(
     current_user: User = Depends(get_current_active_user),
 ):
     """
-    Verify family PIN.
+    Verify family PIN with account lockout protection.
 
     Used to:
     - Unlock restricted content
@@ -195,6 +195,7 @@ async def verify_family_pin(
 
     Returns 401 if PIN is incorrect.
     Returns 404 if family controls not set up.
+    Returns 423 if account is locked due to too many failed attempts.
     """
     controls = await family_controls_service.get_controls(str(current_user.id))
     if not controls:
@@ -203,21 +204,28 @@ async def verify_family_pin(
             detail="Family controls not set up.",
         )
 
-    is_valid = await family_controls_service.verify_pin(
-        str(current_user.id),
-        request.pin,
-    )
-
-    if not is_valid:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid PIN",
+    try:
+        is_valid = await family_controls_service.verify_pin(
+            str(current_user.id),
+            request.pin,
         )
 
-    return {
-        "status": "success",
-        "message": "PIN verified successfully",
-    }
+        if not is_valid:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid PIN",
+            )
+
+        return {
+            "status": "success",
+            "message": "PIN verified successfully",
+        }
+    except ValueError as e:
+        # Account locked due to too many failed attempts
+        raise HTTPException(
+            status_code=status.HTTP_423_LOCKED,
+            detail=str(e),
+        )
 
 
 @router.post("/controls/reset-pin")
@@ -227,7 +235,7 @@ async def reset_family_pin(
     current_user: User = Depends(get_current_active_user),
 ):
     """
-    Update family PIN.
+    Update family PIN with account lockout protection.
 
     Requires:
     - old_pin: Current PIN for verification
@@ -235,23 +243,31 @@ async def reset_family_pin(
 
     Returns 401 if old PIN is incorrect.
     Returns 404 if family controls not set up.
+    Returns 423 if account is locked due to too many failed attempts.
     """
-    success = await family_controls_service.update_pin(
-        user_id=str(current_user.id),
-        old_pin=request.old_pin,
-        new_pin=request.new_pin,
-    )
-
-    if not success:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid old PIN",
+    try:
+        success = await family_controls_service.update_pin(
+            user_id=str(current_user.id),
+            old_pin=request.old_pin,
+            new_pin=request.new_pin,
         )
 
-    return {
-        "status": "success",
-        "message": "PIN updated successfully",
-    }
+        if not success:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid old PIN",
+            )
+
+        return {
+            "status": "success",
+            "message": "PIN updated successfully",
+        }
+    except ValueError as e:
+        # Account locked due to too many failed attempts
+        raise HTTPException(
+            status_code=status.HTTP_423_LOCKED,
+            detail=str(e),
+        )
 
 
 @router.get("/controls/sections")

@@ -54,7 +54,7 @@ def _format_household_response(household: Household) -> HouseholdResponse:
         household_id=household.household_id,
         name=household.name,
         owner_id=household.owner_id,
-        members=[m.dict() for m in household.members],
+        members=[m.model_dump() for m in household.members],
         shared_controls_id=household.shared_controls_id,
         created_at=household.created_at.isoformat(),
         updated_at=household.updated_at.isoformat(),
@@ -252,4 +252,4 @@ async def list_members(
             detail="User is not member of this household",
         )
 
-    return [m.dict() for m in household.members]
+    return [m.model_dump() for m in household.members]

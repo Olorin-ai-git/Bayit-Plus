@@ -9,6 +9,7 @@
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useFamilyControlsStore } from '../../stores/familyControlsStore';
 
 interface FamilyPinModalProps {
@@ -34,6 +35,7 @@ export const FamilyPinModal: React.FC<FamilyPinModalProps> = ({
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const { t } = useTranslation();
   const { setFamilyPin, verifyFamilyPin, updatePin } = useFamilyControlsStore();
 
   const handleSubmit = async () => {
@@ -43,12 +45,12 @@ export const FamilyPinModal: React.FC<FamilyPinModalProps> = ({
     try {
       if (mode === 'setup') {
         if (pin.length < 4) {
-          setError('PIN must be at least 4 digits');
+          setError(t('familyControls.errors.pinTooShort'));
           setLoading(false);
           return;
         }
         if (pin !== confirmPin) {
-          setError('PINs do not match');
+          setError(t('familyControls.errors.pinMismatch'));
           setLoading(false);
           return;
         }
@@ -58,7 +60,7 @@ export const FamilyPinModal: React.FC<FamilyPinModalProps> = ({
           onSuccess();
           resetForm();
         } else {
-          setError('Failed to set PIN');
+          setError(t('familyControls.errors.failedToSetPin'));
         }
       } else if (mode === 'verify') {
         const isValid = await verifyFamilyPin(pin);
@@ -66,16 +68,16 @@ export const FamilyPinModal: React.FC<FamilyPinModalProps> = ({
           onSuccess();
           resetForm();
         } else {
-          setError('Incorrect PIN');
+          setError(t('familyControls.errors.invalidPin'));
         }
       } else if (mode === 'update') {
         if (pin.length < 4) {
-          setError('New PIN must be at least 4 digits');
+          setError(t('familyControls.errors.newPinTooShort'));
           setLoading(false);
           return;
         }
         if (pin !== confirmPin) {
-          setError('New PINs do not match');
+          setError(t('familyControls.errors.pinMismatch'));
           setLoading(false);
           return;
         }
@@ -85,7 +87,7 @@ export const FamilyPinModal: React.FC<FamilyPinModalProps> = ({
           onSuccess();
           resetForm();
         } else {
-          setError('Failed to update PIN. Check old PIN.');
+          setError(t('familyControls.errors.failedToUpdatePin'));
         }
       }
     } finally {
@@ -105,13 +107,13 @@ export const FamilyPinModal: React.FC<FamilyPinModalProps> = ({
   return (
     <View style={styles.overlay}>
       <View style={styles.modal}>
-        <Text style={styles.title}>{title || 'Family PIN'}</Text>
+        <Text style={styles.title}>{title || t('familyControls.familyPin')}</Text>
         {description && <Text style={styles.description}>{description}</Text>}
 
         {mode === 'update' && (
           <TextInput
             style={styles.input}
-            placeholder="Current PIN"
+            placeholder={t('familyControls.placeholders.currentPin')}
             placeholderTextColor="#888"
             value={oldPin}
             onChangeText={setOldPin}
@@ -123,7 +125,7 @@ export const FamilyPinModal: React.FC<FamilyPinModalProps> = ({
 
         <TextInput
           style={styles.input}
-          placeholder={mode === 'verify' ? 'Enter PIN' : 'Enter new PIN'}
+          placeholder={mode === 'verify' ? t('familyControls.placeholders.enterPin') : t('familyControls.placeholders.enterNewPin')}
           placeholderTextColor="#888"
           value={pin}
           onChangeText={setPin}
@@ -135,7 +137,7 @@ export const FamilyPinModal: React.FC<FamilyPinModalProps> = ({
         {(mode === 'setup' || mode === 'update') && (
           <TextInput
             style={styles.input}
-            placeholder="Confirm new PIN"
+            placeholder={t('familyControls.placeholders.confirmNewPin')}
             placeholderTextColor="#888"
             value={confirmPin}
             onChangeText={setConfirmPin}
@@ -149,7 +151,7 @@ export const FamilyPinModal: React.FC<FamilyPinModalProps> = ({
 
         <View style={styles.buttons}>
           <Pressable style={styles.cancelButton} onPress={onClose}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
+            <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
           </Pressable>
           <Pressable
             style={[styles.submitButton, loading && styles.submitButtonDisabled]}
@@ -157,7 +159,7 @@ export const FamilyPinModal: React.FC<FamilyPinModalProps> = ({
             disabled={loading}
           >
             <Text style={styles.submitButtonText}>
-              {loading ? 'Processing...' : 'Confirm'}
+              {loading ? t('common.processing') : t('common.confirm')}
             </Text>
           </Pressable>
         </View>
