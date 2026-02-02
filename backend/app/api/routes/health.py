@@ -11,7 +11,8 @@ Endpoints:
 - /health/live-translation - Legacy endpoint for translation services
 """
 
-from fastapi import APIRouter, Response
+from fastapi import APIRouter, Request, Response
+import socket
 
 from app.core.config import settings
 from app.core.health_checks import (HealthStatus, run_deep_health_check,
@@ -20,15 +21,39 @@ from app.core.health_checks import (HealthStatus, run_deep_health_check,
 router = APIRouter(tags=["health"])
 
 
+def get_server_host() -> str:
+    """
+    Get the server's accessible IP address for casting devices.
+
+    Returns the local network IP address that can be used by casting
+    devices (Apple TV, Chromecast) to access the backend.
+    """
+    try:
+        # Create a socket to determine the local IP
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        # Connect to a public DNS (doesn't actually send data)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+        return local_ip
+    except Exception:
+        return "localhost"
+
+
 @router.get("/health")
-async def health_check() -> dict:
+async def health_check(request: Request) -> dict:
     """
     Basic health check endpoint.
 
     Returns:
-        Basic health status with app name.
+        Basic health status with app name and server host for casting.
     """
-    return {"status": "healthy", "app": settings.APP_NAME}
+    return {
+        "status": "healthy",
+        "app": settings.APP_NAME,
+        "server_host": get_server_host(),
+        "server_port": 8000
+    }
 
 
 @router.get("/health/live")

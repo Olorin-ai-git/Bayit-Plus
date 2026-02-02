@@ -3,11 +3,15 @@
  * Combines AirPlay and Chromecast capabilities with a unified interface
  */
 
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
+import { logger } from '@/utils/logger'
 import { castConfig } from '@/config/castConfig'
 import { useAirPlayWeb } from './useAirPlayWeb'
 import { useChromecastWeb } from './useChromecastWeb'
 import { CastSession, CastMetadata, CastType } from '../types/cast'
+
+const log = logger.scope('CastSession')
+const DEBUG_CAST = import.meta.env.VITE_DEBUG_CAST === 'true'
 
 interface UseCastSessionOptions {
   videoRef: React.RefObject<HTMLVideoElement>
@@ -34,6 +38,36 @@ export function useCastSession({
     receiverAppId: castConfig.receiverAppId,
     metadata,
   })
+
+  // Debug logging for cast availability
+  useEffect(() => {
+    if (DEBUG_CAST) {
+      log.info('Cast session state', {
+        enabled,
+        featureEnabled: castConfig.featureEnabled,
+        enableAirPlay: castConfig.enableAirPlay,
+        enableChromecast: castConfig.enableChromecast,
+        receiverAppId: castConfig.receiverAppId,
+        airplayAvailable: airplay.isAvailable,
+        airplayConnected: airplay.isConnected,
+        chromecastAvailable: chromecast.isAvailable,
+        chromecastConnected: chromecast.isConnected,
+        chromecastConnecting: chromecast.isConnecting,
+        browser: {
+          isWebKit: /AppleWebKit/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent),
+          isChrome: /Chrome/.test(navigator.userAgent),
+          userAgent: navigator.userAgent.substring(0, 100),
+        },
+      })
+    }
+  }, [
+    enabled,
+    airplay.isAvailable,
+    airplay.isConnected,
+    chromecast.isAvailable,
+    chromecast.isConnected,
+    chromecast.isConnecting,
+  ])
 
   // Unified interface - prioritize active connection
   const session: CastSession = useMemo(() => {

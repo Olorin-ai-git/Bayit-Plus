@@ -181,12 +181,21 @@ export function useHLSPlayer({
         liveSyncDuration: isLive ? targetLatencySeconds : undefined,
         liveMaxLatencyDuration: isLive ? targetLatencySeconds + 5 : undefined,
         liveDurationInfinity: isLive,
+        // Disable subtitle display - we handle subtitles via our own overlay system
+        subtitleDisplay: false,
       })
       hlsRef.current = hls
       activeHlsInstances.add(hls) // Track for cleanup
+
+      // Disable subtitle tracks BEFORE loading source to prevent automatic loading
+      hls.subtitleTrack = -1
+
       hls.loadSource(effectiveStreamUrl)
       hls.attachMedia(video)
+
       hls.on(Hls.Events.MANIFEST_PARSED, (_, data) => {
+        // Ensure subtitle tracks stay disabled after manifest is parsed
+        hls.subtitleTrack = -1
         onReady()
         // Check audio tracks in the stream
         const hasAudioTracks = (data.audioTracks?.length || 0) > 0
@@ -447,15 +456,22 @@ export function useHLSPlayer({
         liveSyncDuration: delaySeconds,
         liveMaxLatencyDuration: delaySeconds + 5,
         liveDurationInfinity: true,
+        // Disable subtitle display - we handle subtitles via our own overlay system
+        subtitleDisplay: false,
       })
 
       hlsRef.current = hls
       activeHlsInstances.add(hls)
 
+      // Disable subtitle tracks BEFORE loading source
+      hls.subtitleTrack = -1
+
       hls.loadSource(event.detail.url)
       hls.attachMedia(video)
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        // Ensure subtitle tracks stay disabled after manifest is parsed
+        hls.subtitleTrack = -1
         logger.info('HLS reconfigured for dubbing, manifest parsed', 'useHLSPlayer')
         if (wasPlaying) {
           video.play().catch((err) => {
@@ -499,15 +515,22 @@ export function useHLSPlayer({
         liveSyncDuration: 3,
         liveMaxLatencyDuration: 8,
         liveDurationInfinity: true,
+        // Disable subtitle display - we handle subtitles via our own overlay system
+        subtitleDisplay: false,
       })
 
       hlsRef.current = hls
       activeHlsInstances.add(hls)
 
+      // Disable subtitle tracks BEFORE loading source
+      hls.subtitleTrack = -1
+
       hls.loadSource(event.detail.url)
       hls.attachMedia(video)
 
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        // Ensure subtitle tracks stay disabled after manifest is parsed
+        hls.subtitleTrack = -1
         logger.info('HLS restored to normal latency', 'useHLSPlayer')
         if (wasPlaying) {
           video.play().catch((err) => {

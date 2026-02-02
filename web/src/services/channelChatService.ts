@@ -1,8 +1,12 @@
 /**
  * Channel Chat Service - WebSocket chat for live TV channels
+ *
+ * Uses centralized api instance for HTTP requests (translate, history)
+ * to ensure auth token injection, correlation ID tracking, and retry logic.
  */
 
 import logger from '@/utils/logger'
+import api from './api'
 import type {
   ConnectedData, ChatMessageData, UserJoinData, UserLeftData,
   ReactionUpdateData, MessageDeletedData, UserMutedData, UserUnmutedData,
@@ -15,18 +19,7 @@ export type {
   ChannelChatCallbacks, ChatHistoryResponse,
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL
 const AUTH_STORAGE_KEY = 'bayit-auth'
-
-function validateConfiguration(): void {
-  if (!API_BASE_URL) {
-    throw new Error('[ChannelChat] VITE_API_URL environment variable is required.')
-  }
-}
-
-if (!API_BASE_URL) {
-  logger.warn('VITE_API_URL not configured - channel chat will fail', 'channelChatService')
-}
 
 class ChannelChatService {
   private ws: WebSocket | null = null
@@ -36,10 +29,6 @@ class ChannelChatService {
   private callbacks: ChannelChatCallbacks | null = null
 
   async connect(channelId: string, callbacks: ChannelChatCallbacks, isLive = true): Promise<void> {
-    try { validateConfiguration() } catch (error) {
-      callbacks.onError('CONFIG_ERROR', error instanceof Error ? error.message : 'Configuration error', false)
-      return
-    }
     try {
       const authData = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || '{}')
       const token = authData?.state?.token
@@ -51,11 +40,7 @@ class ChannelChatService {
       this.currentChannelId = channelId
       this.callbacks = callbacks
       const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:'
-      // Handle both absolute URLs (https://api.example.com/api/v1) and relative paths (/api/v1)
-      const isRelativePath = API_BASE_URL.startsWith('/')
-      const wsHost = isRelativePath
-        ? window.location.host
-        : API_BASE_URL.replace(/^https?:\/\//, '').replace(/\/api\/v1\/?$/, '')
+      const wsHost = window.location.host
       const wsPathPrefix = isLive ? 'live' : 'content'
       const wsUrl = `${wsProtocol}//${wsHost}/api/v1/ws/${wsPathPrefix}/${channelId}/chat`
 
@@ -207,19 +192,13 @@ class ChannelChatService {
   static async translateMessage(
     channelId: string, text: string, fromLang: string, toLang: string, isLive = true,
   ): Promise<string | null> {
-    validateConfiguration()
     try {
-      const authData = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || '{}')
-      const token = authData?.state?.token
-      const params = new URLSearchParams({ text, to_lang: toLang })
-      if (fromLang) params.set('from_lang', fromLang)
       const pathPrefix = isLive ? 'live' : 'content'
-      const response = await fetch(
-        `${API_BASE_URL}/${pathPrefix}/${channelId}/chat/translate?${params.toString()}`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      )
-      if (!response.ok) throw new Error('Translation failed')
-      const data = await response.json()
+      const params: Record<string, string> = { text, to_lang: toLang }
+      if (fromLang) params.from_lang = fromLang
+
+      // Use centralized api for auth token injection and retry logic
+      const data = await api.get(`/${pathPrefix}/${channelId}/chat/translate`, { params })
       return data.translated_text || null
     } catch (error) {
       logger.error('Error translating message', 'channelChatService', error)
@@ -230,20 +209,13 @@ class ChannelChatService {
   static async fetchHistory(
     channelId: string, before?: string, limit?: number, isLive = true,
   ): Promise<ChatHistoryResponse> {
-    validateConfiguration()
-    const authData = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY) || '{}')
-    const token = authData?.state?.token
-    const params = new URLSearchParams()
-    if (before) params.set('before', before)
-    if (limit) params.set('limit', String(limit))
     const pathPrefix = isLive ? 'live' : 'content'
-    const url = `${API_BASE_URL}/${pathPrefix}/${channelId}/chat/history${params.toString() ? `?${params.toString()}` : ''}`
-    const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` } })
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => 'Unknown error')
-      throw new Error(`Failed to fetch chat history: ${errorText}`)
-    }
-    return response.json()
+    const params: Record<string, string | number> = {}
+    if (before) params.before = before
+    if (limit) params.limit = limit
+
+    // Use centralized api for auth token injection and retry logic
+    return api.get(`/${pathPrefix}/${channelId}/chat/history`, { params })
   }
 }
 

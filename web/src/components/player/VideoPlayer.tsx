@@ -55,6 +55,8 @@ export default function VideoPlayer({
   directUrl,
   savedPosition,
   onRestartComplete,
+  initialSubtitleLang,
+  isHLS = false,
 }: VideoPlayerProps) {
   const { t, i18n } = useTranslation()
   const user = useAuthStore((s) => s.user)
@@ -105,7 +107,7 @@ export default function VideoPlayer({
     handleSplitModeToggle,
     handleSplitLanguagesChange,
     fetchAvailableSubtitles,
-  } = useSubtitles({ contentId, isLive })
+  } = useSubtitles({ contentId, isLive, initialSubtitleLang })
 
   const {
     liveSubtitleLang,
@@ -180,6 +182,7 @@ export default function VideoPlayer({
     splitMode,
     splitLanguages,
     splitCues,
+    isHLS,
   })
 
   // Playback session management for concurrent stream limit enforcement

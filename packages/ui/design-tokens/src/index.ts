@@ -39,9 +39,10 @@ import {
   gold,
 } from './colors';
 
-// Re-export semantic text colors for easy access
+// Re-export semantic text colors for easy access (dark mode)
 export const textColors = {
   text: '#ffffff',
+  textPrimary: '#ffffff',
   textSecondary: 'rgba(255, 255, 255, 0.7)',
   textMuted: 'rgba(255, 255, 255, 0.5)',
   textDisabled: 'rgba(255, 255, 255, 0.3)',
@@ -89,6 +90,7 @@ export const theme = {
     black: '#000000',
     // Semantic text colors for dark theme
     text: '#ffffff',
+    textPrimary: '#ffffff',
     textSecondary: 'rgba(255, 255, 255, 0.7)',
     textMuted: 'rgba(255, 255, 255, 0.5)',
     textDisabled: 'rgba(255, 255, 255, 0.3)',

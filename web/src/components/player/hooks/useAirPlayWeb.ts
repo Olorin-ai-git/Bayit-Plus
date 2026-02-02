@@ -8,6 +8,7 @@ import { logger } from '@/utils/logger'
 import { WebKitVideoElement, CastMetadata, PlaybackState } from '../types/cast'
 
 const log = logger.scope('AirPlayWeb')
+const DEBUG_CAST = import.meta.env.VITE_DEBUG_CAST === 'true'
 
 interface UseAirPlayWebOptions {
   videoRef: React.RefObject<HTMLVideoElement>
@@ -55,10 +56,10 @@ export function useAirPlayWeb({
     const video = videoRef.current as WebKitVideoElement
 
     const handleAvailabilityChange = (event: Event) => {
-      const target = event.target as WebKitVideoElement
-      // AirPlay is available when event fires with available targets
-      const available = target.webkitPlaybackTargetAvailabilityChanged === true
-      setIsAvailable(available)
+      // AirPlay is available when this event fires
+      // The event fires when AirPlay devices become available on the network
+      log.info('AirPlay availability changed - devices detected on network')
+      setIsAvailable(true)
     }
 
     const handleWirelessChange = (event: Event) => {

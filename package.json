@@ -71,7 +71,9 @@
     "legacy:deploy": "npm run legacy:build:all && firebase deploy --only hosting",
     "legacy:deploy:web": "cd web && npm run deploy",
     "legacy:deploy:tv": "cd tv-app && npm run deploy",
-    "legacy:install:tvos": "cd tvos-app && npm install && cd tvos && pod install"
+    "legacy:install:tvos": "cd tvos-app && npm install && cd tvos && pod install",
+    "remotion:preview": "remotion preview shared/remotion/Root.tsx",
+    "remotion:render": "node scripts/render-wizard-sequences.js"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.2",
@@ -94,6 +96,7 @@
     "postinstall-postinstall": "^2.1.0",
     "prettier": "^3.2.0",
     "react-i18next": "^16.5.3",
+    "remotion": "^4.0.417",
     "syncpack": "^12.0.0",
     "turbo": "^2.0.0",
     "typescript": "^5.7.0",

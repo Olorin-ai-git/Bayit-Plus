@@ -50,7 +50,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 websocket_diagnostics,
                                 extension_subscriptions,
                                 family_controls, favorites, friends, health,
-                                history, jerusalem, judaism, librarian, live,
+                                history, household, jerusalem, judaism, librarian, live,
                                 live_dubbing, live_quota, location, location_consent, media_proxy, news, nlp,
                                 notifications,
                                 onboarding, party, password_reset,
@@ -78,6 +78,8 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes.olorin import router as olorin_router
     # Subtitle routes (split into 3 files per 200-line limit)
     from app.api.routes import subtitles_cues, subtitles_tracks, subtitles_translation
+    # VTT streaming endpoint for native tracks (AirPlay/Chromecast)
+    from app.api.v1.endpoints import subtitles as subtitles_vtt
     # Beta 500 routes
     from app.api.routes.beta import signup, credits, sessions, status
 
@@ -140,6 +142,7 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(subtitles_tracks.router, prefix=prefix, tags=["subtitles"])
     app.include_router(subtitles_cues.router, prefix=prefix, tags=["subtitles"])
     app.include_router(subtitles_translation.router, prefix=prefix, tags=["subtitles"])
+    app.include_router(subtitles_vtt.router, prefix=f"{prefix}/subtitles", tags=["subtitles"])
     app.include_router(
         subtitle_preferences.router,
         prefix=f"{prefix}/subtitles",
@@ -198,6 +201,9 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         family_controls.router, prefix=f"{prefix}/family", tags=["family-controls"]
+    )
+    app.include_router(
+        household.router, prefix=f"{prefix}/household", tags=["household"]
     )
     app.include_router(users.router, prefix=f"{prefix}/users", tags=["users"])
     app.include_router(profile_stats.router, prefix=prefix, tags=["profile"])

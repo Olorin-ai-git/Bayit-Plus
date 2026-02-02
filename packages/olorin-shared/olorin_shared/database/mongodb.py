@@ -87,6 +87,11 @@ class MongoDBConnection:
         self.connect_timeout_ms = int(os.getenv("MONGODB_CONNECT_TIMEOUT_MS", "30000"))
         self.server_selection_timeout_ms = int(os.getenv("MONGODB_SERVER_SELECTION_TIMEOUT_MS", "30000"))
 
+        # TLS/SSL configuration from environment (Python 3.13+ compatibility)
+        # These settings ensure proper SSL certificate validation with MongoDB Atlas
+        self.tls_enabled = os.getenv("MONGODB_TLS_ENABLED", "true").lower() == "true"
+        self.tls_allow_invalid_certificates = os.getenv("MONGODB_TLS_ALLOW_INVALID_CERTIFICATES", "false").lower() == "true"
+
     def _encode_mongodb_uri(self, uri: str) -> str:
         """
         Ensure MongoDB URI has properly URL-encoded credentials.
@@ -148,15 +153,26 @@ class MongoDBConnection:
             logger.info(f"Connecting to MongoDB Atlas")
             logger.info(f"Database: {self.mongodb_db_name}")
 
-            # Create Motor client with connection pooling
-            self.client = AsyncIOMotorClient(
-                self.mongodb_uri,
-                maxPoolSize=self.max_pool_size,
-                minPoolSize=self.min_pool_size,
-                maxIdleTimeMS=self.max_idle_time_ms,
-                connectTimeoutMS=self.connect_timeout_ms,
-                serverSelectionTimeoutMS=self.server_selection_timeout_ms,
-            )
+            # Create Motor client with connection pooling and explicit TLS settings
+            # Python 3.13+ requires explicit TLS configuration for MongoDB Atlas
+            client_options = {
+                "maxPoolSize": self.max_pool_size,
+                "minPoolSize": self.min_pool_size,
+                "maxIdleTimeMS": self.max_idle_time_ms,
+                "connectTimeoutMS": self.connect_timeout_ms,
+                "serverSelectionTimeoutMS": self.server_selection_timeout_ms,
+            }
+
+            # Add explicit TLS/SSL settings for Python 3.13+ compatibility
+            # These settings ensure proper SSL certificate validation with MongoDB Atlas
+            if self.tls_enabled:
+                client_options["tls"] = True  # Force TLS/SSL connection
+                client_options["tlsAllowInvalidCertificates"] = self.tls_allow_invalid_certificates
+
+            logger.debug(f"MongoDB client options: {', '.join(f'{k}={v}' for k, v in client_options.items() if not k.startswith('tls'))}")
+            logger.debug(f"TLS settings: enabled={self.tls_enabled}, allowInvalidCertificates={self.tls_allow_invalid_certificates}")
+
+            self.client = AsyncIOMotorClient(self.mongodb_uri, **client_options)
 
             # Get database
             self.database = self.client[self.mongodb_db_name]

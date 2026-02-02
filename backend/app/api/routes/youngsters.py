@@ -3,6 +3,10 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 
+from app.core.family_controls_dependencies import check_youngsters_section_allowed
+from app.core.security import (get_current_active_user, get_optional_user,
+                               get_password_hash, verify_password)
+from app.models.family_controls import FamilyControls
 from app.models.user import User
 from app.models.youngsters_content import (YoungstersAgeGroupsResponse,
                                            YoungstersContentAggregatedResponse,
@@ -17,10 +21,6 @@ class CategoriesResponse(BaseModel):
     data: list
 
 
-from app.core.security import (get_current_active_user, get_optional_user,
-                               get_password_hash, verify_password)
-
-
 class ParentalControlsUpdate(BaseModel):
     youngsters_pin: Optional[str] = None
     default_age_limit: Optional[int] = None
@@ -33,8 +33,16 @@ youngsters_content_service = YoungstersContentService()
 
 
 @router.get("/categories", response_model=CategoriesResponse)
-async def get_youngsters_categories():
-    """Get youngsters-specific content categories."""
+async def get_youngsters_categories(
+    family_controls: Optional[FamilyControls] = Depends(check_youngsters_section_allowed),
+):
+    """
+    Get youngsters-specific content categories.
+
+    Family controls enforced:
+    - Youngsters section must be enabled
+    - Viewing hours restrictions apply
+    """
     categories = await youngsters_content_service.get_categories()
     return CategoriesResponse(data=categories)
 
@@ -45,16 +53,25 @@ async def get_youngsters_content(
     category: Optional[str] = Query(None, description="Category filter"),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_youngsters_section_allowed),
 ):
     """
     Get youngsters content filtered by age and category.
 
-    PG-13 Filter: Only returns content rated G, PG, PG-13, TV-G, TV-PG, TV-14
+    Family controls enforced:
+    - Youngsters section must be enabled
+    - Viewing hours restrictions apply
+    - Age limit from family controls overrides age_max parameter
+    - Content rating restrictions apply (PG-13 Filter: G, PG, PG-13, TV-G, TV-PG, TV-14)
     """
+    effective_age_limit = (
+        family_controls.youngsters_age_limit if family_controls else age_max
+    )
+
     return await youngsters_content_service.fetch_all_content(
         category=category,
-        age_max=age_max,
+        age_max=effective_age_limit,
+        family_controls=family_controls,
         page=page,
         limit=limit,
     )
@@ -63,10 +80,24 @@ async def get_youngsters_content(
 @router.get("/featured", response_model=YoungstersFeaturedResponse)
 async def get_youngsters_featured(
     age_max: Optional[int] = Query(None, description="Maximum age rating"),
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_youngsters_section_allowed),
 ):
-    """Get featured youngsters content for homepage."""
-    return await youngsters_content_service.get_featured_content()
+    """
+    Get featured youngsters content for homepage.
+
+    Family controls enforced:
+    - Youngsters section must be enabled
+    - Viewing hours restrictions apply
+    - Age limit and content rating restrictions apply
+    """
+    effective_age_limit = (
+        family_controls.youngsters_age_limit if family_controls else age_max
+    )
+
+    return await youngsters_content_service.get_featured_content(
+        age_max=effective_age_limit,
+        family_controls=family_controls,
+    )
 
 
 @router.get(
@@ -77,11 +108,24 @@ async def get_youngsters_by_category(
     age_max: Optional[int] = Query(None),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
-    current_user: User = Depends(get_current_active_user),
+    family_controls: Optional[FamilyControls] = Depends(check_youngsters_section_allowed),
 ):
-    """Get youngsters content by specific category."""
+    """
+    Get youngsters content by specific category.
+
+    Family controls enforced:
+    - Youngsters section must be enabled
+    - Viewing hours restrictions apply
+    - Age limit and content rating restrictions apply
+    """
+    effective_age_limit = (
+        family_controls.youngsters_age_limit if family_controls else age_max
+    )
+
     return await youngsters_content_service.get_content_by_category(
         category=category_id,
+        age_max=effective_age_limit,
+        family_controls=family_controls,
         page=page,
         limit=limit,
     )
@@ -89,7 +133,7 @@ async def get_youngsters_by_category(
 
 @router.get("/subcategories", response_model=YoungstersSubcategoriesResponse)
 async def get_youngsters_subcategories(
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_youngsters_section_allowed),
 ):
     """
     Get all youngsters subcategories with metadata.
@@ -102,6 +146,10 @@ async def get_youngsters_subcategories(
     - Entertainment: teen-movies, teen-series
     - Tech: gaming, coding, gadgets
     - Judaism: bar-bat-mitzvah, teen-torah, jewish-history
+
+    Family controls enforced:
+    - Youngsters section must be enabled
+    - Viewing hours restrictions apply
     """
     return await youngsters_content_service.get_subcategories()
 
@@ -112,7 +160,7 @@ async def get_youngsters_by_subcategory(
     age_max: Optional[int] = Query(None, description="Maximum age rating"),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_youngsters_section_allowed),
 ):
     """
     Get youngsters content by specific subcategory.
@@ -125,9 +173,20 @@ async def get_youngsters_by_subcategory(
     - teen-movies, teen-series (Entertainment)
     - gaming, coding, gadgets (Tech)
     - bar-bat-mitzvah, teen-torah, jewish-history (Judaism)
+
+    Family controls enforced:
+    - Youngsters section must be enabled
+    - Viewing hours restrictions apply
+    - Age limit and content rating restrictions apply
     """
+    effective_age_limit = (
+        family_controls.youngsters_age_limit if family_controls else age_max
+    )
+
     return await youngsters_content_service.get_content_by_subcategory(
         subcategory_slug=slug,
+        age_max=effective_age_limit,
+        family_controls=family_controls,
         page=page,
         limit=limit,
     )
@@ -135,7 +194,7 @@ async def get_youngsters_by_subcategory(
 
 @router.get("/age-groups", response_model=YoungstersAgeGroupsResponse)
 async def get_youngsters_age_groups(
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_youngsters_section_allowed),
 ):
     """
     Get all youngsters age groups.
@@ -143,6 +202,10 @@ async def get_youngsters_age_groups(
     Returns:
     - middle-school: Ages 12-14
     - high-school: Ages 15-17
+
+    Family controls enforced:
+    - Youngsters section must be enabled
+    - Viewing hours restrictions apply
     """
     return await youngsters_content_service.get_age_groups()
 
@@ -152,7 +215,7 @@ async def get_youngsters_by_age_group(
     group: str,
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_youngsters_section_allowed),
 ):
     """
     Get youngsters content by age group.
@@ -160,9 +223,15 @@ async def get_youngsters_by_age_group(
     Valid age groups:
     - middle-school (12-14 years)
     - high-school (15-17 years)
+
+    Family controls enforced:
+    - Youngsters section must be enabled
+    - Viewing hours restrictions apply
+    - Content rating restrictions apply
     """
     return await youngsters_content_service.get_content_by_age_group(
         age_group=group,
+        family_controls=family_controls,
         page=page,
         limit=limit,
     )
@@ -174,7 +243,7 @@ async def get_youngsters_trending(
         None, description="Age group filter (middle_school, high_school)"
     ),
     limit: int = Query(10, ge=1, le=20),
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_youngsters_section_allowed),
 ):
     """
     Get AI-filtered trending topics appropriate for youngsters.
@@ -193,9 +262,15 @@ async def get_youngsters_trending(
     - Sentiment and importance scores
     - Brief summary in Hebrew
     - Relevant keywords
+
+    Family controls enforced:
+    - Youngsters section must be enabled
+    - Viewing hours restrictions apply
+    - Age-appropriate content filtering applies
     """
     return await youngsters_content_service.get_trending_for_youth(
         age_group=age_group,
+        family_controls=family_controls,
         limit=limit,
     )
 
@@ -204,7 +279,7 @@ async def get_youngsters_trending(
 async def get_youngsters_news(
     limit: int = Query(10, ge=1, le=20),
     age_group: Optional[str] = Query(None, description="Age group filter"),
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_youngsters_section_allowed),
 ):
     """
     Get age-appropriate news items for youngsters.
@@ -229,10 +304,16 @@ async def get_youngsters_news(
     - Publication timestamp
     - Brief summary
     - Source (e.g., ynet)
+
+    Family controls enforced:
+    - Youngsters section must be enabled
+    - Viewing hours restrictions apply
+    - Age-appropriate content filtering applies
     """
     return await youngsters_content_service.get_news_for_youth(
         limit=limit,
         age_group=age_group,
+        family_controls=family_controls,
     )
 
 
@@ -256,11 +337,23 @@ async def update_parental_controls(
     current_user: User = Depends(get_current_active_user),
 ):
     """
-    Update parental control settings for youngsters content.
+    DEPRECATED: Update parental control settings for youngsters content.
 
-    Allows parents to set age limits and PIN protection.
+    This endpoint is deprecated and will be removed in a future version.
+    Please use the unified family controls API at /api/v1/family/controls
+
+    Migration: Legacy PINs are automatically migrated to the unified system
+    on first access to any family controls endpoint.
     """
-    # Update user's parental control settings
+    import warnings
+
+    warnings.warn(
+        "POST /youngsters/parental-controls is deprecated. Use /api/v1/family/controls instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
+    # Update user's parental control settings (legacy support)
     if controls.youngsters_pin is not None:
         current_user.youngsters_pin_hash = get_password_hash(controls.youngsters_pin)
 
@@ -277,7 +370,9 @@ async def update_parental_controls(
     return {
         "status": "success",
         "message": "Parental controls updated",
-        "age_limit": current_user.youngsters_age_limit,
+        "age_limit": getattr(current_user, "youngsters_age_limit", 17),
+        "warning": "This endpoint is deprecated. Please use /api/v1/family/controls for unified family controls.",
+        "migration_url": "/api/v1/family/controls",
     }
 
 
@@ -287,14 +382,29 @@ async def verify_parent_pin(
     current_user: User = Depends(get_current_active_user),
 ):
     """
-    Verify parent PIN for accessing youngsters content settings.
+    DEPRECATED: Verify parent PIN for accessing youngsters content settings.
 
-    Returns success if PIN matches.
+    This endpoint is deprecated and will be removed in a future version.
+    Please use the unified family controls PIN verification at /api/v1/family/controls/verify-pin
+
+    Migration: Legacy PINs are automatically migrated to the unified system.
     """
-    if not current_user.youngsters_pin_hash:
+    import warnings
+
+    warnings.warn(
+        "POST /youngsters/verify-parent-pin is deprecated. Use /api/v1/family/controls/verify-pin instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
+    if not hasattr(current_user, "youngsters_pin_hash") or not current_user.youngsters_pin_hash:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No parent PIN set",
+            detail={
+                "error": "no_pin_set",
+                "message": "No parent PIN set. Please set up unified family controls at /api/v1/family/controls/setup",
+                "migration_url": "/api/v1/family/controls/setup",
+            },
         )
 
     if not verify_password(pin, current_user.youngsters_pin_hash):
@@ -303,4 +413,9 @@ async def verify_parent_pin(
             detail="Invalid parent PIN",
         )
 
-    return {"status": "success", "message": "PIN verified"}
+    return {
+        "status": "success",
+        "message": "PIN verified",
+        "warning": "This endpoint is deprecated. Please use /api/v1/family/controls/verify-pin for unified family controls.",
+        "migration_url": "/api/v1/family/controls/verify-pin",
+    }

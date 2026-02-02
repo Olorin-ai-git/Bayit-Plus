@@ -5885,6 +5885,8 @@
     "privacy": "Privacy",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
+    "familyAndSafety": "Family & Safety",
+    "familyControls": "Family Controls",
     "about": "About",
     "display": "Display",
     "homePageSections": "Home Page Sections",
@@ -5917,6 +5919,78 @@
       "small": "Small",
       "medium": "Medium",
       "large": "Large"
+    }
+  },
+  "familyControls": {
+    "title": "Family Controls",
+    "pinSetup": "PIN Setup",
+    "familyPin": "Family PIN",
+    "createPin": "Create Family PIN",
+    "verifyPin": "Verify Family PIN",
+    "updatePin": "Update Family PIN",
+    "pinConfigured": "Family PIN is configured",
+    "pinNotConfigured": "No Family PIN set up yet",
+    "enterPin": "Enter PIN",
+    "confirmPin": "Confirm PIN",
+    "kidsSection": "Kids (0-12 years)",
+    "kidsEnabled": "Enable Kids Mode",
+    "kidsAgeLimit": "Age Limit",
+    "youngstersSection": "Youngsters (12-17 years)",
+    "youngstersEnabled": "Enable Youngsters Mode",
+    "youngstersAgeLimit": "Age Limit",
+    "contentRatings": "Content Ratings",
+    "maxContentRating": "Maximum Content Rating",
+    "viewingHours": "Viewing Hours",
+    "viewingHoursEnabled": "Enable Time Restrictions",
+    "startHour": "Start Hour",
+    "endHour": "End Hour",
+    "ratings": {
+      "G": "G - General Audiences",
+      "PG": "PG - Parental Guidance Suggested",
+      "PG13": "PG-13 - Parents Strongly Cautioned",
+      "R": "R - Restricted",
+      "TVMA": "TV-MA - Mature Audience Only"
+    },
+    "errors": {
+      "pinMismatch": "PINs do not match",
+      "pinTooShort": "PIN must be at least 4 digits",
+      "invalidPin": "Invalid PIN",
+      "sectionDisabled": "This section is disabled by family controls",
+      "outsideViewingHours": "Access restricted outside viewing hours",
+      "contentRatingTooHigh": "Content rating exceeds allowed limit"
+    },
+    "household": {
+      "title": "Household",
+      "create": "Create Household",
+      "name": "Household Name",
+      "members": "Members",
+      "inviteMember": "Invite Member",
+      "removeMember": "Remove Member",
+      "role": "Role",
+      "roles": {
+        "parent": "Parent",
+        "child": "Child",
+        "guardian": "Guardian"
+      },
+      "sharedControls": "Shared Controls",
+      "invitation": {
+        "title": "Invitation",
+        "email": "Email Address",
+        "send": "Send Invitation",
+        "accept": "Accept Invitation",
+        "code": "Invitation Code",
+        "expires": "Expires",
+        "pending": "Pending Invitations"
+      }
+    },
+    "profile": {
+      "title": "Profile Controls",
+      "override": "Override Controls",
+      "inherit": "Inherit Controls",
+      "inheritHousehold": "Inherit from Household",
+      "inheritAccount": "Inherit from Account",
+      "hierarchy": "Control Hierarchy",
+      "source": "Controls Source"
     }
   },
   "stats": {

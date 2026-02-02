@@ -147,6 +147,11 @@ export default function FullscreenVideoOverlay() {
         logger.info('Watch history received in overlay', 'FullscreenVideoOverlay', {
           itemsCount: items?.length || 0,
         })
+        // Ensure items is an array
+        if (!Array.isArray(items)) {
+          logger.info('No watch history items found in overlay', 'FullscreenVideoOverlay')
+          return
+        }
         const saved = items.find((i) => i.content_id === content.id)
         if (saved?.position > 0) {
           setSavedPosition(saved.position)
@@ -323,10 +328,14 @@ export default function FullscreenVideoOverlay() {
         ) : (
           // Regular video content - use native player
           (() => {
+            // Detect HLS content to skip native text tracks (HLS has embedded subtitles)
+            const isHLS = streamUrl.toLowerCase().includes('.m3u8');
+
             logger.info('Rendering VideoPlayer with initial subtitle', 'FullscreenVideoOverlay', {
               contentId: content.id,
               initialSubtitleLang: content.initialSubtitleLang,
               savedPosition,
+              isHLS,
             });
             return (
               <VideoPlayer
@@ -344,6 +353,7 @@ export default function FullscreenVideoOverlay() {
                 savedPosition={savedPosition}
                 onRestartComplete={handleRestartComplete}
                 initialSubtitleLang={content.initialSubtitleLang}
+                isHLS={isHLS}
               />
             );
           })()

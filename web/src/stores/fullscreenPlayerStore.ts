@@ -18,6 +18,8 @@ interface FullscreenPlayerContent {
   is_kids_content?: boolean
   /** Age group for kids content quiz */
   age_group?: 'toddlers' | 'preschool' | 'elementary' | 'preteen'
+  /** Pre-selected subtitle language from detail page */
+  initialSubtitleLang?: string | null
 }
 
 interface FullscreenPlayerState {

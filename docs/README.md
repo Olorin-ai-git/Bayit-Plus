@@ -1,7 +1,7 @@
 # Bayit+ Documentation
 
-**Last Updated:** 2026-02-01
-**Total Documents:** 252 files
+**Last Updated:** 2026-02-02
+**Total Documents:** 254 files
 **Documentation Portal:** https://docs.bayitplus.com
 
 ---
@@ -70,6 +70,7 @@ System design and architecture documents:
 
 Feature specifications and implementation guides:
 
+- [Content Categorization System](features/CONTENT_CATEGORIZATION_SYSTEM.md) - Complete guide to multi-axis content organization, kids/youngsters filtering, IMDB integration, and family controls ⭐ **NEW**
 - [AI Features Overview](features/AI_FEATURES_OVERVIEW.md) - Complete AI catalog ⭐ **NEW**
 - [Subtitle System Enhancements](features/SUBTITLE_SYSTEM_ENHANCEMENTS.md) - 21 accessibility, UX, and performance fixes ⭐ **NEW**
   - Error categorization (network/server/client)
@@ -144,6 +145,7 @@ Deployment guides and infrastructure:
 - [Deployment Guide](deployment/DEPLOYMENT_GUIDE.md) - Production deployment
 - [CI/CD Pipeline](deployment/CI_CD_PIPELINE.md) - GitHub Actions workflows
 - [Secrets Management](deployment/SECRETS_MANAGEMENT.md) - Google Cloud secrets
+- [MongoDB SSL Fix](deployment/MONGODB_SSL_FIX.md) - Python 3.13+ SSL connection fix ⭐ **NEW**
 - [GCloud Secrets API Configuration](deployment/GCLOUD_SECRETS_API_CONFIGURATION.md) - API retry and subtitle config
 - [GCloud Secrets Schedules Direct](deployment/GCLOUD_SECRETS_SCHEDULES_DIRECT.md) - EPG integration config ⭐ **NEW**
 - [LLM Configuration](deployment/LLM_CONFIGURATION.md) - AI model setup and cost optimization
@@ -403,6 +405,13 @@ Bayit+ runs on 4 platforms with unified documentation:
 
 ## Recent Updates
 
+**2026-02-02: MongoDB SSL Connection Fix**
+- Fixed MongoDB Atlas SSL connection errors on macOS with Python 3.13+
+- Added explicit TLS/SSL configuration to olorin-shared MongoDB client
+- Created diagnostic tool for troubleshooting SSL issues
+- Documented environment variable options for TLS settings
+- Updated documentation with security best practices
+
 **2026-02-01: Beta 500 User Manual v2.0**
 - Complete rewrite of Beta 500 User Manual with accurate information
 - Corrected credit allocation (5,000 credits, not 500)
@@ -462,6 +471,6 @@ MIT License - Copyright © 2026 Bayit+
 ---
 
 **Document Status:** Production Ready
-**Last Updated:** 2026-02-01
+**Last Updated:** 2026-02-02
 **Maintained by:** Documentation Team
 **Next Review:** 2026-02-15

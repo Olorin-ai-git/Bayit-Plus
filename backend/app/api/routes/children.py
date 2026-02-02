@@ -3,6 +3,10 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 
+from app.core.family_controls_dependencies import check_kids_section_allowed
+from app.core.security import (get_current_active_user, get_optional_user,
+                               get_password_hash, verify_password)
+from app.models.family_controls import FamilyControls
 from app.models.kids_content import (KidsAgeGroupsResponse,
                                      KidsContentAggregatedResponse,
                                      KidsFeaturedResponse,
@@ -17,10 +21,6 @@ class CategoriesResponse(BaseModel):
     data: list
 
 
-from app.core.security import (get_current_active_user, get_optional_user,
-                               get_password_hash, verify_password)
-
-
 class ParentalControlsUpdate(BaseModel):
     kids_pin: Optional[str] = None
     default_age_limit: Optional[int] = None
@@ -30,8 +30,16 @@ router = APIRouter()
 
 
 @router.get("/categories", response_model=CategoriesResponse)
-async def get_children_categories():
-    """Get kids-specific content categories."""
+async def get_children_categories(
+    family_controls: Optional[FamilyControls] = Depends(check_kids_section_allowed),
+):
+    """
+    Get kids-specific content categories.
+
+    Family controls enforced:
+    - Kids section must be enabled
+    - Viewing hours restrictions apply
+    """
     categories = await kids_content_service.get_categories()
     return CategoriesResponse(data=categories)
 
@@ -42,12 +50,26 @@ async def get_children_content(
     category: Optional[str] = Query(None, description="Category filter"),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_kids_section_allowed),
 ):
-    """Get children's content filtered by age and category."""
+    """
+    Get children's content filtered by age and category.
+
+    Family controls enforced:
+    - Kids section must be enabled
+    - Viewing hours restrictions apply
+    - Age limit from family controls overrides age_max parameter
+    - Content rating restrictions apply
+    """
+    # Use family controls age limit if set, otherwise use query parameter
+    effective_age_limit = (
+        family_controls.kids_age_limit if family_controls else age_max
+    )
+
     return await kids_content_service.fetch_all_content(
         category=category,
-        age_max=age_max,
+        age_max=effective_age_limit,
+        family_controls=family_controls,
         page=page,
         limit=limit,
     )
@@ -56,10 +78,24 @@ async def get_children_content(
 @router.get("/featured", response_model=KidsFeaturedResponse)
 async def get_children_featured(
     age_max: Optional[int] = Query(None, description="Maximum age rating"),
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_kids_section_allowed),
 ):
-    """Get featured children's content for homepage."""
-    return await kids_content_service.get_featured_content(age_max=age_max)
+    """
+    Get featured children's content for homepage.
+
+    Family controls enforced:
+    - Kids section must be enabled
+    - Viewing hours restrictions apply
+    - Age limit and content rating restrictions apply
+    """
+    effective_age_limit = (
+        family_controls.kids_age_limit if family_controls else age_max
+    )
+
+    return await kids_content_service.get_featured_content(
+        age_max=effective_age_limit,
+        family_controls=family_controls,
+    )
 
 
 @router.get("/by-category/{category_id}", response_model=KidsContentAggregatedResponse)
@@ -68,12 +104,24 @@ async def get_children_by_category(
     age_max: Optional[int] = Query(None),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
-    current_user: User = Depends(get_current_active_user),
+    family_controls: Optional[FamilyControls] = Depends(check_kids_section_allowed),
 ):
-    """Get children's content by specific category."""
+    """
+    Get children's content by specific category.
+
+    Family controls enforced:
+    - Kids section must be enabled
+    - Viewing hours restrictions apply
+    - Age limit and content rating restrictions apply
+    """
+    effective_age_limit = (
+        family_controls.kids_age_limit if family_controls else age_max
+    )
+
     return await kids_content_service.get_content_by_category(
         category=category_id,
-        age_max=age_max,
+        age_max=effective_age_limit,
+        family_controls=family_controls,
         page=page,
         limit=limit,
     )
@@ -81,7 +129,7 @@ async def get_children_by_category(
 
 @router.get("/subcategories", response_model=KidsSubcategoriesResponse)
 async def get_children_subcategories(
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_kids_section_allowed),
 ):
     """
     Get all kids subcategories with metadata.
@@ -92,6 +140,10 @@ async def get_children_subcategories(
     - Cartoons: kids-movies, kids-series
     - Jewish: jewish-holidays, torah-stories
     - Stories: bedtime-stories
+
+    Family controls enforced:
+    - Kids section must be enabled
+    - Viewing hours restrictions apply
     """
     return await kids_content_service.get_subcategories()
 
@@ -102,12 +154,24 @@ async def get_children_by_subcategory(
     age_max: Optional[int] = Query(None, description="Maximum age rating"),
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_kids_section_allowed),
 ):
-    """Get children's content by specific subcategory."""
+    """
+    Get children's content by specific subcategory.
+
+    Family controls enforced:
+    - Kids section must be enabled
+    - Viewing hours restrictions apply
+    - Age limit and content rating restrictions apply
+    """
+    effective_age_limit = (
+        family_controls.kids_age_limit if family_controls else age_max
+    )
+
     return await kids_content_service.get_content_by_subcategory(
         subcategory_slug=slug,
-        age_max=age_max,
+        age_max=effective_age_limit,
+        family_controls=family_controls,
         page=page,
         limit=limit,
     )
@@ -115,7 +179,7 @@ async def get_children_by_subcategory(
 
 @router.get("/age-groups", response_model=KidsAgeGroupsResponse)
 async def get_children_age_groups(
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_kids_section_allowed),
 ):
     """
     Get all age groups for kids content filtering.
@@ -125,6 +189,10 @@ async def get_children_age_groups(
     - preschool: 3-5 years
     - elementary: 5-10 years
     - preteen: 10-12 years
+
+    Family controls enforced:
+    - Kids section must be enabled
+    - Viewing hours restrictions apply
     """
     return await kids_content_service.get_age_groups()
 
@@ -134,11 +202,19 @@ async def get_children_by_age_group(
     group: str,
     page: int = Query(1, ge=1),
     limit: int = Query(20, ge=1, le=50),
-    current_user: Optional[User] = Depends(get_optional_user),
+    family_controls: Optional[FamilyControls] = Depends(check_kids_section_allowed),
 ):
-    """Get children's content by specific age group."""
+    """
+    Get children's content by specific age group.
+
+    Family controls enforced:
+    - Kids section must be enabled
+    - Viewing hours restrictions apply
+    - Content rating restrictions apply
+    """
     return await kids_content_service.get_content_by_age_group(
         age_group_slug=group,
+        family_controls=family_controls,
         page=page,
         limit=limit,
     )
@@ -165,7 +241,23 @@ async def update_parental_controls(
     controls: ParentalControlsUpdate,
     current_user: User = Depends(get_current_active_user),
 ):
-    """Update parental control settings."""
+    """
+    DEPRECATED: Update parental control settings.
+
+    This endpoint is deprecated and will be removed in a future version.
+    Please use the unified family controls API at /api/v1/family/controls
+
+    Migration: Legacy PINs are automatically migrated to the unified system
+    on first access to any family controls endpoint.
+    """
+    import warnings
+
+    warnings.warn(
+        "POST /children/parental-controls is deprecated. Use /api/v1/family/controls instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     if controls.kids_pin is not None:
         current_user.kids_pin = get_password_hash(controls.kids_pin)
 
@@ -173,7 +265,12 @@ async def update_parental_controls(
         current_user.preferences["default_kids_age_limit"] = controls.default_age_limit
 
     await current_user.save()
-    return {"message": "Parental controls updated successfully"}
+
+    return {
+        "message": "Parental controls updated successfully",
+        "warning": "This endpoint is deprecated. Please use /api/v1/family/controls for unified family controls.",
+        "migration_url": "/api/v1/family/controls",
+    }
 
 
 @router.post("/verify-parent-pin")
@@ -181,11 +278,30 @@ async def verify_parent_pin(
     pin: str,
     current_user: User = Depends(get_current_active_user),
 ):
-    """Verify parent PIN to exit kids mode."""
+    """
+    DEPRECATED: Verify parent PIN to exit kids mode.
+
+    This endpoint is deprecated and will be removed in a future version.
+    Please use the unified family controls PIN verification at /api/v1/family/controls/verify-pin
+
+    Migration: Legacy PINs are automatically migrated to the unified system.
+    """
+    import warnings
+
+    warnings.warn(
+        "POST /children/verify-parent-pin is deprecated. Use /api/v1/family/controls/verify-pin instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
     if not current_user.kids_pin:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="No parental PIN set",
+            detail={
+                "error": "no_pin_set",
+                "message": "No parental PIN set. Please set up unified family controls at /api/v1/family/controls/setup",
+                "migration_url": "/api/v1/family/controls/setup",
+            },
         )
 
     is_valid = verify_password(pin, current_user.kids_pin)
@@ -195,4 +311,8 @@ async def verify_parent_pin(
             detail="Incorrect PIN",
         )
 
-    return {"valid": True}
+    return {
+        "valid": True,
+        "warning": "This endpoint is deprecated. Please use /api/v1/family/controls/verify-pin for unified family controls.",
+        "migration_url": "/api/v1/family/controls/verify-pin",
+    }

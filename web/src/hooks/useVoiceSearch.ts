@@ -3,9 +3,13 @@
  *
  * Bridges VoiceSearchButton → STT API → search query
  * Handles audio transcription with multi-language support (Hebrew, English, Spanish)
+ *
+ * Uses centralized chatService from api.js for auth token injection,
+ * correlation ID tracking, retry logic, and consistent error handling.
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback } from 'react';
+import { chatService } from '@/services/api';
 import logger from '../../../shared/utils/logger';
 
 const LOG_CONTEXT = 'useVoiceSearch';
@@ -39,18 +43,6 @@ interface UseVoiceSearchReturn {
 }
 
 /**
- * Get API base URL from environment
- */
-const getApiBaseUrl = (): string => {
-  const apiUrl = import.meta.env.VITE_API_URL;
-  if (!apiUrl) {
-    logger.error('VITE_API_URL not configured', LOG_CONTEXT);
-    throw new Error('API URL not configured. Set VITE_API_URL in environment.');
-  }
-  return apiUrl;
-};
-
-/**
  * Hook for voice search functionality
  * Provides transcription integration for VoiceSearchButton component
  *
@@ -78,9 +70,6 @@ export function useVoiceSearch(options: UseVoiceSearchOptions): UseVoiceSearchRe
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Abort controller for cancelling in-flight requests
-  const abortControllerRef = useRef<AbortController | null>(null);
-
   /**
    * Clear error state
    */
@@ -89,27 +78,16 @@ export function useVoiceSearch(options: UseVoiceSearchOptions): UseVoiceSearchRe
   }, []);
 
   /**
-   * Transcribe audio blob using STT API
+   * Transcribe audio blob using centralized chatService
+   * Provides auth token injection, correlation ID tracking, and retry logic
    */
   const transcribe = useCallback(
     async (audioBlob: Blob, language?: string): Promise<{ text: string }> => {
-      // Abort previous request if exists
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-
       setIsTranscribing(true);
       setError(null);
-      abortControllerRef.current = new AbortController();
 
       try {
-        const baseUrl = getApiBaseUrl();
         const transcriptionLanguage = language || defaultLanguage;
-
-        // Prepare form data
-        const formData = new FormData();
-        formData.append('audio', audioBlob, 'recording.webm');
-        formData.append('language', transcriptionLanguage);
 
         logger.info(
           `Transcribing audio (${transcriptionLanguage})`,
@@ -117,21 +95,8 @@ export function useVoiceSearch(options: UseVoiceSearchOptions): UseVoiceSearchRe
           { size: audioBlob.size, type: audioBlob.type }
         );
 
-        // Send to STT API
-        const response = await fetch(`${baseUrl}/chat/transcribe`, {
-          method: 'POST',
-          body: formData,
-          signal: abortControllerRef.current.signal,
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(
-            errorData.detail || `Transcription failed: ${response.statusText}`
-          );
-        }
-
-        const data: TranscriptionResponse = await response.json();
+        // Use centralized chatService for auth token injection
+        const data = await chatService.transcribeAudio(audioBlob, transcriptionLanguage);
 
         if (!data.text?.trim()) {
           throw new Error('No text received from transcription');
@@ -152,12 +117,6 @@ export function useVoiceSearch(options: UseVoiceSearchOptions): UseVoiceSearchRe
 
         return { text: data.text.trim() };
       } catch (err: any) {
-        // Ignore aborted requests
-        if (err.name === 'AbortError') {
-          logger.debug('Transcription request aborted', LOG_CONTEXT);
-          return { text: '' };
-        }
-
         logger.error('Transcription failed', LOG_CONTEXT, err);
 
         const errorMessage =
@@ -172,7 +131,6 @@ export function useVoiceSearch(options: UseVoiceSearchOptions): UseVoiceSearchRe
         throw err;
       } finally {
         setIsTranscribing(false);
-        abortControllerRef.current = null;
       }
     },
     [defaultLanguage, onTranscriptionComplete, onError]

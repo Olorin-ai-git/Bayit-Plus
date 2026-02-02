@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
@@ -10,6 +11,7 @@ import logger from '@/utils/logger';
 import api from '@/services/api';
 
 export default function SettingsPage() {
+  const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
   const { user } = useAuthStore();
@@ -235,6 +237,37 @@ export default function SettingsPage() {
             onValueChange={setDarkMode}
           />
         </View>
+      </GlassView>
+
+      {/* Family Controls */}
+      <GlassView style={styles.section}>
+        <Text style={[
+          styles.sectionHeader,
+          textAlign === 'right' && styles.textRight
+        ]}>
+          {t('settings.familyAndSafety', 'Family & Safety')}
+        </Text>
+        <Pressable
+          style={[
+            styles.settingRow,
+            flexDirection === 'row-reverse' && styles.rowReverse
+          ]}
+          onPress={() => navigate('/settings/family-controls')}
+        >
+          <View style={[
+            styles.settingLeft,
+            flexDirection === 'row-reverse' && styles.rowReverse
+          ]}>
+            <Shield size={20} color={colors.primary} />
+            <Text style={[
+              styles.settingLabel,
+              textAlign === 'right' && styles.textRight
+            ]}>
+              {t('settings.familyControls', 'Family Controls')}
+            </Text>
+          </View>
+          <ChevronRight size={20} color={colors.textMuted} />
+        </Pressable>
       </GlassView>
 
       {/* Privacy */}

@@ -17,8 +17,10 @@ import logging
 from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
+from app.core.family_controls_dependencies import filter_content_by_controls
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
+from app.models.family_controls import FamilyControls
 from app.models.kids_content import (AGE_GROUP_RANGES, SUBCATEGORY_PARENT_MAP,
                                      KidsAgeGroup, KidsAgeGroupResponse,
                                      KidsAgeGroupsResponse,
@@ -271,6 +273,7 @@ class KidsContentService:
         self,
         category: Optional[str] = None,
         age_max: Optional[int] = None,
+        family_controls: Optional[FamilyControls] = None,
         page: int = 1,
         limit: int = 20,
     ) -> KidsContentAggregatedResponse:
@@ -281,6 +284,10 @@ class KidsContentService:
         1. PRIMARY: Database query (Content with is_kids_content=True)
         2. SECONDARY: Stale cache (if fresh fails)
         3. FALLBACK: Seed data from KIDS_CONTENT_SEED
+
+        Family controls:
+        - If family_controls provided, applies age limit and content rating filtering
+        - Age limit from family_controls overrides age_max parameter
         """
         cache_key = f"kids_content_{category or 'all'}_{age_max or 'all'}"
         cached_items = self._cache.get(cache_key)
@@ -380,6 +387,20 @@ class KidsContentService:
                 item for item in filtered_items if item.get("category") == category
             ]
 
+        # Apply family controls filtering (age and content rating)
+        if family_controls:
+            # Convert dict items to objects with attributes for filtering
+            from types import SimpleNamespace
+
+            item_objects = [SimpleNamespace(**item) for item in filtered_items]
+            filtered_objects = filter_content_by_controls(
+                item_objects, family_controls, is_kids=True
+            )
+            filtered_items = [vars(obj) for obj in filtered_objects]
+            logger.info(
+                f"Family controls filtered {len(cached_items)} items to {len(filtered_items)}"
+            )
+
         # Pagination
         total = len(filtered_items)
         start_idx = (page - 1) * limit
@@ -427,10 +448,19 @@ class KidsContentService:
         )
 
     async def get_featured_content(
-        self, age_max: Optional[int] = None
+        self,
+        age_max: Optional[int] = None,
+        family_controls: Optional[FamilyControls] = None,
     ) -> KidsFeaturedResponse:
-        """Get featured kids content for homepage hero section."""
-        content = await self.fetch_all_content(age_max=age_max, limit=10)
+        """
+        Get featured kids content for homepage hero section.
+
+        Family controls:
+        - If family_controls provided, applies age limit and content rating filtering
+        """
+        content = await self.fetch_all_content(
+            age_max=age_max, family_controls=family_controls, limit=10
+        )
         categories = await self.get_categories()
 
         return KidsFeaturedResponse(
@@ -492,13 +522,20 @@ class KidsContentService:
         self,
         category: str,
         age_max: Optional[int] = None,
+        family_controls: Optional[FamilyControls] = None,
         page: int = 1,
         limit: int = 20,
     ) -> KidsContentAggregatedResponse:
-        """Get kids content by specific category."""
+        """
+        Get kids content by specific category.
+
+        Family controls:
+        - If family_controls provided, applies age limit and content rating filtering
+        """
         return await self.fetch_all_content(
             category=category,
             age_max=age_max,
+            family_controls=family_controls,
             page=page,
             limit=limit,
         )
@@ -608,13 +645,20 @@ class KidsContentService:
         self,
         subcategory_slug: str,
         age_max: Optional[int] = None,
+        family_controls: Optional[FamilyControls] = None,
         page: int = 1,
         limit: int = 20,
     ) -> KidsContentAggregatedResponse:
-        """Get kids content filtered by subcategory."""
+        """
+        Get kids content filtered by subcategory.
+
+        Family controls:
+        - If family_controls provided, applies age limit and content rating filtering
+        """
         # First get all content
         content_response = await self.fetch_all_content(
             age_max=age_max,
+            family_controls=family_controls,
             page=1,
             limit=1000,  # Get more items for filtering
         )
@@ -670,10 +714,16 @@ class KidsContentService:
     async def get_content_by_age_group(
         self,
         age_group_slug: str,
+        family_controls: Optional[FamilyControls] = None,
         page: int = 1,
         limit: int = 20,
     ) -> KidsContentAggregatedResponse:
-        """Get kids content filtered by age group."""
+        """
+        Get kids content filtered by age group.
+
+        Family controls:
+        - If family_controls provided, applies age limit and content rating filtering
+        """
         # Get age range for this group
         age_range = AGE_GROUP_RANGES.get(age_group_slug)
         if not age_range:
@@ -689,6 +739,7 @@ class KidsContentService:
         # Get content within age range
         content_response = await self.fetch_all_content(
             age_max=max_age,
+            family_controls=family_controls,
             page=1,
             limit=1000,  # Get more items for filtering
         )

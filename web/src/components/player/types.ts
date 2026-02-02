@@ -42,6 +42,10 @@ export interface VideoPlayerProps {
   savedPosition?: number | null
   /** Callback when restart is complete (clears saved position) */
   onRestartComplete?: () => void
+  /** Pre-selected subtitle language from detail page */
+  initialSubtitleLang?: string | null
+  /** Whether the stream is HLS (skips native text tracks - HLS has embedded subtitles) */
+  isHLS?: boolean
 }
 
 export interface PlayerState {

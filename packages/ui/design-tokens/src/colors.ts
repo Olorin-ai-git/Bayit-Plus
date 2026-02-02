@@ -216,8 +216,9 @@ export const colors = {
   white: '#ffffff',
   black: '#000000',
 
-  // Semantic text colors
+  // Semantic text colors (dark mode - light text on dark backgrounds)
   text: '#ffffff',              // Primary text color (white for dark theme)
+  textPrimary: '#ffffff',       // Alias for text (primary text color)
   textSecondary: 'rgba(255, 255, 255, 0.7)',  // Secondary text
   textMuted: 'rgba(255, 255, 255, 0.5)',      // Muted/disabled text
   textDisabled: 'rgba(255, 255, 255, 0.3)',   // Disabled text

@@ -1,0 +1,139 @@
+"""
+Subtitle VTT Streaming Endpoint
+Serves WebVTT files for native video track elements (AirPlay/Chromecast support)
+"""
+
+from fastapi import APIRouter, HTTPException, Query
+from fastapi.responses import Response
+import logging
+
+from app.models.subtitles import SubtitleTrackDoc
+
+logger = logging.getLogger(__name__)
+router = APIRouter()
+
+
+@router.options("/vtt/{content_id}")
+async def vtt_options(content_id: str) -> Response:
+    """
+    CORS preflight handler for VTT endpoint.
+    Required for Apple TV AirPlay to access subtitles.
+    """
+    return Response(
+        status_code=204,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Max-Age": "86400",
+        }
+    )
+
+
+@router.get("/vtt/{content_id}")
+async def stream_vtt_subtitles(
+    content_id: str,
+    language: str = Query(..., description="Language code (e.g., 'en', 'he')"),
+) -> Response:
+    """
+    Stream WebVTT subtitle file for a given content and language.
+
+    Used by native <track> elements for AirPlay/Chromecast subtitle support.
+    Returns VTT content with proper MIME type and CORS headers.
+
+    Args:
+        content_id: Content identifier
+        language: Language code (ISO 639-1)
+
+    Returns:
+        WebVTT file content with text/vtt MIME type
+    """
+    try:
+        # Fetch subtitle track from database
+        tracks = await SubtitleTrackDoc.get_for_content(content_id, language)
+
+        if not tracks:
+            raise HTTPException(
+                status_code=404,
+                detail=f"Subtitles not found for content {content_id} in language {language}"
+            )
+
+        track = tracks[0]
+
+        # Convert to VTT format
+        vtt_content = _generate_vtt_from_track(track)
+
+        # Return with proper headers for video track consumption
+        return Response(
+            content=vtt_content,
+            media_type="text/vtt",
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Cache-Control": "public, max-age=3600",  # Cache for 1 hour
+            }
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error streaming VTT subtitles: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to stream subtitles")
+
+
+def _generate_vtt_from_track(track: SubtitleTrackDoc) -> str:
+    """
+    Generate WebVTT content from SubtitleTrackDoc.
+
+    Args:
+        track: SubtitleTrackDoc with cues
+
+    Returns:
+        WebVTT formatted string
+    """
+    # WebVTT header with optional metadata for better compatibility
+    vtt = "WEBVTT\n"
+
+    # Add language metadata if available
+    if hasattr(track, 'language') and track.language:
+        vtt += f"X-TIMESTAMP-MAP=MPEGTS:0,LOCAL:00:00:00.000\n"
+
+    vtt += "\n"
+
+    for cue in track.cues:
+        # Add cue identifier
+        vtt += f"{cue.index}\n"
+
+        # Add timestamp line
+        start_time = _format_vtt_timestamp(cue.start_time)
+        end_time = _format_vtt_timestamp(cue.end_time)
+        vtt += f"{start_time} --> {end_time}"
+
+        # Add VTT settings if available (check if attribute exists)
+        if hasattr(cue, 'settings') and cue.settings:
+            vtt += f" {cue.settings}"
+        vtt += "\n"
+
+        # Add subtitle text
+        vtt += f"{cue.text}\n\n"
+
+    return vtt
+
+
+def _format_vtt_timestamp(seconds: float) -> str:
+    """
+    Format time in seconds to VTT timestamp format (HH:MM:SS.mmm).
+
+    Args:
+        seconds: Time in seconds
+
+    Returns:
+        Formatted timestamp string
+    """
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    secs = int(seconds % 60)
+    milliseconds = int((seconds % 1) * 1000)
+
+    return f"{hours:02d}:{minutes:02d}:{secs:02d}.{milliseconds:03d}"

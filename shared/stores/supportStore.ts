@@ -11,6 +11,7 @@ import { getPlatformStorage } from '../utils/storage';
 import { AvatarCoreState, AvatarVisualForm } from '../constants/avatarStates';
 import { GestureType } from '../constants/avatarGestures';
 import { DialogueLine } from '../constants/avatarDialogues';
+import { AnimationSequence } from '../remotion/utils/sequencing';
 
 /**
  * Voice interaction states following the state machine:
@@ -42,6 +43,23 @@ export type GestureState =
   | 'emphatic'   // Hand raised for emphasis
   | 'reading'    // Looks at content, then back to user
   | 'confirmation'; // Slight nod, awaiting response
+
+/**
+ * Remotion animation state for wizard multi-gesture sequences
+ * Enables fluid, multi-gesture animation flows with particle effects
+ */
+export interface RemotionAnimationState {
+  /** Whether Remotion animations are enabled (vs fallback to static sprites) */
+  remotionEnabled: boolean;
+  /** Currently playing animation sequence (null if idle) */
+  currentSequence: AnimationSequence | null;
+  /** Use pre-rendered MP4s (mobile/tvOS) vs live rendering (web) */
+  usePreRendered: boolean;
+  /** Playback speed multiplier (1.0 = normal, 0.5 = half speed, 2.0 = double speed) */
+  playbackSpeed: number;
+  /** Particle effects intensity (0.0 = disabled, 1.0 = full intensity) */
+  effectsIntensity: number;
+}
 
 /**
  * Support portal tabs
@@ -152,6 +170,9 @@ interface SupportStore {
   /** Whether spritesheet animation is currently playing */
   isAnimatingGesture: boolean;
 
+  // Remotion animation state
+  remotionAnimation: RemotionAnimationState;
+
   // Audio level for visual feedback (0-1)
   audioLevel: number;
 
@@ -232,6 +253,18 @@ interface SupportStore {
   setIsAnimatingGesture: (isAnimating: boolean) => void;
   /** Clear gesture state and animation */
   clearGesture: () => void;
+
+  // Remotion animation actions
+  /** Play a multi-gesture animation sequence */
+  playAnimationSequence: (sequence: AnimationSequence) => void;
+  /** Stop the currently playing animation sequence */
+  stopAnimationSequence: () => void;
+  /** Set whether Remotion animations are enabled */
+  setRemotionEnabled: (enabled: boolean) => void;
+  /** Set particle effects intensity (0.0-1.0) */
+  setEffectsIntensity: (intensity: number) => void;
+  /** Set playback speed multiplier */
+  setPlaybackSpeed: (speed: number) => void;
 
   // Audio level actions
   /** Set audio level for visual feedback (0-1) */
@@ -317,6 +350,15 @@ const initialState = {
   // Gesture state
   gestureState: null as GestureState | null,
   isAnimatingGesture: false,
+
+  // Remotion animation state
+  remotionAnimation: {
+    remotionEnabled: true, // Enable Remotion by default
+    currentSequence: null,
+    usePreRendered: false, // Auto-detected by platform adapter
+    playbackSpeed: 1.0,
+    effectsIntensity: 1.0,
+  } as RemotionAnimationState,
 
   // Audio level
   audioLevel: 0,
@@ -450,6 +492,47 @@ export const useSupportStore = create<SupportStore>()(
       setGestureState: (state: GestureState | null) => set({ gestureState: state }),
       setIsAnimatingGesture: (isAnimating: boolean) => set({ isAnimatingGesture: isAnimating }),
       clearGesture: () => set({ gestureState: null, isAnimatingGesture: false }),
+
+      // Remotion animation actions
+      playAnimationSequence: (sequence: AnimationSequence) =>
+        set((state) => ({
+          remotionAnimation: {
+            ...state.remotionAnimation,
+            currentSequence: sequence,
+          },
+        })),
+
+      stopAnimationSequence: () =>
+        set((state) => ({
+          remotionAnimation: {
+            ...state.remotionAnimation,
+            currentSequence: null,
+          },
+        })),
+
+      setRemotionEnabled: (enabled: boolean) =>
+        set((state) => ({
+          remotionAnimation: {
+            ...state.remotionAnimation,
+            remotionEnabled: enabled,
+          },
+        })),
+
+      setEffectsIntensity: (intensity: number) =>
+        set((state) => ({
+          remotionAnimation: {
+            ...state.remotionAnimation,
+            effectsIntensity: Math.max(0, Math.min(1, intensity)),
+          },
+        })),
+
+      setPlaybackSpeed: (speed: number) =>
+        set((state) => ({
+          remotionAnimation: {
+            ...state.remotionAnimation,
+            playbackSpeed: Math.max(0.1, Math.min(3.0, speed)),
+          },
+        })),
 
       // Audio level actions
       setAudioLevel: (level: number) => set({ audioLevel: Math.max(0, Math.min(1, level)) }),

@@ -2,23 +2,24 @@
  * WizardSprite - Web Implementation
  * Animated sprite component for wizard spritesheet animations
  * Uses CSS background-position for proper frame-by-frame animation on web
- * Supports clapping, speaking, thinking, listening, conjuring, crying, facepalm animations
+ * Supports all gesture animations with correct frame layouts
  */
 
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { isTV } from '../../utils/platform';
 
-// Spritesheet configurations
+// Spritesheet configurations - measured from actual sprite files
 const SPRITESHEET_CONFIG = {
+  // Large 6×6 grid spritesheets (330×362 per frame)
   clapping: {
     url: '/assets/images/characters/wizard/spritesheets/clapping/spritesheet.png',
     frameWidth: 330,
     frameHeight: 362,
     columns: 6,
     rows: 6,
-    totalFrames: 35, // Skip corrupt frame 35
-    fps: 8,
-    loop: false,
+    totalFrames: 35,
+    fps: 10,
+    loop: true,
   },
   speaking: {
     url: '/assets/images/characters/wizard/spritesheets/speaking/spritesheet.png',
@@ -26,18 +27,8 @@ const SPRITESHEET_CONFIG = {
     frameHeight: 362,
     columns: 6,
     rows: 6,
-    totalFrames: 35, // Skip corrupt frame 35
-    fps: 6,
-    loop: true,
-  },
-  conjuring: {
-    url: '/assets/images/characters/wizard/spritesheets/conjuring/spritesheet.png',
-    frameWidth: 329,
-    frameHeight: 359,
-    columns: 6,
-    rows: 4,
-    totalFrames: 24,
-    fps: 8,
+    totalFrames: 35,
+    fps: 10,
     loop: true,
   },
   thinking: {
@@ -46,18 +37,8 @@ const SPRITESHEET_CONFIG = {
     frameHeight: 362,
     columns: 6,
     rows: 6,
-    totalFrames: 35, // Skip corrupt frame 35
-    fps: 6,
-    loop: true,
-  },
-  listening: {
-    url: '/assets/images/characters/wizard/spritesheets/listening/spritesheet.png',
-    frameWidth: 330,
-    frameHeight: 362,
-    columns: 6,
-    rows: 6,
-    totalFrames: 35, // Skip corrupt frame 35
-    fps: 6,
+    totalFrames: 35,
+    fps: 5,
     loop: true,
   },
   crying: {
@@ -66,18 +47,286 @@ const SPRITESHEET_CONFIG = {
     frameHeight: 362,
     columns: 6,
     rows: 6,
-    totalFrames: 35, // Skip corrupt frame 35
-    fps: 6,
+    totalFrames: 35,
+    fps: 5,
     loop: true,
   },
-  facepalm: {
+  smacking: {
     url: '/assets/images/characters/wizard/spritesheets/smacking/spritesheet.png',
     frameWidth: 330,
     frameHeight: 362,
     columns: 6,
     rows: 6,
-    totalFrames: 35, // Skip corrupt frame 35
+    totalFrames: 35,
     fps: 8,
+    loop: false,
+  },
+  listening: {
+    url: '/assets/images/characters/wizard/spritesheets/listening/spritesheet.png',
+    frameWidth: 331,
+    frameHeight: 363,
+    columns: 6,
+    rows: 6,
+    totalFrames: 35,
+    fps: 5,
+    loop: true,
+  },
+  clarification: {
+    url: '/assets/images/characters/wizard/spritesheets/clarification/spritesheet.png',
+    frameWidth: 331,
+    frameHeight: 363,
+    columns: 6,
+    rows: 6,
+    totalFrames: 35,
+    fps: 6,
+    loop: false,
+  },
+  warning: {
+    url: '/assets/images/characters/wizard/spritesheets/warning/spritesheet.png',
+    frameWidth: 330,
+    frameHeight: 362,
+    columns: 6,
+    rows: 6,
+    totalFrames: 35,
+    fps: 6,
+    loop: false,
+  },
+
+  // 6×4 grid spritesheet
+  conjuring: {
+    url: '/assets/images/characters/wizard/spritesheets/conjuring/spritesheet.png',
+    frameWidth: 329,
+    frameHeight: 359,
+    columns: 6,
+    rows: 4,
+    totalFrames: 24,
+    fps: 6,
+    loop: true,
+  },
+
+  // Wide 6×1 spritesheets (6 frames in single row, 528×1344 per frame)
+  agreement: {
+    url: '/assets/images/characters/wizard/spritesheets/agreement/spritesheet.png',
+    frameWidth: 528,
+    frameHeight: 1344,
+    columns: 6,
+    rows: 1,
+    totalFrames: 6,
+    fps: 6,
+    loop: false,
+  },
+  attentive: {
+    url: '/assets/images/characters/wizard/spritesheets/attentive/spritesheet.png',
+    frameWidth: 528,
+    frameHeight: 1344,
+    columns: 6,
+    rows: 1,
+    totalFrames: 6,
+    fps: 5,
+    loop: true,
+  },
+  disagreement: {
+    url: '/assets/images/characters/wizard/spritesheets/disagreement/spritesheet.png',
+    frameWidth: 528,
+    frameHeight: 1344,
+    columns: 6,
+    rows: 1,
+    totalFrames: 6,
+    fps: 5,
+    loop: false,
+  },
+  magical_reveal: {
+    url: '/assets/images/characters/wizard/spritesheets/magical_reveal/spritesheet.png',
+    frameWidth: 528,
+    frameHeight: 1344,
+    columns: 6,
+    rows: 1,
+    totalFrames: 6,
+    fps: 6,
+    loop: false,
+  },
+  single_result: {
+    url: '/assets/images/characters/wizard/spritesheets/single_result/spritesheet.png',
+    frameWidth: 528,
+    frameHeight: 1344,
+    columns: 6,
+    rows: 1,
+    totalFrames: 6,
+    fps: 6,
+    loop: false,
+  },
+  success: {
+    url: '/assets/images/characters/wizard/spritesheets/success/spritesheet.png',
+    frameWidth: 528,
+    frameHeight: 1344,
+    columns: 6,
+    rows: 1,
+    totalFrames: 6,
+    fps: 8,
+    loop: false,
+  },
+  waiting: {
+    url: '/assets/images/characters/wizard/spritesheets/waiting/spritesheet.png',
+    frameWidth: 528,
+    frameHeight: 1344,
+    columns: 6,
+    rows: 1,
+    totalFrames: 6,
+    fps: 4,
+    loop: true,
+  },
+
+  // Small spritesheets (single row, varying dimensions)
+  browsing: {
+    url: '/assets/images/characters/wizard/spritesheets/browsing/spritesheet.png',
+    frameWidth: 77,
+    frameHeight: 89,
+    columns: 5,
+    rows: 1,
+    totalFrames: 5,
+    fps: 6,
+    loop: true,
+  },
+  cheering: {
+    url: '/assets/images/characters/wizard/spritesheets/cheering/spritesheet.png',
+    frameWidth: 86,
+    frameHeight: 97,
+    columns: 3,
+    rows: 1,
+    totalFrames: 3,
+    fps: 8,
+    loop: true,
+  },
+  confirmation: {
+    url: '/assets/images/characters/wizard/spritesheets/confirmation/spritesheet.png',
+    frameWidth: 88,
+    frameHeight: 90,
+    columns: 2,
+    rows: 1,
+    totalFrames: 2,
+    fps: 5,
+    loop: false,
+  },
+  confused: {
+    url: '/assets/images/characters/wizard/spritesheets/confused/spritesheet.png',
+    frameWidth: 84,
+    frameHeight: 88,
+    columns: 3,
+    rows: 1,
+    totalFrames: 3,
+    fps: 5,
+    loop: true,
+  },
+  emphatic: {
+    url: '/assets/images/characters/wizard/spritesheets/emphatic/spritesheet.png',
+    frameWidth: 81,
+    frameHeight: 87,
+    columns: 3,
+    rows: 1,
+    totalFrames: 3,
+    fps: 8,
+    loop: true,
+  },
+  farewell: {
+    url: '/assets/images/characters/wizard/spritesheets/farewell/spritesheet.png',
+    frameWidth: 82,
+    frameHeight: 97,
+    columns: 4,
+    rows: 1,
+    totalFrames: 4,
+    fps: 6,
+    loop: false,
+  },
+  greeting: {
+    url: '/assets/images/characters/wizard/spritesheets/greeting/spritesheet.png',
+    frameWidth: 86,
+    frameHeight: 86,
+    columns: 4,
+    rows: 1,
+    totalFrames: 4,
+    fps: 6,
+    loop: false,
+  },
+  presenting: {
+    url: '/assets/images/characters/wizard/spritesheets/presenting/spritesheet.png',
+    frameWidth: 105,
+    frameHeight: 97,
+    columns: 2,
+    rows: 1,
+    totalFrames: 2,
+    fps: 6,
+    loop: true,
+  },
+  reading: {
+    url: '/assets/images/characters/wizard/spritesheets/reading/spritesheet.png',
+    frameWidth: 70,
+    frameHeight: 91,
+    columns: 4,
+    rows: 1,
+    totalFrames: 4,
+    fps: 5,
+    loop: true,
+  },
+  shrugging: {
+    url: '/assets/images/characters/wizard/spritesheets/shrugging/spritesheet.png',
+    frameWidth: 86,
+    frameHeight: 92,
+    columns: 3,
+    rows: 1,
+    totalFrames: 3,
+    fps: 6,
+    loop: false,
+  },
+
+  // Idle behaviors (large frames)
+  shifts_weight: {
+    url: '/assets/images/characters/wizard/spritesheets/idle/shifts_weight/spritesheet.png',
+    frameWidth: 396,
+    frameHeight: 672,
+    columns: 3,
+    rows: 1,
+    totalFrames: 3,
+    fps: 4,
+    loop: false,
+  },
+  adjusts_hat: {
+    url: '/assets/images/characters/wizard/spritesheets/idle/adjusts_hat/spritesheet.png',
+    frameWidth: 396,
+    frameHeight: 672,
+    columns: 4,
+    rows: 1,
+    totalFrames: 4,
+    fps: 5,
+    loop: false,
+  },
+  looks_around: {
+    url: '/assets/images/characters/wizard/spritesheets/idle/looks_around/spritesheet.png',
+    frameWidth: 396,
+    frameHeight: 672,
+    columns: 5,
+    rows: 1,
+    totalFrames: 5,
+    fps: 5,
+    loop: false,
+  },
+  puffs_in: {
+    url: '/assets/images/characters/wizard/spritesheets/idle/puffs_in/spritesheet.png',
+    frameWidth: 396,
+    frameHeight: 672,
+    columns: 5,
+    rows: 1,
+    totalFrames: 5,
+    fps: 3,  // Slower FPS for smoother appearing effect
+    loop: false,
+  },
+  puffs_out: {
+    url: '/assets/images/characters/wizard/spritesheets/idle/puffs_out/spritesheet.png',
+    frameWidth: 396,
+    frameHeight: 672,
+    columns: 5,
+    rows: 1,
+    totalFrames: 5,
+    fps: 3,  // Slower FPS for smoother disappearing effect
     loop: false,
   },
 } as const;
@@ -112,6 +361,13 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
   style,
 }) => {
   const config = SPRITESHEET_CONFIG[spritesheet];
+
+  // Guard against invalid spritesheet - return null if config doesn't exist
+  if (!config) {
+    console.error(`WizardSprite: Invalid spritesheet "${spritesheet}". Available spritesheets:`, Object.keys(SPRITESHEET_CONFIG));
+    return null;
+  }
+
   const shouldLoop = loop !== undefined ? loop : config.loop;
 
   // Current frame state
@@ -129,10 +385,6 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
   // Full spritesheet dimensions when scaled
   const sheetWidth = Math.round(config.frameWidth * config.columns * scale);
   const sheetHeight = Math.round(config.frameHeight * config.rows * scale);
-
-  // Center offset to position non-square sprites in the center of the circular container
-  const offsetX = Math.round((size - scaledWidth) / 2);
-  const offsetY = Math.round((size - scaledHeight) / 2);
 
   // Frame duration in ms
   const frameDuration = 1000 / config.fps;
@@ -213,11 +465,11 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
         borderRadius: '50%',
         overflow: 'hidden',
         position: 'relative',
-        backgroundColor: '#0a0a0f',
+        backgroundColor: 'transparent',
         ...style,
       }}
     >
-      {/* Spritesheet container - absolutely positioned and centered */}
+      {/* Frame clipping container - shows ONLY one frame */}
       <div
         style={{
           position: 'absolute',
@@ -227,17 +479,23 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
           width: `${scaledWidth}px`,
           height: `${scaledHeight}px`,
           overflow: 'hidden',
+          backgroundColor: 'transparent',
         }}
       >
+        {/* Spritesheet positioned to show current frame */}
         <div
           style={{
+            position: 'absolute',
+            top: '0',
+            left: '0',
             width: `${sheetWidth}px`,
             height: `${sheetHeight}px`,
             backgroundImage: `url(${config.url})`,
             backgroundSize: `${sheetWidth}px ${sheetHeight}px`,
             backgroundPosition: `${backgroundPositionX}px ${backgroundPositionY}px`,
             backgroundRepeat: 'no-repeat',
-            imageRendering: 'crisp-edges',
+            imageRendering: 'auto',
+            willChange: 'background-position',
           }}
         />
       </div>

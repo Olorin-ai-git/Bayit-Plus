@@ -12,6 +12,13 @@
       "command": "npx",
       "args": ["-y", "--package=agentvibes", "agentvibes-mcp-server"],
       "env": {}
+    },
+    "nano-banana": {
+      "command": "npx",
+      "args": ["-y", "nano-banana-mcp"],
+      "env": {
+        "GEMINI_API_KEY": "$(gcloud secrets versions access latest --secret=GEMINI_API_KEY)"
+      }
     }
   }
 }

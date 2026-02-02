@@ -10,6 +10,7 @@ import { SplitSquareVertical, Check } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassLiveControlButton } from './controls/GlassLiveControlButton'
 import { SplitLanguages, getLanguageInfo } from '@/types/subtitle'
+import SplitModeToggle from './subtitle/SplitModeToggle'
 import logger from '@/utils/logger'
 
 const LANG_FLAGS: Record<string, string> = {
@@ -93,6 +94,17 @@ export default function LiveSplitSubtitleControls({
       return [...prev, lang]
     })
   }, [])
+
+  // Handle toggle from within modal
+  const handleToggleInModal = useCallback((enabled: boolean) => {
+    if (!enabled) {
+      // User disabled split mode from within modal
+      onSplitModeToggle(false)
+      setShowLangPicker(false)
+      logger.info('Live split mode disabled from modal', 'LiveSplitSubtitleControls')
+    }
+    // If enabling, do nothing - user must select languages and confirm
+  }, [onSplitModeToggle])
 
   // Confirm language selection
   const handleConfirmLanguages = useCallback(() => {
@@ -180,6 +192,15 @@ export default function LiveSplitSubtitleControls({
               <Text style={styles.langPickerSubtitle}>
                 {t('subtitles.splitScreen.selectTwoHint', 'Choose two languages for split screen subtitles')}
               </Text>
+
+              {/* Split Mode Toggle */}
+              <View style={styles.splitModeSection}>
+                <SplitModeToggle
+                  enabled={true}
+                  onToggle={handleToggleInModal}
+                  disabled={quotaExceeded}
+                />
+              </View>
 
               {/* Language List */}
               <View style={styles.langList}>
@@ -312,10 +333,10 @@ const styles = StyleSheet.create({
   langPickerSubtitle: {
     fontSize: 13,
     color: colors.textMuted,
+    marginBottom: spacing.sm,
+  },
+  splitModeSection: {
     marginBottom: spacing.md,
-    paddingBottom: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(139, 92, 246, 0.3)',
   },
   langList: {
     gap: spacing.xs,

@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { View, Text, ScrollView, Image, Dimensions, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Image, Dimensions, StyleSheet, Pressable, Modal } from 'react-native';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Play, Plus, Check, Share2, Star } from 'lucide-react';
+import { Play, Plus, Check, Share2, Star, ChevronRight, X } from 'lucide-react';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import Hls from 'hls.js';
 import LinearGradient from 'react-native-linear-gradient';
@@ -60,6 +60,8 @@ export default function MovieDetailPage() {
   const [inWatchlist, setInWatchlist] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [availableSubtitles, setAvailableSubtitles] = useState<SubtitleTrack[]>([]);
+  const [showSubtitleModal, setShowSubtitleModal] = useState(false);
+  const [selectedSubtitleLang, setSelectedSubtitleLang] = useState<string | null>(null);
   const openPlayer = useFullscreenPlayerStore((state) => state.openPlayer);
 
   // Video preview state
@@ -218,6 +220,11 @@ export default function MovieDetailPage() {
 
   const handlePlay = () => {
     if (movie) {
+      logger.info('Opening player with pre-selected subtitle', 'MovieDetailPage', {
+        movieId: movie.id,
+        selectedSubtitle: selectedSubtitleLang
+      });
+
       openPlayer({
         id: movie.id,
         title: movie.title,
@@ -225,7 +232,20 @@ export default function MovieDetailPage() {
         poster: movie.backdrop || movie.thumbnail,
         type: 'movie',
         is_kids_content: movie.is_kids_content,
+        initialSubtitleLang: selectedSubtitleLang, // Pass pre-selected subtitle
       });
+    }
+  };
+
+  const handleSubtitleSelect = (language: string) => {
+    setSelectedSubtitleLang(language);
+    setShowSubtitleModal(false);
+    logger.info('Pre-selected subtitle', 'MovieDetailPage', { language });
+  };
+
+  const handleSubtitlePanelClick = () => {
+    if (availableSubtitles.length > 0) {
+      setShowSubtitleModal(true);
     }
   };
 
@@ -376,7 +396,10 @@ export default function MovieDetailPage() {
 
           {/* Available Subtitles */}
           {availableSubtitles.length > 0 && (
-            <View style={styles.subtitlesContainer}>
+            <Pressable onPress={handleSubtitlePanelClick} style={({ pressed }) => [
+              styles.subtitlesContainer,
+              pressed && styles.subtitlesContainerPressed
+            ]}>
               <Text style={styles.subtitlesLabel}>{t('subtitles.available', 'Subtitles')}:</Text>
               <View style={styles.subtitlesFlagRow}>
                 {/* Deduplicate tracks by language, keeping first occurrence */}
@@ -384,6 +407,7 @@ export default function MovieDetailPage() {
                   .filter((track, index, self) =>
                     self.findIndex(t => t.language === track.language) === index
                   )
+                  .slice(0, 5)
                   .map((track) => {
                     // Check if track has any AI-enhanced versions
                     const hasAI = !!(
@@ -393,8 +417,9 @@ export default function MovieDetailPage() {
                       track.has_grammar_flip_version ||
                       track.has_slang_synthesis_version
                     );
+                    const isSelected = selectedSubtitleLang === track.language;
                     return (
-                      <View key={track.id} style={styles.subtitleFlag}>
+                      <View key={track.id} style={[styles.subtitleFlag, isSelected && styles.subtitleFlagSelected]}>
                         <FlagWithSparkle
                           language={track.language}
                           hasAI={hasAI}
@@ -404,8 +429,17 @@ export default function MovieDetailPage() {
                       </View>
                     );
                   })}
+                {availableSubtitles.length > 5 && (
+                  <Text style={styles.moreSubtitlesText}>+{availableSubtitles.length - 5}</Text>
+                )}
               </View>
-            </View>
+              <ChevronRight size={18} color={colors.textSecondary} />
+              {selectedSubtitleLang && (
+                <View style={styles.selectedIndicator}>
+                  <Check size={14} color={colors.primary.DEFAULT} />
+                </View>
+              )}
+            </Pressable>
           )}
 
           {/* Description */}
@@ -529,6 +563,101 @@ export default function MovieDetailPage() {
           items={movie.related}
         />
       )}
+
+      {/* Subtitle Selection Modal */}
+      <Modal
+        visible={showSubtitleModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSubtitleModal(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setShowSubtitleModal(false)}
+        >
+          <Pressable
+            style={styles.modalContent}
+            onPress={(e) => e.stopPropagation()}
+          >
+            <GlassView style={styles.subtitleModal}>
+              {/* Header */}
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>{t('subtitles.selectLanguage')}</Text>
+                <Pressable
+                  onPress={() => setShowSubtitleModal(false)}
+                  style={styles.closeButton}
+                >
+                  <X size={20} color={colors.text} />
+                </Pressable>
+              </View>
+
+              {/* Subtitle List */}
+              <ScrollView style={styles.subtitleList}>
+                {/* Off Option */}
+                <Pressable
+                  onPress={() => {
+                    setSelectedSubtitleLang(null);
+                    setShowSubtitleModal(false);
+                  }}
+                  style={({ pressed }) => [
+                    styles.subtitleItem,
+                    !selectedSubtitleLang && styles.subtitleItemSelected,
+                    pressed && styles.subtitleItemPressed
+                  ]}
+                >
+                  <Text style={styles.subtitleItemText}>{t('subtitles.off', 'Off')}</Text>
+                  {!selectedSubtitleLang && (
+                    <Check size={20} color={colors.primary.DEFAULT} />
+                  )}
+                </Pressable>
+
+                {/* Language Options */}
+                {availableSubtitles
+                  .filter((track, index, self) =>
+                    self.findIndex(t => t.language === track.language) === index
+                  )
+                  .map((track) => {
+                    const hasAI = !!(
+                      track.has_nikud_version ||
+                      track.has_shoresh_version ||
+                      track.has_heblish_version ||
+                      track.has_grammar_flip_version ||
+                      track.has_slang_synthesis_version
+                    );
+                    const isSelected = selectedSubtitleLang === track.language;
+
+                    return (
+                      <Pressable
+                        key={track.id}
+                        onPress={() => handleSubtitleSelect(track.language)}
+                        style={({ pressed }) => [
+                          styles.subtitleItem,
+                          isSelected && styles.subtitleItemSelected,
+                          pressed && styles.subtitleItemPressed
+                        ]}
+                      >
+                        <View style={styles.subtitleItemContent}>
+                          <FlagWithSparkle
+                            language={track.language}
+                            hasAI={hasAI}
+                            size="medium"
+                            showTooltip={false}
+                          />
+                          <Text style={styles.subtitleItemText}>
+                            {track.language_name || track.language.toUpperCase()}
+                          </Text>
+                        </View>
+                        {isSelected && (
+                          <Check size={20} color={colors.primary.DEFAULT} />
+                        )}
+                      </Pressable>
+                    );
+                  })}
+              </ScrollView>
+            </GlassView>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </ScrollView>
   );
 }
@@ -674,6 +803,13 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.lg,
     alignSelf: 'flex-start',
+    cursor: 'pointer',
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  subtitlesContainerPressed: {
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderColor: colors.primary.DEFAULT,
   },
   subtitlesLabel: {
     fontSize: fontSize.sm,
@@ -687,6 +823,25 @@ const styles = StyleSheet.create({
   },
   subtitleFlag: {
     fontSize: fontSize.xl,
+    opacity: 0.7,
+  },
+  subtitleFlagSelected: {
+    opacity: 1,
+    // @ts-ignore
+    transform: 'scale(1.1)',
+  },
+  moreSubtitlesText: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    fontWeight: '500',
+  },
+  selectedIndicator: {
+    width: 18,
+    height: 18,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   heroDescription: {
     fontSize: fontSize.base,
@@ -760,5 +915,75 @@ const styles = StyleSheet.create({
     fontSize: fontSize.base,
     color: colors.textSecondary,
     lineHeight: 26,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    maxWidth: 500,
+    maxHeight: '80%',
+  },
+  subtitleModal: {
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    maxHeight: 600,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.md,
+    paddingBottom: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(139, 92, 246, 0.3)',
+  },
+  modalTitle: {
+    fontSize: fontSize.lg,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  closeButton: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  subtitleList: {
+    maxHeight: 400,
+  },
+  subtitleItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.lg,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    marginBottom: spacing.xs,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  subtitleItemSelected: {
+    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+    borderColor: colors.primary.DEFAULT,
+  },
+  subtitleItemPressed: {
+    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+  },
+  subtitleItemContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  subtitleItemText: {
+    fontSize: fontSize.base,
+    color: colors.text,
+    fontWeight: '500',
   },
 });

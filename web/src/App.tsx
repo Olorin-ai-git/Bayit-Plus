@@ -98,6 +98,7 @@ const MyRecordingsPage = lazy(() => import('./pages/MyRecordingsPage'))
 const MorningRitualPage = lazy(() => import('./pages/MorningRitualPage'))
 const TVLoginPage = lazy(() => import('./pages/TVLoginPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
+const FamilyControlsPage = lazy(() => import('./pages/FamilyControlsPage'))
 const HelpPage = lazy(() => import('./pages/HelpPage'))
 const SupportPage = lazy(() => import('./pages/SupportPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
@@ -282,6 +283,7 @@ const AppContent = () => {
         <Route path="/morning-ritual" element={<MorningRitualPage />} />
         <Route path="/widgets" element={<UserWidgetsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings/family-controls" element={<FamilyControlsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
