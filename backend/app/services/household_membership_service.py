@@ -11,7 +11,7 @@ from typing import Optional
 
 from app.models.household import Household, HouseholdRole, PendingInvitation
 from app.models.user import User
-from app.services.email_service import send_household_invitation
+from app.services.bayit_email_service import get_bayit_email_service
 
 logger = logging.getLogger(__name__)
 
@@ -73,7 +73,8 @@ class HouseholdMembershipService:
         inviter = await User.get(inviter_id)
         inviter_name = inviter.name if inviter else "A Bayit+ user"
 
-        await send_household_invitation(
+        email_service = get_bayit_email_service()
+        await email_service.send_household_invitation(
             to_email=invitee_email,
             inviter_name=inviter_name,
             household_name=household.name,

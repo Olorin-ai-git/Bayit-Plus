@@ -405,3 +405,56 @@ async def send_push_notification(
     await notification.save()
 
     return {"message": "Push notification sent"}
+
+
+class PlatformInvitationRequest(BaseModel):
+    """Platform invitation request."""
+
+    email: str
+    inviter_name: Optional[str] = None
+    personal_message: Optional[str] = None
+
+
+@router.post("/marketing/invitations/send")
+async def send_platform_invitation_email(
+    data: PlatformInvitationRequest,
+    current_user: User = Depends(has_permission(Permission.MARKETING_SEND)),
+):
+    """
+    Send platform invitation email to a new user.
+
+    Uses Olorin shared email package with Bayit+ templates.
+
+    Args:
+        data: Invitation details (email, inviter name, personal message)
+        current_user: Admin user sending the invitation
+
+    Returns:
+        Success message
+    """
+    from app.services.bayit_email_service import get_bayit_email_service
+
+    # Get Bayit email service (wraps Olorin core email)
+    bayit_email = get_bayit_email_service()
+
+    # Send invitation email
+    result = await bayit_email.send_platform_invitation(
+        to_email=data.email,
+        inviter_name=data.inviter_name or current_user.name,
+        personal_message=data.personal_message,
+    )
+
+    if result.success:
+        return {
+            "success": True,
+            "message": f"Invitation sent successfully to {data.email}",
+            "email": data.email,
+            "message_id": result.message_id,
+        }
+    else:
+        return {
+            "success": False,
+            "message": result.message,
+            "email": data.email,
+            "provider": result.provider,
+        }

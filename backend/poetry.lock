@@ -3583,6 +3583,26 @@ type = "directory"
 url = "../packages/olorin-core"
 
 [[package]]
+name = "olorin-email"
+version = "1.0.0"
+description = "Olorin Ecosystem - Shared Email Service (SendGrid, SMTP, Templates)"
+optional = false
+python-versions = "^3.11"
+groups = ["main"]
+files = []
+develop = true
+
+[package.dependencies]
+httpx = "^0.28.0"
+jinja2 = "^3.1.0"
+pydantic = "^2.12.0"
+pydantic-settings = "^2.7.0"
+
+[package.source]
+type = "directory"
+url = "../../../olorin-core/backend-core/olorin-email"
+
+[[package]]
 name = "olorin-i18n"
 version = "1.0.0"
 description = "Olorin.ai Platform Internationalization - Unified i18n library for multilingual support across all platforms"
@@ -6464,4 +6484,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11,<3.14"
-content-hash = "ee34f40a03e2288fd615a76e06cac2d7258effb0914d1462060336d84ed92ba1"
+content-hash = "e2783faba020af85ac3d1e0104bf5f5333b8dcf8a665094b1c447ef5723e7a42"

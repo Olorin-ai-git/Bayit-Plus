@@ -38,6 +38,7 @@ def setup_logging(level: str = "INFO"):
     logging.getLogger("httpx").setLevel(logging.WARNING)
     logging.getLogger("anthropic").setLevel(logging.INFO)
     logging.getLogger("pymongo.connection").setLevel(logging.WARNING)
+    logging.getLogger("pymongo.client").setLevel(logging.WARNING)  # Suppress background pool maintenance errors
 
     # Suppress uvicorn HTTP access logs (move to DEBUG level)
     logging.getLogger("uvicorn.access").setLevel(logging.DEBUG)

@@ -1,32 +1,40 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, ScrollView, useWindowDimensions, Pressable, ActivityIndicator } from 'react-native';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions, Pressable } from 'react-native';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { Film, Tv, Search, ChevronLeft, ChevronRight, SlidersHorizontal, Mic, X } from 'lucide-react';
 import ContentCard from '@/components/content/ContentCard';
 import AnimatedCard from '@/components/common/AnimatedCard';
-import { contentService } from '@/services/api';
+import api from '@/services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import {
-  GlassView,
   GlassCard,
   GlassCategoryPill,
   GlassInput,
-  GlassButton,
   GlassCheckbox,
   GlassPageHeader,
-  GridSkeleton,
 } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
 import PageLoading from '@/components/common/PageLoading';
+
+interface Subcategory {
+  id: string;
+  slug: string;
+  name: string;
+  name_en?: string;
+  name_es?: string;
+}
 
 interface Category {
   id: string;
   name: string;
   name_en?: string;
   name_es?: string;
+  slug: string;
+  supports_subcategories?: boolean;
+  subcategories?: Subcategory[];
 }
 
 interface ContentItem {
@@ -46,37 +54,33 @@ interface ContentItem {
 
 export default function VODPage() {
   const { t, i18n } = useTranslation();
-  const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
+  const { isRTL, textAlign, flexDirection } = useDirection();
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [movies, setMovies] = useState<ContentItem[]>([]);
-  const [series, setSeries] = useState<ContentItem[]>([]);
+  const [allContent, setAllContent] = useState<ContentItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState(
     searchParams.get('category') || 'all'
   );
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
+  const [contentTypeFilter, setContentTypeFilter] = useState<'all' | 'movies' | 'series'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [moviesPage, setMoviesPage] = useState(1);
-  const [seriesPage, setSeriesPage] = useState(1);
-  const [totalMovies, setTotalMovies] = useState(0);
-  const [totalSeries, setTotalSeries] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
   const [showFilterPanel, setShowFilterPanel] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const { width } = useWindowDimensions();
 
-  // Track previous category to detect changes and prevent duplicate API calls
-  const prevCategoryRef = useRef(selectedCategory);
-
   const numColumns = width >= 1280 ? 6 : width >= 1024 ? 5 : width >= 768 ? 4 : width >= 640 ? 3 : 2;
-  const itemsPerPage = 24; // Reduced from 100 for better UX and smaller batches
+  const itemsPerPage = 24;
 
   // Debounced search query for API calls
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Debounce search query to avoid excessive API calls
+  // Debounce search query
   useEffect(() => {
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
@@ -91,77 +95,123 @@ export default function VODPage() {
     };
   }, [searchQuery]);
 
-  // Filter movies and series by subtitle filter (search is now server-side)
-  const filteredMovies = useMemo(() => {
-    if (!showOnlyWithSubtitles) return movies;
-    return movies.filter(item =>
+  // Filter content by subtitle filter
+  const filteredContent = useMemo(() => {
+    if (!showOnlyWithSubtitles) return allContent;
+    return allContent.filter(item =>
       item.available_subtitle_languages && item.available_subtitle_languages.length > 0
     );
-  }, [movies, showOnlyWithSubtitles]);
+  }, [allContent, showOnlyWithSubtitles]);
 
-  const filteredSeries = useMemo(() => {
-    if (!showOnlyWithSubtitles) return series;
-    return series.filter(item =>
-      item.available_subtitle_languages && item.available_subtitle_languages.length > 0
-    );
-  }, [series, showOnlyWithSubtitles]);
-
-  // Track previous search to detect changes
-  const prevSearchRef = useRef(debouncedSearch);
-
-  // Combined useEffect to prevent duplicate API calls
+  // Reset page when filters change
   useEffect(() => {
-    const categoryChanged = prevCategoryRef.current !== selectedCategory;
-    const searchChanged = prevSearchRef.current !== debouncedSearch;
+    setCurrentPage(1);
+  }, [selectedCategory, selectedSubcategory, contentTypeFilter, debouncedSearch]);
 
-    if (categoryChanged) {
-      prevCategoryRef.current = selectedCategory;
-      setMoviesPage(1);
-      setSeriesPage(1);
-    }
+  // Load categories on mount
+  useEffect(() => {
+    loadCategories();
+  }, []);
 
-    if (searchChanged) {
-      prevSearchRef.current = debouncedSearch;
-      setMoviesPage(1);
-      setSeriesPage(1);
-    }
-
+  // Load content when filters change
+  useEffect(() => {
     loadContent();
-  }, [selectedCategory, moviesPage, seriesPage, debouncedSearch]);
+  }, [selectedCategory, selectedSubcategory, contentTypeFilter, currentPage, debouncedSearch]);
+
+  const loadCategories = async () => {
+    try {
+      const data = await api.get('/content/categories', { params: { content_type: 'vod' } });
+      setCategories(data.categories || []);
+      logger.info(`VODPage: Loaded ${data.categories?.length || 0} VOD categories`, 'VODPage');
+    } catch (error) {
+      logger.error('Failed to load categories', 'VODPage', error);
+    }
+  };
 
   const loadContent = async () => {
     setLoading(true);
+
+    // Clear content immediately to prevent stale data display
+    setAllContent([]);
+    setTotalItems(0);
+
     try {
       const categoryParam = selectedCategory === 'all' ? undefined : selectedCategory;
       const searchParam = debouncedSearch || undefined;
 
-      const [categoriesData, moviesData, seriesData] = await Promise.all([
-        contentService.getCategories(),
-        contentService.getAllMovies({ page: moviesPage, limit: itemsPerPage, category_id: categoryParam, search: searchParam }),
-        contentService.getAllSeries({ page: seriesPage, limit: itemsPerPage, category_id: categoryParam, search: searchParam }),
-      ]);
+      let items: ContentItem[] = [];
+      let total = 0;
 
-      // Filter categories to only include VOD-relevant sections
-      // Exclude: audiobooks, podcasts, radio, live
-      const vodCategories = (categoriesData.categories || []).filter((cat: Category) => {
-        const slug = cat.id.toLowerCase();
-        const name = (cat.name || '').toLowerCase();
+      // Determine which content types to fetch based on filter
+      const fetchMovies = contentTypeFilter === 'all' || contentTypeFilter === 'movies';
+      const fetchSeries = contentTypeFilter === 'all' || contentTypeFilter === 'series';
 
-        // Exclude non-VOD content types
-        const nonVodSlugs = ['audiobooks', 'podcasts', 'radio', 'live', 'live-tv'];
-        const nonVodNames = ['audiobooks', 'ספרי אודיו', 'podcasts', 'פודקאסטים', 'radio', 'רדיו', 'live', 'שידור חי'];
+      if (selectedSubcategory) {
+        // Fetch content by subcategory
+        const selectedCat = categories.find(c => c.id === selectedCategory);
+        if (selectedCat) {
+          const subcat = selectedCat.subcategories?.find(s => s.id === selectedSubcategory);
+          if (subcat) {
+            const data = await api.get(`/content/section/${selectedCat.slug}/subcategory/${subcat.slug}`, {
+              params: { page: currentPage, limit: itemsPerPage, search: searchParam }
+            });
 
-        return !nonVodSlugs.some(s => slug.includes(s)) &&
-               !nonVodNames.some(n => name.includes(n));
-      });
+            // Filter by content type if specified
+            const allItems = data.items || [];
+            if (contentTypeFilter === 'movies') {
+              items = allItems.filter((item: ContentItem) => !item.is_series);
+            } else if (contentTypeFilter === 'series') {
+              items = allItems.filter((item: ContentItem) => item.is_series);
+            } else {
+              items = allItems;
+            }
 
-      setCategories(vodCategories);
-      setMovies(moviesData.items || []);
-      setSeries(seriesData.items || []);
-      setTotalMovies(moviesData.total || 0);
-      setTotalSeries(seriesData.total || 0);
+            total = items.length; // Note: This is approximate; ideally backend should support content_type filter
+          }
+        }
+      } else {
+        // Fetch movies and/or series based on content type filter
+        const requests = [];
 
-      logger.info(`VODPage: Loaded ${moviesData.items?.length || 0} movies and ${seriesData.items?.length || 0} series with ${vodCategories.length} categories`, 'VODPage');
+        if (fetchMovies) {
+          requests.push(
+            api.get('/content/movies', {
+              params: { page: currentPage, limit: itemsPerPage, category_id: categoryParam, search: searchParam }
+            })
+          );
+        }
+
+        if (fetchSeries) {
+          requests.push(
+            api.get('/content/series', {
+              params: { page: currentPage, limit: itemsPerPage, category_id: categoryParam, search: searchParam }
+            })
+          );
+        }
+
+        const results = await Promise.all(requests);
+
+        if (contentTypeFilter === 'all') {
+          // Both movies and series
+          const movies = results[0]?.items || [];
+          const series = results[1]?.items || [];
+          items = interleaveArrays(movies, series);
+          total = (results[0]?.total || 0) + (results[1]?.total || 0);
+        } else if (contentTypeFilter === 'movies') {
+          // Movies only
+          items = results[0]?.items || [];
+          total = results[0]?.total || 0;
+        } else {
+          // Series only
+          items = results[0]?.items || [];
+          total = results[0]?.total || 0;
+        }
+      }
+
+      setAllContent(items);
+      setTotalItems(total);
+
+      logger.info(`VODPage: Loaded ${items.length} items (total: ${total})`, 'VODPage');
     } catch (error) {
       logger.error('Failed to load content', 'VODPage', error);
     } finally {
@@ -169,9 +219,22 @@ export default function VODPage() {
     }
   };
 
+  // Interleave two arrays for better visual distribution
+  const interleaveArrays = (arr1: ContentItem[], arr2: ContentItem[]): ContentItem[] => {
+    const result: ContentItem[] = [];
+    const maxLength = Math.max(arr1.length, arr2.length);
+    for (let i = 0; i < maxLength; i++) {
+      if (i < arr1.length) result.push(arr1[i]);
+      if (i < arr2.length) result.push(arr2[i]);
+    }
+    return result;
+  };
+
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);
+    setSelectedSubcategory(null); // Clear subcategory when changing category
     setSearchQuery(''); // Clear search when changing category
+    setCurrentPage(1); // Reset to first page
     if (categoryId === 'all') {
       searchParams.delete('category');
     } else {
@@ -180,8 +243,16 @@ export default function VODPage() {
     setSearchParams(searchParams);
   };
 
-  const moviesTotalPages = Math.ceil(totalMovies / itemsPerPage);
-  const seriesTotalPages = Math.ceil(totalSeries / itemsPerPage);
+  const handleSubcategoryChange = (subcategoryId: string | null) => {
+    setSelectedSubcategory(subcategoryId);
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  // Get selected category's subcategories
+  const selectedCategoryData = categories.find(c => c.id === selectedCategory);
+  const subcategories = selectedCategoryData?.subcategories || [];
 
   const renderContentGrid = (items: ContentItem[], emptyMessage: string) => {
     if (items.length === 0) {
@@ -209,7 +280,7 @@ export default function VODPage() {
   };
 
   // Show full page loader on initial load
-  if (loading && movies.length === 0 && series.length === 0) {
+  if (loading && allContent.length === 0) {
     return (
       <PageLoading
         title={t('vod.title')}
@@ -227,7 +298,7 @@ export default function VODPage() {
         <GlassPageHeader
           title={t('vod.title')}
           pageType="vod"
-          badge={totalMovies + totalSeries}
+          badge={totalItems}
           isRTL={isRTL}
         />
 
@@ -301,6 +372,30 @@ export default function VODPage() {
           )}
         </View>
 
+        {/* Content Type Filter (Movies/Series/All) */}
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.contentTypeScroll}
+          contentContainerStyle={styles.contentTypeContent}
+        >
+          <GlassCategoryPill
+            label={t('vod.allContent', 'All Content')}
+            isActive={contentTypeFilter === 'all'}
+            onPress={() => setContentTypeFilter('all')}
+          />
+          <GlassCategoryPill
+            label={t('vod.moviesOnly', 'Movies')}
+            isActive={contentTypeFilter === 'movies'}
+            onPress={() => setContentTypeFilter('movies')}
+          />
+          <GlassCategoryPill
+            label={t('vod.seriesOnly', 'Series')}
+            isActive={contentTypeFilter === 'series'}
+            onPress={() => setContentTypeFilter('series')}
+          />
+        </ScrollView>
+
         {/* Category Filter */}
         <ScrollView
           horizontal
@@ -323,8 +418,32 @@ export default function VODPage() {
           ))}
         </ScrollView>
 
-        {/* Loading State for Pagination */}
-        {loading && (movies.length > 0 || series.length > 0) ? (
+        {/* Subcategory Filter (if category supports subcategories) */}
+        {selectedCategory !== 'all' && selectedCategoryData?.supports_subcategories && subcategories.length > 0 && (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.subcategoriesScroll}
+            contentContainerStyle={styles.subcategoriesContent}
+          >
+            <GlassCategoryPill
+              label={t('vod.allSubcategories', 'All')}
+              isActive={selectedSubcategory === null}
+              onPress={() => handleSubcategoryChange(null)}
+            />
+            {subcategories.map((subcategory) => (
+              <GlassCategoryPill
+                key={subcategory.id}
+                label={getLocalizedName(subcategory, i18n.language)}
+                isActive={selectedSubcategory === subcategory.id}
+                onPress={() => handleSubcategoryChange(subcategory.id)}
+              />
+            ))}
+          </ScrollView>
+        )}
+
+        {/* Content Grid */}
+        {loading ? (
           <View style={styles.grid}>
             {[...Array(12)].map((_, i) => (
               <View key={i} style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}>
@@ -336,76 +455,34 @@ export default function VODPage() {
           </View>
         ) : (
           <>
-            {/* Movies Section */}
-            <View style={styles.section}>
-              <View style={[styles.sectionHeader, { flexDirection }]}>
-                <Film size={24} color={colors.primary} />
-                <Text style={[styles.sectionTitle, { textAlign }]}>
-                  {t('vod.movies')}
-                </Text>
-                <View style={styles.countBadge}>
-                  <Text style={styles.countText}>{totalMovies}</Text>
-                </View>
-              </View>
-              {renderContentGrid(filteredMovies, t('vod.noMovies'))}
-              {/* Movies Pagination */}
-              {moviesTotalPages > 1 && (
-                <View style={styles.sectionPagination}>
-                  <Pressable
-                    onPress={() => setMoviesPage(p => Math.max(1, p - 1))}
-                    disabled={moviesPage === 1}
-                    style={[styles.smallPageButton, moviesPage === 1 && styles.pageButtonDisabled]}
-                  >
-                    {isRTL ? <ChevronRight size={16} color={colors.text} /> : <ChevronLeft size={16} color={colors.text} />}
-                  </Pressable>
-                  <Text style={styles.pageText}>{moviesPage} / {moviesTotalPages}</Text>
-                  <Pressable
-                    onPress={() => setMoviesPage(p => Math.min(moviesTotalPages, p + 1))}
-                    disabled={moviesPage === moviesTotalPages}
-                    style={[styles.smallPageButton, moviesPage === moviesTotalPages && styles.pageButtonDisabled]}
-                  >
-                    {isRTL ? <ChevronLeft size={16} color={colors.text} /> : <ChevronRight size={16} color={colors.text} />}
-                  </Pressable>
-                </View>
-              )}
-            </View>
+            {renderContentGrid(filteredContent, t('vod.noContent', 'No content found'))}
 
-            {/* Series Section */}
-            <View style={styles.section}>
-              <View style={[styles.sectionHeader, { flexDirection }]}>
-                <Tv size={24} color={colors.secondary} />
-                <Text style={[styles.sectionTitle, { textAlign }]}>
-                  {t('vod.series')}
-                </Text>
-                <View style={styles.countBadge}>
-                  <Text style={styles.countText}>{totalSeries}</Text>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <View style={styles.paginationContainer}>
+                <Pressable
+                  onPress={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  style={[styles.pageButton, currentPage === 1 && styles.pageButtonDisabled]}
+                >
+                  {isRTL ? <ChevronRight size={20} color={colors.text} /> : <ChevronLeft size={20} color={colors.text} />}
+                </Pressable>
+                <View style={styles.pageInfo}>
+                  <Text style={styles.pageText}>{currentPage} / {totalPages}</Text>
+                  <Text style={styles.pageSubtext}>{totalItems} {t('vod.items', 'items')}</Text>
                 </View>
+                <Pressable
+                  onPress={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  style={[styles.pageButton, currentPage === totalPages && styles.pageButtonDisabled]}
+                >
+                  {isRTL ? <ChevronLeft size={20} color={colors.text} /> : <ChevronRight size={20} color={colors.text} />}
+                </Pressable>
               </View>
-              {renderContentGrid(filteredSeries, t('vod.noSeries'))}
-              {/* Series Pagination */}
-              {seriesTotalPages > 1 && (
-                <View style={styles.sectionPagination}>
-                  <Pressable
-                    onPress={() => setSeriesPage(p => Math.max(1, p - 1))}
-                    disabled={seriesPage === 1}
-                    style={[styles.smallPageButton, seriesPage === 1 && styles.pageButtonDisabled]}
-                  >
-                    {isRTL ? <ChevronRight size={16} color={colors.text} /> : <ChevronLeft size={16} color={colors.text} />}
-                  </Pressable>
-                  <Text style={styles.pageText}>{seriesPage} / {seriesTotalPages}</Text>
-                  <Pressable
-                    onPress={() => setSeriesPage(p => Math.min(seriesTotalPages, p + 1))}
-                    disabled={seriesPage === seriesTotalPages}
-                    style={[styles.smallPageButton, seriesPage === seriesTotalPages && styles.pageButtonDisabled]}
-                  >
-                    {isRTL ? <ChevronLeft size={16} color={colors.text} /> : <ChevronRight size={16} color={colors.text} />}
-                  </Pressable>
-                </View>
-              )}
-            </View>
+            )}
 
-            {/* Empty State - when both are empty */}
-            {filteredMovies.length === 0 && filteredSeries.length === 0 && (
+            {/* Empty State */}
+            {filteredContent.length === 0 && (
               <View style={styles.emptyState}>
                 <GlassCard style={styles.emptyCard}>
                   <Film size={64} color={colors.textMuted} />
@@ -435,18 +512,6 @@ const styles = StyleSheet.create({
     maxWidth: 1400,
     marginHorizontal: 'auto',
     width: '100%',
-  },
-  searchSkeleton: {
-    height: 48,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.lg,
-  },
-  categoriesSkeleton: {
-    height: 40,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    marginBottom: spacing.lg,
   },
   searchContainer: {
     marginBottom: spacing.lg,
@@ -518,6 +583,13 @@ const styles = StyleSheet.create({
   filterPanelContent: {
     gap: spacing.md,
   },
+  contentTypeScroll: {
+    marginBottom: spacing.md,
+  },
+  contentTypeContent: {
+    gap: spacing.sm,
+    paddingBottom: spacing.sm,
+  },
   categoriesScroll: {
     marginBottom: spacing.lg,
   },
@@ -525,36 +597,12 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingBottom: spacing.sm,
   },
-  section: {
-    marginBottom: spacing.xl,
+  subcategoriesScroll: {
+    marginBottom: spacing.lg,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  subcategoriesContent: {
     gap: spacing.sm,
-    marginBottom: spacing.md,
     paddingBottom: spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorder,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: colors.text,
-    flex: 1,
-  },
-  countBadge: {
-    backgroundColor: colors.glass,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: spacing.xs,
-    borderRadius: borderRadius.full,
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-  countText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: colors.textSecondary,
   },
   grid: {
     flexDirection: 'row',
@@ -626,18 +674,5 @@ const styles = StyleSheet.create({
   pageSubtext: {
     fontSize: 13,
     color: colors.textMuted,
-  },
-  sectionPagination: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: spacing.md,
-    marginTop: spacing.md,
-    paddingVertical: spacing.sm,
-  },
-  smallPageButton: {
-    padding: spacing.sm,
-    borderRadius: borderRadius.md,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
 });

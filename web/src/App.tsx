@@ -14,10 +14,14 @@ import ProtectedRoute from './components/auth/ProtectedRoute'
 import { useAuthStore } from '@/stores/authStore'
 import { logger } from '@/utils/logger'
 import { killStaleHLS } from '@/components/player/hooks/useHLSPlayer'
+import { setupWizardActionHandler, cleanupWizardActionHandler } from '@/services/wizardActionHandler'
 import './styles/layout-fix.css'
 
 // Clear stale HLS sessions on app startup to prevent 404 errors from previous sessions
 killStaleHLS()
+
+// Setup wizard action handler for processing wizard backend actions
+setupWizardActionHandler()
 
 // Loading fallback component
 const LoadingFallback = () => {

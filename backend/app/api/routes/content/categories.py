@@ -26,11 +26,14 @@ logger = logging.getLogger(__name__)
 
 
 @router.get("/categories")
-async def get_categories():
+async def get_categories(content_type: Optional[str] = Query(None, description="Filter by content type: 'vod' for movies/series only")):
     """
     Get all content sections (categories).
 
     Returns sections from the new taxonomy system.
+    Supports filtering by content_type:
+    - 'vod': Only returns VOD-compatible sections (movies, series, kids, documentaries)
+    - None: Returns all active sections
     """
     sections = (
         await ContentSection.find(ContentSection.is_active == True)
@@ -38,28 +41,84 @@ async def get_categories():
         .to_list()
     )
 
+    # VOD-only filter: Exclude audiobooks, podcasts, radio, live TV, music
+    # Also exclude 'movies' and 'series' as categories (they're content types, not categories)
+    non_vod_slugs = [
+        'audiobooks',
+        'audiobook',
+        'podcasts',
+        'podcast',
+        'radio',
+        'radios',
+        'live',
+        'live-tv',
+        'live_tv',
+        'livetv',
+        'music',
+        'movies',  # Content type, not a category
+        'movie',   # Content type, not a category
+        'series',  # Content type, not a category
+        'serie',   # Content type, not a category
+    ]
+
     result_items = []
     for section in sections:
+        # Apply VOD filter if requested (case-insensitive comparison)
+        if content_type == 'vod' and section.slug.lower() in non_vod_slugs:
+            logger.info(f"VOD filter: Excluding section with slug '{section.slug}'")
+            continue
+
+        # Log included section for debugging
+        if content_type == 'vod':
+            logger.info(f"VOD filter: Including section with slug '{section.slug}'")
+
         # Resolve multilingual names from i18n
         names = get_multilingual_names(
             section.name_key, slug=section.slug, taxonomy_type="sections"
         )
 
-        result_items.append(
-            {
-                "id": str(section.id),
-                "name": names["he"],  # Hebrew as default
-                "name_en": names["en"],
-                "name_es": names["es"],
-                "slug": section.slug,
-                "thumbnail": section.thumbnail,
-                "icon": section.icon,
-                "color": section.color,
-                "show_on_homepage": section.show_on_homepage,
-                "show_on_nav": section.show_on_nav,
-                "supports_subcategories": section.supports_subcategories,
-            }
-        )
+        section_data = {
+            "id": str(section.id),
+            "name": names["he"],  # Hebrew as default
+            "name_en": names["en"],
+            "name_es": names["es"],
+            "slug": section.slug,
+            "thumbnail": section.thumbnail,
+            "icon": section.icon,
+            "color": section.color,
+            "show_on_homepage": section.show_on_homepage,
+            "show_on_nav": section.show_on_nav,
+            "supports_subcategories": section.supports_subcategories,
+        }
+
+        # Include subcategories if section supports them
+        if section.supports_subcategories:
+            subcats = (
+                await SectionSubcategory.find(
+                    SectionSubcategory.section_id == str(section.id),
+                    SectionSubcategory.is_active == True,
+                )
+                .sort("order")
+                .to_list()
+            )
+
+            subcategories = []
+            for sub in subcats:
+                sub_names = get_multilingual_names(
+                    sub.name_key, slug=sub.slug, taxonomy_type="subcategories"
+                )
+                subcategories.append(
+                    {
+                        "id": str(sub.id),
+                        "slug": sub.slug,
+                        "name": sub_names["he"],
+                        "name_en": sub_names["en"],
+                        "name_es": sub_names["es"],
+                    }
+                )
+            section_data["subcategories"] = subcategories
+
+        result_items.append(section_data)
 
     return {"categories": result_items}
 
