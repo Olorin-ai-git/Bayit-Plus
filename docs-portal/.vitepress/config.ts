@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: 'Bayit+ Documentation',
   description: 'Complete documentation for the Bayit+ streaming platform',
-  base: '/docs/',
+  base: '/',
   srcDir: '../docs',
   srcExclude: ['**/templates/**'],
   ignoreDeadLinks: true,
