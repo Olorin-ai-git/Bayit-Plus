@@ -204,6 +204,7 @@ export default function VideoPlayerOverlays({
           onHoverEnd={onTriviaHoverEnd}
           isRTL={i18n.language === 'he'}
           isTTSPlaying={isTTSPlaying}
+          currentSubtitleLang={currentSubtitleLang}
         />
       )}
 

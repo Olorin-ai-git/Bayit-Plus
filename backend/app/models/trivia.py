@@ -175,13 +175,21 @@ class ContentTrivia(Document):
     class Settings:
         name = "content_trivia"
         indexes = [
+            # Primary lookup indexes
             "content_id",
             "tmdb_id",
             "is_enriched",
-            # NEW: Index for querying by source language
+
+            # Multilingual translation indexes
             "facts.source_language",
-            # NEW: Compound index for content + enrichment status
-            [("content_id", 1), ("is_enriched", 1)],
+            "facts.fact_id",  # For individual fact lookups
+
+            # Compound indexes for optimized queries
+            [("content_id", 1), ("is_enriched", 1)],  # Enrichment status queries
+            [("content_id", 1), ("facts.fact_id", 1)],  # Fact retrieval by content + fact ID
+
+            # Performance optimization for fact queries
+            [("facts.source_language", 1), ("content_id", 1)],  # Language-filtered content queries
         ]
         # Unique compound index defined separately via IndexModel
         unique_indexes = [
