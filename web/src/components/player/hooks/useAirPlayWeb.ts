@@ -72,30 +72,16 @@ export function useAirPlayWeb({
 
     const video = videoRef.current as WebKitVideoElement
 
-    // WORKAROUND: Safari's webkitplaybacktargetavailabilitychanged event doesn't fire
-    // reliably with HLS blob URLs. Force availability when FORCE_AVAILABLE is enabled.
-    if (FORCE_AVAILABLE) {
-      log.info('AirPlay force-enabled (VITE_CAST_FORCE_SHOW=true) - bypassing device detection', {
-        reason: 'Safari blob URL limitation workaround',
-        hasVideo: !!video,
-        hasPickerFunction: typeof video?.webkitShowPlaybackTargetPicker === 'function',
-        currentPlaybackTargetIsWireless: video?.webkitCurrentPlaybackTargetIsWireless,
-        note: 'Cast button will show picker even if no devices detected initially',
-      })
-      setIsAvailable(true)
-    } else {
-      log.info('AirPlay WebKit support detected - waiting for device availability event', {
-        hasVideo: !!video,
-        hasPickerFunction: typeof video?.webkitShowPlaybackTargetPicker === 'function',
-        currentPlaybackTargetIsWireless: video?.webkitCurrentPlaybackTargetIsWireless,
-        troubleshooting: {
-          appleTV: 'Check: Settings → AirPlay → "Everyone" or "Anyone on Same Network"',
-          macOS: 'Check: System Settings → Privacy → Local Network → Safari enabled',
-          network: 'Ensure both devices on same WiFi (not guest network, no AP isolation)',
-          workaround: 'Set VITE_CAST_FORCE_SHOW=true in .env to bypass detection',
-        },
-      })
-    }
+    // Set available immediately if browser supports AirPlay API
+    // Safari's webkitplaybacktargetavailabilitychanged event is unreliable with HLS blob URLs
+    // Better UX: Show clickable button, let picker display "No AirPlay Devices" if none found
+    log.info('AirPlay WebKit support detected - enabling button', {
+      hasVideo: !!video,
+      hasPickerFunction: typeof video?.webkitShowPlaybackTargetPicker === 'function',
+      currentPlaybackTargetIsWireless: video?.webkitCurrentPlaybackTargetIsWireless,
+      forceAvailable: FORCE_AVAILABLE,
+    })
+    setIsAvailable(true)
 
     const handleAvailabilityChange = (event: Event) => {
       // AirPlay is available when this event fires

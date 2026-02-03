@@ -11,6 +11,12 @@ import { loadCastSDK, loadChromecastMedia } from '../utils/chromecastUtils'
 const log = logger.scope('ChromecastWeb')
 const DEBUG_CAST = import.meta.env.VITE_DEBUG_CAST === 'true'
 
+// Check if browser supports Chrome Cast (Chrome/Edge/Chromium-based)
+const isChromeBasedBrowser = (): boolean => {
+  const ua = navigator.userAgent
+  return /Chrome/.test(ua) && !/Safari/.test(ua.replace(/Chrome/g, ''))
+}
+
 interface UseChromecastWebOptions {
   videoRef: React.RefObject<HTMLVideoElement>
   enabled: boolean
@@ -49,10 +55,31 @@ export function useChromecastWeb({
     metadataRef.current = metadata
   }, [metadata])
 
+  // Set availability based on browser support (before SDK loads)
+  // This allows button to show as enabled while SDK is loading
+  useEffect(() => {
+    if (!enabled || !receiverAppId) {
+      log.info('Chromecast not enabled', { enabled, receiverAppId })
+      setIsAvailable(false)
+      return
+    }
+
+    if (isChromeBasedBrowser()) {
+      log.info('Chrome-based browser detected - Chromecast potentially available', {
+        userAgent: navigator.userAgent.substring(0, 100),
+      })
+      setIsAvailable(true)
+    } else {
+      log.info('Non-Chrome browser - Chromecast not supported', {
+        userAgent: navigator.userAgent.substring(0, 100),
+      })
+      setIsAvailable(false)
+    }
+  }, [enabled, receiverAppId])
+
   // Load Cast SDK
   useEffect(() => {
     if (!enabled || !receiverAppId) {
-      log.info('Chromecast SDK not loading', { enabled, receiverAppId })
       return
     }
 
@@ -66,6 +93,7 @@ export function useChromecastWeb({
       () => {
         log.warn('Chromecast SDK failed to load')
         setSdkLoaded(false)
+        // Keep isAvailable true - button will show error when clicked
       }
     )
   }, [enabled, receiverAppId])
@@ -97,8 +125,7 @@ export function useChromecastWeb({
         autoJoinPolicy: 'origin_scoped',
       })
 
-      setIsAvailable(true)
-      log.info('Context initialized')
+      log.info('Chromecast context initialized successfully')
 
       // Listen for session state changes
       const handleSessionChange = (event: any) => {
@@ -136,8 +163,17 @@ export function useChromecastWeb({
   }, [sdkLoaded, receiverAppId])
 
   const startCast = useCallback(async () => {
-    if (!isAvailable || !window.chrome?.cast?.framework?.CastContext) {
-      log.warn('Cannot start cast - not available', { isAvailable })
+    if (!isAvailable) {
+      log.warn('Cannot start cast - Chromecast not available on this browser')
+      return
+    }
+
+    if (!window.chrome?.cast?.framework?.CastContext) {
+      log.warn('Cast SDK not loaded yet - please try again', {
+        sdkLoaded,
+        hasChromeObject: !!window.chrome,
+        hasCastObject: !!window.chrome?.cast,
+      })
       return
     }
 
@@ -146,10 +182,10 @@ export function useChromecastWeb({
       const castContext = window.chrome.cast.framework.CastContext.getInstance()
       await castContext.requestSession()
     } catch (error) {
-      log.error('Failed to start session', error)
+      log.error('Failed to start Chromecast session', error)
       setIsConnecting(false)
     }
-  }, [isAvailable])
+  }, [isAvailable, sdkLoaded])
 
   const stopCast = useCallback(() => {
     if (!isConnected || !sessionRef.current) return

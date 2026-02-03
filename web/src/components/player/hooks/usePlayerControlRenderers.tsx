@@ -7,6 +7,8 @@ import LiveSplitSubtitleControls from '../LiveSplitSubtitleControls'
 import { DubbingControls } from '../dubbing'
 import { RecordButton } from '../RecordButton'
 import CastButton from '../controls/CastButton'
+import AirPlayButton from '../controls/AirPlayButton'
+import ChromecastButton from '../controls/ChromecastButton'
 import CatchUpButton from '../catchup/CatchUpButton'
 import LiveFeatureButton from '../controls/LiveFeatureButton'
 import { MessageCircle, Lightbulb } from 'lucide-react'
@@ -16,7 +18,7 @@ import { SubtitleTrack, SubtitleSettings, HebrewMode, EnglishMode, SplitLanguage
 import { UseLiveDubbingState } from './useLiveDubbing'
 import { WatchParty } from '@/types/watchparty'
 import { SubtitleCue } from '../types'
-import { CastSession } from '../types/cast'
+import { CastSessions } from './useCastSession'
 import { UsageStats } from '@/services/liveQuotaApi'
 import { castConfig } from '@/config/castConfig'
 
@@ -77,8 +79,8 @@ interface UsePlayerControlRenderersParams {
   // Dubbing
   dubbing: UseLiveDubbingState
 
-  // Cast
-  cast: CastSession
+  // Cast (unified and individual sessions)
+  cast: CastSessions
 
   // Recording
   setIsRecording: (recording: boolean) => void
@@ -315,22 +317,57 @@ export function usePlayerControlRenderers({
     ) : null
   , [isLive, contentId, isPremium, onShowUpgrade, setIsRecording, setRecordingDuration])
 
+  // Unified cast button (for backwards compatibility)
   const renderCastButton = useCallback(() => {
-    // Cast button is always rendered - it handles its own disabled state internally
     return (
       <CastButton
-        castSession={cast}
+        castSession={cast.unified}
         onHoveredButtonChange={onHoveredButtonChange}
       />
     )
   }, [
-    cast.isAvailable,
-    cast.isConnected,
-    cast.isConnecting,
-    cast.deviceName,
-    cast.castType,
-    cast.startCast,
-    cast.stopCast,
+    cast.unified.isAvailable,
+    cast.unified.isConnected,
+    cast.unified.isConnecting,
+    cast.unified.deviceName,
+    cast.unified.castType,
+    cast.unified.startCast,
+    cast.unified.stopCast,
+    onHoveredButtonChange,
+  ])
+
+  // Individual AirPlay button (Safari/WebKit)
+  const renderAirPlayButton = useCallback(() => {
+    return (
+      <AirPlayButton
+        session={cast.airplay}
+        onHoveredButtonChange={onHoveredButtonChange}
+      />
+    )
+  }, [
+    cast.airplay.isAvailable,
+    cast.airplay.isConnected,
+    cast.airplay.deviceName,
+    cast.airplay.startCast,
+    cast.airplay.stopCast,
+    onHoveredButtonChange,
+  ])
+
+  // Individual Chromecast button (Chrome/Edge)
+  const renderChromecastButton = useCallback(() => {
+    return (
+      <ChromecastButton
+        session={cast.chromecast}
+        onHoveredButtonChange={onHoveredButtonChange}
+      />
+    )
+  }, [
+    cast.chromecast.isAvailable,
+    cast.chromecast.isConnecting,
+    cast.chromecast.isConnected,
+    cast.chromecast.deviceName,
+    cast.chromecast.startCast,
+    cast.chromecast.stopCast,
     onHoveredButtonChange,
   ])
 
@@ -378,6 +415,8 @@ export function usePlayerControlRenderers({
     renderDubbingControls,
     renderRecordButton,
     renderCastButton,
+    renderAirPlayButton,
+    renderChromecastButton,
     renderChannelChatButton,
     renderLiveTriviaButton,
     renderCatchUpButton,
@@ -389,6 +428,8 @@ export function usePlayerControlRenderers({
     renderDubbingControls,
     renderRecordButton,
     renderCastButton,
+    renderAirPlayButton,
+    renderChromecastButton,
     renderChannelChatButton,
     renderLiveTriviaButton,
     renderCatchUpButton,

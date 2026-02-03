@@ -22,7 +22,6 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './src/config/queryClient';
 import { SvgXml } from 'react-native-svg';
 import { AISearchScreen, AIRecommendationsScreen } from './src/components/beta';
-import { NativeIcon } from '@olorin/shared-icons/native';
 
 // API Configuration - Using fixed URL
 const API_BASE_URL = 'https://bayit.tv/api/v1';
@@ -200,7 +199,7 @@ const HomeScreen: React.FC<{ onNavigate: (route: string) => void }> = ({ onNavig
               ]}
             >
               <View style={styles.watchButtonContent}>
-                <NativeIcon name="play" size="md" color="#ffffff" context="tv" />
+                <Text style={{ fontSize: 24, color: '#ffffff' }}>Play</Text>
                 <Text style={styles.watchButtonText}>Watch Now</Text>
               </View>
             </Pressable>

@@ -32,6 +32,8 @@ interface PlayerControlsProps {
   renderDubbingControls?: () => React.ReactNode
   renderRecordButton?: () => React.ReactNode
   renderCastButton?: () => React.ReactNode
+  renderAirPlayButton?: () => React.ReactNode
+  renderChromecastButton?: () => React.ReactNode
   renderChannelChatButton?: () => React.ReactNode
   renderLiveTriviaButton?: () => React.ReactNode
   renderCatchUpButton?: () => React.ReactNode
@@ -63,6 +65,8 @@ export default function PlayerControls({
   renderDubbingControls,
   renderRecordButton,
   renderCastButton,
+  renderAirPlayButton,
+  renderChromecastButton,
   renderChannelChatButton,
   renderLiveTriviaButton,
   renderCatchUpButton,
@@ -96,6 +100,8 @@ export default function PlayerControls({
         onSettingsToggle={onSettingsToggle}
         renderWatchPartyButton={renderWatchPartyButton}
         renderCastButton={renderCastButton}
+        renderAirPlayButton={renderAirPlayButton}
+        renderChromecastButton={renderChromecastButton}
         renderSubtitleControls={renderSubtitleControls}
         renderLiveSubtitleControls={renderLiveSubtitleControls}
         renderLiveSplitSubtitleControls={renderLiveSplitSubtitleControls}

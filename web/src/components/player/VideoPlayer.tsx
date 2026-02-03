@@ -408,6 +408,8 @@ export default function VideoPlayer({
     renderDubbingControls,
     renderRecordButton,
     renderCastButton,
+    renderAirPlayButton,
+    renderChromecastButton,
     renderChannelChatButton,
     renderLiveTriviaButton,
     renderCatchUpButton,
@@ -581,6 +583,8 @@ export default function VideoPlayer({
         renderDubbingControls={renderDubbingControls}
         renderRecordButton={renderRecordButton}
         renderCastButton={renderCastButton}
+        renderAirPlayButton={renderAirPlayButton}
+        renderChromecastButton={renderChromecastButton}
         renderChannelChatButton={renderChannelChatButton}
         renderLiveTriviaButton={renderLiveTriviaButton}
         renderCatchUpButton={renderCatchUpButton}

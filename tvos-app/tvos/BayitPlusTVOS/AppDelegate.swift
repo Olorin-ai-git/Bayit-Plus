@@ -17,7 +17,14 @@ class AppDelegate: RCTAppDelegate {
 
   override func bundleURL() -> URL? {
     #if DEBUG
-    return URL(string: "http://127.0.0.1:8081/index.bundle?platform=ios&dev=true&minify=false")
+    // For tvOS simulator, use the host machine's IP address directly
+    // The simulator cannot resolve localhost/127.0.0.1 to the host machine
+    #if targetEnvironment(simulator)
+    return URL(string: "http://192.168.86.81:8081/index.bundle?platform=ios&dev=true&minify=false")
+    #else
+    // For physical Apple TV devices, use RCTBundleURLProvider
+    return RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
+    #endif
     #else
     return Bundle.main.url(forResource: "main", withExtension: "jsbundle")
     #endif

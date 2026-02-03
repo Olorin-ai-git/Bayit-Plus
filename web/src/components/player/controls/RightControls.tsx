@@ -32,6 +32,8 @@ interface RightControlsProps {
   onSettingsToggle?: () => void
   renderWatchPartyButton?: () => React.ReactNode
   renderCastButton?: () => React.ReactNode
+  renderAirPlayButton?: () => React.ReactNode
+  renderChromecastButton?: () => React.ReactNode
   renderSubtitleControls?: () => React.ReactNode
   renderLiveSubtitleControls?: () => React.ReactNode
   renderLiveSplitSubtitleControls?: () => React.ReactNode
@@ -62,6 +64,8 @@ export default function RightControls({
   onSettingsToggle,
   renderWatchPartyButton,
   renderCastButton,
+  renderAirPlayButton,
+  renderChromecastButton,
   renderSubtitleControls,
   renderLiveSubtitleControls,
   renderLiveSplitSubtitleControls,
@@ -87,7 +91,8 @@ export default function RightControls({
     return (
       <View style={styles.rightControls}>
         {renderWatchPartyButton && renderWatchPartyButton()}
-        {renderCastButton && renderCastButton()}
+        {renderAirPlayButton && renderAirPlayButton()}
+        {renderChromecastButton && renderChromecastButton()}
         {renderRecordButton && renderRecordButton()}
 
         {/* Glass Live AI Panel (all AI features inside) */}
@@ -116,7 +121,8 @@ export default function RightControls({
   return (
     <View style={styles.rightControls}>
       {renderWatchPartyButton && renderWatchPartyButton()}
-      {renderCastButton && renderCastButton()}
+      {renderAirPlayButton && renderAirPlayButton()}
+      {renderChromecastButton && renderChromecastButton()}
 
       {/* Chapters */}
       {!isLive && hasChapters && onChaptersPanelToggle && (

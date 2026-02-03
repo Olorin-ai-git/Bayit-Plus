@@ -45,10 +45,12 @@ const config = {
       '@olorin/shared-hooks': path.resolve(packagesRoot, 'shared-hooks/src'),
       '@olorin/shared-i18n': path.resolve(packagesRoot, 'shared-i18n/src'),
       '@olorin/shared-icons': path.resolve(packagesRoot, 'shared-icons/src'),
+      '@olorin/shared-icons/native': path.resolve(packagesRoot, 'shared-icons/src/native'),
+      '@olorin/glass-ui': path.resolve(packagesRoot, 'glass-components/src'),
       '@olorin/shared-services': path.resolve(packagesRoot, 'shared-services/src'),
       '@olorin/shared-stores': path.resolve(packagesRoot, 'shared-stores/src'),
       // @bayit/i18n - Bayit+ platform-specific i18n (8 keys)
-      '@bayit/i18n': path.resolve(packagesRoot, 'bayit-i18n/src'),
+      '@bayit/i18n': path.resolve(packagesRoot, 'bayit-i18n'),
       '@bayit/i18n/native': path.resolve(packagesRoot, 'bayit-i18n/native.ts'),
       // Shared package aliases
       '@bayit/shared': path.resolve(sharedRoot, 'components'),

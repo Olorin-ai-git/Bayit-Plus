@@ -1,15 +1,41 @@
 """
-HLS Subtitle Generator - Generate VTT files for HLS embedding
+HLS Subtitle Generator - Generate VTT files and HLS playlists for Apple TV
+
+Apple TV requires subtitles to be wrapped in HLS playlists (.m3u8) rather than
+referenced directly as .vtt files. This module generates both the VTT files
+and their corresponding HLS playlist wrappers.
 """
 
 import logging
 import os
-from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 from app.models.subtitles import SubtitleTrackDoc
 
 logger = logging.getLogger(__name__)
+
+
+def _generate_subtitle_playlist(vtt_filename: str, output_path: str) -> None:
+    """
+    Generate HLS subtitle playlist (.m3u8) that wraps a VTT file.
+
+    Apple TV requires subtitles to be delivered via HLS playlists, not raw VTT.
+
+    Args:
+        vtt_filename: Name of the VTT file (e.g., "subtitles_en.vtt")
+        output_path: Full path for the output .m3u8 file
+    """
+    content = f"""#EXTM3U
+#EXT-X-TARGETDURATION:3600
+#EXT-X-VERSION:3
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXTINF:3600.000,
+{vtt_filename}
+#EXT-X-ENDLIST
+"""
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(content)
 
 
 async def generate_vtt_files_for_content(
@@ -17,14 +43,16 @@ async def generate_vtt_files_for_content(
     output_dir: str,
 ) -> List[dict]:
     """
-    Generate VTT files for all subtitle languages for a content item.
+    Generate VTT files and HLS playlists for all subtitle languages.
+
+    Creates both .vtt files and .m3u8 playlist wrappers for Apple TV compatibility.
 
     Args:
         content_id: Content identifier
-        output_dir: Directory to write VTT files
+        output_dir: Directory to write VTT and playlist files
 
     Returns:
-        List of subtitle info dicts: [{"language": "en", "path": "/path/to/en.vtt", "label": "English"}, ...]
+        List of subtitle info dicts with playlist references for HLS manifest
     """
     try:
         # Ensure output directory exists
@@ -52,12 +80,17 @@ async def generate_vtt_files_for_content(
             # Generate VTT content
             vtt_content = _generate_vtt_from_track(track)
 
-            # Write to file
+            # Write VTT file
             vtt_filename = f"subtitles_{language}.vtt"
             vtt_path = os.path.join(output_dir, vtt_filename)
 
             with open(vtt_path, "w", encoding="utf-8") as f:
                 f.write(vtt_content)
+
+            # Generate HLS playlist wrapper for Apple TV compatibility
+            playlist_filename = f"subtitles_{language}.m3u8"
+            playlist_path = os.path.join(output_dir, playlist_filename)
+            _generate_subtitle_playlist(vtt_filename, playlist_path)
 
             # Get language label
             label = _get_language_label(language)
@@ -66,10 +99,15 @@ async def generate_vtt_files_for_content(
                 "language": language,
                 "path": vtt_path,
                 "filename": vtt_filename,
+                "playlist_filename": playlist_filename,
+                "playlist_path": playlist_path,
                 "label": label,
             })
 
-            logger.info(f"Generated VTT file for {content_id} ({language}): {vtt_path}")
+            logger.info(
+                f"Generated subtitle files for {content_id} ({language}): "
+                f"{vtt_filename}, {playlist_filename}"
+            )
 
         return subtitle_files
 
@@ -147,7 +185,9 @@ def generate_master_m3u8_with_subtitles(
     output_path: str,
 ) -> str:
     """
-    Generate HLS master manifest with subtitle references.
+    Generate HLS master manifest with subtitle playlist references.
+
+    Apple TV requires subtitles to be referenced via .m3u8 playlists, not .vtt files.
 
     Args:
         video_playlist_name: Name of the video playlist file (e.g., "playlist.m3u8")
@@ -157,32 +197,33 @@ def generate_master_m3u8_with_subtitles(
     Returns:
         Path to the generated master manifest
     """
-    # Start with HLS version and target duration
+    # Start with HLS version
     manifest = "#EXTM3U\n"
     manifest += "#EXT-X-VERSION:3\n\n"
 
-    # Add subtitle tracks
+    # Add subtitle tracks using .m3u8 playlist references (Apple TV compatible)
     # CRITICAL: Set ALL subtitles to DEFAULT=NO and AUTOSELECT=NO
     # This prevents HLS.js from auto-loading subtitles during manifest parsing
     # The app will handle subtitle selection through the UI
     if subtitle_files:
-        for idx, sub in enumerate(subtitle_files):
+        for sub in subtitle_files:
+            # Use playlist_filename (.m3u8) for Apple TV, fallback to filename for legacy
+            subtitle_uri = sub.get("playlist_filename", sub["filename"])
             manifest += (
                 f'#EXT-X-MEDIA:TYPE=SUBTITLES,GROUP-ID="subs",'
                 f'NAME="{sub["label"]}",DEFAULT=NO,'
                 f'AUTOSELECT=NO,FORCED=NO,'
                 f'LANGUAGE="{sub["language"]}",'
-                f'URI="{sub["filename"]}"\n'
+                f'CHARACTERISTICS="public.accessibility.transcribes-spoken-dialog",'
+                f'URI="{subtitle_uri}"\n'
             )
         manifest += "\n"
 
-    # Add video stream reference
-    # For now, we'll use a simple single quality stream
-    # In production, you'd have multiple quality levels here
+    # Add video stream reference with subtitle group
     if subtitle_files:
-        manifest += f'#EXT-X-STREAM-INF:BANDWIDTH=2000000,SUBTITLES="subs"\n'
+        manifest += '#EXT-X-STREAM-INF:BANDWIDTH=2000000,SUBTITLES="subs"\n'
     else:
-        manifest += f'#EXT-X-STREAM-INF:BANDWIDTH=2000000\n'
+        manifest += "#EXT-X-STREAM-INF:BANDWIDTH=2000000\n"
 
     manifest += f"{video_playlist_name}\n"
 
@@ -190,5 +231,8 @@ def generate_master_m3u8_with_subtitles(
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(manifest)
 
-    logger.info(f"Generated master manifest with {len(subtitle_files)} subtitle tracks: {output_path}")
+    logger.info(
+        f"Generated Apple TV compatible master manifest with "
+        f"{len(subtitle_files)} subtitle tracks: {output_path}"
+    )
     return output_path

@@ -1,0 +1,21 @@
+{
+  "content_id": "69651dacb0b67350385e6df1",
+  "created_at": "2026-02-03T08:07:08.069301",
+  "updated_at": "2026-02-03T08:07:08.111588",
+  "current_stage": "transcode",
+  "completed_stages": [
+    "init",
+    "download"
+  ],
+  "temp_dir": "/var/folders/f5/8hvwmyw14_981msrd_nqrb_w0000gn/T/hls_69651dacb0b67350385e6df1_5z9wsdeh",
+  "source_url": "https://storage.googleapis.com/bayit-plus-media-new/movies/Black_Site_XviD_-EVO/Black.Site.2022.BRRip.XviD.AC3-EVO.avi",
+  "local_source": "https://storage.googleapis.com/bayit-plus-media-new/movies/Black_Site_XviD_-EVO/Black.Site.2022.BRRip.XviD.AC3-EVO.avi",
+  "hls_output_dir": "/var/folders/f5/8hvwmyw14_981msrd_nqrb_w0000gn/T/hls_69651dacb0b67350385e6df1_5z9wsdeh/hls",
+  "subtitle_files": [],
+  "uploaded_files": [],
+  "total_segments": 0,
+  "uploaded_segments": 0,
+  "final_url": null,
+  "error": null,
+  "title": "Black Site"
+}

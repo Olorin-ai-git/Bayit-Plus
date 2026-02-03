@@ -13,6 +13,32 @@ import { CastSession, CastMetadata, CastType } from '../types/cast'
 const log = logger.scope('CastSession')
 const DEBUG_CAST = import.meta.env.VITE_DEBUG_CAST === 'true'
 
+// Individual session types for separate buttons
+export interface AirPlaySession {
+  isAvailable: boolean
+  isConnected: boolean
+  deviceName: string | null
+  startCast: () => void
+  stopCast: () => void
+}
+
+export interface ChromecastSession {
+  isAvailable: boolean
+  isConnecting: boolean
+  isConnected: boolean
+  deviceName: string | null
+  startCast: () => void
+  stopCast: () => void
+}
+
+export interface CastSessions {
+  // Unified session (for backwards compatibility)
+  unified: CastSession
+  // Individual sessions for separate buttons
+  airplay: AirPlaySession
+  chromecast: ChromecastSession
+}
+
 interface UseCastSessionOptions {
   videoRef: React.RefObject<HTMLVideoElement>
   metadata?: CastMetadata
@@ -30,7 +56,7 @@ export function useCastSession({
   isHLS = false,
   originalStreamUrl,
   destroyHLS,
-}: UseCastSessionOptions): CastSession {
+}: UseCastSessionOptions): CastSessions {
   // Initialize AirPlay (Safari/WebKit)
   const airplay = useAirPlayWeb({
     videoRef,
@@ -167,5 +193,41 @@ export function useCastSession({
     chromecast.syncPlaybackState,
   ])
 
-  return session
+  // Individual AirPlay session for separate button
+  const airplaySession: AirPlaySession = useMemo(() => ({
+    isAvailable: airplay.isAvailable,
+    isConnected: airplay.isConnected,
+    deviceName: airplay.deviceName,
+    startCast: airplay.startCast,
+    stopCast: airplay.stopCast,
+  }), [
+    airplay.isAvailable,
+    airplay.isConnected,
+    airplay.deviceName,
+    airplay.startCast,
+    airplay.stopCast,
+  ])
+
+  // Individual Chromecast session for separate button
+  const chromecastSession: ChromecastSession = useMemo(() => ({
+    isAvailable: chromecast.isAvailable,
+    isConnecting: chromecast.isConnecting,
+    isConnected: chromecast.isConnected,
+    deviceName: chromecast.deviceName,
+    startCast: chromecast.startCast,
+    stopCast: chromecast.stopCast,
+  }), [
+    chromecast.isAvailable,
+    chromecast.isConnecting,
+    chromecast.isConnected,
+    chromecast.deviceName,
+    chromecast.startCast,
+    chromecast.stopCast,
+  ])
+
+  return {
+    unified: session,
+    airplay: airplaySession,
+    chromecast: chromecastSession,
+  }
 }

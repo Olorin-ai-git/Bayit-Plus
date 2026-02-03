@@ -15,8 +15,14 @@ Options:
 
 import asyncio
 import argparse
+import sys
+from pathlib import Path
 from typing import Dict, Optional
 from datetime import datetime, timezone
+
+# Add backend directory to path
+backend_dir = Path(__file__).parent.parent
+sys.path.insert(0, str(backend_dir))
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
@@ -52,9 +58,12 @@ class TriviaDataMigrator:
         - If text_he exists and text matches text_he → source is Hebrew
         - Default to English (new generation default)
         """
-        if fact.text_en and fact.text == fact.text_en:
+        text_en = getattr(fact, "text_en", None)
+        text_he = getattr(fact, "text_he", None)
+
+        if text_en and fact.text == text_en:
             return "en"
-        elif fact.text_he and fact.text == fact.text_he:
+        elif text_he and fact.text == text_he:
             return "he"
         # Default to English (new trivia is generated in English)
         return "en"
@@ -68,12 +77,16 @@ class TriviaDataMigrator:
         """
         translations = {}
 
-        if fact.text_he:
-            translations["he"] = fact.text_he
-        if fact.text_en:
-            translations["en"] = fact.text_en
-        if fact.text_es:
-            translations["es"] = fact.text_es
+        text_he = getattr(fact, "text_he", None)
+        text_en = getattr(fact, "text_en", None)
+        text_es = getattr(fact, "text_es", None)
+
+        if text_he:
+            translations["he"] = text_he
+        if text_en:
+            translations["en"] = text_en
+        if text_es:
+            translations["es"] = text_es
 
         return translations
 
@@ -100,10 +113,13 @@ class TriviaDataMigrator:
         fact.translations = translations
 
         # Ensure text field contains source language text
-        if source_language == "en" and fact.text_en:
-            fact.text = fact.text_en
-        elif source_language == "he" and fact.text_he:
-            fact.text = fact.text_he
+        text_en = getattr(fact, "text_en", None)
+        text_he = getattr(fact, "text_he", None)
+
+        if source_language == "en" and text_en:
+            fact.text = text_en
+        elif source_language == "he" and text_he:
+            fact.text = text_he
 
         logger.info(
             f"Migrated fact {fact.fact_id}",
