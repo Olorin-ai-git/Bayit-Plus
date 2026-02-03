@@ -17,6 +17,7 @@ import { GlassAlert } from '../../../shared/components/ui/GlassAlert';
 import { ControlsSourceSection } from '../components/profile-controls/ControlsSourceSection';
 import { CustomControlsSelection } from '../components/profile-controls/CustomControlsSelection';
 import { EffectiveControlsGrid } from '../components/profile-controls/EffectiveControlsGrid';
+import { ScreenHeader } from '../components/profile-controls/ScreenHeader';
 import httpClient from '../services/httpClient';
 
 // Initialize API client with compatible HTTP client
@@ -119,20 +120,10 @@ export default function ProfileControlsScreenMobile() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-            accessibilityRole="button"
-            accessibilityLabel={t('common.back', 'Back')}
-            accessibilityHint={t('accessibility.navigateBack', 'Navigate back to profiles list')}
-          >
-            <Ionicons name="arrow-back" size={24} color="#ffffff" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>
-            {t('profileControls.title', 'Profile Family Controls')}
-          </Text>
-        </View>
+        <ScreenHeader
+          title={t('profileControls.title', 'Profile Family Controls')}
+          onBack={() => navigation.goBack()}
+        />
 
         <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
           {/* Error Display */}
@@ -184,42 +175,10 @@ export default function ProfileControlsScreenMobile() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#1a1a2e',
-  },
-  container: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    paddingTop: 60,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
-  },
-  backButton: {
-    padding: 12,
-    marginRight: 12,
-    minWidth: 44,
-    minHeight: 44,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#ffffff',
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: 16,
-  },
+  safeArea: { flex: 1, backgroundColor: '#1a1a2e' },
+  container: { flex: 1 },
+  content: { flex: 1 },
+  contentContainer: { padding: 16 },
   errorContainer: {
     backgroundColor: 'rgba(239, 68, 68, 0.2)',
     borderRadius: 16,
@@ -228,13 +187,6 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
   },
-  errorText: {
-    color: '#fecaca',
-    marginBottom: 8,
-  },
-  dismissButton: {
-    color: '#fca5a5',
-    textDecorationLine: 'underline',
-    fontSize: 14,
-  },
+  errorText: { color: '#fecaca', marginBottom: 8 },
+  dismissButton: { color: '#fca5a5', textDecorationLine: 'underline', fontSize: 14 },
 });
