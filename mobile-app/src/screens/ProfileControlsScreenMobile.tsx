@@ -13,7 +13,6 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  Alert,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useProfileControlsStore } from '../../../shared/stores/profileControlsStore';
 import { setApiClient as setProfileControlsApiClient } from '../../../shared/services/profileControlsApi';
 import { useFamilyControlsStore } from '../../../shared/stores/familyControlsStore';
+import { GlassAlert } from '../../../shared/components/ui/GlassAlert';
 import api from '../services/api';
 
 // Initialize API client
@@ -86,7 +86,7 @@ export default function ProfileControlsScreenMobile() {
         } else if (availableControls && availableControls.length > 0) {
           await setCustomControls(profileId, availableControls[0].id);
         } else {
-          Alert.alert(
+          GlassAlert.error(
             t('common.error', 'Error'),
             t('profileControls.errors.noControlsAvailable', 'No family controls available.')
           );
@@ -98,7 +98,7 @@ export default function ProfileControlsScreenMobile() {
 
       await getControlsSource(profileId);
     } catch (error: any) {
-      Alert.alert(t('common.error', 'Error'), error.message);
+      GlassAlert.error(t('common.error', 'Error'), error.message);
     }
   };
 
@@ -112,7 +112,7 @@ export default function ProfileControlsScreenMobile() {
         await setCustomControls(profileId, controlsId);
         await getControlsSource(profileId);
       } catch (error: any) {
-        Alert.alert(t('common.error', 'Error'), error.message);
+        GlassAlert.error(t('common.error', 'Error'), error.message);
       }
     }
   };
