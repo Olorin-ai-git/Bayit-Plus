@@ -647,7 +647,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.xl,
     overflow: 'hidden',
     backgroundColor: 'rgba(250, 204, 21, 0.1)',
-    height: '220px',
+    height: '280px',
   },
   contentCardHovered: {
     transform: [{ scale: 1.05 }],
