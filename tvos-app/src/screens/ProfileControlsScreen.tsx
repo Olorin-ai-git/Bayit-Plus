@@ -22,10 +22,10 @@ import { useProfileControlsStore } from '../../../shared/stores/profileControlsS
 import { setApiClient as setProfileControlsApiClient } from '../../../shared/services/profileControlsApi';
 import { useFamilyControlsStore } from '../../../shared/stores/familyControlsStore';
 import { GlassAlert } from '../../../shared/components/ui/GlassAlert';
-import api from '../services/api';
+import httpClient from '../services/httpClient';
 
-// Initialize API client
-setProfileControlsApiClient(api);
+// Initialize API client with compatible HTTP client
+setProfileControlsApiClient(httpClient);
 
 export default function ProfileControlsScreen() {
   const { t } = useTranslation();
@@ -128,6 +128,14 @@ export default function ProfileControlsScreen() {
           onPress={() => navigation.goBack()}
           style={styles.backButton}
           hasTVPreferredFocus
+          tvParallaxProperties={{
+            enabled: true,
+            magnification: 1.1,
+            pressMagnification: 1.0,
+          }}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.back', 'Back')}
+          accessibilityHint={t('accessibility.navigateBack', 'Navigate back to profiles list')}
         >
           <Ionicons name="arrow-back" size={32} color="#ffffff" />
           <Text style={styles.backButtonText}>{t('common.back', 'Back')}</Text>
@@ -167,6 +175,15 @@ export default function ProfileControlsScreen() {
             style={[styles.radioOption, isInheriting && styles.radioOptionSelected]}
             onPress={handleToggleInheritance}
             disabled={isLoading}
+            tvParallaxProperties={{
+              enabled: true,
+              magnification: 1.05,
+              pressMagnification: 0.98,
+            }}
+            accessibilityRole="radio"
+            accessibilityLabel={t('profileControls.sourceSection.inheritHousehold', 'Inherit from Household')}
+            accessibilityHint={t('profileControls.sourceSection.inheritHouseholdDesc', 'Use household-wide family controls')}
+            accessibilityState={{ checked: isInheriting }}
           >
             <View style={styles.radioCircle}>
               {isInheriting && <View style={styles.radioCircleSelected} />}
@@ -189,6 +206,15 @@ export default function ProfileControlsScreen() {
             style={[styles.radioOption, !isInheriting && styles.radioOptionSelected]}
             onPress={handleToggleInheritance}
             disabled={isLoading}
+            tvParallaxProperties={{
+              enabled: true,
+              magnification: 1.05,
+              pressMagnification: 0.98,
+            }}
+            accessibilityRole="radio"
+            accessibilityLabel={t('profileControls.sourceSection.customControls', 'Custom Controls')}
+            accessibilityHint={t('profileControls.sourceSection.customControlsDesc', 'Use profile-specific family controls')}
+            accessibilityState={{ checked: !isInheriting }}
           >
             <View style={styles.radioCircle}>
               {!isInheriting && <View style={styles.radioCircleSelected} />}
