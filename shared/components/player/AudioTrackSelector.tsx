@@ -22,6 +22,9 @@ export interface AudioTrack {
   channels?: string;
   bitrate?: number;
   isDefault?: boolean;
+  // AI-generated audio variant metadata
+  variantType?: 'heblish' | 'slang' | 'grammar_flip' | 'engrew' | 'original';
+  variantDisplayName?: string;
 }
 
 export interface AudioTrackSelectorProps {
@@ -103,8 +106,16 @@ const AudioTrackOption: React.FC<{
               <Text className={`text-lg font-semibold text-white ${isTV ? 'text-xl' : 'text-lg'}`} style={{ textAlign }}>
                 {track.language}
               </Text>
+              {track.variantDisplayName && (
+                <Text
+                  className={`text-xs font-semibold px-2 py-0.5 rounded ${isTV ? 'text-sm' : 'text-xs'}`}
+                  style={{ backgroundColor: colors.primary, color: colors.white }}
+                >
+                  {track.variantDisplayName}
+                </Text>
+              )}
               {isSelected && <NativeIcon name="check" size={isTV ? 20 : 16} color={colors.success.DEFAULT} />}
-              {track.isDefault && <Text className={`text-white/70 ${isTV ? 'text-sm' : 'text-xs'}`}>(Default)</Text>}
+              {track.isDefault && !track.variantDisplayName && <Text className={`text-white/70 ${isTV ? 'text-sm' : 'text-xs'}`}>(Default)</Text>}
             </View>
             {track.languageCode && (
               <Text className={`font-semibold text-white/70 bg-white/10 px-2 py-1 rounded ${isTV ? 'text-sm' : 'text-xs'}`}>

@@ -78,7 +78,8 @@
       "triviaAnalytics": "டிரிவியா பகுப்பாய்வு",
       "liveAiDataFlow": "நேரடி AI தரவு ஓட்டம்",
       "costDashboard": "செலவு டாஷ்போர்டு",
-      "systemHealth": "கணினி ஆரோக்கியம்"
+      "systemHealth": "கணினி ஆரோக்கியம்",
+      "emailTemplates": "மின்னஞ்சல் வார்ப்புருக்கள்"
     },
     "content": {
       "noEpisodes": "எபிசோட்கள் இல்லை",

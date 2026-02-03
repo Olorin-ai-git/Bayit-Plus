@@ -63,7 +63,8 @@
       "triviaAnalytics": "问答分析",
       "liveAiDataFlow": "实时AI数据流",
       "costDashboard": "成本仪表板",
-      "systemHealth": "系统健康"
+      "systemHealth": "系统健康",
+      "emailTemplates": "邮件模板"
     },
     "dashboard": {
       "subtitle": "系统概览",

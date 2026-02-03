@@ -17,24 +17,58 @@ from app.services.ai_text_transform_service import AITextTransformService
 
 logger = get_logger(__name__)
 
-# Heblish transformation prompt
-HEBLISH_PROMPT = """Act as a bilingual cultural mediator. Rewrite the following text into 'Heblish'—a synthesis of English and Hebrew.
+# Heblish transformation prompt - MAXIMUM HEBREW IMMERSION
+HEBLISH_PROMPT = """Act as a Hebrew immersion specialist. Convert the following text to COMPREHENSIVE 'Heblish'—English grammar with MAXIMUM Hebrew vocabulary transliterated to English letters.
 
-**The Rules:**
-1. **Core Grammar:** Keep the sentence structure primarily in English.
-2. **Vocabulary Injection:** Replace high-frequency or culturally specific English nouns, adjectives, and greetings with their Hebrew equivalents. Common replacements:
-   - Greetings: hello/hi -> shalom/ahlan, goodbye -> lehitraot, thanks -> toda
-   - People: friends -> chaverim, buddy/dude -> achi, guys -> chevre
-   - Expressions: great/awesome -> sababa/achla, cool -> magniv, okay/fine -> beseder
-   - Common words: let's go -> yalla, really -> be'emet, no problem -> ein ba'aya
-3. **Transliteration:** Use English characters for the Hebrew words (Phonetic Transliteration).
-4. **Contextual Preservation:** Ensure that even if the user doesn't know the Hebrew word, the context of the English sentence makes the meaning clear.
-5. **Tone:** Match the energy of an Israeli 'Sabra'—direct, warm, and a bit informal.
-6. **Consistency:** For the same English word, use the same Hebrew replacement throughout.
+**CRITICAL: Transliterate AS MANY words as possible to Hebrew while keeping English sentence structure.**
+
+**Priority Transliteration Categories (convert ALL of these):**
+
+1. **Greetings & Expressions:**
+   hello/hi → shalom/ahlan, goodbye → lehitraot, thanks → toda, please → bevakasha
+   excuse me → slicha, sorry → mitztaer, wow → walla, yes → ken, no → lo
+
+2. **People & Relationships:**
+   friends → chaverim, friend → chaver/chavera, buddy/dude → achi, guys → chevre
+   people → anashim, person → ben adam, family → mishpacha, mother → ima, father → aba
+   brother → ach, sister → achot, children → yeladim, child → yeled/yalda, baby → tinok
+
+3. **Common Verbs (use Hebrew infinitives or conjugated forms):**
+   go → lelekhet/holech, come → lavo/ba, see → lirot/ro'eh, want → rotzeh, need → tzarich
+   know → yode'a, think → choshev, say → omer, do/make → oseh, give → noten
+   take → loke'ach, eat → ochel, drink → shoteh, speak → medaber, hear → shome'a
+
+4. **Adjectives & Descriptions:**
+   good/great → tov/sababa/achla, bad → ra, big → gadol, small → katan
+   beautiful → yafe/yafa, nice → nechmad, new → chadash, old → yashan
+   happy → same'ach, sad → atzuv, tired → ayef, hungry → ra'ev, thirsty → tzame
+
+5. **Common Nouns:**
+   house → bayit, home → bayit, room → cheder, door → delet, window → chalon
+   car → mechonit, street → rechov, city → ir, country → eretz, world → olam
+   food → ochel, water → mayim, bread → lechem, coffee → kafe, tea → te
+   day → yom, night → layla, morning → boker, evening → erev, time → zman
+   book → sefer, movie → seret, music → musica, work → avoda, school → beit sefer
+
+6. **Adverbs & Modifiers:**
+   very → me'od, really → mamash/be'emet, now → achshav, today → hayom
+   yesterday → etmol, tomorrow → machar, always → tamid, never → af pa'am
+   here → kan, there → sham, maybe → ulai, why → lama, how → eich, what → ma
+
+7. **Expressions & Idioms:**
+   let's go → yalla, okay/fine → beseder, cool → magniv, no problem → ein ba'aya
+   exactly → bediyuk, of course → bevadai, wait → rega, enough → maspik
+
+**Rules:**
+- Keep English sentence structure (Subject-Verb-Object)
+- Transliterate to English letters (phonetic)
+- Use Hebrew words even if less common in conversation
+- Aim for 60-80% Hebrew vocabulary while maintaining clarity
+- If unsure, transliterate it anyway - immersion is the goal
 
 **Text to process:** {text}
 
-**Output only the Heblish text, nothing else.**"""
+**Output only the maximum-Hebrew Heblish text, nothing else.**"""
 
 
 class HeblishService(AITextTransformService[str]):
@@ -62,28 +96,37 @@ class HeblishService(AITextTransformService[str]):
         return response.content[0].text.strip()
 
     def _create_batch_prompt(self, texts: List[str]) -> str:
-        """Create batch prompt for Heblish transformation"""
+        """Create batch prompt for COMPREHENSIVE Heblish transformation"""
         texts_formatted = "\n---\n".join(
             [f"[{i+1}] {t}" for i, t in enumerate(texts)]
         )
 
-        return f"""Act as a bilingual cultural mediator. Convert each English text below to 'Heblish'—English with Hebrew word injections.
+        return f"""Act as Hebrew immersion specialist. Convert each text to COMPREHENSIVE 'Heblish'—English grammar with MAXIMUM Hebrew vocabulary.
+
+**CRITICAL: Transliterate AS MANY words as possible to Hebrew using English letters.**
+
+**Quick Reference (transliterate these categories):**
+- Greetings: hello→shalom, goodbye→lehitraot, thanks→toda, please→bevakasha
+- People: friends→chaverim, people→anashim, family→mishpacha, mother→ima, father→aba
+- Verbs: go→lelekhet/holech, come→lavo/ba, see→lirot, want→rotzeh, know→yode'a, think→choshev
+- Adjectives: good→tov/sababa, bad→ra, big→gadol, small→katan, beautiful→yafe, nice→nechmad
+- Nouns: house→bayit, car→mechonit, food→ochel, water→mayim, day→yom, night→layla
+- Adverbs: very→me'od, really→mamash, now→achshav, today→hayom, always→tamid
+- Expressions: let's go→yalla, okay→beseder, cool→magniv, no problem→ein ba'aya
 
 **Rules:**
-1. Keep sentence structure in English
-2. Replace greetings, common nouns, and expressions with Hebrew equivalents (transliterated)
-   - hello/hi -> shalom/ahlan, friends -> chaverim, great -> sababa, okay -> beseder
-   - let's go -> yalla, thanks -> toda, cool -> magniv, guys -> chevre
-3. Use English characters for Hebrew words (phonetic transliteration)
-4. Ensure meaning is clear from English context
-5. Keep the "Sabra" tone—direct, warm, informal
+1. Keep English sentence structure (Subject-Verb-Object)
+2. Transliterate to English letters (phonetic)
+3. Aim for 60-80% Hebrew vocabulary
+4. Ensure meaning clear from context
+5. Consistency: same English word → same Hebrew throughout
 
 **Texts:**
 {texts_formatted}
 
 **Return in exact format:**
-[1] Heblish text for first
-[2] Heblish text for second
+[1] Maximum-Hebrew Heblish for first
+[2] Maximum-Hebrew Heblish for second
 etc."""
 
     def _parse_batch_response(

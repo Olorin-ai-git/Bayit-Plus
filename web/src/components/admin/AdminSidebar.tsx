@@ -90,6 +90,7 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       { key: 'marketing-dashboard', labelKey: 'admin.nav.marketingDashboard', route: '/admin/marketing' },
       { key: 'email-campaigns', labelKey: 'admin.nav.emailCampaigns', route: '/admin/emails' },
+      { key: 'email-templates', labelKey: 'admin.nav.emailTemplates', route: '/admin/email-templates' },
       { key: 'push-notifications', labelKey: 'admin.nav.pushNotifications', route: '/admin/push' },
     ],
   },

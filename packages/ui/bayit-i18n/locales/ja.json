@@ -585,7 +585,8 @@
       "triviaAnalytics": "トリビア分析",
       "liveAiDataFlow": "ライブAIデータフロー",
       "costDashboard": "コストダッシュボード",
-      "systemHealth": "システムヘルス"
+      "systemHealth": "システムヘルス",
+      "emailTemplates": "メールテンプレート"
     },
     "diagnostics": {
       "title": "システム診断",

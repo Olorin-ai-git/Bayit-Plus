@@ -62,7 +62,8 @@
       "triviaAnalytics": "Analisi Trivia",
       "liveAiDataFlow": "Flusso dati IA in tempo reale",
       "costDashboard": "Dashboard costi",
-      "systemHealth": "Salute del sistema"
+      "systemHealth": "Salute del sistema",
+      "emailTemplates": "Modelli Email"
     },
     "dashboard": {
       "title": "Dashboard",

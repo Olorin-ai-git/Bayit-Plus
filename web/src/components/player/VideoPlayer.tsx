@@ -25,6 +25,7 @@ import {
   usePlayerControlRenderers,
   useCastSession,
   usePlaybackSession,
+  useAudioTracks,
 } from './hooks'
 import { SplitLanguages } from '@/types/subtitle'
 import { useChannelChatStore } from '@/stores/channelChatSlice'
@@ -82,6 +83,19 @@ export default function VideoPlayer({
     contentDuration,
     savedPosition,
     onRestartComplete,
+  })
+
+  // Audio tracks for VOD content (AI-generated variants)
+  const {
+    audioTracks,
+    loading: audioTracksLoading,
+    selectedTrackId: selectedAudioTrackId,
+    handleTrackChange: handleAudioTrackChange,
+  } = useAudioTracks({
+    contentId: contentId || '',
+    contentType,
+    hlsInstance: (videoRef.current as any)?._hls || null,
+    enabled: !isLive && contentType === 'vod',
   })
 
   const {

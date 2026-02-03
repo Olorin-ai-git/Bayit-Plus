@@ -296,48 +296,77 @@ export default function EmailTemplatesPage() {
             {t('admin.emailTemplates.previewTitle', 'Template Preview')}: {selectedTemplate?.display_name}
           </Text>
 
-          <ScrollView style={styles.variablesForm}>
-            {selectedTemplate?.required_variables.map((variable) => (
-              <View key={variable} style={styles.variableField}>
-                <Text style={styles.variableLabel}>{variable}:</Text>
-                <GlassInput
-                  value={previewVariables[variable] || ''}
-                  onChangeText={(value) =>
-                    setPreviewVariables((prev) => ({ ...prev, [variable]: value }))
-                  }
-                  placeholder={`Enter ${variable}`}
-                  style={styles.variableInput}
-                />
-              </View>
-            ))}
-          </ScrollView>
+          <Text style={styles.sectionLabel}>Template Variables</Text>
+          <View style={styles.variablesSection}>
+            <ScrollView style={styles.variablesForm} contentContainerStyle={styles.variablesFormContent}>
+              {selectedTemplate?.required_variables.map((variable) => (
+                <View key={variable} style={styles.variableField}>
+                  <Text style={styles.variableLabel}>{variable}:</Text>
+                  <GlassInput
+                    value={previewVariables[variable] || ''}
+                    onChangeText={(value) =>
+                      setPreviewVariables((prev) => ({ ...prev, [variable]: value }))
+                    }
+                    placeholder={`Enter ${variable}`}
+                    style={styles.variableInput}
+                  />
+                </View>
+              ))}
+            </ScrollView>
+            <View style={styles.updateButtonContainer}>
+              <GlassButton
+                title={previewLoading
+                  ? t('admin.emailTemplates.updating', 'Updating...')
+                  : t('admin.emailTemplates.updatePreview', 'Update Preview')}
+                variant="info"
+                size="sm"
+                onPress={handleUpdatePreview}
+                disabled={previewLoading}
+                textStyle={styles.buttonText}
+              />
+            </View>
+          </View>
 
-          <GlassButton variant="secondary" size="sm" onPress={handleUpdatePreview} disabled={previewLoading}>
-            {previewLoading
-              ? t('admin.emailTemplates.updating', 'Updating...')
-              : t('admin.emailTemplates.updatePreview', 'Update Preview')}
-          </GlassButton>
+          <View style={styles.divider} />
 
+          <Text style={styles.sectionLabel}>Email Preview</Text>
           <View style={styles.previewContainer}>
             {previewLoading ? (
-              <GlassLoadingSpinner size="medium" />
+              <View style={styles.previewLoadingContainer}>
+                <GlassLoadingSpinner size="medium" />
+                <Text style={styles.previewLoadingText}>Rendering preview...</Text>
+              </View>
             ) : (
-              <iframe
-                srcDoc={previewHtml}
-                sandbox=""
-                title="Email Template Preview"
-                style={{ width: '100%', height: '100%', border: 'none' }}
-              />
+              <View style={styles.previewWrapper}>
+                <iframe
+                  srcDoc={previewHtml}
+                  sandbox=""
+                  title="Email Template Preview"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    border: 'none',
+                    backgroundColor: '#f5f5f5',
+                    borderRadius: '8px'
+                  }}
+                />
+              </View>
             )}
           </View>
 
           <View style={styles.modalActions}>
-            <GlassButton variant="secondary" onPress={() => setPreviewModalVisible(false)}>
-              {t('common.close', 'Close')}
-            </GlassButton>
-            <GlassButton variant="primary" onPress={() => setSendModalVisible(true)}>
-              {t('admin.emailTemplates.sendTest', 'Send Test')}
-            </GlassButton>
+            <GlassButton
+              title={t('common.close', 'Close')}
+              variant="ghost"
+              onPress={() => setPreviewModalVisible(false)}
+              textStyle={styles.buttonText}
+            />
+            <GlassButton
+              title={t('admin.emailTemplates.sendTest', 'Send Test')}
+              variant="success"
+              onPress={() => setSendModalVisible(true)}
+              textStyle={styles.buttonText}
+            />
           </View>
         </View>
       </GlassModal>
@@ -359,12 +388,19 @@ export default function EmailTemplatesPage() {
             autoCapitalize="none"
           />
           <View style={styles.modalActions}>
-            <GlassButton variant="secondary" onPress={() => setSendModalVisible(false)}>
-              {t('common.cancel', 'Cancel')}
-            </GlassButton>
-            <GlassButton variant="primary" onPress={handleSendTest} disabled={sendingTest || !sendTestEmail}>
-              {sendingTest ? t('common.sending', 'Sending...') : t('admin.emailTemplates.send', 'Send')}
-            </GlassButton>
+            <GlassButton
+              title={t('common.cancel', 'Cancel')}
+              variant="ghost"
+              onPress={() => setSendModalVisible(false)}
+              textStyle={styles.buttonText}
+            />
+            <GlassButton
+              title={sendingTest ? t('common.sending', 'Sending...') : t('admin.emailTemplates.send', 'Send')}
+              variant="success"
+              onPress={handleSendTest}
+              disabled={sendingTest || !sendTestEmail}
+              textStyle={styles.buttonText}
+            />
           </View>
         </View>
       </GlassModal>
@@ -401,18 +437,18 @@ export default function EmailTemplatesPage() {
           />
           <View style={styles.modalActions}>
             <GlassButton
-              variant="secondary"
+              title={t('common.cancel', 'Cancel')}
+              variant="ghost"
               onPress={() => setInvitationModalVisible(false)}
-            >
-              {t('common.cancel', 'Cancel')}
-            </GlassButton>
+              textStyle={styles.buttonText}
+            />
             <GlassButton
-              variant="primary"
+              title={sendingInvitation ? t('common.sending', 'Sending...') : t('admin.emailTemplates.send', 'Send')}
+              variant="success"
               onPress={handleSendInvitation}
               disabled={sendingInvitation || !invitationData.email}
-            >
-              {sendingInvitation ? t('common.sending', 'Sending...') : t('admin.emailTemplates.send', 'Send')}
-            </GlassButton>
+              textStyle={styles.buttonText}
+            />
           </View>
         </View>
       </GlassModal>
@@ -503,9 +539,25 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.9)',
     marginBottom: spacing.lg,
   },
-  variablesForm: {
-    maxHeight: 200,
+  sectionLabel: {
+    fontSize: fontSize.md,
+    fontWeight: '600',
+    color: 'rgba(255, 255, 255, 0.8)',
     marginBottom: spacing.md,
+    marginTop: spacing.sm,
+  },
+  variablesSection: {
+    backgroundColor: 'rgba(255, 255, 255, 0.03)',
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  variablesForm: {
+    maxHeight: 180,
+  },
+  variablesFormContent: {
+    paddingBottom: spacing.sm,
   },
   variableField: {
     marginBottom: spacing.md,
@@ -519,18 +571,55 @@ const styles = StyleSheet.create({
   variableInput: {
     width: '100%',
   },
+  updateButtonContainer: {
+    marginTop: spacing.md,
+    alignItems: 'flex-end',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    marginVertical: spacing.lg,
+  },
   previewContainer: {
     width: '100%',
-    height: 500,
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    height: 400,
+    backgroundColor: 'rgba(30, 30, 35, 0.6)',
     borderRadius: borderRadius.md,
     overflow: 'hidden',
-    marginVertical: spacing.lg,
+    marginBottom: spacing.lg,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    padding: spacing.md,
+  },
+  previewWrapper: {
+    flex: 1,
+    borderRadius: borderRadius.sm,
+    overflow: 'hidden',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+  },
+  previewLoadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  previewLoadingText: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: fontSize.sm,
+    fontWeight: '500',
   },
   modalActions: {
     flexDirection: 'row',
     gap: spacing.md,
     justifyContent: 'flex-end',
+    marginTop: spacing.md,
+  },
+  buttonText: {
+    color: '#ffffff',
+    fontWeight: '700',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   formInput: {
     marginBottom: spacing.md,

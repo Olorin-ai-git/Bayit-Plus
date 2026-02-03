@@ -62,7 +62,8 @@
       "triviaAnalytics": "Analyse Trivia",
       "liveAiDataFlow": "Flux de données IA en direct",
       "costDashboard": "Tableau des coûts",
-      "systemHealth": "Santé du système"
+      "systemHealth": "Santé du système",
+      "emailTemplates": "Modèles d'Email"
     },
     "dashboard": {
       "title": "Tableau de bord",

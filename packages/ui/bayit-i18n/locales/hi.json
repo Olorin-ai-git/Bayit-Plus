@@ -78,7 +78,8 @@
       "triviaAnalytics": "ट्रिविया विश्लेषण",
       "liveAiDataFlow": "लाइव AI डेटा फ़्लो",
       "costDashboard": "लागत डैशबोर्ड",
-      "systemHealth": "सिस्टम स्वास्थ्य"
+      "systemHealth": "सिस्टम स्वास्थ्य",
+      "emailTemplates": "ईमेल टेम्पलेट"
     },
     "content": {
       "noEpisodes": "कोई एपिसोड नहीं",

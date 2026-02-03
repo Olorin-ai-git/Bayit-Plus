@@ -322,7 +322,7 @@ export const ADMIN_PAGE_CONFIG: Record<string, AdminPageConfig> = {
     category: 'financial',
   },
 
-  // Marketing & Communications (4 pages)
+  // Marketing & Communications (5 pages)
   notifications: {
     icon: Bell,
     iconColor: colors.secondary.DEFAULT,
@@ -330,6 +330,12 @@ export const ADMIN_PAGE_CONFIG: Record<string, AdminPageConfig> = {
     category: 'marketing',
   },
   'email-campaigns': {
+    icon: Mail,
+    iconColor: colors.secondary.DEFAULT,
+    iconBackgroundColor: `${colors.secondary.DEFAULT}26`,
+    category: 'marketing',
+  },
+  'email-templates': {
     icon: Mail,
     iconColor: colors.secondary.DEFAULT,
     iconBackgroundColor: `${colors.secondary.DEFAULT}26`,

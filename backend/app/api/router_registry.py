@@ -80,6 +80,8 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import subtitles_cues, subtitles_tracks, subtitles_translation
     # VTT streaming endpoint for native tracks (AirPlay/Chromecast)
     from app.api.v1.endpoints import subtitles as subtitles_vtt
+    # VOD Audio Tracks routes (AI-generated audio dubbing)
+    from app.api.routes import vod_audio_tracks
     # Beta 500 routes
     from app.api.routes.beta import signup, credits, sessions, status
 
@@ -147,6 +149,11 @@ def register_all_routers(app: FastAPI) -> None:
         subtitle_preferences.router,
         prefix=f"{prefix}/subtitles",
         tags=["subtitle-preferences"],
+    )
+    app.include_router(
+        vod_audio_tracks.router,
+        prefix=prefix,
+        tags=["vod-audio-tracks"],
     )
     app.include_router(trending.router, prefix=f"{prefix}/trending", tags=["trending"])
     app.include_router(

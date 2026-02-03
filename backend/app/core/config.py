@@ -1214,6 +1214,16 @@ class Settings(BaseSettings):
         default="", description="ElevenLabs voice ID for English (male)"
     )
 
+    # VOD Audio Generation Configuration
+    VOD_AUDIO_TEMP_DIR: str = Field(
+        default="/tmp/vod-audio",
+        description="Temporary directory for VOD audio generation processing",
+    )
+    AUDIO_GENERATION_MAX_CONCURRENT_JOBS: int = Field(
+        default=5,
+        description="Maximum number of concurrent audio generation jobs",
+    )
+
     # Jewish News Aggregation Configuration
     JEWISH_NEWS_CACHE_TTL_MINUTES: int = 15
     JEWISH_NEWS_SYNC_INTERVAL_MINUTES: int = 30
