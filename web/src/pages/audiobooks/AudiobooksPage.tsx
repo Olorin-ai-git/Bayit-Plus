@@ -14,8 +14,8 @@ import {
   GlassView,
   GlassInput,
   GlassPageHeader,
+  GlassEmptyState,
 } from '@bayit/shared/ui'
-import { LoadingState, EmptyState } from '@bayit/shared/components/states'
 import logger from '@/utils/logger'
 import PageLoading from '@/components/common/PageLoading'
 import type { Audiobook, AudiobookFilters } from '@/types/audiobook'
@@ -165,10 +165,10 @@ export default function AudiobooksPage() {
 
         {/* Error State */}
         {error && (
-          <EmptyState
+          <GlassEmptyState
+            variant="error"
             title={t('common.error', 'Error')}
-            message={error}
-            isRTL={isRTL}
+            description={error}
           />
         )}
 

@@ -7,10 +7,9 @@ import { useProfileStore } from '@/stores/profileStore';
 import { youngstersService } from '../services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
-import { GlassCard, GlassButton, GlassCategoryPill, GlassModal } from '@bayit/shared/ui';
+import { GlassCard, GlassButton, GlassCategoryPill, GlassModal, GlassEmptyState } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { useDirection } from '@/hooks/useDirection';
-import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 
@@ -474,7 +473,8 @@ export default function YoungstersPage() {
             )}
           />
         ) : (
-          <EmptyState
+          <GlassEmptyState
+            variant="no-content"
             icon={<Target size={48} color="#a855f7" />}
             title={t('youngsters.noContent')}
             description={t('youngsters.tryAnotherCategory')}

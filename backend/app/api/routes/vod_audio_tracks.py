@@ -356,8 +356,12 @@ async def get_hls_manifest_with_audio(content_id: str):
         ])
 
     # Add original audio (default)
-    # Assuming original HLS playlist is at content.hls_playlist_url
-    original_playlist_url = getattr(content, "hls_playlist_url", None)
+    # Try multiple fields for HLS playlist URL
+    original_playlist_url = (
+        getattr(content, "stream_url", None)
+        or getattr(content, "hls_playlist_url", None)
+        or getattr(content, "hls_master_url", None)
+    )
     if original_playlist_url:
         manifest_lines.extend([
             f'#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio",NAME="Original",'

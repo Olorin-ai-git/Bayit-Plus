@@ -28,6 +28,7 @@ interface TriviaOverlayProps {
   isRTL?: boolean
   accessibilityLabel?: string
   isTTSPlaying?: boolean
+  currentSubtitleLang?: string | null  // NEW: Current subtitle language for trivia display
 }
 
 // useNativeDriver is not supported on web
@@ -42,6 +43,7 @@ export function TriviaOverlay({
   isRTL = false,
   accessibilityLabel,
   isTTSPlaying = false,
+  currentSubtitleLang,
 }: TriviaOverlayProps) {
   const { t, i18n } = useTranslation()
   const insets = useSafeAreaInsets()
@@ -143,7 +145,13 @@ export function TriviaOverlay({
         onMouseLeave: onHoverEnd,
       } : {})}
     >
-      <TriviaCard fact={fact} onDismiss={onDismiss} onFollowUp={onFollowUp} isRTL={isRTL} />
+      <TriviaCard
+        fact={fact}
+        onDismiss={onDismiss}
+        onFollowUp={onFollowUp}
+        isRTL={isRTL}
+        currentSubtitleLang={currentSubtitleLang || undefined}
+      />
     </Animated.View>
   )
 }

@@ -9,7 +9,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, Pressable, useWindowDimensions, ActivityIndicator, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Plus, Check, Tv, Globe, Podcast, Radio, Film, RefreshCw, Eye, EyeOff, RotateCcw, Trash2 } from 'lucide-react';
+import { Plus, Check, Tv, Globe, Mic, Radio, Film, RefreshCw, Eye, EyeOff, RotateCcw, Trash2 } from 'lucide-react';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { adminWidgetsService } from '@/services/adminApi';
@@ -47,17 +47,17 @@ function SystemWidgetCard({
     switch (contentType) {
       case 'live_channel':
       case 'live':
-        return <Tv size={14} color={colors.primary} />;
+        return <Tv size={14} color={colors.primary.DEFAULT} />;
       case 'iframe':
-        return <Globe size={14} color={colors.accent} />;
+        return <Globe size={14} color={colors.secondary.DEFAULT} />;
       case 'podcast':
-        return <Podcast size={14} color={colors.success} />;
+        return <Mic size={14} color={colors.success.DEFAULT} />;
       case 'radio':
-        return <Radio size={14} color={colors.warning} />;
+        return <Radio size={14} color={colors.warning.DEFAULT} />;
       case 'vod':
-        return <Film size={14} color={colors.info} />;
+        return <Film size={14} color={colors.info.DEFAULT} />;
       case 'custom':
-        return <Tv size={14} color={colors.info} />;
+        return <Tv size={14} color={colors.info.DEFAULT} />;
       default:
         return <Tv size={14} color={colors.textMuted} />;
     }
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
   },
   badgeText: {
     fontSize: 11,
-    color: colors.primaryLight,
+    color: colors.primary[300],
     textTransform: 'capitalize',
   },
   resetButton: {

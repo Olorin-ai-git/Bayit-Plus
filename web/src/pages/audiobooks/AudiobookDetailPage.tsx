@@ -12,8 +12,7 @@ import { ArrowLeft, Heart, Share2 } from 'lucide-react'
 import { NativeIcon } from '@olorin/shared-icons/native'
 import audiobookService from '@/services/audiobookService'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
-import { GlassView, GlassButton } from '@bayit/shared/ui'
-import { LoadingState, EmptyState } from '@bayit/shared/components/states'
+import { GlassView, GlassButton, GlassEmptyState } from '@bayit/shared/ui'
 import logger from '@/utils/logger'
 import type { Audiobook } from '@/types/audiobook'
 import AudiobookMetadataCard from './AudiobookMetadataCard'
@@ -75,7 +74,7 @@ export default function AudiobookDetailPage() {
   if (error || !audiobook) {
     return (
       <GlassView style={styles.container}>
-        <EmptyState title={t('common.error', 'Error')} message={error || t('audiobooks.notFound', 'Audiobook not found')} isRTL={isRTL} />
+        <GlassEmptyState variant="error" title={t('common.error', 'Error')} description={error || t('audiobooks.notFound', 'Audiobook not found')} />
       </GlassView>
     )
   }

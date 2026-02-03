@@ -1,7 +1,7 @@
 """Trivia Models - facts and fun facts for content during video playback."""
 
 from datetime import datetime
-from typing import List, Optional
+from typing import Dict, List, Literal, Optional
 from uuid import uuid4
 
 from beanie import Document
@@ -10,11 +10,41 @@ from pymongo import ReturnDocument
 
 
 class TriviaFactModel(BaseModel):
-    """Individual trivia fact with optional multilingual support and chain linking."""
+    """Individual trivia fact with multilingual translations.
+
+    NEW SCHEMA (Post-Migration):
+    - text: English source text (always populated)
+    - source_language: Honest source tracking ("en" or "he")
+    - translations: Dict[str, str] for Hebrew/Spanish translations
+
+    DEPRECATED FIELDS (For migration compatibility):
+    - text_en, text_es: Legacy multilingual fields
+    """
     fact_id: str = Field(default_factory=lambda: str(uuid4()))
-    text: str = Field(..., min_length=1, description="Primary text in requested language")
-    text_en: Optional[str] = Field(None, description="English text (populated when generated in English)")
-    text_es: Optional[str] = Field(None, description="Spanish text (populated when generated in Spanish)")
+
+    # NEW SCHEMA: Multilingual content with translation dictionary
+    text: str = Field(..., min_length=1, description="English source text (always populated)")
+    source_language: Literal["en", "he"] = Field(
+        default="en",
+        description="Source language - 'en' for English-generated, 'he' for Hebrew-generated"
+    )
+    translations: Dict[str, str] = Field(
+        default_factory=dict,
+        description="Translations: {'he': 'Hebrew text', 'es': 'Spanish text'}"
+    )
+
+    # DEPRECATED: Legacy multilingual fields (keep for migration compatibility)
+    text_en: Optional[str] = Field(
+        None,
+        deprecated=True,
+        description="DEPRECATED: Use 'text' and 'translations' instead"
+    )
+    text_es: Optional[str] = Field(
+        None,
+        deprecated=True,
+        description="DEPRECATED: Use 'translations[\"es\"]' instead"
+    )
+
     trigger_time: Optional[float] = Field(
         None, ge=0, description="Seconds into content"
     )
@@ -41,13 +71,32 @@ class TriviaFactModel(BaseModel):
     @field_validator("text")
     @classmethod
     def validate_text_not_empty(cls, v: str) -> str:
+        """Ensure English source text is not empty."""
         if not v or not v.strip():
-            raise ValueError("Text field cannot be empty or whitespace")
+            raise ValueError("Text field (English source) cannot be empty or whitespace")
         return v.strip()
+
+    @field_validator("translations")
+    @classmethod
+    def validate_translations(cls, v: Dict[str, str]) -> Dict[str, str]:
+        """Validate translation dictionary - strip whitespace and remove empty values."""
+        if not isinstance(v, dict):
+            return {}
+
+        # Strip whitespace and filter out empty translations
+        cleaned = {}
+        for lang_code, translation_text in v.items():
+            if isinstance(translation_text, str):
+                stripped = translation_text.strip()
+                if stripped:
+                    cleaned[lang_code] = stripped
+
+        return cleaned
 
     @field_validator("text_en", "text_es", mode="before")
     @classmethod
     def strip_optional_text(cls, v: Optional[str]) -> Optional[str]:
+        """DEPRECATED: Strip optional legacy text fields."""
         if v is not None and isinstance(v, str):
             return v.strip() or None
         return v
@@ -62,6 +111,46 @@ class TriviaFactModel(BaseModel):
                 "chain_id and chain_order must both be set or both be null"
             )
         return self
+
+    @model_validator(mode="after")
+    def validate_source_language_consistency(self) -> "TriviaFactModel":
+        """Ensure source_language matches the content structure.
+
+        Rules:
+        - If source_language="en", text should be English (always true by definition)
+        - If source_language="he", text contains Hebrew (we trust the generator)
+        - translations dict should NOT include the source language
+        """
+        # Validate translations don't include source language
+        if self.source_language in self.translations:
+            # Remove source language from translations (shouldn't translate to itself)
+            del self.translations[self.source_language]
+
+        return self
+
+    def get_text_for_language(self, lang_code: str) -> str:
+        """Get trivia text for a specific language.
+
+        Args:
+            lang_code: Language code (e.g., "en", "he", "es")
+
+        Returns:
+            Text in requested language, falling back to English if not available
+
+        Fallback order:
+        1. translations[lang_code] if available
+        2. text (English source) as fallback
+        """
+        # If requesting source language, return source text
+        if lang_code == self.source_language:
+            return self.text
+
+        # Check translations dictionary
+        if lang_code in self.translations:
+            return self.translations[lang_code]
+
+        # Fallback to English source
+        return self.text
 
 
 class ContentTrivia(Document):
@@ -89,6 +178,10 @@ class ContentTrivia(Document):
             "content_id",
             "tmdb_id",
             "is_enriched",
+            # NEW: Index for querying by source language
+            "facts.source_language",
+            # NEW: Compound index for content + enrichment status
+            [("content_id", 1), ("is_enriched", 1)],
         ]
         # Unique compound index defined separately via IndexModel
         unique_indexes = [
@@ -145,15 +238,34 @@ class ContentTrivia(Document):
 
 # API Response Models
 class TriviaFactResponse(BaseModel):
-    """API response for a single trivia fact."""
+    """API response for a single trivia fact.
+
+    Supports both new schema (translations dict) and legacy fields for backward compatibility.
+    """
 
     fact_id: str
-    text: str  # Kept for backward compatibility (Hebrew)
+    text: str  # English source text (NEW SCHEMA)
 
-    # Optional multilingual fields
-    text_he: Optional[str] = None
-    text_en: Optional[str] = None
-    text_es: Optional[str] = None
+    # NEW SCHEMA: Source language and translations
+    source_language: Literal["en", "he"] = "en"
+    translations: Dict[str, str] = Field(default_factory=dict)
+
+    # DEPRECATED: Legacy multilingual fields (kept for backward compatibility)
+    text_he: Optional[str] = Field(
+        None,
+        deprecated=True,
+        description="DEPRECATED: Use translations['he'] instead"
+    )
+    text_en: Optional[str] = Field(
+        None,
+        deprecated=True,
+        description="DEPRECATED: Use 'text' instead (always English)"
+    )
+    text_es: Optional[str] = Field(
+        None,
+        deprecated=True,
+        description="DEPRECATED: Use translations['es'] instead"
+    )
 
     trigger_time: Optional[float] = None
     category: str
@@ -167,6 +279,26 @@ class TriviaFactResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+    @model_validator(mode="after")
+    def populate_legacy_fields(self) -> "TriviaFactResponse":
+        """Populate legacy text_* fields from new schema for backward compatibility.
+
+        This ensures old clients still receive data in the expected format.
+        """
+        # Populate text_en from source text (always English)
+        if not self.text_en:
+            self.text_en = self.text
+
+        # Populate text_he from translations if available
+        if not self.text_he and "he" in self.translations:
+            self.text_he = self.translations["he"]
+
+        # Populate text_es from translations if available
+        if not self.text_es and "es" in self.translations:
+            self.text_es = self.translations["es"]
+
+        return self
 
 
 class TriviaResponse(BaseModel):

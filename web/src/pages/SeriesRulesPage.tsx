@@ -10,9 +10,8 @@ import { Repeat } from 'lucide-react'
 import { useDirection } from '@/hooks/useDirection'
 import { recordingApi, SeriesRecordingRule } from '@/services/recordingApi'
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens'
-import { GlassPageHeader } from '@bayit/shared/ui'
+import { GlassPageHeader, GlassEmptyState } from '@bayit/shared/ui'
 import { SeriesRuleCard } from '@/components/recordings/SeriesRuleCard'
-import { LoadingState, EmptyState } from '@bayit/shared/components/states'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import logger from '@/utils/logger'
 
@@ -103,7 +102,8 @@ export default function SeriesRulesPage() {
           spinnerColor={colors.primary}
         />
       ) : rules.length === 0 ? (
-        <EmptyState
+        <GlassEmptyState
+          variant="no-content"
           icon={<Repeat size={72} color={colors.textSecondary} strokeWidth={1.5} />}
           title={t('recordings.noSeriesRules')}
           description={t('recordings.noSeriesRulesHint')}

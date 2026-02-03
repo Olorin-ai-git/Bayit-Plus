@@ -265,18 +265,19 @@ async def sync_podcast_episodes(podcast: Podcast, max_episodes: int = 20) -> int
     return new_episodes_added
 
 
-async def sync_all_podcasts(max_episodes: int = 20) -> dict:
+async def sync_all_podcasts(max_episodes: int = 20, max_concurrent: int = 10) -> dict:
     """
-    Sync episodes for all active podcasts with RSS feeds.
+    Sync episodes for all active podcasts with RSS feeds using parallel processing.
 
     Args:
         max_episodes: Maximum number of episodes to fetch per podcast (default 20)
+        max_concurrent: Maximum number of podcasts to sync concurrently (default 10)
 
     Returns:
         Dictionary with sync results
     """
     logger.info("\n" + "=" * 80)
-    logger.info("🎙️ Starting Podcast RSS Sync")
+    logger.info("🎙️ Starting Podcast RSS Sync (Parallel Mode)")
     logger.info("=" * 80 + "\n")
 
     # Find all active podcasts with RSS feeds
@@ -284,28 +285,46 @@ async def sync_all_podcasts(max_episodes: int = 20) -> dict:
         {"is_active": True, "rss_feed": {"$exists": True, "$ne": None}}
     ).to_list(length=None)
 
-    logger.info(f"📚 Found {len(podcasts)} podcasts with RSS feeds\n")
+    logger.info(f"📚 Found {len(podcasts)} podcasts with RSS feeds")
+    logger.info(f"⚡ Processing {max_concurrent} podcasts concurrently\n")
 
     if not podcasts:
         logger.info("No active podcasts with RSS feeds found")
         return {
             "total_podcasts": 0,
-            "podcasts_synced": 0,
+            "synced_count": 0,
             "total_episodes_added": 0,
         }
 
-    # Sync each podcast
+    # Create semaphore for concurrency limiting
+    semaphore = asyncio.Semaphore(max_concurrent)
+
+    async def sync_with_semaphore(podcast: Podcast) -> tuple[str, int]:
+        """Sync a podcast with semaphore-based concurrency control."""
+        async with semaphore:
+            try:
+                episodes_added = await sync_podcast_episodes(podcast, max_episodes)
+                return (podcast.title, episodes_added)
+            except Exception as e:
+                logger.error(f"❌ Error syncing {podcast.title}: {str(e)}")
+                return (podcast.title, 0)
+
+    # Sync all podcasts in parallel with concurrency limit
+    results = await asyncio.gather(
+        *[sync_with_semaphore(podcast) for podcast in podcasts],
+        return_exceptions=True
+    )
+
+    # Calculate stats
     podcasts_synced = 0
     total_episodes_added = 0
 
-    for podcast in podcasts:
-        try:
-            episodes_added = await sync_podcast_episodes(podcast, max_episodes)
+    for result in results:
+        if isinstance(result, tuple):
+            _, episodes_added = result
             if episodes_added > 0:
                 podcasts_synced += 1
                 total_episodes_added += episodes_added
-        except Exception as e:
-            logger.error(f"❌ Error syncing {podcast.title}: {str(e)}")
 
     logger.info("\n" + "=" * 80)
     logger.info(f"✅ Podcast Sync Complete")
@@ -316,6 +335,6 @@ async def sync_all_podcasts(max_episodes: int = 20) -> dict:
 
     return {
         "total_podcasts": len(podcasts),
-        "podcasts_synced": podcasts_synced,
+        "synced_count": podcasts_synced,
         "total_episodes_added": total_episodes_added,
     }

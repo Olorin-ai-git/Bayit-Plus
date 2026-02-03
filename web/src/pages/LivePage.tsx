@@ -12,9 +12,9 @@ import {
   GlassPageHeader,
   GridSkeleton,
   GlassLoadingSpinner,
+  GlassEmptyState,
 } from '@bayit/shared/ui';
 import AnimatedCard from '@/components/common/AnimatedCard';
-import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import { AIEnhancedBadge } from '@/components/content';
 import logger from '@/utils/logger';
 import PageLoading from '@/components/common/PageLoading';
@@ -174,7 +174,9 @@ export default function LivePage() {
             ))}
           </View>
         ) : (
-          <EmptyState
+          <GlassEmptyState
+            variant="no-content"
+            contentType="live"
             icon={<LiveTVIcon size={72} color={colors.textMuted} />}
             title={t('live.noChannels')}
             description={t('live.tryLater')}

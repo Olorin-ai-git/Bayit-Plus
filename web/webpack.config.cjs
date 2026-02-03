@@ -129,6 +129,8 @@ module.exports = (env, argv) => {
         '@bayit/shared-components/quiz': path.resolve(sharedPath, 'components/quiz'),
         '@bayit/shared-components': path.resolve(sharedPath, 'components'),
         '@bayit/shared-assets': path.resolve(sharedPath, 'assets'),
+        // Glass components package (Bayit alias)
+        '@bayit/glass': path.resolve(packagesPath, 'glass-components/src/web'),
       },
       symlinks: true,
     },

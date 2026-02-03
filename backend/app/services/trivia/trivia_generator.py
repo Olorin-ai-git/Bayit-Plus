@@ -1,6 +1,9 @@
 """
 Trivia Generation Service.
 Generates trivia facts for content using TMDB data and AI with chain support.
+
+NEW: Always generates trivia in English, then translates to Hebrew and Spanish
+using TriviaTranslationService.
 """
 
 import logging
@@ -18,16 +21,21 @@ from app.services.trivia.fact_generators import (
     generate_ai_facts,
     generate_chained_facts,
 )
+from app.services.trivia.trivia_translation_service import TriviaTranslationService
 
 logger = logging.getLogger(__name__)
 
 
 class TriviaGenerationService:
-    """Service for generating and enriching content trivia."""
+    """Service for generating and enriching content trivia.
+
+    NEW: Always generates in English, then translates to Hebrew and Spanish.
+    """
 
     def __init__(self):
         self.tmdb_service = TMDBService()
         self._anthropic_client: Optional[AsyncAnthropic] = None
+        self.translation_service = TriviaTranslationService()
 
     @property
     def anthropic_client(self) -> AsyncAnthropic:
@@ -42,9 +50,13 @@ class TriviaGenerationService:
         self,
         content: Content,
         enrich: bool = False,
-        language: str = "he",
+        language: str = "en",  # DEPRECATED: Always generates in English now
     ) -> ContentTrivia:
-        """Generate trivia using TMDB context -> chained AI -> fallback pipeline."""
+        """Generate trivia using TMDB context -> chained AI -> fallback pipeline.
+
+        NEW: Always generates in English, then translates to Hebrew and Spanish.
+        The language parameter is deprecated and ignored.
+        """
         facts: list[TriviaFactModel] = []
         sources_used: list[str] = []
 
@@ -53,11 +65,12 @@ class TriviaGenerationService:
             tmdb_context = await fetch_tmdb_context(content, self.tmdb_service)
             if tmdb_context:
                 try:
+                    # Always generate in English
                     chained = await generate_chained_facts(
                         content,
                         self.anthropic_client,
                         tmdb_context,
-                        language=language,
+                        language="en",  # Always English
                         existing_count=len(facts),
                     )
                     if chained:
@@ -72,7 +85,8 @@ class TriviaGenerationService:
 
         # Fallback: basic TMDB facts if no AI facts generated
         if not facts and content.tmdb_id:
-            tmdb_facts = await fetch_tmdb_facts(content, self.tmdb_service, language)
+            # Always generate in English
+            tmdb_facts = await fetch_tmdb_facts(content, self.tmdb_service, language="en")
             facts.extend(tmdb_facts)
             if tmdb_facts:
                 sources_used.append("tmdb")
@@ -81,10 +95,11 @@ class TriviaGenerationService:
         if enrich and len(facts) < settings.TRIVIA_MAX_FACTS_PER_CONTENT:
             if not any(f.chain_id for f in facts):
                 try:
+                    # Always generate in English
                     ai_facts = await generate_ai_facts(
                         content,
                         self.anthropic_client,
-                        language=language,
+                        language="en",  # Always English
                         existing_count=len(facts),
                     )
                     facts.extend(ai_facts)
@@ -95,6 +110,9 @@ class TriviaGenerationService:
                         "Standalone AI fact generation failed",
                         extra={"content_id": str(content.id), "error": str(e)},
                     )
+
+        # NEW: Translate all facts to Hebrew and Spanish
+        facts = await self._translate_facts(facts, content.id)
 
         content_type = "series_episode" if content.is_series else "vod"
         trivia = await ContentTrivia.create_or_update(
@@ -108,20 +126,71 @@ class TriviaGenerationService:
 
         return trivia
 
+    async def _translate_facts(
+        self, facts: list[TriviaFactModel], content_id: str
+    ) -> list[TriviaFactModel]:
+        """Translate all facts to Hebrew and Spanish.
+
+        Args:
+            facts: List of facts with English text
+            content_id: Content ID for tracking
+
+        Returns:
+            Facts with translations populated
+        """
+        for fact in facts:
+            try:
+                # Translate to both Hebrew and Spanish
+                translations = await self.translation_service.translate_trivia_fact(
+                    english_text=fact.text,
+                    content_id=f"trivia_{content_id}_{fact.fact_id}",
+                    partner_id="system"
+                )
+
+                # Update fact with translations
+                fact.source_language = "en"
+                fact.translations = translations
+
+                logger.debug(
+                    "Translated trivia fact",
+                    extra={
+                        "fact_id": fact.fact_id,
+                        "translations": list(translations.keys())
+                    }
+                )
+
+            except Exception as e:
+                logger.warning(
+                    "Failed to translate trivia fact, keeping English only",
+                    extra={
+                        "fact_id": fact.fact_id,
+                        "error": str(e)
+                    }
+                )
+                # Set source language but leave translations empty
+                fact.source_language = "en"
+                fact.translations = {}
+
+        return facts
+
     async def get_or_generate_trivia(
         self,
         content: Content,
         enrich: bool = False,
-        language: str = "he",
+        language: str = "en",  # DEPRECATED: Always generates in English now
     ) -> ContentTrivia:
-        """Get existing trivia or generate new if not found."""
+        """Get existing trivia or generate new if not found.
+
+        NEW: Always generates in English, then translates to Hebrew and Spanish.
+        The language parameter is deprecated and ignored.
+        """
         existing = await ContentTrivia.find_one(
             ContentTrivia.content_id == str(content.id)
         )
 
         if existing:
             if enrich and not existing.is_enriched:
-                return await self.generate_trivia(content, enrich=True, language=language)
+                return await self.generate_trivia(content, enrich=True)
             return existing
 
-        return await self.generate_trivia(content, enrich=enrich, language=language)
+        return await self.generate_trivia(content, enrich=enrich)

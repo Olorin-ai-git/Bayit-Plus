@@ -19,9 +19,10 @@ interface TriviaCardProps {
   onDismiss: () => void
   onFollowUp?: () => void
   isRTL?: boolean
+  currentSubtitleLang?: string  // NEW: Current subtitle language for trivia display
 }
 
-export function TriviaCard({ fact, onDismiss, onFollowUp, isRTL = false }: TriviaCardProps) {
+export function TriviaCard({ fact, onDismiss, onFollowUp, isRTL = false, currentSubtitleLang }: TriviaCardProps) {
   const { t, i18n } = useTranslation()
   const isTV = Platform.isTV || Platform.OS === 'tvos'
   const tvStyles = getTvStyles(isTV)
@@ -69,6 +70,7 @@ export function TriviaCard({ fact, onDismiss, onFollowUp, isRTL = false }: Trivi
       <MultilingualTextDisplay
         fact={fact}
         displayLanguages={displayLanguages}
+        currentSubtitleLang={currentSubtitleLang}
         isTV={isTV}
       />
 

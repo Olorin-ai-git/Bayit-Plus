@@ -7,9 +7,13 @@
 
 export interface TriviaFact {
   fact_id: string
-  text: string  // Kept for backward compatibility
+  text: string  // English source text (NEW SCHEMA) / Hebrew text (legacy)
 
-  // Multilingual text fields (optional)
+  // NEW SCHEMA: Multilingual support with translations dictionary
+  source_language?: 'en' | 'he'  // Source language tracking
+  translations?: Record<string, string>  // {"he": "...", "es": "..."}
+
+  // DEPRECATED: Legacy multilingual fields (kept for backward compatibility)
   text_he?: string
   text_en?: string
   text_es?: string

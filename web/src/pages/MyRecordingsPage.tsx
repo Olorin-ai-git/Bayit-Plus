@@ -10,12 +10,11 @@ import { Circle, HardDrive } from 'lucide-react'
 import { useDirection } from '@/hooks/useDirection'
 import { recordingApi, Recording } from '@/services/recordingApi'
 import { colors } from '@olorin/design-tokens'
-import { GlassView, GlassPageHeader } from '@bayit/shared/ui'
+import { GlassView, GlassPageHeader, GlassEmptyState } from '@bayit/shared/ui'
 import { RecordingCard } from '@/components/recordings/RecordingCard'
 import {
   RecordingsFilterBar, RecordingFilter, RecordingSortField, RecordingSortOrder,
 } from '@/components/recordings/RecordingsFilterBar'
-import { LoadingState, EmptyState } from '@bayit/shared/components/states'
 import logger from '@/utils/logger'
 import { styles } from './MyRecordingsPage.styles'
 import { RecordingsQuotaPanel } from '@/components/recordings/RecordingsQuotaPanel'
@@ -95,7 +94,8 @@ export default function MyRecordingsPage() {
       {loading ? (
         <LoadingState message={t('recordings.loading', 'Loading recordings...')} spinnerColor={colors.primary} />
       ) : filteredRecordings.length === 0 ? (
-        <EmptyState
+        <GlassEmptyState
+          variant="no-content"
           icon={<Circle size={72} color={colors.textSecondary} strokeWidth={1.5} />}
           title={t('recordings.noRecordings')} description={t('recordings.noRecordingsHint')}
         />

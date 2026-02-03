@@ -100,6 +100,15 @@ export type { GlassToggleProps } from './GlassToggle';
 export type { GlassStatCardProps } from './GlassStatCard';
 export type { GlassSliderProps } from './GlassSlider';
 
+// Empty State Component (re-exported from @olorin/glass-ui)
+export {
+  GlassEmptyState,
+  type GlassEmptyStateProps,
+  type EmptyStateVariant,
+  type EmptyStateSize,
+  type EmptyStateAction,
+} from '@olorin/glass-ui';
+
 // Web-only components (depend on lucide-react) are in a separate export
 // Import from '@bayit/shared/ui/web' for web-only usage:
 // GlassTable, GlassTableCell, GlassLog, GlassDraggableExpander

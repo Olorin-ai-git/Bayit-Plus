@@ -15,10 +15,10 @@ import {
   GlassPageHeader,
   GridSkeleton,
   GlassContentPlaceholder,
+  GlassEmptyState,
 } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import { useDirection } from '@/hooks/useDirection';
-import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import { AIEnhancedBadge } from '@/components/content';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
@@ -501,7 +501,8 @@ export default function ChildrenPage() {
             )}
           />
         ) : (
-          <EmptyState
+          <GlassEmptyState
+            variant="no-content"
             icon={<NativeIcon name="discover" size="xl" color="#facc15" />}
             title={t('children.noContent')}
             description={t('children.tryAnotherCategory')}
@@ -646,6 +647,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.xl,
     overflow: 'hidden',
     backgroundColor: 'rgba(250, 204, 21, 0.1)',
+    height: '220px',
   },
   contentCardHovered: {
     transform: [{ scale: 1.05 }],
@@ -653,10 +655,11 @@ const styles = StyleSheet.create({
   thumbnailContainer: {
     aspectRatio: 16 / 9,
     position: 'relative',
+    display: 'contents'
   },
   thumbnail: {
     width: '100%',
-    height: '100%',
+    height: '100%'
   },
   thumbnailPlaceholder: {
     width: '100%',

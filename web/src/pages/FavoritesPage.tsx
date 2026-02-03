@@ -7,8 +7,7 @@ import { useDirection } from '@/hooks/useDirection';
 import { favoritesService } from '@/services/api';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
-import { GlassCard, GlassView, GlassPageHeader } from '@bayit/shared/ui';
-import { LoadingState, EmptyState } from '@bayit/shared/components/states';
+import { GlassCard, GlassView, GlassPageHeader, GlassEmptyState } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
 const TYPE_ICON_NAMES: Record<string, string> = {
@@ -177,7 +176,8 @@ export default function FavoritesPage() {
           )}
         />
       ) : (
-        <EmptyState
+        <GlassEmptyState
+          variant="no-favorites"
           icon={<Star size={72} color="rgba(245, 158, 11, 0.5)" strokeWidth={1.5} />}
           title={t('favorites.empty')}
           description={t('favorites.emptyHint')}

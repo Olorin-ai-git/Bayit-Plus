@@ -90,12 +90,8 @@ export const RemotionWizard: React.FC<RemotionWizardProps> = ({
     }
   }, [onComplete]);
 
-  // Update playback speed when it changes
-  useEffect(() => {
-    if (playerRef.current) {
-      playerRef.current.setPlaybackRate(playbackSpeed);
-    }
-  }, [playbackSpeed]);
+  // Note: Playback speed is controlled via the playbackRate prop on the Player component
+  // The PlayerRef does not have a setPlaybackRate method
 
   // If no sequence is playing, render nothing
   if (!isPlaying || !currentSequence) {

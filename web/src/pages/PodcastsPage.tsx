@@ -15,9 +15,9 @@ import {
   GlassPageHeader,
   RowSkeleton,
   PodcastPlaceholder,
+  GlassEmptyState,
 } from '@bayit/shared/ui';
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
-import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
 import PageLoading from '@/components/common/PageLoading';
 
@@ -331,7 +331,8 @@ export default function PodcastsPage() {
           </View>
         )}
         ListEmptyComponent={
-          <EmptyState
+          <GlassEmptyState
+            variant={searchQuery ? 'no-results' : 'no-content'}
             icon={<Podcast size={72} color={colors.textMuted} />}
             title={searchQuery ? t('common.noResults') : t('podcasts.noPodcasts')}
             description={searchQuery ? t('common.tryDifferentSearch') : t('podcasts.tryLater')}

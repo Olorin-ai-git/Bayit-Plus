@@ -40,12 +40,12 @@ export default function YoungstersContentCard({ item }: YoungstersContentCardPro
           style={isHovered ? { transform: [{ scale: 1.02 }] } : undefined}
         >
           {/* Thumbnail Container */}
-          <View className={platformClass('aspect-video relative')}>
+          <View className={platformClass('aspect-[2/3] relative bg-black')}>
             {item.thumbnail ? (
               <Image
                 source={{ uri: item.thumbnail }}
-                className={platformClass('w-full h-full')}
-                resizeMode="cover"
+                className={platformClass('w-full')}
+                resizeMode="contain"
               />
             ) : (
               <View className={platformClass(

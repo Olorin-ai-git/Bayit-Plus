@@ -22,7 +22,7 @@ import {
   CommunityDirectory,
   ShabbatEveSection,
 } from '@/components/judaism';
-import { LoadingState } from '@bayit/shared/components/states';
+// LoadingState is used for loading indicators, not deprecated like EmptyState
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
 

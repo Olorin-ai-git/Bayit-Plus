@@ -15,9 +15,9 @@ import {
   GlassPageHeader,
   GridSkeleton,
   RadioPlaceholder,
+  GlassEmptyState,
 } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
-import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
 import PageLoading from '@/components/common/PageLoading';
 
@@ -225,7 +225,9 @@ export default function RadioPage() {
           </View>
         )}
         ListEmptyComponent={
-          <EmptyState
+          <GlassEmptyState
+            variant="no-content"
+            contentType="radio"
             icon={<Radio size={72} color={colors.textMuted} />}
             title={t('radio.noStations')}
             description={t('radio.tryLater')}

@@ -292,7 +292,7 @@ export default function ContentCard({ content, showProgress = false, showActions
                     <Image
                       source={{ uri: thumbnailUrl }}
                       style={styles.thumbnail}
-                      resizeMode="cover"
+                      resizeMode="contain"
                       onError={handleThumbnailError}
                     />
                   );
@@ -629,7 +629,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: borderRadius.lg,
     borderTopRightRadius: borderRadius.lg,
     overflow: 'hidden',
-    backgroundColor: colors.backgroundDark, // Background for letterboxing
+    backgroundColor: colors.dark[950], // Background for letterboxing (pure black)
   },
   thumbnailPortrait: {
     aspectRatio: 2 / 3, // Portrait aspect ratio for movie/series posters
@@ -779,7 +779,7 @@ const styles = StyleSheet.create({
   },
   metaDivider: {
     fontSize: 12,
-    color: colors.backgroundLighter,
+    color: colors.dark[400],
   },
   qualityBadge: {
     position: 'absolute',

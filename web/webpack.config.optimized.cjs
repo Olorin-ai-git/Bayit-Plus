@@ -113,6 +113,12 @@ module.exports = (env, argv) => {
         '@bayit/shared/admin': path.resolve(sharedPath, 'components/admin'),
         '@bayit/shared': path.resolve(sharedPath, 'components'),
         '@bayit/shared-assets': path.resolve(sharedPath, 'assets'),
+        // Glass components package
+        '@bayit/glass': path.resolve(packagesPath, 'glass-components/src/web'),
+        '@olorin/glass-ui': path.resolve(packagesPath, 'glass-components/src/native'),
+        '@olorin/shared-icons/web': path.resolve(packagesPath, 'shared-icons/src/web'),
+        '@olorin/shared-icons/native': path.resolve(packagesPath, 'shared-icons/src/native'),
+        '@olorin/shared-icons': path.resolve(packagesPath, 'shared-icons/src'),
       },
       symlinks: true,
     },

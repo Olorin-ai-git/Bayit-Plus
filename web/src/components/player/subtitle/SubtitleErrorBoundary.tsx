@@ -5,7 +5,7 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react'
 import { View, Text, StyleSheet, Platform } from 'react-native'
-import { GlassButton } from '@bayit/glass'
+import { GlassButton } from '@bayit/shared/ui'
 import { Icon } from '@olorin/shared-icons/web'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useTranslation } from 'react-i18next'

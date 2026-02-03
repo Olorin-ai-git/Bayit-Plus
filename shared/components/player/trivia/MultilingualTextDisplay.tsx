@@ -1,7 +1,9 @@
 /**
  * MultilingualTextDisplay Component
- * Displays trivia fact text in current locale language only
+ * Displays trivia fact text in selected subtitle language
  * Supports RTL (Hebrew) and LTR (English/Spanish) text direction
+ *
+ * NEW: Syncs with subtitle track selection instead of app locale
  */
 
 import React from 'react'
@@ -11,7 +13,8 @@ import { TriviaFact, getTriviaLanguageInfo } from '@bayit/shared-types/trivia'
 
 interface MultilingualTextDisplayProps {
   fact: TriviaFact
-  displayLanguages: string[]  // Deprecated - now uses current i18n language
+  displayLanguages: string[]  // Deprecated - now uses currentSubtitleLang
+  currentSubtitleLang?: string  // NEW: Current subtitle language (e.g., 'en', 'he', 'es')
   isTV?: boolean
 }
 
@@ -28,14 +31,32 @@ interface LanguageVersion {
 }
 
 /**
- * Get text for a specific language from fact
+ * Get text for a specific language from fact.
+ *
+ * NEW: Supports new translations dictionary with fallback to legacy fields.
+ * Priority:
+ * 1. translations[langCode] (new schema)
+ * 2. text_* legacy fields (old schema)
+ * 3. text field if langCode matches source_language
+ * 4. text field as fallback (English source)
  */
 function getTextForLanguage(fact: TriviaFact, langCode: string): string | null {
+  // NEW SCHEMA: Check translations dictionary first
+  if (fact.translations && fact.translations[langCode]) {
+    return fact.translations[langCode]
+  }
+
+  // If requesting source language, return source text
+  if (fact.source_language && langCode === fact.source_language) {
+    return fact.text
+  }
+
+  // LEGACY SCHEMA: Fallback to text_* fields
   switch (langCode) {
     case 'he':
-      return fact.text_he || fact.text
+      return fact.text_he || (fact.source_language === 'he' ? fact.text : null)
     case 'en':
-      return fact.text_en || null
+      return fact.text_en || (fact.source_language === 'en' ? fact.text : null)
     case 'es':
       return fact.text_es || null
     default:
@@ -46,20 +67,31 @@ function getTextForLanguage(fact: TriviaFact, langCode: string): string | null {
 export function MultilingualTextDisplay({
   fact,
   displayLanguages,
+  currentSubtitleLang,
   isTV = false,
 }: MultilingualTextDisplayProps) {
   const { i18n } = useTranslation()
 
-  // Get current language from i18n
-  const currentLang = i18n.language || 'he'
+  // NEW: Use subtitle language if provided, otherwise fall back to app locale
+  const currentLang = currentSubtitleLang || i18n.language || 'en'
 
-  // Get text and language info for current locale only
+  // Get text and language info for subtitle language
   const langInfo = getTriviaLanguageInfo(currentLang)
-  const text = getTextForLanguage(fact, currentLang)
+  let text = getTextForLanguage(fact, currentLang)
 
-  // Fallback: Show fact.text (Hebrew) if current language not available
-  if (!langInfo || !text) {
-    return <Text style={styles.factText}>{fact.text}</Text>
+  // Fallback chain: requested lang → English → fact.text
+  if (!text) {
+    // Try English as fallback
+    text = getTextForLanguage(fact, 'en')
+    if (!text) {
+      // Final fallback: use fact.text (English source or legacy Hebrew)
+      text = fact.text
+    }
+  }
+
+  // Safety: If still no text, don't render
+  if (!text) {
+    return null
   }
 
   // tvOS font size requirements

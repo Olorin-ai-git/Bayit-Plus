@@ -3,14 +3,13 @@ import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator, Image }
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Play, X } from 'lucide-react';
-import { GlassView, GlassCard } from '@bayit/shared/ui';
+import { GlassView, GlassCard, GlassEmptyState } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { Icon } from '@olorin/shared-icons/web';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { watchlistService } from '@/services/api';
 import { useDirection } from '@/hooks/useDirection';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
-import { LoadingState, EmptyState } from '@bayit/shared/components/states';
 import logger from '@/utils/logger';
 import PageLoading from '@/components/common/PageLoading';
 

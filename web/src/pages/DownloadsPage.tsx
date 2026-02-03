@@ -7,8 +7,7 @@ import { useDirection } from '@/hooks/useDirection';
 import { downloadsService } from '@/services/api';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
-import { GlassCard, GlassView, GlassPageHeader } from '@bayit/shared/ui';
-import { LoadingState, EmptyState } from '@bayit/shared/components/states';
+import { GlassCard, GlassView, GlassPageHeader, GlassEmptyState } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
 const TYPE_ICON_NAMES: Record<string, string> = {
@@ -240,7 +239,8 @@ export default function DownloadsPage() {
           )}
         />
       ) : (
-        <EmptyState
+        <GlassEmptyState
+          variant="no-downloads"
           icon={<Download size={72} color="rgba(168, 85, 247, 0.5)" strokeWidth={1.5} />}
           title={t('downloads.empty')}
           description={t('downloads.emptyHint')}

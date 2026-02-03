@@ -93,6 +93,9 @@ def format_trivia_response(
     """
     Format ContentTrivia document for API response.
 
+    Supports both new schema (source_language + translations) and legacy schema
+    (text_he, text_en, text_es) for backward compatibility.
+
     Args:
         trivia: ContentTrivia document
         language: Preferred language for single-language mode
@@ -107,14 +110,10 @@ def format_trivia_response(
         # Select text based on mode
         if multilingual:
             # Multilingual mode: return all language fields
-            text = fact.text  # Hebrew (default)
+            text = fact.text  # Source text (English or Hebrew)
         else:
-            # Single language mode: select based on language parameter
-            text = fact.text
-            if language == "en" and fact.text_en:
-                text = fact.text_en
-            elif language == "es" and fact.text_es:
-                text = fact.text_es
+            # Single language mode: use get_text_for_language() for proper fallback
+            text = fact.get_text_for_language(language)
 
         fact_data = {
             "fact_id": fact.fact_id,
@@ -126,12 +125,20 @@ def format_trivia_response(
             "priority": fact.priority,
         }
 
-        # Add language-specific fields: map primary text to the correct language key
-        if multilingual:
-            lang_key = {"he": "text_he", "en": "text_en", "es": "text_es"}.get(
-                language, "text_he"
-            )
-            fact_data[lang_key] = fact.text
+        # NEW SCHEMA: Add source_language and translations
+        if fact.source_language:
+            fact_data["source_language"] = fact.source_language
+        if fact.translations:
+            fact_data["translations"] = fact.translations
+
+        # LEGACY SCHEMA: Backward compatibility fields
+        # These are populated from translations dict or legacy fields
+        if multilingual or language == "he":
+            fact_data["text_he"] = fact.get_text_for_language("he")
+        if multilingual or language == "en":
+            fact_data["text_en"] = fact.get_text_for_language("en")
+        if multilingual or language == "es":
+            fact_data["text_es"] = fact.get_text_for_language("es")
 
         if fact.related_person:
             fact_data["related_person"] = fact.related_person
