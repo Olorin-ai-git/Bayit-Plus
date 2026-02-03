@@ -7658,6 +7658,40 @@
       "enterPin": "PIN दर्ज करें",
       "enterNewPin": "नया PIN दर्ज करें",
       "confirmNewPin": "नए PIN की पुष्टि करें"
+    },
+    "profileControls": {
+      "title": "प्रोफ़ाइल पारिवारिक नियंत्रण",
+      "subtitle": "इस प्रोफ़ाइल के लिए पारिवारिक नियंत्रण प्रबंधित करें",
+      "sourceSection": {
+        "title": "नियंत्रण स्रोत",
+        "inheritHousehold": "घर से विरासत में मिला",
+        "inheritHouseholdDesc": "घर-स्तरीय पारिवारिक नियंत्रण का उपयोग करें",
+        "customControls": "कस्टम नियंत्रण",
+        "customControlsDesc": "प्रोफ़ाइल-विशिष्ट पारिवारिक नियंत्रण का उपयोग करें"
+      },
+      "selectControls": {
+        "title": "नियंत्रण चुनें",
+        "controlsLabel": "पारिवारिक नियंत्रण {{id}}",
+        "kidsAge": "बच्चे: {{age}}",
+        "youngstersAge": "किशोर: {{age}}",
+        "rating": "रेटिंग: {{rating}}",
+        "noControls": "कोई पारिवारिक नियंत्रण उपलब्ध नहीं है। पारिवारिक नियंत्रण सेटिंग में नियंत्रण बनाएं।"
+      },
+      "effectiveControls": {
+        "title": "सक्रिय नियंत्रण",
+        "kidsEnabled": "बच्चों की सामग्री",
+        "youngstersEnabled": "किशोर सामग्री",
+        "contentRating": "सामग्री रेटिंग सीमा",
+        "viewingHours": "देखने के घंटे",
+        "enabled": "सक्षम",
+        "disabled": "अक्षम",
+        "ageLimit": "आयु सीमा: {{age}}",
+        "noRestriction": "कोई प्रतिबंध नहीं",
+        "noControls": "इस प्रोफ़ाइल के लिए कोई सक्रिय पारिवारिक नियंत्रण नहीं"
+      },
+      "errors": {
+        "noControlsAvailable": "कोई पारिवारिक नियंत्रण उपलब्ध नहीं है। पहले नियंत्रण बनाएं।"
+      }
     }
   }
 }

@@ -6,6 +6,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
+from app.core.logging_config import get_logger
 from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.models.admin import (AudienceFilter, EmailCampaign, MarketingStatus,
                               Permission, PushNotification)
@@ -14,6 +15,7 @@ from app.models.user import User
 from .auth import has_permission
 
 router = APIRouter()
+logger = get_logger(__name__)
 
 
 @router.get("/marketing/metrics")
@@ -448,6 +450,19 @@ async def send_platform_invitation_email(
     )
 
     if result.success:
+        # Audit log: successful platform invitation
+        logger.info(
+            "Platform invitation sent successfully",
+            extra={
+                "event": "platform_invitation_sent",
+                "recipient": data.email,
+                "inviter_name": data.inviter_name or current_user.name,
+                "user_id": str(current_user.id),
+                "user_email": current_user.email,
+                "message_id": result.message_id,
+                "has_personal_message": bool(data.personal_message),
+            },
+        )
         return {
             "success": True,
             "message": f"Invitation sent successfully to {data.email}",
@@ -455,6 +470,19 @@ async def send_platform_invitation_email(
             "message_id": result.message_id,
         }
     else:
+        # Audit log: failed platform invitation
+        logger.warning(
+            "Platform invitation send failed",
+            extra={
+                "event": "platform_invitation_failed",
+                "recipient": data.email,
+                "inviter_name": data.inviter_name or current_user.name,
+                "user_id": str(current_user.id),
+                "user_email": current_user.email,
+                "error": result.message,
+                "provider": result.provider,
+            },
+        )
         return {
             "success": False,
             "message": result.message,

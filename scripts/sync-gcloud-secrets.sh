@@ -361,7 +361,7 @@ EOF
 # Execute sync based on target
 EXIT_CODE=0
 
-sync_platform "backend" || EXIT_CODE=$?
+sync_platform "$TARGET" || EXIT_CODE=$?
 
 echo -e "${BLUE}============================================${NC}"
 if [ $EXIT_CODE -eq 0 ]; then

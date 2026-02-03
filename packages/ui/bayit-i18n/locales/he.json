@@ -7968,6 +7968,40 @@
       "enterPin": "הזן קוד PIN",
       "enterNewPin": "הזן קוד PIN חדש",
       "confirmNewPin": "אשר קוד PIN חדש"
+    },
+    "profileControls": {
+      "title": "בקרות פרופיל משפחתיות",
+      "subtitle": "נהל בקרות משפחתיות עבור פרופיל זה",
+      "sourceSection": {
+        "title": "מקור הבקרות",
+        "inheritHousehold": "ירושה ממשק הבית",
+        "inheritHouseholdDesc": "השתמש בבקרות משפחתיות ברמת משק הבית",
+        "customControls": "בקרות מותאמות אישית",
+        "customControlsDesc": "השתמש בבקרות משפחתיות ייעודיות לפרופיל"
+      },
+      "selectControls": {
+        "title": "בחר בקרות",
+        "controlsLabel": "בקרות משפחתיות {{id}}",
+        "kidsAge": "ילדים: {{age}}",
+        "youngstersAge": "בני נוער: {{age}}",
+        "rating": "דירוג: {{rating}}",
+        "noControls": "אין בקרות משפחתיות זמינות. צור בקרות בהגדרות הבקרות המשפחתיות."
+      },
+      "effectiveControls": {
+        "title": "בקרות פעילות",
+        "kidsEnabled": "תוכן ילדים",
+        "youngstersEnabled": "תוכן בני נוער",
+        "contentRating": "הגבלת דירוג תוכן",
+        "viewingHours": "שעות צפייה",
+        "enabled": "מופעל",
+        "disabled": "מושבת",
+        "ageLimit": "הגבלת גיל: {{age}}",
+        "noRestriction": "אין הגבלה",
+        "noControls": "אין בקרות משפחתיות פעילות עבור פרופיל זה"
+      },
+      "errors": {
+        "noControlsAvailable": "אין בקרות משפחתיות זמינות. צור בקרות תחילה."
+      }
     }
   }
 }

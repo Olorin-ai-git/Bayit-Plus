@@ -1,5 +1,5 @@
 """
-Tests for Email Templates Management API
+Tests for Email Templates Management API - Preview and Send Actions
 """
 
 import pytest
@@ -8,65 +8,13 @@ from httpx import AsyncClient
 pytestmark = pytest.mark.asyncio
 
 
-class TestListEmailTemplates:
-    """Tests for GET /admin/marketing/email-templates"""
-
-    async def test_list_templates_success(self, admin_client: AsyncClient):
-        """Test listing all email templates."""
-        response = await admin_client.get("/admin/marketing/email-templates")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert "templates" in data
-        assert len(data["templates"]) == 3
-
-        # Verify template structure
-        template_names = [t["name"] for t in data["templates"]]
-        assert "platform_invitation" in template_names
-        assert "beta_verification" in template_names
-        assert "household_invitation" in template_names
-
-    async def test_list_templates_requires_permission(self, client_without_permission: AsyncClient):
-        """Test that listing templates requires MARKETING_READ permission."""
-        response = await client_without_permission.get("/admin/marketing/email-templates")
-        assert response.status_code == 403
-
-
-class TestGetTemplateDetails:
-    """Tests for GET /admin/marketing/email-templates/{template_name}"""
-
-    async def test_get_template_details_success(self, admin_client: AsyncClient):
-        """Test getting template details."""
-        response = await admin_client.get("/admin/marketing/email-templates/platform_invitation")
-
-        assert response.status_code == 200
-        data = response.json()
-        assert data["name"] == "platform_invitation"
-        assert data["display_name"] == "Platform Invitation"
-        assert data["category"] == "marketing"
-        assert "required_variables" in data
-        assert "optional_variables" in data
-
-    async def test_get_template_not_found(self, admin_client: AsyncClient):
-        """Test getting non-existent template."""
-        response = await admin_client.get("/admin/marketing/email-templates/nonexistent")
-        assert response.status_code == 404
-
-    async def test_get_template_requires_permission(self, client_without_permission: AsyncClient):
-        """Test that getting template requires MARKETING_READ permission."""
-        response = await client_without_permission.get(
-            "/admin/marketing/email-templates/platform_invitation"
-        )
-        assert response.status_code == 403
-
-
 class TestPreviewTemplate:
-    """Tests for POST /admin/marketing/email-templates/{template_name}/preview"""
+    """Tests for POST /api/v1/admin/marketing/email-templates/{template_name}/preview"""
 
     async def test_preview_template_success(self, admin_client: AsyncClient):
         """Test previewing template with variables."""
         response = await admin_client.post(
-            "/admin/marketing/email-templates/platform_invitation/preview",
+            "/api/v1/admin/marketing/email-templates/platform_invitation/preview",
             json={
                 "variables": {
                     "greeting": "Welcome to Bayit+!",
@@ -87,7 +35,7 @@ class TestPreviewTemplate:
     async def test_preview_template_missing_variables(self, admin_client: AsyncClient):
         """Test preview fails with missing required variables."""
         response = await admin_client.post(
-            "/admin/marketing/email-templates/platform_invitation/preview",
+            "/api/v1/admin/marketing/email-templates/platform_invitation/preview",
             json={"variables": {"greeting": "Welcome"}},
         )
 
@@ -97,7 +45,7 @@ class TestPreviewTemplate:
     async def test_preview_template_not_found(self, admin_client: AsyncClient):
         """Test preview fails for non-existent template."""
         response = await admin_client.post(
-            "/admin/marketing/email-templates/nonexistent/preview",
+            "/api/v1/admin/marketing/email-templates/nonexistent/preview",
             json={"variables": {}},
         )
         assert response.status_code == 404
@@ -105,14 +53,14 @@ class TestPreviewTemplate:
     async def test_preview_requires_permission(self, client_without_permission: AsyncClient):
         """Test that preview requires MARKETING_READ permission."""
         response = await client_without_permission.post(
-            "/admin/marketing/email-templates/platform_invitation/preview",
+            "/api/v1/admin/marketing/email-templates/platform_invitation/preview",
             json={"variables": {}},
         )
         assert response.status_code == 403
 
 
 class TestSendTestEmail:
-    """Tests for POST /admin/marketing/email-templates/{template_name}/send-test"""
+    """Tests for POST /api/v1/admin/marketing/email-templates/{template_name}/send-test"""
 
     async def test_send_test_email_success(self, admin_client: AsyncClient, mocker):
         """Test sending test email."""
@@ -124,7 +72,7 @@ class TestSendTestEmail:
         mock_send.return_value.send_generic_email.return_value.message_id = "test-123"
 
         response = await admin_client.post(
-            "/admin/marketing/email-templates/platform_invitation/send-test",
+            "/api/v1/admin/marketing/email-templates/platform_invitation/send-test",
             json={
                 "test_email": "test@example.com",
                 "variables": {
@@ -145,7 +93,7 @@ class TestSendTestEmail:
     async def test_send_test_email_missing_variables(self, admin_client: AsyncClient):
         """Test send test email fails with missing variables."""
         response = await admin_client.post(
-            "/admin/marketing/email-templates/platform_invitation/send-test",
+            "/api/v1/admin/marketing/email-templates/platform_invitation/send-test",
             json={
                 "test_email": "test@example.com",
                 "variables": {"greeting": "Welcome"},
@@ -156,7 +104,7 @@ class TestSendTestEmail:
     async def test_send_test_email_invalid_email(self, admin_client: AsyncClient):
         """Test send test email fails with invalid email."""
         response = await admin_client.post(
-            "/admin/marketing/email-templates/platform_invitation/send-test",
+            "/api/v1/admin/marketing/email-templates/platform_invitation/send-test",
             json={
                 "test_email": "not-an-email",
                 "variables": {
@@ -173,7 +121,7 @@ class TestSendTestEmail:
     async def test_send_test_requires_permission(self, client_without_permission: AsyncClient):
         """Test that send test requires MARKETING_SEND permission."""
         response = await client_without_permission.post(
-            "/admin/marketing/email-templates/platform_invitation/send-test",
+            "/api/v1/admin/marketing/email-templates/platform_invitation/send-test",
             json={
                 "test_email": "test@example.com",
                 "variables": {},
@@ -188,7 +136,7 @@ class TestTemplateVariables:
     async def test_html_escaping_in_preview(self, admin_client: AsyncClient):
         """Test that HTML in variables is escaped to prevent XSS."""
         response = await admin_client.post(
-            "/admin/marketing/email-templates/platform_invitation/preview",
+            "/api/v1/admin/marketing/email-templates/platform_invitation/preview",
             json={
                 "variables": {
                     "greeting": "<script>alert('XSS')</script>",
@@ -207,7 +155,7 @@ class TestTemplateVariables:
 
     async def test_all_templates_have_required_fields(self, admin_client: AsyncClient):
         """Test that all templates have complete metadata."""
-        response = await admin_client.get("/admin/marketing/email-templates")
+        response = await admin_client.get("/api/v1/admin/marketing/email-templates")
         assert response.status_code == 200
 
         templates = response.json()["templates"]

@@ -5,6 +5,7 @@ from typing import Dict, Optional
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, EmailStr
 
+from app.core.logging_config import get_logger
 from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.models.admin import Permission
 from app.models.user import User
@@ -14,6 +15,7 @@ from app.services.email_templates import get_template_renderer
 from .auth import has_permission
 
 router = APIRouter()
+logger = get_logger(__name__)
 
 
 class TemplateMetadata(BaseModel):
@@ -62,6 +64,48 @@ TEMPLATE_CATALOG: Dict[str, TemplateMetadata] = {
         optional_variables=[],
     ),
 }
+
+
+# Helper functions for validation
+def validate_template_exists(template_name: str) -> TemplateMetadata:
+    """
+    Validate that template exists in catalog.
+
+    Args:
+        template_name: Template identifier
+
+    Returns:
+        Template metadata
+
+    Raises:
+        HTTPException: If template not found
+    """
+    metadata = TEMPLATE_CATALOG.get(template_name)
+    if not metadata:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Template '{template_name}' not found. Available templates: {list(TEMPLATE_CATALOG.keys())}",
+        )
+    return metadata
+
+
+def validate_required_variables(metadata: TemplateMetadata, variables: Dict[str, str]):
+    """
+    Validate that all required variables are present.
+
+    Args:
+        metadata: Template metadata with required variables list
+        variables: Provided template variables
+
+    Raises:
+        HTTPException: If required variables are missing
+    """
+    missing_vars = [var for var in metadata.required_variables if var not in variables]
+    if missing_vars:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Missing required variables: {missing_vars}",
+        )
 
 
 @router.get("/marketing/email-templates")
@@ -147,23 +191,9 @@ async def preview_email_template(
     Raises:
         HTTPException: If template not found or variables missing
     """
-    # Validate template exists
-    metadata = TEMPLATE_CATALOG.get(template_name)
-    if not metadata:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Template '{template_name}' not found",
-        )
-
-    # Validate required variables are present
-    missing_vars = [
-        var for var in metadata.required_variables if var not in data.variables
-    ]
-    if missing_vars:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Missing required variables: {missing_vars}",
-        )
+    # Validate template and required variables
+    metadata = validate_template_exists(template_name)
+    validate_required_variables(metadata, data.variables)
 
     try:
         renderer = get_template_renderer()
@@ -204,23 +234,9 @@ async def send_test_email(
     Raises:
         HTTPException: If template not found, variables missing, or send fails
     """
-    # Validate template exists
-    metadata = TEMPLATE_CATALOG.get(template_name)
-    if not metadata:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Template '{template_name}' not found",
-        )
-
-    # Validate required variables
-    missing_vars = [
-        var for var in metadata.required_variables if var not in data.variables
-    ]
-    if missing_vars:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Missing required variables: {missing_vars}",
-        )
+    # Validate template and required variables
+    metadata = validate_template_exists(template_name)
+    validate_required_variables(metadata, data.variables)
 
     try:
         # Render template
@@ -236,12 +252,36 @@ async def send_test_email(
         )
 
         if result.success:
+            # Audit log: successful test email send
+            logger.info(
+                "Test email sent successfully",
+                extra={
+                    "event": "email_template_test_sent",
+                    "template_name": template_name,
+                    "recipient": data.test_email,
+                    "user_id": str(current_user.id),
+                    "user_email": current_user.email,
+                    "message_id": result.message_id,
+                },
+            )
             return {
                 "message": f"Test email sent successfully to {data.test_email}",
                 "email": data.test_email,
                 "message_id": result.message_id,
             }
         else:
+            # Audit log: failed test email send
+            logger.warning(
+                "Test email send failed",
+                extra={
+                    "event": "email_template_test_failed",
+                    "template_name": template_name,
+                    "recipient": data.test_email,
+                    "user_id": str(current_user.id),
+                    "user_email": current_user.email,
+                    "error": result.message,
+                },
+            )
             raise HTTPException(
                 status_code=500,
                 detail=f"Failed to send test email: {result.message}",

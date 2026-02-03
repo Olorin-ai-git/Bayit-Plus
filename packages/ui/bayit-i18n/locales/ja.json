@@ -8425,6 +8425,40 @@
       "enterPin": "PINを入力",
       "enterNewPin": "新しいPINを入力",
       "confirmNewPin": "新しいPINを確認"
+    },
+    "profileControls": {
+      "title": "プロフィールファミリーコントロール",
+      "subtitle": "このプロフィールのファミリーコントロールを管理",
+      "sourceSection": {
+        "title": "コントロールのソース",
+        "inheritHousehold": "世帯から継承",
+        "inheritHouseholdDesc": "世帯レベルのファミリーコントロールを使用",
+        "customControls": "カスタムコントロール",
+        "customControlsDesc": "プロフィール固有のファミリーコントロールを使用"
+      },
+      "selectControls": {
+        "title": "コントロールを選択",
+        "controlsLabel": "ファミリーコントロール {{id}}",
+        "kidsAge": "子供：{{age}}",
+        "youngstersAge": "若者：{{age}}",
+        "rating": "レーティング：{{rating}}",
+        "noControls": "利用可能なファミリーコントロールがありません。ファミリーコントロール設定でコントロールを作成してください。"
+      },
+      "effectiveControls": {
+        "title": "アクティブなコントロール",
+        "kidsEnabled": "子供向けコンテンツ",
+        "youngstersEnabled": "若者向けコンテンツ",
+        "contentRating": "コンテンツレーティング制限",
+        "viewingHours": "視聴時間",
+        "enabled": "有効",
+        "disabled": "無効",
+        "ageLimit": "年齢制限：{{age}}",
+        "noRestriction": "制限なし",
+        "noControls": "このプロフィールにはアクティブなファミリーコントロールがありません"
+      },
+      "errors": {
+        "noControlsAvailable": "利用可能なファミリーコントロールがありません。最初にコントロールを作成してください。"
+      }
     }
   }
 }

@@ -7668,6 +7668,40 @@
       "enterPin": "输入PIN码",
       "enterNewPin": "输入新PIN码",
       "confirmNewPin": "确认新PIN码"
+    },
+    "profileControls": {
+      "title": "个人资料家庭控制",
+      "subtitle": "管理此个人资料的家庭控制",
+      "sourceSection": {
+        "title": "控制来源",
+        "inheritHousehold": "从家庭继承",
+        "inheritHouseholdDesc": "使用家庭级别的家庭控制",
+        "customControls": "自定义控制",
+        "customControlsDesc": "使用个人资料专用的家庭控制"
+      },
+      "selectControls": {
+        "title": "选择控制",
+        "controlsLabel": "家庭控制 {{id}}",
+        "kidsAge": "儿童：{{age}}",
+        "youngstersAge": "青少年：{{age}}",
+        "rating": "评级：{{rating}}",
+        "noControls": "没有可用的家庭控制。请在家庭控制设置中创建控制。"
+      },
+      "effectiveControls": {
+        "title": "活动控制",
+        "kidsEnabled": "儿童内容",
+        "youngstersEnabled": "青少年内容",
+        "contentRating": "内容评级限制",
+        "viewingHours": "观看时间",
+        "enabled": "已启用",
+        "disabled": "已禁用",
+        "ageLimit": "年龄限制：{{age}}",
+        "noRestriction": "无限制",
+        "noControls": "此个人资料没有活动的家庭控制"
+      },
+      "errors": {
+        "noControlsAvailable": "没有可用的家庭控制。请先创建控制。"
+      }
     }
   }
 }

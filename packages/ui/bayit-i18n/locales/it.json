@@ -7911,6 +7911,40 @@
       "enterPin": "Inserisci PIN",
       "enterNewPin": "Inserisci nuovo PIN",
       "confirmNewPin": "Conferma nuovo PIN"
+    },
+    "profileControls": {
+      "title": "Controlli Familiari del Profilo",
+      "subtitle": "Gestisci i controlli familiari per questo profilo",
+      "sourceSection": {
+        "title": "Fonte dei Controlli",
+        "inheritHousehold": "Eredita dalla Famiglia",
+        "inheritHouseholdDesc": "Usa i controlli familiari a livello della famiglia",
+        "customControls": "Controlli Personalizzati",
+        "customControlsDesc": "Usa controlli familiari specifici del profilo"
+      },
+      "selectControls": {
+        "title": "Seleziona Controlli",
+        "controlsLabel": "Controlli Familiari {{id}}",
+        "kidsAge": "Bambini: {{age}}",
+        "youngstersAge": "Ragazzi: {{age}}",
+        "rating": "Classificazione: {{rating}}",
+        "noControls": "Nessun controllo familiare disponibile. Crea controlli nelle impostazioni dei Controlli Familiari."
+      },
+      "effectiveControls": {
+        "title": "Controlli Attivi",
+        "kidsEnabled": "Contenuto Bambini",
+        "youngstersEnabled": "Contenuto Ragazzi",
+        "contentRating": "Limite di Classificazione del Contenuto",
+        "viewingHours": "Orari di Visione",
+        "enabled": "Abilitato",
+        "disabled": "Disabilitato",
+        "ageLimit": "Limite di età: {{age}}",
+        "noRestriction": "Nessuna restrizione",
+        "noControls": "Nessun controllo familiare attivo per questo profilo"
+      },
+      "errors": {
+        "noControlsAvailable": "Nessun controllo familiare disponibile. Crea prima dei controlli."
+      }
     }
   }
 }

@@ -103,6 +103,12 @@ export default function EmailTemplatesPage() {
     return defaults
   }, [])
 
+  // Email validation helper
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
   // Handle preview template
   const handlePreview = useCallback(
     async (template: EmailTemplate) => {
@@ -148,6 +154,12 @@ export default function EmailTemplatesPage() {
   const handleSendTest = useCallback(async () => {
     if (!selectedTemplate || !sendTestEmail) return
 
+    // Validate email format
+    if (!validateEmail(sendTestEmail)) {
+      setError(t('admin.emailTemplates.errors.invalidEmail', 'Please enter a valid email address'))
+      return
+    }
+
     setSendingTest(true)
     try {
       await api.post(`/admin/marketing/email-templates/${selectedTemplate.name}/send-test`, {
@@ -167,6 +179,12 @@ export default function EmailTemplatesPage() {
   // Handle send invitation
   const handleSendInvitation = useCallback(async () => {
     if (!invitationData.email) return
+
+    // Validate email format
+    if (!validateEmail(invitationData.email)) {
+      setError(t('admin.emailTemplates.errors.invalidEmail', 'Please enter a valid email address'))
+      return
+    }
 
     setSendingInvitation(true)
     try {
@@ -266,7 +284,13 @@ export default function EmailTemplatesPage() {
         ))}
       </View>
 
-      <GlassModal visible={previewModalVisible} onClose={() => setPreviewModalVisible(false)} size="large">
+      <GlassModal
+        visible={previewModalVisible}
+        onClose={() => setPreviewModalVisible(false)}
+        size="large"
+        accessibilityLabel={t('admin.emailTemplates.previewTitle', 'Template Preview')}
+        accessibilityRole="dialog"
+      >
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>
             {t('admin.emailTemplates.previewTitle', 'Template Preview')}: {selectedTemplate?.display_name}
@@ -318,7 +342,13 @@ export default function EmailTemplatesPage() {
         </View>
       </GlassModal>
 
-      <GlassModal visible={sendModalVisible} onClose={() => setSendModalVisible(false)} size="small">
+      <GlassModal
+        visible={sendModalVisible}
+        onClose={() => setSendModalVisible(false)}
+        size="small"
+        accessibilityLabel={t('admin.emailTemplates.sendTestTitle', 'Send Test Email')}
+        accessibilityRole="dialog"
+      >
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>{t('admin.emailTemplates.sendTestTitle', 'Send Test Email')}</Text>
           <GlassInput
@@ -339,7 +369,13 @@ export default function EmailTemplatesPage() {
         </View>
       </GlassModal>
 
-      <GlassModal visible={invitationModalVisible} onClose={() => setInvitationModalVisible(false)} size="medium">
+      <GlassModal
+        visible={invitationModalVisible}
+        onClose={() => setInvitationModalVisible(false)}
+        size="medium"
+        accessibilityLabel={t('admin.emailTemplates.sendInvitation', 'Send Platform Invitation')}
+        accessibilityRole="dialog"
+      >
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>{t('admin.emailTemplates.sendInvitation', 'Send Platform Invitation')}</Text>
           <GlassInput

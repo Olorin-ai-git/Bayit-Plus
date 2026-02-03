@@ -7634,6 +7634,40 @@
       "enterPin": "PIN লিখুন",
       "enterNewPin": "নতুন PIN লিখুন",
       "confirmNewPin": "নতুন PIN নিশ্চিত করুন"
+    },
+    "profileControls": {
+      "title": "প্রোফাইল পারিবারিক নিয়ন্ত্রণ",
+      "subtitle": "এই প্রোফাইলের জন্য পারিবারিক নিয়ন্ত্রণ পরিচালনা করুন",
+      "sourceSection": {
+        "title": "নিয়ন্ত্রণ উৎস",
+        "inheritHousehold": "পরিবার থেকে উত্তরাধিকার",
+        "inheritHouseholdDesc": "পরিবার-স্তরের পারিবারিক নিয়ন্ত্রণ ব্যবহার করুন",
+        "customControls": "কাস্টম নিয়ন্ত্রণ",
+        "customControlsDesc": "প্রোফাইল-নির্দিষ্ট পারিবারিক নিয়ন্ত্রণ ব্যবহার করুন"
+      },
+      "selectControls": {
+        "title": "নিয়ন্ত্রণ নির্বাচন করুন",
+        "controlsLabel": "পারিবারিক নিয়ন্ত্রণ {{id}}",
+        "kidsAge": "শিশুরা: {{age}}",
+        "youngstersAge": "কিশোররা: {{age}}",
+        "rating": "রেটিং: {{rating}}",
+        "noControls": "কোনো পারিবারিক নিয়ন্ত্রণ উপলব্ধ নেই। পারিবারিক নিয়ন্ত্রণ সেটিংসে নিয়ন্ত্রণ তৈরি করুন।"
+      },
+      "effectiveControls": {
+        "title": "সক্রিয় নিয়ন্ত্রণ",
+        "kidsEnabled": "শিশুদের সামগ্রী",
+        "youngstersEnabled": "কিশোরদের সামগ্রী",
+        "contentRating": "সামগ্রী রেটিং সীমা",
+        "viewingHours": "দেখার সময়",
+        "enabled": "সক্ষম",
+        "disabled": "অক্ষম",
+        "ageLimit": "বয়স সীমা: {{age}}",
+        "noRestriction": "কোনো সীমাবদ্ধতা নেই",
+        "noControls": "এই প্রোফাইলের জন্য কোনো সক্রিয় পারিবারিক নিয়ন্ত্রণ নেই"
+      },
+      "errors": {
+        "noControlsAvailable": "কোনো পারিবারিক নিয়ন্ত্রণ উপলব্ধ নেই। প্রথমে নিয়ন্ত্রণ তৈরি করুন।"
+      }
     }
   }
 }
