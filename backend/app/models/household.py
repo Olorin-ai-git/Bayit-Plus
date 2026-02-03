@@ -63,7 +63,9 @@ class Household(Document):
 
     # Members
     members: List[HouseholdMember] = Field(
-        default_factory=list, description="List of household members with roles"
+        default_factory=list,
+        description="List of household members with roles",
+        max_length=50  # Limit to prevent unbounded array growth
     )
 
     # Shared family controls (inherited by all child accounts)
@@ -73,7 +75,9 @@ class Household(Document):
 
     # Invitations
     pending_invitations: List[PendingInvitation] = Field(
-        default_factory=list, description="Pending invitations to join household"
+        default_factory=list,
+        description="Pending invitations to join household",
+        max_length=100  # Limit to prevent unbounded array growth
     )
 
     # Timestamps
@@ -91,6 +95,10 @@ class Household(Document):
             "household_id",
             [("members.user_id", pymongo.ASCENDING)],
             [("pending_invitations.email", pymongo.ASCENDING)],
+            [  # Compound index for profile controls resolution
+                ("members.user_id", pymongo.ASCENDING),
+                ("shared_controls_id", pymongo.ASCENDING),
+            ],
         ]
 
     def is_owner(self, user_id: str) -> bool:
@@ -119,7 +127,15 @@ class Household(Document):
     def add_member(
         self, user_id: str, role: HouseholdRole, invited_by: Optional[str] = None
     ) -> None:
-        """Add new member to household."""
+        """
+        Add new member to household.
+
+        Raises:
+            ValueError: If household is at maximum capacity (50 members)
+        """
+        if len(self.members) >= 50:
+            raise ValueError("Household has reached maximum capacity of 50 members")
+
         if not self.is_member(user_id):
             self.members.append(
                 HouseholdMember(user_id=user_id, role=role, invited_by=invited_by)
