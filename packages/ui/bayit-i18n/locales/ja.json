@@ -1525,6 +1525,36 @@
       "unsubscribeRate": "配信停止率",
       "viewAll": "すべて表示"
     },
+    "emailTemplates": {
+      "title": "メールテンプレート",
+      "preview": "プレビュー",
+      "send": "送信",
+      "sendTest": "テスト送信",
+      "sendInvitation": "招待を送信",
+      "recipientEmail": "受信者メール",
+      "inviterName": "あなたの名前（任意）",
+      "personalMessage": "個人メッセージ（任意）",
+      "testEmailAddress": "テストメールアドレス",
+      "previewTitle": "テンプレートプレビュー",
+      "sendTestTitle": "テストメール送信",
+      "updatePreview": "プレビューを更新",
+      "updating": "更新中...",
+      "category": "カテゴリー",
+      "categories": {
+        "all": "すべてのテンプレート",
+        "marketing": "マーケティング",
+        "onboarding": "オンボーディング",
+        "family": "ファミリー"
+      },
+      "success": {
+        "testSent": "テストメールを送信しました",
+        "invitationSent": "招待を送信しました"
+      },
+      "errors": {
+        "invalidEmail": "有効なメールアドレスを入力してください",
+        "sendFailed": "メール送信に失敗しました"
+      }
+    },
     "push": {
       "titlePlaceholder": "通知タイトル",
       "bodyPlaceholder": "通知メッセージ",

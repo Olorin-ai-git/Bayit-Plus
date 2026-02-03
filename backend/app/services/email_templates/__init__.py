@@ -17,7 +17,10 @@ class EmailTemplateRenderer:
     def __init__(self):
         """Initialize template renderer with template directory."""
         template_dir = Path(__file__).parent
-        self.env = Environment(loader=FileSystemLoader(str(template_dir)))
+        self.env = Environment(
+            loader=FileSystemLoader(str(template_dir)),
+            autoescape=True  # XSS Protection: Auto-escape HTML variables
+        )
 
     def render(self, template_name: str, context: Dict[str, Any]) -> str:
         """

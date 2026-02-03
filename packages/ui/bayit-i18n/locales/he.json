@@ -382,6 +382,7 @@
       "marketing": "שיווק",
       "marketingDashboard": "סקירה",
       "emailCampaigns": "קמפייני דוא״ל",
+      "emailTemplates": "תבניות אימייל",
       "pushNotifications": "התראות פוש",
       "content": "תוכן",
       "contentLibrary": "ספריית תוכן",
@@ -1809,6 +1810,36 @@
       "sent": "נשלחו",
       "unsubscribeRate": "שיעור הסרה",
       "viewAll": "הצג הכל"
+    },
+    "emailTemplates": {
+      "title": "תבניות אימייל",
+      "preview": "תצוגה מקדימה",
+      "send": "שלח",
+      "sendTest": "שלח בדיקה",
+      "sendInvitation": "שלח הזמנה לפלטפורמה",
+      "recipientEmail": "כתובת אימייל של הנמען",
+      "inviterName": "שמך (אופציונלי)",
+      "personalMessage": "הודעה אישית (אופציונלי)",
+      "testEmailAddress": "כתובת אימייל לבדיקה",
+      "previewTitle": "תצוגה מקדימה של תבנית",
+      "sendTestTitle": "שלח אימייל בדיקה",
+      "updatePreview": "עדכן תצוגה מקדימה",
+      "updating": "מעדכן...",
+      "category": "קטגוריה",
+      "categories": {
+        "all": "כל התבניות",
+        "marketing": "שיווק",
+        "onboarding": "הצטרפות",
+        "family": "משפחה"
+      },
+      "success": {
+        "testSent": "אימייל בדיקה נשלח בהצלחה",
+        "invitationSent": "הזמנה לפלטפורמה נשלחה בהצלחה"
+      },
+      "errors": {
+        "invalidEmail": "נא להזין כתובת אימייל תקינה",
+        "sendFailed": "שליחת האימייל נכשלה"
+      }
     },
     "push": {
       "titlePlaceholder": "כותרת הודעה",

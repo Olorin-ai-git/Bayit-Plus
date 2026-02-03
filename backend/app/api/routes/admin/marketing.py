@@ -6,6 +6,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from pydantic import BaseModel
 
+from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.models.admin import (AudienceFilter, EmailCampaign, MarketingStatus,
                               Permission, PushNotification)
 from app.models.user import User
@@ -416,7 +417,9 @@ class PlatformInvitationRequest(BaseModel):
 
 
 @router.post("/marketing/invitations/send")
+@limiter.limit(RATE_LIMITS["email_send_invitation"])
 async def send_platform_invitation_email(
+    request: Request,
     data: PlatformInvitationRequest,
     current_user: User = Depends(has_permission(Permission.MARKETING_SEND)),
 ):

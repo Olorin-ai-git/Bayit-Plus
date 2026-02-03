@@ -385,6 +385,7 @@
       "marketing": "Marketing",
       "marketingDashboard": "Overview",
       "emailCampaigns": "Email Campaigns",
+      "emailTemplates": "Email Templates",
       "pushNotifications": "Push Notifications",
       "content": "Content",
       "contentLibrary": "Content Library",
@@ -1808,6 +1809,36 @@
       "sent": "Sent",
       "unsubscribeRate": "Unsubscribe Rate",
       "viewAll": "View All"
+    },
+    "emailTemplates": {
+      "title": "Email Templates",
+      "preview": "Preview",
+      "send": "Send",
+      "sendTest": "Send Test",
+      "sendInvitation": "Send Platform Invitation",
+      "recipientEmail": "Recipient Email",
+      "inviterName": "Your Name (optional)",
+      "personalMessage": "Personal Message (optional)",
+      "testEmailAddress": "Test Email Address",
+      "previewTitle": "Template Preview",
+      "sendTestTitle": "Send Test Email",
+      "updatePreview": "Update Preview",
+      "updating": "Updating...",
+      "category": "Category",
+      "categories": {
+        "all": "All Templates",
+        "marketing": "Marketing",
+        "onboarding": "Onboarding",
+        "family": "Family"
+      },
+      "success": {
+        "testSent": "Test email sent successfully",
+        "invitationSent": "Platform invitation sent successfully"
+      },
+      "errors": {
+        "invalidEmail": "Please enter a valid email address",
+        "sendFailed": "Failed to send email"
+      }
     },
     "push": {
       "titlePlaceholder": "Notification Title",

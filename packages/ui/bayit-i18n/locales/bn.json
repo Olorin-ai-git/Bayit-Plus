@@ -1946,6 +1946,36 @@
       "unsubscribeRate": "আনসাবস্ক্রাইব রেট",
       "viewAll": "সব দেখুন"
     },
+    "emailTemplates": {
+      "title": "ইমেইল টেমপ্লেট",
+      "preview": "প্রিভিউ",
+      "send": "পাঠান",
+      "sendTest": "টেস্ট পাঠান",
+      "sendInvitation": "আমন্ত্রণ পাঠান",
+      "recipientEmail": "প্রাপক ইমেইল",
+      "inviterName": "আপনার নাম (ঐচ্ছিক)",
+      "personalMessage": "ব্যক্তিগত বার্তা (ঐচ্ছিক)",
+      "testEmailAddress": "টেস্ট ইমেইল ঠিকানা",
+      "previewTitle": "টেমপ্লেট প্রিভিউ",
+      "sendTestTitle": "টেস্ট ইমেইল পাঠান",
+      "updatePreview": "প্রিভিউ আপডেট করুন",
+      "updating": "আপডেট হচ্ছে...",
+      "category": "বিভাগ",
+      "categories": {
+        "all": "সব টেমপ্লেট",
+        "marketing": "মার্কেটিং",
+        "onboarding": "অনবোর্ডিং",
+        "family": "পরিবার"
+      },
+      "success": {
+        "testSent": "টেস্ট ইমেইল সফলভাবে পাঠানো হয়েছে",
+        "invitationSent": "আমন্ত্রণ সফলভাবে পাঠানো হয়েছে"
+      },
+      "errors": {
+        "invalidEmail": "অনুগ্রহ করে একটি বৈধ ইমেইল ঠিকানা লিখুন",
+        "sendFailed": "ইমেইল পাঠাতে ব্যর্থ"
+      }
+    },
     "push": {
       "titlePlaceholder": "নোটিফিকেশন শিরোনাম",
       "bodyPlaceholder": "নোটিফিকেশন মেসেজ",

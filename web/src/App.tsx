@@ -126,6 +126,7 @@ const RefundsPage = lazy(() => import('./pages/admin/RefundsPage'))
 const PlanManagementPage = lazy(() => import('./pages/admin/PlanManagementPage'))
 const MarketingDashboardPage = lazy(() => import('./pages/admin/MarketingDashboardPage'))
 const EmailCampaignsPage = lazy(() => import('./pages/admin/EmailCampaignsPage'))
+const EmailTemplatesPage = lazy(() => import('./pages/admin/EmailTemplatesPage'))
 const PushNotificationsPage = lazy(() => import('./pages/admin/PushNotificationsPage'))
 const AuditLogsPage = lazy(() => import('./pages/admin/AuditLogsPage'))
 const AdminSettingsPage = lazy(() => import('./pages/admin/SettingsPage'))
@@ -220,6 +221,7 @@ const AppContent = () => {
         <Route path="plans" element={<PlanManagementPage />} />
         <Route path="marketing" element={<MarketingDashboardPage />} />
         <Route path="emails" element={<EmailCampaignsPage />} />
+        <Route path="email-templates" element={<EmailTemplatesPage />} />
         <Route path="push" element={<PushNotificationsPage />} />
         <Route path="logs" element={<AuditLogsPage />} />
         <Route path="librarian" element={<LibrarianAgentPage />} />

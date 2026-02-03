@@ -49,7 +49,7 @@ PROJECT_ID=""
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        backend)
+        backend|web)
             TARGET="$1"
             shift
             ;;
@@ -70,10 +70,11 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         -h|--help)
-            echo "Usage: $0 [backend] [--dry-run] [--force] [--project PROJECT_ID]"
+            echo "Usage: $0 [backend|web] [--dry-run] [--force] [--project PROJECT_ID]"
             echo ""
             echo "Options:"
-            echo "  backend           Target platform (default: backend)"
+            echo "  backend           Target backend platform (default)"
+            echo "  web               Target web platform"
             echo "  --dry-run         Preview changes without writing"
             echo "  --force           Write .env even if validation fails"
             echo "  --project ID      Google Cloud project ID"

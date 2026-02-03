@@ -73,6 +73,9 @@ try:
         "location_content": _dev_limit("60/minute"),  # Content discovery queries
         # Voice Interaction - Protection for AI inference and real-time processing
         "voice_unified": _dev_limit("60/minute"),  # Voice command processing (intent classification + execution)
+        # Email Templates - Protection for email sending operations
+        "email_send_test": _dev_limit("10/hour"),  # Test email sends (prevent spam)
+        "email_send_invitation": _dev_limit("20/hour"),  # Platform invitations per user
         # Synced Streams - Live stream synchronization
         "synced_streams_create": _dev_limit("30/minute"),  # Synced stream creation
         "synced_streams_latency": _dev_limit("60/minute"),  # Latency updates during streaming

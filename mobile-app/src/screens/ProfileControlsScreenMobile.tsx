@@ -185,7 +185,7 @@ export default function ProfileControlsScreenMobile() {
             disabled={isLoading}
           >
             <View style={styles.radioCircle}>
-              {!isInheriting && <View style={styles.radioCircleSelected />}
+              {!isInheriting && <View style={styles.radioCircleSelected} />}
             </View>
             <View style={styles.radioContent}>
               <View style={styles.radioHeader}>

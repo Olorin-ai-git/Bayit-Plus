@@ -1946,6 +1946,36 @@
       "unsubscribeRate": "अनसब्सक्राइब दर",
       "viewAll": "सभी देखें"
     },
+    "emailTemplates": {
+      "title": "ईमेल टेम्पलेट",
+      "preview": "पूर्वावलोकन",
+      "send": "भेजें",
+      "sendTest": "परीक्षण भेजें",
+      "sendInvitation": "निमंत्रण भेजें",
+      "recipientEmail": "प्राप्तकर्ता ईमेल",
+      "inviterName": "आपका नाम (वैकल्पिक)",
+      "personalMessage": "व्यक्तिगत संदेश (वैकल्पिक)",
+      "testEmailAddress": "परीक्षण ईमेल पता",
+      "previewTitle": "टेम्पलेट पूर्वावलोकन",
+      "sendTestTitle": "परीक्षण ईमेल भेजें",
+      "updatePreview": "पूर्वावलोकन अपडेट करें",
+      "updating": "अपडेट हो रहा है...",
+      "category": "श्रेणी",
+      "categories": {
+        "all": "सभी टेम्पलेट",
+        "marketing": "मार्केटिंग",
+        "onboarding": "ऑनबोर्डिंग",
+        "family": "परिवार"
+      },
+      "success": {
+        "testSent": "परीक्षण ईमेल सफलतापूर्वक भेजा गया",
+        "invitationSent": "निमंत्रण सफलतापूर्वक भेजा गया"
+      },
+      "errors": {
+        "invalidEmail": "कृपया एक वैध ईमेल पता दर्ज करें",
+        "sendFailed": "ईमेल भेजने में विफल"
+      }
+    },
     "push": {
       "titlePlaceholder": "सूचना शीर्षक",
       "bodyPlaceholder": "सूचना संदेश",

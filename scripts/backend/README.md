@@ -35,6 +35,7 @@ backend/scripts/
 See individual directories for detailed documentation.
 
 **Key Scripts:**
+- **User Management:** `add-admin.sh` - Create/upgrade admin users with role-based access control
 - **Library Integrity Verification:** `bayit-verify-library-integrity.sh` - Zero-trust verification of complete media library
 - **Category Mismatch Fix:** `bayit-fix-category-mismatch.sh` - Fix category_name/is_series field inconsistencies
 - **URL Migrator:** `production/content/url_migrator.py` - Unified URL migration (consolidates 7+ scripts)
@@ -45,6 +46,21 @@ See individual directories for detailed documentation.
 - **Database Restore:** `production/database/restore_database.sh` - Decryption and safety backups
 
 ## 🚀 Common Tasks
+
+**User Management:**
+```bash
+# Add new admin user
+./add-admin.sh user@example.com "User Name"
+
+# List all users
+./add-admin.sh --list
+
+# Get help
+./add-admin.sh --help
+
+# See full documentation
+cat USER_MANAGEMENT.md
+```
 
 **Upload Movies from External Drive:**
 ```bash
@@ -146,6 +162,7 @@ See `config/paths.env.example` for full configuration options.
 
 ## 📚 Documentation
 
+- **User Management:** `USER_MANAGEMENT.md`
 - **URL Migrator:** `production/content/README.md`
 - **Migration History:** `migrations/MIGRATION_HISTORY.md`
 - **Configuration:** `config/paths.env.example`

@@ -1946,6 +1946,36 @@
       "unsubscribeRate": "Taux de désabonnement",
       "viewAll": "Voir tout"
     },
+    "emailTemplates": {
+      "title": "Modèles d'e-mail",
+      "preview": "Aperçu",
+      "send": "Envoyer",
+      "sendTest": "Envoyer un test",
+      "sendInvitation": "Envoyer une invitation",
+      "recipientEmail": "E-mail du destinataire",
+      "inviterName": "Votre nom (optionnel)",
+      "personalMessage": "Message personnel (optionnel)",
+      "testEmailAddress": "Adresse e-mail de test",
+      "previewTitle": "Aperçu du modèle",
+      "sendTestTitle": "Envoyer un e-mail de test",
+      "updatePreview": "Mettre à jour l'aperçu",
+      "updating": "Mise à jour...",
+      "category": "Catégorie",
+      "categories": {
+        "all": "Tous les modèles",
+        "marketing": "Marketing",
+        "onboarding": "Intégration",
+        "family": "Famille"
+      },
+      "success": {
+        "testSent": "E-mail de test envoyé avec succès",
+        "invitationSent": "Invitation envoyée avec succès"
+      },
+      "errors": {
+        "invalidEmail": "Veuillez entrer une adresse e-mail valide",
+        "sendFailed": "Échec de l'envoi de l'e-mail"
+      }
+    },
     "push": {
       "titlePlaceholder": "Titre de la notification",
       "bodyPlaceholder": "Message de la notification",

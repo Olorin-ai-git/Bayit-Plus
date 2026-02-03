@@ -4,6 +4,7 @@ Household Membership Service
 Manages household member invitations, acceptances, and removals.
 """
 
+import secrets
 import uuid
 import logging
 from datetime import datetime, timedelta, timezone
@@ -50,9 +51,9 @@ class HouseholdMembershipService:
             raise PermissionError("Only parents can invite members")
 
         if household.get_invitation_by_email(invitee_email):
-            raise ValueError("Invitation already sent to this email")
+            raise ValueError("Unable to send invitation at this time")
 
-        invitation_id = str(uuid.uuid4())
+        invitation_id = secrets.token_urlsafe(32)
         expires_at = datetime.now(timezone.utc) + timedelta(days=7)
 
         invitation = PendingInvitation(
@@ -96,14 +97,22 @@ class HouseholdMembershipService:
 
         Args:
             user_id: User ID accepting invitation
-            invitation_code: Invitation code (UUID)
+            invitation_code: Invitation code (secure token)
 
         Returns:
             Household instance
 
         Raises:
-            ValueError: If invitation not found or expired
+            ValueError: If invitation not found, expired, or invalid format
+
+        Security: Validates invitation code format to prevent NoSQL injection.
         """
+        if not invitation_code or not isinstance(invitation_code, str):
+            raise ValueError("Invalid invitation code")
+
+        if len(invitation_code) > 100:
+            raise ValueError("Invalid invitation code")
+
         household = await Household.find_one(
             {"pending_invitations.invitation_id": invitation_code}
         )

@@ -9,11 +9,38 @@ from pydantic import BaseModel
 
 from app.core.security import get_current_active_user
 from app.models.user import User
-from app.models.profile import ProfileResponse
+from app.models.profile import Profile, ProfileResponse
 from app.models.family_controls_schemas import FamilyControlsResponse
 from app.services.profile_controls_service import profile_controls_service
 
 router = APIRouter(prefix="/profile-controls", tags=["profile-controls"])
+
+
+async def verify_profile_ownership(profile_id: str, current_user: User) -> Profile:
+    """
+    Verify that the current user owns the specified profile.
+
+    Args:
+        profile_id: Profile ID to verify
+        current_user: Current authenticated user
+
+    Returns:
+        Profile instance if ownership verified
+
+    Raises:
+        HTTPException: 404 if profile not found, 403 if access denied
+    """
+    profile = await Profile.get(profile_id)
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    if profile.user_id != str(current_user.id):
+        raise HTTPException(
+            status_code=403,
+            detail="Access denied: You do not own this profile",
+        )
+
+    return profile
 
 
 class SetCustomControlsRequest(BaseModel):
@@ -41,7 +68,11 @@ async def get_profile_controls(
     Returns household controls if profile inherits,
     custom controls if profile has overrides,
     or None if no controls apply.
+
+    Security: Verifies profile ownership before returning controls.
     """
+    await verify_profile_ownership(profile_id, current_user)
+
     try:
         controls = await profile_controls_service.get_effective_controls(
             profile_id
@@ -82,7 +113,11 @@ async def set_custom_controls(
     Set custom family controls for a profile.
 
     Disables household inheritance and uses specified controls.
+
+    Security: Verifies profile ownership before modification.
     """
+    await verify_profile_ownership(profile_id, current_user)
+
     try:
         profile = await profile_controls_service.set_custom_controls(
             profile_id, data.controls_id
@@ -106,7 +141,11 @@ async def inherit_household_controls(
     Configure profile to inherit household controls.
 
     Clears custom controls and enables household inheritance.
+
+    Security: Verifies profile ownership before modification.
     """
+    await verify_profile_ownership(profile_id, current_user)
+
     try:
         profile = await profile_controls_service.inherit_household_controls(
             profile_id
@@ -134,7 +173,11 @@ async def get_controls_source(
     - source: "household", "custom", or "none"
     - controls_id: ID of active controls (if any)
     - inherit_household_controls: Whether profile inherits from household
+
+    Security: Verifies profile ownership before returning source information.
     """
+    await verify_profile_ownership(profile_id, current_user)
+
     try:
         source_info = await profile_controls_service.get_controls_source(
             profile_id

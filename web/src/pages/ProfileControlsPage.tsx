@@ -15,6 +15,7 @@ import { useProfileControlsStore } from '../../../shared/stores/profileControlsS
 import { setApiClient as setProfileControlsApiClient } from '../../../shared/services/profileControlsApi';
 import { useFamilyControlsStore } from '../../../shared/stores/familyControlsStore';
 import api from '../services/api';
+import logger from '../utils/logger';
 
 // Initialize profile controls API client
 setProfileControlsApiClient(api);
@@ -46,6 +47,7 @@ export default function ProfileControlsPage() {
 
   const [selectedControlsId, setSelectedControlsId] = useState<string | null>(null);
   const [isInheriting, setIsInheriting] = useState(true);
+  const [localError, setLocalError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!profileId) {
@@ -82,7 +84,9 @@ export default function ProfileControlsPage() {
           // Use first available controls
           await setCustomControls(profileId, availableControls[0].id);
         } else {
-          alert(t('profileControls.errors.noControlsAvailable', 'No family controls available. Create controls first.'));
+          const errorMsg = t('profileControls.errors.noControlsAvailable', 'No family controls available. Create controls first.');
+          setLocalError(errorMsg);
+          logger.warn('No family controls available', 'ProfileControlsPage', { profileId });
           return;
         }
       } else {
@@ -93,7 +97,8 @@ export default function ProfileControlsPage() {
       // Reload source after change
       await getControlsSource(profileId);
     } catch (error: any) {
-      console.error('Failed to toggle inheritance:', error);
+      logger.error('Failed to toggle inheritance', 'ProfileControlsPage', error);
+      setLocalError(error.message || 'Failed to toggle inheritance');
     }
   };
 
@@ -108,13 +113,14 @@ export default function ProfileControlsPage() {
         await setCustomControls(profileId, controlsId);
         await getControlsSource(profileId);
       } catch (error: any) {
-        console.error('Failed to set custom controls:', error);
+        logger.error('Failed to set custom controls', 'ProfileControlsPage', error);
+        setLocalError(error.message || 'Failed to set custom controls');
       }
     }
   };
 
   const isLoading = profileControlsLoading || familyControlsLoading;
-  const error = profileControlsError || familyControlsError;
+  const error = profileControlsError || familyControlsError || localError;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-6">
@@ -140,6 +146,7 @@ export default function ProfileControlsPage() {
               onClick={() => {
                 clearProfileControlsError();
                 clearFamilyControlsError();
+                setLocalError(null);
               }}
               className="mt-2 text-sm text-red-300 hover:text-red-100 underline"
             >

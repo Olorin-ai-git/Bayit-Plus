@@ -1,8 +1,36 @@
-# Content Upload Quick Reference
+# Quick Reference Guide
 
-Quick reference for uploading movies and TV series to Bayit+.
+Quick reference for common administrative tasks in Bayit+.
 
-## Setup (One-Time)
+## User Management
+
+### Add Admin User
+```bash
+./add-admin.sh user@example.com "User Name"
+```
+
+### List All Users
+```bash
+./add-admin.sh --list
+```
+
+### Upgrade Existing User
+```bash
+./add-admin.sh existing@example.com
+```
+
+### Get Help
+```bash
+./add-admin.sh --help
+```
+
+**Full Documentation:** `USER_MANAGEMENT.md`
+
+---
+
+## Content Upload
+
+### Setup (One-Time)
 
 ```bash
 # 1. Copy environment template

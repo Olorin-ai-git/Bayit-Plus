@@ -15,6 +15,7 @@ from .campaigns import router as campaigns_router
 from .cost_dashboard import router as cost_dashboard_router
 from .dashboard import router as dashboard_router
 from .database_maintenance import router as database_maintenance_router
+from .email_templates import router as email_templates_router
 from .live_quota_analytics import router as live_quota_analytics_router
 from .live_quotas import router as live_quotas_router
 from .marketing import router as marketing_router
@@ -41,6 +42,7 @@ router.include_router(billing_router, tags=["admin-billing"])
 router.include_router(subscriptions_router, tags=["admin-subscriptions"])
 router.include_router(plans_router, tags=["admin-plans"])
 router.include_router(marketing_router, tags=["admin-marketing"])
+router.include_router(email_templates_router, tags=["admin-email-templates"])
 router.include_router(settings_router, tags=["admin-settings"])
 router.include_router(audit_router, tags=["admin-audit"])
 router.include_router(analytics_router, tags=["admin-analytics"])

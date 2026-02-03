@@ -1518,6 +1518,36 @@
       "unsubscribeRate": "退订率",
       "viewAll": "查看全部"
     },
+    "emailTemplates": {
+      "title": "邮件模板",
+      "preview": "预览",
+      "send": "发送",
+      "sendTest": "发送测试",
+      "sendInvitation": "发送平台邀请",
+      "recipientEmail": "收件人邮箱",
+      "inviterName": "您的姓名（可选）",
+      "personalMessage": "个人消息（可选）",
+      "testEmailAddress": "测试邮箱地址",
+      "previewTitle": "模板预览",
+      "sendTestTitle": "发送测试邮件",
+      "updatePreview": "更新预览",
+      "updating": "更新中...",
+      "category": "类别",
+      "categories": {
+        "all": "所有模板",
+        "marketing": "营销",
+        "onboarding": "入门引导",
+        "family": "家庭"
+      },
+      "success": {
+        "testSent": "测试邮件发送成功",
+        "invitationSent": "平台邀请发送成功"
+      },
+      "errors": {
+        "invalidEmail": "请输入有效的邮箱地址",
+        "sendFailed": "邮件发送失败"
+      }
+    },
     "push": {
       "titlePlaceholder": "通知标题",
       "bodyPlaceholder": "通知消息",

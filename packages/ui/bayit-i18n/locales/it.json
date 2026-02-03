@@ -2146,6 +2146,36 @@
       "unsubscribeRate": "Tasso di disiscrizione",
       "viewAll": "Vedi tutto"
     },
+    "emailTemplates": {
+      "title": "Modelli email",
+      "preview": "Anteprima",
+      "send": "Invia",
+      "sendTest": "Invia test",
+      "sendInvitation": "Invia invito",
+      "recipientEmail": "Email destinatario",
+      "inviterName": "Il tuo nome (opzionale)",
+      "personalMessage": "Messaggio personale (opzionale)",
+      "testEmailAddress": "Indirizzo email di test",
+      "previewTitle": "Anteprima modello",
+      "sendTestTitle": "Invia email di test",
+      "updatePreview": "Aggiorna anteprima",
+      "updating": "Aggiornamento...",
+      "category": "Categoria",
+      "categories": {
+        "all": "Tutti i modelli",
+        "marketing": "Marketing",
+        "onboarding": "Onboarding",
+        "family": "Famiglia"
+      },
+      "success": {
+        "testSent": "Email di test inviata con successo",
+        "invitationSent": "Invito inviato con successo"
+      },
+      "errors": {
+        "invalidEmail": "Inserisci un indirizzo email valido",
+        "sendFailed": "Invio email fallito"
+      }
+    },
     "push": {
       "titlePlaceholder": "Titolo notifica",
       "bodyPlaceholder": "Messaggio notifica",

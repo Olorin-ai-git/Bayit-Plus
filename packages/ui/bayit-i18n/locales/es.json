@@ -1320,7 +1320,8 @@
       "voiceManagement": "Gestión de Voz",
       "triviaAnalytics": "Análisis de Trivia",
       "liveAiDataFlow": "Flujo de Datos IA en Vivo",
-      "systemHealth": "Salud del Sistema"
+      "systemHealth": "Salud del Sistema",
+      "emailTemplates": "Plantillas de Correo"
     },
     "liveQuotas": {
       "title": "Gestión de Cuotas de Funciones en Vivo",
@@ -2894,6 +2895,36 @@
       "age": "Edad",
       "approve": "Aprobar",
       "reject": "Rechazar"
+    },
+    "emailTemplates": {
+      "title": "Plantillas de Correo",
+      "preview": "Vista Previa",
+      "send": "Enviar",
+      "sendTest": "Enviar Prueba",
+      "sendInvitation": "Enviar Invitación de Plataforma",
+      "recipientEmail": "Correo del Destinatario",
+      "inviterName": "Tu Nombre (opcional)",
+      "personalMessage": "Mensaje Personal (opcional)",
+      "testEmailAddress": "Dirección de Correo de Prueba",
+      "previewTitle": "Vista Previa de Plantilla",
+      "sendTestTitle": "Enviar Correo de Prueba",
+      "updatePreview": "Actualizar Vista Previa",
+      "updating": "Actualizando...",
+      "category": "Categoría",
+      "categories": {
+        "all": "Todas las Plantillas",
+        "marketing": "Marketing",
+        "onboarding": "Incorporación",
+        "family": "Familia"
+      },
+      "success": {
+        "testSent": "Correo de prueba enviado exitosamente",
+        "invitationSent": "Invitación de plataforma enviada exitosamente"
+      },
+      "errors": {
+        "invalidEmail": "Por favor ingrese un correo válido",
+        "sendFailed": "Error al enviar correo"
+      }
     }
   },
   "breadcrumbs": {
