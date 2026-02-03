@@ -13,6 +13,7 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
+  SafeAreaView,
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
@@ -21,10 +22,10 @@ import { useProfileControlsStore } from '../../../shared/stores/profileControlsS
 import { setApiClient as setProfileControlsApiClient } from '../../../shared/services/profileControlsApi';
 import { useFamilyControlsStore } from '../../../shared/stores/familyControlsStore';
 import { GlassAlert } from '../../../shared/components/ui/GlassAlert';
-import api from '../services/api';
+import httpClient from '../services/httpClient';
 
-// Initialize API client
-setProfileControlsApiClient(api);
+// Initialize API client with compatible HTTP client
+setProfileControlsApiClient(httpClient);
 
 export default function ProfileControlsScreenMobile() {
   const { t } = useTranslation();
@@ -121,10 +122,17 @@ export default function ProfileControlsScreenMobile() {
   const error = profileControlsError || familyControlsError;
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+          accessibilityRole="button"
+          accessibilityLabel={t('common.back', 'Back')}
+          accessibilityHint={t('accessibility.navigateBack', 'Navigate back to profiles list')}
+        >
           <Ionicons name="arrow-back" size={24} color="#ffffff" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>
@@ -142,6 +150,9 @@ export default function ProfileControlsScreenMobile() {
                 clearProfileControlsError();
                 clearFamilyControlsError();
               }}
+              accessibilityRole="button"
+              accessibilityLabel={t('common.dismiss', 'Dismiss')}
+              accessibilityHint={t('accessibility.dismissError', 'Dismiss error message')}
             >
               <Text style={styles.dismissButton}>
                 {t('common.dismiss', 'Dismiss')}
@@ -161,6 +172,10 @@ export default function ProfileControlsScreenMobile() {
             style={[styles.radioOption, isInheriting && styles.radioOptionSelected]}
             onPress={handleToggleInheritance}
             disabled={isLoading}
+            accessibilityRole="radio"
+            accessibilityLabel={t('profileControls.sourceSection.inheritHousehold', 'Inherit from Household')}
+            accessibilityHint={t('profileControls.sourceSection.inheritHouseholdDesc', 'Use household-wide family controls')}
+            accessibilityState={{ checked: isInheriting }}
           >
             <View style={styles.radioCircle}>
               {isInheriting && <View style={styles.radioCircleSelected} />}
@@ -183,6 +198,10 @@ export default function ProfileControlsScreenMobile() {
             style={[styles.radioOption, !isInheriting && styles.radioOptionSelected]}
             onPress={handleToggleInheritance}
             disabled={isLoading}
+            accessibilityRole="radio"
+            accessibilityLabel={t('profileControls.sourceSection.customControls', 'Custom Controls')}
+            accessibilityHint={t('profileControls.sourceSection.customControlsDesc', 'Use profile-specific family controls')}
+            accessibilityState={{ checked: !isInheriting }}
           >
             <View style={styles.radioCircle}>
               {!isInheriting && <View style={styles.radioCircleSelected} />}
@@ -335,14 +354,18 @@ export default function ProfileControlsScreenMobile() {
           </View>
         )}
       </ScrollView>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: '#1a1a2e',
+  },
+  container: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
@@ -354,8 +377,12 @@ const styles = StyleSheet.create({
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   backButton: {
-    padding: 8,
+    padding: 12,
     marginRight: 12,
+    minWidth: 44,
+    minHeight: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
     fontSize: 20,
