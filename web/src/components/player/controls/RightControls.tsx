@@ -139,8 +139,8 @@ export default function RightControls({
       {renderAirPlayButton && renderAirPlayButton()}
       {renderChromecastButton && renderChromecastButton()}
 
-      {/* Chapters */}
-      {!isLive && hasChapters && onChaptersPanelToggle && (
+      {/* Chapters - hidden on mobile */}
+      {!responsive.isMobile && !isLive && hasChapters && onChaptersPanelToggle && (
         <Pressable
           onPress={(e) => {
             e.stopPropagation?.()
@@ -167,8 +167,8 @@ export default function RightControls({
         </Pressable>
       )}
 
-      {/* Scene Search */}
-      {hasSceneSearch && onSceneSearchToggle && (
+      {/* Scene Search - hidden on mobile */}
+      {!responsive.isMobile && hasSceneSearch && onSceneSearchToggle && (
         <Pressable
           onPress={(e) => {
             e.stopPropagation?.()
@@ -196,10 +196,10 @@ export default function RightControls({
       )}
 
       {renderSubtitleControls && renderSubtitleControls()}
-      {renderRecordButton && renderRecordButton()}
+      {!responsive.isMobile && renderRecordButton && renderRecordButton()}
 
-      {/* Channel Chat button for VOD */}
-      {renderChannelChatButton && renderChannelChatButton()}
+      {/* Channel Chat button for VOD - hidden on mobile */}
+      {!responsive.isMobile && renderChannelChatButton && renderChannelChatButton()}
 
       {/* Regular Settings button for VOD */}
       {onSettingsToggle && (

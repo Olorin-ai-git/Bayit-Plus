@@ -179,7 +179,7 @@ export default function LeftControls({
         </>
       )}
 
-      {/* Volume */}
+      {/* Volume - hide slider on mobile to save space */}
       <View style={styles.volumeControls}>
         <Pressable
           onPress={(e) => { e.stopPropagation?.(); controls.toggleMute() }}
@@ -197,19 +197,21 @@ export default function LeftControls({
         >
           {state.isMuted ? <VolumeX size={smallIconSize} color={colors.text} /> : <Volume2 size={smallIconSize} color={colors.text} />}
         </Pressable>
-        <View style={styles.sliderContainer}>
-          <GlassSlider
-            value={state.isMuted ? 0 : state.volume}
-            min={0} max={1} step={0.1}
-            onValueChange={controls.setVolume}
-            accessibilityLabel={t('player.volume')}
-            testID="volume-slider"
-          />
-        </View>
+        {!responsive.isMobile && (
+          <View style={styles.sliderContainer}>
+            <GlassSlider
+              value={state.isMuted ? 0 : state.volume}
+              min={0} max={1} step={0.1}
+              onValueChange={controls.setVolume}
+              accessibilityLabel={t('player.volume')}
+              testID="volume-slider"
+            />
+          </View>
+        )}
       </View>
 
-      {/* Time Display */}
-      {!isLive && (
+      {/* Time Display - hidden on mobile to save space */}
+      {!isLive && !responsive.isMobile && (
         <View style={styles.timeContainer}>
           <Text style={[styles.timeText, isTV && styles.timeTextTV]}>
             {controls.formatTime(state.currentTime)} / {controls.formatTime(state.duration)}

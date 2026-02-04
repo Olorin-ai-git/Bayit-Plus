@@ -3,9 +3,9 @@
  * Provides UI controls for subtitle selection and customization
  */
 
-import { useState, useRef, useCallback, RefObject } from 'react'
+import { useState, useRef, useCallback, useEffect, RefObject } from 'react'
 import { createPortal } from 'react-dom'
-import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator, Dimensions } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Subtitles, Settings as SettingsIcon, X, Download, Check, AlertCircle } from 'lucide-react'
 import { Icon } from '@olorin/shared-icons/web'
@@ -72,8 +72,15 @@ export default function SubtitleControls({
   onSplitLanguagesChange,
 }: SubtitleControlsProps) {
   const { t } = useTranslation()
+  const [isMobile, setIsMobile] = useState(Dimensions.get('window').width < 768)
   const [showLanguageMenu, setShowLanguageMenu] = useState(false)
   const [showSettingsPanel, setShowSettingsPanel] = useState(false)
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
   const [showHebrewModePicker, setShowHebrewModePicker] = useState(false)
   const [showEnglishModePicker, setShowEnglishModePicker] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
@@ -258,7 +265,7 @@ export default function SubtitleControls({
         />
         <GlassView
           intensity="high"
-          style={styles.menu}
+          style={[styles.menu, isMobile && styles.menuMobile]}
           data-controls-panel="true"
           onClick={(e: any) => {
             // Stop event propagation to prevent clicks from reaching video controls
@@ -598,6 +605,15 @@ const styles = StyleSheet.create({
     maxHeight: 500,
     borderRadius: borderRadius.lg,
     zIndex: 200,
+  },
+  menuMobile: {
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%' as any,
+    maxHeight: '70%' as any,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
   },
   menuHeader: {
     flexDirection: 'row',
