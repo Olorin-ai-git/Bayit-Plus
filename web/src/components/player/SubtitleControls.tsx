@@ -296,7 +296,7 @@ export default function SubtitleControls({
 
           {/* Split Mode Toggle - shown when at least 2 languages available */}
           {deduplicatedLanguages.length >= 2 && onSplitModeToggle && (
-            <View style={styles.splitModeSection}>
+            <View style={[styles.splitModeSection, isMobile && styles.splitModeSectionMobile]}>
               <SplitModeToggle
                 enabled={splitMode}
                 onToggle={handleSplitModeToggleLocal}
@@ -313,8 +313,8 @@ export default function SubtitleControls({
             </View>
           )}
 
-          {/* Available Languages Flags Preview - Deduplicated (hidden in split mode) */}
-          {!splitMode && deduplicatedLanguages.length > 0 && (
+          {/* Available Languages Flags Preview - Deduplicated (hidden in split mode and on mobile) */}
+          {!splitMode && !isMobile && deduplicatedLanguages.length > 0 && (
             <View style={styles.flagsPreview}>
               {deduplicatedLanguages.map((track) => {
                 const isActive = track.language === currentLanguage && enabled
@@ -351,7 +351,7 @@ export default function SubtitleControls({
             </View>
           )}
 
-          <ScrollView style={styles.menuContent}>
+          <ScrollView style={[styles.menuContent, isMobile && styles.menuContentMobile]}>
             {/* Language list with Hebrew and English mode split button support */}
             <SubtitleLanguageList
               availableLanguages={deduplicatedLanguages}
@@ -611,7 +611,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     width: '100%' as any,
-    maxHeight: '70%' as any,
+    maxHeight: '50%' as any,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
   },
@@ -635,6 +635,9 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  splitModeSectionMobile: {
+    padding: spacing.sm,
   },
   flagsPreview: {
     flexDirection: 'row',
@@ -667,6 +670,10 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     maxHeight: 440,
     gap: spacing.xs,
+  },
+  menuContentMobile: {
+    padding: spacing.sm,
+    maxHeight: 250,
   },
   menuItem: {
     flexDirection: 'row',
