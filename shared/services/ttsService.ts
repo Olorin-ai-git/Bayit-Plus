@@ -42,6 +42,7 @@ interface CachedAudio {
 class TTSService extends EventEmitter {
   private playQueue: TTSQueueItem[] = [];
   private currentPlayback: HTMLAudioElement | null = null;
+  private currentItem: TTSQueueItem | null = null;
   private isPlaying = false;
   private audioContext: AudioContext | null = null;
   private audioCache: Map<string, CachedAudio> = new Map();
@@ -128,6 +129,20 @@ class TTSService extends EventEmitter {
     callbacks?: { onStart?: () => void; onComplete?: () => void; onError?: (e: Error) => void }
   ): Promise<void> {
     const id = `${Date.now()}-${Math.random()}`;
+    const effectiveVoiceId = voiceId || this.config.voiceId;
+
+    // Deduplication: Check if the same text is already in queue or currently playing
+    const isDuplicate = this.playQueue.some(
+      (item) => item.text === text && (item.voiceId || this.config.voiceId) === effectiveVoiceId
+    ) || (this.currentItem?.text === text && (this.currentItem?.voiceId || this.config.voiceId) === effectiveVoiceId);
+
+    if (isDuplicate) {
+      ttsLogger.debug('Skipping duplicate TTS request', {
+        text: text.substring(0, 50),
+        voiceId: effectiveVoiceId,
+      });
+      return;
+    }
 
     if (priority === 'high') {
       // Stop current playback and clear queue
@@ -154,7 +169,6 @@ class TTSService extends EventEmitter {
     // Process queue if not playing
     if (!this.isPlaying) {
       await this.processQueue();
-    } else {
     }
   }
 
@@ -173,7 +187,7 @@ class TTSService extends EventEmitter {
     const item = this.playQueue.shift();
     if (!item) return;
 
-
+    this.currentItem = item;
     this.isPlaying = true;
     this.emit('playing', item);
 
@@ -216,6 +230,7 @@ class TTSService extends EventEmitter {
       this.emit('error', { item, error: err });
     } finally {
       this.isPlaying = false;
+      this.currentItem = null;
       // Process next in queue
       await this.processQueue();
     }
@@ -580,6 +595,7 @@ class TTSService extends EventEmitter {
       this.currentPlayback = null;
     }
     this.isPlaying = false;
+    this.currentItem = null;
     this.emit('stopped');
   }
 
