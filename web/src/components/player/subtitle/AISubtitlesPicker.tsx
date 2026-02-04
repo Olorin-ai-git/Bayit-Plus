@@ -526,7 +526,7 @@ export default function AISubtitlesPicker({
     >
       <div
         ref={modalRef}
-        className="bg-gray-900/95 backdrop-blur-xl rounded-2xl p-6 w-[95%] max-w-4xl shadow-2xl animate-scale-in"
+        className="bg-gray-900/95 backdrop-blur-xl rounded-2xl p-4 sm:p-6 w-[95%] max-w-4xl max-h-[85vh] overflow-y-auto shadow-2xl animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Admin Tab Switcher (optional) */}
@@ -537,7 +537,7 @@ export default function AISubtitlesPicker({
         )}
 
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4 sm:mb-6">
           <h2
             id="hebrew-mode-modal-title"
             className="text-xl font-bold text-white"
@@ -617,7 +617,7 @@ export default function AISubtitlesPicker({
         )}
 
         {/* Options */}
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {memoizedOptions.map((option) => {
             const isAvailable = isModeAvailable(option.mode)
             const isSelected = option.mode === currentMode
@@ -636,7 +636,7 @@ export default function AISubtitlesPicker({
                 role="button"
                 tabIndex={isAvailable ? 0 : -1}
                 className={`
-                  w-full rounded-lg p-4 border-2 transition-all
+                  w-full rounded-lg p-3 sm:p-4 border-2 transition-all
                   ${
                     isSelected
                       ? 'bg-indigo-500/20 border-indigo-500'
@@ -649,31 +649,50 @@ export default function AISubtitlesPicker({
                 aria-pressed={isSelected}
                 aria-disabled={!isAvailable && !canShowGenerateButton}
               >
-                <div className="flex items-center gap-5">
-                  {/* Icon */}
-                  <div className="w-12 flex-shrink-0 flex items-center justify-center">
-                    {option.mode === 'nikud' ? (
-                      <span className="text-4xl">{option.icon}</span>
-                    ) : (
-                      <Icon name={option.icon} size="xl" color="#FFFFFF" />
-                    )}
-                  </div>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+                  {/* Top row on mobile: icon + title + status */}
+                  <div className="flex items-center gap-3 sm:contents">
+                    {/* Icon */}
+                    <div className="w-10 sm:w-12 flex-shrink-0 flex items-center justify-center">
+                      {option.mode === 'nikud' ? (
+                        <span className="text-3xl sm:text-4xl">{option.icon}</span>
+                      ) : (
+                        <Icon name={option.icon} size="xl" color="#FFFFFF" />
+                      )}
+                    </div>
 
-                  {/* Title */}
-                  <div className="w-24 flex-shrink-0">
-                    <h3
-                      className={`text-base font-semibold ${
-                        isAvailable ? 'text-white' : 'text-gray-500'
-                      }`}
-                    >
-                      {t(option.titleKey, option.mode)}
-                    </h3>
+                    {/* Title */}
+                    <div className="flex-1 sm:w-24 sm:flex-shrink-0 sm:flex-grow-0">
+                      <h3
+                        className={`text-sm sm:text-base font-semibold ${
+                          isAvailable ? 'text-white' : 'text-gray-500'
+                        }`}
+                      >
+                        {t(option.titleKey, option.mode)}
+                      </h3>
+                    </div>
+
+                    {/* Status indicator - sparkle for AI modes, check for regular */}
+                    {isSelected && (
+                      <div
+                        className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 sm:order-last ${
+                          option.isAI ? 'bg-purple-500' : 'bg-indigo-500'
+                        }`}
+                        aria-hidden="true"
+                      >
+                        {option.isAI ? (
+                          <Sparkles size={14} color="#FFFFFF" />
+                        ) : (
+                          <Icon name="check" size="sm" color="#FFFFFF" />
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Description */}
                   <div className="flex-1 min-w-0">
                     <p
-                      className={`text-sm ${
+                      className={`text-xs sm:text-sm ${
                         isAvailable ? 'text-gray-400' : 'text-gray-500'
                       }`}
                     >
@@ -683,7 +702,7 @@ export default function AISubtitlesPicker({
 
                   {/* Warning - only show when not available AND not currently generating */}
                   {!isAvailable && generatingMode !== option.mode && option.mode !== 'regular' && (
-                    <div className="w-32 flex-shrink-0">
+                    <div className="sm:w-32 sm:flex-shrink-0">
                       <p className="text-xs text-amber-500/90 italic">
                         {option.mode === 'nikud'
                           ? t('subtitles.hebrewMode.nikud.unavailableReason', 'AI processing not available for this content')
@@ -695,8 +714,8 @@ export default function AISubtitlesPicker({
                     </div>
                   )}
 
-                  {/* Example */}
-                  <div className="w-36 flex-shrink-0">
+                  {/* Example - hidden on mobile */}
+                  <div className="hidden sm:block w-36 flex-shrink-0">
                     <p
                       className="text-sm text-gray-500 font-mono text-right"
                       dir="rtl"
@@ -705,24 +724,8 @@ export default function AISubtitlesPicker({
                       {option.example}
                     </p>
                   </div>
-
-                  {/* Status indicator - sparkle for AI modes, check for regular */}
-                  {isSelected && (
-                    <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        option.isAI ? 'bg-purple-500' : 'bg-indigo-500'
-                      }`}
-                      aria-hidden="true"
-                    >
-                      {option.isAI ? (
-                        <Sparkles size={14} color="#FFFFFF" />
-                      ) : (
-                        <Icon name="check" size="sm" color="#FFFFFF" />
-                      )}
-                    </div>
-                  )}
                   {!isAvailable && option.mode !== 'regular' && (
-                    <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                    <div className="flex flex-col items-start sm:items-end gap-1 flex-shrink-0">
                       {isAdmin && contentId ? (
                         <div className="flex items-center gap-2">
                           {generatingMode === option.mode ? (
