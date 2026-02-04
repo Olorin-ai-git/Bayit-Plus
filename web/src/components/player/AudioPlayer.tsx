@@ -74,6 +74,8 @@ export default function AudioPlayer({
   }, [compact, isMobile])
 
   // Initialize audio element
+  // Mobile Chrome restricts audio preloading (cellular, battery/data saver).
+  // canplay may never fire, so we also clear loading on loadedmetadata + timeout.
   useEffect(() => {
     if (!src) {
       setLoading(false)
@@ -81,23 +83,36 @@ export default function AudioPlayer({
     }
 
     setLoading(true)
+    let loadingTimeout: ReturnType<typeof setTimeout> | null = null
 
     if (!audioRef.current) {
       audioRef.current = new Audio()
     }
 
     const audio = audioRef.current
+    audio.preload = 'metadata'
     audio.src = src
 
-    const handleCanPlay = () => {
+    const clearLoading = () => {
       setLoading(false)
       setError(null)
       setRetryCount(0)
+      if (loadingTimeout) { clearTimeout(loadingTimeout); loadingTimeout = null }
     }
 
-    const handleLoadedMetadata = () => setDuration(audio.duration)
+    const handleCanPlay = () => clearLoading()
+
+    const handleLoadedMetadata = () => {
+      setDuration(audio.duration)
+      // On mobile, canplay may not fire due to preload restrictions.
+      // loadedmetadata means the browser fetched enough to know the duration,
+      // so we can safely let the user press play.
+      setLoading(false)
+      if (loadingTimeout) { clearTimeout(loadingTimeout); loadingTimeout = null }
+    }
+
     const handleTimeUpdate = () => setCurrentTime(audio.currentTime)
-    const handlePlay = () => setIsPlaying(true)
+    const handlePlay = () => { setIsPlaying(true); setLoading(false) }
     const handlePause = () => setIsPlaying(false)
     const handleEnded = () => {
       setIsPlaying(false)
@@ -107,6 +122,7 @@ export default function AudioPlayer({
     const handleError = (event: any) => {
       setLoading(false)
       setIsPlaying(false)
+      if (loadingTimeout) { clearTimeout(loadingTimeout); loadingTimeout = null }
 
       const mediaError = audio.error
       let errorMessage = t('player.errors.streamFailed', 'Stream failed to load')
@@ -142,6 +158,13 @@ export default function AudioPlayer({
       }
     }
 
+    // Fallback timeout: if mobile Chrome never fires canplay/loadedmetadata,
+    // clear loading so the user can tap play (which forces the browser to load).
+    loadingTimeout = setTimeout(() => {
+      setLoading(false)
+      loadingTimeout = null
+    }, 8000)
+
     audio.addEventListener('canplay', handleCanPlay)
     audio.addEventListener('loadedmetadata', handleLoadedMetadata)
     audio.addEventListener('timeupdate', handleTimeUpdate)
@@ -151,6 +174,7 @@ export default function AudioPlayer({
     audio.addEventListener('error', (e) => handleError(e))
 
     return () => {
+      if (loadingTimeout) clearTimeout(loadingTimeout)
       audio.removeEventListener('canplay', handleCanPlay)
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
       audio.removeEventListener('timeupdate', handleTimeUpdate)
@@ -244,7 +268,15 @@ export default function AudioPlayer({
           setLoading(false)
           return
         }
-        audioRef.current.play().catch(() => {})
+        // On mobile, pressing play forces the browser to start buffering
+        setLoading(true)
+        audioRef.current.play().catch((err) => {
+          // NotAllowedError = user gesture required (already handled by tap)
+          // AbortError = src changed during play attempt (safe to ignore)
+          if (err.name !== 'AbortError') {
+            setLoading(false)
+          }
+        })
       }
     }
   }, [isPlaying, src, t])
@@ -349,11 +381,11 @@ export default function AudioPlayer({
 
                   <Pressable
                     onPress={togglePlay}
-                    disabled={loading}
+                    disabled={!src}
                     style={[styles.heroPlayBtn, { width: sizes.play, height: sizes.play, borderRadius: sizes.play / 2 }]}
                     accessibilityLabel={isPlaying ? t('player.pause') : t('player.play')}
                     accessibilityRole="button"
-                    accessibilityState={{ disabled: loading }}
+                    accessibilityState={{ disabled: !src }}
                   >
                     {renderPlayIcon()}
                   </Pressable>
@@ -463,7 +495,7 @@ export default function AudioPlayer({
                       onFocus={playFocus.handleFocus}
                       onBlur={playFocus.handleBlur}
                       focusable={true}
-                      disabled={loading}
+                      disabled={!src}
                       style={[
                         styles.heroPlayBtn,
                         { width: sizes.play, height: sizes.play, borderRadius: sizes.play / 2 },
@@ -471,7 +503,7 @@ export default function AudioPlayer({
                       ]}
                       accessibilityLabel={isPlaying ? t('player.pause') : t('player.play')}
                       accessibilityRole="button"
-                      accessibilityState={{ disabled: loading }}
+                      accessibilityState={{ disabled: !src }}
                     >
                       {renderPlayIcon()}
                     </Pressable>
@@ -602,11 +634,11 @@ export default function AudioPlayer({
 
               <Pressable
                 onPress={togglePlay}
-                disabled={loading}
+                disabled={!src}
                 style={[styles.compactPlayBtn, { width: sizes.play, height: sizes.play, borderRadius: sizes.play / 2 }]}
                 accessibilityLabel={isPlaying ? t('player.pause') : t('player.play')}
                 accessibilityRole="button"
-                accessibilityState={{ disabled: loading }}
+                accessibilityState={{ disabled: !src }}
               >
                 {renderPlayIcon()}
               </Pressable>

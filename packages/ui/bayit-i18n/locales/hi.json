@@ -5425,7 +5425,9 @@
     "cancelSelection": "रद्द करें",
     "deleteSelected": "हटाएँ",
     "bulkDeleteConfirm": "चयनित विजेट हटाएँ?",
-    "bulkDeleted": "विजेट हटा दिए गए"
+    "bulkDeleted": "विजेट हटा दिए गए",
+    "showDock": "डॉक दिखाएँ",
+    "hideDock": "डॉक छुपाएँ"
   },
   "trending": {
     "title": "इज़राइल में क्या ट्रेंड कर रहा है",

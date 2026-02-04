@@ -5736,7 +5736,9 @@
     "cancelSelection": "Annulla",
     "deleteSelected": "Elimina",
     "bulkDeleteConfirm": "Eliminare i widget selezionati?",
-    "bulkDeleted": "Widget eliminati"
+    "bulkDeleted": "Widget eliminati",
+    "showDock": "Mostra dock",
+    "hideDock": "Nascondi dock"
   },
   "trending": {
     "title": "Tendenze in Israele",

@@ -5510,7 +5510,9 @@
     "cancelSelection": "ரத்து",
     "deleteSelected": "அழி",
     "bulkDeleteConfirm": "தேர்ந்தெடுத்த விட்ஜெட்களை அழிக்கவா?",
-    "bulkDeleted": "விட்ஜெட்கள் அழிக்கப்பட்டன"
+    "bulkDeleted": "விட்ஜெட்கள் அழிக்கப்பட்டன",
+    "showDock": "டாக் காண்பி",
+    "hideDock": "டாக் மறை"
   },
   "trending": {
     "title": "இஸ்ரேலில் டிரெண்டிங்",

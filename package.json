@@ -81,7 +81,7 @@
     "@playwright/test": "^1.57.0",
     "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react": "^16.3.2",
-    "@types/react": "^19.2.9",
+    "@types/react": "^18.2.45",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "archiver": "^7.0.1",
@@ -145,6 +145,13 @@
         "pinVersion": "^18.3.1"
       },
       {
+        "label": "@types/react must match React 18",
+        "dependencies": [
+          "@types/react"
+        ],
+        "pinVersion": "^18.2.45"
+      },
+      {
         "label": "Zustand version must be consistent",
         "dependencies": [
           "zustand"
@@ -159,6 +166,9 @@
         "pinVersion": "^5.62.0"
       }
     ]
+  },
+  "overrides": {
+    "@types/react": "^18.2.45"
   },
   "packageManager": "npm@10.2.0"
 }

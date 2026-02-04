@@ -3687,7 +3687,9 @@
     "cancelSelection": "ביטול",
     "deleteSelected": "מחיקה",
     "bulkDeleteConfirm": "למחוק ווידג'טים שנבחרו?",
-    "bulkDeleted": "ווידג'טים נמחקו"
+    "bulkDeleted": "ווידג'טים נמחקו",
+    "showDock": "הצג סרגל",
+    "hideDock": "הסתר סרגל"
   },
   "liveCategories": {
     "educational": "חינוכי"

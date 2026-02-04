@@ -11,8 +11,9 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
-import { CheckSquare, Trash2, X } from 'lucide-react';
+import { CheckSquare, Trash2, X, Eye, EyeOff } from 'lucide-react';
 import { useDirection } from '@/hooks/useDirection';
+import { useWidgetStore } from '@/stores/widgetStore';
 import { GlassButton } from '@bayit/shared/ui';
 import { colors, spacing } from '@olorin/design-tokens';
 
@@ -42,6 +43,7 @@ export default function WidgetsPageHeader({
 }: WidgetsPageHeaderProps) {
   const { t } = useTranslation();
   const { textAlign } = useDirection();
+  const { isDockVisible, toggleDockVisible } = useWidgetStore();
 
   return (
     <View style={styles.container}>
@@ -89,6 +91,16 @@ export default function WidgetsPageHeader({
           </>
         ) : (
           <>
+            <GlassButton
+              title={isDockVisible ? t('widgets.hideDock') : t('widgets.showDock')}
+              onPress={toggleDockVisible}
+              variant="ghost"
+              size="md"
+              icon={isDockVisible
+                ? <EyeOff size={16} color={colors.text} />
+                : <Eye size={16} color={colors.text} />
+              }
+            />
             <GlassButton
               title={t('widgets.select')}
               onPress={onToggleSelectMode}

@@ -50,6 +50,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "style-src 'self' 'unsafe-inline'; "  # Allow inline styles for Glass UI
             "img-src 'self' data: https:; "
             "font-src 'self' data:; "
+            "media-src 'self' https: blob:; "
             "connect-src 'self' https://api.stripe.com wss://api.bayit.tv wss://m.bayit.tv; "
             "frame-ancestors 'none'; "
             "base-uri 'self'; "

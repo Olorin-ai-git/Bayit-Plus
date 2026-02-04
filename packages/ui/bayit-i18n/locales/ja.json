@@ -6192,7 +6192,9 @@
     "cancelSelection": "キャンセル",
     "deleteSelected": "削除",
     "bulkDeleteConfirm": "選択したウィジェットを削除しますか？",
-    "bulkDeleted": "ウィジェットが削除されました"
+    "bulkDeleted": "ウィジェットが削除されました",
+    "showDock": "ドックを表示",
+    "hideDock": "ドックを非表示"
   },
   "trending": {
     "title": "イスラエルのトレンド",

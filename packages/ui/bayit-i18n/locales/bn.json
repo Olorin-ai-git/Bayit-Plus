@@ -5410,7 +5410,9 @@
     "cancelSelection": "বাতিল",
     "deleteSelected": "মুছুন",
     "bulkDeleteConfirm": "নির্বাচিত উইজেটগুলি মুছবেন?",
-    "bulkDeleted": "উইজেটগুলি মুছে ফেলা হয়েছে"
+    "bulkDeleted": "উইজেটগুলি মুছে ফেলা হয়েছে",
+    "showDock": "ডক দেখান",
+    "hideDock": "ডক লুকান"
   },
   "trending": {
     "title": "ইসরায়েলে কী ট্রেন্ডিং",

@@ -3540,7 +3540,9 @@
     "cancelSelection": "Cancelar",
     "deleteSelected": "Eliminar",
     "bulkDeleteConfirm": "Eliminar widgets seleccionados?",
-    "bulkDeleted": "Widgets eliminados"
+    "bulkDeleted": "Widgets eliminados",
+    "showDock": "Mostrar barra",
+    "hideDock": "Ocultar barra"
   },
   "liveCategories": {
     "educational": "Educativo"

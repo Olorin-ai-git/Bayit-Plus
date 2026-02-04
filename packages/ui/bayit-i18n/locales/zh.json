@@ -5772,7 +5772,9 @@
     "cancelSelection": "取消",
     "deleteSelected": "删除",
     "bulkDeleteConfirm": "删除选中的小组件？",
-    "bulkDeleted": "小组件已删除"
+    "bulkDeleted": "小组件已删除",
+    "showDock": "显示停靠栏",
+    "hideDock": "隐藏停靠栏"
   },
   "beta": {
     "credits": {

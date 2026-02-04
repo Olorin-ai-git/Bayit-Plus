@@ -3738,7 +3738,9 @@
     "cancelSelection": "Cancel",
     "deleteSelected": "Delete",
     "bulkDeleteConfirm": "Delete selected widgets?",
-    "bulkDeleted": "Widgets deleted"
+    "bulkDeleted": "Widgets deleted",
+    "showDock": "Show Dock",
+    "hideDock": "Hide Dock"
   },
   "liveCategories": {
     "educational": "Educational"

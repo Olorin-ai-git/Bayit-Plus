@@ -131,6 +131,9 @@ interface WidgetState {
   // Voice widget tracking
   voiceWidgetIds: string[];
 
+  // Dock visibility (persisted)
+  isDockVisible: boolean;
+
   // Actions - Data fetching
   setWidgets: (widgets: Widget[]) => void;
   setLoading: (loading: boolean) => void;
@@ -147,6 +150,10 @@ interface WidgetState {
   addWidget: (widget: Widget) => void;
   removeWidget: (widgetId: string) => void;
   updateWidget: (widgetId: string, updates: Partial<Widget>) => void;
+
+  // Actions - Dock visibility
+  toggleDockVisible: () => void;
+  setDockVisible: (visible: boolean) => void;
 
   // Actions - Voice widgets (created from voice commands)
   createVoiceWidgets: (items: VoiceContentItem[]) => void;
@@ -166,6 +173,7 @@ export const useWidgetStore = create<WidgetState>()(
       error: null,
       localState: {},
       voiceWidgetIds: [],
+      isDockVisible: true,
 
       setWidgets: (newWidgets) => {
         // Initialize local state for new widgets
@@ -394,6 +402,14 @@ export const useWidgetStore = create<WidgetState>()(
         });
       },
 
+      toggleDockVisible: () => {
+        set({ isDockVisible: !get().isDockVisible });
+      },
+
+      setDockVisible: (visible) => {
+        set({ isDockVisible: visible });
+      },
+
       // Create temporary widgets from voice command content
       createVoiceWidgets: (items) => {
         // First, clear any existing voice widgets
@@ -528,13 +544,14 @@ export const useWidgetStore = create<WidgetState>()(
     }),
     {
       name: 'bayit-widget-store',
-      // Only persist local state, not widgets array or voice widgets (transient)
-      partialize: (state) => ({ 
+      // Only persist local state + dock visibility, not widgets array or voice widgets (transient)
+      partialize: (state) => ({
         localState: Object.fromEntries(
           Object.entries(state.localState).filter(
             ([key]) => !key.startsWith(VOICE_WIDGET_PREFIX)
           )
         ),
+        isDockVisible: state.isDockVisible,
       }),
     }
   )

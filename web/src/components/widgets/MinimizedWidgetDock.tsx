@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { X } from 'lucide-react';
 import { useWidgetStore } from '@/stores/widgetStore';
 import { useResponsive } from '@/hooks/useResponsive';
 import { glass, colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -106,10 +107,13 @@ if (typeof document !== 'undefined' && !document.getElementById('minimized-dock-
   document.head.appendChild(style);
 }
 
+const ANIMATION_DURATION_MS = 300;
+
 export default function MinimizedWidgetDock() {
   const [hoveredWidgetId, setHoveredWidgetId] = useState<string | null>(null);
   const [highlightedWidgetId, setHighlightedWidgetId] = useState<string | null>(null);
-  const { widgets, getWidgetState, toggleMinimize } = useWidgetStore();
+  const [isAnimatingOut, setIsAnimatingOut] = useState(false);
+  const { widgets, getWidgetState, toggleMinimize, isDockVisible, setDockVisible } = useWidgetStore();
   const { isMobile } = useResponsive();
   const previousMinimizedIdsRef = useRef<Set<string>>(new Set());
   const isInitialMountRef = useRef(true);
@@ -118,6 +122,14 @@ export default function MinimizedWidgetDock() {
     const state = getWidgetState(widget.id);
     return state?.isMinimized && state?.isVisible;
   });
+
+  const handleCloseDock = useCallback(() => {
+    setIsAnimatingOut(true);
+    setTimeout(() => {
+      setDockVisible(false);
+      setIsAnimatingOut(false);
+    }, ANIMATION_DURATION_MS);
+  }, [setDockVisible]);
 
   // Detect newly minimized widget and highlight it
   useEffect(() => {
@@ -151,6 +163,15 @@ export default function MinimizedWidgetDock() {
   }, [minimizedWidgets]);
 
   if (minimizedWidgets.length === 0) return null;
+  if (!isDockVisible && !isAnimatingOut) return null;
+
+  const animationStyle = {
+    transition: `transform ${ANIMATION_DURATION_MS}ms ease, opacity ${ANIMATION_DURATION_MS}ms ease`,
+    transform: isAnimatingOut
+      ? isMobile ? 'translateX(-100%) translateY(-50%)' : 'translateY(100%)'
+      : isMobile ? 'translateY(-50%)' : 'translateY(0)',
+    opacity: isAnimatingOut ? 0 : 1,
+  };
 
   // Mobile: vertical left sidebar
   if (isMobile) {
@@ -164,9 +185,9 @@ export default function MinimizedWidgetDock() {
           position: 'fixed',
           left: 0,
           top: '50%',
-          transform: 'translateY(-50%)',
           zIndex: 50,
           ...(styles.containerMobile as any),
+          ...animationStyle,
         }}
         role="toolbar"
         aria-label="Minimized widgets"
@@ -184,6 +205,15 @@ export default function MinimizedWidgetDock() {
               onClick={() => toggleMinimize(widget.id)}
             />
           ))}
+          <Pressable
+            onPress={handleCloseDock}
+            style={styles.closeButtonMobile}
+            aria-label="Close dock"
+            role="button"
+            accessible={true}
+          >
+            <X size={14} color={colors.textSecondary} />
+          </Pressable>
         </View>
       </div>
     );
@@ -192,11 +222,14 @@ export default function MinimizedWidgetDock() {
   // Desktop: horizontal bottom-center bar
   const iconSize = 56;
   const iconSpacing = 12;
+  const closeButtonSize = 24;
+  const closeButtonSpacing = 8;
   const containerPadding = 16;
   const containerWidth =
     containerPadding * 2 +
     minimizedWidgets.length * iconSize +
-    (minimizedWidgets.length - 1) * iconSpacing;
+    (minimizedWidgets.length - 1) * iconSpacing +
+    closeButtonSpacing + closeButtonSize;
 
   return (
     <div
@@ -207,6 +240,7 @@ export default function MinimizedWidgetDock() {
         zIndex: 50,
         ...(styles.container as any),
         width: containerWidth,
+        ...animationStyle,
       }}
       role="toolbar"
       aria-label="Minimized widgets"
@@ -224,6 +258,15 @@ export default function MinimizedWidgetDock() {
             onClick={() => toggleMinimize(widget.id)}
           />
         ))}
+        <Pressable
+          onPress={handleCloseDock}
+          style={styles.closeButton}
+          aria-label="Close dock"
+          role="button"
+          accessible={true}
+        >
+          <X size={14} color={colors.textSecondary} />
+        </Pressable>
       </View>
 
       {hoveredWidgetId && (() => {
@@ -341,6 +384,29 @@ const styles = StyleSheet.create({
     animationTimingFunction: 'ease-in-out',
     animationIterationCount: 'infinite',
   } as any,
+
+  closeButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 4,
+    // @ts-ignore - Web CSS
+    cursor: 'pointer',
+    transition: 'background-color 0.15s ease',
+  } as any,
+
+  closeButtonMobile: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 4,
+  },
 
   iconEmoji: {
     fontSize: 28,

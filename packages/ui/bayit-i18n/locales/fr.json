@@ -6947,7 +6947,9 @@
     "cancelSelection": "Annuler",
     "deleteSelected": "Supprimer",
     "bulkDeleteConfirm": "Supprimer les widgets sélectionnés ?",
-    "bulkDeleted": "Widgets supprimés"
+    "bulkDeleted": "Widgets supprimés",
+    "showDock": "Afficher le dock",
+    "hideDock": "Masquer le dock"
   },
   "youngsters": {
     "title": "Jeunes",
