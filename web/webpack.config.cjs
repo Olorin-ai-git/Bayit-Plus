@@ -75,8 +75,17 @@ module.exports = (env, argv) => {
         'react-native$': 'react-native-web',
         'react-native-linear-gradient': 'react-native-web-linear-gradient',
         'react-native-reanimated': path.resolve(__dirname, 'src/utils/reanimatedShim.js'),
+        // React Native Web direct path aliases (babel-plugin-react-native-web transforms)
+        'react-native-web/dist/exports/NativeModules': path.resolve(__dirname, 'node_modules/react-native-web/dist/exports/NativeModules/index.js'),
+        'react-native-web/dist/exports/NativeEventEmitter': path.resolve(__dirname, 'node_modules/react-native-web/dist/exports/NativeEventEmitter/index.js'),
+        'react-native-web/dist/exports/BackHandler': path.resolve(__dirname, 'node_modules/react-native-web/dist/exports/BackHandler/index.js'),
+        'react-native-web/dist/exports/Vibration': path.resolve(__dirname, 'node_modules/react-native-web/dist/exports/Vibration/index.js'),
+        'react-native-web/dist/exports/StatusBar': path.resolve(__dirname, 'node_modules/react-native-web/dist/exports/StatusBar/index.js'),
         // Voice detection
         'vosk-browser': path.resolve(__dirname, '../node_modules/vosk-browser/dist/vosk.js'),
+        // Picovoice wake word shims (optional packages)
+        '@picovoice/porcupine-web': path.resolve(__dirname, 'src/utils/picovoiceShim.js'),
+        '@picovoice/web-voice-processor': path.resolve(__dirname, 'src/utils/picovoiceShim.js'),
         // Native module shims
         '@react-native-async-storage/async-storage': path.resolve(__dirname, 'src/utils/asyncStorageWeb.ts'),
         '@react-native-clipboard/clipboard': path.resolve(__dirname, 'src/utils/clipboardWeb.ts'),
