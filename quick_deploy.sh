@@ -1,1 +1,0 @@
-deployment/scripts/quick-deploy.sh

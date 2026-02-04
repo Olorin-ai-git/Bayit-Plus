@@ -1,1 +1,0 @@
-deployment/scripts/deploy_server.sh

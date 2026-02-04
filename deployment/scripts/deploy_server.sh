@@ -1,1 +1,0 @@
-/Users/olorin/Documents/olorin/scripts/deployment/bayit-plus/deploy_server.sh
