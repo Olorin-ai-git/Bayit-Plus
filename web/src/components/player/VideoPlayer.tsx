@@ -56,6 +56,8 @@ export default function VideoPlayer({
   savedPosition,
   onRestartComplete,
   initialSubtitleLang,
+  initialSplitMode,
+  initialSplitLanguages,
   isHLS = false,
 }: VideoPlayerProps) {
   const { t, i18n } = useTranslation()
@@ -120,7 +122,7 @@ export default function VideoPlayer({
     handleSplitModeToggle,
     handleSplitLanguagesChange,
     fetchAvailableSubtitles,
-  } = useSubtitles({ contentId, isLive, initialSubtitleLang })
+  } = useSubtitles({ contentId, isLive, initialSubtitleLang, initialSplitMode, initialSplitLanguages })
 
   const {
     liveSubtitleLang,

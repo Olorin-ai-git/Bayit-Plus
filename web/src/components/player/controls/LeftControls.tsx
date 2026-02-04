@@ -80,8 +80,8 @@ export default function LeftControls({
 
       {!isLive && (
         <>
-          {/* Previous Chapter */}
-          {hasChapters && chapters.length > 0 && (
+          {/* Previous Chapter - hidden on mobile */}
+          {!responsive.isMobile && hasChapters && chapters.length > 0 && (
             <Pressable
               onPress={(e) => { e.stopPropagation?.(); controls.skipToPreviousChapter(chapters, state.currentTime) }}
               onFocus={prevChapterFocus.handleFocus}
@@ -100,47 +100,49 @@ export default function LeftControls({
             </Pressable>
           )}
 
-          {/* Skip Back/Forward */}
-          <Pressable
-            onPress={(e) => { e.stopPropagation?.(); controls.skip(-30) }}
-            onFocus={skipBackFocus.handleFocus}
-            onBlur={skipBackFocus.handleBlur}
-            focusable={true}
-            style={({ hovered }) => [
-              styles.controlButton,
-              styles.skipButton,
-              responsive.isMobile && { width: skipButtonWidth },
-              hovered && styles.controlButtonHovered,
-              skipBackFocus.isFocused && skipBackFocus.focusStyle,
-            ]}
-            accessibilityRole="button"
-            accessibilityLabel={t('player.skipBackward')}
-          >
-            <SkipBack size={isTV ? 20 : (responsive.isMobile ? 20 : 16)} color={colors.text} />
-            <Text style={[styles.skipText, isTV && styles.skipTextTV]}>30</Text>
-          </Pressable>
+          {/* Skip Back/Forward - hidden on mobile (available in hero overlay) */}
+          {!responsive.isMobile && (
+            <Pressable
+              onPress={(e) => { e.stopPropagation?.(); controls.skip(-30) }}
+              onFocus={skipBackFocus.handleFocus}
+              onBlur={skipBackFocus.handleBlur}
+              focusable={true}
+              style={({ hovered }) => [
+                styles.controlButton,
+                styles.skipButton,
+                hovered && styles.controlButtonHovered,
+                skipBackFocus.isFocused && skipBackFocus.focusStyle,
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel={t('player.skipBackward')}
+            >
+              <SkipBack size={isTV ? 20 : 16} color={colors.text} />
+              <Text style={[styles.skipText, isTV && styles.skipTextTV]}>30</Text>
+            </Pressable>
+          )}
 
-          <Pressable
-            onPress={(e) => { e.stopPropagation?.(); controls.skip(30) }}
-            onFocus={skipForwardFocus.handleFocus}
-            onBlur={skipForwardFocus.handleBlur}
-            focusable={true}
-            style={({ hovered }) => [
-              styles.controlButton,
-              styles.skipButton,
-              responsive.isMobile && { width: skipButtonWidth },
-              hovered && styles.controlButtonHovered,
-              skipForwardFocus.isFocused && skipForwardFocus.focusStyle,
-            ]}
-            accessibilityRole="button"
-            accessibilityLabel={t('player.skipForward')}
-          >
-            <SkipForward size={isTV ? 20 : (responsive.isMobile ? 20 : 16)} color={colors.text} />
-            <Text style={[styles.skipText, isTV && styles.skipTextTV]}>30</Text>
-          </Pressable>
+          {!responsive.isMobile && (
+            <Pressable
+              onPress={(e) => { e.stopPropagation?.(); controls.skip(30) }}
+              onFocus={skipForwardFocus.handleFocus}
+              onBlur={skipForwardFocus.handleBlur}
+              focusable={true}
+              style={({ hovered }) => [
+                styles.controlButton,
+                styles.skipButton,
+                hovered && styles.controlButtonHovered,
+                skipForwardFocus.isFocused && skipForwardFocus.focusStyle,
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel={t('player.skipForward')}
+            >
+              <SkipForward size={isTV ? 20 : 16} color={colors.text} />
+              <Text style={[styles.skipText, isTV && styles.skipTextTV]}>30</Text>
+            </Pressable>
+          )}
 
-          {/* Next Chapter */}
-          {hasChapters && chapters.length > 0 && (
+          {/* Next Chapter - hidden on mobile */}
+          {!responsive.isMobile && hasChapters && chapters.length > 0 && (
             <Pressable
               onPress={(e) => { e.stopPropagation?.(); controls.skipToNextChapter(chapters, state.currentTime) }}
               onFocus={nextChapterFocus.handleFocus}
@@ -159,45 +161,47 @@ export default function LeftControls({
             </Pressable>
           )}
 
-          {/* Restart */}
+          {/* Restart - hidden on mobile */}
+          {!responsive.isMobile && (
+            <Pressable
+              onPress={(e) => { e.stopPropagation?.(); controls.handleRestart() }}
+              onFocus={restartFocus.handleFocus}
+              onBlur={restartFocus.handleBlur}
+              focusable={true}
+              style={({ hovered }) => [
+                styles.controlButton,
+                mobileButtonStyle,
+                hovered && styles.controlButtonHovered,
+                restartFocus.isFocused && restartFocus.focusStyle,
+              ]}
+              accessibilityRole="button"
+              accessibilityLabel={t('player.restart')}
+            >
+              <RotateCcw size={smallIconSize} color={colors.text} />
+            </Pressable>
+          )}
+        </>
+      )}
+
+      {/* Volume - hidden on mobile to save space for subtitles/cast */}
+      {!responsive.isMobile && (
+        <View style={styles.volumeControls}>
           <Pressable
-            onPress={(e) => { e.stopPropagation?.(); controls.handleRestart() }}
-            onFocus={restartFocus.handleFocus}
-            onBlur={restartFocus.handleBlur}
+            onPress={(e) => { e.stopPropagation?.(); controls.toggleMute() }}
+            onFocus={muteFocus.handleFocus}
+            onBlur={muteFocus.handleBlur}
             focusable={true}
             style={({ hovered }) => [
               styles.controlButton,
               mobileButtonStyle,
               hovered && styles.controlButtonHovered,
-              restartFocus.isFocused && restartFocus.focusStyle,
+              muteFocus.isFocused && muteFocus.focusStyle,
             ]}
             accessibilityRole="button"
-            accessibilityLabel={t('player.restart')}
+            accessibilityLabel={state.isMuted ? t('player.unmute') : t('player.mute')}
           >
-            <RotateCcw size={smallIconSize} color={colors.text} />
+            {state.isMuted ? <VolumeX size={smallIconSize} color={colors.text} /> : <Volume2 size={smallIconSize} color={colors.text} />}
           </Pressable>
-        </>
-      )}
-
-      {/* Volume - hide slider on mobile to save space */}
-      <View style={styles.volumeControls}>
-        <Pressable
-          onPress={(e) => { e.stopPropagation?.(); controls.toggleMute() }}
-          onFocus={muteFocus.handleFocus}
-          onBlur={muteFocus.handleBlur}
-          focusable={true}
-          style={({ hovered }) => [
-            styles.controlButton,
-            mobileButtonStyle,
-            hovered && styles.controlButtonHovered,
-            muteFocus.isFocused && muteFocus.focusStyle,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={state.isMuted ? t('player.unmute') : t('player.mute')}
-        >
-          {state.isMuted ? <VolumeX size={smallIconSize} color={colors.text} /> : <Volume2 size={smallIconSize} color={colors.text} />}
-        </Pressable>
-        {!responsive.isMobile && (
           <View style={styles.sliderContainer}>
             <GlassSlider
               value={state.isMuted ? 0 : state.volume}
@@ -207,8 +211,8 @@ export default function LeftControls({
               testID="volume-slider"
             />
           </View>
-        )}
-      </View>
+        </View>
+      )}
 
       {/* Time Display - hidden on mobile to save space */}
       {!isLive && !responsive.isMobile && (

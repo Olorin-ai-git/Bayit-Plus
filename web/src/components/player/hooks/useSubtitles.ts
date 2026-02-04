@@ -17,9 +17,11 @@ interface UseSubtitlesOptions {
   contentId?: string
   isLive?: boolean
   initialSubtitleLang?: string | null
+  initialSplitMode?: boolean
+  initialSplitLanguages?: [string, string] | null
 }
 
-export function useSubtitles({ contentId, isLive = false, initialSubtitleLang }: UseSubtitlesOptions) {
+export function useSubtitles({ contentId, isLive = false, initialSubtitleLang, initialSplitMode, initialSplitLanguages }: UseSubtitlesOptions) {
   const addNotification = useNotificationStore((state) => state.add)
   const initialSubtitleAppliedRef = useRef(false)
 
@@ -78,22 +80,35 @@ export function useSubtitles({ contentId, isLive = false, initialSubtitleLang }:
   // Apply initial subtitle selection from detail page (overrides stored preferences)
   // CRITICAL: Wait for preferences to load first to avoid race condition
   useEffect(() => {
-    if (initialSubtitleLang && preferencesLoaded && !initialSubtitleAppliedRef.current) {
+    if (!preferencesLoaded || initialSubtitleAppliedRef.current) return
+
+    // Apply initial split mode from detail page
+    if (initialSplitMode && initialSplitLanguages) {
+      logger.info('Applying pre-selected split mode from detail page', 'useSubtitles', {
+        splitLanguages: initialSplitLanguages,
+        preferencesLoaded,
+        override: true
+      })
+      initialSubtitleAppliedRef.current = true
+      setSplitMode(true)
+      setSplitLanguages(initialSplitLanguages)
+      setSubtitlesEnabled(true)
+      return
+    }
+
+    // Apply initial single language from detail page
+    if (initialSubtitleLang) {
       logger.info('Applying pre-selected subtitle from detail page', 'useSubtitles', {
         language: initialSubtitleLang,
         currentLang: currentSubtitleLang,
         preferencesLoaded,
         override: true
       })
-
-      // Mark as applied to prevent re-triggering
       initialSubtitleAppliedRef.current = true
-
-      // Apply the pre-selected subtitle (overrides any stored preference)
       setCurrentSubtitleLang(initialSubtitleLang)
       setSubtitlesEnabled(true)
     }
-  }, [initialSubtitleLang, preferencesLoaded, currentSubtitleLang, setCurrentSubtitleLang, setSubtitlesEnabled])
+  }, [initialSubtitleLang, initialSplitMode, initialSplitLanguages, preferencesLoaded, currentSubtitleLang, setCurrentSubtitleLang, setSubtitlesEnabled, setSplitMode, setSplitLanguages])
 
   // Handler: Toggle subtitles on/off
   const handleSubtitleToggle = useCallback((enabled: boolean) => {

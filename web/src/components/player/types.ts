@@ -44,6 +44,10 @@ export interface VideoPlayerProps {
   onRestartComplete?: () => void
   /** Pre-selected subtitle language from detail page */
   initialSubtitleLang?: string | null
+  /** Pre-selected split/dual subtitle mode from detail page */
+  initialSplitMode?: boolean
+  /** Pre-selected split languages pair from detail page */
+  initialSplitLanguages?: [string, string] | null
   /** Whether the stream is HLS (skips native text tracks - HLS has embedded subtitles) */
   isHLS?: boolean
 }

@@ -353,6 +353,8 @@ export default function FullscreenVideoOverlay() {
                 savedPosition={savedPosition}
                 onRestartComplete={handleRestartComplete}
                 initialSubtitleLang={content.initialSubtitleLang}
+                initialSplitMode={content.initialSplitMode}
+                initialSplitLanguages={content.initialSplitLanguages}
                 isHLS={isHLS}
               />
             );

@@ -20,6 +20,10 @@ interface FullscreenPlayerContent {
   age_group?: 'toddlers' | 'preschool' | 'elementary' | 'preteen'
   /** Pre-selected subtitle language from detail page */
   initialSubtitleLang?: string | null
+  /** Pre-selected split/dual subtitle mode from detail page */
+  initialSplitMode?: boolean
+  /** Pre-selected split languages pair from detail page */
+  initialSplitLanguages?: [string, string] | null
 }
 
 interface FullscreenPlayerState {

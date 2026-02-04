@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Play, Plus, Check, Share2, Star, ChevronRight, X, ArrowLeft } from 'lucide-react';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Icon } from '@olorin/shared-icons/web';
 import Hls from 'hls.js';
 import LinearGradient from 'react-native-linear-gradient';
 import { useDirection } from '@/hooks/useDirection';
@@ -63,6 +64,8 @@ export default function MovieDetailPage() {
   const [availableSubtitles, setAvailableSubtitles] = useState<SubtitleTrack[]>([]);
   const [showSubtitleModal, setShowSubtitleModal] = useState(false);
   const [selectedSubtitleLang, setSelectedSubtitleLang] = useState<string | null>(null);
+  const [dualMode, setDualMode] = useState(false);
+  const [dualLanguages, setDualLanguages] = useState<[string, string] | null>(null);
   const openPlayer = useFullscreenPlayerStore((state) => state.openPlayer);
 
   // Video preview state
@@ -223,7 +226,9 @@ export default function MovieDetailPage() {
     if (movie) {
       logger.info('Opening player with pre-selected subtitle', 'MovieDetailPage', {
         movieId: movie.id,
-        selectedSubtitle: selectedSubtitleLang
+        selectedSubtitle: selectedSubtitleLang,
+        dualMode,
+        dualLanguages,
       });
 
       openPlayer({
@@ -233,15 +238,63 @@ export default function MovieDetailPage() {
         poster: movie.backdrop || movie.thumbnail,
         type: 'movie',
         is_kids_content: movie.is_kids_content,
-        initialSubtitleLang: selectedSubtitleLang, // Pass pre-selected subtitle
+        initialSubtitleLang: dualMode ? null : selectedSubtitleLang,
+        initialSplitMode: dualMode,
+        initialSplitLanguages: dualLanguages,
       });
     }
   };
 
   const handleSubtitleSelect = (language: string) => {
+    if (dualMode) {
+      // In dual mode, build a pair of selected languages
+      setDualLanguages((prev) => {
+        if (!prev) return [language, language];
+        const isAlreadySelected = prev.includes(language);
+        if (isAlreadySelected) {
+          // Deselect this language
+          const other = prev.find((l) => l !== language);
+          return other ? [other, other] : null;
+        }
+        // Add second language (replace the duplicate slot)
+        if (prev[0] === prev[1]) {
+          return [prev[0], language];
+        }
+        // Replace the second language
+        return [prev[0], language];
+      });
+      return;
+    }
     setSelectedSubtitleLang(language);
     setShowSubtitleModal(false);
     logger.info('Pre-selected subtitle', 'MovieDetailPage', { language });
+  };
+
+  const handleDualModeToggle = () => {
+    const newDualMode = !dualMode;
+    setDualMode(newDualMode);
+    if (newDualMode) {
+      // Initialize with current selected language if any
+      if (selectedSubtitleLang) {
+        setDualLanguages([selectedSubtitleLang, selectedSubtitleLang]);
+      } else {
+        setDualLanguages(null);
+      }
+      setSelectedSubtitleLang(null);
+    } else {
+      // Switching back to single mode
+      if (dualLanguages) {
+        setSelectedSubtitleLang(dualLanguages[0]);
+      }
+      setDualLanguages(null);
+    }
+  };
+
+  const handleDualConfirm = () => {
+    if (dualLanguages && dualLanguages[0] !== dualLanguages[1]) {
+      setShowSubtitleModal(false);
+      logger.info('Pre-selected dual subtitles', 'MovieDetailPage', { languages: dualLanguages });
+    }
   };
 
   const handleSubtitlePanelClick = () => {
@@ -261,6 +314,11 @@ export default function MovieDetailPage() {
   };
 
   // Format IMDB votes
+  // Deduplicate subtitle tracks by language
+  const deduplicatedSubtitles = availableSubtitles.filter(
+    (track, index, self) => self.findIndex(t => t.language === track.language) === index
+  );
+
   const formatVotes = (votes?: number): string => {
     if (!votes) return '';
     if (votes >= 1000000) {
@@ -433,7 +491,9 @@ export default function MovieDetailPage() {
                       track.has_grammar_flip_version ||
                       track.has_slang_synthesis_version
                     );
-                    const isSelected = selectedSubtitleLang === track.language;
+                    const isSelected = dualMode
+                      ? dualLanguages?.includes(track.language) ?? false
+                      : selectedSubtitleLang === track.language;
                     return (
                       <View key={track.id} style={[styles.subtitleFlag, isSelected && styles.subtitleFlagSelected]}>
                         <FlagWithSparkle
@@ -450,7 +510,7 @@ export default function MovieDetailPage() {
                 )}
               </View>
               <ChevronRight size={18} color={colors.textSecondary} />
-              {selectedSubtitleLang && (
+              {(selectedSubtitleLang || (dualMode && dualLanguages && dualLanguages[0] !== dualLanguages[1])) && (
                 <View style={styles.selectedIndicator}>
                   <Check size={14} color={colors.primary.DEFAULT} />
                 </View>
@@ -618,32 +678,68 @@ export default function MovieDetailPage() {
                 </Pressable>
               </View>
 
+              {/* Dual Mode Toggle */}
+              {deduplicatedSubtitles.length >= 2 && (
+                <Pressable
+                  onPress={handleDualModeToggle}
+                  style={[styles.dualModeToggle, dualMode && styles.dualModeToggleActive]}
+                >
+                  <View style={styles.dualModeIconContainer}>
+                    <Icon
+                      name="splitScreen"
+                      size="md"
+                      color={dualMode ? colors.primary.DEFAULT : colors.textSecondary}
+                    />
+                  </View>
+                  <View style={styles.dualModeTextContainer}>
+                    <Text style={[styles.dualModeTitle, dualMode && styles.dualModeTitleActive]}>
+                      {t('subtitles.splitScreen.toggle', 'Dual Subtitles')}
+                    </Text>
+                    <Text style={styles.dualModeDescription}>
+                      {t('subtitles.splitScreen.description', 'Show two languages at once')}
+                    </Text>
+                  </View>
+                  <View style={[styles.dualModeSwitch, dualMode && styles.dualModeSwitchActive]}>
+                    <View style={[styles.dualModeSwitchKnob, dualMode && styles.dualModeSwitchKnobActive]} />
+                  </View>
+                </Pressable>
+              )}
+
               {/* Subtitle List */}
               <ScrollView style={styles.subtitleList}>
-                {/* Off Option */}
-                <Pressable
-                  onPress={() => {
-                    setSelectedSubtitleLang(null);
-                    setShowSubtitleModal(false);
-                  }}
-                  style={({ pressed }) => [
-                    styles.subtitleItem,
-                    !selectedSubtitleLang && styles.subtitleItemSelected,
-                    pressed && styles.subtitleItemPressed
-                  ]}
-                >
-                  <Text style={styles.subtitleItemText}>{t('subtitles.off', 'Off')}</Text>
-                  {!selectedSubtitleLang && (
-                    <Check size={20} color={colors.primary.DEFAULT} />
-                  )}
-                </Pressable>
+                {/* Off Option - only in single mode */}
+                {!dualMode && (
+                  <Pressable
+                    onPress={() => {
+                      setSelectedSubtitleLang(null);
+                      setDualMode(false);
+                      setDualLanguages(null);
+                      setShowSubtitleModal(false);
+                    }}
+                    style={({ pressed }) => [
+                      styles.subtitleItem,
+                      !selectedSubtitleLang && !dualMode && styles.subtitleItemSelected,
+                      pressed && styles.subtitleItemPressed
+                    ]}
+                  >
+                    <Text style={styles.subtitleItemText}>{t('subtitles.off', 'Off')}</Text>
+                    {!selectedSubtitleLang && !dualMode && (
+                      <Check size={20} color={colors.primary.DEFAULT} />
+                    )}
+                  </Pressable>
+                )}
+
+                {/* Dual mode instruction */}
+                {dualMode && (
+                  <View style={styles.dualModeInstruction}>
+                    <Text style={styles.dualModeInstructionText}>
+                      {t('subtitles.splitScreen.selectTwo', 'Select 2 languages')}
+                    </Text>
+                  </View>
+                )}
 
                 {/* Language Options */}
-                {availableSubtitles
-                  .filter((track, index, self) =>
-                    self.findIndex(t => t.language === track.language) === index
-                  )
-                  .map((track) => {
+                {deduplicatedSubtitles.map((track) => {
                     const hasAI = !!(
                       track.has_nikud_version ||
                       track.has_shoresh_version ||
@@ -651,7 +747,9 @@ export default function MovieDetailPage() {
                       track.has_grammar_flip_version ||
                       track.has_slang_synthesis_version
                     );
-                    const isSelected = selectedSubtitleLang === track.language;
+                    const isSelected = dualMode
+                      ? dualLanguages?.includes(track.language) ?? false
+                      : selectedSubtitleLang === track.language;
 
                     return (
                       <Pressable
@@ -681,6 +779,15 @@ export default function MovieDetailPage() {
                     );
                   })}
               </ScrollView>
+
+              {/* Dual mode confirm button */}
+              {dualMode && dualLanguages && dualLanguages[0] !== dualLanguages[1] && (
+                <Pressable onPress={handleDualConfirm} style={styles.dualConfirmButton}>
+                  <Text style={styles.dualConfirmText}>
+                    {t('subtitles.splitScreen.confirm', 'Apply Dual Subtitles')}
+                  </Text>
+                </Pressable>
+              )}
             </GlassView>
           </Pressable>
         </Pressable>
@@ -1041,5 +1148,88 @@ const styles = StyleSheet.create({
     fontSize: fontSize.base,
     color: colors.text,
     fontWeight: '500',
+  },
+  dualModeToggle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    gap: spacing.sm,
+  },
+  dualModeToggleActive: {
+    borderColor: 'rgba(139, 92, 246, 0.5)',
+    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+  },
+  dualModeIconContainer: {
+    width: 32,
+    height: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: borderRadius.md,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+  dualModeTextContainer: {
+    flex: 1,
+  },
+  dualModeTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.textSecondary,
+  },
+  dualModeTitleActive: {
+    color: colors.primary.DEFAULT,
+  },
+  dualModeDescription: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.4)',
+    marginTop: 2,
+  },
+  dualModeSwitch: {
+    width: 44,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    padding: 2,
+    justifyContent: 'center',
+  },
+  dualModeSwitchActive: {
+    backgroundColor: colors.primary.DEFAULT,
+  },
+  dualModeSwitchKnob: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+  },
+  dualModeSwitchKnobActive: {
+    backgroundColor: colors.text,
+    transform: [{ translateX: 20 }],
+  },
+  dualModeInstruction: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.xs,
+  },
+  dualModeInstructionText: {
+    fontSize: fontSize.sm,
+    color: colors.textSecondary,
+    fontStyle: 'italic',
+  },
+  dualConfirmButton: {
+    marginTop: spacing.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.primary.DEFAULT,
+    alignItems: 'center',
+  },
+  dualConfirmText: {
+    fontSize: fontSize.base,
+    fontWeight: '600',
+    color: colors.text,
   },
 });
