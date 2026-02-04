@@ -68,7 +68,7 @@ export default function AudioPlayer({
   // Size presets based on layout mode
   const sizes = useMemo(() => {
     if (compact) return { play: 32, skip: 24, iconLg: 16, iconSm: 12 }
-    if (isMobile) return { play: 40, skip: 32, iconLg: 20, iconSm: 16 }
+    if (isMobile) return { play: 64, skip: 48, iconLg: 28, iconSm: 22 }
     if (isTV) return { play: 72, skip: 56, iconLg: 32, iconSm: 26 }
     return { play: 56, skip: 44, iconLg: 26, iconSm: 20 }
   }, [compact, isMobile])
@@ -306,92 +306,120 @@ export default function AudioPlayer({
         />
 
         <View style={styles.heroScrim as any}>
-          <View style={styles.heroSpacer} />
-
-          <View style={styles.heroControlsArea}>
-            {/* Title & Artist */}
-            <View style={styles.heroTitleSection}>
-              {isLive && (
-                <GlassBadge variant="danger" size="sm">
-                  {t('player.live')}
-                </GlassBadge>
-              )}
-              <Text
-                style={[styles.heroTitle, isRTL && styles.textRTL]}
-                numberOfLines={1}
-                accessibilityRole="header"
-              >
-                {title}
-              </Text>
-              {artist && (
+          {isMobile ? (
+            /* Mobile: centered play controls over poster, progress at bottom */
+            <>
+              {/* Title at top */}
+              <View style={styles.mobileTitleSection}>
+                {isLive && (
+                  <GlassBadge variant="danger" size="sm">
+                    {t('player.live')}
+                  </GlassBadge>
+                )}
                 <Text
-                  style={[styles.heroArtist, isRTL && styles.textRTL]}
+                  style={[styles.heroTitle, isRTL && styles.textRTL]}
                   numberOfLines={1}
+                  accessibilityRole="header"
                 >
-                  {artist}
+                  {title}
                 </Text>
-              )}
-            </View>
-
-            {isMobile ? (
-              /* Mobile: controls + progress on same row */
-              <View style={[styles.mobileRow, { flexDirection }]}>
-                {!isLive && (
-                  <Pressable
-                    onPress={() => skip(-SKIP_SECONDS)}
-                    style={[styles.heroSkipBtn, { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 }]}
-                    accessibilityLabel={t('player.skipBack', { seconds: SKIP_SECONDS })}
-                    accessibilityRole="button"
+                {artist && (
+                  <Text
+                    style={[styles.heroArtist, isRTL && styles.textRTL]}
+                    numberOfLines={1}
                   >
-                    <SkipBack size={sizes.iconSm} color={colors.text} />
-                  </Pressable>
-                )}
-
-                <Pressable
-                  onPress={togglePlay}
-                  disabled={loading}
-                  style={[styles.heroPlayBtn, { width: sizes.play, height: sizes.play, borderRadius: sizes.play / 2 }]}
-                  accessibilityLabel={isPlaying ? t('player.pause') : t('player.play')}
-                  accessibilityRole="button"
-                  accessibilityState={{ disabled: loading }}
-                >
-                  {renderPlayIcon()}
-                </Pressable>
-
-                {!isLive && (
-                  <Pressable
-                    onPress={() => skip(SKIP_SECONDS)}
-                    style={[styles.heroSkipBtn, { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 }]}
-                    accessibilityLabel={t('player.skipForward', { seconds: SKIP_SECONDS })}
-                    accessibilityRole="button"
-                  >
-                    <SkipForward size={sizes.iconSm} color={colors.text} />
-                  </Pressable>
-                )}
-
-                {!isLive && duration > 0 && (
-                  <View style={styles.mobileProgress}>
-                    <GlassSlider
-                      value={currentTime}
-                      min={0}
-                      max={duration}
-                      step={1}
-                      onValueChange={handleSeek}
-                      accessibilityLabel={t('player.seekBar')}
-                      testID="audio-progress-slider"
-                    />
-                  </View>
-                )}
-
-                {!isLive && duration > 0 && (
-                  <Text style={styles.mobileTimeText}>
-                    {formatTime(currentTime)}
+                    {artist}
                   </Text>
                 )}
               </View>
-            ) : (
+
+              {/* Centered play/skip buttons */}
+              <View style={styles.mobileCenterControls}>
+                <View style={[styles.mobileCenterRow, { flexDirection }]}>
+                  {!isLive && (
+                    <Pressable
+                      onPress={() => skip(-SKIP_SECONDS)}
+                      style={[styles.heroSkipBtn, { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 }]}
+                      accessibilityLabel={t('player.skipBack', { seconds: SKIP_SECONDS })}
+                      accessibilityRole="button"
+                    >
+                      <SkipBack size={sizes.iconSm} color={colors.text} />
+                    </Pressable>
+                  )}
+
+                  <Pressable
+                    onPress={togglePlay}
+                    disabled={loading}
+                    style={[styles.heroPlayBtn, { width: sizes.play, height: sizes.play, borderRadius: sizes.play / 2 }]}
+                    accessibilityLabel={isPlaying ? t('player.pause') : t('player.play')}
+                    accessibilityRole="button"
+                    accessibilityState={{ disabled: loading }}
+                  >
+                    {renderPlayIcon()}
+                  </Pressable>
+
+                  {!isLive && (
+                    <Pressable
+                      onPress={() => skip(SKIP_SECONDS)}
+                      style={[styles.heroSkipBtn, { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 }]}
+                      accessibilityLabel={t('player.skipForward', { seconds: SKIP_SECONDS })}
+                      accessibilityRole="button"
+                    >
+                      <SkipForward size={sizes.iconSm} color={colors.text} />
+                    </Pressable>
+                  )}
+                </View>
+              </View>
+
+              {/* Progress bar at bottom */}
+              {!isLive && duration > 0 && (
+                <View style={styles.mobileBottomProgress}>
+                  <GlassSlider
+                    value={currentTime}
+                    min={0}
+                    max={duration}
+                    step={1}
+                    onValueChange={handleSeek}
+                    accessibilityLabel={t('player.seekBar')}
+                    testID="audio-progress-slider"
+                  />
+                  <View style={[styles.timeLabels, { flexDirection }]}>
+                    <Text style={styles.mobileTimeText}>{formatTime(currentTime)}</Text>
+                    <Text style={styles.mobileTimeText}>{formatTime(duration)}</Text>
+                  </View>
+                </View>
+              )}
+            </>
+          ) : (
               /* Desktop/tvOS: progress bar then controls row */
               <>
+                <View style={styles.heroSpacer} />
+
+                <View style={styles.heroControlsArea}>
+                  {/* Title & Artist */}
+                  <View style={styles.heroTitleSection}>
+                    {isLive && (
+                      <GlassBadge variant="danger" size="sm">
+                        {t('player.live')}
+                      </GlassBadge>
+                    )}
+                    <Text
+                      style={[styles.heroTitle, isRTL && styles.textRTL]}
+                      numberOfLines={1}
+                      accessibilityRole="header"
+                    >
+                      {title}
+                    </Text>
+                    {artist && (
+                      <Text
+                        style={[styles.heroArtist, isRTL && styles.textRTL]}
+                        numberOfLines={1}
+                      >
+                        {artist}
+                      </Text>
+                    )}
+                  </View>
+
                 {!isLive && duration > 0 && (
                   <View style={styles.progressSection}>
                     <GlassSlider
@@ -474,9 +502,9 @@ export default function AudioPlayer({
                     onVolumeChange={handleVolumeChange}
                   />
                 </View>
+                </View>
               </>
             )}
-          </View>
         </View>
 
         {/* Error overlay */}
@@ -684,18 +712,26 @@ const styles = StyleSheet.create({
   },
 
   // ── Mobile Hero ──
-  mobileRow: {
-    alignItems: 'center',
-    gap: spacing.sm,
+  mobileTitleSection: {
+    gap: spacing.xs,
+    paddingTop: spacing.md,
   },
-  mobileProgress: {
+  mobileCenterControls: {
     flex: 1,
-    minWidth: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mobileCenterRow: {
+    alignItems: 'center',
+    gap: spacing.lg,
+  },
+  mobileBottomProgress: {
+    gap: 2,
+    paddingBottom: spacing.xs,
   },
   mobileTimeText: {
-    fontSize: 11,
+    fontSize: 12,
     color: 'rgba(255, 255, 255, 0.7)',
-    minWidth: 32,
   },
 
   // ── Shared ──

@@ -636,8 +636,8 @@ export default function WidgetContainer({
           }}
           onMouseDown={!isMobileLayout && widget.is_draggable && !isMinimized && !IS_TV_BUILD ? (handleDragStart as any) : undefined}
         >
-          {/* Controls */}
-          <View style={styles.controlsContainer}>
+          {/* Controls - stop propagation to prevent drag handler from intercepting button presses */}
+          <View style={styles.controlsContainer} onPointerDown={(e: any) => e.stopPropagation()} onMouseDown={(e: any) => e.stopPropagation()}>
             {/* Minimize/Restore Button */}
             <Pressable
               style={styles.controlButton}
