@@ -273,11 +273,11 @@ export const supportConfig: SupportConfig = {
       description: 'Custom cloned voice for the Olorin support wizard',
     },
 
-    // Voice Search Voice - multilingual female voice
+    // Voice Search Voice - using same Olorin male voice for consistency
     voiceSearchVoice: {
-      voiceId: getEnvVar('VITE_ELEVENLABS_DEFAULT_VOICE_ID', 'EXAVITQu4vr4xnSDxMaL'),
-      name: 'Rachel',
-      description: 'Multilingual female voice for general voice search',
+      voiceId: getEnvVar('VITE_ELEVENLABS_DEFAULT_VOICE_ID', 'ashjVK50jp28G73AUTnb'),
+      name: 'Olorin',
+      description: 'Custom cloned male voice for consistent voice experience',
     },
 
     maxRecordingDuration: getEnvVarNumber('VITE_SUPPORT_MAX_RECORDING_MS', 15000),

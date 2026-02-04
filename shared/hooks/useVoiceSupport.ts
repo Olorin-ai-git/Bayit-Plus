@@ -269,6 +269,28 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
 
       return new Promise<void>((resolve, reject) => {
         const audio = new Audio(audioPath);
+        let hasFallenBackToTTS = false;
+
+        const fallbackToTTS = (errorSource: string, errorDetail: unknown) => {
+          // Prevent duplicate TTS calls (onerror and play().catch() can both fire)
+          if (hasFallenBackToTTS) {
+            voiceSupportLogger.debug('TTS fallback already triggered, ignoring duplicate', {
+              errorSource,
+            });
+            return;
+          }
+          hasFallenBackToTTS = true;
+
+          voiceSupportLogger.error('Pre-recorded intro playback error', {
+            errorSource,
+            error: errorDetail,
+            audioPath,
+          });
+          voiceSupportLogger.info('Falling back to TTS', {
+            audioPath,
+          });
+          playIntroWithTTS(introText, resolve, reject);
+        };
 
         audio.onplay = () => {
           voiceSupportLogger.debug('Pre-recorded intro playback started', {
@@ -287,22 +309,11 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
         };
 
         audio.onerror = (error) => {
-          voiceSupportLogger.error('Pre-recorded intro playback error', {
-            error,
-            audioPath,
-          });
-          voiceSupportLogger.info('Falling back to TTS', {
-            audioPath,
-          });
-          playIntroWithTTS(introText, resolve, reject);
+          fallbackToTTS('onerror', error);
         };
 
         audio.play().catch((error) => {
-          voiceSupportLogger.error('Failed to play pre-recorded audio', {
-            error: error instanceof Error ? error.message : String(error),
-            audioPath,
-          });
-          playIntroWithTTS(introText, resolve, reject);
+          fallbackToTTS('play().catch()', error instanceof Error ? error.message : String(error));
         });
       });
     }

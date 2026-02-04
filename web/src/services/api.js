@@ -395,7 +395,7 @@ const apiHistoryService = {
 // Chat Service (API)
 const apiChatService = {
   sendMessage: (message, conversationId, context = null, language = null) =>
-    api.post('/chat', { message, conversation_id: conversationId, context, language }),
+    api.post('/chat/', { message, conversation_id: conversationId, context, language }),
   getConversation: (conversationId) => api.get(`/chat/${conversationId}`),
   clearConversation: (conversationId) => api.delete(`/chat/${conversationId}`),
   // Transcribe audio blob to text with language hint for better accuracy

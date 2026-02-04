@@ -36,7 +36,7 @@ export function ChatMessageList({
         <View
           key={index}
           className="mb-2"
-          style={[message.role === 'user' ? styles.alignStart : styles.alignEnd]}
+          style={[message.role === 'user' ? styles.alignEnd : styles.alignStart]}
         >
           {message.type === 'recommendations' ? (
             <ChatRecommendations

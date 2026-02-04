@@ -71,30 +71,31 @@ class TTSService extends EventEmitter {
    * Uses ElevenLabs multilingual voices configured for each language
    */
   private getLanguageVoiceId(language: VoiceLanguage): string {
+    // Using Olorin (male) voice consistently for all languages
     const languageVoices: Record<VoiceLanguage, string> = {
-      he: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Hebrew optimized)
-      en: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (English)
-      es: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Spanish)
-      zh: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Chinese)
-      fr: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (French)
-      it: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Italian)
-      hi: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Hindi)
-      ta: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Tamil)
-      bn: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Bengali)
-      ja: 'EXAVITQu4vr4xnSDxMaL', // Rachel - multilingual (Japanese)
+      he: 'ashjVK50jp28G73AUTnb', // Olorin - male voice (Hebrew)
+      en: 'ashjVK50jp28G73AUTnb', // Olorin - male voice (English)
+      es: 'ashjVK50jp28G73AUTnb', // Olorin - male voice (Spanish)
+      zh: 'ashjVK50jp28G73AUTnb', // Olorin - male voice (Chinese)
+      fr: 'ashjVK50jp28G73AUTnb', // Olorin - male voice (French)
+      it: 'ashjVK50jp28G73AUTnb', // Olorin - male voice (Italian)
+      hi: 'ashjVK50jp28G73AUTnb', // Olorin - male voice (Hindi)
+      ta: 'ashjVK50jp28G73AUTnb', // Olorin - male voice (Tamil)
+      bn: 'ashjVK50jp28G73AUTnb', // Olorin - male voice (Bengali)
+      ja: 'ashjVK50jp28G73AUTnb', // Olorin - male voice (Japanese)
     };
 
     return languageVoices[language] || this.getDefaultVoiceId();
   }
 
   private getDefaultVoiceId(): string {
-    // Use env variable from config, otherwise fallback to Rachel (multilingual, excellent for all 10 languages)
+    // Use env variable from config, otherwise fallback to Olorin (male voice for consistent experience)
     // Note: Using process.env for React Native compatibility (Vite's import.meta.env not supported by Hermes)
     try {
       const envVoiceId = typeof process !== 'undefined' && process.env?.VITE_ELEVENLABS_DEFAULT_VOICE_ID;
-      return envVoiceId || 'EXAVITQu4vr4xnSDxMaL'; // Default: Rachel - multilingual voice
+      return envVoiceId || 'ashjVK50jp28G73AUTnb'; // Default: Olorin - male voice
     } catch {
-      return 'EXAVITQu4vr4xnSDxMaL'; // Default: Rachel - multilingual voice
+      return 'ashjVK50jp28G73AUTnb'; // Default: Olorin - male voice
     }
   }
 

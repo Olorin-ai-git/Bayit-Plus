@@ -540,7 +540,7 @@ class Settings(BaseSettings):
     ELEVENLABS_API_KEY: str = ""
     ELEVENLABS_WEBHOOK_SECRET: str = ""
     ELEVENLABS_DEFAULT_VOICE_ID: str = (
-        "EXAVITQu4vr4xnSDxMaL"  # Rachel - multilingual female voice for general TTS
+        "ashjVK50jp28G73AUTnb"  # Olorin - male voice for consistent TTS experience
     )
     # Olorin Assistant Avatar - custom cloned voice for AI assistant interactions
     ELEVENLABS_ASSISTANT_VOICE_ID: str = (
