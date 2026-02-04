@@ -51,6 +51,6 @@
     }
   ],
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://api.bayit.tv wss://api.bayit.tv"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://api.bayit.tv https://m.bayit.tv wss://api.bayit.tv wss://m.bayit.tv"
   }
 }

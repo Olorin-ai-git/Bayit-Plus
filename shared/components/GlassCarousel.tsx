@@ -365,11 +365,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               activeOpacity={0.8}
               onPress={() => {
                 carouselLogger.debug('Left arrow pressed', { isRTL });
-                if (isRTL) {
-                  transitionToNext();
-                } else {
-                  transitionToPrevious();
-                }
+                transitionToPrevious();
               }}
               onFocus={() => {
                 carouselLogger.debug('Left arrow focused');
@@ -380,7 +376,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                 setLeftArrowFocused(false);
               }}
               accessible={true}
-              accessibilityLabel={isRTL ? 'Next' : 'Previous'}
+              accessibilityLabel={t('common.previous')}
               accessibilityRole="button"
               // @ts-ignore - tvOS specific focus navigation
               nextFocusRight={mainCarouselNode || undefined}
@@ -389,7 +385,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                 styles.navButtonInner,
                 leftArrowFocused && styles.navButtonFocused
               ]}>
-                <Text style={styles.navButtonText}>{isRTL ? '›' : '‹'}</Text>
+                <Text style={styles.navButtonText}>{'‹'}</Text>
               </View>
             </TouchableOpacity>
 
@@ -399,11 +395,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               activeOpacity={0.8}
               onPress={() => {
                 carouselLogger.debug('Right arrow pressed', { isRTL });
-                if (isRTL) {
-                  transitionToPrevious();
-                } else {
-                  transitionToNext();
-                }
+                transitionToNext();
               }}
               onFocus={() => {
                 carouselLogger.debug('Right arrow focused');
@@ -414,7 +406,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                 setRightArrowFocused(false);
               }}
               accessible={true}
-              accessibilityLabel={isRTL ? 'Previous' : 'Next'}
+              accessibilityLabel={t('common.next')}
               accessibilityRole="button"
               // @ts-ignore - tvOS specific focus navigation
               nextFocusLeft={mainCarouselNode || undefined}
@@ -423,7 +415,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                 styles.navButtonInner,
                 rightArrowFocused && styles.navButtonFocused
               ]}>
-                <Text style={styles.navButtonText}>{isRTL ? '‹' : '›'}</Text>
+                <Text style={styles.navButtonText}>{'›'}</Text>
               </View>
             </TouchableOpacity>
           </>

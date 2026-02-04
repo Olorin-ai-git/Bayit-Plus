@@ -1,4 +1,5 @@
 import axios from 'axios'
+import i18n from 'i18next'
 import { config, isDemo } from '../config/appConfig'
 import { useAuthStore } from '@bayit/shared-stores/authStore'
 import {
@@ -104,6 +105,9 @@ api.interceptors.request.use((config) => {
       })
     }
   }
+
+  // Add Accept-Language header based on app's i18n language (not browser default)
+  config.headers['Accept-Language'] = i18n.language || 'he'
 
   // Add correlation ID - use existing or generate new one
   let correlationId = getCorrelationId()

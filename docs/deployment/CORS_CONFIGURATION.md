@@ -25,12 +25,12 @@ Update the `backend-cors-origins` secret in Google Cloud Secret Manager to inclu
 
    **Option 1: JSON Array (Recommended)**
    ```json
-   ["http://localhost:3200","http://localhost:8000","https://bayit.tv","https://www.bayit.tv","https://bayit-plus.web.app","https://api.bayit.tv"]
+   ["http://localhost:3200","http://localhost:8000","https://bayit.tv","https://www.bayit.tv","https://m.bayit.tv","https://bayit-plus.web.app","https://api.bayit.tv"]
    ```
 
    **Option 2: Comma-Separated String**
    ```
-   http://localhost:3200,http://localhost:8000,https://bayit.tv,https://www.bayit.tv,https://bayit-plus.web.app,https://api.bayit.tv
+   http://localhost:3200,http://localhost:8000,https://bayit.tv,https://www.bayit.tv,https://m.bayit.tv,https://bayit-plus.web.app,https://api.bayit.tv
    ```
 
 4. **Create a new secret version** (don't edit the existing version - add a new one)
@@ -45,6 +45,7 @@ The backend needs to allow requests from:
 - `http://localhost:8000` - Local development (alternative port)
 - `https://bayit.tv` - Production (main domain)
 - `https://www.bayit.tv` - Production (with www)
+- `https://m.bayit.tv` - Production (mobile subdomain)
 - `https://bayit-plus.web.app` - Firebase Hosting (frontend deployment)
 - `https://api.bayit.tv` - API subdomain (if API calls itself)
 
@@ -135,7 +136,7 @@ If you prefer not to use Secret Manager for CORS origins (they're not sensitive)
 2. Add it as an environment variable in the Cloud Run service:
    ```bash
    gcloud run services update bayit-backend \
-     --set-env-vars='BACKEND_CORS_ORIGINS=["http://localhost:3200","https://bayit.tv","https://www.bayit.tv","https://bayit-plus.web.app"]' \
+     --set-env-vars='BACKEND_CORS_ORIGINS=["http://localhost:3200","https://bayit.tv","https://www.bayit.tv","https://m.bayit.tv","https://bayit-plus.web.app"]' \
      --region=us-east1 \
      --project=bayit-plus
    ```

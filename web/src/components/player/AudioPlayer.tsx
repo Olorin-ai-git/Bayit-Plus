@@ -19,8 +19,10 @@ import { Icon } from '@olorin/shared-icons/web'
 import { colors, borderRadius, spacing } from '@olorin/design-tokens'
 import { GlassView, GlassBadge, GlassSlider } from '@bayit/shared/ui'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
+import { useNotifications } from '@olorin/glass-ui/hooks'
 import { useDirection } from '@bayit/shared/hooks'
 import { isTV } from '@bayit/shared/utils/platform'
+import { logger } from '@/utils/logger'
 import VolumeControls from './controls/VolumeControls'
 
 interface AudioPlayerProps {
@@ -30,6 +32,8 @@ interface AudioPlayerProps {
   cover?: string
   isLive?: boolean
   onEnded?: () => void
+  onProgress?: (currentTime: number, duration: number) => void
+  savedPosition?: number | null
   compact?: boolean
 }
 
@@ -52,11 +56,15 @@ export default function AudioPlayer({
   cover,
   isLive = false,
   onEnded,
+  onProgress,
+  savedPosition,
   compact = false,
 }: AudioPlayerProps) {
   const { t } = useTranslation()
   const { isRTL, flexDirection } = useDirection()
+  const notifications = useNotifications()
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const hasResumed = useRef(false)
 
   // Resolve sizes based on compact mode
   const coverSize = compact ? COVER_SIZE_COMPACT : COVER_SIZE
@@ -169,6 +177,82 @@ export default function AudioPlayer({
       audio.removeEventListener('error', handleError)
     }
   }, [src, onEnded])
+
+  // Progress reporting: 10-second interval while playing, plus on pause/unmount
+  useEffect(() => {
+    if (!onProgress || isLive) return
+
+    let intervalId: NodeJS.Timeout | null = null
+
+    if (isPlaying) {
+      intervalId = setInterval(() => {
+        const audio = audioRef.current
+        if (audio && audio.duration && isFinite(audio.duration)) {
+          onProgress(audio.currentTime, audio.duration)
+        }
+      }, 10000)
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId)
+      // Fire final progress on cleanup (pause or unmount)
+      const audio = audioRef.current
+      if (audio && audio.duration && isFinite(audio.duration) && audio.currentTime > 0) {
+        onProgress(audio.currentTime, audio.duration)
+      }
+    }
+  }, [isPlaying, isLive, onProgress])
+
+  // Auto-resume from saved position
+  useEffect(() => {
+    if (!savedPosition || isLive || hasResumed.current) return
+    if (savedPosition < 30) {
+      hasResumed.current = true
+      return
+    }
+
+    const audio = audioRef.current
+    if (!audio) return
+
+    const handleCanPlay = () => {
+      if (hasResumed.current) return
+      try {
+        audio.currentTime = savedPosition
+        hasResumed.current = true
+
+        const minutes = Math.floor(savedPosition / 60)
+        const seconds = Math.floor(savedPosition % 60)
+        const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`
+
+        notifications.show({
+          level: 'info',
+          title: t('player.resumedFrom', { time: timeStr }, `Resumed from ${timeStr}`),
+          dismissable: true,
+        })
+      } catch (error) {
+        logger.error('Failed to seek to saved position', 'AudioPlayer', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          savedPosition,
+        })
+      }
+    }
+
+    // Check if audio is already ready (readyState >= 3 = HAVE_FUTURE_DATA)
+    if (audio.readyState >= 3) {
+      handleCanPlay()
+    } else {
+      audio.addEventListener('canplay', handleCanPlay, { once: true })
+    }
+
+    return () => {
+      audio.removeEventListener('canplay', handleCanPlay)
+    }
+  }, [savedPosition, isLive, notifications, t])
+
+  // Reset hasResumed when src changes (new episode)
+  useEffect(() => {
+    hasResumed.current = false
+  }, [src])
 
   const togglePlay = useCallback(() => {
     if (audioRef.current) {

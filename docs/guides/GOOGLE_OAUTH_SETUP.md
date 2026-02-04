@@ -42,6 +42,7 @@ To fix the Google login, you need to add the production redirect URI to your Goo
 5. Under **Authorized redirect URIs**, add the following URIs:
    - `https://bayit.tv/auth/google/callback` (production)
    - `https://www.bayit.tv/auth/google/callback` (production with www)
+   - `https://m.bayit.tv/auth/google/callback` (production mobile subdomain)
    - `http://localhost:3200/auth/google/callback` (development)
    - `http://localhost:8000/auth/google/callback` (alternative local port)
 

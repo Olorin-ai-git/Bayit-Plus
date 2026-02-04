@@ -133,62 +133,65 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
     setStreamUrl(initialStreamUrl);
   }, [initialStreamUrl]);
 
-  // Fetch saved watch position on mount
+  const { chapters, chaptersLoading, loadChapters } = useChaptersLoader();
+
+  const { currentEpisodeId, handlePlayEpisode, handleDeleteEpisode } =
+    useEpisodePlayer();
+
+  // Effective content ID for podcast episodes (use episode ID if available)
+  const progressContentId = effectiveType === 'podcast' && currentEpisodeId
+    ? currentEpisodeId
+    : contentId;
+
+  // Fetch saved watch position on mount (and when episode changes for podcasts)
   React.useEffect(() => {
     logger.info('Watch position fetch effect triggered', 'WatchPage', {
       isAuthenticated,
-      contentId,
+      progressContentId,
       effectiveType,
     });
 
-    if (isAuthenticated && contentId && effectiveType === 'vod') {
-      logger.info('Fetching watch history', 'WatchPage', { contentId });
+    const supportsResume = effectiveType === 'vod' || effectiveType === 'podcast';
+
+    if (isAuthenticated && progressContentId && supportsResume) {
+      logger.info('Fetching watch history', 'WatchPage', { progressContentId });
       historyService
         .getContinueWatching()
-        .then((items) => {
+        .then((response) => {
+          const items = response?.items || [];
           logger.info('Watch history received', 'WatchPage', {
-            itemsCount: items?.length || 0,
-            items,
+            itemsCount: items.length,
           });
-          const saved = items.find((i) => i.content_id === contentId);
+          const saved = items.find((i: any) => i.id === progressContentId);
           if (saved) {
             logger.info('Found saved position for content', 'WatchPage', {
-              contentId,
-              saved,
+              progressContentId,
               position: saved.position,
             });
             if (saved.position > 0) {
               setSavedPosition(saved.position);
-              logger.info('Set saved watch position', 'WatchPage', {
-                contentId,
-                position: saved.position,
-              });
             }
           } else {
+            // Clear stale position when switching episodes
+            setSavedPosition(null);
             logger.info('No saved position found for content', 'WatchPage', {
-              contentId,
+              progressContentId,
             });
           }
         })
         .catch((err) => {
           logger.error('Failed to fetch watch history', 'WatchPage', {
             error: err instanceof Error ? err.message : 'Unknown error',
-            errorObj: err,
           });
         });
     } else {
       logger.info('Skipping watch history fetch', 'WatchPage', {
         isAuthenticated,
-        hasContentId: !!contentId,
+        hasContentId: !!progressContentId,
         effectiveType,
       });
     }
-  }, [contentId, isAuthenticated, effectiveType]);
-
-  const { chapters, chaptersLoading, loadChapters } = useChaptersLoader();
-
-  const { currentEpisodeId, handlePlayEpisode, handleDeleteEpisode } =
-    useEpisodePlayer();
+  }, [progressContentId, isAuthenticated, effectiveType]);
 
   useEffect(() => {
     if (
@@ -203,7 +206,8 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
 
   const handleProgress = React.useCallback(
     async (currentTime: number, duration: number) => {
-      if (!isAuthenticated || !contentId || effectiveType !== 'vod') return;
+      const supportsProgress = effectiveType === 'vod' || effectiveType === 'podcast';
+      if (!isAuthenticated || !progressContentId || !supportsProgress) return;
 
       try {
         const percentage = (currentTime / duration) * 100;
@@ -211,7 +215,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
         // Mark complete at 90% (send duration, not 0)
         const position = percentage >= 90 ? duration : currentTime;
 
-        await historyService.updateProgress(contentId, effectiveType, position, duration);
+        await historyService.updateProgress(progressContentId, effectiveType, position, duration);
 
         // Show completion notification once at 90%
         if (percentage >= 90 && percentage < 91) {
@@ -224,14 +228,14 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
       } catch (error) {
         logger.error('Failed to save watch progress', 'WatchPage', {
           error: error instanceof Error ? error.message : 'Unknown error',
-          contentId,
+          progressContentId,
           currentTime,
           duration,
         });
         // Silent fail - don't interrupt playback
       }
     },
-    [contentId, isAuthenticated, effectiveType, notifications, t]
+    [progressContentId, isAuthenticated, effectiveType, notifications, t]
   );
 
   const handleRestartComplete = React.useCallback(() => {
@@ -431,6 +435,8 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
             cover={content.cover || content.logo || content.thumbnail}
             isLive={effectiveType === 'radio'}
             onEnded={handleContentEnded}
+            onProgress={handleProgress}
+            savedPosition={savedPosition}
           />
         ) : (
           <VideoPlayer

@@ -82,7 +82,7 @@ cd backend && poetry run python -m app.local_server
 |------------|------|---------------|-------------|
 | `WEBAUTHN_RP_ID` | string | `bayit.tv` | Relying Party ID (must match domain) |
 | `WEBAUTHN_RP_NAME` | string | `Bayit Plus` | Display name shown to users |
-| `WEBAUTHN_ORIGIN` | string | `https://bayit.tv,https://www.bayit.tv` | Comma-separated allowed origins |
+| `WEBAUTHN_ORIGIN` | string | `https://bayit.tv,https://www.bayit.tv,https://m.bayit.tv` | Comma-separated allowed origins |
 
 ---
 
@@ -208,7 +208,7 @@ gcloud secrets create WEBAUTHN_RP_NAME \
 
 gcloud secrets create WEBAUTHN_ORIGIN \
   --replication-policy="automatic" \
-  --data-file=- <<< "https://bayit.tv,https://www.bayit.tv"
+  --data-file=- <<< "https://bayit.tv,https://www.bayit.tv,https://m.bayit.tv"
 ```
 
 ### Grant Access to Service Accounts
