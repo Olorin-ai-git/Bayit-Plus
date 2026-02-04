@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
+import { useResponsive } from '@/hooks/useResponsive';
 import { Radio, Volume2, Play } from 'lucide-react';
 import { radioService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -110,13 +111,13 @@ function SkeletonCard() {
 export default function RadioPage() {
   const { t, i18n } = useTranslation();
   const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
+  const responsive = useResponsive();
   const [stations, setStations] = useState<Station[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
-  const { width } = useWindowDimensions();
 
-  const numColumns = width >= 1024 ? 4 : width >= 768 ? 3 : 2;
+  const numColumns = responsive.getColumns();
 
   useEffect(() => {
     loadStations();

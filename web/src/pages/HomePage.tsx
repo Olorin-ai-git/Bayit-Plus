@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
 import ContentCarousel from '@/components/content/ContentCarousel';
-import AnimatedCard from '@/components/common/AnimatedCard';
 import {
   TrendingRow,
   JerusalemRow,
@@ -17,7 +16,6 @@ import {
 } from '@bayit/shared';
 import { useCultureStore } from '@bayit/shared-contexts/CultureContext';
 import {
-  GlassCard,
   GlassPageHeader,
   HeroCarouselSkeleton,
   RowSkeleton,
@@ -373,41 +371,17 @@ export default function HomePage() {
       {liveLoading ? (
         <SectionSkeleton />
       ) : liveChannels.length > 0 && (
-        <View style={styles.section}>
-          <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <View style={[styles.sectionTitleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-              <View style={styles.liveBadge}>
-                <View style={styles.liveDot} />
-                <Text style={styles.liveBadgeText}>{t('common.live')}</Text>
-              </View>
-              <Text style={[styles.sectionTitle, { textAlign: isRTL ? 'right' : 'left' }]}>{t('home.liveTV')}</Text>
-            </View>
-            <Link to="/live" style={{ textDecoration: 'none' }}>
-              <Text style={styles.seeAll}>{t('home.allChannels')}</Text>
-            </Link>
-          </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={[styles.liveRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
-          >
-            {liveChannels.slice(0, 8).map((channel, index) => (
-              <AnimatedCard
-                key={channel.id}
-                index={index}
-                variant="carousel"
-                isRTL={isRTL}
-                style={styles.liveCardWrapper}
-              >
-                <GlassCard
-                  title={channel.name}
-                  imageUrl={channel.thumbnail || channel.logo}
-                  onPress={() => navigate(`/live/${channel.id}`)}
-                />
-              </AnimatedCard>
-            ))}
-          </ScrollView>
-        </View>
+        <ContentCarousel
+          title={t('home.liveTV')}
+          items={liveChannels.slice(0, 8).map((channel) => ({
+            id: channel.id,
+            title: channel.name,
+            thumbnail: channel.logo || channel.thumbnail,
+            type: 'live' as const,
+          }))}
+          seeAllLink="/live"
+          style={styles.section}
+        />
       )}
 
 
@@ -551,33 +525,6 @@ const styles = StyleSheet.create({
     fontSize: IS_TV_BUILD ? 18 : 14,
     color: colors.primary.DEFAULT,
     fontWeight: '500',
-  },
-  liveBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.error.DEFAULT,
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 4,
-    borderRadius: 4,
-    gap: 4,
-  },
-  liveDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: colors.text,
-  },
-  liveBadgeText: {
-    fontSize: IS_TV_BUILD ? 12 : 10,
-    fontWeight: '700',
-    color: colors.text,
-  },
-  liveRow: {
-    gap: IS_TV_BUILD ? spacing.md : spacing.sm,
-    paddingRight: spacing.md,
-  },
-  liveCardWrapper: {
-    width: IS_TV_BUILD ? 320 : 240,
   },
   // Skeleton
   skeletonHero: {

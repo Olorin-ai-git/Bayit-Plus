@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, useWindowDimensions, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
+import { useResponsive } from '@/hooks/useResponsive';
 import { Film, Tv, Search, ChevronLeft, ChevronRight, SlidersHorizontal, Mic, X } from 'lucide-react';
 import ContentCard from '@/components/content/ContentCard';
 import AnimatedCard from '@/components/common/AnimatedCard';
@@ -14,6 +15,7 @@ import {
   GlassInput,
   GlassCheckbox,
   GlassPageHeader,
+  GlassModal,
 } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
@@ -55,6 +57,8 @@ interface ContentItem {
 export default function VODPage() {
   const { t, i18n } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
+  const responsive = useResponsive();
+  const { isMobile } = responsive;
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [allContent, setAllContent] = useState<ContentItem[]>([]);
@@ -71,9 +75,9 @@ export default function VODPage() {
   const [showOnlyWithSubtitles, setShowOnlyWithSubtitles] = useState(false);
   const [showFilterPanel, setShowFilterPanel] = useState(false);
   const [isListening, setIsListening] = useState(false);
-  const { width } = useWindowDimensions();
 
-  const numColumns = width >= 1280 ? 6 : width >= 1024 ? 5 : width >= 768 ? 4 : width >= 640 ? 3 : 2;
+  // Use responsive hook for column count
+  const numColumns = responsive.getColumns();
   const itemsPerPage = 24;
 
   // Debounced search query for API calls
@@ -356,15 +360,13 @@ export default function VODPage() {
             </Pressable>
           </View>
 
-          {/* Filter Panel Overlay */}
-          {showFilterPanel && (
-            <GlassCard style={styles.filterPanel}>
-              <View style={[styles.filterPanelHeader, { flexDirection }]}>
-                <Text style={[styles.filterPanelTitle, { textAlign }]}>{t('vod.filters', 'Filters')}</Text>
-                <Pressable onPress={() => setShowFilterPanel(false)} style={styles.filterCloseButton}>
-                  <X size={16} color={colors.textMuted} />
-                </Pressable>
-              </View>
+          {/* Filter Panel - Modal on mobile, overlay on desktop */}
+          {isMobile ? (
+            <GlassModal
+              visible={showFilterPanel}
+              onClose={() => setShowFilterPanel(false)}
+              title={t('vod.filters', 'Filters')}
+            >
               <View style={styles.filterPanelContent}>
                 <GlassCheckbox
                   label={t('vod.showOnlyWithSubtitles', 'Show only with subtitles')}
@@ -372,7 +374,25 @@ export default function VODPage() {
                   onChange={setShowOnlyWithSubtitles}
                 />
               </View>
-            </GlassCard>
+            </GlassModal>
+          ) : (
+            showFilterPanel && (
+              <GlassCard style={styles.filterPanel}>
+                <View style={[styles.filterPanelHeader, { flexDirection }]}>
+                  <Text style={[styles.filterPanelTitle, { textAlign }]}>{t('vod.filters', 'Filters')}</Text>
+                  <Pressable onPress={() => setShowFilterPanel(false)} style={styles.filterCloseButton}>
+                    <X size={16} color={colors.textMuted} />
+                  </Pressable>
+                </View>
+                <View style={styles.filterPanelContent}>
+                  <GlassCheckbox
+                    label={t('vod.showOnlyWithSubtitles', 'Show only with subtitles')}
+                    checked={showOnlyWithSubtitles}
+                    onChange={setShowOnlyWithSubtitles}
+                  />
+                </View>
+              </GlassCard>
+            )
           )}
         </View>
 

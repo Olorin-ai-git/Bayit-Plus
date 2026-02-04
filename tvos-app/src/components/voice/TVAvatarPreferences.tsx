@@ -117,7 +117,7 @@ const TVAvatarModeCard: React.FC<TVAvatarModeCardProps> = ({ mode, isSelected, o
       {/* Selection Indicator */}
       {isSelected && (
         <View style={styles.selectedBadge}>
-          <Text style={styles.selectedBadgeText}>✓</Text>
+          <Text style={styles.selectedBadgeText}>OK</Text>
         </View>
       )}
     </TouchableOpacity>
@@ -163,16 +163,16 @@ function getFeatures(mode: AvatarMode): Array<{ icon: string; text: string }> {
   const features = [];
 
   if (config.showWizard) {
-    features.push({ icon: '🧙', text: 'Wizard character' });
+    features.push({ icon: 'W', text: 'Wizard character' });
   }
   if (config.showAnimations) {
-    features.push({ icon: '✨', text: 'Animated gestures' });
+    features.push({ icon: 'A', text: 'Animated gestures' });
   }
   if (config.showWaveform) {
-    features.push({ icon: '〰️', text: 'Audio waveform' });
+    features.push({ icon: '~', text: 'Audio waveform' });
   }
   if (config.showTranscript) {
-    features.push({ icon: '💬', text: 'Live transcript' });
+    features.push({ icon: 'T', text: 'Live transcript' });
   }
 
   return features;
@@ -196,15 +196,15 @@ function getModeColor(mode: AvatarMode): string {
 function getModeIcon(mode: AvatarMode): string {
   switch (mode) {
     case 'full':
-      return '🧙‍♂️';
+      return 'F';
     case 'compact':
-      return '⭕';
+      return 'C';
     case 'minimal':
-      return '〰️';
+      return 'M';
     case 'icon_only':
-      return '🎩';
+      return 'I';
     default:
-      return '❓';
+      return '?';
   }
 }
 

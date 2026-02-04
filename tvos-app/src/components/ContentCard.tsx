@@ -73,7 +73,7 @@ export const ContentCard: React.FC<ContentCardProps> = ({
   // Add subtitle language indicator
   const subtitleCount = available_subtitle_languages?.length || 0;
   const finalSubtitle = subtitleCount > 0
-    ? `${metadataSubtitle}${metadataSubtitle ? ' • ' : ''}🎬 ${subtitleCount} lang${subtitleCount === 1 ? '' : 's'}`
+    ? `${metadataSubtitle}${metadataSubtitle ? ' • ' : ''}CC ${subtitleCount} lang${subtitleCount === 1 ? '' : 's'}`
     : metadataSubtitle;
 
   // Determine if content is new (< 7 days old)

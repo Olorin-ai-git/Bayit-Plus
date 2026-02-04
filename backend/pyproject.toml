@@ -67,7 +67,7 @@ dependencies = [
     "tavily-python (>=0.7.20,<0.8.0)",
     "exa-py (>=2.2.0,<3.0.0)",
     "better-profanity (>=0.7.0,<0.8.0)",
-    "olorin-email @ file:///Users/olorin/Documents/Projects/olorin/olorin-core/backend-core/olorin-email"
+    "olorin-email"
 ]
 
 
@@ -77,7 +77,7 @@ bayit-translation = { path = "../packages/bayit-translation", develop = true }
 olorin-core = { path = "../packages/olorin-core", develop = true }
 olorin-shared = { path = "../packages/olorin-shared", develop = true }
 olorin-i18n = { path = "../packages/python/olorin-i18n", develop = true }
-olorin-email = {develop = true}
+olorin-email = { path = "../packages/olorin-email", develop = true }
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

@@ -3,6 +3,7 @@
  *
  * Glassmorphic button with multiple variants, TV focus support, and accessibility.
  * Provides consistent button styling across platforms.
+ * Mobile-optimized with larger touch targets (minimum 56px height).
  */
 
 import React from 'react';
@@ -16,6 +17,7 @@ import {
   type TextStyle,
   type StyleProp,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { GlassView } from './GlassView';
 import { useTVFocus } from '../../hooks/useTVFocus';
@@ -70,11 +72,18 @@ export interface GlassButtonProps {
   testID?: string;
 }
 
-// Size configuration
+// Size configuration (desktop/default)
 const sizeStyles = {
   sm: { paddingVertical: 8, paddingHorizontal: 16, fontSize: 14 },
   md: { paddingVertical: 12, paddingHorizontal: 24, fontSize: 16 },
   lg: { paddingVertical: 16, paddingHorizontal: 32, fontSize: 18 },
+} as const;
+
+// Mobile size configuration (larger touch targets, minimum 56px height)
+const mobileSizeStyles = {
+  sm: { paddingVertical: 12, paddingHorizontal: 20, fontSize: 14 }, // ~44px height
+  md: { paddingVertical: 16, paddingHorizontal: 28, fontSize: 16 }, // ~56px height
+  lg: { paddingVertical: 20, paddingHorizontal: 36, fontSize: 18 }, // ~64px height
 } as const;
 
 // Variant background colors with glassmorphism
@@ -166,11 +175,16 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
   accessibilityHint,
   testID,
 }) => {
+  // Mobile detection for responsive sizing
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
   const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
     styleType: 'button',
   });
 
-  const currentSize = sizeStyles[size];
+  // Use mobile sizes on mobile, desktop sizes otherwise
+  const currentSize = isMobile ? mobileSizeStyles[size] : sizeStyles[size];
   const variantStyles = getVariantStyles();
   const textColorStyles = getTextColorStyles();
   const currentVariant = variantStyles[variant];

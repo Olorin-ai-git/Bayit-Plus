@@ -36,11 +36,11 @@ interface DemoStep {
 }
 
 const SAMPLE_COMMANDS = [
-  { text: 'Show me live TV channels', icon: '📺' },
-  { text: 'Play the latest movie', icon: '🎬' },
-  { text: 'Search for sports', icon: '⚽' },
-  { text: 'Open my favorites', icon: '❤️' },
-  { text: 'Go to settings', icon: '⚙️' },
+  { text: 'Show me live TV channels', icon: 'TV' },
+  { text: 'Play the latest movie', icon: 'Film' },
+  { text: 'Search for sports', icon: 'Sports' },
+  { text: 'Open my favorites', icon: 'Fav' },
+  { text: 'Go to settings', icon: 'Cog' },
 ];
 
 export const TVVoiceDemo: React.FC<TVVoiceDemoProps> = ({
@@ -118,7 +118,7 @@ export const TVVoiceDemo: React.FC<TVVoiceDemoProps> = ({
       id: 'menu-button',
       title: t('demo.step1_title', 'Press Menu Button'),
       description: t('demo.step1_desc', 'Long-press the Menu button for 500ms to activate voice'),
-      icon: '🔘',
+      icon: '1',
       action: () => moveToNextStep(),
       completed: completedSteps.has(0),
     },
@@ -126,7 +126,7 @@ export const TVVoiceDemo: React.FC<TVVoiceDemoProps> = ({
       id: 'speak',
       title: t('demo.step2_title', 'Speak Your Command'),
       description: t('demo.step2_desc', 'Say one of the sample commands shown below'),
-      icon: '🎤',
+      icon: '2',
       action: () => moveToNextStep(),
       completed: completedSteps.has(1),
     },
@@ -134,7 +134,7 @@ export const TVVoiceDemo: React.FC<TVVoiceDemoProps> = ({
       id: 'response',
       title: t('demo.step3_title', 'See Response'),
       description: t('demo.step3_desc', 'Your command is processed and executed'),
-      icon: '✓',
+      icon: '3',
       action: () => moveToNextStep(),
       completed: completedSteps.has(2),
     },
@@ -142,7 +142,7 @@ export const TVVoiceDemo: React.FC<TVVoiceDemoProps> = ({
       id: 'repeat',
       title: t('demo.step4_title', 'Try Another Command'),
       description: t('demo.step4_desc', 'Press Menu button again to give another command'),
-      icon: '🔄',
+      icon: '4',
       action: () => setDemoRunning(false),
       completed: completedSteps.has(3),
     },
@@ -268,7 +268,9 @@ export const TVVoiceDemo: React.FC<TVVoiceDemoProps> = ({
               {/* Microphone Animation (Step 2) */}
               {step.id === 'speak' && isListening && (
                 <View style={styles.microphoneContainer}>
-                  <Text style={styles.microphoneIcon}>🎤</Text>
+                  <View style={styles.microphoneIconContainer}>
+                    <Text style={styles.microphoneIconText}>MIC</Text>
+                  </View>
                   <Text style={styles.listeningText}>
                     {t('voice.listening', 'Listening...')}
                   </Text>
@@ -473,8 +475,18 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   stepIcon: {
-    fontSize: 120,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 30,
+    fontSize: 48,
+    fontWeight: '700',
+    color: '#A855F7',
+    textAlign: 'center',
+    lineHeight: 80,
   },
   menuButtonGraphic: {
     width: 200,
@@ -497,9 +509,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 30,
   },
-  microphoneIcon: {
-    fontSize: 80,
+  microphoneIconContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: '#A855F7',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 12,
+  },
+  microphoneIconText: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   listeningText: {
     fontSize: 32,
@@ -554,7 +576,17 @@ const styles = StyleSheet.create({
     transform: [{ scale: 1.05 }],
   },
   sampleIcon: {
-    fontSize: 32,
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#A855F7',
+    textAlign: 'center',
+    lineHeight: 40,
   },
   sampleText: {
     fontSize: 22,

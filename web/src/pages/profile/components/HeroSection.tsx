@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { View, Text, Pressable, Image, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Image, StyleSheet, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Camera, Zap, Shield, Star, Download } from 'lucide-react';
@@ -25,6 +25,15 @@ export function HeroSection({ isRTL, stats, statsLoading, onAvatarUploadSuccess 
   const { user, isAdmin } = useAuthStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [avatarUploading, setAvatarUploading] = useState(false);
+
+  // Mobile detection for responsive sizing
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
+  // Mobile-responsive avatar and camera button sizes
+  const avatarSize = isMobile ? 120 : 100; // Larger on mobile for better visibility
+  const cameraButtonSize = isMobile ? 40 : 32; // Larger touch target on mobile
+  const cameraIconSize = isMobile ? 20 : 16; // Larger icon on mobile
 
   const initial = user?.name?.charAt(0).toUpperCase() || 'U';
 
@@ -84,19 +93,31 @@ export function HeroSection({ isRTL, stats, statsLoading, onAvatarUploadSuccess 
           <Pressable onPress={handleAvatarClick} disabled={avatarUploading}>
             <View style={styles.avatarWrapper}>
               {user?.avatar ? (
-                <Image source={{ uri: user.avatar }} style={styles.avatar} />
+                <Image
+                  source={{ uri: user.avatar }}
+                  style={[styles.avatar, { width: avatarSize, height: avatarSize }]}
+                />
               ) : (
-                <View style={styles.avatarPlaceholder}>
+                <View style={[styles.avatarPlaceholder, { width: avatarSize, height: avatarSize }]}>
                   <Text style={styles.avatarInitial}>{initial}</Text>
                 </View>
               )}
               {avatarUploading && (
-                <View style={styles.avatarUploadingOverlay}>
+                <View style={[styles.avatarUploadingOverlay, { borderRadius: avatarSize / 2 }]}>
                   <Text style={styles.uploadingText}>...</Text>
                 </View>
               )}
-              <View style={styles.cameraButton}>
-                <Camera size={16} color="#fff" />
+              <View
+                style={[
+                  styles.cameraButton,
+                  {
+                    width: cameraButtonSize,
+                    height: cameraButtonSize,
+                    borderRadius: cameraButtonSize / 2,
+                  },
+                ]}
+              >
+                <Camera size={cameraIconSize} color="#fff" />
               </View>
             </View>
           </Pressable>

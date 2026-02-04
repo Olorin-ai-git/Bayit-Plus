@@ -21,6 +21,29 @@ body {
   padding: 0;
 }
 
+/* Mobile viewport fix - prevents content from being pushed off-screen */
+@media (max-width: 768px) {
+  html {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+
+  body {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+
+  #root {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    overflow: auto;
+  }
+}
+
 /* Force flex display on React Native Web View components */
 div[class*="flex-1"] {
   display: flex !important;

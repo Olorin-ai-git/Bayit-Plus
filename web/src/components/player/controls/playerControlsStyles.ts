@@ -8,7 +8,12 @@ import { colors, spacing, borderRadius, fontSizeTV } from '@olorin/design-tokens
 import { isTV } from '@bayit/shared/utils/platform'
 
 export const MIN_TOUCH_TARGET = 44
+export const MOBILE_TOUCH_TARGET = 56 // WCAG AA compliant for mobile
 export const TV_TOUCH_TARGET = 56
+export const MOBILE_ICON_SIZE = 28 // Larger icons for mobile
+export const DESKTOP_ICON_SIZE = 20 // Standard icons for desktop
+export const MOBILE_CONTROL_BAR_HEIGHT = 80
+export const DESKTOP_CONTROL_BAR_HEIGHT = 64
 
 export const controlStyles = StyleSheet.create({
   controlsRow: {

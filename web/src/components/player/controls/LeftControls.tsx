@@ -13,8 +13,16 @@ import { colors } from '@olorin/design-tokens'
 import { GlassSlider } from '@bayit/shared/ui'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import { isTV } from '@bayit/shared/utils/platform'
+import { useResponsive } from '@/hooks/useResponsive'
 import { PlayerState, PlayerControls, Chapter } from '../types'
-import { controlStyles as styles, MIN_TOUCH_TARGET, TV_TOUCH_TARGET } from './playerControlsStyles'
+import {
+  controlStyles as styles,
+  MIN_TOUCH_TARGET,
+  MOBILE_TOUCH_TARGET,
+  TV_TOUCH_TARGET,
+  MOBILE_ICON_SIZE,
+  DESKTOP_ICON_SIZE,
+} from './playerControlsStyles'
 
 interface LeftControlsProps {
   state: PlayerState
@@ -28,6 +36,7 @@ export default function LeftControls({
   state, controls, isLive = false, hasChapters = false, chapters = [],
 }: LeftControlsProps) {
   const { t } = useTranslation()
+  const responsive = useResponsive()
   const playFocus = useTVFocus({ styleType: 'button' })
   const prevChapterFocus = useTVFocus({ styleType: 'button' })
   const skipBackFocus = useTVFocus({ styleType: 'button' })
@@ -36,9 +45,18 @@ export default function LeftControls({
   const restartFocus = useTVFocus({ styleType: 'button' })
   const muteFocus = useTVFocus({ styleType: 'button' })
 
-  const iconSize = isTV ? 28 : 22
-  const smallIconSize = isTV ? 24 : 18
+  // Mobile-responsive button and icon sizes
+  const buttonSize = isTV ? TV_TOUCH_TARGET : (responsive.isMobile ? MOBILE_TOUCH_TARGET : MIN_TOUCH_TARGET)
+  const iconSize = isTV ? 28 : (responsive.isMobile ? MOBILE_ICON_SIZE : DESKTOP_ICON_SIZE)
+  const smallIconSize = isTV ? 24 : (responsive.isMobile ? 24 : 18)
+  const skipButtonWidth = isTV ? 72 : (responsive.isMobile ? 64 : 52)
   const speedDisplay = state.playbackSpeed !== 1 ? `${state.playbackSpeed}x` : null
+
+  // Mobile-responsive button style
+  const mobileButtonStyle = responsive.isMobile ? {
+    width: buttonSize,
+    height: buttonSize,
+  } : {}
 
   return (
     <View style={styles.leftControls}>
@@ -50,6 +68,7 @@ export default function LeftControls({
         focusable={true}
         style={({ hovered }) => [
           styles.controlButton,
+          mobileButtonStyle,
           hovered && styles.controlButtonHovered,
           playFocus.isFocused && playFocus.focusStyle,
         ]}
@@ -69,7 +88,9 @@ export default function LeftControls({
               onBlur={prevChapterFocus.handleBlur}
               focusable={true}
               style={({ hovered }) => [
-                styles.controlButton, hovered && styles.controlButtonHovered,
+                styles.controlButton,
+                mobileButtonStyle,
+                hovered && styles.controlButtonHovered,
                 prevChapterFocus.isFocused && prevChapterFocus.focusStyle,
               ]}
               accessibilityRole="button"
@@ -86,13 +107,16 @@ export default function LeftControls({
             onBlur={skipBackFocus.handleBlur}
             focusable={true}
             style={({ hovered }) => [
-              styles.controlButton, styles.skipButton, hovered && styles.controlButtonHovered,
+              styles.controlButton,
+              styles.skipButton,
+              responsive.isMobile && { width: skipButtonWidth },
+              hovered && styles.controlButtonHovered,
               skipBackFocus.isFocused && skipBackFocus.focusStyle,
             ]}
             accessibilityRole="button"
             accessibilityLabel={t('player.skipBackward')}
           >
-            <SkipBack size={isTV ? 20 : 16} color={colors.text} />
+            <SkipBack size={isTV ? 20 : (responsive.isMobile ? 20 : 16)} color={colors.text} />
             <Text style={[styles.skipText, isTV && styles.skipTextTV]}>30</Text>
           </Pressable>
 
@@ -102,13 +126,16 @@ export default function LeftControls({
             onBlur={skipForwardFocus.handleBlur}
             focusable={true}
             style={({ hovered }) => [
-              styles.controlButton, styles.skipButton, hovered && styles.controlButtonHovered,
+              styles.controlButton,
+              styles.skipButton,
+              responsive.isMobile && { width: skipButtonWidth },
+              hovered && styles.controlButtonHovered,
               skipForwardFocus.isFocused && skipForwardFocus.focusStyle,
             ]}
             accessibilityRole="button"
             accessibilityLabel={t('player.skipForward')}
           >
-            <SkipForward size={isTV ? 20 : 16} color={colors.text} />
+            <SkipForward size={isTV ? 20 : (responsive.isMobile ? 20 : 16)} color={colors.text} />
             <Text style={[styles.skipText, isTV && styles.skipTextTV]}>30</Text>
           </Pressable>
 
@@ -120,7 +147,9 @@ export default function LeftControls({
               onBlur={nextChapterFocus.handleBlur}
               focusable={true}
               style={({ hovered }) => [
-                styles.controlButton, hovered && styles.controlButtonHovered,
+                styles.controlButton,
+                mobileButtonStyle,
+                hovered && styles.controlButtonHovered,
                 nextChapterFocus.isFocused && nextChapterFocus.focusStyle,
               ]}
               accessibilityRole="button"
@@ -137,7 +166,9 @@ export default function LeftControls({
             onBlur={restartFocus.handleBlur}
             focusable={true}
             style={({ hovered }) => [
-              styles.controlButton, hovered && styles.controlButtonHovered,
+              styles.controlButton,
+              mobileButtonStyle,
+              hovered && styles.controlButtonHovered,
               restartFocus.isFocused && restartFocus.focusStyle,
             ]}
             accessibilityRole="button"
@@ -156,7 +187,9 @@ export default function LeftControls({
           onBlur={muteFocus.handleBlur}
           focusable={true}
           style={({ hovered }) => [
-            styles.controlButton, hovered && styles.controlButtonHovered,
+            styles.controlButton,
+            mobileButtonStyle,
+            hovered && styles.controlButtonHovered,
             muteFocus.isFocused && muteFocus.focusStyle,
           ]}
           accessibilityRole="button"

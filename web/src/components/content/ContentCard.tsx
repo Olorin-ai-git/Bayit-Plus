@@ -11,6 +11,7 @@ import { SubtitleFlags, ContentBadges } from '@bayit/shared';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import AIEnhancedBadge from './AIEnhancedBadge';
 import { useDirection } from '@/hooks/useDirection';
+import { useResponsive } from '@/hooks/useResponsive';
 import { favoritesService, watchlistService } from '@/services/api';
 import { getLocalizedCategory } from '@bayit/shared-utils/contentLocalization';
 import LinearGradient from 'react-native-linear-gradient';
@@ -62,6 +63,8 @@ export default function ContentCard({ content, showProgress = false, showActions
 
   const { t, i18n } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
+  const responsive = useResponsive();
+  const { isMobile } = responsive;
   const [isHovered, setIsHovered] = useState(false);
   const { isUIInteractionEnabled } = useModeEnforcement();
   const [showArticleModal, setShowArticleModal] = useState(false);
@@ -334,10 +337,19 @@ export default function ContentCard({ content, showProgress = false, showActions
               }
             })()}
 
-            {/* Action Buttons - Show on hover */}
+            {/* Action Buttons - Show on hover (larger on mobile) */}
             {showActions && isHovered && (
               <div
-                style={{ position: 'absolute', top: spacing.sm, right: isRTL ? 'auto' : spacing.sm, left: isRTL ? spacing.sm : 'auto', display: 'flex', flexDirection: 'row', gap: spacing.xs, zIndex: 10 }}
+                style={{
+                  position: 'absolute',
+                  top: spacing.sm,
+                  right: isRTL ? 'auto' : spacing.sm,
+                  left: isRTL ? spacing.sm : 'auto',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: isMobile ? spacing.sm : spacing.xs,
+                  zIndex: 10
+                }}
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
@@ -346,9 +358,9 @@ export default function ContentCard({ content, showProgress = false, showActions
                   onMouseLeave={() => setFavoriteHovered(false)}
                   disabled={favoriteLoading}
                   style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 16,
+                    width: isMobile ? 56 : 32,
+                    height: isMobile ? 56 : 32,
+                    borderRadius: isMobile ? 28 : 16,
                     backgroundColor: isFavorite ? 'rgba(255, 255, 255, 0.15)' : favoriteHovered ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.6)',
                     border: 'none',
                     cursor: 'pointer',
@@ -361,7 +373,7 @@ export default function ContentCard({ content, showProgress = false, showActions
                   }}
                 >
                   <Star
-                    size={16}
+                    size={isMobile ? 24 : 16}
                     color={isFavorite ? colors.warning : colors.text}
                     fill={isFavorite ? colors.warning : 'transparent'}
                   />
@@ -372,9 +384,9 @@ export default function ContentCard({ content, showProgress = false, showActions
                   onMouseLeave={() => setWatchlistHovered(false)}
                   disabled={watchlistLoading}
                   style={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: 16,
+                    width: isMobile ? 56 : 32,
+                    height: isMobile ? 56 : 32,
+                    borderRadius: isMobile ? 28 : 16,
                     backgroundColor: inWatchlist ? 'rgba(255, 255, 255, 0.15)' : watchlistHovered ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.6)',
                     border: 'none',
                     cursor: 'pointer',
@@ -387,7 +399,7 @@ export default function ContentCard({ content, showProgress = false, showActions
                   }}
                 >
                   <Bookmark
-                    size={16}
+                    size={isMobile ? 24 : 16}
                     color={inWatchlist ? colors.primary : colors.text}
                     fill={inWatchlist ? colors.primary : 'transparent'}
                   />
@@ -395,15 +407,18 @@ export default function ContentCard({ content, showProgress = false, showActions
               </div>
             )}
 
-            {/* Play Overlay - Hide for articles */}
+            {/* Play Overlay - Hide for articles (larger on mobile) */}
             {isHovered && !isScrapedArticle && (
               <View style={styles.playOverlay}>
                 <LinearGradient
                   colors={['transparent', 'rgba(10, 10, 20, 0.8)']}
                   style={StyleSheet.absoluteFill}
                 />
-                <View style={styles.playButton}>
-                  <Play size={24} color={colors.text} fill={colors.text} />
+                <View style={[
+                  styles.playButton,
+                  isMobile && styles.playButtonMobile,
+                ]}>
+                  <Play size={isMobile ? 32 : 24} color={colors.text} fill={colors.text} />
                 </View>
               </View>
             )}
@@ -665,6 +680,11 @@ const styles = StyleSheet.create({
     backdropFilter: 'blur(8px)',
     transition: 'all 0.2s ease',
   },
+  actionButtonMobile: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+  },
   actionButtonActive: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
   },
@@ -678,9 +698,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   playButton: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
     // @ts-ignore
     backdropFilter: 'blur(8px)',
@@ -688,6 +708,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     // @ts-ignore
     boxShadow: `0 0 20px ${colors.primary}`,
+  },
+  playButtonMobile: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
   },
   durationBadge: {
     position: 'absolute',

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Icon } from '@olorin/shared-icons/web'
 import { spacing, borderRadius, colors } from '@olorin/design-tokens'
 import { GlassView, GlassBadge } from '@bayit/shared/ui'
+import { useResponsive } from '@/hooks/useResponsive'
 import { getLanguageInfo } from '@/types/subtitle'
 import PlayerControls from './PlayerControls'
 import ProgressBar from './ProgressBar'
@@ -10,6 +11,10 @@ import VideoPlayerCenterControls from './VideoPlayerCenterControls'
 import { Chapter } from '@/types/media'
 import { SubtitleTrack } from '@/types/subtitle'
 import { VideoPlayerState, VideoPlayerControls } from './hooks/useVideoPlayer'
+import {
+  MOBILE_CONTROL_BAR_HEIGHT,
+  DESKTOP_CONTROL_BAR_HEIGHT,
+} from './controls/playerControlsStyles'
 
 interface VideoPlayerControlsOverlayProps {
   state: VideoPlayerState
@@ -79,6 +84,10 @@ export default function VideoPlayerControlsOverlay({
   contentId,
 }: VideoPlayerControlsOverlayProps) {
   const { t } = useTranslation()
+  const responsive = useResponsive()
+
+  // Mobile-responsive control bar height
+  const controlBarHeight = responsive.isMobile ? MOBILE_CONTROL_BAR_HEIGHT : DESKTOP_CONTROL_BAR_HEIGHT
 
   // Don't render overlay at all when controls are hidden
   if (!state.showControls) {
@@ -130,7 +139,7 @@ export default function VideoPlayerControlsOverlay({
       />
 
       {/* Bottom Controls */}
-      <GlassView style={styles.bottomControls} intensity="high" noBorder>
+      <GlassView style={[styles.bottomControls, { minHeight: controlBarHeight }]} intensity="high" noBorder>
           {!isLive && (
             <ProgressBar
               currentTime={state.currentTime}

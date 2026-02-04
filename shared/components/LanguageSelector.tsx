@@ -5,7 +5,12 @@ import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors } from '@olorin/design-tokens';
 import { languages, saveLanguage, getCurrentLanguage } from '../i18n';
 
-export const LanguageSelector: React.FC = () => {
+interface LanguageSelectorProps {
+  /** Compact mode for mobile (48x48px touch target) */
+  compact?: boolean;
+}
+
+export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ compact = false }) => {
   const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -28,7 +33,11 @@ export const LanguageSelector: React.FC = () => {
         onPress={() => setIsOpen(!isOpen)}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        style={[styles.button, isFocused && styles.buttonFocused]}
+        style={[
+          styles.button,
+          compact && styles.buttonCompact,
+          isFocused && styles.buttonFocused,
+        ]}
         accessibilityLabel={t('settings.selectLanguage')}
       >
         <Text style={styles.flagText}>{currentLang.flag}</Text>
@@ -98,6 +107,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
     borderColor: 'transparent',
+  },
+  buttonCompact: {
+    width: 48,
+    height: 48,
   },
   buttonFocused: {
     borderColor: colors.primary.DEFAULT,

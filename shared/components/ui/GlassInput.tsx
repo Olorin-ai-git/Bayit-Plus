@@ -10,6 +10,7 @@ import {
   TextInputProps,
   Pressable,
   StyleSheet,
+  useWindowDimensions,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './GlassView';
@@ -45,6 +46,14 @@ export const GlassInput: React.FC<GlassInputProps> = ({
   const { i18n } = useTranslation();
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
 
+  // Mobile detection for responsive sizing
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
+  // Mobile-optimized dimensions
+  const minHeight = isMobile ? 56 : 50; // 56px on mobile for comfortable touch
+  const fontSize = 16; // Always 16px (prevents iOS zoom on mobile, good size on desktop)
+
   const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
     styleType: disableFocusBorder ? 'none' : 'input',
     onFocus: () => props.onFocus?.(null as any),
@@ -62,6 +71,7 @@ export const GlassInput: React.FC<GlassInputProps> = ({
         <GlassView
           style={[
             styles.inputContainer,
+            { minHeight },
             isRTL && styles.rowReverse,
             error && styles.errorBorder,
           ]}
@@ -72,7 +82,7 @@ export const GlassInput: React.FC<GlassInputProps> = ({
           {icon && <View>{icon}</View>}
           <TextInput
             {...props}
-            style={[styles.input, isRTL && styles.textRight, inputStyle]}
+            style={[styles.input, { fontSize, minHeight }, isRTL && styles.textRight, inputStyle]}
             placeholderTextColor={colors.textMuted}
             onFocus={(e) => {
               handleFocus();
@@ -115,7 +125,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    minHeight: 50,
+    // minHeight is dynamic (50px desktop, 56px mobile) - applied inline
     paddingHorizontal: spacing.md,
     gap: spacing.sm,
     width: '100%',
@@ -127,9 +137,10 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: 16,
+    // fontSize is dynamic (always 16px to prevent iOS zoom) - applied inline
+    // minHeight is dynamic (50px desktop, 56px mobile) - applied inline
     color: colors.text,
-    paddingVertical: spacing.sm,
+    padding: 0, // No padding - input fills container height
     outlineWidth: 0,
     borderWidth: 0,
   },

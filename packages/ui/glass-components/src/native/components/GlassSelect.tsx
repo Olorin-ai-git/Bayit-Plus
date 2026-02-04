@@ -3,6 +3,7 @@
  *
  * Glassmorphic dropdown select with modal picker.
  * Supports RTL, TV focus, and accessibility.
+ * Mobile-optimized with 56px minimum height and larger touch targets.
  */
 
 import React, { useState } from 'react';
@@ -15,6 +16,7 @@ import {
   Animated,
   Platform,
   I18nManager,
+  useWindowDimensions,
 } from 'react-native';
 import { GlassView } from './GlassView';
 import { colors, borderRadius, spacing } from '../../theme';
@@ -70,6 +72,14 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Mobile detection for responsive sizing
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
+  // Mobile-optimized dimensions
+  const minHeight = isMobile ? 56 : 48; // 56px on mobile for comfortable touch
+  const fontSize = isMobile ? 16 : 14; // 16px on mobile prevents iOS zoom
+
   // Detect RTL from prop, I18nManager, or document direction
   const isRTL =
     isRTLProp ??
@@ -115,9 +125,10 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
       >
         <Animated.View style={scaleTransform}>
           <GlassView
-            className={`items-center justify-between min-h-[48px] ${disabled ? 'opacity-50' : ''}`}
+            className={`items-center justify-between ${disabled ? 'opacity-50' : ''}`}
             style={[
               {
+                minHeight,
                 flexDirection,
                 paddingHorizontal: spacing.md,
                 paddingVertical: spacing.md,
@@ -128,8 +139,9 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
             borderColor={error ? colors.error : isFocused ? colors.glassBorderFocus : undefined}
           >
             <Text
-              className={`flex-1 text-base ${!selectedOption ? '' : ''}`}
+              className="flex-1"
               style={{
+                fontSize,
                 textAlign,
                 color: selectedOption ? colors.text : colors.textMuted,
               }}

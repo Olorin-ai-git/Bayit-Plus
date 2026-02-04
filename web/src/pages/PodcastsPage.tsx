@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Image, ScrollView, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Image, ScrollView } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
+import { useResponsive } from '@/hooks/useResponsive';
 import { Podcast, Headphones, Clock, Search, X, RefreshCw } from 'lucide-react';
 import { podcastService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -102,16 +103,16 @@ function SkeletonCard() {
 export default function PodcastsPage() {
   const { t, i18n } = useTranslation();
   const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
+  const responsive = useResponsive();
   const [shows, setShows] = useState<Show[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const { width } = useWindowDimensions();
   const episodesLabel = t('podcasts.episodes');
 
-  const numColumns = width >= 1280 ? 5 : width >= 1024 ? 4 : width >= 768 ? 3 : 2;
+  const numColumns = responsive.getColumns();
 
   // Filter shows by search query and category
   const filteredShows = useMemo(() => {

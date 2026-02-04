@@ -1,107 +1,89 @@
+# Exclude large frontend/mobile apps (not needed for backend Docker build)
+web/
+mobile-app/
+tv-app/
+tvos-app/
+tizen/
+webos/
+ios/
+cli/
+partner-portal/
+playwright-report/
+chrome-extension/
+public/
+docs-portal/
+
+# Root node_modules
+node_modules/
+
+# Shared (exclude large directories, keep i18n for backend)
+shared/node_modules/
+shared/assets/
+shared/models/
+shared/components/
+shared/hooks/
+shared/services/
+shared/stores/
+shared/styles/
+shared/utils/
+
+# Test results
+test-results/
+
+# Documentation
+docs/
+
 # Git
 .git/
 .gitignore
 .gitattributes
 
-# Python
-**/__pycache__/
-**/*.py[cod]
-**/*$py.class
-**/*.so
-.Python
-**/build/
-**/develop-eggs/
-**/dist/
-**/downloads/
-**/eggs/
-**/.eggs/
-**/lib64/
-**/parts/
-**/sdist/
-**/var/
-**/wheels/
-**/*.egg-info/
-**/*.egg
-MANIFEST
-
-# Virtual environments
-**/venv/
-**/ENV/
-**/env/
-**/.venv
-
-# Testing
-**/.pytest_cache/
-**/.coverage
-**/htmlcov/
-**/.tox/
-**/.hypothesis/
-backend/tests/
-backend/test/
-
-# IDEs
+# IDE
 .vscode/
 .idea/
-**/*.swp
-**/*.swo
+*.swp
+*.swo
 *~
-**/.DS_Store
-
-# Documentation (exclude only from backend, not packages)
-backend/docs/
-**/*.md
-!packages/**/*.md
-!README.md
+.DS_Store
 
 # CI/CD
 .github/
-.gitlab-ci.yml
 
-# Deployment config files
-.env
-.env.*
-!.env.example
-**/credentials.json
-**/service-account.json
-**/token.json
-**/*.pem
-**/*.key
-
-# Logs
-**/*.log
-backend/logs/
-backend_server.log
-backend_debug.log
-backend.log
-
-# Node modules (for frontend)
-node_modules/
-**/node_modules/
-
-# Build artifacts (frontend)
-shared/build/
-shared/dist/
-
-# Uploads
+# Backend-specific
 backend/uploads/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/**/*.pyc
+backend/venv/
+backend/.venv/
+backend/.pytest_cache/
+backend/logs/
+backend/*.log
+backend/.env
+backend/.env.*
+!backend/.env.example
+backend/credentials.json
+backend/service-account.json
+backend/*.pem
+backend/*.key
+backend/*.zip
+backend/*.tar.gz
+backend/scripts/
+backend/docs/
+backend/backups/
 
-# Scripts (shell scripts excluded, but scripts directory needed for migration models)
-**/*.sh
+# Packages - keep only backend Python dependencies
+packages/firebase-config/
+packages/ui/design-tokens/
+packages/ui/design-tokens.local/
+packages/ui/glass-components/
+packages/ui/shared-hooks/
+packages/ui/shared-icons/
+packages/ui/shared-services/
+packages/ui/shared-stores/
+packages/ui/node_modules/
+scripts/backend/.hls_conversion_state/
 
-# Config files
-.gcp-config
-.gcloudignore
-backend/DEPLOYMENT*.md
-backend/QUICKSTART.md
-
-# Docker
-**/docker-compose*.yml
-
-# Cloud Build
-cloudbuild.yaml
-
-# Large files
-**/*.zip
-**/*.tar.gz
-**/*.sql
-**/*.dump
+# Exclude scripts directory (not needed in Docker build)
+scripts/

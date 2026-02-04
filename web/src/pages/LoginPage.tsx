@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(147, 51, 234, 0.08)',
     top: -200,
     right: -200,
-    // Use filter instead of blur for React Native Web compatibility
+    // @ts-ignore - Web CSS
     filter: 'blur(120px)',
   },
   bgGradient2: {
@@ -306,6 +306,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(192, 132, 252, 0.06)',
     bottom: -100,
     left: -100,
+    // @ts-ignore - Web CSS
     filter: 'blur(100px)',
   },
   bgGradient3: {
@@ -316,9 +317,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(147, 51, 234, 0.04)',
     top: '50%',
     left: '50%',
-    // Use marginLeft/marginTop for translate
     marginLeft: -150,
     marginTop: -150,
+    // @ts-ignore - Web CSS
     filter: 'blur(80px)',
   },
   // Language Selector

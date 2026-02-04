@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatbotStore } from '@/stores/chatbotStore';
 import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
+import { useMobileLayoutStore } from '@/stores/mobileLayoutStore';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { chatService } from '@/services/api';
 import { VoiceSearchButton, LanguageSelector, SoundwaveVisualizer } from '@bayit/shared';
@@ -34,10 +35,10 @@ const navLinkKeys = [
 
 export default function Header() {
   const { i18n, t } = useTranslation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, isAuthenticated, isAdmin, logout, isHydrated } = useAuthStore();
   const { sendMessage, toggleOpen } = useChatbotStore();
   const { preferences } = useVoiceSettingsStore();
+  const { toggleSidebar } = useMobileLayoutStore();
   const { isRemoteControlEnabled } = useModeEnforcement();
   const navigate = useNavigate();
   const { width } = useWindowDimensions();
@@ -182,7 +183,8 @@ export default function Header() {
   // Actions component
   const ActionsSection = (
     <View style={styles.actions}>
-      {showAdmin && (
+      {/* Admin button - hidden on mobile */}
+      {showAdmin && !isMobile && (
         <Link to="/admin" style={{ textDecoration: 'none' }}>
           <View style={styles.adminButton}>
             <Shield size={16} color={colors.text} />
@@ -190,12 +192,25 @@ export default function Header() {
           </View>
         </Link>
       )}
+
+      {/* Profile/Login - simplified on mobile */}
       {authReady && isAuthenticated && user ? (
-        <ProfileDropdown
-          user={user}
-          onNavigate={handleProfileNavigate}
-          onLogout={handleLogout}
-        />
+        isMobile ? (
+          // Mobile: Simple logout button
+          <Pressable
+            onPress={handleLogout}
+            style={styles.mobileLogoutButton}
+          >
+            <Text style={styles.mobileLogoutText}>{t('account.logout')}</Text>
+          </Pressable>
+        ) : (
+          // Desktop: Full profile dropdown
+          <ProfileDropdown
+            user={user}
+            onNavigate={handleProfileNavigate}
+            onLogout={handleLogout}
+          />
+        )
       ) : (
         <Pressable
           onPress={() => navigate('/login')}
@@ -203,6 +218,7 @@ export default function Header() {
           onBlur={() => setLoginFocused(false)}
           style={[
             styles.loginButton,
+            isMobile && styles.loginButtonMobile,
             loginFocused && styles.loginButtonFocused,
           ]}
         >
@@ -210,11 +226,16 @@ export default function Header() {
         </Pressable>
       )}
 
-      <LanguageSelector />
+      {/* Language selector - compact on mobile */}
+      <LanguageSelector compact={isMobile} />
 
+      {/* Search button - 48x48px on mobile */}
       <Link to="/search" style={{ textDecoration: 'none' }}>
-        <View style={styles.iconButton}>
-          <Search size={IS_TV_BUILD ? 32 : 20} color={colors.text} />
+        <View style={[
+          styles.iconButton,
+          isMobile && styles.iconButtonMobile,
+        ]}>
+          <Search size={IS_TV_BUILD ? 32 : (isMobile ? 24 : 20)} color={colors.text} />
         </View>
       </Link>
 
@@ -233,7 +254,10 @@ export default function Header() {
 
       {/* Voice search button - hide on TV when Hebrew is selected (voice doesn't support Hebrew) */}
       {(!IS_TV_BUILD || (i18n.language !== 'he')) && (
-        <View style={styles.voiceButtonContainer}>
+        <View style={[
+          styles.voiceButtonContainer,
+          isMobile && styles.voiceButtonContainerMobile,
+        ]}>
           <VoiceSearchButton
             onResult={handleVoiceTranscribed}
             transcribeAudio={chatService.transcribeAudio}
@@ -242,17 +266,13 @@ export default function Header() {
         </View>
       )}
 
-      {/* Mobile Menu Toggle */}
+      {/* Mobile Menu Toggle - Opens sidebar drawer (48x48px) */}
       {isMobile && (
         <Pressable
-          onPress={() => setMobileMenuOpen(!mobileMenuOpen)}
-          style={styles.iconButton}
+          onPress={toggleSidebar}
+          style={styles.iconButtonMobile}
         >
-          {mobileMenuOpen ? (
-            <X size={20} color={colors.text} />
-          ) : (
-            <Menu size={20} color={colors.text} />
-          )}
+          <Menu size={24} color={colors.text} />
         </Pressable>
       )}
     </View>
@@ -267,43 +287,7 @@ export default function Header() {
           {ActionsSection}
         </View>
 
-        {/* Mobile Navigation */}
-        {isMobile && mobileMenuOpen && (
-          <View style={styles.mobileNav}>
-            {navLinkKeys.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                onClick={() => setMobileMenuOpen(false)}
-                style={{ textDecoration: 'none' }}
-              >
-                {({ isActive }) => (
-                  <View style={[styles.mobileNavLink, isActive && styles.navLinkActive]}>
-                    <Text style={[styles.navLinkText, isActive && styles.navLinkTextActive]}>
-                      {t(link.key)}
-                    </Text>
-                  </View>
-                )}
-              </NavLink>
-            ))}
-            {showAdmin && (
-              <NavLink
-                to="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                style={{ textDecoration: 'none' }}
-              >
-                {({ isActive }) => (
-                  <View style={[styles.mobileNavLink, styles.mobileAdminLink, isActive && styles.navLinkActive]}>
-                    <Shield size={16} color="#ef4444" />
-                    <Text style={[styles.navLinkText, styles.adminLinkText, isActive && styles.navLinkTextActive]}>
-                      {t('nav.admin', 'Admin')}
-                    </Text>
-                  </View>
-                )}
-              </NavLink>
-            )}
-          </View>
-        )}
+        {/* Mobile Navigation removed - now handled by sidebar drawer */}
       </View>
     </GlassView>
   );
@@ -438,5 +422,43 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.glassBorderStrong,     // Purple border
+  },
+  // Mobile-specific styles (≥48px touch targets)
+  iconButtonMobile: {
+    width: 48,
+    height: 48,
+    borderRadius: 8,
+    backgroundColor: 'transparent',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  voiceButtonContainerMobile: {
+    height: 48,
+    minWidth: 48,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loginButtonMobile: {
+    minWidth: 80,
+    minHeight: 48,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  mobileLogoutButton: {
+    minWidth: 80,
+    minHeight: 48,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: 8,
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mobileLogoutText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ef4444',
   },
 });

@@ -255,7 +255,9 @@ const styles = StyleSheet.create({
   },
   labelContainer: {
     alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: spacing.xs,
+    minHeight: isTV ? 44 : 36, // Fixed height to align clocks with different label lengths
   },
   flagEmoji: {
     marginRight: spacing.xs,

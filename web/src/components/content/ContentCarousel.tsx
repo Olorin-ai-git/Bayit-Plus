@@ -8,6 +8,7 @@ import AnimatedCard from '@/components/common/AnimatedCard';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassView } from '@bayit/shared/ui';
 import { useDirection } from '@/hooks/useDirection';
+import { useResponsive } from '@/hooks/useResponsive';
 
 declare const __TV__: boolean;
 const isTV = typeof __TV__ !== 'undefined' && __TV__;
@@ -42,7 +43,11 @@ export default function ContentCarousel({
 }: ContentCarouselProps) {
   const { t } = useTranslation();
   const { isRTL, flexDirection, textAlign } = useDirection();
+  const { isMobile, isTablet } = useResponsive();
   const scrollRef = useRef<ScrollView>(null);
+
+  // Responsive card width: mobile 140px, tablet 200px, desktop 260px
+  const cardWidth = isMobile ? 140 : isTablet ? 200 : isTV ? 320 : 260;
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollRef.current) {
@@ -60,8 +65,11 @@ export default function ContentCarousel({
 
   const SeeAllChevron = isRTL ? ChevronLeft : ChevronRight;
 
+  // Responsive min height for container
+  const containerMinHeight = isMobile ? 280 : isTablet ? 350 : 400;
+
   return (
-    <View style={[styles.container, style]}>
+    <View style={[styles.container, { minHeight: containerMinHeight }, style]}>
       {/* Header */}
       <View style={[styles.header, { flexDirection }]}>
         <Text style={[styles.title, { textAlign }]}>{title}</Text>
@@ -77,29 +85,33 @@ export default function ContentCarousel({
 
       {/* Carousel Container */}
       <View style={styles.carouselContainer}>
-        {/* Scroll Buttons */}
-        <Pressable
-          onPress={() => scroll('right')}
-          style={[
-            styles.scrollButton,
-            isRTL ? styles.scrollButtonLeft : styles.scrollButtonRight,
-          ]}
-        >
-          <GlassView style={styles.scrollButtonInner}>
-            {isRTL ? <ChevronLeft size={28} color={colors.text} /> : <ChevronRight size={28} color={colors.text} />}
-          </GlassView>
-        </Pressable>
-        <Pressable
-          onPress={() => scroll('left')}
-          style={[
-            styles.scrollButton,
-            isRTL ? styles.scrollButtonRight : styles.scrollButtonLeft,
-          ]}
-        >
-          <GlassView style={styles.scrollButtonInner}>
-            {isRTL ? <ChevronRight size={28} color={colors.text} /> : <ChevronLeft size={28} color={colors.text} />}
-          </GlassView>
-        </Pressable>
+        {/* Scroll Buttons - hidden on mobile, touch scrolling is more natural */}
+        {!isMobile && (
+          <>
+            <Pressable
+              onPress={() => scroll('right')}
+              style={[
+                styles.scrollButton,
+                isRTL ? styles.scrollButtonLeft : styles.scrollButtonRight,
+              ]}
+            >
+              <GlassView style={styles.scrollButtonInner}>
+                {isRTL ? <ChevronLeft size={28} color={colors.text} /> : <ChevronRight size={28} color={colors.text} />}
+              </GlassView>
+            </Pressable>
+            <Pressable
+              onPress={() => scroll('left')}
+              style={[
+                styles.scrollButton,
+                isRTL ? styles.scrollButtonRight : styles.scrollButtonLeft,
+              ]}
+            >
+              <GlassView style={styles.scrollButtonInner}>
+                {isRTL ? <ChevronRight size={28} color={colors.text} /> : <ChevronLeft size={28} color={colors.text} />}
+              </GlassView>
+            </Pressable>
+          </>
+        )}
 
         {/* Items */}
         <ScrollView
@@ -118,7 +130,7 @@ export default function ContentCarousel({
               variant="carousel"
               isRTL={isRTL}
             >
-              <View style={styles.cardWrapper}>
+              <View style={{ width: cardWidth, flexShrink: 0 }}>
                 <ContentCard content={item} />
               </View>
             </AnimatedCard>
@@ -135,7 +147,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
     paddingHorizontal: spacing.md,
     width: '100%',
-    minHeight: 400,
   },
   header: {
     flexDirection: 'row',
@@ -190,9 +201,5 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.md,
     paddingLeft: spacing.xs,
     paddingRight: spacing.md,
-  },
-  cardWrapper: {
-    width: isTV ? 320 : 260,
-    flexShrink: 0,
   },
 });

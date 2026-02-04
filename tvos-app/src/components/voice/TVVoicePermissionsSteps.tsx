@@ -20,7 +20,9 @@ export const TVVoicePermissionsSteps: React.FC<TVVoicePermissionsStepsProps> = (
 
   const renderIntro = () => (
     <View style={styles.stepContent}>
-      <Text style={styles.stepIcon}>🎤</Text>
+      <View style={styles.stepIconContainer}>
+        <Text style={styles.stepIconText}>MIC</Text>
+      </View>
       <Text style={styles.stepTitle}>
         {t('voice.enable_title', 'Enable Voice Control')}
       </Text>
@@ -37,7 +39,9 @@ export const TVVoicePermissionsSteps: React.FC<TVVoicePermissionsStepsProps> = (
 
   const renderMicrophone = () => (
     <View style={styles.stepContent}>
-      <Text style={styles.stepIcon}>🎙️</Text>
+      <View style={styles.stepIconContainer}>
+        <Text style={styles.stepIconText}>2</Text>
+      </View>
       <Text style={styles.stepTitle}>
         {t('voice.microphone_permission', 'Microphone Access')}
       </Text>
@@ -55,7 +59,9 @@ export const TVVoicePermissionsSteps: React.FC<TVVoicePermissionsStepsProps> = (
 
   const renderSpeech = () => (
     <View style={styles.stepContent}>
-      <Text style={styles.stepIcon}>🗣️</Text>
+      <View style={styles.stepIconContainer}>
+        <Text style={styles.stepIconText}>3</Text>
+      </View>
       <Text style={styles.stepTitle}>
         {t('voice.speech_recognition', 'Speech Recognition')}
       </Text>
@@ -73,7 +79,9 @@ export const TVVoicePermissionsSteps: React.FC<TVVoicePermissionsStepsProps> = (
 
   const renderComplete = () => (
     <View style={styles.stepContent}>
-      <Text style={styles.stepIcon}>✓</Text>
+      <View style={[styles.stepIconContainer, styles.stepIconSuccess]}>
+        <Text style={styles.stepIconText}>OK</Text>
+      </View>
       <Text style={styles.stepTitle}>
         {t('voice.setup_complete', 'Setup Complete!')}
       </Text>
@@ -109,9 +117,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 40,
   },
-  stepIcon: {
-    fontSize: 80,
+  stepIconContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    borderWidth: 3,
+    borderColor: '#A855F7',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 24,
+  },
+  stepIconSuccess: {
+    backgroundColor: 'rgba(16, 185, 129, 0.3)',
+    borderColor: '#10B981',
+  },
+  stepIconText: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#A855F7',
   },
   stepTitle: {
     fontSize: 48,

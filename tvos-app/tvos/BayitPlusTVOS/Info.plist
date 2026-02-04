@@ -10,6 +10,11 @@
 	<string>Bayit+: Smart Israeli TV</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIcons</key>
+	<dict>
+		<key>CFBundlePrimaryIcon</key>
+		<string>AppIcon</string>
+	</dict>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -37,12 +42,19 @@
 	</dict>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bayit+ uses your microphone for voice search and voice commands, allowing you to search for content and control the app hands-free.</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Bayit+ uses speech recognition to understand your voice commands and help you find content.</string>
 	<key>NSPrivacyPolicyURL</key>
 	<string>https://bayit.tv/policy</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Bayit+ uses speech recognition to understand your voice commands and help you find content.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
+	<key>TVTopShelfImage</key>
+	<dict>
+		<key>TVTopShelfPrimaryImage</key>
+		<string>TopShelf</string>
+		<key>TVTopShelfPrimaryImageWide</key>
+		<string>TopShelfWide</string>
+	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -57,17 +69,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>CFBundleIcons</key>
-	<dict>
-		<key>CFBundlePrimaryIcon</key>
-		<string>AppIcon</string>
-	</dict>
-	<key>TVTopShelfImage</key>
-	<dict>
-		<key>TVTopShelfPrimaryImage</key>
-		<string>TopShelf</string>
-		<key>TVTopShelfPrimaryImageWide</key>
-		<string>TopShelfWide</string>
-	</dict>
 </dict>
 </plist>

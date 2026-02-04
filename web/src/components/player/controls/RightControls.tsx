@@ -10,8 +10,14 @@ import { List, Search, Settings, Maximize, Minimize } from 'lucide-react'
 import { colors } from '@olorin/design-tokens'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import { isTV } from '@bayit/shared/utils/platform'
+import { useResponsive } from '@/hooks/useResponsive'
 import { PlayerState } from '../types'
-import { controlStyles as styles } from './playerControlsStyles'
+import {
+  controlStyles as styles,
+  MIN_TOUCH_TARGET,
+  MOBILE_TOUCH_TARGET,
+  TV_TOUCH_TARGET,
+} from './playerControlsStyles'
 import { GlassLiveControlsPanel } from './GlassLiveControlsPanel'
 
 interface RightControlsProps {
@@ -78,12 +84,21 @@ export default function RightControls({
   onDismissLiveFeatureError,
 }: RightControlsProps) {
   const { t } = useTranslation()
+  const responsive = useResponsive()
   const chaptersFocus = useTVFocus({ styleType: 'button' })
   const searchFocus = useTVFocus({ styleType: 'button' })
   const settingsFocus = useTVFocus({ styleType: 'button' })
   const fullscreenFocus = useTVFocus({ styleType: 'button' })
 
-  const smallIconSize = isTV ? 24 : 18
+  // Mobile-responsive button and icon sizes
+  const buttonSize = isTV ? TV_TOUCH_TARGET : (responsive.isMobile ? MOBILE_TOUCH_TARGET : MIN_TOUCH_TARGET)
+  const smallIconSize = isTV ? 24 : (responsive.isMobile ? 24 : 18)
+
+  // Mobile-responsive button style
+  const mobileButtonStyle = responsive.isMobile ? {
+    width: buttonSize,
+    height: buttonSize,
+  } : {}
 
   const isLiveWithPanel = isLive && onSettingsToggle && renderLiveSubtitleControls && renderDubbingControls
 
@@ -136,6 +151,7 @@ export default function RightControls({
           focusable={true}
           style={({ hovered }) => [
             styles.controlButton,
+            mobileButtonStyle,
             hovered && styles.controlButtonHovered,
             showChaptersPanel && styles.controlButtonActive,
             chaptersFocus.isFocused && chaptersFocus.focusStyle,
@@ -163,6 +179,7 @@ export default function RightControls({
           focusable={true}
           style={({ hovered }) => [
             styles.controlButton,
+            mobileButtonStyle,
             hovered && styles.controlButtonHovered,
             showSceneSearchPanel && styles.controlButtonActive,
             searchFocus.isFocused && searchFocus.focusStyle,
@@ -196,6 +213,7 @@ export default function RightControls({
           focusable={true}
           style={({ hovered }) => [
             styles.controlButton,
+            mobileButtonStyle,
             hovered && styles.controlButtonHovered,
             showSettings && styles.controlButtonActive,
             settingsFocus.isFocused && settingsFocus.focusStyle,
@@ -222,6 +240,7 @@ export default function RightControls({
         focusable={true}
         style={({ hovered }) => [
           styles.controlButton,
+          mobileButtonStyle,
           hovered && styles.controlButtonHovered,
           fullscreenFocus.isFocused && fullscreenFocus.focusStyle,
         ]}

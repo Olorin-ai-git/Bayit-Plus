@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { View, Text, Pressable, Animated, StyleSheet } from 'react-native'
+import { View, Text, Pressable, Animated, StyleSheet, Image } from 'react-native'
 import { useNavigate } from 'react-router-dom'
 import { X, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -19,6 +19,10 @@ import { ChatSuggestionsPanel } from './ChatSuggestionsPanel'
 import { useChatMessages } from './hooks/useChatMessages'
 import { useChatVoice } from './hooks/useChatVoice'
 import { useChatActions } from './hooks/useChatActions'
+import { useResponsive } from '@/hooks/useResponsive'
+
+// Wizard hat image for mobile FAB (same as VoiceAvatarFAB)
+const WIZARD_HAT_URL = '/assets/images/characters/hat/48x48.png'
 
 declare const __TV__: boolean
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__
@@ -30,6 +34,7 @@ export default function Chatbot() {
   const { preferences, loadPreferences } = useVoiceSettingsStore()
   const { currentMode } = useModeEnforcement()
   const { setListeningState } = useVoiceListeningContext()
+  const { isMobile } = useResponsive()
   const {
     isOpen,
     setOpen,

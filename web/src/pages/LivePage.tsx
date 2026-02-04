@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDirection } from '@/hooks/useDirection';
+import { useResponsive } from '@/hooks/useResponsive';
 import { liveService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import {
@@ -49,15 +50,15 @@ interface Channel {
 export default function LivePage() {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
+  const responsive = useResponsive();
   const [channels, setChannels] = useState<Channel[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
-  const { width } = useWindowDimensions();
   const nextLabel = t('live.next');
   const liveLabel = t('common.live');
 
   const navigate = useNavigate();
-  const numColumns = width >= 1280 ? 5 : width >= 1024 ? 4 : width >= 768 ? 3 : 2;
+  const numColumns = responsive.getColumns();
 
   useEffect(() => {
     loadChannels();

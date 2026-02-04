@@ -14,6 +14,7 @@ import { ttsService } from './ttsService';
 import { supportConfig } from '../config/supportConfig';
 import { useSupportStore, VoiceState } from '../stores/supportStore';
 import { streamingVoicePipeline } from './streamingVoicePipeline';
+import { useAuthStore } from '../stores/authStore';
 
 export interface VoiceSupportConfig {
   maxRecordingDuration: number;
@@ -306,8 +307,16 @@ class VoiceSupportService extends EventEmitter {
     formData.append('audio', audioBlob, `recording.${this.getFileExtension()}`);
     formData.append('language', this.config.language);
 
+    // Get auth token from auth store
+    const token = useAuthStore.getState().token;
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${this.API_ENDPOINT}/transcribe`, {
       method: 'POST',
+      headers,
       body: formData,
     });
 
@@ -323,9 +332,18 @@ class VoiceSupportService extends EventEmitter {
    * Get AI response from support chat endpoint
    */
   private async getAIResponse(transcript: string): Promise<string> {
+    // Get auth token from auth store
+    const token = useAuthStore.getState().token;
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${this.API_ENDPOINT}/chat`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({
         message: transcript,
         language: this.config.language,
@@ -334,7 +352,9 @@ class VoiceSupportService extends EventEmitter {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to get AI response');
+      const errorText = await response.text();
+      console.error(`[VoiceSupport] Chat API error: ${response.status} - ${errorText}`);
+      throw new Error(`Failed to get AI response: ${response.status}`);
     }
 
     const data = await response.json();
@@ -344,7 +364,7 @@ class VoiceSupportService extends EventEmitter {
       this.conversationId = data.conversation_id;
     }
 
-    return data.response || '';
+    return data.message || data.response || '';
   }
 
   /**

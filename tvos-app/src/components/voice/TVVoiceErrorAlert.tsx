@@ -39,15 +39,15 @@ export const TVVoiceErrorAlert: React.FC<TVVoiceErrorAlertProps> = ({
   };
 
   const ERROR_MAP: Record<string, any> = {
-    microphone_permission: { title: 'voice.permission_error', desc: 'voice.permission_description', icon: '🎙️' },
-    microphone_unavailable: { title: 'voice.unavailable_error', desc: 'voice.unavailable_description', icon: '❌' },
-    network_error: { title: 'voice.network_error', desc: 'voice.network_description', icon: '📡' },
-    recognition_failed: { title: 'voice.recognition_error', desc: 'voice.recognition_description', icon: '🔊' },
-    timeout: { title: 'voice.timeout_error', desc: 'voice.timeout_description', icon: '⏱️' },
+    microphone_permission: { title: 'voice.permission_error', desc: 'voice.permission_description', icon: 'MIC' },
+    microphone_unavailable: { title: 'voice.unavailable_error', desc: 'voice.unavailable_description', icon: 'X' },
+    network_error: { title: 'voice.network_error', desc: 'voice.network_description', icon: 'NET' },
+    recognition_failed: { title: 'voice.recognition_error', desc: 'voice.recognition_description', icon: 'ERR' },
+    timeout: { title: 'voice.timeout_error', desc: 'voice.timeout_description', icon: 'TIME' },
   };
 
   const getErrorDetails = () => {
-    const mapping = ERROR_MAP[error.type] || { title: 'voice.error', desc: 'voice.unknown_error', icon: '⚠️' };
+    const mapping = ERROR_MAP[error.type] || { title: 'voice.error', desc: 'voice.unknown_error', icon: '!' };
     return {
       title: t(mapping.title, mapping.title),
       description: t(mapping.desc, error.message || 'Error occurred'),
@@ -150,8 +150,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icon: {
-    fontSize: 64,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(220, 38, 38, 0.3)',
+    borderWidth: 3,
+    borderColor: '#DC2626',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 20,
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#FCA5A5',
+    textAlign: 'center',
+    lineHeight: 74,
   },
   title: {
     fontSize: 36,

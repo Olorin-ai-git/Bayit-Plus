@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
+import { View, Text, StyleSheet, Animated, Pressable } from 'react-native';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
@@ -7,6 +7,7 @@ import GlassSidebar from './GlassSidebar';
 import Breadcrumbs from './Breadcrumbs';
 import Chatbot from '../chat/Chatbot';
 import SoundwaveParticles from '../content/SoundwaveParticles';
+import MobileBottomNav from '../mobile/MobileBottomNav';
 import { WidgetManager } from '../widgets';
 import { useVoiceListeningContext } from '@bayit/shared-contexts';
 import { ttsService } from '@bayit/shared-services';
@@ -14,7 +15,9 @@ import { colors, spacing } from '@olorin/design-tokens';
 import { useTizenRemoteKeys } from '@/hooks/useTizenRemoteKeys';
 import { useSamsungVoice } from '@/hooks/useSamsungVoice';
 import { useChatbotStore } from '@/stores/chatbotStore';
+import { useMobileLayoutStore } from '@/stores/mobileLayoutStore';
 import { useDirection } from '@/hooks/useDirection';
+import { useResponsive } from '@/hooks/useResponsive';
 import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
 import { useVoiceSupport } from '@bayit/shared-hooks';
 import { supportConfig } from '@bayit/shared-config/supportConfig';
@@ -25,7 +28,14 @@ declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
 export default function Layout() {
-  // Sidebar state: always expanded by default on both web and TV
+  // Responsive state
+  const responsive = useResponsive();
+  const { isMobile } = responsive;
+
+  // Mobile layout store
+  const { isSidebarOpen, closeSidebar } = useMobileLayoutStore();
+
+  // Sidebar state: always expanded by default on desktop/TV, drawer on mobile
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const { isRTL } = useDirection();
 
@@ -191,9 +201,13 @@ export default function Layout() {
 
   // Calculate content margin based on sidebar state
   // Sidebar widths must match GlassSidebar: TV uses 80/280, web uses 64/220
-  const collapsedWidth = IS_TV_BUILD ? 80 : 64;
-  const expandedWidth = IS_TV_BUILD ? 280 : 220;
-  const sidebarWidth = isSidebarExpanded ? expandedWidth : collapsedWidth;
+  // Mobile: sidebar is overlay (drawer), so no margin
+  const getSidebarWidth = () => {
+    if (IS_TV_BUILD) return isSidebarExpanded ? 280 : 80;
+    if (isMobile) return 0; // Sidebar is overlay on mobile
+    return isSidebarExpanded ? 220 : 64;
+  };
+  const sidebarWidth = getSidebarWidth();
 
   return (
     <View style={styles.container}>
@@ -204,7 +218,15 @@ export default function Layout() {
         <View style={[styles.blurCircle, styles.blurCircleSuccess]} />
       </View>
 
-      {/* Sidebar - Always visible on web, toggleable on TV */}
+      {/* Mobile Drawer Backdrop - only on mobile when sidebar is open */}
+      {isMobile && isSidebarOpen && (
+        <Pressable
+          style={styles.drawerBackdrop}
+          onPress={closeSidebar}
+        />
+      )}
+
+      {/* Sidebar - Always visible on web/TV, drawer on mobile */}
       <GlassSidebar
         isExpanded={isSidebarExpanded}
         onToggle={toggleSidebar}
@@ -214,6 +236,7 @@ export default function Layout() {
       <View style={[
         styles.contentWrapper,
         isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth },
+        isMobile && { paddingBottom: 64 }, // Space for bottom nav
       ]}>
         <Header />
 
@@ -246,8 +269,11 @@ export default function Layout() {
         <View style={styles.main}>
           <Outlet />
         </View>
-        {!IS_TV_BUILD && <Footer />}
+        {!IS_TV_BUILD && !isMobile && <Footer />}
       </View>
+
+      {/* Mobile Bottom Navigation - only on mobile */}
+      {isMobile && !IS_TV_BUILD && <MobileBottomNav />}
 
       {/* Chatbot enabled on both web and TV for voice interaction */}
       <Chatbot />
@@ -282,6 +308,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     position: 'relative',
     flexDirection: 'row',
+  },
+  drawerBackdrop: {
+    position: 'fixed' as any,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    zIndex: 99,
   },
   contentWrapper: {
     flex: 1,

@@ -9,6 +9,7 @@ import { GlassAlertRoot } from '@bayit/shared/ui'
 import Layout from './components/layout/Layout'
 import FullscreenVideoOverlay from './components/player/FullscreenVideoOverlay'
 import LocationManager from './components/location/LocationManager'
+import MobileRedirect from './components/common/MobileRedirect'
 import PaymentPendingGuard from './components/auth/PaymentPendingGuard'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import { useAuthStore } from '@/stores/authStore'
@@ -330,6 +331,9 @@ function App() {
 
   return (
     <GlassAlertRoot>
+      {/* Mobile Device Redirect - redirects phones to m.bayit.tv */}
+      <MobileRedirect />
+
       <NotificationProvider position="top" maxVisible={3}>
         <Suspense fallback={<LoadingFallback />}>
           <AppContent />

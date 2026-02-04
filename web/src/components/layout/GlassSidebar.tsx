@@ -23,6 +23,8 @@ import { GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
+import { useMobileLayoutStore } from '@/stores/mobileLayoutStore';
+import { useResponsive } from '@/hooks/useResponsive';
 import { renderIcon } from '@olorin/shared-icons/web';
 
 // Check if this is a TV build (set by webpack)
@@ -106,16 +108,20 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const location = useLocation();
   const { user, isAuthenticated } = useAuthStore();
   const { isUIInteractionEnabled } = useModeEnforcement();
+  const responsive = useResponsive();
+  const { isMobile } = responsive;
+  const { isSidebarOpen, closeSidebar } = useMobileLayoutStore();
 
   // User display info
   const displayName = user?.name || t('account.guest', 'Guest');
   const displayInitial = displayName.charAt(0).toUpperCase();
   const subscriptionPlan = user?.subscription?.plan || 'basic';
 
-  // Sidebar is always visible - collapsed shows icons only, expanded shows full menu
-  // Web uses narrower sidebar than TV
+  // Mobile: drawer mode (280px fixed width)
+  // Desktop/TV: collapsible sidebar
+  const isMobileDrawer = isMobile && !IS_TV_BUILD;
   const collapsedWidth = IS_TV_BUILD ? 80 : 64;
-  const expandedWidth = IS_TV_BUILD ? 280 : 220;
+  const expandedWidth = isMobileDrawer ? 280 : (IS_TV_BUILD ? 280 : 220);
   const minWidth = collapsedWidth;
   const maxWidth = IS_TV_BUILD ? 350 : 300;
 
@@ -276,6 +282,10 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
     }
     if (item.path) {
       navigate(item.path);
+      // Close drawer after navigation on mobile
+      if (isMobileDrawer) {
+        closeSidebar();
+      }
       // Collapse sidebar after navigation on TV
       if (IS_TV_BUILD && isExpanded) {
         handleToggle();
@@ -303,11 +313,25 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   // Show labels when width is large enough
   const showLabels = customWidth !== null ? customWidth > collapsedWidth + 40 : isExpanded;
 
+  // Mobile drawer visibility
+  const drawerVisible = isMobileDrawer ? isSidebarOpen : true;
+
   return (
     <Animated.View style={[
       styles.container,
       { width: widthAnim },
       isRTL ? { right: 0, left: 'auto' } : { left: 0, right: 'auto' },
+      isMobileDrawer && {
+        position: 'fixed' as any,
+        zIndex: 100,
+        transform: [{
+          translateX: isSidebarOpen
+            ? 0
+            : (isRTL ? expandedWidth : -expandedWidth)
+        }] as any,
+        // @ts-ignore - Web CSS
+        transition: 'transform 0.3s ease-out',
+      },
     ]}>
         <View style={[
           styles.sidebar,

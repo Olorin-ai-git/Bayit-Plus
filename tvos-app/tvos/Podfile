@@ -39,5 +39,18 @@ target 'BayitPlusTVOS' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Fix Hermes dSYM for App Store uploads
+    # This ensures hermesvm.framework dSYM is included in the archive
+    installer.pods_project.targets.each do |target|
+      if target.name == 'hermes-engine'
+        target.build_configurations.each do |config|
+          # Enable dSYM generation for Hermes
+          config.build_settings['DEBUG_INFORMATION_FORMAT'] = 'dwarf-with-dsym'
+          config.build_settings['DWARF_DSYM_FOLDER_PATH'] = '$(CONFIGURATION_BUILD_DIR)'
+          config.build_settings['DWARF_DSYM_FILE_NAME'] = '$(EXECUTABLE_NAME).dSYM'
+        end
+      end
+    end
   end
 end

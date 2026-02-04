@@ -3,6 +3,7 @@
  *
  * Text input with glassmorphic styling, label, error states, and RTL support.
  * Supports icons, TV focus, and accessibility.
+ * Mobile-optimized with 56px minimum height and 16px font size to prevent iOS zoom.
  */
 
 import React from 'react';
@@ -17,6 +18,7 @@ import {
   TextInputProps,
   Pressable,
   I18nManager,
+  useWindowDimensions,
 } from 'react-native';
 import { GlassView } from './GlassView';
 import { colors, spacing } from '../../theme';
@@ -64,6 +66,14 @@ export const GlassInput: React.FC<GlassInputProps> = ({
   // Use I18nManager for RTL detection, allow override via prop
   const isRTL = forceRTL ?? I18nManager.isRTL;
 
+  // Mobile detection for responsive sizing
+  const { width } = useWindowDimensions();
+  const isMobile = width < 768;
+
+  // Mobile-optimized dimensions
+  const minHeight = isMobile ? 56 : 50; // 56px on mobile for comfortable touch
+  const fontSize = isMobile ? 16 : 14; // 16px on mobile prevents iOS zoom
+
   const { isFocused, handleFocus, handleBlur, scaleTransform, focusStyle } = useTVFocus({
     styleType: 'input',
     onFocus: () => props.onFocus?.(null as unknown as Parameters<NonNullable<TextInputProps['onFocus']>>[0]),
@@ -82,9 +92,13 @@ export const GlassInput: React.FC<GlassInputProps> = ({
       )}
       <Animated.View style={scaleTransform}>
         <GlassView
-          className={`${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center min-h-[50px] w-full`}
+          className={`${isRTL ? 'flex-row-reverse' : 'flex-row'} items-center w-full`}
           style={[
-            { paddingHorizontal: spacing.md, gap: spacing.sm },
+            {
+              minHeight,
+              paddingHorizontal: spacing.md,
+              gap: spacing.sm,
+            },
             error && { borderColor: colors.error },
           ]}
           intensity="medium"
@@ -93,8 +107,15 @@ export const GlassInput: React.FC<GlassInputProps> = ({
           {icon && <View>{icon}</View>}
           <TextInput
             {...props}
-            className={`flex-1 text-base ${isRTL ? 'text-right' : ''}`}
-            style={[{ color: colors.text, paddingVertical: spacing.sm }, inputStyle]}
+            className={`flex-1 ${isRTL ? 'text-right' : ''}`}
+            style={[
+              {
+                color: colors.text,
+                fontSize,
+                paddingVertical: spacing.sm,
+              },
+              inputStyle,
+            ]}
             placeholderTextColor={colors.textMuted}
             onFocus={(e) => {
               handleFocus();

@@ -21,6 +21,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './src/config/queryClient';
 import { SvgXml } from 'react-native-svg';
+import LinearGradient from 'react-native-linear-gradient';
 import { AISearchScreen, AIRecommendationsScreen } from './src/components/beta';
 
 // API Configuration - Using fixed URL
@@ -188,8 +189,11 @@ const HomeScreen: React.FC<{ onNavigate: (route: string) => void }> = ({ onNavig
             style={styles.heroImage}
             resizeMode="cover"
           />
-          <View style={styles.heroGradient} />
-          <View style={styles.heroOverlay}>
+          <LinearGradient
+            colors={['transparent', 'rgba(10, 10, 15, 0.6)', 'rgba(10, 10, 15, 0.95)']}
+            locations={[0, 0.5, 1]}
+            style={styles.heroOverlay}
+          >
             <Text style={styles.heroTitle}>{hero.title}</Text>
             {hero.year && <Text style={styles.heroMeta}>{hero.year}</Text>}
             <Pressable
@@ -198,12 +202,9 @@ const HomeScreen: React.FC<{ onNavigate: (route: string) => void }> = ({ onNavig
                 focused && styles.watchButtonFocused,
               ]}
             >
-              <View style={styles.watchButtonContent}>
-                <Text style={{ fontSize: 24, color: '#ffffff' }}>Play</Text>
-                <Text style={styles.watchButtonText}>Watch Now</Text>
-              </View>
+              <Text style={styles.watchButtonText}>Watch Now</Text>
             </Pressable>
-          </View>
+          </LinearGradient>
         </View>
       )}
 
@@ -340,11 +341,11 @@ const JudaismScreen: React.FC = () => {
       {/* Header with PURPLE icon (#A855F7) */}
       <View style={styles.judaismHeader}>
         <View style={styles.judaismIconContainer}>
-          <Text style={styles.judaismIcon}>📖</Text>
+          <Text style={styles.judaismIconText}>T</Text>
         </View>
         <Text style={styles.pageTitle}>Torah & Judaism</Text>
         <View style={styles.starBadge}>
-          <Text style={styles.starIcon}>⭐</Text>
+          <Text style={styles.starIconText}>*</Text>
         </View>
       </View>
 
@@ -396,7 +397,9 @@ const JudaismScreen: React.FC = () => {
 
       {/* Content placeholder */}
       <View style={styles.emptyContent}>
-        <Text style={styles.emptyIcon}>📚</Text>
+        <View style={styles.emptyIconContainer}>
+          <Text style={styles.emptyIconText}>T</Text>
+        </View>
         <Text style={styles.emptyText}>
           Showing: {selectedCategory} - {selectedHoliday}
         </Text>
@@ -410,7 +413,7 @@ const JudaismScreen: React.FC = () => {
 const ChildrenScreen: React.FC = () => (
   <View style={styles.placeholderScreen}>
     <View style={styles.childrenIconContainer}>
-      <Text style={styles.childrenIcon}>👶</Text>
+      <Text style={styles.childrenIconText}>K</Text>
     </View>
     <Text style={styles.pageTitle}>Children's Content</Text>
     <Text style={styles.placeholderText}>Safe, educational content for kids</Text>
@@ -601,26 +604,15 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  heroGradient: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: '70%',
-    backgroundColor: 'transparent',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: -60 },
-    shadowOpacity: 0.8,
-    shadowRadius: 80,
-  },
   heroOverlay: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
+    height: '60%',
     padding: 60,
-    paddingTop: 180,
-    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    paddingTop: 120,
+    justifyContent: 'flex-end',
   },
   heroTitle: {
     fontSize: 64,
@@ -650,11 +642,6 @@ const styles = StyleSheet.create({
   watchButtonFocused: {
     backgroundColor: '#9333ea', // Darker purple on focus
     transform: [{ scale: 1.05 }],
-  },
-  watchButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
   },
   watchButtonText: {
     color: '#ffffff',
@@ -850,8 +837,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  judaismIcon: {
+  judaismIconText: {
     fontSize: 40,
+    fontWeight: 'bold',
+    color: '#A855F7',
   },
   starBadge: {
     width: 48,
@@ -861,8 +850,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  starIcon: {
-    fontSize: 24,
+  starIconText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#fbbf24',
   },
   filterLabel: {
     fontSize: 24,
@@ -906,8 +897,18 @@ const styles = StyleSheet.create({
     marginTop: 60,
     gap: 16,
   },
-  emptyIcon: {
-    fontSize: 64,
+  emptyIconContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyIconText: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#A855F7',
   },
   emptyText: {
     fontSize: 28,
@@ -928,7 +929,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
-  childrenIcon: {
-    fontSize: 50,
+  childrenIconText: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#10b981',
   },
 });

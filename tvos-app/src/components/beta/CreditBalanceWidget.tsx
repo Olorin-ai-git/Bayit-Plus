@@ -334,7 +334,7 @@ export const CreditBalanceWidget: React.FC<CreditBalanceWidgetProps> = ({
           accessibilityRole="alert"
         >
           <Text style={[styles.warningText, styles.warningTextLow]}>
-            ⚠️ {t('beta.credits.warningLow')}
+            {t('beta.credits.warningLow')}
           </Text>
         </View>
       )}

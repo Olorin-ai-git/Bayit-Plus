@@ -6,8 +6,57 @@ import { clearPersistedSession } from '@/services/liveSessionPersistence'
 // Track all active HLS instances for cleanup
 const activeHlsInstances = new Set<Hls>()
 
-// Track failed stream URLs to prevent retry loops (cleared on page reload or manual reset)
-const failedStreamUrls = new Set<string>()
+// Track failed stream URLs with timestamps to prevent retry loops
+// Entries expire after TTL to allow retrying previously failed streams
+// Map<streamUrl, timestamp>
+const failedStreamUrls = new Map<string, number>()
+
+// TTL for failed streams: 5 minutes (300000ms)
+// After this time, a failed stream can be retried
+const FAILED_STREAM_TTL = 5 * 60 * 1000
+
+/**
+ * Check if a failed stream entry has expired.
+ */
+function isStreamFailureExpired(timestamp: number): boolean {
+  return Date.now() - timestamp > FAILED_STREAM_TTL
+}
+
+/**
+ * Clean up expired entries from the failed streams map.
+ */
+function cleanupExpiredStreams(): void {
+  const now = Date.now()
+  let removedCount = 0
+
+  failedStreamUrls.forEach((timestamp, url) => {
+    if (isStreamFailureExpired(timestamp)) {
+      failedStreamUrls.delete(url)
+      removedCount++
+    }
+  })
+
+  if (removedCount > 0) {
+    logger.info(`Cleaned up ${removedCount} expired failed streams`, 'cleanupExpiredStreams')
+  }
+}
+
+/**
+ * Check if a stream URL is in the failed list and not expired.
+ */
+function isStreamBlocked(url: string): boolean {
+  const timestamp = failedStreamUrls.get(url)
+  if (!timestamp) return false
+
+  // If expired, remove it and allow retry
+  if (isStreamFailureExpired(timestamp)) {
+    failedStreamUrls.delete(url)
+    logger.info('Failed stream TTL expired, allowing retry', 'isStreamBlocked', { url })
+    return false
+  }
+
+  return true
+}
 
 /**
  * Kill all stale HLS instances and clear persisted sessions.
@@ -63,11 +112,55 @@ export function clearFailedStreams(): void {
   logger.info(`Cleared ${count} failed streams from blocklist`, 'clearFailedStreams')
 }
 
+/**
+ * Get statistics about failed streams including TTL expiration info.
+ */
+export function getFailedStreamsStats(): {
+  total: number
+  expired: number
+  active: number
+  streams: Array<{ url: string; timestamp: number; expiresIn: number; isExpired: boolean }>
+} {
+  const now = Date.now()
+  let expiredCount = 0
+  const streams: Array<{ url: string; timestamp: number; expiresIn: number; isExpired: boolean }> = []
+
+  failedStreamUrls.forEach((timestamp, url) => {
+    const isExpired = isStreamFailureExpired(timestamp)
+    const expiresIn = Math.max(0, FAILED_STREAM_TTL - (now - timestamp))
+
+    if (isExpired) expiredCount++
+
+    streams.push({
+      url,
+      timestamp,
+      expiresIn,
+      isExpired,
+    })
+  })
+
+  return {
+    total: failedStreamUrls.size,
+    expired: expiredCount,
+    active: failedStreamUrls.size - expiredCount,
+    streams,
+  }
+}
+
+// Periodic cleanup of expired failed streams (runs every minute)
+if (typeof window !== 'undefined') {
+  setInterval(() => {
+    cleanupExpiredStreams()
+  }, 60 * 1000) // 1 minute
+}
+
 // Expose for debugging in browser console
 if (typeof window !== 'undefined') {
   (window as any).killStaleHLS = killStaleHLS
   ;(window as any).clearFailedStreams = clearFailedStreams
-  ;(window as any).getFailedStreams = () => Array.from(failedStreamUrls)
+  ;(window as any).cleanupExpiredStreams = cleanupExpiredStreams
+  ;(window as any).getFailedStreams = () => Array.from(failedStreamUrls.keys())
+  ;(window as any).getFailedStreamsStats = getFailedStreamsStats
 }
 
 interface UseHLSPlayerOptions {
@@ -136,9 +229,19 @@ export function useHLSPlayer({
   useEffect(() => {
     if (!streamUrl || !videoRef.current) return
 
-    // Check if this stream URL has already failed - don't retry
-    if (failedStreamUrls.has(streamUrl)) {
-      logger.warn('Stream URL previously failed, not retrying', 'useHLSPlayer', { streamUrl })
+    // Clean up expired entries on each new stream attempt
+    cleanupExpiredStreams()
+
+    // Check if this stream URL is blocked (failed recently and not expired)
+    if (isStreamBlocked(streamUrl)) {
+      const timestamp = failedStreamUrls.get(streamUrl)!
+      const timeUntilExpiry = Math.ceil((FAILED_STREAM_TTL - (Date.now() - timestamp)) / 1000)
+
+      logger.warn('Stream URL previously failed, not retrying', 'useHLSPlayer', {
+        streamUrl,
+        timeUntilExpiry: `${timeUntilExpiry}s`,
+      })
+
       // Notify parent component immediately
       if (onFatalError) {
         onFatalError({
@@ -285,9 +388,13 @@ export function useHLSPlayer({
             clearPersistedSession()
             networkErrorCountRef.current = 0
 
-            // Add to failed streams to prevent retry loops
-            failedStreamUrls.add(streamUrl)
-            logger.info('Added stream to failed list, will not retry', 'useHLSPlayer', { streamUrl })
+            // Add to failed streams to prevent retry loops (with TTL)
+            const timestamp = Date.now()
+            failedStreamUrls.set(streamUrl, timestamp)
+            logger.info('Added stream to failed list, will not retry', 'useHLSPlayer', {
+              streamUrl,
+              ttlMinutes: FAILED_STREAM_TTL / 60000,
+            })
 
             handleFatalError({
               type: data.type,

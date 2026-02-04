@@ -31,7 +31,7 @@ export const GlassBadgeTV: React.FC<GlassBadgeTVProps> = ({ variant, value, styl
         };
       case 'rating':
         return {
-          text: `⭐ ${value}`,
+          text: `${value}`,
           backgroundColor: 'rgba(255,215,0,0.9)', // Gold
           color: '#000000',
         };

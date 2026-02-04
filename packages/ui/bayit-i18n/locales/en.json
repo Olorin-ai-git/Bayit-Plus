@@ -4938,7 +4938,8 @@
     "privacy": "Privacy Policy",
     "flows": "Flows",
     "liveChannels": "Live Channels",
-    "menu": "Menu"
+    "menu": "Menu",
+    "more": "More"
   },
   "notFound": {
     "title": "Page Not Found",
@@ -7555,27 +7556,34 @@
         "yes": "Yes?",
         "seek": "What do you seek?",
         "listening": "I'm listening.",
-        "awaits": "The wizard awaits."
+        "awaits": "The wizard awaits.",
+        "hmm": "Hmm?"
       },
       "listening": {
         "see": "Hmm, let me see...",
         "moment": "One moment...",
         "archives": "Consulting the archives...",
         "yes": "Ah, yes...",
-        "find": "Let me find that..."
+        "find": "Let me find that...",
+        "interesting": "Interesting...",
+        "let": "Let me think about that..."
       },
       "processing": {
         "vast": "The scrolls are vast... patience.",
         "depths": "Searching the depths...",
         "deeper": "This requires a deeper look...",
-        "ancient": "Consulting ancient knowledge..."
+        "ancient": "Consulting ancient knowledge...",
+        "seek": "I'm searching the library...",
+        "moment": "One moment...",
+        "consulting": "Consulting the archives..."
       },
       "presenting": {
         "here": "Here you are.",
         "channels": "As you wish. Your channels.",
         "behold": "Behold.",
         "summoned": "I've summoned them for you.",
-        "exactly": "Here — exactly as requested."
+        "exactly": "Here — exactly as requested.",
+        "found": "I found it for you."
       },
       "presentingList": {
         "found": "I found {{count}} that may interest you...",
@@ -7588,7 +7596,8 @@
         "seek": "This is what you seek.",
         "found": "Found it.",
         "exactly": "Here — exactly as you described.",
-        "this": "Ah! This one."
+        "this": "Ah! This one.",
+        "precisely": "Precisely what you asked for."
       },
       "fuzzySearch": {
         "said": "You said '{{query}}'... I found these in your collection.",
@@ -7601,27 +7610,37 @@
         "another": "I searched, but found no match. Shall we try another way?",
         "describe": "Nothing by that name. Could you describe it differently?",
         "limits": "Even wizards have limits. I couldn't find that.",
-        "silent": "The scrolls are silent on this matter."
+        "silent": "The scrolls are silent on this matter.",
+        "elsewhere": "I found nothing here. Perhaps search elsewhere?",
+        "sorry": "Sorry, that's not in my scrolls."
       },
       "clarification": {
         "catch": "I didn't quite catch that. Once more?",
         "hearing": "My hearing isn't what it was. Again?",
         "again": "Say that again for me.",
         "uncertain": "I'm uncertain what you mean. Could you clarify?",
-        "guess": "Did you say '{{guess}}', or something else?"
+        "guess": "Did you say '{{guess}}', or something else?",
+        "didYouMean": "Did you mean {{guess}}?",
+        "unclear": "Your request isn't clear. Could you clarify?",
+        "whichOne": "Which one interests you?"
       },
       "confirmation": {
         "play": "Shall I play it?",
         "continue": "Want me to continue?",
         "list": "Should I read through the list?",
-        "details": "Would you like more details?"
+        "details": "Would you like more details?",
+        "done": "Done.",
+        "completed": "Completed.",
+        "understood": "Understood."
       },
       "dismissal": {
         "rests": "The wizard rests. Call when you need me.",
         "next": "Until next time.",
         "here": "I'll be here.",
         "farewell": "Farewell for now.",
-        "word": "I am but a word away."
+        "word": "I am but a word away.",
+        "rest": "I'll rest here if you need me.",
+        "return": "Call, and I shall return."
       },
       "dismissalLate": {
         "late": "The hour grows late. Sweet dreams.",
@@ -7632,24 +7651,32 @@
         "got": "Got it — what would you like instead?",
         "understood": "Understood. I await your new command.",
         "well": "Very well. What now?",
-        "stopped": "Stopped. What do you seek?"
+        "stopped": "Stopped. What do you seek?",
+        "speak": "Speak, and I shall listen.",
+        "course": "Of course, what's the new request?"
       },
       "error": {
-        "awry": "Something went awry. Shall we try again?",
-        "faltered": "The magic faltered. Once more?",
-        "obstacle": "An unexpected obstacle. Let me try differently."
+        "technical": "Something went awry. Shall we try again?",
+        "apologies": "The magic faltered. Once more?",
+        "failed": "An unexpected obstacle. Let me try differently."
       },
       "personality": {
         "deliver": "You ask much... but I deliver.",
         "hidden": "Ah! Hidden, but not from me.",
         "manners": "Manners. I appreciate that.",
         "already": "You already asked me this, but very well...",
-        "worthy": "A worthy challenge for a wizard."
+        "worthy": "A worthy challenge for a wizard.",
+        "wisdom": "Remember, even the wisest wizard once started as a student.",
+        "patience": "Patience reveals what haste conceals.",
+        "magic": "Magic flows everywhere — you just need to know where to look."
       },
       "idleTimeout": {
         "there": "Still there? Or shall I rest?",
         "awaits": "The wizard awaits your command...",
-        "remain": "I remain at your service."
+        "remain": "I remain at your service.",
+        "still": "Still here?",
+        "anything": "Anything else?",
+        "resting": "I'll rest until you need me again."
       },
       "greeting": {
         "morning": "Good morning. What do you seek?",

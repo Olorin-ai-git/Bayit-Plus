@@ -1,175 +1,43 @@
-# ===========================================
-# Bayit+ Project Root .gcloudignore
-# For Cloud Build backend deployments
-# ===========================================
+# This file specifies files that are *not* uploaded to Google Cloud
+# using gcloud. It follows the same syntax as .gitignore.
 
-# Exclude all frontend/mobile apps (not needed for backend build)
-web/
-mobile-app/
-tv-app/
-tvos-app/
-tizen/
-webos/
-ios/
-cli/
-partner-portal/
-playwright-report/
+# Exclude EVERYTHING except what we explicitly need
+*
 
-# Packages - exclude frontend UI packages, keep backend Python dependencies
-# KEEP: bayit-translation, bayit-voice-pipeline, olorin-core, olorin-shared (Python deps)
-# KEEP: packages/python/ (olorin-i18n Python package)
-# KEEP: packages/ui/shared-i18n/ (locale JSON files for i18n)
-# EXCLUDE: firebase-config and all other UI packages
+# Include only what's needed for backend Docker build
+!backend/
+!backend/**
+!packages/
+!packages/bayit-voice-pipeline/
+!packages/bayit-voice-pipeline/**
+!packages/bayit-translation/
+!packages/bayit-translation/**
+!packages/olorin-core/
+!packages/olorin-core/**
+!packages/olorin-shared/
+!packages/olorin-shared/**
+!packages/olorin-email/
+!packages/olorin-email/**
+!packages/python/
+!packages/python/olorin-i18n/
+!packages/python/olorin-i18n/**
+!packages/ui/
+!packages/ui/shared-i18n/
+!packages/ui/shared-i18n/**
+!cloudbuild.yaml
+!Dockerfile
 
-# Exclude firebase-config (not needed for backend)
-packages/firebase-config/
-
-# Exclude UI packages except shared-i18n (has locale JSON files)
-packages/ui/design-tokens/
-packages/ui/design-tokens.local/
-packages/ui/glass-components/
-packages/ui/shared-hooks/
-packages/ui/shared-icons/
-packages/ui/shared-services/
-packages/ui/shared-stores/
-packages/ui/dist/
-packages/ui/node_modules/
-packages/ui/*.tar.gz
-packages/ui/*.backup.*
-packages/ui/.DS_Store
-packages/ui/MIGRATION.md
-
-# Root node_modules
-node_modules/
-
-# Shared (exclude large directories, keep i18n for backend)
-shared/node_modules/
-shared/assets/
-shared/models/
-shared/components/
-shared/hooks/
-shared/services/
-shared/stores/
-shared/styles/
-shared/utils/
-# Keep shared/i18n/ for backend localization
-
-# Test results
-test-results/
-
-# Documentation (not needed in container)
-docs/
-
-# Git
-.git/
-.gitignore
-.gitattributes
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# CI/CD config files (not needed in build context)
-.github/
-
-# Credentials at root (secrets should come from Secret Manager)
-credentials/
-
-# ===========================================
-# Backend-specific exclusions
-# ===========================================
-
-# Large uploads directory (18GB+)
-backend/uploads/
-
-# Python artifacts
+# But exclude node_modules, cache, logs from included directories
+backend/node_modules/
 backend/__pycache__/
 backend/**/__pycache__/
-backend/*.py[cod]
-backend/**/*.py[cod]
-backend/*$py.class
-backend/**/*$py.class
-backend/*.so
-backend/**/*.so
-backend/.Python
-backend/build/
-backend/develop-eggs/
-backend/dist/
-backend/downloads/
-backend/eggs/
-backend/.eggs/
-backend/lib/
-backend/lib64/
-backend/parts/
-backend/sdist/
-backend/var/
-backend/wheels/
-backend/*.egg-info/
-backend/**/*.egg-info/
-backend/.installed.cfg
-backend/*.egg
-backend/MANIFEST
-
-# Virtual environments
 backend/venv/
-backend/ENV/
-backend/env/
 backend/.venv/
-
-# Testing
-backend/.pytest_cache/
-backend/**/.pytest_cache/
-backend/.coverage
-backend/htmlcov/
-backend/.tox/
-backend/.hypothesis/
-
-# Logs
-backend/*.log
+backend/uploads/
 backend/logs/
-
-# Cache
-backend/.cache/
-backend/cache/
-backend/*.cache
-
-# Local env files (secrets from Secret Manager)
+backend/*.log
 backend/.env
-backend/.env.*
-!backend/.env.example
-
-# Credentials (secrets from Secret Manager)
-backend/credentials.json
-backend/service-account.json
-backend/*-service-account.json
-backend/token.json
-backend/*.pem
-backend/*.key
-
-# Scripts (not needed in container)
-backend/scripts/
-backend/*.sh
-!backend/start.sh
-
-# Documentation
-backend/docs/
-backend/*.md
-!backend/README.md
-
-# Large files
-backend/*.zip
-backend/*.tar.gz
-backend/*.sql
-backend/*.dump
-
-# Backups
-backend/backups/
-
-# Config files not needed
-backend/.gcp-config
-backend/DEPLOYMENT*.md
-backend/QUICKSTART.md
+backend/.pytest_cache/
+packages/**/node_modules/
+packages/**/__pycache__/
+packages/**/.pytest_cache/

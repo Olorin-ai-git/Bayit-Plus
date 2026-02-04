@@ -43,7 +43,7 @@ export const TVVoiceCommandHistory: React.FC<TVVoiceCommandHistoryProps> = ({
 
   const renderItem = ({ item, index }: any) => {
     const isFocused = focusedIndex === index;
-    const statusIcon = item.success ? '✓' : '❌';
+    const statusIcon = item.success ? 'OK' : 'X';
     const statusColor = item.success ? '#10B981' : '#EF4444';
 
     return (

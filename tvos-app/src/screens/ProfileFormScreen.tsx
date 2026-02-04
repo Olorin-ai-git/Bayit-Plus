@@ -26,7 +26,7 @@ const AVATAR_COLORS = [
   '#6c5ce7', '#a8e6cf', '#ff8b94', '#ffaaa5',
 ];
 
-const AVATAR_EMOJIS = ['👤', '👨', '👩', '👶', '👦', '👧', '🧒', '👨‍💼', '👩‍💼', '🎭'];
+const AVATAR_INITIALS = ['U', 'M', 'F', 'K', 'B', 'G', 'C', 'P1', 'P2', 'A'];
 
 const KIDS_AGE_LIMITS = [
   { value: 3, label: '0-3' },
@@ -51,7 +51,7 @@ export const ProfileFormScreen: React.FC = () => {
     existingProfile?.avatar_color || AVATAR_COLORS[0]
   );
   const [selectedEmoji, setSelectedEmoji] = useState(
-    existingProfile?.avatar || AVATAR_EMOJIS[0]
+    existingProfile?.avatar || AVATAR_INITIALS[0]
   );
   const [isKidsProfile, setIsKidsProfile] = useState(
     existingProfile?.is_kids_profile || false
