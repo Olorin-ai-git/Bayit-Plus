@@ -353,29 +353,31 @@ export default function MovieDetailPage() {
         />
 
         {/* Content */}
-        <View style={styles.heroContent}>
-          {/* Category Badge */}
-          {movie.category && (
+        <View style={[styles.heroContent, IS_MOBILE && styles.heroContentMobile]}>
+          {/* Category Badge - hidden on mobile */}
+          {!IS_MOBILE && movie.category && (
             <GlassView style={styles.categoryBadge}>
               <Text style={styles.categoryText}>{movie.category}</Text>
             </GlassView>
           )}
 
           {/* Title */}
-          <Text style={styles.movieTitle}>{movie.title}</Text>
+          <Text style={[styles.movieTitle, IS_MOBILE && styles.movieTitleMobile]}>{movie.title}</Text>
 
-          {/* Metadata Row */}
-          <View style={[styles.metadataRow, { flexDirection }]}>
-            {movie.year && <Text style={styles.metadataText}>{movie.year}</Text>}
-            {movie.rating && (
-              <GlassBadge variant="default" size="sm">{movie.rating}</GlassBadge>
-            )}
-            {movie.duration && <Text style={styles.metadataText}>{movie.duration}</Text>}
-            {movie.genre && <Text style={styles.metadataText}>{movie.genre}</Text>}
-          </View>
+          {/* Metadata Row - hidden on mobile */}
+          {!IS_MOBILE && (
+            <View style={[styles.metadataRow, { flexDirection }]}>
+              {movie.year && <Text style={styles.metadataText}>{movie.year}</Text>}
+              {movie.rating && (
+                <GlassBadge variant="default" size="sm">{movie.rating}</GlassBadge>
+              )}
+              {movie.duration && <Text style={styles.metadataText}>{movie.duration}</Text>}
+              {movie.genre && <Text style={styles.metadataText}>{movie.genre}</Text>}
+            </View>
+          )}
 
-          {/* IMDB Rating */}
-          {movie.imdb_rating && (
+          {/* IMDB Rating - hidden on mobile */}
+          {!IS_MOBILE && movie.imdb_rating && (
             <View style={styles.imdbContainer}>
               <View style={styles.imdbBadge}>
                 <Text style={styles.imdbLogoText}>IMDb</Text>
@@ -395,8 +397,8 @@ export default function MovieDetailPage() {
             </View>
           )}
 
-          {/* Available Subtitles */}
-          {availableSubtitles.length > 0 && (
+          {/* Available Subtitles - hidden on mobile */}
+          {!IS_MOBILE && availableSubtitles.length > 0 && (
             <Pressable onPress={handleSubtitlePanelClick} style={({ pressed }) => [
               styles.subtitlesContainer,
               pressed && styles.subtitlesContainerPressed
@@ -443,8 +445,8 @@ export default function MovieDetailPage() {
             </Pressable>
           )}
 
-          {/* Description */}
-          {movie.description && (
+          {/* Description - hidden on mobile */}
+          {!IS_MOBILE && movie.description && (
             <Text style={[styles.heroDescription, { textAlign }]} numberOfLines={4}>
               {movie.description}
             </Text>
@@ -516,48 +518,50 @@ export default function MovieDetailPage() {
         </View>
       </View>
 
-      {/* Movie Facts Section */}
-      <View style={styles.factsSection}>
-        <Text style={styles.sectionTitle}>{t('content.details')}</Text>
+      {/* Movie Facts Section - hidden on mobile */}
+      {!IS_MOBILE && (
+        <View style={styles.factsSection}>
+          <Text style={styles.sectionTitle}>{t('content.details')}</Text>
 
-        <GlassCard style={styles.factsCard}>
-          {movie.director && (
-            <View style={styles.factRow}>
-              <Text style={styles.factLabel}>{t('content.director')}</Text>
-              <Text style={styles.factValue}>{movie.director}</Text>
-            </View>
-          )}
-          {movie.cast && movie.cast.length > 0 && (
-            <View style={styles.factRow}>
-              <Text style={styles.factLabel}>{t('content.starring')}</Text>
-              <Text style={styles.factValue} numberOfLines={2}>
-                {movie.cast.slice(0, 5).join(', ')}
-              </Text>
-            </View>
-          )}
-          {movie.genre && (
-            <View style={styles.factRow}>
-              <Text style={styles.factLabel}>{t('content.genre')}</Text>
-              <Text style={styles.factValue}>{movie.genre}</Text>
-            </View>
-          )}
-          {movie.duration && (
-            <View style={styles.factRow}>
-              <Text style={styles.factLabel}>{t('content.runtime')}</Text>
-              <Text style={styles.factValue}>{movie.duration}</Text>
-            </View>
-          )}
-          {movie.year && (
-            <View style={styles.factRow}>
-              <Text style={styles.factLabel}>{t('content.released')}</Text>
-              <Text style={styles.factValue}>{movie.year}</Text>
-            </View>
-          )}
-        </GlassCard>
-      </View>
+          <GlassCard style={styles.factsCard}>
+            {movie.director && (
+              <View style={styles.factRow}>
+                <Text style={styles.factLabel}>{t('content.director')}</Text>
+                <Text style={styles.factValue}>{movie.director}</Text>
+              </View>
+            )}
+            {movie.cast && movie.cast.length > 0 && (
+              <View style={styles.factRow}>
+                <Text style={styles.factLabel}>{t('content.starring')}</Text>
+                <Text style={styles.factValue} numberOfLines={2}>
+                  {movie.cast.slice(0, 5).join(', ')}
+                </Text>
+              </View>
+            )}
+            {movie.genre && (
+              <View style={styles.factRow}>
+                <Text style={styles.factLabel}>{t('content.genre')}</Text>
+                <Text style={styles.factValue}>{movie.genre}</Text>
+              </View>
+            )}
+            {movie.duration && (
+              <View style={styles.factRow}>
+                <Text style={styles.factLabel}>{t('content.runtime')}</Text>
+                <Text style={styles.factValue}>{movie.duration}</Text>
+              </View>
+            )}
+            {movie.year && (
+              <View style={styles.factRow}>
+                <Text style={styles.factLabel}>{t('content.released')}</Text>
+                <Text style={styles.factValue}>{movie.year}</Text>
+              </View>
+            )}
+          </GlassCard>
+        </View>
+      )}
 
-      {/* Synopsis Section */}
-      {movie.description && (
+      {/* Synopsis Section - hidden on mobile */}
+      {!IS_MOBILE && movie.description && (
         <View style={styles.synopsisSection}>
           <Text style={styles.sectionTitle}>{t('content.synopsis')}</Text>
           <Text style={[styles.synopsisText, { textAlign }]}>
@@ -733,6 +737,12 @@ const styles = StyleSheet.create({
     bottom: spacing.xl * 3,
     maxWidth: 650,
   },
+  heroContentMobile: {
+    left: spacing.lg,
+    right: spacing.lg,
+    bottom: spacing.xl,
+    alignItems: 'center',
+  },
   categoryBadge: {
     alignSelf: 'flex-start',
     paddingHorizontal: spacing.md,
@@ -750,6 +760,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.text,
     marginBottom: spacing.sm,
+  },
+  movieTitleMobile: {
+    fontSize: 28,
+    textAlign: 'center',
+    marginBottom: spacing.md,
   },
   metadataRow: {
     flexDirection: 'row',
