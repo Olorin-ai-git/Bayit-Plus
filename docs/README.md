@@ -1,7 +1,7 @@
 # Bayit+ Documentation
 
-**Last Updated:** 2026-02-02
-**Total Documents:** 256 files
+**Last Updated:** 2026-02-03
+**Total Documents:** 226 files (organized)
 **Documentation Portal:** https://docs.bayitplus.com
 
 ---
@@ -144,7 +144,6 @@ Testing strategies and best practices:
 
 Deployment guides and infrastructure:
 
-- [Deployment Log](deployment/DEPLOYMENT_LOG.md) - Production deployment history and tracking ⭐ **NEW**
 - [Deployment Guide](deployment/DEPLOYMENT_GUIDE.md) - Production deployment
 - [CI/CD Pipeline](deployment/CI_CD_PIPELINE.md) - GitHub Actions workflows
 - [Secrets Management](deployment/SECRETS_MANAGEMENT.md) - Google Cloud secrets
@@ -208,8 +207,7 @@ Comprehensive code reviews and assessments:
 
 Implementation summaries and session reports:
 
-- [Feature Parity Implementation 2026-02-01](implementation/FEATURE_PARITY_IMPLEMENTATION_2026-02-01.md) - Complete web/shared/tvOS parity (AI modes, timestamps, preview timing) - 2026-02-01 **NEW**
-- [Split-Screen Subtitles Limitation](implementation/SPLIT_SCREEN_SUBTITLES_LIMITATION.md) - Platform limitation research and recommendations - 2026-02-01 **NEW**
+- [Split-Screen Subtitles Limitation](implementation/SPLIT_SCREEN_SUBTITLES_LIMITATION.md) - Platform limitation research and recommendations
 - [Emoji to Icons Migration Plan](implementation/EMOJI_TO_ICONS_MIGRATION_PLAN.md) - Replace 306+ emojis with @olorin/shared-icons - 2026-01-31 **NEW**
 - Build Summaries
 - Bug Fix Reports
@@ -300,13 +298,11 @@ npm run dev  # Opens http://localhost:5173
 
 ## 📊 Documentation Statistics
 
-- **Total Files:** 249 markdown files
-- **Total Size:** 5.5 MB
-- **Total Lines:** 126,605 lines
-- **Categories:** 10 main categories
+- **Total Files:** 226 markdown files
+- **Categories:** 27 organized subfolders
 - **Languages:** Documentation in English (UI supports 10 languages)
 - **Platforms:** Web, iOS, Android, tvOS
-- **Last Major Update:** 2026-01-30 (Documentation Portal Launch)
+- **Last Major Update:** 2026-02-03 (Documentation Organization)
 
 ---
 
@@ -408,6 +404,14 @@ Bayit+ runs on 4 platforms with unified documentation:
 
 ## Recent Updates
 
+**2026-02-03: Documentation Organization**
+- Reduced docs from 306 to 226 files
+- Cleaned up obsolete summaries, phase reports, and dated files
+- Organized root-level docs into proper subfolders
+- Archived old trivia plan versions (V2-V7)
+- Removed duplicate and obsolete implementation summaries
+- Updated docs index with current structure
+
 **2026-02-02: HLS Subtitles for Apple TV/AirPlay**
 - Comprehensive implementation guide for HLS-compatible subtitles
 - Browser playback (HLS.js) and Apple TV AirPlay casting support
@@ -482,6 +486,6 @@ MIT License - Copyright © 2026 Bayit+
 ---
 
 **Document Status:** Production Ready
-**Last Updated:** 2026-02-02
+**Last Updated:** 2026-02-03
 **Maintained by:** Documentation Team
 **Next Review:** 2026-02-15
