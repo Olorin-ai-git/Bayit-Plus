@@ -67,7 +67,7 @@ export default function AudioPlayer({
 
   // Size presets based on layout mode
   const sizes = useMemo(() => {
-    if (compact) return { play: 32, skip: 24, iconLg: 16, iconSm: 12 }
+    if (compact) return { play: 32, skip: 22, iconLg: 14, iconSm: 10 }
     if (isMobile) return { play: 64, skip: 48, iconLg: 28, iconSm: 22 }
     if (isTV) return { play: 72, skip: 56, iconLg: 32, iconSm: 26 }
     return { play: 56, skip: 44, iconLg: 26, iconSm: 20 }
@@ -566,97 +566,93 @@ export default function AudioPlayer({
   // ── Compact Layout (Widget containers) ──
   return (
     <GlassView style={styles.compactContainer}>
-      <View style={[styles.compactContent, { flexDirection }]}>
-        {/* Cover Art */}
-        <View style={styles.compactCoverWrap}>
-          <Image
-            source={{ uri: cover || '/placeholder-audio.png' }}
-            style={styles.compactCoverImg}
-            resizeMode="cover"
-            accessibilityLabel={t('player.albumArt', { title })}
-          />
-          {isLive && (
-            <View style={styles.liveOverlay}>
-              <View style={styles.livePulse} />
-            </View>
-          )}
+      {/* Top row: cover art + title/artist */}
+      <View style={[styles.compactTopRow, { flexDirection }]}>
+        <View style={styles.compactCoverArea}>
+          <View style={styles.compactCoverWrap}>
+            <Image
+              source={{ uri: cover || '/placeholder-audio.png' }}
+              style={styles.compactCoverImg}
+              resizeMode="cover"
+              accessibilityLabel={t('player.albumArt', { title })}
+            />
+          </View>
+          <View style={[styles.compactCoverControls, { flexDirection }]}>
+            {!isLive && (
+              <Pressable
+                onPress={() => skip(-SKIP_SECONDS)}
+                style={[styles.compactSkipBtn, { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 }]}
+                accessibilityLabel={t('player.skipBack', { seconds: SKIP_SECONDS })}
+                accessibilityRole="button"
+              >
+                <SkipBack size={sizes.iconSm} color={colors.text} />
+              </Pressable>
+            )}
+            <Pressable
+              onPress={togglePlay}
+              disabled={!src}
+              style={[styles.compactPlayBtn, { width: sizes.play, height: sizes.play, borderRadius: sizes.play / 2 }]}
+              accessibilityLabel={isPlaying ? t('player.pause') : t('player.play')}
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !src }}
+            >
+              {renderPlayIcon()}
+            </Pressable>
+            {!isLive && (
+              <Pressable
+                onPress={() => skip(SKIP_SECONDS)}
+                style={[styles.compactSkipBtn, { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 }]}
+                accessibilityLabel={t('player.skipForward', { seconds: SKIP_SECONDS })}
+                accessibilityRole="button"
+              >
+                <SkipForward size={sizes.iconSm} color={colors.text} />
+              </Pressable>
+            )}
+          </View>
         </View>
 
-        {/* Info Section */}
-        <View style={styles.compactInfo}>
-          <View style={styles.compactTitleWrap}>
-            {isLive && (
-              <GlassBadge variant="danger" size="sm" style={styles.liveBadge}>
-                {t('player.live')}
-              </GlassBadge>
-            )}
-            <Text
-              style={[styles.compactTitle, isRTL && styles.textRTL]}
-              numberOfLines={1}
-              accessibilityRole="header"
-            >
-              {title}
-            </Text>
-          </View>
-
-          {/* Progress Bar */}
-          {!isLive && duration > 0 && (
-            <View style={styles.progressSection}>
-              <GlassSlider
-                value={currentTime}
-                min={0}
-                max={duration}
-                step={1}
-                onValueChange={handleSeek}
-                accessibilityLabel={t('player.seekBar')}
-                testID="audio-progress-slider"
-              />
-              <View style={[styles.timeLabels, { flexDirection }]}>
-                <Text style={styles.compactTimeText}>{formatTime(currentTime)}</Text>
-                <Text style={styles.compactTimeText}>{formatTime(duration)}</Text>
-              </View>
-            </View>
+        <View style={styles.compactMeta}>
+          {isLive && (
+            <GlassBadge variant="danger" size="sm" style={styles.liveBadge}>
+              {t('player.live')}
+            </GlassBadge>
           )}
-
-          {/* Controls */}
-          <View style={[styles.compactControls, { flexDirection }]}>
-            <View style={[styles.playbackBtns, { flexDirection }]}>
-              {!isLive && (
-                <Pressable
-                  onPress={() => skip(-SKIP_SECONDS)}
-                  style={[styles.compactSkipBtn, { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 }]}
-                  accessibilityLabel={t('player.skipBack', { seconds: SKIP_SECONDS })}
-                  accessibilityRole="button"
-                >
-                  <SkipBack size={sizes.iconSm} color={colors.text} />
-                </Pressable>
-              )}
-
-              <Pressable
-                onPress={togglePlay}
-                disabled={!src}
-                style={[styles.compactPlayBtn, { width: sizes.play, height: sizes.play, borderRadius: sizes.play / 2 }]}
-                accessibilityLabel={isPlaying ? t('player.pause') : t('player.play')}
-                accessibilityRole="button"
-                accessibilityState={{ disabled: !src }}
-              >
-                {renderPlayIcon()}
-              </Pressable>
-
-              {!isLive && (
-                <Pressable
-                  onPress={() => skip(SKIP_SECONDS)}
-                  style={[styles.compactSkipBtn, { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 }]}
-                  accessibilityLabel={t('player.skipForward', { seconds: SKIP_SECONDS })}
-                  accessibilityRole="button"
-                >
-                  <SkipForward size={sizes.iconSm} color={colors.text} />
-                </Pressable>
-              )}
-            </View>
-          </View>
+          <Text
+            style={[styles.compactTitle, isRTL && styles.textRTL]}
+            numberOfLines={1}
+            accessibilityRole="header"
+          >
+            {title}
+          </Text>
+          {artist && (
+            <Text
+              style={[styles.compactArtist, isRTL && styles.textRTL]}
+              numberOfLines={1}
+            >
+              {artist}
+            </Text>
+          )}
         </View>
       </View>
+
+      {/* Full-width progress bar */}
+      {!isLive && duration > 0 && (
+        <View style={styles.compactProgressSection}>
+          <GlassSlider
+            value={currentTime}
+            min={0}
+            max={duration}
+            step={1}
+            onValueChange={handleSeek}
+            accessibilityLabel={t('player.seekBar')}
+            testID="audio-progress-slider"
+          />
+          <View style={[styles.timeLabels, { flexDirection }]}>
+            <Text style={styles.compactTimeText}>{formatTime(currentTime)}</Text>
+            <Text style={styles.compactTimeText}>{formatTime(duration)}</Text>
+          </View>
+        </View>
+      )}
 
       {/* Error Display */}
       {error && (
@@ -787,16 +783,21 @@ const styles = StyleSheet.create({
   // ── Compact Layout (Widgets) ──
   compactContainer: {
     flex: 1,
-    padding: spacing.xs,
-    justifyContent: 'center',
-  },
-  compactContent: {
-    alignItems: 'center',
+    padding: spacing.sm,
     gap: spacing.xs,
   },
+  compactTopRow: {
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  compactCoverArea: {
+    width: 80,
+    height: 80,
+    flexShrink: 0,
+  },
   compactCoverWrap: {
-    width: 48,
-    height: 48,
+    width: 80,
+    height: 80,
     borderRadius: borderRadius.md,
     overflow: 'hidden',
     backgroundColor: colors.glassLight,
@@ -804,6 +805,24 @@ const styles = StyleSheet.create({
   compactCoverImg: {
     width: '100%',
     height: '100%',
+  },
+  compactCoverControls: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+    borderRadius: borderRadius.md,
+  },
+  compactMeta: {
+    flex: 1,
+    minWidth: 0,
+    gap: 2,
   },
   liveOverlay: {
     position: 'absolute',
@@ -829,26 +848,22 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginBottom: spacing.xs,
   },
-  compactInfo: {
-    flex: 1,
-    minWidth: 0,
-    gap: spacing.xs,
-  },
-  compactTitleWrap: {
-    gap: 2,
-  },
   compactTitle: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: '700',
     color: colors.text,
+  },
+  compactArtist: {
+    fontSize: 12,
+    color: colors.textMuted,
+  },
+  compactProgressSection: {
+    width: '100%',
+    gap: 2,
   },
   compactTimeText: {
     fontSize: 11,
     color: colors.textMuted,
-  },
-  compactControls: {
-    alignItems: 'center',
-    gap: spacing.xs,
   },
   compactSkipBtn: {
     alignItems: 'center',

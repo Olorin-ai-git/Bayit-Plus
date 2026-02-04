@@ -511,7 +511,7 @@ export default function WidgetContainer({
                 title={widget.title}
                 cover={widget.cover_url || widget.icon}
                 isLive={false}
-                compact={isMobileLayout}
+                compact
               />
             </div>
           );
@@ -529,7 +529,7 @@ export default function WidgetContainer({
                 title={widget.title}
                 cover={widget.cover_url || widget.icon}
                 isLive={true}
-                compact={isMobileLayout}
+                compact
               />
             </div>
           );
