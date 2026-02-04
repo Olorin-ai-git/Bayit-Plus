@@ -10,6 +10,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, Request, Header
 
 from app.api.routes.content.utils import is_series_by_category
+from app.api.routes.content_taxonomy import _get_legacy_category_mapping
 from app.core.security import get_optional_user, get_passkey_session
 from app.models.content import Content, Podcast
 from app.models.content_taxonomy import ContentSection
@@ -505,6 +506,17 @@ async def get_featured(
             # If no explicitly featured content for this section, use recently published fallback
             if not items:
                 logger.info(f"No explicitly featured content for section '{slug}', using recently published fallback")
+                # Build section filter for fallback (same as browse endpoint)
+                legacy_map = _get_legacy_category_mapping()
+                section_or_conditions = [
+                    {"section_ids": {"$in": all_section_ids}},
+                    {"primary_section_id": {"$in": all_section_ids}},
+                ]
+                if slug in legacy_map:
+                    section_or_conditions.append(
+                        {"category_name": {"$in": legacy_map[slug]}}
+                    )
+
                 fallback_pipeline = [
                     {
                         "$match": {
@@ -513,6 +525,7 @@ async def get_featured(
                                     "is_published": True,
                                     "is_quality_variant": {"$ne": True},
                                 },
+                                {"$or": section_or_conditions},
                                 {
                                     "$or": [
                                         {"series_id": None},
@@ -603,14 +616,16 @@ async def get_featured(
                 item.pop("_order", None)
             category_items = category_items[:10]
 
-            category_data.append({
-                "id": str(primary_section.id),
-                "name": slug,
-                "name_key": primary_section.name_key,
-                "name_en": slug,
-                "name_es": slug,
-                "items": category_items,
-            })
+            # Only include sections that have content
+            if category_items:
+                category_data.append({
+                    "id": str(primary_section.id),
+                    "name": slug,
+                    "name_key": primary_section.name_key,
+                    "name_en": slug,
+                    "name_es": slug,
+                    "items": category_items,
+                })
 
     logger.info(
         f"⏱️ Featured: Category content query took {time.time() - cat_query_start:.2f}s"
