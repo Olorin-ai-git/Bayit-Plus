@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, ScrollView, Image, Dimensions, StyleSheet, Pressable, Modal } from 'react-native';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Play, Plus, Check, Share2, Star, ChevronRight, X } from 'lucide-react';
+import { Play, Plus, Check, Share2, Star, ChevronRight, X, ArrowLeft } from 'lucide-react';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import Hls from 'hls.js';
 import LinearGradient from 'react-native-linear-gradient';
@@ -352,6 +352,19 @@ export default function MovieDetailPage() {
           pointerEvents="none"
         />
 
+        {/* Back Button - mobile only */}
+        {IS_MOBILE && (
+          <Pressable
+            onPress={() => navigate(-1)}
+            style={({ pressed }) => [
+              styles.mobileBackButton,
+              pressed && styles.mobileBackButtonPressed,
+            ]}
+          >
+            <ArrowLeft size={22} color={colors.text} />
+          </Pressable>
+        )}
+
         {/* Content */}
         <View style={[styles.heroContent, IS_MOBILE && styles.heroContentMobile]}>
           {/* Category Badge - hidden on mobile */}
@@ -397,8 +410,8 @@ export default function MovieDetailPage() {
             </View>
           )}
 
-          {/* Available Subtitles - hidden on mobile */}
-          {!IS_MOBILE && availableSubtitles.length > 0 && (
+          {/* Available Subtitles */}
+          {availableSubtitles.length > 0 && (
             <Pressable onPress={handleSubtitlePanelClick} style={({ pressed }) => [
               styles.subtitlesContainer,
               pressed && styles.subtitlesContainerPressed
@@ -742,6 +755,21 @@ const styles = StyleSheet.create({
     right: spacing.lg,
     bottom: spacing.xl,
     alignItems: 'center',
+  },
+  mobileBackButton: {
+    position: 'absolute',
+    top: spacing.xl,
+    left: spacing.lg,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 10,
+  },
+  mobileBackButtonPressed: {
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
   },
   categoryBadge: {
     alignSelf: 'flex-start',
