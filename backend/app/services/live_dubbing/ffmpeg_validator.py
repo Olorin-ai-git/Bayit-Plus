@@ -39,6 +39,8 @@ ALLOWED_DOMAINS = {
     "mako.co.il",
     "reshet.tv",
     "kan.org.il",
+    "medonecdn.net",
+    "cdn-redge.media",
     "keshet-d.akamaized.net",
     "keshetlive-keshetinternational.akamaized.net",
     "kan-live.akamaized.net",

@@ -11,6 +11,7 @@ import { colors } from '@olorin/design-tokens'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import { isTV } from '@bayit/shared/utils/platform'
 import { useResponsive } from '@/hooks/useResponsive'
+import { useDirection } from '@/hooks/useDirection'
 import { PlayerState } from '../types'
 import {
   controlStyles as styles,
@@ -84,6 +85,7 @@ export default function RightControls({
   onDismissLiveFeatureError,
 }: RightControlsProps) {
   const { t } = useTranslation()
+  const { isRTL } = useDirection()
   const responsive = useResponsive()
   const chaptersFocus = useTVFocus({ styleType: 'button' })
   const searchFocus = useTVFocus({ styleType: 'button' })
@@ -104,7 +106,7 @@ export default function RightControls({
 
   if (isLiveWithPanel) {
     return (
-      <View style={styles.rightControls}>
+      <View style={[styles.rightControls, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
         {renderWatchPartyButton && renderWatchPartyButton()}
         {renderAirPlayButton && renderAirPlayButton()}
         {renderChromecastButton && renderChromecastButton()}
@@ -134,7 +136,7 @@ export default function RightControls({
   }
 
   return (
-    <View style={styles.rightControls}>
+    <View style={[styles.rightControls, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       {renderWatchPartyButton && renderWatchPartyButton()}
       {renderAirPlayButton && renderAirPlayButton()}
       {renderChromecastButton && renderChromecastButton()}

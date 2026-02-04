@@ -57,34 +57,31 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
   const [hasPermission, setHasPermission] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
 
-  // Check support and permission on mount
+  // Check voice support on mount (no microphone access until user interaction)
   useEffect(() => {
-    const checkSupport = async () => {
-      const supported = voiceSupportService.isSupported();
-      setIsSupported(supported);
+    const supported = voiceSupportService.isSupported();
+    setIsSupported(supported);
+  }, []);
 
-      if (supported) {
-        // Check if we already have permission
-        try {
-          const permissionStatus = await navigator.permissions.query({
-            name: 'microphone' as PermissionName,
-          });
-          setHasPermission(permissionStatus.state === 'granted');
+  // Lazy permission check - only queries microphone when user interacts with voice features
+  const checkMicPermission = useCallback(async () => {
+    if (!voiceSupportService.isSupported()) return;
+    try {
+      const permissionStatus = await navigator.permissions.query({
+        name: 'microphone' as PermissionName,
+      });
+      setHasPermission(permissionStatus.state === 'granted');
 
-          // Listen for permission changes
-          permissionStatus.onchange = () => {
-            setHasPermission(permissionStatus.state === 'granted');
-          };
-        } catch (error) {
-          // Some browsers don't support permission query
-          voiceSupportLogger.debug('Permission query not supported', {
-            error: error instanceof Error ? error.message : String(error),
-          });
-        }
-      }
-    };
-
-    checkSupport();
+      // Listen for permission changes
+      permissionStatus.onchange = () => {
+        setHasPermission(permissionStatus.state === 'granted');
+      };
+    } catch (error) {
+      // Some browsers don't support permission query
+      voiceSupportLogger.debug('Permission query not supported', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
   }, []);
 
   // Subscribe to voice service events
@@ -121,6 +118,9 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
       return;
     }
 
+    // Check permission status on first user interaction
+    await checkMicPermission();
+
     if (!hasPermission) {
       const granted = await requestPermission();
       if (!granted) {
@@ -132,7 +132,7 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
     }
 
     await voiceSupportService.startListening();
-  }, [isSupported, hasPermission]);
+  }, [isSupported, hasPermission, checkMicPermission]);
 
   // Stop listening
   const stopListening = useCallback(() => {

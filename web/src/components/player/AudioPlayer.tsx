@@ -30,13 +30,19 @@ interface AudioPlayerProps {
   cover?: string
   isLive?: boolean
   onEnded?: () => void
+  compact?: boolean
 }
 
 const COVER_SIZE = isTV ? 160 : 128
+const COVER_SIZE_COMPACT = 64
 const PLAY_BUTTON_SIZE = isTV ? 72 : 56
+const PLAY_BUTTON_SIZE_COMPACT = 36
 const SKIP_BUTTON_SIZE = isTV ? 56 : 44
+const SKIP_BUTTON_SIZE_COMPACT = 28
 const ICON_SIZE_LARGE = isTV ? 32 : 28
+const ICON_SIZE_LARGE_COMPACT = 18
 const ICON_SIZE_SMALL = isTV ? 26 : 22
+const ICON_SIZE_SMALL_COMPACT = 14
 const SKIP_SECONDS = 15
 
 export default function AudioPlayer({
@@ -46,10 +52,18 @@ export default function AudioPlayer({
   cover,
   isLive = false,
   onEnded,
+  compact = false,
 }: AudioPlayerProps) {
   const { t } = useTranslation()
   const { isRTL, flexDirection } = useDirection()
   const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  // Resolve sizes based on compact mode
+  const coverSize = compact ? COVER_SIZE_COMPACT : COVER_SIZE
+  const playBtnSize = compact ? PLAY_BUTTON_SIZE_COMPACT : PLAY_BUTTON_SIZE
+  const skipBtnSize = compact ? SKIP_BUTTON_SIZE_COMPACT : SKIP_BUTTON_SIZE
+  const iconLarge = compact ? ICON_SIZE_LARGE_COMPACT : ICON_SIZE_LARGE
+  const iconSmall = compact ? ICON_SIZE_SMALL_COMPACT : ICON_SIZE_SMALL
 
   // Audio state
   const [isPlaying, setIsPlaying] = useState(false)
@@ -218,10 +232,10 @@ export default function AudioPlayer({
   }, [])
 
   return (
-    <GlassView style={styles.container}>
-      <View style={[styles.mainContent, { flexDirection }]}>
+    <GlassView style={[styles.container, compact && styles.containerCompact]}>
+      <View style={[styles.mainContent, compact && styles.mainContentCompact, { flexDirection }]}>
         {/* Cover Art */}
-        <View style={styles.coverArtContainer}>
+        <View style={[styles.coverArtContainer, { width: coverSize, height: coverSize }]}>
           <Image
             source={{ uri: cover || '/placeholder-audio.png' }}
             style={styles.coverImage}
@@ -236,22 +250,22 @@ export default function AudioPlayer({
         </View>
 
         {/* Info Section */}
-        <View style={styles.infoSection}>
+        <View style={[styles.infoSection, compact && styles.infoSectionCompact]}>
           {/* Title & Artist */}
-          <View style={styles.titleSection}>
+          <View style={[styles.titleSection, compact && styles.titleSectionCompact]}>
             {isLive && (
               <GlassBadge variant="danger" size="sm" style={styles.liveBadge}>
                 {t('player.live')}
               </GlassBadge>
             )}
             <Text
-              style={[styles.title, isRTL && styles.textRTL]}
+              style={[compact ? styles.titleCompact : styles.title, isRTL && styles.textRTL]}
               numberOfLines={1}
               accessibilityRole="header"
             >
               {title}
             </Text>
-            {artist && (
+            {artist && !compact && (
               <Text
                 style={[styles.artist, isRTL && styles.textRTL]}
                 numberOfLines={1}
@@ -281,7 +295,7 @@ export default function AudioPlayer({
           )}
 
           {/* Controls */}
-          <View style={[styles.controlsRow, { flexDirection }]}>
+          <View style={[styles.controlsRow, compact && styles.controlsRowCompact, { flexDirection }]}>
             {/* Playback Controls */}
             <View style={[styles.playbackControls, { flexDirection }]}>
               {!isLive && (
@@ -291,13 +305,13 @@ export default function AudioPlayer({
                   onBlur={skipBackFocus.handleBlur}
                   focusable={true}
                   style={[
-                    styles.skipButton,
+                    { width: skipBtnSize, height: skipBtnSize, borderRadius: skipBtnSize / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.glassLight },
                     skipBackFocus.isFocused && skipBackFocus.focusStyle,
                   ]}
                   accessibilityLabel={t('player.skipBack', { seconds: SKIP_SECONDS })}
                   accessibilityRole="button"
                 >
-                  <SkipBack size={ICON_SIZE_SMALL} color={colors.text} />
+                  <SkipBack size={iconSmall} color={colors.text} />
                 </Pressable>
               )}
 
@@ -308,7 +322,7 @@ export default function AudioPlayer({
                 focusable={true}
                 disabled={loading}
                 style={[
-                  styles.playButton,
+                  { width: playBtnSize, height: playBtnSize, borderRadius: playBtnSize / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary.DEFAULT },
                   playFocus.isFocused && playFocus.focusStyle,
                 ]}
                 accessibilityLabel={isPlaying ? t('player.pause') : t('player.play')}
@@ -319,13 +333,13 @@ export default function AudioPlayer({
                   <ActivityIndicator size="small" color={colors.background} />
                 ) : isPlaying ? (
                   <Pause
-                    size={ICON_SIZE_LARGE}
+                    size={iconLarge}
                     fill={colors.background}
                     color={colors.background}
                   />
                 ) : (
                   <Play
-                    size={ICON_SIZE_LARGE}
+                    size={iconLarge}
                     fill={colors.background}
                     color={colors.background}
                     style={styles.playIcon}
@@ -340,24 +354,26 @@ export default function AudioPlayer({
                   onBlur={skipForwardFocus.handleBlur}
                   focusable={true}
                   style={[
-                    styles.skipButton,
+                    { width: skipBtnSize, height: skipBtnSize, borderRadius: skipBtnSize / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.glassLight },
                     skipForwardFocus.isFocused && skipForwardFocus.focusStyle,
                   ]}
                   accessibilityLabel={t('player.skipForward', { seconds: SKIP_SECONDS })}
                   accessibilityRole="button"
                 >
-                  <SkipForward size={ICON_SIZE_SMALL} color={colors.text} />
+                  <SkipForward size={iconSmall} color={colors.text} />
                 </Pressable>
               )}
             </View>
 
-            {/* Volume Controls */}
-            <VolumeControls
-              isMuted={isMuted}
-              volume={volume}
-              onToggleMute={toggleMute}
-              onVolumeChange={handleVolumeChange}
-            />
+            {/* Volume Controls - hidden in compact mode */}
+            {!compact && (
+              <VolumeControls
+                isMuted={isMuted}
+                volume={volume}
+                onToggleMute={toggleMute}
+                onVolumeChange={handleVolumeChange}
+              />
+            )}
           </View>
         </View>
       </View>
@@ -392,9 +408,15 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     justifyContent: 'center',
   },
+  containerCompact: {
+    padding: spacing.sm,
+  },
   mainContent: {
     alignItems: 'center',
     gap: spacing.md,
+  },
+  mainContentCompact: {
+    gap: spacing.sm,
   },
   coverArtContainer: {
     width: COVER_SIZE,
@@ -437,8 +459,14 @@ const styles = StyleSheet.create({
     minWidth: 0,
     gap: spacing.md,
   },
+  infoSectionCompact: {
+    gap: spacing.xs,
+  },
   titleSection: {
     gap: spacing.xs,
+  },
+  titleSectionCompact: {
+    gap: 2,
   },
   liveBadge: {
     alignSelf: 'flex-start',
@@ -447,6 +475,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: isTV ? 24 : 20,
     fontWeight: 'bold',
+    color: colors.text,
+  },
+  titleCompact: {
+    fontSize: 13,
+    fontWeight: '600',
     color: colors.text,
   },
   artist: {
@@ -470,6 +503,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: spacing.md,
+  },
+  controlsRowCompact: {
+    gap: spacing.xs,
   },
   playbackControls: {
     alignItems: 'center',

@@ -5,6 +5,7 @@
 
 import { View } from 'react-native'
 import { isTV } from '@bayit/shared/utils/platform'
+import { useDirection } from '@/hooks/useDirection'
 import { PlayerState, PlayerControls as PlayerControlsType, Chapter } from './types'
 import { LeftControls, RightControls, controlStyles as styles } from './controls'
 
@@ -73,8 +74,10 @@ export default function PlayerControls({
   liveFeatureError,
   onDismissLiveFeatureError,
 }: PlayerControlsProps) {
+  const { isRTL } = useDirection()
+
   return (
-    <View style={styles.controlsRow}>
+    <View style={[styles.controlsRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       <LeftControls
         state={state}
         controls={controls}

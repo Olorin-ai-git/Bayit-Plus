@@ -32,6 +32,7 @@ interface WidgetContainerProps {
   onPositionChange: (position: Partial<WidgetPosition>) => void;
   streamUrl?: string;
   episodeData?: PodcastEpisode;
+  isMobileLayout?: boolean;
 }
 
 // Check if this is a TV build
@@ -51,6 +52,7 @@ export default function WidgetContainer({
   onPositionChange,
   streamUrl,
   episodeData,
+  isMobileLayout = false,
 }: WidgetContainerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
@@ -78,6 +80,14 @@ export default function WidgetContainer({
   // Minimized widget dimensions
   const MINIMIZED_HEIGHT = 40;
   const MINIMIZED_WIDTH = 200;
+
+  // Mobile stacked layout heights by content type
+  const getMobileHeight = (): number => {
+    const contentType = widget.content.content_type;
+    if (contentType === 'live_channel' || contentType === 'live' || contentType === 'vod') return 280;
+    if (contentType === 'radio' || contentType === 'podcast') return 220;
+    return 300; // iframe, custom
+  };
 
   // Update loading state when stream URL changes
   useEffect(() => {
@@ -501,6 +511,7 @@ export default function WidgetContainer({
                 title={widget.title}
                 cover={widget.cover_url || widget.icon}
                 isLive={false}
+                compact={isMobileLayout}
               />
             </div>
           );
@@ -518,6 +529,7 @@ export default function WidgetContainer({
                 title={widget.title}
                 cover={widget.cover_url || widget.icon}
                 isLive={true}
+                compact={isMobileLayout}
               />
             </div>
           );
@@ -579,26 +591,35 @@ export default function WidgetContainer({
   const minimizedX = isRTL ? window.innerWidth - MINIMIZED_WIDTH - 20 - (minimizedIndex * (MINIMIZED_WIDTH + 10)) : 20 + (minimizedIndex * (MINIMIZED_WIDTH + 10));
   const minimizedY = window.innerHeight - MINIMIZED_HEIGHT - 20;
 
+  // Mobile stacked layout: static positioning, full width, fixed height
+  const mobileContainerStyle: React.CSSProperties | undefined = isMobileLayout ? {
+    position: 'relative' as const,
+    width: '100%',
+    height: getMobileHeight(),
+    marginBottom: 8,
+  } : undefined;
+
+  // Desktop/TV floating overlay style
+  const desktopContainerStyle: React.CSSProperties | undefined = !isMobileLayout ? {
+    position: 'fixed' as const,
+    left: isMinimized ? minimizedX : position.x,
+    top: isMinimized ? minimizedY : position.y,
+    width: isMinimized ? MINIMIZED_WIDTH : position.width,
+    height: isMinimized ? MINIMIZED_HEIGHT : position.height,
+    zIndex: position.z_index,
+    cursor: isResizing ? (resizeDirection?.includes('e') || resizeDirection?.includes('w') ? 'ew-resize' : resizeDirection?.includes('n') || resizeDirection?.includes('s') ? 'ns-resize' : 'default') : isDragging ? 'grabbing' : IS_TV_BUILD ? 'pointer' : 'default',
+    outline: IS_TV_BUILD && isFocused ? '2px solid #00aaff' : 'none',
+    outlineOffset: '2px',
+    transition: !isResizing && !isDragging ? 'all 0.3s ease, opacity 0.4s ease' : 'opacity 0.4s ease',
+    opacity: isMinimized ? 0 : 1,
+    pointerEvents: (isMinimized ? 'none' : 'auto') as React.CSSProperties['pointerEvents'],
+    visibility: (isMinimized && !isAnimatingMinimize ? 'hidden' : 'visible') as React.CSSProperties['visibility'],
+  } : undefined;
+
   return (
     <div
       ref={containerRef}
-      style={{
-        position: 'fixed',
-        left: isMinimized ? minimizedX : position.x,
-        top: isMinimized ? minimizedY : position.y,
-        width: isMinimized ? MINIMIZED_WIDTH : position.width,
-        height: isMinimized ? MINIMIZED_HEIGHT : position.height,
-        zIndex: position.z_index,
-        cursor: isResizing ? (resizeDirection?.includes('e') || resizeDirection?.includes('w') ? 'ew-resize' : resizeDirection?.includes('n') || resizeDirection?.includes('s') ? 'ns-resize' : 'default') : isDragging ? 'grabbing' : IS_TV_BUILD ? 'pointer' : 'default',
-        // TV: Always show focus indicator
-        outline: IS_TV_BUILD && isFocused ? '2px solid #00aaff' : 'none',
-        outlineOffset: '2px',
-        transition: !isResizing && !isDragging ? 'all 0.3s ease, opacity 0.4s ease' : 'opacity 0.4s ease',
-        // Fade out when minimizing, fade in when restoring
-        opacity: isMinimized ? 0 : 1,
-        pointerEvents: isMinimized ? 'none' : 'auto',
-        visibility: isMinimized && !isAnimatingMinimize ? 'hidden' : 'visible',
-      }}
+      style={isMobileLayout ? mobileContainerStyle : desktopContainerStyle}
       onFocus={() => IS_TV_BUILD && setIsFocused(true)}
       onBlur={() => IS_TV_BUILD && setIsFocused(false)}
       tabIndex={IS_TV_BUILD ? 0 : -1}
@@ -606,14 +627,14 @@ export default function WidgetContainer({
       aria-label={`Widget: ${widget.title}`}
     >
       <View style={styles.container}>
-        {/* Header Bar - Always visible, entire bar is draggable */}
+        {/* Header Bar - Always visible, entire bar is draggable on desktop */}
         <div
           style={{
             ...styles.headerBar as any,
-            flexDirection: 'row', // Controls on left, title on right
-            cursor: widget.is_draggable && !isMinimized ? (isDragging ? 'grabbing' : 'grab') : 'default',
+            flexDirection: 'row',
+            cursor: !isMobileLayout && widget.is_draggable && !isMinimized ? (isDragging ? 'grabbing' : 'grab') : 'default',
           }}
-          onMouseDown={widget.is_draggable && !isMinimized && !IS_TV_BUILD ? (handleDragStart as any) : undefined}
+          onMouseDown={!isMobileLayout && widget.is_draggable && !isMinimized && !IS_TV_BUILD ? (handleDragStart as any) : undefined}
         >
           {/* Controls */}
           <View style={styles.controlsContainer}>
@@ -651,8 +672,8 @@ export default function WidgetContainer({
             )}
           </View>
 
-          {/* Drag indicator in center - only when not minimized */}
-          {widget.is_draggable && !isMinimized && !IS_TV_BUILD && (
+          {/* Drag indicator in center - only when not minimized, hidden on mobile */}
+          {widget.is_draggable && !isMinimized && !IS_TV_BUILD && !isMobileLayout && (
             <View style={styles.dragIndicator}>
               <GripHorizontal size={16} color="rgba(255,255,255,0.4)" />
             </View>
@@ -679,8 +700,8 @@ export default function WidgetContainer({
           </View>
         )}
 
-        {/* Resize handles - only when not minimized and not on TV */}
-        {!isMinimized && !IS_TV_BUILD && (
+        {/* Resize handles - only when not minimized, not on TV, not mobile */}
+        {!isMinimized && !IS_TV_BUILD && !isMobileLayout && (
           <>
             {/* Edge handles */}
             <div
@@ -802,13 +823,16 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     gap: 2,
     flex: 1,
-    maxWidth: '40%',
-  },
+    maxWidth: '50%',
+    overflow: 'hidden',
+  } as any,
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
-  },
+    maxWidth: '100%',
+    overflow: 'hidden',
+  } as any,
   controlsContainer: {
     flexDirection: 'row',
     alignItems: 'center',

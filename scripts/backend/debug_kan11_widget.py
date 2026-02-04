@@ -134,7 +134,7 @@ async def debug_kan11_widget():
     if not channel.stream_url:
         logger.error("❌ Live channel has NO stream_url!")
         logger.info("\n   SOLUTION: Add stream_url to the live channel document")
-        logger.info("   Example: channel.stream_url = 'https://kan11.media.kan.org.il/hls/live/2105694/2105694/master.m3u8'")
+        logger.info("   Example: channel.stream_url = 'https://kancdn.medonecdn.net/livehls/oil/kancdn-live/live/kan11/live.livx/playlist.m3u8'")
     else:
         logger.info(f"✅ Channel has stream_url: {channel.stream_url[:80] + '...' if len(channel.stream_url) > 80 else channel.stream_url}")
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useWidgetStore } from '@/stores/widgetStore';
+import { useResponsive } from '@/hooks/useResponsive';
 import { glass, colors, spacing, borderRadius } from '@olorin/design-tokens';
 import type { Widget } from '@/types/widget';
 
@@ -8,27 +9,28 @@ interface IconButtonProps {
   widget: Widget;
   isHovered: boolean;
   isHighlighted: boolean;
+  isMobile: boolean;
   onHover: () => void;
   onLeave: () => void;
   onClick: () => void;
 }
 
-function IconButton({ widget, isHovered, isHighlighted, onHover, onLeave, onClick }: IconButtonProps) {
+function IconButton({ widget, isHovered, isHighlighted, isMobile, onHover, onLeave, onClick }: IconButtonProps) {
   return (
     <Pressable
       onPress={onClick}
-      onHoverIn={onHover}
-      onHoverOut={onLeave}
+      onHoverIn={isMobile ? undefined : onHover}
+      onHoverOut={isMobile ? undefined : onLeave}
       style={[
-        styles.iconButton,
-        isHovered && styles.iconButtonHovered,
+        isMobile ? styles.iconButtonMobile : styles.iconButton,
+        !isMobile && isHovered && styles.iconButtonHovered,
         isHighlighted && styles.iconButtonHighlighted,
       ]}
       aria-label={`Restore ${widget.title}`}
       role="button"
       accessible={true}
     >
-      <Text style={styles.iconEmoji}>{widget.icon || '📻'}</Text>
+      <Text style={isMobile ? styles.iconEmojiMobile : styles.iconEmoji}>{widget.icon || '📻'}</Text>
     </Pressable>
   );
 }
@@ -108,6 +110,7 @@ export default function MinimizedWidgetDock() {
   const [hoveredWidgetId, setHoveredWidgetId] = useState<string | null>(null);
   const [highlightedWidgetId, setHighlightedWidgetId] = useState<string | null>(null);
   const { widgets, getWidgetState, toggleMinimize } = useWidgetStore();
+  const { isMobile } = useResponsive();
   const previousMinimizedIdsRef = useRef<Set<string>>(new Set());
   const isInitialMountRef = useRef(true);
 
@@ -149,6 +152,44 @@ export default function MinimizedWidgetDock() {
 
   if (minimizedWidgets.length === 0) return null;
 
+  // Mobile: vertical left sidebar
+  if (isMobile) {
+    const mobileIconSize = 40;
+    const mobileIconSpacing = 8;
+    const mobileContainerPadding = 8;
+
+    return (
+      <div
+        style={{
+          position: 'fixed',
+          left: 0,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          zIndex: 50,
+          ...(styles.containerMobile as any),
+        }}
+        role="toolbar"
+        aria-label="Minimized widgets"
+      >
+        <View style={styles.iconsColumn}>
+          {minimizedWidgets.map((widget) => (
+            <IconButton
+              key={widget.id}
+              widget={widget}
+              isHovered={false}
+              isHighlighted={highlightedWidgetId === widget.id}
+              isMobile={true}
+              onHover={() => {}}
+              onLeave={() => {}}
+              onClick={() => toggleMinimize(widget.id)}
+            />
+          ))}
+        </View>
+      </div>
+    );
+  }
+
+  // Desktop: horizontal bottom-center bar
   const iconSize = 56;
   const iconSpacing = 12;
   const containerPadding = 16;
@@ -177,6 +218,7 @@ export default function MinimizedWidgetDock() {
             widget={widget}
             isHovered={hoveredWidgetId === widget.id}
             isHighlighted={highlightedWidgetId === widget.id}
+            isMobile={false}
             onHover={() => setHoveredWidgetId(widget.id)}
             onLeave={() => setHoveredWidgetId(null)}
             onClick={() => toggleMinimize(widget.id)}
@@ -226,10 +268,32 @@ const styles = StyleSheet.create({
     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
   } as any,
 
+  containerMobile: {
+    backgroundColor: glass.bg,
+    borderTopRightRadius: borderRadius.lg,
+    borderBottomRightRadius: borderRadius.lg,
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderColor: glass.border,
+    padding: 8,
+    // @ts-ignore - Web CSS
+    backdropFilter: 'blur(20px)',
+    WebkitBackdropFilter: 'blur(20px)',
+    boxShadow: '4px 0 16px rgba(0, 0, 0, 0.3)',
+  } as any,
+
   iconsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing[3],
+  },
+
+  iconsColumn: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 8,
   },
 
   iconButton: {
@@ -245,6 +309,17 @@ const styles = StyleSheet.create({
     transition: 'all 0.2s ease',
     cursor: 'pointer',
   } as any,
+
+  iconButtonMobile: {
+    width: 40,
+    height: 40,
+    borderRadius: borderRadius.full,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderWidth: 1,
+    borderColor: glass.borderLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 
   iconButtonHovered: {
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
@@ -269,6 +344,10 @@ const styles = StyleSheet.create({
 
   iconEmoji: {
     fontSize: 28,
+  },
+
+  iconEmojiMobile: {
+    fontSize: 20,
   },
 
   popup: {

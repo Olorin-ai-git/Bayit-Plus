@@ -12,6 +12,7 @@ import { adminWidgetsService } from '@/services/adminApi';
 import { liveService, radioService, podcastService } from '@/services/api';
 import { adminContentService } from '@/services/adminApi';
 import { useAuthStore } from '@/stores/authStore';
+import { useResponsive } from '@/hooks/useResponsive';
 import WidgetContainer from './WidgetContainer';
 import MinimizedWidgetDock from './MinimizedWidgetDock';
 import type { Widget, WidgetPosition } from '@/types/widget';
@@ -25,6 +26,7 @@ const streamUrlCache: Record<string, { streamUrl?: string; episodeData?: Podcast
 export default function WidgetManager() {
   const location = useLocation();
   const { user, isAuthenticated } = useAuthStore();
+  const { isMobile } = useResponsive();
 
   const {
     widgets,
@@ -274,35 +276,77 @@ export default function WidgetManager() {
     return null;
   }
 
+  // Separate minimized vs non-minimized widgets for mobile layout
+  const nonMinimizedWidgets = visibleWidgets.filter((w) => {
+    const state = getWidgetState(w.id);
+    return state && !state.isMinimized;
+  });
+
+  const renderWidgetItem = (widget: Widget) => {
+    const state = getWidgetState(widget.id);
+    if (!state) return null;
+
+    return (
+      <WidgetItem
+        key={widget.id}
+        widget={widget}
+        state={state}
+        isMobileLayout={isMobile}
+        onToggleMute={() => toggleMute(widget.id)}
+        onClose={() => handleClose(widget.id)}
+        onToggleMinimize={() => handleToggleMinimize(widget.id)}
+        onPositionChange={(pos) => handlePositionChange(widget.id, pos)}
+        getContentStreamUrl={getContentStreamUrl}
+      />
+    );
+  };
+
+  // Mobile: stacked scroll container for non-minimized widgets
+  if (isMobile) {
+    return (
+      <>
+        {nonMinimizedWidgets.length > 0 && (
+          <div style={mobileStackContainerStyle}>
+            {nonMinimizedWidgets.map(renderWidgetItem)}
+          </div>
+        )}
+        <MinimizedWidgetDock />
+      </>
+    );
+  }
+
+  // Desktop: free-floating overlay widgets
   return (
     <>
-      {visibleWidgets.map((widget) => {
-        const state = getWidgetState(widget.id);
-        if (!state) return null;
-
-        return (
-          <WidgetItem
-            key={widget.id}
-            widget={widget}
-            state={state}
-            onToggleMute={() => toggleMute(widget.id)}
-            onClose={() => handleClose(widget.id)}
-            onToggleMinimize={() => handleToggleMinimize(widget.id)}
-            onPositionChange={(pos) => handlePositionChange(widget.id, pos)}
-            getContentStreamUrl={getContentStreamUrl}
-          />
-        );
-      })}
-
+      {visibleWidgets.map(renderWidgetItem)}
       <MinimizedWidgetDock />
     </>
   );
 }
 
+// Mobile stacked container inline style (fixed position, scrollable)
+const MOBILE_DOCK_WIDTH = 56; // dock width (40px icon + 8px padding * 2)
+const MOBILE_TOP_NAV_HEIGHT = 64;
+const MOBILE_BOTTOM_NAV_HEIGHT = 64;
+
+const mobileStackContainerStyle: React.CSSProperties = {
+  position: 'fixed',
+  top: MOBILE_TOP_NAV_HEIGHT,
+  left: MOBILE_DOCK_WIDTH,
+  right: 0,
+  bottom: MOBILE_BOTTOM_NAV_HEIGHT,
+  overflowY: 'auto',
+  overflowX: 'hidden',
+  zIndex: 49,
+  padding: 8,
+  WebkitOverflowScrolling: 'touch',
+};
+
 // Separate component to handle async stream URL loading
 interface WidgetItemProps {
   widget: Widget;
   state: { isMuted: boolean; isVisible: boolean; isMinimized: boolean; position: WidgetPosition };
+  isMobileLayout: boolean;
   onToggleMute: () => void;
   onClose: () => void;
   onToggleMinimize: () => void;
@@ -313,6 +357,7 @@ interface WidgetItemProps {
 function WidgetItem({
   widget,
   state,
+  isMobileLayout,
   onToggleMute,
   onClose,
   onToggleMinimize,
@@ -352,6 +397,7 @@ function WidgetItem({
       onPositionChange={onPositionChange}
       streamUrl={streamUrl}
       episodeData={episodeData}
+      isMobileLayout={isMobileLayout}
     />
   );
 }

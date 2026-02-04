@@ -14,6 +14,7 @@ import { GlassSlider } from '@bayit/shared/ui'
 import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import { isTV } from '@bayit/shared/utils/platform'
 import { useResponsive } from '@/hooks/useResponsive'
+import { useDirection } from '@/hooks/useDirection'
 import { PlayerState, PlayerControls, Chapter } from '../types'
 import {
   controlStyles as styles,
@@ -36,6 +37,7 @@ export default function LeftControls({
   state, controls, isLive = false, hasChapters = false, chapters = [],
 }: LeftControlsProps) {
   const { t } = useTranslation()
+  const { isRTL } = useDirection()
   const responsive = useResponsive()
   const playFocus = useTVFocus({ styleType: 'button' })
   const prevChapterFocus = useTVFocus({ styleType: 'button' })
@@ -59,7 +61,7 @@ export default function LeftControls({
   } : {}
 
   return (
-    <View style={styles.leftControls}>
+    <View style={[styles.leftControls, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
       {/* Play/Pause */}
       <Pressable
         onPress={(e) => { e.stopPropagation?.(); controls.togglePlay() }}

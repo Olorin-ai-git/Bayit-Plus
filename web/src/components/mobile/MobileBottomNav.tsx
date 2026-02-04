@@ -1,7 +1,7 @@
 /**
  * Mobile Bottom Navigation
  *
- * Fixed bottom navigation bar for mobile devices with 5 main tabs.
+ * Fixed bottom navigation bar for mobile devices with 6 main tabs.
  * Provides quick access to core features with safe area handling and RTL support.
  */
 
@@ -26,6 +26,7 @@ const tabs: TabItem[] = [
   { id: 'search', icon: 'search', labelKey: 'nav.search', path: '/search' },
   { id: 'live', icon: 'live', labelKey: 'nav.liveTV', path: '/live' },
   { id: 'vod', icon: 'vod', labelKey: 'nav.vod', path: '/vod' },
+  { id: 'podcasts', icon: 'podcasts', labelKey: 'nav.podcasts', path: '/podcasts' },
   { id: 'widgets', icon: 'widgets', labelKey: 'nav.widgets', path: '/widgets' },
 ];
 
@@ -49,8 +50,8 @@ export default function MobileBottomNav() {
   };
 
   return (
-    <View style={[styles.container, isRTL && styles.containerRTL]}>
-      <View style={styles.content}>
+    <View style={styles.container}>
+      <View style={[styles.content, isRTL && styles.contentRTL]}>
         {tabs.map((tab) => {
           const isActive = isActiveTab(tab);
           return (
@@ -101,9 +102,6 @@ const styles = StyleSheet.create({
     // @ts-ignore - Web CSS
     boxShadow: '0 -4px 16px rgba(0, 0, 0, 0.3)',
   },
-  containerRTL: {
-    flexDirection: 'row-reverse',
-  },
   content: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -112,6 +110,9 @@ const styles = StyleSheet.create({
     paddingTop: spacing.sm,
     paddingBottom: spacing.xs,
     minHeight: 64,
+  },
+  contentRTL: {
+    flexDirection: 'row-reverse',
   },
   tab: {
     alignItems: 'center',
@@ -139,11 +140,11 @@ const styles = StyleSheet.create({
     // Icon receives active state through renderIcon color
   },
   label: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '500',
     color: colors.textSecondary,
     textAlign: 'center',
-    letterSpacing: 0.2,
+    letterSpacing: 0.1,
   },
   labelActive: {
     color: colors.primary.DEFAULT,
