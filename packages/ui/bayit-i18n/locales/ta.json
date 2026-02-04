@@ -3951,7 +3951,25 @@
     "loadingShows": "பாட்காஸ்ட் நிகழ்ச்சிகள் ஏற்றப்படுகின்றன...",
     "loadError": "Podcast களை ஏற்ற முடியவில்லை. உங்கள் இணைப்பைச் சரிபார்க்கவும்.",
     "loading": "Podcast கள் ஏற்றப்படுகின்றன...",
-    "noPodcastsFound": "Podcast கள் எதுவும் இல்லை"
+    "noPodcastsFound": "Podcast கள் எதுவும் இல்லை",
+    "addPodcast": {
+      "title": "Podcast சேர்க்கவும்",
+      "urlPlaceholder": "Podcast URL ஐ இங்கே ஒட்டவும்",
+      "providerRSS": "RSS URL",
+      "providerApple": "Apple Podcasts",
+      "providerSpotify": "Spotify",
+      "resolve": "கண்டறி",
+      "resolving": "கண்டறியப்படுகிறது...",
+      "preview": "முன்னோட்டம்",
+      "author": "ஆசிரியர்",
+      "episodesFound": "{{count}} அத்தியாயங்கள் கண்டறியப்பட்டன",
+      "addPodcast": "Podcast சேர்",
+      "adding": "சேர்க்கப்படுகிறது...",
+      "success": "Podcast வெற்றிகரமாக சேர்க்கப்பட்டது",
+      "errorResolve": "இந்த URL ஐ கண்டறிய இயலவில்லை",
+      "errorAdd": "Podcast ஐ சேர்க்க இயலவில்லை",
+      "errorDuplicate": "இந்த Podcast ஏற்கனவே உள்ளது"
+    }
   },
   "profile": {
     "title": "என் சுயவிவரம்",
@@ -5415,6 +5433,10 @@
     "hidden": "மறைக்கப்பட்டது",
     "addToCollection": "என் விட்ஜெட்களில் சேர்",
     "removeFromCollection": "என் விட்ஜெட்களில் இருந்து நீக்கு",
+    "addToMyWidgets": "எனது விட்ஜெட்களில் சேர்",
+    "removeFromMyWidgets": "எனது விட்ஜெட்களிலிருந்து நீக்கு",
+    "widgetAdded": "விட்ஜெட் சேர்க்கப்பட்டது",
+    "widgetRemoved": "விட்ஜெட் நீக்கப்பட்டது",
     "contentTypes": {
       "liveChannel": "நேரலை சேனல்",
       "iframe": "வலை உள்ளடக்கம்",
@@ -5482,7 +5504,13 @@
     },
     "delete": "அழி",
     "hide": "மறை",
-    "resetPosition": "நிலையை மீட்டமை"
+    "resetPosition": "நிலையை மீட்டமை",
+    "select": "தேர்வு",
+    "selectAll": "அனைத்தையும் தேர்",
+    "cancelSelection": "ரத்து",
+    "deleteSelected": "அழி",
+    "bulkDeleteConfirm": "தேர்ந்தெடுத்த விட்ஜெட்களை அழிக்கவா?",
+    "bulkDeleted": "விட்ஜெட்கள் அழிக்கப்பட்டன"
   },
   "trending": {
     "title": "இஸ்ரேலில் டிரெண்டிங்",

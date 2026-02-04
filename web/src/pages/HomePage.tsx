@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
 import ContentCarousel from '@/components/content/ContentCarousel';
+import { WidgetToggleProvider } from '@/contexts/WidgetToggleContext';
 import {
   TrendingRow,
   JerusalemRow,
@@ -29,6 +30,7 @@ import { colors, spacing } from '@olorin/design-tokens';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 import { getContentPosterUrl } from '@bayit/shared-utils/youtube';
+import WidgetToggleButton from '@/components/content/WidgetToggleButton';
 import logger from '@/utils/logger';
 import { useFeaturedAudiobooksCarousel } from '@/hooks/useFeaturedAudiobooksCarousel';
 import { useUserGeolocation } from '@/hooks/useUserGeolocation';
@@ -43,6 +45,7 @@ interface CarouselItem {
   description?: string;
   image?: string;
   badge?: string;
+  contentType?: 'vod' | 'live' | 'podcast' | 'radio' | 'movie' | 'series' | 'channel';
   is_series?: boolean;
   available_subtitle_languages?: string[];
   has_subtitles?: boolean;
@@ -78,6 +81,7 @@ interface ContentItem {
 interface Category {
   id: string;
   name: string;
+  name_key?: string;
   name_he?: string;
   name_en?: string;
   name_es?: string;
@@ -211,6 +215,7 @@ export default function HomePage() {
         description: getLocalizedDescription(item, i18n.language),
         image: getContentPosterUrl(item) || item.backdrop || item.thumbnail,
         badge: index === 0 ? t('common.new') : undefined,
+        contentType: item.is_series ? 'series' : 'vod',
         is_series: item.is_series,
         available_subtitle_languages: item.available_subtitle_languages,
         has_subtitles: item.has_subtitles,
@@ -294,7 +299,28 @@ export default function HomePage() {
     }
   };
 
+  // Collect all content items for widget toggle batch-check
+  const widgetItems = useMemo(() => {
+    const items: { content_type: string; content_id: string }[] = [];
+    for (const item of carouselItems) {
+      items.push({ content_type: 'vod', content_id: item.id });
+    }
+    for (const cat of categories) {
+      for (const item of cat.items) {
+        items.push({ content_type: item.type || 'vod', content_id: item.id });
+      }
+    }
+    for (const ch of liveChannels) {
+      items.push({ content_type: 'live', content_id: ch.id });
+    }
+    for (const item of continueWatching) {
+      items.push({ content_type: item.type || 'vod', content_id: item.id });
+    }
+    return items;
+  }, [carouselItems, categories, liveChannels, continueWatching]);
+
   return (
+    <WidgetToggleProvider items={widgetItems}>
     <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
       {/* Page Header */}
       <View style={styles.headerSection}>
@@ -338,6 +364,14 @@ export default function HomePage() {
             onItemPress={handleCarouselPress}
             height={IS_TV_BUILD ? 550 : 600}
             autoPlayInterval={6000}
+            renderItemActions={(item) => (
+              <WidgetToggleButton
+                contentType="vod"
+                contentId={item.id}
+                title={item.title}
+                coverUrl={item.image}
+              />
+            )}
           />
         )}
       </View>
@@ -420,7 +454,7 @@ export default function HomePage() {
             <View key={city.city_id} style={styles.section}>
               <CultureCityRow
                 cityId={city.city_id}
-                cultureId={currentCulture?.culture_id}
+                cultureId={currentCulture?.culture_id ?? ''}
               />
             </View>
           ))}
@@ -450,13 +484,14 @@ export default function HomePage() {
         </>
       )}
     </ScrollView>
+    </WidgetToggleProvider>
   );
 }
 
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: colors.dark[950],
   },
   pageContent: {
     paddingBottom: spacing.xl * 2,

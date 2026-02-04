@@ -1,17 +1,11 @@
 /**
  * AudioPlayer Component
- * Podcast/audio playback with glassmorphism styling
- *
- * Features:
- * - Play/pause, skip forward/back controls
- * - Progress bar using GlassSlider
- * - Volume controls using VolumeControls component
- * - RTL support via useDirection hook
- * - TV focus states via useTVFocus hook
- * - Cross-platform support (web, iOS, tvOS, Android)
+ * Two layout modes:
+ * - Hero: Cover fills container, controls overlaid at bottom (WatchPage)
+ * - Compact: Small horizontal player (widget containers)
  */
 
-import { useRef, useState, useEffect, useCallback } from 'react'
+import { useRef, useState, useEffect, useCallback, useMemo } from 'react'
 import { View, Text, Pressable, Image, ActivityIndicator, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react'
@@ -22,6 +16,7 @@ import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import { useDirection } from '@bayit/shared/hooks'
 import { isTV } from '@bayit/shared/utils/platform'
+import { useResponsive } from '@/hooks/useResponsive'
 import { logger } from '@/utils/logger'
 import VolumeControls from './controls/VolumeControls'
 
@@ -37,16 +32,6 @@ interface AudioPlayerProps {
   compact?: boolean
 }
 
-const COVER_SIZE = isTV ? 160 : 128
-const COVER_SIZE_COMPACT = 64
-const PLAY_BUTTON_SIZE = isTV ? 72 : 56
-const PLAY_BUTTON_SIZE_COMPACT = 36
-const SKIP_BUTTON_SIZE = isTV ? 56 : 44
-const SKIP_BUTTON_SIZE_COMPACT = 28
-const ICON_SIZE_LARGE = isTV ? 32 : 28
-const ICON_SIZE_LARGE_COMPACT = 18
-const ICON_SIZE_SMALL = isTV ? 26 : 22
-const ICON_SIZE_SMALL_COMPACT = 14
 const SKIP_SECONDS = 15
 
 export default function AudioPlayer({
@@ -62,18 +47,11 @@ export default function AudioPlayer({
 }: AudioPlayerProps) {
   const { t } = useTranslation()
   const { isRTL, flexDirection } = useDirection()
+  const { isMobile } = useResponsive()
   const notifications = useNotifications()
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const hasResumed = useRef(false)
 
-  // Resolve sizes based on compact mode
-  const coverSize = compact ? COVER_SIZE_COMPACT : COVER_SIZE
-  const playBtnSize = compact ? PLAY_BUTTON_SIZE_COMPACT : PLAY_BUTTON_SIZE
-  const skipBtnSize = compact ? SKIP_BUTTON_SIZE_COMPACT : SKIP_BUTTON_SIZE
-  const iconLarge = compact ? ICON_SIZE_LARGE_COMPACT : ICON_SIZE_LARGE
-  const iconSmall = compact ? ICON_SIZE_SMALL_COMPACT : ICON_SIZE_SMALL
-
-  // Audio state
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(1)
@@ -83,10 +61,17 @@ export default function AudioPlayer({
   const [error, setError] = useState<string | null>(null)
   const [retryCount, setRetryCount] = useState(0)
 
-  // Focus states for TV navigation
   const playFocus = useTVFocus({ styleType: 'button' })
   const skipBackFocus = useTVFocus({ styleType: 'button' })
   const skipForwardFocus = useTVFocus({ styleType: 'button' })
+
+  // Size presets based on layout mode
+  const sizes = useMemo(() => {
+    if (compact) return { play: 32, skip: 24, iconLg: 16, iconSm: 12 }
+    if (isMobile) return { play: 40, skip: 32, iconLg: 20, iconSm: 16 }
+    if (isTV) return { play: 72, skip: 56, iconLg: 32, iconSm: 26 }
+    return { play: 56, skip: 44, iconLg: 26, iconSm: 20 }
+  }, [compact, isMobile])
 
   // Initialize audio element
   useEffect(() => {
@@ -126,7 +111,6 @@ export default function AudioPlayer({
       const mediaError = audio.error
       let errorMessage = t('player.errors.streamFailed', 'Stream failed to load')
 
-      // Map HTML5 Media error codes to user-friendly messages
       if (mediaError) {
         switch (mediaError.code) {
           case mediaError.MEDIA_ERR_ABORTED:
@@ -148,7 +132,6 @@ export default function AudioPlayer({
 
       setError(errorMessage)
 
-      // Attempt retry with exponential backoff (0s, 1s, 2s delays, max 3 total attempts)
       if (retryCount < 2) {
         const backoffDelays = [0, 1000, 2000]
         const delayMs = backoffDelays[retryCount]
@@ -178,7 +161,7 @@ export default function AudioPlayer({
     }
   }, [src, onEnded])
 
-  // Progress reporting: 10-second interval while playing, plus on pause/unmount
+  // Progress reporting: 10-second interval while playing
   useEffect(() => {
     if (!onProgress || isLive) return
 
@@ -195,7 +178,6 @@ export default function AudioPlayer({
 
     return () => {
       if (intervalId) clearInterval(intervalId)
-      // Fire final progress on cleanup (pause or unmount)
       const audio = audioRef.current
       if (audio && audio.duration && isFinite(audio.duration) && audio.currentTime > 0) {
         onProgress(audio.currentTime, audio.duration)
@@ -229,15 +211,14 @@ export default function AudioPlayer({
           title: t('player.resumedFrom', { time: timeStr }, `Resumed from ${timeStr}`),
           dismissable: true,
         })
-      } catch (error) {
+      } catch (err) {
         logger.error('Failed to seek to saved position', 'AudioPlayer', {
-          error: error instanceof Error ? error.message : 'Unknown error',
+          error: err instanceof Error ? err.message : 'Unknown error',
           savedPosition,
         })
       }
     }
 
-    // Check if audio is already ready (readyState >= 3 = HAVE_FUTURE_DATA)
     if (audio.readyState >= 3) {
       handleCanPlay()
     } else {
@@ -249,7 +230,6 @@ export default function AudioPlayer({
     }
   }, [savedPosition, isLive, notifications, t])
 
-  // Reset hasResumed when src changes (new episode)
   useEffect(() => {
     hasResumed.current = false
   }, [src])
@@ -259,15 +239,12 @@ export default function AudioPlayer({
       if (isPlaying) {
         audioRef.current.pause()
       } else {
-        // Validate stream is available before attempting playback
         if (!src || src.trim() === '') {
           setError(t('player.errors.noSource', 'No stream available'))
           setLoading(false)
           return
         }
-        audioRef.current.play().catch(() => {
-          // Play promise rejection handled by error event listener
-        })
+        audioRef.current.play().catch(() => {})
       }
     }
   }, [isPlaying, src, t])
@@ -288,11 +265,7 @@ export default function AudioPlayer({
   }, [])
 
   const handleSeek = useCallback((newTime: number) => {
-    // Validate that newTime is finite and within valid range
-    if (!isFinite(newTime) || newTime < 0) {
-      return
-    }
-
+    if (!isFinite(newTime) || newTime < 0) return
     if (audioRef.current && audioRef.current.duration && isFinite(audioRef.current.duration)) {
       const clampedTime = Math.min(Math.max(0, newTime), audioRef.current.duration)
       audioRef.current.currentTime = clampedTime
@@ -315,14 +288,230 @@ export default function AudioPlayer({
     return `${minutes}:${seconds.toString().padStart(2, '0')}`
   }, [])
 
+  const renderPlayIcon = useCallback(() => {
+    if (loading) return <ActivityIndicator size="small" color={colors.background} />
+    if (isPlaying) return <Pause size={sizes.iconLg} fill={colors.background} color={colors.background} />
+    return <Play size={sizes.iconLg} fill={colors.background} color={colors.background} style={styles.playIcon} />
+  }, [loading, isPlaying, sizes.iconLg])
+
+  // ── Hero Layout (WatchPage - cover fills container) ──
+  if (!compact) {
+    return (
+      <View style={styles.heroContainer}>
+        <Image
+          source={{ uri: cover || '/placeholder-audio.png' }}
+          style={styles.heroCover as any}
+          resizeMode="cover"
+          accessibilityLabel={t('player.albumArt', { title })}
+        />
+
+        <View style={styles.heroScrim as any}>
+          <View style={styles.heroSpacer} />
+
+          <View style={styles.heroControlsArea}>
+            {/* Title & Artist */}
+            <View style={styles.heroTitleSection}>
+              {isLive && (
+                <GlassBadge variant="danger" size="sm">
+                  {t('player.live')}
+                </GlassBadge>
+              )}
+              <Text
+                style={[styles.heroTitle, isRTL && styles.textRTL]}
+                numberOfLines={1}
+                accessibilityRole="header"
+              >
+                {title}
+              </Text>
+              {artist && (
+                <Text
+                  style={[styles.heroArtist, isRTL && styles.textRTL]}
+                  numberOfLines={1}
+                >
+                  {artist}
+                </Text>
+              )}
+            </View>
+
+            {isMobile ? (
+              /* Mobile: controls + progress on same row */
+              <View style={[styles.mobileRow, { flexDirection }]}>
+                {!isLive && (
+                  <Pressable
+                    onPress={() => skip(-SKIP_SECONDS)}
+                    style={[styles.heroSkipBtn, { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 }]}
+                    accessibilityLabel={t('player.skipBack', { seconds: SKIP_SECONDS })}
+                    accessibilityRole="button"
+                  >
+                    <SkipBack size={sizes.iconSm} color={colors.text} />
+                  </Pressable>
+                )}
+
+                <Pressable
+                  onPress={togglePlay}
+                  disabled={loading}
+                  style={[styles.heroPlayBtn, { width: sizes.play, height: sizes.play, borderRadius: sizes.play / 2 }]}
+                  accessibilityLabel={isPlaying ? t('player.pause') : t('player.play')}
+                  accessibilityRole="button"
+                  accessibilityState={{ disabled: loading }}
+                >
+                  {renderPlayIcon()}
+                </Pressable>
+
+                {!isLive && (
+                  <Pressable
+                    onPress={() => skip(SKIP_SECONDS)}
+                    style={[styles.heroSkipBtn, { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 }]}
+                    accessibilityLabel={t('player.skipForward', { seconds: SKIP_SECONDS })}
+                    accessibilityRole="button"
+                  >
+                    <SkipForward size={sizes.iconSm} color={colors.text} />
+                  </Pressable>
+                )}
+
+                {!isLive && duration > 0 && (
+                  <View style={styles.mobileProgress}>
+                    <GlassSlider
+                      value={currentTime}
+                      min={0}
+                      max={duration}
+                      step={1}
+                      onValueChange={handleSeek}
+                      accessibilityLabel={t('player.seekBar')}
+                      testID="audio-progress-slider"
+                    />
+                  </View>
+                )}
+
+                {!isLive && duration > 0 && (
+                  <Text style={styles.mobileTimeText}>
+                    {formatTime(currentTime)}
+                  </Text>
+                )}
+              </View>
+            ) : (
+              /* Desktop/tvOS: progress bar then controls row */
+              <>
+                {!isLive && duration > 0 && (
+                  <View style={styles.progressSection}>
+                    <GlassSlider
+                      value={currentTime}
+                      min={0}
+                      max={duration}
+                      step={1}
+                      onValueChange={handleSeek}
+                      accessibilityLabel={t('player.seekBar')}
+                      testID="audio-progress-slider"
+                    />
+                    <View style={[styles.timeLabels, { flexDirection }]}>
+                      <Text style={styles.heroTimeText}>{formatTime(currentTime)}</Text>
+                      <Text style={styles.heroTimeText}>{formatTime(duration)}</Text>
+                    </View>
+                  </View>
+                )}
+
+                <View style={[styles.desktopControlsRow, { flexDirection }]}>
+                  <View style={[styles.playbackBtns, { flexDirection }]}>
+                    {!isLive && (
+                      <Pressable
+                        onPress={() => skip(-SKIP_SECONDS)}
+                        onFocus={skipBackFocus.handleFocus}
+                        onBlur={skipBackFocus.handleBlur}
+                        focusable={true}
+                        style={[
+                          styles.heroSkipBtn,
+                          { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 },
+                          skipBackFocus.isFocused && skipBackFocus.focusStyle,
+                        ]}
+                        accessibilityLabel={t('player.skipBack', { seconds: SKIP_SECONDS })}
+                        accessibilityRole="button"
+                      >
+                        <SkipBack size={sizes.iconSm} color={colors.text} />
+                      </Pressable>
+                    )}
+
+                    <Pressable
+                      onPress={togglePlay}
+                      onFocus={playFocus.handleFocus}
+                      onBlur={playFocus.handleBlur}
+                      focusable={true}
+                      disabled={loading}
+                      style={[
+                        styles.heroPlayBtn,
+                        { width: sizes.play, height: sizes.play, borderRadius: sizes.play / 2 },
+                        playFocus.isFocused && playFocus.focusStyle,
+                      ]}
+                      accessibilityLabel={isPlaying ? t('player.pause') : t('player.play')}
+                      accessibilityRole="button"
+                      accessibilityState={{ disabled: loading }}
+                    >
+                      {renderPlayIcon()}
+                    </Pressable>
+
+                    {!isLive && (
+                      <Pressable
+                        onPress={() => skip(SKIP_SECONDS)}
+                        onFocus={skipForwardFocus.handleFocus}
+                        onBlur={skipForwardFocus.handleBlur}
+                        focusable={true}
+                        style={[
+                          styles.heroSkipBtn,
+                          { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 },
+                          skipForwardFocus.isFocused && skipForwardFocus.focusStyle,
+                        ]}
+                        accessibilityLabel={t('player.skipForward', { seconds: SKIP_SECONDS })}
+                        accessibilityRole="button"
+                      >
+                        <SkipForward size={sizes.iconSm} color={colors.text} />
+                      </Pressable>
+                    )}
+                  </View>
+
+                  <VolumeControls
+                    isMuted={isMuted}
+                    volume={volume}
+                    onToggleMute={toggleMute}
+                    onVolumeChange={handleVolumeChange}
+                  />
+                </View>
+              </>
+            )}
+          </View>
+        </View>
+
+        {/* Error overlay */}
+        {error && (
+          <View style={styles.heroErrorBanner}>
+            <View style={styles.errorContent}>
+              <Text style={styles.errorText}>{error}</Text>
+              {retryCount > 0 && (
+                <Text style={styles.retryText}>
+                  {t('player.retrying', 'Retry attempt')} {retryCount}/2
+                </Text>
+              )}
+            </View>
+            <Pressable
+              onPress={() => setError(null)}
+              style={styles.closeErrorButton}
+              accessibilityLabel={t('common.close', 'Close')}
+            >
+              <Icon name="x" size="md" color={colors.error.DEFAULT} />
+            </Pressable>
+          </View>
+        )}
+      </View>
+    )
+  }
+
+  // ── Compact Layout (Widget containers) ──
   return (
-    <GlassView style={[styles.container, compact && styles.containerCompact]}>
-      <View style={[styles.mainContent, compact && styles.mainContentCompact, { flexDirection }]}>
+    <GlassView style={styles.compactContainer}>
+      <View style={[styles.compactContent, { flexDirection }]}>
         {/* Cover Art */}
-        <View style={[styles.coverArtContainer, { width: coverSize, height: coverSize }]}>
+        <View style={styles.compactCoverWrap}>
           <Image
             source={{ uri: cover || '/placeholder-audio.png' }}
-            style={styles.coverImage}
+            style={styles.compactCoverImg}
             resizeMode="cover"
             accessibilityLabel={t('player.albumArt', { title })}
           />
@@ -334,32 +523,23 @@ export default function AudioPlayer({
         </View>
 
         {/* Info Section */}
-        <View style={[styles.infoSection, compact && styles.infoSectionCompact]}>
-          {/* Title & Artist */}
-          <View style={[styles.titleSection, compact && styles.titleSectionCompact]}>
+        <View style={styles.compactInfo}>
+          <View style={styles.compactTitleWrap}>
             {isLive && (
               <GlassBadge variant="danger" size="sm" style={styles.liveBadge}>
                 {t('player.live')}
               </GlassBadge>
             )}
             <Text
-              style={[compact ? styles.titleCompact : styles.title, isRTL && styles.textRTL]}
+              style={[styles.compactTitle, isRTL && styles.textRTL]}
               numberOfLines={1}
               accessibilityRole="header"
             >
               {title}
             </Text>
-            {artist && !compact && (
-              <Text
-                style={[styles.artist, isRTL && styles.textRTL]}
-                numberOfLines={1}
-              >
-                {artist}
-              </Text>
-            )}
           </View>
 
-          {/* Progress Bar (not for live) */}
+          {/* Progress Bar */}
           {!isLive && duration > 0 && (
             <View style={styles.progressSection}>
               <GlassSlider
@@ -372,92 +552,48 @@ export default function AudioPlayer({
                 testID="audio-progress-slider"
               />
               <View style={[styles.timeLabels, { flexDirection }]}>
-                <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
-                <Text style={styles.timeText}>{formatTime(duration)}</Text>
+                <Text style={styles.compactTimeText}>{formatTime(currentTime)}</Text>
+                <Text style={styles.compactTimeText}>{formatTime(duration)}</Text>
               </View>
             </View>
           )}
 
           {/* Controls */}
-          <View style={[styles.controlsRow, compact && styles.controlsRowCompact, { flexDirection }]}>
-            {/* Playback Controls */}
-            <View style={[styles.playbackControls, { flexDirection }]}>
+          <View style={[styles.compactControls, { flexDirection }]}>
+            <View style={[styles.playbackBtns, { flexDirection }]}>
               {!isLive && (
                 <Pressable
                   onPress={() => skip(-SKIP_SECONDS)}
-                  onFocus={skipBackFocus.handleFocus}
-                  onBlur={skipBackFocus.handleBlur}
-                  focusable={true}
-                  style={[
-                    { width: skipBtnSize, height: skipBtnSize, borderRadius: skipBtnSize / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.glassLight },
-                    skipBackFocus.isFocused && skipBackFocus.focusStyle,
-                  ]}
+                  style={[styles.compactSkipBtn, { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 }]}
                   accessibilityLabel={t('player.skipBack', { seconds: SKIP_SECONDS })}
                   accessibilityRole="button"
                 >
-                  <SkipBack size={iconSmall} color={colors.text} />
+                  <SkipBack size={sizes.iconSm} color={colors.text} />
                 </Pressable>
               )}
 
               <Pressable
                 onPress={togglePlay}
-                onFocus={playFocus.handleFocus}
-                onBlur={playFocus.handleBlur}
-                focusable={true}
                 disabled={loading}
-                style={[
-                  { width: playBtnSize, height: playBtnSize, borderRadius: playBtnSize / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary.DEFAULT },
-                  playFocus.isFocused && playFocus.focusStyle,
-                ]}
+                style={[styles.compactPlayBtn, { width: sizes.play, height: sizes.play, borderRadius: sizes.play / 2 }]}
                 accessibilityLabel={isPlaying ? t('player.pause') : t('player.play')}
                 accessibilityRole="button"
                 accessibilityState={{ disabled: loading }}
               >
-                {loading ? (
-                  <ActivityIndicator size="small" color={colors.background} />
-                ) : isPlaying ? (
-                  <Pause
-                    size={iconLarge}
-                    fill={colors.background}
-                    color={colors.background}
-                  />
-                ) : (
-                  <Play
-                    size={iconLarge}
-                    fill={colors.background}
-                    color={colors.background}
-                    style={styles.playIcon}
-                  />
-                )}
+                {renderPlayIcon()}
               </Pressable>
 
               {!isLive && (
                 <Pressable
                   onPress={() => skip(SKIP_SECONDS)}
-                  onFocus={skipForwardFocus.handleFocus}
-                  onBlur={skipForwardFocus.handleBlur}
-                  focusable={true}
-                  style={[
-                    { width: skipBtnSize, height: skipBtnSize, borderRadius: skipBtnSize / 2, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.glassLight },
-                    skipForwardFocus.isFocused && skipForwardFocus.focusStyle,
-                  ]}
+                  style={[styles.compactSkipBtn, { width: sizes.skip, height: sizes.skip, borderRadius: sizes.skip / 2 }]}
                   accessibilityLabel={t('player.skipForward', { seconds: SKIP_SECONDS })}
                   accessibilityRole="button"
                 >
-                  <SkipForward size={iconSmall} color={colors.text} />
+                  <SkipForward size={sizes.iconSm} color={colors.text} />
                 </Pressable>
               )}
             </View>
-
-            {/* Volume Controls - hidden in compact mode */}
-            {!compact && (
-              <VolumeControls
-                isMuted={isMuted}
-                volume={volume}
-                onToggleMute={toggleMute}
-                onVolumeChange={handleVolumeChange}
-              />
-            )}
           </View>
         </View>
       </View>
@@ -487,34 +623,117 @@ export default function AudioPlayer({
 }
 
 const styles = StyleSheet.create({
-  container: {
+  // ── Hero Layout (WatchPage) ──
+  heroContainer: {
     flex: 1,
-    padding: spacing.md,
-    justifyContent: 'center',
+    position: 'relative' as any,
+    overflow: 'hidden',
+    borderRadius: borderRadius['2xl'],
+    backgroundColor: colors.glassLight,
   },
-  containerCompact: {
-    padding: spacing.sm,
+  heroCover: {
+    ...StyleSheet.absoluteFillObject,
   },
-  mainContent: {
-    alignItems: 'center',
+  heroScrim: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundImage:
+      'linear-gradient(to top, rgba(10, 10, 20, 0.95) 0%, rgba(10, 10, 20, 0.7) 30%, rgba(10, 10, 20, 0.15) 60%, transparent 100%)' as any,
+    padding: spacing.lg,
+  },
+  heroSpacer: {
+    flex: 1,
+  },
+  heroControlsArea: {
     gap: spacing.md,
   },
-  mainContentCompact: {
+  heroTitleSection: {
+    gap: spacing.xs,
+  },
+  heroTitle: {
+    fontSize: isTV ? 28 : 22,
+    fontWeight: '700',
+    color: colors.text,
+    textShadowColor: 'rgba(0, 0, 0, 0.6)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
+  },
+  heroArtist: {
+    fontSize: isTV ? 18 : 15,
+    color: colors.textSecondary,
+    textShadowColor: 'rgba(0, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
+  heroSkipBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  heroPlayBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.primary.DEFAULT,
+  },
+  heroTimeText: {
+    fontSize: isTV ? 14 : 12,
+    color: 'rgba(255, 255, 255, 0.7)',
+  },
+  desktopControlsRow: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+
+  // ── Mobile Hero ──
+  mobileRow: {
+    alignItems: 'center',
     gap: spacing.sm,
   },
-  coverArtContainer: {
-    width: COVER_SIZE,
-    height: COVER_SIZE,
-    borderRadius: borderRadius.lg,
+  mobileProgress: {
+    flex: 1,
+    minWidth: 60,
+  },
+  mobileTimeText: {
+    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.7)',
+    minWidth: 32,
+  },
+
+  // ── Shared ──
+  progressSection: {
+    gap: 2,
+  },
+  timeLabels: {
+    justifyContent: 'space-between',
+  },
+  playbackBtns: {
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  playIcon: {
+    marginLeft: 2,
+  },
+  textRTL: {
+    textAlign: 'right',
+  },
+
+  // ── Compact Layout (Widgets) ──
+  compactContainer: {
+    flex: 1,
+    padding: spacing.xs,
+    justifyContent: 'center',
+  },
+  compactContent: {
+    alignItems: 'center',
+    gap: spacing.xs,
+  },
+  compactCoverWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.md,
     overflow: 'hidden',
     backgroundColor: colors.glassLight,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 8,
   },
-  coverImage: {
+  compactCoverImg: {
     width: '100%',
     height: '100%',
   },
@@ -533,86 +752,63 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 8,
     backgroundColor: colors.error.DEFAULT,
-    shadowColor: colors.error,
+    shadowColor: colors.error as any,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 8,
-  },
-  infoSection: {
-    flex: 1,
-    minWidth: 0,
-    gap: spacing.md,
-  },
-  infoSectionCompact: {
-    gap: spacing.xs,
-  },
-  titleSection: {
-    gap: spacing.xs,
-  },
-  titleSectionCompact: {
-    gap: 2,
   },
   liveBadge: {
     alignSelf: 'flex-start',
     marginBottom: spacing.xs,
   },
-  title: {
-    fontSize: isTV ? 24 : 20,
-    fontWeight: 'bold',
-    color: colors.text,
+  compactInfo: {
+    flex: 1,
+    minWidth: 0,
+    gap: spacing.xs,
   },
-  titleCompact: {
+  compactTitleWrap: {
+    gap: 2,
+  },
+  compactTitle: {
     fontSize: 13,
     fontWeight: '600',
     color: colors.text,
   },
-  artist: {
-    fontSize: isTV ? 16 : 14,
-    color: colors.textSecondary,
-  },
-  textRTL: {
-    textAlign: 'right',
-  },
-  progressSection: {
-    gap: spacing.xs,
-  },
-  timeLabels: {
-    justifyContent: 'space-between',
-  },
-  timeText: {
-    fontSize: isTV ? 14 : 12,
+  compactTimeText: {
+    fontSize: 11,
     color: colors.textMuted,
   },
-  controlsRow: {
+  compactControls: {
     alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: spacing.md,
-  },
-  controlsRowCompact: {
     gap: spacing.xs,
   },
-  playbackControls: {
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  skipButton: {
-    width: SKIP_BUTTON_SIZE,
-    height: SKIP_BUTTON_SIZE,
-    borderRadius: SKIP_BUTTON_SIZE / 2,
+  compactSkipBtn: {
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.glassLight,
   },
-  playButton: {
-    width: PLAY_BUTTON_SIZE,
-    height: PLAY_BUTTON_SIZE,
-    borderRadius: PLAY_BUTTON_SIZE / 2,
+  compactPlayBtn: {
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.primary.DEFAULT,
   },
-  playIcon: {
-    marginLeft: 2,
+
+  // ── Error ──
+  heroErrorBanner: {
+    position: 'absolute',
+    bottom: spacing.sm,
+    left: spacing.sm,
+    right: spacing.sm,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderColor: colors.error.DEFAULT,
+    borderWidth: 1,
+    borderRadius: borderRadius.md,
+    padding: spacing.sm,
+    gap: spacing.sm,
+    zIndex: 20,
   },
   errorBanner: {
     flexDirection: 'row',
@@ -622,8 +818,8 @@ const styles = StyleSheet.create({
     borderColor: colors.error.DEFAULT,
     borderWidth: 1,
     borderRadius: borderRadius.md,
-    padding: spacing.md,
-    marginTop: spacing.md,
+    padding: spacing.sm,
+    marginTop: spacing.sm,
     gap: spacing.sm,
   },
   errorContent: {

@@ -947,6 +947,9 @@ export const createAdminApi = (authStore: AuthStore) => {
 
   toggleWidgetMinimize: (widgetId: string, isMinimized: boolean): Promise<{ message: string }> =>
     adminApi.post(`/widgets/${widgetId}/minimize`, null, { params: { is_minimized: isMinimized } }),
+
+  bulkSoftDelete: (widgetIds: string[]): Promise<{ deleted_count: number }> =>
+    adminApi.post('/widgets/bulk-delete', { widget_ids: widgetIds }),
 };
 
   // ============================================

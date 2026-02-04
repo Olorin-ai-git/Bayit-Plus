@@ -13,6 +13,8 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
+from pymongo import IndexModel
+
 from beanie import Document
 from pydantic import BaseModel, Field
 
@@ -116,6 +118,10 @@ class Widget(Document):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
+    # Soft delete
+    is_deleted: bool = False
+    deleted_at: Optional[datetime] = None
+
     class Settings:
         name = "widgets"
         indexes = [
@@ -126,6 +132,10 @@ class Widget(Document):
             ("user_id", "is_active"),
             "created_at",
             "order",
+            IndexModel(
+                [("is_deleted", 1), ("user_id", 1), ("is_active", 1)],
+                name="soft_delete_user_active",
+            ),
         ]
 
 
@@ -178,6 +188,12 @@ class WidgetPositionUpdate(BaseModel):
     y: float
     width: Optional[int] = None
     height: Optional[int] = None
+
+
+class WidgetBulkDeleteRequest(BaseModel):
+    """Request schema for bulk soft-deleting personal widgets"""
+
+    widget_ids: List[str]
 
 
 class WidgetResponse(BaseModel):

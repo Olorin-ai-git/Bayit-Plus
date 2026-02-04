@@ -12,6 +12,10 @@ export function useWidgetsPage() {
   const [error, setError] = useState<string | null>(null);
   const [showWidgetForm, setShowWidgetForm] = useState(false);
 
+  // Selection mode state
+  const [selectMode, setSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
   // Get local state to check which widgets are hidden
   const { localState, showWidget, closeWidget, updatePosition, toggleMinimize } = useWidgetStore();
 
@@ -125,6 +129,46 @@ export function useWidgetsPage() {
     }
   };
 
+  // Selection mode handlers
+  const toggleSelectMode = useCallback(() => {
+    setSelectMode((prev) => {
+      if (prev) {
+        setSelectedIds(new Set());
+      }
+      return !prev;
+    });
+  }, []);
+
+  const toggleSelected = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const selectAll = useCallback(() => {
+    setSelectedIds(new Set(widgets.map((w) => w.id)));
+  }, [widgets]);
+
+  const handleBulkDelete = useCallback(async () => {
+    if (selectedIds.size === 0) return;
+    try {
+      await adminWidgetsService.bulkSoftDelete(Array.from(selectedIds));
+      setWidgets((prev) => prev.filter((w) => !selectedIds.has(w.id)));
+      setSelectMode(false);
+      setSelectedIds(new Set());
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : t('common.error');
+      logger.error(msg, 'useWidgetsPage', err);
+      setError(msg);
+    }
+  }, [selectedIds, t]);
+
   useEffect(() => {
     loadWidgets();
   }, [loadWidgets]);
@@ -147,5 +191,11 @@ export function useWidgetsPage() {
     handleSaveWidget,
     handleDelete,
     loadWidgets,
+    selectMode,
+    selectedIds,
+    toggleSelectMode,
+    toggleSelected,
+    selectAll,
+    handleBulkDelete,
   };
 }

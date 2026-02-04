@@ -4172,7 +4172,25 @@
     "loadingShows": "Caricamento podcast...",
     "loadError": "Impossibile caricare i podcast. Controlla la tua connessione.",
     "loading": "Caricamento podcast...",
-    "noPodcastsFound": "Nessun podcast trovato"
+    "noPodcastsFound": "Nessun podcast trovato",
+    "addPodcast": {
+      "title": "Aggiungi Podcast",
+      "urlPlaceholder": "Incolla l'URL del podcast qui",
+      "providerRSS": "RSS URL",
+      "providerApple": "Apple Podcasts",
+      "providerSpotify": "Spotify",
+      "resolve": "Risolvi",
+      "resolving": "Risoluzione...",
+      "preview": "Anteprima",
+      "author": "Autore",
+      "episodesFound": "{{count}} episodi trovati",
+      "addPodcast": "Aggiungi Podcast",
+      "adding": "Aggiunta...",
+      "success": "Podcast aggiunto con successo",
+      "errorResolve": "Impossibile risolvere questo URL",
+      "errorAdd": "Impossibile aggiungere il podcast",
+      "errorDuplicate": "Questo podcast esiste già"
+    }
   },
   "profile": {
     "complimentaryPremium": "ACCESSO PREMIUM GRATUITO",
@@ -5649,6 +5667,10 @@
     "hidden": "Nascosto",
     "addToCollection": "Aggiungi ai miei widget",
     "removeFromCollection": "Rimuovi dai miei widget",
+    "addToMyWidgets": "Aggiungi ai miei widget",
+    "removeFromMyWidgets": "Rimuovi dai miei widget",
+    "widgetAdded": "Widget aggiunto",
+    "widgetRemoved": "Widget rimosso",
     "contentTypes": {
       "liveChannel": "Canale in diretta",
       "iframe": "Contenuto web",
@@ -5708,7 +5730,13 @@
     },
     "delete": "Elimina",
     "hide": "Nascondi",
-    "resetPosition": "Ripristina posizione"
+    "resetPosition": "Ripristina posizione",
+    "select": "Seleziona",
+    "selectAll": "Seleziona tutto",
+    "cancelSelection": "Annulla",
+    "deleteSelected": "Elimina",
+    "bulkDeleteConfirm": "Eliminare i widget selezionati?",
+    "bulkDeleted": "Widget eliminati"
   },
   "trending": {
     "title": "Tendenze in Israele",

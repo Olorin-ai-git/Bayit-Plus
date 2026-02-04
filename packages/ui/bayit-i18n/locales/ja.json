@@ -4326,7 +4326,25 @@
     "loadingShows": "ポッドキャスト番組を読み込み中...",
     "loadError": "ポッドキャストの読み込みに失敗しました。接続を確認してください。",
     "loading": "ポッドキャストを読み込み中...",
-    "noPodcastsFound": "ポッドキャストが見つかりません"
+    "noPodcastsFound": "ポッドキャストが見つかりません",
+    "addPodcast": {
+      "title": "ポッドキャストを追加",
+      "urlPlaceholder": "ポッドキャストのURLをここに貼り付け",
+      "providerRSS": "RSS URL",
+      "providerApple": "Apple Podcasts",
+      "providerSpotify": "Spotify",
+      "resolve": "解決",
+      "resolving": "解決中...",
+      "preview": "プレビュー",
+      "author": "著者",
+      "episodesFound": "{{count}}件のエピソードが見つかりました",
+      "addPodcast": "ポッドキャストを追加",
+      "adding": "追加中...",
+      "success": "ポッドキャストが正常に追加されました",
+      "errorResolve": "このURLを解決できませんでした",
+      "errorAdd": "ポッドキャストを追加できませんでした",
+      "errorDuplicate": "このポッドキャストは既に存在します"
+    }
   },
   "profile": {
     "title": "プロフィール",
@@ -6105,6 +6123,10 @@
     "hidden": "非表示",
     "addToCollection": "マイウィジェットに追加",
     "removeFromCollection": "マイウィジェットから削除",
+    "addToMyWidgets": "マイウィジェットに追加",
+    "removeFromMyWidgets": "マイウィジェットから削除",
+    "widgetAdded": "ウィジェットが追加されました",
+    "widgetRemoved": "ウィジェットが削除されました",
     "contentTypes": {
       "liveChannel": "ライブチャンネル",
       "iframe": "Webコンテンツ",
@@ -6164,7 +6186,13 @@
     },
     "delete": "削除",
     "hide": "非表示",
-    "resetPosition": "位置をリセット"
+    "resetPosition": "位置をリセット",
+    "select": "選択",
+    "selectAll": "すべて選択",
+    "cancelSelection": "キャンセル",
+    "deleteSelected": "削除",
+    "bulkDeleteConfirm": "選択したウィジェットを削除しますか？",
+    "bulkDeleted": "ウィジェットが削除されました"
   },
   "trending": {
     "title": "イスラエルのトレンド",

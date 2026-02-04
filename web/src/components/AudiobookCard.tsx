@@ -12,6 +12,7 @@ import { colors } from '@olorin/design-tokens'
 import { GlassCard } from '@bayit/shared/ui'
 import type { Audiobook } from '@/types/audiobook'
 import { AudibleBadge } from './audiobook/AudibleBadge'
+import WidgetToggleButton from './content/WidgetToggleButton'
 import { Icon } from '@olorin/shared-icons/web'
 
 const styles = StyleSheet.create({
@@ -50,6 +51,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  widgetButtonContainer: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 10,
   },
   title: {
     fontSize: 16,
@@ -130,6 +137,18 @@ export function AudiobookCard({ audiobook, onAudiblePlay }: AudiobookCardProps) 
 
           {/* Audible Badge */}
           {isAudible && <AudibleBadge variant="compact" />}
+
+          {/* Widget Toggle - Show on hover */}
+          {isHovered && (
+            <View style={styles.widgetButtonContainer}>
+              <WidgetToggleButton
+                contentType="audiobook"
+                contentId={audiobook.id}
+                title={audiobook.title}
+                coverUrl={audiobook.thumbnail}
+              />
+            </View>
+          )}
         </GlassCard>
 
         <Text

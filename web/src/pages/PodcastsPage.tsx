@@ -1,10 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, Image, ScrollView } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { useResponsive } from '@/hooks/useResponsive';
-import { Podcast, Headphones, Clock, Search, X, RefreshCw } from 'lucide-react';
+import { Podcast, Headphones, Clock, Search, X, RefreshCw, Plus } from 'lucide-react';
 import { podcastService } from '@/services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -19,8 +19,11 @@ import {
   GlassEmptyState,
 } from '@bayit/shared/ui';
 import { SubtitleFlags } from '@bayit/shared/components/SubtitleFlags';
+import WidgetToggleButton from '@/components/content/WidgetToggleButton';
+import { WidgetToggleProvider } from '@/contexts/WidgetToggleContext';
 import logger from '@/utils/logger';
 import PageLoading from '@/components/common/PageLoading';
+import AddPodcastModal from '@/components/podcasts/AddPodcastModal';
 
 interface Category {
   id: string;
@@ -67,6 +70,18 @@ function ShowCard({ show, episodesLabel, isRTL }: { show: Show; episodesLabel: s
                 size="small"
               />
             )}
+
+            {/* Widget Toggle - Show on hover */}
+            {isHovered && (
+              <View style={styles.widgetButtonContainer}>
+                <WidgetToggleButton
+                  contentType="podcast"
+                  contentId={show.id}
+                  title={show.title}
+                  coverUrl={show.cover}
+                />
+              </View>
+            )}
           </GlassCard>
           <Text style={[styles.showTitle, isHovered && styles.showTitleHovered]} numberOfLines={1}>
             {show.title}
@@ -108,11 +123,20 @@ export default function PodcastsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const episodesLabel = t('podcasts.episodes');
 
   const numColumns = responsive.getColumns();
+
+  // Collect items for widget toggle batch-check
+  const widgetItems = useMemo(() => {
+    return shows.map((show) => ({
+      content_type: 'podcast',
+      content_id: show.id,
+    }));
+  }, [shows]);
 
   // Filter shows by search query and category
   const filteredShows = useMemo(() => {
@@ -224,6 +248,7 @@ export default function PodcastsPage() {
   }
 
   return (
+    <WidgetToggleProvider items={widgetItems}>
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
@@ -234,13 +259,21 @@ export default function PodcastsPage() {
           isRTL={isRTL}
           style={styles.pageHeader}
         />
-        <Pressable
-          onPress={syncPodcasts}
-          disabled={syncing}
-          style={[styles.refreshButton, syncing && styles.refreshButtonDisabled]}
-        >
-          <RefreshCw size={20} color={colors.text} style={syncing ? styles.spinning : undefined} />
-        </Pressable>
+        <View style={styles.headerActions}>
+          <Pressable
+            onPress={() => setShowAddModal(true)}
+            style={styles.addButton}
+          >
+            <Plus size={20} color={colors.text} />
+          </Pressable>
+          <Pressable
+            onPress={syncPodcasts}
+            disabled={syncing}
+            style={[styles.refreshButton, syncing && styles.refreshButtonDisabled]}
+          >
+            <RefreshCw size={20} color={colors.text} style={syncing ? styles.spinning : undefined} />
+          </Pressable>
+        </View>
       </View>
 
       {/* Search Input */}
@@ -340,7 +373,13 @@ export default function PodcastsPage() {
           />
         }
       />
+      <AddPodcastModal
+        visible={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={() => { setShowAddModal(false); loadShows(); }}
+      />
     </View>
+    </WidgetToggleProvider>
   );
 }
 
@@ -401,6 +440,12 @@ const styles = StyleSheet.create({
   coverContainerHovered: {
     // @ts-ignore
     boxShadow: `0 8px 32px rgba(16, 185, 129, 0.3)`,
+  },
+  widgetButtonContainer: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    zIndex: 10,
   },
   cover: {
     width: '100%',
@@ -484,7 +529,22 @@ const styles = StyleSheet.create({
     backgroundColor: colors.glass,
     borderRadius: borderRadius.lg,
   },
-  // Refresh button styles
+  // Header action buttons
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+  },
+  addButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+  },
   refreshButton: {
     width: 48,
     height: 48,

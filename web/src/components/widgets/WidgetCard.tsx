@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
-import { Trash2, Eye, EyeOff, RotateCcw, Tv, Film, Radio, Mic, Globe, Zap, Target } from 'lucide-react';
+import { View, Text, Pressable, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { Trash2, Eye, EyeOff, RotateCcw, Check, Tv, Film, Radio, Mic, Globe, Zap, Target } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -13,6 +13,9 @@ interface WidgetCardProps {
   isHidden: boolean;
   onToggleVisibility: (id: string) => void;
   onResetPosition: (id: string) => void;
+  selectMode?: boolean;
+  isSelected?: boolean;
+  onToggleSelect?: (id: string) => void;
 }
 
 function getContentTypeLabel(contentType: string | undefined, t: any): string {
@@ -64,13 +67,23 @@ export default function WidgetCard({
   isHidden,
   onToggleVisibility,
   onResetPosition,
+  selectMode = false,
+  isSelected = false,
+  onToggleSelect,
 }: WidgetCardProps) {
   const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
   const [imageLoading, setImageLoading] = useState(!!widget.cover_url);
 
+  const handlePress = () => {
+    if (selectMode && onToggleSelect) {
+      onToggleSelect(widget.id);
+    }
+  };
+
   return (
-    <View
+    <Pressable
+      onPress={selectMode ? handlePress : undefined}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={styles.container}
@@ -80,8 +93,22 @@ export default function WidgetCard({
           styles.card,
           isHovered && styles.cardHovered,
           isHidden && styles.cardHidden,
+          selectMode && isSelected && styles.cardSelected,
         ]}
       >
+        {selectMode && (
+          <Pressable
+            onPress={handlePress}
+            style={[
+              styles.checkbox,
+              isSelected && styles.checkboxSelected,
+            ]}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: isSelected }}
+          >
+            {isSelected && <Check size={14} color={colors.text} />}
+          </Pressable>
+        )}
         <View style={styles.posterContainer}>
           {widget.cover_url ? (
             <>
@@ -133,7 +160,7 @@ export default function WidgetCard({
           </View>
         </View>
 
-        {isHovered && (
+        {isHovered && !selectMode && (
           <View style={styles.actionButtons}>
             <GlassButton
               title=""
@@ -174,7 +201,7 @@ export default function WidgetCard({
           </View>
         )}
       </GlassCard>
-    </View>
+    </Pressable>
   );
 }
 
@@ -307,5 +334,23 @@ const styles = StyleSheet.create({
   },
   visibilityButtonVisible: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: colors.glassBorder,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  checkboxSelected: {
+    backgroundColor: colors.primary.DEFAULT,
+    borderColor: colors.primary.DEFAULT,
+  },
+  cardSelected: {
+    borderColor: colors.primary.DEFAULT,
+    borderWidth: 2,
   },
 });

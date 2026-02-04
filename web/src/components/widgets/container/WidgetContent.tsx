@@ -113,6 +113,7 @@ export function WidgetContent({
               title={widget.title}
               cover={widget.cover_url || widget.icon || undefined}
               isLive={false}
+              compact
             />
           </div>
         );
@@ -132,6 +133,7 @@ export function WidgetContent({
               title={widget.title}
               cover={widget.cover_url || widget.icon || undefined}
               isLive={true}
+              compact
             />
           </div>
         );

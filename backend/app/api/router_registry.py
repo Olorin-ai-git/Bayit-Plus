@@ -69,7 +69,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 websocket_chess, websocket_dm,
                                 websocket_live_dubbing,
                                 websocket_live_subtitles, websocket_live_trivia,
-                                widgets, youngsters, zman)
+                                widget_toggle, widgets, youngsters, zman)
     from app.api.routes.admin.recordings import \
         router as admin_recordings_router
     # Quiz and rewards routes
@@ -254,6 +254,11 @@ def register_all_routers(app: FastAPI) -> None:
     # Feature Routes
     # ============================================
     app.include_router(widgets.router, prefix=f"{prefix}/widgets", tags=["widgets"])
+    app.include_router(
+        widget_toggle.router,
+        prefix=prefix,
+        tags=["widget-toggle"],
+    )
     app.include_router(
         user_system_widgets.router,
         prefix=f"{prefix}/widgets/system",

@@ -25,7 +25,7 @@ const carouselLogger = logger.scope('UI:GlassCarousel');
 
 type ContentType = 'vod' | 'live' | 'podcast' | 'radio' | 'movie' | 'series' | 'channel';
 
-interface CarouselItem {
+export interface CarouselItem {
   id: string;
   title: string;
   subtitle?: string;
@@ -54,6 +54,7 @@ interface GlassCarouselProps {
   showActions?: boolean;
   favoritesService?: FavoritesService;
   watchlistService?: WatchlistService;
+  renderItemActions?: (item: CarouselItem) => React.ReactNode;
 }
 
 export const GlassCarousel: React.FC<GlassCarouselProps> = ({
@@ -64,6 +65,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
   showActions = true,
   favoritesService,
   watchlistService,
+  renderItemActions,
 }) => {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
@@ -277,15 +279,15 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               )}
 
               {/* Action Buttons - Top corner opposite to badge */}
-              {showActions && currentItem.contentType && (favoritesService || watchlistService) && (
+              {((showActions && currentItem.contentType && (favoritesService || watchlistService)) || renderItemActions) && (
                 <View
                   style={[styles.actionButtons, isRTL ? styles.actionButtonsLeft : styles.actionButtonsRight]}
                   // @ts-ignore - Web only onClick
                   onClick={(e: any) => { e.stopPropagation(); e.preventDefault(); }}
                 >
-                  {favoritesService && (
+                  {showActions && currentItem.contentType && favoritesService && (
                     <Pressable
-                      onPress={(e) => handleFavoriteToggle(currentItem, e)}
+                      onPress={(e: any) => handleFavoriteToggle(currentItem, e)}
                       disabled={actionLoading[`fav-${currentItem.id}`]}
                       style={[
                         styles.actionButton,
@@ -299,9 +301,9 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                       />
                     </Pressable>
                   )}
-                  {watchlistService && (
+                  {showActions && currentItem.contentType && watchlistService && (
                     <Pressable
-                      onPress={(e) => handleWatchlistToggle(currentItem, e)}
+                      onPress={(e: any) => handleWatchlistToggle(currentItem, e)}
                       disabled={actionLoading[`wl-${currentItem.id}`]}
                       style={[
                         styles.actionButton,
@@ -315,6 +317,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                       />
                     </Pressable>
                   )}
+                  {renderItemActions && renderItemActions(currentItem)}
                 </View>
               )}
 

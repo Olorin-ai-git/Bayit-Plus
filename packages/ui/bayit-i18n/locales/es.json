@@ -3457,6 +3457,10 @@
     "hidden": "Oculto",
     "addToCollection": "Añadir a Mis Widgets",
     "removeFromCollection": "Eliminar de Mis Widgets",
+    "addToMyWidgets": "Agregar a mis widgets",
+    "removeFromMyWidgets": "Eliminar de mis widgets",
+    "widgetAdded": "Widget agregado",
+    "widgetRemoved": "Widget eliminado",
     "contentTypes": {
       "liveChannel": "Canal en Vivo",
       "iframe": "Contenido Web",
@@ -3530,7 +3534,13 @@
     "allowedDomains": "Dominios permitidos:",
     "changeUrl": "Cambiar URL",
     "minimize": "Minimizar",
-    "expandWidget": "Expandir widget"
+    "expandWidget": "Expandir widget",
+    "select": "Seleccionar",
+    "selectAll": "Seleccionar todo",
+    "cancelSelection": "Cancelar",
+    "deleteSelected": "Eliminar",
+    "bulkDeleteConfirm": "Eliminar widgets seleccionados?",
+    "bulkDeleted": "Widgets eliminados"
   },
   "liveCategories": {
     "educational": "Educativo"
@@ -5107,7 +5117,25 @@
     "loadingShows": "Cargando programas de podcast...",
     "loadError": "Error al cargar podcasts. Por favor, verifica tu conexión.",
     "loading": "Cargando podcasts...",
-    "noPodcastsFound": "No se encontraron podcasts"
+    "noPodcastsFound": "No se encontraron podcasts",
+    "addPodcast": {
+      "title": "Agregar Podcast",
+      "urlPlaceholder": "Pega la URL del podcast aqui",
+      "providerRSS": "RSS URL",
+      "providerApple": "Apple Podcasts",
+      "providerSpotify": "Spotify",
+      "resolve": "Resolver",
+      "resolving": "Resolviendo...",
+      "preview": "Vista previa",
+      "author": "Autor",
+      "episodesFound": "{{count}} episodios encontrados",
+      "addPodcast": "Agregar Podcast",
+      "adding": "Agregando...",
+      "success": "Podcast agregado exitosamente",
+      "errorResolve": "No se pudo resolver esta URL",
+      "errorAdd": "No se pudo agregar el podcast",
+      "errorDuplicate": "Este podcast ya existe"
+    }
   },
   "profile": {
     "title": "Mi Perfil",

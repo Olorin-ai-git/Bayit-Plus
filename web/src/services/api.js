@@ -358,6 +358,8 @@ const apiPodcastService = {
   getCategories: () => api.get('/podcasts/categories'),
   getFeatured: () => api.get('/podcasts', { params: { is_featured: true, page_size: 20 } }),
   syncPodcasts: () => api.post('/podcasts/sync'),
+  resolveUrl: (url, provider) => api.post('/podcasts/resolve-url', { url, provider }),
+  addFromUrl: (rssUrl, overrides = {}) => api.post('/podcasts/add-from-url', { rss_url: rssUrl, ...overrides }),
 }
 
 // Audiobook Service (API)
@@ -709,6 +711,14 @@ const apiRewardsService = {
   getBadge: (badgeId) => api.get(`/rewards/badges/${badgeId}`),
 }
 
+// Widget Toggle Service (API)
+const apiWidgetService = {
+  toggle: (data) => api.post('/widgets/toggle', data),
+  checkBatch: (items) => api.post('/widgets/check-batch', { items }),
+  getPersonalWidgets: () => api.get('/widgets/personal'),
+  bulkSoftDelete: (widgetIds) => api.post('/widgets/bulk-delete', { widget_ids: widgetIds }),
+}
+
 // Watch Party Service (API)
 const apiPartyService = {
   create: (data) => api.post('/party/create', data),
@@ -762,5 +772,6 @@ export const youngstersService = apiYoungstersService // No demo mode - requires
 export const judaismService = isDemo ? demoJudaismService : apiJudaismService
 export const quizService = apiQuizService // No demo mode - requires kids profile auth
 export const rewardsService = apiRewardsService // No demo mode - requires kids profile auth
+export const widgetService = apiWidgetService // No demo mode - requires auth
 
 export default api

@@ -14,7 +14,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.user import User
 from app.models.user_system_widget import UserSystemWidget
-from app.models.widget import (Widget, WidgetContent, WidgetCreateRequest,
+from app.models.widget import (Widget, WidgetBulkDeleteRequest,
+                               WidgetContent, WidgetCreateRequest,
                                WidgetPosition, WidgetPositionUpdate,
                                WidgetType, WidgetUpdateRequest)
 
@@ -36,9 +37,12 @@ def _widget_dict(w: Widget) -> dict:
             "podcast_id": w.content.podcast_id,
             "content_id": w.content.content_id,
             "station_id": w.content.station_id,
+            "audiobook_id": w.content.audiobook_id,
             "iframe_url": w.content.iframe_url,
             "iframe_title": w.content.iframe_title,
+            "component_name": w.content.component_name,
         },
+        "cover_url": w.cover_url,
         "position": {
             "x": w.position.x,
             "y": w.position.y,
@@ -86,12 +90,13 @@ async def get_my_widgets(
         # Unauthenticated users don't see any widgets
         return {"items": [], "total": 0}
 
-    # Get personal widgets for this user
+    # Get personal widgets for this user (exclude soft-deleted)
     personal_widgets = (
         await Widget.find(
             Widget.type == WidgetType.PERSONAL,
             Widget.user_id == user_id,
             Widget.is_active == True,
+            Widget.is_deleted != True,
         )
         .sort(Widget.order)
         .to_list()
@@ -290,9 +295,50 @@ async def delete_personal_widget(
         # Users cannot delete system widgets
         raise HTTPException(status_code=403, detail="Cannot delete system widgets")
 
-    await widget.delete()
+    # Soft delete: mark as deleted instead of removing
+    widget.is_deleted = True
+    widget.deleted_at = datetime.utcnow()
+    widget.updated_at = datetime.utcnow()
+    await widget.save()
 
     return {"message": "Widget deleted"}
+
+
+@router.post("/bulk-delete")
+async def bulk_delete_personal_widgets(
+    data: WidgetBulkDeleteRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """Bulk soft-delete multiple personal widgets (owner only)."""
+    user_id = str(current_user.id)
+    now = datetime.utcnow()
+    deleted_count = 0
+
+    widget_object_ids = []
+    for wid in data.widget_ids:
+        try:
+            widget_object_ids.append(ObjectId(wid))
+        except Exception:
+            continue
+
+    if not widget_object_ids:
+        return {"deleted_count": 0}
+
+    widgets = await Widget.find(
+        {"_id": {"$in": widget_object_ids}},
+        Widget.type == WidgetType.PERSONAL,
+        Widget.user_id == user_id,
+        Widget.is_deleted != True,
+    ).to_list()
+
+    for widget in widgets:
+        widget.is_deleted = True
+        widget.deleted_at = now
+        widget.updated_at = now
+        await widget.save()
+        deleted_count += 1
+
+    return {"deleted_count": deleted_count}
 
 
 @router.post("/{widget_id}/position")

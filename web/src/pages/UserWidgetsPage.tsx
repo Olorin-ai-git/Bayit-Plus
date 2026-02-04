@@ -40,6 +40,12 @@ export default function UserWidgetsPage() {
     handleSaveWidget,
     handleDelete,
     loadWidgets,
+    selectMode,
+    selectedIds,
+    toggleSelectMode,
+    toggleSelected,
+    selectAll,
+    handleBulkDelete,
   } = useWidgetsPage();
 
   const numColumns = width >= 1280 ? 4 : width >= 1024 ? 3 : width >= 768 ? 2 : 1;
@@ -54,6 +60,11 @@ export default function UserWidgetsPage() {
       <WidgetsPageHeader
         widgetCount={widgets.length}
         onCreateWidget={handleCreateWidget}
+        selectMode={selectMode}
+        onToggleSelectMode={toggleSelectMode}
+        selectedCount={selectedIds.size}
+        onBulkDelete={handleBulkDelete}
+        onSelectAll={selectAll}
       />
 
       {/* Error Message */}
@@ -113,6 +124,9 @@ export default function UserWidgetsPage() {
                 isHidden={isWidgetHidden(widget.id)}
                 onToggleVisibility={handleToggleVisibility}
                 onResetPosition={handleResetPosition}
+                selectMode={selectMode}
+                isSelected={selectedIds.has(widget.id)}
+                onToggleSelect={toggleSelected}
               />
             </View>
           ))}

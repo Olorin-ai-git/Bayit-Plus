@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Play, Star, Bookmark } from 'lucide-react';
+import { Play } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassCard, GlassBadge, GlassModal, GlassButton } from '@bayit/shared/ui';
 import { GlassPlaceholder } from '@olorin/glass-ui';
@@ -10,6 +10,7 @@ import type { ContentType as GlassContentType } from '@olorin/design-tokens';
 import { SubtitleFlags, ContentBadges } from '@bayit/shared';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import AIEnhancedBadge from './AIEnhancedBadge';
+import ContentCardActions from './ContentCardActions';
 import { useDirection } from '@/hooks/useDirection';
 import { useResponsive } from '@/hooks/useResponsive';
 import { favoritesService, watchlistService } from '@/services/api';
@@ -149,8 +150,6 @@ export default function ContentCard({ content, showProgress = false, showActions
   const [inWatchlist, setInWatchlist] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
-  const [favoriteHovered, setFavoriteHovered] = useState(false);
-  const [watchlistHovered, setWatchlistHovered] = useState(false);
 
   // Check if this is a scraped article/business that should open in modal
   // Any content with city+state (location-based) or article/event type should open in modal
@@ -337,74 +336,20 @@ export default function ContentCard({ content, showProgress = false, showActions
               }
             })()}
 
-            {/* Action Buttons - Show on hover (larger on mobile) */}
+            {/* Action Buttons - Show on hover */}
             {showActions && isHovered && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: spacing.sm,
-                  right: isRTL ? 'auto' : spacing.sm,
-                  left: isRTL ? spacing.sm : 'auto',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  gap: isMobile ? spacing.sm : spacing.xs,
-                  zIndex: 10
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <button
-                  onClick={handleFavoriteToggle}
-                  onMouseEnter={() => setFavoriteHovered(true)}
-                  onMouseLeave={() => setFavoriteHovered(false)}
-                  disabled={favoriteLoading}
-                  style={{
-                    width: isMobile ? 56 : 32,
-                    height: isMobile ? 56 : 32,
-                    borderRadius: isMobile ? 28 : 16,
-                    backgroundColor: isFavorite ? 'rgba(255, 255, 255, 0.15)' : favoriteHovered ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.6)',
-                    border: 'none',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backdropFilter: 'blur(8px)',
-                    transition: 'all 0.2s ease',
-                    transform: favoriteHovered ? 'scale(1.1)' : 'scale(1)',
-                  }}
-                >
-                  <Star
-                    size={isMobile ? 24 : 16}
-                    color={isFavorite ? colors.warning : colors.text}
-                    fill={isFavorite ? colors.warning : 'transparent'}
-                  />
-                </button>
-                <button
-                  onClick={handleWatchlistToggle}
-                  onMouseEnter={() => setWatchlistHovered(true)}
-                  onMouseLeave={() => setWatchlistHovered(false)}
-                  disabled={watchlistLoading}
-                  style={{
-                    width: isMobile ? 56 : 32,
-                    height: isMobile ? 56 : 32,
-                    borderRadius: isMobile ? 28 : 16,
-                    backgroundColor: inWatchlist ? 'rgba(255, 255, 255, 0.15)' : watchlistHovered ? 'rgba(255, 255, 255, 0.25)' : 'rgba(0, 0, 0, 0.6)',
-                    border: 'none',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    backdropFilter: 'blur(8px)',
-                    transition: 'all 0.2s ease',
-                    transform: watchlistHovered ? 'scale(1.1)' : 'scale(1)',
-                  }}
-                >
-                  <Bookmark
-                    size={isMobile ? 24 : 16}
-                    color={inWatchlist ? colors.primary : colors.text}
-                    fill={inWatchlist ? colors.primary : 'transparent'}
-                  />
-                </button>
-              </div>
+              <ContentCardActions
+                contentId={content.id}
+                contentTitle={content.title}
+                contentType={content.type}
+                contentThumbnail={content.thumbnail}
+                isFavorite={isFavorite}
+                inWatchlist={inWatchlist}
+                favoriteLoading={favoriteLoading}
+                watchlistLoading={watchlistLoading}
+                onToggleFavorite={handleFavoriteToggle}
+                onToggleWatchlist={handleWatchlistToggle}
+              />
             )}
 
             {/* Play Overlay - Hide for articles (larger on mobile) */}

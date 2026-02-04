@@ -291,6 +291,7 @@ export function Maariv103PlaylistWidget({
             artist="103FM"
             cover={selectedEpisode.thumbnail}
             isLive={false}
+            compact
             onEnded={() => setSelectedEpisode(null)}
           />
         </View>

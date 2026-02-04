@@ -3,7 +3,7 @@
  * Main entry point for audiobook browsing and discovery
  */
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { View, StyleSheet, ScrollView, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useDirection } from '@/hooks/useDirection'
@@ -16,6 +16,7 @@ import {
   GlassPageHeader,
   GlassEmptyState,
 } from '@bayit/shared/ui'
+import { WidgetToggleProvider } from '@/contexts/WidgetToggleContext'
 import logger from '@/utils/logger'
 import PageLoading from '@/components/common/PageLoading'
 import type { Audiobook, AudiobookFilters } from '@/types/audiobook'
@@ -76,6 +77,14 @@ export default function AudiobooksPage() {
     )
   }, [audiobooks, searchQuery])
 
+  // Collect items for widget toggle batch-check
+  const widgetItems = useMemo(() => {
+    return audiobooks.map((book) => ({
+      content_type: 'audiobook',
+      content_id: book.id,
+    }))
+  }, [audiobooks])
+
   // Load audiobooks on mount and filter change
   useEffect(() => {
     loadAudiobooks()
@@ -121,6 +130,7 @@ export default function AudiobooksPage() {
   }
 
   return (
+    <WidgetToggleProvider items={widgetItems}>
     <GlassView style={styles.container}>
       <ScrollView scrollEnabled={true} showsVerticalScrollIndicator={false}>
         {/* Header */}
@@ -184,5 +194,6 @@ export default function AudiobooksPage() {
         )}
       </ScrollView>
     </GlassView>
+    </WidgetToggleProvider>
   )
 }

@@ -4012,7 +4012,25 @@
     "loadingShows": "पॉडकास्ट शो लोड हो रहे हैं...",
     "loadError": "Podcast लोड करने में विफल। कृपया अपना कनेक्शन जाँचें।",
     "loading": "Podcast लोड हो रहे हैं...",
-    "noPodcastsFound": "कोई Podcast नहीं मिला"
+    "noPodcastsFound": "कोई Podcast नहीं मिला",
+    "addPodcast": {
+      "title": "Podcast जोड़ें",
+      "urlPlaceholder": "Podcast URL यहाँ पेस्ट करें",
+      "providerRSS": "RSS URL",
+      "providerApple": "Apple Podcasts",
+      "providerSpotify": "Spotify",
+      "resolve": "खोजें",
+      "resolving": "खोज रहे हैं...",
+      "preview": "पूर्वावलोकन",
+      "author": "लेखक",
+      "episodesFound": "{{count}} एपिसोड मिले",
+      "addPodcast": "Podcast जोड़ें",
+      "adding": "जोड़ रहे हैं...",
+      "success": "Podcast सफलतापूर्वक जोड़ा गया",
+      "errorResolve": "इस URL को हल नहीं किया जा सका",
+      "errorAdd": "Podcast जोड़ा नहीं जा सका",
+      "errorDuplicate": "यह Podcast पहले से मौजूद है"
+    }
   },
   "profile": {
     "title": "मेरी प्रोफ़ाइल",
@@ -5338,6 +5356,10 @@
     "hidden": "छिपा हुआ",
     "addToCollection": "मेरे विजेट में जोड़ें",
     "removeFromCollection": "मेरे विजेट से हटाएं",
+    "addToMyWidgets": "मेरे विजेट्स में जोड़ें",
+    "removeFromMyWidgets": "मेरे विजेट्स से हटाएं",
+    "widgetAdded": "विजेट जोड़ा गया",
+    "widgetRemoved": "विजेट हटाया गया",
     "contentTypes": {
       "liveChannel": "लाइव चैनल",
       "iframe": "वेब सामग्री",
@@ -5397,7 +5419,13 @@
     },
     "delete": "हटाएँ",
     "hide": "छिपाएँ",
-    "resetPosition": "स्थिति रीसेट करें"
+    "resetPosition": "स्थिति रीसेट करें",
+    "select": "चुनें",
+    "selectAll": "सभी चुनें",
+    "cancelSelection": "रद्द करें",
+    "deleteSelected": "हटाएँ",
+    "bulkDeleteConfirm": "चयनित विजेट हटाएँ?",
+    "bulkDeleted": "विजेट हटा दिए गए"
   },
   "trending": {
     "title": "इज़राइल में क्या ट्रेंड कर रहा है",

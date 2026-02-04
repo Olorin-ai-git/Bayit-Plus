@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { View, Text, FlatList, Pressable, Image, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +19,8 @@ import {
   GlassEmptyState,
 } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
+import WidgetToggleButton from '@/components/content/WidgetToggleButton';
+import { WidgetToggleProvider } from '@/contexts/WidgetToggleContext';
 import logger from '@/utils/logger';
 import PageLoading from '@/components/common/PageLoading';
 
@@ -66,6 +68,17 @@ function StationCard({ station }: { station: Station }) {
                 <View style={styles.playButton}>
                   <Play size={28} color={colors.text} fill={colors.text} />
                 </View>
+              </View>
+            )}
+            {/* Widget Toggle - Show on hover */}
+            {isHovered && (
+              <View style={styles.widgetButtonContainer}>
+                <WidgetToggleButton
+                  contentType="radio"
+                  contentId={station.id}
+                  title={station.name}
+                  coverUrl={station.logo}
+                />
               </View>
             )}
           </View>
@@ -119,6 +132,14 @@ export default function RadioPage() {
 
   const numColumns = responsive.getColumns();
 
+  // Collect items for widget toggle batch-check
+  const widgetItems = useMemo(() => {
+    return stations.map((station) => ({
+      content_type: 'radio',
+      content_id: station.id,
+    }));
+  }, [stations]);
+
   useEffect(() => {
     loadStations();
   }, [selectedCategory]);
@@ -156,6 +177,7 @@ export default function RadioPage() {
   }
 
   return (
+    <WidgetToggleProvider items={widgetItems}>
     <View style={styles.container}>
       {/* Header */}
       <GlassPageHeader
@@ -236,6 +258,7 @@ export default function RadioPage() {
         }
       />
     </View>
+    </WidgetToggleProvider>
   );
 }
 
@@ -284,6 +307,12 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
     overflow: 'hidden',
     position: 'relative',
+  },
+  widgetButtonContainer: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    zIndex: 10,
   },
   logoImage: {
     width: '100%',

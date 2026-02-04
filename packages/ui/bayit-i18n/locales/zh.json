@@ -4382,7 +4382,25 @@
     "loadingShows": "正在加载播客节目...",
     "loadError": "加载播客失败。请检查您的连接。",
     "loading": "加载播客...",
-    "noPodcastsFound": "未找到播客"
+    "noPodcastsFound": "未找到播客",
+    "addPodcast": {
+      "title": "添加播客",
+      "urlPlaceholder": "在此粘贴播客URL",
+      "providerRSS": "RSS URL",
+      "providerApple": "Apple Podcasts",
+      "providerSpotify": "Spotify",
+      "resolve": "解析",
+      "resolving": "解析中...",
+      "preview": "预览",
+      "author": "作者",
+      "episodesFound": "找到{{count}}个节目",
+      "addPodcast": "添加播客",
+      "adding": "添加中...",
+      "success": "播客添加成功",
+      "errorResolve": "无法解析此URL",
+      "errorAdd": "无法添加播客",
+      "errorDuplicate": "此播客已存在"
+    }
   },
   "profile": {
     "title": "我的资料",
@@ -5684,6 +5702,10 @@
     "hidden": "已隐藏",
     "addToCollection": "添加到我的小组件",
     "removeFromCollection": "从我的小组件移除",
+    "addToMyWidgets": "添加到我的小部件",
+    "removeFromMyWidgets": "从我的小部件中移除",
+    "widgetAdded": "小部件已添加",
+    "widgetRemoved": "小部件已移除",
     "contentTypes": {
       "liveChannel": "直播频道",
       "iframe": "网页内容",
@@ -5744,7 +5766,13 @@
     },
     "delete": "删除",
     "hide": "隐藏",
-    "resetPosition": "重置位置"
+    "resetPosition": "重置位置",
+    "select": "选择",
+    "selectAll": "全选",
+    "cancelSelection": "取消",
+    "deleteSelected": "删除",
+    "bulkDeleteConfirm": "删除选中的小组件？",
+    "bulkDeleted": "小组件已删除"
   },
   "beta": {
     "credits": {

@@ -3606,6 +3606,10 @@
     "hidden": "מוסתר",
     "addToCollection": "הוסף לוידג'טים שלי",
     "removeFromCollection": "הסר מהוידג'טים שלי",
+    "addToMyWidgets": "הוסף לווידג'טים שלי",
+    "removeFromMyWidgets": "הסר מהווידג'טים שלי",
+    "widgetAdded": "ווידג'ט נוסף",
+    "widgetRemoved": "ווידג'ט הוסר",
     "contentTypes": {
       "liveChannel": "ערוץ חי",
       "iframe": "תוכן אינטרנט",
@@ -3677,7 +3681,13 @@
     "allowedDomains": "דומיינים מותרים:",
     "changeUrl": "שנה כתובת URL",
     "minimize": "מזער",
-    "expandWidget": "הרחב ווידג'ט"
+    "expandWidget": "הרחב ווידג'ט",
+    "select": "בחירה",
+    "selectAll": "בחר הכל",
+    "cancelSelection": "ביטול",
+    "deleteSelected": "מחיקה",
+    "bulkDeleteConfirm": "למחוק ווידג'טים שנבחרו?",
+    "bulkDeleted": "ווידג'טים נמחקו"
   },
   "liveCategories": {
     "educational": "חינוכי"
@@ -5254,7 +5264,25 @@
     "loadingShows": "טוען תוכניות פודקאסט...",
     "loadError": "טעינת הפודקאסטים נכשלה. אנא בדוק את החיבור שלך.",
     "loading": "טוען פודקאסטים...",
-    "noPodcastsFound": "לא נמצאו פודקאסטים"
+    "noPodcastsFound": "לא נמצאו פודקאסטים",
+    "addPodcast": {
+      "title": "הוספת פודקאסט",
+      "urlPlaceholder": "הדבק כתובת פודקאסט כאן",
+      "providerRSS": "RSS URL",
+      "providerApple": "Apple Podcasts",
+      "providerSpotify": "Spotify",
+      "resolve": "אתר",
+      "resolving": "מאתר...",
+      "preview": "תצוגה מקדימה",
+      "author": "מחבר",
+      "episodesFound": "נמצאו {{count}} פרקים",
+      "addPodcast": "הוסף פודקאסט",
+      "adding": "מוסיף...",
+      "success": "הפודקאסט נוסף בהצלחה",
+      "errorResolve": "לא ניתן לאתר כתובת זו",
+      "errorAdd": "לא ניתן להוסיף את הפודקאסט",
+      "errorDuplicate": "פודקאסט זה כבר קיים"
+    }
   },
   "profile": {
     "title": "הפרופיל שלי",

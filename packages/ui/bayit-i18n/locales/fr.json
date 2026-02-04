@@ -4051,7 +4051,25 @@
     "loadingShows": "Chargement des émissions de podcast...",
     "loadError": "Échec du chargement des podcasts. Veuillez vérifier votre connexion.",
     "loading": "Chargement des podcasts...",
-    "noPodcastsFound": "Aucun podcast trouvé"
+    "noPodcastsFound": "Aucun podcast trouvé",
+    "addPodcast": {
+      "title": "Ajouter un podcast",
+      "urlPlaceholder": "Collez l'URL du podcast ici",
+      "providerRSS": "RSS URL",
+      "providerApple": "Apple Podcasts",
+      "providerSpotify": "Spotify",
+      "resolve": "Résoudre",
+      "resolving": "Résolution...",
+      "preview": "Aperçu",
+      "author": "Auteur",
+      "episodesFound": "{{count}} épisodes trouvés",
+      "addPodcast": "Ajouter le podcast",
+      "adding": "Ajout...",
+      "success": "Podcast ajouté avec succès",
+      "errorResolve": "Impossible de résoudre cette URL",
+      "errorAdd": "Impossible d'ajouter le podcast",
+      "errorDuplicate": "Ce podcast existe déjà"
+    }
   },
   "profile": {
     "complimentaryPremium": "ACCÈS PREMIUM GRATUIT",
@@ -6870,6 +6888,10 @@
     "hidden": "Masqué",
     "addToCollection": "Ajouter à mes widgets",
     "removeFromCollection": "Retirer de mes widgets",
+    "addToMyWidgets": "Ajouter a mes widgets",
+    "removeFromMyWidgets": "Retirer de mes widgets",
+    "widgetAdded": "Widget ajoute",
+    "widgetRemoved": "Widget supprime",
     "contentTypes": {
       "liveChannel": "Chaîne en direct",
       "iframe": "Contenu web",
@@ -6919,7 +6941,13 @@
     },
     "delete": "Supprimer",
     "hide": "Masquer",
-    "resetPosition": "Réinitialiser la position"
+    "resetPosition": "Réinitialiser la position",
+    "select": "Sélectionner",
+    "selectAll": "Tout sélectionner",
+    "cancelSelection": "Annuler",
+    "deleteSelected": "Supprimer",
+    "bulkDeleteConfirm": "Supprimer les widgets sélectionnés ?",
+    "bulkDeleted": "Widgets supprimés"
   },
   "youngsters": {
     "title": "Jeunes",

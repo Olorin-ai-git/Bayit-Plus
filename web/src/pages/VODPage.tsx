@@ -7,6 +7,7 @@ import { useResponsive } from '@/hooks/useResponsive';
 import { Film, Tv, Search, ChevronLeft, ChevronRight, SlidersHorizontal, Mic, X } from 'lucide-react';
 import ContentCard from '@/components/content/ContentCard';
 import AnimatedCard from '@/components/common/AnimatedCard';
+import { WidgetToggleProvider } from '@/contexts/WidgetToggleContext';
 import api from '@/services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import {
@@ -262,6 +263,14 @@ export default function VODPage() {
   const selectedCategoryData = categories.find(c => c.id === selectedCategory);
   const subcategories = selectedCategoryData?.subcategories || [];
 
+  // Collect items for widget toggle batch-check
+  const widgetItems = useMemo(() => {
+    return allContent.map((item) => ({
+      content_type: item.type || 'vod',
+      content_id: item.id,
+    }));
+  }, [allContent]);
+
   const renderContentGrid = (items: ContentItem[], emptyMessage: string) => {
     if (items.length === 0) {
       return (
@@ -300,6 +309,7 @@ export default function VODPage() {
   }
 
   return (
+    <WidgetToggleProvider items={widgetItems}>
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
         {/* Header */}
@@ -519,6 +529,7 @@ export default function VODPage() {
         )}
       </View>
     </ScrollView>
+    </WidgetToggleProvider>
   );
 }
 

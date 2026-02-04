@@ -3857,7 +3857,25 @@
     "loadingShows": "পডকাস্ট শো লোড হচ্ছে...",
     "loadError": "Podcast লোড করতে ব্যর্থ। দয়া করে আপনার সংযোগ পরীক্ষা করুন।",
     "loading": "Podcast লোড হচ্ছে...",
-    "noPodcastsFound": "কোনো Podcast পাওয়া যায়নি"
+    "noPodcastsFound": "কোনো Podcast পাওয়া যায়নি",
+    "addPodcast": {
+      "title": "Podcast যোগ করুন",
+      "urlPlaceholder": "এখানে Podcast URL পেস্ট করুন",
+      "providerRSS": "RSS URL",
+      "providerApple": "Apple Podcasts",
+      "providerSpotify": "Spotify",
+      "resolve": "সমাধান করুন",
+      "resolving": "সমাধান হচ্ছে...",
+      "preview": "পূর্বরূপ",
+      "author": "লেখক",
+      "episodesFound": "{{count}} টি পর্ব পাওয়া গেছে",
+      "addPodcast": "Podcast যোগ করুন",
+      "adding": "যোগ হচ্ছে...",
+      "success": "Podcast সফলভাবে যোগ করা হয়েছে",
+      "errorResolve": "এই URL সমাধান করা যায়নি",
+      "errorAdd": "Podcast যোগ করা যায়নি",
+      "errorDuplicate": "এই Podcast টি আগে থেকেই আছে"
+    }
   },
   "profile": {
     "title": "আমার প্রোফাইল",
@@ -5321,6 +5339,10 @@
     "hidden": "লুকানো",
     "addToCollection": "আমার উইজেটে যোগ করুন",
     "removeFromCollection": "আমার উইজেট থেকে সরান",
+    "addToMyWidgets": "আমার উইজেটে যোগ করুন",
+    "removeFromMyWidgets": "আমার উইজেট থেকে সরান",
+    "widgetAdded": "উইজেট যোগ হয়েছে",
+    "widgetRemoved": "উইজেট সরানো হয়েছে",
     "contentTypes": {
       "liveChannel": "লাইভ চ্যানেল",
       "iframe": "ওয়েব কন্টেন্ট",
@@ -5382,7 +5404,13 @@
     },
     "delete": "মুছুন",
     "hide": "লুকান",
-    "resetPosition": "অবস্থান রিসেট করুন"
+    "resetPosition": "অবস্থান রিসেট করুন",
+    "select": "নির্বাচন",
+    "selectAll": "সব নির্বাচন করুন",
+    "cancelSelection": "বাতিল",
+    "deleteSelected": "মুছুন",
+    "bulkDeleteConfirm": "নির্বাচিত উইজেটগুলি মুছবেন?",
+    "bulkDeleted": "উইজেটগুলি মুছে ফেলা হয়েছে"
   },
   "trending": {
     "title": "ইসরায়েলে কী ট্রেন্ডিং",

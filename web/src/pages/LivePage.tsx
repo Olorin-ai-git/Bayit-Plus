@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,8 @@ import {
 } from '@bayit/shared/ui';
 import AnimatedCard from '@/components/common/AnimatedCard';
 import { AIEnhancedBadge } from '@/components/content';
+import WidgetToggleButton from '@/components/content/WidgetToggleButton';
+import { WidgetToggleProvider } from '@/contexts/WidgetToggleContext';
 import logger from '@/utils/logger';
 import PageLoading from '@/components/common/PageLoading';
 
@@ -60,6 +62,14 @@ export default function LivePage() {
   const navigate = useNavigate();
   const numColumns = responsive.getColumns();
 
+  // Collect items for widget toggle batch-check
+  const widgetItems = useMemo(() => {
+    return channels.map((channel) => ({
+      content_type: 'live_channel',
+      content_id: channel.id,
+    }));
+  }, [channels]);
+
   useEffect(() => {
     loadChannels();
   }, []);
@@ -92,6 +102,7 @@ export default function LivePage() {
   }
 
   return (
+    <WidgetToggleProvider items={widgetItems}>
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
       <View style={styles.container}>
         {/* Header */}
@@ -170,6 +181,15 @@ export default function LivePage() {
                       <AIEnhancedBadge features={channel.ai_features} size="small" />
                     </View>
                   )}
+                  {/* Widget Toggle */}
+                  <View style={styles.widgetButtonWrapper}>
+                    <WidgetToggleButton
+                      contentType="live_channel"
+                      contentId={channel.id}
+                      title={channel.name}
+                      coverUrl={channel.thumbnail || channel.logo}
+                    />
+                  </View>
                 </View>
               </AnimatedCard>
             ))}
@@ -185,6 +205,7 @@ export default function LivePage() {
         )}
       </View>
     </ScrollView>
+    </WidgetToggleProvider>
   );
 }
 
@@ -224,6 +245,12 @@ const styles = StyleSheet.create({
   },
   channelCardWrapper: {
     position: 'relative',
+  },
+  widgetButtonWrapper: {
+    position: 'absolute',
+    top: spacing.sm,
+    left: spacing.sm,
+    zIndex: 10,
   },
   aiEnhancedBadgeWrapper: {
     position: 'absolute',

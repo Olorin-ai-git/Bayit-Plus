@@ -1,17 +1,197 @@
 import logging
+from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from pydantic import BaseModel, Field
 
 from app.api.routes.content.beta_filter import (build_beta_content_filter,
                                                  check_beta_access)
-from app.core.security import get_optional_user
+from app.core.security import get_current_user, get_optional_user
 from app.models.content import Podcast, PodcastEpisode
 from app.models.user import User
-from app.services.podcast_sync import sync_all_podcasts
+from app.services.apple_podcasts_converter import convert_apple_podcasts_to_rss
+from app.services.podcast_scraper import fetch_rss_feed
+from app.services.podcast_sync import fetch_rss_episodes, sync_all_podcasts
+from app.services.spotify_podcast_converter import resolve_spotify_to_rss
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+class ResolveUrlRequest(BaseModel):
+    url: str
+    provider: Optional[str] = Field(
+        None, description="Provider: rss, apple_podcasts, spotify. Auto-detected if omitted."
+    )
+
+
+class AddFromUrlRequest(BaseModel):
+    rss_url: str
+    title: Optional[str] = None
+    category: Optional[str] = None
+
+
+def _detect_provider(url: str) -> str:
+    """Auto-detect podcast provider from URL pattern."""
+    if "podcasts.apple.com" in url or "itunes.apple.com" in url:
+        return "apple_podcasts"
+    if "open.spotify.com" in url:
+        return "spotify"
+    return "rss"
+
+
+@router.post("/resolve-url")
+async def resolve_podcast_url(
+    body: ResolveUrlRequest,
+    current_user: User = Depends(get_current_user),
+):
+    """Resolve a podcast URL to RSS feed and return a preview. No DB writes."""
+    url = body.url.strip()
+    provider = body.provider or _detect_provider(url)
+
+    # Step 1: Resolve to RSS URL
+    rss_url: Optional[str] = None
+
+    if provider == "apple_podcasts":
+        result = await convert_apple_podcasts_to_rss(url)
+        if not result:
+            raise HTTPException(
+                status_code=400,
+                detail="Could not resolve Apple Podcasts URL to an RSS feed",
+            )
+        rss_url = result["rss_url"]
+
+    elif provider == "spotify":
+        result = await resolve_spotify_to_rss(url)
+        if not result:
+            raise HTTPException(
+                status_code=400,
+                detail="Could not resolve Spotify URL to an RSS feed",
+            )
+        rss_url = result["rss_url"]
+
+    else:
+        rss_url = url
+
+    # Step 2: Fetch and parse the RSS feed
+    podcast_data = await fetch_rss_feed(rss_url)
+    if not podcast_data:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not parse RSS feed from the resolved URL",
+        )
+
+    episodes_preview = [
+        {
+            "title": ep.title,
+            "description": ep.description,
+            "duration": ep.duration,
+            "published_date": ep.published_date.isoformat() if ep.published_date else None,
+        }
+        for ep in podcast_data.episodes[:3]
+    ]
+
+    return {
+        "title": podcast_data.title,
+        "author": podcast_data.author,
+        "description": podcast_data.description,
+        "cover": podcast_data.cover,
+        "category": podcast_data.category,
+        "rss_url": rss_url,
+        "episode_count": len(podcast_data.episodes),
+        "episodes_preview": episodes_preview,
+    }
+
+
+@router.post("/add-from-url")
+async def add_podcast_from_url(
+    body: AddFromUrlRequest,
+    current_user: User = Depends(get_current_user),
+):
+    """Create a Podcast document + episodes from a resolved RSS URL."""
+    rss_url = body.rss_url.strip()
+
+    # Check for duplicate
+    existing = await Podcast.find_one(Podcast.rss_feed == rss_url)
+    if existing:
+        raise HTTPException(
+            status_code=409,
+            detail="A podcast with this RSS feed already exists",
+        )
+
+    # Parse RSS feed for episodes
+    episodes_data = await fetch_rss_episodes(rss_url, max_episodes=15)
+
+    # Also get feed-level metadata via podcast_scraper
+    podcast_data = await fetch_rss_feed(rss_url)
+    if not podcast_data:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not parse RSS feed",
+        )
+
+    title = body.title or podcast_data.title
+    category = body.category or podcast_data.category or "general"
+
+    # Create Podcast document
+    podcast = Podcast(
+        title=title,
+        author=podcast_data.author,
+        description=podcast_data.description,
+        cover=podcast_data.cover,
+        category=category,
+        rss_feed=rss_url,
+        episode_count=0,
+        is_active=True,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow(),
+    )
+    await podcast.insert()
+
+    # Create PodcastEpisode documents
+    episodes_added = 0
+    if episodes_data:
+        for i, ep_data in enumerate(episodes_data):
+            episode = PodcastEpisode(
+                podcast_id=str(podcast.id),
+                title=ep_data["title"],
+                description=ep_data.get("description"),
+                audio_url=ep_data.get("audio_url"),
+                duration=ep_data.get("duration"),
+                episode_number=i + 1,
+                season_number=1,
+                published_at=ep_data.get("published_at", datetime.utcnow()),
+                thumbnail=podcast_data.cover,
+                guid=ep_data.get("guid"),
+            )
+            await episode.insert()
+            episodes_added += 1
+
+    # Update podcast metadata
+    podcast.episode_count = episodes_added
+    if episodes_data:
+        dates = [ep.get("published_at") for ep in episodes_data if ep.get("published_at")]
+        if dates:
+            podcast.latest_episode_date = max(dates)
+    podcast.updated_at = datetime.utcnow()
+    await podcast.save()
+
+    logger.info(
+        "Podcast added from URL",
+        extra={
+            "podcast_id": str(podcast.id),
+            "title": title,
+            "episodes": episodes_added,
+            "user_id": str(current_user.id),
+        },
+    )
+
+    return {
+        "id": str(podcast.id),
+        "title": title,
+        "episode_count": episodes_added,
+    }
 
 
 @router.get("/categories")
