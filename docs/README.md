@@ -1,7 +1,7 @@
 # Bayit+ Documentation
 
-**Last Updated:** 2026-02-03
-**Total Documents:** 226 files (organized)
+**Last Updated:** 2026-02-04
+**Total Documents:** 229 files (organized)
 **Documentation Portal:** https://docs.bayitplus.com
 
 ---
@@ -147,9 +147,10 @@ Deployment guides and infrastructure:
 - [Deployment Guide](deployment/DEPLOYMENT_GUIDE.md) - Production deployment
 - [CI/CD Pipeline](deployment/CI_CD_PIPELINE.md) - GitHub Actions workflows
 - [Secrets Management](deployment/SECRETS_MANAGEMENT.md) - Google Cloud secrets
-- [MongoDB SSL Fix](deployment/MONGODB_SSL_FIX.md) - Python 3.13+ SSL connection fix ⭐ **NEW**
+- [App Store Connect tvOS Metadata Guide](deployment/APP_STORE_CONNECT_TVOS_METADATA_GUIDE.md) - Complete guide for tvOS App Store submission ⭐ **NEW**
+- [MongoDB SSL Fix](deployment/MONGODB_SSL_FIX.md) - Python 3.13+ SSL connection fix
 - [GCloud Secrets API Configuration](deployment/GCLOUD_SECRETS_API_CONFIGURATION.md) - API retry and subtitle config
-- [GCloud Secrets Schedules Direct](deployment/GCLOUD_SECRETS_SCHEDULES_DIRECT.md) - EPG integration config ⭐ **NEW**
+- [GCloud Secrets Schedules Direct](deployment/GCLOUD_SECRETS_SCHEDULES_DIRECT.md) - EPG integration config
 - [LLM Configuration](deployment/LLM_CONFIGURATION.md) - AI model setup and cost optimization
 - Firebase Hosting configuration
 - Google Cloud Run setup
@@ -164,6 +165,27 @@ Design system, accessibility, and UI/UX standards:
 - Glass UI design system guidelines
 - Component design patterns
 - Accessibility standards (WCAG AA compliance)
+
+---
+
+### Marketing Documentation (`/marketing/`)
+
+Marketing assets, campaigns, and promotional materials:
+
+- [Bayit+ tvOS Marketing Assets](marketing/BAYIT_PLUS_TVOS_MARKETING_ASSETS.md) - Complete marketing package for Apple TV launch ⭐ **NEW**
+  - Social media posts (Twitter, Instagram, Facebook, LinkedIn)
+  - Email campaigns (launch announcement, beta invitations)
+  - Press release
+  - App preview video script
+  - Feature graphics descriptions
+  - Influencer outreach templates
+- [Visual Assets Specifications](marketing/VISUAL_ASSETS_SPECIFICATIONS.md) - Designer specifications for all visual assets ⭐ **NEW**
+  - App Store screenshots (1920x1080)
+  - Social media graphics (multiple formats)
+  - Email headers
+  - Press kit assets
+  - Brand guidelines
+  - Video requirements
 
 ---
 
@@ -298,11 +320,11 @@ npm run dev  # Opens http://localhost:5173
 
 ## 📊 Documentation Statistics
 
-- **Total Files:** 226 markdown files
-- **Categories:** 27 organized subfolders
+- **Total Files:** 229 markdown files
+- **Categories:** 28 organized subfolders
 - **Languages:** Documentation in English (UI supports 10 languages)
 - **Platforms:** Web, iOS, Android, tvOS
-- **Last Major Update:** 2026-02-03 (Documentation Organization)
+- **Last Major Update:** 2026-02-04 (Marketing Materials Added)
 
 ---
 
@@ -403,6 +425,18 @@ Bayit+ runs on 4 platforms with unified documentation:
 ---
 
 ## Recent Updates
+
+**2026-02-04: Marketing Materials & App Store Guide**
+- Added comprehensive App Store Connect tvOS Metadata Guide
+- Created complete marketing assets package for Apple TV launch
+- Social media campaigns (Twitter, Instagram, Facebook, LinkedIn)
+- Email templates (launch announcement, beta invitations)
+- Press release for media distribution
+- App preview video script (30 seconds)
+- Visual assets specifications for designers
+- Feature graphics descriptions (5 screenshots)
+- Influencer outreach templates
+- Launch checklist and performance metrics
 
 **2026-02-03: Documentation Organization**
 - Reduced docs from 306 to 226 files

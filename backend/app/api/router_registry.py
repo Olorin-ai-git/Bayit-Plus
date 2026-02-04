@@ -74,6 +74,8 @@ def register_all_routers(app: FastAPI) -> None:
         router as admin_recordings_router
     # Quiz and rewards routes
     from app.api.routes import quiz, rewards
+    # Comprehension quiz routes
+    from app.api.routes import comprehension
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
     from app.api.routes.olorin import router as olorin_router
     # Subtitle routes (split into 3 files per 200-line limit)
@@ -280,6 +282,7 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(quiz.router, prefix=f"{prefix}/quiz", tags=["quiz"])
     app.include_router(rewards.router, prefix=f"{prefix}/rewards", tags=["rewards"])
+    app.include_router(comprehension.router, prefix=f"{prefix}/comprehension", tags=["comprehension"])
     logger.debug("Registered feature routes")
 
     # ============================================

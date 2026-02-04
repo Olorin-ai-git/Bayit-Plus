@@ -227,6 +227,51 @@ class Settings(BaseSettings):
         description="Credits per AI recommendation generation"
     )
 
+    CREDIT_RATE_COMPREHENSION_QUESTION: float = Field(
+        default=1.0,
+        env="CREDIT_RATE_COMPREHENSION_QUESTION",
+        description="Credits per comprehension question"
+    )
+
+    # Comprehension Quiz Feature
+    COMPREHENSION_QUIZ_ENABLED: bool = Field(
+        default=True,
+        env="COMPREHENSION_QUIZ_ENABLED",
+        description="Enable scene-triggered comprehension questions"
+    )
+
+    COMPREHENSION_QUIZ_ROLLOUT_PERCENTAGE: int = Field(
+        default=100,
+        env="COMPREHENSION_QUIZ_ROLLOUT_PERCENTAGE",
+        description="Percentage of users with comprehension quiz (0-100)"
+    )
+
+    # Scene Detection Configuration
+    SCENE_GAP_THRESHOLD_SECONDS: float = Field(
+        default=5.0,
+        env="SCENE_GAP_THRESHOLD_SECONDS",
+        description="Minimum subtitle gap (seconds) to detect scene boundary"
+    )
+
+    MIN_SCENE_DURATION_SECONDS: float = Field(
+        default=30.0,
+        env="MIN_SCENE_DURATION_SECONDS",
+        description="Minimum scene duration (seconds) to trigger question"
+    )
+
+    # Question Generation Configuration
+    COMPREHENSION_QUESTION_MODEL: str = Field(
+        default="claude-3-5-sonnet-20241022",
+        env="COMPREHENSION_QUESTION_MODEL",
+        description="Claude model for generating comprehension questions"
+    )
+
+    COMPREHENSION_AI_MAX_TOKENS: int = Field(
+        default=1500,
+        env="COMPREHENSION_AI_MAX_TOKENS",
+        description="Maximum tokens for question generation API call"
+    )
+
     # Credit Thresholds
     BETA_CREDIT_WARNING_THRESHOLD: int = Field(
         default=500,

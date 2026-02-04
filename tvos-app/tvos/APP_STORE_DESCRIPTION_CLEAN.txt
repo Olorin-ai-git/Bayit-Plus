@@ -1,0 +1,70 @@
+Bring Israel Home. In Your Language.
+
+Bayit+ is the world's first AI-powered streaming platform dedicated to Israeli and Jewish content. Whether you are an expat missing home, a partner trying to connect with the culture, or a student learning Hebrew, Bayit+ makes Israeli television accessible, understandable, and smarter than ever before.
+
+WHY BAYIT+?
+Watching Israeli TV abroad has always been a challenge - language barriers, missing cultural context, and fragmented apps. Bayit+ solves this by adding an Intelligence Layer to your viewing experience. We don't just stream content; we translate and explain it in real-time.
+
+AI-POWERED FEATURES
+
+Real-Time AI Dubbing
+Watch live Israeli news and entertainment in your native language. Our advanced AI dubbing technology translates the broadcast instantly, allowing you to listen to Channel 12, 13, and 14 in English, French, or Spanish with near-zero latency.
+
+Smart Context Cards
+Never feel lost again. When a politician, historical event, or slang term is mentioned on screen, Bayit+ pushes a Context Card to your Apple TV explaining exactly who or what it is. Understand the nuance, not just the words.
+
+Visual Sync Technology
+Already watching on your big screen? Use our Magic Sync feature. Simply point your iPhone camera at your TV, and Bayit+ will identify the show and sync the translated audio to your personal device - perfect for mixed families where one person speaks Hebrew and the other doesn't.
+
+Interactive VOD Library
+Explore a curated collection of Jewish and Israeli content enriched with AI deep-dives. Get AI-generated summaries, lesson plans for kids, and Deep Dive explainers that turn entertainment into a learning experience.
+
+FOR THE WHOLE FAMILY
+
+For Expats: Stay connected to the daily pulse of Israel without the distance.
+
+For Partners: Watch Master Chef or the News together, finally understanding every joke and debate.
+
+For Parents: Safe, curated content that helps pass heritage and language to the next generation.
+
+APPLE TV EXPERIENCE
+
+Bayit+ is fully optimized for Apple TV with:
+- Focus navigation designed for Siri Remote
+- 4K HDR streaming for supported content
+- 10-foot UI optimized for living room viewing
+- Seamless integration with iPhone and iPad
+- Picture-in-Picture support
+- Siri voice control
+
+CONTENT LIBRARY
+
+- Live TV: Channels Kan 11, Channel 20
+- Israeli Radio: 24/7 streaming of top stations
+- VOD: Movies, series, and exclusive content
+- Podcasts: Hebrew and Israeli podcasts with transcripts
+- Audiobooks: Hebrew audiobooks with playback controls
+
+MULTILINGUAL SUPPORT
+
+Interface and AI features available in 10 languages:
+Hebrew, English, Spanish, French, Italian, Chinese, Hindi, Tamil, Bengali, Japanese
+
+BETA 500 PROGRAM
+
+Join our closed beta and receive 500 AI credits to test all AI-powered features including:
+- Real-time dubbing
+- Context cards
+- AI search and recommendations
+- Content summaries
+
+TECHNICAL REQUIREMENTS:
+- Requires an active internet connection
+- Visual Sync features require iOS device with camera
+- AI Dubbing available on select live broadcasts
+- Recommended: 10 Mbps or faster connection for 4K streaming
+
+PRIVACY AND TERMS:
+Bayit+ is a product of Olorin.ai LLC. We prioritize your privacy and do not record your home or conversations. Visual Sync technology processes video frames locally on your device. For more information, please visit our Privacy Policy within the app or at https://bayit.tv/privacy
+
+Join the future of Jewish streaming. Download Bayit+ today and experience Israel like never before.

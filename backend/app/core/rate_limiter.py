@@ -83,6 +83,10 @@ try:
         "family_pin_verify": _dev_limit("5/minute"),  # PIN verification (brute force protection)
         "family_pin_setup": _dev_limit("3/hour"),  # PIN setup/update
         "family_controls_update": _dev_limit("30/minute"),  # Settings updates
+        # Comprehension Quiz - AI-generated comprehension questions during playback
+        "comprehension_question": _dev_limit("20/minute"),  # AI question retrieval/generation
+        "comprehension_submit": _dev_limit("10/minute"),  # Answer submission (write + credit deduction)
+        "comprehension_scenes": _dev_limit("60/minute"),  # Scene marker listing (lightweight read)
     }
 
     RATE_LIMITING_ENABLED = True
