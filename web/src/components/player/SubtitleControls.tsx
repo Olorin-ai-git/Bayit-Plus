@@ -611,7 +611,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     width: '100%' as any,
-    maxHeight: '50%' as any,
+    maxHeight: '75%' as any,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
   },
@@ -673,7 +673,7 @@ const styles = StyleSheet.create({
   },
   menuContentMobile: {
     padding: spacing.sm,
-    maxHeight: 250,
+    maxHeight: 400,
   },
   menuItem: {
     flexDirection: 'row',
