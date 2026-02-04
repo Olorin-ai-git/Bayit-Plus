@@ -17,6 +17,7 @@ import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
 import logger from '@/utils/logger';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const IS_MOBILE = SCREEN_WIDTH < 768;
 
 // IMDB brand colors
 const IMDB_YELLOW = '#f5c518';
@@ -450,7 +451,11 @@ export default function MovieDetailPage() {
           )}
 
           {/* Action Buttons */}
-          <View style={[styles.actionButtonsRow, { flexDirection }]}>
+          <View style={[
+            styles.actionButtonsRow,
+            { flexDirection },
+            IS_MOBILE && styles.actionButtonsRowMobile,
+          ]}>
             <GlassButton
               onPress={handlePlay}
               variant="primary"
@@ -459,40 +464,45 @@ export default function MovieDetailPage() {
               title={t('content.play')}
             />
 
-            <GlassButton
-              onPress={toggleWatchlist}
-              variant="ghost"
-              size="lg"
-              icon={inWatchlist ? <Check size={20} color={colors.text} /> : <Plus size={20} color={colors.text} />}
-              title={inWatchlist ? t('content.inList') : t('content.addToList')}
-            />
-
-            {movie.trailer_url ? (
-              <GlassButton
-                onPress={() => {
-                  // Open trailer in fullscreen player
-                  openPlayer({
-                    id: `${movie.id}-trailer`,
-                    title: `${movie.title} - ${t('content.trailer')}`,
-                    src: movie.trailer_url!,
-                    poster: movie.backdrop || movie.thumbnail,
-                    type: 'vod',
-                  });
-                }}
-                variant="ghost"
-                size="lg"
-                title={t('content.watchTrailer')}
-              />
-            ) : (
-              <GlassTooltip content={t('content.trailerNotAvailable', 'Trailer not available for this title')}>
+            {/* Hide Add to List and Watch Trailer on mobile */}
+            {!IS_MOBILE && (
+              <>
                 <GlassButton
+                  onPress={toggleWatchlist}
                   variant="ghost"
                   size="lg"
-                  title={t('content.watchTrailer')}
-                  disabled
-                  style={styles.disabledButton}
+                  icon={inWatchlist ? <Check size={20} color={colors.text} /> : <Plus size={20} color={colors.text} />}
+                  title={inWatchlist ? t('content.inList') : t('content.addToList')}
                 />
-              </GlassTooltip>
+
+                {movie.trailer_url ? (
+                  <GlassButton
+                    onPress={() => {
+                      // Open trailer in fullscreen player
+                      openPlayer({
+                        id: `${movie.id}-trailer`,
+                        title: `${movie.title} - ${t('content.trailer')}`,
+                        src: movie.trailer_url!,
+                        poster: movie.backdrop || movie.thumbnail,
+                        type: 'vod',
+                      });
+                    }}
+                    variant="ghost"
+                    size="lg"
+                    title={t('content.watchTrailer')}
+                  />
+                ) : (
+                  <GlassTooltip content={t('content.trailerNotAvailable', 'Trailer not available for this title')}>
+                    <GlassButton
+                      variant="ghost"
+                      size="lg"
+                      title={t('content.watchTrailer')}
+                      disabled
+                      style={styles.disabledButton}
+                    />
+                  </GlassTooltip>
+                )}
+              </>
             )}
           </View>
 
@@ -854,6 +864,9 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: spacing.md,
     marginBottom: spacing.lg,
+  },
+  actionButtonsRowMobile: {
+    justifyContent: 'center',
   },
   disabledButton: {
     opacity: 0.5,

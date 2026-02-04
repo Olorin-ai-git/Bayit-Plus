@@ -97,16 +97,44 @@ deploy_web() {
   log "Building web application..."
   npm run build
 
-  # Deploy to Firebase Hosting
+  cd "$PROJECT_ROOT"
+
+  # Deploy to Firebase Hosting (desktop)
   if [ "$ENVIRONMENT" = "production" ]; then
-    log "Deploying to Firebase Hosting production..."
+    log "Deploying to Firebase Hosting production (desktop)..."
     firebase deploy --only hosting:bayit-plus
   else
-    log "Deploying to Firebase Hosting preview channel..."
-    firebase hosting:channel:deploy staging --expires 30d
+    log "Deploying to Firebase Hosting preview channel (desktop)..."
+    firebase hosting:channel:deploy staging-desktop --only bayit-plus --expires 30d
   fi
 
-  log "✅ Web deployment complete"
+  log "✅ Web (desktop) deployment complete"
+}
+
+deploy_mobile_web() {
+  log "📱 Deploying Mobile Web Application..."
+
+  # Mobile uses the same web build but deploys to mobile-specific Firebase site
+  # Ensure web is already built
+  if [ ! -d "$PROJECT_ROOT/web/dist" ]; then
+    log "Building web application for mobile deployment..."
+    cd "$PROJECT_ROOT/web"
+    npm ci
+    npm run build
+  fi
+
+  cd "$PROJECT_ROOT"
+
+  # Deploy to Firebase Hosting (mobile)
+  if [ "$ENVIRONMENT" = "production" ]; then
+    log "Deploying to Firebase Hosting production (mobile)..."
+    firebase deploy --only hosting:mobile-bayit
+  else
+    log "Deploying to Firebase Hosting preview channel (mobile)..."
+    firebase hosting:channel:deploy staging-mobile --only mobile-bayit --expires 30d
+  fi
+
+  log "✅ Mobile web deployment complete"
 }
 
 deploy_docs_portal() {
@@ -227,19 +255,23 @@ main() {
   deploy_shared_packages
   echo ""
 
-  # 3. Web Application
+  # 3. Web Application (Desktop)
   deploy_web
   echo ""
 
-  # 4. Documentation Portal
+  # 4. Mobile Web Application
+  deploy_mobile_web
+  echo ""
+
+  # 5. Documentation Portal
   deploy_docs_portal
   echo ""
 
-  # 5. Mobile Apps
+  # 6. Mobile Apps (Native iOS/Android)
   build_mobile
   echo ""
 
-  # 6. tvOS Application
+  # 7. tvOS Application
   build_tvos
   echo ""
 
@@ -266,7 +298,8 @@ Timestamp: $(date '+%Y-%m-%d %H:%M:%S')
 Platforms Deployed:
   ✅ Backend Services (Cloud Run)
   ✅ Shared Packages (npm)
-  ✅ Web Application (Firebase Hosting)
+  ✅ Web Application - Desktop (Firebase Hosting)
+  ✅ Web Application - Mobile (Firebase Hosting)
   ✅ Documentation Portal (Firebase Hosting)
   ✅ Mobile Apps (iOS/Android bundles)
   ✅ tvOS Application (tvOS bundle)

@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "bayit-plus"
+  },
+  "targets": {
+    "bayit-plus": {
+      "hosting": {
+        "web": ["bayit-plus"],
+        "mobile": ["mobile-bayit"],
+        "docs": ["docs-bayit-plus"]
+      }
+    }
   }
 }

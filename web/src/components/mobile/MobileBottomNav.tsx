@@ -26,7 +26,7 @@ const tabs: TabItem[] = [
   { id: 'search', icon: 'search', labelKey: 'nav.search', path: '/search' },
   { id: 'live', icon: 'live', labelKey: 'nav.liveTV', path: '/live' },
   { id: 'vod', icon: 'vod', labelKey: 'nav.vod', path: '/vod' },
-  { id: 'more', icon: 'menu', labelKey: 'nav.more', path: '/settings' },
+  { id: 'widgets', icon: 'widgets', labelKey: 'nav.widgets', path: '/widgets' },
 ];
 
 export default function MobileBottomNav() {

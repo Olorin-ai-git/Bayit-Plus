@@ -82,6 +82,11 @@ module.exports = (env, argv) => {
         '@react-native-clipboard/clipboard': path.resolve(__dirname, 'src/utils/clipboardWeb.ts'),
         '@react-native/assets-registry/registry': path.resolve(__dirname, 'src/utils/assetsRegistryShim.js'),
         '@react-native/assets-registry': path.resolve(__dirname, 'src/utils/assetsRegistryShim.js'),
+        // Expo and SVG shims for web
+        'expo-modules-core': path.resolve(__dirname, 'src/utils/expoModulesCoreShim.js'),
+        'expo-asset': path.resolve(__dirname, 'src/utils/expoAssetShim.js'),
+        'react-native-svg': path.resolve(__dirname, 'src/utils/reactNativeSvgShim.js'),
+        'lucide-react-native': path.resolve(__dirname, 'src/utils/lucideReactNativeShim.js'),
         // Local path aliases
         '@': srcPath,
         '@components': path.resolve(srcPath, 'components'),

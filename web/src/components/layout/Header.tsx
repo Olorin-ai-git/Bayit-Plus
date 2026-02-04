@@ -1,12 +1,11 @@
 import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useState, useCallback, useEffect } from 'react';
-import { Search, Menu, X, Shield } from 'lucide-react'; // Menu and X kept for mobile menu
+import { Search, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatbotStore } from '@/stores/chatbotStore';
 import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
-import { useMobileLayoutStore } from '@/stores/mobileLayoutStore';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { chatService } from '@/services/api';
 import { VoiceSearchButton, LanguageSelector, SoundwaveVisualizer } from '@bayit/shared';
@@ -38,7 +37,6 @@ export default function Header() {
   const { user, isAuthenticated, isAdmin, logout, isHydrated } = useAuthStore();
   const { sendMessage, toggleOpen } = useChatbotStore();
   const { preferences } = useVoiceSettingsStore();
-  const { toggleSidebar } = useMobileLayoutStore();
   const { isRemoteControlEnabled } = useModeEnforcement();
   const navigate = useNavigate();
   const { width } = useWindowDimensions();
@@ -182,7 +180,7 @@ export default function Header() {
 
   // Actions component
   const ActionsSection = (
-    <View style={styles.actions}>
+    <View style={[styles.actions, isMobile && styles.actionsMobile]}>
       {/* Admin button - hidden on mobile */}
       {showAdmin && !isMobile && (
         <Link to="/admin" style={{ textDecoration: 'none' }}>
@@ -265,16 +263,6 @@ export default function Header() {
           />
         </View>
       )}
-
-      {/* Mobile Menu Toggle - Opens sidebar drawer (48x48px) */}
-      {isMobile && (
-        <Pressable
-          onPress={toggleSidebar}
-          style={styles.iconButtonMobile}
-        >
-          <Menu size={24} color={colors.text} />
-        </Pressable>
-      )}
     </View>
   );
 
@@ -341,6 +329,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: IS_TV_BUILD ? spacing.md : spacing.sm,
+  },
+  actionsMobile: {
+    flex: 1,
+    justifyContent: 'space-evenly',
+    gap: 0,
   },
   voiceButtonContainer: {
     position: 'relative',

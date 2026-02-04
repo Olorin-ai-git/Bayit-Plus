@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
@@ -15,7 +15,6 @@ import { colors, spacing } from '@olorin/design-tokens';
 import { useTizenRemoteKeys } from '@/hooks/useTizenRemoteKeys';
 import { useSamsungVoice } from '@/hooks/useSamsungVoice';
 import { useChatbotStore } from '@/stores/chatbotStore';
-import { useMobileLayoutStore } from '@/stores/mobileLayoutStore';
 import { useDirection } from '@/hooks/useDirection';
 import { useResponsive } from '@/hooks/useResponsive';
 import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
@@ -32,10 +31,7 @@ export default function Layout() {
   const responsive = useResponsive();
   const { isMobile } = responsive;
 
-  // Mobile layout store
-  const { isSidebarOpen, closeSidebar } = useMobileLayoutStore();
-
-  // Sidebar state: always expanded by default on desktop/TV, drawer on mobile
+  // Sidebar state: always expanded by default on desktop/TV, hidden on mobile
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const { isRTL } = useDirection();
 
@@ -218,19 +214,13 @@ export default function Layout() {
         <View style={[styles.blurCircle, styles.blurCircleSuccess]} />
       </View>
 
-      {/* Mobile Drawer Backdrop - only on mobile when sidebar is open */}
-      {isMobile && isSidebarOpen && (
-        <Pressable
-          style={styles.drawerBackdrop}
-          onPress={closeSidebar}
+      {/* Sidebar - Hidden on mobile, always visible on web/TV */}
+      {!isMobile && (
+        <GlassSidebar
+          isExpanded={isSidebarExpanded}
+          onToggle={toggleSidebar}
         />
       )}
-
-      {/* Sidebar - Always visible on web/TV, drawer on mobile */}
-      <GlassSidebar
-        isExpanded={isSidebarExpanded}
-        onToggle={toggleSidebar}
-      />
 
       {/* Main content wrapper with sidebar offset */}
       <View style={[
@@ -308,15 +298,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
     position: 'relative',
     flexDirection: 'row',
-  },
-  drawerBackdrop: {
-    position: 'fixed' as any,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    zIndex: 99,
   },
   contentWrapper: {
     flex: 1,
