@@ -59,14 +59,14 @@ export async function initBayitI18nNative(): Promise<typeof i18n> {
     }
   }
 
-  // Determine initial language (AsyncStorage > 'he')
+  // Determine initial language (AsyncStorage > 'en')
   const savedLanguage = await loadLanguageNative();
-  const initialLanguage = savedLanguage || 'he';
+  const initialLanguage = savedLanguage || 'en';
 
   await i18n.use(initReactI18next).init({
     resources,
     lng: initialLanguage,
-    fallbackLng: 'he',
+    fallbackLng: 'en',
     compatibilityJSON: 'v4', // i18next v25+ uses v4 format
     interpolation: {
       escapeValue: false, // React Native already escapes

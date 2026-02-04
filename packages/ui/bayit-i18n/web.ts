@@ -56,14 +56,14 @@ export async function initBayitI18nWeb(): Promise<typeof i18n> {
     }
   }
 
-  // Determine initial language (localStorage > 'he')
+  // Determine initial language (localStorage > 'en')
   const savedLanguage = loadLanguageWeb();
-  const initialLanguage = savedLanguage || 'he';
+  const initialLanguage = savedLanguage || 'en';
 
   await i18n.use(initReactI18next).init({
     resources,
     lng: initialLanguage,
-    fallbackLng: 'he',
+    fallbackLng: 'en',
     interpolation: {
       escapeValue: false, // React already escapes
     },
