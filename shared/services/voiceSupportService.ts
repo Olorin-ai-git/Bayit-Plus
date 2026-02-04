@@ -14,7 +14,7 @@ import { ttsService } from './ttsService';
 import { supportConfig } from '../config/supportConfig';
 import { useSupportStore, VoiceState } from '../stores/supportStore';
 import { streamingVoicePipeline } from './streamingVoicePipeline';
-import { useAuthStore } from '../stores/authStore';
+import api from './api/client';
 
 export interface VoiceSupportConfig {
   maxRecordingDuration: number;
@@ -38,7 +38,6 @@ class VoiceSupportService extends EventEmitter {
   private audioStream: MediaStream | null = null;
   private isRecording = false;
   private conversationId: string | null = null;
-  private API_ENDPOINT: string;
 
   private config: VoiceSupportConfig = {
     maxRecordingDuration: supportConfig.voiceAssistant.maxRecordingDuration,
@@ -50,18 +49,8 @@ class VoiceSupportService extends EventEmitter {
   private streamingModeActive = false;
   private isPrewarmed = false;
 
-  private getApiEndpoint(): string {
-    // Check for browser environment with location (web only)
-    if (typeof window !== 'undefined' && window.location?.hostname === 'localhost') {
-      return 'http://localhost:8000/api/v1/support';
-    }
-    // For React Native, use relative path or configured API URL
-    return '/api/v1/support';
-  }
-
   constructor() {
     super();
-    this.API_ENDPOINT = this.getApiEndpoint();
 
     // Listen to language changes
     if (typeof window !== 'undefined') {
@@ -307,57 +296,22 @@ class VoiceSupportService extends EventEmitter {
     formData.append('audio', audioBlob, `recording.${this.getFileExtension()}`);
     formData.append('language', this.config.language);
 
-    // Get auth token from auth store
-    const token = useAuthStore.getState().token;
-    const headers: Record<string, string> = {};
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${this.API_ENDPOINT}/transcribe`, {
-      method: 'POST',
-      headers,
-      body: formData,
+    const data = await api.post('/chat/transcribe', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
     });
 
-    if (!response.ok) {
-      throw new Error('Transcription failed');
-    }
-
-    const data = await response.json();
-    return data.transcript || '';
+    return data.transcript || data.text || '';
   }
 
   /**
    * Get AI response from support chat endpoint
    */
   private async getAIResponse(transcript: string): Promise<string> {
-    // Get auth token from auth store
-    const token = useAuthStore.getState().token;
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(`${this.API_ENDPOINT}/chat`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        message: transcript,
-        language: this.config.language,
-        conversation_id: this.conversationId,
-      }),
+    const data = await api.post('/support/chat', {
+      message: transcript,
+      language: this.config.language,
+      conversation_id: this.conversationId,
     });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error(`[VoiceSupport] Chat API error: ${response.status} - ${errorText}`);
-      throw new Error(`Failed to get AI response: ${response.status}`);
-    }
-
-    const data = await response.json();
 
     // Store conversation ID for context continuity
     if (data.conversation_id) {

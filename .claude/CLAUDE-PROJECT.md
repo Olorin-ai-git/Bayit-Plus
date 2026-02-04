@@ -388,6 +388,65 @@ api_key = os.getenv("API_KEY", "fallback-key")
 
 **Refusal Requirement:** Any code change that introduces secrets without full paved road compliance across all 6 locations (.env, docker, yaml, deploy_server.sh, deploy_all.sh, gcloud secrets) MUST be refused. Secrets in code files is a critical failure.
 
+#### 10. MANDATORY: Centralized API Client Usage
+
+**ALL API calls MUST use the centralized `api` client. NEVER use raw `fetch()`, `axios`, or custom HTTP clients.**
+
+**Centralized API Clients:**
+- **Web:** `web/src/services/api.js`
+- **Shared (cross-platform):** `shared/services/api/client.ts`
+
+**Why Centralized API is Required:**
+- Automatic auth token injection from auth store
+- CSRF token handling for state-changing requests
+- Correlation ID propagation for request tracing
+- Consistent error handling and 401 redirect
+- Security headers applied uniformly
+- Rate limiting and retry logic
+
+**Correct Pattern:**
+```typescript
+// ✅ CORRECT - Using centralized api client
+import api from './api/client';  // or '../services/api' for web
+
+const data = await api.post('/support/chat', { message: 'Hello' });
+const result = await api.get('/content/movies');
+
+// For file uploads
+const formData = new FormData();
+formData.append('file', blob);
+await api.post('/upload', formData, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+});
+```
+
+**Forbidden (CRITICAL VIOLATION):**
+```typescript
+// ❌ WRONG - Raw fetch without auth
+const response = await fetch('/api/v1/chat', {
+  method: 'POST',
+  body: JSON.stringify(data)
+});
+
+// ❌ WRONG - Custom axios instance
+import axios from 'axios';
+const myApi = axios.create({ baseURL: '/api' });
+
+// ❌ WRONG - Manual auth token handling
+const token = getAuthToken();
+fetch('/api/endpoint', {
+  headers: { 'Authorization': `Bearer ${token}` }
+});
+```
+
+**Applies to:**
+- All HTTP API calls (GET, POST, PUT, DELETE, PATCH)
+- File uploads (use api client with multipart/form-data)
+- WebSocket authentication (get token from auth store)
+- Any service that communicates with the backend
+
+**Refusal Requirement:** Any code that uses raw `fetch()`, creates custom axios instances, or manually handles auth tokens for API calls MUST be refused. ALL API calls MUST go through the centralized api client.
+
 ---
 
 ### 1. UI/UX Standards
