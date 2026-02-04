@@ -4862,7 +4862,8 @@
       "right": "Destra",
       "maxLanguagesReached": "È possibile selezionare al massimo 2 lingue",
       "enabled": "Schermo diviso attivato",
-      "disabled": "Schermo diviso disattivato"
+      "disabled": "Schermo diviso disattivato",
+      "castingNotSupported": "Non supportato durante la trasmissione"
     },
     "loading": "Caricamento sottotitoli...",
     "error": {

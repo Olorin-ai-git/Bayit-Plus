@@ -5199,7 +5199,8 @@
       "right": "右侧",
       "maxLanguagesReached": "最多只能选择2种语言",
       "enabled": "分屏显示已启用",
-      "disabled": "分屏显示已禁用"
+      "disabled": "分屏显示已禁用",
+      "castingNotSupported": "投屏时不支持"
     },
     "error": {
       "title": "字幕错误",

@@ -705,6 +705,16 @@ export default function MovieDetailPage() {
                 </Pressable>
               )}
 
+              {/* Casting warning for dual mode */}
+              {dualMode && (
+                <View style={styles.dualModeCastingWarning}>
+                  <NativeIcon name="warning" size="sm" color={colors.warning.DEFAULT} />
+                  <Text style={styles.dualModeCastingWarningText}>
+                    {t('subtitles.splitScreen.castingNotSupported', 'Not supported while casting')}
+                  </Text>
+                </View>
+              )}
+
               {/* Subtitle List */}
               <ScrollView style={styles.subtitleList}>
                 {/* Off Option - only in single mode */}
@@ -1218,6 +1228,17 @@ const styles = StyleSheet.create({
     fontSize: fontSize.sm,
     color: colors.textSecondary,
     fontStyle: 'italic',
+  },
+  dualModeCastingWarning: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.lg,
+  },
+  dualModeCastingWarningText: {
+    fontSize: fontSize.xs,
+    color: colors.warning.DEFAULT,
   },
   dualConfirmButton: {
     marginTop: spacing.md,

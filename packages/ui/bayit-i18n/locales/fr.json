@@ -4817,7 +4817,8 @@
       "right": "Droite",
       "maxLanguagesReached": "Maximum 2 langues peuvent être sélectionnées",
       "enabled": "Écran partagé activé",
-      "disabled": "Écran partagé désactivé"
+      "disabled": "Écran partagé désactivé",
+      "castingNotSupported": "Non pris en charge pendant la diffusion"
     },
     "loading": "Chargement des sous-titres...",
     "error": {

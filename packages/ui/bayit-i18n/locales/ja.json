@@ -5271,7 +5271,8 @@
       "right": "右",
       "maxLanguagesReached": "選択できるのは最大2言語です",
       "enabled": "分割画面が有効になりました",
-      "disabled": "分割画面が無効になりました"
+      "disabled": "分割画面が無効になりました",
+      "castingNotSupported": "キャスト中はサポートされていません"
     },
     "error": {
       "title": "字幕エラー",

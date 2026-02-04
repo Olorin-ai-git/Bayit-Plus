@@ -6080,7 +6080,8 @@
       "right": "ימין",
       "maxLanguagesReached": "ניתן לבחור מקסימום 2 שפות",
       "enabled": "מסך מפוצל פעיל",
-      "disabled": "מסך מפוצל כבוי"
+      "disabled": "מסך מפוצל כבוי",
+      "castingNotSupported": "לא נתמך בזמן שידור"
     },
     "loading": "טוען כתוביות...",
     "error": {

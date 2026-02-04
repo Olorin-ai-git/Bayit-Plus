@@ -6253,7 +6253,8 @@
       "right": "Right",
       "maxLanguagesReached": "Maximum 2 languages can be selected",
       "enabled": "Split screen enabled",
-      "disabled": "Split screen disabled"
+      "disabled": "Split screen disabled",
+      "castingNotSupported": "Not supported while casting"
     },
     "error": {
       "title": "Subtitle Error",

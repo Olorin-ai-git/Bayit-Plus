@@ -5944,7 +5944,8 @@
       "right": "Derecha",
       "maxLanguagesReached": "Se pueden seleccionar máximo 2 idiomas",
       "enabled": "Pantalla dividida activada",
-      "disabled": "Pantalla dividida desactivada"
+      "disabled": "Pantalla dividida desactivada",
+      "castingNotSupported": "No compatible durante la transmisión"
     },
     "loading": "Cargando subtítulos...",
     "error": {
