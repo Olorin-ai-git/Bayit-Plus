@@ -47,6 +47,7 @@ const config = {
       '@olorin/shared-icons': path.resolve(packagesRoot, 'shared-icons/src'),
       '@olorin/shared-icons/native': path.resolve(packagesRoot, 'shared-icons/src/native'),
       '@olorin/glass-ui': path.resolve(packagesRoot, 'glass-components/src'),
+      '@bayit/glass': path.resolve(packagesRoot, 'glass-components'),
       '@olorin/shared-services': path.resolve(packagesRoot, 'shared-services/src'),
       '@olorin/shared-stores': path.resolve(packagesRoot, 'shared-stores/src'),
       // @bayit/i18n - Bayit+ platform-specific i18n (8 keys)
@@ -68,6 +69,9 @@ const config = {
       'expo-linear-gradient': path.resolve(shimsRoot, 'expo-linear-gradient.ts'),
       '@expo/vector-icons': path.resolve(shimsRoot, 'expo-vector-icons.ts'),
       'react-native-web-linear-gradient': path.resolve(shimsRoot, 'react-native-web-linear-gradient.ts'),
+      // Shim native community components (not installed for tvOS)
+      '@react-native-community/slider': path.resolve(shimsRoot, 'react-native-community-slider.tsx'),
+      '@react-native-picker/picker': path.resolve(shimsRoot, 'react-native-picker.tsx'),
       // Shim Picovoice Porcupine
       '@picovoice/porcupine-web': path.resolve(shimsRoot, 'porcupine-web.ts'),
       '@picovoice/web-voice-processor': path.resolve(shimsRoot, 'porcupine-web.ts'),
@@ -154,6 +158,22 @@ const config = {
         };
       }
 
+      // Dynamic fallback for @bayit/shared/* subpaths not in explicit maps
+      if (moduleName.startsWith('@bayit/shared/') && !sharedSubpaths[moduleName] && !singleFileImports[moduleName]) {
+        const subPath = moduleName.replace('@bayit/shared/', '');
+        const possiblePaths = [
+          path.resolve(sharedRoot, subPath + '.ts'),
+          path.resolve(sharedRoot, subPath + '.tsx'),
+          path.resolve(sharedRoot, subPath, 'index.ts'),
+          path.resolve(sharedRoot, subPath, 'index.tsx'),
+        ];
+        for (const p of possiblePaths) {
+          if (fs.existsSync(p)) {
+            return { filePath: p, type: 'sourceFile' };
+          }
+        }
+      }
+
       // Stub out react-dom for React Native
       if (moduleName === 'react-dom') {
         return { type: 'empty' };
@@ -187,6 +207,19 @@ const config = {
       if (moduleName === '../stores/watchPartyStore' || moduleName.includes('watchPartyStore')) {
         return {
           filePath: path.resolve(shimsRoot, 'watchPartyStore.ts'),
+          type: 'sourceFile',
+        };
+      }
+
+      // Shim mobile-app RemotionWizard import (mobile-only path)
+      if (moduleName.includes('RemotionWizard.native')) {
+        return { type: 'empty' };
+      }
+
+      // Shim web api import from shared quizService (web-only path)
+      if (moduleName.includes('web/src/services/api')) {
+        return {
+          filePath: path.resolve(projectRoot, 'src/services/api.ts'),
           type: 'sourceFile',
         };
       }

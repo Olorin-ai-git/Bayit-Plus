@@ -46,6 +46,9 @@ export type {
   UseTVVoiceShortcutsResult,
 } from './useTVVoiceShortcuts';
 
+// Beta 500 enrollment check
+export { useBetaUser } from './useBetaUser';
+
 // Existing hooks
 export { useAudioCapture } from './useAudioCapture';
 export { useTVConstantListening } from './useTVConstantListening';

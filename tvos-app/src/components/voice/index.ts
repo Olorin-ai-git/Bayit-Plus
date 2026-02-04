@@ -7,7 +7,7 @@
  */
 
 // Export unified voice panel (replaces TVVoiceIndicator, TVVoiceWaveform, TVVoiceResponseDisplay)
-export { VoiceInteractionPanel } from '@bayit/shared/components/voice/VoiceInteractionPanel';
+export { VoiceInteractionPanel } from '../../../../shared/components/voice/VoiceInteractionPanel';
 
 // Deprecated: Legacy TV voice components (will be removed in Phase 5)
 // export { TVVoiceIndicator } from './TVVoiceIndicator';

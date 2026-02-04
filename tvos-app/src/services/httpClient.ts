@@ -3,10 +3,9 @@
  * Compatible with profile controls API and other authenticated services
  */
 
-import { getApiBaseUrl } from '../config/apiConfig';
+import { API_BASE_URL } from '../config/appConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_BASE_URL = getApiBaseUrl();
+import { logger } from '../utils/logger';
 const AUTH_TOKEN_KEY = '@bayit_auth_token';
 
 /**
@@ -16,7 +15,7 @@ const AUTH_TOKEN_KEY = '@bayit_auth_token';
 class HttpClient {
   private baseURL: string;
 
-  constructor(baseURL: string = API_BASE_URL) {
+  constructor(baseURL: string = API_BASE_URL as string) {
     this.baseURL = baseURL;
   }
 
@@ -27,7 +26,7 @@ class HttpClient {
     try {
       return await AsyncStorage.getItem(AUTH_TOKEN_KEY);
     } catch (error) {
-      console.error('Failed to get auth token:', error);
+      logger.error('Failed to get auth token', { error });
       return null;
     }
   }
@@ -58,9 +57,13 @@ class HttpClient {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.detail || `HTTP ${response.status}: ${response.statusText}`
-      );
+      // Log full error detail server-side; expose only status to callers
+      logger.error('HTTP request failed', {
+        endpoint,
+        status: response.status,
+        detail: errorData.detail,
+      });
+      throw new Error(`Request failed (${response.status})`);
     }
 
     const data = await response.json();

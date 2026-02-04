@@ -6,6 +6,7 @@
  */
 
 import { Platform } from 'react-native';
+import { logger } from '../utils/logger';
 
 // Get app mode from environment or default to production
 const APP_MODE: 'demo' | 'production' =
@@ -13,6 +14,11 @@ const APP_MODE: 'demo' | 'production' =
 
 export const isDemo = APP_MODE === 'demo';
 export const isProduction = APP_MODE === 'production';
+
+// Production API URL - set via REACT_APP_API_BASE_URL environment variable at build time.
+// Fallback used only when env var is missing; logged as warning so builds can be fixed.
+const PRODUCTION_API_FALLBACK = 'https://bayit.tv/api/v1';
+const DEVELOPMENT_API_URL = 'http://localhost:8000/api/v1';
 
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {
@@ -22,11 +28,14 @@ const getApiBaseUrl = () => {
   }
 
   if (!__DEV__) {
-    return 'https://bayit.tv/api/v1';
+    logger.warn('REACT_APP_API_BASE_URL not set; using production fallback', {
+      fallback: PRODUCTION_API_FALLBACK,
+    });
+    return PRODUCTION_API_FALLBACK;
   }
 
   // In development, tvOS simulators use localhost
-  return 'http://localhost:8000/api/v1';
+  return DEVELOPMENT_API_URL;
 };
 
 export const API_BASE_URL = getApiBaseUrl();

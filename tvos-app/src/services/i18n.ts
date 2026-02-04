@@ -7,6 +7,7 @@
  */
 
 import { initBayitI18nNative } from '@bayit/i18n/native';
+import { logger } from '../utils/logger';
 
 // i18n instance (initialized on first call)
 let i18n: Awaited<ReturnType<typeof initBayitI18nNative>> | null = null;
@@ -24,7 +25,7 @@ export async function initializeI18n(): Promise<void> {
     // Note: initBayitI18nNative() already loads saved language from AsyncStorage
     // and sets it as the initial language, so no additional loading needed
   } catch (error) {
-    console.error('Failed to initialize i18n:', error);
+    logger.error('Failed to initialize i18n', { error });
     throw error; // Re-throw to let caller handle
   }
 }

@@ -12,20 +12,19 @@ import {
   Pressable,
   useWindowDimensions,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore, useChatbotStore, useVoiceSettingsStore } from '@bayit/shared-stores';
 import { VoiceSearchButton, LanguageSelector, AnimatedLogo, SoundwaveVisualizer } from '@bayit/shared';
-// import { ProfileDropdown } from '@bayit/shared/ProfileDropdown'; // TODO: Component not available yet
+import { ProfileDropdown } from '@bayit/shared/ProfileDropdown';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing } from '@olorin/design-tokens';
 import LinearGradient from 'react-native-linear-gradient';
 import { chatService } from '@bayit/shared-services';
 import { useConstantListening } from '@bayit/shared-hooks';
+import { logger } from '../utils/logger';
 import { useVoiceTV } from '../hooks/useVoiceTV';
-import { TVVoiceIndicator } from './voice/TVVoiceIndicator';
-import { TVVoiceResponseDisplay } from './voice/TVVoiceResponseDisplay';
-import { TVProactiveSuggestionBanner } from './voice/TVProactiveSuggestionBanner';
+import { VoiceInteractionPanel, TVProactiveSuggestionBanner } from './voice';
 
 // Navigation links - matching web app navigation with TV-specific additions
 // Maps to unified icon registry names
@@ -43,18 +42,22 @@ const navLinkKeys = [
 ];
 
 interface TVHeaderProps {
-  currentRoute: string;
-  onNavigate: (route: string) => void;
   onChatbotOpen?: () => void;
+  /** @deprecated Route detected via useRoute() hook internally */
+  currentScreen?: string;
+  /** @deprecated Navigation accessed via useNavigation() hook internally */
+  navigation?: any;
+  /** Optional title override (unused, kept for backward compat) */
+  title?: string;
 }
 
 export const TVHeader: React.FC<TVHeaderProps> = ({
-  currentRoute,
-  onNavigate,
   onChatbotOpen,
 }) => {
   const { i18n, t } = useTranslation();
   const navigation = useNavigation<any>();
+  const route = useRoute();
+  const currentRoute = route.name;
   const { user, isAuthenticated, logout } = useAuthStore();
   const { sendMessage, setOpen: setChatbotOpen } = useChatbotStore();
   const { preferences } = useVoiceSettingsStore();
@@ -93,12 +96,12 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
       '/settings': 'Settings',
     };
     const screen = pathToScreen[path] || 'Profile';
-    onNavigate(screen);
+    navigation.navigate(screen);
   };
 
   const handleLogout = () => {
     logout();
-    onNavigate('Home');
+    navigation.navigate('Home');
   };
 
   const isNavActive = (route: string) => currentRoute === route;
@@ -106,7 +109,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
   // Logo component
   const LogoSection = (
     <Pressable
-      onPress={() => onNavigate('Home')}
+      onPress={() => navigation.navigate('Home')}
       onFocus={() => setFocusedNav('logo')}
       onBlur={() => setFocusedNav(null)}
       className={`p-2 rounded-lg border-2 ${
@@ -127,7 +130,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
         return (
           <Pressable
             key={link.route}
-            onPress={() => onNavigate(link.route)}
+            onPress={() => navigation.navigate(link.route)}
             onFocus={() => setFocusedNav(link.route)}
             onBlur={() => setFocusedNav(null)}
             className={`px-4 py-2.5 rounded-lg border-2 flex-row items-center gap-2 ${
@@ -158,7 +161,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
     <View className="flex-row items-center gap-4">
       {/* Recordings Button */}
       <Pressable
-        onPress={() => onNavigate('Recordings')}
+        onPress={() => navigation.navigate('Recordings')}
         onFocus={() => setFocusedAction('recordings')}
         onBlur={() => setFocusedAction(null)}
         className={`w-[60px] h-[60px] rounded-lg bg-white/5 justify-center items-center border-2 ${
@@ -175,7 +178,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
 
       {/* Settings Button */}
       <Pressable
-        onPress={() => onNavigate('Settings')}
+        onPress={() => navigation.navigate('Settings')}
         onFocus={() => setFocusedAction('settings')}
         onBlur={() => setFocusedAction(null)}
         className={`w-[60px] h-[60px] rounded-lg bg-white/5 justify-center items-center border-2 ${
@@ -199,7 +202,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
         />
       ) : (
         <Pressable
-          onPress={() => onNavigate('Login')}
+          onPress={() => navigation.navigate('Login')}
           onFocus={() => setFocusedAction('login')}
           onBlur={() => setFocusedAction(null)}
           className={`px-6 py-4 rounded-lg bg-purple-500 border-2 ${
@@ -215,7 +218,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
 
       {/* Search Button */}
       <Pressable
-        onPress={() => onNavigate('Search')}
+        onPress={() => navigation.navigate('Search')}
         onFocus={() => setFocusedAction('search')}
         onBlur={() => setFocusedAction(null)}
         className={`w-[60px] h-[60px] rounded-lg bg-white/5 justify-center items-center border-2 ${
@@ -232,13 +235,9 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
 
       {/* Voice Indicator - Show when listening */}
       {isListening && (
-        <View className="px-3">
-          <TVVoiceIndicator
-            size="small"
-            showLabel={false}
-            onPress={() => stopListening()}
-          />
-        </View>
+        <Pressable className="px-3" onPress={() => stopListening()}>
+          <NativeIcon name="podcasts" size="lg" color="#A855F7" variant="colored" />
+        </Pressable>
       )}
 
       {/* Voice/Chatbot Button */}
@@ -265,9 +264,13 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
       {/* Proactive Suggestion Banner - Top banner with voice command suggestions */}
       <TVProactiveSuggestionBanner
         visible={!isListening}
-        onDismiss={() => {}}
+        onDismiss={() => {
+          logger.debug('Proactive suggestion banner dismissed');
+        }}
         onSuggestionPress={(suggestionId) => {
-          // Handle suggestion press - typically triggers a command
+          logger.debug('Proactive suggestion pressed', { suggestionId });
+          setChatbotOpen(true);
+          sendMessage(suggestionId);
         }}
       />
 
@@ -283,10 +286,13 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
         </LinearGradient>
       </View>
 
-      {/* Voice Response Display - Shows voice command responses */}
-      <TVVoiceResponseDisplay
-        autoDismissMs={5000}
-        onDismiss={() => {}}
+      {/* Voice Interaction Panel - Unified voice indicator and response */}
+      <VoiceInteractionPanel
+        visible={isListening}
+        onClose={() => stopListening()}
+        onStartListening={() => startListening()}
+        onStopListening={() => stopListening()}
+        onInterrupt={() => stopListening()}
       />
     </View>
   );
