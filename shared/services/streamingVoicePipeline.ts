@@ -242,6 +242,7 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 3;
   private pingInterval: NodeJS.Timeout | null = null;
+  private micPermissionGranted = false;
 
   private getWsEndpoint(): string {
     if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
@@ -650,13 +651,18 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
     }
 
     try {
-      // Request microphone permission proactively
-      const hasPermission = await this.requestPermission();
-      if (hasPermission) {
+      // Only passively check permission status - never trigger a browser prompt on startup.
+      // getUserMedia is deferred to the first user-initiated voice interaction.
+      if (typeof navigator !== 'undefined' && navigator.permissions) {
+        try {
+          const status = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+          if (status.state === 'granted') {
+            this.micPermissionGranted = true;
+          }
+        } catch {
+          // permissions.query not supported in all browsers
+        }
       }
-
-      // Could also pre-connect WebSocket here for even faster first interaction
-      // but that would require keeping the connection alive with pings
     } catch (error) {
     }
   }
