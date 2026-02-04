@@ -310,6 +310,14 @@ export default function SubtitleControls({
                   disabled={isLoading}
                 />
               )}
+              {splitMode && (
+                <View style={styles.castingWarning}>
+                  <AlertCircle size={14} color={colors.warning.DEFAULT} />
+                  <Text style={styles.castingWarningText}>
+                    {t('subtitles.splitScreen.castingNotSupported', 'Not supported while casting')}
+                  </Text>
+                </View>
+              )}
             </View>
           )}
 
@@ -638,6 +646,16 @@ const styles = StyleSheet.create({
   },
   splitModeSectionMobile: {
     padding: spacing.sm,
+  },
+  castingWarning: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  castingWarningText: {
+    fontSize: 12,
+    color: colors.warning.DEFAULT,
   },
   flagsPreview: {
     flexDirection: 'row',
