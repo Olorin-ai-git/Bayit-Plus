@@ -11,6 +11,7 @@ from uuid import uuid4
 
 from beanie import Document
 from pydantic import BaseModel, Field
+from pymongo import IndexModel
 
 
 class ComprehensionQuestionModel(BaseModel):
@@ -59,8 +60,8 @@ class ContentComprehension(Document):
     class Settings:
         name = "content_comprehension"
         indexes = [
-            "content_id",
-            [("content_id", 1), ("language", 1)],
+            IndexModel([("content_id", 1), ("language", 1)], unique=True),
+            "questions.question_id",
         ]
 
     @classmethod

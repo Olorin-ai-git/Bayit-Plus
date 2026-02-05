@@ -11,12 +11,11 @@ import { colors, spacing } from '@olorin/design-tokens';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { CustomToggle } from './CustomToggle';
 import { FrequencySelector } from './FrequencySelector';
+import type { ComprehensionFrequency } from '@/types/comprehension';
 
 interface ComprehensionSettingsProps {
   isRTL?: boolean;
 }
-
-type ComprehensionFrequency = 'off' | 'low' | 'normal' | 'high';
 
 export function ComprehensionSettings({
   isRTL = false,
@@ -79,6 +78,7 @@ export function ComprehensionSettings({
         <FrequencySelector
           frequency={frequency}
           onFrequencyChange={handleFrequencyChange}
+          isRTL={isHebrew}
         />
       )}
 

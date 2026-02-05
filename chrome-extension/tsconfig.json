@@ -25,6 +25,8 @@
     "paths": {
       "@/*": ["./extension/*"],
       "@bayit/glass": ["./extension/lib/glass-shim"],
+      "@bayit/i18n": ["../packages/ui/bayit-i18n/index"],
+      "@bayit/i18n/*": ["../packages/ui/bayit-i18n/*"],
       "@olorin/glass-ui": ["../packages/ui/glass-components/src"],
       "@olorin/shared-i18n": ["../packages/ui/shared-i18n/src"]
     },

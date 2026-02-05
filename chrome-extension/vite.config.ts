@@ -16,6 +16,7 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, 'extension'),
       '@bayit/glass': resolve(__dirname, 'extension/lib/glass-shim'),
+      '@bayit/i18n': resolve(__dirname, '../packages/ui/bayit-i18n'),
       '@olorin/glass-ui': resolve(__dirname, '../packages/ui/glass-components/src'),
       '@olorin/shared-i18n': resolve(__dirname, '../packages/ui/shared-i18n/src'),
     },

@@ -4,6 +4,7 @@ Comprehension Question Cache Service.
 Handles caching and retrieval of generated questions.
 """
 
+from datetime import datetime
 from typing import Optional
 
 from app.core.logging_config import get_logger
@@ -13,6 +14,9 @@ from app.models.comprehension import (
 )
 
 logger = get_logger(__name__)
+
+# Float comparison tolerance
+EPSILON = 0.001
 
 
 class ComprehensionCacheService:
@@ -34,8 +38,8 @@ class ComprehensionCacheService:
 
         for q in doc.questions:
             if (
-                q.scene_start_time == scene_start_time
-                and q.scene_end_time == scene_end_time
+                abs(q.scene_start_time - scene_start_time) < EPSILON
+                and abs(q.scene_end_time - scene_end_time) < EPSILON
             ):
                 return q
 
@@ -47,17 +51,18 @@ class ComprehensionCacheService:
         question: ComprehensionQuestionModel,
         language: str,
     ):
-        """Cache question in MongoDB."""
-        doc = await ContentComprehension.get_for_content(
-            content_id, language
+        """Cache question in MongoDB using atomic upsert."""
+        await ContentComprehension.get_motor_collection().update_one(
+            {"content_id": content_id, "language": language},
+            {
+                "$push": {"questions": question.model_dump()},
+                "$setOnInsert": {
+                    "content_id": content_id,
+                    "language": language,
+                    "content_type": "vod",
+                    "created_at": datetime.utcnow(),
+                },
+                "$set": {"updated_at": datetime.utcnow()},
+            },
+            upsert=True,
         )
-        if not doc:
-            doc = ContentComprehension(
-                content_id=content_id,
-                language=language,
-                questions=[question],
-            )
-            await doc.insert()
-        else:
-            doc.questions.append(question)
-            await doc.save()

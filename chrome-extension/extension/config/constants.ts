@@ -7,8 +7,6 @@
 
 import { createLogger } from '@/lib/logger';
 
-const configLogger = createLogger('Config');
-
 export interface ExtensionConfig {
   AUDIO: {
     SAMPLE_RATE: number;
@@ -47,8 +45,8 @@ export interface ExtensionConfig {
 
 // Environment variable validation
 function getEnvVar(key: string, defaultValue?: string): string {
-  const value = import.meta.env[key] || defaultValue;
-  if (!value && !defaultValue) {
+  const value = import.meta.env[key] ?? defaultValue;
+  if (value === undefined) {
     throw new Error(`Missing required environment variable: ${key}`);
   }
   return value;
@@ -125,6 +123,7 @@ interface BackendConfig {
  * MUST be called during extension initialization
  */
 export async function loadRuntimeConfig(): Promise<void> {
+  const configLogger = createLogger('Config');
   try {
     const response = await fetch(`${CONFIG.API.BASE_URL}/api/v1/config/extension`, {
       method: 'GET',
@@ -154,8 +153,7 @@ export async function loadRuntimeConfig(): Promise<void> {
 
     configLogger.info('Runtime configuration loaded successfully');
   } catch (error) {
-    configLogger.error('Failed to load runtime configuration', { error: String(error) });
-    throw error;
+    configLogger.warn('Failed to load runtime configuration, using defaults', { error: String(error) });
   }
 }
 

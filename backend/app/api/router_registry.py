@@ -259,12 +259,14 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     # Feature Routes
     # ============================================
-    app.include_router(widgets.router, prefix=f"{prefix}/widgets", tags=["widgets"])
+    # IMPORTANT: Register widget_toggle BEFORE widgets to avoid routing conflicts
+    # widget_toggle has specific routes at /widgets/toggle and /widgets/check-batch
     app.include_router(
         widget_toggle.router,
         prefix=prefix,
         tags=["widget-toggle"],
     )
+    app.include_router(widgets.router, prefix=f"{prefix}/widgets", tags=["widgets"])
     app.include_router(
         user_system_widgets.router,
         prefix=f"{prefix}/widgets/system",

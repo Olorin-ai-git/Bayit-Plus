@@ -71,9 +71,8 @@ class DubbingWebSocketManager:
         self.subtitles_count = 0
 
     async def connect(self):
-        """Accept WebSocket connection and initialize services"""
+        """Initialize services for an already-accepted WebSocket connection"""
         try:
-            await self.websocket.accept()
             self.is_connected = True
 
             # Get session

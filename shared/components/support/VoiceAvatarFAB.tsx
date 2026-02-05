@@ -261,7 +261,7 @@ const WakeWordPulse: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: isTV ? spacing.xl * 2 : spacing.xl,
+    bottom: isTV ? spacing.xl * 2 : spacing['2xl'] + spacing.lg, // 72px for mobile (48 + 24)
     zIndex: 1000,
     alignItems: 'center',
     justifyContent: 'center',

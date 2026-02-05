@@ -66,7 +66,7 @@ class UserDubbingService:
 
             if not has_quota:
                 raise ValueError(
-                    f"Daily quota of {UserQuotaService.FREE_TIER_MINUTES_PER_DAY} minutes exhausted. "
+                    f"Daily quota of {self.quota_service.FREE_TIER_MINUTES_PER_DAY} minutes exhausted. "
                     "Upgrade to premium for unlimited dubbing."
                 )
 

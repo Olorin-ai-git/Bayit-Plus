@@ -7,6 +7,7 @@ Handles the logic for submitting and verifying answers.
 from fastapi import HTTPException
 
 from app.core.config import settings
+from app.core.database import db
 from app.core.logging_config import get_logger
 from app.models.comprehension import (
     ComprehensionQuestionModel,
@@ -15,6 +16,7 @@ from app.models.comprehension import (
 from app.models.comprehension_attempt import ComprehensionAttempt
 from app.models.user import User
 from app.services.beta.credit_service import BetaCreditService
+from app.services.olorin.metering.service import MeteringService
 
 from .schemas import ComprehensionSubmitRequest, ComprehensionSubmitResponse
 
@@ -42,6 +44,7 @@ async def handle_answer_submission(
     """
     # Find question using aggregation pipeline
     pipeline = [
+        {"$match": {"questions.question_id": question_id}},
         {"$unwind": "$questions"},
         {"$match": {"questions.question_id": question_id}},
         {"$limit": 1}
@@ -68,7 +71,11 @@ async def handle_answer_submission(
     # Deduct credits for beta users
     credits_deducted = 0
     if user.is_beta_user:
-        credit_service = BetaCreditService()
+        credit_service = BetaCreditService(
+            settings=settings,
+            metering_service=MeteringService(),
+            db=db
+        )
         await credit_service.deduct(
             user_id=str(user.id),
             feature="comprehension_question",

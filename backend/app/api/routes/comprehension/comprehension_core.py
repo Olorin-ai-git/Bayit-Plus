@@ -7,6 +7,7 @@ Endpoints for scene-triggered comprehension questions.
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.core.config import settings
+from app.core.database import db
 from app.core.logging_config import get_logger
 from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.core.security import get_current_user
@@ -17,6 +18,7 @@ from app.services.beta.credit_service import BetaCreditService
 from app.services.comprehension.question_service import (
     ComprehensionQuestionService,
 )
+from app.services.olorin.metering.service import MeteringService
 from app.services.scene_detection_service import SceneDetectionService
 
 from .schemas import (
@@ -65,7 +67,11 @@ async def get_comprehension_question(
 
     # Check beta credits
     if user.is_beta_user:
-        credit_service = BetaCreditService()
+        credit_service = BetaCreditService(
+            settings=settings,
+            metering_service=MeteringService(),
+            db=db
+        )
         authorized, balance = await credit_service.authorize(
             user_id=str(user.id),
             feature="comprehension_question",

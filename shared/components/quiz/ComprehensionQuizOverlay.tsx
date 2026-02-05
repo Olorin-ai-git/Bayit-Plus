@@ -13,16 +13,15 @@ import {
   View,
   Text,
   Modal,
-  StyleSheet,
   Platform,
 } from 'react-native';
-import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassView } from '../ui/GlassView';
 import { GlassButton } from '../ui/GlassButton';
 import { GlassLoadingSpinner } from '../ui/GlassLoadingSpinner';
 import { QuizQuestion } from './QuizQuestion';
 import { ComprehensionFeedbackDisplay, ComprehensionFeedback } from './ComprehensionFeedback';
 import { useTranslation } from 'react-i18next';
+import { styles } from './comprehensionQuizOverlayStyles';
 
 export interface ComprehensionQuestion {
   question_id: string;
@@ -150,60 +149,5 @@ export const ComprehensionQuizOverlay: React.FC<ComprehensionQuizOverlayProps> =
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    width: '90%',
-    maxWidth: 600,
-    maxHeight: '80%',
-    borderRadius: borderRadius['2xl'],
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorderLight,
-  },
-  headerRTL: {
-    flexDirection: 'row-reverse',
-  },
-  title: {
-    color: colors.text,
-    fontSize: 22,
-    fontWeight: '700',
-  },
-  titleTV: {
-    fontSize: 32,
-  },
-  content: {
-    flex: 1,
-    padding: spacing.lg,
-  },
-  centerContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    color: colors.textSecondary,
-    fontSize: 16,
-    marginTop: spacing.md,
-  },
-  errorText: {
-    color: colors.error.DEFAULT,
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-});
 
 export default ComprehensionQuizOverlay;

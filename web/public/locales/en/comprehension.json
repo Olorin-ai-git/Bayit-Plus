@@ -1,0 +1,26 @@
+{
+  "title": "Comprehension Quizzes",
+  "enable": "Enable Comprehension Quizzes",
+  "enable_desc": "Test your understanding with interactive questions during playback",
+  "info_message": "Comprehension quizzes appear at natural scene breaks to test your understanding of the content. Earn points for correct answers and improve your Hebrew comprehension!",
+  "scene_end": "Scene Complete",
+  "skip": "Skip",
+  "loading": "Loading question...",
+  "insufficient_credits": "Insufficient credits for comprehension questions. Please upgrade your account.",
+  "error": "Failed to load question. Please try again.",
+  "correct": "Correct!",
+  "incorrect": "Not Quite",
+  "points_earned": "+{{points}} points",
+  "explanation": "Explanation",
+  "frequency": {
+    "title": "Quiz Frequency",
+    "off": "Off",
+    "off_desc": "No quizzes during playback",
+    "low": "Low",
+    "low_desc": "Occasional quizzes (every 15-20 minutes)",
+    "normal": "Normal",
+    "normal_desc": "Regular quizzes (every 10 minutes)",
+    "high": "High",
+    "high_desc": "Frequent quizzes (every 5 minutes)"
+  }
+}

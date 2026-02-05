@@ -7,17 +7,18 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing } from '@olorin/design-tokens';
-
-type ComprehensionFrequency = 'off' | 'low' | 'normal' | 'high';
+import type { ComprehensionFrequency } from '@/types/comprehension';
 
 interface FrequencySelectorProps {
   frequency: ComprehensionFrequency;
   onFrequencyChange: (frequency: ComprehensionFrequency) => void;
+  isRTL?: boolean;
 }
 
 export function FrequencySelector({
   frequency,
   onFrequencyChange,
+  isRTL = false,
 }: FrequencySelectorProps) {
   const { t } = useTranslation();
 
@@ -56,12 +57,16 @@ export function FrequencySelector({
       {frequencyOptions.map((option) => (
         <Pressable
           key={option.value}
-          style={styles.frequencyOption}
+          style={[
+            styles.frequencyOption,
+            isRTL && styles.frequencyOptionRTL,
+          ]}
           onPress={() => onFrequencyChange(option.value)}
         >
           <View
             style={[
               styles.radioButton,
+              isRTL && styles.radioButtonRTL,
               frequency === option.value && styles.radioButtonSelected,
             ]}
           >
@@ -96,6 +101,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing.sm,
   },
+  frequencyOptionRTL: {
+    flexDirection: 'row-reverse',
+  },
   radioButton: {
     width: 24,
     height: 24,
@@ -105,6 +113,10 @@ const styles = StyleSheet.create({
     marginRight: spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  radioButtonRTL: {
+    marginRight: 0,
+    marginLeft: spacing.sm,
   },
   radioButtonSelected: {
     borderColor: colors.success.DEFAULT,

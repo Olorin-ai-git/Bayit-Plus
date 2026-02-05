@@ -27,10 +27,11 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: chrome-extension/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --workspace=chrome-extension
+        working-directory: .
 
       - name: Run ESLint
         run: npm run lint
@@ -50,10 +51,11 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: chrome-extension/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --workspace=chrome-extension
+        working-directory: .
 
       - name: Run tests with coverage
         run: npm run test:coverage
@@ -78,10 +80,11 @@ jobs:
         with:
           node-version: '18'
           cache: 'npm'
-          cache-dependency-path: chrome-extension/package-lock.json
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --workspace=chrome-extension
+        working-directory: .
 
       - name: Production build
         run: npm run build:production

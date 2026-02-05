@@ -105,6 +105,8 @@ from app.models.migration import MigrationRecord, RollbackData
 from app.models.nlp_session import NLPConversationSession
 from app.models.user_audible_account import UserAudibleAccount
 from app.models.diagnostics import ClientHeartbeat, ClientHealthHistory, ClientAlert
+# User dubbing session and quota models
+from app.models.dubbing.session import UserDubbingSession, UserQuota
 # Transcript Event Bus models (highlights, search index)
 from app.models.highlight import LiveHighlight
 from app.models.live_transcript_index import LiveTranscriptIndex
@@ -361,6 +363,9 @@ async def connect_to_mongo():
         # Transcript Event Bus models (highlights, search index)
         LiveHighlight,
         LiveTranscriptIndex,
+        # User dubbing session and quota models
+        UserDubbingSession,
+        UserQuota,
     ]
 
     # Conditionally add Olorin models based on database separation setting

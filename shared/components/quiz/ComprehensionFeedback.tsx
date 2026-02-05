@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   explanationBox: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: colors.glass.bg,
     borderRadius: borderRadius.lg,
     padding: spacing.md,
     width: '100%',

@@ -34,7 +34,7 @@
         "headers": [
           {
             "key": "Content-Security-Policy",
-            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://www.googletagmanager.com https://www.gstatic.com https://cdn.bayit.tv; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https: blob:; font-src 'self' data: https:; connect-src 'self' https: wss: blob:; media-src 'self' https: blob:; frame-src 'self' https://js.stripe.com https://103embed.maariv.co.il; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
+            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' blob: https://js.stripe.com https://www.googletagmanager.com https://www.gstatic.com https://cdn.bayit.tv; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https: blob:; font-src 'self' data: https:; connect-src 'self' https: wss: blob:; media-src 'self' https: blob:; frame-src 'self' https://js.stripe.com https://103embed.maariv.co.il; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
           },
           {
             "key": "Strict-Transport-Security",
@@ -54,7 +54,7 @@
           },
           {
             "key": "Permissions-Policy",
-            "value": "camera=(), microphone=(), geolocation=()"
+            "value": "camera=(self), microphone=(self), geolocation=(self)"
           }
         ]
       },
@@ -215,7 +215,7 @@
           "headers": [
             {
               "key": "Content-Security-Policy",
-              "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://js.stripe.com https://www.googletagmanager.com https://www.gstatic.com https://cdn.bayit.tv; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https: blob:; font-src 'self' data: https:; connect-src 'self' https: wss: blob:; media-src 'self' https: blob:; frame-src 'self' https://js.stripe.com https://103embed.maariv.co.il; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
+              "value": "default-src 'self'; script-src 'self' 'unsafe-inline' blob: https://js.stripe.com https://www.googletagmanager.com https://www.gstatic.com https://cdn.bayit.tv; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https: blob:; font-src 'self' data: https:; connect-src 'self' https: wss: blob:; media-src 'self' https: blob:; frame-src 'self' https://js.stripe.com https://103embed.maariv.co.il; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;"
             },
             {
               "key": "Strict-Transport-Security",
@@ -235,7 +235,7 @@
             },
             {
               "key": "Permissions-Policy",
-              "value": "camera=(self), microphone=(self), geolocation=()"
+              "value": "camera=(self), microphone=(self), geolocation=(self)"
             }
           ]
         },
