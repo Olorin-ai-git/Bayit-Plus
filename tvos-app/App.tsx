@@ -15,6 +15,7 @@ import { AppNavigator } from './src/navigation';
 import { initializeI18n } from './src/services/i18n';
 import { logger } from './src/utils/logger';
 import { colors } from '@olorin/design-tokens';
+import { SplashScreen } from './src/components/SplashScreen';
 
 const tvDarkTheme = {
   ...DefaultTheme,
@@ -32,6 +33,7 @@ const tvDarkTheme = {
 
 export default function App() {
   const [i18nReady, setI18nReady] = useState(false);
+  const [splashComplete, setSplashComplete] = useState(false);
 
   useEffect(() => {
     initializeI18n()
@@ -48,6 +50,12 @@ export default function App() {
         <ActivityIndicator size="large" color={colors.primary['500']} />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
+    );
+  }
+
+  if (!splashComplete) {
+    return (
+      <SplashScreen onComplete={() => setSplashComplete(true)} />
     );
   }
 

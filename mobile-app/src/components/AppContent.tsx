@@ -8,21 +8,23 @@ import { View, StatusBar, StyleSheet, Text, ActivityIndicator } from 'react-nati
 import { createStackNavigator } from '@react-navigation/stack';
 import MainTabNavigator from '../navigation/MainTabNavigator';
 import { initializeI18n } from '../services/i18n';
+import { SplashScreen } from './SplashScreen';
+import logger from '@/utils/logger';
 
+const moduleLogger = logger.scope('AppContent');
 const Stack = createStackNavigator();
 
 export const AppContent: React.FC = () => {
   const [i18nReady, setI18nReady] = useState(false);
+  const [splashComplete, setSplashComplete] = useState(false);
 
   useEffect(() => {
-    // Initialize i18n with merged resources (Olorin core + Bayit+ platform)
     initializeI18n()
       .then(() => {
         setI18nReady(true);
       })
       .catch((error) => {
-        console.error('Failed to initialize i18n:', error);
-        // Even if initialization fails, render the app (it will fall back to keys)
+        moduleLogger.error('Failed to initialize i18n', { error });
         setI18nReady(true);
       });
   }, []);
@@ -33,6 +35,12 @@ export const AppContent: React.FC = () => {
         <ActivityIndicator size="large" color="#7e22ce" />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
+    );
+  }
+
+  if (!splashComplete) {
+    return (
+      <SplashScreen onComplete={() => setSplashComplete(true)} />
     );
   }
 
