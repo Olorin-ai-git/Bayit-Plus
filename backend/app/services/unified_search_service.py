@@ -450,8 +450,14 @@ class UnifiedSearchService:
 
         # Filter by content type (vod vs series episodes)
         if "vod" in filters.content_types:
-            # Exclude episodes (series_id is None OR is_series is True for parent series)
-            conditions.append({"$or": [{"series_id": None}, {"is_series": True}]})
+            # Exclude episodes (only show movies and series, not individual episodes)
+            conditions.append({
+                "$or": [
+                    {"series_id": None},
+                    {"series_id": {"$exists": False}},
+                    {"series_id": ""},
+                ]
+            })
 
         # Genre filter
         if filters.genres:
@@ -654,6 +660,7 @@ class UnifiedSearchService:
         Convert Content document to dictionary for API response.
         Excludes large base64 fields.
         """
+        is_series = is_series_content(content.model_dump())
         return {
             "id": str(content.id),
             "title": content.title,
@@ -673,7 +680,7 @@ class UnifiedSearchService:
             "author": content.author,
             "narrator": content.narrator,
             "content_type": content.content_type,
-            "is_series": content.is_series,
+            "is_series": is_series,
             "requires_subscription": content.requires_subscription,
             "is_kids_content": content.is_kids_content,
             "age_rating": content.age_rating,
@@ -706,7 +713,7 @@ class UnifiedSearchService:
             "author": None,
             "narrator": None,
             "content_type": "live",
-            "is_series": False,
+            "is_series": False,  # Live channels, radio stations, and podcasts are not series
             "requires_subscription": channel.requires_subscription,
             "is_kids_content": channel.category == "kids" if channel.category else False,
             "age_rating": None,
@@ -739,7 +746,7 @@ class UnifiedSearchService:
             "author": None,
             "narrator": None,
             "content_type": "radio",
-            "is_series": False,
+            "is_series": False,  # Live channels, radio stations, and podcasts are not series
             "requires_subscription": "basic",
             "is_kids_content": False,
             "age_rating": None,
@@ -772,7 +779,7 @@ class UnifiedSearchService:
             "author": podcast.author,
             "narrator": None,
             "content_type": "podcast",
-            "is_series": False,
+            "is_series": False,  # Live channels, radio stations, and podcasts are not series
             "requires_subscription": "basic",
             "is_kids_content": False,
             "age_rating": None,

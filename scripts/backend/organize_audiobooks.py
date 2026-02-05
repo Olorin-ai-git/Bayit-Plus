@@ -231,8 +231,8 @@ class AudiobookOrganizer:
 
             # Skip if already a parent (no stream_url)
             if not stream_url:
-                # Check if it looks like a parent entry
-                if audiobook.get("is_series") and audiobook.get("total_episodes"):
+                # Check if it looks like a parent entry (has no stream but has total_episodes)
+                if audiobook.get("total_episodes"):
                     standalone.append(audiobook)
                     continue
 

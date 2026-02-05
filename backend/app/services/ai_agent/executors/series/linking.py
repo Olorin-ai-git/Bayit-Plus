@@ -114,7 +114,7 @@ async def execute_auto_link_episodes(
             # Search for matching series by title
             series = await Content.find_one(
                 {
-                    "is_series": True,
+                    "category_name": {"$regex": "series|סדרות", "$options": "i"},
                     "$or": [{"title": title_base}, {"title_en": title_base}],
                 }
             )

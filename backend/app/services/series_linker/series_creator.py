@@ -89,7 +89,6 @@ async def create_series_from_tmdb(
             genres=[g.get("name") for g in tmdb_data.get("genres", [])],
             total_seasons=tmdb_data.get("number_of_seasons"),
             total_episodes=tmdb_data.get("number_of_episodes"),
-            is_series=True,
             content_type="series",
             is_published=True,
             category_id=category_id,

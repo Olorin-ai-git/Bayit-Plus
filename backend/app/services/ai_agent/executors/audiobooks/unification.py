@@ -112,7 +112,7 @@ async def find_or_create_parent(
         "section_ids": best_part.section_ids or [],
         "primary_section_id": best_part.primary_section_id,
         "category_id": best_part.category_id,
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "series_id": None,
         "total_episodes": len(parts),
         "stream_url": "",
@@ -197,7 +197,7 @@ async def link_parts_to_parent(
 
         await part.set({
             "series_id": parent_id,
-            "is_series": True,
+            # Removed: "is_series": True (field no longer exists)
             "episode": part_number,
             "updated_at": datetime.now(timezone.utc),
         })

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { GlassModal, GlassButton } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
+import { isSeriesContent } from '@/utils/contentHelpers'
 
 export interface ContentItem {
   id: string
@@ -12,7 +13,8 @@ export interface ContentItem {
   description?: string
   thumbnail?: string
   year?: number
-  is_series: boolean
+  /** @deprecated Use isSeriesContent() helper instead */
+  is_series?: boolean
   episode_count?: number
   metadata?: {
     tmdb_id?: string
@@ -81,8 +83,8 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
 
   const validateItems = () => {
     // Check if all items are of the same type (all series or all movies)
-    const allSeries = selectedItems.every(item => item.is_series)
-    const allMovies = selectedItems.every(item => !item.is_series)
+    const allSeries = selectedItems.every(item => isSeriesContent(item))
+    const allMovies = selectedItems.every(item => !isSeriesContent(item))
 
     if (!allSeries && !allMovies) {
       setValidation({
@@ -324,7 +326,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
               )}
               <View style={styles.itemDetails}>
                 <Text style={styles.itemTitle}>{item.title}</Text>
-                {item.is_series && item.episode_count !== undefined && (
+                {isSeriesContent(item) && item.episode_count !== undefined && (
                   <Text style={styles.itemMeta}>
                     {item.episode_count} {t('admin.content.episodes', 'episodes')}
                   </Text>
@@ -379,7 +381,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
                 {item.year && (
                   <Text style={styles.itemMeta}>{item.year}</Text>
                 )}
-                {item.is_series && item.episode_count !== undefined && (
+                {isSeriesContent(item) && item.episode_count !== undefined && (
                   <Text style={styles.itemMeta}>
                     {item.episode_count} episodes
                   </Text>
@@ -434,7 +436,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
 
         <ScrollView style={styles.configSection} showsVerticalScrollIndicator={false}>
           {/* Content Transfer Options */}
-          {baseItem?.is_series && (
+          {isSeriesContent(baseItem || {}) && (
             <View style={styles.configGroup}>
               <Text style={styles.configGroupTitle}>
                 {t('admin.merge.contentTransfer', 'Content Transfer')}
@@ -563,7 +565,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
               </Text>
               <Text style={styles.previewValue}>{mergeItems.length}</Text>
             </View>
-            {baseItem?.is_series && (
+            {isSeriesContent(baseItem || {}) && (
               <View style={styles.previewRow}>
                 <Text style={styles.previewLabel}>
                   {t('admin.merge.totalEpisodes', 'Total Episodes After Merge')}:
@@ -649,7 +651,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
                 )}
                 <View style={styles.confirmItemInfo}>
                   <Text style={styles.confirmItemTitle}>{item.title}</Text>
-                  {item.is_series && item.episode_count !== undefined && (
+                  {isSeriesContent(item) && item.episode_count !== undefined && (
                     <Text style={styles.confirmItemMeta}>
                       {item.episode_count} episodes
                     </Text>

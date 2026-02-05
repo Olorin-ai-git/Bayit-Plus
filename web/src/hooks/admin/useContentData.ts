@@ -5,6 +5,7 @@ import { useNotifications } from '@olorin/glass-ui/hooks'
 import { useTranslation } from 'react-i18next'
 import logger from '@/utils/logger'
 import type { HierarchicalTableRow } from '@bayit/shared/ui'
+import { isSeriesContent } from '@/utils/contentHelpers'
 
 interface ContentItem {
   id: string
@@ -13,7 +14,8 @@ interface ContentItem {
   thumbnail?: string
   category_name?: string
   year?: number
-  is_series: boolean
+  /** @deprecated Use isSeriesContent() helper instead */
+  is_series?: boolean
   is_published: boolean
   is_featured: boolean
   is_beta_content?: boolean
@@ -142,7 +144,7 @@ export function useContentData() {
         // Add content_type to each item for proper labeling
         const itemsWithType = response.items.map(item => ({
           ...item,
-          content_type: item.is_series ? 'series' : 'movie'
+          content_type: isSeriesContent(item) ? 'series' : 'movie'
         }))
 
         setItems(itemsWithType)
@@ -375,7 +377,7 @@ export function useContentData() {
     const result = filtered.map(item => {
       let children: HierarchicalTableRow<Episode>[] | undefined = undefined
 
-      if (item.is_series) {
+      if (isSeriesContent(item)) {
         if (expandedSeries.has(item.id)) {
           children = (episodeCache[item.id] || []).map(episode => ({
             id: episode.id,

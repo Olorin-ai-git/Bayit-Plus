@@ -133,10 +133,7 @@ async def set_vod_to_protected(
     # Build query for VOD content
     query = {
         "visibility_mode": "public",
-        "$or": [
-            {"is_series": True},
-            {"content_type": {"$in": ["movie", "series", "episode"]}},
-        ],
+        "content_type": {"$in": ["movie", "series", "episode"]},
     }
 
     if category_ids:

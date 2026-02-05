@@ -51,6 +51,48 @@ def is_series_by_category(category_name: str) -> bool:
     return any(keyword in category_lower for keyword in SERIES_CATEGORY_KEYWORDS)
 
 
+def is_series_content(content_dict: dict) -> bool:
+    """
+    Determine if content is series-type based on multiple indicators.
+
+    Checks (in order):
+    1. Category name contains "Series" keywords
+    2. Has series_id (is an episode)
+    3. Has total_episodes (is a parent series)
+    4. Has season/episode numbers
+
+    Args:
+        content_dict: Content document as dictionary
+
+    Returns:
+        True if content is series-related (parent series or episode)
+    """
+    # Check category name
+    category_name = content_dict.get("category_name", "")
+    if is_series_by_category(category_name):
+        return True
+
+    # Check series structure
+    series_id = content_dict.get("series_id")
+    total_episodes = content_dict.get("total_episodes")
+    season_number = content_dict.get("season_number")
+    episode_number = content_dict.get("episode_number")
+
+    # Has series_id → is an episode
+    if series_id:
+        return True
+
+    # Has total_episodes → is a parent series
+    if total_episodes:
+        return True
+
+    # Has season/episode info → is an episode
+    if season_number is not None or episode_number is not None:
+        return True
+
+    return False
+
+
 def generate_signed_url_if_needed(url: str) -> str:
     """Generate signed URL for GCS files, return other URLs as-is."""
     if not url:

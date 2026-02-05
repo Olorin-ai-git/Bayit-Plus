@@ -21,6 +21,7 @@ from app.models.content_taxonomy import (Audience, ContentSection, Genre,
 from app.services.subtitle_enrichment import \
     enrich_content_items_with_subtitles
 from app.utils.i18n import get_multilingual_names, resolve_name_key
+from app.api.routes.content.utils import is_series_content
 
 router = APIRouter(prefix="/content", tags=["content-taxonomy"])
 logger = logging.getLogger(__name__)
@@ -467,7 +468,8 @@ async def browse_content(
         ]
         # Handle series format specially
         if content_format == "series":
-            format_or.append({"is_series": True})
+            # Use category_name instead of deprecated is_series field
+            format_or.append({"category_name": {"$regex": "series|סדרות", "$options": "i"}})
             # Hide series without episodes from user-facing browse
             content_filter["total_episodes"] = {"$gt": 0}
         and_conditions.append({"$or": format_or})
@@ -497,10 +499,8 @@ async def browse_content(
     # Build response items
     result_items = []
     for item in items:
-        is_series = (
-            getattr(item, "is_series", False)
-            or getattr(item, "content_format", None) == "series"
-        )
+        # Determine if series using helper function (NOT is_series field)
+        is_series = is_series_content(item.model_dump())
 
         item_data = {
             "id": str(item.id),
@@ -526,7 +526,7 @@ async def browse_content(
             "category_id": item.category_id,
             "category_name": item.category_name,
             "type": "series" if is_series else "movie",
-            "is_series": is_series,
+            "is_series": is_series,  # Computed from category/structure
         }
 
         # Add episode count for series
@@ -631,7 +631,8 @@ async def get_section_content(
     # Build response
     result_items = []
     for item in items:
-        is_series = getattr(item, "is_series", False)
+        # Determine if series using helper function (NOT is_series field)
+        is_series = is_series_content(item.model_dump())
 
         result_items.append(
             {
@@ -644,7 +645,7 @@ async def get_section_content(
                 "year": item.year,
                 "duration": item.duration,
                 "type": "series" if is_series else "movie",
-                "is_series": is_series,
+                "is_series": is_series,  # Computed from category/structure
                 "total_episodes": item.total_episodes if is_series else None,
             }
         )

@@ -93,7 +93,7 @@ async def find_matching_series_by_similarity(
     # Strategy 1: Exact match (case-insensitive)
     exact_match = await Content.find_one(
         {
-            "is_series": True,
+            "category_name": {"$regex": "series|סדרות", "$options": "i"},
             "$or": [
                 {"title": {"$regex": f"^{re.escape(series_name)}$", "$options": "i"}},
                 {
@@ -113,7 +113,7 @@ async def find_matching_series_by_similarity(
         return exact_match, 1.0
 
     # Strategy 2: Similarity matching
-    all_series = await Content.find({"is_series": True}).to_list()
+    all_series = await Content.find({"category_name": {"$regex": "series|סדרות", "$options": "i"}}).to_list()
 
     best_match = None
     best_ratio = 0.0

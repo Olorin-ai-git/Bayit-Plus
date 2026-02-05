@@ -11,6 +11,7 @@ from typing import List, Optional
 
 from anthropic import AsyncAnthropic
 
+from app.api.routes.content.utils import is_series_content
 from app.core.config import settings
 from app.models.content import Content
 from app.models.profile import Profile
@@ -117,7 +118,7 @@ class QuizGenerationService:
             prompt, age_group, num_questions
         )
 
-        content_type = "series_episode" if content.is_series else "vod"
+        content_type = "series_episode" if is_series_content(content.model_dump()) else "vod"
         quiz = await ContentQuiz.create_or_update(
             content_id=str(content.id),
             content_type=content_type,

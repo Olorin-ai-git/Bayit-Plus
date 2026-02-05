@@ -11,6 +11,7 @@ import { GlassTableCell, GlassCheckbox } from '@bayit/shared/ui/web';
 import { colors, borderRadius } from '@olorin/design-tokens';
 import { z } from 'zod';
 import { FlagWithSparkle } from '@/components/common/FlagWithSparkle';
+import { isSeriesContent } from '@/utils/contentHelpers';
 
 const ContentItemSchema = z.object({
   id: z.string(),
@@ -19,7 +20,8 @@ const ContentItemSchema = z.object({
   thumbnail: z.string().optional(),
   category_name: z.string().optional(),
   year: z.number().optional(),
-  is_series: z.boolean(),
+  /** @deprecated Use isSeriesContent() helper instead */
+  is_series: z.boolean().optional(),
   is_published: z.boolean(),
   is_featured: z.boolean(),
   episode_count: z.number().optional(),
@@ -61,7 +63,7 @@ function ContentThumbnail({ item, isRTL }: ThumbnailCellProps) {
           />
         ) : (
           <View style={styles.thumbnailPlaceholder}>
-            {item.is_series ? (
+            {isSeriesContent(item) ? (
               <Tv size={20} color="rgba(255,255,255,0.4)" />
             ) : (
               <Film size={20} color="rgba(255,255,255,0.4)" />
@@ -124,7 +126,7 @@ export function ContentTitleCell({ item, isRTL, t }: ContentTitleCellProps) {
         <Text style={titleTextStyle} numberOfLines={1}>
           {item.title}
         </Text>
-        {item.is_series && (
+        {isSeriesContent(item) && (
           <View style={styles.seriesBadge}>
             <Text style={styles.seriesBadgeText}>
               {item.episode_count || 0} {t('admin.content.episodes', { count: item.episode_count || 0 })}
@@ -133,7 +135,7 @@ export function ContentTitleCell({ item, isRTL, t }: ContentTitleCellProps) {
         )}
       </View>
       <Text style={subtitleTextStyle}>
-        {item.is_series ? t('admin.content.type.series') : t('admin.content.type.movie')}
+        {isSeriesContent(item) ? t('admin.content.type.series') : t('admin.content.type.movie')}
       </Text>
     </View>
   );

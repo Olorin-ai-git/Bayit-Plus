@@ -14,6 +14,7 @@ import { GlassTable, GlassTableColumn, GlassTableCell, GlassCheckbox, GlassChevr
 import { useDirection } from '@/hooks/useDirection'
 import { adminContentService } from '@/services/adminApi'
 import logger from '@/utils/logger'
+import { isSeriesContent } from '@/utils/contentHelpers'
 
 interface ContentItem {
   id: string
@@ -22,7 +23,8 @@ interface ContentItem {
   thumbnail?: string
   category_name?: string
   year?: number
-  is_series: boolean
+  /** @deprecated Use isSeriesContent() helper instead */
+  is_series?: boolean
   is_published: boolean
   is_featured: boolean
   episode_count?: number
@@ -217,7 +219,7 @@ export default function HierarchicalContentTable({
       result.push({ rowType: 'content', ...item })
 
       // If series is expanded, add its episodes
-      if (item.is_series && expandedSeries.has(item.id)) {
+      if (isSeriesContent(item) && expandedSeries.has(item.id)) {
         const episodes = episodeCache[item.id] || []
         episodes.forEach((episode) => {
           result.push({ rowType: 'episode', parentId: item.id, ...episode })
@@ -278,7 +280,7 @@ export default function HierarchicalContentTable({
             return <View style={styles.expandPlaceholder} />
           }
           const item = row as ContentItem & { rowType: 'content' }
-          if (!item.is_series) {
+          if (!isSeriesContent(item)) {
             return <View style={styles.expandPlaceholder} />
           }
           return (
@@ -318,7 +320,7 @@ export default function HierarchicalContentTable({
                   <View style={[styles.thumbnailImage, { backgroundImage: `url(${item.thumbnail})` } as any]} />
                 ) : (
                   <View style={styles.thumbnailPlaceholder}>
-                    {item.is_series ? (
+                    {isSeriesContent(item) ? (
                       <Tv size={20} color="rgba(255,255,255,0.4)" />
                     ) : (
                       <Film size={20} color="rgba(255,255,255,0.4)" />
@@ -357,7 +359,7 @@ export default function HierarchicalContentTable({
                 <Text style={[styles.contentTitle, { textAlign: isRTL ? 'right' : 'left' }]} numberOfLines={1}>
                   {item.title}
                 </Text>
-                {item.is_series && (
+                {isSeriesContent(item) && (
                   <View style={styles.episodeCountBadge}>
                     <Text style={styles.episodeCountText}>
                       {item.episode_count || 0} {t('admin.content.episodes', { count: item.episode_count || 0 })}
@@ -366,7 +368,7 @@ export default function HierarchicalContentTable({
                 )}
               </View>
               <Text style={[styles.contentType, { textAlign: isRTL ? 'right' : 'left' }]}>
-                {item.is_series ? t('admin.content.type.series') : t('admin.content.type.movie')}
+                {isSeriesContent(item) ? t('admin.content.type.series') : t('admin.content.type.movie')}
               </Text>
             </View>
           )

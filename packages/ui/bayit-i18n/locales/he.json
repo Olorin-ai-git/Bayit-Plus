@@ -3698,6 +3698,8 @@
     "sections": {
       "movies": "סרטים",
       "series": "סדרות",
+      "israeli-movies": "סרטים ישראליים",
+      "israeli-series": "סדרות ישראליות",
       "kids": "ילדים",
       "youngsters": "צעירים",
       "music": "מוזיקה",
@@ -4688,9 +4690,6 @@
     "allChannels": "לכל הערוצים",
     "liveChannels": "ערוצים בשידור חי",
     "showOnlyWithSubtitles": "הצג רק עם כתוביות",
-    "israeliMovies": "סרטים ישראליים",
-    "israeli-movies": "סרטים ישראליים",
-    "israeli-series": "סדרות ישראליות",
     "action": "אקשן ומתח",
     "comedy": "קומדיה",
     "drama": "דרמה",

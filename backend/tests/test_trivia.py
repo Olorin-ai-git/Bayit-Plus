@@ -291,7 +291,6 @@ class TestTriviaGenerationService:
         content.genre = "Drama"
         content.director = "Test Director"
         content.tmdb_id = 12345
-        content.is_series = False
         return content
 
     @pytest.fixture

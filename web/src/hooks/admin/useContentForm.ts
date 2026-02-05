@@ -43,7 +43,6 @@ export function useContentForm(contentId?: string) {
     stream_url: '',
     stream_type: 'hls',
     is_drm_protected: false,
-    is_series: false,
     is_published: false,
     is_featured: false,
     is_kids_content: false,

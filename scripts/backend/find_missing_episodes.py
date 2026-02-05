@@ -62,7 +62,6 @@ class MissingEpisodeFinder:
         """Find all series parent documents."""
         series_parents = await self.db.content.find(
             {
-                "is_series": True,
                 "$or": [
                     {"series_id": None},
                     {"series_id": {"$exists": False}},
@@ -78,7 +77,7 @@ class MissingEpisodeFinder:
     async def get_episodes_for_series(self, series_id: str) -> List[dict]:
         """Get all episodes for a series from database."""
         episodes = await self.db.content.find(
-            {"series_id": series_id, "is_series": True}
+            {"series_id": series_id}
         ).to_list(None)
         return episodes
 

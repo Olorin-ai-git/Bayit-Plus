@@ -14,11 +14,13 @@ import {
   type HierarchicalTableColumn,
 } from '@bayit/shared/ui'
 import { FlagWithSparkle } from '@/components/common/FlagWithSparkle'
+import { isSeriesContent } from '@/utils/contentHelpers'
 
 interface ContentItem {
   id: string
   title: string
-  is_series: boolean
+  /** @deprecated Use isSeriesContent() helper instead */
+  is_series?: boolean
   is_featured: boolean
   is_beta_content?: boolean
   category_name?: string
@@ -147,10 +149,10 @@ export function getContentTableColumns(
         }
 
         // Show warning badge for series without episodes
-        const hasNoEpisodes = content.is_series && (!content.episode_count || content.episode_count === 0)
+        const hasNoEpisodes = isSeriesContent(content) && (!content.episode_count || content.episode_count === 0)
         const episodeBadge = hasNoEpisodes
           ? t('admin.content.noEpisodes', 'No Episodes')
-          : content.is_series && content.episode_count
+          : isSeriesContent(content) && content.episode_count
             ? `${content.episode_count} episodes`
             : undefined
         const badgeColor = hasNoEpisodes ? '#ef4444' : '#a855f7'  // Red for warning, purple for normal
@@ -250,7 +252,7 @@ export function getContentTableColumns(
             case 'movie':
             default:
               // Also check is_series for backwards compatibility
-              return content.is_series ? `/vod/series/${content.id}` : `/vod/movie/${content.id}`
+              return isSeriesContent(content) ? `/vod/series/${content.id}` : `/vod/movie/${content.id}`
           }
         }
 

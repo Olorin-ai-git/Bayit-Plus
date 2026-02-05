@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from app.core.security import get_current_active_user
 from app.models.content import Content, LiveChannel, Podcast
 from app.models.user import User
+from app.api.routes.content.utils import is_series_content
 
 
 # Favorite model
@@ -83,8 +84,8 @@ async def get_favorites(
                     content.description[:100] if content.description else None
                 )
                 item_data["thumbnail"] = content.thumbnail
-                # Normalize type for frontend based on is_series field
-                item_data["type"] = "series" if content.is_series else "movie"
+                # Normalize type for frontend using helper function
+                item_data["type"] = "series" if is_series_content(content.model_dump()) else "movie"
         elif fav.content_type in ("live", "channel"):
             channel = await LiveChannel.get(fav.content_id)
             if channel:

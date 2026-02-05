@@ -181,7 +181,6 @@ class ContentEntryCreator:
             genre=m.get("genre"),
             cast=m.get("cast", []),
             director=m.get("director"),
-            is_series=False,
             season=season,
             episode=episode,
             series_id=series_id,
@@ -219,7 +218,6 @@ class ContentEntryCreator:
             genre=m.get("genre"),
             cast=m.get("cast", []),
             director=m.get("director"),
-            is_series=True,
             is_featured=False,
             view_count=0,
             file_hash=job.file_hash,
@@ -237,7 +235,7 @@ class ContentEntryCreator:
         # Try exact title match
         series = await Content.find_one(
             {
-                "is_series": True,
+                "category_name": {"$regex": "series|סדרות", "$options": "i"},
                 "$or": [
                     {"title": {"$regex": f"^{re.escape(name)}$", "$options": "i"}},
                     {"title_en": {"$regex": f"^{re.escape(name)}$", "$options": "i"}},
@@ -251,7 +249,7 @@ class ContentEntryCreator:
         # Try TMDB ID match
         if tmdb_id := m.get("tmdb_id"):
             if series := await Content.find_one(
-                {"is_series": True, "tmdb_id": tmdb_id}
+                {"category_name": {"$regex": "series|סדרות", "$options": "i"}, "tmdb_id": tmdb_id}
             ):
                 return str(series.id), series
 
@@ -268,7 +266,6 @@ class ContentEntryCreator:
                 tmdb_id=m.get("tmdb_id"),
                 imdb_id=m.get("imdb_id"),
                 genre=m.get("genre"),
-                is_series=True,
                 content_type="series",
                 is_published=True,
                 category_id=str(category.id),

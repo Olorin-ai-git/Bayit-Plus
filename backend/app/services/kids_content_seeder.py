@@ -365,7 +365,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "infinity", "numbers", "series"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 1,
         "series_id": "avudim-baribua",
@@ -384,7 +384,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "zero", "numbers", "history"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 2,
         "series_id": "avudim-baribua",
@@ -401,7 +401,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "numbers", "patterns", "divisibility"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 3,
         "series_id": "avudim-baribua",
@@ -418,7 +418,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "logic", "pigeonhole", "proof"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 4,
         "series_id": "avudim-baribua",
@@ -435,7 +435,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "primes", "numbers", "divisibility"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 5,
         "series_id": "avudim-baribua",
@@ -452,7 +452,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "exponents", "powers", "multiplication"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 6,
         "series_id": "avudim-baribua",
@@ -469,7 +469,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "graphs", "topology", "konigsberg"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 7,
         "series_id": "avudim-baribua",
@@ -486,7 +486,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "algorithms", "computer-science", "logic"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 8,
         "series_id": "avudim-baribua",
@@ -503,7 +503,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "counting", "combinatorics", "methods"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 9,
         "series_id": "avudim-baribua",
@@ -520,7 +520,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "binary", "computer-science", "numbers"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 10,
         "series_id": "avudim-baribua",
@@ -537,7 +537,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "set-theory", "logic", "foundations"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 11,
         "series_id": "avudim-baribua",
@@ -554,7 +554,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "measurements", "units", "geometry"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 12,
         "series_id": "avudim-baribua",
@@ -571,7 +571,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "circle", "pi", "geometry"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 13,
         "series_id": "avudim-baribua",
@@ -588,7 +588,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "art", "symmetry", "patterns"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 14,
         "series_id": "avudim-baribua",
@@ -605,7 +605,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "permutations", "combinatorics", "counting"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 15,
         "series_id": "avudim-baribua",
@@ -622,7 +622,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "combinations", "combinatorics", "counting"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 16,
         "series_id": "avudim-baribua",
@@ -639,7 +639,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "paradoxes", "logic", "philosophy"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 17,
         "series_id": "avudim-baribua",
@@ -656,7 +656,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "percentages", "fractions", "practical"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 18,
         "series_id": "avudim-baribua",
@@ -673,7 +673,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "estimation", "approximation", "practical"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 19,
         "series_id": "avudim-baribua",
@@ -690,7 +690,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "rate", "time", "word-problems"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 20,
         "series_id": "avudim-baribua",
@@ -707,7 +707,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "average", "statistics", "data"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 21,
         "series_id": "avudim-baribua",
@@ -724,7 +724,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "fractions", "arithmetic", "numbers"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 22,
         "series_id": "avudim-baribua",
@@ -741,7 +741,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "geometry", "hexagons", "nature"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 23,
         "series_id": "avudim-baribua",
@@ -758,7 +758,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "ratios", "proportions", "comparison"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 24,
         "series_id": "avudim-baribua",
@@ -775,7 +775,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "modular-arithmetic", "remainders", "division"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 25,
         "series_id": "avudim-baribua",
@@ -792,7 +792,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "fibonacci", "sequences", "nature"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 26,
         "series_id": "avudim-baribua",
@@ -809,7 +809,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "encryption", "cryptography", "codes"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 27,
         "series_id": "avudim-baribua",
@@ -826,7 +826,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "triangles", "geometry", "shapes"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 28,
         "series_id": "avudim-baribua",
@@ -843,7 +843,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "large-numbers", "scale", "estimation"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 29,
         "series_id": "avudim-baribua",
@@ -860,7 +860,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "probability", "statistics", "chance"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 30,
         "series_id": "avudim-baribua",
@@ -877,7 +877,7 @@ KIDS_CONTENT_SEED: List[Dict[str, Any]] = [
         "age_rating": 7,
         "educational_tags": ["math", "sequences", "patterns", "series"],
         "content_rating": "G",
-        "is_series": True,
+        # Removed: "is_series": True (field no longer exists)
         "season": 1,
         "episode": 31,
         "series_id": "avudim-baribua",
@@ -999,7 +999,7 @@ class KidsContentSeeder:
                     content_rating=item.get("content_rating", "G"),
                     educational_tags=item.get("educational_tags", []),
                     # Series fields
-                    is_series=item.get("is_series", False),
+                    # Removed: is_series=item.get("is_series", False) (field no longer exists)
                     season=item.get("season"),
                     episode=item.get("episode"),
                     series_id=item.get("series_id"),

@@ -196,7 +196,6 @@ class SeriesOrganizer:
             {
                 "title": series_name,
                 "content_type": "series",
-                "is_series": True,
                 "season": None,
                 "episode": None,
             }
@@ -234,7 +233,6 @@ class SeriesOrganizer:
             "description_en": tmdb_data.get("overview") if tmdb_data else None,
             "category_id": category_id,
             "content_type": "series",
-            "is_series": True,
             "is_published": True,
             "season": None,
             "episode": None,
@@ -335,7 +333,6 @@ class SeriesOrganizer:
 
             update_data = {
                 "series_id": series_id,
-                "is_series": True,
                 "content_type": "episode",
                 "updated_at": datetime.now(timezone.utc),
             }
@@ -366,8 +363,8 @@ class SeriesOrganizer:
             self.stats["episodes_linked"] += 1
 
             if (
-                len(update_data) > 4
-            ):  # More than just series_id, is_series, content_type, updated_at
+                len(update_data) > 3
+            ):  # More than just series_id, content_type, updated_at
                 self.stats["episodes_enriched"] += 1
 
         logger.info(f"      ✅ Linked {len(episodes)} episodes")
@@ -426,7 +423,6 @@ class SeriesOrganizer:
         # Build series parent lookup by normalized title
         series_parents = await self.db.content.find(
             {
-                "is_series": True,
                 "$or": [
                     {"series_id": None},
                     {"series_id": {"$exists": False}},
@@ -500,7 +496,6 @@ class SeriesOrganizer:
             now = datetime.now(timezone.utc)
             series_doc = {
                 "title": series_name,
-                "is_series": True,
                 "content_type": "series",
                 "season": None,
                 "episode": None,
@@ -604,9 +599,12 @@ class SeriesOrganizer:
         # Count series parents
         series_parents = await self.db.content.find(
             {
-                "is_series": True,
                 "season": None,
                 "episode": None,
+                "$or": [
+                    {"series_id": None},
+                    {"series_id": {"$exists": False}},
+                ],
             }
         ).to_list(None)
         report["total_series_parents"] = len(series_parents)

@@ -134,7 +134,8 @@ class Content(Document):
     is_quality_variant: bool = False  # True if linked as variant of another content
 
     # Series info
-    is_series: bool = False
+    # NOTE: Removed is_series field - use category_name or series structure instead
+    # is_series can be determined by: category_name contains "Series" OR has series_id/total_episodes
     season: Optional[int] = None
     episode: Optional[int] = None
     series_id: Optional[str] = None

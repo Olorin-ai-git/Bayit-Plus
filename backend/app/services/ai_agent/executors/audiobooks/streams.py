@@ -190,7 +190,7 @@ async def execute_sync_audiobook_posters(
         # Process all parent audiobooks
         parents = await Content.find({
             "content_format": "audiobook",
-            "is_series": True,
+            # Removed: "is_series": True (parent audiobooks determined by series_id pattern)
             "$or": [
                 {"series_id": None},
                 {"series_id": {"$exists": False}},

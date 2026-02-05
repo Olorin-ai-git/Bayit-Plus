@@ -212,13 +212,13 @@ async def check_referential_integrity() -> Dict[str, Any]:
         # Check 2: Content.series_id -> Content.id (parent series)
         logger.info("      Checking series references...")
         series_episodes = await Content.find(
-            {"is_series": False, "series_id": {"$exists": True, "$ne": None}}
+            {"series_id": {"$exists": True, "$ne": None, "$nin": ["", None]}}
         ).to_list(length=None)
 
         for episode in series_episodes:
             # Check if parent series exists
             parent = await Content.find_one(
-                {"_id": episode.series_id, "is_series": True}
+                {"_id": episode.series_id}
             )
             if not parent:
                 result["orphaned"].append(

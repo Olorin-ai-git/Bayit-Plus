@@ -8,6 +8,7 @@ import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from app.api.routes.content.utils import is_series_content
 from app.models.content import Content
 from app.models.content_taxonomy import (CONTENT_FORMATS, Audience,
                                          ContentSection, Genre,
@@ -264,8 +265,9 @@ async def execute_suggest_taxonomy_classification(
         content_format = _determine_content_format(content)
         if content_format:
             suggestions["content_format"] = content_format
+            is_series = is_series_content(content.model_dump())
             reasoning.append(
-                f"Suggested format '{content_format}' based on is_series={content.is_series}, content_type={content.content_type}"
+                f"Suggested format '{content_format}' based on is_series={is_series}, content_type={content.content_type}"
             )
 
         # Determine audience
@@ -297,7 +299,7 @@ async def execute_suggest_taxonomy_classification(
             "current_data": {
                 "category_id": content.category_id,
                 "category_name": content.category_name,
-                "is_series": content.is_series,
+                "is_series": is_series_content(content.model_dump()),
                 "is_kids_content": getattr(content, "is_kids_content", False),
                 "content_type": content.content_type,
                 "genre": content.genre,

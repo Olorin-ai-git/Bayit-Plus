@@ -36,7 +36,13 @@ async def find_unlinked_episodes(limit: int = 100) -> List[UnlinkedEpisode]:
         query = {
             "$and": [
                 {"is_published": True},
-                {"is_series": {"$ne": True}},  # Not a series container
+                # Not a series container (has series_id or no series indicators)
+                {
+                    "$or": [
+                        {"series_id": {"$exists": True, "$ne": None, "$ne": ""}},
+                        {"content_type": "episode"},
+                    ]
+                },
                 {"series_id": None},
                 {
                     "$or": [
@@ -90,8 +96,8 @@ async def find_episodes_with_incomplete_data() -> List[Dict[str, Any]]:
     try:
         # Find episodes that have series_id but missing season/episode
         query = {
-            "series_id": {"$ne": None},
-            "is_series": {"$ne": True},
+            "series_id": {"$ne": None, "$exists": True},
+            # Episodes have series_id, so we don't need to check is_series
             "$or": [
                 {"season": None},
                 {"episode": None},

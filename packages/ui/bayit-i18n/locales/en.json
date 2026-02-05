@@ -3747,6 +3747,8 @@
     "sections": {
       "movies": "Movies",
       "series": "Series",
+      "israeli-movies": "Israeli Movies",
+      "israeli-series": "Israeli Series",
       "kids": "Kids",
       "youngsters": "Youngsters",
       "music": "Music",
@@ -4726,9 +4728,6 @@
     "allChannels": "All Channels",
     "liveChannels": "Live Channels",
     "showOnlyWithSubtitles": "Show only with subtitles",
-    "israeliMovies": "Israeli Movies",
-    "israeli-movies": "Israeli Movies",
-    "israeli-series": "Israeli Series",
     "action": "Action & Thriller",
     "comedy": "Comedy",
     "drama": "Drama",

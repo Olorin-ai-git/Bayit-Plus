@@ -54,7 +54,7 @@ async def find_series_via_tmdb(
         # Check if we have a series with this TMDB ID
         existing = await Content.find_one(
             {
-                "is_series": True,
+                "category_name": {"$regex": "series|סדרות", "$options": "i"},
                 "tmdb_id": tmdb_id,
             }
         )

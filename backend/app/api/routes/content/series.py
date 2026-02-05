@@ -11,7 +11,7 @@ from app.api.routes.content.beta_filter import (
     build_beta_content_filter,
     check_beta_access,
 )
-from app.api.routes.content.utils import is_native_app
+from app.api.routes.content.utils import is_native_app, is_series_content
 from app.core.security import get_optional_user
 from app.models.content import Content
 from app.models.user import User
@@ -57,7 +57,8 @@ async def list_all_series(
     # Also exclude series with no episodes from user-facing endpoints
     filters = {
         "is_published": True,
-        "is_series": True,
+        # Use category_name instead of deprecated is_series field
+        "category_name": {"$regex": "series|סדרות", "$options": "i"},
         "total_episodes": {"$gt": 0},  # Hide series without episodes
         "$or": [
             {"series_id": None},
@@ -134,7 +135,12 @@ async def get_series_details(
 ):
     """Get full series details with seasons summary."""
     series = await Content.get(series_id)
-    if not series or not series.is_published or not series.is_series:
+    if not series or not series.is_published:
+        raise HTTPException(status_code=404, detail="Series not found")
+
+    # Verify it's actually a series using helper function
+    series_dict = series.model_dump()
+    if not is_series_content(series_dict):
         raise HTTPException(status_code=404, detail="Series not found")
 
     # Check beta content access - return 404 to hide existence from non-authorized users
@@ -173,7 +179,8 @@ async def get_series_details(
         "category_id": series.category_id,
         "_id": {"$ne": series.id},
         "is_published": True,
-        "is_series": True,
+        # Use category_name instead of deprecated is_series field
+        "category_name": {"$regex": "series|סדרות", "$options": "i"},
         **beta_filter,
     }
     related = await Content.find(related_query).limit(6).to_list()
@@ -224,7 +231,12 @@ async def get_series_seasons(
 ):
     """Get all seasons for a series."""
     series = await Content.get(series_id)
-    if not series or not series.is_published or not series.is_series:
+    if not series or not series.is_published:
+        raise HTTPException(status_code=404, detail="Series not found")
+
+    # Verify it's actually a series using helper function
+    series_dict = series.model_dump()
+    if not is_series_content(series_dict):
         raise HTTPException(status_code=404, detail="Series not found")
 
     # Check beta content access on parent series
@@ -267,7 +279,12 @@ async def get_season_episodes(
 ):
     """Get episodes for a specific season."""
     series = await Content.get(series_id)
-    if not series or not series.is_published or not series.is_series:
+    if not series or not series.is_published:
+        raise HTTPException(status_code=404, detail="Series not found")
+
+    # Verify it's actually a series using helper function
+    series_dict = series.model_dump()
+    if not is_series_content(series_dict):
         raise HTTPException(status_code=404, detail="Series not found")
 
     # Check beta content access on parent series

@@ -12,7 +12,8 @@ from fastapi import APIRouter, Depends, Query, Request
 
 from app.api.routes.content.beta_filter import build_beta_content_filter
 from app.api.routes.content.utils import (convert_to_proxy_url,
-                                          is_series_by_category)
+                                          is_series_by_category,
+                                          is_series_content)
 from app.core.security import get_optional_user, get_passkey_session
 from app.models.content import Content
 from app.models.user import User
@@ -113,13 +114,11 @@ async def get_all_content(
         for cat in categories
     }
 
-    def is_series_content(item) -> bool:
-        return item.is_series or is_series_by_category(item.category_name)
-
+    # Use global is_series_content helper from utils (NOT local function)
     content_items = []
     for item in items:
         cat_info = category_map.get(item.category_id, {})
-        is_series = is_series_content(item)
+        is_series = is_series_content(item.model_dump())
         item_data = {
             "id": str(item.id),
             "title": item.title,
@@ -236,7 +235,7 @@ async def search_content(
                     "duration": item.duration,
                     "year": item.year,
                     "category": item.category_name,
-                    "type": "series" if item.is_series else "movie",
+                    "type": "series" if is_series_content(item.model_dump()) else "movie",
                 }
             )
 

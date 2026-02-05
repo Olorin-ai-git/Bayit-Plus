@@ -22,6 +22,7 @@ import { useDirection } from '@/hooks/useDirection';
 import { liveService, radioService, podcastService } from '@/services/api';
 import { audiobookService } from '@/services/audiobookService';
 import logger from '@/utils/logger';
+import { isSeriesContent } from '@/utils/contentHelpers';
 import type { ContentItem } from './form/ContentSelectionSection';
 
 interface ContentPickerModalProps {
@@ -119,7 +120,7 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
 
         // Filter to only parent audiobooks (is_series=true, no series_id)
         const parentAudiobooks = (response.items || []).filter((item: any) =>
-          item.is_series === true && !item.series_id
+          isSeriesContent(item) && !item.series_id
         );
 
         setAudiobooks(parentAudiobooks.map((item: any) => ({

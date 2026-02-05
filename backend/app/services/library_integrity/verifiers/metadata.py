@@ -7,6 +7,7 @@ Validates metadata completeness and re-fetches from TMDB when needed.
 import logging
 from typing import TYPE_CHECKING
 
+from app.api.routes.content.utils import is_series_content
 from app.models.content import Content
 from app.services.tmdb_service import TMDBService
 
@@ -72,7 +73,8 @@ async def rehydrate_metadata_from_tmdb(
 
     try:
         # Search TMDB
-        if content.is_series:
+        is_series = is_series_content(content.model_dump())
+        if is_series:
             tmdb_data = await tmdb_service.search_tv_series(content.title, content.year)
         else:
             tmdb_data = await tmdb_service.search_movie(content.title, content.year)
@@ -83,7 +85,7 @@ async def rehydrate_metadata_from_tmdb(
 
         # Get details
         tmdb_id = tmdb_data.get("id")
-        if content.is_series:
+        if is_series:
             details = await tmdb_service.get_tv_series_details(tmdb_id)
         else:
             details = await tmdb_service.get_movie_details(tmdb_id)
@@ -105,7 +107,7 @@ async def rehydrate_metadata_from_tmdb(
                 fields_updated.append("poster_url")
 
             if not content.year:
-                if content.is_series and details.get("first_air_date"):
+                if is_series and details.get("first_air_date"):
                     year_str = details["first_air_date"][:4]
                     content.year = int(year_str)
                     fields_updated.append("year")

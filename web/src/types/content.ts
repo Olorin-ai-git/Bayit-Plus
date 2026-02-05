@@ -23,7 +23,8 @@ export interface Content {
   stream_type: 'hls' | 'dash'
   is_drm_protected: boolean
   drm_key_id?: string
-  is_series: boolean
+  /** @deprecated Use isSeriesContent() helper from utils/contentHelpers.ts instead */
+  is_series?: boolean
   season?: number
   episode?: number
   series_id?: string

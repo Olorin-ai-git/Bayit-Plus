@@ -65,7 +65,6 @@ async def sample_series(series_linker_db_client):
         genres=["Drama", "Crime"],
         year=2008,
         rating=9.5,
-        is_series=True,
         category_id="test_series_category",
         stream_url="https://test.example.com/series/stream.m3u8",
     )
@@ -277,7 +276,6 @@ async def test_find_unlinked_episodes(series_linker_service, series_linker_db_cl
         title_en="Test Series",
         content_type="series",
         year=2020,
-        is_series=True,
         category_id="test_series_cat",
         stream_url="https://test.example.com/series/stream.m3u8",
     )

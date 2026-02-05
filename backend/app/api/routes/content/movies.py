@@ -11,7 +11,7 @@ from app.api.routes.content.beta_filter import (
     build_beta_content_filter,
     check_beta_access,
 )
-from app.api.routes.content.utils import is_native_app
+from app.api.routes.content.utils import is_native_app, is_series_content
 from app.core.config import settings
 from app.core.security import get_current_active_user, get_optional_user
 from app.models.content import Content
@@ -37,7 +37,8 @@ async def list_all_movies(
     beta_filter = build_beta_content_filter(current_user)
     filters = {
         "is_published": True,
-        "is_series": {"$ne": True},
+        # Use category_name for movies (NOT series categories)
+        "category_name": {"$regex": "^(?!.*(series|סדרות)).*$", "$options": "i"},
         "$or": [
             {"series_id": None},
             {"series_id": {"$exists": False}},
@@ -121,7 +122,12 @@ async def get_movie_details(
 ):
     """Get movie details with TMDB/IMDB data."""
     movie = await Content.get(movie_id)
-    if not movie or not movie.is_published or movie.is_series:
+    if not movie or not movie.is_published:
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+    # Verify it's NOT a series using helper function
+    movie_dict = movie.model_dump()
+    if is_series_content(movie_dict):
         raise HTTPException(status_code=404, detail="Movie not found")
 
     # Check beta content access - return 404 to hide existence from non-authorized users
@@ -213,7 +219,12 @@ async def enrich_movie_with_tmdb(
         raise HTTPException(status_code=403, detail="Admin access required")
 
     movie = await Content.get(movie_id)
-    if not movie or movie.is_series:
+    if not movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+    # Verify it's NOT a series using helper function
+    movie_dict = movie.model_dump()
+    if is_series_content(movie_dict):
         raise HTTPException(status_code=404, detail="Movie not found")
 
     tmdb_data = await tmdb_service.enrich_movie_content(movie.title, movie.year)

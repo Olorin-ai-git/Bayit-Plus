@@ -21,6 +21,7 @@ import {
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
 import PageLoading from '@/components/common/PageLoading';
+import { isSeriesContent } from '@/utils/contentHelpers';
 
 interface Subcategory {
   id: string;
@@ -50,6 +51,7 @@ interface ContentItem {
   category?: string;
   category_name_en?: string;
   category_name_es?: string;
+  /** @deprecated Use isSeriesContent() helper from @/utils/contentHelpers instead */
   is_series?: boolean;
   available_subtitle_languages?: string[];
   has_subtitles?: boolean;

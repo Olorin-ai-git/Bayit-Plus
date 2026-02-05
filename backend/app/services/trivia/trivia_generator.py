@@ -11,6 +11,7 @@ from typing import Optional
 
 from anthropic import AsyncAnthropic
 
+from app.api.routes.content.utils import is_series_content
 from app.core.config import settings
 from app.models.content import Content
 from app.models.trivia import ContentTrivia, TriviaFactModel
@@ -114,7 +115,8 @@ class TriviaGenerationService:
         # NEW: Translate all facts to Hebrew and Spanish
         facts = await self._translate_facts(facts, content.id)
 
-        content_type = "series_episode" if content.is_series else "vod"
+        is_series = is_series_content(content.model_dump())
+        content_type = "series_episode" if is_series else "vod"
         trivia = await ContentTrivia.create_or_update(
             content_id=str(content.id),
             content_type=content_type,

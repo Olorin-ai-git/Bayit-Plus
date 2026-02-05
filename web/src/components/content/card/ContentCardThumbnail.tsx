@@ -7,6 +7,7 @@ import { platformClass } from '@/utils/platformClass';
 import { GlassPlaceholder } from '@olorin/glass-ui';
 import type { ContentType as GlassContentType } from '@olorin/design-tokens';
 import { SubtitleFlags, ContentBadges } from '@bayit/shared';
+import { isSeriesContent } from '@/utils/contentHelpers';
 
 /**
  * Zod schema for ContentCardThumbnail props
@@ -17,6 +18,7 @@ const ContentCardThumbnailPropsSchema = z.object({
     title: z.string().optional(),
     thumbnail: z.string().optional(),
     type: z.enum(['live', 'radio', 'podcast', 'vod', 'movie', 'series']).optional(),
+    /** @deprecated Use isSeriesContent() helper instead */
     is_series: z.boolean().optional(),
     duration: z.string().optional(),
     progress: z.number().min(0).max(100).optional(),
@@ -117,7 +119,7 @@ export function ContentCardThumbnail(props: ContentCardThumbnailProps) {
       )}
 
       {/* Duration Badge - for movies */}
-      {content.duration && !content.is_series && (
+      {content.duration && !isSeriesContent(content) && (
         <View
           className={platformClass(
             'absolute bottom-3 px-2 py-0.5 rounded-sm bg-black/70',
@@ -132,7 +134,7 @@ export function ContentCardThumbnail(props: ContentCardThumbnailProps) {
       )}
 
       {/* Episode Count Badge - for series */}
-      {(content.is_series || content.type === 'series') &&
+      {(isSeriesContent(content) || content.type === 'series') &&
        content.total_episodes !== undefined &&
        content.total_episodes > 0 && (
         <View

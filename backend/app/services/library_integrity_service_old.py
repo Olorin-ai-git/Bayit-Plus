@@ -21,6 +21,8 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import httpx
+
+from app.api.routes.content.utils import is_series_content
 from beanie import PydanticObjectId
 
 from app.core.config import settings
@@ -678,7 +680,7 @@ class LibraryIntegrityService:
 
         try:
             # Search TMDB
-            if content.is_series:
+            if is_series_content(content.model_dump()):
                 tmdb_data = await self.tmdb_service.search_tv_series(
                     content.title, content.year
                 )
@@ -693,7 +695,7 @@ class LibraryIntegrityService:
 
             # Get details
             tmdb_id = tmdb_data.get("id")
-            if content.is_series:
+            if is_series_content(content.model_dump()):
                 details = await self.tmdb_service.get_tv_series_details(tmdb_id)
             else:
                 details = await self.tmdb_service.get_movie_details(tmdb_id)
@@ -715,7 +717,7 @@ class LibraryIntegrityService:
                     fields_updated.append("poster_url")
 
                 if not content.year:
-                    if content.is_series and details.get("first_air_date"):
+                    if is_series_content(content.model_dump()) and details.get("first_air_date"):
                         year_str = details["first_air_date"][:4]
                         content.year = int(year_str)
                         fields_updated.append("year")

@@ -109,7 +109,7 @@ async def fetch_and_tag_kids_movies(dry_run: bool = False, limit: Optional[int] 
 
         # Fetch movies with TMDB IDs but no content_rating
         query = {
-            "is_series": False,
+            "content_type": "movie",
             "tmdb_id": {"$exists": True, "$ne": None},
             "$or": [
                 {"content_rating": {"$exists": False}},

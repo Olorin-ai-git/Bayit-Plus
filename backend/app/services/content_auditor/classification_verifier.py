@@ -132,6 +132,9 @@ async def verify_classification_batch(
     if not items:
         return []
 
+    # Import helper for series detection
+    from app.api.routes.content.utils import is_series_content
+
     items_data = [
         {
             "content_id": str(item.id),
@@ -139,7 +142,7 @@ async def verify_classification_batch(
             "description": item.description[:200] if item.description else "",
             "genre": item.genre,
             "year": item.year,
-            "is_series": item.is_series,
+            "is_series": is_series_content(item.model_dump()),
         }
         for item in items
     ]

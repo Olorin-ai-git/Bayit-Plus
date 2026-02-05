@@ -6,6 +6,7 @@ Handles complete deletion of content including GCS files and related documents
 import logging
 from typing import List
 
+from app.api.routes.content.utils import is_series_content
 from app.core.storage import get_storage_provider
 from app.models.content import Content
 
@@ -46,7 +47,7 @@ class ContentDeletionService:
             storage = get_storage_provider()
 
             # If this is a series, delete all episodes first
-            if content.is_series and delete_episodes:
+            if is_series_content(content.model_dump()) and delete_episodes:
                 episodes = await Content.find({"series_id": str(content.id)}).to_list()
                 for episode in episodes:
                     episode_result = await self._delete_single_content(

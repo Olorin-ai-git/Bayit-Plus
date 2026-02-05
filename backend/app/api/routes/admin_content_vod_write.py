@@ -21,6 +21,7 @@ from app.services.subtitle_extraction_service import \
 from .admin_content_schemas import (BatchBetaRequest, ContentCreateRequest,
                                     ContentUpdateRequest, MergeContentRequest)
 from .admin_content_utils import has_permission, log_audit
+from app.api.routes.content.utils import is_series_content
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -55,7 +56,7 @@ async def create_content(
         stream_type=data.stream_type,
         is_drm_protected=data.is_drm_protected,
         drm_key_id=data.drm_key_id,
-        is_series=data.is_series,
+        # NOTE: is_series field removed - determined from category_name/series structure
         season=data.season,
         episode=data.episode,
         series_id=data.series_id,
@@ -256,7 +257,8 @@ async def delete_content(
         raise HTTPException(status_code=404, detail="Content not found")
 
     content_title = content.title
-    is_series = content.is_series
+    # Determine if series using helper function (NOT is_series field)
+    is_series = is_series_content(content.model_dump())
 
     # Use the deletion service for complete cleanup
     if delete_files:
@@ -275,7 +277,7 @@ async def delete_content(
         content_id,
         {
             "title": content_title,
-            "is_series": is_series,
+            "is_series": is_series,  # Computed from category/structure
             "gcs_files_deleted": result.get("gcs_files_deleted", 0),
             "episodes_deleted": result.get("episodes_deleted", 0),
         },
@@ -499,7 +501,8 @@ async def merge_content(
             )
 
         # Validate all contents are same type (series/movie)
-        if not all(c.is_series == base_content.is_series for c in merge_contents):
+        base_is_series = is_series_content(base_content.model_dump())
+        if not all(is_series_content(c.model_dump()) == base_is_series for c in merge_contents):
             raise HTTPException(
                 status_code=400,
                 detail="All content items must be of the same type (series or movie)",
@@ -510,7 +513,7 @@ async def merge_content(
         errors = []
 
         # For series, transfer seasons and episodes
-        if base_content.is_series:
+        if base_is_series:
             for merge_series in merge_contents:
                 try:
                     # Transfer seasons if requested
@@ -518,7 +521,7 @@ async def merge_content(
                         seasons = await Content.find(
                             {
                                 "series_id": merge_series.id,
-                                "is_series": False,
+                                # Episodes have series_id, not parent series
                                 "season_number": {"$exists": True, "$ne": None},
                             }
                         ).to_list()
@@ -534,7 +537,7 @@ async def merge_content(
                         episodes = await Content.find(
                             {
                                 "series_id": merge_series.id,
-                                "is_series": False,
+                                # Episodes have series_id, not parent series
                                 "episode_number": {"$exists": True, "$ne": None},
                             }
                         ).to_list()

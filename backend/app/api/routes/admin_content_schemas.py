@@ -26,7 +26,7 @@ class ContentCreateRequest(BaseModel):
     stream_type: str = "hls"
     is_drm_protected: bool = False
     drm_key_id: Optional[str] = None
-    is_series: bool = False
+    # NOTE: is_series field removed - determined from category_name/series structure
     season: Optional[int] = None
     episode: Optional[int] = None
     series_id: Optional[str] = None
@@ -55,7 +55,7 @@ class ContentUpdateRequest(BaseModel):
     stream_type: Optional[str] = None
     is_drm_protected: Optional[bool] = None
     drm_key_id: Optional[str] = None
-    is_series: Optional[bool] = None
+    # NOTE: is_series field removed - determined from category_name/series structure
     season: Optional[int] = None
     episode: Optional[int] = None
     series_id: Optional[str] = None

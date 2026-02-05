@@ -12,7 +12,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.api.routes.content.beta_filter import build_beta_content_filter
 from app.api.routes.content.utils import (convert_to_proxy_url,
-                                          is_series_by_category)
+                                          is_series_by_category,
+                                          is_series_content)
 from app.core.security import get_optional_user
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
@@ -248,7 +249,8 @@ async def get_by_category(
 
     result_items = []
     for item in items:
-        is_series = item.is_series or is_series_by_category(section_names["he"])
+        # Determine if series using helper function (NOT is_series field)
+        is_series = is_series_content(item.model_dump()) or is_series_by_category(section_names["he"])
 
         item_data = {
             "id": str(item.id),
@@ -260,7 +262,7 @@ async def get_by_category(
             "category_name_en": section_names["en"],
             "category_name_es": section_names["es"],
             "type": "series" if is_series else "movie",
-            "is_series": is_series,
+            "is_series": is_series,  # Computed from category/structure
         }
 
         if is_series:
@@ -363,12 +365,14 @@ async def get_subcategory_content(
         **beta_filter,
     }
 
-    # Add content type filter if specified
+    # Add content type filter if specified (using category_name, NOT is_series)
     if content_type == 'movies':
-        content_filter["is_series"] = False
+        # Filter for movie categories (NOT series categories)
+        content_filter["category_name"] = {"$regex": "^(?!.*(series|סדרות)).*$", "$options": "i"}
         logger.info(f"Subcategory filtering: movies only for {section_slug}/{subcategory_slug}")
     elif content_type == 'series':
-        content_filter["is_series"] = True
+        # Filter for series categories
+        content_filter["category_name"] = {"$regex": "series|סדרות", "$options": "i"}
         logger.info(f"Subcategory filtering: series only for {section_slug}/{subcategory_slug}")
     else:
         logger.info(f"Subcategory filtering: all content types for {section_slug}/{subcategory_slug}")
@@ -378,6 +382,8 @@ async def get_subcategory_content(
 
     result_items = []
     for item in items:
+        # Determine if series using helper function (NOT is_series field)
+        is_series_val = is_series_content(item.model_dump())
         result_items.append(
             {
                 "id": str(item.id),
@@ -385,8 +391,8 @@ async def get_subcategory_content(
                 "thumbnail": item.thumbnail_data or item.thumbnail or item.poster_url,
                 "duration": item.duration,
                 "year": item.year,
-                "type": "series" if item.is_series else "movie",
-                "is_series": item.is_series,
+                "type": "series" if is_series_val else "movie",
+                "is_series": is_series_val,  # Computed from category/structure
             }
         )
 

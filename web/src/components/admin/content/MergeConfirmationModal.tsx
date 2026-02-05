@@ -7,6 +7,7 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 import { Icon } from '@olorin/shared-icons/web'
 import logger from '@/utils/logger'
+import { isSeriesContent } from '@/utils/contentHelpers'
 
 const log = logger.scope('MergeConfirmationModal')
 
@@ -16,7 +17,8 @@ export interface ContentItem {
   description?: string
   thumbnail?: string
   year?: number
-  is_series: boolean
+  /** @deprecated Use isSeriesContent() helper instead */
+  is_series?: boolean
   episode_count?: number
 }
 
@@ -139,7 +141,7 @@ const MergeConfirmationModal: React.FC<MergeConfirmationModalProps> = ({
                     {item.year}
                   </Text>
                 )}
-                {item.is_series && item.episode_count !== undefined && (
+                {isSeriesContent(item) && item.episode_count !== undefined && (
                   <Text style={[styles.itemMeta, { textAlign }]}>
                     {item.episode_count} {t('admin.content.episodes', 'episodes')}
                   </Text>

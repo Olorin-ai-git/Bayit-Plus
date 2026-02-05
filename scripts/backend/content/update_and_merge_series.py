@@ -32,6 +32,7 @@ import logging
 from bson import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
+from app.api.routes.content.utils import is_series_content
 from app.models.content import Content
 from app.core.config import settings
 
@@ -110,7 +111,7 @@ class SeriesMerger:
             return {
                 "id": series_id,
                 "title": series.title,
-                "is_series": series.is_series,
+                "is_series": is_series_content(series.model_dump()),
                 "content_type": series.content_type,
                 "tmdb_id": series.tmdb_id,
                 "poster_url": series.poster_url,

@@ -650,7 +650,6 @@ async def import_movies(
                 content_type="movie",
                 content_format="movie",
                 is_published=True,
-                is_series=False,
             )
             await content.insert()
             imported.append(metadata["title"])
@@ -763,7 +762,6 @@ async def import_series(
                 content_type="series",
                 content_format="series",
                 is_published=True,
-                is_series=True,
                 season=metadata["season"],
                 episode=metadata["episode"],
             )

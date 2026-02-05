@@ -78,7 +78,7 @@ async def tag_kids_movies(dry_run: bool = False):
         # Fetch all movies (not series)
         logger.info("Fetching all movies from database...")
         all_movies = await content_collection.find({
-            "is_series": False,
+            "content_type": "movie",
             "is_published": True
         }).to_list(length=None)
 

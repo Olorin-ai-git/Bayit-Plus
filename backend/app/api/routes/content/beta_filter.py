@@ -20,7 +20,8 @@ MOVIES_SERIES_FILTER = {
     "$or": [
         {"content_format": {"$in": ["movie", "series", None]}},
         {"content_format": {"$exists": False}},
-        {"is_series": True},
+        # Use category_name instead of deprecated is_series field
+        {"category_name": {"$regex": "movie|series|סרט|סדר", "$options": "i"}},
     ]
 }
 
@@ -53,6 +54,31 @@ def build_beta_content_filter(user: Optional[User]) -> dict:
             MOVIES_SERIES_FILTER,
         ]
     }
+
+
+def build_spotlight_filter(user: Optional[User]) -> dict:
+    """Return MongoDB $match condition for hero carousel spotlight content.
+
+    Spotlight allows all content types (movies, series, podcasts, audiobooks, radio)
+    with beta filtering but no content type restrictions.
+
+    Args:
+        user: The current user, or None for anonymous access.
+
+    Returns:
+        A dict to inject into MongoDB queries.
+        - Admin: Movies and series only
+        - Beta user: Beta content only (all types: movies, series, podcasts, audiobooks, radio)
+        - Non-beta/anonymous: Non-beta content (all types: movies, series, podcasts, audiobooks, radio)
+    """
+    if user and user.is_admin_user():
+        # Admin still sees only movies and series in spotlight
+        return MOVIES_SERIES_FILTER
+    if user and getattr(user, "is_beta_user", False):
+        # Beta users see all beta content types
+        return {"is_beta_content": True}
+    # Regular users: all non-beta content types
+    return {"is_beta_content": False}
 
 
 def build_beta_only_filter(user: Optional[User]) -> dict:

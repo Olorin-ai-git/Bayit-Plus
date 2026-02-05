@@ -7,6 +7,7 @@ Functions for creating series from episodes and fixing misclassified content.
 import logging
 from typing import Any, Dict
 
+from app.api.routes.content.utils import is_series_content
 from app.core.config import settings
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection
@@ -44,7 +45,7 @@ async def execute_create_series_from_episode(
             backdrop=episode.backdrop,
             category_id=str(category.id) if category else "",
             category_name="Series",
-            is_series=True,
+            # Removed: is_series=True (field no longer exists)
             content_type="series",
             stream_url="",
             is_published=True,
@@ -83,7 +84,7 @@ async def execute_find_misclassified_episodes(
         misclassified = (
             await Content.find(
                 {
-                    "is_series": True,
+                    "category_name": {"$regex": "series|סדרות", "$options": "i"},
                     "$or": [
                         {"title": {"$regex": "S[0-9]{2}E[0-9]{2}", "$options": "i"}},
                         {"title": {"$regex": "Episode [0-9]+", "$options": "i"}},
@@ -127,16 +128,16 @@ async def execute_fix_misclassified_series(
             return error
 
         before_state = {
-            "is_series": content.is_series,
+            "is_series": is_series_content(content.model_dump()),
             "content_type": content.content_type,
         }
 
-        content.is_series = False
+        # Removed: content.is_series = False (field no longer exists)
         content.content_type = "episode"
         await content.save()
 
         after_state = {
-            "is_series": content.is_series,
+            "is_series": False,  # For audit trail only
             "content_type": content.content_type,
         }
 

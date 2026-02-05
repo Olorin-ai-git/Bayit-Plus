@@ -46,14 +46,13 @@ async def add_tagad_series():
             print(f"Using existing category: סדרות (ID: {tagad_category.id})")
 
         # Find or create the series document
-        tagad_series = await Content.find_one({"title": "תאגד", "is_series": True, "series_id": None})
+        tagad_series = await Content.find_one({"title": "תאגד", "content_type": "series", "series_id": None})
         if not tagad_series:
             tagad_series = Content(
                 title="תאגד",
                 description="סדרה דרמטית ישראלית",
                 category_id=str(tagad_category.id),
                 category_name="סדרות",
-                is_series=True,
                 is_published=True,
                 is_featured=True,
                 requires_subscription="basic",

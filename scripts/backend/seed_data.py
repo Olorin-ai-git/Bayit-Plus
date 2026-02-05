@@ -138,7 +138,6 @@ async def seed_database(clear_existing=False):
             "year": 2015,
             "rating": "TV-MA",
             "genre": "דרמה, מתח",
-            "is_series": True,
             "stream_url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
         },
         {
@@ -152,7 +151,6 @@ async def seed_database(clear_existing=False):
             "year": 2013,
             "rating": "TV-14",
             "genre": "דרמה",
-            "is_series": True,
             "stream_url": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
         },
         # Comedy

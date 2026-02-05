@@ -8,6 +8,7 @@ import logging
 from datetime import datetime
 from typing import Any, Dict
 
+from app.api.routes.content.utils import is_series_content
 from app.services.ai_agent.executors._shared import (
     get_content_or_error, get_content_section_or_error, handle_dry_run,
     log_librarian_action)
@@ -105,12 +106,12 @@ async def execute_reclassify_as_series(
 
         before_state = {
             "category_id": content.category_id,
-            "is_series": content.is_series,
+            "is_series": is_series_content(content.model_dump()),
         }
 
         content.category_id = str(category.id)
         content.category_name = "Series"
-        content.is_series = True
+        # Removed: content.is_series = True (field no longer exists)
         content.content_type = "series"
         content.updated_at = datetime.utcnow()
         await content.save()
@@ -152,7 +153,7 @@ async def execute_reclassify_as_movie(
 
         content.category_id = str(category.id)
         content.category_name = "Movies"
-        content.is_series = False
+        # Removed: content.is_series = False (field no longer exists)
         content.content_type = "vod"
         content.updated_at = datetime.utcnow()
         await content.save()

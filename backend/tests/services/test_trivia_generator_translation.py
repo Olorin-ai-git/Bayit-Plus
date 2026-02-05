@@ -25,7 +25,6 @@ class TestTriviaGeneratorTranslation:
         content.genre = "Drama"
         content.director = "Test Director"
         content.tmdb_id = 12345
-        content.is_series = False
         return content
 
     @pytest.fixture
@@ -108,7 +107,6 @@ class TestTriviaGeneratorTranslation:
         mock_content.id = "test-123"
         mock_content.title = "Test"
         mock_content.tmdb_id = None
-        mock_content.is_series = False
 
         # Mock ContentTrivia.create_or_update to avoid database calls
         with patch('app.services.trivia.trivia_generator.ContentTrivia.create_or_update') as mock_create:

@@ -8,6 +8,7 @@ import { colors, spacing } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { platformClass } from '@/utils/platformClass';
 import VODPageEmptyState from './VODPageEmptyState';
+import { isSeriesContent } from '@/utils/contentHelpers';
 
 const ContentItemSchema = z.object({
   id: z.string(),
@@ -19,6 +20,7 @@ const ContentItemSchema = z.object({
   category: z.string().optional(),
   category_name_en: z.string().optional(),
   category_name_es: z.string().optional(),
+  /** @deprecated Use isSeriesContent() helper instead */
   is_series: z.boolean().optional(),
   available_subtitle_languages: z.array(z.string()).optional(),
   has_subtitles: z.boolean().optional(),

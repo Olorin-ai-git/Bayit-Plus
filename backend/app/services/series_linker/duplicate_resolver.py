@@ -34,10 +34,10 @@ async def find_duplicate_episodes(
 
     try:
         match_stage: Dict[str, Any] = {
-            "series_id": {"$ne": None},
+            "series_id": {"$ne": None, "$exists": True},
             "season": {"$ne": None},
             "episode": {"$ne": None},
-            "is_series": {"$ne": True},
+            # Episodes have series_id, so no need to check is_series
         }
 
         if series_id:

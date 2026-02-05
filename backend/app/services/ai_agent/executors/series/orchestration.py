@@ -50,7 +50,7 @@ async def execute_organize_all_series(
         link_result = await execute_auto_link_episodes(audit_id, dry_run=False)
 
         # Step 2: Sync posters for all series
-        all_series = await Content.find({"is_series": True}).to_list()
+        all_series = await Content.find({"category_name": {"$regex": "series|סדרות", "$options": "i"}}).to_list()
         synced = 0
 
         for series in all_series:

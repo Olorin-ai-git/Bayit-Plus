@@ -49,7 +49,6 @@ async def sample_series(test_db_client):
     series = Content(
         title="The Test Show",
         title_en="The Test Show",
-        is_series=True,
         content_type="series",
         description="A test TV series for testing",
         description_en="A test TV series for testing",
@@ -83,7 +82,6 @@ async def sample_episodes(test_db_client, sample_series):
     episode1 = Content(
         title="The Test Show S01E01 - Pilot",
         title_en="The Test Show S01E01 - Pilot",
-        is_series=False,
         content_type="episode",
         description="The pilot episode",
         is_published=True,
@@ -102,7 +100,6 @@ async def sample_episodes(test_db_client, sample_series):
     episode2 = Content(
         title="The Test Show S01E02 - Second Episode",
         title_en="The Test Show S01E02 - Second Episode",
-        is_series=False,
         content_type="episode",
         description="The second episode",
         is_published=True,
@@ -121,7 +118,6 @@ async def sample_episodes(test_db_client, sample_series):
     episode3 = Content(
         title="The Test Show - Special Episode",
         title_en="The Test Show - Special Episode",
-        is_series=False,
         content_type="episode",
         description="A special episode",
         is_published=True,

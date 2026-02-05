@@ -55,11 +55,11 @@ async def relink_orphan_episodes(dry_run: bool = False):
     # Build series parent lookup by normalized title
     series_parents = await Content.find(
         {
-            "is_series": True,
             "$or": [
                 {"series_id": None},
                 {"series_id": {"$exists": False}},
             ],
+            "content_type": "series",
         }
     ).to_list()
 

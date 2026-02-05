@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import logging
 
+from app.api.routes.content.utils import is_series_content
 from app.core.config import settings
 from app.models.content import Content
 from app.services.tmdb_service import tmdb_service
@@ -81,7 +82,7 @@ async def enrich_content(content: Content, dry_run: bool = False) -> bool:
         logger.info(f"📝 Processing: {content.title} (ID: {content.id})")
 
         # Determine content type
-        is_series = content.is_series or content.season is not None
+        is_series = is_series_content(content.model_dump()) or content.season is not None
 
         # Fetch metadata from TMDB
         if is_series:

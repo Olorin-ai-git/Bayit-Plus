@@ -11,7 +11,7 @@ from app.api.routes.content.beta_filter import (
     build_beta_content_filter,
     check_beta_access,
 )
-from app.api.routes.content.utils import is_native_app
+from app.api.routes.content.utils import is_native_app, is_series_content
 from app.core.security import (get_current_active_user, get_optional_user,
                                get_passkey_session)
 from app.models.content import Content
@@ -118,8 +118,8 @@ async def get_content(
         "genre": content.genre,
         "cast": content.cast,
         "director": content.director,
-        "is_series": content.is_series,
-        "type": "series" if content.is_series else "movie",
+        "is_series": is_series_content(content.model_dump()),  # Computed from category/structure
+        "type": "series" if is_series_content(content.model_dump()) else "movie",
         "available_subtitle_languages": content.available_subtitle_languages or [],
         "has_subtitles": bool(
             content.available_subtitle_languages
@@ -132,7 +132,7 @@ async def get_content(
                 "thumbnail": item.thumbnail,
                 "duration": item.duration,
                 "year": item.year,
-                "type": "series" if item.is_series else "movie",
+                "type": "series" if is_series_content(item.model_dump()) else "movie",
             }
             for item in related
         ],

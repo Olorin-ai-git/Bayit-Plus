@@ -8,6 +8,7 @@ import logging
 from datetime import datetime
 from typing import Dict, List, Optional
 
+from app.api.routes.content.utils import is_series_content
 from app.models.content import Content
 from app.models.content_taxonomy import ContentSection, SectionSubcategory
 
@@ -701,7 +702,7 @@ def _determine_content_format(item: Content) -> Optional[str]:
     """Determine content format (movie, episode, etc)."""
     if item.content_type:
         return item.content_type
-    if item.is_series:
+    if is_series_content(item.model_dump()):
         return "series"
     return "movie"
 

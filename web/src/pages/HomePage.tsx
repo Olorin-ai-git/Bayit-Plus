@@ -32,6 +32,7 @@ import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 import { getContentPosterUrl } from '@bayit/shared-utils/youtube';
 import WidgetToggleButton from '@/components/content/WidgetToggleButton';
 import logger from '@/utils/logger';
+import { isSeriesContent } from '@/utils/contentHelpers';
 import { useFeaturedAudiobooksCarousel } from '@/hooks/useFeaturedAudiobooksCarousel';
 import { useUserGeolocation } from '@/hooks/useUserGeolocation';
 
@@ -46,6 +47,7 @@ interface CarouselItem {
   image?: string;
   badge?: string;
   contentType?: 'vod' | 'live' | 'podcast' | 'radio' | 'movie' | 'series' | 'channel';
+  /** @deprecated Use isSeriesContent() helper from @/utils/contentHelpers instead */
   is_series?: boolean;
   available_subtitle_languages?: string[];
   has_subtitles?: boolean;
@@ -69,6 +71,7 @@ interface ContentItem {
   category?: string;
   category_name_en?: string;
   category_name_es?: string;
+  /** @deprecated Use isSeriesContent() helper from @/utils/contentHelpers instead */
   is_series?: boolean;
   available_subtitle_languages?: string[];
   has_subtitles?: boolean;
@@ -215,8 +218,8 @@ export default function HomePage() {
         description: getLocalizedDescription(item, i18n.language),
         image: getContentPosterUrl(item) || item.backdrop || item.thumbnail,
         badge: index === 0 ? t('common.new') : undefined,
-        contentType: item.is_series ? 'series' : 'vod',
-        is_series: item.is_series,
+        contentType: isSeriesContent(item) ? 'series' : 'vod',
+        is_series: isSeriesContent(item),
         available_subtitle_languages: item.available_subtitle_languages,
         has_subtitles: item.has_subtitles,
       })));
@@ -292,7 +295,7 @@ export default function HomePage() {
 
   // Handle carousel item press
   const handleCarouselPress = (item: CarouselItem & { is_series?: boolean }) => {
-    if (item.is_series) {
+    if (isSeriesContent(item)) {
       navigate(`/vod/series/${item.id}`);
     } else {
       navigate(`/vod/${item.id}`);

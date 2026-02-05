@@ -45,14 +45,13 @@ async def add_palmach_series():
             print(f"Using existing category: פלמח (ID: {palmach_category.id})")
 
         # Find or create the series document
-        palmach_series = await Content.find_one({"title": "פלמח", "is_series": True, "series_id": None})
+        palmach_series = await Content.find_one({"title": "פלמח", "content_type": "series", "series_id": None})
         if not palmach_series:
             palmach_series = Content(
                 title="פלמח",
                 description="סדרה דרמטית ישראלית",
                 category_id=str(palmach_category.id),
                 category_name="פלמח",
-                is_series=True,
                 is_published=True,
                 is_featured=False,
                 requires_subscription="basic",

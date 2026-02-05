@@ -14,6 +14,7 @@ from app.models.subtitles import SubtitleTrackDoc
 from app.models.user import User
 
 from .admin_content_utils import has_permission
+from app.api.routes.content.utils import is_series_content
 
 router = APIRouter()
 
@@ -79,9 +80,11 @@ async def get_content_hierarchical(
     if is_beta_content is not None:
         query = query.find(Content.is_beta_content == is_beta_content)
     if content_type == "series":
-        query = query.find(Content.is_series == True)
+        # Filter by category_name for series (NOT is_series field)
+        query = query.find({"category_name": {"$regex": "series|סדרות", "$options": "i"}})
     elif content_type == "movies":
-        query = query.find(Content.is_series == False)
+        # Filter by category_name for movies (NOT is_series field)
+        query = query.find({"category_name": {"$regex": "^(?!.*(series|סדרות)).*$", "$options": "i"}})
 
     # Map frontend column keys to backend Content model fields
     column_field_map = {
@@ -156,7 +159,8 @@ async def get_content_hierarchical(
 
     # Batch fetch episode counts for all series using aggregation (server-side counting)
     episode_start = time.time()
-    series_ids = [str(item.id) for item in items if item.is_series]
+    # Use helper function instead of is_series field
+    series_ids = [str(item.id) for item in items if is_series_content(item.model_dump())]
     episode_counts = {}
     if series_ids:
         # Use aggregation to count episodes per series (much faster than fetching all documents)
@@ -192,7 +196,7 @@ async def get_content_hierarchical(
             "year": item.year,
             "rating": item.rating,
             "genre": item.genre,
-            "is_series": item.is_series,
+            "is_series": is_series_content(item.model_dump()),  # Computed from category/structure
             "is_published": item.is_published,
             "is_featured": item.is_featured,
             "requires_subscription": item.requires_subscription,
@@ -206,7 +210,7 @@ async def get_content_hierarchical(
             "created_at": item.created_at.isoformat(),
             "updated_at": item.updated_at.isoformat(),
             "episode_count": (
-                episode_counts.get(str(item.id), 0) if item.is_series else 0
+                episode_counts.get(str(item.id), 0) if is_series_content(item.model_dump()) else 0
             ),
         }
 
@@ -254,7 +258,7 @@ async def get_content_detail(
         "stream_url": content.stream_url,
         "stream_type": content.stream_type,
         "is_drm_protected": content.is_drm_protected,
-        "is_series": content.is_series,
+        "is_series": is_series_content(content.model_dump()),  # Computed from category/structure
         "season": content.season,
         "episode": content.episode,
         "series_id": content.series_id,
@@ -289,7 +293,8 @@ async def get_series_episodes(
         raise HTTPException(status_code=404, detail="Series not found")
     if not series:
         raise HTTPException(status_code=404, detail="Series not found")
-    if not series.is_series:
+    # Verify it's actually a series using helper function
+    if not is_series_content(series.model_dump()):
         raise HTTPException(status_code=400, detail="Content is not a series")
 
     # Get all episodes for this series
@@ -437,7 +442,11 @@ async def get_featured_by_sections(
                         "thumbnail": 1,
                         "year": 1,
                         "content_format": 1,
-                        "is_series": 1,
+                        "category_name": 1,  # For is_series_content() helper
+                        "series_id": 1,  # For is_series_content() helper
+                        "total_episodes": 1,  # For is_series_content() helper
+                        "season_number": 1,  # For is_series_content() helper
+                        "episode_number": 1,  # For is_series_content() helper
                         "duration": 1,
                         "featured_order": 1,
                     }
@@ -471,7 +480,7 @@ async def get_featured_by_sections(
                         "thumbnail": item.get("thumbnail"),
                         "year": item.get("year"),
                         "content_format": item.get("content_format"),
-                        "is_series": item.get("is_series", False),
+                        "is_series": is_series_content(item),  # Computed from category/structure
                         "duration": item.get("duration"),
                         "featured_order": best_order,
                     }

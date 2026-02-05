@@ -10,6 +10,7 @@ from typing import Optional
 
 from beanie import PydanticObjectId
 
+from app.api.routes.content.utils import is_series_content
 from app.models.content import Content
 from app.models.librarian import LibrarianAction
 from app.services.series_linker.constants import LinkingResult
@@ -62,7 +63,7 @@ async def link_episode_to_series(
                 error=f"Series {series_id} not found",
             )
 
-        if not series.is_series:
+        if not is_series_content(series.model_dump()):
             return LinkingResult(
                 success=False,
                 episode_id=episode_id,

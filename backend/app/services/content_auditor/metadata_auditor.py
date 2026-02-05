@@ -7,6 +7,7 @@ Checks for missing or incomplete metadata in content items.
 import logging
 from typing import Any, Dict, List, Optional
 
+from app.api.routes.content.utils import is_series_content
 from app.models.content import Content
 from app.services.content_auditor.constants import (MetadataAuditConfig,
                                                     get_metadata_audit_config)
@@ -86,7 +87,8 @@ def check_metadata_fields(content: Content, config: MetadataAuditConfig) -> List
         issues.append("missing_tmdb_id")
 
     # Movies should have IMDB ID
-    if not content.is_series and (not content.imdb_id or not content.imdb_id.strip()):
+    is_series = is_series_content(content.model_dump())
+    if not is_series and (not content.imdb_id or not content.imdb_id.strip()):
         issues.append("missing_imdb_id")
 
     # Check description (None, empty, or too short)
@@ -122,8 +124,9 @@ def check_subtitle_issues(content: Content, config: MetadataAuditConfig) -> List
         issues.append("missing_subtitles")
 
     # Check minimum subtitle language count for movies
+    is_series = is_series_content(content.model_dump())
     if (
-        not content.is_series
+        not is_series
         and len(content.available_subtitle_languages)
         < config.min_subtitle_languages_movie
     ):

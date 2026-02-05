@@ -18,6 +18,7 @@ import {
 } from './TreeRow';
 import { getLanguageFlag, getLanguageName } from './TreeActions';
 import { TreeNode } from './TreeNode';
+import { isSeriesContent } from '@/utils/contentHelpers';
 
 export type TableRow = ({ rowType: 'content' } & ContentItem) | ({ rowType: 'episode'; parentId: string } & Episode);
 
@@ -41,7 +42,7 @@ export function renderExpandCell(row: TableRow, context: RenderContext) {
   return (
     <TreeNode
       seriesId={item.id}
-      isSeries={item.is_series}
+      isSeries={isSeriesContent(item)}
       isExpanded={context.expandedSeries.has(item.id)}
       isLoading={context.loadingEpisodes.has(item.id)}
       episodes={context.episodeCache[item.id] || []}

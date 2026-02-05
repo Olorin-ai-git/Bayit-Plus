@@ -12,6 +12,7 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from app.api.routes.content.utils import is_series_content
 from app.services.docs_search_service import docs_search_service
 from app.services.olorin.search.docs_indexer import search_documentation
 from app.services.unified_search_service import (SearchFilters,
@@ -253,7 +254,7 @@ async def execute_search_content(
             "id": item.get("id"),
             "title": item.get("title"),
             "title_en": item.get("title_en"),
-            "type": "series" if item.get("is_series") else "movie",
+            "type": "series" if is_series_content(item) else "movie",
             "year": item.get("year"),
             "genres": item.get("genres", []),
             "rating": item.get("rating"),

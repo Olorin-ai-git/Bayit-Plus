@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { GlassView, GlassInput, GlassCheckbox } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
 import type { Content } from '@/types/content'
+import { isSeriesContent } from '@/utils/contentHelpers'
 
 interface ContentDetailsSectionProps {
   formData: Partial<Content>
@@ -70,7 +71,7 @@ export default function ContentDetailsSection({
         disabled={disabled}
       />
 
-      {formData.is_series && (
+      {isSeriesContent(formData) && (
         <>
           <View style={styles.formGroup}>
             <Text style={styles.label}>{t('admin.content.editor.fields.season', 'Season')}</Text>

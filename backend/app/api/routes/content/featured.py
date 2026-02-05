@@ -9,7 +9,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Request, Header
 
-from app.api.routes.content.utils import is_series_by_category
+from app.api.routes.content.utils import is_series_by_category, is_series_content
 from app.api.routes.content_taxonomy import _get_legacy_category_mapping
 from app.core.security import get_optional_user, get_passkey_session
 from app.models.content import Content, Podcast
@@ -17,10 +17,51 @@ from app.models.content_taxonomy import ContentSection
 from app.models.user import User
 from app.services.culture_content_service import culture_content_service
 from app.services.location_content_service import LocationContentService
-from app.api.routes.content.beta_filter import build_beta_content_filter, build_beta_only_filter
+from app.api.routes.content.beta_filter import (
+    build_beta_content_filter,
+    build_beta_only_filter,
+    build_spotlight_filter,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+
+def get_content_type_priority(item: dict) -> int:
+    """Get priority for content type in hero carousel. Lower number = higher priority.
+
+    Priority order:
+    1. Movies (highest)
+    2. Series
+    3. Podcasts
+    4. Audiobooks
+    5. Radio (lowest)
+    """
+    content_format = item.get("content_format", "")
+    category_name = item.get("category_name", "")
+
+    # Movies have highest priority
+    if content_format == "movie" or category_name in ["Movies", "Israeli Movies", "Documentary", "סרטים"]:
+        return 1
+
+    # Series
+    if is_series_content(item) or content_format == "series" or category_name in ["Series", "Israeli Series", "סדרות", "סדרות ישראליות"]:
+        return 2
+
+    # Podcasts
+    if content_format == "podcast":
+        return 3
+
+    # Audiobooks
+    if content_format == "audiobook":
+        return 4
+
+    # Radio stations (lowest priority)
+    if content_format == "radio":
+        return 5
+
+    # Default to movie priority for unknown types
+    return 1
 
 
 def build_visibility_match(has_passkey_access: bool) -> dict:
@@ -71,6 +112,8 @@ async def get_featured(
     has_passkey = passkey_session is not None
     visibility_match = build_visibility_match(has_passkey)
     beta_filter = build_beta_content_filter(current_user)
+    # Separate filter for hero carousel spotlight - allows all content types with priority
+    spotlight_filter = build_spotlight_filter(current_user)
     # Separate filter for podcasts/audiobooks - only beta filtering, no content type filter
     beta_only_filter = build_beta_only_filter(current_user)
 
@@ -141,20 +184,24 @@ async def get_featured(
                         # Exclude series without episodes from homepage
                         {
                             "$or": [
-                                {"is_series": {"$ne": True}},
-                                {"total_episodes": {"$gt": 0}},
+                                {"category_name": {"$regex": "^(?!.*Series).*$"}},  # Not a series category
+                                {"total_episodes": {"$gt": 0}},  # Or has episodes
                             ]
                         },
                         visibility_match,
-                        beta_filter,
+                        spotlight_filter,  # Use spotlight filter for hero carousel
                     ]
                 }
             },
             {"$project": {"thumbnail_data": 0, "backdrop_data": 0}},
-            {"$limit": 10},
+            {"$limit": 50},  # Get more results for priority sorting
         ]
         cursor = collection.aggregate(pipeline)
         results = await cursor.to_list(length=None)
+
+        # Sort by content type priority (movies → series → podcasts → audiobooks → radio)
+        results.sort(key=get_content_type_priority)
+        results = results[:10]  # Take top 10 after priority sorting
 
         # If no explicitly featured content, fallback to recently published
         if not results:
@@ -176,21 +223,25 @@ async def get_featured(
                             },
                             {
                                 "$or": [
-                                    {"is_series": {"$ne": True}},
-                                    {"total_episodes": {"$gt": 0}},
+                                    {"category_name": {"$regex": "^(?!.*Series).*$"}},  # Not a series category
+                                    {"total_episodes": {"$gt": 0}},  # Or has episodes
                                 ]
                             },
                             visibility_match,
-                            beta_filter,
+                            spotlight_filter,  # Use spotlight filter for hero carousel
                         ]
                     }
                 },
                 {"$sort": {"created_at": -1}},  # Sort by most recently added
                 {"$project": {"thumbnail_data": 0, "backdrop_data": 0}},
-                {"$limit": 10},
+                {"$limit": 50},  # Get more results for priority sorting
             ]
             cursor = collection.aggregate(fallback_pipeline)
             results = await cursor.to_list(length=None)
+
+            # Sort by content type priority (movies → series → podcasts → audiobooks → radio)
+            results.sort(key=get_content_type_priority)
+            results = results[:10]  # Take top 10 after priority sorting
 
         return results
 
@@ -201,7 +252,7 @@ async def get_featured(
                 ContentSection.show_on_homepage == True,
             )
             .sort("order")
-            .limit(6)
+            .limit(15)
             .to_list()
         )
 
@@ -356,8 +407,9 @@ async def get_featured(
 
     spotlight_items = []
     for item in featured_content:
-        category_name = item.get("category_name")
-        is_series = item.get("is_series", False) or is_series_by_category(category_name)
+        category_name = item.get("category_name", "")
+        # Determine if series based on comprehensive check (NOT is_series flag)
+        is_series = is_series_content(item)
         subtitle_langs = item.get("available_subtitle_languages") or []
         spotlight_items.append(
             {
@@ -372,7 +424,7 @@ async def get_featured(
                 "year": item.get("year"),
                 "duration": item.get("duration"),
                 "rating": item.get("rating"),
-                "is_series": is_series,
+                "is_series": is_series,  # Computed from category/structure
                 "total_episodes": item.get("total_episodes") if is_series else None,
                 "available_subtitle_languages": subtitle_langs,
                 "has_subtitles": len(subtitle_langs) > 0,
@@ -391,7 +443,7 @@ async def get_featured(
             sections_by_slug[cat.slug] = []
         sections_by_slug[cat.slug].append(cat)
 
-    # Build category data using featured_order (matching admin endpoint logic)
+    # Build category data using is_featured flag and category/genre filtering
     category_data = []
     collection = Content.get_settings().pymongo_collection
 
@@ -447,41 +499,97 @@ async def get_featured(
                 "items": audiobook_items,
             })
         else:
-            # Regular content sections - query by featured_order (matching admin logic)
-            or_conditions = [
-                {f"featured_order.{sid}": {"$exists": True}} for sid in all_section_ids
+            # Regular content sections - filter by category/genre match
+            # Define category filters for each section
+            category_filters = {
+                "movies": {
+                    # Movies category only
+                    "$and": [
+                        {"category_name": "Movies"},
+                        {"genres": {"$nin": ["Kids", "Children", "Family", "Animation",
+                                              "Documentary", "Music", "Judaism", "Jewish", "Israeli"]}}
+                    ]
+                },
+                "israeli-movies": {
+                    "$and": [
+                        {"category_name": "Israeli Movies"},
+                        {"genres": {"$nin": ["Kids", "Children", "Family", "Animation", "Documentary", "Music", "Judaism"]}}
+                    ]
+                },
+                "series": {
+                    "$and": [
+                        {"category_name": "Series"},
+                        {"genres": {"$nin": ["Kids", "Children", "Family", "Animation",
+                                              "Documentary", "Music", "Judaism", "Jewish", "Israeli"]}}
+                    ]
+                },
+                "israeli-series": {
+                    "$and": [
+                        {"category_name": "Israeli Series"},
+                        {"genres": {"$nin": ["Kids", "Children", "Family", "Animation", "Documentary", "Music", "Judaism"]}}
+                    ]
+                },
+                "kids": {
+                    "$or": [
+                        {"category_name": {"$in": ["Kids", "Children", "Family", "ילדים", "משפחה"]}},
+                        {"genres": {"$in": ["Kids", "Children", "Family", "Animation"]}}
+                    ]
+                },
+                "judaism": {
+                    "$or": [
+                        {"category_name": {"$in": ["Judaism", "Jewish", "יהדות"]}},
+                        {"genres": {"$in": ["Judaism", "Jewish"]}}
+                    ]
+                },
+                "documentaries": {
+                    "$or": [
+                        {"category_name": {"$in": ["Documentary", "דוקומנטרי"]}},
+                        {"genres": {"$in": ["Documentary"]}}
+                    ]
+                },
+                "music": {
+                    "$or": [
+                        {"category_name": {"$in": ["Music", "מוזיקה"]}},
+                        {"genres": {"$in": ["Music"]}}
+                    ]
+                },
+            }
+
+            # Get category filter for this section
+            category_filter = category_filters.get(slug, {})
+
+            # Build match conditions
+            match_conditions = [
+                {
+                    "is_featured": True,
+                    "is_published": True,
+                    "is_quality_variant": {"$ne": True},
+                },
+                {
+                    "$or": [
+                        {"series_id": None},
+                        {"series_id": {"$exists": False}},
+                        {"series_id": ""},
+                    ]
+                },
+                # Exclude series without episodes from category carousels
+                {
+                    "$or": [
+                        {"category_name": {"$regex": "^(?!.*Series).*$"}},  # Not a series category
+                        {"total_episodes": {"$gt": 0}},  # Or has episodes
+                    ]
+                },
+                visibility_match,
+                beta_filter,
             ]
 
-            # Try to get explicitly featured content with featured_order first
+            # Add category filter if defined
+            if category_filter:
+                match_conditions.append(category_filter)
+
+            # Get featured content matching category/genre
             pipeline = [
-                {
-                    "$match": {
-                        "$and": [
-                            {
-                                "is_featured": True,
-                                "is_published": True,
-                                "is_quality_variant": {"$ne": True},
-                            },
-                            {"$or": or_conditions},
-                            {
-                                "$or": [
-                                    {"series_id": None},
-                                    {"series_id": {"$exists": False}},
-                                    {"series_id": ""},
-                                ]
-                            },
-                            # Exclude series without episodes from category carousels
-                            {
-                                "$or": [
-                                    {"is_series": {"$ne": True}},
-                                    {"total_episodes": {"$gt": 0}},
-                                ]
-                            },
-                            visibility_match,
-                            beta_filter,
-                        ]
-                    }
-                },
+                {"$match": {"$and": match_conditions}},
                 {
                     "$project": {
                         "_id": 1,
@@ -491,13 +599,18 @@ async def get_featured(
                         "poster_url": 1,
                         "duration": 1,
                         "year": 1,
-                        "is_series": 1,
-                        "total_episodes": 1,
+                        "series_id": 1,  # For is_series_content() helper
+                        "total_episodes": 1,  # For is_series_content() helper
+                        "season_number": 1,  # For is_series_content() helper
+                        "episode_number": 1,  # For is_series_content() helper
                         "available_subtitle_languages": 1,
-                        "featured_order": 1,
+                        "category_name": 1,
+                        "genres": 1,
+                        "created_at": 1,
                     }
                 },
-                {"$limit": 100},
+                {"$sort": {"created_at": -1}},  # Most recent first
+                {"$limit": 10},
             ]
 
             cursor = collection.aggregate(pipeline)
@@ -535,8 +648,8 @@ async def get_featured(
                                 },
                                 {
                                     "$or": [
-                                        {"is_series": {"$ne": True}},
-                                        {"total_episodes": {"$gt": 0}},
+                                        {"category_name": {"$regex": "^(?!.*Series).*$"}},  # Not a series category
+                                        {"total_episodes": {"$gt": 0}},  # Or has episodes
                                     ]
                                 },
                                 visibility_match,
@@ -554,9 +667,13 @@ async def get_featured(
                             "poster_url": 1,
                             "duration": 1,
                             "year": 1,
-                            "is_series": 1,
-                            "total_episodes": 1,
+                            "series_id": 1,  # For is_series_content() helper
+                            "total_episodes": 1,  # For is_series_content() helper
+                            "season_number": 1,  # For is_series_content() helper
+                            "episode_number": 1,  # For is_series_content() helper
                             "available_subtitle_languages": 1,
+                            "category_name": 1,
+                            "genres": 1,
                         }
                     },
                     {"$limit": 10},
@@ -564,23 +681,22 @@ async def get_featured(
                 cursor = collection.aggregate(fallback_pipeline)
                 items = await cursor.to_list(length=None)
 
-            # Process items and get best order from any section
+            # Process items (already sorted by created_at)
             category_items = []
-            seen_ids = set()
+            seen_titles = set()  # Track titles to prevent duplicates
+
             for item in items:
                 item_id = str(item["_id"])
-                if item_id in seen_ids:
+                title = item.get("title", "")
+                title_lower = title.lower()
+
+                # Skip duplicates (prefer first occurrence)
+                if title_lower in seen_titles:
                     continue
-                seen_ids.add(item_id)
+                seen_titles.add(title_lower)
 
-                # Get the lowest order from any of the section IDs
-                featured_order = item.get("featured_order", {})
-                best_order = min(
-                    (featured_order.get(sid, 999) for sid in all_section_ids),
-                    default=999,
-                )
-
-                is_series = item.get("is_series", False) or is_series_by_category(slug)
+                # Determine if series based on comprehensive check (NOT is_series flag)
+                is_series = is_series_content(item)
                 thumbnail = (
                     item.get("thumbnail_data")
                     or item.get("thumbnail")
@@ -598,23 +714,18 @@ async def get_featured(
                     "category_name_en": slug,
                     "category_name_es": slug,
                     "type": "series" if is_series else "movie",
-                    "is_series": is_series,
+                    "is_series": is_series,  # Computed from category/structure
                     "available_subtitle_languages": subtitle_langs,
                     "has_subtitles": len(subtitle_langs) > 0,
-                    "_order": best_order,
                 }
                 if is_series:
                     item_data["total_episodes"] = item.get("total_episodes") or 0
 
                 category_items.append(item_data)
 
-            # Sort by featured_order
-            category_items.sort(key=lambda x: x.get("_order", 999))
-
-            # Remove internal _order field and limit to 10 items
-            for item in category_items:
-                item.pop("_order", None)
-            category_items = category_items[:10]
+            # Items already sorted by created_at (most recent first)
+            # Items are already sorted by created_at from MongoDB query
+            # Limit already applied in pipeline ($limit: 10)
 
             # Only include sections that have content
             if category_items:
@@ -755,7 +866,7 @@ async def get_featured(
                     "poster_url": 1,
                     "duration": 1,
                     "year": 1,
-                    "is_series": 1,
+                    "category_name": 1,
                     "total_episodes": 1,
                     "available_subtitle_languages": 1,
                 }
@@ -768,7 +879,9 @@ async def get_featured(
         if beta_items_raw:
             beta_exclusive_items = []
             for item in beta_items_raw:
-                is_series = item.get("is_series", False)
+                category_name = item.get("category_name", "")
+                # Determine if series based on comprehensive check (NOT is_series flag)
+                is_series = is_series_content(item)
                 thumbnail = (
                     item.get("thumbnail_data")
                     or item.get("thumbnail")
@@ -784,7 +897,7 @@ async def get_featured(
                     "year": item.get("year"),
                     "category": "beta-exclusive",
                     "type": "series" if is_series else "movie",
-                    "is_series": is_series,
+                    "is_series": is_series,  # Computed from category/structure
                     "total_episodes": item.get("total_episodes") if is_series else None,
                     "available_subtitle_languages": subtitle_langs,
                     "has_subtitles": len(subtitle_langs) > 0,

@@ -101,7 +101,8 @@ class ExternalSubtitleService:
             series = await ContentModel.get(content.series_id)
             if series:
                 parent_imdb_id = series.imdb_id
-        is_tv_series = content.is_series or content.content_type == "episode" or season_number is not None
+        # Determine if this is a TV series/episode based on content_type and structure
+        is_tv_series = content.content_type in ["series", "episode"] or season_number is not None
 
         # Determine search strategy
         if is_tv_series and parent_imdb_id and season_number and episode_number:

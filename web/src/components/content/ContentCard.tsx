@@ -17,6 +17,7 @@ import { favoritesService, watchlistService } from '@/services/api';
 import { getLocalizedCategory } from '@bayit/shared-utils/contentLocalization';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
+import { isSeriesContent } from '@/utils/contentHelpers';
 
 const log = logger.scope('ContentCard');
 
@@ -25,6 +26,7 @@ interface Content {
   title: string;
   thumbnail?: string;
   type?: 'live' | 'radio' | 'podcast' | 'vod' | 'movie' | 'series' | 'audiobook' | 'article' | 'event';
+  /** @deprecated Use isSeriesContent() helper instead */
   is_series?: boolean;
   duration?: string;
   progress?: number;
@@ -215,7 +217,7 @@ export default function ContentCard({ content, showProgress = false, showActions
       if (content.type === 'radio') return { pathname: `/radio/${content.id}` };
       if (content.type === 'podcast') return { pathname: `/podcasts/${content.id}` };
 
-      if (content.type === 'series' || content.is_series) return { pathname: `/vod/series/${content.id}` };
+      if (content.type === 'series' || isSeriesContent(content)) return { pathname: `/vod/series/${content.id}` };
 
       // Default to movie/VOD page
       return { pathname: `/vod/movie/${content.id}` };
@@ -369,14 +371,14 @@ export default function ContentCard({ content, showProgress = false, showActions
             )}
 
             {/* Duration Badge - for movies */}
-            {content.duration && !content.is_series && (
+            {content.duration && !isSeriesContent(content) && (
               <View style={[styles.durationBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
                 <Text style={styles.durationText}>{content.duration}</Text>
               </View>
             )}
 
             {/* Episode Count Badge - for series */}
-            {(content.is_series || content.type === 'series') && content.total_episodes !== undefined && content.total_episodes > 0 && (
+            {(isSeriesContent(content) || content.type === 'series') && content.total_episodes !== undefined && content.total_episodes > 0 && (
               <View style={[styles.episodesBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
                 <Text style={styles.episodesText}>
                   {content.total_episodes} {t('content.episodes')}

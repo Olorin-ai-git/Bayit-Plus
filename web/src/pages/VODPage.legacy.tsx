@@ -11,6 +11,7 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { GlassView, GlassCard, GlassCategoryPill, GlassInput, GlassButton, GlassCheckbox } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
+import { isSeriesContent } from '@/utils/contentHelpers';
 
 interface Category {
   id: string;
@@ -29,6 +30,7 @@ interface ContentItem {
   category?: string;
   category_name_en?: string;
   category_name_es?: string;
+  /** @deprecated Use isSeriesContent() helper instead */
   is_series?: boolean;
   available_subtitle_languages?: string[];
   has_subtitles?: boolean;

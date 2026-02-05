@@ -9,6 +9,7 @@ import { X, Film, Tv } from 'lucide-react'
 import { GlassView } from '@bayit/shared/ui'
 import { Content } from '@/services/adminApi'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
+import { isSeriesContent } from '@/utils/contentHelpers'
 
 interface CarouselPosterCardProps {
   item: Content
@@ -23,7 +24,7 @@ export default function CarouselPosterCard({
   onRemove,
   isRTL = false,
 }: CarouselPosterCardProps) {
-  const isSeries = item.is_series || item.stream_type === 'series'
+  const isSeries = isSeriesContent(item) || item.stream_type === 'series'
 
   return (
     <GlassView style={styles.card}>

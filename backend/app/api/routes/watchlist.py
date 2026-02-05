@@ -7,6 +7,7 @@ from app.core.security import get_current_active_user
 from app.models.content import Content, LiveChannel, Podcast
 from app.models.user import User
 from app.models.watchlist import WatchlistItem
+from app.api.routes.content.utils import is_series_content
 
 router = APIRouter()
 
@@ -40,7 +41,7 @@ async def get_watchlist(
                     "thumbnail": content.thumbnail,
                     "duration": content.duration,
                     "year": content.year,
-                    "type": "series" if content.is_series else "movie",
+                    "type": "series" if is_series_content(content.model_dump()) else "movie",
                     "category": content.category_name,
                     "is_kids_content": content.is_kids_content,
                 }
