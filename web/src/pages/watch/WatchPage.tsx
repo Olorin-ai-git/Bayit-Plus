@@ -3,7 +3,7 @@
  * Main page for watching VOD, live, radio, and podcast content
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -19,6 +19,8 @@ import { useAICompanionStore } from '@/stores/aiCompanionStore';
 import ContentCarousel from '@/components/content/ContentCarousel';
 import { historyService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
+import { GlassButton } from '@bayit/shared/ui';
+import api from '@/services/api';
 import {
   AuthRequiredOverlay,
   BackButton,
@@ -128,6 +130,9 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
 
   // Saved watch position for auto-resume
   const [savedPosition, setSavedPosition] = React.useState<number | null>(null);
+
+  // Refresh state for podcast sync
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   React.useEffect(() => {
     setStreamUrl(initialStreamUrl);
@@ -243,6 +248,44 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
     logger.info('Watch position cleared after restart', 'WatchPage', { contentId });
   }, [contentId]);
 
+  const handleRefreshPodcast = React.useCallback(async () => {
+    if (effectiveType !== 'podcast' || !contentId) return;
+
+    setIsRefreshing(true);
+    logger.info('Refreshing podcast episodes', 'WatchPage', { contentId });
+
+    try {
+      const data = await api.post(`/podcasts/${contentId}/sync`);
+
+      notifications.show({
+        level: 'success',
+        title: t('watch.podcastRefreshed', 'Podcast Refreshed'),
+        message: data.episodes_added > 0
+          ? t('watch.episodesAdded', { count: data.episodes_added }, `${data.episodes_added} new episode(s) added`)
+          : t('watch.noNewEpisodes', 'No new episodes available'),
+      });
+
+      logger.info('Podcast refresh successful', 'WatchPage', {
+        contentId,
+        episodesAdded: data.episodes_added,
+      });
+
+      // Reload the page to show new episodes
+      if (data.episodes_added > 0) {
+        window.location.reload();
+      }
+    } catch (error: any) {
+      logger.error('Failed to refresh podcast', 'WatchPage', { contentId, error: error.message || String(error) });
+      notifications.show({
+        level: 'error',
+        title: t('watch.refreshFailed', 'Refresh Failed'),
+        message: error.response?.data?.detail || t('watch.refreshError', 'Failed to refresh podcast. Please try again.'),
+      });
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [effectiveType, contentId, notifications, t]);
+
   const onPlayEpisode = (episode: any) => {
     handlePlayEpisode(episode, setStreamUrl);
   };
@@ -307,7 +350,19 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
 
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-      <BackButton label={t('common.back')} onPress={() => window.history.back()} />
+      <View style={styles.headerContainer}>
+        <BackButton label={t('common.back')} onPress={() => window.history.back()} />
+        {effectiveType === 'podcast' && (
+          <GlassButton
+            title={isRefreshing ? t('watch.refreshing', 'Refreshing...') : t('watch.refresh', 'Refresh')}
+            variant="secondary"
+            size="sm"
+            onPress={handleRefreshPodcast}
+            disabled={isRefreshing}
+            style={styles.refreshButton}
+          />
+        )}
+      </View>
 
       <View style={styles.playerContainer}>
         {requiresAuth ? (
@@ -541,6 +596,17 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: 96,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    marginBottom: spacing.md,
+    maxWidth: 1400,
+    width: '100%',
+  },
+  refreshButton: {
   },
   playerContainer: {
     paddingHorizontal: spacing.md,

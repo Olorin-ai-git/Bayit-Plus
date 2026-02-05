@@ -1197,6 +1197,13 @@ export const ICON_REGISTRY: Record<string, IconDefinition> = {
     description: 'Split Screen / Dual Pane',
     usage: ['split_screen', 'subtitles', 'side_by_side'],
   },
+  messageSquareQuote: {
+    name: 'messageSquareQuote',
+    lucideName: 'MessageSquareQuote',
+    category: 'ui',
+    description: 'Message with Quote / Comprehension / Question',
+    usage: ['comprehension_quiz', 'questions', 'dialog', 'quotes'],
+  },
 };
 
 /**

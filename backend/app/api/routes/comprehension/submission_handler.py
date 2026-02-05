@@ -68,23 +68,8 @@ async def handle_answer_submission(
     is_correct = submit_data.selected_option == question_model.correct_index
     points_earned = question_model.points if is_correct else 0
 
-    # Deduct credits for beta users
+    # Record attempt first (before credit deduction)
     credits_deducted = 0
-    if user.is_beta_user:
-        credit_service = BetaCreditService(
-            settings=settings,
-            metering_service=MeteringService(),
-            db=db
-        )
-        await credit_service.deduct(
-            user_id=str(user.id),
-            feature="comprehension_question",
-            usage=settings.CREDIT_RATE_COMPREHENSION_QUESTION,
-            transaction_id=None
-        )
-        credits_deducted = int(settings.CREDIT_RATE_COMPREHENSION_QUESTION)
-
-    # Record attempt
     attempt = ComprehensionAttempt(
         user_id=str(user.id),
         content_id=content_id,
@@ -94,9 +79,50 @@ async def handle_answer_submission(
         time_taken_ms=submit_data.time_taken_ms,
         scene_start_time=question_model.scene_start_time,
         scene_end_time=question_model.scene_end_time,
-        credits_deducted=credits_deducted,
+        credits_deducted=0,
     )
     await attempt.insert()
+
+    # Deduct credits for beta users (after attempt recorded)
+    if user.is_beta_user:
+        credit_service = BetaCreditService(
+            settings=settings,
+            metering_service=MeteringService(),
+            db=db
+        )
+
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(user.id),
+            feature="comprehension_question",
+            usage_amount=settings.CREDIT_RATE_COMPREHENSION_QUESTION,
+            metadata={"question_id": question_id, "content_id": content_id}
+        )
+
+        if not success:
+            logger.warning(
+                "Credit deduction failed for comprehension answer",
+                extra={
+                    "user_id": str(user.id),
+                    "question_id": question_id,
+                    "remaining_credits": remaining
+                }
+            )
+            raise HTTPException(
+                status_code=402,
+                detail="Failed to deduct credits for answer submission"
+            )
+
+        credits_deducted = int(settings.CREDIT_RATE_COMPREHENSION_QUESTION)
+
+        logger.info(
+            "Credits deducted for comprehension answer",
+            extra={
+                "user_id": str(user.id),
+                "question_id": question_id,
+                "credits_deducted": credits_deducted,
+                "remaining_credits": remaining
+            }
+        )
 
     return ComprehensionSubmitResponse(
         is_correct=is_correct,

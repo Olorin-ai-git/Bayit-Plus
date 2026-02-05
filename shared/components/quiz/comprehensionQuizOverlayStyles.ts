@@ -9,7 +9,7 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 export const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    backgroundColor: colors.glassOverlayStrong,
     justifyContent: 'center',
     alignItems: 'center',
   },

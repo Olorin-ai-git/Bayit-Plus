@@ -6,7 +6,8 @@ Tests authentication, authorization, rate limiting, and business logic.
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import AsyncMock, patch
-from app.models.comprehension import ComprehensionQuestionModel, ComprehensionAttempt
+from app.models.comprehension import ComprehensionQuestionModel
+from app.models.comprehension_attempt import ComprehensionAttempt
 from app.models.user import User
 
 

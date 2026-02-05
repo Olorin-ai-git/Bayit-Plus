@@ -6,7 +6,7 @@ Tests scene boundary detection based on subtitle gap analysis.
 import pytest
 from unittest.mock import AsyncMock, patch
 from app.services.scene_detection_service import SceneDetectionService, SceneMarker
-from app.models.subtitle import SubtitleCueModel
+from app.models.subtitles import SubtitleCueModel
 
 
 @pytest.fixture

@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
 from app.core.security import get_current_active_user, get_optional_user
-from app.models.content import Content
+from app.models.content import Content, PodcastEpisode
 from app.models.user import User
 from app.models.watchlist import WatchHistory
 
@@ -32,20 +32,32 @@ async def get_history(
         await WatchHistory.find(WatchHistory.user_id == str(current_user.id))
         .sort("-last_watched_at")
         .skip(skip)
-        .limit(limit)
+        .limit(limit * 2)  # Fetch more to deduplicate
         .to_list()
     )
 
     result = []
+    seen_content_ids = set()  # Deduplicate by content_id
+
     for item in items:
-        content = await Content.get(item.content_id)
+        # Skip duplicates
+        if item.content_id in seen_content_ids:
+            continue
+
+        # Fetch content based on type
+        if item.content_type == "podcast":
+            content = await PodcastEpisode.get(item.content_id)
+        else:
+            content = await Content.get(item.content_id)
+
         if content:
+            seen_content_ids.add(item.content_id)
             result.append(
                 {
                     "id": str(content.id),
                     "title": content.title,
-                    "thumbnail": content.thumbnail,
-                    "duration": content.duration,
+                    "thumbnail": getattr(content, "thumbnail", None) or getattr(content, "cover", None),
+                    "duration": getattr(content, "duration", None),
                     "type": item.content_type,
                     "progress": item.progress_percent,
                     "position": item.position,
@@ -53,6 +65,10 @@ async def get_history(
                     "lastWatched": item.last_watched_at.isoformat(),
                 }
             )
+
+        # Limit to requested page size
+        if len(result) >= limit:
+            break
 
     total = await WatchHistory.find(
         WatchHistory.user_id == str(current_user.id)
@@ -85,25 +101,41 @@ async def get_continue_watching(
             WatchHistory.progress_percent > 5,  # At least 5% watched
         )
         .sort("-last_watched_at")
-        .limit(10)
+        .limit(20)  # Fetch more to deduplicate
         .to_list()
     )
 
     result = []
+    seen_content_ids = set()  # Deduplicate by content_id
+
     for item in items:
-        content = await Content.get(item.content_id)
+        # Skip duplicates
+        if item.content_id in seen_content_ids:
+            continue
+
+        # Fetch content based on type
+        if item.content_type == "podcast":
+            content = await PodcastEpisode.get(item.content_id)
+        else:
+            content = await Content.get(item.content_id)
+
         if content:
+            seen_content_ids.add(item.content_id)
             result.append(
                 {
                     "id": str(content.id),
                     "title": content.title,
-                    "thumbnail": content.thumbnail,
-                    "duration": content.duration,
+                    "thumbnail": getattr(content, "thumbnail", None) or getattr(content, "cover", None),
+                    "duration": getattr(content, "duration", None),
                     "type": item.content_type,
                     "progress": item.progress_percent,
                     "position": item.position,
                 }
             )
+
+        # Limit to 10 unique items
+        if len(result) >= 10:
+            break
 
     return {"items": result}
 

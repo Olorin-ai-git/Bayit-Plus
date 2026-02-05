@@ -25,11 +25,6 @@ export function BackButton({ label, onPress }: BackButtonProps) {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.md,
-    maxWidth: 1400,
-    marginHorizontal: 'auto',
-    width: '100%',
   },
   button: {
     flexDirection: 'row',

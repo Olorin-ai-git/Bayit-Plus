@@ -12,7 +12,7 @@ from app.models.content import Podcast, PodcastEpisode
 from app.models.user import User
 from app.services.apple_podcasts_converter import convert_apple_podcasts_to_rss
 from app.services.podcast_scraper import fetch_rss_feed
-from app.services.podcast_sync import fetch_rss_episodes, sync_all_podcasts
+from app.services.podcast_sync import fetch_rss_episodes, sync_all_podcasts, sync_podcast_episodes
 from app.services.spotify_podcast_converter import resolve_spotify_to_rss
 
 router = APIRouter()
@@ -285,6 +285,42 @@ async def sync_podcasts():
         }
     except Exception as e:
         logger.error(f"❌ Podcast sync failed: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Podcast sync failed: {str(e)}")
+
+
+@router.post("/{podcast_id}/sync")
+async def sync_single_podcast(podcast_id: str):
+    """
+    Sync latest 3 episodes for a specific podcast.
+    This endpoint fetches the latest 3 episodes from the podcast's RSS feed.
+    """
+    logger.info(f"📻 Manual sync triggered for podcast: {podcast_id}")
+
+    try:
+        # Find the podcast
+        podcast = await Podcast.get(podcast_id)
+        if not podcast:
+            raise HTTPException(status_code=404, detail=f"Podcast not found: {podcast_id}")
+
+        if not podcast.rss_feed:
+            raise HTTPException(status_code=400, detail="Podcast does not have an RSS feed")
+
+        # Sync with max 3 episodes
+        episodes_added = await sync_podcast_episodes(podcast, max_episodes=3)
+
+        logger.info(f"✅ Podcast sync completed: {podcast.title} - {episodes_added} episodes added")
+
+        return {
+            "status": "success",
+            "message": f"Synced {episodes_added} new episode(s)",
+            "podcast_id": podcast_id,
+            "podcast_title": podcast.title,
+            "episodes_added": episodes_added,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Podcast sync failed for {podcast_id}: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Podcast sync failed: {str(e)}")
 
 

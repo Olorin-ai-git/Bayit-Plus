@@ -36,21 +36,20 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
    * Handle Google OAuth login
    */
   const handleGoogleOAuth = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
+    setIsLoading(true);
+    setError(null);
 
-      logger.info('Initiating Google OAuth');
+    logger.info('Initiating Google OAuth');
 
-      // Use Chrome Identity API for OAuth
-      const authUrl = `${CONFIG.API.BASE_URL}/api/v1/auth/google/authorize`;
+    const authUrl = `${CONFIG.API.BASE_URL}/api/v1/auth/google/authorize`;
 
-      chrome.identity.launchWebAuthFlow(
-        {
-          url: authUrl,
-          interactive: true,
-        },
-        async (redirectUrl) => {
+    chrome.identity.launchWebAuthFlow(
+      {
+        url: authUrl,
+        interactive: true,
+      },
+      async (redirectUrl) => {
+        try {
           if (chrome.runtime.lastError) {
             throw new Error(chrome.runtime.lastError.message);
           }
@@ -59,7 +58,6 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
             throw new Error('OAuth flow cancelled');
           }
 
-          // Extract token from redirect URL
           const url = new URL(redirectUrl);
           const token = url.searchParams.get('token');
 
@@ -67,19 +65,16 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
             throw new Error('No token received from OAuth');
           }
 
-          // Store token
           await storeToken(token);
-
           logger.info('Google OAuth successful');
-
           onSuccess();
+        } catch (error) {
+          logger.error('Google OAuth failed', { error: String(error) });
+          setError(t('auth.errors.oauthFailed', 'Google login failed. Please try again.'));
+          setIsLoading(false);
         }
-      );
-    } catch (error) {
-      logger.error('Google OAuth failed', { error: String(error) });
-      setError(t('auth.errors.oauthFailed', 'Google login failed. Please try again.'));
-      setIsLoading(false);
-    }
+      }
+    );
   };
 
   /**

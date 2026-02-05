@@ -9,7 +9,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { View, Text, Animated, StyleSheet, TouchableOpacity } from 'react-native';
 import { colors, glass } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
-import { useTranslation } from '@bayit/shared-i18n';
+import { useTranslation } from 'react-i18next';
 import logger from '@/utils/logger';
 
 const bubbleLogger = logger.scope('VoiceResponseBubble');

@@ -6,7 +6,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { MessageSquareQuote } from 'lucide-react-native';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing } from '@olorin/design-tokens';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { CustomToggle } from './CustomToggle';
@@ -46,12 +46,19 @@ export function ComprehensionSettings({
   return (
     <View style={styles.container}>
       {/* Section Header */}
-      <View style={[styles.header, isHebrew && styles.headerRTL]}>
+      <View
+        style={[styles.header, isHebrew && styles.headerRTL]}
+        accessible={true}
+        accessibilityRole="header"
+        accessibilityLabel={t('comprehension.title')}
+      >
         <View
           style={[styles.headerIcon, isHebrew && styles.headerIconRTL]}
         >
-          <MessageSquareQuote
-            size={isTV ? 28 : 20}
+          <NativeIcon
+            name="messageSquareQuote"
+            size={isTV ? 'sm' : 'md'}
+            context={isTV ? 'tv' : 'default'}
             color={colors.success.DEFAULT}
           />
         </View>
@@ -61,7 +68,14 @@ export function ComprehensionSettings({
       </View>
 
       {/* Enable/Disable Toggle */}
-      <View style={styles.toggleRow}>
+      <View
+        style={styles.toggleRow}
+        accessible={true}
+        accessibilityRole="button"
+        accessibilityLabel={t('comprehension.enable')}
+        accessibilityHint={t('comprehension.enable_desc')}
+        accessibilityState={{ checked: enabled }}
+      >
         <View style={styles.toggleContent}>
           <Text style={styles.toggleLabel}>
             {t('comprehension.enable')}

@@ -12,7 +12,7 @@ import type { GestureState } from '@bayit/shared/stores/supportStore';
 import { sendVoiceCommand } from '@/services/wizardService';
 import type { WizardVoiceResponse } from '@/services/wizardService';
 import { ttsService } from '@bayit/shared-services';
-import i18n from '@bayit/shared-i18n';
+import i18n from 'i18next';
 import logger from '@/utils/logger';
 
 const wizardLogger = logger.scope('WizardVoice');

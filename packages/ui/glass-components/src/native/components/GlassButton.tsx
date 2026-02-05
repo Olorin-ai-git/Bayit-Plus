@@ -183,8 +183,8 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
     styleType: 'button',
   });
 
-  // Use mobile sizes on mobile, desktop sizes otherwise
-  const currentSize = isMobile ? mobileSizeStyles[size] : sizeStyles[size];
+  // Use mobile sizes on mobile, desktop sizes otherwise (fallback to 'md' for safety)
+  const currentSize = (isMobile ? mobileSizeStyles[size] : sizeStyles[size]) || sizeStyles.md;
   const variantStyles = getVariantStyles();
   const textColorStyles = getTextColorStyles();
   const currentVariant = variantStyles[variant];

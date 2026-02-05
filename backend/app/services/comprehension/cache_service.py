@@ -51,9 +51,30 @@ class ComprehensionCacheService:
         question: ComprehensionQuestionModel,
         language: str,
     ):
-        """Cache question in MongoDB using atomic upsert."""
-        await ContentComprehension.get_motor_collection().update_one(
-            {"content_id": content_id, "language": language},
+        """Cache question in MongoDB using atomic upsert with duplicate prevention."""
+        scene_start = question.scene_start_time
+        scene_end = question.scene_end_time
+
+        # Only push if no question exists for this scene (prevents race condition duplicates)
+        result = await ContentComprehension.get_motor_collection().update_one(
+            {
+                "content_id": content_id,
+                "language": language,
+                "questions": {
+                    "$not": {
+                        "$elemMatch": {
+                            "scene_start_time": {
+                                "$gte": scene_start - EPSILON,
+                                "$lte": scene_start + EPSILON
+                            },
+                            "scene_end_time": {
+                                "$gte": scene_end - EPSILON,
+                                "$lte": scene_end + EPSILON
+                            },
+                        }
+                    }
+                }
+            },
             {
                 "$push": {"questions": question.model_dump()},
                 "$setOnInsert": {
@@ -66,3 +87,13 @@ class ComprehensionCacheService:
             },
             upsert=True,
         )
+
+        if result.matched_count == 0 and result.modified_count == 0:
+            logger.debug(
+                "Question already cached for scene",
+                extra={
+                    "content_id": content_id,
+                    "scene_start": scene_start,
+                    "scene_end": scene_end
+                }
+            )

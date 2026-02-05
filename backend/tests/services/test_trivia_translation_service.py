@@ -10,7 +10,6 @@ from app.services.trivia.trivia_translation_service import (
     TriviaTextSanitizer,
     TriviaTranslationService,
     RateLimitExceeded,
-    SimpleRateLimiter
 )
 
 

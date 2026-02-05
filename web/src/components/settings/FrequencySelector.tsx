@@ -62,6 +62,11 @@ export function FrequencySelector({
             isRTL && styles.frequencyOptionRTL,
           ]}
           onPress={() => onFrequencyChange(option.value)}
+          accessible={true}
+          accessibilityRole="radio"
+          accessibilityLabel={option.label}
+          accessibilityHint={option.description}
+          accessibilityState={{ checked: frequency === option.value }}
         >
           <View
             style={[

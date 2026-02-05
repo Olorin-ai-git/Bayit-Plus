@@ -10,6 +10,7 @@ import i18next from 'i18next';
 import { initializeI18n } from '../config/i18n';
 import { App } from './App';
 import { logger } from '../lib/logger';
+import './popup.css';
 
 /**
  * Initialize and render popup

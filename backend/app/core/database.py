@@ -86,6 +86,9 @@ from app.models.upload import (BrowserUploadSession, MonitoredFolder,
 # Quiz feature models
 from app.models.quiz import ContentQuiz
 from app.models.quiz_attempt import QuizAttempt
+# Comprehension quiz feature models
+from app.models.comprehension import ContentComprehension
+from app.models.comprehension_attempt import ComprehensionAttempt
 from app.models.reward import Badge, UserReward
 # Models
 from app.models.user import User
@@ -238,6 +241,9 @@ async def connect_to_mongo():
         # Quiz models (kids interactive quizzes)
         ContentQuiz,
         QuizAttempt,
+        # Comprehension quiz models (scene-triggered questions)
+        ContentComprehension,
+        ComprehensionAttempt,
         Badge,
         UserReward,
         # Subtitle models

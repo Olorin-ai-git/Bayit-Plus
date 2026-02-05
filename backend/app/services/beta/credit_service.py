@@ -75,6 +75,7 @@ class BetaCreditService:
             "live_dubbing": self.settings.CREDIT_RATE_LIVE_DUBBING,
             "ai_search": self.settings.CREDIT_RATE_AI_SEARCH,
             "ai_recommendations": self.settings.CREDIT_RATE_AI_RECOMMENDATIONS,
+            "comprehension_question": self.settings.CREDIT_RATE_COMPREHENSION_QUESTION,
         }
         
         if feature not in rate_mapping:
