@@ -13,11 +13,19 @@ from ..tool_models import (
     GetRecommendationsInput,
     GetLiveChannelsInput,
     GetKidsContentInput,
-    LookupUserGuideInput
+    LookupUserGuideInput,
+    PlayContentInput,
+    SelectSubtitlesInput,
+    NavigateToPageInput,
+    ControlPlaybackInput,
 )
 from .recommendations import execute_get_recommendations
 from .live_channels import execute_get_live_channels
 from .kids_content import execute_get_kids_content
+from .play_content import execute_play_content
+from .select_subtitles import execute_select_subtitles
+from .navigate_to_page import execute_navigate_to_page
+from .control_playback import execute_control_playback
 
 logger = get_logger(__name__)
 
@@ -35,7 +43,6 @@ async def execute_tool(tool_name: str, tool_input: Dict[str, Any]) -> Dict[str, 
     """
     try:
         if tool_name == "search_content":
-            # Validate input using Pydantic model
             validated_input = SearchContentInput(**tool_input)
             return await execute_search_content(validated_input.dict())
 
@@ -54,6 +61,22 @@ async def execute_tool(tool_name: str, tool_input: Dict[str, Any]) -> Dict[str, 
         elif tool_name == "lookup_user_guide":
             validated_input = LookupUserGuideInput(**tool_input)
             return await execute_lookup_user_guide(validated_input.dict())
+
+        elif tool_name == "play_content":
+            validated_input = PlayContentInput(**tool_input)
+            return await execute_play_content(**validated_input.dict())
+
+        elif tool_name == "select_subtitles":
+            validated_input = SelectSubtitlesInput(**tool_input)
+            return await execute_select_subtitles(**validated_input.dict())
+
+        elif tool_name == "navigate_to_page":
+            validated_input = NavigateToPageInput(**tool_input)
+            return await execute_navigate_to_page(**validated_input.dict())
+
+        elif tool_name == "control_playback":
+            validated_input = ControlPlaybackInput(**tool_input)
+            return await execute_control_playback(**validated_input.dict())
 
         else:
             logger.error("Unknown tool", extra={"tool_name": tool_name})

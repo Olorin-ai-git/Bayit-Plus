@@ -3531,7 +3531,6 @@
     "success": "Success",
     "partialSuccess": "Partial Success",
     "warning": "Warning",
-    "confirm": "Confirm",
     "yes": "Yes",
     "no": "No",
     "apply": "Apply",
@@ -3578,7 +3577,6 @@
     "filter": "Filter",
     "inactive": "Inactive",
     "of": "of",
-    "processing": "Processing...",
     "showing": "Showing",
     "unban": "Unban",
     "addToLibrary": "Add to Library",
@@ -4361,7 +4359,16 @@
     "streamLoadFailed": "Failed to load stream. Please try again.",
     "trivia": {
       "invalidChannel": "Invalid channel ID"
-    }
+    },
+    "initializationFailed": "Failed to Initialize",
+    "reloadButton": "Reload"
+  },
+  "status": {
+    "pleaseLogin": "Please log in to use Bayit+ Companion",
+    "quotaExhausted": "Daily quota of {{limit}} minutes exhausted. Upgrade to premium.",
+    "connected": "Connected",
+    "dubbingFailed": "Failed to start dubbing. Please try again.",
+    "dubbingError": "Dubbing error: {{error}}"
   },
   "favorites": {
     "title": "Favorites",
@@ -6569,7 +6576,10 @@
       "transcript": "💬 Transcript",
       "waveform": "〰️ Waveform",
       "wizard": "🧙 Wizard"
-    }
+    },
+    "wizardResponse": "Wizard response",
+    "dismissResponse": "Dismiss voice response",
+    "dismissResponseHint": "Tap to hide the wizard response"
   },
   "voiceMode": {
     "voiceOnly": "Voice Only",
@@ -7963,6 +7973,9 @@
     "startTranslation": "Start translation",
     "targetLanguage": "Target language",
     "toggleSubtitles": "Toggle subtitles",
-    "close": "Close Bayit+ Bar"
+    "close": "Close Bayit+ Bar",
+    "logo": "Bayit+",
+    "subtitlesButton": "CC",
+    "closeButton": "×"
   }
 }

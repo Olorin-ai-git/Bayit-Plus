@@ -3568,7 +3568,16 @@
     "streamLoadFailed": "ストリームの読み込みに失敗しました。再試行してください。",
     "trivia": {
       "invalidChannel": "無効なチャンネルID"
-    }
+    },
+    "initializationFailed": "初期化に失敗しました",
+    "reloadButton": "再読み込み"
+  },
+  "status": {
+    "pleaseLogin": "Bayit+ Companionを使用するにはログインしてください",
+    "quotaExhausted": "{{limit}}分の1日あたりのクォータを使い切りました。プレミアムにアップグレードしてください。",
+    "connected": "接続済み",
+    "dubbingFailed": "吹き替えの開始に失敗しました。もう一度お試しください。",
+    "dubbingError": "吹き替えエラー: {{error}}"
   },
   "favorites": {
     "title": "お気に入り",
@@ -5613,7 +5622,10 @@
       "transcript": "💬 トランスクリプト",
       "waveform": "〰️ 波形",
       "wizard": "🧙 ウィザード"
-    }
+    },
+    "wizardResponse": "アシスタントの応答",
+    "dismissResponse": "音声応答を閉じる",
+    "dismissResponseHint": "アシスタントの応答を非表示にするにはタップしてください"
   },
   "voiceOnboarding": {
     "welcome": {
@@ -8499,6 +8511,9 @@
     "startTranslation": "翻訳を開始",
     "targetLanguage": "翻訳先言語",
     "toggleSubtitles": "字幕の切り替え",
-    "close": "Bayit+ バーを閉じる"
+    "close": "Bayit+ バーを閉じる",
+    "logo": "Bayit+",
+    "subtitlesButton": "CC",
+    "closeButton": "×"
   }
 }

@@ -3513,7 +3513,16 @@
     "streamLoadFailed": "加载流媒体失败，请重试。",
     "trivia": {
       "invalidChannel": "无效的频道 ID"
-    }
+    },
+    "initializationFailed": "初始化失败",
+    "reloadButton": "重新加载"
+  },
+  "status": {
+    "pleaseLogin": "请登录以使用 Bayit+ Companion",
+    "quotaExhausted": "每日 {{limit}} 分钟配额已用完。升级到高级版。",
+    "connected": "已连接",
+    "dubbingFailed": "配音启动失败，请重试。",
+    "dubbingError": "配音错误：{{error}}"
   },
   "favorites": {
     "title": "收藏",
@@ -5499,7 +5508,10 @@
       "transcript": "💬 转录",
       "waveform": "〰️ 波形",
       "wizard": "🧙 向导"
-    }
+    },
+    "wizardResponse": "助手回复",
+    "dismissResponse": "关闭语音回复",
+    "dismissResponseHint": "点击隐藏助手回复"
   },
   "voiceMode": {
     "voiceOnly": "仅语音",
@@ -7743,6 +7755,9 @@
     "startTranslation": "开始翻译",
     "targetLanguage": "目标语言",
     "toggleSubtitles": "切换字幕",
-    "close": "关闭 Bayit+ 栏"
+    "close": "关闭 Bayit+ 栏",
+    "logo": "Bayit+",
+    "subtitlesButton": "CC",
+    "closeButton": "×"
   }
 }

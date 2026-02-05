@@ -3322,7 +3322,16 @@
     "streamLoadFailed": "স্ট্রিম লোড করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
     "trivia": {
       "invalidChannel": "অবৈধ চ্যানেল আইডি"
-    }
+    },
+    "initializationFailed": "সূচনা ব্যর্থ হয়েছে",
+    "reloadButton": "পুনরায় লোড করুন"
+  },
+  "status": {
+    "pleaseLogin": "Bayit+ Companion ব্যবহার করতে লগ ইন করুন",
+    "quotaExhausted": "{{limit}} মিনিটের দৈনিক কোটা শেষ হয়েছে। প্রিমিয়ামে আপগ্রেড করুন।",
+    "connected": "সংযুক্ত",
+    "dubbingFailed": "ডাবিং শুরু করতে ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।",
+    "dubbingError": "ডাবিং ত্রুটি: {{error}}"
   },
   "favorites": {
     "title": "প্রিয়",
@@ -4848,7 +4857,10 @@
       "transcript": "💬 ট্রান্সক্রিপ্ট",
       "waveform": "〰️ ওয়েভফর্ম",
       "wizard": "🧙 উইজার্ড"
-    }
+    },
+    "wizardResponse": "সহায়কের প্রতিক্রিয়া",
+    "dismissResponse": "ভয়েস প্রতিক্রিয়া বন্ধ করুন",
+    "dismissResponseHint": "সহায়কের প্রতিক্রিয়া লুকাতে ট্যাপ করুন"
   },
   "voiceOnboarding": {
     "welcome": {
@@ -7709,6 +7721,9 @@
     "startTranslation": "অনুবাদ শুরু করুন",
     "targetLanguage": "লক্ষ্য ভাষা",
     "toggleSubtitles": "সাবটাইটেল টগল করুন",
-    "close": "Bayit+ বার বন্ধ করুন"
+    "close": "Bayit+ বার বন্ধ করুন",
+    "logo": "Bayit+",
+    "subtitlesButton": "CC",
+    "closeButton": "×"
   }
 }

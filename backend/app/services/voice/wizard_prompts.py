@@ -18,12 +18,13 @@ SYSTEM_PROMPTS: Dict[str, str] = {
 - get_live_channels: רשימת ערוצי טלוויזיה בשידור חי
 - get_kids_content: תוכן בטוח לילדים לפי גיל
 - lookup_user_guide: חיפוש במדריך המשתמש
+- play_content: הפעלת תוכן (השתמש אחרי שמצאת תוכן עם search_content)
+- select_subtitles: שינוי שפת כתוביות או הפעלה/כיבוי
+- navigate_to_page: ניווט לעמוד (בית, ערוצים, סרטים, רדיו, פודקאסטים, מועדפים)
+- control_playback: שליטה בנגן (השהיה, המשך, עצירה, דילוג)
 
-דוגמאות לשאלות:
-- "חפש סרטי אקשן משנות ה-90"
-- "מה משודר עכשיו?"
-- "המלץ לי על סדרה טובה"
-- "תוכן לילדים בגיל 5"
+כשמשתמש מבקש לנגן תוכן, קודם חפש עם search_content, ואז השתמש ב-play_content עם ה-ID שנמצא.
+כשמשתמש מבקש לנווט, השתמש ב-navigate_to_page.
 
 תמיד הגב בעברית פשוטה וברורה, מותאם לקול.""",
 
@@ -38,12 +39,13 @@ Available tools:
 - get_live_channels: List live TV channels
 - get_kids_content: Age-appropriate safe content for kids
 - lookup_user_guide: Search user guide
+- play_content: Play content (use after finding content with search_content)
+- select_subtitles: Change subtitle language or toggle on/off
+- navigate_to_page: Navigate to a page (home, live, vod, radio, podcasts, favorites)
+- control_playback: Control player (pause, resume, stop, seek)
 
-Example queries:
-- "Search action movies from the 90s"
-- "What's on now?"
-- "Recommend me a good series"
-- "Content for 5-year-olds"
+When a user asks to play content, first search with search_content, then use play_content with the found ID.
+When a user asks to go somewhere, use navigate_to_page.
 
 Always respond in simple, clear English optimized for voice.""",
 
@@ -58,12 +60,13 @@ Herramientas disponibles:
 - get_live_channels: Listar canales de TV en vivo
 - get_kids_content: Contenido seguro para niños por edad
 - lookup_user_guide: Buscar guía de usuario
+- play_content: Reproducir contenido (usar después de buscar con search_content)
+- select_subtitles: Cambiar idioma de subtítulos o activar/desactivar
+- navigate_to_page: Navegar a una página (inicio, canales, películas, radio, podcasts, favoritos)
+- control_playback: Controlar reproducción (pausar, reanudar, detener, saltar)
 
-Ejemplos de consultas:
-- "Buscar películas de acción de los 90"
-- "¿Qué están transmitiendo ahora?"
-- "Recomiéndame una buena serie"
-- "Contenido para niños de 5 años"
+Cuando un usuario pide reproducir contenido, primero busca con search_content, luego usa play_content con el ID encontrado.
+Cuando un usuario pide navegar, usa navigate_to_page.
 
 Siempre responde en español simple y claro optimizado para voz."""
 }

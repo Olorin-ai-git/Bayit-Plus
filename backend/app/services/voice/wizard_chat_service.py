@@ -71,7 +71,7 @@ class WizardChatService:
 
             # Execute with timeout
             try:
-                result = await asyncio.wait_for(
+                tool_result = await asyncio.wait_for(
                     execute_with_tools(self.client, messages, system_prompt),
                     timeout=settings.WIZARD_CHAT_TIMEOUT_SECONDS
                 )
@@ -106,8 +106,8 @@ class WizardChatService:
                     "action": None
                 }
 
-            # Extract response text
-            response_text = extract_text_from_response(result)
+            # Extract response text from the Claude message
+            response_text = extract_text_from_response(tool_result.message)
 
             # Format for voice
             spoken_response = format_for_voice(response_text)
@@ -130,18 +130,25 @@ class WizardChatService:
                     extra={"conversation_id": conversation_id, "user_id": user_id}
                 )
 
+            # Use extracted action from tool results if available,
+            # otherwise fall back to generic chat action
+            action = tool_result.extracted_action
+            if action is None:
+                action = {"type": "chat", "payload": {"message": transcript}}
+
             logger.info(
                 "Chat processed successfully",
                 extra={
                     "conversation_id": conversation_id,
                     "language": language,
-                    "response_length": len(spoken_response)
+                    "response_length": len(spoken_response),
+                    "action_type": action.get("type"),
                 }
             )
 
             return {
                 "spoken_response": spoken_response,
-                "action": {"type": "chat", "payload": {"message": transcript}}
+                "action": action
             }
 
         except Exception as e:

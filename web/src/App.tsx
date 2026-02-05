@@ -16,6 +16,7 @@ import { useAuthStore } from '@/stores/authStore'
 import { logger } from '@/utils/logger'
 import { killStaleHLS } from '@/components/player/hooks/useHLSPlayer'
 import { setupWizardActionHandler, cleanupWizardActionHandler } from '@/services/wizardActionHandler'
+import { useWizardNavigation } from '@/hooks/useWizardNavigation'
 import './styles/layout-fix.css'
 
 // Clear stale HLS sessions on app startup to prevent 404 errors from previous sessions
@@ -157,6 +158,9 @@ const LiveAIDataFlowPage = lazy(() => import('./pages/admin/LiveAIDataFlowPage')
 const AppContent = () => {
   const { isHydrated, isLoading } = useAuthStore()
   const location = useLocation()
+
+  // Bridge wizard voice navigation events to React Router
+  useWizardNavigation()
 
   // Remove splash screen when navigating away from home page
   useEffect(() => {

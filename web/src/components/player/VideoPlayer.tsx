@@ -28,6 +28,7 @@ import {
   usePlaybackSession,
   useAudioTracks,
   useComprehensionQuizIntegration,
+  useWizardMediaEvents,
 } from './hooks'
 import { SplitLanguages } from '@/types/subtitle'
 import { useChannelChatStore } from '@/stores/channelChatSlice'
@@ -168,6 +169,15 @@ export default function VideoPlayer({
     setLiveSplitMode(true)
     logger.info('Live split languages selected', 'VideoPlayer', { languages })
   }, [])
+
+  // Wire wizard voice commands to player controls and subtitle handlers
+  useWizardMediaEvents({
+    controls,
+    state,
+    videoRef,
+    onSubtitleToggle: handleSubtitleToggle,
+    onSubtitleLanguageChange: handleSubtitleLanguageChange,
+  })
 
   const dubbing = useLiveDubbing({
     channelId: contentId || '',

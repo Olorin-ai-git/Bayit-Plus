@@ -17,6 +17,8 @@ import { useSamsungVoice } from '@/hooks/useSamsungVoice';
 import { useChatbotStore } from '@/stores/chatbotStore';
 import { useDirection } from '@/hooks/useDirection';
 import { useResponsive } from '@/hooks/useResponsive';
+import { useSupportStore } from '@bayit/shared/stores/supportStore';
+import { VoiceResponseBubble } from '@/components/voice/VoiceResponseBubble';
 import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
 import { useVoiceSupport } from '@bayit/shared-hooks';
 import { supportConfig } from '@bayit/shared-config/supportConfig';
@@ -34,6 +36,9 @@ export default function Layout() {
   // Sidebar state: always expanded by default on desktop/TV, hidden on mobile
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const { isRTL } = useDirection();
+
+  // Current transcript from voice support store (set by voice pipeline services)
+  const currentTranscript = useSupportStore((s) => s.currentTranscript);
 
   // Voice Support for floating wizard hat FAB
   const {
@@ -283,6 +288,14 @@ export default function Layout() {
         onStartListening={startListening}
         onStopListening={stopListening}
         onInterrupt={interrupt}
+      />
+
+      {/* Voice Response Bubble - shows wizard response text */}
+      <VoiceResponseBubble
+        transcript={currentTranscript}
+        responseText={voiceResponse}
+        isVisible={isTTSSpeaking}
+        isRTL={isRTL}
       />
 
       {/* Widget Manager - renders floating overlay widgets */}

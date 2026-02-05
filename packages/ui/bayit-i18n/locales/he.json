@@ -4309,7 +4309,16 @@
     "streamLoadFailed": "טעינת השידור נכשלה. אנא נסה שוב.",
     "trivia": {
       "invalidChannel": "מזהה ערוץ לא תקין"
-    }
+    },
+    "initializationFailed": "האתחול נכשל",
+    "reloadButton": "טען מחדש"
+  },
+  "status": {
+    "pleaseLogin": "אנא התחבר כדי להשתמש ב-Bayit+ Companion",
+    "quotaExhausted": "מכסת {{limit}} הדקות היומית מוצתה. שדרג לפרימיום.",
+    "connected": "מחובר",
+    "dubbingFailed": "הפעלת הדיבוב נכשלה. אנא נסה שוב.",
+    "dubbingError": "שגיאת דיבוב: {{error}}"
   },
   "favorites": {
     "title": "מועדפים",
@@ -6397,7 +6406,10 @@
       "transcript": "💬 תמליל",
       "waveform": "〰️ גל קולי",
       "wizard": "🧙 אשף"
-    }
+    },
+    "wizardResponse": "תגובת הקוסם",
+    "dismissResponse": "סגור תגובת הקוסם",
+    "dismissResponseHint": "הקש כדי להסתיר את תגובת הקוסם"
   },
   "voiceMode": {
     "voiceOnly": "קולי בלבד",
@@ -8069,6 +8081,9 @@
     "startTranslation": "התחל תרגום",
     "targetLanguage": "שפת יעד",
     "toggleSubtitles": "הצג/הסתר כתוביות",
-    "close": "סגור את סרגל Bayit+"
+    "close": "סגור את סרגל Bayit+",
+    "logo": "Bayit+",
+    "subtitlesButton": "CC",
+    "closeButton": "×"
   }
 }

@@ -4164,7 +4164,16 @@
     "streamLoadFailed": "Error al cargar la transmisión. Por favor intenta de nuevo.",
     "trivia": {
       "invalidChannel": "ID de canal inválido"
-    }
+    },
+    "initializationFailed": "Error de inicialización",
+    "reloadButton": "Recargar"
+  },
+  "status": {
+    "pleaseLogin": "Inicia sesión para usar Bayit+ Companion",
+    "quotaExhausted": "Cuota diaria de {{limit}} minutos agotada. Actualiza a premium.",
+    "connected": "Conectado",
+    "dubbingFailed": "Error al iniciar el doblaje. Inténtalo de nuevo.",
+    "dubbingError": "Error de doblaje: {{error}}"
   },
   "favorites": {
     "title": "Favoritos",
@@ -6261,7 +6270,10 @@
       "transcript": "💬 Transcripción",
       "waveform": "〰️ Forma de onda",
       "wizard": "🧙 Asistente"
-    }
+    },
+    "wizardResponse": "Respuesta del asistente",
+    "dismissResponse": "Cerrar respuesta de voz",
+    "dismissResponseHint": "Toca para ocultar la respuesta del asistente"
   },
   "voiceMode": {
     "title": "Modo de Voz",
@@ -7952,6 +7964,9 @@
     "startTranslation": "Iniciar traduccion",
     "targetLanguage": "Idioma de destino",
     "toggleSubtitles": "Alternar subtitulos",
-    "close": "Cerrar barra Bayit+"
+    "close": "Cerrar barra Bayit+",
+    "logo": "Bayit+",
+    "subtitlesButton": "CC",
+    "closeButton": "×"
   }
 }

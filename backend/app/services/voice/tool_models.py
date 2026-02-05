@@ -51,3 +51,36 @@ class LookupUserGuideInput(BaseModel):
         if len(v.strip()) == 0:
             raise ValueError("Query cannot be empty")
         return v.strip()
+
+
+class PlayContentInput(BaseModel):
+    """Input validation for play_content tool."""
+    content_id: str = Field(..., max_length=100)
+    content_type: str = Field(..., pattern=r'^(vod|live|radio|podcast|audiobook)$')
+    timestamp: Optional[float] = Field(None, ge=0)
+
+
+class SelectSubtitlesInput(BaseModel):
+    """Input validation for select_subtitles tool."""
+    language: Optional[str] = Field(None, max_length=10)
+    enabled: bool = Field(True)
+
+
+class NavigateToPageInput(BaseModel):
+    """Input validation for navigate_to_page tool."""
+    page: str = Field(..., max_length=100)
+
+    @validator('page')
+    def validate_page(cls, v):
+        if len(v.strip()) == 0:
+            raise ValueError("Page cannot be empty")
+        return v.strip()
+
+
+class ControlPlaybackInput(BaseModel):
+    """Input validation for control_playback tool."""
+    command: str = Field(
+        ...,
+        pattern=r'^(play|pause|resume|stop|seek|mute|unmute)$'
+    )
+    value: Optional[float] = None

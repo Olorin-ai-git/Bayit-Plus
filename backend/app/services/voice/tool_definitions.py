@@ -119,5 +119,79 @@ WIZARD_TOOLS = [
             },
             "required": ["query"]
         }
+    },
+    {
+        "name": "play_content",
+        "description": "הפעלת תוכן בבית+ (סרט, סדרה, ערוץ חי, רדיו, פודקאסט, ספר שמע) | Play content on Bayit+ (movie, series, live channel, radio, podcast, audiobook) | Reproducir contenido en Bayit+ (película, serie, canal en vivo, radio, podcast, audiolibro)",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "content_id": {
+                    "type": "string",
+                    "description": "Content ID to play"
+                },
+                "content_type": {
+                    "type": "string",
+                    "enum": ["vod", "live", "radio", "podcast", "audiobook"],
+                    "description": "Content type"
+                },
+                "timestamp": {
+                    "type": "number",
+                    "description": "Start time in seconds (optional)"
+                }
+            },
+            "required": ["content_id", "content_type"]
+        }
+    },
+    {
+        "name": "select_subtitles",
+        "description": "שינוי שפת כתוביות או הפעלה/כיבוי כתוביות | Change subtitle language or toggle subtitles on/off | Cambiar idioma de subtítulos o activar/desactivar subtítulos",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "language": {
+                    "type": "string",
+                    "description": "Subtitle language code (e.g. en, he, es, fr)"
+                },
+                "enabled": {
+                    "type": "boolean",
+                    "description": "Enable (true) or disable (false) subtitles"
+                }
+            },
+            "required": []
+        }
+    },
+    {
+        "name": "navigate_to_page",
+        "description": "ניווט לעמוד בבית+ (בית, ערוצים, סרטים, רדיו, פודקאסטים, מועדפים) | Navigate to a Bayit+ page (home, live, movies, radio, podcasts, favorites) | Navegar a una página de Bayit+ (inicio, canales, películas, radio, podcasts, favoritos)",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "string",
+                    "description": "Page name or path (e.g. home, live, radio, vod, podcasts, favorites, settings, search)"
+                }
+            },
+            "required": ["page"]
+        }
+    },
+    {
+        "name": "control_playback",
+        "description": "שליטה בהפעלת מדיה (השהיה, המשך, עצירה, דילוג) | Control media playback (pause, resume, stop, seek) | Controlar reproducción (pausar, reanudar, detener, saltar)",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "command": {
+                    "type": "string",
+                    "enum": ["play", "pause", "resume", "stop", "seek", "mute", "unmute"],
+                    "description": "Playback command"
+                },
+                "value": {
+                    "type": "number",
+                    "description": "Optional value (e.g. seek position in seconds)"
+                }
+            },
+            "required": ["command"]
+        }
     }
 ]

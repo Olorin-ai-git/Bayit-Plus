@@ -27,3 +27,4 @@ export type {
   UseComprehensionQuizIntegrationProps,
   UseComprehensionQuizIntegrationReturn,
 } from './useComprehensionQuizIntegration'
+export { useWizardMediaEvents } from './useWizardMediaEvents'

@@ -3411,7 +3411,16 @@
     "streamLoadFailed": "ஸ்ட்ரீமை ஏற்ற இயலவில்லை. மீண்டும் முயற்சிக்கவும்.",
     "trivia": {
       "invalidChannel": "தவறான சேனல் ஐடி"
-    }
+    },
+    "initializationFailed": "துவக்கம் தோல்வியடைந்தது",
+    "reloadButton": "மீண்டும் ஏற்று"
+  },
+  "status": {
+    "pleaseLogin": "Bayit+ Companion பயன்படுத்த உள்நுழையவும்",
+    "quotaExhausted": "{{limit}} நிமிட தினசரி ஒதுக்கீடு தீர்ந்தது. பிரீமியத்திற்கு மேம்படுத்தவும்.",
+    "connected": "இணைக்கப்பட்டது",
+    "dubbingFailed": "டப்பிங் தொடங்குவதில் தோல்வி. மீண்டும் முயற்சிக்கவும்.",
+    "dubbingError": "டப்பிங் பிழை: {{error}}"
   },
   "favorites": {
     "title": "பிடித்தவை",
@@ -4942,7 +4951,10 @@
       "transcript": "💬 படியெடுப்பு",
       "waveform": "〰️ அலைவடிவம்",
       "wizard": "🧙 மந்திரவாதி"
-    }
+    },
+    "wizardResponse": "உதவியாளர் பதில்",
+    "dismissResponse": "குரல் பதிலை மூடு",
+    "dismissResponseHint": "உதவியாளரின் பதிலை மறைக்க தட்டவும்"
   },
   "voiceOnboarding": {
     "welcome": {
@@ -7807,6 +7819,9 @@
     "startTranslation": "மொழிபெயர்ப்பைத் தொடங்கு",
     "targetLanguage": "இலக்கு மொழி",
     "toggleSubtitles": "வசன வரிகளை மாற்று",
-    "close": "Bayit+ பட்டையை மூடு"
+    "close": "Bayit+ பட்டையை மூடு",
+    "logo": "Bayit+",
+    "subtitlesButton": "CC",
+    "closeButton": "×"
   }
 }
