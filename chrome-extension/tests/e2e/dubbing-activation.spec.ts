@@ -74,10 +74,7 @@ test.describe('Dubbing Activation', () => {
     await expect(usageDisplay).toContainText(/\d+\.\d+\s*\/\s*\d+\.\d+/);
   });
 
-  test('should show quota exceeded modal when limit reached', async ({ page, context }) => {
-    // Mock quota to be nearly exhausted
-    const serviceWorker = context.serviceWorkers()[0];
-    const extensionId = serviceWorker.url().split('/')[2];
+  test('should show quota exceeded modal when limit reached', async ({ page }) => {
 
     // Set quota to 4.9 minutes (near limit of 5.0)
     await page.evaluate(() => {
@@ -145,7 +142,7 @@ test.describe('Dubbing Activation', () => {
     await expect(startButton).toHaveText(/Start Dubbing/i, { timeout: 5000 });
   });
 
-  test('should persist user settings across sessions', async ({ page, context }) => {
+  test('should persist user settings across sessions', async ({ page }) => {
     const dubbingControls = page.locator('[data-bayit-dubbing-controls]');
     await expect(dubbingControls).toBeVisible({ timeout: 10000 });
 

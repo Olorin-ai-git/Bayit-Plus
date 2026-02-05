@@ -6,7 +6,8 @@
  * - Email/Password (fallback)
  */
 
-import React, { useState } from 'react';
+import type React from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GlassCard, GlassButton, GlassInput } from '@bayit/glass';
 import { storeToken } from '../../background/auth-manager';
@@ -150,7 +151,11 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
       <GlassCard className="p-8 max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="text-5xl mb-4">🎬</div>
+          <div className="mb-4">
+            <svg className="w-12 h-12 mx-auto text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+          </div>
           <h1 className="text-2xl font-bold text-white mb-2">
             {mode === 'login'
               ? t('auth.signIn', 'Sign In')
@@ -268,15 +273,16 @@ export function AuthPage({ onSuccess }: AuthPageProps) {
 
         {/* Toggle Mode */}
         <div className="mt-6 text-center">
-          <button
-            onClick={() => setMode(mode === 'login' ? 'register' : 'login')}
+          <GlassButton
+            variant="ghost"
+            onPress={() => setMode(mode === 'login' ? 'register' : 'login')}
             disabled={isLoading}
-            className="text-white/60 hover:text-white/80 text-sm transition-colors disabled:opacity-50"
+            className="text-white/60 text-sm"
           >
             {mode === 'login'
               ? t('auth.noAccount', "Don't have an account? Sign up")
               : t('auth.haveAccount', 'Already have an account? Sign in')}
-          </button>
+          </GlassButton>
         </div>
       </GlassCard>
     </div>

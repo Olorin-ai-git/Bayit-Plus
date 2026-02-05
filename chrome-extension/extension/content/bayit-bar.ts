@@ -81,7 +81,7 @@ export class BayitBar {
 
     // Bayit+ text icon
     const logo = document.createElement('span');
-    logo.textContent = 'Bayit+';
+    logo.textContent = t('bar.logo', 'Bayit+');
     Object.assign(logo.style, { fontWeight: '700', fontSize: '14px', whiteSpace: 'nowrap', opacity: '0.9' });
 
     // Translate toggle button
@@ -106,9 +106,9 @@ export class BayitBar {
     // Subtitle toggle
     const subtitleBtn = document.createElement('button');
     subtitleBtn.setAttribute('data-role', 'subtitles');
-    subtitleBtn.textContent = 'CC';
+    subtitleBtn.textContent = t('bar.subtitlesButton', 'CC');
     subtitleBtn.setAttribute('aria-label', t('bar.toggleSubtitles', 'Toggle subtitles'));
-    subtitleBtn.style.cssText = this.btnStyle('rgba(255,255,255,0.15)');
+    subtitleBtn.style.cssText = this.btnStyle('rgba(255,255,255,0.25)');
 
     // Status text
     const statusSpan = document.createElement('span');
@@ -121,11 +121,11 @@ export class BayitBar {
     // Close button
     const closeBtn = document.createElement('button');
     closeBtn.setAttribute('data-role', 'close');
-    closeBtn.textContent = 'X';
+    closeBtn.textContent = t('bar.closeButton', '\u00D7');
     closeBtn.setAttribute('aria-label', t('bar.close', 'Close Bayit+ Bar'));
     Object.assign(closeBtn.style, {
       background: 'transparent', border: 'none', color: 'white', cursor: 'pointer',
-      fontSize: '16px', padding: '4px 8px', opacity: '0.7', lineHeight: '1',
+      fontSize: '16px', padding: '12px 12px', opacity: '0.7', lineHeight: '1', minWidth: '44px', minHeight: '44px',
     });
 
     parent.appendChild(logo);
@@ -144,7 +144,7 @@ export class BayitBar {
       'cursor: pointer',
       'font-size: 12px',
       'font-weight: 600',
-      'padding: 6px 14px',
+      'padding: 14px 14px',
       'border-radius: 6px',
       'transition: background 0.2s',
       'white-space: nowrap',
@@ -158,9 +158,10 @@ export class BayitBar {
       'color: white',
       'cursor: pointer',
       'font-size: 12px',
-      'padding: 4px 8px',
+      'padding: 12px 8px',
       'border-radius: 6px',
       'outline: none',
+      'min-height: 44px',
     ].join('; ');
   }
 
@@ -201,7 +202,7 @@ export class BayitBar {
     if (!this.subtitleBtn) return;
     this.subtitleBtn.style.background = this.subtitlesEnabled
       ? 'rgba(59, 130, 246, 0.6)'
-      : 'rgba(255, 255, 255, 0.15)';
+      : 'rgba(255, 255, 255, 0.25)';
   }
 
   /**

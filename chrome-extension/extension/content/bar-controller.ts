@@ -21,7 +21,6 @@ export class BarController {
   private subtitleDisplay: SubtitleDisplay;
   private container: HTMLElement | null = null;
   private resizeObserver: ResizeObserver | null = null;
-  private video: HTMLVideoElement | null = null;
 
   constructor(callbacks: BayitBarCallbacks) {
     this.bar = new BayitBar(callbacks);
@@ -32,7 +31,6 @@ export class BarController {
    * Attach bar and subtitles to the video's container element
    */
   attach(video: HTMLVideoElement): void {
-    this.video = video;
     this.container = this.findVideoContainer(video);
 
     if (!this.container) {
@@ -157,7 +155,6 @@ export class BarController {
     this.subtitleDisplay.destroy();
     this.bar.destroy();
     this.container = null;
-    this.video = null;
 
     logger.info('BarController destroyed');
   }

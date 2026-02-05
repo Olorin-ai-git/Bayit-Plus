@@ -100,6 +100,9 @@ function broadcastMessage(message: Record<string, unknown>): void {
  * Handle messages from other extension contexts
  */
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // Validate sender is from this extension (defense-in-depth)
+  if (sender.id !== chrome.runtime.id) return false;
+
   logger.debug('Message received', { type: message.type, sender: sender.id });
 
   switch (message.type) {
@@ -118,6 +121,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       handleGetUsageData().then(sendResponse);
       return true; // Async response
 
+    case 'GET_AUTH_TOKEN':
+      // Return decrypted auth token for content script
+      handleGetAuthToken().then(sendResponse);
+      return true; // Async response
+
+    case 'GET_TAB_ID':
+      // Return sender tab ID for content script
+      sendResponse({ tabId: sender.tab?.id || 0 });
+      break;
+
     case 'START_DUBBING_SESSION':
       // Start dubbing session
       handleStartDubbingSession(message.sessionId).then(sendResponse);
@@ -133,6 +146,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ error: 'Unknown message type' });
   }
 });
+
+/**
+ * Handle get auth token request (for content scripts that cannot import background modules)
+ */
+async function handleGetAuthToken(): Promise<{ token: string | null }> {
+  try {
+    const { getToken } = await import('./background/auth-manager');
+    const token = await getToken();
+    return { token };
+  } catch (error) {
+    logger.error('Failed to get auth token', { error: String(error) });
+    return { token: null };
+  }
+}
 
 /**
  * Handle get auth status request

@@ -66,7 +66,7 @@ export class AudioWorkletManager {
           this.performanceMonitor.trackAudioWorkletCall();
 
           // Measure capture-to-encode latency
-          const captureToEncode = this.performanceMonitor.markEnd('captureToEncode');
+          void this.performanceMonitor.markEnd('captureToEncode');
 
           this.handleAudioData(event.data.data);
 

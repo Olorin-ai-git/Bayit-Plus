@@ -4,7 +4,7 @@
  * Tests CPU profiling, latency measurement, and memory tracking
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { PerformanceMonitor } from '@/lib/performance-monitor';
 
 // Mock performance.memory

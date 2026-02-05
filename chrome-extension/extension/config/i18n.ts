@@ -49,7 +49,7 @@ export async function initializeI18n(): Promise<void> {
 /**
  * Setup listener for language changes (RTL support)
  */
-function setupDirectionListener(i18n: any): void {
+function setupDirectionListener(i18n: typeof import('i18next').default): void {
   i18n.on('languageChanged', (lng: string) => {
     const dir = ['he', 'ar'].includes(lng) ? 'rtl' : 'ltr';
     document.documentElement.setAttribute('dir', dir);

@@ -71,11 +71,14 @@ class OffscreenManager {
     sender: chrome.runtime.MessageSender,
     sendResponse: (response: unknown) => void
   ): boolean {
+    // Validate sender is from this extension (defense-in-depth)
+    if (sender.id !== chrome.runtime.id) return false;
+
     logger.debug('Message received', { type: message.type });
 
     switch (message.type) {
       case 'START_DUBBING':
-        this.handleStartDubbing(message as StartDubbingMessage)
+        this.handleStartDubbing(message as unknown as StartDubbingMessage)
           .then(sendResponse)
           .catch((error) => sendResponse({ error: String(error) }));
         return true; // Async response
@@ -87,12 +90,12 @@ class OffscreenManager {
         return true; // Async response
 
       case 'SET_VOLUME':
-        this.handleSetVolume(message as SetVolumeMessage);
+        this.handleSetVolume(message as unknown as SetVolumeMessage);
         sendResponse({ success: true });
         break;
 
       case 'APPLY_VOLUME_PRESET':
-        this.handleApplyVolumePreset(message as ApplyVolumePresetMessage);
+        this.handleApplyVolumePreset(message as unknown as ApplyVolumePresetMessage);
         sendResponse({ success: true });
         break;
 
@@ -513,7 +516,7 @@ interface ApplyVolumePresetMessage {
 }
 
 // Initialize offscreen manager
-const offscreenManager = new OffscreenManager();
+void new OffscreenManager();
 
 // Export for testing
 export { OffscreenManager };

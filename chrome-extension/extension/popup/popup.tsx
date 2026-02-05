@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import i18next from 'i18next';
 import { initializeI18n } from '../config/i18n';
 import { App } from './App';
 import { logger } from '../lib/logger';
@@ -44,7 +45,7 @@ async function main() {
       Object.assign(wrapper.style, { padding: '20px', color: '#fff', textAlign: 'center' });
 
       const heading = document.createElement('h2');
-      heading.textContent = 'Failed to Initialize';
+      heading.textContent = i18next.t('errors.initializationFailed', 'Failed to Initialize');
       Object.assign(heading.style, { color: '#ff4757', marginBottom: '10px' });
 
       const message = document.createElement('p');
@@ -52,7 +53,7 @@ async function main() {
       Object.assign(message.style, { color: '#ddd', fontSize: '14px' });
 
       const reloadBtn = document.createElement('button');
-      reloadBtn.textContent = 'Reload';
+      reloadBtn.textContent = i18next.t('errors.reloadButton', 'Reload');
       reloadBtn.addEventListener('click', () => window.location.reload());
       Object.assign(reloadBtn.style, {
         marginTop: '20px', padding: '10px 20px',

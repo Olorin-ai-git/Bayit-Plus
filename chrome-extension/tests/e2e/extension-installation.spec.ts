@@ -5,7 +5,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Extension Installation', () => {
-  test('should load extension successfully', async ({ page, context }) => {
+  test('should load extension successfully', async ({ context }) => {
     // Check if extension is loaded
     const extensionTargets = context.serviceWorkers();
     expect(extensionTargets.length).toBeGreaterThan(0);

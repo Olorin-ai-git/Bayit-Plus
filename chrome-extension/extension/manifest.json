@@ -51,7 +51,13 @@
   "web_accessible_resources": [
     {
       "resources": ["offscreen.html", "offscreen/audio-worklet-processor.js"],
-      "matches": ["<all_urls>"]
+      "matches": [
+        "https://screenil.com/*",
+        "https://mako.co.il/*",
+        "https://13tv.co.il/*",
+        "https://kan.org.il/*",
+        "https://*.kan.org.il/*"
+      ]
     }
   ],
   "content_security_policy": {

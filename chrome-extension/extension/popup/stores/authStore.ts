@@ -7,7 +7,6 @@
 import { create } from 'zustand';
 import type { User } from '../../background/auth-manager';
 import {
-  getToken,
   getCurrentUser,
   isAuthenticated,
   isPremiumUser,

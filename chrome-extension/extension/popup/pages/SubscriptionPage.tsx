@@ -8,12 +8,23 @@
  * - Cancel subscription
  */
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GlassCard, GlassButton, GlassBadge, GlassConfirmDialog } from '@bayit/glass';
+import { GlassConfirmDialog } from '@bayit/glass';
 import { useAuthStore } from '../stores/authStore';
 import { CONFIG } from '../../config/constants';
 import { logger } from '../../lib/logger';
+import {
+  authenticatedFetch,
+  SubscriptionHeader,
+  ErrorAlert,
+  SuccessAlert,
+  CheckoutPollingBanner,
+  CurrentPlanCard,
+  UpgradeCTA,
+  ManageSection,
+  SupportCard,
+} from './subscription';
 
 interface SubscriptionPageProps {
   onBack: () => void;
@@ -34,497 +45,134 @@ export function SubscriptionPage({ onBack }: SubscriptionPageProps) {
 
   const { user, isPremium } = authStore;
 
-  // Auto-dismiss success messages to prevent stale UI state
   useEffect(() => {
     if (!successMessage) return;
-
     const timer = setTimeout(() => {
       setSuccessMessage(null);
     }, CONFIG.USAGE_TRACKING.POLL_INTERVAL_MS);
-
     return () => clearTimeout(timer);
   }, [successMessage]);
 
-  /**
-   * Handle upgrade to premium (Stripe checkout)
-   */
   const handleUpgrade = async () => {
     try {
       setIsProcessing(true);
       setError(null);
-
       logger.info('Initiating Stripe checkout');
-
-      // Create Stripe checkout session (Chrome Extension-specific endpoint)
-      const response = await fetch(
-        `${CONFIG.API.BASE_URL}/api/v1/extension/subscriptions/checkout`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${await import('../../background/auth-manager').then(
-              (m) => m.getToken()
-            )}`,
-          },
-        }
+      const response = await authenticatedFetch(
+        '/api/v1/extension/subscriptions/checkout',
+        { method: 'POST' }
       );
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || 'Failed to create checkout session');
       }
-
       const data = await response.json();
-      const checkoutUrl = data.checkout_url;
-
-      logger.info('Stripe checkout URL created', { checkoutUrl });
-
-      // Open Stripe checkout in new tab
-      chrome.tabs.create({ url: checkoutUrl });
-
-      // Start polling for subscription status (every 5s)
+      chrome.tabs.create({ url: data.checkout_url });
       setPollingCheckout(true);
       startSubscriptionPolling();
-    } catch (error) {
-      logger.error('Failed to initiate checkout', { error: String(error) });
-      setError(
-        t(
-          'subscription.errors.checkoutFailed',
-          'Failed to start checkout. Please try again.'
-        )
-      );
+    } catch (err) {
+      logger.error('Failed to initiate checkout', { error: String(err) });
+      setError(t('subscription.errors.checkoutFailed', 'Failed to start checkout. Please try again.'));
       setIsProcessing(false);
     }
   };
 
-  /**
-   * Poll subscription status until upgrade detected
-   */
   const startSubscriptionPolling = () => {
     let attempts = 0;
-    const maxAttempts = 60; // 5 minutes max (5s intervals)
-
+    const maxAttempts = 60;
     const interval = setInterval(async () => {
       attempts++;
-
       try {
-        // Refresh user info
         await authStore.refresh();
-
-        // Check if upgraded
         if (authStore.isPremium) {
           clearInterval(interval);
           setPollingCheckout(false);
           setIsProcessing(false);
-
           logger.info('Subscription upgrade detected');
-
-          setSuccessMessage(
-            t(
-              'subscription.upgradeSuccess',
-              'Upgrade successful! You now have unlimited dubbing.'
-            )
-          );
+          setSuccessMessage(t('subscription.upgradeSuccess', 'Upgrade successful! You now have unlimited dubbing.'));
         }
-
-        // Stop polling after max attempts
         if (attempts >= maxAttempts) {
           clearInterval(interval);
           setPollingCheckout(false);
           setIsProcessing(false);
-
           logger.warn('Subscription polling timed out');
-
-          setError(
-            t(
-              'subscription.errors.pollingTimeout',
-              'Please refresh the page to see your updated subscription status.'
-            )
-          );
+          setError(t('subscription.errors.pollingTimeout', 'Please refresh the page to see your updated subscription status.'));
         }
-      } catch (error) {
-        logger.error('Subscription polling error', { error: String(error) });
-        // Continue polling despite errors
+      } catch (err) {
+        logger.error('Subscription polling error', { error: String(err) });
       }
     }, CONFIG.USAGE_TRACKING.POLL_INTERVAL_MS);
   };
 
-  /**
-   * Handle cancel subscription
-   */
-  const handleCancelRequest = () => {
-    setShowCancelConfirm(true);
-  };
-
   const handleCancelConfirmed = async () => {
     setShowCancelConfirm(false);
-
     try {
       setIsProcessing(true);
       setError(null);
-
       logger.info('Cancelling subscription');
-
-      const response = await fetch(
-        `${CONFIG.API.BASE_URL}/api/v1/extension/subscriptions/cancel`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${await import('../../background/auth-manager').then(
-              (m) => m.getToken()
-            )}`,
-          },
-        }
-      );
-
+      const response = await authenticatedFetch('/api/v1/extension/subscriptions/cancel', { method: 'POST' });
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || 'Failed to cancel subscription');
       }
-
-      logger.info('Subscription cancelled successfully');
-
-      // Refresh user info
       await authStore.refresh();
-
-      setSuccessMessage(
-        t(
-          'subscription.cancelSuccess',
-          'Subscription cancelled. You can continue using premium until the end of your billing period.'
-        )
-      );
-
+      setSuccessMessage(t('subscription.cancelSuccess', 'Subscription cancelled. You can continue using premium until the end of your billing period.'));
       setIsProcessing(false);
-    } catch (error) {
-      logger.error('Failed to cancel subscription', { error: String(error) });
-      setError(
-        t(
-          'subscription.errors.cancelFailed',
-          'Failed to cancel subscription. Please try again or contact support.'
-        )
-      );
+    } catch (err) {
+      logger.error('Failed to cancel subscription', { error: String(err) });
+      setError(t('subscription.errors.cancelFailed', 'Failed to cancel subscription. Please try again or contact support.'));
       setIsProcessing(false);
     }
   };
 
-  /**
-   * Open billing portal
-   */
   const handleBillingPortal = async () => {
     try {
       setIsProcessing(true);
-
       logger.info('Opening Stripe billing portal');
-
-      const response = await fetch(
-        `${CONFIG.API.BASE_URL}/api/v1/subscriptions/billing-portal`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${await import('../../background/auth-manager').then(
-              (m) => m.getToken()
-            )}`,
-          },
-          body: JSON.stringify({
-            return_url: chrome.runtime.getURL('popup.html'),
-          }),
-        }
-      );
-
+      const response = await authenticatedFetch('/api/v1/subscriptions/billing-portal', {
+        method: 'POST',
+        body: JSON.stringify({ return_url: chrome.runtime.getURL('popup.html') }),
+      });
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.detail || 'Failed to open billing portal');
       }
-
       const data = await response.json();
-      const portalUrl = data.portal_url;
-
-      logger.info('Opening billing portal', { portalUrl });
-
-      // Open billing portal in new tab
-      chrome.tabs.create({ url: portalUrl });
-
+      chrome.tabs.create({ url: data.portal_url });
       setIsProcessing(false);
-    } catch (error) {
-      logger.error('Failed to open billing portal', { error: String(error) });
-      setError(
-        t(
-          'subscription.errors.portalFailed',
-          'Failed to open billing portal. Please try again.'
-        )
-      );
+    } catch (err) {
+      logger.error('Failed to open billing portal', { error: String(err) });
+      setError(t('subscription.errors.portalFailed', 'Failed to open billing portal. Please try again.'));
       setIsProcessing(false);
     }
   };
 
   return (
     <div className="w-full p-6 space-y-4">
-      {/* Header */}
-      <div className="flex items-center gap-3 mb-2">
-        <GlassButton
-          variant="ghost"
-          onPress={onBack}
-          aria-label={t('common.back', 'Back')}
-        >
-          <svg
-            className="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-        </GlassButton>
-
-        <h1 className="text-2xl font-bold text-white">
-          {t('subscription.title', 'Subscription')}
-        </h1>
-      </div>
-
-      {/* Error Message */}
-      {error && (
-        <div
-          className="p-4 bg-red-500/20 border border-red-500/50 rounded-lg"
-          role="alert"
-          aria-live="assertive"
-        >
-          <p className="text-red-200 text-sm">{error}</p>
-        </div>
-      )}
-
-      {/* Processing State */}
-      {pollingCheckout && (
-        <div
-          className="p-4 bg-blue-500/20 border border-blue-500/50 rounded-lg"
-          role="status"
-          aria-live="polite"
-        >
-          <p className="text-blue-200 text-sm">
-            {t(
-              'subscription.waitingForCheckout',
-              'Waiting for checkout completion... Please complete the payment in the opened tab.'
-            )}
-          </p>
-        </div>
-      )}
-
-      {/* Current Subscription Status */}
-      <GlassCard className="p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-xl font-bold text-white mb-1">
-              {t('subscription.currentPlan', 'Current Plan')}
-            </h2>
-            <p className="text-white/60 text-sm">
-              {user?.email}
-            </p>
-          </div>
-
-          <GlassBadge
-            variant={isPremium ? 'success' : 'default'}
-            aria-label={`Subscription: ${user?.subscription_tier || 'free'}`}
-          >
-            {isPremium
-              ? t('subscription.tier.premium', 'Premium')
-              : t('subscription.tier.free', 'Free')}
-          </GlassBadge>
-        </div>
-
-        <div className="space-y-3">
-          <FeatureItem
-            included={true}
-            text={t('subscription.features.basicDubbing', '5 minutes per day')}
-          />
-          <FeatureItem
-            included={isPremium}
-            text={t('subscription.features.unlimited', 'Unlimited dubbing')}
-          />
-          <FeatureItem
-            included={isPremium}
-            text={t('subscription.features.prioritySupport', 'Priority support')}
-          />
-          <FeatureItem
-            included={isPremium}
-            text={t('subscription.features.noWatermark', 'No watermark')}
-          />
-        </div>
-      </GlassCard>
-
-      {/* Free Tier: Upgrade CTA */}
-      {!isPremium && (
-        <GlassCard className="p-6 bg-gradient-to-br from-purple-500/20 to-blue-500/20 border-purple-500/30">
-          <div className="text-center">
-            <div className="mb-3">
-              <svg className="w-10 h-10 mx-auto text-yellow-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-              </svg>
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-2">
-              {t('subscription.upgradeToPremium', 'Upgrade to Premium')}
-            </h2>
-            <p className="text-white/80 mb-4">
-              {t(
-                'subscription.upgradeDescription',
-                'Get unlimited dubbing, priority support, and more'
-              )}
-            </p>
-
-            <div className="text-4xl font-bold text-white mb-6">
-              ${CONFIG.QUOTA.PREMIUM_TIER_PRICE_USD}
-              <span className="text-lg text-white/60 font-normal">
-                {t('subscription.perMonth', '/month')}
-              </span>
-            </div>
-
-            <GlassButton
-              variant="primary"
-              onPress={handleUpgrade}
-              disabled={isProcessing}
-              className="w-full"
-              aria-label={t('subscription.upgradeNow', 'Upgrade Now')}
-            >
-              {isProcessing
-                ? t('common.loading', 'Loading...')
-                : t('subscription.upgradeNow', 'Upgrade Now')}
-            </GlassButton>
-
-            <p className="text-white/50 text-xs mt-3">
-              {t(
-                'subscription.securePayment',
-                'Secure payment powered by Stripe'
-              )}
-            </p>
-          </div>
-        </GlassCard>
-      )}
-
-      {/* Premium: Manage Subscription */}
+      <SubscriptionHeader onBack={onBack} isPremium={isPremium} t={t} />
+      {error && <ErrorAlert error={error} />}
+      {pollingCheckout && <CheckoutPollingBanner t={t} />}
+      <CurrentPlanCard user={user} isPremium={isPremium} t={t} />
+      {!isPremium && <UpgradeCTA onUpgrade={handleUpgrade} isProcessing={isProcessing} t={t} />}
       {isPremium && (
-        <GlassCard className="p-6">
-          <h2 className="text-lg font-bold text-white mb-4">
-            {t('subscription.manage', 'Manage Subscription')}
-          </h2>
-
-          <div className="space-y-3">
-            <GlassButton
-              variant="secondary"
-              onPress={handleBillingPortal}
-              disabled={isProcessing}
-              className="w-full"
-              aria-label={t('subscription.billingPortal', 'View Billing History')}
-            >
-              {t('subscription.billingPortal', 'View Billing History')}
-            </GlassButton>
-
-            <GlassButton
-              variant="secondary"
-              onPress={handleCancelRequest}
-              disabled={isProcessing}
-              className="w-full"
-              aria-label={t('subscription.cancel', 'Cancel Subscription')}
-            >
-              {t('subscription.cancel', 'Cancel Subscription')}
-            </GlassButton>
-          </div>
-        </GlassCard>
+        <ManageSection
+          onBillingPortal={handleBillingPortal}
+          onCancel={() => setShowCancelConfirm(true)}
+          isProcessing={isProcessing}
+          t={t}
+        />
       )}
-
-      {/* Support */}
-      <GlassCard className="p-4">
-        <p className="text-white/70 text-sm text-center">
-          {t('subscription.needHelp', 'Need help?')}{' '}
-          <a
-            href="mailto:support@bayit.tv"
-            className="text-white hover:text-white/80 underline"
-          >
-            {t('subscription.contactSupport', 'Contact Support')}
-          </a>
-        </p>
-      </GlassCard>
-
-      {/* Success Message */}
-      {successMessage && (
-        <div
-          className="p-4 bg-green-500/20 border border-green-500/50 rounded-lg"
-          role="status"
-          aria-live="polite"
-        >
-          <p className="text-green-200 text-sm">{successMessage}</p>
-        </div>
-      )}
-
-      {/* Cancel Confirmation Dialog */}
+      <SupportCard t={t} />
+      {successMessage && <SuccessAlert message={successMessage} />}
       <GlassConfirmDialog
         visible={showCancelConfirm}
         title={t('subscription.cancelConfirmTitle', 'Cancel Subscription')}
-        message={t(
-          'subscription.confirmCancel',
-          'Are you sure you want to cancel your premium subscription? You will lose unlimited dubbing access.'
-        )}
+        message={t('subscription.confirmCancel', 'Are you sure you want to cancel your premium subscription? You will lose unlimited dubbing access.')}
         confirmLabel={t('subscription.cancelConfirm', 'Yes, Cancel')}
         cancelLabel={t('common.back', 'Back')}
         onConfirm={handleCancelConfirmed}
         onCancel={() => setShowCancelConfirm(false)}
       />
-    </div>
-  );
-}
-
-/**
- * Feature Item Component
- */
-function FeatureItem({ included, text }: { included: boolean; text: string }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div
-        className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${
-          included ? 'bg-green-500/20' : 'bg-white/10'
-        }`}
-        aria-hidden="true"
-      >
-        {included ? (
-          <svg
-            className="w-3 h-3 text-green-400"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fillRule="evenodd"
-              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-              clipRule="evenodd"
-            />
-          </svg>
-        ) : (
-          <svg
-            className="w-3 h-3 text-white/30"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        )}
-      </div>
-      <span
-        className={`text-sm ${
-          included ? 'text-white' : 'text-white/50 line-through'
-        }`}
-      >
-        {text}
-      </span>
     </div>
   );
 }

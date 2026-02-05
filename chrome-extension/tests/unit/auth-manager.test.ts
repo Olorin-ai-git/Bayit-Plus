@@ -78,7 +78,7 @@ describe('AuthManager', () => {
       const testToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjk5OTk5OTk5OTl9.signature';
 
       // Mock chrome.storage.local.get to return encrypted token
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({ jwt_enc: 'encrypted_token_base64' });
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ jwt_enc: 'encrypted_token_base64' });
 
       // Mock decryption functions
       vi.spyOn(crypto, 'getEncryptionKey').mockResolvedValue({} as CryptoKey);
@@ -93,7 +93,7 @@ describe('AuthManager', () => {
     });
 
     it('should return null if no token stored', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({});
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({});
 
       const token = await getToken();
 
@@ -103,7 +103,7 @@ describe('AuthManager', () => {
     it('should return null and clear storage if token is expired', async () => {
       const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjE1MTYyMzkwMjJ9.signature';
 
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({ jwt_enc: 'encrypted_token_base64' });
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ jwt_enc: 'encrypted_token_base64' });
       vi.spyOn(crypto, 'getEncryptionKey').mockResolvedValue({} as CryptoKey);
       vi.spyOn(crypto, 'decryptToken').mockResolvedValue(expiredToken);
       vi.spyOn(crypto, 'isTokenExpired').mockReturnValue(true);
@@ -115,7 +115,7 @@ describe('AuthManager', () => {
     });
 
     it('should return null if decryption fails', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({ jwt_enc: 'invalid_encrypted_token' });
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ jwt_enc: 'invalid_encrypted_token' });
       vi.spyOn(crypto, 'getEncryptionKey').mockResolvedValue({} as CryptoKey);
       vi.spyOn(crypto, 'decryptToken').mockRejectedValue(new Error('Decryption failed'));
 
@@ -133,7 +133,7 @@ describe('AuthManager', () => {
     });
 
     it('should throw error if removal fails', async () => {
-      vi.mocked(chrome.storage.local.remove).mockRejectedValue(new Error('Storage error'));
+      (chrome.storage.local.remove as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('Storage error'));
 
       await expect(clearToken()).rejects.toThrow();
     });
@@ -150,7 +150,7 @@ describe('AuthManager', () => {
     it('should return cached user info if available', async () => {
       const mockToken = 'valid_token';
 
-      vi.mocked(chrome.storage.local.get)
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>)
         .mockResolvedValueOnce({ jwt_enc: 'encrypted' }) // First call in getToken()
         .mockResolvedValueOnce({ user_info: mockUser }); // Second call for user_info
 
@@ -167,7 +167,7 @@ describe('AuthManager', () => {
     it('should fetch user info from backend if not cached', async () => {
       const mockToken = 'valid_token';
 
-      vi.mocked(chrome.storage.local.get)
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>)
         .mockResolvedValueOnce({ jwt_enc: 'encrypted' }) // getToken()
         .mockResolvedValueOnce({}); // user_info not cached
 
@@ -198,7 +198,7 @@ describe('AuthManager', () => {
     });
 
     it('should return null if not authenticated', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({});
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({});
 
       const user = await getCurrentUser();
 
@@ -208,7 +208,7 @@ describe('AuthManager', () => {
     it('should clear token and return null if API returns 401', async () => {
       const mockToken = 'invalid_token';
 
-      vi.mocked(chrome.storage.local.get)
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>)
         .mockResolvedValueOnce({ jwt_enc: 'encrypted' })
         .mockResolvedValueOnce({});
 
@@ -230,7 +230,7 @@ describe('AuthManager', () => {
 
   describe('isAuthenticated', () => {
     it('should return true if valid token exists', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({ jwt_enc: 'encrypted' });
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ jwt_enc: 'encrypted' });
       vi.spyOn(crypto, 'getEncryptionKey').mockResolvedValue({} as CryptoKey);
       vi.spyOn(crypto, 'decryptToken').mockResolvedValue('valid_token');
       vi.spyOn(crypto, 'isTokenExpired').mockReturnValue(false);
@@ -241,7 +241,7 @@ describe('AuthManager', () => {
     });
 
     it('should return false if no token exists', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({});
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({});
 
       const authenticated = await isAuthenticated();
 
@@ -249,7 +249,7 @@ describe('AuthManager', () => {
     });
 
     it('should return false if token is expired', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({ jwt_enc: 'encrypted' });
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ jwt_enc: 'encrypted' });
       vi.spyOn(crypto, 'getEncryptionKey').mockResolvedValue({} as CryptoKey);
       vi.spyOn(crypto, 'decryptToken').mockResolvedValue('expired_token');
       vi.spyOn(crypto, 'isTokenExpired').mockReturnValue(true);
@@ -268,7 +268,7 @@ describe('AuthManager', () => {
         subscription_tier: 'premium',
       };
 
-      vi.mocked(chrome.storage.local.get)
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>)
         .mockResolvedValueOnce({ jwt_enc: 'encrypted' })
         .mockResolvedValueOnce({ user_info: premiumUser });
 
@@ -288,7 +288,7 @@ describe('AuthManager', () => {
         subscription_tier: 'family',
       };
 
-      vi.mocked(chrome.storage.local.get)
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>)
         .mockResolvedValueOnce({ jwt_enc: 'encrypted' })
         .mockResolvedValueOnce({ user_info: familyUser });
 
@@ -308,7 +308,7 @@ describe('AuthManager', () => {
         subscription_tier: 'free',
       };
 
-      vi.mocked(chrome.storage.local.get)
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>)
         .mockResolvedValueOnce({ jwt_enc: 'encrypted' })
         .mockResolvedValueOnce({ user_info: freeUser });
 
@@ -322,7 +322,7 @@ describe('AuthManager', () => {
     });
 
     it('should return false if not authenticated', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({});
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({});
 
       const isPremium = await isPremiumUser();
 
@@ -340,7 +340,7 @@ describe('AuthManager', () => {
     it('should fetch and cache updated user info', async () => {
       const mockToken = 'valid_token';
 
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({ jwt_enc: 'encrypted' });
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({ jwt_enc: 'encrypted' });
       vi.spyOn(crypto, 'getEncryptionKey').mockResolvedValue({} as CryptoKey);
       vi.spyOn(crypto, 'decryptToken').mockResolvedValue(mockToken);
       vi.spyOn(crypto, 'isTokenExpired').mockReturnValue(false);
@@ -361,7 +361,7 @@ describe('AuthManager', () => {
     });
 
     it('should do nothing if not authenticated', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({});
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({});
 
       await refreshUserInfo();
 

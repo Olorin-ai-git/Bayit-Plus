@@ -10,6 +10,7 @@
  * - Communication with service worker and offscreen document
  */
 
+import i18next from 'i18next';
 import { createLogger, generateCorrelationId } from '@/lib/logger';
 import { CONFIG } from '@/config/constants';
 import { detectSite, isSupportedSite } from './site-detector';
@@ -167,7 +168,10 @@ class ContentScriptManager {
 
       if (!authStatus.authenticated) {
         logger.warn('User not authenticated');
-        this.barController?.showStatus('Please log in to use Bayit+ Companion', 'warn');
+        this.barController?.showStatus(
+          i18next.t('status.pleaseLogin', 'Please log in to use Bayit+ Companion'),
+          'warn'
+        );
         chrome.runtime.openOptionsPage();
         return;
       }
@@ -183,7 +187,10 @@ class ContentScriptManager {
       ) {
         logger.warn('Quota exhausted');
         this.barController?.showStatus(
-          `Daily quota of ${freeTierLimit} minutes exhausted. Upgrade to premium.`,
+          i18next.t('status.quotaExhausted', {
+            defaultValue: 'Daily quota of {{limit}} minutes exhausted. Upgrade to premium.',
+            limit: freeTierLimit,
+          }),
           'warn'
         );
         chrome.runtime.openOptionsPage();
@@ -225,7 +232,7 @@ class ContentScriptManager {
 
       // Update UI
       if (this.barController) {
-        this.barController.updateState(true, 'Connected');
+        this.barController.updateState(true, i18next.t('status.connected', 'Connected'));
       }
 
       // Notify service worker
@@ -237,7 +244,10 @@ class ContentScriptManager {
       logger.info('Dubbing started successfully', { sessionId: this.sessionId });
     } catch (error) {
       logger.error('Failed to start dubbing', { error: String(error) });
-      this.barController?.showStatus('Failed to start dubbing. Please try again.', 'error');
+      this.barController?.showStatus(
+        i18next.t('status.dubbingFailed', 'Failed to start dubbing. Please try again.'),
+        'error'
+      );
     }
   }
 
@@ -284,8 +294,11 @@ class ContentScriptManager {
   private handleMessage(
     message: Record<string, unknown>,
     sender: chrome.runtime.MessageSender,
-    sendResponse: (response: unknown) => void
+    _sendResponse: (response: unknown) => void
   ): boolean {
+    // Validate sender is from this extension (defense-in-depth)
+    if (sender.id !== chrome.runtime.id) return false;
+
     logger.debug('Message received', { type: message.type });
 
     switch (message.type) {
@@ -308,7 +321,13 @@ class ContentScriptManager {
         if (this.isActive) {
           this.stopDubbing();
         }
-        this.barController?.showStatus(`Dubbing error: ${message.error}`, 'error');
+        this.barController?.showStatus(
+          i18next.t('status.dubbingError', {
+            defaultValue: 'Dubbing error: {{error}}',
+            error: message.error,
+          }),
+          'error'
+        );
         break;
 
       case 'AUTH_STATE_CHANGED':
@@ -323,24 +342,19 @@ class ContentScriptManager {
   }
 
   /**
-   * Get auth token
+   * Get auth token via service worker messaging (content scripts cannot import background modules)
    */
   private async getAuthToken(): Promise<string | null> {
-    const result = await chrome.storage.local.get('jwt_enc');
-    if (!result.jwt_enc) return null;
-
-    // Decrypt token
-    const { decryptToken, getEncryptionKey } = await import('@/background/auth-manager');
-    const key = await getEncryptionKey();
-    return await decryptToken(result.jwt_enc, key);
+    const response = await chrome.runtime.sendMessage({ type: 'GET_AUTH_TOKEN' });
+    return response?.token || null;
   }
 
   /**
-   * Get current tab ID
+   * Get current tab ID via service worker messaging (chrome.tabs unavailable in content scripts)
    */
   private async getTabId(): Promise<number> {
-    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    return tabs[0]?.id || 0;
+    const response = await chrome.runtime.sendMessage({ type: 'GET_TAB_ID' });
+    return response?.tabId || 0;
   }
 
   /**
@@ -348,7 +362,10 @@ class ContentScriptManager {
    */
   private async ensureOffscreenDocument(): Promise<void> {
     // Check if offscreen document already exists
-    const existingContexts = await chrome.runtime.getContexts({
+    const getContexts = (chrome.runtime as unknown as {
+      getContexts: (filter: { contextTypes: string[] }) => Promise<Array<{ contextType: string }>>;
+    }).getContexts;
+    const existingContexts = await getContexts({
       contextTypes: ['OFFSCREEN_DOCUMENT'],
     });
 
@@ -360,7 +377,7 @@ class ContentScriptManager {
     // Create offscreen document
     await chrome.offscreen.createDocument({
       url: chrome.runtime.getURL('offscreen.html'),
-      reasons: ['USER_MEDIA'],
+      reasons: ['USER_MEDIA' as chrome.offscreen.Reason],
       justification: 'Audio capture and processing for real-time dubbing',
     });
 
@@ -369,7 +386,7 @@ class ContentScriptManager {
 }
 
 // Initialize content script manager
-const contentScriptManager = new ContentScriptManager();
+void new ContentScriptManager();
 
 // Export for testing
 export { ContentScriptManager };

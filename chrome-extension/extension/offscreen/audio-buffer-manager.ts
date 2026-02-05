@@ -6,7 +6,6 @@
  */
 
 import { createLogger } from '@/lib/logger';
-import { CONFIG } from '@/config/constants';
 
 const logger = createLogger('AudioBufferManager');
 

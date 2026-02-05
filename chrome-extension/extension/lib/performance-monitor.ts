@@ -5,6 +5,17 @@
  * Provides profiling data for optimization
  */
 
+/** Chrome-only non-standard memory API */
+declare global {
+  interface Performance {
+    memory?: {
+      usedJSHeapSize: number;
+      totalJSHeapSize: number;
+      jsHeapSizeLimit: number;
+    };
+  }
+}
+
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('PerformanceMonitor');

@@ -4,35 +4,35 @@
  * Mocks Chrome Extension APIs for testing environment
  */
 
-import { vi } from 'vitest';
+import { vi, beforeEach } from 'vitest';
 
 // Mock chrome.storage API
 const mockStorage = {
   local: {
-    get: vi.fn((keys: string | string[] | { [key: string]: any } | null) => {
+    get: vi.fn((_keys?: string | string[] | Record<string, unknown> | null): Promise<Record<string, unknown>> => {
       return Promise.resolve({});
     }),
-    set: vi.fn((items: { [key: string]: any }) => {
+    set: vi.fn((_items: Record<string, unknown>): Promise<void> => {
       return Promise.resolve();
     }),
-    remove: vi.fn((keys: string | string[]) => {
+    remove: vi.fn((_keys?: string | string[]): Promise<void> => {
       return Promise.resolve();
     }),
-    clear: vi.fn(() => {
+    clear: vi.fn((): Promise<void> => {
       return Promise.resolve();
     }),
   },
   sync: {
-    get: vi.fn((keys: string | string[] | { [key: string]: any } | null) => {
+    get: vi.fn((_keys?: string | string[] | Record<string, unknown> | null): Promise<Record<string, unknown>> => {
       return Promise.resolve({});
     }),
-    set: vi.fn((items: { [key: string]: any }) => {
+    set: vi.fn((_items: Record<string, unknown>): Promise<void> => {
       return Promise.resolve();
     }),
-    remove: vi.fn((keys: string | string[]) => {
+    remove: vi.fn((_keys?: string | string[]): Promise<void> => {
       return Promise.resolve();
     }),
-    clear: vi.fn(() => {
+    clear: vi.fn((): Promise<void> => {
       return Promise.resolve();
     }),
   },
@@ -49,12 +49,12 @@ const mockRuntime = {
     version: '1.0.0',
     name: 'Bayit+ Translator',
   })),
-  sendMessage: vi.fn((message: any) => Promise.resolve({})),
+  sendMessage: vi.fn((_message: unknown) => Promise.resolve({})),
   onMessage: {
     addListener: vi.fn(),
     removeListener: vi.fn(),
   },
-  getURL: vi.fn((path: string) => `chrome-extension://mock-id/${path}`),
+  getURL: vi.fn((_path: string) => `chrome-extension://mock-id/${_path}`),
   id: 'mock-extension-id',
 };
 
@@ -65,20 +65,20 @@ const mockIdentity = {
 
 // Mock chrome.tabCapture API
 const mockTabCapture = {
-  capture: vi.fn((options: any) => {
+  capture: vi.fn((_options: unknown) => {
     return Promise.resolve(new MediaStream());
   }),
 };
 
 // Mock chrome.offscreen API
 const mockOffscreen = {
-  createDocument: vi.fn((params: any) => Promise.resolve()),
+  createDocument: vi.fn((_params: unknown) => Promise.resolve()),
   closeDocument: vi.fn(() => Promise.resolve()),
   hasDocument: vi.fn(() => Promise.resolve(false)),
 };
 
 // Mock global chrome object
-(global as any).chrome = {
+(global as Record<string, unknown>).chrome = {
   storage: mockStorage,
   runtime: mockRuntime,
   identity: mockIdentity,
@@ -105,7 +105,7 @@ class MockWebSocket {
     }, 0);
   }
 
-  send(data: any): void {
+  send(_data: unknown): void {
     // Mock send
   }
 
@@ -122,21 +122,21 @@ class MockWebSocket {
   static CLOSED = 3;
 }
 
-(global as any).WebSocket = MockWebSocket;
+(global as Record<string, unknown>).WebSocket = MockWebSocket;
 
 // Mock AudioContext
 class MockAudioContext {
   public sampleRate = 16000;
   public state = 'running';
 
-  createMediaStreamSource(): any {
+  createMediaStreamSource(): { connect: ReturnType<typeof vi.fn>; disconnect: ReturnType<typeof vi.fn> } {
     return {
       connect: vi.fn(),
       disconnect: vi.fn(),
     };
   }
 
-  createGain(): any {
+  createGain(): { gain: { value: number }; connect: ReturnType<typeof vi.fn>; disconnect: ReturnType<typeof vi.fn> } {
     return {
       gain: { value: 1.0 },
       connect: vi.fn(),
@@ -144,7 +144,7 @@ class MockAudioContext {
     };
   }
 
-  createBufferSource(): any {
+  createBufferSource(): { buffer: null; connect: ReturnType<typeof vi.fn>; start: ReturnType<typeof vi.fn>; stop: ReturnType<typeof vi.fn> } {
     return {
       buffer: null,
       connect: vi.fn(),
@@ -153,7 +153,7 @@ class MockAudioContext {
     };
   }
 
-  decodeAudioData(arrayBuffer: ArrayBuffer): Promise<any> {
+  decodeAudioData(_arrayBuffer: ArrayBuffer): Promise<{ duration: number; length: number; sampleRate: number }> {
     return Promise.resolve({
       duration: 1.0,
       length: 16000,
@@ -176,16 +176,16 @@ class MockAudioContext {
   }
 }
 
-(global as any).AudioContext = MockAudioContext;
+(global as Record<string, unknown>).AudioContext = MockAudioContext;
 
 // Mock crypto for encryption tests
 if (typeof global.crypto === 'undefined') {
-  (global as any).crypto = {};
+  (global as Record<string, unknown>).crypto = {};
 }
 
 // Ensure getRandomValues exists
 if (!global.crypto.getRandomValues) {
-  (global.crypto as any).getRandomValues = (array: any) => {
+  (global.crypto as unknown as Record<string, unknown>).getRandomValues = (array: Uint8Array) => {
     for (let i = 0; i < array.length; i++) {
       array[i] = Math.floor(Math.random() * 256);
     }
@@ -195,7 +195,7 @@ if (!global.crypto.getRandomValues) {
 
 // Mock crypto.subtle methods (will be set up per-test as needed with vi.spyOn)
 if (!global.crypto.subtle) {
-  (global.crypto as any).subtle = {
+  (global.crypto as unknown as Record<string, unknown>).subtle = {
     encrypt: async () => new ArrayBuffer(40),
     decrypt: async () => new ArrayBuffer(20),
     importKey: async () => ({} as CryptoKey),
@@ -205,24 +205,24 @@ if (!global.crypto.subtle) {
 }
 
 // Mock fetch for API tests
-global.fetch = vi.fn((url: string, options?: any) => {
+global.fetch = vi.fn((_url: string | URL | Request, _init?: RequestInit) => {
   return Promise.resolve({
     ok: true,
     status: 200,
     json: () => Promise.resolve({}),
     text: () => Promise.resolve(''),
     blob: () => Promise.resolve(new Blob()),
-  } as Response);
-});
+  } as unknown as Response);
+}) as typeof fetch;
 
 // Mock localStorage
 const localStorageMock = {
-  getItem: vi.fn((key: string) => null),
-  setItem: vi.fn((key: string, value: string) => {}),
-  removeItem: vi.fn((key: string) => {}),
+  getItem: vi.fn((_key: string) => null),
+  setItem: vi.fn((_key: string, _value: string) => {}),
+  removeItem: vi.fn((_key: string) => {}),
   clear: vi.fn(() => {}),
   length: 0,
-  key: vi.fn((index: number) => null),
+  key: vi.fn((_index: number) => null),
 };
 
 Object.defineProperty(window, 'localStorage', {

@@ -38,6 +38,9 @@ export interface ExtensionConfig {
     SENTRY_DSN: string;
     POSTHOG_KEY: string;
   };
+  SUPPORT: {
+    EMAIL: string;
+  };
   ENV: string;
   DEBUG: boolean;
 }
@@ -95,6 +98,10 @@ export const CONFIG: ExtensionConfig = {
   MONITORING: {
     SENTRY_DSN: getEnvVar('VITE_SENTRY_DSN', ''),
     POSTHOG_KEY: getEnvVar('VITE_POSTHOG_KEY', ''),
+  },
+
+  SUPPORT: {
+    EMAIL: getEnvVar('VITE_SUPPORT_EMAIL', 'support@bayit.tv'),
   },
 
   ENV: getEnvVar('VITE_ENV', 'development'),

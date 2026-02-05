@@ -8,13 +8,12 @@
  * - Navigation to settings and subscription management
  */
 
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { GlassCard, GlassButton, GlassBadge, GlassProgress } from '@bayit/glass';
 import { useAuthStore } from '../stores/authStore';
 import { useUsageStore } from '../stores/usageStore';
 import { useSettingsStore } from '../stores/settingsStore';
-import { CONFIG } from '../../config/constants';
+import { CONFIG, SUPPORTED_SITES } from '../../config/constants';
 
 interface DashboardPageProps {
   onNavigateToSettings: () => void;
@@ -214,22 +213,13 @@ export function DashboardPage({
         </h3>
 
         <div className="grid grid-cols-2 gap-2">
-          <QuickActionButton
-            label="Screenil"
-            onClick={() => openSite('https://screenil.com')}
-          />
-          <QuickActionButton
-            label="Mako"
-            onClick={() => openSite('https://mako.co.il')}
-          />
-          <QuickActionButton
-            label="13TV"
-            onClick={() => openSite('https://13tv.co.il')}
-          />
-          <QuickActionButton
-            label="Kan"
-            onClick={() => openSite('https://kan.org.il')}
-          />
+          {SUPPORTED_SITES.map((site) => (
+            <QuickActionButton
+              key={site.hostname}
+              label={site.name}
+              onClick={() => openSite(`https://${site.hostname}`)}
+            />
+          ))}
         </div>
       </GlassCard>
     </div>
@@ -303,9 +293,10 @@ function QuickActionButton({
   onClick: () => void;
 }) {
   return (
-    <button
-      onClick={onClick}
-      className="flex items-center justify-center gap-2 p-3 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-lg transition-colors"
+    <GlassButton
+      variant="ghost"
+      onPress={onClick}
+      className="flex items-center justify-center gap-2 p-3"
       aria-label={`Open ${label}`}
     >
       <svg
@@ -318,6 +309,6 @@ function QuickActionButton({
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
       </svg>
       <span className="text-white/80 text-xs font-medium">{label}</span>
-    </button>
+    </GlassButton>
   );
 }

@@ -5,7 +5,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Authentication', () => {
-  test('should show login page on first visit', async ({ page, context }) => {
+  test('should show login page on first visit', async ({ context }) => {
     const serviceWorker = context.serviceWorkers()[0];
     const extensionId = serviceWorker.url().split('/')[2];
 
@@ -18,7 +18,7 @@ test.describe('Authentication', () => {
     ).toBeVisible({ timeout: 10000 });
   });
 
-  test('should navigate through onboarding flow', async ({ page, context }) => {
+  test('should navigate through onboarding flow', async ({ context }) => {
     const serviceWorker = context.serviceWorkers()[0];
     const extensionId = serviceWorker.url().split('/')[2];
 
@@ -40,7 +40,7 @@ test.describe('Authentication', () => {
     ).toBeVisible({ timeout: 10000 });
   });
 
-  test('should show validation errors for invalid login', async ({ page, context }) => {
+  test('should show validation errors for invalid login', async ({ context }) => {
     const serviceWorker = context.serviceWorkers()[0];
     const extensionId = serviceWorker.url().split('/')[2];
 
@@ -62,7 +62,7 @@ test.describe('Authentication', () => {
     }
   });
 
-  test('should display usage dashboard when authenticated', async ({ page, context }) => {
+  test('should display usage dashboard when authenticated', async ({ context }) => {
     // This test assumes a valid test account exists
     // In real testing, you would authenticate with test credentials
 

@@ -142,7 +142,7 @@ export class WebSocketManager {
   /**
    * Handle WebSocket error
    */
-  private handleError(event: Event): void {
+  private handleError(_event: Event): void {
     logger.error('WebSocket error', {
       sessionId: this.config.sessionId,
       reconnectAttempts: this.reconnectAttempts,

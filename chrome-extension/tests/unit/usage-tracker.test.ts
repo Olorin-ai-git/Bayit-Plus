@@ -57,7 +57,7 @@ describe('UsageTracker', () => {
 
   describe('getUsageData', () => {
     it('should return default usage data if none stored', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({});
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({});
 
       const usage = await getUsageData();
 
@@ -78,7 +78,7 @@ describe('UsageTracker', () => {
         currentSessionStartTime: Date.now() - 60000,
       };
 
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: storedUsage,
       });
 
@@ -98,7 +98,7 @@ describe('UsageTracker', () => {
         currentSessionStartTime: null,
       };
 
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: yesterdayUsage,
       });
 
@@ -129,7 +129,7 @@ describe('UsageTracker', () => {
       const currentTime = Date.now();
       vi.setSystemTime(currentTime);
 
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 1.0,
           lastResetDate: '2026-01-28',
@@ -149,7 +149,7 @@ describe('UsageTracker', () => {
     });
 
     it('should preserve existing usage data when starting session', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 2.5,
           lastResetDate: '2026-01-28',
@@ -174,7 +174,7 @@ describe('UsageTracker', () => {
       const startTime = Date.now();
       vi.setSystemTime(startTime);
 
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 1.0,
           lastResetDate: '2026-01-28',
@@ -192,7 +192,7 @@ describe('UsageTracker', () => {
         ok: true,
         status: 200,
         json: () => Promise.resolve({ daily_minutes_used: 4.0 }),
-      } as Response);
+      } as unknown as Response);
 
       const duration = await endSession();
 
@@ -207,7 +207,7 @@ describe('UsageTracker', () => {
     });
 
     it('should return 0 if no active session', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 1.0,
           lastResetDate: '2026-01-28',
@@ -225,7 +225,7 @@ describe('UsageTracker', () => {
     it('should sync usage with backend after ending session', async () => {
       const startTime = Date.now();
 
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 0,
           lastResetDate: '2026-01-28',
@@ -241,7 +241,7 @@ describe('UsageTracker', () => {
         ok: true,
         status: 200,
         json: () => Promise.resolve({ daily_minutes_used: 1.0 }),
-      } as Response);
+      } as unknown as Response);
 
       await endSession();
 
@@ -265,7 +265,7 @@ describe('UsageTracker', () => {
       const startTime = Date.now();
       vi.setSystemTime(startTime);
 
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 0,
           lastResetDate: '2026-01-28',
@@ -283,7 +283,7 @@ describe('UsageTracker', () => {
     });
 
     it('should return 0 if no active session', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 0,
           lastResetDate: '2026-01-28',
@@ -300,7 +300,7 @@ describe('UsageTracker', () => {
 
   describe('hasAvailableQuota', () => {
     it('should return true if usage below limit', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 3.0,
           lastResetDate: '2026-01-28',
@@ -315,7 +315,7 @@ describe('UsageTracker', () => {
     });
 
     it('should return false if usage at limit', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 5.0,
           lastResetDate: '2026-01-28',
@@ -330,7 +330,7 @@ describe('UsageTracker', () => {
     });
 
     it('should return false if usage exceeds limit', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 6.0,
           lastResetDate: '2026-01-28',
@@ -347,7 +347,7 @@ describe('UsageTracker', () => {
 
   describe('getRemainingQuota', () => {
     it('should return remaining quota in minutes', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 2.0,
           lastResetDate: '2026-01-28',
@@ -362,7 +362,7 @@ describe('UsageTracker', () => {
     });
 
     it('should return 0 if quota exhausted', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 5.0,
           lastResetDate: '2026-01-28',
@@ -377,7 +377,7 @@ describe('UsageTracker', () => {
     });
 
     it('should return 0 if quota exceeded (negative case)', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 6.0,
           lastResetDate: '2026-01-28',
@@ -394,7 +394,7 @@ describe('UsageTracker', () => {
 
   describe('syncUsageWithBackend', () => {
     it('should send usage data to backend and update local storage', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 2.5,
           lastResetDate: '2026-01-28',
@@ -409,7 +409,7 @@ describe('UsageTracker', () => {
         ok: true,
         status: 200,
         json: () => Promise.resolve({ daily_minutes_used: 3.0 }),
-      } as Response);
+      } as unknown as Response);
 
       await syncUsageWithBackend();
 
@@ -440,7 +440,7 @@ describe('UsageTracker', () => {
     });
 
     it('should throw error if sync fails', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 2.0,
           lastResetDate: '2026-01-28',
@@ -454,13 +454,13 @@ describe('UsageTracker', () => {
       global.fetch = vi.fn().mockResolvedValue({
         ok: false,
         status: 500,
-      } as Response);
+      } as unknown as Response);
 
       await expect(syncUsageWithBackend()).rejects.toThrow('Usage sync failed: 500');
     });
 
     it('should not update local storage if server data matches', async () => {
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 2.5,
           lastResetDate: '2026-01-28',
@@ -475,7 +475,7 @@ describe('UsageTracker', () => {
         ok: true,
         status: 200,
         json: () => Promise.resolve({ daily_minutes_used: 2.5 }), // Same as local
-      } as Response);
+      } as unknown as Response);
 
       await syncUsageWithBackend();
 
@@ -491,9 +491,9 @@ describe('UsageTracker', () => {
         ok: true,
         status: 200,
         json: () => Promise.resolve({ daily_minutes_used: 0 }),
-      } as Response);
+      } as unknown as Response);
 
-      vi.mocked(chrome.storage.local.get).mockResolvedValue({
+      (chrome.storage.local.get as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
         usage_data: {
           dailyMinutesUsed: 0,
           lastResetDate: '2026-01-28',

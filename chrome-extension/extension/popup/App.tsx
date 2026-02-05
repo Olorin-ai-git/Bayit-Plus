@@ -4,7 +4,7 @@
  * Handles routing and initialization
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from './stores/authStore';
 import { useUsageStore } from './stores/usageStore';
