@@ -5,7 +5,7 @@ export default defineConfig({
   description: 'Complete documentation for the Bayit+ streaming platform',
   base: '/',
   srcDir: '../docs',
-  srcExclude: ['**/templates/**'],
+  srcExclude: ['**/templates/**', '**/implementation/**'],
   ignoreDeadLinks: true,
   outDir: '.vitepress/dist',
 
@@ -34,6 +34,7 @@ export default defineConfig({
         items: [
           { text: 'Getting Started', link: '/guides/STARTUP_GUIDE' },
           { text: 'Web Development', link: '/guides/WEB_DEVELOPMENT_GUIDE' },
+          { text: 'Mobile Web App (m.bayit.tv)', link: '/guides/MOBILE_WEB_APP_GUIDE' },
           { text: 'Mobile Development', link: '/guides/MOBILE_DEVELOPMENT_GUIDE' },
           { text: 'tvOS Development', link: '/guides/TVOS_DEVELOPMENT_GUIDE' },
           { text: 'Troubleshooting', link: '/guides/TROUBLESHOOTING' },
@@ -44,6 +45,14 @@ export default defineConfig({
         text: 'API',
         items: [
           { text: 'API Overview', link: '/api/API_OVERVIEW' },
+          { text: 'Authentication API', link: '/api/AUTH_API_REFERENCE' },
+          { text: 'Content & Search API', link: '/api/CONTENT_API_REFERENCE' },
+          { text: 'User Management API', link: '/api/USER_API_REFERENCE' },
+          { text: 'Media & Live TV API', link: '/api/MEDIA_API_REFERENCE' },
+          { text: 'Social & Gaming API', link: '/api/SOCIAL_API_REFERENCE' },
+          { text: 'Features & Cultural API', link: '/api/FEATURES_API_REFERENCE' },
+          { text: 'Beta 500 API', link: '/api/BETA_API_REFERENCE' },
+          { text: 'WebSocket API', link: '/api/WEBSOCKET_API_REFERENCE' },
           { text: 'AI Features API', link: '/api/AI_API_REFERENCE' },
           { text: 'Channel Chat API', link: '/api/CHANNEL_CHAT_API' },
           { text: 'Catch-Up API', link: '/api/CATCH_UP_API' },
@@ -96,7 +105,8 @@ export default defineConfig({
           text: 'Development Guides',
           items: [
             { text: 'Web Development', link: '/guides/WEB_DEVELOPMENT_GUIDE' },
-            { text: 'Mobile Development', link: '/guides/MOBILE_DEVELOPMENT_GUIDE' },
+            { text: 'Mobile Web App (m.bayit.tv)', link: '/guides/MOBILE_WEB_APP_GUIDE' },
+            { text: 'Mobile Development (Native)', link: '/guides/MOBILE_DEVELOPMENT_GUIDE' },
             { text: 'tvOS Development', link: '/guides/TVOS_DEVELOPMENT_GUIDE' },
           ]
         },
@@ -125,11 +135,32 @@ export default defineConfig({
       ],
       '/api/': [
         {
-          text: 'API Documentation',
+          text: 'API Overview',
           items: [
             { text: 'API Overview', link: '/api/API_OVERVIEW' },
+          ]
+        },
+        {
+          text: 'Endpoint Reference',
+          items: [
+            { text: 'Authentication & Security', link: '/api/AUTH_API_REFERENCE' },
+            { text: 'Content & Search', link: '/api/CONTENT_API_REFERENCE' },
+            { text: 'User Management', link: '/api/USER_API_REFERENCE' },
+            { text: 'Media & Live TV', link: '/api/MEDIA_API_REFERENCE' },
+            { text: 'Social & Gaming', link: '/api/SOCIAL_API_REFERENCE' },
+            { text: 'Features & Cultural', link: '/api/FEATURES_API_REFERENCE' },
+            { text: 'Beta 500 Program', link: '/api/BETA_API_REFERENCE' },
+            { text: 'WebSocket API', link: '/api/WEBSOCKET_API_REFERENCE' },
+          ]
+        },
+        {
+          text: 'Feature-Specific APIs',
+          items: [
             { text: 'AI Features API', link: '/api/AI_API_REFERENCE' },
+            { text: 'Channel Chat API', link: '/api/CHANNEL_CHAT_API' },
+            { text: 'Catch-Up API', link: '/api/CATCH_UP_API' },
             { text: 'Voice API', link: '/api/VOICE_API_REFERENCE' },
+            { text: 'Family Controls API', link: '/api/FAMILY_CONTROLS_API' },
           ]
         },
       ],

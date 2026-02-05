@@ -1,0 +1,209 @@
+name: Chrome Extension CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'chrome-extension/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'chrome-extension/**'
+
+defaults:
+  run:
+    working-directory: chrome-extension
+
+jobs:
+  lint-typecheck:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: chrome-extension/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run TypeScript type check
+        run: npm run typecheck
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: lint-typecheck
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: chrome-extension/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: chrome-extension/coverage/
+          retention-days: 14
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: lint-typecheck
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: chrome-extension/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Production build
+        run: npm run build:production
+        env:
+          NODE_ENV: production
+
+      - name: Verify dist directory
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "::error::dist directory not found after build"
+            exit 1
+          fi
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-build
+          path: chrome-extension/dist/
+          retention-days: 30
+
+  quality-scan:
+    name: Quality Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for forbidden TODO patterns
+        run: |
+          RESULT=$(grep -rn --exclude-dir=node_modules \
+            "TODO\|FIXME\|STUB\|MOCK\|PLACEHOLDER\|PENDING" \
+            . \
+            --include="*.ts" --include="*.tsx" \
+            || true)
+          if [ -n "$RESULT" ]; then
+            echo "::error::Forbidden patterns found in extension code:"
+            echo "$RESULT"
+            exit 1
+          fi
+          echo "No forbidden TODO patterns found."
+
+      - name: Check for console.log usage
+        run: |
+          RESULT=$(grep -rn --exclude-dir=node_modules \
+            "console\.\(log\|error\|warn\|info\|debug\)" \
+            . \
+            --include="*.ts" --include="*.tsx" \
+            || true)
+          if [ -n "$RESULT" ]; then
+            echo "::error::console.log statements found in extension code:"
+            echo "$RESULT"
+            exit 1
+          fi
+          echo "No console.log statements found."
+
+      - name: Check for alert/confirm usage
+        run: |
+          RESULT=$(grep -rn --exclude-dir=node_modules \
+            "\balert(\|confirm(" \
+            . \
+            --include="*.ts" --include="*.tsx" \
+            || true)
+          if [ -n "$RESULT" ]; then
+            echo "::error::alert()/confirm() calls found in extension code:"
+            echo "$RESULT"
+            exit 1
+          fi
+          echo "No alert/confirm calls found."
+
+      - name: Check for emoji characters
+        run: |
+          RESULT=$(grep -Prn --exclude-dir=node_modules \
+            '[\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]' \
+            . \
+            --include="*.ts" --include="*.tsx" \
+            || true)
+          if [ -n "$RESULT" ]; then
+            echo "::error::Emoji characters found in extension code:"
+            echo "$RESULT"
+            exit 1
+          fi
+          echo "No emoji characters found."
+
+      - name: Validate manifest.json
+        run: |
+          node -e "
+            const fs = require('fs');
+            const manifest = JSON.parse(fs.readFileSync('extension/manifest.json', 'utf8'));
+            const required = ['name', 'version', 'manifest_version', 'permissions'];
+            const missing = required.filter(k => !manifest[k]);
+            if (missing.length) {
+              console.error('Missing required manifest fields:', missing.join(', '));
+              process.exit(1);
+            }
+            if (manifest.manifest_version !== 3) {
+              console.error('Expected manifest_version 3, got', manifest.manifest_version);
+              process.exit(1);
+            }
+            console.log('Manifest validation passed:', manifest.name, 'v' + manifest.version);
+          "
+
+  package:
+    name: Package for Chrome Web Store
+    runs-on: ubuntu-latest
+    needs: [test, build, quality-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: extension-build
+          path: chrome-extension/dist/
+
+      - name: Create extension zip
+        run: |
+          cd dist
+          zip -r ../bayit-companion-extension.zip .
+
+      - name: Upload packaged extension
+        uses: actions/upload-artifact@v4
+        with:
+          name: bayit-companion-extension
+          path: chrome-extension/bayit-companion-extension.zip
+          retention-days: 90

@@ -6,10 +6,12 @@ Supports both audio dubbing and live subtitles
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
+from datetime import timedelta
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
+from app.core.security import get_current_active_user
 from app.models.dubbing.session import (
     CreateSessionRequest,
     QuotaCheckResponse,
@@ -25,80 +27,12 @@ from app.services.voice_management_service import VoiceManagementService
 
 logger = get_logger(__name__)
 router = APIRouter()
-security = HTTPBearer()
-
-
-# Dependency: Get current user from JWT token
-async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-) -> User:
-    """
-    Get current user from JWT token
-
-    Args:
-        credentials: HTTP Bearer credentials
-
-    Returns:
-        User object
-
-    Raises:
-        HTTPException: If authentication fails
-    """
-    try:
-        token = credentials.credentials
-
-        # Import here to avoid circular dependency
-        from app.core.security import decode_access_token
-
-        # Decode JWT token
-        payload = decode_access_token(token)
-        if not payload:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication credentials",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-        user_id = payload.get("sub")
-        if not user_id:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication credentials",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-        # Get user from database
-        user = await User.get(user_id)
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="User not found",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
-
-        if not user.is_active:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="User account is disabled",
-            )
-
-        return user
-
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error authenticating user: {e}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
 
 
 @router.post("/sessions", response_model=SessionResponse, status_code=status.HTTP_201_CREATED)
 async def create_dubbing_session(
     request: CreateSessionRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Create new dubbing/subtitle session
@@ -134,7 +68,7 @@ async def create_dubbing_session(
             websocket_url=websocket_url,
             quota_remaining_minutes=usage_data["daily_minutes_remaining"],
             session_type=session.session_type,
-            expires_at=session.created_at,  # TODO: Add expiry logic
+            expires_at=session.created_at + timedelta(minutes=settings.MAX_SESSION_DURATION_MINUTES),
         )
 
     except ValueError as e:
@@ -160,7 +94,7 @@ async def create_dubbing_session(
 @router.get("/sessions/{session_id}", response_model=SessionStatusResponse)
 async def get_session_status(
     session_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Get session status and statistics
@@ -209,7 +143,7 @@ async def get_session_status(
 @router.delete("/sessions/{session_id}", status_code=status.HTTP_200_OK)
 async def end_dubbing_session(
     session_id: str,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     End dubbing/subtitle session and calculate final usage
@@ -262,7 +196,7 @@ async def end_dubbing_session(
 
 @router.post("/quota/check", response_model=QuotaCheckResponse)
 async def check_quota(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Check if user has available quota
@@ -303,7 +237,7 @@ async def check_quota(
 @router.post("/usage/sync", response_model=UsageSyncResponse)
 async def sync_usage(
     request: UsageSyncRequest,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     Sync usage data between extension and server
@@ -340,7 +274,7 @@ async def sync_usage(
 
 @router.get("/voices")
 async def list_available_voices(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_active_user),
 ):
     """
     List available voices for dubbing from ElevenLabs API

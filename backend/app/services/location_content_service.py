@@ -17,13 +17,38 @@ logger = logging.getLogger(__name__)
 # Fallback poster for articles without images
 FALLBACK_NEWS_POSTER = "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=800&h=450&fit=crop"  # News/journalism themed image
 
+# Seed data for development (when Exa API unavailable)
+SEED_NEWS_ARTICLES = {
+    "New York": [
+        {
+            "title": "Israeli Tech Startups Thrive in NYC's Silicon Alley",
+            "summary": "New York's thriving tech scene continues to attract Israeli entrepreneurs, with over 50 Israeli-founded startups now calling the city home.",
+            "url": "https://example.com/israeli-tech-nyc",
+            "source": "TechCrunch",
+        },
+        {
+            "title": "Israeli Restaurant Week Kicks Off in Manhattan",
+            "summary": "Dozens of Israeli restaurants across Manhattan participate in the annual Israeli Restaurant Week, showcasing authentic Middle Eastern cuisine.",
+            "url": "https://example.com/israeli-restaurant-week",
+            "source": "Eater NY",
+        },
+        {
+            "title": "Israeli-American Community Celebrates Independence Day",
+            "summary": "Thousands gather in Central Park for annual Yom Ha'atzmaut celebration featuring Israeli music, food, and cultural performances.",
+            "url": "https://example.com/yom-haatzmaut-celebration",
+            "source": "NY Times",
+        },
+    ],
+}
+
 
 class LocationContentService:
     """Service for aggregating Israeli-focused content by US location."""
 
     # Cache for location content (city_state -> {data, timestamp})
     _cache = {}
-    _cache_ttl = timedelta(hours=1)  # Cache for 1 hour
+    # Cache TTL: 3 days in production (reduce API costs), 1 hour in development
+    _cache_ttl = timedelta(days=3) if settings.SENTRY_ENVIRONMENT == "production" else timedelta(hours=1)
     _scraping_tasks = {}  # Track ongoing scraping tasks
 
     @classmethod
@@ -566,6 +591,30 @@ class LocationContentService:
             # Use Exa to get Israeli-related news with clean article data and images
             headlines = await scrape_israeli_content_exa(city, state, max_results=limit)
 
+            # If Exa returns empty results and we're in development, use seed data
+            if len(headlines) == 0 and settings.SENTRY_ENVIRONMENT == "development":
+                logger.warning(
+                    f"Exa returned no results for {city}, {state}. "
+                    f"Using seed data for development (run: poetry run python scripts/seed_location_content.py --city '{city}' --state '{state}')"
+                )
+                seed_articles = SEED_NEWS_ARTICLES.get(city, [])
+                return [
+                    {
+                        "id": f"seed-article-{idx}",
+                        "title": article["title"],
+                        "description": article["summary"],
+                        "thumbnail": FALLBACK_NEWS_POSTER,
+                        "url": article["url"],
+                        "source": f"{article['source']} (Seed Data)",
+                        "city": city,
+                        "state": state,
+                        "type": "article",
+                        "content_format": "article",
+                        "published_at": datetime.now(timezone.utc).isoformat(),
+                    }
+                    for idx, article in enumerate(seed_articles[:limit])
+                ]
+
             logger.info(f"Found {len(headlines)} Israeli-related headlines for {city}, {state}")
 
             # Log image extraction stats
@@ -599,6 +648,28 @@ class LocationContentService:
             ]
         except Exception as e:
             logger.error(f"Error fetching news articles for {city}, {state}: {e}")
+
+            # In development, return seed data even on error
+            if settings.SENTRY_ENVIRONMENT == "development":
+                logger.warning(f"Returning seed data for development due to error")
+                seed_articles = SEED_NEWS_ARTICLES.get(city, [])
+                return [
+                    {
+                        "id": f"seed-article-{idx}",
+                        "title": article["title"],
+                        "description": article["summary"],
+                        "thumbnail": FALLBACK_NEWS_POSTER,
+                        "url": article["url"],
+                        "source": f"{article['source']} (Seed Data)",
+                        "city": city,
+                        "state": state,
+                        "type": "article",
+                        "content_format": "article",
+                        "published_at": datetime.now(timezone.utc).isoformat(),
+                    }
+                    for idx, article in enumerate(seed_articles[:limit])
+                ]
+
             return []
 
     async def fetch_community_events(

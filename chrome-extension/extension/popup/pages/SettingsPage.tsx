@@ -74,16 +74,14 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
    * Handle reset to defaults
    */
   const handleReset = async () => {
-    if (confirm(t('settings.confirmReset', 'Reset all settings to defaults?'))) {
-      await settingsStore.resetToDefaults();
-      logger.info('Settings reset to defaults');
-    }
+    await settingsStore.resetToDefaults();
+    logger.info('Settings reset to defaults');
   };
 
   // Prepare select options
   const targetLanguageOptions = SUPPORTED_LANGUAGES.map((lang) => ({
     value: lang.code,
-    label: `${lang.flag} ${lang.name}`,
+    label: lang.name,
   }));
 
   const voiceOptions = voices
@@ -95,7 +93,7 @@ export function SettingsPage({ onBack }: SettingsPageProps) {
 
   const uiLanguageOptions = AVAILABLE_LANGUAGES.map((lang) => ({
     value: lang.code,
-    label: `${lang.flag} ${lang.nativeName}`,
+    label: lang.nativeName,
   }));
 
   return (

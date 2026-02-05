@@ -197,12 +197,12 @@ export function DashboardPage({
           <FeatureBadge
             enabled={settingsStore.audioDubbing}
             label={t('settings.audioDubbing', 'Audio Dubbing')}
-            icon="🎙️"
+            iconType="audio"
           />
           <FeatureBadge
             enabled={settingsStore.liveSubtitles}
             label={t('settings.liveSubtitles', 'Live Subtitles')}
-            icon="📝"
+            iconType="subtitles"
           />
         </div>
       </GlassCard>
@@ -213,21 +213,22 @@ export function DashboardPage({
           {t('dashboard.quickActions', 'Quick Actions')}
         </h3>
 
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <QuickActionButton
-            icon="🎬"
             label="Screenil"
             onClick={() => openSite('https://screenil.com')}
           />
           <QuickActionButton
-            icon="📺"
             label="Mako"
             onClick={() => openSite('https://mako.co.il')}
           />
           <QuickActionButton
-            icon="📡"
             label="13TV"
             onClick={() => openSite('https://13tv.co.il')}
+          />
+          <QuickActionButton
+            label="Kan"
+            onClick={() => openSite('https://kan.org.il')}
           />
         </div>
       </GlassCard>
@@ -241,11 +242,11 @@ export function DashboardPage({
 function FeatureBadge({
   enabled,
   label,
-  icon,
+  iconType,
 }: {
   enabled: boolean;
   label: string;
-  icon: string;
+  iconType: 'audio' | 'subtitles';
 }) {
   return (
     <div
@@ -257,9 +258,19 @@ function FeatureBadge({
       role="status"
       aria-label={`${label}: ${enabled ? 'enabled' : 'disabled'}`}
     >
-      <span className="text-lg" aria-hidden="true">
-        {icon}
-      </span>
+      <svg
+        className={`w-4 h-4 ${enabled ? 'text-green-300' : 'text-white/40'}`}
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        {iconType === 'audio' ? (
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m-4 0h8m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+        ) : (
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+        )}
+      </svg>
       <span className={`text-sm ${enabled ? 'text-green-200' : 'text-white/60'}`}>
         {label}
       </span>
@@ -285,23 +296,27 @@ function FeatureBadge({
  * Quick Action Button Component
  */
 function QuickActionButton({
-  icon,
   label,
   onClick,
 }: {
-  icon: string;
   label: string;
   onClick: () => void;
 }) {
   return (
     <button
       onClick={onClick}
-      className="flex flex-col items-center gap-2 p-3 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-lg transition-colors"
+      className="flex items-center justify-center gap-2 p-3 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-lg transition-colors"
       aria-label={`Open ${label}`}
     >
-      <span className="text-2xl" aria-hidden="true">
-        {icon}
-      </span>
+      <svg
+        className="w-4 h-4 text-white/60"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+      </svg>
       <span className="text-white/80 text-xs font-medium">{label}</span>
     </button>
   );

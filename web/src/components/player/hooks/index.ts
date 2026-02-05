@@ -22,3 +22,8 @@ export type { AirPlaySession, ChromecastSession, CastSessions } from './useCastS
 export { usePlaybackSession } from './usePlaybackSession'
 export { useAudioTracks } from './useAudioTracks'
 export type { UseAudioTracksProps, UseAudioTracksReturn } from './useAudioTracks'
+export { useComprehensionQuizIntegration } from './useComprehensionQuizIntegration'
+export type {
+  UseComprehensionQuizIntegrationProps,
+  UseComprehensionQuizIntegrationReturn,
+} from './useComprehensionQuizIntegration'

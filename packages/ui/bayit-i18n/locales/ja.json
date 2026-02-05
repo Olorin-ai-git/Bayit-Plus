@@ -8492,5 +8492,13 @@
         "noControlsAvailable": "利用可能なファミリーコントロールがありません。最初にコントロールを作成してください。"
       }
     }
+  },
+  "bar": {
+    "translate": "翻訳",
+    "stop": "停止",
+    "startTranslation": "翻訳を開始",
+    "targetLanguage": "翻訳先言語",
+    "toggleSubtitles": "字幕の切り替え",
+    "close": "Bayit+ バーを閉じる"
   }
 }

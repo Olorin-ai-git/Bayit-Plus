@@ -112,9 +112,13 @@ function WelcomeStep({ onNext, onSkip }: { onNext: () => void; onSkip: () => voi
   return (
     <GlassCard className="p-8 max-w-md text-center">
       <div className="mb-6">
-        <div className="text-6xl mb-4">🎬</div>
+        <div className="mb-4">
+          <svg className="w-16 h-16 mx-auto text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+          </svg>
+        </div>
         <h1 className="text-3xl font-bold text-white mb-2">
-          {t('onboarding.welcome.title', 'Welcome to Bayit+ Translator')}
+          {t('onboarding.welcome.title', 'Welcome to Bayit+ Companion')}
         </h1>
         <p className="text-white/80 text-base leading-relaxed">
           {t(
@@ -160,7 +164,7 @@ function PermissionsStep({ onNext }: { onNext: () => void }) {
 
       <div className="space-y-4 mb-8">
         <PermissionItem
-          icon="🔊"
+          iconType="audio"
           title={t('onboarding.permissions.tabCapture.title', 'Audio Capture')}
           description={t(
             'onboarding.permissions.tabCapture.description',
@@ -169,7 +173,7 @@ function PermissionsStep({ onNext }: { onNext: () => void }) {
         />
 
         <PermissionItem
-          icon="💾"
+          iconType="storage"
           title={t('onboarding.permissions.storage.title', 'Storage')}
           description={t(
             'onboarding.permissions.storage.description',
@@ -178,11 +182,11 @@ function PermissionsStep({ onNext }: { onNext: () => void }) {
         />
 
         <PermissionItem
-          icon="🌐"
+          iconType="globe"
           title={t('onboarding.permissions.sites.title', 'Site Access')}
           description={t(
             'onboarding.permissions.sites.description',
-            'Access screenil.com, mako.co.il, and 13tv.co.il to provide dubbing controls.'
+            'Access screenil.com, mako.co.il, 13tv.co.il, and kan.org.il to provide dubbing controls.'
           )}
         />
       </div>
@@ -200,18 +204,26 @@ function PermissionsStep({ onNext }: { onNext: () => void }) {
 }
 
 function PermissionItem({
-  icon,
+  iconType,
   title,
   description,
 }: {
-  icon: string;
+  iconType: 'audio' | 'storage' | 'globe';
   title: string;
   description: string;
 }) {
+  const iconPaths: Record<string, string> = {
+    audio: 'M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m-4 0h8m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z',
+    storage: 'M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4',
+    globe: 'M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9',
+  };
+
   return (
     <div className="flex gap-4 p-4 bg-white/5 backdrop-blur-sm rounded-xl">
-      <div className="text-3xl flex-shrink-0" aria-hidden="true">
-        {icon}
+      <div className="flex-shrink-0" aria-hidden="true">
+        <svg className="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={iconPaths[iconType]} />
+        </svg>
       </div>
       <div>
         <h3 className="text-white font-medium mb-1">{title}</h3>
@@ -237,7 +249,7 @@ function LanguageStep({
 
   const languageOptions = SUPPORTED_LANGUAGES.map((lang) => ({
     value: lang.code,
-    label: `${lang.flag} ${lang.name}`,
+    label: lang.name,
   }));
 
   return (
@@ -308,7 +320,7 @@ function FeaturesStep({
 
       <div className="space-y-4 mb-8">
         <FeatureToggle
-          icon="🎙️"
+          iconType="audio"
           title={t('onboarding.features.audioDubbing', 'Audio Dubbing')}
           description={t(
             'onboarding.features.audioDubbingDesc',
@@ -319,7 +331,7 @@ function FeaturesStep({
         />
 
         <FeatureToggle
-          icon="📝"
+          iconType="subtitles"
           title={t('onboarding.features.liveSubtitles', 'Live Subtitles')}
           description={t(
             'onboarding.features.liveSubtitlesDesc',
@@ -350,18 +362,23 @@ function FeaturesStep({
 }
 
 function FeatureToggle({
-  icon,
+  iconType,
   title,
   description,
   enabled,
   onToggle,
 }: {
-  icon: string;
+  iconType: 'audio' | 'subtitles';
   title: string;
   description: string;
   enabled: boolean;
   onToggle: (enabled: boolean) => void;
 }) {
+  const iconPaths: Record<string, string> = {
+    audio: 'M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m-4 0h8m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z',
+    subtitles: 'M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z',
+  };
+
   return (
     <button
       onClick={() => onToggle(!enabled)}
@@ -373,8 +390,10 @@ function FeatureToggle({
       aria-pressed={enabled}
       aria-label={`${title}: ${enabled ? 'enabled' : 'disabled'}`}
     >
-      <div className="text-3xl flex-shrink-0" aria-hidden="true">
-        {icon}
+      <div className="flex-shrink-0" aria-hidden="true">
+        <svg className={`w-8 h-8 ${enabled ? 'text-blue-400' : 'text-white/40'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={iconPaths[iconType]} />
+        </svg>
       </div>
       <div className="flex-1 text-left">
         <h3 className="text-white font-medium mb-1">{title}</h3>
@@ -405,7 +424,11 @@ function TryItStep({ onFinish }: { onFinish: () => void }) {
   return (
     <GlassCard className="p-8 max-w-md text-center">
       <div className="mb-6">
-        <div className="text-6xl mb-4">🎉</div>
+        <div className="mb-4">
+          <svg className="w-16 h-16 mx-auto text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
         <h2 className="text-2xl font-bold text-white mb-2">
           {t('onboarding.tryIt.title', 'You\'re All Set!')}
         </h2>
@@ -418,25 +441,25 @@ function TryItStep({ onFinish }: { onFinish: () => void }) {
       </div>
 
       <div className="space-y-3 mb-8 text-left">
-        <TryItStep
+        <NumberedStep
           step={1}
           text={t(
             'onboarding.tryIt.step1',
-            'Visit screenil.com, mako.co.il, or 13tv.co.il'
+            'Visit screenil.com, mako.co.il, 13tv.co.il, or kan.org.il'
           )}
         />
-        <TryItStep
+        <NumberedStep
           step={2}
           text={t('onboarding.tryIt.step2', 'Start playing a video')}
         />
-        <TryItStep
+        <NumberedStep
           step={3}
           text={t(
             'onboarding.tryIt.step3',
             'Click the dubbing controls overlay and select your language'
           )}
         />
-        <TryItStep
+        <NumberedStep
           step={4}
           text={t(
             'onboarding.tryIt.step4',
@@ -449,15 +472,15 @@ function TryItStep({ onFinish }: { onFinish: () => void }) {
         variant="primary"
         onPress={onFinish}
         className="w-full"
-        aria-label={t('onboarding.tryIt.finish', 'Start Using Bayit+ Translator')}
+        aria-label={t('onboarding.tryIt.finish', 'Start Using Bayit+ Companion')}
       >
-        {t('onboarding.tryIt.finish', 'Start Using Bayit+ Translator')}
+        {t('onboarding.tryIt.finish', 'Start Using Bayit+ Companion')}
       </GlassButton>
     </GlassCard>
   );
 }
 
-function TryItStep({ step, text }: { step: number; text: string }) {
+function NumberedStep({ step, text }: { step: number; text: string }) {
   return (
     <div className="flex items-center gap-3 p-3 bg-white/5 backdrop-blur-sm rounded-lg">
       <div

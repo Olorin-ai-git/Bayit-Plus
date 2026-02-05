@@ -11,14 +11,16 @@ from app.core.ai_clients import get_anthropic_client
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.models.chapters import VideoChapters
-from app.models.comprehension import (
-    ComprehensionQuestionModel,
-    ContentComprehension,
-)
+from app.models.comprehension import ComprehensionQuestionModel
 from app.models.content import Content
+from app.services.comprehension.cache_service import (
+    ComprehensionCacheService,
+)
 from app.services.comprehension.prompts import (
     build_comprehension_question_prompt,
-    build_translation_prompt,
+)
+from app.services.comprehension.translation_service import (
+    ComprehensionTranslationService,
 )
 from app.services.scene_detection_service import SceneDetectionService
 
@@ -31,6 +33,8 @@ class ComprehensionQuestionService:
     def __init__(self):
         self._anthropic_client = None
         self.scene_detector = SceneDetectionService()
+        self.cache_service = ComprehensionCacheService()
+        self.translation_service = ComprehensionTranslationService()
 
     @property
     def anthropic_client(self):
@@ -59,7 +63,7 @@ class ComprehensionQuestionService:
         3. Return question
         """
         # Check cache
-        cached = await self._get_cached_question(
+        cached = await self.cache_service.get_cached_question(
             content_id, scene_start_time, scene_end_time, language
         )
         if cached:
@@ -98,7 +102,9 @@ class ComprehensionQuestionService:
             )
 
             # Cache question
-            await self._cache_question(content_id, question, language)
+            await self.cache_service.cache_question(
+                content_id, question, language
+            )
 
             return question
 
@@ -150,87 +156,11 @@ class ComprehensionQuestionService:
 
         # Generate translation if Hebrew
         if language == "he":
-            question = await self._add_english_translation(question)
-
-        return question
-
-    async def _add_english_translation(
-        self, question: ComprehensionQuestionModel
-    ) -> ComprehensionQuestionModel:
-        """Add English translation to Hebrew question."""
-        # Build translation data
-        translation_input = {
-            "question": question.question_text,
-            "options": question.options,
-            "explanation": question.explanation,
-        }
-
-        prompt = build_translation_prompt(
-            text=json.dumps(translation_input, ensure_ascii=False),
-            source_lang="he",
-            target_lang="en",
-        )
-
-        response = await self.anthropic_client.messages.create(
-            model=settings.COMPREHENSION_QUESTION_MODEL,
-            max_tokens=settings.COMPREHENSION_AI_MAX_TOKENS,
-            messages=[{"role": "user", "content": prompt}],
-        )
-
-        content_text = response.content[0].text
-        translated_data = json.loads(content_text)
-
-        # Update question with translations
-        question.question_text_en = translated_data["question"]
-        question.options_en = translated_data["options"]
-        question.explanation_en = translated_data.get("explanation")
-
-        return question
-
-    async def _get_cached_question(
-        self,
-        content_id: str,
-        scene_start_time: float,
-        scene_end_time: float,
-        language: str,
-    ) -> Optional[ComprehensionQuestionModel]:
-        """Get cached question for scene."""
-        doc = await ContentComprehension.get_for_content(
-            content_id, language
-        )
-        if not doc or not doc.questions:
-            return None
-
-        # Find question matching scene timing
-        for q in doc.questions:
-            if (
-                q.scene_start_time == scene_start_time
-                and q.scene_end_time == scene_end_time
-            ):
-                return q
-
-        return None
-
-    async def _cache_question(
-        self,
-        content_id: str,
-        question: ComprehensionQuestionModel,
-        language: str,
-    ):
-        """Cache question in MongoDB."""
-        doc = await ContentComprehension.get_for_content(
-            content_id, language
-        )
-        if not doc:
-            doc = ContentComprehension(
-                content_id=content_id,
-                language=language,
-                questions=[question],
+            question = await self.translation_service.add_english_translation(
+                question
             )
-            await doc.insert()
-        else:
-            doc.questions.append(question)
-            await doc.save()
+
+        return question
 
     async def _get_chapter_title(
         self, content_id: str, timestamp: float

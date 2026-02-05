@@ -7945,5 +7945,13 @@
         "noControlsAvailable": "No hay controles familiares disponibles. Cree controles primero."
       }
     }
+  },
+  "bar": {
+    "translate": "Traducir",
+    "stop": "Detener",
+    "startTranslation": "Iniciar traduccion",
+    "targetLanguage": "Idioma de destino",
+    "toggleSubtitles": "Alternar subtitulos",
+    "close": "Cerrar barra Bayit+"
   }
 }

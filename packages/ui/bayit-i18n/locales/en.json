@@ -7929,5 +7929,40 @@
     "errors": {
       "noControlsAvailable": "No family controls available. Create controls first."
     }
+  },
+  "comprehension": {
+    "title": "Comprehension Questions",
+    "enable": "Enable Comprehension Questions",
+    "enable_desc": "Show comprehension questions during playback to improve Hebrew",
+    "frequency": {
+      "title": "Question Frequency",
+      "off": "Off",
+      "off_desc": "No comprehension questions",
+      "low": "Low",
+      "low_desc": "One question every 15 minutes",
+      "normal": "Normal",
+      "normal_desc": "One question every 10 minutes (recommended)",
+      "high": "High",
+      "high_desc": "One question every 5 minutes"
+    },
+    "info_message": "Comprehension questions help improve your Hebrew understanding and deepen your connection to the content",
+    "scene_end": "What happened in this scene?",
+    "skip": "Skip",
+    "submit": "Submit Answer",
+    "correct": "Correct!",
+    "incorrect": "Incorrect",
+    "points_earned": "You earned {{points}} points",
+    "explanation": "Explanation",
+    "loading": "Loading question...",
+    "insufficient_credits": "Insufficient credits for comprehension question",
+    "error": "Error loading question"
+  },
+  "bar": {
+    "translate": "Translate",
+    "stop": "Stop",
+    "startTranslation": "Start translation",
+    "targetLanguage": "Target language",
+    "toggleSubtitles": "Toggle subtitles",
+    "close": "Close Bayit+ Bar"
   }
 }

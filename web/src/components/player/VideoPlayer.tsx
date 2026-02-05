@@ -11,6 +11,7 @@ import VideoPlayerWatchParty from './VideoPlayerWatchParty'
 import VideoPlayerCatchUp from './VideoPlayerCatchUp'
 import GlassChatSidebar from './chat/GlassChatSidebar'
 import { StreamLimitExceededModal } from './StreamLimitExceededModal'
+import { ComprehensionQuizOverlay } from '@bayit/shared/components/quiz/ComprehensionQuizOverlay'
 import {
   useVideoPlayer,
   useSubtitles,
@@ -26,6 +27,7 @@ import {
   useCastSession,
   usePlaybackSession,
   useAudioTracks,
+  useComprehensionQuizIntegration,
 } from './hooks'
 import { SplitLanguages } from '@/types/subtitle'
 import { useChannelChatStore } from '@/stores/channelChatSlice'
@@ -267,6 +269,16 @@ export default function VideoPlayer({
     channelId: isLive ? contentId : undefined,
     language: i18n.language,
     enabled: false, // Start disabled, user must click to enable
+  })
+
+  // Comprehension quiz integration for VOD content
+  const comprehensionQuiz = useComprehensionQuizIntegration({
+    videoRef,
+    contentId: contentId || '',
+    subtitles: currentCues,
+    enabled: !isLive && contentType === 'vod',
+    isLive,
+    language: i18n.language,
   })
 
   // Forward subtitle transcripts to trivia when both are active
@@ -646,6 +658,21 @@ export default function VideoPlayer({
           activeStreams={streamLimitError.activeStreams}
           activeDevices={streamLimitError.activeDevices}
           onClose={() => setShowStreamLimitModal(false)}
+        />
+      )}
+
+      {/* Comprehension Quiz Overlay for VOD */}
+      {comprehensionQuiz.question && (
+        <ComprehensionQuizOverlay
+          visible={!!comprehensionQuiz.question}
+          question={comprehensionQuiz.question}
+          feedback={comprehensionQuiz.feedback}
+          isLoading={comprehensionQuiz.isLoading}
+          error={comprehensionQuiz.error}
+          language={i18n.language}
+          isRTL={i18n.language === 'he'}
+          onAnswer={comprehensionQuiz.handleAnswer}
+          onSkip={comprehensionQuiz.handleSkip}
         />
       )}
     </div>

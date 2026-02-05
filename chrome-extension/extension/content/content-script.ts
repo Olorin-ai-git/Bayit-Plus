@@ -5,23 +5,24 @@
  * Handles:
  * - Site detection
  * - Video element finding
- * - UI overlay display
+ * - Bayit+ Bar display
  * - Audio control
  * - Communication with service worker and offscreen document
  */
 
 import { createLogger, generateCorrelationId } from '@/lib/logger';
+import { CONFIG } from '@/config/constants';
 import { detectSite, isSupportedSite } from './site-detector';
 import { VideoFinder } from './video-finder';
 import { AudioController } from './audio-controller';
-import { UIOverlay } from './ui-overlay';
+import { BarController } from './bar-controller';
 
 const logger = createLogger('ContentScript');
 
 class ContentScriptManager {
   private videoFinder: VideoFinder | null = null;
   private audioController: AudioController | null = null;
-  private uiOverlay: UIOverlay | null = null;
+  private barController: BarController | null = null;
   private currentVideo: HTMLVideoElement | null = null;
   private sessionId: string | null = null;
   private isActive = false;
@@ -68,7 +69,7 @@ class ContentScriptManager {
       chrome.runtime.onMessage.addListener(this.handleMessage.bind(this));
 
       // Mark content script as ready
-      document.documentElement.setAttribute('data-bayit-translator-ready', 'true');
+      document.documentElement.setAttribute('data-bayit-companion-ready', 'true');
 
       logger.info('Content script initialized successfully');
     } catch (error) {
@@ -90,8 +91,8 @@ class ContentScriptManager {
       this.audioController = new AudioController();
       this.audioController.attach(video);
 
-      // Show UI overlay
-      this.showUIOverlay();
+      // Show Bayit+ Bar
+      this.showBar();
     }
   }
 
@@ -113,9 +114,9 @@ class ContentScriptManager {
         this.audioController = null;
       }
 
-      if (this.uiOverlay) {
-        this.uiOverlay.hide();
-        this.uiOverlay = null;
+      if (this.barController) {
+        this.barController.destroy();
+        this.barController = null;
       }
 
       this.currentVideo = null;
@@ -123,34 +124,35 @@ class ContentScriptManager {
   }
 
   /**
-   * Show UI overlay
+   * Show Bayit+ Bar attached to video container
    */
-  private showUIOverlay(): void {
+  private showBar(): void {
     if (!this.currentVideo) return;
 
-    this.uiOverlay = new UIOverlay({
+    this.barController = new BarController({
       onStartDubbing: this.startDubbing.bind(this),
       onStopDubbing: this.stopDubbing.bind(this),
       onLanguageChange: (language) => {
         logger.info('Language changed', { language });
       },
-      onVolumeChange: (originalVolume, dubbedVolume) => {
-        logger.info('Volume changed', { originalVolume, dubbedVolume });
-
-        // Update original volume
-        if (this.audioController) {
-          this.audioController.setVolume(originalVolume);
+      onToggleSubtitles: (enabled) => {
+        if (enabled) {
+          logger.info('Subtitles enabled');
+        } else {
+          this.barController?.hideSubtitles();
+          logger.info('Subtitles disabled');
         }
-
-        // Update dubbed volume (send to offscreen)
-        chrome.runtime.sendMessage({
-          type: 'SET_VOLUME',
-          dubbedVolume,
-        });
+      },
+      onClose: () => {
+        if (this.isActive) {
+          this.stopDubbing();
+        }
+        this.barController?.destroy();
+        this.barController = null;
       },
     });
 
-    this.uiOverlay.show(this.currentVideo);
+    this.barController.attach(this.currentVideo);
   }
 
   /**
@@ -165,17 +167,25 @@ class ContentScriptManager {
 
       if (!authStatus.authenticated) {
         logger.warn('User not authenticated');
-        alert('Please log in to use the Bayit+ Translator');
+        this.barController?.showStatus('Please log in to use Bayit+ Companion', 'warn');
         chrome.runtime.openOptionsPage();
         return;
       }
 
       // Check quota
       const usageData = await chrome.runtime.sendMessage({ type: 'GET_USAGE_DATA' });
+      const freeTierLimit = CONFIG.QUOTA.FREE_TIER_MINUTES_PER_DAY;
 
-      if (usageData.usage.dailyMinutesUsed >= 5.0 && authStatus.user.subscription_tier === 'free') {
+      if (
+        freeTierLimit &&
+        usageData.usage.dailyMinutesUsed >= freeTierLimit &&
+        authStatus.user.subscription_tier === 'free'
+      ) {
         logger.warn('Quota exhausted');
-        alert('Daily quota of 5 minutes exhausted. Upgrade to premium for unlimited dubbing.');
+        this.barController?.showStatus(
+          `Daily quota of ${freeTierLimit} minutes exhausted. Upgrade to premium.`,
+          'warn'
+        );
         chrome.runtime.openOptionsPage();
         return;
       }
@@ -214,8 +224,8 @@ class ContentScriptManager {
       }
 
       // Update UI
-      if (this.uiOverlay) {
-        this.uiOverlay.updateState(true, 'Connected');
+      if (this.barController) {
+        this.barController.updateState(true, 'Connected');
       }
 
       // Notify service worker
@@ -227,7 +237,7 @@ class ContentScriptManager {
       logger.info('Dubbing started successfully', { sessionId: this.sessionId });
     } catch (error) {
       logger.error('Failed to start dubbing', { error: String(error) });
-      alert('Failed to start dubbing. Please try again.');
+      this.barController?.showStatus('Failed to start dubbing. Please try again.', 'error');
     }
   }
 
@@ -253,8 +263,8 @@ class ContentScriptManager {
       }
 
       // Update UI
-      if (this.uiOverlay) {
-        this.uiOverlay.updateState(false);
+      if (this.barController) {
+        this.barController.updateState(false);
       }
 
       // Notify service worker
@@ -281,13 +291,15 @@ class ContentScriptManager {
     switch (message.type) {
       case 'TRANSCRIPT_RECEIVED':
         logger.debug('Transcript received', { transcript: message.transcript });
-        // TODO: Display transcript in UI
+        if (this.barController) {
+          this.barController.showSubtitle(message.transcript as string);
+        }
         break;
 
       case 'CONNECTION_STATUS_CHANGED':
         logger.info('Connection status changed', { status: message.status });
-        if (this.uiOverlay) {
-          this.uiOverlay.showStatus(message.status as string);
+        if (this.barController) {
+          this.barController.showStatus(message.status as string);
         }
         break;
 
@@ -296,7 +308,7 @@ class ContentScriptManager {
         if (this.isActive) {
           this.stopDubbing();
         }
-        alert(`Dubbing error: ${message.error}`);
+        this.barController?.showStatus(`Dubbing error: ${message.error}`, 'error');
         break;
 
       case 'AUTH_STATE_CHANGED':

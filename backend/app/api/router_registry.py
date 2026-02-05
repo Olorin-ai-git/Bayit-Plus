@@ -48,6 +48,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 cultures, device_pairing, devices,
                                 diagnostics, direct_messages, downloads, dubbing, epg,
                                 websocket_diagnostics,
+                                extension_config,
                                 extension_subscriptions,
                                 family_controls, favorites, friends, health,
                                 history, household, jerusalem, judaism, librarian, live,
@@ -168,6 +169,9 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     app.include_router(
         subscriptions.router, prefix=f"{prefix}/subscriptions", tags=["subscriptions"]
+    )
+    app.include_router(
+        extension_config.router, prefix=prefix, tags=["extension-config"]
     )
     app.include_router(
         extension_subscriptions.router, prefix=prefix, tags=["extension-subscriptions"]

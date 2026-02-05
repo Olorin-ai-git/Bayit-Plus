@@ -7736,5 +7736,13 @@
         "noControlsAvailable": "没有可用的家庭控制。请先创建控制。"
       }
     }
+  },
+  "bar": {
+    "translate": "翻译",
+    "stop": "停止",
+    "startTranslation": "开始翻译",
+    "targetLanguage": "目标语言",
+    "toggleSubtitles": "切换字幕",
+    "close": "关闭 Bayit+ 栏"
   }
 }

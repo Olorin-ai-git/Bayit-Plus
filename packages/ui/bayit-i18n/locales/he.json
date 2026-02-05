@@ -8034,6 +8034,41 @@
       "errors": {
         "noControlsAvailable": "אין בקרות משפחתיות זמינות. צור בקרות תחילה."
       }
+    },
+    "comprehension": {
+      "title": "שאלות הבנה",
+      "enable": "הפעל שאלות הבנה",
+      "enable_desc": "הצג שאלות הבנה במהלך הצפייה לשיפור העברית",
+      "frequency": {
+        "title": "תדירות שאלות",
+        "off": "כבוי",
+        "off_desc": "ללא שאלות הבנה",
+        "low": "נמוך",
+        "low_desc": "שאלה כל 15 דקות",
+        "normal": "רגיל",
+        "normal_desc": "שאלה כל 10 דקות (מומלץ)",
+        "high": "גבוה",
+        "high_desc": "שאלה כל 5 דקות"
+      },
+      "info_message": "שאלות הבנה עוזרות לשפר את ההבנה שלך בעברית ומעמיקות את החיבור לתוכן",
+      "scene_end": "מה קרה בסצנה?",
+      "skip": "דלג",
+      "submit": "שלח תשובה",
+      "correct": "נכון!",
+      "incorrect": "לא נכון",
+      "points_earned": "הרווחת {{points}} נקודות",
+      "explanation": "הסבר",
+      "loading": "טוען שאלה...",
+      "insufficient_credits": "אין מספיק קרדיטים לשאלת הבנה",
+      "error": "שגיאה בטעינת שאלה"
     }
+  },
+  "bar": {
+    "translate": "תרגום",
+    "stop": "עצור",
+    "startTranslation": "התחל תרגום",
+    "targetLanguage": "שפת יעד",
+    "toggleSubtitles": "הצג/הסתר כתוביות",
+    "close": "סגור את סרגל Bayit+"
   }
 }

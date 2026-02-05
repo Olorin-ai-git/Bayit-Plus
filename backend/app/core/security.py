@@ -208,6 +208,9 @@ async def get_passkey_session(request: Request) -> Optional[PasskeySession]:
 # Indicates that this dependency verifies OAuth token credentials
 verify_oauth_token = get_current_user
 
+# Alias for dubbing WebSocket/session endpoints
+decode_access_token = decode_token
+
 
 async def has_passkey_access(request: Request) -> bool:
     """

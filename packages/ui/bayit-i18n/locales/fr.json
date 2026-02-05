@@ -8660,5 +8660,13 @@
         "noControlsAvailable": "Aucun contrôle familial disponible. Créez d'abord des contrôles."
       }
     }
+  },
+  "bar": {
+    "translate": "Traduire",
+    "stop": "Arreter",
+    "startTranslation": "Commencer la traduction",
+    "targetLanguage": "Langue cible",
+    "toggleSubtitles": "Activer/desactiver les sous-titres",
+    "close": "Fermer la barre Bayit+"
   }
 }

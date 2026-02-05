@@ -11,6 +11,7 @@
 **New to Bayit+?** Start here:
 - [Startup Guide](guides/STARTUP_GUIDE.md) - Get up and running in 15 minutes
 - [Web Development](guides/WEB_DEVELOPMENT_GUIDE.md) - React 18 + Vite + TypeScript
+- [Mobile Web App](guides/MOBILE_WEB_APP_GUIDE.md) - m.bayit.tv mobile-optimized PWA
 - [Mobile Development](guides/MOBILE_DEVELOPMENT_GUIDE.md) - React Native iOS/Android
 - [tvOS Development](guides/TVOS_DEVELOPMENT_GUIDE.md) - Apple TV development
 
@@ -40,20 +41,29 @@ The documentation portal provides:
 
 Complete API reference for all Bayit+ services:
 
+**Endpoint Reference (NEW - Complete Coverage):**
+- [Authentication & Security API](api/AUTH_API_REFERENCE.md) - Auth, OAuth, WebAuthn, device pairing, verification
+- [Content & Search API](api/CONTENT_API_REFERENCE.md) - Search, EPG, chapters, subtitles, taxonomy, trending
+- [User Management API](api/USER_API_REFERENCE.md) - Profiles, subscriptions, watchlist, favorites, downloads, devices
+- [Media & Live TV API](api/MEDIA_API_REFERENCE.md) - Live TV, radio, audiobooks, recordings, media proxy
+- [Social & Gaming API](api/SOCIAL_API_REFERENCE.md) - Friends, DMs, chess, avatar dialogue, chat moderation
+- [Features & Cultural API](api/FEATURES_API_REFERENCE.md) - Ritual, Judaism, Jerusalem, Tel Aviv, cultures, NLP, trivia, quiz, support
+- [Beta 500 API](api/BETA_API_REFERENCE.md) - Beta program signup, credits, sessions
+- [WebSocket API](api/WEBSOCKET_API_REFERENCE.md) - Live subtitles, dubbing, trivia, chess, DM, diagnostics
+
+**Overview & Feature APIs:**
 - [API Overview](api/API_OVERVIEW.md) - REST API architecture, auth, rate limiting
 - [AI API Reference](api/AI_API_REFERENCE.md) - AI Search, Recommendations, Catch-Up
 - [Channel Chat API](api/CHANNEL_CHAT_API.md) - Real-time chat for live channels
 - [Catch-Up API](api/CATCH_UP_API.md) - AI-powered summaries
-- [Family Controls API](api/FAMILY_CONTROLS_API.md) - Unified parental controls (7 endpoints, lockout protection, rate limiting) ⭐ **NEW**
+- [Family Controls API](api/FAMILY_CONTROLS_API.md) - Unified parental controls
 - [Voice API Reference](api/VOICE_API_REFERENCE.md) - TTS/STT integration
-- [Authentication](api/AUTHENTICATION.md) - JWT, Firebase Auth, OAuth 2.0
 
-**50+ API endpoints documented with:**
-- Request/response examples
-- TypeScript interfaces
-- cURL commands
-- Python SDK examples
-- Error handling patterns
+**300+ API endpoints documented with:**
+- Request/response schemas
+- Authentication requirements
+- Rate limiting details
+- WebSocket message formats
 
 ---
 

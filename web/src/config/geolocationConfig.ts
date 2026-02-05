@@ -21,6 +21,15 @@ export const GEOLOCATION_CONFIG = {
   GEOLOCATION_MAX_AGE_MS: 3600000, // Reuse cached coords for 1 hour
   ENABLE_HIGH_ACCURACY: false, // Standard accuracy is sufficient
 
+  // Default location for US-based Israeli expats when timezone isn't found
+  DEFAULT_LOCATION: {
+    city: 'New York',
+    state: 'NY',
+    county: 'New York County',
+    latitude: 40.7128,
+    longitude: -74.006,
+  } as TimezoneLocation,
+
   // Timezone-based fallback cities for denied geolocation
   TIMEZONE_FALLBACK_CITIES: {
     'America/New_York': {

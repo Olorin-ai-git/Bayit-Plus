@@ -35,31 +35,36 @@ async function main() {
   } catch (error) {
     logger.error('Failed to initialize popup', { error: String(error) });
 
-    // Show error message in UI
+    // Show error message in UI (DOM API, no innerHTML for XSS safety)
     const container = document.getElementById('root');
     if (container) {
-      container.innerHTML = `
-        <div style="padding: 20px; color: #fff; text-align: center;">
-          <h2 style="color: #ff4757; margin-bottom: 10px;">Failed to Initialize</h2>
-          <p style="color: #ddd; font-size: 14px;">${String(error)}</p>
-          <button
-            onclick="window.location.reload()"
-            style="
-              margin-top: 20px;
-              padding: 10px 20px;
-              background: rgba(255,255,255,0.1);
-              backdrop-filter: blur(10px);
-              border: 1px solid rgba(255,255,255,0.2);
-              border-radius: 12px;
-              color: #fff;
-              cursor: pointer;
-              font-size: 14px;
-            "
-          >
-            Reload
-          </button>
-        </div>
-      `;
+      while (container.firstChild) container.removeChild(container.firstChild);
+
+      const wrapper = document.createElement('div');
+      Object.assign(wrapper.style, { padding: '20px', color: '#fff', textAlign: 'center' });
+
+      const heading = document.createElement('h2');
+      heading.textContent = 'Failed to Initialize';
+      Object.assign(heading.style, { color: '#ff4757', marginBottom: '10px' });
+
+      const message = document.createElement('p');
+      message.textContent = String(error);
+      Object.assign(message.style, { color: '#ddd', fontSize: '14px' });
+
+      const reloadBtn = document.createElement('button');
+      reloadBtn.textContent = 'Reload';
+      reloadBtn.addEventListener('click', () => window.location.reload());
+      Object.assign(reloadBtn.style, {
+        marginTop: '20px', padding: '10px 20px',
+        background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)',
+        border: '1px solid rgba(255,255,255,0.2)', borderRadius: '12px',
+        color: '#fff', cursor: 'pointer', fontSize: '14px',
+      });
+
+      wrapper.appendChild(heading);
+      wrapper.appendChild(message);
+      wrapper.appendChild(reloadBtn);
+      container.appendChild(wrapper);
     }
   }
 }

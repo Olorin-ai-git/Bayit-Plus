@@ -91,16 +91,36 @@ export const useUserGeolocation = (): GeolocationResult => {
       try {
         const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
         const fallback = GEOLOCATION_CONFIG.TIMEZONE_FALLBACK_CITIES[timezone];
+
+        // Use timezone-specific fallback if available, otherwise default to NYC
+        const locationToUse = fallback || GEOLOCATION_CONFIG.DEFAULT_LOCATION;
+        const locationData: LocationData = {
+          ...locationToUse,
+          timestamp: new Date(),
+          source: 'timezone_inferred',
+        };
+
         if (fallback) {
-          const locationData: LocationData = {
-            ...fallback, timestamp: new Date(), source: 'timezone_inferred',
-          };
-          logger.info('Using timezone-inferred location', locationData);
-          setLocation(locationData);
-          cacheLocation(locationData);
+          logger.info('Using timezone-inferred location', { timezone, ...locationData });
+        } else {
+          logger.info('Timezone not in fallback list, using default NYC location', {
+            detectedTimezone: timezone,
+            ...locationData,
+          });
         }
+
+        setLocation(locationData);
+        cacheLocation(locationData);
       } catch (err) {
-        logger.warn('Failed to infer location from timezone', { error: err });
+        logger.warn('Failed to infer location from timezone, using default NYC', { error: err });
+        // Ultimate fallback - always use NYC for US-based Israeli expats
+        const defaultLocation: LocationData = {
+          ...GEOLOCATION_CONFIG.DEFAULT_LOCATION,
+          timestamp: new Date(),
+          source: 'timezone_inferred',
+        };
+        setLocation(defaultLocation);
+        cacheLocation(defaultLocation);
       }
     };
 

@@ -8,9 +8,9 @@
  * - Cancel subscription
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { GlassCard, GlassButton, GlassBadge } from '@bayit/glass';
+import { GlassCard, GlassButton, GlassBadge, GlassConfirmDialog } from '@bayit/glass';
 import { useAuthStore } from '../stores/authStore';
 import { CONFIG } from '../../config/constants';
 import { logger } from '../../lib/logger';
@@ -29,8 +29,21 @@ export function SubscriptionPage({ onBack }: SubscriptionPageProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pollingCheckout, setPollingCheckout] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   const { user, isPremium } = authStore;
+
+  // Auto-dismiss success messages to prevent stale UI state
+  useEffect(() => {
+    if (!successMessage) return;
+
+    const timer = setTimeout(() => {
+      setSuccessMessage(null);
+    }, CONFIG.USAGE_TRACKING.POLL_INTERVAL_MS);
+
+    return () => clearTimeout(timer);
+  }, [successMessage]);
 
   /**
    * Handle upgrade to premium (Stripe checkout)
@@ -106,8 +119,7 @@ export function SubscriptionPage({ onBack }: SubscriptionPageProps) {
 
           logger.info('Subscription upgrade detected');
 
-          // Show success message
-          alert(
+          setSuccessMessage(
             t(
               'subscription.upgradeSuccess',
               'Upgrade successful! You now have unlimited dubbing.'
@@ -140,17 +152,12 @@ export function SubscriptionPage({ onBack }: SubscriptionPageProps) {
   /**
    * Handle cancel subscription
    */
-  const handleCancel = async () => {
-    if (
-      !confirm(
-        t(
-          'subscription.confirmCancel',
-          'Are you sure you want to cancel your premium subscription? You will lose unlimited dubbing access.'
-        )
-      )
-    ) {
-      return;
-    }
+  const handleCancelRequest = () => {
+    setShowCancelConfirm(true);
+  };
+
+  const handleCancelConfirmed = async () => {
+    setShowCancelConfirm(false);
 
     try {
       setIsProcessing(true);
@@ -181,7 +188,7 @@ export function SubscriptionPage({ onBack }: SubscriptionPageProps) {
       // Refresh user info
       await authStore.refresh();
 
-      alert(
+      setSuccessMessage(
         t(
           'subscription.cancelSuccess',
           'Subscription cancelled. You can continue using premium until the end of your billing period.'
@@ -355,7 +362,11 @@ export function SubscriptionPage({ onBack }: SubscriptionPageProps) {
       {!isPremium && (
         <GlassCard className="p-6 bg-gradient-to-br from-purple-500/20 to-blue-500/20 border-purple-500/30">
           <div className="text-center">
-            <div className="text-4xl mb-3">⭐</div>
+            <div className="mb-3">
+              <svg className="w-10 h-10 mx-auto text-yellow-400" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+              </svg>
+            </div>
             <h2 className="text-2xl font-bold text-white mb-2">
               {t('subscription.upgradeToPremium', 'Upgrade to Premium')}
             </h2>
@@ -415,7 +426,7 @@ export function SubscriptionPage({ onBack }: SubscriptionPageProps) {
 
             <GlassButton
               variant="secondary"
-              onPress={handleCancel}
+              onPress={handleCancelRequest}
               disabled={isProcessing}
               className="w-full"
               aria-label={t('subscription.cancel', 'Cancel Subscription')}
@@ -438,6 +449,31 @@ export function SubscriptionPage({ onBack }: SubscriptionPageProps) {
           </a>
         </p>
       </GlassCard>
+
+      {/* Success Message */}
+      {successMessage && (
+        <div
+          className="p-4 bg-green-500/20 border border-green-500/50 rounded-lg"
+          role="status"
+          aria-live="polite"
+        >
+          <p className="text-green-200 text-sm">{successMessage}</p>
+        </div>
+      )}
+
+      {/* Cancel Confirmation Dialog */}
+      <GlassConfirmDialog
+        visible={showCancelConfirm}
+        title={t('subscription.cancelConfirmTitle', 'Cancel Subscription')}
+        message={t(
+          'subscription.confirmCancel',
+          'Are you sure you want to cancel your premium subscription? You will lose unlimited dubbing access.'
+        )}
+        confirmLabel={t('subscription.cancelConfirm', 'Yes, Cancel')}
+        cancelLabel={t('common.back', 'Back')}
+        onConfirm={handleCancelConfirmed}
+        onCancel={() => setShowCancelConfirm(false)}
+      />
     </div>
   );
 }

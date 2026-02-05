@@ -104,7 +104,7 @@ class DubbingWebSocketManager:
                 try:
                     self.whisper_transcription = WhisperTranscriptionService()
                     logger.info(
-                        "✅ Whisper transcription initialized for subtitles",
+                        "Whisper transcription initialized for subtitles",
                         extra={"session_id": self.session_id}
                     )
                 except Exception as e:
@@ -382,9 +382,9 @@ async def dubbing_websocket_endpoint(websocket: WebSocket, session_id: str):
             return
 
         # Authenticate user
-        from app.core.security import decode_access_token
+        from app.core.security import decode_token
 
-        payload = decode_access_token(token)
+        payload = decode_token(token)
         if not payload:
             await websocket.send_json(
                 {"type": "error", "error": "Invalid authentication token"}

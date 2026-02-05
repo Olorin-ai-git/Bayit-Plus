@@ -589,8 +589,8 @@ const styles = StyleSheet.create({
   card: {
     width: 256,
     minWidth: 256,
-    height: 176,
-    minHeight: 176,
+    height: 220,
+    minHeight: 220,
     padding: spacing.lg,
     borderRadius: borderRadius.lg,
     marginRight: spacing.md,
@@ -601,8 +601,8 @@ const styles = StyleSheet.create({
   cardMobile: {
     width: 176,
     minWidth: 176,
-    height: 128,
-    minHeight: 128,
+    height: 160,
+    minHeight: 160,
     padding: spacing.md,
     borderRadius: borderRadius.md,
     marginRight: spacing.sm,

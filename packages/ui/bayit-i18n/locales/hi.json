@@ -7726,5 +7726,13 @@
         "noControlsAvailable": "कोई पारिवारिक नियंत्रण उपलब्ध नहीं है। पहले नियंत्रण बनाएं।"
       }
     }
+  },
+  "bar": {
+    "translate": "अनुवाद करें",
+    "stop": "रोकें",
+    "startTranslation": "अनुवाद शुरू करें",
+    "targetLanguage": "लक्ष्य भाषा",
+    "toggleSubtitles": "उपशीर्षक टॉगल करें",
+    "close": "Bayit+ बार बंद करें"
   }
 }

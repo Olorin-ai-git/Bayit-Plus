@@ -7702,5 +7702,13 @@
         "noControlsAvailable": "কোনো পারিবারিক নিয়ন্ত্রণ উপলব্ধ নেই। প্রথমে নিয়ন্ত্রণ তৈরি করুন।"
       }
     }
+  },
+  "bar": {
+    "translate": "অনুবাদ করুন",
+    "stop": "থামুন",
+    "startTranslation": "অনুবাদ শুরু করুন",
+    "targetLanguage": "লক্ষ্য ভাষা",
+    "toggleSubtitles": "সাবটাইটেল টগল করুন",
+    "close": "Bayit+ বার বন্ধ করুন"
   }
 }

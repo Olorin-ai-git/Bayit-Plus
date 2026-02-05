@@ -5,6 +5,10 @@
  * Per CLAUDE.md requirements
  */
 
+import { createLogger } from '@/lib/logger';
+
+const configLogger = createLogger('Config');
+
 export interface ExtensionConfig {
   AUDIO: {
     SAMPLE_RATE: number;
@@ -141,9 +145,9 @@ export async function loadRuntimeConfig(): Promise<void> {
       throw new Error('Invalid runtime config: missing premium_tier_price_usd');
     }
 
-    console.log('[Config] Runtime configuration loaded successfully');
+    configLogger.info('Runtime configuration loaded successfully');
   } catch (error) {
-    console.error('[Config] Failed to load runtime configuration:', error);
+    configLogger.error('Failed to load runtime configuration', { error: String(error) });
     throw error;
   }
 }
@@ -156,16 +160,25 @@ export const SUPPORTED_SITES = [
     hostname: 'screenil.com',
     name: 'Screenil',
     videoSelector: 'video',
+    containerHint: '.video-player',
   },
   {
     hostname: 'mako.co.il',
     name: 'Mako',
     videoSelector: 'video',
+    containerHint: '.kaltura-player',
   },
   {
     hostname: '13tv.co.il',
     name: '13TV',
     videoSelector: 'video',
+    containerHint: '.video-player',
+  },
+  {
+    hostname: 'kan.org.il',
+    name: 'Kan',
+    videoSelector: 'video',
+    containerHint: '.video-wrapper',
   },
 ] as const;
 
@@ -173,8 +186,8 @@ export const SUPPORTED_SITES = [
  * Supported Languages Configuration
  */
 export const SUPPORTED_LANGUAGES = [
-  { code: 'en', name: 'English', flag: '🇺🇸' },
-  { code: 'es', name: 'Spanish', flag: '🇪🇸' },
+  { code: 'en', name: 'English' },
+  { code: 'es', name: 'Spanish' },
 ] as const;
 
 /**

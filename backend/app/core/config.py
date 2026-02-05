@@ -1686,8 +1686,18 @@ class Settings(BaseSettings):
     # ============================================
     # User-facing dubbing for Chrome extension (not partner API)
     # Free tier: 5 minutes/day, Premium: unlimited ($5/month)
-    FREE_TIER_MINUTES_PER_DAY: float = 5.0  # Free quota per day (Chrome extension)
+    FREE_TIER_MINUTES_PER_DAY: float = 15.0  # Free quota per day (Chrome extension)
     PREMIUM_TIER_PRICE_USD: float = 5.00  # Monthly subscription price
+    WEBSOCKET_BASE_URL: str = ""  # WebSocket base URL for dubbing sessions
+    MAX_SESSION_DURATION_MINUTES: int = 120  # Maximum dubbing session duration
+    AUDIO_SAMPLE_RATE: int = 16000  # Audio sample rate for dubbing capture (Hz)
+    SUPPORTED_EXTENSION_LANGUAGES: list[str] = ["en", "es"]  # Dubbing target languages
+    SUPPORTED_EXTENSION_SITES: list[str] = [  # Supported streaming sites
+        "screenil.com",
+        "mako.co.il",
+        "13tv.co.il",
+        "kan.org.il",
+    ]
 
     # ============================================
     # URL MIGRATION CONFIGURATION (for script consolidation)

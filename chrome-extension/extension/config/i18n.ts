@@ -5,6 +5,7 @@
  * Supports 10 languages with RTL support for Hebrew
  */
 
+import i18next from 'i18next';
 import { initBayitI18nWeb } from '@bayit/i18n/web';
 import { logger } from '../lib/logger';
 
@@ -63,21 +64,32 @@ function setupDirectionListener(i18n: any): void {
   });
 }
 
-// Note: After initialization, use i18next's useTranslation hook or i18n instance
-// These functions are kept for backward compatibility but require the i18n instance
+/**
+ * Change the current UI language
+ */
+export async function changeLanguage(language: string): Promise<void> {
+  await i18next.changeLanguage(language);
+}
+
+/**
+ * Get the current UI language
+ */
+export function getCurrentLanguage(): string {
+  return i18next.language || 'en';
+}
 
 /**
  * Get available languages
  */
 export const AVAILABLE_LANGUAGES = [
-  { code: 'en', name: 'English', nativeName: 'English', flag: '🇺🇸' },
-  { code: 'es', name: 'Spanish', nativeName: 'Español', flag: '🇪🇸' },
-  { code: 'he', name: 'Hebrew', nativeName: 'עברית', flag: '🇮🇱', rtl: true },
-  { code: 'fr', name: 'French', nativeName: 'Français', flag: '🇫🇷' },
-  { code: 'it', name: 'Italian', nativeName: 'Italiano', flag: '🇮🇹' },
-  { code: 'zh', name: 'Chinese', nativeName: '中文', flag: '🇨🇳' },
-  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी', flag: '🇮🇳' },
-  { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்', flag: '🇮🇳' },
-  { code: 'bn', name: 'Bengali', nativeName: 'বাংলা', flag: '🇧🇩' },
-  { code: 'ja', name: 'Japanese', nativeName: '日本語', flag: '🇯🇵' },
+  { code: 'en', name: 'English', nativeName: 'English' },
+  { code: 'es', name: 'Spanish', nativeName: 'Español' },
+  { code: 'he', name: 'Hebrew', nativeName: 'עברית', rtl: true },
+  { code: 'fr', name: 'French', nativeName: 'Français' },
+  { code: 'it', name: 'Italian', nativeName: 'Italiano' },
+  { code: 'zh', name: 'Chinese', nativeName: '中文' },
+  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
+  { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்' },
+  { code: 'bn', name: 'Bengali', nativeName: 'বাংলা' },
+  { code: 'ja', name: 'Japanese', nativeName: '日本語' },
 ] as const;
