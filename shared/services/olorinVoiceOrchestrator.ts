@@ -10,7 +10,7 @@ import i18n from '../i18n';
 import { useSupportStore, VoiceState } from '../stores/supportStore';
 import { streamingVoicePipeline } from './streamingVoicePipeline';
 import { voiceCommandProcessor, VoiceCommandResponse } from './voiceCommandProcessor';
-import { VoiceConfig, VoiceTrigger, AvatarMode } from '../types/voiceAvatar';
+import { VoiceConfig, VoiceTrigger, AvatarMode, VoiceIntent } from '../types/voiceAvatar';
 import { logger } from '../utils/logger';
 import {
   updateGestureForIntent,
@@ -187,6 +187,15 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
       if (isFinal && containsStopKeyword(transcript)) {
         this.shouldStopListening = true;
       }
+    });
+
+    streamingVoicePipeline.on('intentAction', (intent, action, spokenResponse, confidence) => {
+      const store = useSupportStore.getState();
+      store.setInteractionType(intent as VoiceIntent);
+      store.setIntentConfidence(confidence);
+      store.setPendingVoiceAction(action);
+      store.setLastResponse(spokenResponse);
+      orchestratorLogger.info('Intent action received', { intent, actionType: action.type, confidence });
     });
 
     streamingVoicePipeline.on('responseComplete', (conversationId) => {

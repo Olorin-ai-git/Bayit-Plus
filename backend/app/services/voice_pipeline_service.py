@@ -12,31 +12,37 @@ Reduces end-to-end latency from ~20s to ~3-5s by:
 import asyncio
 import base64
 import json
-import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import AsyncIterator, Awaitable, Callable, Optional
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.models.user import User
 from app.services.elevenlabs_realtime_service import ElevenLabsRealtimeService
 from app.services.elevenlabs_tts_streaming_service import \
     ElevenLabsTTSStreamingService
 from app.services.support_service import support_service
+from app.services.voice.intent_router import IntentRouter
+from app.services.voice.models import VoiceIntent, VoiceResponse
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @dataclass
 class PipelineMessage:
     """Message type for voice pipeline communication."""
 
-    type: str  # audio, commit, cancel, transcript_partial, transcript_final, llm_chunk, tts_audio, complete, error
+    type: str  # audio, commit, cancel, transcript_partial, transcript_final, llm_chunk, tts_audio, intent_action, complete, error
     data: Optional[str] = None  # Base64 audio data or text
     text: Optional[str] = None  # Text content
     language: Optional[str] = None  # Detected language
     conversation_id: Optional[str] = None  # Conversation tracking
     escalation_needed: Optional[bool] = None
     message: Optional[str] = None  # Error message
+    intent: Optional[str] = None  # Intent type for intent_action messages
+    action: Optional[dict] = field(default=None)  # Action payload for intent_action messages
+    confidence: Optional[float] = None  # Intent confidence score
+    gesture: Optional[dict] = field(default=None)  # Wizard gesture for intent_action messages
 
     def to_dict(self) -> dict:
         """Convert to dictionary for JSON serialization."""
@@ -53,6 +59,14 @@ class PipelineMessage:
             result["escalation_needed"] = self.escalation_needed
         if self.message is not None:
             result["message"] = self.message
+        if self.intent is not None:
+            result["intent"] = self.intent
+        if self.action is not None:
+            result["action"] = self.action
+        if self.confidence is not None:
+            result["confidence"] = self.confidence
+        if self.gesture is not None:
+            result["gesture"] = self.gesture
         return result
 
     @classmethod
@@ -66,6 +80,10 @@ class PipelineMessage:
             conversation_id=data.get("conversation_id"),
             escalation_needed=data.get("escalation_needed"),
             message=data.get("message"),
+            intent=data.get("intent"),
+            action=data.get("action"),
+            confidence=data.get("confidence"),
+            gesture=data.get("gesture"),
         )
 
 
@@ -271,15 +289,137 @@ class VoicePipelineService:
                 )
             )
 
+    async def _try_intent_classification(
+        self, transcript: str, language: str
+    ) -> Optional[VoiceResponse]:
+        """
+        Classify transcript intent using IntentRouter.
+        Returns VoiceResponse for actionable intents, None for CHAT.
+        """
+        try:
+            router = IntentRouter(
+                language=language,
+                user_id=str(self.user.id),
+                conversation_id=self.conversation_id,
+            )
+            intent, confidence = router._classify_intent(transcript)
+
+            if intent != VoiceIntent.CHAT:
+                logger.info(
+                    "Intent classified - short-circuiting LLM",
+                    extra={
+                        "intent": intent.value,
+                        "confidence": confidence,
+                        "transcript": transcript,
+                    },
+                )
+                voice_response = await router.process_and_route(transcript)
+                return voice_response
+
+            return None
+        except Exception as exc:
+            logger.error(
+                "Intent classification failed, falling through to LLM",
+                extra={"error": str(exc)},
+            )
+            return None
+
+    async def _send_intent_action(self, voice_response: VoiceResponse) -> None:
+        """
+        Speak the intent response via TTS and send the intent_action
+        message to the client after audio completes.
+        """
+        try:
+            self.tts_service = ElevenLabsTTSStreamingService()
+            await self.tts_service.connect(voice_id=self.voice_id)
+
+            async def single_text_generator():
+                yield voice_response.spoken_response
+
+            audio_chunk_count = 0
+            async for audio_chunk in self.tts_service.synthesize_streaming(
+                single_text_generator(),
+                voice_id=self.voice_id,
+            ):
+                audio_chunk_count += 1
+                audio_b64 = base64.b64encode(audio_chunk).decode("utf-8")
+                await self._output_queue.put(
+                    PipelineMessage(type="tts_audio", data=audio_b64)
+                )
+
+            logger.info(
+                "Intent TTS complete",
+                extra={"audio_chunks": audio_chunk_count},
+            )
+
+            # Send intent_action message after TTS audio completes
+            await self._output_queue.put(
+                PipelineMessage(
+                    type="intent_action",
+                    text=voice_response.spoken_response,
+                    intent=voice_response.intent,
+                    action=(
+                        voice_response.action.model_dump()
+                        if voice_response.action
+                        else None
+                    ),
+                    confidence=voice_response.confidence,
+                    gesture=(
+                        voice_response.gesture.model_dump()
+                        if voice_response.gesture
+                        else None
+                    ),
+                )
+            )
+
+            # Send completion message
+            await self._output_queue.put(
+                PipelineMessage(
+                    type="complete",
+                    conversation_id=self.conversation_id,
+                    escalation_needed=False,
+                )
+            )
+        except Exception as exc:
+            logger.error(
+                "Intent action send failed",
+                extra={"error": str(exc)},
+            )
+            raise
+        finally:
+            if self.tts_service:
+                await self.tts_service.close()
+                self.tts_service = None
+
     async def _process_llm_tts(self, transcript: str, language: str) -> None:
         """
         Process transcript through LLM and stream response to TTS.
+        First attempts intent classification to short-circuit the LLM
+        for actionable commands (navigation, playback, etc.).
 
         Args:
             transcript: The transcribed user speech
             language: Detected language code
         """
-        logger.info(f"🤖 Processing: '{transcript}' (lang: {language})")
+        logger.info(
+            "Processing voice transcript",
+            extra={"transcript": transcript, "language": language},
+        )
+
+        # Intent classification gate
+        intent_response = await self._try_intent_classification(
+            transcript, language
+        )
+        if intent_response:
+            try:
+                await self._send_intent_action(intent_response)
+            except Exception as exc:
+                logger.error(
+                    "Intent action failed, falling through to LLM",
+                    extra={"error": str(exc)},
+                )
+            else:
+                return  # Only skip LLM if intent action succeeded
 
         try:
             # Initialize TTS service

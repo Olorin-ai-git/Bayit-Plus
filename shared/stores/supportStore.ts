@@ -213,6 +213,10 @@ interface SupportStore {
   /** Frozen content during interruption */
   frozenContent: unknown | null;
 
+  // Voice action execution
+  /** Pending voice action to be executed by platform-specific code */
+  pendingVoiceAction: { type: string; payload: Record<string, unknown> } | null;
+
   // Voice actions
   setVoiceState: (state: VoiceState) => void;
   setCurrentTranscript: (transcript: string) => void;
@@ -312,6 +316,12 @@ interface SupportStore {
   /** Clear command history */
   clearCommandHistory: () => void;
 
+  // Voice action execution actions
+  /** Set a pending voice action for platform execution */
+  setPendingVoiceAction: (action: { type: string; payload: Record<string, unknown> } | null) => void;
+  /** Consume (read + atomically clear) the pending voice action */
+  consumeVoiceAction: () => { type: string; payload: Record<string, unknown> } | null;
+
   // Enhanced Avatar State Machine Actions
   /** Set avatar core state (dormant, listening, processing, responding, confused, interrupted) */
   setAvatarCoreState: (state: AvatarCoreState) => void;
@@ -403,6 +413,9 @@ const initialState = {
   isInterrupted: false,
   pendingCommand: null as string | null,
   frozenContent: null as unknown | null,
+
+  // Voice action execution
+  pendingVoiceAction: null as { type: string; payload: Record<string, unknown> } | null,
 };
 
 export const useSupportStore = create<SupportStore>()(
@@ -607,6 +620,14 @@ export const useSupportStore = create<SupportStore>()(
         })),
 
       clearCommandHistory: () => set({ commandHistory: [] }),
+
+      // Voice action execution actions
+      setPendingVoiceAction: (action) => set({ pendingVoiceAction: action }),
+      consumeVoiceAction: () => {
+        const current = get().pendingVoiceAction;
+        if (current) set({ pendingVoiceAction: null });
+        return current;
+      },
 
       // Enhanced Avatar State Machine Actions
       setAvatarCoreState: (state: AvatarCoreState) => set({ avatarCoreState: state }),

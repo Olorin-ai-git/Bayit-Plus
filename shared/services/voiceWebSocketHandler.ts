@@ -11,7 +11,7 @@ const log = logger.scope('VoiceWebSocket');
 /** Valid server message types */
 const VALID_SERVER_MESSAGE_TYPES = new Set([
   'transcript_partial', 'transcript_final', 'llm_chunk', 'tts_audio',
-  'complete', 'cancelled', 'error', 'pong',
+  'intent_action', 'complete', 'cancelled', 'error', 'pong',
 ]);
 
 /** Base64 validation pattern - checks for valid base64 characters */
@@ -19,13 +19,17 @@ const BASE64_PATTERN = /^[A-Za-z0-9+/]*={0,2}$/;
 
 interface ServerMessage {
   type: 'transcript_partial' | 'transcript_final' | 'llm_chunk' | 'tts_audio'
-    | 'complete' | 'cancelled' | 'error' | 'pong';
+    | 'intent_action' | 'complete' | 'cancelled' | 'error' | 'pong';
   text?: string;
   data?: string;
   language?: string;
   conversation_id?: string;
   escalation_needed?: boolean;
   message?: string;
+  intent?: string;
+  action?: { type: string; payload: Record<string, unknown> };
+  confidence?: number;
+  gesture?: { gesture: string; duration?: number };
 }
 
 interface ClientMessage {
@@ -41,6 +45,7 @@ export interface WebSocketCallbacks {
   onTranscriptFinal: (text: string, language: string) => void;
   onLlmChunk: (text: string) => void;
   onTtsAudio: (audioData: ArrayBuffer) => void;
+  onIntentAction: (intent: string, action: { type: string; payload: Record<string, unknown> }, spokenResponse: string, confidence: number) => void;
   onComplete: (conversationId: string, escalationNeeded: boolean, responseText: string) => void;
   onCancelled: () => void;
   onError: (error: Error) => void;
@@ -127,6 +132,19 @@ export class VoiceWebSocketHandler {
       return null;
     }
 
+    // Validate intent_action message structure
+    if (msg.type === 'intent_action') {
+      if (typeof msg.intent !== 'string' || typeof msg.text !== 'string') {
+        log.warn('Rejected intent_action with missing intent or text');
+        return null;
+      }
+      const action = msg.action as Record<string, unknown> | undefined;
+      if (!action || typeof action.type !== 'string' || typeof action.payload !== 'object' || action.payload === null) {
+        log.warn('Rejected intent_action with invalid action structure');
+        return null;
+      }
+    }
+
     return msg as unknown as ServerMessage;
   }
 
@@ -150,6 +168,18 @@ export class VoiceWebSocketHandler {
           const bytes = new Uint8Array(binaryString.length);
           for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
           callbacks.onTtsAudio(bytes.buffer);
+        }
+        break;
+      case 'intent_action':
+        if (message.intent && message.action?.type && message.action?.payload && message.text) {
+          callbacks.onIntentAction(
+            message.intent,
+            message.action as { type: string; payload: Record<string, unknown> },
+            message.text,
+            message.confidence ?? 0,
+          );
+        } else {
+          log.warn('Rejected intent_action with missing required fields');
         }
         break;
       case 'complete':

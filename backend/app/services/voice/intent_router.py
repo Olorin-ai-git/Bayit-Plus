@@ -186,5 +186,5 @@ class IntentRouter:
         if intent in context_handlers:
             return await context_handlers[intent](transcript, context)
         if intent in simple_handlers:
-            return await simple_handlers[intent](transcript)
+            return await simple_handlers[intent](transcript, language=self.language)
         return await handle_chat(transcript, context)

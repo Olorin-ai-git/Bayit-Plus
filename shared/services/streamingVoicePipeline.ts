@@ -16,6 +16,7 @@ export interface StreamingVoicePipelineEvents {
   stateChange: (state: VoiceState) => void;
   transcriptUpdate: (transcript: string, language: string, isFinal: boolean) => void;
   llmChunk: (text: string) => void;
+  intentAction: (intent: string, action: { type: string; payload: Record<string, unknown> }, spokenResponse: string, confidence: number) => void;
   responseComplete: (conversationId: string, escalationNeeded: boolean) => void;
   audioChunk: (audioData: ArrayBuffer) => void;
   error: (error: Error) => void;
@@ -118,6 +119,9 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
         onTtsAudio: (audioData) => {
           if (!this.audioPlayer?.isCurrentlyPlaying()) this.emitStateChange('speaking');
           this.audioPlayer?.addChunk(audioData); this.emit('audioChunk', audioData);
+        },
+        onIntentAction: (intent, action, spokenResponse, confidence) => {
+          this.emit('intentAction', intent, action, spokenResponse, confidence);
         },
         onComplete: (convId, escalation, responseText) => {
           this.config.conversationId = convId || undefined;

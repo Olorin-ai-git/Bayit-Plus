@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import GlassSidebar from './GlassSidebar';
@@ -39,6 +39,50 @@ export default function Layout() {
 
   // Current transcript from voice support store (set by voice pipeline services)
   const currentTranscript = useSupportStore((s) => s.currentTranscript);
+
+  // Voice action execution - navigate, search, playback, scroll
+  const navigate = useNavigate();
+  const pendingVoiceAction = useSupportStore((s) => s.pendingVoiceAction);
+  const lastProcessedActionRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!pendingVoiceAction) return;
+
+    // Deduplication: prevent processing the same action twice
+    const actionKey = `${pendingVoiceAction.type}:${JSON.stringify(pendingVoiceAction.payload)}`;
+    if (lastProcessedActionRef.current === actionKey) return;
+
+    const action = useSupportStore.getState().consumeVoiceAction();
+    if (!action) return;
+
+    lastProcessedActionRef.current = actionKey;
+
+    try {
+      switch (action.type) {
+        case 'navigate':
+          if (action.payload.path && typeof action.payload.path === 'string') {
+            navigate(action.payload.path);
+          }
+          break;
+        case 'search':
+          if (action.payload.query && typeof action.payload.query === 'string') {
+            navigate(`/search?q=${encodeURIComponent(action.payload.query)}`);
+          }
+          break;
+        case 'playback':
+          window.dispatchEvent(new CustomEvent('bayit:voice-playback', { detail: action.payload }));
+          break;
+        case 'scroll':
+          window.scrollBy({
+            top: action.payload.direction === 'up' ? -500 : 500,
+            behavior: 'smooth',
+          });
+          break;
+      }
+    } catch (error) {
+      logger.error('Failed to execute voice action', 'Layout', { actionType: action.type, error });
+    }
+  }, [pendingVoiceAction, navigate]);
 
   // Voice Support for floating wizard hat FAB
   const {
