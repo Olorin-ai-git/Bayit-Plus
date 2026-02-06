@@ -30,6 +30,35 @@ try:
             return f"{count}/{parts[1]}"
         return limit
 
+    # Tier-based voice rate limits (requests per minute)
+    VOICE_TIER_LIMITS = {
+        "free": _dev_limit("10/minute"),
+        "basic": _dev_limit("10/minute"),
+        "premium": _dev_limit("60/minute"),
+        "family": _dev_limit("60/minute"),
+        "admin": _dev_limit("120/minute"),
+        "super_admin": _dev_limit("120/minute"),
+    }
+
+    def get_voice_rate_limit(subscription_tier: str | None, role: str | None = None) -> str:
+        """
+        Get the voice rate limit string based on user subscription tier and role.
+
+        Args:
+            subscription_tier: User subscription tier (basic, premium, family)
+            role: User role (admin, super_admin, etc.)
+
+        Returns:
+            Rate limit string (e.g., "60/minute")
+        """
+        # Admin roles get highest tier
+        admin_roles = {"admin", "super_admin", "content_manager", "billing_admin", "support"}
+        if role and role in admin_roles:
+            return VOICE_TIER_LIMITS.get("admin", _dev_limit("120/minute"))
+
+        tier = subscription_tier or "free"
+        return VOICE_TIER_LIMITS.get(tier, VOICE_TIER_LIMITS["free"])
+
     # Rate limit configurations (relaxed 10x when DEBUG=True)
     RATE_LIMITS = {
         "login": _dev_limit("5/minute"),  # 5 login attempts per minute
@@ -119,3 +148,7 @@ except ImportError:
     limiter = DummyLimiter()
     RATE_LIMITING_ENABLED = False
     RATE_LIMITS = {}
+    VOICE_TIER_LIMITS = {}
+
+    def get_voice_rate_limit(subscription_tier=None, role=None):
+        return "120/minute"

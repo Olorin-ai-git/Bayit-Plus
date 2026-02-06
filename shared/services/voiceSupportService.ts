@@ -1,6 +1,6 @@
 /**
  * Voice Support Service
- * Orchestrates STT → LLM → TTS for voice-based support interactions
+ * Orchestrates STT -> LLM -> TTS for voice-based support interactions
  * Integrates with ElevenLabs for transcription and Claude for responses
  *
  * Supports two modes:
@@ -14,13 +14,16 @@ import { ttsService } from './ttsService';
 import { supportConfig } from '../config/supportConfig';
 import { useSupportStore, VoiceState } from '../stores/supportStore';
 import { streamingVoicePipeline } from './streamingVoicePipeline';
-import api from './api/client';
+import { VoiceBatchRecorder } from './voiceBatchRecorder';
+import { containsStopKeyword } from './voiceStopKeywords';
+import { logger } from '../utils/logger';
 
 export interface VoiceSupportConfig {
   maxRecordingDuration: number;
   silenceTimeout: number;
   language: string;
-  useStreamingMode: boolean; // Enable ultra-low latency streaming
+  useStreamingMode: boolean;
+  continuousListening: boolean;
 }
 
 export interface VoiceSupportEvents {
@@ -30,428 +33,166 @@ export interface VoiceSupportEvents {
   error: (error: Error) => void;
 }
 
-class VoiceSupportService extends EventEmitter {
-  private mediaRecorder: MediaRecorder | null = null;
-  private audioChunks: Blob[] = [];
-  private recordingTimeout: NodeJS.Timeout | null = null;
-  private silenceTimer: NodeJS.Timeout | null = null;
-  private audioStream: MediaStream | null = null;
-  private isRecording = false;
-  private conversationId: string | null = null;
+const log = logger.scope('VoiceSupportService');
 
+class VoiceSupportService extends EventEmitter {
+  private batchRecorder = new VoiceBatchRecorder();
   private config: VoiceSupportConfig = {
     maxRecordingDuration: supportConfig.voiceAssistant.maxRecordingDuration,
     silenceTimeout: supportConfig.voiceAssistant.silenceTimeout,
     language: i18n.language || supportConfig.documentation.defaultLanguage,
     useStreamingMode: supportConfig.voiceAssistant.useStreamingMode,
+    continuousListening: true,
   };
-
   private streamingModeActive = false;
   private isPrewarmed = false;
+  private shouldStopListening = false;
 
   constructor() {
     super();
-
-    // Listen to language changes
+    this.batchRecorder.setStopKeywordChecker(containsStopKeyword);
+    this.setupBatchRecorderHandlers();
     if (typeof window !== 'undefined') {
-      i18n.on('languageChanged', (lng: string) => {
-        this.config.language = lng;
-      });
-
-      // Set up streaming pipeline event handlers
+      i18n.on('languageChanged', (lng: string) => { this.config.language = lng; });
       this.setupStreamingPipelineHandlers();
-
-      // Prewarm pipeline for faster first interaction
-      if (supportConfig.voiceAssistant.prewarmPipeline) {
-        this.prewarm();
-      }
+      if (supportConfig.voiceAssistant.prewarmPipeline) this.prewarm();
     }
   }
 
-  /**
-   * Pre-warm the voice pipeline for faster first interaction
-   * Call this during app initialization
-   */
+  private setupBatchRecorderHandlers(): void {
+    this.batchRecorder.on('stateChange', (state) => this.emit('stateChange', state));
+    this.batchRecorder.on('transcriptUpdate', (t) => this.emit('transcriptUpdate', t));
+    this.batchRecorder.on('responseReceived', (r) => this.emit('responseReceived', r));
+    this.batchRecorder.on('error', (e) => this.handleError(e));
+    this.batchRecorder.on('restartListening', () => this.startListening());
+  }
+
   async prewarm(): Promise<void> {
     if (this.isPrewarmed) return;
-
     try {
       await streamingVoicePipeline.prewarm();
       this.isPrewarmed = true;
-    } catch (error) {
-    }
+    } catch (_error) { /* prewarm failure is non-critical */ }
   }
 
-  /**
-   * Set up event handlers for streaming voice pipeline
-   */
   private setupStreamingPipelineHandlers(): void {
     streamingVoicePipeline.on('stateChange', (state) => {
-      if (this.streamingModeActive) {
-        this.emit('stateChange', state);
-      }
+      if (this.streamingModeActive) this.emit('stateChange', state);
     });
-
     streamingVoicePipeline.on('transcriptUpdate', (transcript, _language, isFinal) => {
       if (this.streamingModeActive && isFinal) {
         this.emit('transcriptUpdate', transcript);
+        if (containsStopKeyword(transcript)) this.shouldStopListening = true;
       }
     });
-
     streamingVoicePipeline.on('responseComplete', (conversationId) => {
-      if (this.streamingModeActive) {
-        this.conversationId = conversationId;
-      }
+      if (!this.streamingModeActive) return;
+      this.batchRecorder.setConversationId(conversationId);
+      this.handleStreamingContinuation();
     });
-
     streamingVoicePipeline.on('error', (error) => {
       if (this.streamingModeActive) {
-        this.emit('error', error);
-        // Fall back to batch mode on streaming error
         this.config.useStreamingMode = false;
         this.streamingModeActive = false;
+        this.handleError(error);
       }
     });
   }
 
-  /**
-   * Start listening for voice input
-   *
-   * Uses streaming mode by default for ultra-low latency (~3-5s end-to-end).
-   * Falls back to batch mode if streaming is not supported.
-   */
-  async startListening(): Promise<void> {
-    if (this.isRecording || this.streamingModeActive) {
-      return;
+  private handleStreamingContinuation(): void {
+    const isMediaPlaying = this.batchRecorder.isMediaCurrentlyPlaying();
+    const shouldContinue = this.config.continuousListening &&
+      useSupportStore.getState().isVoiceModalOpen && !this.shouldStopListening && !isMediaPlaying;
+    if (shouldContinue) {
+      setTimeout(async () => {
+        if (this.streamingModeActive && useSupportStore.getState().isVoiceModalOpen && !this.shouldStopListening) {
+          await streamingVoicePipeline.restartListening();
+        }
+      }, 500);
+    } else {
+      this.shouldStopListening = false;
     }
+  }
 
-    // Try streaming mode first (lower latency)
+  async startListening(): Promise<void> {
+    if (this.batchRecorder.getIsRecording() || this.streamingModeActive) return;
+    this.shouldStopListening = false;
     if (this.config.useStreamingMode && streamingVoicePipeline.isSupported()) {
       try {
         this.streamingModeActive = true;
         streamingVoicePipeline.setConfig({ language: this.config.language });
-        await streamingVoicePipeline.startInteraction(this.conversationId || undefined);
+        await streamingVoicePipeline.startInteraction(this.batchRecorder.getConversationId() || undefined);
         return;
-      } catch (error) {
-        this.streamingModeActive = false;
-      }
+      } catch (_error) { this.streamingModeActive = false; }
     }
-
-    // Fall back to batch mode
-    try {
-      this.emitStateChange('listening');
-
-      // Request microphone access
-      this.audioStream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      });
-
-      // Create MediaRecorder
-      const mimeType = this.getSupportedMimeType();
-      this.mediaRecorder = new MediaRecorder(this.audioStream, { mimeType });
-      this.audioChunks = [];
-      this.isRecording = true;
-
-      this.mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          this.audioChunks.push(event.data);
-        }
-      };
-
-      this.mediaRecorder.onstop = async () => {
-        await this.processRecording();
-      };
-
-      this.mediaRecorder.onerror = (event) => {
-        this.handleError(new Error('Recording error'));
-      };
-
-      // Start recording
-      this.mediaRecorder.start(250); // Collect data every 250ms
-
-      // Set max recording timeout
-      this.recordingTimeout = setTimeout(() => {
-        this.stopListening();
-      }, this.config.maxRecordingDuration);
-
-    } catch (error) {
-      this.handleError(error instanceof Error ? error : new Error('Failed to start recording'));
-    }
+    await this.batchRecorder.startRecording(this.config);
   }
 
-  /**
-   * Stop listening and process the recording
-   */
   stopListening(): void {
-    // Handle streaming mode
-    if (this.streamingModeActive) {
-      streamingVoicePipeline.commit('button');
-      return;
-    }
-
-    // Handle batch mode
-    if (!this.isRecording || !this.mediaRecorder) {
-      return;
-    }
-
-    // Clear timeouts
-    if (this.recordingTimeout) {
-      clearTimeout(this.recordingTimeout);
-      this.recordingTimeout = null;
-    }
-    if (this.silenceTimer) {
-      clearTimeout(this.silenceTimer);
-      this.silenceTimer = null;
-    }
-
-    // Stop recording
-    this.isRecording = false;
-    this.mediaRecorder.stop();
-
-    // Stop audio stream
-    if (this.audioStream) {
-      this.audioStream.getTracks().forEach((track) => track.stop());
-      this.audioStream = null;
-    }
-
+    if (this.streamingModeActive) { streamingVoicePipeline.commit('button'); return; }
+    this.batchRecorder.stopRecording();
   }
 
-  /**
-   * Interrupt current speech
-   */
   interrupt(): void {
-    // Handle streaming mode
     if (this.streamingModeActive) {
       streamingVoicePipeline.cancel();
       this.streamingModeActive = false;
       return;
     }
-
-    // Handle batch mode
     ttsService.stop();
-    this.emitStateChange('idle');
+    useSupportStore.getState().setVoiceState('idle');
+    this.emit('stateChange', 'idle');
   }
 
-  /**
-   * Process the recorded audio
-   */
-  private async processRecording(): Promise<void> {
-    if (this.audioChunks.length === 0) {
-      this.emitStateChange('idle');
-      return;
-    }
-
-    try {
-      this.emitStateChange('processing');
-
-      // Create audio blob
-      const mimeType = this.getSupportedMimeType();
-      const audioBlob = new Blob(this.audioChunks, { type: mimeType });
-      this.audioChunks = [];
-
-      // Check minimum size (avoid sending silent recordings)
-      if (audioBlob.size < 1000) {
-        this.emitStateChange('idle');
-        return;
-      }
-
-      // Transcribe audio
-      const transcript = await this.transcribeAudio(audioBlob);
-
-      if (!transcript || transcript.trim().length === 0) {
-        this.emitStateChange('idle');
-        return;
-      }
-
-      this.emit('transcriptUpdate', transcript);
-      useSupportStore.getState().setCurrentTranscript(transcript);
-
-      // Get AI response
-      const response = await this.getAIResponse(transcript);
-
-      if (response) {
-        this.emit('responseReceived', response);
-        useSupportStore.getState().setLastResponse(response);
-
-        // Speak the response
-        this.emitStateChange('speaking');
-        await this.speakResponse(response);
-      }
-
-      this.emitStateChange('idle');
-    } catch (error) {
-      this.handleError(error instanceof Error ? error : new Error('Processing failed'));
-    }
-  }
-
-  /**
-   * Transcribe audio using backend STT
-   */
-  private async transcribeAudio(audioBlob: Blob): Promise<string> {
-    const formData = new FormData();
-    formData.append('audio', audioBlob, `recording.${this.getFileExtension()}`);
-    formData.append('language', this.config.language);
-
-    const data = await api.post('/chat/transcribe', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-
-    return data.transcript || data.text || '';
-  }
-
-  /**
-   * Get AI response from support chat endpoint
-   */
-  private async getAIResponse(transcript: string): Promise<string> {
-    const data = await api.post('/support/chat', {
-      message: transcript,
-      language: this.config.language,
-      conversation_id: this.conversationId,
-    });
-
-    // Store conversation ID for context continuity
-    if (data.conversation_id) {
-      this.conversationId = data.conversation_id;
-    }
-
-    return data.message || data.response || '';
-  }
-
-  /**
-   * Speak the AI response using TTS
-   */
-  private async speakResponse(text: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      ttsService.speak(text, 'high', {
-        onComplete: () => resolve(),
-        onError: (error) => reject(error),
-      });
-    });
-  }
-
-  /**
-   * Get supported MIME type for recording
-   */
-  private getSupportedMimeType(): string {
-    const types = [
-      'audio/webm;codecs=opus',
-      'audio/webm',
-      'audio/ogg;codecs=opus',
-      'audio/mp4',
-    ];
-
-    for (const type of types) {
-      if (MediaRecorder.isTypeSupported(type)) {
-        return type;
-      }
-    }
-
-    return 'audio/webm';
-  }
-
-  /**
-   * Get file extension based on MIME type
-   */
-  private getFileExtension(): string {
-    const mimeType = this.getSupportedMimeType();
-    if (mimeType.includes('webm')) return 'webm';
-    if (mimeType.includes('ogg')) return 'ogg';
-    if (mimeType.includes('mp4')) return 'm4a';
-    return 'webm';
-  }
-
-  /**
-   * Emit state change
-   */
-  private emitStateChange(state: VoiceState): void {
-    useSupportStore.getState().setVoiceState(state);
-    this.emit('stateChange', state);
-  }
-
-  /**
-   * Handle errors
-   */
   private handleError(error: Error): void {
-    this.emitStateChange('error');
+    useSupportStore.getState().setVoiceState('error');
+    this.emit('stateChange', 'error');
     this.emit('error', error);
-
-    // Reset to idle after error display
     setTimeout(() => {
-      this.emitStateChange('idle');
+      useSupportStore.getState().setVoiceState('idle');
+      this.emit('stateChange', 'idle');
+      const isMediaPlaying = this.batchRecorder.isMediaCurrentlyPlaying();
+      const shouldContinue = this.config.continuousListening &&
+        useSupportStore.getState().isVoiceModalOpen && !this.shouldStopListening && !isMediaPlaying;
+      if (shouldContinue) {
+        setTimeout(() => {
+          if (useSupportStore.getState().isVoiceModalOpen && !this.shouldStopListening) {
+            this.startListening();
+          }
+        }, 500);
+      } else { this.shouldStopListening = false; }
     }, 3000);
   }
 
-  /**
-   * Reset conversation context
-   */
   resetConversation(): void {
-    this.conversationId = null;
-    useSupportStore.getState().setCurrentTranscript('');
-    useSupportStore.getState().setLastResponse('');
-
-    // Also reset streaming pipeline
+    this.batchRecorder.resetConversation();
     streamingVoicePipeline.resetConversation();
   }
 
-  /**
-   * Update configuration
-   */
   setConfig(config: Partial<VoiceSupportConfig>): void {
     this.config = { ...this.config, ...config };
-
-    // Sync streaming mode config
-    if (config.language) {
-      streamingVoicePipeline.setConfig({ language: config.language });
-    }
+    if (config.language) streamingVoicePipeline.setConfig({ language: config.language });
   }
 
-  /**
-   * Enable or disable streaming mode
-   * Streaming mode provides ~80% lower latency (~3-5s vs ~20s)
-   */
-  setStreamingMode(enabled: boolean): void {
-    this.config.useStreamingMode = enabled;
-  }
+  setStreamingMode(enabled: boolean): void { this.config.useStreamingMode = enabled; }
+  setContinuousListening(enabled: boolean): void { this.config.continuousListening = enabled; }
+  isContinuousListeningEnabled(): boolean { return this.config.continuousListening; }
+  isStreamingModeActive(): boolean { return this.streamingModeActive; }
 
-  /**
-   * Check if streaming mode is active
-   */
-  isStreamingModeActive(): boolean {
-    return this.streamingModeActive;
-  }
-
-  /**
-   * Check if voice support is available on this platform
-   */
   isSupported(): boolean {
-    return (
-      typeof window !== 'undefined' &&
-      typeof navigator !== 'undefined' &&
-      !!navigator.mediaDevices &&
-      !!navigator.mediaDevices.getUserMedia &&
-      typeof MediaRecorder !== 'undefined'
-    );
+    return typeof window !== 'undefined' && typeof navigator !== 'undefined' &&
+      !!navigator.mediaDevices && !!navigator.mediaDevices.getUserMedia &&
+      typeof MediaRecorder !== 'undefined';
   }
 
-  /**
-   * Request microphone permission
-   */
   async requestPermission(): Promise<boolean> {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach((track) => track.stop());
       return true;
-    } catch (error) {
-      return false;
-    }
+    } catch (_error) { return false; }
   }
 }
 
-// Singleton instance
 export const voiceSupportService = new VoiceSupportService();
-
 export default voiceSupportService;

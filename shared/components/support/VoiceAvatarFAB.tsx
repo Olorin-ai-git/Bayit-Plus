@@ -6,23 +6,21 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  Animated,
-  Easing,
-  Image,
-  Platform,
+  View, TouchableOpacity, StyleSheet, Animated, Easing, Image, Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
 import { useSupportStore } from '../../stores/supportStore';
 import { useVoiceAvatarMode } from '../../hooks/useVoiceAvatarMode';
+import { useVoiceOrchestrator } from '../../hooks/useVoiceOrchestrator';
 import { isTV } from '../../utils/platform';
 import { voiceActivationFeedback } from '../../utils/voiceHaptics';
+import { logger } from '../../utils/logger';
+import { ProcessingOverlay, WakeWordPulse } from './FABAnimations';
 
-// Wizard hat images for FAB button
+const fabLogger = logger.scope('VoiceAvatarFAB');
+
 const WIZARD_HAT = {
   mobile: require('../../assets/images/characters/hat/48x48.png'),
   tv: require('../../assets/images/characters/hat/64x64.png'),
@@ -33,53 +31,34 @@ interface VoiceAvatarFABProps {
   visible?: boolean;
 }
 
-export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
-  onPress,
-  visible = true,
-}) => {
+export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({ onPress, visible = true }) => {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
   const { voiceState, wakeWordDetected } = useSupportStore();
   const [isFocused, setIsFocused] = useState(false);
-
-  // Get avatar mode configuration
   const platform = Platform.OS === 'web' ? 'web' : isTV ? 'tv' : 'mobile';
   const { avatarMode } = useVoiceAvatarMode(platform);
+  const { isListening, startListening, stopListening } = useVoiceOrchestrator({ autoInitialize: true });
 
-  // FAB always visible except when voice modal is open in full/compact mode
-  const shouldShow = visible;
-
-  // Animations
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const opacityAnim = useRef(new Animated.Value(visible ? 1 : 0)).current;
   const bounceAnim = useRef(new Animated.Value(0)).current;
 
-  // Visibility animation
   useEffect(() => {
     Animated.timing(opacityAnim, {
-      toValue: visible ? 1 : 0,
-      duration: 200,
-      useNativeDriver: true,
+      toValue: visible ? 1 : 0, duration: 200, useNativeDriver: true,
     }).start();
   }, [visible, opacityAnim]);
 
-  // Idle floating animation
   useEffect(() => {
     if (!visible) return;
-
     const bounce = Animated.loop(
       Animated.sequence([
         Animated.timing(bounceAnim, {
-          toValue: -5,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
+          toValue: -5, duration: 2000, easing: Easing.inOut(Easing.ease), useNativeDriver: true,
         }),
         Animated.timing(bounceAnim, {
-          toValue: 0,
-          duration: 2000,
-          easing: Easing.inOut(Easing.ease),
-          useNativeDriver: true,
+          toValue: 0, duration: 2000, easing: Easing.inOut(Easing.ease), useNativeDriver: true,
         }),
       ])
     );
@@ -88,190 +67,73 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({
   }, [visible, bounceAnim]);
 
   const handlePressIn = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 0.9,
-      useNativeDriver: true,
-    }).start();
+    Animated.spring(scaleAnim, { toValue: 0.9, useNativeDriver: true }).start();
   };
-
   const handlePressOut = () => {
-    Animated.spring(scaleAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
+    Animated.spring(scaleAnim, { toValue: 1, useNativeDriver: true }).start();
   };
 
-  const handlePress = async () => {
-    // Trigger haptic feedback on activation
-    await voiceActivationFeedback();
+  const handlePress = () => {
+    voiceActivationFeedback();
     onPress();
+    if (isListening) {
+      stopListening().catch((err) => fabLogger.error('Failed to stop listening via orchestrator', err));
+    } else {
+      startListening('manual').catch((err) => fabLogger.error('Failed to start listening via orchestrator', err));
+    }
   };
 
-  // Sizes: TV gets bigger FAB and hat
   const fabSize = isTV ? 96 : 64;
   const hatSize = isTV ? 72 : 48;
 
-  // Auto-expand on wake word detection
   useEffect(() => {
-    if (wakeWordDetected && avatarMode !== 'icon_only') {
-      onPress(); // Trigger expansion
-    }
+    if (wakeWordDetected && avatarMode !== 'icon_only') onPress();
   }, [wakeWordDetected, avatarMode, onPress]);
 
-  if (!shouldShow) return null;
+  if (!visible) return null;
 
   return (
     <Animated.View
       style={[
-        styles.container,
-        isRTL ? styles.containerRTL : styles.containerLTR,
-        {
-          opacity: opacityAnim,
-          transform: [
-            { scale: scaleAnim },
-            { translateY: bounceAnim },
-          ],
-        },
+        styles.container, isRTL ? styles.containerRTL : styles.containerLTR,
+        { opacity: opacityAnim, transform: [{ scale: scaleAnim }, { translateY: bounceAnim }] },
       ]}
     >
       <TouchableOpacity
-        onPress={handlePress}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        activeOpacity={0.9}
-        accessible
-        accessibilityLabel={t('voice.avatar.openVoice')}
-        accessibilityRole="button"
+        onPress={handlePress} onPressIn={handlePressIn} onPressOut={handlePressOut}
+        onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)}
+        activeOpacity={0.9} accessible
+        accessibilityLabel={t('voice.avatar.openVoice')} accessibilityRole="button"
         accessibilityHint={t('voice.avatar.openVoiceHint')}
-        accessibilityState={{
-          busy: voiceState === 'processing',
-          selected: wakeWordDetected,
-        }}
+        accessibilityState={{ busy: voiceState === 'processing', selected: wakeWordDetected }}
         style={[
           styles.fab,
-          {
-            width: fabSize,
-            height: fabSize,
-            borderRadius: fabSize / 2,
-          },
+          { width: fabSize, height: fabSize, borderRadius: fabSize / 2 },
           isFocused && styles.fabFocused,
         ]}
       >
         <Image
           source={isTV ? WIZARD_HAT.tv : WIZARD_HAT.mobile}
-          style={[
-            styles.wizardHat,
-            { width: hatSize, height: hatSize },
-          ]}
-          resizeMode="contain"
-          accessible
-          accessibilityLabel={t('voice.avatar.wizardHat')}
+          style={{ width: hatSize, height: hatSize }}
+          resizeMode="contain" accessible accessibilityLabel={t('voice.avatar.wizardHat')}
         />
-
-        {/* Processing indicator */}
         {voiceState === 'processing' && <ProcessingOverlay />}
-
-        {/* Wake word detection pulse */}
         {wakeWordDetected && <WakeWordPulse />}
       </TouchableOpacity>
     </Animated.View>
   );
 };
 
-const ProcessingOverlay: React.FC = () => {
-  const rotateAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const rotate = Animated.loop(
-      Animated.timing(rotateAnim, {
-        toValue: 1,
-        duration: 1500,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    );
-    rotate.start();
-    return () => rotate.stop();
-  }, [rotateAnim]);
-
-  const spin = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
-
-  return (
-    <Animated.View
-      style={[
-        styles.processingOverlay,
-        { transform: [{ rotate: spin }] },
-      ]}
-    />
-  );
-};
-
-const WakeWordPulse: React.FC = () => {
-  const pulseAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 800,
-          easing: Easing.out(Easing.ease),
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 0,
-          duration: 800,
-          easing: Easing.in(Easing.ease),
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    pulse.start();
-    return () => pulse.stop();
-  }, [pulseAnim]);
-
-  const scale = pulseAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [1, 1.4],
-  });
-
-  const opacity = pulseAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.6, 0],
-  });
-
-  return (
-    <Animated.View
-      style={[
-        styles.wakeWordPulse,
-        {
-          transform: [{ scale }],
-          opacity,
-        },
-      ]}
-    />
-  );
-};
-
 const styles = StyleSheet.create({
   container: {
     position: 'fixed' as any,
-    bottom: isTV ? spacing.xl * 2 : 24, // 24px from bottom on web
-    zIndex: 1000, // Above widgets dock (which has zIndex: 50)
+    bottom: isTV ? spacing.xl * 2 : 24,
+    zIndex: 1000,
     alignItems: 'center',
     justifyContent: 'center',
   } as any,
-  containerLTR: {
-    right: isTV ? spacing.xl * 2 : 24, // 24px from right on web
-  } as any,
-  containerRTL: {
-    left: isTV ? spacing.xl * 2 : 24, // 24px from left on web
-  } as any,
+  containerLTR: { right: isTV ? spacing.xl * 2 : 24 } as any,
+  containerRTL: { left: isTV ? spacing.xl * 2 : 24 } as any,
   fab: {
     backgroundColor: 'rgba(13, 13, 26, 0.9)',
     borderWidth: 2,
@@ -284,31 +146,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 8,
   },
-  fabFocused: {
-    borderColor: colors.text,
-    borderWidth: 3,
-  },
-  wizardHat: {
-    // Wizard hat image
-  },
-  processingOverlay: {
-    position: 'absolute',
-    width: isTV ? 64 : 44,
-    height: isTV ? 64 : 44,
-    borderRadius: isTV ? 32 : 22,
-    borderWidth: 2,
-    borderColor: colors.warning.DEFAULT,
-    borderTopColor: 'transparent',
-  },
-  wakeWordPulse: {
-    position: 'absolute',
-    width: isTV ? 96 : 64,
-    height: isTV ? 96 : 64,
-    borderRadius: isTV ? 48 : 32,
-    borderWidth: 2,
-    borderColor: colors.info[500],
-    backgroundColor: 'transparent',
-  },
+  fabFocused: { borderColor: colors.text, borderWidth: 3 },
 });
 
 export default VoiceAvatarFAB;

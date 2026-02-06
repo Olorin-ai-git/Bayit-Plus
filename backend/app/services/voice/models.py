@@ -17,6 +17,9 @@ class VoiceIntent(str, Enum):
     SCROLL = "SCROLL"
     CONTROL = "CONTROL"
     KIDS = "KIDS"
+    CONTENT_QUERY = "CONTENT_QUERY"
+    DISPLAY_CHANNELS = "DISPLAY_CHANNELS"
+    WEB_SEARCH = "WEB_SEARCH"
 
 
 class VoiceAction(BaseModel):

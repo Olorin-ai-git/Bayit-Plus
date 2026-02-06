@@ -1,15 +1,6 @@
 """
 Intent Router Service
 Routes voice intents to appropriate handlers and generates responses
-
-Handlers:
-- CHAT: Natural language chat via Claude API
-- SEARCH: Content search
-- KIDS: Age-appropriate kids content
-- NAVIGATION: Page routing
-- PLAYBACK: Content playback control
-- SCROLL: UI scrolling
-- CONTROL: System controls
 """
 
 from typing import Optional, Dict, Any
@@ -25,6 +16,9 @@ from .intent_keywords import (
     PLAYBACK_KEYWORDS,
     SCROLL_KEYWORDS,
     CONTROL_KEYWORDS,
+    CONTENT_QUERY_KEYWORDS,
+    DISPLAY_CHANNELS_KEYWORDS,
+    WEB_SEARCH_KEYWORDS,
 )
 from .intent_handlers import (
     handle_chat,
@@ -151,40 +145,46 @@ class IntentRouter:
         if any(kw in transcript_lower for kw in CONTROL_KEYWORDS):
             return VoiceIntent.CONTROL, 0.9
 
+        # Content query patterns (3 languages)
+        cq_keywords = CONTENT_QUERY_KEYWORDS.get(self.language, CONTENT_QUERY_KEYWORDS["en"])
+        if any(kw in transcript_lower for kw in cq_keywords):
+            return VoiceIntent.CONTENT_QUERY, 0.85
+
+        # Display channels patterns (3 languages)
+        dc_keywords = DISPLAY_CHANNELS_KEYWORDS.get(self.language, DISPLAY_CHANNELS_KEYWORDS["en"])
+        if any(kw in transcript_lower for kw in dc_keywords):
+            return VoiceIntent.DISPLAY_CHANNELS, 0.9
+
+        # Web search patterns (3 languages)
+        ws_keywords = WEB_SEARCH_KEYWORDS.get(self.language, WEB_SEARCH_KEYWORDS["en"])
+        if any(kw in transcript_lower for kw in ws_keywords):
+            return VoiceIntent.WEB_SEARCH, 0.85
+
         # Default to CHAT for natural language
         return VoiceIntent.CHAT, 0.5
 
     async def _route_intent(
-        self,
-        intent: VoiceIntent,
-        transcript: str,
-        context: VoiceContext
+        self, intent: VoiceIntent, transcript: str, context: VoiceContext
     ) -> Dict[str, Any]:
-        """
-        Route intent to appropriate handler with context.
-
-        Args:
-            intent: Classified voice intent
-            transcript: User voice input
-            context: Voice request context
-
-        Returns:
-            Handler response dict
-        """
-
-        if intent == VoiceIntent.CHAT:
-            return await handle_chat(transcript, context)
-        elif intent == VoiceIntent.SEARCH:
-            return await handle_search(transcript, context)
-        elif intent == VoiceIntent.KIDS:
-            return await handle_kids(transcript, context)
-        elif intent == VoiceIntent.NAVIGATION:
-            return await handle_navigation(transcript)
-        elif intent == VoiceIntent.PLAYBACK:
-            return await handle_playback(transcript)
-        elif intent == VoiceIntent.SCROLL:
-            return await handle_scroll(transcript)
-        elif intent == VoiceIntent.CONTROL:
-            return await handle_control(transcript)
-        else:
-            return await handle_chat(transcript, context)
+        """Route intent to appropriate handler."""
+        # Handlers that require context
+        context_handlers = {
+            VoiceIntent.CHAT: handle_chat,
+            VoiceIntent.SEARCH: handle_search,
+            VoiceIntent.KIDS: handle_kids,
+            VoiceIntent.CONTENT_QUERY: handle_search,
+            VoiceIntent.WEB_SEARCH: handle_search,
+        }
+        # Handlers that only need transcript
+        simple_handlers = {
+            VoiceIntent.NAVIGATION: handle_navigation,
+            VoiceIntent.PLAYBACK: handle_playback,
+            VoiceIntent.SCROLL: handle_scroll,
+            VoiceIntent.CONTROL: handle_control,
+            VoiceIntent.DISPLAY_CHANNELS: handle_navigation,
+        }
+        if intent in context_handlers:
+            return await context_handlers[intent](transcript, context)
+        if intent in simple_handlers:
+            return await simple_handlers[intent](transcript)
+        return await handle_chat(transcript, context)

@@ -66,16 +66,69 @@ export default function Layout() {
     // Open modal
     openVoiceModal();
 
-    // Play intro and start listening
+    // CRITICAL: Request microphone permission SYNCHRONOUSLY first
+    // This MUST happen in the same event loop tick as the user gesture
+    // to trigger the browser's permission dialog
+    try {
+      logger.debug('Requesting microphone permission synchronously', 'Layout');
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(track => track.stop()); // Immediately release
+      logger.debug('Microphone permission granted', 'Layout');
+    } catch (error: any) {
+      logger.error('Microphone permission denied', 'Layout', error);
+
+      // Show user-friendly error message based on error type
+      const errorName = error?.name || 'UnknownError';
+      const errorMessage = error?.message || 'Unknown error';
+
+      let userMessage = '';
+      let instructions = '';
+
+      if (errorName === 'NotFoundError') {
+        userMessage = 'Microphone not found or not accessible';
+        instructions = 'Please check:\n' +
+          '1. System Preferences → Security & Privacy → Microphone\n' +
+          '2. Enable Chrome to access microphone\n' +
+          '3. Restart Chrome\n' +
+          '4. Try again';
+      } else if (errorName === 'NotAllowedError' || errorName === 'PermissionDeniedError') {
+        userMessage = 'Microphone permission denied';
+        instructions = 'Please allow microphone access when prompted, or:\n' +
+          '1. Click the lock icon in the address bar\n' +
+          '2. Allow microphone access\n' +
+          '3. Reload the page';
+      } else if (errorName === 'NotReadableError' || errorName === 'TrackStartError') {
+        userMessage = 'Microphone is in use by another application';
+        instructions = 'Please close other applications using the microphone and try again.';
+      } else {
+        userMessage = 'Could not access microphone';
+        instructions = `Error: ${errorMessage}`;
+      }
+
+      // Show alert with instructions
+      alert(`${userMessage}\n\n${instructions}`);
+
+      // Log detailed error for debugging
+      logger.error('Microphone access failed', 'Layout', {
+        errorName,
+        errorMessage,
+        userMessage,
+      });
+
+      closeVoiceModal();
+      window.dispatchEvent(new CustomEvent('bayit:toggle-voice')); // Toggle mic button back
+      return; // Stop if permission denied
+    }
+
+    // Now proceed with intro and listening (permission already granted)
     try {
       await playIntro();
       logger.debug('Intro completed, starting listening', 'Layout');
-      // Start listening (this will request microphone permission)
       await startListening();
     } catch (error) {
       logger.warn('Intro or listening failed', 'Layout', error);
     }
-  }, [openVoiceModal, playIntro, startListening]);
+  }, [openVoiceModal, playIntro, startListening, closeVoiceModal]);
 
   // Handle closing the voice modal - must also toggle the microphone button back
   const handleCloseVoiceModal = useCallback(() => {

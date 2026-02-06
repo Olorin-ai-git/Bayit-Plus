@@ -7,6 +7,7 @@ and handling voice search queries.
 
 from fastapi import APIRouter, Depends
 
+from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user
 from app.models.content import Content, LiveChannel, Podcast
 from app.models.user import User
@@ -17,6 +18,8 @@ from .models import (HebronicsRequest, HebronicsResponse,
                      ResolvedContentItem, VoiceSearchRequest,
                      VoiceSearchResponse)
 from .services import resolve_single_content
+
+logger = get_logger(__name__)
 
 router = APIRouter()
 
@@ -47,13 +50,21 @@ async def resolve_content(
 
         if result:
             resolved_items.append(result)
-            print(
-                f"[CHAT] Resolved '{item.name}' -> '{result.name}' "
-                f"(type={result.type}, confidence={result.confidence:.2f})"
+            logger.info(
+                "Resolved content",
+                extra={
+                    "input_name": item.name,
+                    "resolved_name": result.name,
+                    "content_type": result.type,
+                    "confidence": f"{result.confidence:.2f}",
+                },
             )
         else:
             unresolved.append(item.name)
-            print(f"[CHAT] Could not resolve: '{item.name}'")
+            logger.info(
+                "Could not resolve content",
+                extra={"input_name": item.name},
+            )
 
     return ResolveContentResponse(
         items=resolved_items,

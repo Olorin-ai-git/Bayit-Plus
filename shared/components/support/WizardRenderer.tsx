@@ -24,7 +24,7 @@ function getRemotionComponent(): any {
     try {
       RemotionWizardWeb = require('../../../web/src/components/wizard/RemotionWizard').default;
     } catch (error) {
-      console.warn('[WizardRenderer] Failed to load web Remotion component:', error);
+      // Remotion web component not available on this platform - using fallback
       return null;
     }
   }
@@ -102,19 +102,6 @@ export const WizardRenderer: React.FC<WizardRendererProps> = ({
   const renderingMode = getRenderingMode();
 
   // Log rendering decision (dev only)
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[WizardRenderer] Rendering mode:', {
-        useRemotion,
-        renderingMode,
-        remotionEnabled,
-        remotionIsPlaying,
-        currentSequence,
-        gestureState,
-        voiceState,
-      });
-    }
-  }, [useRemotion, renderingMode, remotionEnabled, remotionIsPlaying, currentSequence, gestureState, voiceState]);
 
   // Render Remotion player if enabled and sequence is playing
   if (useRemotion && remotionIsPlaying && currentSequence) {

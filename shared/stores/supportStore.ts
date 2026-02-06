@@ -631,6 +631,7 @@ export const useSupportStore = create<SupportStore>()(
       name: 'bayit-support',
       storage: createJSONStorage(() => getPlatformStorage()),
       // Only persist user preferences, not transient state like modal visibility
+      // commandHistory is intentionally transient (session-only context for intent routing, resets on app close)
       partialize: (state) => ({
         isWakeWordEnabled: state.isWakeWordEnabled,
         hasSeenWizardIntro: state.hasSeenWizardIntro,

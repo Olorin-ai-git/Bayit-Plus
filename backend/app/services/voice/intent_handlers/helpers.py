@@ -17,6 +17,9 @@ def get_intent_gesture(intent: str) -> Optional[Dict[str, Any]]:
         "PLAYBACK": None,
         "SCROLL": None,
         "CONTROL": None,
+        "CONTENT_QUERY": {"gesture": "browsing", "duration": 2000},
+        "DISPLAY_CHANNELS": {"gesture": "browsing", "duration": 2000},
+        "WEB_SEARCH": {"gesture": "conjuring", "duration": 3000},
     }
 
     return gesture_map.get(intent)

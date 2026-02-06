@@ -1,14 +1,61 @@
 """
 Play Content Tool Executor
-Validates content exists and returns a play action payload
+Validates content exists, resolves latest episodes, and returns play action payload
 """
 
+import re
 from typing import Any, Dict, Optional
 
 from app.core.logging_config import get_logger
 from app.models.content import Content, LiveChannel
 
 logger = get_logger(__name__)
+
+LAST_EPISODE_PATTERNS = [
+    re.compile(r"פרק\s*אחרון", re.IGNORECASE),
+    re.compile(r"הפרק\s*האחרון", re.IGNORECASE),
+    re.compile(r"last\s*episode", re.IGNORECASE),
+    re.compile(r"latest\s*episode", re.IGNORECASE),
+    re.compile(r"newest\s*episode", re.IGNORECASE),
+    re.compile(r"último\s*episodio", re.IGNORECASE),
+]
+
+
+def is_last_episode_request(transcript: str) -> bool:
+    """Check if transcript requests the latest episode."""
+    return any(p.search(transcript) for p in LAST_EPISODE_PATTERNS)
+
+
+async def resolve_latest_episode(series_id: str) -> Optional[Dict[str, Any]]:
+    """
+    Find the most recent episode for a series by created_at date.
+
+    Args:
+        series_id: The series content ID
+
+    Returns:
+        Dict with episode info or None if not found
+    """
+    try:
+        episode = await Content.find_one(
+            {"series_id": series_id, "is_published": True},
+            sort=[("season", -1), ("episode", -1)],
+        )
+        if not episode:
+            return None
+        return {
+            "content_id": str(episode.id),
+            "title": episode.title,
+            "season": episode.season,
+            "episode": episode.episode,
+        }
+    except Exception as e:
+        logger.error(
+            "Latest episode resolution failed",
+            extra={"series_id": series_id, "error": str(e)},
+            exc_info=True,
+        )
+        return None
 
 
 async def execute_play_content(
@@ -40,9 +87,7 @@ async def execute_play_content(
             }
         )
 
-        # Validate content exists
         content_title = await _resolve_content_title(content_id, content_type)
-
         if not content_title:
             return {
                 "success": False,
@@ -63,12 +108,9 @@ async def execute_play_content(
                 },
             },
         }
-
         if timestamp is not None:
             result["_action"]["payload"]["timestamp"] = timestamp
-
         return result
-
     except Exception as e:
         logger.error(
             "Failed to execute play_content",
@@ -86,7 +128,6 @@ async def _resolve_content_title(
         if content_type in ("live", "channel"):
             channel = await LiveChannel.get(content_id)
             return channel.name if channel else None
-
         content = await Content.get(content_id)
         return content.title if content else None
     except Exception:

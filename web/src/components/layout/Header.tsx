@@ -9,7 +9,9 @@ import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { chatService } from '@/services/api';
 import { VoiceSearchButton, LanguageSelector, SoundwaveVisualizer } from '@bayit/shared';
-import { useConstantListening, useVoiceSupport } from '@bayit/shared-hooks';
+import { useConstantListening } from '@bayit/shared-hooks';
+import { useSupportStore } from '@bayit/shared/stores/supportStore';
+import { voiceSupportService } from '@bayit/shared/services/voiceSupportService';
 import { ProfileDropdown } from '../../../../shared/components/ProfileDropdown';
 import { colors, spacing } from '@olorin/design-tokens';
 import { GlassView } from '@bayit/shared/ui';
@@ -157,11 +159,9 @@ export default function Header() {
   };
 
   // Voice Support for wizard hat button (mobile only)
-  const {
-    openVoiceModal,
-    playIntro,
-    isSupported: voiceSupported,
-  } = useVoiceSupport();
+  // Use store and service directly to avoid duplicate event subscriptions
+  const openVoiceModal = useSupportStore((s) => s.openVoiceModal);
+  const voiceSupported = voiceSupportService.isSupported();
 
   const handleWizardHatPress = useCallback(async () => {
     logger.debug('Wizard hat button pressed - opening voice modal and showing particles', 'Header');
@@ -177,12 +177,12 @@ export default function Header() {
 
     // Play intro (this will show particles/animation)
     try {
-      await playIntro();
+      await voiceSupportService.playIntro();
       logger.debug('Intro completed successfully', 'Header');
     } catch (error) {
       logger.warn('Intro playback failed, continuing anyway', 'Header', error);
     }
-  }, [openVoiceModal, playIntro]);
+  }, [openVoiceModal]);
 
   // Navigation component - document.dir handles visual direction
   // Disabled in Voice Only mode

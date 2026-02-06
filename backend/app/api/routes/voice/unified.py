@@ -1,14 +1,6 @@
 """
 Unified Voice Endpoint
 Single endpoint for all voice interactions across platforms
-
-Routes intents to appropriate handlers:
-- CHAT -> Claude API
-- SEARCH -> Content search service
-- NAVIGATION -> Path/section routing
-- PLAYBACK -> Playback control
-- SCROLL -> UI scroll commands
-- CONTROL -> System controls
 """
 
 from typing import Optional, Dict, Any
@@ -16,16 +8,14 @@ from pydantic import BaseModel, Field, field_validator
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from app.core.security import get_current_user
 from app.services.voice.intent_router import IntentRouter, VoiceIntent
+from app.services.voice.error_codes import VoiceErrorCode, get_error_detail
+from app.services.voice.error_messages import get_error_message
 from app.models.user import User
 from app.core.logging_config import get_logger
 from app.core.rate_limiter import limiter, RATE_LIMITS
 
 logger = get_logger(__name__)
 router = APIRouter()
-
-# ============================================================================
-# Models
-# ============================================================================
 
 class UnifiedVoiceRequest(BaseModel):
     """Request model for unified voice endpoint"""
@@ -87,10 +77,6 @@ class UnifiedVoiceResponse(BaseModel):
     gesture: Optional[GestureState] = Field(None, description="Wizard gesture to display")
 
 
-# ============================================================================
-# Endpoint
-# ============================================================================
-
 @router.post(
     "/unified",
     response_model=UnifiedVoiceResponse,
@@ -103,23 +89,7 @@ async def unified_voice_interaction(
     request: UnifiedVoiceRequest,
     current_user: User = Depends(get_current_user)
 ) -> UnifiedVoiceResponse:
-    """
-    Unified voice endpoint that:
-    1. Classifies intent from transcript
-    2. Routes to appropriate handler
-    3. Returns structured response with action and gesture
-
-    Supported intents:
-    - CHAT: Natural language conversation (Claude API)
-    - SEARCH: Content search
-    - NAVIGATION: Page/section navigation
-    - PLAYBACK: Content playback control
-    - SCROLL: UI scrolling
-    - CONTROL: System controls
-
-    Rate Limit: 60 requests/minute per user
-    Authentication: Required (JWT token)
-    """
+    """Classify intent, route to handler, return structured response."""
 
     logger.info(
         "Voice interaction started",
@@ -160,31 +130,45 @@ async def unified_voice_interaction(
         return response
 
     except ValueError as e:
-        # Validation or business logic error
+        error_detail = get_error_detail(VoiceErrorCode.VALIDATION_TRANSCRIPT_EMPTY)
         logger.warning(
             "Voice interaction validation error",
             extra={
                 "user_id": str(current_user.id),
                 "error": str(e),
-                "transcript": request.transcript[:50],  # Log first 50 chars only
+                "error_code": VoiceErrorCode.VALIDATION_TRANSCRIPT_EMPTY.value,
+                "transcript": request.transcript[:50],
             }
         )
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
+            status_code=error_detail.http_status,
+            detail={
+                "error_code": VoiceErrorCode.VALIDATION_TRANSCRIPT_EMPTY.value,
+                "message": str(e),
+                "spoken_response": get_error_message(
+                    error_detail.message_key, request.language
+                ),
+            },
         )
     except Exception as e:
-        # Unexpected error
+        error_detail = get_error_detail(VoiceErrorCode.INTERNAL_ERROR)
         logger.error(
             "Voice interaction failed",
             extra={
                 "user_id": str(current_user.id),
                 "error": str(e),
+                "error_code": VoiceErrorCode.INTERNAL_ERROR.value,
                 "error_type": type(e).__name__,
             },
             exc_info=True
         )
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to process voice input"
+            status_code=error_detail.http_status,
+            detail={
+                "error_code": VoiceErrorCode.INTERNAL_ERROR.value,
+                "message": error_detail.description,
+                "spoken_response": get_error_message(
+                    error_detail.message_key, request.language
+                ),
+            },
         )
