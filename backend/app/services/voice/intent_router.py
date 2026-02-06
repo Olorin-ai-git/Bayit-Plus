@@ -19,11 +19,14 @@ from .intent_keywords import (
     CONTENT_QUERY_KEYWORDS,
     DISPLAY_CHANNELS_KEYWORDS,
     WEB_SEARCH_KEYWORDS,
+    is_play_content_request,
+    clean_play_prefix,
 )
 from .intent_handlers import (
     handle_chat,
     handle_search,
     handle_kids,
+    handle_play_content,
     handle_navigation,
     handle_playback,
     handle_scroll,
@@ -70,6 +73,7 @@ class IntentRouter:
         """
 
         # Classify intent
+        self._play_content_query = None
         intent, confidence = self._classify_intent(transcript)
 
         logger.info(
@@ -110,15 +114,14 @@ class IntentRouter:
         )
 
     def _classify_intent(self, transcript: str) -> tuple[VoiceIntent, float]:
-        """
-        Classify intent from transcript.
-        Uses command patterns in Hebrew, English, and Spanish.
-
-        Returns:
-            (intent, confidence_score)
-        """
+        """Classify intent from transcript using multi-language command patterns."""
 
         transcript_lower = transcript.lower().strip()
+
+        # "play [content]" takes priority - handles movies, channels, podcasts, radio
+        if is_play_content_request(transcript_lower):
+            self._play_content_query = clean_play_prefix(transcript)
+            return VoiceIntent.PLAYBACK, 0.9
 
         # Kids content patterns (3 languages)
         kids_keywords = KIDS_KEYWORDS.get(self.language, KIDS_KEYWORDS["en"])
@@ -133,7 +136,7 @@ class IntentRouter:
         if any(kw in transcript_lower for kw in SEARCH_KEYWORDS):
             return VoiceIntent.SEARCH, 0.8
 
-        # Playback patterns
+        # Bare playback control (play, pause, stop, resume)
         if any(kw in transcript_lower for kw in PLAYBACK_KEYWORDS):
             return VoiceIntent.PLAYBACK, 0.9
 
@@ -167,6 +170,9 @@ class IntentRouter:
         self, intent: VoiceIntent, transcript: str, context: VoiceContext
     ) -> Dict[str, Any]:
         """Route intent to appropriate handler."""
+        # "play [content]" → search for content and navigate to player
+        if intent == VoiceIntent.PLAYBACK and self._play_content_query:
+            return await handle_play_content(self._play_content_query, context)
         # Handlers that require context
         context_handlers = {
             VoiceIntent.CHAT: handle_chat,
