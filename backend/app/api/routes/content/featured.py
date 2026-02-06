@@ -184,7 +184,7 @@ async def get_featured(
                         # Exclude series without episodes from homepage
                         {
                             "$or": [
-                                {"category_name": {"$regex": "^(?!.*Series).*$"}},  # Not a series category
+                                {"category_name": {"$regex": "^(?!.*(series|סדרות)).*$", "$options": "i"}},  # Not a series category
                                 {"total_episodes": {"$gt": 0}},  # Or has episodes
                             ]
                         },
@@ -223,7 +223,7 @@ async def get_featured(
                             },
                             {
                                 "$or": [
-                                    {"category_name": {"$regex": "^(?!.*Series).*$"}},  # Not a series category
+                                    {"category_name": {"$regex": "^(?!.*(series|סדרות)).*$", "$options": "i"}},  # Not a series category
                                     {"total_episodes": {"$gt": 0}},  # Or has episodes
                                 ]
                             },
@@ -575,7 +575,7 @@ async def get_featured(
                 # Exclude series without episodes from category carousels
                 {
                     "$or": [
-                        {"category_name": {"$regex": "^(?!.*Series).*$"}},  # Not a series category
+                        {"category_name": {"$regex": "^(?!.*(series|סדרות)).*$", "$options": "i"}},  # Not a series category
                         {"total_episodes": {"$gt": 0}},  # Or has episodes
                     ]
                 },
@@ -648,7 +648,7 @@ async def get_featured(
                                 },
                                 {
                                     "$or": [
-                                        {"category_name": {"$regex": "^(?!.*Series).*$"}},  # Not a series category
+                                        {"category_name": {"$regex": "^(?!.*(series|סדרות)).*$", "$options": "i"}},  # Not a series category
                                         {"total_episodes": {"$gt": 0}},  # Or has episodes
                                     ]
                                 },

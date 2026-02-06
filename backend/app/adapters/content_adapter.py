@@ -116,16 +116,21 @@ class BayitContentAdapter:
     @property
     def metadata(self) -> dict:
         """Additional metadata as key-value pairs."""
+        from app.api.routes.content.utils import is_series_content
+
+        # Determine if series using helper function
+        is_series = is_series_content(self._content.model_dump())
+
         meta = {
             "rating": str(self._content.rating) if self._content.rating else None,
-            "is_series": self._content.is_series,
+            "is_series": is_series,
             "is_featured": self._content.is_featured,
             "is_kids_content": self._content.is_kids_content,
             "requires_subscription": self._content.requires_subscription,
         }
 
         # Add series info if applicable
-        if self._content.is_series:
+        if is_series:
             meta.update(
                 {
                     "season": self._content.season,

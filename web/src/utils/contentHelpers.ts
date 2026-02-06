@@ -21,23 +21,34 @@ import { Content } from '../types/content'
  */
 export function isSeriesContent(content: Partial<Content>): boolean {
   // Check category name (most reliable indicator)
+  // Aligned with backend SERIES_CATEGORY_KEYWORDS: "series", "סדרות", "סדרה", "tv shows", "shows"
   const categoryName = content.category_name?.toLowerCase() || ''
-  if (categoryName.includes('series') || categoryName.includes('סדרות')) {
+  const seriesKeywords = ['series', 'סדרות', 'סדרה', 'tv shows', 'shows']
+  if (seriesKeywords.some(keyword => categoryName.includes(keyword))) {
     return true
   }
 
-  // Check if has series_id but no episode markers (could be series parent)
-  if (content.series_id && !content.season && !content.episode) {
-    return false // This is an episode without season/episode info
-  }
+  // Check series structure indicators (aligned with backend logic)
+  const series_id = content.series_id
+  const total_episodes = (content as any).total_episodes
+  const season_number = (content as any).season_number
+  const episode_number = (content as any).episode_number
 
-  // Check for total_episodes (series parents have this)
-  if ((content as any).total_episodes !== undefined && (content as any).total_episodes !== null) {
+  // Has series_id → is an episode or series-related
+  if (series_id) {
     return true
   }
 
-  // Check if has season but no episode (season container)
-  if (content.season !== undefined && content.season !== null && !content.episode) {
+  // Has total_episodes → is a parent series
+  if (total_episodes !== undefined && total_episodes !== null) {
+    return true
+  }
+
+  // Has season_number or episode_number → is series content
+  if (season_number !== undefined && season_number !== null) {
+    return true
+  }
+  if (episode_number !== undefined && episode_number !== null) {
     return true
   }
 

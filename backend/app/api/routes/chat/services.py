@@ -336,7 +336,8 @@ async def resolve_single_content(
                 score = fuzzy_match_score(name, check_name)
                 if score > best_score and score >= min_score:
                     best_score = score
-                    item_type = "series" if item.is_series else "movie"
+                    from app.api.routes.content.utils import is_series_content
+                    item_type = "series" if is_series_content(item.model_dump()) else "movie"
                     best_match = ResolvedContentItem(
                         id=str(item.id),
                         name=item.title,

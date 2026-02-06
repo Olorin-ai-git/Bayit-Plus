@@ -55,10 +55,18 @@ async def list_all_series(
     # Defensive filtering: Exclude episodes even if data is malformed
     # Parent series should NEVER have season/episode numbers
     # Also exclude series with no episodes from user-facing endpoints
+
+    # Build list of series category names (for index-backed queries)
+    from app.api.routes.content.utils import SERIES_CATEGORY_KEYWORDS
+    series_categories = SERIES_CATEGORY_KEYWORDS + [
+        "Israeli Series", "israeli series",
+        "סדרות ישראליות",  # Israeli Series in Hebrew
+    ]
+
     filters = {
         "is_published": True,
-        # Use category_name instead of deprecated is_series field
-        "category_name": {"$regex": "series|סדרות", "$options": "i"},
+        # Use $in for better performance (can use category_name index)
+        "category_name": {"$in": series_categories},
         "total_episodes": {"$gt": 0},  # Hide series without episodes
         "$or": [
             {"series_id": None},
@@ -87,7 +95,8 @@ async def list_all_series(
 
     # Apply search filter if provided
     if search and search.strip():
-        search_regex = {"$regex": search.strip(), "$options": "i"}
+        from app.api.routes.content.utils import sanitize_search_input
+        search_regex = {"$regex": sanitize_search_input(search), "$options": "i"}
         filters["$and"] = filters.get("$and", []) + [
             {
                 "$or": [

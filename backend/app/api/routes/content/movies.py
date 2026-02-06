@@ -35,10 +35,18 @@ async def list_all_movies(
     skip = (page - 1) * limit
 
     beta_filter = build_beta_content_filter(current_user)
+
+    # Build list of series category names to exclude (for index-backed queries)
+    from app.api.routes.content.utils import SERIES_CATEGORY_KEYWORDS
+    series_categories = SERIES_CATEGORY_KEYWORDS + [
+        "Israeli Series", "israeli series",
+        "סדרות ישראליות",  # Israeli Series in Hebrew
+    ]
+
     filters = {
         "is_published": True,
-        # Use category_name for movies (NOT series categories)
-        "category_name": {"$regex": "^(?!.*(series|סדרות)).*$", "$options": "i"},
+        # Use $nin for better performance (can use category_name index)
+        "category_name": {"$nin": series_categories},
         "$or": [
             {"series_id": None},
             {"series_id": {"$exists": False}},
@@ -51,7 +59,8 @@ async def list_all_movies(
 
     # Apply search filter if provided
     if search and search.strip():
-        search_regex = {"$regex": search.strip(), "$options": "i"}
+        from app.api.routes.content.utils import sanitize_search_input
+        search_regex = {"$regex": sanitize_search_input(search), "$options": "i"}
         filters["$and"] = filters.get("$and", []) + [
             {
                 "$or": [
@@ -139,11 +148,13 @@ async def get_movie_details(
     beta_filter = build_beta_content_filter(current_user)
 
     # Query related items with beta filter
+    # Exclude series content using category name filter (is_series field removed)
+    from app.api.routes.content.utils import SERIES_CATEGORY_KEYWORDS
     related_query = {
         "category_id": movie.category_id,
         "_id": {"$ne": movie.id},
         "is_published": True,
-        "is_series": False,
+        "category_name": {"$nin": SERIES_CATEGORY_KEYWORDS + ["Israeli Series", "סדרות ישראליות"]},
         **beta_filter,
     }
     related = await Content.find(related_query).limit(6).to_list()

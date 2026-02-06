@@ -16,6 +16,31 @@ logger = logging.getLogger(__name__)
 # Series category indicators (Hebrew and English)
 SERIES_CATEGORY_KEYWORDS = ["series", "סדרות", "סדרה", "tv shows", "shows"]
 
+
+def sanitize_search_input(search: str) -> str:
+    """
+    Sanitize user search input for MongoDB regex queries to prevent NoSQL injection.
+
+    Args:
+        search: User-provided search query
+
+    Returns:
+        Escaped search string safe for regex
+
+    Raises:
+        ValueError: If search query exceeds maximum length
+    """
+    if not search or len(search.strip()) == 0:
+        return ""
+
+    # Prevent ReDoS attacks with length limit
+    if len(search) > 100:
+        raise ValueError("Search query too long (max 100 characters)")
+
+    # Escape regex metacharacters to prevent injection
+    return re.escape(search.strip())
+
+
 # User-Agent patterns for native iOS/tvOS apps
 _NATIVE_APP_PATTERNS: List[str] = [
     r"Bayit\+/.*CFNetwork",
