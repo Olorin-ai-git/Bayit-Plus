@@ -9,7 +9,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable, useWindowDimensions } from 'react-native';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Search, Mic, X, TrendingUp, Clock, Sparkles } from 'lucide-react';
+import { Search, X, TrendingUp, Sparkles } from 'lucide-react';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import {
   GlassInput,
@@ -20,7 +20,6 @@ import {
   GlassLoadingSpinner,
   GlassToggle,
 } from '@bayit/shared/ui';
-import { VoiceSearchButton } from '@bayit/shared/components';
 import { useDirection } from '@/hooks/useDirection';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { useAuthStore } from '@bayit/shared-stores';
@@ -28,7 +27,6 @@ import { contentService } from '@/services/api';
 import ContentCard from '@/components/content/ContentCard';
 import PageLoading from '@/components/common/PageLoading';
 import logger from '@/utils/logger';
-import { useVoiceSearch } from '@/hooks/useVoiceSearch';
 
 interface SearchResult {
   id: string;
@@ -58,6 +56,9 @@ export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const isPremium = useAuthStore((state) => state.isPremium());
 
+  // Mobile detection
+  const isMobile = width < 768;
+
   // State
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [contentType, setContentType] = useState<ContentTypeFilter>('all');
@@ -70,14 +71,6 @@ export default function SearchPage() {
   // Responsive grid
   const numColumns = width >= 1280 ? 6 : width >= 1024 ? 5 : width >= 768 ? 4 : 3;
 
-  // Voice search integration
-  const { transcribe, isTranscribing, error: voiceError } = useVoiceSearch({
-    onTranscriptionComplete: (text) => {
-      logger.info('Voice transcription completed', 'SearchPage', { text });
-      setQuery(text);
-    },
-    defaultLanguage: i18n.language === 'he' ? 'he' : i18n.language === 'es' ? 'es' : 'en',
-  });
 
   // Load recent searches from localStorage
   useEffect(() => {
@@ -219,17 +212,19 @@ export default function SearchPage() {
 
   return (
     <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-      <View style={styles.container}>
-        {/* Header */}
-        <GlassPageHeader
-          title={t('search.title', 'Search')}
-          pageType="search"
-          isRTL={isRTL}
-          icon={<Search size={24} color={colors.primary.DEFAULT} />}
-        />
+      <View style={[styles.container, isMobile && styles.containerMobile]}>
+        {/* Header - Smaller on mobile */}
+        {!isMobile && (
+          <GlassPageHeader
+            title={t('search.title', 'Search')}
+            pageType="search"
+            isRTL={isRTL}
+            icon={<Search size={24} color={colors.primary.DEFAULT} />}
+          />
+        )}
 
-        {/* AI Search Toggle (Premium) - Always visible as search configuration */}
-        {isPremium && (
+        {/* AI Search Toggle (Premium) - Hidden on mobile */}
+        {!isMobile && isPremium && (
           <View style={styles.aiToggleContainer}>
             <View style={styles.aiToggleRow}>
               <Sparkles size={18} color={colors.primary.DEFAULT} />
@@ -251,47 +246,36 @@ export default function SearchPage() {
         )}
 
         {/* Search Input */}
-        <View style={styles.searchContainer}>
+        <View style={[styles.searchContainer, isMobile && styles.searchContainerMobile]}>
           <GlassInput
             value={query}
             onChangeText={setQuery}
-            placeholder={t('search.placeholder', 'Search for content...')}
+            placeholder={isMobile ? t('search.placeholderShort', 'Search...') : t('search.placeholder', 'Search for content...')}
             placeholderTextColor={colors.textMuted}
             containerStyle={styles.searchInputContainer}
-            inputStyle={styles.searchInput}
-            rightIcon={query.length > 0 ? <X size={20} color={colors.textSecondary} /> : undefined}
+            inputStyle={[styles.searchInput, isMobile && styles.searchInputMobile]}
+            rightIcon={query.length > 0 ? <X size={isMobile ? 18 : 20} color={colors.textSecondary} /> : undefined}
             onRightIconPress={() => setQuery('')}
             disableFocusBorder={true}
             noBorder={true}
-            autoFocus
+            autoFocus={!isMobile}
           />
 
           {/* Search Button */}
           <Pressable
             onPress={() => query.trim() && performSearch(query)}
-            style={styles.searchButton}
+            style={[styles.searchButton, isMobile && styles.searchButtonMobile]}
           >
-            <Search size={24} color={colors.primary.DEFAULT} />
+            <Search size={isMobile ? 20 : 24} color={colors.primary.DEFAULT} />
           </Pressable>
-
-          {/* Voice Search Button (Premium) */}
-          {isPremium && (
-            <View style={styles.voiceButtonContainer}>
-              <VoiceSearchButton
-                onResult={(text) => setQuery(text)}
-                transcribeAudio={transcribe}
-                testID="search-voice-button"
-              />
-            </View>
-          )}
         </View>
 
         {/* Content Type Filters */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={styles.filtersScroll}
-          contentContainerStyle={styles.filtersContent}
+          style={[styles.filtersScroll, isMobile && styles.filtersScrollMobile]}
+          contentContainerStyle={[styles.filtersContent, isMobile && styles.filtersContentMobile]}
         >
           <GlassCategoryPill
             label={t('search.filters.all', 'All')}
@@ -299,7 +283,7 @@ export default function SearchPage() {
             onPress={() => setContentType('all')}
           />
           <GlassCategoryPill
-            label={t('search.filters.vod', 'Movies & Series')}
+            label={isMobile ? t('search.filters.vodShort', 'Movies') : t('search.filters.vod', 'Movies & Series')}
             isActive={contentType === 'vod'}
             onPress={() => setContentType('vod')}
           />
@@ -308,11 +292,14 @@ export default function SearchPage() {
             isActive={contentType === 'live'}
             onPress={() => setContentType('live')}
           />
-          <GlassCategoryPill
-            label={t('search.filters.radio', 'Radio')}
-            isActive={contentType === 'radio'}
-            onPress={() => setContentType('radio')}
-          />
+          {/* Radio filter - hidden on mobile */}
+          {!isMobile && (
+            <GlassCategoryPill
+              label={t('search.filters.radio', 'Radio')}
+              isActive={contentType === 'radio'}
+              onPress={() => setContentType('radio')}
+            />
+          )}
           <GlassCategoryPill
             label={t('search.filters.podcast', 'Podcasts')}
             isActive={contentType === 'podcasts'}
@@ -320,8 +307,8 @@ export default function SearchPage() {
           />
         </ScrollView>
 
-        {/* Trending Searches - Positioned above search results area */}
-        {query.trim().length === 0 && (
+        {/* Trending Searches - Hidden on mobile */}
+        {!isMobile && query.trim().length === 0 && (
           <View style={styles.trendingSection}>
             <View style={styles.trendingHeader}>
               <TrendingUp size={16} color={colors.primary.DEFAULT} />
@@ -341,13 +328,6 @@ export default function SearchPage() {
               ))}
             </View>
           </View>
-        )}
-
-        {/* Voice Error Message */}
-        {voiceError && (
-          <Text style={styles.errorMessage}>
-            {voiceError}
-          </Text>
         )}
 
         {/* Search Results Section - Always visible when query exists */}
@@ -427,10 +407,19 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
     width: '100%',
   },
+  containerMobile: {
+    paddingHorizontal: spacing.sm,
+    paddingTop: spacing.sm,
+    paddingBottom: 80, // Space for bottom nav
+  },
   searchContainer: {
     flexDirection: 'row',
     gap: spacing.sm,
     marginBottom: spacing.md,
+  },
+  searchContainerMobile: {
+    gap: spacing.xs,
+    marginBottom: spacing.sm,
   },
   searchInputContainer: {
     flex: 1,
@@ -444,6 +433,10 @@ const styles = StyleSheet.create({
     outlineWidth: 0,
     borderWidth: 0,
   },
+  searchInputMobile: {
+    fontSize: fontSize.base,
+    paddingHorizontal: spacing.sm,
+  },
   searchButton: {
     width: 56,
     height: 56,
@@ -455,22 +448,30 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(139,92,246,0.3)',
     backdropFilter: 'blur(12px)',
   },
-  voiceButtonContainer: {
-    width: 56,
-    height: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
+  searchButtonMobile: {
+    width: 48,
+    height: 48,
+    borderRadius: borderRadius.lg,
   },
   filtersScroll: {
+    flexDirection: 'row-reverse',
     marginBottom: spacing.sm,
     flex: 0,
     height: 'auto' as any,
     maxHeight: 'max-content' as any,
   },
+  filtersScrollMobile: {
+    marginBottom: spacing.xs,
+    marginHorizontal: -spacing.sm, // Extend to edges
+  },
   filtersContent: {
     gap: spacing.sm,
     paddingVertical: 0,
     maxHeight: 'max-content' as any,
+  },
+  filtersContentMobile: {
+    gap: spacing.xs,
+    paddingHorizontal: spacing.sm,
   },
   aiToggleContainer: {
     backgroundColor: 'rgba(139,92,246,0.08)',

@@ -1,7 +1,7 @@
 /**
  * Mobile Bottom Navigation
  *
- * Fixed bottom navigation bar for mobile devices with 6 main tabs.
+ * Fixed bottom navigation bar for mobile devices with 5 main tabs.
  * Provides quick access to core features with safe area handling and RTL support.
  */
 
@@ -23,7 +23,6 @@ interface TabItem {
 
 const tabs: TabItem[] = [
   { id: 'home', icon: 'home', labelKey: 'nav.home', path: '/' },
-  { id: 'search', icon: 'search', labelKey: 'nav.search', path: '/search' },
   { id: 'live', icon: 'live', labelKey: 'nav.liveTV', path: '/live' },
   { id: 'vod', icon: 'vod', labelKey: 'nav.vod', path: '/vod' },
   { id: 'podcasts', icon: 'podcasts', labelKey: 'nav.podcasts', path: '/podcasts' },

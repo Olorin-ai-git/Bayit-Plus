@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, Pressable, useWindowDimensions, Image } from 'react-native';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useState, useCallback, useEffect } from 'react';
 import { Search, Shield } from 'lucide-react';
@@ -9,11 +9,15 @@ import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
 import { useModeEnforcement } from '@bayit/shared-hooks';
 import { chatService } from '@/services/api';
 import { VoiceSearchButton, LanguageSelector, SoundwaveVisualizer } from '@bayit/shared';
-import { useConstantListening } from '@bayit/shared-hooks';
+import { useConstantListening, useVoiceSupport } from '@bayit/shared-hooks';
 import { ProfileDropdown } from '../../../../shared/components/ProfileDropdown';
 import { colors, spacing } from '@olorin/design-tokens';
 import { GlassView } from '@bayit/shared/ui';
+import { supportConfig } from '@bayit/shared-config/supportConfig';
 import logger from '@/utils/logger';
+
+// Wizard hat image for voice assistant button
+const WIZARD_HAT = require('../../../../shared/assets/images/characters/hat/48x48.png');
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
@@ -152,6 +156,20 @@ export default function Header() {
     navigate('/');
   };
 
+  // Voice Support for wizard hat button (mobile only)
+  const {
+    activateVoiceAssistant,
+    isSupported: voiceSupported,
+  } = useVoiceSupport();
+
+  const handleWizardHatPress = useCallback(() => {
+    logger.debug('Wizard hat button pressed - activating voice assistant', 'Header');
+    // Dispatch custom event to toggle topbar microphone button state
+    window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
+    // Activate voice assistant (handles intro + modal + listening)
+    activateVoiceAssistant();
+  }, [activateVoiceAssistant]);
+
   // Navigation component - document.dir handles visual direction
   // Disabled in Voice Only mode
   const NavSection = !isMobile && isRemoteControlEnabled && (
@@ -237,6 +255,23 @@ export default function Header() {
         </View>
       </Link>
 
+      {/* Wizard hat voice assistant button - mobile only */}
+      {isMobile && voiceSupported && supportConfig.voiceAssistant.enabled && (
+        <Pressable
+          onPress={handleWizardHatPress}
+          style={styles.wizardHatButton}
+          accessible
+          accessibilityLabel={t('voice.avatar.openVoice')}
+          accessibilityRole="button"
+        >
+          <Image
+            source={WIZARD_HAT}
+            style={styles.wizardHatImage}
+            resizeMode="contain"
+          />
+        </Pressable>
+      )}
+
       {/* Soundwave Visualizer - for TV wake word listening mode */}
       {showSoundwave && (
         <View style={styles.soundwaveContainer}>
@@ -246,20 +281,6 @@ export default function Header() {
             isProcessing={isProcessing}
             isSendingToServer={isSendingToServer}
             compact
-          />
-        </View>
-      )}
-
-      {/* Voice search button - hide on TV when Hebrew is selected (voice doesn't support Hebrew) */}
-      {(!IS_TV_BUILD || (i18n.language !== 'he')) && (
-        <View style={[
-          styles.voiceButtonContainer,
-          isMobile && styles.voiceButtonContainerMobile,
-        ]}>
-          <VoiceSearchButton
-            onResult={handleVoiceTranscribed}
-            transcribeAudio={chatService.transcribeAudio}
-            tvMode={IS_TV_BUILD}
           />
         </View>
       )}
@@ -453,5 +474,25 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#ef4444',
+  },
+  wizardHatButton: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(13, 13, 26, 0.9)',
+    borderWidth: 2,
+    borderColor: colors.primary.DEFAULT,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: colors.primary.DEFAULT,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    // @ts-ignore - Web CSS
+    boxShadow: `0 4px 16px ${colors.primary.DEFAULT}40`,
+  } as any,
+  wizardHatImage: {
+    width: 48,
+    height: 48,
   },
 });

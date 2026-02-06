@@ -273,8 +273,8 @@ export default function Layout() {
       {/* Chatbot enabled on both web and TV for voice interaction */}
       <Chatbot />
 
-      {/* Voice Avatar FAB - Floating wizard hat for voice support */}
-      {voiceSupported && supportConfig.voiceAssistant.enabled && (
+      {/* Voice Avatar FAB - Floating wizard hat for voice support (desktop/TV only, hidden on mobile) */}
+      {!isMobile && voiceSupported && supportConfig.voiceAssistant.enabled && (
         <VoiceAvatarFAB
           onPress={handleVoiceAvatarPress}
           visible={!isVoiceModalOpen}
