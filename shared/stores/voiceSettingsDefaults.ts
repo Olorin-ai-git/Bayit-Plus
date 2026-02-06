@@ -26,7 +26,7 @@ export const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   voice_mode: VoiceMode.VOICE_ONLY,
   voice_feedback_enabled: true,
   tts_enabled: true,
-  tts_voice_id: supportConfig.supportVoice.voiceId,
+  tts_voice_id: supportConfig.voiceAssistant.supportVoice.voiceId,
   tts_speed: 1.0,
   tts_volume: 1.0,
 };
