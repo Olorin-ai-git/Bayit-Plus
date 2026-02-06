@@ -1,0 +1,471 @@
+
+ ▐▛███▜▌   Claude Code v2.1.34
+▝▜█████▛▘  Opus 4.6 · Claude Max
+  ▘▘ ▝▝    ~/Documents/Projects/olorin/olorin-media/bayit-plus
+
+ ⚠Large /Users/olorin/.claude/CLAUDE.md will impact performance (45.6k chars > 
+  40.0k) • /memory to edit
+
+✻ Conversation compacted (ctrl+o for history)
+
+  ⎿ Read ../../../../../.claude/projects/-Users-olorin-Documents-Projects-olorin
+    olorin-media-bayit-plus/memory/MEMORY.md (21 lines)
+  ⎿  Referenced file web/src/components/layout/Layout.tsx
+  ⎿  Read shared/services/olorinVoiceOrchestrator.ts (455 lines)
+  ⎿  Referenced file shared/stores/supportStore.ts
+  ⎿  Read shared/services/streamingVoicePipeline.ts (209 lines)
+
+⏺ Task "System architect review of voice overhaul" completed in background
+
+⏺ Task "Code reviewer signoff on voice overhaul" completed in background
+
+⏺ Task "Security review of voice overhaul" completed in background
+
+⏺ Task "Voice technician review of voice overhaul" completed in background
+
+⏺ Task "Web expert review of voice overhaul" completed in background
+
+⏺ Task "Mobile expert review of voice overhaul" completed in background
+
+⏺ Task "System architect re-review voice fixes" completed in background
+
+⏺ Task "Code reviewer re-review voice fixes" completed in background
+
+⏺ Task "Security re-review voice fixes" completed in background
+
+⏺ Task "Voice technician re-review voice fixes" completed in background
+
+⏺ Task "Web expert re-review voice fixes" completed in background
+
+⏺ Task "Mobile expert re-review voice fixes" completed in background
+  ⎿  Plan file referenced (~/.claude/plans/unified-launching-parasol.md)
+
+⏺ I'm continuing with fixing the avatar state transition bug. The issue is a
+  race condition between audioPlayer.setOnPlaybackComplete (which forces state
+  to idle) and handleContinuation() (which restarts listening after 500ms). Let
+  me trace through the relevant code.
+
+⏺ Read 3 files (ctrl+o to expand)
+
+⏺ Now I can see the race condition clearly. Here's what's happening:
+
+  1. streamingAudioPlayer.ts:42-43: When audio queue drains, onPlaybackComplete
+  fires
+  2. streamingVoicePipeline.ts:91: This callback emits stateChange('idle')
+  3. olorinVoiceOrchestrator.ts:180-183: Orchestrator receives this and
+  forceTransitionTo('idle')
+  4. olorinVoiceOrchestrator.ts:234-244: Meanwhile, handleContinuation() has a
+  fixed 500ms timeout before calling restartListening()
+
+  The race: if audio finishes playing after the 500ms timeout starts
+  restartListening(), the onPlaybackComplete callback fires stateChange('idle'),
+   which overrides the listening state back to idle.
+
+  The fix: replace the fixed 500ms timeout with event-driven coordination - wait
+   for audio playback to complete, then restart listening.
+
+⏺ Read 2 files (ctrl+o to expand)
+
+❯ when the user says exit word like "Done" disconnect from listening mode   
+  and turn the wizard back to a hat                                         
+
+⏺ Let me also check the stop keywords functionality since the user has a
+  follow-up request about exit words.
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Let me check the AvatarMode type to understand what "hat" mode is.
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Good. AvatarMode is 'full' | 'compact' | 'minimal' | 'icon_only'. The "hat" is
+   icon_only. Now I have everything I need to fix both issues. Let me implement
+  the changes.
+
+  Two problems to fix:
+  1. Continuation timing race - replace fixed 500ms timeout with event-driven
+  playbackComplete coordination
+  2. Stop keyword behavior - end session and collapse avatar to icon_only when
+  user says "Done"
+
+  Starting with streamingVoicePipeline.ts:
+
+⏺ Update(shared/services/streamingVoicePipeline.ts)
+  ⎿  Added 1 line
+      20    responseComplete: (conversationId: string, escalationNeeded: 
+          boolean) => void;
+      21    audioChunk: (audioData: ArrayBuffer) => void;
+      22    error: (error: Error) => void;
+      23 +  playbackComplete: () => void;                                
+      24    connected: () => void;
+      25    disconnected: () => void;
+      26  }
+
+⏺ Update(shared/services/streamingVoicePipeline.ts)
+  ⎿  Added 1 line, removed 1 line
+      89        if (this.config.voiceId) wsUrl.searchParams.set('voice_id
+          ', this.config.voiceId);
+      90        this.audioProcessor = new AudioProcessor();
+      91        this.audioPlayer = new StreamingAudioPlayer();
+      92 -      this.audioPlayer.setOnPlaybackComplete(() => this.emitSta
+         -teChange('idle'));                                             
+      92 +      this.audioPlayer.setOnPlaybackComplete(() => this.emit('p
+         +laybackComplete'));                                            
+      93        this.wsHandler.connect(wsUrl.toString(), {
+      94          onConnected: async () => {
+      95            this.isConnected = true; this.isConnecting = false; t
+          his.reconnectAttempts = 0; this.emit('connected');
+
+⏺ Update(shared/services/streamingVoicePipeline.ts)
+  ⎿  Added 1 line
+      190    getConversationId(): string | undefined { return this.config
+           .conversationId; }
+      191    isActive(): boolean { return this.isConnected; }
+      192    isCurrentlyRecording(): boolean { return this.isRecording; }
+      193 +  isAudioPlaying(): boolean { return this.audioPlayer?.isCurre
+          +ntlyPlaying() ?? false; }                                     
+      194    isSupported(): boolean { return isStreamingSupported(); }
+      195    async requestPermission(): Promise<boolean> { return request
+           MicrophonePermission(); }
+      196  
+
+⏺ Now the orchestrator changes. Add the new flags and constants:
+
+⏺ Update(shared/services/olorinVoiceOrchestrator.ts)
+  ⎿  Added 4 lines
+      62    private continuationTimeoutId: ReturnType<typeof setTimeout> 
+          | null = null;
+      63    private pipelineActive = false;
+      64    private shouldStopListening = false;
+      65 +  private continuationPending = false;                         
+      66 +  private endSessionPending = false;                           
+      67  
+      68    private static readonly MAX_RETRIES = 3;
+      69 +  private static readonly CONTINUATION_UI_DELAY_MS = 200;      
+      70 +  private static readonly PLAYBACK_SAFETY_TIMEOUT_MS = 10000;  
+      71  
+      72    constructor(config: VoiceConfig) {
+      73      super();
+
+⏺ Add playbackComplete handler in setupPipelineHandlers():
+
+⏺ Update(shared/services/olorinVoiceOrchestrator.ts)
+  ⎿  Added 12 lines
+      202        orchestratorLogger.info('Intent action received', { inte
+           nt, actionType: action.type, confidence });
+      203      });
+      204  
+      205 +    streamingVoicePipeline.on('playbackComplete', () => {     
+      206 +      if (this.continuationPending) {                         
+      207 +        this.continuationPending = false;                     
+      208 +        this.restartListeningForContinuation();               
+      209 +      } else if (this.endSessionPending) {                    
+      210 +        this.endSessionPending = false;                       
+      211 +        this.endSessionWithCollapse();                        
+      212 +      } else {                                                
+      213 +        this.forceTransitionTo('idle');                       
+      214 +      }                                                       
+      215 +    });                                                       
+      216 +                                                              
+      217      streamingVoicePipeline.on('responseComplete', (conversatio
+           nId) => {
+      218        this.handleResponseComplete(conversationId);
+      219      });
+
+⏺ Now rewrite handleContinuation():
+
+⏺ Update(shared/services/olorinVoiceOrchestrator.ts)
+  ⎿  Added 56 lines, removed 15 lines
+      239      this.handleContinuation();
+      240    }
+      241  
+      242 -  /** Handle continuation after response completes */         
+      242 +  /** Handle continuation after response completes - waits for
+          + audio playback */                                            
+      243    private handleContinuation(): void {
+      244      this.cancelPendingContinuation();
+      245 -                                                              
+      245      const store = useSupportStore.getState();
+      247 -    const shouldContinue = store.isVoiceModalOpen && !this.sho
+          -uldStopListening;                                             
+      246  
+      249 -    if (shouldContinue) {                                     
+      250 -      this.continuationTimeoutId = setTimeout(async () => {   
+      251 -        this.continuationTimeoutId = null;                    
+      252 -        const currentStore = useSupportStore.getState();      
+      253 -        if (this.pipelineActive && currentStore.isVoiceModalOp
+          -en && !this.shouldStopListening) {                            
+      254 -          try {                                               
+      255 -            await streamingVoicePipeline.restartListening();  
+      256 -          } catch (error) {                                   
+      257 -            orchestratorLogger.error('Failed to restart listen
+          -ing', { error });                                             
+      247 +    if (this.shouldStopListening) {                           
+      248 +      this.shouldStopListening = false;                       
+      249 +      if (streamingVoicePipeline.isAudioPlaying()) {          
+      250 +        this.endSessionPending = true;                        
+      251 +        this.continuationTimeoutId = setTimeout(() => {       
+      252 +          this.continuationTimeoutId = null;                  
+      253 +          if (this.endSessionPending) {                       
+      254 +            this.endSessionPending = false;                   
+      255 +            orchestratorLogger.warn('End session playback time
+          +out');                                                        
+      256 +            this.endSessionWithCollapse();                    
+      257            }
+      259 -        }                                                     
+      260 -      }, 500);                                                
+      258 +        }, OlorinVoiceOrchestrator.PLAYBACK_SAFETY_TIMEOUT_MS)
+          +;                                                             
+      259 +      } else {                                                
+      260 +        this.endSessionWithCollapse();                        
+      261 +      }                                                       
+      262 +      return;                                                 
+      263 +    }                                                         
+      264 +                                                              
+      265 +    if (store.isVoiceModalOpen) {                             
+      266 +      if (streamingVoicePipeline.isAudioPlaying()) {          
+      267 +        this.continuationPending = true;                      
+      268 +        this.continuationTimeoutId = setTimeout(() => {       
+      269 +          this.continuationTimeoutId = null;                  
+      270 +          if (this.continuationPending) {                     
+      271 +            this.continuationPending = false;                 
+      272 +            orchestratorLogger.warn('Playback completion timeo
+          +ut - forcing continuation');                                  
+      273 +            this.restartListeningForContinuation();           
+      274 +          }                                                   
+      275 +        }, OlorinVoiceOrchestrator.PLAYBACK_SAFETY_TIMEOUT_MS)
+          +;                                                             
+      276 +      } else {                                                
+      277 +        this.continuationTimeoutId = setTimeout(async () => { 
+      278 +          this.continuationTimeoutId = null;                  
+      279 +          await this.restartListeningForContinuation();       
+      280 +        }, OlorinVoiceOrchestrator.CONTINUATION_UI_DELAY_MS); 
+      281 +      }                                                       
+      282 +    }                                                         
+      283 +  }                                                           
+      284 +                                                              
+      285 +  /** Restart listening after audio playback completes */     
+      286 +  private async restartListeningForContinuation(): Promise<voi
+          +d> {                                                          
+      287 +    const store = useSupportStore.getState();                 
+      288 +    if (this.pipelineActive && store.isVoiceModalOpen && !this
+          +.shouldStopListening) {                                       
+      289 +      try {                                                   
+      290 +        await streamingVoicePipeline.restartListening();      
+      291 +      } catch (error) {                                       
+      292 +        orchestratorLogger.error('Failed to restart listening 
+          +after playback', { error });                                  
+      293 +        this.forceTransitionTo('idle');                       
+      294 +      }                                                       
+      295      } else {
+      262 -      this.shouldStopListening = false;                       
+      296 +      this.forceTransitionTo('idle');                         
+      297      }
+      298    }
+      299  
+      300 +  /** End session and collapse avatar to icon_only (stop keywo
+          +rd exit) */                                                   
+      301 +  private endSessionWithCollapse(): void {                    
+      302 +    this.endSession();                                        
+      303 +    useSupportStore.getState().setAvatarVisibilityMode('icon_o
+          +nly');                                                        
+      304 +    orchestratorLogger.info('Session ended with avatar collaps
+          +e (stop keyword)');                                           
+      305 +  }                                                           
+      306 +                                                              
+      307    /** Stop listening - commit current audio */
+      308    stopListening(): void {
+      309      this.cancelPendingContinuation();
+
+⏺ Update cancelPendingContinuation() to clear both flags:
+
+⏺ Update(shared/services/olorinVoiceOrchestrator.ts)
+  ⎿  Added 3 lines, removed 1 line
+      388      this.pipelineActive = false;
+      389    }
+      390  
+      391 -  /** Cancel any pending continuation timer */                
+      391 +  /** Cancel any pending continuation timer and clear pending 
+          +flags */                                                      
+      392    private cancelPendingContinuation(): void {
+      393      if (this.continuationTimeoutId) {
+      394        clearTimeout(this.continuationTimeoutId);
+      395        this.continuationTimeoutId = null;
+      396      }
+      397 +    this.continuationPending = false;                         
+      398 +    this.endSessionPending = false;                           
+      399    }
+      400  
+      401    /** Trigger an animation sequence */
+
+⏺ Now let me verify both files look correct.
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ All edits look correct. Let me verify there are no TypeScript issues by
+  checking imports are in order.
+
+⏺ Bash(npx tsc --noEmit --project web/tsconfig.json 2>&1 | head -30)
+  ⎿ shared/components/AnimatedLogo.tsx(2,10): error TS2305: Module '"react-
+    native"' has no exported member 'View'.
+    shared/components/AnimatedLogo.tsx(2,16): error TS2305: Module '"react-
+    … +63 lines (ctrl+o to expand)
+
+
+  ⎿  (timeout 30s)
+
+❯ the blue user input bubble has only room for one line. make it same size  
+  as the wizard bubble                                                      
+
+⏺ The TS errors are all pre-existing (react-native module resolution for shared
+  components). Let me check if there are any errors specifically in the files I
+  modified.
+
+⏺ Bash(npx tsc --noEmit --project web/tsconfig.json 2>&1 | grep -E
+      "olorinVoiceOrchestrator|streamingVoicePipeline|streamingAudioPlayer|voice
+      StopKeywords")
+  ⎿  No matches found
+  ⎿  (timeout 30s)
+
+⏺ No TypeScript errors in the modified files. Now let me update the memory file
+  with the fix details, then address the user's other messages.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(~/.claude/projects/-Users-olorin-Documents-Projects-olorin-olorin-media
+        -bayit-plus/memory/MEMORY.md)
+  ⎿  Added 10 lines, removed 1 line
+      18  
+      19  ## Voice Handler Signatures
+      20  - Simple intent handlers (navigation, playback, scroll, control
+          ) accept `(transcript, language="he")`
+      21 -- Context handlers (chat, search, kids) accept `(transcript, co
+         -ntext)`                                                        
+      21   No newline at end of file
+      22 +- Context handlers (chat, search, kids) accept `(transcript, co
+         +ntext)`                                                        
+      23 +                                                               
+      24 +## Voice Continuation & Playback Coordination                  
+      25 +- `StreamingAudioPlayer.onPlaybackComplete` fires when audio qu
+         +eue drains (last chunk finishes playing)                       
+      26 +- Pipeline emits `playbackComplete` event (NOT `stateChange('id
+         +le')`) - orchestrator decides what to do                       
+      27 +- Orchestrator uses `continuationPending` flag: when true, play
+         +backComplete restarts listening                                
+      28 +- Orchestrator uses `endSessionPending` flag: when true, playba
+         +ckComplete ends session + collapses avatar                     
+      29 +- Safety timeout (10s) prevents hanging if playbackComplete nev
+         +er fires                                                       
+      30 +- Stop keywords ("done", "exit", etc.) trigger `endSessionWithC
+         +ollapse()` which sets avatar to `icon_only`                    
+      31 +- Race condition lesson: never use fixed timeouts for audio syn
+         +chronization - use event-driven coordination                   
+      32   No newline at end of file
+
+⏺ Good. Now let me address the user's second request about the blue user input
+  bubble. Let me find the VoiceChatModal or the relevant component that renders
+  the chat bubbles.
+
+⏺ Explore(Find voice chat bubble components)
+  ⎿  Done (13 tool uses · 60.8k tokens · 27s)
+
+⏺ Good, the continuation timing fix is done. Now let me address the bubble
+  sizing issue. Let me read the ChatMessageList component.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Wait - the user is referring to voice interaction bubbles, not the text
+  chatbot. Let me find the voice modal component that shows during voice
+  conversations.
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Now I can see the UserSpeechBubble and SpeechBubble components. Let me read
+  both.
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Now I can see the problem. Comparing the two bubbles:
+
+  UserSpeechBubble (blue): numberOfLines is 2 (mobile) / 3 (desktop), font
+  12-13px, plus a mic icon takes horizontal space.
+  SpeechBubble (wizard): numberOfLines is 4, font 13-14px.
+
+  The user bubble is more constrained. Let me match it to the wizard bubble's
+  sizing.
+
+⏺ Update(shared/components/support/UserSpeechBubble.tsx)
+  ⎿  Added 2 lines, removed 2 lines
+      29    const maxWidth = isMobile ? 200 : isTV ? 320 : 240;
+      30    const minWidth = isMobile ? 80 : isTV ? 120 : 100;
+      31    const borderRadiusValue = isMobile ? 16 : 24;
+      32 -  const fontSize = isMobile ? 12 : isTV ? 15 : 13;             
+      33 -  const lineHeight = isMobile ? 16 : isTV ? 20 : 18;           
+      32 +  const fontSize = isMobile ? 13 : isTV ? 16 : 14;             
+      33 +  const lineHeight = isMobile ? 18 : isTV ? 22 : 20;           
+      34  
+      35    return (
+      36      <Animated.View
+
+⏺ Update(shared/components/support/UserSpeechBubble.tsx)
+  ⎿  Added 1 line, removed 1 line
+      100              fontStyle: 'italic',
+      101              flex: 1,
+      102            }}
+      103 -          numberOfLines={isMobile ? 2 : 3}                    
+      103 +          numberOfLines={4}                                   
+      104          >
+      105            {transcript}
+      106          </Text>
+
+⏺ Let me verify the final state of both files to confirm everything is
+  consistent.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Good. Here's a summary of all changes made:
+
+  ---
+  Fix 1: Voice continuation timing race condition (2 files)
+
+  shared/services/streamingVoicePipeline.ts:
+  - Added playbackComplete event to the events interface
+  - Changed onPlaybackComplete to emit playbackComplete instead of
+  stateChange('idle') - gives orchestrator full control over state transitions
+  after audio finishes
+  - Added isAudioPlaying() method for the orchestrator to check playback status
+
+  shared/services/olorinVoiceOrchestrator.ts:
+  - Added continuationPending and endSessionPending flags, plus
+  CONTINUATION_UI_DELAY_MS (200ms) and PLAYBACK_SAFETY_TIMEOUT_MS (10s)
+  constants
+  - Added playbackComplete event handler: if continuation pending, restart
+  listening; if end session pending, close with avatar collapse; otherwise
+  transition to idle
+  - Rewrote handleContinuation() - now event-driven instead of a fixed 500ms
+  timeout. Checks isAudioPlaying(): if audio is still playing, sets the
+  appropriate pending flag and waits for playbackComplete; if audio is done,
+  acts immediately (with 200ms UI delay for continuation)
+  - Added restartListeningForContinuation() - safe restart with error fallback
+  to idle
+  - Added endSessionWithCollapse() - ends session and sets avatar to icon_only
+  for stop keyword exits
+  - Updated cancelPendingContinuation() to clear both pending flags
+
+  Fix 2: Stop keyword behavior ("Done" -> disconnect + collapse avatar)
+
+  When stop keyword is detected (e.g., "done", "exit", "bye"), the session now:
+  1. Waits for the current audio response to finish playing (so user hears the
+  goodbye)
+  2. Calls endSession() to close the modal and stop the pipeline
+  3. Sets avatar visibility to icon_only (the "hat" mode)
+
+  Fix 3: User speech bubble sizing (1 file)
+
+  shared/components/support/UserSpeechBubble.tsx:
+  - Font size matched to wizard bubble: 13/16/14px (was 12/15/13px)
+  - Line height matched: 18/22/20px (was 16/20/18px)
+  - numberOfLines set to 4 for all platforms (was 2 mobile / 3 desktop),
+  matching wizard bubble
+
+✻ Brewed for 9m 24s

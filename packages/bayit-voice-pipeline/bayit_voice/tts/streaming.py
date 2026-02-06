@@ -249,7 +249,14 @@ class ElevenLabsTTSStreamingService:
         text_stream: AsyncIterator[str],
         voice_id: Optional[str] = None,
     ) -> AsyncIterator[bytes]:
-        """Synthesize streaming text to streaming audio."""
+        """
+        Synthesize streaming text to streaming audio.
+
+        NOTE: Callers are responsible for calling close() after iteration.
+        This generator does NOT close the connection, allowing callers
+        to send follow-up messages (e.g. completion signals) without
+        being blocked by the WebSocket close handshake.
+        """
         sender_task = None
         try:
             await self.connect(voice_id=voice_id)
@@ -287,7 +294,6 @@ class ElevenLabsTTSStreamingService:
                     await sender_task
                 except asyncio.CancelledError:
                     pass
-            await self.close()
 
     @property
     def is_connected(self) -> bool:

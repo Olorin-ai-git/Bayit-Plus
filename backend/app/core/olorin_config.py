@@ -553,6 +553,32 @@ class SubtitleConfig(BaseSettings):
         description="STT WebSocket graceful close timeout (seconds)",
     )
 
+    # STT Voice Activity Detection (VAD) tuning
+    stt_vad_silence_threshold_secs: float = Field(
+        default=1.0,
+        ge=0.1,
+        le=5.0,
+        description="VAD silence duration before committing transcript (seconds)",
+    )
+    stt_vad_threshold: float = Field(
+        default=0.5,
+        ge=0.1,
+        le=1.0,
+        description="VAD energy threshold for speech detection (0.0-1.0)",
+    )
+    stt_forced_commit_interval_seconds: float = Field(
+        default=5.0,
+        ge=1.0,
+        le=30.0,
+        description="Force transcript commit after this duration (seconds)",
+    )
+    stt_max_chunks_before_commit: int = Field(
+        default=150,
+        ge=10,
+        le=1000,
+        description="Force transcript commit after this many audio chunks",
+    )
+
     # Deduplication configuration
     dedup_min_pattern_length: int = Field(
         default=10,

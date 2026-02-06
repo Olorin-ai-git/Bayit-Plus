@@ -29,8 +29,8 @@ export const UserSpeechBubble: React.FC<UserSpeechBubbleProps> = ({
   const maxWidth = isMobile ? 200 : isTV ? 320 : 240;
   const minWidth = isMobile ? 80 : isTV ? 120 : 100;
   const borderRadiusValue = isMobile ? 16 : 24;
-  const fontSize = isMobile ? 12 : isTV ? 15 : 13;
-  const lineHeight = isMobile ? 16 : isTV ? 20 : 18;
+  const fontSize = isMobile ? 13 : isTV ? 16 : 14;
+  const lineHeight = isMobile ? 18 : isTV ? 22 : 20;
 
   return (
     <Animated.View
@@ -100,7 +100,7 @@ export const UserSpeechBubble: React.FC<UserSpeechBubbleProps> = ({
             fontStyle: 'italic',
             flex: 1,
           }}
-          numberOfLines={isMobile ? 2 : 3}
+          numberOfLines={4}
         >
           {transcript}
         </Text>

@@ -327,11 +327,10 @@ class VoicePipelineService:
     async def _send_intent_action(self, voice_response: VoiceResponse) -> None:
         """
         Speak the intent response via TTS and send the intent_action
-        message to the client after audio completes.
+        and complete messages immediately after the last audio chunk.
         """
         try:
             self.tts_service = ElevenLabsTTSStreamingService()
-            await self.tts_service.connect(voice_id=self.voice_id)
 
             async def single_text_generator():
                 yield voice_response.spoken_response
@@ -352,7 +351,9 @@ class VoicePipelineService:
                 extra={"audio_chunks": audio_chunk_count},
             )
 
-            # Send intent_action message after TTS audio completes
+            # Send intent_action and complete immediately after last audio chunk.
+            # synthesize_streaming() no longer blocks on WebSocket close,
+            # so these messages reach the client without delay.
             await self._output_queue.put(
                 PipelineMessage(
                     type="intent_action",
@@ -372,7 +373,6 @@ class VoicePipelineService:
                 )
             )
 
-            # Send completion message
             await self._output_queue.put(
                 PipelineMessage(
                     type="complete",
@@ -422,9 +422,8 @@ class VoicePipelineService:
                 return  # Only skip LLM if intent action succeeded
 
         try:
-            # Initialize TTS service
+            # Initialize TTS service (synthesize_streaming handles connect internally)
             self.tts_service = ElevenLabsTTSStreamingService()
-            await self.tts_service.connect(voice_id=self.voice_id)
 
             # Create async generator for LLM text chunks
             llm_text_queue: asyncio.Queue[Optional[str]] = asyncio.Queue()
@@ -510,9 +509,9 @@ class VoicePipelineService:
             # Wait for LLM task to complete
             await llm_task
 
-            logger.info(f"🔊 Streamed {audio_chunk_count} audio chunks")
+            logger.info(f"Streamed {audio_chunk_count} audio chunks")
 
-            # Send completion message
+            # Send completion immediately after last audio chunk.
             await self._output_queue.put(
                 PipelineMessage(
                     type="complete",

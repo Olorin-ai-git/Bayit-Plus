@@ -62,8 +62,12 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
   private continuationTimeoutId: ReturnType<typeof setTimeout> | null = null;
   private pipelineActive = false;
   private shouldStopListening = false;
+  private continuationPending = false;
+  private endSessionPending = false;
 
   private static readonly MAX_RETRIES = 3;
+  private static readonly CONTINUATION_UI_DELAY_MS = 200;
+  private static readonly PLAYBACK_SAFETY_TIMEOUT_MS = 10000;
 
   constructor(config: VoiceConfig) {
     super();
@@ -198,6 +202,18 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
       orchestratorLogger.info('Intent action received', { intent, actionType: action.type, confidence });
     });
 
+    streamingVoicePipeline.on('playbackComplete', () => {
+      if (this.continuationPending) {
+        this.continuationPending = false;
+        this.restartListeningForContinuation();
+      } else if (this.endSessionPending) {
+        this.endSessionPending = false;
+        this.endSessionWithCollapse();
+      } else {
+        this.forceTransitionTo('idle');
+      }
+    });
+
     streamingVoicePipeline.on('responseComplete', (conversationId) => {
       this.handleResponseComplete(conversationId);
     });
@@ -223,28 +239,69 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     this.handleContinuation();
   }
 
-  /** Handle continuation after response completes */
+  /** Handle continuation after response completes - waits for audio playback */
   private handleContinuation(): void {
     this.cancelPendingContinuation();
-
     const store = useSupportStore.getState();
-    const shouldContinue = store.isVoiceModalOpen && !this.shouldStopListening;
 
-    if (shouldContinue) {
-      this.continuationTimeoutId = setTimeout(async () => {
-        this.continuationTimeoutId = null;
-        const currentStore = useSupportStore.getState();
-        if (this.pipelineActive && currentStore.isVoiceModalOpen && !this.shouldStopListening) {
-          try {
-            await streamingVoicePipeline.restartListening();
-          } catch (error) {
-            orchestratorLogger.error('Failed to restart listening', { error });
-          }
-        }
-      }, 500);
-    } else {
+    if (this.shouldStopListening) {
       this.shouldStopListening = false;
+      if (streamingVoicePipeline.isAudioPlaying()) {
+        this.endSessionPending = true;
+        this.continuationTimeoutId = setTimeout(() => {
+          this.continuationTimeoutId = null;
+          if (this.endSessionPending) {
+            this.endSessionPending = false;
+            orchestratorLogger.warn('End session playback timeout');
+            this.endSessionWithCollapse();
+          }
+        }, OlorinVoiceOrchestrator.PLAYBACK_SAFETY_TIMEOUT_MS);
+      } else {
+        this.endSessionWithCollapse();
+      }
+      return;
     }
+
+    if (store.isVoiceModalOpen) {
+      if (streamingVoicePipeline.isAudioPlaying()) {
+        this.continuationPending = true;
+        this.continuationTimeoutId = setTimeout(() => {
+          this.continuationTimeoutId = null;
+          if (this.continuationPending) {
+            this.continuationPending = false;
+            orchestratorLogger.warn('Playback completion timeout - forcing continuation');
+            this.restartListeningForContinuation();
+          }
+        }, OlorinVoiceOrchestrator.PLAYBACK_SAFETY_TIMEOUT_MS);
+      } else {
+        this.continuationTimeoutId = setTimeout(async () => {
+          this.continuationTimeoutId = null;
+          await this.restartListeningForContinuation();
+        }, OlorinVoiceOrchestrator.CONTINUATION_UI_DELAY_MS);
+      }
+    }
+  }
+
+  /** Restart listening after audio playback completes */
+  private async restartListeningForContinuation(): Promise<void> {
+    const store = useSupportStore.getState();
+    if (this.pipelineActive && store.isVoiceModalOpen && !this.shouldStopListening) {
+      try {
+        await streamingVoicePipeline.restartListening();
+      } catch (error) {
+        orchestratorLogger.error('Failed to restart listening after playback', { error });
+        this.forceTransitionTo('idle');
+      }
+    } else {
+      this.forceTransitionTo('idle');
+    }
+  }
+
+  /** End session and collapse avatar to icon_only (stop keyword exit) */
+  private endSessionWithCollapse(): void {
+    this.endSession();
+    useSupportStore.getState().setAvatarVisibilityMode('icon_only');
+    orchestratorLogger.info('Session ended with avatar collapse (stop keyword)');
   }
 
   /** Stop listening - commit current audio */
@@ -331,12 +388,14 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     this.pipelineActive = false;
   }
 
-  /** Cancel any pending continuation timer */
+  /** Cancel any pending continuation timer and clear pending flags */
   private cancelPendingContinuation(): void {
     if (this.continuationTimeoutId) {
       clearTimeout(this.continuationTimeoutId);
       this.continuationTimeoutId = null;
     }
+    this.continuationPending = false;
+    this.endSessionPending = false;
   }
 
   /** Trigger an animation sequence */

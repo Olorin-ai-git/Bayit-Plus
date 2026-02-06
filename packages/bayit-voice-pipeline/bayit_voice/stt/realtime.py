@@ -58,9 +58,20 @@ class ElevenLabsRealtimeService:
         self._reconnect_lock: asyncio.Lock = asyncio.Lock()
         self._pending_reconnect: bool = False
         self._last_commit_time: float = 0.0
-        self._forced_commit_interval_sec: float = 2.0
         self._chunk_count_since_commit: int = 0
-        self._max_chunks_before_commit: int = 30
+
+        # VAD and commit tuning (with fallbacks for standalone usage)
+        try:
+            from app.core.config import settings
+            self._forced_commit_interval_sec: float = (
+                settings.olorin.subtitle.stt_forced_commit_interval_seconds
+            )
+            self._max_chunks_before_commit: int = (
+                settings.olorin.subtitle.stt_max_chunks_before_commit
+            )
+        except ImportError:
+            self._forced_commit_interval_sec = 5.0
+            self._max_chunks_before_commit = 150
 
         logger.info("ElevenLabsRealtimeService initialized")
 
@@ -74,28 +85,34 @@ class ElevenLabsRealtimeService:
         self._session_event.clear()
         self._session_confirmed = False
 
-        ws_url = (
-            f"{ELEVENLABS_REALTIME_STT_URL}?model_id=scribe_v2_realtime"
-            f"&audio_format=pcm_16000&sample_rate=16000&commit_strategy=vad"
-            f"&include_language_detection=true&vad_silence_threshold_secs=0.3&vad_threshold=0.25"
-        )
-
-        lang_code = "auto"
-        if source_lang and source_lang != "auto":
-            lang_code = ELEVENLABS_LANGUAGE_CODES.get(source_lang, source_lang)
-            ws_url += f"&language_code={lang_code}"
-
         try:
-            # Get WebSocket configuration (with fallbacks for standalone usage)
+            # Get WebSocket and VAD configuration (with fallbacks for standalone usage)
             try:
                 from app.core.config import settings
+                vad_silence = settings.olorin.subtitle.stt_vad_silence_threshold_secs
+                vad_threshold = settings.olorin.subtitle.stt_vad_threshold
                 ping_interval = settings.olorin.subtitle.stt_ping_interval_seconds
                 ping_timeout = settings.olorin.subtitle.stt_ping_timeout_seconds
                 close_timeout = settings.olorin.subtitle.stt_close_timeout_seconds
             except ImportError:
+                vad_silence = 1.0
+                vad_threshold = 0.5
                 ping_interval = 20
                 ping_timeout = 30
                 close_timeout = 10
+
+            ws_url = (
+                f"{ELEVENLABS_REALTIME_STT_URL}?model_id=scribe_v2_realtime"
+                f"&audio_format=pcm_16000&sample_rate=16000&commit_strategy=vad"
+                f"&include_language_detection=true"
+                f"&vad_silence_threshold_secs={vad_silence}"
+                f"&vad_threshold={vad_threshold}"
+            )
+
+            lang_code = "auto"
+            if source_lang and source_lang != "auto":
+                lang_code = ELEVENLABS_LANGUAGE_CODES.get(source_lang, source_lang)
+                ws_url += f"&language_code={lang_code}"
 
             self.websocket = await websockets.connect(
                 ws_url,

@@ -20,6 +20,7 @@ export interface StreamingVoicePipelineEvents {
   responseComplete: (conversationId: string, escalationNeeded: boolean) => void;
   audioChunk: (audioData: ArrayBuffer) => void;
   error: (error: Error) => void;
+  playbackComplete: () => void;
   connected: () => void;
   disconnected: () => void;
 }
@@ -88,7 +89,7 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
       if (this.config.voiceId) wsUrl.searchParams.set('voice_id', this.config.voiceId);
       this.audioProcessor = new AudioProcessor();
       this.audioPlayer = new StreamingAudioPlayer();
-      this.audioPlayer.setOnPlaybackComplete(() => this.emitStateChange('idle'));
+      this.audioPlayer.setOnPlaybackComplete(() => this.emit('playbackComplete'));
       this.wsHandler.connect(wsUrl.toString(), {
         onConnected: async () => {
           this.isConnected = true; this.isConnecting = false; this.reconnectAttempts = 0; this.emit('connected');
@@ -189,6 +190,7 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
   getConversationId(): string | undefined { return this.config.conversationId; }
   isActive(): boolean { return this.isConnected; }
   isCurrentlyRecording(): boolean { return this.isRecording; }
+  isAudioPlaying(): boolean { return this.audioPlayer?.isCurrentlyPlaying() ?? false; }
   isSupported(): boolean { return isStreamingSupported(); }
   async requestPermission(): Promise<boolean> { return requestMicrophonePermission(); }
 
