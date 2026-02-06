@@ -141,8 +141,8 @@ const styles = StyleSheet.create({
     zIndex: 10,
     // @ts-ignore - Web-specific
     backdropFilter: 'blur(4px)',
-    opacity: 0,
-    transition: 'opacity 0.2s ease',
+    opacity: 0.8,
+    transition: 'opacity 0.2s ease, transform 0.2s ease',
   },
   removeButtonLTR: {
     right: spacing.sm,
@@ -153,6 +153,8 @@ const styles = StyleSheet.create({
   removeButtonHovered: {
     opacity: 1,
     backgroundColor: colors.error.DEFAULT,
+    // @ts-ignore - Web-specific
+    transform: 'scale(1.1)',
   },
   posterContainer: {
     width: '100%',
