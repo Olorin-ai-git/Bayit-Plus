@@ -6,15 +6,9 @@
  * Old components deprecated in favor of shared VoiceInteractionPanel
  */
 
-// Export unified voice panel (replaces TVVoiceIndicator, TVVoiceWaveform, TVVoiceResponseDisplay)
 export { VoiceInteractionPanel } from '../../../../shared/components/voice/VoiceInteractionPanel';
 
-// Deprecated: Legacy TV voice components (will be removed in Phase 5)
-// export { TVVoiceIndicator } from './TVVoiceIndicator';
-// export { TVVoiceResponseDisplay } from './TVVoiceResponseDisplay';
-// export { TVVoiceWaveform } from './TVVoiceWaveform';
 
-// Keep TV-specific components
 export { TVVoiceCommandHistory } from './TVVoiceCommandHistory';
 export { TVVoiceSettings } from './TVVoiceSettings';
 export { TVAvatarPreferences } from './TVAvatarPreferences';

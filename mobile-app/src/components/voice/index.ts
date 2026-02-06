@@ -13,18 +13,7 @@
 export { default as VoiceWaveform } from './VoiceWaveform';
 export { default as ProactiveSuggestionBanner } from './ProactiveSuggestionBanner';
 
-/**
- * Voice Components
- *
- * VoiceSearchModal is deprecated - use VoiceInteractionPanel from @bayit/shared instead
- * VoiceInteractionPanel supports 4 avatar modes: FULL, COMPACT, MINIMAL, ICON_ONLY
- */
-
-// Export unified voice panel (replaces VoiceSearchModal)
 export { VoiceInteractionPanel } from '@bayit/shared/components/voice/VoiceInteractionPanel';
-
-// Deprecated: Legacy voice search modal (will be removed in Phase 5)
-// export { VoiceSearchModal } from './VoiceSearchModal';
 
 export { VoiceStatusIndicator } from './VoiceStatusIndicator';
 export { VoiceResponseDisplay } from './VoiceResponseDisplay';

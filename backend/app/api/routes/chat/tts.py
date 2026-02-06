@@ -9,8 +9,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user
 from app.models.user import User
+
+logger = get_logger(__name__)
 
 from .models import TTSRequest
 
@@ -29,10 +32,7 @@ async def text_to_speech(
     current_user: User = Depends(get_current_active_user),
 ) -> StreamingResponse:
     """Convert text to speech using ElevenLabs Text-to-Speech API."""
-    print(
-        f"[TTS] Text-to-speech request: language='{request.language}', "
-        f"text='{request.text[:100]}'..."
-    )
+    logger.info("Text-to-speech request", extra={"language": request.language, "text_preview": request.text[:100]})
 
     if not request.text or not request.text.strip():
         raise HTTPException(status_code=400, detail="Text cannot be empty")
@@ -44,7 +44,7 @@ async def text_to_speech(
         )
 
     voice_id = request.voice_id or settings.ELEVENLABS_DEFAULT_VOICE_ID
-    print(f"[TTS] Using voice_id='{voice_id}', language='{request.language}'")
+    logger.info("Using voice", extra={"voice_id": voice_id, "language": request.language})
 
     try:
         tts_url = f"{ELEVENLABS_TTS_URL}/{voice_id}/stream"
@@ -53,7 +53,7 @@ async def text_to_speech(
         model_to_use = request.model_id
         if request.language in ["he", "es"]:
             model_to_use = "eleven_v3"
-            print(f"[TTS] Using eleven_v3 model for {request.language} text")
+            logger.info("Using eleven_v3 model", extra={"language": request.language})
 
         request_body = {
             "text": request.text,
@@ -74,7 +74,7 @@ async def text_to_speech(
 
             if response.status_code != 200:
                 error_detail = response.text or "Unknown error"
-                print(f"[TTS] ElevenLabs API error: {error_detail}")
+                logger.error("ElevenLabs API error", extra={"error": error_detail})
                 raise HTTPException(
                     status_code=500,
                     detail=f"ElevenLabs TTS error: {error_detail}",

@@ -14,8 +14,11 @@ from typing import Any, Optional
 import anthropic
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.models.content import (Content, LiveChannel, Podcast, PodcastEpisode,
                                 RadioStation)
+
+logger = get_logger(__name__)
 
 from .helpers import extract_content_name_from_query, fuzzy_match_score
 from .models import ResolvedContentItem
@@ -166,7 +169,7 @@ Return ONLY valid JSON, nothing else."""
         )
 
         action_text = action_response.content[0].text.strip()
-        print(f"[CHAT] Claude action decision: {action_text}")
+        logger.info("Claude action decision", extra={"action_text": action_text})
 
         try:
             action_data = json.loads(action_text)
@@ -177,32 +180,28 @@ Return ONLY valid JSON, nothing else."""
                 if action_type == "show_multiple":
                     items = action_data.get("items", [])
                     if items:
-                        print(
-                            f"[CHAT] show_multiple action with {len(items)} items: {items}"
-                        )
+                        logger.info("show_multiple action", extra={"item_count": len(items)})
                         return {
                             "type": "show_multiple",
                             "payload": {"items": items},
                             "confidence": 0.9,
                         }
                     else:
-                        print(f"[CHAT] show_multiple action but no items found")
+                        logger.info("show_multiple action but no items found")
                         return None
 
                 # Handle chess_invite action
                 if action_type == "chess_invite":
                     friend_name = action_data.get("friend_name")
                     if friend_name:
-                        print(f"[CHAT] chess_invite action for friend: {friend_name}")
+                        logger.info("chess_invite action", extra={"friend_name": friend_name})
                         return {
                             "type": "chess_invite",
                             "payload": {"friend_name": friend_name},
                             "confidence": 0.9,
                         }
                     else:
-                        print(
-                            f"[CHAT] chess_invite without friend name, converting to navigate"
-                        )
+                        logger.info("chess_invite without friend name, converting to navigate")
                         return {
                             "type": "navigate",
                             "payload": {"target": "chess"},
@@ -212,50 +211,40 @@ Return ONLY valid JSON, nothing else."""
                 # If it's a play action, validate the content exists in our library
                 if action_type == "play":
                     try:
-                        print(
-                            f"[CHAT] Validating play action: checking if '{query}' exists in library"
-                        )
+                        logger.info("Validating play action", extra={"query": query})
                         content_found = await Content.find(
                             Content.is_published == True
                         ).to_list()
 
-                        print(
-                            f"[CHAT] Found {len(content_found)} published content items in library"
-                        )
+                        logger.debug("Content library search", extra={"count": len(content_found)})
 
                         query_lower = query.lower()
                         found = None
                         for c in content_found:
                             title = str(c.title).lower()
-                            print(
-                                f"[CHAT]   Checking: '{title}' vs query '{query_lower}'"
-                            )
+                            logger.debug("Checking content match", extra={"title": title, "query": query_lower})
                             if query_lower in title:
                                 found = c
-                                print(f"[CHAT]   Match found!")
+                                logger.debug("Content match found in title")
                                 break
                             if hasattr(c, "name"):
                                 name = str(c.name).lower()
                                 if query_lower in name:
                                     found = c
-                                    print(f"[CHAT]   Match found in name!")
+                                    logger.debug("Content match found in name")
                                     break
 
                         if not found:
-                            print(
-                                f"[CHAT] Content '{query}' not found in library, converting play to search action"
-                            )
+                            logger.info("Content not found, converting play to search", extra={"query": query})
                             return {
                                 "type": "search",
                                 "payload": {"query": query},
                                 "confidence": 0.8,
                             }
                         else:
-                            print(
-                                f"[CHAT] Content '{query}' found in library, keeping play action"
-                            )
+                            logger.info("Content found in library, keeping play action", extra={"query": query})
                     except Exception as e:
-                        print(f"[CHAT] Error validating content in library: {e}")
+                        logger.error("Error validating content in library", extra={"error": str(e)})
                         pass
 
                 # Build payload based on action type
@@ -275,13 +264,13 @@ Return ONLY valid JSON, nothing else."""
                     "confidence": 0.9,
                 }
         except json.JSONDecodeError:
-            print(f"[CHAT] Failed to parse action JSON: {action_text}")
+            logger.warning("Failed to parse action JSON", extra={"action_text": action_text})
             return None
 
         return None
 
     except Exception as e:
-        print(f"[CHAT] Error extracting action: {e}")
+        logger.error("Error extracting action", extra={"error": str(e)})
         return None
 
 
@@ -436,10 +425,10 @@ async def process_transcription_completed(
     """
     from .helpers import process_hebronics_input
 
-    print(f"[ElevenLabs Webhook] Processing transcription: {transcription_id}")
-    print(f"  Text: {text}")
-    print(f"  Language: {language_code}")
-    print(f"  Duration: {audio_duration}s")
+    logger.info("Processing transcription", extra={
+        "transcription_id": transcription_id, "text_preview": text[:100] if text else None,
+        "language_code": language_code, "audio_duration": audio_duration,
+    })
 
     if not text:
         return
@@ -458,13 +447,14 @@ async def process_transcription_completed(
     if language_code in ["he", "iw"]:
         try:
             processed = await process_hebronics_input(text)
-            print(f"  Normalized: {processed.get('normalized')}")
-            print(f"  Intent: {processed.get('intent')}")
+            logger.info("Hebronics processed", extra={
+                "normalized": processed.get("normalized"), "intent": processed.get("intent"),
+            })
 
             if transcription_id and transcription_id in pending_transcriptions:
                 pending_transcriptions[transcription_id]["processed"] = processed
         except Exception as e:
-            print(f"  Hebronics processing error: {e}")
+            logger.error("Hebronics processing error", extra={"error": str(e)})
 
 
 async def align_message_with_action(
@@ -480,7 +470,7 @@ async def align_message_with_action(
     action_type = action.get("type")
     msg_lower = message.lower()
 
-    print(f"[CHAT] ACTION DEBUG: action_type='{action_type}'")
+    logger.debug("Action alignment check", extra={"action_type": action_type})
 
     if action_type == "search":
         playback_words = [
@@ -498,17 +488,14 @@ async def align_message_with_action(
             "trying to play",
         ]
         if any(word in msg_lower for word in playback_words):
-            print(
-                f"[CHAT] Message/action mismatch: message says playing but action is search"
-            )
-            print(f"[CHAT] Original message: {message}")
+            logger.info("Message/action mismatch, correcting", extra={"original_message": message})
             content_name = await extract_content_name_from_query(query, language)
-            print(f"[CHAT] Extracted content name: {content_name}")
+            logger.debug("Extracted content name", extra={"content_name": content_name})
             if language == "he":
                 corrected = f"מחפשת את {content_name}..."
             else:
                 corrected = f"Searching for {content_name}..."
-            print(f"[CHAT] Corrected message: {corrected}")
+            logger.debug("Corrected message", extra={"corrected": corrected})
             return corrected
 
     return message

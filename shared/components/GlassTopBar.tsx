@@ -17,6 +17,9 @@ import { isWeb, isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import { useConstantListening } from '../hooks/useConstantListening';
 import { useVoiceSettingsStore } from '../stores/voiceSettingsStore';
+import { logger as baseLogger } from '../utils/logger';
+
+const logger = baseLogger.scope('GlassTopBar');
 import { useTVFocus } from './hooks/useTVFocus';
 
 interface GlassTopBarProps {
@@ -60,7 +63,7 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
 
   // Handle voice errors
   const handleVoiceError = useCallback((error: Error) => {
-    console.warn('[GlassTopBar] Voice error:', error.message);
+    logger.warn('Voice error', { error: error.message });
   }, []);
 
   // Wake word listening hook
