@@ -46,20 +46,36 @@ export default function Layout() {
     isVoiceModalOpen,
     isSupported: voiceSupported,
     closeVoiceModal,
+    openVoiceModal,
     startListening,
     stopListening,
     interrupt,
-    activateVoiceAssistant,
+    playIntro,
   } = useVoiceSupport();
 
-  const handleVoiceAvatarPress = useCallback(() => {
+  const handleVoiceAvatarPress = useCallback(async () => {
     // Dispatch custom event to toggle topbar microphone button state
-    logger.debug('Wizard avatar pressed - activating voice assistant', 'Layout');
+    logger.debug('Wizard avatar pressed - opening voice modal and starting listening', 'Layout');
+
+    // Toggle particles animation
+    window.dispatchEvent(new CustomEvent('bayit:voice-started'));
+
+    // Toggle microphone button state
     window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
 
-    // Activate voice assistant (handles intro + modal + listening)
-    activateVoiceAssistant();
-  }, [activateVoiceAssistant]);
+    // Open modal
+    openVoiceModal();
+
+    // Play intro and start listening
+    try {
+      await playIntro();
+      logger.debug('Intro completed, starting listening', 'Layout');
+      // Start listening (this will request microphone permission)
+      await startListening();
+    } catch (error) {
+      logger.warn('Intro or listening failed', 'Layout', error);
+    }
+  }, [openVoiceModal, playIntro, startListening]);
 
   // Handle closing the voice modal - must also toggle the microphone button back
   const handleCloseVoiceModal = useCallback(() => {
@@ -144,8 +160,22 @@ export default function Layout() {
   // Animation for voice panel slide up/down
   const voicePanelAnim = useRef(new Animated.Value(0)).current;
 
+  // Manual voice activation for testing (without microphone)
+  const [manualVoiceActive, setManualVoiceActive] = useState(false);
+
+  // Listen for manual voice activation event - toggle on/off
+  useEffect(() => {
+    const handleVoiceStarted = () => {
+      logger.debug('Voice manually toggled - toggling particles', 'Layout');
+      setManualVoiceActive(prev => !prev);
+    };
+
+    window.addEventListener('bayit:voice-started', handleVoiceStarted);
+    return () => window.removeEventListener('bayit:voice-started', handleVoiceStarted);
+  }, []);
+
   // Voice panel is visible when any voice activity is happening
-  const isVoiceActive = isListening || isAwake || isProcessing || isResponding || isTTSSpeaking;
+  const isVoiceActive = isListening || isAwake || isProcessing || isResponding || isTTSSpeaking || manualVoiceActive;
 
   // Animate the voice panel visibility
   useEffect(() => {
@@ -368,5 +398,7 @@ const styles = StyleSheet.create({
   voicePanelWrapper: {
     overflow: 'hidden',
     width: '100%',
+    position: 'relative',
+    zIndex: 9999, // Above modal and all other elements
   },
 });

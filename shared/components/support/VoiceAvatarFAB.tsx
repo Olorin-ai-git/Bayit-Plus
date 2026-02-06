@@ -260,18 +260,18 @@ const WakeWordPulse: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    bottom: isTV ? spacing.xl * 2 : spacing['4xl'], // Higher position for mobile (96px)
+    position: 'fixed' as any,
+    bottom: isTV ? spacing.xl * 2 : 24, // 24px from bottom on web
     zIndex: 1000, // Above widgets dock (which has zIndex: 50)
     alignItems: 'center',
     justifyContent: 'center',
-  },
+  } as any,
   containerLTR: {
-    right: isTV ? spacing.xl * 2 : spacing.lg,
-  },
+    right: isTV ? spacing.xl * 2 : 24, // 24px from right on web
+  } as any,
   containerRTL: {
-    left: isTV ? spacing.xl * 2 : spacing.lg,
-  },
+    left: isTV ? spacing.xl * 2 : 24, // 24px from left on web
+  } as any,
   fab: {
     backgroundColor: 'rgba(13, 13, 26, 0.9)',
     borderWidth: 2,

@@ -158,17 +158,31 @@ export default function Header() {
 
   // Voice Support for wizard hat button (mobile only)
   const {
-    activateVoiceAssistant,
+    openVoiceModal,
+    playIntro,
     isSupported: voiceSupported,
   } = useVoiceSupport();
 
-  const handleWizardHatPress = useCallback(() => {
-    logger.debug('Wizard hat button pressed - activating voice assistant', 'Header');
+  const handleWizardHatPress = useCallback(async () => {
+    logger.debug('Wizard hat button pressed - opening voice modal and showing particles', 'Header');
+
+    // Dispatch custom event to show particles
+    window.dispatchEvent(new CustomEvent('bayit:voice-started'));
+
     // Dispatch custom event to toggle topbar microphone button state
     window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
-    // Activate voice assistant (handles intro + modal + listening)
-    activateVoiceAssistant();
-  }, [activateVoiceAssistant]);
+
+    // Open modal
+    openVoiceModal();
+
+    // Play intro (this will show particles/animation)
+    try {
+      await playIntro();
+      logger.debug('Intro completed successfully', 'Header');
+    } catch (error) {
+      logger.warn('Intro playback failed, continuing anyway', 'Header', error);
+    }
+  }, [openVoiceModal, playIntro]);
 
   // Navigation component - document.dir handles visual direction
   // Disabled in Voice Only mode
