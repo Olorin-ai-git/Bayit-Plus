@@ -17,6 +17,7 @@ import { isWeb, isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import { useConstantListening } from '../hooks/useConstantListening';
 import { useVoiceSettingsStore } from '../stores/voiceSettingsStore';
+import { useSupportStore } from '../stores/supportStore';
 import { logger as baseLogger } from '../utils/logger';
 
 const logger = baseLogger.scope('GlassTopBar');
@@ -48,6 +49,7 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
 
   // Voice settings
   const { preferences } = useVoiceSettingsStore();
+  const isVoiceSessionActive = useSupportStore((s) => s.isVoiceSessionActive);
   const wakeWordActive = preferences.wake_word_enabled && (isTV || isWeb);
   const holdButtonModeEnabled = preferences.hold_button_mode;
 
@@ -74,7 +76,7 @@ export const GlassTopBar: React.FC<GlassTopBarProps> = ({
     audioLevel,
     isSupported: wakeWordSupported,
   } = useConstantListening({
-    enabled: wakeWordActive && !holdButtonModeEnabled,
+    enabled: wakeWordActive && !holdButtonModeEnabled && !isVoiceSessionActive,
     onTranscript: handleTranscript,
     onError: handleVoiceError,
     silenceThresholdMs: preferences.silence_threshold_ms,

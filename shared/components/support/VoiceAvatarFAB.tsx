@@ -38,7 +38,8 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({ onPress, visible
   const [isFocused, setIsFocused] = useState(false);
   const platform = Platform.OS === 'web' ? 'web' : isTV ? 'tv' : 'mobile';
   const { avatarMode } = useVoiceAvatarMode(platform);
-  const { isListening, startListening, stopListening } = useVoiceOrchestrator({ autoInitialize: true });
+  // Orchestrator initializes on mount for wake-word support; voice sessions go through voiceSupportService via onPress
+  useVoiceOrchestrator({ autoInitialize: true });
 
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const opacityAnim = useRef(new Animated.Value(visible ? 1 : 0)).current;
@@ -75,12 +76,9 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({ onPress, visible
 
   const handlePress = () => {
     voiceActivationFeedback();
+    // Only call onPress which opens the modal and triggers voiceSupportService.
+    // Do NOT also call startListening here - that creates a second parallel voice stream.
     onPress();
-    if (isListening) {
-      stopListening().catch((err) => fabLogger.error('Failed to stop listening via orchestrator', err));
-    } else {
-      startListening('manual').catch((err) => fabLogger.error('Failed to start listening via orchestrator', err));
-    }
   };
 
   const fabSize = isTV ? 96 : 64;

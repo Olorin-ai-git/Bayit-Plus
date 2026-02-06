@@ -4,11 +4,18 @@
  * for the streaming voice pipeline
  */
 
-import { useSupportStore } from '../stores/supportStore';
-import { StreamingAudioPlayer } from './streamingAudioPlayer';
 import { logger } from '../utils/logger';
 
 const log = logger.scope('VoiceWebSocket');
+
+/** Valid server message types */
+const VALID_SERVER_MESSAGE_TYPES = new Set([
+  'transcript_partial', 'transcript_final', 'llm_chunk', 'tts_audio',
+  'complete', 'cancelled', 'error', 'pong',
+]);
+
+/** Base64 validation pattern - checks for valid base64 characters */
+const BASE64_PATTERN = /^[A-Za-z0-9+/]*={0,2}$/;
 
 interface ServerMessage {
   type: 'transcript_partial' | 'transcript_final' | 'llm_chunk' | 'tts_audio'
@@ -45,6 +52,17 @@ export class VoiceWebSocketHandler {
   private currentResponse = '';
 
   connect(url: string, callbacks: WebSocketCallbacks): void {
+    // Close any existing connection to prevent zombie WebSockets
+    if (this.ws) {
+      this.cleanupPing();
+      this.ws.onclose = null;
+      this.ws.onerror = null;
+      this.ws.onmessage = null;
+      this.ws.onopen = null;
+      try { this.ws.close(1000, 'Reconnecting'); } catch { /* already closed */ }
+      this.ws = null;
+    }
+    this.currentResponse = '';
     this.ws = new WebSocket(url);
 
     this.ws.onopen = () => {
@@ -54,8 +72,11 @@ export class VoiceWebSocketHandler {
 
     this.ws.onmessage = (event) => {
       try {
-        const message: ServerMessage = JSON.parse(event.data);
-        this.handleMessage(message, callbacks);
+        const raw = JSON.parse(event.data);
+        const message = this.validateMessage(raw);
+        if (message) {
+          this.handleMessage(message, callbacks);
+        }
       } catch (error) {
         log.warn('Failed to parse server message', { error });
       }
@@ -63,6 +84,50 @@ export class VoiceWebSocketHandler {
 
     this.ws.onerror = () => { callbacks.onError(new Error('WebSocket connection error')); };
     this.ws.onclose = (event) => { this.cleanupPing(); callbacks.onDisconnected(event.code); };
+  }
+
+  /** Validate incoming WebSocket message structure */
+  private validateMessage(raw: unknown): ServerMessage | null {
+    if (!raw || typeof raw !== 'object') {
+      log.warn('Rejected non-object message');
+      return null;
+    }
+
+    const msg = raw as Record<string, unknown>;
+
+    // Validate type field exists and is a known type
+    if (typeof msg.type !== 'string' || !VALID_SERVER_MESSAGE_TYPES.has(msg.type)) {
+      log.warn('Rejected message with invalid type', { type: msg.type });
+      return null;
+    }
+
+    // Validate text fields are strings when present
+    if (msg.text !== undefined && typeof msg.text !== 'string') {
+      log.warn('Rejected message with non-string text field', { type: msg.type });
+      return null;
+    }
+
+    // Validate data field (base64 audio) is a string when present
+    if (msg.data !== undefined && typeof msg.data !== 'string') {
+      log.warn('Rejected message with non-string data field', { type: msg.type });
+      return null;
+    }
+
+    // For tts_audio, validate base64 encoding
+    if (msg.type === 'tts_audio' && msg.data) {
+      if (!BASE64_PATTERN.test(msg.data as string)) {
+        log.warn('Rejected tts_audio with invalid base64 data');
+        return null;
+      }
+    }
+
+    // Validate language field if present
+    if (msg.language !== undefined && typeof msg.language !== 'string') {
+      log.warn('Rejected message with non-string language field', { type: msg.type });
+      return null;
+    }
+
+    return msg as unknown as ServerMessage;
   }
 
   private handleMessage(message: ServerMessage, callbacks: WebSocketCallbacks): void {

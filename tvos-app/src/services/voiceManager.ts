@@ -7,7 +7,7 @@
 import { speechService } from './speech';
 import { wakeWordService } from './wakeWord';
 import { config } from '../config/appConfig';
-import { createVoiceOrchestrator, OlorinVoiceOrchestrator } from '@bayit/shared/services/olorinVoiceOrchestrator';
+import { OlorinVoiceOrchestrator, voiceOrchestrator } from '@bayit/shared/services/olorinVoiceOrchestrator';
 import { useSupportStore } from '@bayit/shared/stores/supportStore';
 import { logger } from '@bayit/shared/utils/logger';
 import { processSpeechResult } from './voiceSpeechProcessor';
@@ -52,13 +52,12 @@ class VoiceManager {
 
   private async _initializeOrchestrator(): Promise<void> {
     try {
-      const store = useSupportStore.getState();
-      this.orchestrator = createVoiceOrchestrator({
+      this.orchestrator = voiceOrchestrator;
+      await this.orchestrator.initialize({
         platform: 'tvos', language: this.config.speechLanguage, streamingMode: false,
         wakeWordEnabled: this.config.enableBackgroundListening,
-        initialAvatarMode: store.avatarVisibilityMode, autoExpandOnWakeWord: true, collapseDelay: 10000,
+        autoExpandOnWakeWord: true, collapseDelay: 10000,
       });
-      await this.orchestrator.initialize();
       log.info('Orchestrator initialized (tvOS)');
     } catch (error) { log.error('Failed to initialize orchestrator', error); }
   }
@@ -95,7 +94,7 @@ class VoiceManager {
   async startMenuButtonListening(): Promise<void> {
     try {
       log.info('Starting speech recognition via Menu button');
-      if (this.orchestrator) await this.orchestrator.startListening('manual');
+      if (this.orchestrator) await this.orchestrator.startVoiceInteraction('manual');
       useSupportStore.getState().openVoiceModal();
       if (this._isWakeWordListening) await this.stopBackgroundListening();
       this._startSession('menu-button');

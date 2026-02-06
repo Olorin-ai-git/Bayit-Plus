@@ -34,7 +34,7 @@ export async function handleWakeWordDetected(
   try {
     await stopBackgroundListening(deps);
     const orchestrator = deps.getOrchestrator();
-    if (orchestrator) await orchestrator.startListening('wake-word');
+    if (orchestrator) await orchestrator.startVoiceInteraction('wake-word');
     useSupportStore.getState().onWakeWordDetected();
     deps.startSession('wake-word');
     const metrics = deps.getSessionMetrics();

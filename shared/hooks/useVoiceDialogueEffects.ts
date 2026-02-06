@@ -5,7 +5,7 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { VoiceState, GestureState } from '../stores/supportStore';
+import { VoiceState, GestureState, useSupportStore } from '../stores/supportStore';
 import { useAvatarDialogue } from './useAvatarDialogue';
 
 interface UseVoiceDialogueEffectsOptions {
@@ -44,6 +44,9 @@ export function useVoiceDialogueEffects({
       const d = getProcessingDialogue(true);
       setCurrentDialogue(d);
       if (d.gesture) setGestureState(d.gesture as GestureState);
+    } else if (voiceState === 'speaking') {
+      // Clear previous dialogue (greeting/processing) - streamingResponse takes over
+      setCurrentDialogue(null);
     } else if (voiceState === 'error') {
       const d = getErrorDialogue();
       setCurrentDialogue(d);
@@ -54,7 +57,15 @@ export function useVoiceDialogueEffects({
     }
   }, [voiceState, hasAppeared, setCurrentDialogue, setGestureState, getWakeDialogue, getProcessingDialogue, getErrorDialogue, onIntroComplete]);
 
-  // Update dialogue when lastResponse changes during speaking
+  // Real-time dialogue update from streaming response (matches audio being spoken)
+  const { streamingResponse } = useSupportStore();
+
+  useEffect(() => {
+    if (voiceState !== 'speaking' || !streamingResponse) return;
+    setCurrentDialogue({ text: streamingResponse });
+  }, [streamingResponse, voiceState, setCurrentDialogue]);
+
+  // Update dialogue with gesture analysis when lastResponse (final text) arrives
   useEffect(() => {
     if (voiceState !== 'speaking' || !lastResponse) return;
     const lower = lastResponse.toLowerCase();

@@ -1,6 +1,6 @@
 import { speechService } from './speech';
 import { wakeWordService } from './wakeWord';
-import { createVoiceOrchestrator, OlorinVoiceOrchestrator } from '@bayit/shared/services/olorinVoiceOrchestrator';
+import { OlorinVoiceOrchestrator, voiceOrchestrator } from '@bayit/shared/services/olorinVoiceOrchestrator';
 import { useSupportStore } from '@bayit/shared/stores/supportStore';
 import logger from '@/utils/logger';
 import { processSpeechResult } from './voiceSpeechProcessor';
@@ -40,13 +40,12 @@ class VoiceManager {
 
   private async _initializeOrchestrator(): Promise<void> {
     try {
-      const store = useSupportStore.getState();
-      this.orchestrator = createVoiceOrchestrator({
+      this.orchestrator = voiceOrchestrator;
+      await this.orchestrator.initialize({
         platform: 'ios', language: this.config.speechLanguage, streamingMode: false,
         wakeWordEnabled: this.config.enableBackgroundListening,
-        initialAvatarMode: store.avatarVisibilityMode, autoExpandOnWakeWord: true, collapseDelay: 10000,
+        autoExpandOnWakeWord: true, collapseDelay: 10000,
       });
-      await this.orchestrator.initialize();
       moduleLogger.debug('Orchestrator initialized');
     } catch (error) { moduleLogger.error('Failed to initialize orchestrator', error); }
   }
@@ -109,7 +108,7 @@ class VoiceManager {
   private async _onWakeWordDetected(detection: any): Promise<void> {
     try {
       await this.stopBackgroundListening();
-      if (this.orchestrator) await this.orchestrator.startListening('wake-word');
+      if (this.orchestrator) await this.orchestrator.startVoiceInteraction('wake-word');
       useSupportStore.getState().onWakeWordDetected();
       this._startSession();
       if (this.config.enableMetrics && this.sessionMetrics)

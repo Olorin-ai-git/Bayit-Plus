@@ -135,6 +135,10 @@ interface SupportStore {
   voiceState: VoiceState;
   currentTranscript: string;
   lastResponse: string;
+  /** Real-time accumulation of LLM chunks for speech bubble sync */
+  streamingResponse: string;
+  /** Whether LLM chunks are currently arriving */
+  isStreamingText: boolean;
   isVoiceModalOpen: boolean;
   voiceMessages: VoiceMessage[];
   voiceConversationId: string | null;
@@ -152,6 +156,9 @@ interface SupportStore {
   tickets: SupportTicket[];
   selectedTicketId: string | null;
   isSubmittingTicket: boolean;
+
+  // Voice session state (prevents parallel mic streams from useConstantListening)
+  isVoiceSessionActive: boolean;
 
   // Wake word state
   isWakeWordEnabled: boolean;
@@ -210,6 +217,12 @@ interface SupportStore {
   setVoiceState: (state: VoiceState) => void;
   setCurrentTranscript: (transcript: string) => void;
   setLastResponse: (response: string) => void;
+  /** Set streaming response text (sanitized) */
+  setStreamingResponse: (text: string) => void;
+  /** Append an LLM chunk to the streaming response (sanitized) */
+  appendStreamingResponse: (chunk: string) => void;
+  /** Clear streaming response and set isStreamingText to false */
+  clearStreamingResponse: () => void;
   openVoiceModal: () => void;
   closeVoiceModal: () => void;
   addVoiceMessage: (message: Omit<VoiceMessage, 'id' | 'timestamp'>) => void;
@@ -232,6 +245,9 @@ interface SupportStore {
   updateTicket: (id: string, updates: Partial<SupportTicket>) => void;
   selectTicket: (id: string | null) => void;
   setSubmittingTicket: (isSubmitting: boolean) => void;
+
+  // Voice session actions
+  setVoiceSessionActive: (active: boolean) => void;
 
   // Wake word actions
   setWakeWordEnabled: (enabled: boolean) => void;
@@ -319,6 +335,8 @@ const initialState = {
   voiceState: 'idle' as VoiceState,
   currentTranscript: '',
   lastResponse: '',
+  streamingResponse: '',
+  isStreamingText: false,
   isVoiceModalOpen: false,
   voiceMessages: [] as VoiceMessage[],
   voiceConversationId: null as string | null,
@@ -336,6 +354,9 @@ const initialState = {
   tickets: [] as SupportTicket[],
   selectedTicketId: null as string | null,
   isSubmittingTicket: false,
+
+  // Voice session state
+  isVoiceSessionActive: false,
 
   // Wake word state
   isWakeWordEnabled: true,
@@ -402,16 +423,32 @@ export const useSupportStore = create<SupportStore>()(
 
       setLastResponse: (response: string) => set({ lastResponse: response }),
 
+      setStreamingResponse: (text: string) =>
+        set({ streamingResponse: text.replace(/<[^>]*>/g, ''), isStreamingText: true }),
+
+      appendStreamingResponse: (chunk: string) =>
+        set((state) => ({
+          streamingResponse: state.streamingResponse + chunk.replace(/<[^>]*>/g, ''),
+          isStreamingText: true,
+        })),
+
+      clearStreamingResponse: () =>
+        set({ streamingResponse: '', isStreamingText: false }),
+
       openVoiceModal: () => set({
         isVoiceModalOpen: true,
+        isVoiceSessionActive: true,
         wakeWordDetected: false,
         voiceState: 'idle',
       }),
 
       closeVoiceModal: () => set({
         isVoiceModalOpen: false,
+        isVoiceSessionActive: false,
         voiceState: 'idle',
         currentTranscript: '',
+        streamingResponse: '',
+        isStreamingText: false,
       }),
 
       addVoiceMessage: (message: Omit<VoiceMessage, 'id' | 'timestamp'>) => {
@@ -462,6 +499,9 @@ export const useSupportStore = create<SupportStore>()(
       selectTicket: (id: string | null) => set({ selectedTicketId: id }),
 
       setSubmittingTicket: (isSubmitting: boolean) => set({ isSubmittingTicket: isSubmitting }),
+
+      // Voice session actions
+      setVoiceSessionActive: (active: boolean) => set({ isVoiceSessionActive: active }),
 
       // Wake word actions
       setWakeWordEnabled: (enabled: boolean) => set({ isWakeWordEnabled: enabled }),

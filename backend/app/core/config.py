@@ -1298,6 +1298,8 @@ class Settings(BaseSettings):
 
     # Support System Configuration
     SUPPORT_CHAT_MAX_TOKENS: int = 300
+    SUPPORT_VOICE_MAX_TOKENS: int = 120
+    SUPPORT_VOICE_TRANSCRIPT_MAX_LENGTH: int = 500
     SUPPORT_CONTEXT_MAX_DOCS: int = 3
     SUPPORT_ESCALATION_THRESHOLD: float = 0.5
     SUPPORT_TICKET_ADMIN_EMAILS: str = ""

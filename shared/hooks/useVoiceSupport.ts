@@ -6,6 +6,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useSupportStore } from '../stores/supportStore';
 import { voiceSupportService } from '../services/voiceSupportService';
+import { voiceOrchestrator } from '../services/olorinVoiceOrchestrator';
 import { ttsService } from '../services/ttsService';
 import { supportConfig } from '../config/supportConfig';
 import i18n from '../i18n';
@@ -49,7 +50,6 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
     currentIntroText,
     setVoiceState,
     openVoiceModal,
-    closeVoiceModal,
     setSessionIntroPlayed,
     setCurrentIntroText,
   } = useSupportStore();
@@ -84,32 +84,32 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
     }
   }, []);
 
-  // Subscribe to voice service events
+  // Subscribe to orchestrator events
   useEffect(() => {
-    const handleStateChange = (state: typeof voiceState) => {
+    const handleStateChange = (event: { from: string; to: string }) => {
       voiceSupportLogger.info('Voice state changed', {
-        state,
-        previousState: voiceState,
+        from: event.from,
+        to: event.to,
       });
     };
 
-    const handleError = (error: Error) => {
-      voiceSupportLogger.error('Voice service error', {
-        error: error.message,
-        stack: error.stack,
+    const handleError = (event: { error: string; recoverable: boolean }) => {
+      voiceSupportLogger.error('Orchestrator error', {
+        error: event.error,
+        recoverable: event.recoverable,
       });
     };
 
-    voiceSupportService.on('stateChange', handleStateChange);
-    voiceSupportService.on('error', handleError);
+    voiceOrchestrator.on('stateChange', handleStateChange);
+    voiceOrchestrator.on('error', handleError);
 
     return () => {
-      voiceSupportService.off('stateChange', handleStateChange);
-      voiceSupportService.off('error', handleError);
+      voiceOrchestrator.off('stateChange', handleStateChange);
+      voiceOrchestrator.off('error', handleError);
     };
   }, []);
 
-  // Start listening
+  // Start listening - routes through orchestrator
   const startListening = useCallback(async () => {
     if (!isSupported) {
       voiceSupportLogger.warn('Voice not supported on platform', {
@@ -131,17 +131,17 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
       }
     }
 
-    await voiceSupportService.startListening();
+    await voiceOrchestrator.startVoiceInteraction('manual');
   }, [isSupported, hasPermission, checkMicPermission]);
 
-  // Stop listening
+  // Stop listening - routes through orchestrator
   const stopListening = useCallback(() => {
-    voiceSupportService.stopListening();
+    voiceOrchestrator.stopListening();
   }, []);
 
-  // Interrupt speech
+  // Interrupt speech - routes through orchestrator
   const interrupt = useCallback(() => {
-    voiceSupportService.interrupt();
+    voiceOrchestrator.interrupt();
   }, []);
 
   // Reset conversation
@@ -156,22 +156,14 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
     return granted;
   }, []);
 
-  // Handle modal close with cleanup
+  // Handle modal close with cleanup - delegates to orchestrator
   const handleCloseVoiceModal = useCallback(() => {
-    // Stop any ongoing interaction
-    if (voiceState === 'listening') {
-      stopListening();
-    } else if (voiceState === 'speaking') {
-      interrupt();
-    }
-
     // Clear intro text if present
     setCurrentIntroText(null);
 
-    // Reset state
-    setVoiceState('idle');
-    closeVoiceModal();
-  }, [voiceState, stopListening, interrupt, setVoiceState, closeVoiceModal, setCurrentIntroText]);
+    // Orchestrator handles stopping pipeline, animations, state reset, and modal close
+    voiceOrchestrator.endSession();
+  }, [setCurrentIntroText]);
 
   // Helper function to play intro with TTS (defined first to avoid circular dependency)
   const playIntroWithTTS = useCallback((introText: string, resolve: () => void, reject: (error: unknown) => void) => {

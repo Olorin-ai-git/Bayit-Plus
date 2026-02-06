@@ -306,6 +306,7 @@ class VoicePipelineService:
                         user=self.user,
                         language=language,
                         conversation_id=self.conversation_id,
+                        is_voice=True,
                     ):
                         chunk_type = chunk.get("type")
 

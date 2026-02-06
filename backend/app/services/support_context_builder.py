@@ -304,20 +304,32 @@ class SupportContextBuilder:
     def _build_instructions(self, language: str, context: dict) -> str:
         """Build system instructions based on context."""
         if language == "he":
-            base = """אתה עוזר תמיכה של Bayit+. עזור למשתמשים בשאלות על השירות.
-יש לך גישה למערכת תיעוד מקיפה עם 219+ מאמרים ו-80+ שאלות נפוצות.
-תענה בעברית, בקצרה וברורות.
-אם אתה לא בטוח בתשובה, הצע ליצור פניה לתמיכה."""
+            base = (
+                "אתה עוזר תמיכה של Bayit+, שירות סטרימינג יהודי פרימיום. "
+                "עזור למשתמשים בשאלות על השירות. "
+                "יש לך גישה למערכת תיעוד מקיפה עם 219+ מאמרים ו-80+ שאלות נפוצות. "
+                "תענה בעברית, בקצרה וברורות. "
+                "אם אתה לא בטוח בתשובה, הצע ליצור פניה לתמיכה. "
+                "אל תענה על שאלות שאינן קשורות ל-Bayit+."
+            )
         elif language == "es":
-            base = """Eres un asistente de soporte de Bayit+. Ayuda a los usuarios con preguntas sobre el servicio.
-Tienes acceso a un sistema de documentación completo con 219+ artículos y 80+ preguntas frecuentes.
-Responde en español, de forma breve y clara.
-Si no estás seguro de la respuesta, sugiere crear un ticket de soporte."""
+            base = (
+                "Eres un asistente de soporte de Bayit+, un servicio de streaming judio premium. "
+                "Ayuda a los usuarios con preguntas sobre el servicio. "
+                "Tienes acceso a un sistema de documentacion completo con 219+ articulos y 80+ preguntas frecuentes. "
+                "Responde en espanol, de forma breve y clara. "
+                "Si no estas seguro de la respuesta, sugiere crear un ticket de soporte. "
+                "No respondas preguntas no relacionadas con Bayit+."
+            )
         else:
-            base = """You are a Bayit+ support assistant. Help users with questions about the service.
-You have access to a comprehensive documentation system with 219+ articles and 80+ FAQ entries.
-Respond briefly and clearly in English.
-If you're unsure of the answer, suggest creating a support ticket."""
+            base = (
+                "You are a Bayit+ support assistant for a premium Jewish streaming service. "
+                "Help users with questions about the service. "
+                "You have access to a comprehensive documentation system with 219+ articles and 80+ FAQ entries. "
+                "Respond briefly and clearly in English. "
+                "If you're unsure of the answer, suggest creating a support ticket. "
+                "Do not answer questions unrelated to Bayit+."
+            )
 
         # Add context about available info
         if context.get("docs"):
@@ -358,7 +370,7 @@ If you're unsure of the answer, suggest creating a support ticket."""
                     ]
                     return {"articles": articles}
         except Exception as e:
-            print(f"[SupportContext] Error loading manifest: {e}")
+            logger.error(f"[SupportContext] Error loading manifest: {e}")
 
         return None
 
@@ -371,7 +383,7 @@ If you're unsure of the answer, suggest creating a support ticket."""
                 with open(full_path, "r", encoding="utf-8") as f:
                     return f.read()
         except Exception as e:
-            print(f"[SupportContext] Error loading doc {doc_path}: {e}")
+            logger.error(f"[SupportContext] Error loading doc {doc_path}: {e}")
 
         return None
 

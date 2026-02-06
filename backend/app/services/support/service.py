@@ -28,6 +28,7 @@ class SupportService:
         """Initialize SupportService with Anthropic client and configuration."""
         self.async_client = anthropic.AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
         self.max_tokens = settings.SUPPORT_CHAT_MAX_TOKENS
+        self.voice_max_tokens = settings.SUPPORT_VOICE_MAX_TOKENS
         self.escalation_threshold = settings.SUPPORT_ESCALATION_THRESHOLD
 
     # Voice Support Chat
@@ -58,8 +59,10 @@ class SupportService:
         language: str = "en",
         conversation_id: Optional[str] = None,
         app_context: Optional[dict] = None,
+        is_voice: bool = False,
     ) -> AsyncIterator[dict]:
-        """Process a voice support chat message with streaming response."""
+        """Process a support chat message with streaming response."""
+        token_limit = self.voice_max_tokens if is_voice else self.max_tokens
         async for chunk in voice_chat.chat_streaming(
             self.async_client,
             message,
@@ -67,7 +70,8 @@ class SupportService:
             language,
             conversation_id,
             app_context,
-            self.max_tokens,
+            token_limit,
+            is_voice=is_voice,
         ):
             yield chunk
 

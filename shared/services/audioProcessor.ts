@@ -7,12 +7,20 @@
 export class AudioProcessor {
   private audioContext: AudioContext | null = null;
   private mediaStream: MediaStream | null = null;
-  private workletNode: AudioWorkletNode | null = null;
+  private scriptProcessorNode: ScriptProcessorNode | null = null;
   private sourceNode: MediaStreamAudioSourceNode | null = null;
+  private silentGainNode: GainNode | null = null;
   private onAudioChunk: ((chunk: ArrayBuffer) => void) | null = null;
+  private isActive = false;
 
   async start(onAudioChunk: (chunk: ArrayBuffer) => void): Promise<void> {
+    // Prevent double-starts that would create parallel mic streams
+    if (this.isActive) {
+      this.stop();
+    }
+
     this.onAudioChunk = onAudioChunk;
+    this.isActive = true;
 
     try {
       this.mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -28,9 +36,9 @@ export class AudioProcessor {
       this.sourceNode = this.audioContext.createMediaStreamSource(this.mediaStream);
 
       const bufferSize = 2048;
-      const scriptProcessor = this.audioContext.createScriptProcessor(bufferSize, 1, 1);
+      this.scriptProcessorNode = this.audioContext.createScriptProcessor(bufferSize, 1, 1);
 
-      scriptProcessor.onaudioprocess = (event) => {
+      this.scriptProcessorNode.onaudioprocess = (event) => {
         if (!this.onAudioChunk) return;
 
         const inputData = event.inputBuffer.getChannelData(0);
@@ -46,21 +54,30 @@ export class AudioProcessor {
       // CRITICAL: Use silent gain node to avoid feedback loop
       // ScriptProcessor needs connection to trigger onaudioprocess,
       // but we DON'T want to play mic audio through speakers
-      const silentGain = this.audioContext.createGain();
-      silentGain.gain.value = 0;
+      this.silentGainNode = this.audioContext.createGain();
+      this.silentGainNode.gain.value = 0;
 
-      this.sourceNode.connect(scriptProcessor);
-      scriptProcessor.connect(silentGain);
-      silentGain.connect(this.audioContext.destination);
+      this.sourceNode.connect(this.scriptProcessorNode);
+      this.scriptProcessorNode.connect(this.silentGainNode);
+      this.silentGainNode.connect(this.audioContext.destination);
     } catch (error) {
+      this.stop();
       throw error;
     }
   }
 
   stop(): void {
-    if (this.workletNode) {
-      this.workletNode.disconnect();
-      this.workletNode = null;
+    this.isActive = false;
+
+    if (this.scriptProcessorNode) {
+      this.scriptProcessorNode.onaudioprocess = null;
+      this.scriptProcessorNode.disconnect();
+      this.scriptProcessorNode = null;
+    }
+
+    if (this.silentGainNode) {
+      this.silentGainNode.disconnect();
+      this.silentGainNode = null;
     }
 
     if (this.sourceNode) {

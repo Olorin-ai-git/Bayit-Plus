@@ -6,7 +6,7 @@
 
 import { useEffect, useCallback, useRef, useState } from 'react';
 import { useSupportStore } from '../stores/supportStore';
-import { voiceSupportService } from '../services/voiceSupportService';
+import { voiceOrchestrator } from '../services/olorinVoiceOrchestrator';
 import { supportConfig } from '../config/supportConfig';
 import { VoiceSystemType, getWakeWordConfig } from '../utils/porcupineWakeWordDetector';
 import { logger } from '../utils/logger';
@@ -36,7 +36,7 @@ export function useWakeWordSupport(
     onError,
   } = options;
 
-  const { isVoiceModalOpen, openVoiceModal, voiceState } = useSupportStore();
+  const { isVoiceModalOpen, voiceState } = useSupportStore();
   const [isListeningForWakeWord, setIsListeningForWakeWord] = useState(false);
   const detectorRef = useRef<any>(null);
   const isInitializedRef = useRef(false);
@@ -138,16 +138,11 @@ export function useWakeWordSupport(
     // Stop listening for wake word during interaction
     stopWakeWordDetection();
 
-    // Open voice modal for Olorin support
-    openVoiceModal();
-
-    // Start listening immediately
-    setTimeout(() => {
-      voiceSupportService.startListening();
-    }, 500);
+    // Orchestrator handles modal open, animations, and pipeline start
+    voiceOrchestrator.startVoiceInteraction('wake-word');
 
     onWakeWordDetected?.();
-  }, [voiceState, isVoiceModalOpen, openVoiceModal, onWakeWordDetected]);
+  }, [voiceState, isVoiceModalOpen, onWakeWordDetected]);
 
   // Handle detector errors
   const handleDetectorError = useCallback(

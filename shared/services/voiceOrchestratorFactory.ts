@@ -1,37 +1,23 @@
 /**
  * Voice Orchestrator Factory
- * Factory function and default configuration for creating OlorinVoiceOrchestrator instances
+ * Returns the singleton orchestrator instance.
+ * For backwards compatibility with components using createVoiceOrchestrator().
  */
 
 import { VoiceConfig } from '../types/voiceAvatar';
-import { OlorinVoiceOrchestrator } from './olorinVoiceOrchestrator';
+import { OlorinVoiceOrchestrator, voiceOrchestrator, DEFAULT_VOICE_CONFIG } from './olorinVoiceOrchestrator';
+
+// Re-export for consumers that imported from here
+export { DEFAULT_VOICE_CONFIG };
 
 /**
- * Default configuration for voice orchestrator
- * Can be overridden when creating instance
+ * Get the singleton voice orchestrator instance.
+ * Config overrides are applied via initialize() after creation.
+ * @param _config - Ignored, kept for API compatibility. Use orchestrator.initialize(config) instead.
+ * @returns The singleton OlorinVoiceOrchestrator instance
  */
-export const DEFAULT_VOICE_CONFIG: VoiceConfig = {
-  platform: 'web',
-  language: 'he',
-  wakeWordEnabled: false,
-  streamingMode: false,
-  initialAvatarMode: 'full',
-  autoExpandOnWakeWord: true,
-  collapseDelay: 10000,
-};
-
-/**
- * Create voice orchestrator instance with optional config overrides
- * @param config - Partial configuration to override defaults
- * @returns Configured OlorinVoiceOrchestrator instance
- */
-export function createVoiceOrchestrator(config?: Partial<VoiceConfig>): OlorinVoiceOrchestrator {
-  const mergedConfig: VoiceConfig = {
-    ...DEFAULT_VOICE_CONFIG,
-    ...config,
-  };
-
-  return new OlorinVoiceOrchestrator(mergedConfig);
+export function createVoiceOrchestrator(_config?: Partial<VoiceConfig>): OlorinVoiceOrchestrator {
+  return voiceOrchestrator;
 }
 
 export default createVoiceOrchestrator;

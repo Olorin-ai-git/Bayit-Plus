@@ -23,6 +23,34 @@ from app.services.support_context_builder import support_context_builder
 
 logger = logging.getLogger(__name__)
 
+# Voice-specific brevity instructions per language
+_VOICE_BREVITY = {
+    "he": (
+        "\n\nIMPORTANT VOICE RULES: "
+        "Answer in 1-2 sentences maximum. "
+        "No markdown, no lists, no complex punctuation. "
+        "Speak naturally as if talking to a friend."
+    ),
+    "es": (
+        "\n\nIMPORTANT VOICE RULES: "
+        "Respond in 1-2 sentences maximum. "
+        "No markdown, no lists, no complex punctuation. "
+        "Speak naturally as if talking to a friend."
+    ),
+    "en": (
+        "\n\nIMPORTANT VOICE RULES: "
+        "Answer in 1-2 sentences maximum. "
+        "No markdown, no lists, no complex punctuation. "
+        "Speak naturally as if talking to a friend."
+    ),
+}
+
+
+def _append_voice_brevity(system_prompt: str, language: str) -> str:
+    """Append voice-specific brevity instructions to the system prompt."""
+    brevity = _VOICE_BREVITY.get(language, _VOICE_BREVITY["en"])
+    return system_prompt + brevity
+
 
 async def _prepare_chat_context(
     conversation: SupportConversation,
@@ -121,12 +149,22 @@ async def chat_streaming(
     conversation_id: Optional[str] = None,
     app_context: Optional[dict] = None,
     max_tokens: int = 300,
+    is_voice: bool = False,
 ) -> AsyncIterator[dict]:
-    """Process a voice support chat message with streaming response."""
+    """Process a support chat message with streaming response."""
+    # Truncate voice transcripts for safety
+    if is_voice:
+        transcript_limit = settings.SUPPORT_VOICE_TRANSCRIPT_MAX_LENGTH
+        message = message[:transcript_limit]
+
     conversation = await get_or_create_conversation(user, conversation_id, language)
     context, system_prompt, messages = await _prepare_chat_context(
         conversation, message, language, user, app_context
     )
+
+    # Append voice-specific brevity instructions
+    if is_voice:
+        system_prompt = _append_voice_brevity(system_prompt, language)
 
     full_response = ""
 

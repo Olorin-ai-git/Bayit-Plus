@@ -10,7 +10,6 @@ import { View, Pressable, Animated, useWindowDimensions } from 'react-native';
 import { useSupportStore, VoiceState, GestureState } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
 import { sfxService, WizardGesture } from '../../services/sfxService';
-import { useVoiceFlowOrchestrator } from '../../hooks/useVoiceFlowOrchestrator';
 import { useDirection } from '../../hooks/useDirection';
 import { useTextChunking } from '../../hooks/useTextChunking';
 import { useVoiceDialogueEffects } from '../../hooks/useVoiceDialogueEffects';
@@ -48,11 +47,10 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
   const isMobile = windowWidth < MOBILE_BREAKPOINT && !isTV;
   const {
     voiceState, currentIntroText, currentTranscript, lastResponse,
+    streamingResponse, isStreamingText,
     gestureState, isAnimatingGesture, setIsAnimatingGesture, clearGesture,
     audioLevel, voiceError, clearVoiceError, currentDialogue, setCurrentDialogue, setGestureState,
   } = useSupportStore();
-
-  useVoiceFlowOrchestrator({ enabled: false });
 
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
@@ -66,7 +64,8 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
   const [hasAppeared, setHasAppeared] = useState(false);
   const [isIntroComplete, setIsIntroComplete] = useState(false);
 
-  const fullDisplayText = currentDialogue?.text || currentIntroText || lastResponse || currentTranscript;
+  // Priority: streamingResponse (real-time LLM text) > dialogue > intro > lastResponse > transcript
+  const fullDisplayText = streamingResponse || currentDialogue?.text || currentIntroText || lastResponse || currentTranscript;
   const { displayText, textChunks, currentChunkIndex } = useTextChunking({
     text: fullDisplayText, isMobile, voiceState,
   });
@@ -115,19 +114,21 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
     if (voiceError) { const t = setTimeout(clearVoiceError, 5000); return () => clearTimeout(t); }
   }, [voiceError, clearVoiceError]);
 
-  // Speech bubble animation
+  // Speech bubble animation - show during speaking AND while streaming text arrives
   useEffect(() => {
-    if (displayText && voiceState === 'speaking') {
+    const shouldShow = displayText && (voiceState === 'speaking' || isStreamingText);
+    if (shouldShow) {
       setShowBubble(true);
       Animated.spring(bubbleAnim, { toValue: 1, friction: 6, tension: 80, useNativeDriver: true }).start();
     } else if (!displayText || voiceState === 'idle') {
       Animated.timing(bubbleAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => setShowBubble(false));
     }
-  }, [displayText, voiceState, bubbleAnim]);
+  }, [displayText, voiceState, isStreamingText, bubbleAnim]);
 
-  // User speech bubble animation
+  // User speech bubble animation - show during listening AND processing (so user sees their words)
   useEffect(() => {
-    if (currentTranscript && voiceState === 'listening') {
+    const showBubbleStates: VoiceState[] = ['listening', 'processing'];
+    if (currentTranscript && showBubbleStates.includes(voiceState)) {
       setShowUserBubble(true);
       Animated.spring(userBubbleAnim, { toValue: 1, friction: 6, tension: 80, useNativeDriver: true }).start();
     } else {

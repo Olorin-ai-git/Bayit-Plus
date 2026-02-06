@@ -37,6 +37,7 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
   private audioPlayer: StreamingAudioPlayer | null = null;
   private config: StreamingPipelineConfig;
   private isConnected = false;
+  private isConnecting = false;
   private isRecording = false;
   private currentTranscript = '';
   private reconnectAttempts = 0;
@@ -70,10 +71,14 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
   }
 
   async startInteraction(conversationId?: string): Promise<void> {
-    if (this.isConnected) return;
+    if (this.isConnected || this.isConnecting) return;
+    this.isConnecting = true;
     const token = this.getAuthToken();
-    if (!token) { this.emitError(new Error('Authentication required')); return; }
+    if (!token) { this.isConnecting = false; this.emitError(new Error('Authentication required')); return; }
     try {
+      const store = useSupportStore.getState();
+      store.clearStreamingResponse();
+      store.setCurrentTranscript('');
       this.emitStateChange('listening');
       const wsUrl = new URL(this.getWsEndpoint());
       wsUrl.searchParams.set('token', token);
@@ -85,38 +90,48 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
       this.audioPlayer.setOnPlaybackComplete(() => this.emitStateChange('idle'));
       this.wsHandler.connect(wsUrl.toString(), {
         onConnected: async () => {
-          this.isConnected = true; this.reconnectAttempts = 0; this.emit('connected');
+          this.isConnected = true; this.isConnecting = false; this.reconnectAttempts = 0; this.emit('connected');
           try { await this.audioProcessor?.start((c) => this.sendAudioChunk(c)); this.isRecording = true; }
           catch { this.emitError(new Error('Microphone access denied')); }
         },
         onDisconnected: (code) => {
-          this.isConnected = false; this.cleanup(); this.emit('disconnected');
+          this.isConnected = false; this.isConnecting = false; this.cleanup(); this.emit('disconnected');
           if (code !== 1000 && this.reconnectAttempts < this.maxReconnectAttempts) {
             this.reconnectAttempts++;
             setTimeout(() => this.startInteraction(this.config.conversationId), 1000 * this.reconnectAttempts);
           }
         },
-        onTranscriptPartial: (text, lang) => this.emit('transcriptUpdate', text, lang, false),
+        onTranscriptPartial: (text, lang) => {
+          this.emit('transcriptUpdate', text, lang, false);
+          useSupportStore.getState().setCurrentTranscript(text);
+        },
         onTranscriptFinal: (text, lang) => {
           this.currentTranscript = text;
           this.emit('transcriptUpdate', text, lang, true);
           useSupportStore.getState().setCurrentTranscript(text);
           this.stopRecording(); this.emitStateChange('processing');
         },
-        onLlmChunk: (text) => this.emit('llmChunk', text),
+        onLlmChunk: (text) => {
+          useSupportStore.getState().appendStreamingResponse(text);
+          this.emit('llmChunk', text);
+        },
         onTtsAudio: (audioData) => {
           if (!this.audioPlayer?.isCurrentlyPlaying()) this.emitStateChange('speaking');
           this.audioPlayer?.addChunk(audioData); this.emit('audioChunk', audioData);
         },
         onComplete: (convId, escalation, responseText) => {
           this.config.conversationId = convId || undefined;
-          useSupportStore.getState().setLastResponse(responseText);
+          const store = useSupportStore.getState();
+          // Use accumulated streaming text if available, fallback to WS responseText
+          const finalText = store.streamingResponse || responseText;
+          // Atomic update: set final response and clear streaming in single store write
+          useSupportStore.setState({ lastResponse: finalText, streamingResponse: '', isStreamingText: false });
           this.emit('responseComplete', convId, escalation);
         },
         onCancelled: () => { this.audioPlayer?.stop(); this.emitStateChange('idle'); },
         onError: (error) => this.emitError(error),
       });
-    } catch (error) { this.emitError(error instanceof Error ? error : new Error('Failed to start')); }
+    } catch (error) { this.isConnecting = false; this.emitError(error instanceof Error ? error : new Error('Failed to start')); }
   }
 
   private sendAudioChunk(chunk: ArrayBuffer): void {
@@ -137,7 +152,9 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
     if (this.isRecording) { log.warn('Already recording'); return; }
     try {
       log.info('Restarting audio processor');
-      this.currentTranscript = ''; this.emitStateChange('listening');
+      this.currentTranscript = '';
+      useSupportStore.getState().setCurrentTranscript('');
+      this.emitStateChange('listening');
       if (!this.audioProcessor) this.audioProcessor = new AudioProcessor();
       await this.audioProcessor.start((c) => this.sendAudioChunk(c));
       this.isRecording = true;
@@ -151,7 +168,7 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
   cancel(): void { this.wsHandler.send({ type: 'cancel' }); this.audioPlayer?.stop(); this.emitStateChange('idle'); }
 
   stopInteraction(): void {
-    this.cleanup(); this.wsHandler.close(); this.isConnected = false;
+    this.cleanup(); this.wsHandler.close(); this.isConnected = false; this.isConnecting = false;
     this.emitStateChange('idle'); this.emit('disconnected');
   }
 
@@ -161,7 +178,7 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
     this.isRecording = false;
   }
 
-  private emitStateChange(state: VoiceState): void { useSupportStore.getState().setVoiceState(state); this.emit('stateChange', state); }
+  private emitStateChange(state: VoiceState): void { this.emit('stateChange', state); }
   private emitError(error: Error): void { this.emit('error', error); useSupportStore.getState().setError(error.message); setTimeout(() => this.emitStateChange('idle'), 3000); }
 
   setConfig(config: Partial<StreamingPipelineConfig>): void { this.config = { ...this.config, ...config }; }
