@@ -109,13 +109,41 @@ def is_play_content_request(transcript: str) -> bool:
 
 
 def clean_play_prefix(transcript: str) -> str:
-    """Strip play keyword prefix from transcript for better search."""
+    """Strip play keyword prefix and content-type filler words for better search."""
     transcript_lower = transcript.lower()
     for prefix in PLAY_CONTENT_PREFIXES:
         if prefix in transcript_lower:
             idx = transcript_lower.index(prefix) + len(prefix)
-            return transcript[idx:].strip()
-    return transcript
+            result = transcript[idx:].strip()
+            return _strip_content_type_filler(result)
+    return _strip_content_type_filler(transcript)
+
+
+# Filler phrases that appear between "play" and the actual title (3 languages)
+_CONTENT_TYPE_FILLERS = [
+    # English (longer phrases first to match greedily)
+    "the movie ", "the film ", "the series ", "the show ",
+    "the episode ", "the podcast ", "the song ", "the track ",
+    "the channel ", "the station ",
+    "movie ", "film ", "series ", "show ",
+    # Hebrew
+    "את הסרט ", "הסרט ", "את הסדרה ", "הסדרה ",
+    "את הפרק ", "הפרק ", "את הפודקאסט ", "הפודקאסט ",
+    "את הערוץ ", "הערוץ ", "את התחנה ", "התחנה ",
+    # Spanish
+    "la pelicula ", "la serie ", "el episodio ",
+    "el podcast ", "el canal ", "la estacion ",
+]
+
+
+def _strip_content_type_filler(text: str) -> str:
+    """Remove content-type filler phrases and trailing punctuation from query."""
+    text_lower = text.lower()
+    for filler in _CONTENT_TYPE_FILLERS:
+        if text_lower.startswith(filler):
+            text = text[len(filler):]
+            text_lower = text.lower()
+    return text.rstrip(" .!?,;")
 
 
 # Content-type hint keywords for play-content routing

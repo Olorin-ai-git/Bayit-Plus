@@ -185,6 +185,11 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
       // Orchestrator is sole state authority - route pipeline state through forceTransitionTo
       // so events are emitted and store is updated from a single source
       this.forceTransitionTo(state);
+
+      // Set gesture to 'thinking' while processing (before intent is classified)
+      if (state === 'processing') {
+        useSupportStore.getState().setGestureState('thinking');
+      }
     });
 
     streamingVoicePipeline.on('transcriptUpdate', (transcript, _language, isFinal) => {
@@ -199,6 +204,10 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
       store.setIntentConfidence(confidence);
       store.setPendingVoiceAction(action);
       store.setLastResponse(spokenResponse);
+
+      // Update gesture to match the intent (browsing for search, reading for content queries)
+      updateGestureForIntent(intent as VoiceIntent);
+
       orchestratorLogger.info('Intent action received', { intent, actionType: action.type, confidence });
     });
 

@@ -16,6 +16,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from pydantic import BaseModel, Field
 
+from app.api.routes.content.utils import is_series_content
 from app.core.config import settings
 from app.models.content import Content, LiveChannel, RadioStation, Podcast
 from app.models.subtitles import SubtitleTrackDoc

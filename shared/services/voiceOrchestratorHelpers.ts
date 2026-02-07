@@ -16,13 +16,17 @@ export function updateGestureForIntent(intent: VoiceIntent): void {
 
   switch (intent) {
     case 'SEARCH':
+    case 'PLAYBACK':
+      // Both search and play-content trigger content lookup - show browsing
       store.setGestureState('browsing');
       break;
     case 'CHAT':
       store.setGestureState('conjuring');
       break;
+    case 'CONTENT_QUERY':
+      store.setGestureState('reading');
+      break;
     case 'NAVIGATION':
-    case 'PLAYBACK':
     case 'SCROLL':
     case 'CONTROL':
       store.setGestureState('greeting');
