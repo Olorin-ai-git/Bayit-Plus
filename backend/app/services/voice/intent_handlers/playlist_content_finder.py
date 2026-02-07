@@ -74,6 +74,8 @@ def build_player_path(content_id: str, content_type: str, is_series: bool) -> st
         return f"/radio/{content_id}"
     if content_type == "podcast":
         return f"/podcasts/{content_id}"
+    if content_type == "audiobook":
+        return f"/audiobooks/{content_id}"
     if is_series:
         return f"/vod/series/{content_id}"
     return f"/vod/{content_id}"

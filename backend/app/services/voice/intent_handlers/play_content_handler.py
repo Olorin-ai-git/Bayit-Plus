@@ -17,6 +17,7 @@ from ..intent_keywords import (
     CONTENT_NOT_FOUND_RESPONSES,
 )
 from .live_channel_search import search_live
+from .podcast_radio_search import search_podcasts, search_radio, search_audiobooks
 from .playlist_content_finder import build_player_path
 
 logger = get_logger(__name__)
@@ -44,7 +45,7 @@ async def handle_play_content(
     """
     Search for content by name and return a navigate action to the player.
 
-    Supports VOD (movies/series), live TV channels, podcasts, and radio.
+    Supports VOD (movies/series), live TV channels, podcasts, radio, and audiobooks.
     Falls back to search results page if no match found.
     """
     try:
@@ -96,6 +97,12 @@ async def _find_content(
     """Search for content across the requested content types."""
     if content_types == ["live"]:
         return await search_live(query)
+    if content_types == ["podcast"]:
+        return await search_podcasts(query)
+    if content_types == ["radio"]:
+        return await search_radio(query)
+    if content_types == ["audiobook"]:
+        return await search_audiobooks(query)
 
     # VOD queries: try LLM-powered search only for beta users (AI-enhanced search)
     if "vod" in content_types and context.is_beta_user:

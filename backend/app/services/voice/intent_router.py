@@ -24,6 +24,7 @@ from .intent_keywords import (
 )
 from .playlist_keywords import is_playlist_request
 from .channel_keywords import is_channel_request, normalize_number_words
+from .podcast_radio_keywords import is_podcast_request, is_radio_request, is_audiobook_request
 from .intent_handlers import (
     handle_chat,
     handle_search,
@@ -121,27 +122,27 @@ class IntentRouter:
 
         # Bare channel references: "channel 13", "channel thirteen"
         if is_channel_request(transcript_lower):
-            cleaned = transcript.strip().rstrip(".,!?;:")
-            self._play_content_query = normalize_number_words(cleaned)
+            self._play_content_query = normalize_number_words(transcript.strip().rstrip(".,!?;:"))
+            return VoiceIntent.PLAYBACK, 0.9
+        # Bare podcast/radio/audiobook: "podcast Kan", "radio Galatz", "audiobook Harry Potter"
+        if (is_podcast_request(transcript_lower) or is_radio_request(transcript_lower)
+                or is_audiobook_request(transcript_lower)):
+            self._play_content_query = transcript.strip().rstrip(".,!?;:")
             return VoiceIntent.PLAYBACK, 0.9
 
         # Kids content patterns (3 languages)
         kids_keywords = KIDS_KEYWORDS.get(self.language, KIDS_KEYWORDS["en"])
         if any(kw in transcript_lower for kw in kids_keywords):
             return VoiceIntent.KIDS, 0.9
-
         # Navigation patterns
         if any(kw in transcript_lower for kw in NAVIGATION_KEYWORDS):
             return VoiceIntent.NAVIGATION, 0.95
-
         # Search patterns
         if any(kw in transcript_lower for kw in SEARCH_KEYWORDS):
             return VoiceIntent.SEARCH, 0.8
-
         # Bare playback control (play, pause, stop, resume)
         if any(kw in transcript_lower for kw in PLAYBACK_KEYWORDS):
             return VoiceIntent.PLAYBACK, 0.9
-
         # Scroll patterns
         if any(kw in transcript_lower for kw in SCROLL_KEYWORDS):
             return VoiceIntent.SCROLL, 0.85

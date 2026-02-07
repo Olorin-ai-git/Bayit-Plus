@@ -16,7 +16,7 @@ NAVIGATION_KEYWORDS = [
     'ערוצים', 'שידור חי', 'טלוויזיה',
     'סרטים', 'סדרות', 'תוכן', 'וידאו',
     'רדיו', 'פודקאסטים', 'מועדפים',
-    'home', 'back', 'channels', 'movies', 'series', 'radio', 'podcasts',
+    'home', 'back', 'channels', 'movies', 'series', 'radio', 'podcast', 'podcasts', 'audiobooks',
     'inicio', 'canales', 'películas', 'series'
 ]
 
@@ -87,14 +87,8 @@ PLAY_CONTENT_PREFIXES = [
 
 
 def is_play_content_request(transcript: str) -> bool:
-    """
-    Check if a playback-matching transcript is a content play request.
-
-    "play" or "pause" -> False (bare playback control)
-    "play the 25th hour" -> True (user wants to find and play content)
-    """
+    """Check if transcript is a content play request (not bare playback control)."""
     transcript_lower = transcript.lower().strip()
-
     if any(kw in transcript_lower for kw in PLAYBACK_CONTROL_ONLY_KEYWORDS):
         return False
 
@@ -106,7 +100,6 @@ def is_play_content_request(transcript: str) -> bool:
                 return True
 
     return False
-
 
 def clean_play_prefix(transcript: str) -> str:
     """Strip play keyword prefix, content-type filler words, and STT punctuation for better search."""
@@ -123,21 +116,22 @@ def _strip_stt_punctuation(text: str) -> str:
     """Remove trailing punctuation artifacts from STT transcription."""
     return text.rstrip(".,;:!?。、").strip()
 
-
 # Filler phrases that appear between "play" and the actual title (3 languages)
 _CONTENT_TYPE_FILLERS = [
     # English (longer phrases first to match greedily)
     "the movie ", "the film ", "the series ", "the show ",
     "the episode ", "the podcast ", "the song ", "the track ",
-    "the channel ", "the station ",
+    "the channel ", "the station ", "the audiobook ",
     "movie ", "film ", "series ", "show ",
+    "podcast ", "radio ", "station ", "audiobook ", "audio book ",
     # Hebrew
     "את הסרט ", "הסרט ", "את הסדרה ", "הסדרה ",
     "את הפרק ", "הפרק ", "את הפודקאסט ", "הפודקאסט ",
-    "את הערוץ ", "הערוץ ", "את התחנה ", "התחנה ",
+    "את הערוץ ", "הערוץ ", "את התחנה ", "התחנה ", "\u05d0\u05ea \u05d4\u05e1\u05e4\u05e8 \u05e9\u05de\u05e2 ", "\u05d4\u05e1\u05e4\u05e8 \u05e9\u05de\u05e2 ",
+    "\u05e4\u05d5\u05d3\u05e7\u05d0\u05e1\u05d8 ", "\u05e8\u05d3\u05d9\u05d5 ", "\u05ea\u05d7\u05e0\u05d4 ", "\u05e1\u05e4\u05e8 \u05e9\u05de\u05e2 ",
     # Spanish
     "la pelicula ", "la serie ", "el episodio ",
-    "el podcast ", "el canal ", "la estacion ",
+    "el podcast ", "el canal ", "la estacion ", "el audiolibro ",
 ]
 
 
@@ -149,7 +143,6 @@ def _strip_content_type_filler(text: str) -> str:
             text = text[len(filler):]
             text_lower = text.lower()
     return text.rstrip(" .!?,;")
-
 
 # Content-type hint keywords for play-content routing
 LIVE_CONTENT_HINTS = {
@@ -163,23 +156,26 @@ PODCAST_CONTENT_HINTS = {
     "es": ["podcast", "episodio", "programa"],
 }
 RADIO_CONTENT_HINTS = {
-    "he": ["רדיו", "תחנה"],
+    "he": ["\u05e8\u05d3\u05d9\u05d5", "\u05ea\u05d7\u05e0\u05d4"],
     "en": ["radio", "station"],
     "es": ["radio", "estacion"],
 }
-
-
+AUDIOBOOK_CONTENT_HINTS = {
+    "he": ["\u05e1\u05e4\u05e8 \u05e9\u05de\u05e2"],
+    "en": ["audiobook", "audio book"],
+    "es": ["audiolibro"],
+}
 def detect_content_types(query: str, language: str) -> list:
     """Detect which content types to search based on keywords in the query."""
     query_lower = query.lower()
-
     if any(kw in query_lower for kw in LIVE_CONTENT_HINTS.get(language, LIVE_CONTENT_HINTS["en"])):
         return ["live"]
     if any(kw in query_lower for kw in PODCAST_CONTENT_HINTS.get(language, PODCAST_CONTENT_HINTS["en"])):
         return ["podcast"]
     if any(kw in query_lower for kw in RADIO_CONTENT_HINTS.get(language, RADIO_CONTENT_HINTS["en"])):
         return ["radio"]
-
+    if any(kw in query_lower for kw in AUDIOBOOK_CONTENT_HINTS.get(language, AUDIOBOOK_CONTENT_HINTS["en"])):
+        return ["audiobook"]
     return ["vod", "live", "radio", "podcast"]
 
 

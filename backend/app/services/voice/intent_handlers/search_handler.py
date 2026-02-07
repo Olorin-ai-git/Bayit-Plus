@@ -138,10 +138,13 @@ async def _execute_complex_vod_search(query: str, context: VoiceContext) -> List
     """Execute complex VOD search using VODLLMSearchService."""
     try:
         vod_llm_service = VODLLMSearchService()
+        user_context = {
+            "subscription_tier": context.subscription_tier,
+            "is_beta_user": context.is_beta_user,
+        }
         results = await vod_llm_service.search(
             query=query,
-            subscription_tier=context.subscription_tier,
-            is_beta_user=context.is_beta_user,
+            user_context=user_context,
             limit=10
         )
         return results.get("results", [])
@@ -163,8 +166,8 @@ async def _execute_simple_vod_search(query: str, context: VoiceContext) -> List[
             subscription_tier=context.subscription_tier,
             is_kids_content=False
         )
-        results = await search_service.search(query=query, filters=filters, limit=10)
-        return results.get("results", [])
+        search_results = await search_service.search(query=query, filters=filters, limit=10)
+        return search_results.results
     except Exception as e:
         logger.error(
             "Simple VOD search failed",
