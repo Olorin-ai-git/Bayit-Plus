@@ -9,7 +9,6 @@ from typing import Any, Dict, List
 from app.core.logging_config import get_logger
 from app.services.unified_search_service import SearchFilters, UnifiedSearchService
 from app.services.vod_llm_search_service import VODLLMSearchService
-from app.services.llm_search_service import LLMSearchService
 from ..context import VoiceContext
 from ..error_messages import get_error_message
 from ..intent_keywords import (
@@ -17,21 +16,25 @@ from ..intent_keywords import (
     PLAYING_RESPONSES,
     CONTENT_NOT_FOUND_RESPONSES,
 )
+from .live_channel_search import search_live
 from .playlist_content_finder import build_player_path
 
 logger = get_logger(__name__)
 
 
 def _extract_results(result) -> List[Dict[str, Any]]:
-    """Extract results list from search response (handles both Pydantic models and dicts)."""
+    """Extract results list from search response (handles Pydantic models and dicts)."""
     if hasattr(result, 'results'):
         items = result.results
     elif isinstance(result, dict):
         items = result.get("results", [])
     else:
         return []
-    # Ensure all items are dicts
-    return [item if isinstance(item, dict) else (item.model_dump() if hasattr(item, 'model_dump') else dict(item)) for item in items]
+    def _to_dict(item):
+        if isinstance(item, dict):
+            return item
+        return item.model_dump() if hasattr(item, 'model_dump') else dict(item)
+    return [_to_dict(i) for i in items]
 
 
 async def handle_play_content(
@@ -46,18 +49,10 @@ async def handle_play_content(
     """
     try:
         content_types = detect_content_types(transcript, context.language)
-        logger.info(
-            "Play content search starting",
-            extra={"query": transcript, "content_types": content_types, "language": context.language},
-        )
         results = await _find_content(transcript, context, content_types)
         logger.info(
-            "Play content search results",
-            extra={
-                "query": transcript,
-                "result_count": len(results),
-                "top_titles": [r.get("title", "?") for r in results[:3]],
-            },
+            "Play content search",
+            extra={"query": transcript, "types": content_types, "count": len(results)},
         )
 
         if results:
@@ -66,21 +61,12 @@ async def handle_play_content(
             title = top.get("title", transcript)
             content_type = top.get("content_type", "vod")
             is_series = top.get("is_series", False)
-
             path = build_player_path(content_id, content_type, is_series)
             spoken = PLAYING_RESPONSES.get(context.language, PLAYING_RESPONSES["en"]).format(title)
-
             logger.info(
-                "Play content match found",
-                extra={
-                    "query": transcript,
-                    "content_id": content_id,
-                    "title": title,
-                    "content_type": content_type,
-                    "path": path,
-                },
+                "Play content match",
+                extra={"query": transcript, "id": content_id, "title": title, "path": path},
             )
-
             return {
                 "spoken_response": spoken,
                 "action": {"type": "navigate", "payload": {"path": path}},
@@ -109,7 +95,7 @@ async def _find_content(
 ) -> List[Dict[str, Any]]:
     """Search for content across the requested content types."""
     if content_types == ["live"]:
-        return await _search_live(query)
+        return await search_live(query)
 
     # VOD queries: try LLM-powered search only for beta users (AI-enhanced search)
     if "vod" in content_types and context.is_beta_user:
@@ -150,28 +136,3 @@ async def _find_content(
             exc_info=True,
         )
         return []
-
-
-async def _search_live(query: str) -> List[Dict[str, Any]]:
-    """Search live TV channels using EPG-aware LLM search."""
-    try:
-        llm_service = LLMSearchService()
-        result = await llm_service.search(query=query, limit=5)
-        return _extract_results(result)
-    except Exception as e:
-        logger.warning(
-            "Live LLM search failed, trying unified",
-            extra={"query": query, "error_type": type(e).__name__},
-        )
-        try:
-            search_service = UnifiedSearchService()
-            filters = SearchFilters(content_types=["live"])
-            result = await search_service.search(query=query, filters=filters, limit=5)
-            return _extract_results(result)
-        except Exception as e2:
-            logger.error(
-                "Live unified search also failed",
-                extra={"query": query, "error_type": type(e2).__name__},
-                exc_info=True,
-            )
-            return []

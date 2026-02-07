@@ -23,6 +23,7 @@ from .intent_keywords import (
     clean_play_prefix,
 )
 from .playlist_keywords import is_playlist_request
+from .channel_keywords import is_channel_request, normalize_number_words
 from .intent_handlers import (
     handle_chat,
     handle_search,
@@ -116,6 +117,12 @@ class IntentRouter:
         # "play [content]" - handles movies, channels, podcasts, radio
         if is_play_content_request(transcript_lower):
             self._play_content_query = clean_play_prefix(transcript)
+            return VoiceIntent.PLAYBACK, 0.9
+
+        # Bare channel references: "channel 13", "channel thirteen"
+        if is_channel_request(transcript_lower):
+            cleaned = transcript.strip().rstrip(".,!?;:")
+            self._play_content_query = normalize_number_words(cleaned)
             return VoiceIntent.PLAYBACK, 0.9
 
         # Kids content patterns (3 languages)
