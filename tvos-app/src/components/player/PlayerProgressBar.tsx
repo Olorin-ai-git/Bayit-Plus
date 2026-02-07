@@ -50,8 +50,9 @@ export const PlayerProgressBar: React.FC<PlayerProgressBarProps> = ({
   };
 
   const handlePress = () => {
-    // In a full implementation, this would open a seek overlay
-    // For now, it's just a placeholder for the pressable interface
+    const seekStep = config.player.seekStepSeconds ?? 10;
+    const newTime = Math.min(currentTime + seekStep, duration);
+    onSeek(newTime);
   };
 
   return (
