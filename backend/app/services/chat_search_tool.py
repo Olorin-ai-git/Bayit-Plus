@@ -275,6 +275,10 @@ async def execute_search_content(
             "year_range": f"{year_min or 'any'}-{year_max or 'any'}",
             "kids_only": is_kids_content,
         },
+        "_action": {
+            "type": "search",
+            "payload": {"query": query},
+        },
     }
 
 

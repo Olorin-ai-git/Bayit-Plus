@@ -63,6 +63,9 @@ async def execute_get_recommendations(
                 limit=limit
             )
 
+        # Build a search query for the frontend based on content type
+        nav_query = content_type if content_type != "vod" else "recommended"
+
         return {
             "results": [
                 {
@@ -76,6 +79,10 @@ async def execute_get_recommendations(
                 for r in results.results
             ],
             "total_found": results.total,
+            "_action": {
+                "type": "search",
+                "payload": {"query": nav_query},
+            },
         }
 
     except Exception as e:

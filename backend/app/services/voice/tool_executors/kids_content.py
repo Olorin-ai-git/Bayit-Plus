@@ -64,7 +64,11 @@ async def execute_get_kids_content(
                 }
                 for item in response.items[:limit]
             ],
-            "total_found": len(response.items)
+            "total_found": len(response.items),
+            "_action": {
+                "type": "navigate",
+                "payload": {"path": "/children"},
+            },
         }
 
     except Exception as e:

@@ -98,7 +98,11 @@ async def execute_get_live_channels(category: Optional[str] = None) -> Dict[str,
                 }
                 for ch in channels
             ],
-            "total_found": len(channels)
+            "total_found": len(channels),
+            "_action": {
+                "type": "navigate",
+                "payload": {"path": "/live"},
+            },
         }
 
     except Exception as e:

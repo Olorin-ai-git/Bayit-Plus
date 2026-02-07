@@ -38,6 +38,10 @@ _ACTION_PRODUCING_TOOLS = {
     "select_subtitles",
     "navigate_to_page",
     "control_playback",
+    "search_content",
+    "get_kids_content",
+    "get_recommendations",
+    "get_live_channels",
 }
 
 
