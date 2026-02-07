@@ -5,7 +5,7 @@
  * control functions and subtitle handlers.
  */
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { PlayerControls, PlayerState } from '../types'
 import logger from '@/utils/logger'
 
@@ -36,6 +36,16 @@ export function useWizardMediaEvents({
   onSubtitleToggle,
   onSubtitleLanguageChange,
 }: UseWizardMediaEventsOptions) {
+  const controlsRef = useRef(controls)
+  const stateRef = useRef(state)
+  const subtitleToggleRef = useRef(onSubtitleToggle)
+  const subtitleLangRef = useRef(onSubtitleLanguageChange)
+
+  controlsRef.current = controls
+  stateRef.current = state
+  subtitleToggleRef.current = onSubtitleToggle
+  subtitleLangRef.current = onSubtitleLanguageChange
+
   useEffect(() => {
     const handleMediaControl = (event: Event) => {
       const { command, value } = (event as CustomEvent<MediaControlDetail>).detail
@@ -45,20 +55,20 @@ export function useWizardMediaEvents({
       switch (command) {
         case 'play':
         case 'resume':
-          if (!state.isPlaying) {
-            controls.togglePlay()
+          if (!stateRef.current.isPlaying) {
+            controlsRef.current.togglePlay()
           }
           break
 
         case 'pause':
-          if (state.isPlaying) {
-            controls.togglePlay()
+          if (stateRef.current.isPlaying) {
+            controlsRef.current.togglePlay()
           }
           break
 
         case 'stop':
-          if (state.isPlaying) {
-            controls.togglePlay()
+          if (stateRef.current.isPlaying) {
+            controlsRef.current.togglePlay()
           }
           if (videoRef.current) {
             videoRef.current.currentTime = 0
@@ -67,19 +77,19 @@ export function useWizardMediaEvents({
 
         case 'seek':
           if (typeof value === 'number') {
-            controls.seekToTime(value)
+            controlsRef.current.seekToTime(value)
           }
           break
 
         case 'mute':
-          if (!state.isMuted) {
-            controls.toggleMute()
+          if (!stateRef.current.isMuted) {
+            controlsRef.current.toggleMute()
           }
           break
 
         case 'unmute':
-          if (state.isMuted) {
-            controls.toggleMute()
+          if (stateRef.current.isMuted) {
+            controlsRef.current.toggleMute()
           }
           break
 
@@ -94,27 +104,27 @@ export function useWizardMediaEvents({
       mediaLogger.info('Media subtitles received', { language, enabled })
 
       if (enabled === false) {
-        onSubtitleToggle(false)
+        subtitleToggleRef.current(false)
         return
       }
 
       if (language) {
-        onSubtitleLanguageChange(language)
+        subtitleLangRef.current(language)
       }
 
       if (enabled === true) {
-        onSubtitleToggle(true)
+        subtitleToggleRef.current(true)
       }
     }
 
     window.addEventListener('media:control', handleMediaControl)
     window.addEventListener('media:subtitles', handleMediaSubtitles)
 
-    mediaLogger.info('Wizard media event listeners registered')
+    mediaLogger.debug('Wizard media event listeners registered')
 
     return () => {
       window.removeEventListener('media:control', handleMediaControl)
       window.removeEventListener('media:subtitles', handleMediaSubtitles)
     }
-  }, [controls, state.isPlaying, state.isMuted, videoRef, onSubtitleToggle, onSubtitleLanguageChange])
+  }, [videoRef])
 }
