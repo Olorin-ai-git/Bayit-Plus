@@ -6,6 +6,7 @@ Validates content exists, resolves latest episodes, and returns play action payl
 import re
 from typing import Any, Dict, Optional
 
+from app.api.routes.content.utils import is_series_content
 from app.core.logging_config import get_logger
 from app.models.content import Content, LiveChannel
 
@@ -143,18 +144,14 @@ async def _resolve_content_metadata(
         content = await Content.get(content_id)
         if not content:
             return None
-        is_series = bool(
-            content.series_id
-            or content.total_episodes
-            or (content.content_format and content.content_format == "series")
-        )
+        content_dict = content.model_dump()
         thumbnail = (
             content.poster_url
             or content.thumbnail
         )
         return {
             "title": content.title,
-            "is_series": is_series,
+            "is_series": is_series_content(content_dict),
             "thumbnail": thumbnail,
         }
     except Exception:

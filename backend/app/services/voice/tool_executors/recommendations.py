@@ -66,16 +66,16 @@ async def execute_get_recommendations(
         return {
             "results": [
                 {
-                    "id": str(r.get("_id", "")),
+                    "id": str(r.get("_id") or r.get("id", "")),
                     "title": r.get("title", ""),
                     "year": r.get("year"),
                     "genres": r.get("genres", []),
                     "rating": r.get("rating"),
-                    "description": r.get("description", "")[:200]
+                    "description": (r.get("description") or "")[:200],
                 }
-                for r in results.get("results", [])
+                for r in results.results
             ],
-            "total_found": results.get("total_found", 0)
+            "total_found": results.total,
         }
 
     except Exception as e:

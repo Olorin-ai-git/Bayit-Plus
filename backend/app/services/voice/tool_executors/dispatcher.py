@@ -44,7 +44,7 @@ async def execute_tool(tool_name: str, tool_input: Dict[str, Any]) -> Dict[str, 
     try:
         if tool_name == "search_content":
             validated_input = SearchContentInput(**tool_input)
-            return await execute_search_content(validated_input.dict())
+            return await execute_search_content(**validated_input.dict())
 
         elif tool_name == "get_recommendations":
             validated_input = GetRecommendationsInput(**tool_input)
@@ -60,7 +60,9 @@ async def execute_tool(tool_name: str, tool_input: Dict[str, Any]) -> Dict[str, 
 
         elif tool_name == "lookup_user_guide":
             validated_input = LookupUserGuideInput(**tool_input)
-            return await execute_lookup_user_guide(validated_input.dict())
+            return await execute_lookup_user_guide(
+                topic=validated_input.query,
+            )
 
         elif tool_name == "play_content":
             validated_input = PlayContentInput(**tool_input)
