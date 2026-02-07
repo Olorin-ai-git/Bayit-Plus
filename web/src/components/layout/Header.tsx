@@ -26,11 +26,9 @@ const navLinkKeys = [
   { to: '/', key: 'nav.home' },
   { to: '/search', key: 'nav.search' },
   { to: '/live', key: 'nav.liveTV' },
-  { to: '/epg', key: 'nav.epg' },
   { to: '/vod', key: 'nav.vod' },
   { to: '/radio', key: 'nav.radio' },
   { to: '/podcasts', key: 'nav.podcasts' },
-  { to: '/judaism', key: 'nav.judaism' },
   { to: '/children', key: 'nav.children' },
   { to: '/widgets', key: 'nav.widgets' },
 ];
@@ -184,6 +182,14 @@ export default function Header() {
           )}
         </NavLink>
       ))}
+      <Pressable
+        onPress={handlePlaylistPress}
+        style={styles.navLink}
+        accessibilityRole="button"
+        accessibilityLabel={t('nav.playlist')}
+      >
+        <Text style={styles.navLinkText}>{t('nav.playlist')}</Text>
+      </Pressable>
     </View>
   );
 
@@ -248,15 +254,17 @@ export default function Header() {
         </Pressable>
       )}
 
-      {/* Search button - 48x48px on mobile */}
-      <Link to="/search" style={{ textDecoration: 'none' }}>
-        <View style={[
-          styles.iconButton,
-          isMobile && styles.iconButtonMobile,
-        ]}>
-          <Search size={IS_TV_BUILD ? 32 : (isMobile ? 24 : 20)} color={colors.text} />
-        </View>
-      </Link>
+      {/* Search icon button - mobile and TV only (desktop has Search in nav) */}
+      {(isMobile || IS_TV_BUILD) && (
+        <Link to="/search" style={{ textDecoration: 'none' }}>
+          <View style={[
+            styles.iconButton,
+            isMobile && styles.iconButtonMobile,
+          ]}>
+            <Search size={IS_TV_BUILD ? 32 : 24} color={colors.text} />
+          </View>
+        </Link>
+      )}
 
       {/* Soundwave Visualizer - for TV wake word listening mode */}
       {showSoundwave && (

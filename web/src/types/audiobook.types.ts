@@ -153,6 +153,8 @@ export interface AudiobookChapter {
   duration?: string
   progress?: number
   thumbnail?: string
+  stream_url?: string
+  stream_type?: string
 }
 
 /**
@@ -176,6 +178,8 @@ export interface AudiobookWithChapters {
   avg_rating: number
   is_featured: boolean
   requires_subscription: SubscriptionTier
+  stream_url?: string
+  stream_type?: string
   chapters: AudiobookChapter[]
   total_chapters: number
 }

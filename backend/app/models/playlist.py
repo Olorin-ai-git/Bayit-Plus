@@ -36,9 +36,17 @@ class PlaylistItem(Document):
     content_type: ContentType
     title: str = Field(..., min_length=1, max_length=500)
     thumbnail: Optional[str] = None
-    duration: Optional[float] = None
+    duration: Optional[str] = None
     position: int = 0
     added_at: datetime = Field(default_factory=datetime.utcnow)
+
+    @field_validator("duration", mode="before")
+    @classmethod
+    def coerce_duration_to_str(cls, v: object) -> Optional[str]:
+        """Coerce numeric duration values from MongoDB to string."""
+        if v is None:
+            return None
+        return str(v)
 
     class Settings:
         name = "playlist_items"

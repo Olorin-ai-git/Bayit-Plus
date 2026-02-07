@@ -365,6 +365,7 @@ const apiPodcastService = {
 const apiAudiobookService = {
   getAudiobooks: (params) => api.get('/audiobooks', { params }),
   getAudiobook: (audiobookId) => api.get(`/audiobooks/${audiobookId}`),
+  getAudiobookWithChapters: (audiobookId) => api.get(`/audiobooks/${audiobookId}/chapters`),
   getFeatured: () => api.get('/audiobooks', { params: { is_featured: true, page_size: 20 } }),
   getStream: (audiobookId) => api.post(`/audiobooks/${audiobookId}/stream`),
 }

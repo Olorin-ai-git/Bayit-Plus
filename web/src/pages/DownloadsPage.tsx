@@ -8,6 +8,7 @@ import { downloadsService } from '@/services/api';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassCard, GlassView, GlassPageHeader, GlassEmptyState } from '@bayit/shared/ui';
+import { LoadingState } from '@bayit/shared-components/states';
 import logger from '@/utils/logger';
 
 const TYPE_ICON_NAMES: Record<string, string> = {

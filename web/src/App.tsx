@@ -104,7 +104,6 @@ const JudaismPage = lazy(() => import('./pages/JudaismPage'))
 const ChildrenPage = lazy(() => import('./pages/ChildrenPage'))
 const FavoritesPage = lazy(() => import('./pages/FavoritesPage'))
 const DownloadsPage = lazy(() => import('./pages/DownloadsPage'))
-const PlaylistPage = lazy(() => import('./pages/WatchlistPage'))
 const MyRecordingsPage = lazy(() => import('./pages/MyRecordingsPage'))
 const MorningRitualPage = lazy(() => import('./pages/MorningRitualPage'))
 const TVLoginPage = lazy(() => import('./pages/TVLoginPage'))
@@ -294,8 +293,8 @@ const AppContent = () => {
         <Route path="/player/:userId" element={<PlayerProfilePage />} />
         <Route path="/favorites" element={<FavoritesPage />} />
         <Route path="/downloads" element={<DownloadsPage />} />
-        <Route path="/playlist" element={<PlaylistPage />} />
-        <Route path="/watchlist" element={<Navigate to="/playlist" replace />} />
+        <Route path="/playlist" element={<Navigate to="/" replace />} />
+        <Route path="/watchlist" element={<Navigate to="/" replace />} />
         <Route path="/recordings" element={<MyRecordingsPage />} />
         <Route path="/morning-ritual" element={<MorningRitualPage />} />
         <Route path="/widgets" element={<UserWidgetsPage />} />

@@ -289,6 +289,46 @@ class VoicePipelineService:
                 )
             )
 
+    # Minimum word count to send to LLM (single words/filler phrases are rejected)
+    _MIN_LLM_WORD_COUNT = 3
+
+    # Non-actionable phrases that should get a friendly ack, not an LLM call
+    _NON_ACTIONABLE_PHRASES = {
+        "en": {
+            "thank you", "thanks", "ok", "okay", "i mean", "um", "uh",
+            "never mind", "nevermind", "hmm", "hm", "notes", "bye",
+            "goodbye", "good bye", "alright", "all right", "sure",
+            "yes", "no", "yep", "nope", "yeah", "nah", "oops",
+        },
+        "he": {
+            "תודה", "בסדר", "אוקיי", "אה", "אמ", "כן", "לא",
+            "נו", "יאללה", "שלום", "להתראות",
+        },
+        "es": {
+            "gracias", "ok", "vale", "si", "no", "adios",
+            "bueno", "pues", "claro",
+        },
+    }
+
+    # Acknowledgment responses keyed by language
+    _ACKNOWLEDGMENT_RESPONSES = {
+        "he": "אני כאן אם תצטרך משהו",
+        "en": "I'm here if you need anything",
+        "es": "Estoy aqui si necesitas algo",
+    }
+
+    def _is_non_actionable_transcript(self, transcript: str, language: str) -> bool:
+        """Check if transcript is too short or a filler/acknowledgment phrase."""
+        words = transcript.strip().split()
+        if len(words) < self._MIN_LLM_WORD_COUNT:
+            normalized = transcript.lower().strip().rstrip(".,!?")
+            phrases = self._NON_ACTIONABLE_PHRASES.get(
+                language, self._NON_ACTIONABLE_PHRASES["en"]
+            )
+            if normalized in phrases:
+                return True
+        return False
+
     async def _try_intent_classification(
         self, transcript: str, language: str
     ) -> Optional[VoiceResponse]:
@@ -430,6 +470,24 @@ class VoicePipelineService:
                 )
             else:
                 return  # Only skip LLM if intent action succeeded
+
+        # Guard: skip LLM for non-actionable filler phrases
+        if self._is_non_actionable_transcript(transcript, language):
+            ack_text = self._ACKNOWLEDGMENT_RESPONSES.get(language, self._ACKNOWLEDGMENT_RESPONSES["en"])
+            logger.info(
+                "Non-actionable transcript, sending acknowledgment",
+                extra={"transcript": transcript, "language": language},
+            )
+            ack_response = VoiceResponse(
+                intent="ACKNOWLEDGE",
+                spoken_response=ack_text,
+                action=None,
+                conversation_id=self.conversation_id or "",
+                confidence=1.0,
+                gesture=None,
+            )
+            await self._send_intent_action(ack_response)
+            return
 
         try:
             # Initialize TTS service (synthesize_streaming handles connect internally)

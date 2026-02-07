@@ -131,6 +131,8 @@ async def get_audiobook_with_chapters(
             duration=chapter.duration,
             progress=None,  # Can be enriched with user progress later
             thumbnail=chapter.thumbnail,
+            stream_url=chapter.stream_url,
+            stream_type=chapter.stream_type,
         )
         for idx, chapter in enumerate(chapters)
     ]
@@ -153,6 +155,8 @@ async def get_audiobook_with_chapters(
         avg_rating=audiobook.avg_rating or 0.0,
         is_featured=audiobook.is_featured or False,
         requires_subscription=audiobook.requires_subscription or "basic",
+        stream_url=audiobook.stream_url,
+        stream_type=audiobook.stream_type,
         chapters=chapter_responses,
         total_chapters=len(chapter_responses),
     )

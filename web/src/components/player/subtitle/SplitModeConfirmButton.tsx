@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     ...Platform.select({
       web: {
         boxShadow: `0 0 0 3px ${colors.primary[400]}40`,
-        outline: 'none',
+        outlineStyle: 'none',
       },
     }),
   },

@@ -218,6 +218,8 @@ class AudiobookChapterResponse(BaseModel):
     duration: Optional[str] = None
     progress: Optional[float] = None
     thumbnail: Optional[str] = None
+    stream_url: Optional[str] = None
+    stream_type: Optional[str] = None
 
 
 class AudiobookWithChaptersResponse(BaseModel):
@@ -239,5 +241,7 @@ class AudiobookWithChaptersResponse(BaseModel):
     avg_rating: float = 0.0
     is_featured: bool = False
     requires_subscription: str = "basic"
+    stream_url: Optional[str] = None
+    stream_type: Optional[str] = None
     chapters: List[AudiobookChapterResponse]
     total_chapters: int

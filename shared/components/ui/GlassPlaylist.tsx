@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { GlassView } from './GlassView';
 import { GlassButton } from './GlassButton';
-import { GlassBadge } from './GlassBadge';
 import { GlassErrorBanner } from './GlassErrorBanner';
+import { GlassReorderableList } from './GlassReorderableList';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useNavigate } from 'react-router-dom';
@@ -37,6 +37,8 @@ export const GlassPlaylist: React.FC = () => {
   const removeItem = usePlaylistStore((s) => s.removeItem);
   const clearPlaylist = usePlaylistStore((s) => s.clearPlaylist);
   const fetchPlaylist = usePlaylistStore((s) => s.fetchPlaylist);
+  const reorderItem = usePlaylistStore((s) => s.reorderItem);
+  const setItems = usePlaylistStore((s) => s.setItems);
 
   const slideAnim = useRef(new Animated.Value(0)).current;
 
@@ -64,13 +66,11 @@ export const GlassPlaylist: React.FC = () => {
     outputRange: [0, 0.4],
   });
 
-  if (!isVisible) return null;
+  const handleClose = useCallback(() => setVisible(false), [setVisible]);
+  const handleClear = useCallback(() => clearPlaylist(), [clearPlaylist]);
+  const handleRemoveItem = useCallback((contentId: string) => removeItem(contentId), [removeItem]);
 
-  const handleClose = () => setVisible(false);
-  const handleClear = () => clearPlaylist();
-  const handleRemoveItem = (contentId: string) => removeItem(contentId);
-
-  const handlePlayItem = (item: { content_id: string; content_type: string; title: string }) => {
+  const handlePlayItem = useCallback((item: { content_id: string; content_type: string; title: string }) => {
     const routeMap: Record<string, string> = {
       live: `/live/${item.content_id}`,
       radio: `/radio/${item.content_id}`,
@@ -85,7 +85,48 @@ export const GlassPlaylist: React.FC = () => {
     });
     setVisible(false);
     navigate(destination);
-  };
+  }, [setVisible, navigate]);
+
+  const handlePlayAll = useCallback(() => {
+    if (items.length === 0) return;
+    const first = items[0];
+    const routeMap: Record<string, string> = {
+      live: `/live/${first.content_id}`,
+      radio: `/radio/${first.content_id}`,
+      podcast: `/podcasts/${first.content_id}`,
+      series: `/vod/series/${first.content_id}`,
+    };
+    const destination = routeMap[first.content_type] ?? `/vod/movie/${first.content_id}`;
+    logger.info('Play All pressed', 'GlassPlaylist', { count: items.length });
+    setVisible(false);
+    navigate(destination, {
+      state: {
+        flowId: 'playlist-play-all',
+        flowName: t('playlist.title'),
+        playlist: items.map((item) => ({
+          content_id: item.content_id,
+          content_type: item.content_type,
+          title: item.title,
+          thumbnail: item.thumbnail,
+        })),
+        currentIndex: 0,
+      },
+    });
+  }, [items, setVisible, navigate, t]);
+
+  const handleReorder = useCallback((fromIndex: number, toIndex: number) => {
+    const movedItem = items[fromIndex];
+    if (!movedItem) return;
+    // Optimistic local reorder
+    const reordered = [...items];
+    reordered.splice(fromIndex, 1);
+    reordered.splice(toIndex, 0, movedItem);
+    setItems(reordered);
+    // Persist via API
+    reorderItem(movedItem.content_id, toIndex);
+  }, [items, setItems, reorderItem]);
+
+  if (!isVisible) return null;
 
   return (
     <View style={styles.overlay}>
@@ -109,17 +150,28 @@ export const GlassPlaylist: React.FC = () => {
           <View style={styles.header}>
             <View style={styles.headerTitle}>
               <Text style={styles.titleText}>{t('playlist.title')}</Text>
-              <GlassBadge label={String(items.length)} />
             </View>
             <View style={styles.headerActions}>
               {items.length > 0 && (
-                <GlassButton
-                  title={t('playlist.clear')}
-                  variant="ghost"
-                  size="sm"
-                  onPress={handleClear}
-                  disabled={isLoading}
-                />
+                <>
+                  <GlassButton
+                    title={t('playlist.playAll')}
+                    icon={<NativeIcon name="play" size={14} color={colors.text} />}
+                    variant="primary"
+                    size="sm"
+                    style={styles.headerButton}
+                    onPress={handlePlayAll}
+                    disabled={isLoading}
+                  />
+                  <GlassButton
+                    title={t('playlist.clear')}
+                    variant="primary"
+                    size="sm"
+                    style={styles.headerButton}
+                    onPress={handleClear}
+                    disabled={isLoading}
+                  />
+                </>
               )}
               <Pressable
                 onPress={handleClose}
@@ -150,14 +202,19 @@ export const GlassPlaylist: React.FC = () => {
               style={styles.scrollArea}
               showsVerticalScrollIndicator={false}
             >
-              {items.map((item) => (
-                <PlaylistItemRow
-                  key={item.content_id}
-                  item={item}
-                  onRemove={handleRemoveItem}
-                  onPlay={handlePlayItem}
-                />
-              ))}
+              <GlassReorderableList
+                items={items}
+                keyExtractor={(item) => item.content_id}
+                onReorder={handleReorder}
+                renderItem={(item, _index, isDragging) => (
+                  <PlaylistItemRow
+                    item={item}
+                    onRemove={handleRemoveItem}
+                    onPlay={handlePlayItem}
+                    isDragging={isDragging}
+                  />
+                )}
+              />
             </ScrollView>
           )}
         </GlassView>
@@ -214,6 +271,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.xs,
+  },
+  headerButton: {
+    height: 40,
   },
   closeButton: {
     padding: spacing.xs,

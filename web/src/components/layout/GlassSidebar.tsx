@@ -81,7 +81,7 @@ const baseMenuSections: MenuSection[] = [
   {
     titleKey: 'nav.favorites',
     items: [
-      { id: 'playlist', icon: 'playlist', labelKey: 'nav.playlist', path: '/playlist' },
+      { id: 'playlist', icon: 'playlist', labelKey: 'nav.playlist' },
       { id: 'favorites', icon: 'favorites', labelKey: 'nav.favorites', path: '/favorites' },
       { id: 'downloads', icon: 'downloads', labelKey: 'nav.downloads', path: '/downloads' },
       { id: 'recordings', icon: 'recordings', labelKey: 'nav.recordings', path: '/recordings' },

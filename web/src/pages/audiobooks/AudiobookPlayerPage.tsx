@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { colors } from '@olorin/design-tokens';
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
+import logger from '@/utils/logger';
 import { useAudiobookData } from './hooks';
 import { AudiobookHero, ChapterList } from './components';
 import type { AudiobookChapter } from '@/types/audiobook';
@@ -32,10 +33,18 @@ export default function AudiobookPlayerPage() {
   const handlePlay = () => {
     const chapterToPlay = selectedChapter || chapters[0];
     if (chapterToPlay && audiobook) {
+      const streamSrc = chapterToPlay.stream_url || audiobook.stream_url;
+      if (!streamSrc) {
+        logger.warn('No stream URL available for chapter', 'AudiobookPlayerPage', {
+          chapterId: chapterToPlay.id,
+          audiobookId: audiobook.id,
+        });
+        return;
+      }
       openPlayer({
         id: chapterToPlay.id,
         title: `${audiobook.title} - ${chapterToPlay.title}`,
-        src: '',
+        src: streamSrc,
         poster: chapterToPlay.thumbnail || audiobook.backdrop || audiobook.thumbnail,
         type: 'audiobook',
         seriesId: audiobook.id,
@@ -50,10 +59,18 @@ export default function AudiobookPlayerPage() {
 
   const handleChapterPlay = (chapter: AudiobookChapter) => {
     if (audiobook) {
+      const streamSrc = chapter.stream_url || audiobook.stream_url;
+      if (!streamSrc) {
+        logger.warn('No stream URL available for chapter', 'AudiobookPlayerPage', {
+          chapterId: chapter.id,
+          audiobookId: audiobook.id,
+        });
+        return;
+      }
       openPlayer({
         id: chapter.id,
         title: `${audiobook.title} - ${chapter.title}`,
-        src: '',
+        src: streamSrc,
         poster: chapter.thumbnail || audiobook.backdrop || audiobook.thumbnail,
         type: 'audiobook',
         seriesId: audiobook.id,

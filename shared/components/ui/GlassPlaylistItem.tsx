@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Image, Pressable, Platform, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -13,12 +13,14 @@ interface PlaylistItemRowProps {
   };
   onRemove: (contentId: string) => void;
   onPlay: (item: PlaylistItemRowProps['item']) => void;
+  isDragging?: boolean;
 }
 
 export const PlaylistItemRow: React.FC<PlaylistItemRowProps> = ({
   item,
   onRemove,
   onPlay,
+  isDragging = false,
 }) => {
   const { t } = useTranslation();
 
@@ -30,10 +32,23 @@ export const PlaylistItemRow: React.FC<PlaylistItemRowProps> = ({
   return (
     <Pressable
       onPress={() => onPlay(item)}
-      style={styles.itemRow}
+      style={[
+        styles.itemRow,
+        isDragging && styles.itemRowDragging,
+      ]}
       accessibilityRole="button"
       accessibilityLabel={t('playlist.playItem', { title: item.title })}
     >
+      {/* Drag handle - web only */}
+      {Platform.OS === 'web' && (
+        <View
+          style={styles.dragHandle}
+          accessibilityLabel={t('playlist.dragToReorder')}
+          {...{ 'data-drag-handle': 'true' } as any}
+        >
+          <Text style={styles.dragHandleText}>&#x22EE;&#x22EE;</Text>
+        </View>
+      )}
       <View style={styles.playIconContainer}>
         <NativeIcon name="play" size={14} color={colors.primary} />
       </View>
@@ -91,6 +106,25 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.glassBorderLight,
     gap: spacing.sm,
+    borderRadius: borderRadius.sm,
+  },
+  itemRowDragging: {
+    opacity: 0.85,
+    backgroundColor: 'rgba(107, 33, 168, 0.15)',
+    borderColor: colors.primary.DEFAULT,
+    borderWidth: 1,
+  },
+  dragHandle: {
+    width: 20,
+    height: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    cursor: 'grab',
+  } as any,
+  dragHandleText: {
+    color: colors.textMuted,
+    fontSize: 12,
+    letterSpacing: 2,
   },
   playIconContainer: {
     width: 24,

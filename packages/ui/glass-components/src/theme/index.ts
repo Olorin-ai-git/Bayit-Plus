@@ -40,44 +40,68 @@ export const blurSpringConfig: Animated.SpringAnimationConfig = {
 
 /**
  * Card Focused Style
+ * Uses boxShadow on web, shadow* props on native
  */
 export const cardFocusedStyle = {
   borderWidth: TV_FOCUS.BORDER_WIDTH_FOCUSED,
   borderColor: 'rgba(96, 165, 250, 0.8)', // blue-400 with opacity
-  shadowColor: '#3b82f6',
-  shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.5,
-  shadowRadius: 8,
   elevation: 8,
-} as const;
+  ...Platform.select({
+    web: {
+      boxShadow: '0px 4px 8px rgba(59, 130, 246, 0.5)',
+    },
+    default: {
+      shadowColor: '#3b82f6',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.5,
+      shadowRadius: 8,
+    },
+  }),
+};
 
 /**
  * Button Focused Style
+ * Uses boxShadow on web, shadow* props on native
  */
 export const buttonFocusedStyle = {
   borderWidth: TV_FOCUS.BORDER_WIDTH_FOCUSED,
   borderColor: 'rgba(96, 165, 250, 1.0)', // blue-400
   backgroundColor: 'rgba(59, 130, 246, 0.2)', // blue-500 with low opacity
-  shadowColor: '#3b82f6',
-  shadowOffset: { width: 0, height: 2 },
-  shadowOpacity: 0.4,
-  shadowRadius: 6,
   elevation: 6,
-} as const;
+  ...Platform.select({
+    web: {
+      boxShadow: '0px 2px 6px rgba(59, 130, 246, 0.4)',
+    },
+    default: {
+      shadowColor: '#3b82f6',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.4,
+      shadowRadius: 6,
+    },
+  }),
+};
 
 /**
  * Input Focused Style
+ * Uses boxShadow on web, shadow* props on native
  */
 export const inputFocusedStyle = {
   borderWidth: 2,
   borderColor: 'rgba(96, 165, 250, 0.9)', // blue-400
   backgroundColor: 'rgba(59, 130, 246, 0.1)',
-  shadowColor: '#3b82f6',
-  shadowOffset: { width: 0, height: 1 },
-  shadowOpacity: 0.3,
-  shadowRadius: 4,
   elevation: 4,
-} as const;
+  ...Platform.select({
+    web: {
+      boxShadow: '0px 1px 4px rgba(59, 130, 246, 0.3)',
+    },
+    default: {
+      shadowColor: '#3b82f6',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.3,
+      shadowRadius: 4,
+    },
+  }),
+};
 
 /**
  * Web Outline Style (for web platform keyboard navigation)
