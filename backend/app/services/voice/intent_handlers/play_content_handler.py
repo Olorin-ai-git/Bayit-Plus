@@ -17,6 +17,7 @@ from ..intent_keywords import (
     PLAYING_RESPONSES,
     CONTENT_NOT_FOUND_RESPONSES,
 )
+from .playlist_content_finder import build_player_path
 
 logger = get_logger(__name__)
 
@@ -42,7 +43,7 @@ async def handle_play_content(
             content_type = top.get("content_type", "vod")
             is_series = top.get("is_series", False)
 
-            path = _build_player_path(content_id, content_type, is_series)
+            path = build_player_path(content_id, content_type, is_series)
             spoken = PLAYING_RESPONSES.get(context.language, PLAYING_RESPONSES["en"]).format(title)
 
             logger.info(
@@ -147,16 +148,3 @@ async def _search_live(query: str) -> List[Dict[str, Any]]:
                 exc_info=True,
             )
             return []
-
-
-def _build_player_path(content_id: str, content_type: str, is_series: bool) -> str:
-    """Build the frontend player route for the matched content."""
-    if content_type == "live":
-        return f"/live/{content_id}"
-    if content_type == "radio":
-        return f"/radio/{content_id}"
-    if content_type == "podcast":
-        return f"/podcasts/{content_id}"
-    if is_series:
-        return f"/vod/series/{content_id}"
-    return f"/vod/{content_id}"

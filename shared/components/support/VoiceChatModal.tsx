@@ -5,7 +5,7 @@
  * Uses LLM for real conversations, activated by "Jarvis" wake word
  */
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { View, Pressable, Animated, useWindowDimensions } from 'react-native';
 import { useSupportStore, VoiceState, GestureState } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
@@ -151,26 +151,28 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
     <View style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, pointerEvents: 'box-none' }}>
       <Pressable onPress={onClose} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'transparent' }} />
 
-      {isMobile ? (
-        <MobileWizardView
-          opacityAnim={opacityAnim} scaleAnim={scaleAnim} voiceState={voiceState}
-          audioLevel={audioLevel} voiceError={voiceError} isRTL={isRTL} mobileBottom={MOBILE_BOTTOM}
-        />
-      ) : (
-        <DesktopWizardView
-          opacityAnim={opacityAnim} scaleAnim={scaleAnim} voiceState={voiceState}
-          audioLevel={audioLevel} voiceError={voiceError} isRTL={isRTL} wizardSize={WIZARD_SIZE}
-        >
-          <WizardStateRenderer
-            voiceState={voiceState} gestureState={gestureState} effectiveGesture={effectiveGesture}
-            isAnimatingGesture={isAnimatingGesture} isAppearing={isAppearing} isDisappearing={isDisappearing}
-            hasAppeared={hasAppeared} isIntroComplete={isIntroComplete} audioLevel={audioLevel}
-            wizardSize={WIZARD_SIZE}
-            onAppearComplete={() => { setIsAppearing(false); setHasAppeared(true); }}
-            onGestureComplete={() => { setIsAnimatingGesture(false); clearGesture(); }}
+      <Pressable onPress={onClose}>
+        {isMobile ? (
+          <MobileWizardView
+            opacityAnim={opacityAnim} scaleAnim={scaleAnim} voiceState={voiceState}
+            audioLevel={audioLevel} voiceError={voiceError} isRTL={isRTL} mobileBottom={MOBILE_BOTTOM}
           />
-        </DesktopWizardView>
-      )}
+        ) : (
+          <DesktopWizardView
+            opacityAnim={opacityAnim} scaleAnim={scaleAnim} voiceState={voiceState}
+            audioLevel={audioLevel} voiceError={voiceError} isRTL={isRTL} wizardSize={WIZARD_SIZE}
+          >
+            <WizardStateRenderer
+              voiceState={voiceState} gestureState={gestureState} effectiveGesture={effectiveGesture}
+              isAnimatingGesture={isAnimatingGesture} isAppearing={isAppearing} isDisappearing={isDisappearing}
+              hasAppeared={hasAppeared} isIntroComplete={isIntroComplete} audioLevel={audioLevel}
+              wizardSize={WIZARD_SIZE}
+              onAppearComplete={() => { setIsAppearing(false); setHasAppeared(true); }}
+              onGestureComplete={() => { setIsAnimatingGesture(false); clearGesture(); }}
+            />
+          </DesktopWizardView>
+        )}
+      </Pressable>
 
       {showUserBubble && currentTranscript && (
         <UserSpeechBubble

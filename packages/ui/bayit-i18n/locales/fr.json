@@ -3768,7 +3768,8 @@
     "support": "Support",
     "liveChannels": "Chaînes en direct",
     "menu": "Menu",
-    "more": "Plus"
+    "more": "Plus",
+    "playlist": "Liste de lecture"
   },
   "plans": {
     "basic": {
@@ -5186,6 +5187,16 @@
       "startUsing": "Commencer à Utiliser le Contrôle Vocal"
     },
     "skip": "Passer pour l'instant"
+  },
+  "playlist": {
+    "title": "Ma Liste",
+    "clear": "Vider",
+    "playAll": "Tout lire",
+    "empty": "Votre liste est vide",
+    "emptyHint": "Utilisez les commandes vocales pour ajouter du contenu",
+    "removeItem": "Retirer de la liste",
+    "items": "elements",
+    "loading": "Chargement de la liste..."
   },
   "watchlist": {
     "filters": {

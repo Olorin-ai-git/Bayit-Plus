@@ -41,6 +41,7 @@ import { apiChatService, apiPartyService, apiRecordingService, apiDownloadsServi
 import { apiJerusalemService, apiTelAvivService, apiCultureService } from './cultureServices';
 import { securityService } from './securityService';
 import { triviaApi } from './triviaServices';
+import { apiPlaylistService } from './playlistServices';
 
 // Import demo services
 import {
@@ -126,6 +127,9 @@ export { securityService };
 // Trivia services - No demo mode
 export { triviaApi };
 
+// Playlist services - No demo mode (requires real auth)
+export const playlistService = apiPlaylistService;
+
 // Re-export API services for direct access
 export {
   apiAuthService,
@@ -157,6 +161,7 @@ export {
   apiJerusalemService,
   apiTelAvivService,
   apiCultureService,
+  apiPlaylistService,
 };
 
 // Default export - main api instance

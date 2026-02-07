@@ -20,6 +20,7 @@ class VoiceIntent(str, Enum):
     CONTENT_QUERY = "CONTENT_QUERY"
     DISPLAY_CHANNELS = "DISPLAY_CHANNELS"
     WEB_SEARCH = "WEB_SEARCH"
+    PLAYLIST = "PLAYLIST"
 
 
 class VoiceAction(BaseModel):

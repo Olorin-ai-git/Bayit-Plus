@@ -332,9 +332,17 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
       handlePress();
     };
 
+    // Force listening OFF when wizard modal closes (directional, not toggle)
+    const handleVoiceStopped = () => {
+      logger.info('Voice stopped event received - forcing listening off');
+      setIsListeningToggle(false);
+    };
+
     window.addEventListener('bayit:toggle-voice', handleRemoteVoiceTrigger);
+    window.addEventListener('bayit:voice-stopped', handleVoiceStopped);
     return () => {
       window.removeEventListener('bayit:toggle-voice', handleRemoteVoiceTrigger);
+      window.removeEventListener('bayit:voice-stopped', handleVoiceStopped);
     };
   }, [handlePress]);
 

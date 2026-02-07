@@ -1,9 +1,10 @@
 import { View, Text, StyleSheet, Pressable, useWindowDimensions, Image } from 'react-native';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useState, useCallback, useEffect } from 'react';
-import { Search, Shield } from 'lucide-react';
+import { Search, Shield, ListMusic } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
+import { usePlaylistStore } from '@bayit/shared/stores/playlistStore';
 import { useChatbotStore } from '@/stores/chatbotStore';
 import { useVoiceSettingsStore } from '@/stores/voiceSettingsStore';
 import { useModeEnforcement } from '@bayit/shared-hooks';
@@ -158,6 +159,12 @@ export default function Header() {
     navigate('/');
   };
 
+  // Playlist overlay toggle
+  const handlePlaylistPress = useCallback(() => {
+    usePlaylistStore.getState().fetchPlaylist();
+    usePlaylistStore.getState().setVisible(true);
+  }, []);
+
   // Voice Support for wizard hat button (mobile only)
   // Use store and service directly to avoid duplicate event subscriptions
   const openVoiceModal = useSupportStore((s) => s.openVoiceModal);
@@ -258,6 +265,18 @@ export default function Header() {
 
       {/* Language selector - compact on mobile */}
       <LanguageSelector compact={isMobile} />
+
+      {/* Playlist button - mobile only */}
+      {isMobile && (
+        <Pressable
+          onPress={handlePlaylistPress}
+          style={[styles.iconButton, styles.iconButtonMobile]}
+          accessibilityRole="button"
+          accessibilityLabel={t('nav.playlist')}
+        >
+          <ListMusic size={24} color={colors.text} />
+        </Pressable>
+      )}
 
       {/* Search button - 48x48px on mobile */}
       <Link to="/search" style={{ textDecoration: 'none' }}>

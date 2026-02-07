@@ -22,11 +22,13 @@ from .intent_keywords import (
     is_play_content_request,
     clean_play_prefix,
 )
+from .playlist_keywords import is_playlist_request
 from .intent_handlers import (
     handle_chat,
     handle_search,
     handle_kids,
     handle_play_content,
+    handle_playlist,
     handle_navigation,
     handle_playback,
     handle_scroll,
@@ -57,21 +59,9 @@ class IntentRouter:
         return f"conv-{uuid.uuid4().hex[:12]}"
 
     async def process_and_route(
-        self,
-        transcript: str,
-        trigger_type: str = "manual"
+        self, transcript: str, trigger_type: str = "manual"
     ) -> VoiceResponse:
-        """
-        Process transcript and route to appropriate handler.
-
-        Args:
-            transcript: Voice input text
-            trigger_type: 'manual' or 'wake-word'
-
-        Returns:
-            Unified voice response with intent, action, and gesture
-        """
-
+        """Process transcript, classify intent, and route to appropriate handler."""
         # Classify intent
         self._play_content_query = None
         intent, confidence = self._classify_intent(transcript)
@@ -118,7 +108,12 @@ class IntentRouter:
 
         transcript_lower = transcript.lower().strip()
 
-        # "play [content]" takes priority - handles movies, channels, podcasts, radio
+        # Playlist management - checked first because "play my playlist" compounds
+        # must not be intercepted by the simpler play-content prefix check
+        if is_playlist_request(transcript_lower, self.language):
+            return VoiceIntent.PLAYLIST, 0.92
+
+        # "play [content]" - handles movies, channels, podcasts, radio
         if is_play_content_request(transcript_lower):
             self._play_content_query = clean_play_prefix(transcript)
             return VoiceIntent.PLAYBACK, 0.9
@@ -178,6 +173,7 @@ class IntentRouter:
             VoiceIntent.CHAT: handle_chat,
             VoiceIntent.SEARCH: handle_search,
             VoiceIntent.KIDS: handle_kids,
+            VoiceIntent.PLAYLIST: handle_playlist,
             VoiceIntent.CONTENT_QUERY: handle_search,
             VoiceIntent.WEB_SEARCH: handle_search,
         }

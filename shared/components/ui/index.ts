@@ -44,6 +44,9 @@ export { GlassParticleLayer } from './GlassParticleLayer';
 export { GlassReorderableList } from './GlassReorderableList';
 export { GlassSectionItem } from './GlassSectionItem';
 
+// Playlist Overlay Component
+export { GlassPlaylist } from './GlassPlaylist';
+
 // Carousel Components
 export { GlassCarousel3D } from './GlassCarousel3D';
 

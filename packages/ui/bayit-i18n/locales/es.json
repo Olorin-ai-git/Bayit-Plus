@@ -4779,7 +4779,8 @@
     "privacy": "Política de Privacidad",
     "liveChannels": "Canales en vivo",
     "menu": "Menú",
-    "more": "Más"
+    "more": "Más",
+    "playlist": "Lista de reproducción"
   },
   "notFound": {
     "title": "Página no encontrada",
@@ -6441,6 +6442,16 @@
     "stopVoice": "Detener voz",
     "voiceInputHint": "Pista de entrada de voz",
     "watching": "Viendo"
+  },
+  "playlist": {
+    "title": "Mi Lista",
+    "clear": "Limpiar",
+    "playAll": "Reproducir todo",
+    "empty": "Tu lista esta vacia",
+    "emptyHint": "Usa comandos de voz para agregar contenido a tu lista",
+    "removeItem": "Eliminar de la lista",
+    "items": "elementos",
+    "loading": "Cargando lista..."
   },
   "watchlist": {
     "filters": {

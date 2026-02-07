@@ -99,6 +99,7 @@ from app.models.passkey_credential import PasskeyCredential, PasskeySession, Pas
 from app.models.voice_config import VoiceConfiguration, VoiceProviderHealth
 from app.models.verification import VerificationToken
 from app.models.watchlist import Conversation, WatchHistory, WatchlistItem
+from app.models.playlist import UserPlaylist
 from app.models.widget import Widget
 from app.models.youngsters_content import YoungstersContentSource
 from app.services.mcp_content_discovery import ContentDiscoveryQueue
@@ -372,6 +373,8 @@ async def connect_to_mongo():
         # User dubbing session and quota models
         UserDubbingSession,
         UserQuota,
+        # Playlist model (voice-driven ordered playback queue)
+        UserPlaylist,
     ]
 
     # Conditionally add Olorin models based on database separation setting

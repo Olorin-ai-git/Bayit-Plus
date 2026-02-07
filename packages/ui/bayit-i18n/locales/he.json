@@ -4917,7 +4917,8 @@
     "flows": "רצפים",
     "liveChannels": "ערוצים חיים",
     "menu": "תפריט",
-    "more": "עוד"
+    "more": "עוד",
+    "playlist": "רשימת השמעה"
   },
   "notFound": {
     "title": "הדף לא נמצא",
@@ -6571,6 +6572,16 @@
     "stopVoice": "עצור שיחה קולית",
     "voiceInputHint": "לחץ והחזק כדי לדבר",
     "watching": "צופה"
+  },
+  "playlist": {
+    "title": "הרשימה שלי",
+    "clear": "נקה",
+    "playAll": "נגן הכל",
+    "empty": "הרשימה שלך ריקה",
+    "emptyHint": "השתמש בפקודות קוליות כדי להוסיף תוכן לרשימה",
+    "removeItem": "הסר מהרשימה",
+    "items": "פריטים",
+    "loading": "טוען רשימה..."
   },
   "watchlist": {
     "filters": {

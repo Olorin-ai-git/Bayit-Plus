@@ -4009,7 +4009,8 @@
     "games": "ゲーム",
     "privacy": "プライバシーポリシー",
     "friends": "友達",
-    "liveChannels": "ライブチャンネル"
+    "liveChannels": "ライブチャンネル",
+    "playlist": "プレイリスト"
   },
   "notFound": {
     "title": "ページが見つかりません",
@@ -5671,6 +5672,16 @@
       "startUsing": "音声コントロールを使い始める"
     },
     "skip": "今はスキップ"
+  },
+  "playlist": {
+    "title": "マイリスト",
+    "clear": "クリア",
+    "playAll": "すべて再生",
+    "empty": "プレイリストは空です",
+    "emptyHint": "音声コマンドでコンテンツを追加してください",
+    "removeItem": "リストから削除",
+    "items": "アイテム",
+    "loading": "プレイリスト読み込み中..."
   },
   "watchlist": {
     "title": "ウォッチリスト",

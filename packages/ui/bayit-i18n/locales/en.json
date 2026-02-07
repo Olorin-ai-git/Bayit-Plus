@@ -4957,7 +4957,8 @@
     "flows": "Flows",
     "liveChannels": "Live Channels",
     "menu": "Menu",
-    "more": "More"
+    "more": "More",
+    "playlist": "Playlist"
   },
   "notFound": {
     "title": "Page Not Found",
@@ -6741,6 +6742,16 @@
     "stopVoice": "Stop Voice",
     "voiceInputHint": "Voice Input Hint",
     "watching": "Watching"
+  },
+  "playlist": {
+    "title": "My Playlist",
+    "clear": "Clear",
+    "playAll": "Play All",
+    "empty": "Your playlist is empty",
+    "emptyHint": "Use voice commands to add content to your playlist",
+    "removeItem": "Remove from playlist",
+    "items": "items",
+    "loading": "Loading playlist..."
   },
   "watchlist": {
     "filters": {

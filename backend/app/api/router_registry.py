@@ -65,7 +65,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 synced_streams,
                                 tel_aviv, trending, trivia,
                                 user_system_widgets, users, verification,
-                                voice, watchlist, webauthn, websocket,
+                                playlist, voice, watchlist, webauthn, websocket,
                                 websocket_channel_chat,
                                 websocket_chess, websocket_dm,
                                 websocket_live_dubbing,
@@ -178,6 +178,9 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         watchlist.router, prefix=f"{prefix}/watchlist", tags=["watchlist"]
+    )
+    app.include_router(
+        playlist.router, prefix=f"{prefix}/playlist", tags=["playlist"]
     )
     app.include_router(
         favorites.router, prefix=f"{prefix}/favorites", tags=["favorites"]

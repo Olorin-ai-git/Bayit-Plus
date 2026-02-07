@@ -4110,7 +4110,8 @@
     "privacy": "隐私政策",
     "liveChannels": "直播频道",
     "menu": "菜单",
-    "more": "更多"
+    "more": "更多",
+    "playlist": "播放列表"
   },
   "notFound": {
     "title": "页面未找到",
@@ -5676,6 +5677,16 @@
     "stopVoice": "停止语音",
     "voiceInputHint": "语音输入提示",
     "watching": "观看中"
+  },
+  "playlist": {
+    "title": "我的播放列表",
+    "clear": "清空",
+    "playAll": "播放全部",
+    "empty": "您的播放列表为空",
+    "emptyHint": "使用语音命令将内容添加到播放列表",
+    "removeItem": "从列表中移除",
+    "items": "项目",
+    "loading": "正在加载播放列表..."
   },
   "watchlist": {
     "filters": {

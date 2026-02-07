@@ -14,12 +14,14 @@ from .navigation_handler import (
     handle_control
 )
 from .helpers import get_intent_gesture
+from .playlist_handler import handle_playlist
 
 __all__ = [
     'handle_chat',
     'handle_search',
     'handle_kids',
     'handle_play_content',
+    'handle_playlist',
     'handle_navigation',
     'handle_playback',
     'handle_scroll',

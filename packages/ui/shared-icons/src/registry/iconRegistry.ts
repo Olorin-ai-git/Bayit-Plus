@@ -173,6 +173,13 @@ export const ICON_REGISTRY: Record<string, IconDefinition> = {
     description: 'Favorites',
     usage: ['navbar', 'sidebar', 'library'],
   },
+  playlist: {
+    name: 'playlist',
+    lucideName: 'ListMusic',
+    category: 'navigation',
+    description: 'Playlist',
+    usage: ['navbar', 'sidebar', 'library'],
+  },
   watchlist: {
     name: 'watchlist',
     lucideName: 'ListVideo',

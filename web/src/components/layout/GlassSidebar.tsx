@@ -24,6 +24,7 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { useAuthStore } from '@/stores/authStore';
 import { useMobileLayoutStore } from '@/stores/mobileLayoutStore';
+import { usePlaylistStore } from '@bayit/shared/stores/playlistStore';
 import { useResponsive } from '@/hooks/useResponsive';
 import { renderIcon } from '@olorin/shared-icons/web';
 
@@ -80,6 +81,7 @@ const baseMenuSections: MenuSection[] = [
   {
     titleKey: 'nav.favorites',
     items: [
+      { id: 'playlist', icon: 'playlist', labelKey: 'nav.playlist' },
       { id: 'favorites', icon: 'favorites', labelKey: 'nav.favorites', path: '/favorites' },
       { id: 'watchlist', icon: 'watchlist', labelKey: 'nav.watchlist', path: '/watchlist' },
       { id: 'downloads', icon: 'downloads', labelKey: 'nav.downloads', path: '/downloads' },
@@ -278,6 +280,15 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
   const handleItemPress = (item: MenuItem) => {
     // Respect mode enforcement - only allow clicks in allowed modes
     if (!isUIInteractionEnabled) {
+      return;
+    }
+    // Playlist opens overlay instead of navigating
+    if (item.id === 'playlist') {
+      usePlaylistStore.getState().fetchPlaylist();
+      usePlaylistStore.getState().setVisible(true);
+      if (isMobileDrawer) {
+        closeSidebar();
+      }
       return;
     }
     if (item.path) {

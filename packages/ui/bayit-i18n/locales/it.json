@@ -3938,7 +3938,8 @@
     "privacy": "Informativa sulla Privacy",
     "liveChannels": "Canali in diretta",
     "menu": "Menu",
-    "more": "Altro"
+    "more": "Altro",
+    "playlist": "Playlist"
   },
   "plans": {
     "basic": {
@@ -5134,6 +5135,16 @@
       "startUsing": "Inizia a Usare il Controllo Vocale"
     },
     "skip": "Salta per ora"
+  },
+  "playlist": {
+    "title": "La Mia Lista",
+    "clear": "Svuota",
+    "playAll": "Riproduci tutto",
+    "empty": "La tua lista e vuota",
+    "emptyHint": "Usa i comandi vocali per aggiungere contenuti alla lista",
+    "removeItem": "Rimuovi dalla lista",
+    "items": "elementi",
+    "loading": "Caricamento lista..."
   },
   "watchlist": {
     "filters": {
