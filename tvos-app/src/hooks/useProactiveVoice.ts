@@ -24,14 +24,11 @@ import logger from '@/utils/logger';
 
 const moduleLogger = logger.scope('useProactiveVoice');
 
+import type { UseProactiveVoiceOptions } from './types/proactiveVoice.types';
+
 // Re-export for backward compatibility
 export type { ProactiveSuggestion } from './useProactiveSuggestionGenerators';
-
-interface UseProactiveVoiceOptions {
-  enabled?: boolean;
-  speakSuggestions?: boolean;
-  minInterval?: number;
-}
+export type { UseProactiveVoiceOptions };
 
 /**
  * Hook for proactive voice suggestions on tvOS
