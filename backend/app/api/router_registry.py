@@ -38,6 +38,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_content_importer, admin_content_vod_read,
                                 admin_content_vod_toggles,
                                 admin_content_vod_write, admin_cultures,
+                                admin_documentary_import,
                                 admin_kids_content, admin_live_channels,
                                 admin_podcast_episodes, admin_podcasts,
                                 admin_radio_stations, admin_subtitle_sync, admin_taxonomy,
@@ -372,6 +373,11 @@ def register_all_routers(app: FastAPI) -> None:
     )
     app.include_router(
         admin_taxonomy.router, prefix=f"{prefix}/admin", tags=["admin-taxonomy"]
+    )
+    app.include_router(
+        admin_documentary_import.router,
+        prefix=f"{prefix}/admin",
+        tags=["admin-documentary-import"],
     )
     app.include_router(
         admin_subtitle_sync.router, prefix=prefix, tags=["admin-subtitles"]

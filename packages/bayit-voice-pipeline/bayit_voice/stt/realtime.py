@@ -75,8 +75,22 @@ class ElevenLabsRealtimeService:
 
         logger.info("ElevenLabsRealtimeService initialized")
 
-    async def connect(self, source_lang: str = "auto", timeout: float = 10.0) -> None:
-        """Establish WebSocket connection to ElevenLabs realtime STT."""
+    async def connect(
+        self,
+        source_lang: str = "auto",
+        timeout: float = 10.0,
+        vad_silence_override: Optional[float] = None,
+        vad_threshold_override: Optional[float] = None,
+    ) -> None:
+        """Establish WebSocket connection to ElevenLabs realtime STT.
+
+        Args:
+            source_lang: Language hint for STT ("auto" for detection)
+            timeout: Connection timeout in seconds
+            vad_silence_override: Override VAD silence threshold (seconds). Use longer
+                values (e.g. 3.5) for voice assistant to avoid cutting users off mid-thought.
+            vad_threshold_override: Override VAD energy threshold (0.0-1.0).
+        """
         if self._connected and self._session_confirmed:
             logger.warning("Already connected to ElevenLabs realtime STT")
             return
@@ -100,6 +114,12 @@ class ElevenLabsRealtimeService:
                 ping_interval = 20
                 ping_timeout = 30
                 close_timeout = 10
+
+            # Apply overrides (voice assistant needs longer silence threshold)
+            if vad_silence_override is not None:
+                vad_silence = vad_silence_override
+            if vad_threshold_override is not None:
+                vad_threshold = vad_threshold_override
 
             ws_url = (
                 f"{ELEVENLABS_REALTIME_STT_URL}?model_id=scribe_v2_realtime"

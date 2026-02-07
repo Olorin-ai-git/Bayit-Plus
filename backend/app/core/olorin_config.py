@@ -579,6 +579,23 @@ class SubtitleConfig(BaseSettings):
         description="Force transcript commit after this many audio chunks",
     )
 
+    # Voice assistant STT VAD tuning (separate from subtitle VAD)
+    # Voice commands need longer silence threshold since users pause to think
+    voice_assistant_vad_silence_threshold_secs: float = Field(
+        default=3.5,
+        ge=0.5,
+        le=8.0,
+        description="VAD silence duration for voice assistant before committing (seconds). "
+        "Longer than subtitle VAD to avoid cutting users off mid-thought.",
+    )
+    voice_assistant_vad_threshold: float = Field(
+        default=0.4,
+        ge=0.1,
+        le=1.0,
+        description="VAD energy threshold for voice assistant speech detection (0.0-1.0). "
+        "Slightly lower than subtitle VAD for better sensitivity in conversational speech.",
+    )
+
     # Deduplication configuration
     dedup_min_pattern_length: int = Field(
         default=10,

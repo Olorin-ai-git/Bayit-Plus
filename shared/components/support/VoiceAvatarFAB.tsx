@@ -29,9 +29,10 @@ const WIZARD_HAT = {
 interface VoiceAvatarFABProps {
   onPress: () => void;
   visible?: boolean;
+  bottomOffset?: number;
 }
 
-export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({ onPress, visible = true }) => {
+export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({ onPress, visible = true, bottomOffset }) => {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
   const { voiceState, wakeWordDetected } = useSupportStore();
@@ -95,6 +96,7 @@ export const VoiceAvatarFAB: React.FC<VoiceAvatarFABProps> = ({ onPress, visible
       style={[
         styles.container, isRTL ? styles.containerRTL : styles.containerLTR,
         { opacity: opacityAnim, transform: [{ scale: scaleAnim }, { translateY: bounceAnim }] },
+        bottomOffset != null && { bottom: bottomOffset },
       ]}
     >
       <TouchableOpacity

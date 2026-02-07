@@ -103,6 +103,8 @@ from app.models.playlist import PlaylistItem
 from app.models.widget import Widget
 from app.models.youngsters_content import YoungstersContentSource
 from app.services.mcp_content_discovery import ContentDiscoveryQueue
+# Public domain documentary import models
+from app.services.public_domain_doc_importer.sync_tracker import DocSyncState
 # Migration tracking models
 from app.models.migration import MigrationRecord, RollbackData
 # NLP models
@@ -374,6 +376,8 @@ async def connect_to_mongo():
         UserQuota,
         # Unified playlist model (merged watchlist + playlist)
         PlaylistItem,
+        # Public domain documentary import sync tracking
+        DocSyncState,
     ]
 
     # Conditionally add Olorin models based on database separation setting

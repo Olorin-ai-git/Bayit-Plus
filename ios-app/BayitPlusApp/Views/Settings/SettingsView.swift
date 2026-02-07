@@ -48,25 +48,25 @@ struct SettingsView: View {
                 icon: "globe",
                 title: localization.t("settings.autoTranslate"),
                 isOn: vm.autoTranslate
-            ) { Task { await vm.updateAutoTranslate($0) } }
+            ) { val in Task { await vm.updateAutoTranslate(val) } }
 
             toggleRow(
                 icon: "captions.bubble",
                 title: localization.t("settings.subtitles"),
                 isOn: vm.subtitles
-            ) { Task { await vm.updateSubtitles($0) } }
+            ) { val in Task { await vm.updateSubtitles(val) } }
 
             toggleRow(
                 icon: "play.circle",
                 title: localization.t("settings.autoplay"),
                 isOn: vm.autoplay
-            ) { Task { await vm.updateAutoplay($0) } }
+            ) { val in Task { await vm.updateAutoplay(val) } }
 
             toggleRow(
                 icon: "bell",
                 title: localization.t("settings.notifications"),
                 isOn: vm.notifications
-            ) { Task { await vm.updateNotifications($0) } }
+            ) { val in Task { await vm.updateNotifications(val) } }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }

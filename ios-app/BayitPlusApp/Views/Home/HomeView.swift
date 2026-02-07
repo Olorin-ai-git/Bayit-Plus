@@ -56,9 +56,12 @@ struct HomeView: View {
                     .fill(DesignTokens.Glass.bg)
                     .frame(height: 180)
                     .padding(.horizontal, DesignTokens.Spacing.lg)
+                    .accessibilityHidden(true)
             }
         }
         .padding(.top, DesignTokens.Spacing.xl)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Loading content")
     }
 
     private func errorState(_ message: String) -> some View {
@@ -66,6 +69,7 @@ struct HomeView: View {
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 48))
                 .foregroundColor(DesignTokens.Warning.default)
+                .accessibilityHidden(true)
 
             Text(message)
                 .font(.system(size: DesignTokens.FontSize.md))
@@ -76,8 +80,10 @@ struct HomeView: View {
             GlassButton("Retry", variant: .secondary, size: .medium) {
                 Task { await viewModel?.refresh() }
             }
+            .accessibilityHint("Double tap to reload content")
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 100)
+        .accessibilityElement(children: .combine)
     }
 }

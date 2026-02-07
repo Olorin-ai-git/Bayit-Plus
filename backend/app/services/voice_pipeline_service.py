@@ -154,9 +154,17 @@ class VoicePipelineService:
             return
 
         try:
-            # Initialize STT service
+            # Initialize STT service with voice assistant-specific VAD settings
+            # Voice commands need longer silence threshold (3.5s vs 2.0s for subtitles)
+            # so users aren't cut off mid-thought when pausing to recall a movie name etc.
             self.stt_service = ElevenLabsRealtimeService()
-            await self.stt_service.connect(source_lang=self.language)
+            vad_silence = settings.olorin.subtitle.voice_assistant_vad_silence_threshold_secs
+            vad_threshold = settings.olorin.subtitle.voice_assistant_vad_threshold
+            await self.stt_service.connect(
+                source_lang=self.language,
+                vad_silence_override=vad_silence,
+                vad_threshold_override=vad_threshold,
+            )
 
             self._running = True
 

@@ -1,3 +1,4 @@
+import BayitVoice
 import SwiftUI
 
 /// Main tab view with glass tab bar at the bottom
@@ -68,17 +69,17 @@ struct MainTabView: View {
         case .recordings:
             RecordingsView()
         case .settings:
-            ScreenPlaceholder(title: "Settings", subtitle: "Phase 6")
+            SettingsView()
         case .languageSettings:
-            ScreenPlaceholder(title: "Language", subtitle: "Phase 6")
+            LanguageSettingsView()
         case .notificationSettings:
-            ScreenPlaceholder(title: "Notifications", subtitle: "Phase 6")
+            NotificationSettingsView()
         case .billing:
-            ScreenPlaceholder(title: "Billing", subtitle: "Phase 6")
+            BillingView()
         case .subscription:
-            ScreenPlaceholder(title: "Subscription", subtitle: "Phase 6")
+            SubscriptionView()
         case .security:
-            ScreenPlaceholder(title: "Security", subtitle: "Phase 6")
+            SecurityView()
         case .children:
             ChildrenView()
         case .youngsters:
@@ -90,9 +91,9 @@ struct MainTabView: View {
         case .morningRitual:
             MorningRitualView()
         case .voiceOnboarding:
-            ScreenPlaceholder(title: "Voice Setup", subtitle: "Phase 5")
+            VoiceOnboardingView(speechService: SpeechRecognitionService())
         case .support:
-            ScreenPlaceholder(title: "Support", subtitle: "Phase 6")
+            SupportView()
         default:
             ScreenPlaceholder(title: "Screen", subtitle: "")
         }
@@ -158,6 +159,8 @@ struct MainTabView: View {
                     : Color.clear
             )
             .clipShape(RoundedRectangle(cornerRadius: 12))
+            .accessibilityLabel(tab.title)
+            .accessibilityAddTraits(isSelected ? .isSelected : [])
         }
     }
 }

@@ -84,6 +84,7 @@ struct PlayerView: View {
         ProgressView()
             .scaleEffect(1.5)
             .tint(.white)
+            .accessibilityLabel("Loading media")
     }
 
     // MARK: - Error
@@ -138,6 +139,7 @@ struct PlayerView: View {
                     .foregroundStyle(.white)
                     .frame(width: 44, height: 44)
             }
+            .accessibilityLabel("Dismiss player")
 
             VStack(alignment: .leading, spacing: 2) {
                 if let title = viewModel.title {
@@ -163,14 +165,14 @@ struct PlayerView: View {
 
             if PiPController.isSupported {
                 Button {
-                    // PiP toggle would require a reference to the PiP controller
-                    // This is handled via the AVPlayerViewController's built-in PiP
+                    // PiP handled via AVPlayerViewController's built-in support
                 } label: {
                     Image(systemName: "pip.enter")
                         .font(.system(size: 18))
                         .foregroundStyle(.white)
                         .frame(width: 44, height: 44)
                 }
+                .accessibilityLabel("Picture in Picture")
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.base)
@@ -214,6 +216,8 @@ struct PlayerView: View {
                 )
                 .frame(width: 44, height: 44)
         }
+        .accessibilityLabel("Live dubbing")
+        .accessibilityValue(isDubbingEnabled ? "On" : "Off")
     }
 
     // MARK: - Helpers

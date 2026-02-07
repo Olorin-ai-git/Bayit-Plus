@@ -23,6 +23,7 @@ import { useResponsive } from '@/hooks/useResponsive';
 import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
 import { useVoiceSupport } from '@bayit/shared-hooks';
 import { supportConfig } from '@bayit/shared-config/supportConfig';
+import { useVoiceActionExecutor } from '@/hooks/useVoiceActionExecutor';
 import logger from '@/utils/logger';
 
 // Check if this is a TV build (set by webpack)
@@ -36,6 +37,9 @@ export default function Layout() {
   // Sidebar state: always expanded by default on desktop/TV, hidden on mobile
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const { isRTL } = useDirection();
+
+  // Execute voice actions (PLAYBACK, SEARCH, NAVIGATE) from voice assistant
+  useVoiceActionExecutor();
 
   // Voice Support for floating wizard hat FAB
   const {
@@ -298,11 +302,12 @@ export default function Layout() {
       {/* Chatbot enabled on both web and TV for voice interaction */}
       <Chatbot />
 
-      {/* Voice Avatar FAB - Floating wizard hat for voice support (desktop/TV only) */}
-      {!isMobile && voiceSupported && supportConfig.voiceAssistant.enabled && (
+      {/* Voice Avatar FAB - Floating wizard hat for voice support */}
+      {voiceSupported && supportConfig.voiceAssistant.enabled && (
         <VoiceAvatarFAB
           onPress={handleVoiceAvatarPress}
           visible={!isVoiceModalOpen}
+          bottomOffset={isMobile ? 88 : undefined}
         />
       )}
 

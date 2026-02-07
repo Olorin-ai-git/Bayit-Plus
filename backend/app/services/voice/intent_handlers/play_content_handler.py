@@ -70,7 +70,17 @@ async def handle_play_content(
             )
             return {
                 "spoken_response": spoken,
-                "action": {"type": "navigate", "payload": {"path": path}},
+                "action": {
+                    "type": "navigate",
+                    "payload": {
+                        "path": path,
+                        "content_id": content_id,
+                        "title": title,
+                        "content_type": content_type,
+                        "is_series": is_series,
+                        "thumbnail": top.get("thumbnail", ""),
+                    },
+                },
             }
 
         not_found = CONTENT_NOT_FOUND_RESPONSES.get(context.language, CONTENT_NOT_FOUND_RESPONSES["en"])

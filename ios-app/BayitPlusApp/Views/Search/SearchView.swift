@@ -63,6 +63,7 @@ struct SearchView: View {
             }
             .font(.system(size: DesignTokens.FontSize.md))
             .foregroundColor(DesignTokens.Primary.default)
+            .accessibilityLabel("Cancel search")
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.vertical, DesignTokens.Spacing.md)
@@ -106,6 +107,7 @@ struct SearchView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 48))
                 .foregroundColor(DesignTokens.Text.muted)
+                .accessibilityHidden(true)
 
             Text("No results found")
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .semibold))
@@ -117,6 +119,7 @@ struct SearchView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 80)
+        .accessibilityElement(children: .combine)
     }
 
     private var searchPrompt: some View {
@@ -124,6 +127,7 @@ struct SearchView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 64))
                 .foregroundColor(DesignTokens.Text.muted.opacity(0.4))
+                .accessibilityHidden(true)
 
             Text("Search for content")
                 .font(.system(size: DesignTokens.FontSize.lg))
@@ -131,6 +135,7 @@ struct SearchView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.top, 100)
+        .accessibilityElement(children: .combine)
     }
 
     private func resultSubtitle(_ result: SearchResult) -> String? {
