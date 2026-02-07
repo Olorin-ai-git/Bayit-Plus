@@ -128,9 +128,18 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
           this.config.conversationId = convId || undefined;
           const store = useSupportStore.getState();
           // Use accumulated streaming text if available, fallback to WS responseText
+          // Only overwrite lastResponse if we have new text (intentAction may have already set it)
           const finalText = store.streamingResponse || responseText;
-          // Atomic update: set final response and clear streaming in single store write
-          useSupportStore.setState({ lastResponse: finalText, streamingResponse: '', isStreamingText: false });
+          if (finalText) {
+            useSupportStore.setState({ lastResponse: finalText, streamingResponse: '', isStreamingText: false });
+          } else {
+            useSupportStore.setState({ streamingResponse: '', isStreamingText: false });
+          }
+          log.info('Response finalized', {
+            finalTextLength: finalText?.length || 0,
+            keptExisting: !finalText,
+            existingResponse: store.lastResponse?.substring(0, 80),
+          });
           this.emit('responseComplete', convId, escalation);
         },
         onCancelled: () => { this.audioPlayer?.stop(); this.emitStateChange('idle'); },

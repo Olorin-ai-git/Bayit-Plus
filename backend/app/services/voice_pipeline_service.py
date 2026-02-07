@@ -330,6 +330,37 @@ class VoicePipelineService:
         and complete messages immediately after the last audio chunk.
         """
         try:
+            # Send intent_action FIRST so the frontend can execute the action
+            # (navigate, search, etc.) while TTS audio plays
+            await self._output_queue.put(
+                PipelineMessage(
+                    type="intent_action",
+                    text=voice_response.spoken_response,
+                    intent=voice_response.intent,
+                    action=(
+                        voice_response.action.model_dump()
+                        if voice_response.action
+                        else None
+                    ),
+                    confidence=voice_response.confidence,
+                    gesture=(
+                        voice_response.gesture.model_dump()
+                        if voice_response.gesture
+                        else None
+                    ),
+                )
+            )
+
+            logger.info(
+                "Intent action sent to client",
+                extra={
+                    "intent": voice_response.intent,
+                    "action_type": voice_response.action.type if voice_response.action else None,
+                    "spoken_response": voice_response.spoken_response[:80],
+                },
+            )
+
+            # Then stream TTS audio
             self.tts_service = ElevenLabsTTSStreamingService()
 
             async def single_text_generator():
@@ -351,28 +382,7 @@ class VoicePipelineService:
                 extra={"audio_chunks": audio_chunk_count},
             )
 
-            # Send intent_action and complete immediately after last audio chunk.
-            # synthesize_streaming() no longer blocks on WebSocket close,
-            # so these messages reach the client without delay.
-            await self._output_queue.put(
-                PipelineMessage(
-                    type="intent_action",
-                    text=voice_response.spoken_response,
-                    intent=voice_response.intent,
-                    action=(
-                        voice_response.action.model_dump()
-                        if voice_response.action
-                        else None
-                    ),
-                    confidence=voice_response.confidence,
-                    gesture=(
-                        voice_response.gesture.model_dump()
-                        if voice_response.gesture
-                        else None
-                    ),
-                )
-            )
-
+            # Send complete after all audio
             await self._output_queue.put(
                 PipelineMessage(
                     type="complete",

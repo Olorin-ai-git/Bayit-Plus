@@ -1,0 +1,99 @@
+import Foundation
+import Observation
+
+/// ViewModel for the Podcasts screen - manages shows, categories, and pagination
+@Observable
+final class PodcastsViewModel {
+    private(set) var shows: [PodcastShow] = []
+    private(set) var categories: [PodcastCategory] = []
+    private(set) var isLoading = false
+    private(set) var isLoadingMore = false
+    private(set) var error: String?
+    private(set) var currentPage = 1
+    private(set) var hasMore = true
+
+    var selectedCategory: String?
+
+    private let repository: any PodcastRepository
+    private let pageSize = 20
+
+    init(repository: any PodcastRepository) {
+        self.repository = repository
+    }
+
+    @MainActor
+    func loadInitial() async {
+        guard !isLoading else { return }
+        isLoading = true
+        error = nil
+        currentPage = 1
+
+        do {
+            async let showsResult = repository.fetchPodcasts(
+                page: 1,
+                limit: pageSize,
+                category: selectedCategory
+            )
+            async let categoriesResult = repository.fetchCategories()
+
+            let (showsResponse, categoriesResponse) = try await (showsResult, categoriesResult)
+            shows = showsResponse.shows
+            categories = categoriesResponse.categories
+            hasMore = showsResponse.page < showsResponse.pages
+        } catch {
+            self.error = error.localizedDescription
+        }
+
+        isLoading = false
+    }
+
+    @MainActor
+    func loadMore() async {
+        guard !isLoadingMore, hasMore else { return }
+        isLoadingMore = true
+
+        let nextPage = currentPage + 1
+
+        do {
+            let response = try await repository.fetchPodcasts(
+                page: nextPage,
+                limit: pageSize,
+                category: selectedCategory
+            )
+            shows.append(contentsOf: response.shows)
+            currentPage = nextPage
+            hasMore = response.page < response.pages
+        } catch {
+            self.error = error.localizedDescription
+        }
+
+        isLoadingMore = false
+    }
+
+    @MainActor
+    func filterByCategory(_ category: String?) async {
+        selectedCategory = category
+        currentPage = 1
+        isLoading = true
+        error = nil
+
+        do {
+            let response = try await repository.fetchPodcasts(
+                page: 1,
+                limit: pageSize,
+                category: category
+            )
+            shows = response.shows
+            hasMore = response.page < response.pages
+        } catch {
+            self.error = error.localizedDescription
+        }
+
+        isLoading = false
+    }
+
+    @MainActor
+    func refresh() async {
+        await loadInitial()
+    }
+}

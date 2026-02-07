@@ -555,7 +555,7 @@ class SubtitleConfig(BaseSettings):
 
     # STT Voice Activity Detection (VAD) tuning
     stt_vad_silence_threshold_secs: float = Field(
-        default=1.0,
+        default=2.0,
         ge=0.1,
         le=5.0,
         description="VAD silence duration before committing transcript (seconds)",

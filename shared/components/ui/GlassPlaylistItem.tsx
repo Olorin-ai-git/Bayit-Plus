@@ -12,16 +12,31 @@ interface PlaylistItemRowProps {
     thumbnail?: string;
   };
   onRemove: (contentId: string) => void;
+  onPlay: (item: PlaylistItemRowProps['item']) => void;
 }
 
 export const PlaylistItemRow: React.FC<PlaylistItemRowProps> = ({
   item,
   onRemove,
+  onPlay,
 }) => {
   const { t } = useTranslation();
 
+  const handleRemove = (e: { stopPropagation: () => void }) => {
+    e.stopPropagation();
+    onRemove(item.content_id);
+  };
+
   return (
-    <View style={styles.itemRow}>
+    <Pressable
+      onPress={() => onPlay(item)}
+      style={styles.itemRow}
+      accessibilityRole="button"
+      accessibilityLabel={t('playlist.playItem', { title: item.title })}
+    >
+      <View style={styles.playIconContainer}>
+        <NativeIcon name="play" size={14} color={colors.primary} />
+      </View>
       <View style={styles.itemThumbnail}>
         {item.thumbnail ? (
           <Image
@@ -44,14 +59,14 @@ export const PlaylistItemRow: React.FC<PlaylistItemRowProps> = ({
         </Text>
       </View>
       <Pressable
-        onPress={() => onRemove(item.content_id)}
+        onPress={handleRemove}
         style={styles.removeButton}
         accessibilityRole="button"
         accessibilityLabel={t('playlist.removeItem')}
       >
         <NativeIcon name="x" size={16} color={colors.textMuted} />
       </Pressable>
-    </View>
+    </Pressable>
   );
 };
 
@@ -76,6 +91,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.glassBorderLight,
     gap: spacing.sm,
+  },
+  playIconContainer: {
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   itemThumbnail: {
     width: 56,

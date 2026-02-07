@@ -24,7 +24,7 @@ import {
 import { supportConfig } from '../config/supportConfig';
 import { containsStopKeyword } from './voiceStopKeywords';
 
-const orchestratorLogger = logger.scope('OlorinVoiceOrchestrator');
+const log = logger.scope('OlorinVoiceOrchestrator');
 
 /** Valid state transitions for the voice state machine */
 const VALID_TRANSITIONS: Record<VoiceState, VoiceState[]> = {
@@ -66,7 +66,6 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
   private endSessionPending = false;
 
   private static readonly MAX_RETRIES = 3;
-  private static readonly CONTINUATION_UI_DELAY_MS = 200;
   private static readonly PLAYBACK_SAFETY_TIMEOUT_MS = 10000;
 
   constructor(config: VoiceConfig) {
@@ -74,7 +73,6 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     this.config = config;
   }
 
-  /** Initialize orchestrator with optional config overrides */
   async initialize(config?: Partial<VoiceConfig>): Promise<void> {
     if (this.isInitialized) return;
     if (config) {
@@ -83,23 +81,15 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     if (this.config.wakeWordEnabled) {
       await this.initializeWakeWord();
     }
-    // Prewarm streaming pipeline (non-blocking)
     streamingVoicePipeline.prewarm().catch(() => {});
     this.isInitialized = true;
-    orchestratorLogger.info('Initialized', this.config);
+    log.info('Initialized', this.config);
   }
 
-  /**
-   * Validate and execute a state transition.
-   * Rejects invalid transitions with error logging.
-   */
   private transitionTo(newState: VoiceState): boolean {
     const valid = VALID_TRANSITIONS[this.currentState];
     if (!valid?.includes(newState)) {
-      orchestratorLogger.warn('Invalid state transition rejected', {
-        from: this.currentState,
-        to: newState,
-      });
+      log.warn('Invalid state transition rejected', { from: this.currentState, to: newState });
       return false;
     }
     const prev = this.currentState;
@@ -109,93 +99,95 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     return true;
   }
 
-  /**
-   * Force a state transition, bypassing validation.
-   * Used for interrupt/endSession/error recovery where we must reach a known state
-   * regardless of the current state machine position.
-   */
   private forceTransitionTo(newState: VoiceState): void {
     const prev = this.currentState;
     if (prev === newState) return;
     this.currentState = newState;
     useSupportStore.getState().setVoiceState(newState);
     this.emit('stateChange', { from: prev, to: newState });
-    orchestratorLogger.info('Forced state transition', { from: prev, to: newState });
+    log.info('Forced state transition', { from: prev, to: newState });
   }
 
-  /** Start voice interaction - orchestrator owns the pipeline */
   async startVoiceInteraction(trigger: VoiceTrigger = 'manual'): Promise<void> {
     if (!this.isInitialized) {
       throw new Error('Orchestrator not initialized. Call initialize() first.');
     }
 
+    log.info('Starting voice interaction', { trigger, currentState: this.currentState });
+
     const store = useSupportStore.getState();
 
-    // Auto-expand avatar if wake word triggered
     if (trigger === 'wake-word' && this.config.autoExpandOnWakeWord) {
       if (store.avatarVisibilityMode === 'icon_only' || store.avatarVisibilityMode === 'minimal') {
         store.setAvatarVisibilityMode('compact');
       }
     }
 
-    // Open voice modal if not already open
     if (!store.isVoiceModalOpen) {
       store.openVoiceModal();
       this.triggerAnimation(getWakeUpSequence());
+      log.info('Voice modal opened, animation: summon_wizard');
     }
 
     this.shouldStopListening = false;
-
-    // Start streaming pipeline
     await this.startPipeline();
-    orchestratorLogger.info('Started voice interaction', { trigger });
+    log.info('Voice interaction started', { trigger });
   }
 
-  /** Start the streaming pipeline with orchestrator-owned callbacks */
   private async startPipeline(): Promise<void> {
-    if (this.pipelineActive) return;
+    if (this.pipelineActive) {
+      log.info('Pipeline already active, skipping start');
+      return;
+    }
 
     try {
       this.pipelineActive = true;
       useSupportStore.getState().clearStreamingResponse();
-
-      // Setup orchestrator-owned event handlers
       this.setupPipelineHandlers();
 
-      // Always use current i18n language at interaction time (not stale config)
       const currentLanguage = i18n.language || this.config.language;
       streamingVoicePipeline.setConfig({ language: currentLanguage });
       const conversationId = streamingVoicePipeline.getConversationId();
+      log.info('Starting pipeline', { language: currentLanguage, conversationId });
+
       await streamingVoicePipeline.startInteraction(conversationId);
       this.retryCount = 0;
+      log.info('Pipeline started successfully');
     } catch (error) {
       this.pipelineActive = false;
+      log.error('Pipeline start failed', { error: error instanceof Error ? error.message : String(error) });
       await this.handlePipelineError(
         error instanceof Error ? error : new Error('Failed to start pipeline')
       );
     }
   }
 
-  /** Setup event handlers on the pipeline - orchestrator routes all events */
   private setupPipelineHandlers(): void {
-    // Remove previous listeners to avoid duplicates
     streamingVoicePipeline.removeAllListeners();
 
     streamingVoicePipeline.on('stateChange', (state) => {
-      // Orchestrator is sole state authority - route pipeline state through forceTransitionTo
-      // so events are emitted and store is updated from a single source
       this.forceTransitionTo(state);
-
-      // Set gesture to 'thinking' while processing (before intent is classified)
       if (state === 'processing') {
         useSupportStore.getState().setGestureState('thinking');
+        log.info('Processing started, gesture: thinking');
       }
     });
 
-    streamingVoicePipeline.on('transcriptUpdate', (transcript, _language, isFinal) => {
+    streamingVoicePipeline.on('transcriptUpdate', (transcript, language, isFinal) => {
+      log.info('Transcript update', {
+        text: transcript,
+        language,
+        isFinal,
+        length: transcript.length,
+      });
       if (isFinal && containsStopKeyword(transcript)) {
+        log.info('Stop keyword detected in transcript', { transcript });
         this.shouldStopListening = true;
       }
+    });
+
+    streamingVoicePipeline.on('llmChunk', (text) => {
+      log.debug('LLM chunk received', { chunkLength: text.length, preview: text.substring(0, 50) });
     });
 
     streamingVoicePipeline.on('intentAction', (intent, action, spokenResponse, confidence) => {
@@ -205,129 +197,196 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
       store.setPendingVoiceAction(action);
       store.setLastResponse(spokenResponse);
 
-      // Update gesture to match the intent (browsing for search, reading for content queries)
       updateGestureForIntent(intent as VoiceIntent);
 
-      orchestratorLogger.info('Intent action received', { intent, actionType: action.type, confidence });
+      log.info('Intent action received', {
+        intent,
+        actionType: action.type,
+        actionPayload: action.payload,
+        confidence,
+        spokenResponse: spokenResponse.substring(0, 100),
+        gesture: useSupportStore.getState().gestureState,
+      });
+    });
+
+    streamingVoicePipeline.on('audioChunk', (audioData) => {
+      log.debug('TTS audio chunk', { bytes: audioData.byteLength });
     });
 
     streamingVoicePipeline.on('playbackComplete', () => {
+      log.info('Playback complete', {
+        continuationPending: this.continuationPending,
+        endSessionPending: this.endSessionPending,
+        isRecording: streamingVoicePipeline.isCurrentlyRecording(),
+        pipelineActive: this.pipelineActive,
+        modalOpen: useSupportStore.getState().isVoiceModalOpen,
+      });
+
       if (this.continuationPending) {
         this.continuationPending = false;
+        log.info('Continuation pending - restarting listening');
         this.restartListeningForContinuation();
       } else if (this.endSessionPending) {
         this.endSessionPending = false;
+        log.info('End session pending - collapsing');
         this.endSessionWithCollapse();
       } else {
-        // Modal still open → restart listening directly (speaking → listening)
-        // Modal closed → go to idle
         const store = useSupportStore.getState();
         if (this.pipelineActive && store.isVoiceModalOpen && !this.shouldStopListening) {
-          this.restartListeningForContinuation();
+          // Already recording from handleContinuation - skip
+          if (streamingVoicePipeline.isCurrentlyRecording()) {
+            log.info('Already recording after playback - no action needed');
+          } else {
+            log.info('Modal open, restarting listening after playback');
+            this.restartListeningForContinuation();
+          }
         } else {
+          log.info('Session inactive or modal closed - going idle');
           this.forceTransitionTo('idle');
         }
       }
     });
 
     streamingVoicePipeline.on('responseComplete', (conversationId) => {
+      log.info('Response complete', { conversationId });
       this.handleResponseComplete(conversationId);
     });
 
     streamingVoicePipeline.on('error', (error) => {
+      log.error('Pipeline error event', { error: error.message });
       this.handlePipelineError(error);
+    });
+
+    streamingVoicePipeline.on('connected', () => {
+      log.info('WebSocket connected');
+    });
+
+    streamingVoicePipeline.on('disconnected', () => {
+      log.info('WebSocket disconnected');
     });
   }
 
-  /** Handle completed response - trigger animations and continuation */
   private handleResponseComplete(conversationId: string): void {
     const store = useSupportStore.getState();
     const intent = store.currentInteractionType || 'CHAT';
-    const resultContext = this.analyzeResultContext(store.lastResponse);
-
-    // Trigger intent-based animation
+    const responseText = store.lastResponse;
+    const resultContext = this.analyzeResultContext(responseText);
     const sequence = getAnimationSequenceForIntent(intent, resultContext);
+
+    log.info('Handling response complete', {
+      intent,
+      responsePreview: responseText?.substring(0, 100),
+      responseLength: responseText?.length,
+      resultContext,
+      animation: sequence,
+      isAudioPlaying: streamingVoicePipeline.isAudioPlaying(),
+      isRecording: streamingVoicePipeline.isCurrentlyRecording(),
+    });
+
     this.triggerAnimation(sequence);
-
-    this.emit('streamingText', { text: store.lastResponse, isFinal: true });
-
-    // Handle continuation
+    this.emit('streamingText', { text: responseText, isFinal: true });
     this.handleContinuation();
   }
 
-  /** Handle continuation after response completes - waits for audio playback */
   private handleContinuation(): void {
     this.cancelPendingContinuation();
     const store = useSupportStore.getState();
+    const isPlaying = streamingVoicePipeline.isAudioPlaying();
+    const isRecording = streamingVoicePipeline.isCurrentlyRecording();
+
+    log.info('Handling continuation', {
+      shouldStop: this.shouldStopListening,
+      isAudioPlaying: isPlaying,
+      isRecording,
+      modalOpen: store.isVoiceModalOpen,
+      pipelineActive: this.pipelineActive,
+    });
 
     if (this.shouldStopListening) {
       this.shouldStopListening = false;
-      if (streamingVoicePipeline.isAudioPlaying()) {
+      if (isPlaying) {
+        log.info('Stop keyword + audio playing - waiting for playback to end session');
         this.endSessionPending = true;
         this.continuationTimeoutId = setTimeout(() => {
           this.continuationTimeoutId = null;
           if (this.endSessionPending) {
             this.endSessionPending = false;
-            orchestratorLogger.warn('End session playback timeout');
+            log.warn('End session playback timeout - forcing collapse');
             this.endSessionWithCollapse();
           }
         }, OlorinVoiceOrchestrator.PLAYBACK_SAFETY_TIMEOUT_MS);
       } else {
+        log.info('Stop keyword + no audio - ending session now');
         this.endSessionWithCollapse();
       }
       return;
     }
 
     if (store.isVoiceModalOpen) {
-      if (streamingVoicePipeline.isAudioPlaying()) {
+      if (isPlaying) {
+        log.info('Audio still playing - setting continuation pending for playbackComplete');
         this.continuationPending = true;
         this.continuationTimeoutId = setTimeout(() => {
           this.continuationTimeoutId = null;
           if (this.continuationPending) {
             this.continuationPending = false;
-            orchestratorLogger.warn('Playback completion timeout - forcing continuation');
+            log.warn('Playback completion timeout - forcing continuation');
             this.restartListeningForContinuation();
           }
         }, OlorinVoiceOrchestrator.PLAYBACK_SAFETY_TIMEOUT_MS);
+      } else if (isRecording) {
+        // Already recording (pipeline restarted recording before responseComplete)
+        log.info('Already recording - skipping restart');
       } else {
-        // No audio playing - restart listening immediately (no idle gap)
+        log.info('No audio playing, not recording - restarting listening immediately');
         this.restartListeningForContinuation();
       }
+    } else {
+      log.info('Modal closed - not continuing');
     }
   }
 
-  /** Restart listening after audio playback completes */
   private async restartListeningForContinuation(): Promise<void> {
     const store = useSupportStore.getState();
+
+    // Guard: skip if already recording
+    if (streamingVoicePipeline.isCurrentlyRecording()) {
+      log.info('Skip restart - already recording');
+      return;
+    }
+
     if (this.pipelineActive && store.isVoiceModalOpen && !this.shouldStopListening) {
       try {
+        log.info('Restarting listening for continuation');
         await streamingVoicePipeline.restartListening();
       } catch (error) {
-        orchestratorLogger.error('Failed to restart listening after playback', { error });
+        log.error('Failed to restart listening', { error: error instanceof Error ? error.message : String(error) });
         this.forceTransitionTo('idle');
       }
     } else {
+      log.info('Cannot restart - going idle', {
+        pipelineActive: this.pipelineActive,
+        modalOpen: store.isVoiceModalOpen,
+        shouldStop: this.shouldStopListening,
+      });
       this.forceTransitionTo('idle');
     }
   }
 
-  /** End session and collapse avatar to icon_only (stop keyword exit) */
   private endSessionWithCollapse(): void {
+    log.info('Ending session with avatar collapse');
     this.endSession();
     useSupportStore.getState().setAvatarVisibilityMode('icon_only');
-    orchestratorLogger.info('Session ended with avatar collapse (stop keyword)');
   }
 
-  /** Stop listening - commit current audio */
   stopListening(): void {
     this.cancelPendingContinuation();
     if (this.pipelineActive) {
       streamingVoicePipeline.commit('button');
     }
-    orchestratorLogger.info('Stopped listening');
+    log.info('Stopped listening (user action)');
   }
 
-  /** Interrupt current voice interaction */
   interrupt(): void {
     this.cancelPendingContinuation();
     if (this.pipelineActive) {
@@ -335,10 +394,9 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     }
     useSupportStore.getState().clearStreamingResponse();
     this.forceTransitionTo('idle');
-    orchestratorLogger.info('Interrupted');
+    log.info('Interrupted');
   }
 
-  /** End voice session - stop everything and close modal */
   endSession(): void {
     this.cancelPendingContinuation();
     this.triggerAnimation(getDismissSequence());
@@ -354,15 +412,11 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     streamingVoicePipeline.resetConversation();
     this.forceTransitionTo('idle');
     this.shouldStopListening = false;
-    orchestratorLogger.info('Session ended');
+    log.info('Session ended');
   }
 
-  /** Error recovery with exponential backoff retry */
   private async handlePipelineError(error: Error): Promise<void> {
-    orchestratorLogger.error('Pipeline error', {
-      error: error.message,
-      retryCount: this.retryCount,
-    });
+    log.error('Pipeline error', { error: error.message, retryCount: this.retryCount });
 
     this.emit('error', {
       error: error.message,
@@ -372,8 +426,8 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     if (this.retryCount < OlorinVoiceOrchestrator.MAX_RETRIES) {
       this.retryCount++;
       this.cleanupPipeline();
-      // Exponential backoff: 1s, 2s, 4s
       const delay = Math.min(1000 * Math.pow(2, this.retryCount - 1), 10000);
+      log.info('Retrying pipeline', { attempt: this.retryCount, delayMs: delay });
       await new Promise((r) => setTimeout(r, delay));
 
       const store = useSupportStore.getState();
@@ -385,24 +439,22 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
       this.cleanupPipeline();
       this.forceTransitionTo('error');
       this.triggerAnimation(getErrorSequence('unknown'));
-      // Auto-recover to idle after error display
+      log.error('Max retries reached - showing error state');
       setTimeout(() => {
         this.forceTransitionTo('idle');
       }, 3000);
     }
   }
 
-  /** Safe pipeline cleanup */
   private cleanupPipeline(): void {
     try {
       streamingVoicePipeline.stopInteraction();
     } catch (e) {
-      orchestratorLogger.warn('Error during pipeline cleanup', { error: e });
+      log.warn('Error during pipeline cleanup', { error: e });
     }
     this.pipelineActive = false;
   }
 
-  /** Cancel any pending continuation timer and clear pending flags */
   private cancelPendingContinuation(): void {
     if (this.continuationTimeoutId) {
       clearTimeout(this.continuationTimeoutId);
@@ -412,12 +464,11 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     this.endSessionPending = false;
   }
 
-  /** Trigger an animation sequence */
   private triggerAnimation(sequenceId: string): void {
+    log.info('Animation triggered', { sequenceId });
     this.emit('animationTrigger', sequenceId);
   }
 
-  /** Analyze response text for animation selection */
   private analyzeResultContext(response: string | null): ResultContext {
     if (!response) return { count: 0, success: false };
     const lower = response.toLowerCase();
@@ -435,7 +486,6 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     return { count: 1, success: true };
   }
 
-  /** Process voice transcript and classify intent */
   async processTranscript(
     transcript: string,
     _conversationId?: string
@@ -444,7 +494,7 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
       throw new Error('Empty transcript');
     }
 
-    orchestratorLogger.info('Processing transcript', { transcriptLength: transcript.length });
+    log.info('Processing transcript', { transcript, length: transcript.length });
 
     const store = useSupportStore.getState();
     store.setCurrentTranscript(transcript);
@@ -454,6 +504,13 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     store.setIntentConfidence(response.confidence);
     updateGestureForIntent(response.intent);
 
+    log.info('Transcript classified', {
+      intent: response.intent,
+      confidence: response.confidence,
+      actionType: response.action.type,
+      spokenResponse: response.spokenResponse?.substring(0, 80),
+    });
+
     const command = createCommandRecord(
       transcript, response.intent, response.confidence, response.action.type
     );
@@ -462,12 +519,10 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     return response;
   }
 
-  /** Set avatar visibility mode */
   setAvatarVisibility(mode: AvatarMode): void {
     useSupportStore.getState().setAvatarVisibilityMode(mode);
   }
 
-  /** Enable/disable wake word detection */
   setWakeWordEnabled(enabled: boolean): void {
     this.config.wakeWordEnabled = enabled;
     useSupportStore.getState().setWakeWordEnabled(enabled);
@@ -476,22 +531,18 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     }
   }
 
-  /** Enable/disable streaming mode */
   setStreamingMode(enabled: boolean): void {
     this.config.streamingMode = enabled;
   }
 
-  /** Initialize wake word detection (platform-specific) */
   private async initializeWakeWord(): Promise<void> {
-    orchestratorLogger.info('Wake word detection initialized');
+    log.info('Wake word detection initialized');
   }
 
-  /** Get current configuration */
   getConfig(): VoiceConfig {
     return { ...this.config };
   }
 
-  /** Get orchestrator state */
   getState() {
     const store = useSupportStore.getState();
     return {
@@ -505,23 +556,19 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
     };
   }
 
-  /** Check if voice is supported on this platform */
   isSupported(): boolean {
     return streamingVoicePipeline.isSupported();
   }
 
-  /** Check if pipeline is currently active */
   isPipelineActive(): boolean {
     return this.pipelineActive;
   }
 
-  /** Get current state machine state */
   getCurrentState(): VoiceState {
     return this.currentState;
   }
 }
 
-/** Singleton orchestrator instance - use this instead of creating new instances */
 export const voiceOrchestrator = new OlorinVoiceOrchestrator(DEFAULT_VOICE_CONFIG);
 
 export default OlorinVoiceOrchestrator;

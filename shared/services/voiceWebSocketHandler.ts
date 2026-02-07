@@ -151,14 +151,21 @@ export class VoiceWebSocketHandler {
   private handleMessage(message: ServerMessage, callbacks: WebSocketCallbacks): void {
     switch (message.type) {
       case 'transcript_partial':
-        if (message.text) callbacks.onTranscriptPartial(message.text, message.language || 'auto');
+        if (message.text) {
+          log.info('USER SPEECH (partial)', { text: message.text, language: message.language });
+          callbacks.onTranscriptPartial(message.text, message.language || 'auto');
+        }
         break;
       case 'transcript_final':
-        if (message.text) callbacks.onTranscriptFinal(message.text, message.language || 'auto');
+        if (message.text) {
+          log.info('USER SPEECH (final)', { text: message.text, language: message.language });
+          callbacks.onTranscriptFinal(message.text, message.language || 'auto');
+        }
         break;
       case 'llm_chunk':
         if (message.text) {
           this.currentResponse += message.text;
+          log.debug('LLM RESPONSE chunk', { chunk: message.text, totalLength: this.currentResponse.length });
           callbacks.onLlmChunk(message.text);
         }
         break;
@@ -167,11 +174,20 @@ export class VoiceWebSocketHandler {
           const binaryString = atob(message.data);
           const bytes = new Uint8Array(binaryString.length);
           for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+          log.debug('TTS AUDIO chunk', { bytes: bytes.length });
           callbacks.onTtsAudio(bytes.buffer);
         }
         break;
       case 'intent_action':
         if (message.intent && message.action?.type && message.action?.payload && message.text) {
+          log.info('BACKEND INTENT ACTION', {
+            intent: message.intent,
+            actionType: message.action.type,
+            actionPayload: message.action.payload,
+            spokenResponse: message.text,
+            confidence: message.confidence,
+            gesture: message.gesture,
+          });
           callbacks.onIntentAction(
             message.intent,
             message.action as { type: string; payload: Record<string, unknown> },
@@ -179,17 +195,29 @@ export class VoiceWebSocketHandler {
             message.confidence ?? 0,
           );
         } else {
-          log.warn('Rejected intent_action with missing required fields');
+          log.warn('Rejected intent_action with missing required fields', {
+            hasIntent: !!message.intent,
+            hasAction: !!message.action,
+            hasText: !!message.text,
+          });
         }
         break;
       case 'complete':
+        log.info('RESPONSE COMPLETE', {
+          conversationId: message.conversation_id,
+          escalationNeeded: message.escalation_needed,
+          responseLength: this.currentResponse.length,
+          responsePreview: this.currentResponse.substring(0, 150),
+        });
         callbacks.onComplete(message.conversation_id || '', message.escalation_needed || false, this.currentResponse);
         this.currentResponse = '';
         break;
       case 'cancelled':
+        log.info('RESPONSE CANCELLED by server');
         callbacks.onCancelled();
         break;
       case 'error':
+        log.error('SERVER ERROR', { message: message.message });
         callbacks.onError(new Error(message.message || 'Server error'));
         break;
       case 'pong':
@@ -199,7 +227,12 @@ export class VoiceWebSocketHandler {
 
   send(message: ClientMessage): void {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      if (message.type !== 'audio' && message.type !== 'ping') {
+        log.info('SENDING to backend', { type: message.type, reason: message.reason });
+      }
       this.ws.send(JSON.stringify(message));
+    } else {
+      log.warn('Cannot send - WebSocket not open', { type: message.type, readyState: this.ws?.readyState });
     }
   }
 

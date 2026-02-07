@@ -109,14 +109,19 @@ def is_play_content_request(transcript: str) -> bool:
 
 
 def clean_play_prefix(transcript: str) -> str:
-    """Strip play keyword prefix and content-type filler words for better search."""
+    """Strip play keyword prefix, content-type filler words, and STT punctuation for better search."""
     transcript_lower = transcript.lower()
     for prefix in PLAY_CONTENT_PREFIXES:
         if prefix in transcript_lower:
             idx = transcript_lower.index(prefix) + len(prefix)
             result = transcript[idx:].strip()
-            return _strip_content_type_filler(result)
-    return _strip_content_type_filler(transcript)
+            return _strip_stt_punctuation(_strip_content_type_filler(result))
+    return _strip_stt_punctuation(_strip_content_type_filler(transcript))
+
+
+def _strip_stt_punctuation(text: str) -> str:
+    """Remove trailing punctuation artifacts from STT transcription."""
+    return text.rstrip(".,;:!?。、").strip()
 
 
 # Filler phrases that appear between "play" and the actual title (3 languages)

@@ -114,9 +114,11 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
     if (voiceError) { const t = setTimeout(clearVoiceError, 5000); return () => clearTimeout(t); }
   }, [voiceError, clearVoiceError]);
 
-  // Speech bubble animation - show during speaking AND while streaming text arrives
+  // Speech bubble animation - show when there's response text to display
+  // Triggers on: speaking state, streaming text, or new lastResponse from intent actions
   useEffect(() => {
-    const shouldShow = displayText && (voiceState === 'speaking' || isStreamingText);
+    const activeStates: VoiceState[] = ['speaking', 'processing', 'listening'];
+    const shouldShow = displayText && (activeStates.includes(voiceState) || isStreamingText);
     if (shouldShow) {
       setShowBubble(true);
       Animated.spring(bubbleAnim, { toValue: 1, friction: 6, tension: 80, useNativeDriver: true }).start();
@@ -174,14 +176,14 @@ export const VoiceChatModal: React.FC<VoiceChatModalProps> = ({
         )}
       </Pressable>
 
-      {showUserBubble && currentTranscript && (
+      {showUserBubble && !!currentTranscript && (
         <UserSpeechBubble
           transcript={currentTranscript} userBubbleAnim={userBubbleAnim}
           isRTL={isRTL} isMobile={isMobile} bottomOffset={userBubbleBottom} rightOffset={bubbleRightOffset}
         />
       )}
 
-      {showBubble && displayText && (
+      {showBubble && !!displayText && (
         <SpeechBubble
           displayText={displayText} bubbleAnim={bubbleAnim}
           isRTL={isRTL} isMobile={isMobile} bottomOffset={speechBubbleBottom} rightOffset={bubbleRightOffset}

@@ -134,7 +134,10 @@ export function getAnimationSequenceForIntent(
 
     case 'PLAYBACK':
     case 'PLAYLIST':
-      // Playback and playlist commands → success celebration
+      // Playback/playlist: success if found, error if not
+      if (context.count === 0 || !context.success) {
+        return 'error_shake';
+      }
       return 'success';
 
     case 'NAVIGATION':

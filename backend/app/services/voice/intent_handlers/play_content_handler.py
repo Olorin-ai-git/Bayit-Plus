@@ -22,6 +22,18 @@ from .playlist_content_finder import build_player_path
 logger = get_logger(__name__)
 
 
+def _extract_results(result) -> List[Dict[str, Any]]:
+    """Extract results list from search response (handles both Pydantic models and dicts)."""
+    if hasattr(result, 'results'):
+        items = result.results
+    elif isinstance(result, dict):
+        items = result.get("results", [])
+    else:
+        return []
+    # Ensure all items are dicts
+    return [item if isinstance(item, dict) else (item.model_dump() if hasattr(item, 'model_dump') else dict(item)) for item in items]
+
+
 async def handle_play_content(
     transcript: str,
     context: VoiceContext,
@@ -34,7 +46,19 @@ async def handle_play_content(
     """
     try:
         content_types = detect_content_types(transcript, context.language)
+        logger.info(
+            "Play content search starting",
+            extra={"query": transcript, "content_types": content_types, "language": context.language},
+        )
         results = await _find_content(transcript, context, content_types)
+        logger.info(
+            "Play content search results",
+            extra={
+                "query": transcript,
+                "result_count": len(results),
+                "top_titles": [r.get("title", "?") for r in results[:3]],
+            },
+        )
 
         if results:
             top = results[0]
@@ -87,17 +111,20 @@ async def _find_content(
     if content_types == ["live"]:
         return await _search_live(query)
 
-    # VOD queries: try LLM-powered search first for better ranking
-    if "vod" in content_types:
+    # VOD queries: try LLM-powered search only for beta users (AI-enhanced search)
+    if "vod" in content_types and context.is_beta_user:
         try:
             vod_llm = VODLLMSearchService()
+            user_ctx = {
+                "subscription_tier": context.subscription_tier,
+                "language": context.language,
+            }
             result = await vod_llm.search(
                 query=query,
-                subscription_tier=context.subscription_tier,
-                is_beta_user=context.is_beta_user,
+                user_context=user_ctx,
                 limit=5,
             )
-            items = result.get("results", [])
+            items = _extract_results(result)
             if items:
                 return items
         except Exception as e:
@@ -111,11 +138,11 @@ async def _find_content(
         search_service = UnifiedSearchService()
         filters = SearchFilters(
             content_types=content_types,
-            subscription_tier=context.subscription_tier,
-            is_kids_content=False,
+            subscription_tier=None,  # Show all content; tier check at playback time
+            is_kids_content=None,  # Search ALL content (kids + non-kids)
         )
         result = await search_service.search(query=query, filters=filters, limit=5)
-        return result.get("results", [])
+        return _extract_results(result)
     except Exception as e:
         logger.error(
             "Unified search failed",
@@ -130,7 +157,7 @@ async def _search_live(query: str) -> List[Dict[str, Any]]:
     try:
         llm_service = LLMSearchService()
         result = await llm_service.search(query=query, limit=5)
-        return result.get("results", [])
+        return _extract_results(result)
     except Exception as e:
         logger.warning(
             "Live LLM search failed, trying unified",
@@ -140,7 +167,7 @@ async def _search_live(query: str) -> List[Dict[str, Any]]:
             search_service = UnifiedSearchService()
             filters = SearchFilters(content_types=["live"])
             result = await search_service.search(query=query, filters=filters, limit=5)
-            return result.get("results", [])
+            return _extract_results(result)
         except Exception as e2:
             logger.error(
                 "Live unified search also failed",

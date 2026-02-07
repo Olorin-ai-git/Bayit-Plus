@@ -66,11 +66,8 @@ class TriviaTranslationService:
         self.sanitizer = TriviaTextSanitizer()
         self.validator = TriviaTranslationValidator()
 
-        # Use Olorin PartnerRateLimiter (100 translations per hour)
-        self.rate_limiter = rate_limiter or PartnerRateLimiter(
-            max_requests_per_hour=100,
-            resource_type="trivia_translation"
-        )
+        # Use Olorin PartnerRateLimiter (limits enforced per-request via RateLimitConfig)
+        self.rate_limiter = rate_limiter or PartnerRateLimiter()
 
         # Metering service for cost tracking
         self.metering = metering_service or MeteringService()

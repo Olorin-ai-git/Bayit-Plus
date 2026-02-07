@@ -14,9 +14,11 @@ import { GlassBadge } from './GlassBadge';
 import { GlassErrorBanner } from './GlassErrorBanner';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { useNavigate } from 'react-router-dom';
 import { usePlaylistStore } from '../../stores/playlistStore';
 import { useDirection } from '../../hooks/useDirection';
 import { PlaylistItemRow, PlaylistEmpty } from './GlassPlaylistItem';
+import { logger } from '../../utils/logger';
 
 const OVERLAY_WIDTH = 380;
 const ANIMATION_DURATION = 300;
@@ -24,6 +26,7 @@ const ANIMATION_DURATION = 300;
 export const GlassPlaylist: React.FC = () => {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
+  const navigate = useNavigate();
 
   const isVisible = usePlaylistStore((s) => s.isVisible);
   const items = usePlaylistStore((s) => s.items);
@@ -66,6 +69,23 @@ export const GlassPlaylist: React.FC = () => {
   const handleClose = () => setVisible(false);
   const handleClear = () => clearPlaylist();
   const handleRemoveItem = (contentId: string) => removeItem(contentId);
+
+  const handlePlayItem = (item: { content_id: string; content_type: string; title: string }) => {
+    const routeMap: Record<string, string> = {
+      live: `/live/${item.content_id}`,
+      radio: `/radio/${item.content_id}`,
+      podcast: `/podcasts/${item.content_id}`,
+      series: `/vod/series/${item.content_id}`,
+    };
+    const destination = routeMap[item.content_type] ?? `/vod/movie/${item.content_id}`;
+    logger.info('Playlist item played', 'GlassPlaylist', {
+      contentId: item.content_id,
+      contentType: item.content_type,
+      destination,
+    });
+    setVisible(false);
+    navigate(destination);
+  };
 
   return (
     <View style={styles.overlay}>
@@ -135,6 +155,7 @@ export const GlassPlaylist: React.FC = () => {
                   key={item.content_id}
                   item={item}
                   onRemove={handleRemoveItem}
+                  onPlay={handlePlayItem}
                 />
               ))}
             </ScrollView>

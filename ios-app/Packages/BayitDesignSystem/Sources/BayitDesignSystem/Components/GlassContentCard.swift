@@ -1,0 +1,161 @@
+import SwiftUI
+
+/// Content card for movies, series, podcasts with thumbnail and metadata
+/// Features glass overlay, optional badge, and tap interaction
+public struct GlassContentCard: View {
+    let thumbnailURL: String?
+    let title: String?
+    let subtitle: String?
+    let badge: String?
+    let aspectRatio: CGFloat
+    let width: CGFloat
+    let onTap: () -> Void
+
+    public init(
+        thumbnailURL: String?,
+        title: String?,
+        subtitle: String? = nil,
+        badge: String? = nil,
+        aspectRatio: CGFloat = 16/9,
+        width: CGFloat = 280,
+        onTap: @escaping () -> Void = {}
+    ) {
+        self.thumbnailURL = thumbnailURL
+        self.title = title
+        self.subtitle = subtitle
+        self.badge = badge
+        self.aspectRatio = aspectRatio
+        self.width = width
+        self.onTap = onTap
+    }
+
+    public var body: some View {
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 0) {
+                thumbnailSection
+                    .frame(width: width)
+                    .aspectRatio(aspectRatio, contentMode: .fit)
+                    .clipped()
+            }
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
+                    .stroke(DesignTokens.Glass.border, lineWidth: 1)
+            )
+            .shadow(
+                color: DesignTokens.Glass.purpleGlow,
+                radius: 4,
+                x: 0,
+                y: 2
+            )
+        }
+        .buttonStyle(ScaleButtonStyle())
+    }
+
+    private var thumbnailSection: some View {
+        ZStack(alignment: .topTrailing) {
+            thumbnailImage
+
+            if let badge = badge {
+                badgeView(badge)
+                    .padding(DesignTokens.Spacing.sm)
+            }
+
+            VStack {
+                Spacer()
+                metadataOverlay
+            }
+        }
+    }
+
+    private var thumbnailImage: some View {
+        Group {
+            if let urlString = thumbnailURL, let url = URL(string: urlString) {
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .empty:
+                        placeholderGradient
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                    case .failure:
+                        placeholderGradient
+                    @unknown default:
+                        placeholderGradient
+                    }
+                }
+            } else {
+                placeholderGradient
+            }
+        }
+    }
+
+    private var placeholderGradient: some View {
+        LinearGradient(
+            colors: [
+                DesignTokens.Glass.purpleLight,
+                DesignTokens.Glass.purpleStrong
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+    }
+
+    private func badgeView(_ text: String) -> some View {
+        Text(text.uppercased())
+            .font(.system(size: DesignTokens.FontSize.xs, weight: .bold))
+            .foregroundColor(DesignTokens.Text.primary)
+            .padding(.horizontal, DesignTokens.Spacing.sm)
+            .padding(.vertical, DesignTokens.Spacing.xs)
+            .background {
+                ZStack {
+                    badgeColor(for: text)
+                    VisualEffectBlur(style: .systemUltraThinMaterialDark)
+                }
+            }
+            .clipShape(Capsule())
+    }
+
+    private func badgeColor(for text: String) -> Color {
+        if text.uppercased() == "LIVE" {
+            return DesignTokens.live.opacity(0.9)
+        } else {
+            return DesignTokens.Glass.bg
+        }
+    }
+
+    private var metadataOverlay: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
+            if let title = title {
+                Text(title)
+                    .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                    .foregroundColor(DesignTokens.Text.primary)
+                    .lineLimit(1)
+            }
+
+            if let subtitle = subtitle {
+                Text(subtitle)
+                    .font(.system(size: DesignTokens.FontSize.sm))
+                    .foregroundColor(DesignTokens.Text.secondary)
+                    .lineLimit(1)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(DesignTokens.Spacing.md)
+        .background {
+            ZStack {
+                DesignTokens.Glass.bgStrong
+                VisualEffectBlur(style: .systemUltraThinMaterialDark)
+            }
+        }
+    }
+}
+
+private struct ScaleButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
+    }
+}
