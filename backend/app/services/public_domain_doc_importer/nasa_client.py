@@ -117,19 +117,30 @@ class NASAClient(BaseDocSourceClient):
             return None
 
         # Prefer highest quality: "orig" > "large" > "medium" > first
+        selected = mp4_urls[0]
         for quality in ["~orig.mp4", "~large.mp4", "~medium.mp4"]:
             for mp4_url in mp4_urls:
                 if quality in mp4_url:
-                    return mp4_url
+                    selected = mp4_url
+                    break
+            else:
+                continue
+            break
 
-        return mp4_urls[0]
+        # NASA asset API returns http:// URLs; upgrade to https://
+        if selected.startswith("http://"):
+            selected = "https://" + selected[len("http://"):]
+        return selected
 
     async def get_thumbnail_url(self, source_id: str) -> Optional[str]:
         """Get thumbnail URL from search result links."""
         detail = await self.get_item_detail(source_id)
-        if detail:
-            return detail.get("thumbnail_url")
-        return None
+        if not detail:
+            return None
+        thumb = detail.get("thumbnail_url")
+        if thumb and thumb.startswith("http://"):
+            thumb = "https://" + thumb[len("http://"):]
+        return thumb
 
     async def get_captions_url(self, source_id: str) -> Optional[str]:
         """Get captions/subtitles URL if available."""

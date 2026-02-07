@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Any, Dict, Optional
 
 from app.models.content import Content
+from app.models.content_taxonomy import ContentSection
 
 from .base_client import BaseDocSourceClient
 from .source_metadata_schema import DocumentarySourceMetadata
@@ -53,6 +54,19 @@ async def build_and_insert_content(
         source_data=detail,
         topic_overrides=topic_tags if topic_tags else None,
     )
+
+    # Resolve section slug to ObjectId for taxonomy queries
+    section_slug = content_fields.get("primary_section_id", "")
+    section = await ContentSection.find_one(ContentSection.slug == section_slug)
+    if section:
+        resolved_id = str(section.id)
+        content_fields["section_ids"] = [resolved_id]
+        content_fields["primary_section_id"] = resolved_id
+    else:
+        logger.warning(
+            "ContentSection not found for slug",
+            extra={"slug": section_slug, "source_id": source_id},
+        )
 
     source_meta = DocumentarySourceMetadata(
         original_title=detail.get("title"),
