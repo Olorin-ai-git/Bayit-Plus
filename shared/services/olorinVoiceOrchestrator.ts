@@ -219,7 +219,14 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
         this.endSessionPending = false;
         this.endSessionWithCollapse();
       } else {
-        this.forceTransitionTo('idle');
+        // Modal still open → restart listening directly (speaking → listening)
+        // Modal closed → go to idle
+        const store = useSupportStore.getState();
+        if (this.pipelineActive && store.isVoiceModalOpen && !this.shouldStopListening) {
+          this.restartListeningForContinuation();
+        } else {
+          this.forceTransitionTo('idle');
+        }
       }
     });
 
@@ -283,10 +290,8 @@ export class OlorinVoiceOrchestrator extends EventEmitter<OrchestratorEvents> {
           }
         }, OlorinVoiceOrchestrator.PLAYBACK_SAFETY_TIMEOUT_MS);
       } else {
-        this.continuationTimeoutId = setTimeout(async () => {
-          this.continuationTimeoutId = null;
-          await this.restartListeningForContinuation();
-        }, OlorinVoiceOrchestrator.CONTINUATION_UI_DELAY_MS);
+        // No audio playing - restart listening immediately (no idle gap)
+        this.restartListeningForContinuation();
       }
     }
   }

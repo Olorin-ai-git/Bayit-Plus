@@ -170,22 +170,14 @@ export default function Header() {
   const openVoiceModal = useSupportStore((s) => s.openVoiceModal);
   const voiceSupported = voiceSupportService.isSupported();
 
-  const handleWizardHatPress = useCallback(async () => {
-    logger.debug('Wizard hat button pressed - opening voice modal and showing particles', 'Header');
+  const handleWizardHatPress = useCallback(() => {
+    logger.debug('Wizard hat button pressed - opening voice modal', 'Header');
 
     // Dispatch custom event to toggle topbar microphone button state
     window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
 
-    // Open modal
+    // Open modal - VoiceChatModal and Layout handle intro/listening flow
     openVoiceModal();
-
-    // Play intro (this will show particles/animation)
-    try {
-      await voiceSupportService.playIntro();
-      logger.debug('Intro completed successfully', 'Header');
-    } catch (error) {
-      logger.warn('Intro playback failed, continuing anyway', 'Header', error);
-    }
   }, [openVoiceModal]);
 
   // Navigation component - document.dir handles visual direction

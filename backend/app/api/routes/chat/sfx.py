@@ -30,8 +30,8 @@ async def get_wizard_sfx(
     current_user: User = Depends(get_current_active_user),
 ) -> StreamingResponse:
     """Get a sound effect for a wizard gesture animation."""
-    from app.services.elevenlabs_sfx_service import (WIZARD_SFX_DESCRIPTIONS,
-                                                     get_sfx_service)
+    from bayit_voice.sfx import WIZARD_SFX_DESCRIPTIONS
+    from app.services.elevenlabs_sfx_service import get_sfx_service
 
     valid_gestures = list(WIZARD_SFX_DESCRIPTIONS.keys())
     if gesture not in valid_gestures:
