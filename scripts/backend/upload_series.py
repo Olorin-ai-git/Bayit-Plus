@@ -277,10 +277,10 @@ async def download_from_url(url: str, dest_dir: str) -> Optional[str]:
 
 def extract_episode_info(filename: str) -> Tuple[Optional[int], Optional[int]]:
     """Extract season and episode numbers from filename."""
-    # Pattern: S01E01, s01e01, 1x01, etc.
+    # Pattern: S01E01, S01.E01, s01e01, 1x01, etc.
     patterns = [
-        r'[Ss](\d+)[Ee](\d+)',  # S01E01
-        r'(\d+)x(\d+)',          # 1x01
+        r'[Ss](\d+)[\.\s]?[Ee](\d+)',  # S01E01, S01.E01, S01 E01
+        r'(\d+)x(\d+)',                  # 1x01
         r'[Ss]eason[\s\._]?(\d+)[\s\._]?[Ee]pisode[\s\._]?(\d+)',  # Season 1 Episode 1
     ]
 

@@ -25,10 +25,8 @@ logger = get_logger(__name__)
 
 def extract_series_name(title: str) -> str:
     """Extract series name from episode title."""
-    # Remove S01E01 patterns and everything after
-    clean = re.sub(r"\s*S\d+E\d+.*$", "", title, flags=re.IGNORECASE)
-    # Also handle "S01 E01" format with space
-    clean = re.sub(r"\s*S\d+\s+E\d+.*$", "", clean, flags=re.IGNORECASE)
+    # Remove S01E01, S01.E01, S01 E01 patterns and everything after
+    clean = re.sub(r"\s*S\d+[\.\s]?E\d+.*$", "", title, flags=re.IGNORECASE)
     clean = clean.strip(" -_.")
     return clean
 

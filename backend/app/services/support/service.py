@@ -16,6 +16,7 @@ from app.services.support import (analytics, faq_manager, ticket_manager,
                                   voice_chat)
 from app.services.support.conversation import \
     rate_conversation as _rate_conversation
+from app.services.support.voice_chat_tools import chat_streaming_with_tools
 
 
 class SupportService:
@@ -72,6 +73,26 @@ class SupportService:
             app_context,
             token_limit,
             is_voice=is_voice,
+        ):
+            yield chunk
+
+    async def chat_streaming_with_tools(
+        self,
+        message: str,
+        user: User,
+        language: str = "en",
+        conversation_id: Optional[str] = None,
+        app_context: Optional[dict] = None,
+    ) -> AsyncIterator[dict]:
+        """Stream voice chat with tool calling for LLM fallback."""
+        async for chunk in chat_streaming_with_tools(
+            self.async_client,
+            message,
+            user,
+            language,
+            conversation_id,
+            app_context,
+            self.voice_max_tokens,
         ):
             yield chunk
 

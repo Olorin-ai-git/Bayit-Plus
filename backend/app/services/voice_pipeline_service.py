@@ -513,24 +513,23 @@ class VoicePipelineService:
                         break
                     yield chunk
 
-            # Start LLM streaming in background
+            # Start LLM streaming with tools in background
             async def stream_llm():
+                full_response_text = ""
                 try:
-                    async for chunk in support_service.chat_streaming(
+                    async for chunk in support_service.chat_streaming_with_tools(
                         message=transcript,
                         user=self.user,
                         language=language,
                         conversation_id=self.conversation_id,
-                        is_voice=True,
                     ):
                         chunk_type = chunk.get("type")
 
                         if chunk_type == "chunk":
                             text = chunk.get("text", "")
                             if text:
-                                # Send to TTS
+                                full_response_text += text
                                 await llm_text_queue.put(text)
-                                # Send to client for display
                                 await self._output_queue.put(
                                     PipelineMessage(
                                         type="llm_chunk",
@@ -538,8 +537,21 @@ class VoicePipelineService:
                                     )
                                 )
 
+                        elif chunk_type == "tool_action":
+                            action = chunk.get("action", {})
+                            action_type = action.get("type", "")
+                            spoken = full_response_text or action_type
+                            await self._output_queue.put(
+                                PipelineMessage(
+                                    type="intent_action",
+                                    text=spoken,
+                                    intent="CHAT",
+                                    action=action,
+                                    confidence=0.8,
+                                )
+                            )
+
                         elif chunk_type == "complete":
-                            # Store completion data
                             completion_data.update(chunk)
                             self.conversation_id = chunk.get("conversation_id")
 
@@ -560,7 +572,6 @@ class VoicePipelineService:
                         )
                     )
                 finally:
-                    # Signal end of text stream
                     await llm_text_queue.put(None)
 
             # Start LLM task

@@ -87,29 +87,35 @@ async def execute_play_content(
             }
         )
 
-        content_title = await _resolve_content_title(content_id, content_type)
-        if not content_title:
+        metadata = await _resolve_content_metadata(content_id, content_type)
+        if not metadata:
             return {
                 "success": False,
                 "error": "Content not found",
                 "content_id": content_id,
             }
 
+        payload: Dict[str, Any] = {
+            "content_id": content_id,
+            "content_type": content_type,
+            "title": metadata["title"],
+            "is_series": metadata["is_series"],
+        }
+        if metadata.get("thumbnail"):
+            payload["thumbnail"] = metadata["thumbnail"]
+        if timestamp is not None:
+            payload["timestamp"] = timestamp
+
         result: Dict[str, Any] = {
             "success": True,
             "content_id": content_id,
             "content_type": content_type,
-            "title": content_title,
+            "title": metadata["title"],
             "_action": {
                 "type": "play",
-                "payload": {
-                    "content_id": content_id,
-                    "content_type": content_type,
-                },
+                "payload": payload,
             },
         }
-        if timestamp is not None:
-            result["_action"]["payload"]["timestamp"] = timestamp
         return result
     except Exception as e:
         logger.error(
@@ -120,15 +126,36 @@ async def execute_play_content(
         return {"success": False, "error": str(e)}
 
 
-async def _resolve_content_title(
+async def _resolve_content_metadata(
     content_id: str, content_type: str
-) -> Optional[str]:
-    """Look up content title from the database."""
+) -> Optional[Dict[str, Any]]:
+    """Look up content metadata for the frontend player."""
     try:
         if content_type in ("live", "channel"):
             channel = await LiveChannel.get(content_id)
-            return channel.name if channel else None
+            if not channel:
+                return None
+            return {
+                "title": channel.name,
+                "is_series": False,
+                "thumbnail": getattr(channel, "thumbnail", None),
+            }
         content = await Content.get(content_id)
-        return content.title if content else None
+        if not content:
+            return None
+        is_series = bool(
+            content.series_id
+            or content.total_episodes
+            or (content.content_format and content.content_format == "series")
+        )
+        thumbnail = (
+            content.poster_url
+            or content.thumbnail
+        )
+        return {
+            "title": content.title,
+            "is_series": is_series,
+            "thumbnail": thumbnail,
+        }
     except Exception:
         return None
