@@ -3,126 +3,112 @@
 # All content is U.S. government public domain (17 USC Section 105)
 
 nasa:
-  # Space Exploration
-  - source_id: "Apollo 11 Landing"
-    title: "Apollo 11 Moon Landing"
+  # Space Exploration - Apollo
+  - source_id: "KSC-19690716-MH-NAS01-0001-The_Flight_of_Apollo_11_The_Eagle_Has_Landed_HS_from_Film_JSC-DVC_1928"
+    title: "The Flight of Apollo 11: The Eagle Has Landed"
     year: 1969
     topic_tags: ["space", "apollo", "historical"]
     priority: 1
 
-  - source_id: "Apollo 13 Mission"
-    title: "Apollo 13: Houston, We've Had a Problem"
+  - source_id: "KSC-19700417-MH-NAS01-0001-Apollo_13_Splashdown_and_Recovery_B_1373"
+    title: "Apollo 13 Splashdown and Recovery"
     year: 1970
     topic_tags: ["space", "apollo", "historical"]
     priority: 1
 
-  - source_id: "Apollo 17 Last Moon"
-    title: "Apollo 17: The Last Moon Landing"
+  - source_id: "Official Celebration of Apollo 17 50th Anniversary"
+    title: "Apollo 17: 50th Anniversary Celebration"
     year: 1972
     topic_tags: ["space", "apollo", "historical"]
     priority: 1
 
-  - source_id: "NHQ_2020_0127_Remembering Columbia STS-107"
-    title: "Remembering Columbia STS-107"
-    year: 2003
-    topic_tags: ["space", "shuttle", "historical"]
-    priority: 2
-
-  - source_id: "NHQ_2019_0720_Apollo 11 50th Anniversary"
+  - source_id: "NHQ_2019_0722_Celebrating the 50th anniversary of Apollo 11 on This Week @NASA – July 22, 2019"
     title: "Apollo 11: 50th Anniversary"
     year: 2019
     topic_tags: ["space", "apollo", "historical"]
     priority: 1
 
-  - source_id: "JPL-20180222-CASSINf-0001"
-    title: "Cassini's Grand Finale"
-    year: 2017
-    topic_tags: ["space", "saturn", "astronomy"]
+  # Space Shuttle
+  - source_id: "KSC-20230124-MH-GEB01-0001-VAB_Columbia_Room-3321945"
+    title: "Columbia Preservation Room"
+    year: 2003
+    topic_tags: ["space", "shuttle", "historical"]
     priority: 2
 
-  - source_id: "GSFC_20171208_Archive_e001738"
-    title: "Hubble: The Universe in Motion"
-    year: 2017
-    topic_tags: ["space", "astronomy", "hubble"]
-    priority: 1
-
-  - source_id: "jsc2021m000036_ISS_Science_Overview"
-    title: "ISS Science: A Journey of Discovery"
-    year: 2021
-    topic_tags: ["space", "iss", "science"]
-    priority: 2
-
-  - source_id: "JPL-20210218-PERSVRf-0001-Perseverance_Lands"
-    title: "Perseverance Mars Rover Landing"
-    year: 2021
-    topic_tags: ["space", "mars", "science"]
-    priority: 1
-
-  - source_id: "NHQ_2018_1126_InSight_Mars_Landing"
-    title: "InSight Mars Landing"
-    year: 2018
-    topic_tags: ["space", "mars", "science"]
-    priority: 2
-
-  - source_id: "NHQ_2020_0730_Mars2020Launch"
-    title: "Mars 2020 Perseverance Launch"
-    year: 2020
-    topic_tags: ["space", "mars", "science"]
-    priority: 2
-
-  - source_id: "GSFC_20171208_Archive_e000869"
-    title: "Earth from Space: Our Living Planet"
-    year: 2017
-    topic_tags: ["space", "earth-science"]
-    priority: 2
-
-  - source_id: "NHQ_2019_0402_STS-125_Hubble_Repair"
+  - source_id: "ksc_062708_ssm"
     title: "Hubble Repair Mission STS-125"
     year: 2009
     topic_tags: ["space", "hubble", "shuttle"]
     priority: 2
 
-  - source_id: "GSFC_20171208_Archive_e001234"
-    title: "The Sun: Our Living Star"
-    year: 2018
-    topic_tags: ["space", "astronomy", "science"]
-    priority: 2
+  # Hubble & JWST
+  - source_id: "GSFC_20160721_Hubble_m12323_Spot_Hubble_Final"
+    title: "Can You Spot Hubble"
+    year: 2017
+    topic_tags: ["space", "astronomy", "hubble"]
+    priority: 1
 
-  - source_id: "NHQ_2021_0714_JWST_Overview"
-    title: "James Webb Space Telescope Overview"
+  - source_id: "News Conference on the Engineering of the James Webb Space Telescope"
+    title: "James Webb Space Telescope Engineering"
     year: 2021
     topic_tags: ["space", "astronomy", "jwst"]
     priority: 1
 
+  # ISS
+  - source_id: "jsc2019m001192_2019_Space_Station_Science_in_Pictures"
+    title: "ISS Science in Pictures"
+    year: 2021
+    topic_tags: ["space", "iss", "science"]
+    priority: 2
+
+  - source_id: "Earth Views from the International Space Station"
+    title: "Earth Views from the ISS"
+    year: 2017
+    topic_tags: ["space", "earth-science", "iss"]
+    priority: 2
+
+  # Mars
+  - source_id: "JPL-20210305-M2020f-0001Perseverance Lands on Mars UHD Master"
+    title: "Perseverance Rover Lands on Mars"
+    year: 2021
+    topic_tags: ["space", "mars", "science"]
+    priority: 1
+
+  - source_id: "JPL-20181220-MARSf-0001-Mars Report December 2018"
+    title: "NASA Mars Report: InSight Landing"
+    year: 2018
+    topic_tags: ["space", "mars", "science"]
+    priority: 2
+
+  - source_id: "KSC-20200730-VP-MMS01-0001-Mars_2020_Live_Launch_Coverage-3254502"
+    title: "Mars 2020 Perseverance Launch"
+    year: 2020
+    topic_tags: ["space", "mars", "science"]
+    priority: 2
+
   # Aeronautics
-  - source_id: "AFRC_2019_0301_X59_Overview"
-    title: "X-59 Quiet SuperSonic Technology"
+  - source_id: "NHQ20210803ARMD"
+    title: "X-59 Quiet SuperSonic Technology Time-lapse"
     year: 2019
     topic_tags: ["aeronautics", "science"]
     priority: 3
 
   # Earth Science
-  - source_id: "GSFC_20190101_Climate_Change"
-    title: "A Year in the Life of Earth's CO2"
-    year: 2014
-    topic_tags: ["science", "earth-science", "climate"]
-    priority: 2
-
-  - source_id: "GSFC_20200101_Arctic_Ice"
-    title: "Arctic Sea Ice Minimum Over Time"
+  - source_id: "GSFC_20170322_SeaIce_m12537_Arctic"
+    title: "Arctic Sea Ice Reaches Another Record Low"
     year: 2020
     topic_tags: ["science", "earth-science", "climate"]
     priority: 3
 
-  # Hurricane
-  - source_id: "NHQ_2017_0910_Irma_from_ISS"
-    title: "Hurricane Irma from the ISS"
-    year: 2017
-    topic_tags: ["space", "earth-science", "weather"]
-    priority: 3
+  - source_id: "GSFC_20180822_Parker_m13046_Sunset_Show"
+    title: "Parker Solar Probe: Sunset Show"
+    year: 2018
+    topic_tags: ["space", "astronomy", "science"]
+    priority: 2
 
-  - source_id: "NHQ_2020_0101_Decade_of_Discovery"
-    title: "NASA: A Decade of Discovery"
+  # Overview
+  - source_id: "NHQ_2019_0311_Go Forward to the Moon"
+    title: "Go Forward to the Moon"
     year: 2020
     topic_tags: ["space", "science", "historical"]
     priority: 1
