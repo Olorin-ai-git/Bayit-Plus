@@ -48,8 +48,17 @@ class StreamingVoicePipeline extends EventEmitter<StreamingVoicePipelineEvents> 
 
   private getWsEndpoint(): string {
     const voicePath = '/api/v1/support/voice';
-    const protocol = typeof window !== 'undefined' && window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = typeof window !== 'undefined' ? window.location.host : 'localhost:8000';
+    const envWsHost = typeof process !== 'undefined' && process.env?.VITE_SUPPORT_WS_HOST;
+    if (envWsHost) {
+      const cleanHost = envWsHost.replace(/^wss?:\/\//, '');
+      const protocol = envWsHost.startsWith('ws:') ? 'ws:' : 'wss:';
+      return `${protocol}//${cleanHost}${voicePath}`;
+    }
+    const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:';
+    const protocol = isHttps ? 'wss:' : 'ws:';
+    // In production, connect to API backend (not static hosting domain)
+    const isProd = typeof window !== 'undefined' && !window.location.host.includes('localhost');
+    const host = isProd ? 'api.bayit.tv' : (typeof window !== 'undefined' ? window.location.host : 'localhost:8000');
     return `${protocol}//${host}${voicePath}`;
   }
 
