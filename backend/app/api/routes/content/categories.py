@@ -11,8 +11,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.api.routes.content.beta_filter import build_beta_content_filter
-from app.api.routes.content.utils import (convert_to_proxy_url,
-                                          is_series_by_category,
+from app.api.routes.content.utils import (is_series_by_category,
                                           is_series_content)
 from app.core.security import get_optional_user
 from app.models.content import Content

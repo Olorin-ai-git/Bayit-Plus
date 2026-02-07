@@ -3,7 +3,6 @@ Web Search Tool - Search the web using DuckDuckGo.
 """
 
 import logging
-from typing import List
 
 import httpx
 

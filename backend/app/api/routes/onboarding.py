@@ -3,15 +3,14 @@ AI Onboarding API for voice-based account creation.
 Provides a conversational interface powered by Claude for frictionless signup.
 """
 
-from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, status
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 from app.core.security import create_access_token, get_password_hash
-from app.models.user import TokenResponse, User, UserResponse
-from app.services.ai_onboarding import OnboardingStep, ai_onboarding_service
+from app.models.user import User, UserResponse
+from app.services.ai_onboarding import ai_onboarding_service
 
 router = APIRouter()
 

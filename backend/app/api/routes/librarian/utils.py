@@ -9,7 +9,6 @@ from datetime import UTC, datetime
 from beanie import PydanticObjectId
 from olorin_shared.database import get_mongodb_database
 
-from app.core.config import settings
 from app.models.librarian import AuditReport
 from app.services.audit_task_manager import audit_task_manager
 

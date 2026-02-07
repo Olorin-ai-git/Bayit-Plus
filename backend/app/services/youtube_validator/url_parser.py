@@ -8,8 +8,8 @@ Supports multiple URL formats: embed, watch, short URLs, and thumbnail URLs.
 from typing import Optional
 
 from app.services.youtube_validator.constants import (
-    DEFAULT_THUMBNAIL_QUALITY, THUMBNAIL_QUALITIES, YOUTUBE_DOMAINS,
-    YOUTUBE_THUMBNAIL_BASE_URL, YOUTUBE_URL_PATTERNS)
+    DEFAULT_THUMBNAIL_QUALITY, YOUTUBE_DOMAINS, YOUTUBE_THUMBNAIL_BASE_URL,
+    YOUTUBE_URL_PATTERNS)
 
 
 def extract_video_id(url: str) -> Optional[str]:

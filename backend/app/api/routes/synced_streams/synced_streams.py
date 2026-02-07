@@ -17,7 +17,6 @@ from app.core.security import get_current_user
 from app.models.user import User
 from app.services.buffered_channel_service import (
     buffered_channel_service,
-    SyncedStreamInfo,
 )
 
 logger = logging.getLogger(__name__)

@@ -7,7 +7,6 @@ the UnifiedSearchService for full-text MongoDB search, and to provide help
 using the comprehensive documentation system with 219+ articles across 9 categories.
 """
 
-import json
 import logging
 from pathlib import Path
 from typing import Any

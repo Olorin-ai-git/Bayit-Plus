@@ -13,7 +13,7 @@ from app.core.database import get_database
 from app.models.content import Content
 from app.services.series_linker.constants import DuplicateGroup
 from app.services.series_linker.deduplication import (
-    resolve_duplicate_episode_group, select_episode_to_keep)
+    resolve_duplicate_episode_group)
 
 logger = logging.getLogger(__name__)
 

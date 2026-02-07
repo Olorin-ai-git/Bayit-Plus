@@ -6,7 +6,7 @@ Part of the Olorin.ai platform capabilities.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 import pymongo
 from beanie import Document

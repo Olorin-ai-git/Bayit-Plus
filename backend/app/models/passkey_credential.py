@@ -5,7 +5,7 @@ Stores WebAuthn credentials for passkey authentication and manages
 authenticated sessions for accessing passkey-protected content.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import List, Optional
 
 from beanie import Document

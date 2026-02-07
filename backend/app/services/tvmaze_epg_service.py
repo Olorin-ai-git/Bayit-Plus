@@ -16,14 +16,12 @@ API Endpoints:
 - /networks/{id} - Network details
 """
 
-import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
 import httpx
 
-from app.core.config import settings
 from app.models.content import EPGEntry, LiveChannel
 
 logger = logging.getLogger(__name__)

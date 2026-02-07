@@ -5,7 +5,6 @@ Manages Redis tracking of topic mentions and cooldowns for live trivia.
 """
 
 import logging
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 

@@ -10,7 +10,7 @@ Provides:
 
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional
 
 from app.core.config import settings
 from app.models.jewish_community import (CommunityEvent,

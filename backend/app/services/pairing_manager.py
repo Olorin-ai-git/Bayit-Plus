@@ -6,7 +6,6 @@ Manages pairing sessions and WebSocket connections for device pairing.
 import asyncio
 import base64
 import io
-import json
 import secrets
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta

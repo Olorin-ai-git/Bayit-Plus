@@ -5,7 +5,6 @@ import logging
 import re
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from functools import lru_cache
 from typing import Dict, Optional, Tuple
 
 from app.core.config import settings

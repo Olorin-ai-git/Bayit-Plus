@@ -6,8 +6,7 @@ Migrated from jerusalem_content_service.py to support the Global Cultures system
 """
 
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from app.services.culture_scrapers.base_scraper import (BaseCultureScraper,
                                                         CultureHeadlineItem)

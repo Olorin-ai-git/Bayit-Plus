@@ -200,10 +200,6 @@ export default function VideoPlayer({
     destroyHLS, // Pass HLS.js destroy callback for AirPlay source switch
   })
 
-  // Subtitles are now embedded in HLS manifest (EXT-X-MEDIA)
-  // HLS.js and native players handle subtitle selection automatically
-  // No need for external VTT or native <track> elements
-
   // Playback session management for concurrent stream limit enforcement
   const { sessionId } = usePlaybackSession({
     contentId,

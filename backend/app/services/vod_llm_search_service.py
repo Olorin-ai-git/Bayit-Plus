@@ -14,7 +14,6 @@ from anthropic import Anthropic
 from pydantic import BaseModel, Field
 
 from app.core.config import settings
-from app.models.content import Content
 from app.services.unified_search_service import (SearchFilters,
                                                  UnifiedSearchService)
 

@@ -7,7 +7,6 @@ batch operations for efficient MongoDB writes.
 
 import asyncio
 from datetime import datetime
-from typing import Optional
 
 from app.core.config import settings
 from app.core.logging_config import get_logger

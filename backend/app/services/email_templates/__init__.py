@@ -4,11 +4,10 @@ Email templates for Bayit+ platform.
 Provides template rendering utilities for HTML email templates.
 """
 
-import os
 from pathlib import Path
 from typing import Dict, Any
 
-from jinja2 import Environment, FileSystemLoader, Template
+from jinja2 import Environment, FileSystemLoader
 
 
 class EmailTemplateRenderer:

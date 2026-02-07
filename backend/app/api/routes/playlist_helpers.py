@@ -9,7 +9,7 @@ from typing import Optional
 from pydantic import BaseModel, field_validator
 
 from app.models.content import Content, LiveChannel, Podcast, RadioStation
-from app.models.playlist import CONTENT_ID_PATTERN, ContentType, PlaylistItem, UserPlaylist
+from app.models.playlist import CONTENT_ID_PATTERN, ContentType, PlaylistItem
 
 
 class PlaylistAddRequest(BaseModel):

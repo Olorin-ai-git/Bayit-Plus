@@ -3,7 +3,7 @@
 import asyncio
 from datetime import datetime, timedelta
 from decimal import Decimal
-from typing import List, Optional
+from typing import List
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
@@ -15,12 +15,6 @@ from app.models.cost_breakdown import (
     InfrastructureCostBreakdown,
     RevenueBreakdown,
     ThirdPartyCostBreakdown,
-    UserCostBreakdown,
-)
-from app.services.olorin.metering.costs import (
-    calculate_dubbing_cost,
-    calculate_llm_cost,
-    calculate_search_cost,
 )
 
 from .providers import (

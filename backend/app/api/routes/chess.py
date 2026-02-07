@@ -1,6 +1,6 @@
 """Chess game REST API routes."""
 
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel

@@ -9,7 +9,6 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
 
-from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.core.config import settings
 from app.core.database import db

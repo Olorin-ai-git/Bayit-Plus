@@ -11,7 +11,6 @@ from typing import Optional
 
 from app.core.security import get_password_hash, verify_password
 from app.models.family_controls import FamilyControls
-from app.models.family_controls_schemas import FamilyControlsResponse
 
 logger = logging.getLogger(__name__)
 

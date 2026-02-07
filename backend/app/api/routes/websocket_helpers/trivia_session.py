@@ -3,7 +3,7 @@ Trivia session initialization and setup helpers
 """
 
 import logging
-from typing import Optional, Tuple
+from typing import Optional
 
 from beanie import PydanticObjectId
 from fastapi import WebSocket

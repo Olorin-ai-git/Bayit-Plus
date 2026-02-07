@@ -11,7 +11,6 @@ Sources include:
 - Jewish educational podcasts
 """
 
-import asyncio
 import json
 import logging
 from dataclasses import dataclass, field
@@ -24,7 +23,6 @@ from bs4 import BeautifulSoup
 
 from app.core.config import settings
 from app.models.content import Podcast, PodcastEpisode
-from app.models.content_taxonomy import ContentSection
 
 logger = logging.getLogger(__name__)
 

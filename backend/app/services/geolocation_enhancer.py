@@ -15,8 +15,6 @@ import math
 import re
 from typing import List, Optional, Tuple
 
-from app.core.config import settings
-from app.models.location_data import LocationData
 from app.services.location_constants import ISRAELI_CITIES
 from app.services.location_service import LocationService
 

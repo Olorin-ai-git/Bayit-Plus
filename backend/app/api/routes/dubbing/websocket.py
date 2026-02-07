@@ -6,16 +6,13 @@ Real-time bidirectional communication for:
 - Live subtitles (PCM audio in, translated text out)
 """
 
-import asyncio
 import base64
 import json
 from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect, status
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.models.user import User
 from app.services.dubbing.user_dubbing_service import UserDubbingService

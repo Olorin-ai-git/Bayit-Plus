@@ -143,7 +143,6 @@ class BaseCultureScraper(ABC):
         Returns a list of CultureHeadlineItem objects.
         Subclasses must implement this method.
         """
-        pass
 
     @abstractmethod
     async def scrape_city_news(self, city_id: str) -> List[CultureHeadlineItem]:
@@ -156,7 +155,6 @@ class BaseCultureScraper(ABC):
         Returns a list of CultureHeadlineItem objects.
         Subclasses must implement this method.
         """
-        pass
 
     @abstractmethod
     def get_search_queries(self, city_name: str) -> List[str]:
@@ -169,7 +167,6 @@ class BaseCultureScraper(ABC):
         Returns a list of search query strings.
         Subclasses must implement this method.
         """
-        pass
 
     def calculate_relevance_score(
         self,

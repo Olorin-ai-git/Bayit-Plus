@@ -14,7 +14,7 @@ import aiohttp
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from pydantic import BaseModel, Field
 
-from app.core.security import get_current_user, verify_oauth_token
+from app.core.security import verify_oauth_token
 
 router = APIRouter(prefix="/api/v1/wake-word", tags=["wake-word"])
 logger = logging.getLogger(__name__)

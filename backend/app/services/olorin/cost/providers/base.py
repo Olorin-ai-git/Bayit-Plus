@@ -35,9 +35,7 @@ class CostProvider(ABC):
         Raises:
             ProviderError: If API call fails
         """
-        pass
 
     @abstractmethod
     async def health_check(self) -> bool:
         """Check if provider is healthy and credentials are valid."""
-        pass

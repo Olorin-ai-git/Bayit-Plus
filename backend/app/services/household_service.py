@@ -6,10 +6,10 @@ Manages household creation, member management, invitations, and shared family co
 
 import uuid
 import logging
-from datetime import datetime, timedelta, timezone
-from typing import List, Optional
+from datetime import datetime, timezone
+from typing import Optional
 
-from app.models.household import Household, HouseholdMember, HouseholdRole, PendingInvitation
+from app.models.household import Household, HouseholdMember, HouseholdRole
 from app.models.family_controls import FamilyControls
 from app.services.family_controls_service import family_controls_service
 from app.services.household_membership_service import household_membership_service

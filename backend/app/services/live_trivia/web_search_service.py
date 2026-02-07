@@ -7,7 +7,6 @@ and DuckDuckGo instant answers (fallback).
 Both APIs are free and don't require API keys.
 """
 
-import json
 import logging
 import urllib.parse
 from typing import Dict, Optional

@@ -19,7 +19,7 @@ import logging
 import os
 import sys
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List
+from typing import Dict
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)

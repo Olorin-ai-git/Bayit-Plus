@@ -9,8 +9,8 @@ from typing import Any, Dict, List
 import anthropic
 
 from app.services.content_auditor.constants import (
-    SUPPORTED_INSIGHT_LANGUAGES, AIInsightsConfig, get_ai_insights_config,
-    get_anthropic_api_key, get_claude_model)
+    SUPPORTED_INSIGHT_LANGUAGES, get_ai_insights_config, get_anthropic_api_key,
+    get_claude_model)
 
 logger = logging.getLogger(__name__)
 

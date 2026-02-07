@@ -1,10 +1,9 @@
 """Admin Subscriptions Management - Endpoints for managing user subscriptions and plans"""
 
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
-from pydantic import BaseModel
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
 from app.models.admin import AuditAction, Permission, SubscriptionPlan
 from app.models.user import User

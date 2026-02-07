@@ -8,7 +8,7 @@ import re
 from datetime import datetime, timezone
 from typing import ClassVar, List, Literal, Optional
 
-from beanie import Document, PydanticObjectId
+from beanie import Document
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 EmbeddingType = Literal[

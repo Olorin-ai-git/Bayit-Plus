@@ -4,8 +4,6 @@ Generates comprehensive audit reports and sends notifications
 """
 
 import logging
-from datetime import datetime
-from typing import Optional
 
 from app.models.librarian import AuditReport
 

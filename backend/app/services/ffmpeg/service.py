@@ -8,7 +8,7 @@ operations by delegating to specialized modules.
 import logging
 import subprocess
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from app.core.config import settings
 from app.services.ffmpeg.constants import (LANGUAGE_CODE_MAP,

@@ -10,7 +10,6 @@ from typing import List, Optional
 from app.services.news_scraper.constants import MAX_SEARCH_RESULTS
 from app.services.news_scraper.models import HeadlineItem
 from app.services.news_scraper.rss_parser import (
-    enrich_headlines_with_videos,
     search_duckduckgo,
     search_google_news_rss,
 )
@@ -227,17 +226,6 @@ async def scrape_israeli_content_in_us_city(
         logger.info(f"Scraping Israeli content for {city}, {state}")
         results = await _search_with_fallback(location_queries, max_results)
         logger.info(f"Found {len(results)} results for {city}, {state}")
-
-        # Video enrichment disabled - articles only
-        # Enrich headlines with videos in parallel (non-blocking, 10s max)
-        # if enrich_with_videos and results:
-        #     logger.info(f"Starting background video enrichment for {len(results)} headlines")
-        #     results = await enrich_headlines_with_videos(
-        #         results,
-        #         max_concurrent=5,
-        #         timeout_per_item=3.0,
-        #         overall_timeout=10.0,
-        #     )
 
         return results
 

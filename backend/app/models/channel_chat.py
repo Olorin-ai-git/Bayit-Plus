@@ -15,10 +15,9 @@ from enum import Enum
 from typing import Optional
 
 from beanie import Document
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field, field_validator
 from pymongo import IndexModel
 
-from app.core.config import settings
 
 
 class ModerationStatus(str, Enum):

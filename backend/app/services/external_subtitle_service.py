@@ -11,7 +11,7 @@ from beanie import PydanticObjectId
 
 from app.models.content import Content
 from app.models.subtitles import (SubtitleCueModel, SubtitleSearchCacheDoc,
-                                  SubtitleTrackDoc, get_language_name)
+                                  SubtitleTrackDoc)
 from app.services.opensubtitles_service import get_opensubtitles_service
 from app.services.subtitle_service import parse_subtitles
 from app.services.tmdb_service import TMDBService
@@ -388,7 +388,6 @@ class ExternalSubtitleService:
         content_list = await query.to_list()
 
         # Filter to items missing required languages
-        from app.core.config import settings
 
         required_languages = ["he", "en", "es"]  # Default required languages
 

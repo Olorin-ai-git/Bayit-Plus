@@ -13,9 +13,7 @@ from pydantic import BaseModel, Field
 from app.api.routes.olorin.dependencies import (get_current_partner,
                                                 verify_capability)
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
-from app.models.cultural_reference import (ContextDetectionRequest,
-                                           DetectedReference,
-                                           ReferenceExplanation)
+from app.models.cultural_reference import ContextDetectionRequest
 from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.cultural_context_service import \
     cultural_context_service

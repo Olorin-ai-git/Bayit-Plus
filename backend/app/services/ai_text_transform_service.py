@@ -79,7 +79,6 @@ class AITextTransformService(ABC, Generic[T]):
         Returns:
             Transformed result
         """
-        pass
 
     @abstractmethod
     def _create_batch_prompt(self, texts: List[str]) -> str:
@@ -93,7 +92,6 @@ class AITextTransformService(ABC, Generic[T]):
         Returns:
             Formatted prompt for batch processing
         """
-        pass
 
     @abstractmethod
     def _parse_batch_response(
@@ -110,7 +108,6 @@ class AITextTransformService(ABC, Generic[T]):
         Returns:
             List of transformed results
         """
-        pass
 
     async def transform(self, text: str, use_cache: bool = True) -> T:
         """

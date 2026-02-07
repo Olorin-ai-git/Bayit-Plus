@@ -4,27 +4,23 @@ System health monitoring and diagnostic endpoints for admin dashboard
 """
 
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional
+from typing import Dict, List
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from motor.motor_asyncio import AsyncIOMotorClient
+from fastapi import APIRouter, Depends, Query
 
 from app.api.routes.admin_content_utils import has_permission
 from app.core.config import settings
-from app.core.database import db
-from app.core.health_checks import (HealthStatus, ServiceHealth,
-                                    check_gcs_health, check_mongodb_health,
-                                    check_openai_health, check_pinecone_health,
-                                    check_sentry_health, check_elevenlabs_health)
+from app.core.health_checks import (ServiceHealth, check_gcs_health,
+                                    check_mongodb_health, check_openai_health,
+                                    check_pinecone_health, check_sentry_health,
+                                    check_elevenlabs_health)
 from app.core.security import get_current_active_user
 from app.models.admin import Permission
-from app.models.diagnostics import (AnalyticsResponse, ClientAlert,
-                                    ClientHealthHistory, ClientHeartbeat,
-                                    ClientStatus, ClientStatusResponse,
-                                    ClientType, DiagnosticsOverviewResponse,
+from app.models.diagnostics import (AnalyticsResponse, ClientHealthHistory,
+                                    ClientHeartbeat, ClientStatus,
+                                    ClientStatusResponse, ClientType,
                                     HeartbeatRequest, HeartbeatResponse,
-                                    PingResponse, ServiceHealthResponse,
-                                    SystemMetrics)
+                                    PingResponse, ServiceHealthResponse)
 from app.models.user import User
 
 router = APIRouter(prefix="/diagnostics", tags=["Diagnostics"])

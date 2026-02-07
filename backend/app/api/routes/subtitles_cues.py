@@ -3,7 +3,6 @@ Subtitle Cues Routes.
 Handles cue retrieval with Hebrew mode support, nikud/shoresh generation.
 """
 
-import asyncio
 from datetime import datetime
 from typing import Optional
 

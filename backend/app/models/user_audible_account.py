@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from pymongo import IndexModel, ASCENDING, DESCENDING
+from pymongo import IndexModel, ASCENDING
 from beanie import Document
 from pydantic import Field, field_validator
 

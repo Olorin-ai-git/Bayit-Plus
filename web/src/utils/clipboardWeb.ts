@@ -1,9 +1,12 @@
 /**
- * Web shim for @react-native-clipboard/clipboard
- * Uses the browser Clipboard API
+ * Clipboard Web Shim
+ *
+ * Provides a navigator.clipboard-based implementation of the
+ * @react-native-clipboard/clipboard API for web builds.
+ * Webpack alias redirects native Clipboard imports here.
  */
 
-export default {
+const clipboardWeb = {
   getString: async (): Promise<string> => {
     try {
       return await navigator.clipboard.readText();
@@ -11,21 +14,23 @@ export default {
       return '';
     }
   },
-  setString: async (text: string): Promise<void> => {
+
+  setString: (content: string): void => {
     try {
-      await navigator.clipboard.writeText(text);
+      navigator.clipboard.writeText(content);
     } catch {
       // Fallback for older browsers
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      textArea.style.position = 'fixed';
-      textArea.style.left = '-9999px';
-      document.body.appendChild(textArea);
-      textArea.select();
+      const textarea = document.createElement('textarea');
+      textarea.value = content;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
       document.execCommand('copy');
-      document.body.removeChild(textArea);
+      document.body.removeChild(textarea);
     }
   },
+
   hasString: async (): Promise<boolean> => {
     try {
       const text = await navigator.clipboard.readText();
@@ -34,4 +39,29 @@ export default {
       return false;
     }
   },
+
+  hasURL: async (): Promise<boolean> => {
+    return false;
+  },
+
+  hasNumber: async (): Promise<boolean> => {
+    return false;
+  },
+
+  hasWebURL: async (): Promise<boolean> => {
+    try {
+      const text = await navigator.clipboard.readText();
+      return /^https?:\/\//.test(text.trim());
+    } catch {
+      return false;
+    }
+  },
+
+  addListener: (): { remove: () => void } => {
+    return { remove: () => {} };
+  },
+
+  removeAllListeners: (): void => {},
 };
+
+export default clipboardWeb;

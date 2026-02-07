@@ -7,7 +7,7 @@ Includes correlation ID for end-to-end request tracing
 import logging
 
 from olorin_shared.logging import configure_logging as shared_configure_logging
-from olorin_shared.logging import get_logger
+from olorin_shared.logging import get_logger  # noqa: F401 - re-exported, used by many modules
 
 
 def _get_correlation_id() -> str | None:

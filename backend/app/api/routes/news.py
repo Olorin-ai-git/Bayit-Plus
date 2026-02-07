@@ -6,7 +6,6 @@ Provides endpoints for:
 """
 
 from datetime import datetime
-from typing import Optional
 
 from fastapi import APIRouter, Query
 

@@ -9,7 +9,6 @@ import re
 from typing import Callable
 
 from fastapi import Request, Response
-from starlette.datastructures import FormData, QueryParams
 from starlette.middleware.base import BaseHTTPMiddleware
 
 logger = logging.getLogger(__name__)

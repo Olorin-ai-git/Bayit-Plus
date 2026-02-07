@@ -5,8 +5,6 @@ Server-Sent Events endpoint for networks that block WebSocket connections.
 Partners POST audio chunks and receive results via SSE stream.
 """
 
-import asyncio
-import base64
 import logging
 from typing import AsyncIterator
 

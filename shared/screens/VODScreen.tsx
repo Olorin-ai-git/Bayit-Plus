@@ -18,7 +18,6 @@ import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import { getLocalizedName, getLocalizedDescription } from '../utils/contentLocalization';
-import { getOptimizedGridProps, createGridItemLayout } from '../utils/listOptimization';
 
 interface ContentItem {
   id: string;
@@ -252,8 +251,9 @@ export const VODScreen: React.FC = () => {
             index={index}
           />
         )}
-        {...getOptimizedGridProps(isTV ? 6 : 4)}
-        getItemLayout={createGridItemLayout(220, isTV ? 6 : 4, spacing.sm)}
+        removeClippedSubviews
+        maxToRenderPerBatch={isTV ? 12 : 8}
+        windowSize={5}
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-[60px]">
             <GlassView className="p-12 items-center">

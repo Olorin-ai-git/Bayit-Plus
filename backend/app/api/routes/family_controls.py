@@ -11,7 +11,6 @@ from pydantic import BaseModel, Field
 
 from app.core.security import get_current_active_user
 from app.core.rate_limiter import limiter, RATE_LIMITS
-from app.models.family_controls import FamilyControls
 from app.models.user import User
 from app.services.family_controls_service import family_controls_service
 

@@ -9,7 +9,7 @@ from typing import List, Literal, Optional
 
 from beanie import Document
 from pydantic import BaseModel, Field
-from pymongo import ASCENDING, DESCENDING, IndexModel
+from pymongo import ASCENDING, IndexModel
 
 # Category types for cultural references
 ReferenceCategory = Literal[

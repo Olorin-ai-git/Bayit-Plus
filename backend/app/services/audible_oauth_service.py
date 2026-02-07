@@ -4,7 +4,6 @@ Handles OAuth authorization flows, token exchange, and token refresh.
 """
 
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 
 import httpx
 from pydantic import BaseModel

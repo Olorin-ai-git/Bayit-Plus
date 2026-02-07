@@ -6,7 +6,7 @@ import re
 
 from bson import ObjectId
 from fastapi import APIRouter, HTTPException, Query, Request
-from fastapi.responses import RedirectResponse, StreamingResponse
+from fastapi.responses import StreamingResponse
 from google.cloud import storage
 
 from app.models.content import Content

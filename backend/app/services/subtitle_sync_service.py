@@ -4,7 +4,7 @@ Keeps Content.available_subtitle_languages in sync with SubtitleTrackDoc
 """
 
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from app.models.content import Content
 from app.models.subtitles import SubtitleTrackDoc

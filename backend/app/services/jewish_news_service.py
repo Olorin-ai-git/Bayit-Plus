@@ -16,9 +16,9 @@ import httpx
 
 from app.core.config import settings
 from app.models.jewish_news import (JewishNewsAggregatedResponse,
-                                    JewishNewsItem, JewishNewsItemResponse,
-                                    JewishNewsSource, JewishNewsSourceResponse)
-from app.services.news_scraper import HeadlineItem, scrape_judaism_news
+                                    JewishNewsItemResponse, JewishNewsSource,
+                                    JewishNewsSourceResponse)
+from app.services.news_scraper import scrape_judaism_news
 
 logger = logging.getLogger(__name__)
 

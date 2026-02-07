@@ -9,7 +9,7 @@ import asyncio
 import logging
 import os
 import subprocess
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -17,13 +17,11 @@ logger = logging.getLogger(__name__)
 class VideoConversionError(Exception):
     """Raised when video conversion fails."""
 
-    pass
 
 
 class VideoConversionTimeoutError(VideoConversionError):
     """Raised when video conversion times out."""
 
-    pass
 
 
 async def convert_video(

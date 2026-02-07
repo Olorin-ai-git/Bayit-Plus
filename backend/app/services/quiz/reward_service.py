@@ -12,7 +12,7 @@ from typing import Dict, List, Optional, Tuple
 import pytz
 
 from app.core.config import settings
-from app.models.quiz import ContentQuiz, QuizQuestionModel
+from app.models.quiz import ContentQuiz
 from app.models.quiz_attempt import QuizAnswerRecord, QuizAttempt
 from app.models.reward import Badge, BadgeResponse, UserReward
 

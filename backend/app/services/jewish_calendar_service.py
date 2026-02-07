@@ -17,11 +17,8 @@ import httpx
 
 from app.core.config import settings
 from app.models.jewish_calendar import (US_JEWISH_CITIES,
-                                        CalendarTodayResponse, DafYomi,
-                                        DafYomiResponse, HebrewDate, Holiday,
-                                        JewishCalendarCache, JewishCalendarDay,
-                                        Parasha, ShabbatTimes,
-                                        ShabbatTimesResponse,
+                                        CalendarTodayResponse, DafYomiResponse,
+                                        HebrewDate, JewishCalendarCache, ShabbatTimesResponse,
                                         UpcomingHolidaysResponse, USCity)
 
 logger = logging.getLogger(__name__)

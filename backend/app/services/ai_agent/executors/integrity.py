@@ -7,9 +7,8 @@ These wrap the existing upload_integrity_service functionality.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
-from app.models.content import Content
 
 logger = logging.getLogger(__name__)
 

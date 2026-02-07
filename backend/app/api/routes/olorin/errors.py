@@ -5,7 +5,6 @@ Localized error messages for Olorin.ai platform APIs.
 Uses i18n translation keys for multilingual support.
 """
 
-from typing import Optional
 
 from app.utils.i18n import get_translation
 

@@ -33,8 +33,15 @@ export const GlassPlaylist: React.FC = () => {
   const clearError = usePlaylistStore((s) => s.clearError);
   const removeItem = usePlaylistStore((s) => s.removeItem);
   const clearPlaylist = usePlaylistStore((s) => s.clearPlaylist);
+  const fetchPlaylist = usePlaylistStore((s) => s.fetchPlaylist);
 
   const slideAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (isVisible) {
+      fetchPlaylist();
+    }
+  }, [isVisible, fetchPlaylist]);
 
   useEffect(() => {
     Animated.timing(slideAnim, {
@@ -112,7 +119,11 @@ export const GlassPlaylist: React.FC = () => {
             />
           )}
 
-          {items.length === 0 ? (
+          {isLoading ? (
+            <View style={styles.loadingState}>
+              <Text style={styles.loadingText}>{t('playlist.loading')}</Text>
+            </View>
+          ) : items.length === 0 ? (
             <PlaylistEmpty />
           ) : (
             <ScrollView
@@ -186,6 +197,15 @@ const styles = StyleSheet.create({
   closeButton: {
     padding: spacing.xs,
     borderRadius: borderRadius.sm,
+  },
+  loadingState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: colors.textMuted,
+    fontSize: 14,
   },
   scrollArea: {
     flex: 1,

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List, Optional, Tuple
 
-from beanie.operators import And, In, Or
+from beanie.operators import And, Or
 
 from app.core.exceptions import FriendshipError
 from app.models.friendship import (FriendRequest, FriendRequestStatus,

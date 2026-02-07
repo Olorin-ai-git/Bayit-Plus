@@ -4,7 +4,6 @@ Fetch movie/series metadata from The Movie Database (TMDB) API
 """
 
 import logging
-from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import httpx

@@ -802,19 +802,6 @@ async def _run_reapply_fixes(
     dry_run: bool,
 ):
     """Background task to reapply fixes from an audit."""
-    from app.services.ai_agent.executors.metadata.fixes import (
-        execute_fix_missing_metadata,
-        execute_fix_missing_poster,
-        execute_flag_for_manual_review,
-    )
-    from app.services.ai_agent.executors.metadata.titles import execute_clean_title
-    from app.services.ai_agent.executors.series.classification import (
-        execute_fix_misclassified_series,
-    )
-    from app.services.ai_agent.executors.subtitles import (
-        execute_check_subtitle_quota,
-        execute_download_external_subtitle,
-    )
     from app.services.ai_agent.issue_tracker import get_reapply_items
 
     start_time = datetime.utcnow()

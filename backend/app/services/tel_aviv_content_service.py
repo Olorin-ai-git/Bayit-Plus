@@ -21,7 +21,6 @@ from typing import Any, Dict, List, Optional
 from app.core.config import settings
 from app.models.tel_aviv_content import (TelAvivContentAggregatedResponse,
                                          TelAvivContentCategory,
-                                         TelAvivContentItem,
                                          TelAvivContentItemResponse,
                                          TelAvivContentSource,
                                          TelAvivContentSourceResponse,

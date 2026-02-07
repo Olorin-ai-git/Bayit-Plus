@@ -4,7 +4,6 @@ Sanitizes trivia text before translation to prevent security vulnerabilities
 """
 
 import html
-import logging
 import re
 
 from app.core.logging_config import get_logger

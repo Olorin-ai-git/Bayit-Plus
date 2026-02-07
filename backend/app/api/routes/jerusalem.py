@@ -18,8 +18,7 @@ from app.models.jerusalem_content import (JerusalemContentAggregatedResponse,
                                           JerusalemContentCategory,
                                           JerusalemFeaturedResponse)
 from app.models.user import User
-from app.services.jerusalem_content_service import (JERUSALEM_CATEGORY_LABELS,
-                                                    jerusalem_content_service)
+from app.services.jerusalem_content_service import jerusalem_content_service
 
 router = APIRouter()
 

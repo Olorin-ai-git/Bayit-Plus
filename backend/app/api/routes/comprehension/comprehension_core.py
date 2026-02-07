@@ -12,7 +12,6 @@ from app.core.logging_config import get_logger
 from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.core.security import get_current_user
 from app.models.comprehension import ComprehensionQuestionPublic
-from app.models.comprehension_attempt import ComprehensionAttempt
 from app.models.user import User
 from app.services.beta.credit_service import BetaCreditService
 from app.services.comprehension.question_service import (

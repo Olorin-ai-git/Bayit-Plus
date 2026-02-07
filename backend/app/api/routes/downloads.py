@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
 from app.core.security import get_current_active_user
-from app.models.content import Content, Podcast
+from app.models.content import Content
 from app.models.user import User
 
 

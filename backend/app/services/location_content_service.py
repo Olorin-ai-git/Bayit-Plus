@@ -7,7 +7,6 @@ from datetime import datetime, timezone, timedelta
 from typing import Any, Optional
 
 from app.core.config import settings
-from app.models.content import Content
 from app.models.jewish_community import CommunityEvent
 from app.services.location_constants import MAJOR_US_CITIES, CITY_COORDINATES
 from app.services.news_scraper.exa_scraper import scrape_israeli_content_exa, scrape_israeli_businesses_exa

@@ -28,7 +28,13 @@ export const usePlaylistStore = create<PlaylistState>((set) => ({
     set({ isLoading: true, error: null });
     try {
       const data = await apiPlaylistService.getPlaylist();
-      set({ items: data.items || [], isLoading: false });
+      if (data && Array.isArray(data.items)) {
+        set({ items: data.items, isLoading: false });
+      } else if (data?.detail) {
+        set({ error: data.detail, items: [], isLoading: false });
+      } else {
+        set({ items: [], isLoading: false });
+      }
     } catch (err: any) {
       set({
         error: err?.detail || err?.message || 'Failed to load playlist',

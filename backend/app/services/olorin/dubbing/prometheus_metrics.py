@@ -6,7 +6,6 @@ Defines counters, gauges, and histograms for real-time dubbing monitoring.
 
 import logging
 
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 

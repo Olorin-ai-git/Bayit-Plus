@@ -13,11 +13,10 @@ import re
 from collections import defaultdict
 from datetime import datetime
 from difflib import SequenceMatcher
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from beanie import PydanticObjectId
 
-from app.core.config import settings
 from app.models.content import Content
 
 logger = logging.getLogger(__name__)

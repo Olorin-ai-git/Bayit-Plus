@@ -18,8 +18,7 @@ if (
 
 # Conditional imports and feature flags
 try:
-    from google.cloud import speech_v1p1beta1 as speech
-    from google.cloud import translate_v2 as translate
+    pass
 
     GOOGLE_AVAILABLE = True
 except ImportError:
@@ -27,7 +26,7 @@ except ImportError:
     logger.warning("Google Cloud libraries not available")
 
 try:
-    from openai import AsyncOpenAI
+    pass
 
     OPENAI_AVAILABLE = True
 except ImportError:
@@ -35,7 +34,7 @@ except ImportError:
     logger.warning("OpenAI library not available")
 
 try:
-    from app.services.elevenlabs_realtime_service import ElevenLabsRealtimeService
+    pass
 
     ELEVENLABS_AVAILABLE = True
 except ImportError:
@@ -43,7 +42,7 @@ except ImportError:
     logger.warning("ElevenLabs realtime service not available")
 
 try:
-    from anthropic import AsyncAnthropic
+    pass
 
     ANTHROPIC_AVAILABLE = True
 except ImportError:

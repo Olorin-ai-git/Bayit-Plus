@@ -1,6 +1,6 @@
 """Abstract base classes for STT and Translation providers."""
 from abc import ABC, abstractmethod
-from typing import AsyncIterator, Optional
+from typing import AsyncIterator
 
 
 class STTProvider(ABC):
@@ -20,7 +20,6 @@ class STTProvider(ABC):
         Yields:
             Transcribed text chunks
         """
-        pass
 
     @abstractmethod
     def verify_availability(self) -> bool:
@@ -30,7 +29,6 @@ class STTProvider(ABC):
         Returns:
             True if provider is available and functional
         """
-        pass
 
 
 class TranslationProvider(ABC):
@@ -52,7 +50,6 @@ class TranslationProvider(ABC):
         Returns:
             Translated text
         """
-        pass
 
     @abstractmethod
     def verify_availability(self) -> bool:
@@ -62,4 +59,3 @@ class TranslationProvider(ABC):
         Returns:
             True if provider is available and functional
         """
-        pass

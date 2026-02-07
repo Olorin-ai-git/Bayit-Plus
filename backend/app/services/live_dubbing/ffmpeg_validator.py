@@ -18,7 +18,6 @@ import logging
 import os
 import re
 import tempfile
-from pathlib import Path
 from typing import Optional, Tuple
 from urllib.parse import urlparse
 

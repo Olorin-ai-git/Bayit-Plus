@@ -11,7 +11,6 @@ Detects highlight-worthy moments based on:
 import re
 from collections import deque
 from dataclasses import dataclass
-from datetime import datetime, timedelta
 from typing import Optional
 
 from app.core.config import settings

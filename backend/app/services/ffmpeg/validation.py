@@ -6,7 +6,7 @@ This module provides input validation and FFmpeg installation verification.
 
 import logging
 import subprocess
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -14,19 +14,16 @@ logger = logging.getLogger(__name__)
 class FFmpegValidationError(Exception):
     """Raised when FFmpeg validation fails."""
 
-    pass
 
 
 class FFmpegNotInstalledError(FFmpegValidationError):
     """Raised when FFmpeg or ffprobe is not installed."""
 
-    pass
 
 
 class InvalidVideoFileError(FFmpegValidationError):
     """Raised when a video file is invalid or inaccessible."""
 
-    pass
 
 
 async def verify_ffmpeg_installation() -> Dict[str, Any]:

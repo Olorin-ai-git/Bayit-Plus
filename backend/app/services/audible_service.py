@@ -9,7 +9,7 @@ import httpx
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.services.audible_oauth_service import AudibleOAuthService, AudibleOAuthToken
-from app.services.audible_library_service import AudibleLibraryService, AudibleAudiobook
+from app.services.audible_library_service import AudibleLibraryService
 from app.services.audible_catalog_service import AudibleCatalogService
 
 logger = get_logger(__name__)
@@ -18,7 +18,6 @@ logger = get_logger(__name__)
 class AudibleAPIError(Exception):
     """Raised when Audible API calls fail."""
 
-    pass
 
 
 class AudibleService:

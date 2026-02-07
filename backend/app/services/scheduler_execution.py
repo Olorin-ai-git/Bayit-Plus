@@ -6,7 +6,6 @@ Handles the actual start/stop of scheduled recordings (called by APScheduler).
 import logging
 from datetime import datetime
 
-from app.core.config import settings
 from app.models.content import LiveChannel
 from app.models.recording import RecordingSchedule
 

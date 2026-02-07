@@ -5,7 +5,7 @@ Provides batch processing utilities for series linking operations.
 """
 
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from app.core.config import settings
 from app.models.content import Content

@@ -4,8 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 
 from app.core.family_controls_dependencies import check_youngsters_section_allowed
-from app.core.security import (get_current_active_user, get_optional_user,
-                               get_password_hash, verify_password)
+from app.core.security import (get_current_active_user, get_password_hash)
 from app.models.family_controls import FamilyControls
 from app.models.user import User
 from app.models.youngsters_content import (YoungstersAgeGroupsResponse,

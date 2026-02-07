@@ -1,6 +1,5 @@
 """Location-based Israeli content endpoint for discovering content by US city."""
 import logging
-from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 

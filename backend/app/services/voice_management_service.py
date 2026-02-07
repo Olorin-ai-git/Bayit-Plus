@@ -3,8 +3,6 @@ Voice Management Service
 Orchestrates voice configuration, testing, analytics, and provider management
 """
 
-import asyncio
-import base64
 import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
@@ -12,8 +10,7 @@ from typing import Any, Dict, List, Optional
 import httpx
 
 from app.core.config import settings
-from app.models.live_feature_quota import (FeatureType,
-                                           LiveFeatureUsageSession,
+from app.models.live_feature_quota import (LiveFeatureUsageSession,
                                            UsageSessionStatus)
 from app.models.voice_config import VoiceConfiguration, VoiceProviderHealth
 from app.services.elevenlabs_tts_streaming_service import \

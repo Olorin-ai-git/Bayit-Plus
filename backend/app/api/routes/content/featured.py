@@ -9,13 +9,12 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, Request, Header
 
-from app.api.routes.content.utils import is_series_by_category, is_series_content
+from app.api.routes.content.utils import is_series_content
 from app.api.routes.content_taxonomy import _get_legacy_category_mapping
 from app.core.security import get_optional_user, get_passkey_session
 from app.models.content import Content, Podcast
 from app.models.content_taxonomy import ContentSection
 from app.models.user import User
-from app.services.culture_content_service import culture_content_service
 from app.services.location_content_service import LocationContentService
 from app.api.routes.content.beta_filter import (
     build_beta_content_filter,

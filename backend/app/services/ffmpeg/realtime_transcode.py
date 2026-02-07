@@ -30,7 +30,6 @@ LIKELY_INCOMPATIBLE_EXTENSIONS = {".mkv", ".avi", ".mov", ".wmv", ".m4v"}
 class RealtimeTranscodeError(Exception):
     """Raised when real-time transcoding fails."""
 
-    pass
 
 
 def needs_audio_transcode(audio_codec: str) -> bool:

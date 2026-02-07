@@ -4,7 +4,7 @@ Beta User Model
 Represents users in the Beta 500 closed beta program.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional
 from beanie import Document, Indexed
 from pydantic import EmailStr, Field

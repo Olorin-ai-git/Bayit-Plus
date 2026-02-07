@@ -5,7 +5,6 @@ Email Tool - Send emails via configured email service.
 import logging
 from typing import List, Optional
 
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 

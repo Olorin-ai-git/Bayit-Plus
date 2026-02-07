@@ -8,7 +8,6 @@ import logging
 from datetime import datetime, timedelta
 from typing import Optional
 
-from app.core.config import settings
 from app.models.live_feature_quota import (LiveFeatureUsageSession,
                                            UsageSessionStatus)
 

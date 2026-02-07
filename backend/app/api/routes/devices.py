@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from app.core.security import get_current_active_user
-from app.models.user import Device, User
+from app.models.user import User
 from app.services.device_manager import device_manager
 from app.services.session_manager import session_manager
 

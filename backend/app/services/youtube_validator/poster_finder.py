@@ -5,7 +5,7 @@ Functions for finding YouTube content with missing thumbnails/posters.
 """
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from app.models.content import Content
 from app.services.youtube_validator.url_parser import extract_video_id

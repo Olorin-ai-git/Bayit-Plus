@@ -3,7 +3,6 @@ import hashlib
 import random
 import secrets
 from datetime import datetime, timezone
-from typing import Optional
 from urllib.parse import urlencode
 
 import httpx
@@ -13,7 +12,7 @@ from pydantic import BaseModel
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
-from app.core.rate_limiter import RATE_LIMITING_ENABLED, limiter
+from app.core.rate_limiter import limiter
 from app.core.security import (create_access_token, get_current_active_user,
                                get_password_hash, verify_password)
 from app.models.beta_user import BetaUser

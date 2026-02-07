@@ -7,7 +7,6 @@ Functions for checking storage usage, finding large files, and calculating costs
 import logging
 from typing import Any, Dict
 
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 

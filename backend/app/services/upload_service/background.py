@@ -12,7 +12,6 @@ from typing import Any, Awaitable, Callable, Optional
 
 import httpx
 
-from app.core.config import settings
 from app.models.upload import UploadJob
 from app.services.tmdb_service import TMDBService
 

@@ -7,7 +7,7 @@ import logging
 from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional
 
-from app.models.playback_session import PlaybackSession, PlaybackSessionResponse
+from app.models.playback_session import PlaybackSession
 from app.models.user import User
 
 logger = logging.getLogger(__name__)

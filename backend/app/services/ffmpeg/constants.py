@@ -9,7 +9,6 @@ variables via the settings module.
 import logging
 from typing import Set
 
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 

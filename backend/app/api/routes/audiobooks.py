@@ -9,7 +9,6 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
 from app.core.security import (
-    get_current_active_user,
     get_current_admin_user,
     get_optional_user,
     verify_content_access,

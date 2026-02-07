@@ -9,7 +9,6 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 
-from app.core.config import settings
 from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.core.security import get_current_user
 from app.models.profile import Profile

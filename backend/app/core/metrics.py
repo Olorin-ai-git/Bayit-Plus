@@ -33,7 +33,6 @@ from prometheus_client import (
     Gauge,
     Histogram,
     Info,
-    Summary,
     generate_latest,
     CONTENT_TYPE_LATEST,
 )

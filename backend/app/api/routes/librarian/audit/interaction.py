@@ -2,7 +2,6 @@
 import asyncio
 import logging
 from datetime import datetime
-from typing import Optional
 
 from beanie import PydanticObjectId
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status

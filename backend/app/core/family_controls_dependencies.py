@@ -6,7 +6,6 @@ Integrates with household system and profile-level overrides.
 """
 
 import logging
-from datetime import datetime
 from typing import Optional
 
 from fastapi import Depends, Header, HTTPException, status

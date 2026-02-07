@@ -7,7 +7,6 @@ for accessing passkey-protected content.
 Uses the py_webauthn library for FIDO2/WebAuthn protocol implementation.
 """
 
-import base64
 import logging
 import secrets
 from datetime import datetime, timedelta

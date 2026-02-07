@@ -6,7 +6,6 @@ Secure password reset flow with token-based verification.
 import logging
 import secrets
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr

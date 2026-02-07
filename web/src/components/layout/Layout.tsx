@@ -13,8 +13,6 @@ import { useVoiceListeningContext } from '@bayit/shared-contexts';
 import { ttsService } from '@bayit/shared-services';
 import { colors, spacing } from '@olorin/design-tokens';
 import { useTizenRemoteKeys } from '@/hooks/useTizenRemoteKeys';
-import { useSamsungVoice } from '@/hooks/useSamsungVoice';
-import { useChatbotStore } from '@/stores/chatbotStore';
 import { useDirection } from '@/hooks/useDirection';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useSupportStore } from '@bayit/shared/stores/supportStore';
@@ -75,7 +73,6 @@ export default function Layout() {
           }
           break;
         case 'playback':
-          window.dispatchEvent(new CustomEvent('bayit:voice-playback', { detail: action.payload }));
           break;
         case 'scroll':
           window.scrollBy({
@@ -108,9 +105,6 @@ export default function Layout() {
   const handleVoiceAvatarPress = useCallback(async () => {
     // Dispatch custom event to toggle topbar microphone button state
     logger.debug('Wizard avatar pressed - opening voice modal and starting listening', 'Layout');
-
-    // Toggle particles animation
-    window.dispatchEvent(new CustomEvent('bayit:voice-started'));
 
     // Toggle microphone button state
     window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
@@ -212,38 +206,6 @@ export default function Layout() {
     onGreenButton: toggleSidebar, // Green button toggles sidebar on both platforms
     enabled: IS_TV_BUILD,
   });
-
-  // Samsung Voice Integration (Bixby)
-  // When user says "Hey Bixby, search for X", the search query is sent to chatbot
-  const { sendMessage, toggleOpen } = useChatbotStore();
-
-  const handleBixbySearch = useCallback((query: string) => {
-    logger.debug('Bixby search received', 'Layout', query);
-    toggleOpen(); // Open chatbot
-    sendMessage(query); // Send the voice query to chatbot
-  }, [sendMessage, toggleOpen]);
-
-  const handleBixbyCommand = useCallback((command: string, data?: any) => {
-    logger.debug('Bixby command', 'Layout', { command, data });
-    // Could handle play/pause/etc commands here
-  }, []);
-
-  // Bixby voice integration disabled - requires voicecontrol privilege
-  const bixbyAvailable = false;
-  const bixbyError: string | null = null;
-  // const { isAvailable: bixbyAvailable, error: bixbyError } = useSamsungVoice({
-  //   enabled: IS_TV_BUILD,
-  //   onSearch: handleBixbySearch,
-  //   onCommand: handleBixbyCommand,
-  //   currentState: 'Home',
-  // });
-
-  // Log Bixby availability
-  useEffect(() => {
-    if (IS_TV_BUILD) {
-      logger.debug('Bixby voice integration available', 'Layout', bixbyAvailable);
-    }
-  }, [bixbyAvailable]);
 
   // Voice listening context - shared across all pages
   const { isListening, isAwake, isProcessing, audioLevel } = useVoiceListeningContext();

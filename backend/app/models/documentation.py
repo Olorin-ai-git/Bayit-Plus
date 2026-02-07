@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from typing import List, Literal, Optional
 
 from beanie import Document
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 # Type definitions
 DifficultyLevel = Literal["beginner", "intermediate", "advanced"]

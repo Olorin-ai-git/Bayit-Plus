@@ -10,7 +10,6 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from app.models.admin import Permission
 from app.models.content import Content, Podcast
 from app.models.content_taxonomy import ContentSection
-from app.models.subtitles import SubtitleTrackDoc
 from app.models.user import User
 
 from .admin_content_utils import has_permission

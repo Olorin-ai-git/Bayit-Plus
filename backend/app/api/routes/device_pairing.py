@@ -7,14 +7,13 @@ to authenticate the TV session without typing credentials on the TV.
 from datetime import datetime
 from typing import Optional
 
-from fastapi import (APIRouter, Depends, HTTPException, WebSocket,
-                     WebSocketDisconnect, status)
+from fastapi import (APIRouter, HTTPException, WebSocket, WebSocketDisconnect,
+                     status)
 from pydantic import BaseModel
 
 from app.core.config import settings
-from app.core.security import (create_access_token, get_current_active_user,
-                               get_password_hash, verify_password)
-from app.models.user import TokenResponse, User, UserLogin, UserResponse
+from app.core.security import (create_access_token, verify_password)
+from app.models.user import TokenResponse, User
 from app.services.pairing_manager import pairing_manager
 
 router = APIRouter()

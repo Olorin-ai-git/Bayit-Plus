@@ -10,7 +10,7 @@ import asyncio
 import json
 import logging
 import subprocess
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -18,13 +18,11 @@ logger = logging.getLogger(__name__)
 class VideoAnalysisError(Exception):
     """Raised when video analysis fails."""
 
-    pass
 
 
 class VideoAnalysisTimeoutError(VideoAnalysisError):
     """Raised when video analysis times out."""
 
-    pass
 
 
 async def analyze_video(video_url: str, timeout: int = 30) -> Dict[str, Any]:

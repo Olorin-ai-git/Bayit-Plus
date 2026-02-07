@@ -10,8 +10,8 @@ from typing import Any, Dict, Optional
 from beanie.operators import And
 
 from app.core.config import settings
-from app.models.content import EPGEntry, LiveChannel
-from app.models.recording import Recording, RecordingSession
+from app.models.content import EPGEntry
+from app.models.recording import Recording
 
 logger = logging.getLogger(__name__)
 

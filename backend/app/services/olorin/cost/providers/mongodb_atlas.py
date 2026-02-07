@@ -1,6 +1,5 @@
 """MongoDB Atlas API provider for cost data."""
 
-import logging
 from datetime import date
 from decimal import Decimal
 

@@ -14,8 +14,7 @@ from app.api.routes.olorin.dependencies import (get_current_partner,
                                                 verify_capability)
 from app.api.routes.olorin.errors import OlorinErrors, get_error_message
 from app.models.content_embedding import (DialogueSearchQuery,
-                                          IndexContentRequest, SearchQuery,
-                                          SemanticSearchResult)
+                                          IndexContentRequest, SearchQuery)
 from app.models.integration_partner import IntegrationPartner
 from app.services.olorin.metering_service import metering_service
 from app.services.olorin.vector_search_service import vector_search_service

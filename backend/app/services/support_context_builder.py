@@ -12,8 +12,7 @@ import logging
 from pathlib import Path
 from typing import List, Optional
 
-from app.core.config import settings
-from app.models.support import FAQEntry, SupportConversation
+from app.models.support import FAQEntry
 from app.models.user import User
 
 logger = logging.getLogger(__name__)

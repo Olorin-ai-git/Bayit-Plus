@@ -1,19 +1,19 @@
 /**
  * WatchPartyPanel Component
- * Side panel for active Watch Party with participants, chat, and controls
+ * Desktop side-panel layout for Watch Party (used instead of overlay on non-mobile)
  */
 
-import { createPortal } from 'react-dom'
-import { View, Text, Pressable, ScrollView, I18nManager } from 'react-native'
+import { useState } from 'react'
+import { View, Text, Pressable, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
-import { X } from 'lucide-react'
+import { X, Users, MessageSquare } from 'lucide-react'
 import { colors } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
-import { useTVFocus } from '@bayit/shared/components/hooks/useTVFocus'
+import { GlassView } from '@bayit/shared/ui'
+import { useDirection } from '@bayit/shared/hooks/useDirection'
 import WatchPartyHeader from './WatchPartyHeader'
 import WatchPartyParticipants from './WatchPartyParticipants'
 import WatchPartyChat from './WatchPartyChat'
-import AudioControls from './AudioControls'
 import { styles } from './WatchPartyPanel.styles'
 
 interface Participant {
@@ -47,17 +47,13 @@ interface WatchPartyPanelProps {
   isHost: boolean
   isSynced: boolean
   hostPaused: boolean
-  currentUserId: string
+  currentUserId?: string
   onLeave: () => void
   onEnd: () => void
   onSendMessage: (message: string, type?: string) => void
-  audioEnabled?: boolean
-  isMuted?: boolean
-  isSpeaking?: boolean
-  isAudioConnecting?: boolean
-  isAudioConnected?: boolean
-  onToggleMute?: () => void
 }
+
+const TABS = ['participants', 'chat'] as const
 
 export default function WatchPartyPanel({
   isOpen,
@@ -72,52 +68,36 @@ export default function WatchPartyPanel({
   onLeave,
   onEnd,
   onSendMessage,
-  audioEnabled = false,
-  isMuted = true,
-  isSpeaking = false,
-  isAudioConnecting = false,
-  isAudioConnected = false,
-  onToggleMute,
 }: WatchPartyPanelProps) {
   const { t } = useTranslation()
-  const closeFocus = useTVFocus({ styleType: 'button' })
+  const { isRTL } = useDirection()
+  const [activeTab, setActiveTab] = useState<'participants' | 'chat'>('participants')
 
-  if (!party) return null
+  if (!party || !isOpen) return null
 
-  return createPortal(
+  return (
     <View
       style={[
         styles.panel,
-        I18nManager.isRTL ? styles.panelRTL : styles.panelLTR,
-        isOpen ? styles.panelOpen : styles.panelClosed,
+        isRTL ? styles.panelRTL : styles.panelLTR,
+        styles.panelOpen,
       ]}
     >
-      {/* Glass Background */}
       <View style={styles.glassBackground} />
+      <GlassView style={{ flex: 1 }} intensity="high">
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>{t('watchParty.title')}</Text>
+          <Pressable
+            onPress={onClose}
+            style={({ hovered }: { hovered?: boolean }) => [
+              styles.closeButton,
+              hovered && styles.closeButtonHovered,
+            ]}
+          >
+            <X size={isTV ? 20 : 18} color={colors.textSecondary} />
+          </Pressable>
+        </View>
 
-      {/* Panel Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>{t('watchParty.title', 'Watch Party')}</Text>
-        <Pressable
-          onPress={onClose}
-          onFocus={closeFocus.handleFocus}
-          onBlur={closeFocus.handleBlur}
-          focusable={true}
-          style={({ hovered, pressed }) => [
-            styles.closeButton,
-            (hovered || pressed) && styles.closeButtonHovered,
-            closeFocus.isFocused && closeFocus.focusStyle,
-          ]}
-          accessibilityRole="button"
-          accessibilityLabel={t('common.close', 'Close')}
-        >
-          <X size={isTV ? 22 : 18} color={colors.textSecondary} />
-        </Pressable>
-      </View>
-
-      {/* Panel Content */}
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-        {/* Room Info and Controls */}
         <WatchPartyHeader
           roomCode={party.room_code}
           isHost={isHost}
@@ -127,42 +107,47 @@ export default function WatchPartyPanel({
           onEnd={onEnd}
         />
 
-        {/* Audio Controls */}
-        {audioEnabled && (
-          <View style={styles.section}>
-            <AudioControls
-              isMuted={isMuted}
-              isSpeaking={isSpeaking}
-              isConnecting={isAudioConnecting}
-              isConnected={isAudioConnected}
-              onToggleMute={onToggleMute}
-            />
-          </View>
-        )}
-
-        {/* Participants List */}
         <View style={styles.section}>
-          <WatchPartyParticipants
-            participants={participants}
-            hostId={party.host_id}
-            currentUserId={currentUserId}
-          />
+          {TABS.map((tab) => {
+            const Icon = tab === 'participants' ? Users : MessageSquare
+            const isActive = activeTab === tab
+            return (
+              <Pressable
+                key={tab}
+                onPress={() => setActiveTab(tab)}
+                style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8 }}
+              >
+                <Icon size={isTV ? 18 : 16} color={isActive ? colors.primary : colors.textMuted} />
+                <Text style={{ color: isActive ? colors.primary : colors.textMuted, fontWeight: isActive ? '600' : '400' }}>
+                  {tab === 'participants'
+                    ? `${t('watchParty.participants')} (${participants.length})`
+                    : t('watchParty.chat')}
+                </Text>
+              </Pressable>
+            )
+          })}
         </View>
 
-        {/* Chat */}
-        {party.chat_enabled && (
-          <View style={[styles.section, styles.chatSection]}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {activeTab === 'participants' ? (
+            <WatchPartyParticipants
+              participants={participants}
+              hostId={party.host_id}
+              currentUserId={currentUserId}
+            />
+          ) : (
             <WatchPartyChat
               messages={messages}
               currentUserId={currentUserId}
               onSendMessage={onSendMessage}
               chatEnabled={party.chat_enabled}
-              isPanelOpen={isOpen}
             />
-          </View>
-        )}
-      </ScrollView>
-    </View>,
-    document.body
+          )}
+        </ScrollView>
+      </GlassView>
+    </View>
   )
 }

@@ -5,7 +5,7 @@ Manages user sessions and frequency limits for live trivia.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from app.models.live_trivia import LiveTriviaSession
 

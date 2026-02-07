@@ -12,17 +12,13 @@ Uses existing news_scraper infrastructure with Jerusalem keyword filtering.
 
 import asyncio
 import logging
-import re
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
-import httpx
-from bs4 import BeautifulSoup
 
 from app.core.config import settings
 from app.models.jerusalem_content import (JerusalemContentAggregatedResponse,
                                           JerusalemContentCategory,
-                                          JerusalemContentItem,
                                           JerusalemContentItemResponse,
                                           JerusalemContentSource,
                                           JerusalemContentSourceResponse,
@@ -30,9 +26,9 @@ from app.models.jerusalem_content import (JerusalemContentAggregatedResponse,
 from app.services.geolocation_enhancer import GeolocationEnhancer
 from app.services.location_constants import (JERUSALEM_COORDS,
                                              JERUSALEM_DEFAULT_RADIUS_KM)
-from app.services.news_scraper import (HEADERS, HeadlineItem,
-                                       scrape_jerusalem_news, scrape_mako,
-                                       scrape_walla, scrape_ynet)
+from app.services.news_scraper import (HeadlineItem, scrape_jerusalem_news,
+                                       scrape_mako, scrape_walla,
+                                       scrape_ynet)
 
 logger = logging.getLogger(__name__)
 

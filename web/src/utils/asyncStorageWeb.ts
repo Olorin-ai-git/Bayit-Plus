@@ -1,13 +1,16 @@
-// Web shim for @react-native-async-storage/async-storage
-// Uses localStorage under the hood
-import logger from '@/utils/logger';
+/**
+ * AsyncStorage Web Shim
+ *
+ * Provides a localStorage-based implementation of the
+ * @react-native-async-storage/async-storage API for web builds.
+ * Webpack alias redirects native AsyncStorage imports here.
+ */
 
-const AsyncStorage = {
+const asyncStorageWeb = {
   getItem: async (key: string): Promise<string | null> => {
     try {
       return localStorage.getItem(key);
-    } catch (e) {
-      logger.error('AsyncStorage getItem error', 'AsyncStorage', e);
+    } catch {
       return null;
     }
   },
@@ -15,64 +18,82 @@ const AsyncStorage = {
   setItem: async (key: string, value: string): Promise<void> => {
     try {
       localStorage.setItem(key, value);
-    } catch (e) {
-      logger.error('AsyncStorage setItem error', 'AsyncStorage', e);
+    } catch {
+      // Storage quota exceeded or private browsing
     }
   },
 
   removeItem: async (key: string): Promise<void> => {
     try {
       localStorage.removeItem(key);
-    } catch (e) {
-      logger.error('AsyncStorage removeItem error', 'AsyncStorage', e);
+    } catch {
+      // Ignore removal errors
+    }
+  },
+
+  mergeItem: async (key: string, value: string): Promise<void> => {
+    try {
+      const existing = localStorage.getItem(key);
+      if (existing) {
+        const merged = { ...JSON.parse(existing), ...JSON.parse(value) };
+        localStorage.setItem(key, JSON.stringify(merged));
+      } else {
+        localStorage.setItem(key, value);
+      }
+    } catch {
+      // Ignore merge errors
     }
   },
 
   clear: async (): Promise<void> => {
     try {
       localStorage.clear();
-    } catch (e) {
-      logger.error('AsyncStorage clear error', 'AsyncStorage', e);
+    } catch {
+      // Ignore clear errors
     }
   },
 
-  getAllKeys: async (): Promise<string[]> => {
+  getAllKeys: async (): Promise<readonly string[]> => {
     try {
       return Object.keys(localStorage);
-    } catch (e) {
-      logger.error('AsyncStorage getAllKeys error', 'AsyncStorage', e);
+    } catch {
       return [];
     }
   },
 
-  multiGet: async (keys: string[]): Promise<[string, string | null][]> => {
+  multiGet: async (
+    keys: readonly string[],
+  ): Promise<readonly [string, string | null][]> => {
     try {
       return keys.map((key) => [key, localStorage.getItem(key)]);
-    } catch (e) {
-      logger.error('AsyncStorage multiGet error', 'AsyncStorage', e);
+    } catch {
       return keys.map((key) => [key, null]);
     }
   },
 
-  multiSet: async (keyValuePairs: [string, string][]): Promise<void> => {
+  multiSet: async (keyValuePairs: readonly [string, string][]): Promise<void> => {
     try {
-      keyValuePairs.forEach(([key, value]) => {
-        localStorage.setItem(key, value);
-      });
-    } catch (e) {
-      logger.error('AsyncStorage multiSet error', 'AsyncStorage', e);
+      keyValuePairs.forEach(([key, value]) => localStorage.setItem(key, value));
+    } catch {
+      // Ignore errors
     }
   },
 
-  multiRemove: async (keys: string[]): Promise<void> => {
+  multiRemove: async (keys: readonly string[]): Promise<void> => {
     try {
-      keys.forEach((key) => {
-        localStorage.removeItem(key);
-      });
-    } catch (e) {
-      logger.error('AsyncStorage multiRemove error', 'AsyncStorage', e);
+      keys.forEach((key) => localStorage.removeItem(key));
+    } catch {
+      // Ignore errors
+    }
+  },
+
+  multiMerge: async (
+    keyValuePairs: readonly [string, string][],
+  ): Promise<void> => {
+    for (const [key, value] of keyValuePairs) {
+      await asyncStorageWeb.mergeItem(key, value);
     }
   },
 };
 
-export default AsyncStorage;
+export default asyncStorageWeb;

@@ -7,11 +7,9 @@ Implements atomic MongoDB transactions with optimistic locking.
 
 from datetime import datetime
 from typing import Tuple, Optional
-from motor.motor_asyncio import AsyncIOMotorClientSession
 
 from app.core.config import Settings
 from app.core.logging_config import get_logger
-from app.models.beta_user import BetaUser
 from app.models.beta_credit import BetaCredit
 from app.models.beta_credit_transaction import BetaCreditTransaction
 from app.services.olorin.metering.service import MeteringService

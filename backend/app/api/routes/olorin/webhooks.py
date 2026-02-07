@@ -362,7 +362,6 @@ async def _deliver_webhook_with_retry(
 ) -> None:
     """Deliver webhook with retry logic."""
     import asyncio
-    import json
 
     for attempt in range(max_attempts):
         delivery.attempts = attempt + 1

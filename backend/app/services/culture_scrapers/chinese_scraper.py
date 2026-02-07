@@ -5,16 +5,12 @@ Handles Chinese news sources (Sina, Sohu, NetEase, Xinhua) with Mandarin and Eng
 """
 
 import logging
-import re
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
-import httpx
 from bs4 import BeautifulSoup
 
-from app.core.config import settings
-from app.services.culture_scrapers.base_scraper import (DEFAULT_HEADERS,
-                                                        BaseCultureScraper,
+from app.services.culture_scrapers.base_scraper import (BaseCultureScraper,
                                                         CultureHeadlineItem)
 
 logger = logging.getLogger(__name__)

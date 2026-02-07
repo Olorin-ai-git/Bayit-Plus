@@ -4,7 +4,7 @@ Handles kids content requests with age detection and family controls
 """
 
 import re
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, Tuple
 
 from app.core.logging_config import get_logger
 from app.services.kids_content_service import kids_content_service

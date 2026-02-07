@@ -1,8 +1,6 @@
 """Authorization and security utilities for cost dashboard endpoints."""
 
 import hashlib
-import logging
-from typing import Optional
 
 from fastapi import Depends, HTTPException, Request
 from app.core.logging_config import get_logger

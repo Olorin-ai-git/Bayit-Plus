@@ -6,12 +6,11 @@ Real-time summaries for late-joiners to live broadcasts.
 
 import logging
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from app.core.config import settings
-from app.models.content_embedding import (RecapEntry, RecapSession,
-                                          TranscriptSegment)
+from app.models.content_embedding import RecapSession
 
 logger = logging.getLogger(__name__)
 

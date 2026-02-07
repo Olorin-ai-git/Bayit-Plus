@@ -9,17 +9,15 @@ Manages NLP conversation sessions with:
 """
 
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 from app.core.config import settings
 from app.models.nlp_session import (
     NLPConversationSession,
     PendingAction,
-    SessionMessage,
-    ToolCallRecord,
 )
 from app.services.nlp.session_store import MongoSessionStore, SessionStore
 

@@ -7,7 +7,7 @@ import asyncio
 import hashlib
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
 import httpx
 from bs4 import BeautifulSoup

@@ -6,7 +6,7 @@ Request/Response models for support endpoints
 from datetime import datetime
 from typing import List, Literal, Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 
 # Type aliases
 TicketStatus = Literal["open", "in_progress", "resolved", "closed"]

@@ -7,7 +7,6 @@ Routes tool calls to appropriate handlers based on tool name and platform.
 import logging
 from typing import Any, Dict
 
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -508,7 +507,6 @@ async def execute_bayit_tool(
         environment = tool_input.get("environment", "all")
 
         # Read deployment logs and status
-        import os
         from pathlib import Path
 
         logs_dir = Path("scripts/deployment/logs")

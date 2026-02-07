@@ -5,7 +5,7 @@ Endpoints for kids quiz feature including retrieval, submission, and history.
 """
 
 import logging
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 

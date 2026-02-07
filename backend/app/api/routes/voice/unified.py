@@ -5,9 +5,9 @@ Single endpoint for all voice interactions across platforms
 
 from typing import Optional, Dict, Any
 from pydantic import BaseModel, Field, field_validator
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from app.core.security import get_current_user
-from app.services.voice.intent_router import IntentRouter, VoiceIntent
+from app.services.voice.intent_router import IntentRouter
 from app.services.voice.error_codes import VoiceErrorCode, get_error_detail
 from app.services.voice.error_messages import get_error_message
 from app.models.user import User

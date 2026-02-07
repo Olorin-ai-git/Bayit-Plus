@@ -15,7 +15,7 @@ Character: Olorin the Wizard
 import logging
 import random
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from anthropic import Anthropic
 

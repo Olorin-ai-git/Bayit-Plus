@@ -20,7 +20,6 @@ import httpx
 
 from app.core.config import settings
 from app.models.content import Content
-from app.models.content_taxonomy import ContentSection
 
 logger = logging.getLogger(__name__)
 

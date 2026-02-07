@@ -8,7 +8,7 @@ import logging
 from typing import List, Optional
 
 import httpx
-from openai import APIConnectionError, APIStatusError, RateLimitError
+from openai import APIConnectionError, RateLimitError
 
 from app.core.config import settings
 from app.core.retry import async_retry

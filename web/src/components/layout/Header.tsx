@@ -173,9 +173,6 @@ export default function Header() {
   const handleWizardHatPress = useCallback(async () => {
     logger.debug('Wizard hat button pressed - opening voice modal and showing particles', 'Header');
 
-    // Dispatch custom event to show particles
-    window.dispatchEvent(new CustomEvent('bayit:voice-started'));
-
     // Dispatch custom event to toggle topbar microphone button state
     window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
 

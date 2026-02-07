@@ -5,10 +5,8 @@ Manages household member invitations, acceptances, and removals.
 """
 
 import secrets
-import uuid
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Optional
 
 from app.models.household import Household, HouseholdRole, PendingInvitation
 from app.models.user import User

@@ -2,8 +2,7 @@
 import logging
 from typing import List, Optional
 
-from beanie import PydanticObjectId
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.api.routes.admin import require_admin
 from app.api.routes.librarian.models import AuditReportResponse

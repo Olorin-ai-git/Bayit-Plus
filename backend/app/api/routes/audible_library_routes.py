@@ -9,7 +9,6 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
-from app.core.security import get_current_active_user
 from app.models.user import User
 from app.models.user_audible_account import UserAudibleAccount
 from app.services.audible_service import audible_service, AudibleAPIError

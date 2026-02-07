@@ -4,14 +4,12 @@ Import free/test content from various public sources for testing
 """
 
 import re
-from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import httpx
 
-from app.models.content import (Content, LiveChannel, Podcast, PodcastEpisode,
-                                RadioStation)
+from app.models.content import (Content, LiveChannel, Podcast, RadioStation)
 
 # ============ FREE CONTENT SOURCES ============
 
@@ -458,42 +456,6 @@ class ContentImporter:
             imported.append(podcast)
 
         return imported
-
-
-# Convenience functions
-async def import_apple_bipbop_channels(
-    import_all: bool = True,
-    items: Optional[List[str]] = None,
-) -> List[LiveChannel]:
-    """Convenience function to import Apple BipBop test streams"""
-    return await ContentImporter.import_live_channels("apple_bipbop", import_all, items)
-
-
-async def import_public_domain_movies(
-    category_id: str,
-    import_all: bool = True,
-    items: Optional[List[str]] = None,
-) -> List[Content]:
-    """Convenience function to import public domain movies"""
-    return await ContentImporter.import_vod_content(
-        "public_domain", category_id, import_all, items
-    )
-
-
-async def import_somafm_stations(
-    import_all: bool = True,
-    items: Optional[List[str]] = None,
-) -> List[RadioStation]:
-    """Convenience function to import Soma FM stations"""
-    return await ContentImporter.import_radio_stations("somafm", import_all, items)
-
-
-async def import_available_podcasts(
-    import_all: bool = True,
-    items: Optional[List[str]] = None,
-) -> List[Podcast]:
-    """Convenience function to import available podcasts"""
-    return await ContentImporter.import_public_podcasts(import_all, items)
 
 
 # ============ LOCAL FILE IMPORT FUNCTIONS ============

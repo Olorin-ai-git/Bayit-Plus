@@ -10,7 +10,6 @@ Discovery results are queued for admin review before being added to the library.
 """
 
 import logging
-from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
@@ -19,7 +18,7 @@ from beanie import Document
 from pydantic import BaseModel, Field
 
 from app.core.config import settings
-from app.models.kids_content import SUBCATEGORY_PARENT_MAP, KidsSubcategory
+from app.models.kids_content import KidsSubcategory
 
 logger = logging.getLogger(__name__)
 

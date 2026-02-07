@@ -3,7 +3,7 @@
 Extends olorin-shared base exceptions with platform-specific error types.
 """
 
-from olorin_shared.errors import InternalError, OlorinException
+from olorin_shared.errors import InternalError
 
 
 class GameError(InternalError):

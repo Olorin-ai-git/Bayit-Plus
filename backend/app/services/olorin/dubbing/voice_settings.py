@@ -5,10 +5,9 @@ Configurable voice parameters per dubbing session.
 """
 
 import logging
-from dataclasses import dataclass, field
-from typing import Dict, Optional
+from dataclasses import dataclass
+from typing import Dict
 
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 

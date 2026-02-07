@@ -13,7 +13,6 @@ from typing import Dict, List, Optional, Tuple
 from beanie import PydanticObjectId
 from beanie.odm.queries.find import FindMany
 
-from app.core.config import settings
 from app.models.content import Content
 
 logger = logging.getLogger(__name__)

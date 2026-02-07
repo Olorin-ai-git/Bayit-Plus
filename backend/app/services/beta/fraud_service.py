@@ -6,7 +6,7 @@ Detects and prevents abuse in the Beta 500 program.
 
 import hashlib
 from datetime import datetime, timedelta
-from typing import Dict, Optional
+from typing import Dict
 
 from app.core.config import Settings
 from app.core.logging_config import get_logger
@@ -83,14 +83,6 @@ class FraudDetectionService:
             # Note: Would need device_fingerprint field in BetaUser model
             # For now, this is a placeholder
         ).to_list()
-
-        # Check for duplicate device fingerprint
-        # if existing:
-        #     logger.warning(
-        #         "Duplicate device fingerprint",
-        #         extra={"fingerprint": fingerprint}
-        #     )
-        #     return {"risk": "high", "reason": "duplicate_device"}
 
         logger.info(
             "Signup passed fraud checks",

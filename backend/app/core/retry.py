@@ -8,7 +8,7 @@ import asyncio
 import functools
 import logging
 import random
-from typing import Callable, Optional, Sequence, Type, TypeVar, Union
+from typing import Callable, Optional, Sequence, Type, TypeVar
 
 from app.core.config import settings
 
@@ -138,7 +138,6 @@ def sync_retry(
     Raises:
         TypeError: If applied to an async function
     """
-    import inspect
     import time
 
     def decorator(func: Callable[..., T]) -> Callable[..., T]:

@@ -7,11 +7,9 @@ and error handling. Keeps the main websocket_live_dubbing.py route clean.
 
 import asyncio
 import logging
-import time
 from typing import Optional, Tuple
 
 from beanie import PydanticObjectId
-from fastapi import WebSocketDisconnect
 from jose import JWTError, jwt
 
 from app.core.config import settings

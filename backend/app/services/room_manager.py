@@ -9,9 +9,8 @@ from datetime import datetime
 from typing import List, Optional
 
 from app.models.realtime import (ChatMessage, ChatMessageCreate,
-                                 ChatMessageResponse, ParticipantState,
-                                 PlaybackSync, WatchParty, WatchPartyCreate,
-                                 WatchPartyResponse)
+                                 ParticipantState, WatchParty,
+                                 WatchPartyCreate, WatchPartyResponse)
 from app.services.connection_manager import connection_manager
 
 

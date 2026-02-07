@@ -4,8 +4,8 @@ Provides personalized morning content experience for Israeli expats.
 Auto-plays curated content during morning hours (configurable 7-9 AM local time).
 """
 
-from datetime import datetime, time, timedelta
-from typing import Any, Dict, List, Optional
+from datetime import datetime, time
+from typing import Any, Dict, List
 
 import anthropic
 import pytz

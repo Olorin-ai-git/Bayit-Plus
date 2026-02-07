@@ -9,10 +9,8 @@ import asyncio
 import logging
 import os
 import subprocess
-from pathlib import Path
-from typing import Any, Callable, Dict, Optional
+from typing import Callable, Optional
 
-from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -20,13 +18,11 @@ logger = logging.getLogger(__name__)
 class StreamRecordingError(Exception):
     """Raised when stream recording fails."""
 
-    pass
 
 
 class StreamRecordingTimeoutError(StreamRecordingError):
     """Raised when stream recording times out."""
 
-    pass
 
 
 async def start_recording_stream(

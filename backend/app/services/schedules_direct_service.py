@@ -20,7 +20,7 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
-from app.models.content import EPGEntry, LiveChannel
+from app.models.content import EPGEntry
 
 logger = logging.getLogger(__name__)
 

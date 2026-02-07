@@ -31,12 +31,10 @@ class STTProvider(ABC):
         Args:
             source_lang: Source language code (e.g., 'he', 'en', 'es')
         """
-        pass
 
     @abstractmethod
     async def close(self) -> None:
         """Close connection to STT service and cleanup resources."""
-        pass
 
     @abstractmethod
     async def send_audio_chunk(self, audio_data: bytes) -> None:
@@ -46,7 +44,6 @@ class STTProvider(ABC):
         Args:
             audio_data: Raw PCM audio bytes (16kHz, mono, 16-bit signed)
         """
-        pass
 
     @abstractmethod
     async def receive_transcripts(self) -> AsyncIterator[Tuple[str, str]]:
@@ -56,13 +53,11 @@ class STTProvider(ABC):
         Yields:
             Tuple of (transcript_text, detected_language_code)
         """
-        pass
 
     @property
     @abstractmethod
     def is_connected(self) -> bool:
         """Check if connected to STT service."""
-        pass
 
 
 class ElevenLabsSTTProvider(STTProvider):

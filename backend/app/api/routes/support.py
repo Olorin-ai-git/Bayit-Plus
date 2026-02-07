@@ -11,13 +11,12 @@ import json
 import logging
 import math
 from datetime import datetime
-from typing import List, Optional
+from typing import Optional
 
 from fastapi import (APIRouter, Depends, HTTPException, Query, WebSocket,
                      WebSocketDisconnect)
 from fastapi.responses import StreamingResponse
 from jose import JWTError, jwt
-from pydantic import BaseModel
 
 from app.core.config import settings
 from app.core.security import get_current_active_user, require_role
@@ -33,8 +32,7 @@ from app.schemas.support import (ConversationRatingRequest,
                                  TicketUpdateRequest)
 from app.services.docs_search_service import docs_search_service
 from app.services.support_service import support_service
-from app.services.voice_pipeline_service import (PipelineMessage,
-                                                 VoicePipelineService)
+from app.services.voice_pipeline_service import VoicePipelineService
 
 router = APIRouter()
 

@@ -3,16 +3,13 @@ Content Maintenance Tasks Service
 Orchestrates daily content library maintenance operations
 """
 
-import asyncio
 import logging
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from app.models.content import Content, Podcast, PodcastEpisode
 from app.services.auto_fixer.metadata_fixer import fix_missing_metadata
-from app.services.external_subtitle_service import ExternalSubtitleService
 from app.services.podcast_sync import sync_all_podcasts
-from app.services.podcast_translation import PodcastTranslationService
 from app.services.tmdb_service import TMDBService
 
 logger = logging.getLogger(__name__)
@@ -344,57 +341,3 @@ async def queue_podcast_translations(
     except Exception as e:
         logger.error(f"Podcast translation queuing failed: {e}")
         return {"status": "failed", "error": str(e), "episodes_queued": 0}
-
-
-async def get_maintenance_summary() -> Dict[str, Any]:
-    """
-    Get summary of content needing maintenance.
-
-    Returns:
-        Dict with counts of items needing each type of maintenance
-    """
-    try:
-        # Count items needing each type of maintenance
-        vod_missing_posters = await Content.find(
-            {
-                "is_published": True,
-                "$or": [
-                    {"poster_url": None},
-                    {"poster_url": ""},
-                    {"poster_url": {"$exists": False}},
-                ],
-            }
-        ).count()
-
-        vod_missing_subtitles = await Content.find(
-            {
-                "is_published": True,
-                "embedded_subtitle_count": {"$gt": 0},
-                "subtitles_extracted": {"$ne": True},
-            }
-        ).count()
-
-        podcasts_with_rss = await Podcast.find(
-            {"is_active": True, "rss_feed": {"$exists": True, "$ne": None}}
-        ).count()
-
-        episodes_pending_translation = await PodcastEpisode.find(
-            {"translation_status": "pending"}
-        ).count()
-
-        return {
-            "vod_missing_posters": vod_missing_posters,
-            "vod_missing_subtitles": vod_missing_subtitles,
-            "podcasts_with_rss": podcasts_with_rss,
-            "episodes_pending_translation": episodes_pending_translation,
-        }
-
-    except Exception as e:
-        logger.error(f"Failed to get maintenance summary: {e}")
-        return {
-            "vod_missing_posters": 0,
-            "vod_missing_subtitles": 0,
-            "podcasts_with_rss": 0,
-            "episodes_pending_translation": 0,
-            "error": str(e),
-        }

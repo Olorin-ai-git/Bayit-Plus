@@ -24,7 +24,7 @@ import { chatService } from '@bayit/shared-services';
 import { useConstantListening } from '@bayit/shared-hooks';
 import { logger } from '../utils/logger';
 import { useVoiceTV } from '../hooks/useVoiceTV';
-import { VoiceInteractionPanel, TVProactiveSuggestionBanner } from './voice';
+import { TVProactiveSuggestionBanner } from './voice';
 
 // Navigation links - matching web app navigation with TV-specific additions
 // Maps to unified icon registry names
@@ -286,14 +286,6 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
         </LinearGradient>
       </View>
 
-      {/* Voice Interaction Panel - Unified voice indicator and response */}
-      <VoiceInteractionPanel
-        visible={isListening}
-        onClose={() => stopListening()}
-        onStartListening={() => startListening()}
-        onStopListening={() => stopListening()}
-        onInterrupt={() => stopListening()}
-      />
     </View>
   );
 };

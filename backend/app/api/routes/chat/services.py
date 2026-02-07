@@ -9,7 +9,7 @@ import hashlib
 import hmac
 import json
 from datetime import datetime
-from typing import Any, Optional
+from typing import Optional
 
 import anthropic
 
@@ -245,7 +245,6 @@ Return ONLY valid JSON, nothing else."""
                             logger.info("Content found in library, keeping play action", extra={"query": query})
                     except Exception as e:
                         logger.error("Error validating content in library", extra={"error": str(e)})
-                        pass
 
                 # Build payload based on action type
                 payload = action_data.get("payload") or {}

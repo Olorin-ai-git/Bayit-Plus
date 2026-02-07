@@ -410,19 +410,6 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
     const speechDuration = vadRef.current.getSpeechDuration();
     const silenceDuration = vadRef.current.getSilenceDuration();
 
-    // Only log when audio exceeds threshold or state changes
-    if (level.average >= energyThreshold || vadState !== 'silence') {
-      // console.log('[WakeWordListening] THRESHOLD REACHED:', {
-      //   average: level.average.toFixed(4),
-      //   peak: level.peak.toFixed(4),
-      //   threshold: energyThreshold.toFixed(4),
-      //   exceeded: level.average >= energyThreshold,
-      //   state: vadState,
-      //   speechDuration,
-      //   silenceDuration,
-      // });
-    }
-
     if (vadState === 'speech') {
       // Speech detected - continue recording
       if (!bufferRef.current.isRecording()) {

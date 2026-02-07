@@ -6,10 +6,10 @@ notification history and analytics.
 """
 
 from datetime import datetime, timedelta
-from typing import List, Optional
+from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, Query
+from pydantic import BaseModel
 
 from app.core.security import (get_current_active_user, get_current_admin_user,
                                get_optional_user)

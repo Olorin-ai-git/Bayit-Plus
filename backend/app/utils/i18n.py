@@ -13,8 +13,7 @@ Requires I18nService to be initialized from settings:
 import logging
 from typing import Dict, Optional
 
-from olorin_i18n import (I18nConfig, I18nService, LanguageCode,
-                         TranslationKeyError)
+from olorin_i18n import (I18nService, TranslationKeyError)
 
 logger = logging.getLogger(__name__)
 

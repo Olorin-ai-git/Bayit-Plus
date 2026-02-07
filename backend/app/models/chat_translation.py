@@ -1,7 +1,7 @@
 """Chat translation cache and related models."""
 
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Optional
 
 from beanie import Document
 from pydantic import BaseModel, Field

@@ -9,7 +9,6 @@ Note: Kan.org.il and Mako.co.il are blocked by Cloudflare (error 1020).
 Consider using VPN or server-side proxy for those sources.
 """
 
-import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional

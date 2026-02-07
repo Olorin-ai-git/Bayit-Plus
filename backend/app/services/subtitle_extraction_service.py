@@ -5,7 +5,6 @@ Background service for analyzing videos and extracting embedded subtitles
 
 import logging
 from datetime import datetime
-from typing import List
 
 from app.models.content import Content
 from app.models.subtitles import SubtitleCueModel, SubtitleTrackDoc, get_language_name

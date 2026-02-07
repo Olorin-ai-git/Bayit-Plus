@@ -20,8 +20,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from app.core.config import settings
 from app.core.exceptions import (DuplicateContentError,
                                  DuplicateUploadQueueError,
-                                 HashLockConflictError,
-                                 TransactionRollbackError)
+                                 HashLockConflictError)
 from app.models.upload import (ContentType, QueueStats, UploadJob,
                                UploadJobResponse, UploadStatus)
 from app.services.tmdb_service import TMDBService

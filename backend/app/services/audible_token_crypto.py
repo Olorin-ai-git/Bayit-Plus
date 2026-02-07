@@ -15,7 +15,6 @@ logger = get_logger(__name__)
 class TokenEncryptionError(Exception):
     """Raised when token encryption/decryption fails."""
 
-    pass
 
 
 class AudibleTokenCrypto:

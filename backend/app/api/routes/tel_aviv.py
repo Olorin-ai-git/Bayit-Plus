@@ -21,8 +21,7 @@ from app.models.tel_aviv_content import (TelAvivContentAggregatedResponse,
                                          TelAvivContentCategory,
                                          TelAvivFeaturedResponse)
 from app.models.user import User
-from app.services.tel_aviv_content_service import (TEL_AVIV_CATEGORY_LABELS,
-                                                   tel_aviv_content_service)
+from app.services.tel_aviv_content_service import tel_aviv_content_service
 
 router = APIRouter()
 

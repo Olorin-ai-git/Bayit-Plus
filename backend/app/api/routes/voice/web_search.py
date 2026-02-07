@@ -4,7 +4,6 @@ Provides web search functionality for voice commands.
 Returns structured results suitable for iFrame widget display.
 """
 
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, Field

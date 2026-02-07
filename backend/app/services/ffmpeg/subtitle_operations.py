@@ -23,13 +23,11 @@ logger = logging.getLogger(__name__)
 class SubtitleExtractionError(Exception):
     """Raised when subtitle extraction fails."""
 
-    pass
 
 
 class SubtitleExtractionTimeoutError(SubtitleExtractionError):
     """Raised when subtitle extraction times out."""
 
-    pass
 
 
 async def extract_subtitle_track(

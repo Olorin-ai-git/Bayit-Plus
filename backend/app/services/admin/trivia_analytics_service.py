@@ -5,7 +5,6 @@ Provides analytics queries for live trivia feature monitoring:
 topics detected, sessions, content coverage, and usage stats.
 """
 
-from datetime import datetime
 from typing import Optional
 
 from app.core.logging_config import get_logger

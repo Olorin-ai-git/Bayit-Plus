@@ -5,13 +5,11 @@ Provides search functionality across documentation articles and FAQ entries.
 
 import json
 import logging
-import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from app.models.documentation import (DocumentationArticle,
-                                      DocumentationSearchLog)
+from app.models.documentation import DocumentationSearchLog
 from app.models.support import FAQEntry
 
 logger = logging.getLogger(__name__)

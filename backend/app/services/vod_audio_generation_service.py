@@ -18,15 +18,14 @@ import hashlib
 import json
 import logging
 import subprocess
-import tempfile
 from pathlib import Path
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Set
 
 from app.core.config import settings
 from app.core.storage import StorageService
 from app.services.elevenlabs_http_tts_service import ElevenLabsHTTPTTSService
 from app.models.audio_tracks import AudioTrackDoc
-from app.models.subtitles import SubtitleCueModel, SubtitleTrackDoc
+from app.models.subtitles import SubtitleTrackDoc
 
 logger = logging.getLogger(__name__)
 

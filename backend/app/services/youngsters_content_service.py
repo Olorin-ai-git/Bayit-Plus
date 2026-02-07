@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Optional
 from app.core.config import settings
 from app.core.family_controls_dependencies import filter_content_by_controls
 from app.models.content import Content
-from app.models.content_taxonomy import ContentSection, SectionSubcategory
+from app.models.content_taxonomy import SectionSubcategory
 from app.models.family_controls import FamilyControls
 from app.models.youngsters_content import (AGE_GROUP_RANGES,
                                            SUBCATEGORY_PARENT_MAP,

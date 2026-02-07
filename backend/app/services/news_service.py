@@ -5,7 +5,6 @@ Supports:
 - Ynet Mivzakim (Breaking News) RSS feed
 """
 
-import asyncio
 import logging
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass

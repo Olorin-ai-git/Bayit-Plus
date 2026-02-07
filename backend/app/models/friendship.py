@@ -3,7 +3,7 @@ from enum import Enum
 from typing import Optional
 
 from beanie import Document
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 
 class FriendRequestStatus(str, Enum):

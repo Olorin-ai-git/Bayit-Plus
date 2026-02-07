@@ -5,7 +5,6 @@ Enables the opt-in model where users can browse available system widgets
 and choose which ones to add to their collection.
 """
 
-from datetime import datetime
 from typing import Optional
 
 from bson import ObjectId

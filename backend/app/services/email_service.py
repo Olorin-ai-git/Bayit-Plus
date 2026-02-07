@@ -67,24 +67,6 @@ async def send_email(
         return False
 
 
-async def send_via_sendgrid(
-    to_emails: List[str], subject: str, html_content: str, from_email: str
-) -> bool:
-    """
-    DEPRECATED: Send email via SendGrid API.
-
-    Use olorin_email.SendGridProvider directly or bayit_email_service.
-
-    Docs: https://docs.sendgrid.com/api-reference/mail-send/mail-send
-    """
-    logger.warning(
-        "send_via_sendgrid() is deprecated. Use olorin_email.SendGridProvider instead."
-    )
-
-    # Redirect to new service
-    return await send_email(to_emails, subject, html_content, from_email)
-
-
 async def send_platform_invitation(
     to_email: str,
     inviter_name: Optional[str] = None,
@@ -123,14 +105,3 @@ async def send_platform_invitation(
         logger.error(f"Platform invitation failed: {e}")
         return False
 
-
-async def send_via_smtp(
-    to_emails: List[str], subject: str, html_content: str, from_email: str
-) -> bool:
-    """
-    DEPRECATED: SMTP not implemented.
-
-    For SMTP support, use olorin_email.SMTPProvider (future).
-    """
-    logger.warning("SMTP email sending not implemented")
-    return False

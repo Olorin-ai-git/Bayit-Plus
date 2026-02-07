@@ -4,7 +4,6 @@ Supports both local file storage and AWS S3
 """
 
 import logging
-import os
 from abc import ABC, abstractmethod
 from io import BytesIO
 from pathlib import Path
@@ -25,22 +24,18 @@ class StorageProvider(ABC):
     @abstractmethod
     async def upload_image(self, file: UploadFile, image_type: str) -> str:
         """Upload image and return URL/path"""
-        pass
 
     @abstractmethod
     async def validate_url(self, url: str) -> bool:
         """Validate that a URL is accessible"""
-        pass
 
     @abstractmethod
     def get_presigned_url(self, filename: str, content_type: str) -> dict:
         """Get presigned URL for direct upload (S3 only)"""
-        pass
 
     @abstractmethod
     async def delete_file(self, url: str) -> bool:
         """Delete file from storage. Returns True if successful"""
-        pass
 
 
 class LocalStorageProvider(StorageProvider):

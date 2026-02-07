@@ -6,9 +6,9 @@ MongoDB models for third-party platform integration, usage tracking, and billing
 from datetime import datetime, timezone
 from typing import List, Literal, Optional
 
-from beanie import Document, PydanticObjectId
+from beanie import Document
 from pydantic import BaseModel, EmailStr, Field
-from pymongo import ASCENDING, DESCENDING, IndexModel
+from pymongo import ASCENDING, IndexModel
 
 # Type definitions
 BillingTier = Literal["free", "standard", "enterprise"]

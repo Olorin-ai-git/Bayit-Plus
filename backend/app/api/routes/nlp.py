@@ -11,7 +11,7 @@ Provides endpoints for:
 """
 
 import logging
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any, Dict, List, Literal, Optional
 
 from fastapi import APIRouter, HTTPException, status
@@ -20,7 +20,6 @@ from pydantic import BaseModel, Field
 from app.core.config import settings
 from app.services.nlp.agent_executor import AgentExecutionResult, AgentExecutor
 from app.services.nlp.conversation_session import (
-    ConversationSessionManager,
     SessionSummary,
     get_session_manager,
 )

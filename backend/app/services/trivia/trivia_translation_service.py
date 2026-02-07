@@ -3,7 +3,6 @@ Trivia Translation Service with Security Controls
 Supports English→Hebrew and English→Spanish translation with rate limiting
 """
 
-import re
 from typing import Dict, Optional
 from uuid import uuid4
 
@@ -23,7 +22,6 @@ logger = get_logger(__name__)
 
 class RateLimitExceeded(Exception):
     """Raised when translation rate limit is exceeded."""
-    pass
 
 
 class TriviaTranslationService:

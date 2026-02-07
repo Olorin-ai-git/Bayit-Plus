@@ -13,12 +13,8 @@
 export { default as VoiceWaveform } from './VoiceWaveform';
 export { default as ProactiveSuggestionBanner } from './ProactiveSuggestionBanner';
 
-export { VoiceInteractionPanel } from '@bayit/shared/components/voice/VoiceInteractionPanel';
-
 export { VoiceStatusIndicator } from './VoiceStatusIndicator';
 export { VoiceResponseDisplay } from './VoiceResponseDisplay';
 export { VoiceSettings } from './VoiceSettings';
 export type { VoiceSettingsState } from './VoiceSettings';
-export { VoiceCommandHistory } from './VoiceCommandHistory';
-export type { VoiceCommand } from './VoiceCommandHistory';
 export { AvatarPreferences } from './AvatarPreferences';

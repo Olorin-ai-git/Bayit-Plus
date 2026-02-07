@@ -15,7 +15,7 @@ import asyncio
 import logging
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from typing import Dict, Optional, List
+from typing import Dict, Optional
 from dataclasses import dataclass
 
 from app.core.config import settings

@@ -14,7 +14,6 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from app.api.routes.search_models import (SceneSearchRequest,
                                           SceneSearchResponse)
-from app.core.config import settings
 from app.core.rate_limiter import limiter
 from app.core.security import get_optional_user, verify_content_access
 from app.models.content import Content

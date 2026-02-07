@@ -12,10 +12,9 @@ from typing import Any, Dict, List, Optional
 from app.core.config import settings
 from app.models.culture import (Culture, CultureCity, CultureCityResponse,
                                 CultureContentAggregatedResponse,
-                                CultureContentItem, CultureContentItemResponse,
-                                CultureFeaturedResponse, CultureNewsSource,
-                                CultureNewsSourceResponse, CultureResponse,
-                                CultureTimeResponse)
+                                CultureContentItemResponse, CultureFeaturedResponse,
+                                CultureNewsSource, CultureNewsSourceResponse,
+                                CultureResponse, CultureTimeResponse)
 from app.services.culture_scrapers import CultureHeadlineItem, get_scraper
 
 logger = logging.getLogger(__name__)

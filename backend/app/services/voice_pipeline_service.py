@@ -13,7 +13,7 @@ import asyncio
 import base64
 import json
 from dataclasses import dataclass, field
-from typing import AsyncIterator, Awaitable, Callable, Optional
+from typing import AsyncIterator, Optional
 
 from app.core.config import settings
 from app.core.logging_config import get_logger

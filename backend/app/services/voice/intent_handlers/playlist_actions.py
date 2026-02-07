@@ -9,7 +9,6 @@ from typing import Any, Dict
 from app.core.logging_config import get_logger
 from app.models.playlist import UserPlaylist
 from ..context import VoiceContext
-from ..error_messages import get_error_message
 from ..playlist_responses import (
     PLAYLIST_CLEARED_RESPONSES,
     PLAYLIST_EMPTY_RESPONSES,

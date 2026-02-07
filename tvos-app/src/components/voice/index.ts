@@ -6,9 +6,6 @@
  * Old components deprecated in favor of shared VoiceInteractionPanel
  */
 
-export { VoiceInteractionPanel } from '../../../../shared/components/voice/VoiceInteractionPanel';
-
-
 export { TVVoiceCommandHistory } from './TVVoiceCommandHistory';
 export { TVVoiceSettings } from './TVVoiceSettings';
 export { TVAvatarPreferences } from './TVAvatarPreferences';

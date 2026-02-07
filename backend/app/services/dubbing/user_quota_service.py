@@ -6,7 +6,6 @@ Server-side source of truth for quota tracking
 """
 
 from datetime import datetime, timezone
-from typing import Optional
 
 from app.core.config import settings
 from app.core.logging_config import get_logger

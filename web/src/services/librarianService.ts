@@ -19,7 +19,7 @@ const getAuthHeaders = (): HeadersInit => {
 };
 
 // TypeScript Interfaces
-export interface ScheduleConfig {
+interface ScheduleConfig {
   cron: string;
   time: string;
   mode: 'Rule-based' | 'AI Agent';
@@ -28,7 +28,7 @@ export interface ScheduleConfig {
   description: string;
 }
 
-export interface AuditLimits {
+interface AuditLimits {
   max_iterations: number;
   default_budget_usd: number;
   min_budget_usd: number;
@@ -36,7 +36,7 @@ export interface AuditLimits {
   budget_step_usd: number;
 }
 
-export interface PaginationConfig {
+interface PaginationConfig {
   reports_limit: number;
   actions_limit: number;
   activity_page_size: number;
@@ -47,7 +47,7 @@ export interface UIConfig {
   modal_max_height: number;
 }
 
-export interface ActionTypeConfig {
+interface ActionTypeConfig {
   value: string;
   label: string;
   color: string;
@@ -73,7 +73,7 @@ export interface LibrarianStatus {
   system_health: 'excellent' | 'good' | 'fair' | 'poor' | 'unknown';
 }
 
-export interface TriggerAuditRequest {
+interface TriggerAuditRequest {
   audit_type: 'daily_incremental' | 'weekly_full' | 'manual' | 'ai_agent';
   dry_run?: boolean;
   use_ai_agent?: boolean;
@@ -92,7 +92,7 @@ export interface TriggerAuditRequest {
   force_updates?: boolean;
 }
 
-export interface TriggerAuditResponse {
+interface TriggerAuditResponse {
   audit_id: string;
   status: string;
   message: string;
@@ -154,11 +154,6 @@ export interface LibrarianAction {
   auto_approved: boolean;
   rolled_back: boolean;
   content_title: string | null;
-}
-
-export interface RollbackResponse {
-  success: boolean;
-  message: string;
 }
 
 // API Methods
@@ -311,7 +306,7 @@ export const cancelAudit = async (auditId: string): Promise<{ status: string; me
   return response.json();
 };
 
-export interface InterjectMessageResponse {
+interface InterjectMessageResponse {
   success: boolean;
   message: string;
   audit_id: string;
@@ -338,54 +333,8 @@ export const interjectAuditMessage = async (
   return response.json();
 };
 
-export const getLibrarianActions = async (
-  auditId?: string,
-  actionType?: string,
-  limit: number = 50
-): Promise<LibrarianAction[]> => {
-  const params = new URLSearchParams({ limit: limit.toString() });
-  if (auditId) {
-    params.append('audit_id', auditId);
-  }
-  if (actionType) {
-    params.append('action_type', actionType);
-  }
-
-  const response = await fetch(
-    `${API_BASE_URL}/admin/librarian/actions?${params.toString()}`,
-    {
-      method: 'GET',
-      headers: getAuthHeaders(),
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch librarian actions');
-  }
-
-  return response.json();
-};
-
-export const rollbackAction = async (
-  actionId: string
-): Promise<RollbackResponse> => {
-  const response = await fetch(
-    `${API_BASE_URL}/admin/librarian/actions/${actionId}/rollback`,
-    {
-      method: 'POST',
-      headers: getAuthHeaders(),
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error('Failed to rollback action');
-  }
-
-  return response.json();
-};
-
 // Voice Command Interface
-export interface VoiceCommandRequest {
+interface VoiceCommandRequest {
   command: string;
   language?: string;
 }
@@ -422,12 +371,12 @@ export const executeVoiceCommand = async (
 };
 
 // Reapply fixes from a completed audit
-export interface ReapplyFixesRequest {
+interface ReapplyFixesRequest {
   dry_run?: boolean;
   fix_types?: string[];
 }
 
-export interface ReapplyFixesResponse {
+interface ReapplyFixesResponse {
   fix_audit_id: string;
   source_audit_id: string;
   status: string;

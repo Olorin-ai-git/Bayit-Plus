@@ -8,20 +8,6 @@ preventing it from using tools for capabilities that are disabled.
 
 from typing import Any, Dict, List
 
-from app.services.ai_agent.tool_definitions import (
-    AUDIT_TOOLS,
-    CONTENT_TOOLS,
-    DIAGNOSTICS_TOOLS,
-    INTEGRITY_TOOLS,
-    METADATA_TOOLS,
-    NOTIFICATION_TOOLS,
-    PODCAST_TOOLS,
-    SERIES_TOOLS,
-    STORAGE_TOOLS,
-    STREAM_TOOLS,
-    SUBTITLE_TOOLS,
-    TAXONOMY_TOOLS,
-)
 
 # Core tools always available (required for basic audit operation)
 CORE_TOOL_NAMES = {

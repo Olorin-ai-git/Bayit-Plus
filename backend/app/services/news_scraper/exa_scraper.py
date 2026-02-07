@@ -6,7 +6,7 @@ Exa provides high-quality article extraction with images, summaries, and metadat
 
 import logging
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import List
 
 from exa_py import Exa
 
@@ -23,7 +23,6 @@ if not EXA_API_KEY:
 
 class ExaNewsScraperError(Exception):
     """Base exception for Exa scraper errors."""
-    pass
 
 
 async def search_exa_news(

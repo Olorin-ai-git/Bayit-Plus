@@ -7,7 +7,6 @@ This service handles Stripe webhook events with:
 - Token revocation on activation (session rotation)
 """
 from datetime import datetime, timezone
-from typing import Optional
 
 from bson import ObjectId
 
@@ -15,7 +14,6 @@ from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.core.security import verify_session_token
 from app.models.user import User
-from app.models.webhook_event import WebhookEvent
 from app.models.admin import SubscriptionPlan
 from app.services.email_service import send_email
 

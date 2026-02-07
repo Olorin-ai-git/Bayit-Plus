@@ -5,7 +5,6 @@ Redis-backed session metadata registry for cross-instance visibility.
 Local in-memory service objects are tracked separately (not serializable).
 """
 
-import json
 import logging
 import time
 from typing import Dict, List, Optional

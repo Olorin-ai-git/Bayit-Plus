@@ -21,5 +21,4 @@ export { WatchPartyChatInput } from '@bayit/shared/watchparty/WatchPartyChatInpu
 export { WatchPartySyncIndicator } from '@bayit/shared/watchparty/WatchPartySyncIndicator';
 
 // Export text-only overlay for tvOS (no audio controls)
-export { WatchPartyTextOverlay as WatchPartyOverlay } from '@bayit/shared/watchparty/WatchPartyTextOverlay';
 export { WatchPartyTextPanel } from '@bayit/shared/watchparty/WatchPartyTextPanel';

@@ -1,6 +1,6 @@
 """Admin Email Templates Management - Preview and send email templates"""
 
-from typing import Dict, Optional
+from typing import Dict
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, EmailStr

@@ -14,7 +14,6 @@ from app.core.logging_config import get_logger
 from app.models.dubbing.session import (
     CreateSessionRequest,
     DubbingSessionType,
-    SessionResponse,
     UserDubbingSession,
 )
 from app.models.user import User

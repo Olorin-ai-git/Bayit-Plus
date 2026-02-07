@@ -15,7 +15,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 
-from app.core.security import get_current_user, verify_oauth_token
+from app.core.security import verify_oauth_token
 
 router = APIRouter(prefix="/api/v1/tts", tags=["tts"])
 logger = logging.getLogger(__name__)

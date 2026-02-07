@@ -5,7 +5,6 @@ Real-time speech-to-text using OpenAI Whisper API
 
 import io
 import logging
-import struct
 import wave
 from typing import AsyncIterator, Optional
 
@@ -208,7 +207,6 @@ class WhisperTranscriptionService:
         """
         try:
             import os
-            from pathlib import Path
 
             logger.info(f"📝 Transcribing audio file: {audio_path}")
 
@@ -367,7 +365,6 @@ class WhisperTranscriptionService:
             import os
             import subprocess
             import tempfile
-            from pathlib import Path
 
             logger.info("   Splitting audio file using ffmpeg...")
 

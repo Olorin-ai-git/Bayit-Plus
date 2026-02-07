@@ -15,7 +15,7 @@ from app.models.content_taxonomy import ContentSection
 from app.models.librarian import ClassificationVerificationCache
 from app.services.content_auditor.constants import (
     ClassificationAuditConfig, get_anthropic_api_key,
-    get_classification_audit_config, get_claude_model)
+    get_claude_model)
 
 logger = logging.getLogger(__name__)
 

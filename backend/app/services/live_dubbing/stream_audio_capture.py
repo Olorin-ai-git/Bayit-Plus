@@ -12,7 +12,6 @@ import asyncio
 import subprocess
 from typing import AsyncIterator, Optional
 
-from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.services.live_dubbing.ffmpeg_validator import FFmpegInputValidator
 
@@ -28,7 +27,6 @@ CHUNK_SIZE = int(SAMPLE_RATE * CHANNELS * 2 * CHUNK_DURATION_MS / 1000)  # bytes
 
 class StreamAudioCaptureError(Exception):
     """Raised when stream audio capture fails."""
-    pass
 
 
 class StreamAudioCapture:
