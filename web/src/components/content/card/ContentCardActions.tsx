@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Star, Bookmark } from 'lucide-react';
 import { z } from 'zod';
 import { platformClass } from '@/utils/platformClass';
-import { favoritesService, watchlistService } from '@/services/api';
+import { favoritesService, playlistService } from '@/services/api';
 import logger from '@/utils/logger';
 
 /**
@@ -17,11 +17,11 @@ const ContentCardActionsPropsSchema = z.object({
 type ContentCardActionsProps = z.infer<typeof ContentCardActionsPropsSchema>;
 
 /**
- * ContentCardActions - Favorite and watchlist action buttons
+ * ContentCardActions - Favorite and playlist action buttons
  *
  * Displays glassmorphic action buttons for:
  * - Adding to favorites (Star icon)
- * - Adding to watchlist (Bookmark icon)
+ * - Adding to playlist (Bookmark icon)
  *
  * Features:
  * - Loading states during API calls
@@ -36,11 +36,11 @@ export function ContentCardActions(props: ContentCardActionsProps) {
   const { contentId, contentType = 'vod', isRTL } = validatedProps;
 
   const [isFavorite, setIsFavorite] = useState(false);
-  const [inWatchlist, setInWatchlist] = useState(false);
+  const [inPlaylist, setInPlaylist] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
-  const [watchlistLoading, setWatchlistLoading] = useState(false);
+  const [playlistLoading, setPlaylistLoading] = useState(false);
   const [favoriteHovered, setFavoriteHovered] = useState(false);
-  const [watchlistHovered, setWatchlistHovered] = useState(false);
+  const [playlistHovered, setPlaylistHovered] = useState(false);
 
   const handleFavoriteToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -59,20 +59,20 @@ export function ContentCardActions(props: ContentCardActionsProps) {
     }
   };
 
-  const handleWatchlistToggle = async (e: React.MouseEvent) => {
+  const handlePlaylistToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (watchlistLoading) return;
-    setWatchlistLoading(true);
+    if (playlistLoading) return;
+    setPlaylistLoading(true);
 
     try {
-      const result = await watchlistService.toggleWatchlist(contentId, contentType);
-      setInWatchlist(result.in_watchlist);
+      const result = await playlistService.toggleItem(contentId, contentType);
+      setInPlaylist(result.in_playlist);
     } catch (error) {
-      logger.error('Failed to toggle watchlist', 'ContentCardActions', { contentId, error });
+      logger.error('Failed to toggle playlist', 'ContentCardActions', { contentId, error });
     } finally {
-      setWatchlistLoading(false);
+      setPlaylistLoading(false);
     }
   };
 
@@ -87,7 +87,8 @@ export function ContentCardActions(props: ContentCardActionsProps) {
         gap: 8,
         zIndex: 10,
       }}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+      onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
     >
       {/* Favorite Button */}
       <button
@@ -115,29 +116,29 @@ export function ContentCardActions(props: ContentCardActionsProps) {
         />
       </button>
 
-      {/* Watchlist Button */}
+      {/* Playlist Button */}
       <button
-        onClick={handleWatchlistToggle}
-        onMouseEnter={() => setWatchlistHovered(true)}
-        onMouseLeave={() => setWatchlistHovered(false)}
-        disabled={watchlistLoading}
+        onClick={handlePlaylistToggle}
+        onMouseEnter={() => setPlaylistHovered(true)}
+        onMouseLeave={() => setPlaylistHovered(false)}
+        disabled={playlistLoading}
         className={platformClass(
           'w-8 h-8 rounded-full backdrop-blur-lg flex justify-center items-center transition-all duration-200 cursor-pointer hover:scale-110 border-none',
           'w-8 h-8 rounded-full flex justify-center items-center'
         )}
         style={{
-          backgroundColor: inWatchlist
+          backgroundColor: inPlaylist
             ? 'rgba(255, 255, 255, 0.15)'
-            : watchlistHovered
+            : playlistHovered
             ? 'rgba(255, 255, 255, 0.25)'
             : 'rgba(0, 0, 0, 0.6)',
-          transform: watchlistHovered ? 'scale(1.1)' : 'scale(1)',
+          transform: playlistHovered ? 'scale(1.1)' : 'scale(1)',
         }}
       >
         <Bookmark
           size={16}
-          color={inWatchlist ? '#a855f7' : '#ffffff'}
-          fill={inWatchlist ? '#a855f7' : 'transparent'}
+          color={inPlaylist ? '#a855f7' : '#ffffff'}
+          fill={inPlaylist ? '#a855f7' : 'transparent'}
         />
       </button>
     </div>

@@ -169,7 +169,7 @@ FAQ_DATA = [
         "translations": {
             "en": {
                 "question": "Can I create multiple profiles?",
-                "answer": "Yes, you can create up to 5 profiles per account. Each profile has its own watchlist, viewing history, and personalized recommendations. You can also create Kids profiles with parental controls.",
+                "answer": "Yes, you can create up to 5 profiles per account. Each profile has its own playlist, viewing history, and personalized recommendations. You can also create Kids profiles with parental controls.",
             },
             "he": {
                 "question": "האם אפשר ליצור מספר פרופילים?",
@@ -273,7 +273,7 @@ FAQ_DATA = [
         "translations": {
             "en": {
                 "question": "How do I cancel my subscription?",
-                "answer": "Go to Account Settings > Subscription > Cancel Subscription. Your access continues until the end of your billing period. You can reactivate anytime without losing your profiles or watchlist.",
+                "answer": "Go to Account Settings > Subscription > Cancel Subscription. Your access continues until the end of your billing period. You can reactivate anytime without losing your profiles or playlist.",
             },
             "he": {
                 "question": "איך מבטלים את המנוי?",
@@ -714,14 +714,14 @@ FAQ_DATA = [
         },
     },
     {
-        "question_key": "help.faq.features.watchlist.question",
-        "answer_key": "help.faq.features.watchlist.answer",
+        "question_key": "help.faq.features.playlist.question",
+        "answer_key": "help.faq.features.playlist.answer",
         "category": "features",
         "order": 3,
         "translations": {
             "en": {
-                "question": "How do I add content to my watchlist?",
-                "answer": "Click the '+' or 'Add to Watchlist' button on any content. You can also say 'Add to my list'. Access your watchlist from the My Stuff section. Each profile has its own watchlist.",
+                "question": "How do I add content to my playlist?",
+                "answer": "Click the '+' or 'Add to Playlist' button on any content. You can also say 'Add to my list'. Access your playlist from the My Stuff section. Each profile has its own playlist.",
             },
             "he": {
                 "question": "איך מוסיפים תוכן לרשימת הצפייה?",

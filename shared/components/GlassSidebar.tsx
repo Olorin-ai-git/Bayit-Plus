@@ -64,7 +64,7 @@ const baseMenuSections: MenuSection[] = [
     titleKey: 'nav.favorites',
     items: [
       { id: 'favorites', icon: 'favorites', labelKey: 'nav.favorites', route: 'Favorites' },
-      { id: 'watchlist', icon: 'watchlist', labelKey: 'nav.watchlist', route: 'Watchlist' },
+      { id: 'playlist', icon: 'clipboard', labelKey: 'nav.playlist', route: 'Playlist' },
       { id: 'downloads', icon: 'downloads', labelKey: 'nav.downloads', route: 'Downloads' },
     ],
   },
@@ -163,7 +163,7 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
         // Navigate to Main first, then to the specific tab
         navigation.navigate('Main', { screen: item.route });
       } else {
-        // For other screens (Favorites, Watchlist, Settings, etc.), navigate directly
+        // For other screens (Favorites, Playlist, Settings, etc.), navigate directly
         navigation.navigate(item.route);
       }
     }

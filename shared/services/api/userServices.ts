@@ -1,7 +1,7 @@
 /**
  * User Services - User-related API endpoints
  *
- * Includes subscription, watchlist, history, favorites, profiles, and children services.
+ * Includes subscription, history, favorites, profiles, and children services.
  */
 
 import { api } from './client';
@@ -18,17 +18,6 @@ export const apiSubscriptionService = {
   addPaymentMethod: (token: string) => api.post('/subscriptions/payment-methods', { token }),
   removePaymentMethod: (methodId: string) => api.delete(`/subscriptions/payment-methods/${methodId}`),
   setDefaultPaymentMethod: (methodId: string) => api.post(`/subscriptions/payment-methods/${methodId}/default`),
-};
-
-// Watchlist Service (API)
-export const apiWatchlistService = {
-  getWatchlist: () => api.get('/watchlist'),
-  addToWatchlist: (contentId: string, contentType: string) =>
-    api.post('/watchlist', { content_id: contentId, content_type: contentType }),
-  removeFromWatchlist: (contentId: string) => api.delete(`/watchlist/${contentId}`),
-  isInWatchlist: (contentId: string) => api.get(`/watchlist/check/${contentId}`),
-  toggleWatchlist: (contentId: string, contentType: string = 'vod') =>
-    api.post(`/watchlist/toggle/${contentId}?content_type=${contentType}`),
 };
 
 // History Service (API)

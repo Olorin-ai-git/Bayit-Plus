@@ -9,9 +9,18 @@ import re
 
 # Playlist trigger words (3 languages)
 PLAYLIST_KEYWORDS = {
-    "he": ["רשימת השמעה", "הרשימה שלי", "התור שלי", "רשימה", "פלייליסט"],
-    "en": ["playlist", "my list", "my queue", "the list", "the queue", "play list"],
-    "es": ["lista de reproduccion", "mi lista", "mi cola", "la lista", "playlist"],
+    "he": [
+        "רשימת השמעה", "הרשימה שלי", "התור שלי", "רשימה", "פלייליסט",
+        "רשימת צפייה", "שמור לצפייה",
+    ],
+    "en": [
+        "playlist", "my list", "my queue", "the list", "the queue", "play list",
+        "watchlist", "watch list", "save for later", "saved items",
+    ],
+    "es": [
+        "lista de reproduccion", "mi lista", "mi cola", "la lista", "playlist",
+        "lista de seguimiento", "guardar para despues",
+    ],
 }
 
 # Sub-action keywords (3 languages)

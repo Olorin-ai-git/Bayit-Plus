@@ -3680,7 +3680,7 @@
       "judaism": "Ebraismo",
       "profile": "Il mio profilo",
       "favorites": "Preferiti",
-      "watchlist": "Lista",
+      "playlist": "Playlist",
       "subscribe": "Abbonati",
       "downloads": "Download",
       "help": "Centro assistenza",
@@ -3922,7 +3922,6 @@
     "search": "Cerca",
     "settings": "Impostazioni",
     "favorites": "Preferiti",
-    "watchlist": "Lista",
     "downloads": "Download",
     "recordings": "Registrazioni",
     "widgets": "Widget",
@@ -4456,7 +4455,7 @@
     },
     "guest": "Ospite",
     "morningRitual": "Rituale mattutino",
-    "watchlist": "Lista",
+    "playlist": "Playlist",
     "favorites": "Preferiti",
     "downloads": "Download",
     "settings": "Impostazioni",
@@ -5141,12 +5140,10 @@
     "clear": "Svuota",
     "playAll": "Riproduci tutto",
     "empty": "La tua lista e vuota",
-    "emptyHint": "Usa i comandi vocali per aggiungere contenuti alla lista",
+    "emptyHint": "Usa il segnalibro su qualsiasi scheda di contenuto o di' 'aggiungi alla lista' per iniziare a creare la tua lista",
     "removeItem": "Rimuovi dalla lista",
     "items": "elementi",
-    "loading": "Caricamento lista..."
-  },
-  "watchlist": {
+    "loading": "Caricamento lista...",
     "filters": {
       "all": "Tutto",
       "continue": "Continua a guardare",
@@ -5157,12 +5154,10 @@
       "podcasts": "Podcast",
       "radio": "Radio"
     },
-    "title": "Lista",
-    "items": "elementi",
-    "empty": "La tua lista è vuota",
-    "emptyHint": "Inizia a guardare e gli elementi appariranno qui",
     "watched": "guardati",
-    "loading": "Caricamento lista di visione..."
+    "addEpisode": "Aggiungi alla lista",
+    "removeEpisode": "Rimuovi dalla lista",
+    "dragToReorder": "Trascina per riordinare"
   },
   "beta": {
     "credits": {
@@ -5646,7 +5641,7 @@
     "channel": "Canale",
     "station": "Stazione",
     "podcast": "Podcast",
-    "watchlist": "Lista",
+    "playlist": "Playlist",
     "downloads": "Download"
   },
   "podcast": {

@@ -32,7 +32,7 @@ import {
 import { RecordingsScreenTV } from '../screens/RecordingsScreenTV';
 import ProfileControlsScreen from '../screens/ProfileControlsScreen';
 import { ProfileFormScreen } from '../screens/ProfileFormScreen';
-// Shared screens (Login, Watchlist, Subscribe) are not imported directly
+// Shared screens (Login, Playlist, Subscribe) are not imported directly
 // because they pull in a shared dependency chain not fully resolved for tvOS.
 // Routes are mapped to existing tvOS screens until tvOS-specific versions exist.
 import {
@@ -125,13 +125,13 @@ export const AppNavigator: React.FC = () => (
     <Stack.Screen name="PodcastDetail" component={PodcastDetailAdapter} />
     <Stack.Screen name="FlowPlayer" component={FlowPlayerAdapter} />
 
-    {/* User account - Login/Watchlist/WatchHistory/Upgrade use existing tvOS screens */}
+    {/* User account - Login/Playlist/WatchHistory/Upgrade use existing tvOS screens */}
     <Stack.Screen name="Login" component={ProfileScreen} />
     <Stack.Screen name="Profile" component={ProfileScreen} />
     <Stack.Screen name="ProfileControls" component={ProfileControlsScreen} />
     <Stack.Screen name="ProfileForm" component={ProfileFormScreen} />
     <Stack.Screen name="Favorites" component={FavoritesScreen} />
-    <Stack.Screen name="Watchlist" component={FavoritesScreen} />
+    <Stack.Screen name="Playlist" component={FavoritesScreen} />
     <Stack.Screen name="WatchHistory" component={FavoritesScreen} />
     <Stack.Screen name="Settings" component={SettingsScreen} />
     <Stack.Screen name="FamilyControls" component={FamilyControlsScreen} />

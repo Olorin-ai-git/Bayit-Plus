@@ -233,6 +233,15 @@ class Settings(BaseSettings):
         description="Credits per comprehension question"
     )
 
+    # ==========================================
+    # PLAYLIST CONFIGURATION
+    # ==========================================
+    PLAYLIST_MAX_ITEMS: int = Field(
+        default=500,
+        env="PLAYLIST_MAX_ITEMS",
+        description="Maximum number of items per user playlist"
+    )
+
     # Comprehension Quiz Feature
     COMPREHENSION_QUIZ_ENABLED: bool = Field(
         default=True,

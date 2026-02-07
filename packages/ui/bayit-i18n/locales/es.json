@@ -2934,7 +2934,7 @@
     "channel": "Canal",
     "station": "Estación",
     "podcast": "Podcast",
-    "watchlist": "Mi Lista",
+    "playlist": "Lista de reproduccion",
     "downloads": "Descargas"
   },
   "chapters": {
@@ -4362,7 +4362,7 @@
       "judaism": "Judaísmo",
       "profile": "Mi Perfil",
       "favorites": "Favoritos",
-      "watchlist": "Mi Lista",
+      "playlist": "Lista de reproduccion",
       "subscribe": "Suscripción",
       "downloads": "Descargas",
       "help": "Centro de Ayuda",
@@ -4763,7 +4763,6 @@
     "search": "Buscar",
     "settings": "Configuración",
     "favorites": "Favoritos",
-    "watchlist": "Mi Lista",
     "downloads": "Descargas",
     "recordings": "Mis Grabaciones",
     "widgets": "Widgets",
@@ -5372,7 +5371,7 @@
     },
     "guest": "Invitado",
     "morningRitual": "Ritual Matutino",
-    "watchlist": "Mi Lista",
+    "playlist": "Lista de reproduccion",
     "favorites": "Favoritos",
     "downloads": "Descargas",
     "settings": "Configuración",
@@ -6448,12 +6447,10 @@
     "clear": "Limpiar",
     "playAll": "Reproducir todo",
     "empty": "Tu lista esta vacia",
-    "emptyHint": "Usa comandos de voz para agregar contenido a tu lista",
+    "emptyHint": "Usa el icono de marcador en cualquier tarjeta de contenido o di 'agregar a la lista' para empezar a crear tu lista",
     "removeItem": "Eliminar de la lista",
     "items": "elementos",
-    "loading": "Cargando lista..."
-  },
-  "watchlist": {
+    "loading": "Cargando lista...",
     "filters": {
       "all": "Todos",
       "continue": "Continuar viendo",
@@ -6464,12 +6461,10 @@
       "podcasts": "Podcasts",
       "radio": "Radio"
     },
-    "title": "Mi lista",
-    "items": "elementos",
     "watched": "visto",
-    "empty": "Tu lista está vacía",
-    "emptyHint": "Comienza a ver y los elementos aparecerán aquí",
-    "loading": "Cargando lista de seguimiento..."
+    "addEpisode": "Agregar a la lista",
+    "removeEpisode": "Quitar de la lista",
+    "dragToReorder": "Arrastrar para reordenar"
   },
   "youngsters": {
     "title": "Jóvenes",

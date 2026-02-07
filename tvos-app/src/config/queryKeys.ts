@@ -35,7 +35,7 @@ export const queryKeys = {
   user: {
     all: ['user'] as const,
     favorites: () => [...queryKeys.user.all, 'favorites'] as const,
-    watchlist: () => [...queryKeys.user.all, 'watchlist'] as const,
+    playlist: () => [...queryKeys.user.all, 'playlist'] as const,
     downloads: () => [...queryKeys.user.all, 'downloads'] as const,
     profile: () => [...queryKeys.user.all, 'profile'] as const,
   },
@@ -120,9 +120,9 @@ export const mutationKeys = {
     add: 'addFavorite',
     remove: 'removeFavorite',
   },
-  watchlist: {
-    add: 'addWatchlistItem',
-    remove: 'removeWatchlistItem',
+  playlist: {
+    add: 'addPlaylistItem',
+    remove: 'removePlaylistItem',
   },
   playback: {
     updateProgress: 'updatePlaybackProgress',

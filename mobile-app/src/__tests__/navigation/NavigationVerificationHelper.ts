@@ -51,7 +51,7 @@ export const ALL_SCREENS: NavigableScreen[] = [
   'Judaism',
   'Children',
   'Youngsters',
-  'Watchlist',
+  'Playlist',
   // Management screens (3)
   'Favorites',
   'Downloads',

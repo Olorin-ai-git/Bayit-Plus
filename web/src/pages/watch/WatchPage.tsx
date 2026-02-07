@@ -551,7 +551,10 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
           )}
 
           <ContentActions
+            contentId={contentId}
+            contentType={effectiveType}
             addToListLabel={t('watch.addToList')}
+            inListLabel={t('content.inList')}
             likeLabel={t('watch.like')}
             shareLabel={t('watch.share')}
           />

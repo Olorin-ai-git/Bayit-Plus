@@ -102,9 +102,9 @@ class TestAuthenticationBarrier:
         response = client.get("/api/v1/users/me")
         assert response.status_code in [401, 403]
 
-    def test_protected_watchlist_endpoint(self, client: httpx.Client):
-        """Test protected watchlist endpoint requires authentication."""
-        response = client.get("/api/v1/watchlist")
+    def test_protected_playlist_endpoint(self, client: httpx.Client):
+        """Test protected playlist endpoint requires authentication."""
+        response = client.get("/api/v1/playlist")
         assert response.status_code in [401, 403]
 
 

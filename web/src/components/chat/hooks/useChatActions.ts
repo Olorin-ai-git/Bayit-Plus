@@ -38,8 +38,8 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
         return { type: 'skip', payload: {} }
       case 'search':
         return { type: 'search', payload: { query: payload?.query } }
-      case 'add_to_watchlist':
-        return { type: 'add_to_watchlist', payload: {} }
+      case 'add_to_playlist':
+        return { type: 'add_to_playlist', payload: {} }
       case 'add_to_favorites':
         return { type: 'add_to_favorites', payload: {} }
       case 'volume':
@@ -73,11 +73,19 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
         movies: '/vod?category=movies',
         series: '/vod?category=series',
         channels: '/live',
+        live: '/live',
         radio: '/radio',
         podcasts: '/podcasts',
         home: '/',
         chess: '/games/chess',
         games: '/games',
+        children: '/children',
+        kids: '/children',
+        favorites: '/favorites',
+        playlist: '/playlist',
+        search: '/search',
+        profile: '/profile',
+        vod: '/vod',
       }
       navigate(navigationMap[payload.target] || '/')
       setOpen(false)
@@ -112,9 +120,9 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
       logger.debug('Skip action triggered', 'useChatActions')
     })
 
-    // Watchlist/Favorites
-    registerActionHandler('add_to_watchlist', () => {
-      logger.debug('Added to watchlist', 'useChatActions')
+    // Playlist/Favorites
+    registerActionHandler('add_to_playlist', () => {
+      logger.debug('Added to playlist', 'useChatActions')
     })
 
     registerActionHandler('add_to_favorites', () => {
@@ -207,7 +215,7 @@ export function useChatActions(options: UseChatActionsOptions = {}) {
     return () => {
       const actionTypes = [
         'navigate', 'search', 'play', 'pause', 'resume', 'skip',
-        'add_to_watchlist', 'add_to_favorites', 'volume', 'language',
+        'add_to_playlist', 'add_to_favorites', 'volume', 'language',
         'subtitles', 'info', 'help', 'show_multiple', 'chess_invite'
       ]
       actionTypes.forEach(type => unregisterActionHandler(type))

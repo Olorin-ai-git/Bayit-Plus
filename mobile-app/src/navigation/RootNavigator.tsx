@@ -50,8 +50,8 @@ const NotificationSettingsScreen = React.lazy(() =>
 const FavoritesScreenMobile = React.lazy(() =>
   import('../screens').then((mod) => ({ default: mod.FavoritesScreenMobile }))
 );
-const WatchlistScreenMobile = React.lazy(() =>
-  import('../screens').then((mod) => ({ default: mod.WatchlistScreenMobile }))
+const PlaylistScreenMobile = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.PlaylistScreenMobile }))
 );
 const ChildrenScreenMobile = React.lazy(() =>
   import('../screens').then((mod) => ({ default: mod.ChildrenScreenMobile }))
@@ -169,8 +169,8 @@ export const RootNavigator: React.FC = () => {
         component={LazyScreen(YoungstersScreenMobile)}
       />
       <Stack.Screen
-        name="Watchlist"
-        component={LazyScreen(WatchlistScreenMobile)}
+        name="Playlist"
+        component={LazyScreen(PlaylistScreenMobile)}
       />
       <Stack.Screen
         name="Favorites"

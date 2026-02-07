@@ -12,13 +12,15 @@
  * - Chat: Natural language chat (pass to LLM)
  */
 
+import { VoiceIntent } from '../types/voiceAvatar';
+
 export interface VoiceAction {
   type: 'navigate' | 'search' | 'play' | 'pause' | 'scroll' | 'control' | 'chat';
   payload: Record<string, any>;
 }
 
 export interface VoiceCommandResponse {
-  intent: 'NAVIGATION' | 'SEARCH' | 'PLAYBACK' | 'SCROLL' | 'CONTROL' | 'CHAT';
+  intent: VoiceIntent;
   action: VoiceAction;
   spokenResponse: string;
   contentIds?: string[];
@@ -36,7 +38,7 @@ const hebrewCommandPatterns = {
     radio: ['רדיו', 'תחנות רדיו'],
     podcasts: ['פודקאסטים', 'פודקסט'],
     favorites: ['מועדפים', 'המועדפים שלי'],
-    watchlist: ['רשימת הצפייה', 'לצפות מאוחר'],
+    playlist: ['רשימת הצפייה', 'לצפות מאוחר', 'פלייליסט'],
     profile: ['פרופיל', 'החשבון שלי', 'הגדרות'],
   },
 
@@ -183,7 +185,7 @@ export class VoiceCommandProcessor {
       radio: { path: '/radio', spoken: 'עובר לרדיו' },
       podcasts: { path: '/podcasts', spoken: 'עובר לפודקאסטים' },
       favorites: { path: '/favorites', spoken: 'עובר למועדפים' },
-      watchlist: { path: '/watchlist', spoken: 'עובר לרשימת הצפייה' },
+      playlist: { path: '/playlist', spoken: 'עובר לרשימת הצפייה' },
       profile: { path: '/profile', spoken: 'עובר לפרופיל' },
     };
 

@@ -1,22 +1,21 @@
 """
 Playlist Model
-User playlist for ordered content playback queue.
-Separate from Watchlist (save-for-later) - this is an ordered playback queue.
+Unified playlist document - individual documents per item.
+Merges former Watchlist (save-for-later) and Playlist (ordered queue) into one concept.
 """
 
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import Optional
 
 from beanie import Document
-from pydantic import BaseModel, Field, field_validator
+from pydantic import Field, field_validator
 
 from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)
 
 CONTENT_ID_PATTERN = r"^[a-zA-Z0-9_-]{1,64}$"
-MAX_PLAYLIST_ITEMS = 100
 
 
 class ContentType(str, Enum):
@@ -28,9 +27,11 @@ class ContentType(str, Enum):
     PODCAST = "podcast"
 
 
-class PlaylistItem(BaseModel):
-    """Individual item in a user playlist."""
+class PlaylistItem(Document):
+    """Individual playlist item - one document per item per user."""
 
+    user_id: str
+    profile_id: Optional[str] = None
     content_id: str = Field(..., pattern=CONTENT_ID_PATTERN)
     content_type: ContentType
     title: str = Field(..., min_length=1, max_length=500)
@@ -38,6 +39,16 @@ class PlaylistItem(BaseModel):
     duration: Optional[float] = None
     position: int = 0
     added_at: datetime = Field(default_factory=datetime.utcnow)
+
+    class Settings:
+        name = "playlist_items"
+        indexes = [
+            "user_id",
+            "profile_id",
+            ("user_id", "content_id"),
+            ("user_id", "profile_id", "content_id"),
+            ("user_id", "position"),
+        ]
 
     @field_validator("content_id")
     @classmethod
@@ -50,30 +61,39 @@ class PlaylistItem(BaseModel):
         return v
 
 
-class UserPlaylist(Document):
-    """User playlist document - one playlist per user."""
+async def get_next_position(
+    user_id: str, profile_id: Optional[str] = None
+) -> int:
+    """Get the next available position for a user's playlist."""
+    query = {"user_id": user_id}
+    if profile_id:
+        query["profile_id"] = profile_id
 
-    user_id: str
-    items: List[PlaylistItem] = Field(default_factory=list, max_length=MAX_PLAYLIST_ITEMS)
-    created_at: datetime = Field(default_factory=datetime.utcnow)
-    updated_at: datetime = Field(default_factory=datetime.utcnow)
+    last_item = (
+        await PlaylistItem.find(query)
+        .sort("-position")
+        .limit(1)
+        .to_list()
+    )
+    if last_item:
+        return last_item[0].position + 1
+    return 0
 
-    class Settings:
-        name = "playlists"
-        indexes = [
-            "user_id",
-        ]
 
-    @classmethod
-    async def get_or_create(cls, user_id: str) -> "UserPlaylist":
-        """Get existing playlist or create a new empty one."""
-        playlist = await cls.find_one(cls.user_id == user_id)
-        if not playlist:
-            playlist = cls(user_id=user_id)
-            await playlist.insert()
-        return playlist
+async def recalculate_positions(
+    user_id: str, profile_id: Optional[str] = None
+) -> None:
+    """Recalculate positions for all items in a user's playlist."""
+    query = {"user_id": user_id}
+    if profile_id:
+        query["profile_id"] = profile_id
 
-    def recalculate_positions(self) -> None:
-        """Recalculate item positions after add/remove/reorder."""
-        for idx, item in enumerate(self.items):
+    items = (
+        await PlaylistItem.find(query)
+        .sort("position")
+        .to_list()
+    )
+    for idx, item in enumerate(items):
+        if item.position != idx:
             item.position = idx
+            await item.save()

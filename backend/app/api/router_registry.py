@@ -177,7 +177,7 @@ def register_all_routers(app: FastAPI) -> None:
         extension_subscriptions.router, prefix=prefix, tags=["extension-subscriptions"]
     )
     app.include_router(
-        watchlist.router, prefix=f"{prefix}/watchlist", tags=["watchlist"]
+        watchlist.router, prefix=f"{prefix}/watchlist", tags=["watchlist", "deprecated"]
     )
     app.include_router(
         playlist.router, prefix=f"{prefix}/playlist", tags=["playlist"]

@@ -38,7 +38,7 @@ export interface ChatbotAction {
     | 'search' 
     | 'navigate' 
     | 'download' 
-    | 'add_to_watchlist' 
+    | 'add_to_playlist'
     | 'play'
     | 'show_multiple'  // Display multiple content items in widgets
     | 'chess_invite';  // Start chess game and invite friend
@@ -113,7 +113,7 @@ export const useChatbotStore = create<ChatbotStore>((set, get) => ({
     if (handler) {
       handler(action.payload);
     } else {
-      console.warn(`[Chatbot] No handler registered for action type: ${action.type}`);
+      // Action type not handled - no handler registered
     }
   },
 }));

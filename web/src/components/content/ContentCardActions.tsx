@@ -1,7 +1,7 @@
 /**
  * ContentCardActions - Hover overlay action buttons for content cards.
  *
- * Extracted from ContentCard for maintainability. Renders favorite, watchlist,
+ * Extracted from ContentCard for maintainability. Renders favorite, playlist,
  * and widget toggle buttons on hover.
  */
 
@@ -18,11 +18,11 @@ interface ContentCardActionsProps {
   contentType?: string;
   contentThumbnail?: string;
   isFavorite: boolean;
-  inWatchlist: boolean;
+  inPlaylist: boolean;
   favoriteLoading: boolean;
-  watchlistLoading: boolean;
+  playlistLoading: boolean;
   onToggleFavorite: (e: React.MouseEvent) => void;
-  onToggleWatchlist: (e: React.MouseEvent) => void;
+  onTogglePlaylist: (e: React.MouseEvent) => void;
 }
 
 /**
@@ -53,18 +53,18 @@ export default function ContentCardActions({
   contentType,
   contentThumbnail,
   isFavorite,
-  inWatchlist,
+  inPlaylist,
   favoriteLoading,
-  watchlistLoading,
+  playlistLoading,
   onToggleFavorite,
-  onToggleWatchlist,
+  onTogglePlaylist,
 }: ContentCardActionsProps) {
   const responsive = useResponsive();
   const { isMobile } = responsive;
   const { isRTL } = useDirection();
 
   const [favoriteHovered, setFavoriteHovered] = useState(false);
-  const [watchlistHovered, setWatchlistHovered] = useState(false);
+  const [playlistHovered, setPlaylistHovered] = useState(false);
 
   const btnSize = isMobile ? 56 : 32;
   const btnRadius = btnSize / 2;
@@ -84,7 +84,8 @@ export default function ContentCardActions({
         gap: isMobile ? spacing.sm : spacing.xs,
         zIndex: 10,
       }}
-      onClick={(e) => e.stopPropagation()}
+      onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+      onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
     >
       <button
         onClick={onToggleFavorite}
@@ -117,17 +118,17 @@ export default function ContentCardActions({
         />
       </button>
       <button
-        onClick={onToggleWatchlist}
-        onMouseEnter={() => setWatchlistHovered(true)}
-        onMouseLeave={() => setWatchlistHovered(false)}
-        disabled={watchlistLoading}
+        onClick={onTogglePlaylist}
+        onMouseEnter={() => setPlaylistHovered(true)}
+        onMouseLeave={() => setPlaylistHovered(false)}
+        disabled={playlistLoading}
         style={{
           width: btnSize,
           height: btnSize,
           borderRadius: btnRadius,
-          backgroundColor: inWatchlist
+          backgroundColor: inPlaylist
             ? 'rgba(255, 255, 255, 0.15)'
-            : watchlistHovered
+            : playlistHovered
             ? 'rgba(255, 255, 255, 0.25)'
             : 'rgba(0, 0, 0, 0.6)',
           border: 'none',
@@ -137,13 +138,13 @@ export default function ContentCardActions({
           alignItems: 'center',
           backdropFilter: 'blur(8px)',
           transition: 'all 0.2s ease',
-          transform: watchlistHovered ? 'scale(1.1)' : 'scale(1)',
+          transform: playlistHovered ? 'scale(1.1)' : 'scale(1)',
         }}
       >
         <Bookmark
           size={iconSize}
-          color={inWatchlist ? colors.primary : colors.text}
-          fill={inWatchlist ? colors.primary : 'transparent'}
+          color={inPlaylist ? colors.primary : colors.text}
+          fill={inPlaylist ? colors.primary : 'transparent'}
         />
       </button>
       <WidgetToggleButton

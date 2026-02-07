@@ -1,119 +1,48 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, ActivityIndicator, Image } from 'react-native';
+/**
+ * Playlist Page
+ * Displays user playlist with Play All, drag-drop reorder, and filters
+ */
+
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Play, X } from 'lucide-react';
-import { GlassView, GlassCard, GlassEmptyState } from '@bayit/shared/ui';
-import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { Play } from 'lucide-react';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent } from '@dnd-kit/core';
+import { SortableContext, rectSortingStrategy, arrayMove } from '@dnd-kit/sortable';
+import { GlassCard, GlassButton } from '@bayit/shared/ui';
+import { colors, spacing } from '@olorin/design-tokens';
 import { Icon } from '@olorin/shared-icons/web';
-import { NativeIcon } from '@olorin/shared-icons/native';
-import { watchlistService } from '@/services/api';
+import { playlistService } from '@/services/api';
 import { useDirection } from '@/hooks/useDirection';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils/contentLocalization';
 import logger from '@/utils/logger';
 import PageLoading from '@/components/common/PageLoading';
+import { SortablePlaylistCard } from './watchlist/WatchlistCard';
+import { getWatchRoute, getFlowContentType } from './watchlist/helpers';
+import type { PlaylistPageItem } from './watchlist/types';
 
-interface WatchlistItem {
-  id: string;
-  title: string;
-  title_en?: string;
-  title_es?: string;
-  subtitle?: string;
-  subtitle_en?: string;
-  subtitle_es?: string;
-  thumbnail?: string;
-  type: 'movie' | 'series' | 'live' | 'podcast' | 'radio' | 'channel';
-  category?: string;
-  is_kids_content?: boolean;
-  year?: string;
-  duration?: string;
-  addedAt?: string;
-  progress?: number;
-}
+export { type PlaylistPageItem } from './watchlist/types';
 
-const getTypeIconName = (type: string): string => {
-  switch (type) {
-    case 'movie': return 'vod';
-    case 'series': return 'vod';
-    case 'podcast': return 'podcasts';
-    case 'radio': return 'radio';
-    case 'live':
-    case 'channel': return 'live';
-    default: return 'discover';
-  }
-};
+const FILTER_OPTIONS = [
+  { id: 'all', labelKey: 'playlist.filters.all' },
+  { id: 'continue', labelKey: 'playlist.filters.continue' },
+  { id: 'movies', labelKey: 'playlist.filters.movies' },
+  { id: 'series', labelKey: 'playlist.filters.series' },
+  { id: 'kids', labelKey: 'playlist.filters.kids' },
+  { id: 'judaism', labelKey: 'playlist.filters.judaism' },
+  { id: 'podcasts', labelKey: 'playlist.filters.podcasts' },
+  { id: 'radio', labelKey: 'playlist.filters.radio' },
+];
 
-const WatchlistCard: React.FC<{
-  item: WatchlistItem;
-  onPress: () => void;
-  onRemove: () => void;
-  getLocalizedText: (item: any, field: string) => string;
-}> = ({ item, onPress, onRemove, getLocalizedText }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
-
-  return (
-    <Pressable
-      onPress={onPress}
-      onHoverIn={() => setIsHovered(true)}
-      onHoverOut={() => setIsHovered(false)}
-      style={styles.cardTouchable}
-    >
-      <View style={[styles.card, isHovered && styles.cardHovered]}>
-        {item.thumbnail ? (
-          <Image source={{ uri: item.thumbnail }} style={styles.cardImage} />
-        ) : (
-          <View style={styles.cardImagePlaceholder}>
-            <NativeIcon name="discover" size="xl" color={colors.textMuted} />
-          </View>
-        )}
-
-        {item.progress !== undefined && item.progress > 0 && (
-          <View style={styles.progressContainer}>
-            <View style={[styles.progressBar, { width: `${item.progress}%` }]} />
-          </View>
-        )}
-
-        <View style={[styles.typeBadge, isRTL ? { left: 8 } : { right: 8 }]}>
-          <NativeIcon name={getTypeIconName(item.type)} size="sm" color={colors.background} />
-        </View>
-
-        <View style={styles.cardContent}>
-          <Text style={[styles.cardTitle, { textAlign }]} numberOfLines={1}>
-            {getLocalizedText(item, 'title')}
-          </Text>
-          <Text style={[styles.cardMeta, { textAlign }]}>
-            {item.year}{item.year && item.duration ? ' • ' : ''}{item.duration}
-          </Text>
-          {item.progress !== undefined && item.progress > 0 && (
-            <Text style={[styles.progressText, { textAlign }]}>{item.progress}%</Text>
-          )}
-        </View>
-
-        {isHovered && (
-          <View style={styles.overlay}>
-            <View style={styles.overlayButtons}>
-              <Pressable style={styles.playButton} onPress={onPress}>
-                <Play size={20} color={colors.text} fill={colors.text} />
-              </Pressable>
-              <Pressable style={styles.removeButton} onPress={onRemove}>
-                <X size={18} color={colors.text} />
-              </Pressable>
-            </View>
-          </View>
-        )}
-      </View>
-    </Pressable>
-  );
-};
-
-export default function WatchlistPage() {
+export default function PlaylistPage() {
   const { t, i18n } = useTranslation();
   const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
-  const [filter, setFilter] = useState<'all' | 'movies' | 'series' | 'continue' | 'kids' | 'judaism' | 'podcasts' | 'radio'>('all');
+  const [playlistItems, setPlaylistItems] = useState<PlaylistPageItem[]>([]);
+  const [filter, setFilter] = useState<string>('all');
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 8 } }));
 
   const getLocalizedText = (item: any, field: string) => {
     if (field === 'title') return getLocalizedName(item, i18n.language);
@@ -121,81 +50,73 @@ export default function WatchlistPage() {
     return item[field] || '';
   };
 
-  useEffect(() => {
-    loadWatchlist();
-  }, []);
-
-  const loadWatchlist = async () => {
+  const loadPlaylist = useCallback(async () => {
     try {
       setIsLoading(true);
-      const data = await watchlistService.getWatchlist();
-      logger.debug('Watchlist API response', 'WatchlistPage', data);
-      setWatchlist(data?.items || []);
+      const data = await playlistService.getPlaylist();
+      logger.debug('Playlist API response', 'PlaylistPage', data);
+      setPlaylistItems(data?.items || []);
     } catch (err) {
-      logger.error('Watchlist load error', 'WatchlistPage', err);
-      logger.error('Failed to load watchlist', 'WatchlistPage', err);
+      logger.error('Playlist load error', 'PlaylistPage', err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const filteredWatchlist = watchlist.filter(item => {
+  useEffect(() => { loadPlaylist(); }, [loadPlaylist]);
+
+  const filteredItems = playlistItems.filter(item => {
     if (filter === 'all') return true;
     if (filter === 'movies') return item.type === 'movie';
     if (filter === 'series') return item.type === 'series';
     if (filter === 'continue') return item.progress !== undefined && item.progress > 0;
     if (filter === 'kids') return item.is_kids_content === true;
-    if (filter === 'judaism') return item.category?.toLowerCase() === 'judaism' || item.category === 'יהדות';
+    if (filter === 'judaism') return item.category?.toLowerCase() === 'judaism' || item.category === '\u05d9\u05d4\u05d3\u05d5\u05ea';
     if (filter === 'podcasts') return item.type === 'podcast';
     if (filter === 'radio') return item.type === 'radio';
     return true;
   });
 
-  const handleItemPress = (item: WatchlistItem) => {
-    switch (item.type) {
-      case 'live':
-      case 'channel':
-        navigate(`/live/${item.id}`);
-        break;
-      case 'podcast':
-        navigate(`/podcasts/${item.id}`);
-        break;
-      case 'radio':
-        navigate(`/radio/${item.id}`);
-        break;
-      default:
-        navigate(`/vod/${item.id}`);
-    }
-  };
-
-  const handleRemoveFromWatchlist = async (id: string) => {
+  const handleRemove = async (id: string) => {
     try {
-      await watchlistService.removeFromWatchlist(id);
-      setWatchlist(prev => prev.filter(item => item.id !== id));
+      await playlistService.removeItem(id);
+      setPlaylistItems(prev => prev.filter(item => item.id !== id));
     } catch (err) {
-      logger.error('Failed to remove from watchlist', 'WatchlistPage', err);
+      logger.error('Failed to remove from playlist', 'PlaylistPage', err);
     }
   };
 
-  const filterOptions = [
-    { id: 'all', labelKey: 'watchlist.filters.all' },
-    { id: 'continue', labelKey: 'watchlist.filters.continue' },
-    { id: 'movies', labelKey: 'watchlist.filters.movies' },
-    { id: 'series', labelKey: 'watchlist.filters.series' },
-    { id: 'kids', labelKey: 'watchlist.filters.kids' },
-    { id: 'judaism', labelKey: 'watchlist.filters.judaism' },
-    { id: 'podcasts', labelKey: 'watchlist.filters.podcasts' },
-    { id: 'radio', labelKey: 'watchlist.filters.radio' },
-  ];
+  const handlePlayAll = useCallback(() => {
+    if (filteredItems.length === 0) return;
+    const flowItems = filteredItems.map((item, index) => ({
+      content_id: item.id,
+      content_type: getFlowContentType(item.type),
+      title: getLocalizedText(item, 'title'),
+      thumbnail: item.thumbnail,
+      duration_hint: undefined,
+      order: index,
+    }));
+    const firstItem = filteredItems[0];
+    navigate(getWatchRoute(firstItem), {
+      state: { flowId: `playlist-${Date.now()}`, flowName: t('playlist.title'), playlist: flowItems, currentIndex: 0 },
+    });
+  }, [filteredItems, navigate, t, i18n.language]);
+
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = playlistItems.findIndex(item => item.id === active.id);
+    const newIndex = playlistItems.findIndex(item => item.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+    setPlaylistItems(arrayMove(playlistItems, oldIndex, newIndex));
+    playlistService.reorderItem(String(active.id), newIndex).catch((err) => {
+      logger.error('Failed to persist reorder', 'PlaylistPage', err);
+      loadPlaylist();
+    });
+  }, [playlistItems, loadPlaylist]);
 
   if (isLoading) {
-    return (
-      <PageLoading
-        title={t('watchlist.title', 'My Watchlist')}
-        message={t('watchlist.loading', 'Loading watchlist...')}
-        isRTL={isRTL}
-      />
-    );
+    return <PageLoading title={t('playlist.title', 'My Playlist')} message={t('playlist.loading', 'Loading playlist...')} isRTL={isRTL} />;
   }
 
   return (
@@ -204,61 +125,48 @@ export default function WatchlistPage() {
         <View style={[styles.headerIcon, isRTL ? { marginLeft: spacing.lg } : { marginRight: spacing.lg }]}>
           <Icon name="clipboard" size={28} color={colors.secondary.DEFAULT} />
         </View>
-        <View>
-          <Text style={[styles.title, { textAlign }]}>{t('watchlist.title')}</Text>
-          <Text style={[styles.subtitle, { textAlign }]}>
-            {watchlist.length} {t('watchlist.items')}
-          </Text>
+        <View style={{ flex: 1 }}>
+          <Text style={[styles.title, { textAlign }]}>{t('playlist.title')}</Text>
+          <Text style={[styles.subtitle, { textAlign }]}>{playlistItems.length} {t('playlist.items')}</Text>
         </View>
+        {playlistItems.length > 0 && (
+          <GlassButton onPress={handlePlayAll} variant="primary" size="md" icon={<Play size={18} color="#fff" fill="#fff" />} title={t('playlist.playAll')} />
+        )}
       </View>
 
       <View style={[styles.filterContainer, { flexDirection: 'row' }]}>
-        {(isRTL ? [...filterOptions].reverse() : filterOptions).map((option) => (
-          <Pressable
-            key={option.id}
-            onPress={() => setFilter(option.id as any)}
-            style={[styles.filterButton, filter === option.id && styles.filterButtonActive]}
-          >
-            <Text style={[styles.filterText, filter === option.id && styles.filterTextActive]}>
-              {t(option.labelKey)}
-            </Text>
+        {(isRTL ? [...FILTER_OPTIONS].reverse() : FILTER_OPTIONS).map((option) => (
+          <Pressable key={option.id} onPress={() => setFilter(option.id)} style={[styles.filterButton, filter === option.id && styles.filterButtonActive]}>
+            <Text style={[styles.filterText, filter === option.id && styles.filterTextActive]}>{t(option.labelKey)}</Text>
           </Pressable>
         ))}
       </View>
 
-      <FlatList
-        data={filteredWatchlist}
-        keyExtractor={(item) => item.id}
-        numColumns={5}
-        contentContainerStyle={styles.grid}
-        renderItem={({ item }) => (
-          <WatchlistCard
-            item={item}
-            onPress={() => handleItemPress(item)}
-            onRemove={() => handleRemoveFromWatchlist(item.id)}
-            getLocalizedText={getLocalizedText}
-          />
-        )}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <GlassCard style={styles.emptyCard}>
-              <Icon name="clipboard" size={64} color={colors.textMuted} />
-              <Text style={[styles.emptyTitle, { textAlign }]}>{t('watchlist.empty')}</Text>
-              <Text style={[styles.emptySubtitle, { textAlign }]}>
-                {t('watchlist.emptyHint')}
-              </Text>
-            </GlassCard>
-          </View>
-        }
-      />
+      {filteredItems.length === 0 ? (
+        <View style={styles.emptyState}>
+          <GlassCard style={styles.emptyCard}>
+            <Icon name="clipboard" size={64} color={colors.textMuted} />
+            <Text style={[styles.emptyTitle, { textAlign }]}>{t('playlist.empty')}</Text>
+            <Text style={[styles.emptySubtitle, { textAlign }]}>{t('playlist.emptyHint')}</Text>
+          </GlassCard>
+        </View>
+      ) : (
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={filteredItems.map(item => item.id)} strategy={rectSortingStrategy}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: spacing.sm * 2, paddingLeft: spacing.lg, paddingRight: spacing.lg, paddingBottom: spacing.xl, paddingTop: spacing.md }}>
+              {filteredItems.map((item) => (
+                <SortablePlaylistCard key={item.id} item={item} onPress={() => navigate(getWatchRoute(item))} onRemove={() => handleRemove(item.id)} getLocalizedText={getLocalizedText} />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
-  loadingContainer: { flex: 1, backgroundColor: colors.background, justifyContent: 'center', alignItems: 'center' },
-  loadingText: { color: colors.text, fontSize: 18, marginTop: spacing.md },
   header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: spacing.xl, paddingTop: 40, paddingBottom: spacing.lg },
   headerIcon: { width: 60, height: 60, borderRadius: 30, backgroundColor: 'rgba(138, 43, 226, 0.2)', justifyContent: 'center', alignItems: 'center' },
   title: { fontSize: 36, fontWeight: 'bold', color: colors.text },
@@ -268,25 +176,6 @@ const styles = StyleSheet.create({
   filterButtonActive: { backgroundColor: 'rgba(138, 43, 226, 0.2)', borderColor: colors.secondary },
   filterText: { fontSize: 14, color: colors.textMuted },
   filterTextActive: { color: colors.secondary.DEFAULT, fontWeight: 'bold' },
-  grid: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xl, paddingTop: spacing.md },
-  cardTouchable: { flex: 1, margin: spacing.sm, maxWidth: '20%' },
-  card: { backgroundColor: colors.backgroundLight, borderRadius: borderRadius.lg, overflow: 'visible' as any, borderWidth: 3, borderColor: 'transparent' },
-  cardHovered: { borderColor: colors.secondary.DEFAULT, transform: [{ scale: 1.05 }] },
-  cardImage: { width: '100%', aspectRatio: 16 / 9 },
-  cardImagePlaceholder: { width: '100%', aspectRatio: 16 / 9, backgroundColor: colors.backgroundLighter, justifyContent: 'center', alignItems: 'center' },
-  placeholderIcon: { fontSize: 32 },
-  progressContainer: { position: 'absolute', bottom: 52, left: 0, right: 0, height: 4, backgroundColor: 'rgba(0, 0, 0, 0.5)' },
-  progressBar: { height: '100%', backgroundColor: colors.secondary },
-  typeBadge: { position: 'absolute', top: 8, backgroundColor: 'rgba(0, 0, 0, 0.7)', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 4 },
-  typeBadgeText: { fontSize: 14 },
-  cardContent: { padding: spacing.sm },
-  cardTitle: { fontSize: 14, fontWeight: '600', color: colors.text },
-  cardMeta: { fontSize: 12, color: colors.textSecondary, marginTop: 2 },
-  progressText: { fontSize: 11, color: colors.secondary.DEFAULT, marginTop: 2, fontWeight: '600' },
-  overlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0, 0, 0, 0.4)', justifyContent: 'center', alignItems: 'center' },
-  overlayButtons: { flexDirection: 'row', gap: spacing.md },
-  playButton: { width: 48, height: 48, borderRadius: 24, backgroundColor: colors.secondary.DEFAULT, justifyContent: 'center', alignItems: 'center' },
-  removeButton: { width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(255, 255, 255, 0.2)', justifyContent: 'center', alignItems: 'center' },
   emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 60 },
   emptyCard: { padding: spacing.xxl, alignItems: 'center', gap: spacing.md },
   emptyTitle: { fontSize: 20, fontWeight: '600', color: colors.text, marginBottom: spacing.sm },

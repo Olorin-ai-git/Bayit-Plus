@@ -3103,7 +3103,7 @@
     "channel": "ערוץ",
     "station": "תחנה",
     "podcast": "פודקאסט",
-    "watchlist": "רשימת צפייה",
+    "playlist": "רשימת השמעה",
     "downloads": "הורדות"
   },
   "chapters": {
@@ -4507,7 +4507,7 @@
       "judaism": "יהדות",
       "profile": "הפרופיל שלי",
       "favorites": "מועדפים",
-      "watchlist": "רשימת צפייה",
+      "playlist": "רשימת השמעה",
       "subscribe": "הרשמה",
       "downloads": "הורדות",
       "help": "מרכז עזרה",
@@ -4901,7 +4901,6 @@
     "settings": "הגדרות",
     "support": "תמיכה",
     "favorites": "מועדפים",
-    "watchlist": "רשימת צפייה",
     "downloads": "הורדות",
     "recordings": "ההקלטות שלי",
     "widgets": "וידג'טים",
@@ -5516,7 +5515,7 @@
     },
     "guest": "אורח",
     "morningRitual": "טקס הבוקר",
-    "watchlist": "רשימת צפייה",
+    "playlist": "רשימת השמעה",
     "favorites": "מועדפים",
     "downloads": "הורדות",
     "settings": "הגדרות",
@@ -6578,12 +6577,10 @@
     "clear": "נקה",
     "playAll": "נגן הכל",
     "empty": "הרשימה שלך ריקה",
-    "emptyHint": "השתמש בפקודות קוליות כדי להוסיף תוכן לרשימה",
+    "emptyHint": "לחץ על סמל הסימנייה בכרטיס תוכן כלשהו או אמור 'הוסף לרשימה' כדי להתחיל לבנות את הרשימה שלך",
     "removeItem": "הסר מהרשימה",
     "items": "פריטים",
-    "loading": "טוען רשימה..."
-  },
-  "watchlist": {
+    "loading": "טוען רשימה...",
     "filters": {
       "all": "הכל",
       "continue": "המשך צפייה",
@@ -6594,12 +6591,10 @@
       "podcasts": "פודקאסטים",
       "radio": "רדיו"
     },
-    "title": "רשימת הצפייה",
-    "items": "פריטים",
     "watched": "נצפה",
-    "empty": "רשימת הצפייה שלך ריקה",
-    "emptyHint": "התחל לצפות והפריטים יופיעו כאן",
-    "loading": "טוען רשימת צפייה..."
+    "addEpisode": "הוסף לרשימה",
+    "removeEpisode": "הסר מהרשימה",
+    "dragToReorder": "גרור לסידור מחדש"
   },
   "youngsters": {
     "title": "צעירים",

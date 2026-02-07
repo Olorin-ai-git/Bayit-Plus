@@ -2874,7 +2874,7 @@
     "channel": "频道",
     "station": "电台",
     "podcast": "播客",
-    "watchlist": "观看列表",
+    "playlist": "播放列表",
     "downloads": "下载"
   },
   "chapters": {
@@ -3698,7 +3698,7 @@
       "judaism": "犹太教",
       "profile": "我的资料",
       "favorites": "收藏",
-      "watchlist": "观看列表",
+      "playlist": "播放列表",
       "subscribe": "订阅",
       "downloads": "下载",
       "help": "帮助中心",
@@ -4094,7 +4094,6 @@
     "search": "搜索",
     "settings": "设置",
     "favorites": "收藏",
-    "watchlist": "观看列表",
     "downloads": "下载",
     "recordings": "我的录制",
     "widgets": "小组件",
@@ -4633,7 +4632,7 @@
     },
     "guest": "访客",
     "morningRitual": "早间仪式",
-    "watchlist": "观看列表",
+    "playlist": "播放列表",
     "favorites": "收藏",
     "downloads": "下载",
     "settings": "设置",
@@ -5683,12 +5682,10 @@
     "clear": "清空",
     "playAll": "播放全部",
     "empty": "您的播放列表为空",
-    "emptyHint": "使用语音命令将内容添加到播放列表",
+    "emptyHint": "点击任意内容卡片上的书签图标或说'添加到播放列表'来开始创建您的列表",
     "removeItem": "从列表中移除",
     "items": "项目",
-    "loading": "正在加载播放列表..."
-  },
-  "watchlist": {
+    "loading": "正在加载播放列表...",
     "filters": {
       "all": "全部",
       "continue": "继续观看",
@@ -5699,12 +5696,10 @@
       "podcasts": "播客",
       "radio": "广播"
     },
-    "title": "观看列表",
-    "items": "项目",
-    "empty": "您的观看列表为空",
-    "emptyHint": "开始观看，项目将显示在此处",
     "watched": "已观看",
-    "loading": "正在加载观看列表..."
+    "addEpisode": "添加到播放列表",
+    "removeEpisode": "从播放列表移除",
+    "dragToReorder": "拖动重新排序"
   },
   "widgets": {
     "empty": "暂无小组件",

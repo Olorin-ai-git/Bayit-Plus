@@ -99,7 +99,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [castMembers, setCastMembers] = useState<CastMember[]>([]);
-  const [isInWatchlist, setIsInWatchlist] = useState(false);
+  const [isInPlaylist, setIsInPlaylist] = useState(false);
   const [isInFavorites, setIsInFavorites] = useState(false);
 
   const getLocalizedText = useCallback(
@@ -177,11 +177,11 @@ export const MovieDetailScreenMobile: React.FC = () => {
     }
   }, [movie, t, getLocalizedText]);
 
-  const handleToggleWatchlist = useCallback(() => {
+  const handleTogglePlaylist = useCallback(() => {
     ReactNativeHapticFeedback.trigger("impactLight");
-    setIsInWatchlist(!isInWatchlist);
-    // Call API to add/remove from watchlist
-  }, [isInWatchlist]);
+    setIsInPlaylist(!isInPlaylist);
+    // Call API to add/remove from playlist
+  }, [isInPlaylist]);
 
   const handleToggleFavorites = useCallback(() => {
     ReactNativeHapticFeedback.trigger("impactLight");
@@ -328,11 +328,11 @@ export const MovieDetailScreenMobile: React.FC = () => {
             style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
           >
             <TouchableOpacity
-              onPress={handleToggleWatchlist}
+              onPress={handleTogglePlaylist}
               className="items-center min-w-[60px]"
             >
               <View className="mb-1">
-                {isInWatchlist ? (
+                {isInPlaylist ? (
                   <NativeIcon name="check" size="lg" color="#a855f7" />
                 ) : (
                   <NativeIcon name="plus" size="lg" color="#ffffff" />

@@ -41,9 +41,9 @@ interface FavoritesService {
   isFavorite: (contentId: string) => Promise<{ is_favorite: boolean }>;
 }
 
-interface WatchlistService {
-  toggleWatchlist: (contentId: string, contentType: string) => Promise<{ in_watchlist: boolean }>;
-  isInWatchlist: (contentId: string) => Promise<{ in_watchlist: boolean }>;
+interface PlaylistService {
+  toggleItem: (contentId: string, contentType: string) => Promise<{ in_playlist: boolean }>;
+  checkItem: (contentId: string) => Promise<{ in_playlist: boolean }>;
 }
 
 interface GlassCarouselProps {
@@ -53,7 +53,7 @@ interface GlassCarouselProps {
   height?: number;
   showActions?: boolean;
   favoritesService?: FavoritesService;
-  watchlistService?: WatchlistService;
+  playlistService?: PlaylistService;
   renderItemActions?: (item: CarouselItem) => React.ReactNode;
 }
 
@@ -64,7 +64,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
   height = 320,
   showActions = true,
   favoritesService,
-  watchlistService,
+  playlistService,
   renderItemActions,
 }) => {
   const { t } = useTranslation();
@@ -103,7 +103,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
 
   // Action button states - keyed by content ID
   const [favoriteStates, setFavoriteStates] = useState<Record<string, boolean>>({});
-  const [watchlistStates, setWatchlistStates] = useState<Record<string, boolean>>({});
+  const [playlistStates, setPlaylistStates] = useState<Record<string, boolean>>({});
   const [actionLoading, setActionLoading] = useState<Record<string, boolean>>({});
 
   const handleFavoriteToggle = useCallback(async (item: CarouselItem, e?: any) => {
@@ -129,19 +129,19 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
     }
   }, [favoritesService, actionLoading]);
 
-  const handleWatchlistToggle = useCallback(async (item: CarouselItem, e?: any) => {
+  const handlePlaylistToggle = useCallback(async (item: CarouselItem, e?: any) => {
     // Prevent event propagation on all platforms
     e?.preventDefault?.();
     e?.stopPropagation?.();
 
-    if (!watchlistService || !item.contentType || actionLoading[`wl-${item.id}`]) return;
+    if (!playlistService || !item.contentType || actionLoading[`wl-${item.id}`]) return;
 
     setActionLoading(prev => ({ ...prev, [`wl-${item.id}`]: true }));
     try {
-      const result = await watchlistService.toggleWatchlist(item.id, item.contentType);
-      setWatchlistStates(prev => ({ ...prev, [item.id]: result.in_watchlist }));
+      const result = await playlistService.toggleItem(item.id, item.contentType);
+      setPlaylistStates(prev => ({ ...prev, [item.id]: result.in_playlist }));
     } catch (error) {
-      carouselLogger.error('Failed to toggle watchlist', {
+      carouselLogger.error('Failed to toggle playlist', {
         itemId: item.id,
         contentType: item.contentType,
         error: error instanceof Error ? error.message : String(error),
@@ -150,7 +150,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
     } finally {
       setActionLoading(prev => ({ ...prev, [`wl-${item.id}`]: false }));
     }
-  }, [watchlistService, actionLoading]);
+  }, [playlistService, actionLoading]);
 
   // Auto-play with fade transition
   useEffect(() => {
@@ -279,7 +279,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
               )}
 
               {/* Action Buttons - Top corner opposite to badge */}
-              {((showActions && currentItem.contentType && (favoritesService || watchlistService)) || renderItemActions) && (
+              {((showActions && currentItem.contentType && (favoritesService || playlistService)) || renderItemActions) && (
                 <View
                   style={[styles.actionButtons, isRTL ? styles.actionButtonsLeft : styles.actionButtonsRight]}
                   // @ts-ignore - Web only onClick
@@ -301,19 +301,19 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
                       />
                     </Pressable>
                   )}
-                  {showActions && currentItem.contentType && watchlistService && (
+                  {showActions && currentItem.contentType && playlistService && (
                     <Pressable
-                      onPress={(e: any) => handleWatchlistToggle(currentItem, e)}
+                      onPress={(e: any) => handlePlaylistToggle(currentItem, e)}
                       disabled={actionLoading[`wl-${currentItem.id}`]}
                       style={[
                         styles.actionButton,
-                        watchlistStates[currentItem.id] && styles.actionButtonActive,
+                        playlistStates[currentItem.id] && styles.actionButtonActive,
                       ]}
                     >
                       <Ionicons
-                        name={watchlistStates[currentItem.id] ? 'bookmark' : 'bookmark-outline'}
+                        name={playlistStates[currentItem.id] ? 'bookmark' : 'bookmark-outline'}
                         size={Platform.isTV ? 20 : (Platform.OS === 'web' ? 20 : 16)}
-                        color={watchlistStates[currentItem.id] ? colors.primary : colors.text}
+                        color={playlistStates[currentItem.id] ? colors.primary : colors.text}
                       />
                     </Pressable>
                   )}

@@ -8,7 +8,7 @@ export { demoAuthService } from './auth';
 export { demoContentService, demoLiveService, demoRadioService } from './content';
 export { demoPodcastService } from './podcast';
 export { demoSubscriptionService } from './subscription';
-export { demoWatchlistService, demoHistoryService, demoFavoritesService } from './user';
+export { demoPlaylistService, demoHistoryService, demoFavoritesService } from './user';
 export { demoSearchService } from './search';
 export { demoZmanService } from './zman';
 export { demoTrendingService } from './trending';
@@ -21,7 +21,7 @@ import { demoAuthService } from './auth';
 import { demoContentService, demoLiveService, demoRadioService } from './content';
 import { demoPodcastService } from './podcast';
 import { demoSubscriptionService } from './subscription';
-import { demoWatchlistService, demoHistoryService, demoFavoritesService } from './user';
+import { demoPlaylistService, demoHistoryService, demoFavoritesService } from './user';
 import { demoSearchService } from './search';
 import { demoZmanService } from './zman';
 import { demoTrendingService } from './trending';
@@ -36,7 +36,7 @@ export default {
   radio: demoRadioService,
   podcast: demoPodcastService,
   subscription: demoSubscriptionService,
-  watchlist: demoWatchlistService,
+  playlist: demoPlaylistService,
   history: demoHistoryService,
   favorites: demoFavoritesService,
   search: demoSearchService,

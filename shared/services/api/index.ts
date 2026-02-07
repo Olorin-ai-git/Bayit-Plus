@@ -28,7 +28,6 @@ import { apiAuthService, apiVerificationService } from './authServices';
 import { apiContentService, apiLiveService, apiRadioService, apiPodcastService } from './contentServices';
 import {
   apiSubscriptionService,
-  apiWatchlistService,
   apiHistoryService,
   apiFavoritesService,
   apiProfilesService,
@@ -51,7 +50,6 @@ import {
   demoRadioService,
   demoPodcastService,
   demoSubscriptionService,
-  demoWatchlistService,
   demoHistoryService,
   demoSearchService,
   demoFavoritesService,
@@ -90,7 +88,6 @@ export const podcastService = isDemo ? demoPodcastService : apiPodcastService;
 
 // User services - Mixed (some require real auth)
 export const subscriptionService = isDemo ? demoSubscriptionService : apiSubscriptionService;
-export const watchlistService = isDemo ? demoWatchlistService : apiWatchlistService;
 export const historyService = isDemo ? demoHistoryService : apiHistoryService;
 export const favoritesService = isDemo ? demoFavoritesService : apiFavoritesService;
 export const profilesService = apiProfilesService; // No demo mode - requires real auth
@@ -130,6 +127,9 @@ export { triviaApi };
 // Playlist services - No demo mode (requires real auth)
 export const playlistService = apiPlaylistService;
 
+// Backward-compat alias: watchlist now routes through playlist
+export const watchlistService = playlistService;
+
 // Re-export API services for direct access
 export {
   apiAuthService,
@@ -139,7 +139,6 @@ export {
   apiRadioService,
   apiPodcastService,
   apiSubscriptionService,
-  apiWatchlistService,
   apiHistoryService,
   apiFavoritesService,
   apiProfilesService,

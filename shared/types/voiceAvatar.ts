@@ -12,12 +12,17 @@ export type AvatarMode = 'full' | 'compact' | 'minimal' | 'icon_only';
  * Voice interaction intents for routing commands
  */
 export type VoiceIntent =
-  | 'CHAT'          // Natural language conversation with Claude
-  | 'SEARCH'        // Search for content
-  | 'NAVIGATION'    // Navigate to specific pages/sections
-  | 'PLAYBACK'      // Control playback (play, pause, stop)
-  | 'SCROLL'        // Navigate lists and grids
-  | 'CONTROL';      // System controls (volume, language, etc.)
+  | 'CHAT'              // Natural language conversation with Claude
+  | 'SEARCH'            // Search for content
+  | 'NAVIGATION'        // Navigate to specific pages/sections
+  | 'PLAYBACK'          // Control playback (play, pause, stop)
+  | 'SCROLL'            // Navigate lists and grids
+  | 'CONTROL'           // System controls (volume, language, etc.)
+  | 'KIDS'              // Kids content filtering
+  | 'CONTENT_QUERY'     // Detailed content queries
+  | 'DISPLAY_CHANNELS'  // Display live channels
+  | 'WEB_SEARCH'        // Web search queries
+  | 'PLAYLIST';         // Playlist management
 
 /**
  * Trigger types for voice activation

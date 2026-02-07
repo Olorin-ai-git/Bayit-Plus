@@ -9,7 +9,8 @@ from app.models.content import Content, LiveChannel, RadioStation, Podcast, Podc
 from app.models.content_taxonomy import ContentSection
 from app.models.user import User
 from app.models.subscription import Subscription
-from app.models.watchlist import WatchlistItem, WatchHistory
+from app.models.playlist import PlaylistItem
+from app.models.watchlist import WatchHistory
 from app.models.admin import AuditLog
 from app.models.realtime import WatchParty, ChatMessage
 from app.models.chapters import VideoChapters
@@ -81,10 +82,10 @@ async def create_indexes():
         await Subscription.get_pymongo_collection().create_index("stripe_subscription_id")
         await Subscription.get_pymongo_collection().create_index("status")
 
-        # Watchlist indexes
-        print("  - Watchlist indexes")
-        await WatchlistItem.get_pymongo_collection().create_index([("user_id", 1), ("content_id", 1)])
-        await WatchlistItem.get_pymongo_collection().create_index("profile_id")
+        # Playlist indexes
+        print("  - Playlist indexes")
+        await PlaylistItem.get_pymongo_collection().create_index([("user_id", 1), ("content_id", 1)])
+        await PlaylistItem.get_pymongo_collection().create_index("profile_id")
 
         # Watch History indexes
         print("  - Watch History indexes")

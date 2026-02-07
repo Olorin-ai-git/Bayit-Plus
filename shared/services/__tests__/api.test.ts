@@ -6,7 +6,7 @@ import {
   contentService,
   liveService,
   searchService,
-  watchlistService,
+  playlistService,
   historyService,
 } from '../api';
 
@@ -430,65 +430,65 @@ describe('API Services', () => {
     });
   });
 
-  describe('Watchlist Service', () => {
-    describe('getWatchlist', () => {
-      it('should call GET /watchlist', async () => {
-        const mockWatchlist = [
+  describe('Playlist Service', () => {
+    describe('getPlaylist', () => {
+      it('should call GET /playlist', async () => {
+        const mockPlaylist = [
           { id: '1', title: 'Movie 1', added_at: '2026-01-15' },
         ];
 
-        mockAxiosInstance.get.mockResolvedValue({ data: mockWatchlist });
+        mockAxiosInstance.get.mockResolvedValue({ data: mockPlaylist });
 
-        const result = await watchlistService.getWatchlist();
+        const result = await playlistService.getPlaylist();
 
-        expect(mockAxiosInstance.get).toHaveBeenCalledWith('/watchlist');
-        expect(result).toEqual(mockWatchlist);
+        expect(mockAxiosInstance.get).toHaveBeenCalledWith('/playlist');
+        expect(result).toEqual(mockPlaylist);
       });
     });
 
-    describe('addToWatchlist', () => {
-      it('should call POST /watchlist with content ID and type', async () => {
+    describe('addItem', () => {
+      it('should call POST /playlist with content ID and type', async () => {
         const contentId = 'movie-123';
         const contentType = 'vod';
 
         mockAxiosInstance.post.mockResolvedValue({ data: { success: true } });
 
-        await watchlistService.addToWatchlist(contentId, contentType);
+        await playlistService.addItem(contentId, contentType);
 
-        expect(mockAxiosInstance.post).toHaveBeenCalledWith('/watchlist', {
+        expect(mockAxiosInstance.post).toHaveBeenCalledWith('/playlist', {
           content_id: contentId,
           content_type: contentType,
         });
       });
     });
 
-    describe('removeFromWatchlist', () => {
-      it('should call DELETE /watchlist/{id}', async () => {
+    describe('removeItem', () => {
+      it('should call DELETE /playlist/{id}', async () => {
         const contentId = 'movie-123';
 
         mockAxiosInstance.delete.mockResolvedValue({ data: { success: true } });
 
-        await watchlistService.removeFromWatchlist(contentId);
+        await playlistService.removeItem(contentId);
 
         expect(mockAxiosInstance.delete).toHaveBeenCalledWith(
-          `/watchlist/${contentId}`
+          `/playlist/${contentId}`
         );
       });
     });
 
-    describe('toggleWatchlist', () => {
-      it('should call POST /watchlist/toggle with content ID', async () => {
+    describe('toggleItem', () => {
+      it('should call POST /playlist/toggle with content ID', async () => {
         const contentId = 'movie-123';
         const contentType = 'vod';
 
         mockAxiosInstance.post.mockResolvedValue({
-          data: { in_watchlist: true },
+          data: { in_playlist: true },
         });
 
-        await watchlistService.toggleWatchlist(contentId, contentType);
+        await playlistService.toggleItem(contentId, contentType);
 
         expect(mockAxiosInstance.post).toHaveBeenCalledWith(
-          `/watchlist/toggle/${contentId}?content_type=${contentType}`
+          `/playlist/toggle/${contentId}?content_type=${contentType}`
         );
       });
     });
@@ -626,7 +626,7 @@ describe('API Services', () => {
           status: 401,
           data: { detail: 'Not authenticated' },
         },
-        config: { url: '/watchlist' },
+        config: { url: '/playlist' },
       };
 
       // This should not trigger logout (not critical endpoint, not token error)

@@ -5,23 +5,6 @@ from beanie import Document
 from pydantic import Field
 
 
-class WatchlistItem(Document):
-    user_id: str
-    profile_id: Optional[str] = None  # Links to Profile for per-profile watchlists
-    content_id: str
-    content_type: str  # vod, live, podcast
-    added_at: datetime = Field(default_factory=datetime.utcnow)
-
-    class Settings:
-        name = "watchlist"
-        indexes = [
-            "user_id",
-            "profile_id",
-            ("user_id", "content_id"),
-            ("user_id", "profile_id", "content_id"),
-        ]
-
-
 class WatchHistory(Document):
     user_id: str
     profile_id: Optional[str] = None  # Links to Profile for per-profile history

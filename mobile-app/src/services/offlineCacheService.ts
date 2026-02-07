@@ -6,7 +6,7 @@
  *
  * STRATEGY:
  * - Cache content metadata (featured, categories, search results)
- * - Cache user data (continue watching, favorites, watchlist)
+ * - Cache user data (continue watching, favorites, playlist)
  * - Cache live channel information
  * - Automatically expire stale data
  * - Prioritize cache space for frequently accessed content
@@ -32,7 +32,7 @@ const CACHE_LIMITS = {
   search: 1024 * 300, // 300 KB
   continueWatching: 1024 * 100, // 100 KB
   favorites: 1024 * 100, // 100 KB
-  watchlist: 1024 * 100, // 100 KB
+  playlist: 1024 * 100, // 100 KB
   liveChannels: 1024 * 150, // 150 KB
 };
 
@@ -43,7 +43,7 @@ const CACHE_EXPIRY = {
   search: 1000 * 60 * 30, // 30 minutes
   continueWatching: 1000 * 60 * 5, // 5 minutes
   favorites: 1000 * 60 * 60, // 1 hour
-  watchlist: 1000 * 60 * 60, // 1 hour
+  playlist: 1000 * 60 * 60, // 1 hour
   liveChannels: 1000 * 60 * 2, // 2 minutes
 };
 

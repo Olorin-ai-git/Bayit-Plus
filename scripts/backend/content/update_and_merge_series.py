@@ -5,7 +5,7 @@ Update and merge duplicate series entries.
 This script:
 1. Applies a poster to a series
 2. Merges duplicate series entries by transferring all episodes and metadata
-3. Updates watchlist/favorites references
+3. Updates playlist/favorites references
 
 Usage:
     From backend directory:
@@ -50,7 +50,7 @@ class SeriesMerger:
         self.db = db
         self.stats = {
             "episodes_transferred": 0,
-            "watchlist_updated": 0,
+            "playlist_updated": 0,
             "favorites_updated": 0,
             "errors": 0,
         }
@@ -161,9 +161,9 @@ class SeriesMerger:
             episodes_transferred = await self.transfer_episodes(source_id, target_id)
             self.stats["episodes_transferred"] += episodes_transferred
 
-            # Update watchlist references
-            watchlist_updated = await self.update_watchlist_references(source_id, target_id)
-            self.stats["watchlist_updated"] += watchlist_updated
+            # Update playlist references
+            playlist_updated = await self.update_playlist_references(source_id, target_id)
+            self.stats["playlist_updated"] += playlist_updated
 
             # Update favorites references
             favorites_updated = await self.update_favorites_references(source_id, target_id)
@@ -190,7 +190,7 @@ class SeriesMerger:
 
             logger.info(f"✅ Series merged successfully")
             logger.info(f"   Episodes transferred: {episodes_transferred}")
-            logger.info(f"   Watchlist updated: {watchlist_updated}")
+            logger.info(f"   Playlist updated: {playlist_updated}")
             logger.info(f"   Favorites updated: {favorites_updated}")
 
             return True
@@ -221,12 +221,12 @@ class SeriesMerger:
         logger.info(f"      ✅ Transferred {count} episodes")
         return count
 
-    async def update_watchlist_references(self, source_id: str, target_id: str) -> int:
-        """Update watchlist references from source to target."""
-        logger.info(f"   📌 Updating watchlist references...")
+    async def update_playlist_references(self, source_id: str, target_id: str) -> int:
+        """Update playlist references from source to target."""
+        logger.info(f"   📌 Updating playlist references...")
 
         try:
-            result = await self.db.watchlist.update_many(
+            result = await self.db.playlist_items.update_many(
                 {"content_id": source_id},
                 {
                     "$set": {
@@ -237,11 +237,11 @@ class SeriesMerger:
             )
 
             count = result.modified_count
-            logger.info(f"      ✅ Updated {count} watchlist entries")
+            logger.info(f"      ✅ Updated {count} playlist entries")
             return count
 
         except Exception as e:
-            logger.warning(f"      ⚠️ Watchlist update error (collection may not exist): {e}")
+            logger.warning(f"      ⚠️ Playlist update error (collection may not exist): {e}")
             return 0
 
     async def update_favorites_references(self, source_id: str, target_id: str) -> int:
@@ -307,7 +307,7 @@ class SeriesMerger:
         logger.info("OPERATION SUMMARY")
         logger.info("=" * 80)
         logger.info(f"Episodes transferred:  {self.stats['episodes_transferred']}")
-        logger.info(f"Watchlist updated:     {self.stats['watchlist_updated']}")
+        logger.info(f"Playlist updated:     {self.stats['playlist_updated']}")
         logger.info(f"Favorites updated:     {self.stats['favorites_updated']}")
         logger.info(f"Errors:                {self.stats['errors']}")
         logger.info("=" * 80)

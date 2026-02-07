@@ -14,7 +14,10 @@ from typing import Optional
 import anthropic
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.models.content import (Content, LiveChannel, Podcast)
+
+logger = get_logger(__name__)
 
 # Initialize Anthropic client
 client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
@@ -74,7 +77,7 @@ async def build_media_context() -> dict:
         return context
 
     except Exception as e:
-        print(f"[CHAT] Error building media context: {e}")
+        logger.error("Error building media context", extra={"error": str(e)})
         return {
             "channels": [],
             "podcasts": [],
@@ -135,7 +138,7 @@ async def process_hebronics_input(text: str) -> dict:
         return result
 
     except Exception as e:
-        print(f"Hebronics processing error: {e}")
+        logger.error("Hebronics processing error", extra={"error": str(e)})
         return {
             "original": text,
             "normalized": text,
@@ -217,7 +220,7 @@ Content name:"""
 
         return response.content[0].text.strip()
     except Exception as e:
-        print(f"[CHAT] Error extracting content name: {e}")
+        logger.error("Error extracting content name", extra={"error": str(e)})
         return query
 
 

@@ -146,6 +146,12 @@ export const ICON_COLOR_THEME: Record<string, IconStyling> = {
     backgroundColor: 'rgba(245, 158, 11, 0.08)',
     borderColor: 'rgba(245, 158, 11, 0.15)',
   },
+  playlist: {
+    defaultColor: COLORS.warning,
+    glassLevel: 'light',
+    backgroundColor: 'rgba(245, 158, 11, 0.08)',
+    borderColor: 'rgba(245, 158, 11, 0.15)',
+  },
   downloads: {
     defaultColor: COLORS.success,
     glassLevel: 'light',

@@ -31,7 +31,7 @@ export { default as HouseholdScreenMobile } from './HouseholdScreenMobile';
 
 // User content screens
 export * from './FavoritesScreenMobile';
-export * from './WatchlistScreenMobile';
+export { PlaylistScreenMobile } from './WatchlistScreenMobile';
 export * from './DownloadsScreenMobile';
 
 // Content detail screens

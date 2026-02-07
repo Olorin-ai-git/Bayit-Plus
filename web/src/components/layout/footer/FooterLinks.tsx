@@ -63,7 +63,7 @@ export default function FooterLinks({
       links: [
         { to: '/profile', label: t('footer.links.profile', 'My Profile') },
         { to: '/favorites', label: t('footer.links.favorites', 'Favorites') },
-        { to: '/watchlist', label: t('footer.links.watchlist', 'Watchlist') },
+        { to: '/playlist', label: t('footer.links.playlist', 'Playlist') },
         { to: '/subscribe', label: t('footer.links.subscribe', 'Subscribe') },
         { to: '/downloads', label: t('footer.links.downloads', 'Downloads') },
       ],

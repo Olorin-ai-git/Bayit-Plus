@@ -184,7 +184,7 @@ export const ICON_REGISTRY: Record<string, IconDefinition> = {
     name: 'watchlist',
     lucideName: 'ListVideo',
     category: 'navigation',
-    description: 'Watchlist / Queue',
+    description: 'Playlist / Queue (legacy alias)',
     usage: ['navbar', 'sidebar', 'library'],
   },
   downloads: {
@@ -759,7 +759,7 @@ export const ICON_REGISTRY: Record<string, IconDefinition> = {
     lucideName: 'Clipboard',
     category: 'ui',
     description: 'Clipboard / Copy',
-    usage: ['copy', 'paste', 'watchlist'],
+    usage: ['copy', 'paste', 'playlist'],
   },
   video: {
     name: 'video',

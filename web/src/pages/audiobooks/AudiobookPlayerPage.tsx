@@ -24,9 +24,9 @@ export default function AudiobookPlayerPage() {
     chapters,
     selectedChapter,
     loading,
-    inWatchlist,
+    inPlaylist,
     setSelectedChapter,
-    toggleWatchlist,
+    togglePlaylist,
   } = useAudiobookData({ audiobookId });
 
   const handlePlay = () => {
@@ -83,11 +83,11 @@ export default function AudiobookPlayerPage() {
       <AudiobookHero
         audiobook={audiobook}
         selectedChapter={selectedChapter}
-        inWatchlist={inWatchlist}
+        inPlaylist={inPlaylist}
         flexDirection={flexDirection}
         textAlign={textAlign}
         onPlay={handlePlay}
-        toggleWatchlist={toggleWatchlist}
+        togglePlaylist={togglePlaylist}
       />
 
       <ChapterList

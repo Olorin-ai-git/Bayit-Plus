@@ -45,7 +45,8 @@ from app.models.user_system_widget import (UserSystemWidget,
                                            UserSystemWidgetPositionUpdate,
                                            UserSystemWidgetPreferencesUpdate,
                                            UserSystemWidgetResponse)
-from app.models.watchlist import Conversation, WatchHistory, WatchlistItem
+from app.models.playlist import PlaylistItem
+from app.models.watchlist import Conversation, WatchHistory
 
 __all__ = [
     # User
@@ -76,8 +77,8 @@ __all__ = [
     "SubscriptionPlan",
     "Invoice",
     "SUBSCRIPTION_PLANS",
-    # Watchlist/History
-    "WatchlistItem",
+    # Playlist/History
+    "PlaylistItem",
     "WatchHistory",
     "Conversation",
     # User System Widget

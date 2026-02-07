@@ -201,7 +201,7 @@ describe('Navigation Verification - Phase 2.3', () => {
 
     test('should have 4 content category screens', () => {
       const contentScreens = ALL_SCREENS.filter((s) =>
-        ['Judaism', 'Children', 'Youngsters', 'Watchlist'].includes(s as string)
+        ['Judaism', 'Children', 'Youngsters', 'Playlist'].includes(s as string)
       );
       expect(contentScreens).toHaveLength(4);
     });

@@ -4,11 +4,14 @@
  * Platform: Web (React)
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { Player, PlayerRef } from '@remotion/player';
 import { useRemotionWizard } from '../../../../shared/hooks/useRemotionWizard';
 import { AnimationSequence, getSequenceDefinition } from '../../../../shared/remotion/utils/sequencing';
 import { REMOTION_CONFIG } from '../../../../shared/remotion/config/remotion.config';
+import logger from '@/utils/logger';
+
+const log = logger.scope('RemotionWizard');
 
 // Import all sequence components
 import { ProcessAndPresentSequence } from '../../../../shared/remotion/compositions/sequences/ProcessAndPresent';
@@ -103,7 +106,7 @@ export const RemotionWizard: React.FC<RemotionWizardProps> = ({
   const SequenceComponent = SEQUENCE_COMPONENTS[currentSequence];
 
   if (!SequenceComponent) {
-    console.warn(`No component found for sequence: ${currentSequence}`);
+    log.warn(`No component found for sequence: ${currentSequence}`);
     return null;
   }
 

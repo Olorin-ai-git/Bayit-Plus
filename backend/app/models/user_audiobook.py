@@ -1,7 +1,7 @@
 """
 User Audiobook Actions Model
 
-Tracks user interactions with audiobooks: favorites, ratings, watchlist items.
+Tracks user interactions with audiobooks: favorites, ratings, playlist items.
 """
 
 from datetime import datetime
@@ -18,15 +18,15 @@ class UserAudiobookActionType(str, Enum):
     UNFAVORITE = "unfavorite"
     RATE = "rate"
     UNRATE = "unrate"
-    ADD_TO_WATCHLIST = "add_to_watchlist"
-    REMOVE_FROM_WATCHLIST = "remove_from_watchlist"
+    ADD_TO_PLAYLIST = "add_to_playlist"
+    REMOVE_FROM_PLAYLIST = "remove_from_playlist"
 
 
 class UserAudiobook(Document):
     """
     User's interaction with an audiobook.
 
-    Tracks favorites, ratings, and watchlist items per user.
+    Tracks favorites, ratings, and playlist items per user.
     """
 
     # IDs
@@ -41,7 +41,7 @@ class UserAudiobook(Document):
         le=5,
         description="User rating (1-5 stars)"
     )
-    in_watchlist: bool = Field(default=False, description="Is in watchlist")
+    in_playlist: bool = Field(default=False, description="Is in playlist")
 
     # Metadata
     last_action_type: UserAudiobookActionType = Field(
@@ -66,7 +66,7 @@ class UserAudiobook(Document):
             ["audiobook_id"],
             ["user_id", "audiobook_id"],
             ["user_id", "is_favorite"],
-            ["user_id", "in_watchlist"],
+            ["user_id", "in_playlist"],
         ]
 
 

@@ -6,7 +6,7 @@
  *
  * STRATEGY:
  * - Cache content metadata (featured, categories, search results)
- * - Cache user data (continue watching, favorites, watchlist)
+ * - Cache user data (continue watching, favorites, playlist)
  * - Cache live channel information
  * - Automatically expire stale data
  * - Prioritize cache space for frequently accessed content
@@ -33,7 +33,7 @@ const CACHE_LIMITS = {
   search: 1024 * 500, // 500 KB (vs 300 KB mobile)
   continueWatching: 1024 * 200, // 200 KB (vs 100 KB mobile)
   favorites: 1024 * 200, // 200 KB (vs 100 KB mobile)
-  watchlist: 1024 * 200, // 200 KB (vs 100 KB mobile)
+  playlist: 1024 * 200, // 200 KB (vs 100 KB mobile)
   liveChannels: 1024 * 300, // 300 KB (vs 150 KB mobile)
   multiWindow: 1024 * 150, // 150 KB (tvOS-specific: 4 window states)
 };
@@ -46,7 +46,7 @@ const CACHE_EXPIRY = {
   search: 1000 * 60 * 45, // 45 minutes (vs 30 minutes mobile)
   continueWatching: 1000 * 60 * 10, // 10 minutes (vs 5 minutes mobile)
   favorites: 1000 * 60 * 60 * 2, // 2 hours (vs 1 hour mobile)
-  watchlist: 1000 * 60 * 60 * 2, // 2 hours (vs 1 hour mobile)
+  playlist: 1000 * 60 * 60 * 2, // 2 hours (vs 1 hour mobile)
   liveChannels: 1000 * 60 * 5, // 5 minutes (vs 2 minutes mobile)
   multiWindow: 1000 * 60 * 30, // 30 minutes (tvOS-specific)
 };

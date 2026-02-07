@@ -9,7 +9,7 @@ import Hls from 'hls.js';
 import LinearGradient from 'react-native-linear-gradient';
 import { useDirection } from '@/hooks/useDirection';
 import ContentCarousel from '@/components/content/ContentCarousel';
-import { contentService, watchlistService, favoritesService, subtitlesService } from '@/services/api';
+import { contentService, playlistService, favoritesService, subtitlesService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { SubtitleTrack } from '@/types/subtitle';
 import { FlagWithSparkle } from '@/components/common/FlagWithSparkle';
@@ -59,7 +59,7 @@ export default function MovieDetailPage() {
 
   const [movie, setMovie] = useState<MovieData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [inWatchlist, setInWatchlist] = useState(false);
+  const [inPlaylist, setInPlaylist] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [availableSubtitles, setAvailableSubtitles] = useState<SubtitleTrack[]>([]);
   const [showSubtitleModal, setShowSubtitleModal] = useState(false);
@@ -96,6 +96,21 @@ export default function MovieDetailPage() {
         })
         .catch(() => {
           // Subtitles may not be available, ignore error
+        });
+    }
+  }, [movieId]);
+
+  // Check initial playlist status
+  useEffect(() => {
+    if (movieId) {
+      playlistService.checkItem(movieId)
+        .then((result) => {
+          if (result && typeof result.in_playlist === 'boolean') {
+            setInPlaylist(result.in_playlist);
+          }
+        })
+        .catch((error) => {
+          logger.error('Failed to check playlist status', 'MovieDetailPage', error);
         });
     }
   }, [movieId]);
@@ -303,13 +318,13 @@ export default function MovieDetailPage() {
     }
   };
 
-  const toggleWatchlist = async () => {
+  const togglePlaylist = async () => {
     if (!movie) return;
     try {
-      const result = await watchlistService.toggleWatchlist(movie.id, 'movie');
-      setInWatchlist(result.in_watchlist);
+      const result = await playlistService.toggleItem(movie.id, 'movie');
+      setInPlaylist(result.in_playlist);
     } catch (error) {
-      logger.error('Failed to toggle watchlist', 'MovieDetailPage', error);
+      logger.error('Failed to toggle playlist', 'MovieDetailPage', error);
     }
   };
 
@@ -543,11 +558,11 @@ export default function MovieDetailPage() {
             {!IS_MOBILE && (
               <>
                 <GlassButton
-                  onPress={toggleWatchlist}
+                  onPress={togglePlaylist}
                   variant="ghost"
                   size="lg"
-                  icon={inWatchlist ? <Check size={20} color={colors.text} /> : <Plus size={20} color={colors.text} />}
-                  title={inWatchlist ? t('content.inList') : t('content.addToList')}
+                  icon={inPlaylist ? <Check size={20} color={colors.text} /> : <Plus size={20} color={colors.text} />}
+                  title={inPlaylist ? t('content.inList') : t('content.addToList')}
                 />
 
                 {movie.trailer_url ? (

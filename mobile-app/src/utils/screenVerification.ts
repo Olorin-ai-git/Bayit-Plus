@@ -40,7 +40,7 @@ export const SCREEN_VERIFICATION_DATA: ScreenVerificationData[] = [
   { name: 'Judaism', category: 'content', requiresAuth: true, requiresSafeArea: true, supportsRTL: true, focusableElements: 12 },
   { name: 'Children', category: 'content', requiresAuth: true, requiresSafeArea: true, supportsRTL: true, focusableElements: 10 },
   { name: 'Youngsters', category: 'content', requiresAuth: true, requiresSafeArea: true, supportsRTL: true, focusableElements: 10 },
-  { name: 'Watchlist', category: 'content', requiresAuth: true, requiresSafeArea: true, supportsRTL: true, focusableElements: 8 },
+  { name: 'Playlist', category: 'content', requiresAuth: true, requiresSafeArea: true, supportsRTL: true, focusableElements: 8 },
 
   // Management screens (3)
   { name: 'Favorites', category: 'content', requiresAuth: true, requiresSafeArea: true, supportsRTL: true, focusableElements: 8 },
@@ -132,7 +132,7 @@ export function verifyScreenMetadata(): { valid: boolean; missingScreens: Naviga
     'Judaism',
     'Children',
     'Youngsters',
-    'Watchlist',
+    'Playlist',
     'Favorites',
     'Downloads',
     'Recordings',

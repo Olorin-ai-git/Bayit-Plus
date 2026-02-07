@@ -43,7 +43,7 @@ interface PreviewHeroProps {
   onAddToList?: () => void;
   onShare?: () => void;
   children?: React.ReactNode; // For season/episode selectors
-  isInWatchlist?: boolean;
+  isInPlaylist?: boolean;
   isFavorite?: boolean;
 }
 
@@ -67,7 +67,7 @@ export const PreviewHero: React.FC<PreviewHeroProps> = ({
   onAddToList,
   onShare,
   children,
-  isInWatchlist = false,
+  isInPlaylist = false,
   isFavorite = false,
 }) => {
   const { t } = useTranslation();
@@ -314,9 +314,9 @@ export const PreviewHero: React.FC<PreviewHeroProps> = ({
               onFocus={() => setFocusedButton('list')}
               activeOpacity={0.8}
             >
-              <Text className={`${isTV ? 'text-lg' : 'text-sm'} text-white`}>{isInWatchlist ? '✓' : '+'}</Text>
+              <Text className={`${isTV ? 'text-lg' : 'text-sm'} text-white`}>{isInPlaylist ? '✓' : '+'}</Text>
               <Text className={`${isTV ? 'text-base' : 'text-sm'} font-medium text-white`}>
-                {isInWatchlist ? t('content.inList') : t('content.addToList')}
+                {isInPlaylist ? t('content.inList') : t('content.addToList')}
               </Text>
             </TouchableOpacity>
           )}

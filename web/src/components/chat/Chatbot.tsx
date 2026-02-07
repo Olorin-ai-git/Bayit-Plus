@@ -279,7 +279,7 @@ export default function Chatbot() {
   }
 
   const handleRecommendationPress = (id: string) => {
-    navigate(`/vod/\${id}`)
+    navigate(`/vod/${id}`)
   }
 
   if (!isAuthenticated && !IS_TV_BUILD) {

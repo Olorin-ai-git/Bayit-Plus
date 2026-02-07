@@ -3099,7 +3099,7 @@
     "channel": "Channel",
     "station": "Station",
     "podcast": "Podcast",
-    "watchlist": "Watchlist",
+    "playlist": "Playlist",
     "downloads": "Downloads"
   },
   "chapters": {
@@ -4546,7 +4546,7 @@
       "judaism": "Judaism",
       "profile": "My Profile",
       "favorites": "Favorites",
-      "watchlist": "Watchlist",
+      "playlist": "Playlist",
       "subscribe": "Subscribe",
       "downloads": "Downloads",
       "help": "Help Center",
@@ -4941,7 +4941,6 @@
     "settings": "Settings",
     "support": "Support",
     "favorites": "Favorites",
-    "watchlist": "Watchlist",
     "downloads": "Downloads",
     "recordings": "My Recordings",
     "widgets": "Widgets",
@@ -5597,7 +5596,7 @@
     },
     "guest": "Guest",
     "morningRitual": "Morning Ritual",
-    "watchlist": "Watchlist",
+    "playlist": "Playlist",
     "favorites": "Favorites",
     "downloads": "Downloads",
     "settings": "Settings",
@@ -6748,12 +6747,10 @@
     "clear": "Clear",
     "playAll": "Play All",
     "empty": "Your playlist is empty",
-    "emptyHint": "Use voice commands to add content to your playlist",
+    "emptyHint": "Use the bookmark icon on any content card or say 'add to playlist' to start building your list",
     "removeItem": "Remove from playlist",
     "items": "items",
-    "loading": "Loading playlist..."
-  },
-  "watchlist": {
+    "loading": "Loading playlist...",
     "filters": {
       "all": "All",
       "continue": "Continue Watching",
@@ -6764,12 +6761,10 @@
       "podcasts": "Podcasts",
       "radio": "Radio"
     },
-    "title": "Watchlist",
-    "items": "items",
     "watched": "watched",
-    "empty": "Your watchlist is empty",
-    "emptyHint": "Start watching and items will appear here",
-    "loading": "Loading watchlist..."
+    "addEpisode": "Add to Playlist",
+    "removeEpisode": "Remove from Playlist",
+    "dragToReorder": "Drag to reorder"
   },
   "youngsters": {
     "title": "Youngsters",

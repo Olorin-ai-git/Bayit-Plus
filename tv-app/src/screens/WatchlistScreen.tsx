@@ -15,13 +15,30 @@ import { GlassView } from '../components';
 import { colors, spacing, borderRadius } from '../theme';
 import { isTV } from '../utils/platform';
 import { useDirection } from '@bayit/shared/hooks';
-import { demoWatchlist, type WatchlistItem } from '../demo/watchlist';
+import { playlistService } from '../services/api';
 import logger from '../utils/logger';
 
-const watchlistLogger = logger.scope('WatchlistScreen');
+interface PlaylistItem {
+  id: string;
+  content_id?: string;
+  title: string;
+  title_en?: string;
+  title_es?: string;
+  subtitle?: string;
+  subtitle_en?: string;
+  subtitle_es?: string;
+  thumbnail?: string;
+  type: 'movie' | 'series' | 'live' | 'podcast' | 'radio' | 'channel';
+  year?: string;
+  duration?: string;
+  addedAt?: string;
+  progress?: number;
+}
 
-const WatchlistCard: React.FC<{
-  item: WatchlistItem;
+const playlistLogger = logger.scope('PlaylistScreen');
+
+const PlaylistCard: React.FC<{
+  item: PlaylistItem;
   onPress: () => void;
   onRemove: () => void;
   index: number;
@@ -72,7 +89,7 @@ const WatchlistCard: React.FC<{
           />
         ) : (
           <View className="w-full aspect-video bg-[#2d2540] justify-center items-center">
-            <NativeIcon name="watchlist" size="xxl" context="tv" color="#8a2be2" />
+            <NativeIcon name="clipboard" size="xxl" context="tv" color="#8a2be2" />
           </View>
         )}
 
@@ -118,12 +135,12 @@ const WatchlistCard: React.FC<{
   );
 };
 
-export const WatchlistScreen: React.FC = () => {
+export const PlaylistScreen: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
   const navigation = useNavigation<any>();
   const [isLoading, setIsLoading] = useState(true);
-  const [watchlist, setWatchlist] = useState<WatchlistItem[]>([]);
+  const [playlistItems, setPlaylistItems] = useState<PlaylistItem[]>([]);
   const [filter, setFilter] = useState<'all' | 'movies' | 'series' | 'continue'>('all');
   const currentLang = i18n.language;
 
@@ -135,23 +152,22 @@ export const WatchlistScreen: React.FC = () => {
   };
 
   useEffect(() => {
-    loadWatchlist();
+    loadPlaylist();
   }, []);
 
-  const loadWatchlist = async () => {
+  const loadPlaylist = async () => {
     try {
       setIsLoading(true);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setWatchlist(demoWatchlist);
+      const response = await playlistService.getPlaylist();
+      setPlaylistItems(response.items || []);
     } catch (err) {
-      watchlistLogger.error('Failed to load watchlist', err);
+      playlistLogger.error('Failed to load playlist', err);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filteredWatchlist = watchlist.filter(item => {
+  const filteredItems = playlistItems.filter(item => {
     if (filter === 'all') return true;
     if (filter === 'movies') return item.type === 'movie';
     if (filter === 'series') return item.type === 'series';
@@ -159,23 +175,28 @@ export const WatchlistScreen: React.FC = () => {
     return true;
   });
 
-  const handleItemPress = (item: WatchlistItem) => {
+  const handleItemPress = (item: PlaylistItem) => {
     navigation.navigate('Player', {
-      id: item.id,
+      id: item.content_id || item.id,
       title: getLocalizedText(item, 'title'),
       type: 'vod',
     });
   };
 
-  const handleRemoveFromWatchlist = (id: string) => {
-    setWatchlist(prev => prev.filter(item => item.id !== id));
+  const handleRemove = async (id: string) => {
+    try {
+      await playlistService.removeItem(id);
+      setPlaylistItems(prev => prev.filter(item => item.id !== id));
+    } catch (err) {
+      playlistLogger.error('Failed to remove playlist item', err);
+    }
   };
 
   const filterOptions = [
-    { id: 'all', labelKey: 'watchlist.filters.all' },
-    { id: 'continue', labelKey: 'watchlist.filters.continue' },
-    { id: 'movies', labelKey: 'watchlist.filters.movies' },
-    { id: 'series', labelKey: 'watchlist.filters.series' },
+    { id: 'all', labelKey: 'playlist.filters.all' },
+    { id: 'continue', labelKey: 'playlist.filters.continue' },
+    { id: 'movies', labelKey: 'playlist.filters.movies' },
+    { id: 'series', labelKey: 'playlist.filters.series' },
   ];
 
   if (isLoading) {
@@ -192,12 +213,12 @@ export const WatchlistScreen: React.FC = () => {
       {/* Header */}
       <View className="flex-row items-center px-12 pt-10 pb-5" style={{ flexDirection: isRTL ? 'row' : 'row-reverse' }}>
         <View className="w-[60px] h-[60px] rounded-[30px] bg-[#8a2be2]/20 justify-center items-center" style={{ marginLeft: isRTL ? spacing.lg : 0, marginRight: isRTL ? 0 : spacing.lg }}>
-          <NativeIcon name="watchlist" size="xl" context="tv" color="#8a2be2" />
+          <NativeIcon name="clipboard" size="xl" context="tv" color="#8a2be2" />
         </View>
         <View>
-          <Text className="text-[42px] font-bold text-white" style={{ textAlign }}>{t('watchlist.title')}</Text>
+          <Text className="text-[42px] font-bold text-white" style={{ textAlign }}>{t('playlist.title')}</Text>
           <Text className="text-lg text-[#888888] mt-0.5" style={{ textAlign }}>
-            {watchlist.length} {t('watchlist.items')}
+            {playlistItems.length} {t('playlist.items')}
           </Text>
         </View>
       </View>
@@ -219,16 +240,16 @@ export const WatchlistScreen: React.FC = () => {
 
       {/* Content Grid */}
       <FlatList
-        data={filteredWatchlist}
+        data={filteredItems}
         keyExtractor={(item) => item.id}
         numColumns={isTV ? 6 : 4}
         key={isTV ? 'tv' : 'mobile'}
         contentContainerStyle={{ paddingHorizontal: spacing.xl, paddingBottom: spacing.xxl, paddingTop: spacing.md }}
         renderItem={({ item, index }) => (
-          <WatchlistCard
+          <PlaylistCard
             item={item}
             onPress={() => handleItemPress(item)}
-            onRemove={() => handleRemoveFromWatchlist(item.id)}
+            onRemove={() => handleRemove(item.id)}
             index={index}
             getLocalizedText={getLocalizedText}
           />
@@ -236,9 +257,9 @@ export const WatchlistScreen: React.FC = () => {
         ListEmptyComponent={
           <View className="flex-1 justify-center items-center py-[60px]">
             <GlassView className="p-12 items-center">
-              <NativeIcon name="watchlist" size="xxxl" context="tv" color="#8a2be2" />
-              <Text className="text-xl font-semibold text-white mb-2 mt-4" style={{ textAlign }}>{t('watchlist.empty')}</Text>
-              <Text className="text-base text-[#888888]" style={{ textAlign }}>{t('watchlist.emptyHint')}</Text>
+              <NativeIcon name="clipboard" size="xxxl" context="tv" color="#8a2be2" />
+              <Text className="text-xl font-semibold text-white mb-2 mt-4" style={{ textAlign }}>{t('playlist.empty')}</Text>
+              <Text className="text-base text-[#888888]" style={{ textAlign }}>{t('playlist.emptyHint')}</Text>
             </GlassView>
           </View>
         }
@@ -247,4 +268,4 @@ export const WatchlistScreen: React.FC = () => {
   );
 };
 
-export default WatchlistScreen;
+export default PlaylistScreen;

@@ -35,7 +35,7 @@ const pathToScreen: Record<string, string> = {
   '/admin': 'Admin',
   '/profile': 'Profile',
   '/favorites': 'Favorites',
-  '/watchlist': 'Watchlist',
+  '/playlist': 'Playlist',
   '/downloads': 'Downloads',
   '/subscribe': 'Subscribe',
 };

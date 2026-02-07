@@ -7,6 +7,10 @@ Contains language-specific system prompts for the Bayit+ chat assistant.
 import json
 from typing import Optional
 
+from app.core.logging_config import get_logger
+
+logger = get_logger(__name__)
+
 HEBREW_SYSTEM_PROMPT = """אתה עוזר של בית+ (מבוטא "בויית").
 
 **חובה: תשיב בעברית בלבד. כל התשובות שלך חייבות להיות בעברית.**
@@ -141,7 +145,7 @@ Actions:
 - Navigation: "Go to movies" / "Go to series" / "Go to channels" / "Go to radio" / "Go to podcasts" / "Go to judaism" / "Go to children" / "Go home"
 - Playback: "Play [name]" / "Pause" / "Resume" / "Skip"
 - Search: "Search for [query]"
-- Save: "Add to favorites" / "Add to watchlist"
+- Save: "Add to favorites" / "Add to playlist"
 
 No extra help or suggestions. Only answer the specific request in English."""
 
@@ -210,7 +214,7 @@ Acciones:
 - Navegación: "Ir a películas" / "Ir a series" / "Ir a canales" / "Ir a radio" / "Ir a podcasts" / "Ir a judaísmo" / "Ir a niños" / "Ir al inicio"
 - Reproducción: "Reproducir [nombre]" / "Pausar" / "Reanudar" / "Saltar"
 - Búsqueda: "Buscar [consulta]"
-- Guardar: "Agregar a favoritos" / "Agregar a lista"
+- Guardar: "Agregar a favoritos" / "Agregar a playlist"
 
 Sin ayuda adicional ni sugerencias. Solo responde la solicitud específica en español."""
 
@@ -245,7 +249,7 @@ def get_system_prompt(
 
 השתמש בכלי search_content לחיפוש תוכן מלא בקטלוג."""
         except Exception as e:
-            print(f"[CHAT] Error formatting media context: {e}")
+            logger.error("Error formatting media context", extra={"error": str(e)})
             context_str = ""
 
     if lang == "en":

@@ -170,7 +170,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [castMembers, setCastMembers] = useState<CastMember[]>([]);
   const [showSeasonPicker, setShowSeasonPicker] = useState(false);
-  const [isInWatchlist, setIsInWatchlist] = useState(false);
+  const [isInPlaylist, setIsInPlaylist] = useState(false);
 
   const getLocalizedText = useCallback(
     (item: any, field: string): string => {
@@ -310,10 +310,10 @@ export const SeriesDetailScreenMobile: React.FC = () => {
     [navigation],
   );
 
-  const handleToggleWatchlist = useCallback(() => {
+  const handleTogglePlaylist = useCallback(() => {
     ReactNativeHapticFeedback.trigger("impactLight");
-    setIsInWatchlist(!isInWatchlist);
-  }, [isInWatchlist]);
+    setIsInPlaylist(!isInPlaylist);
+  }, [isInPlaylist]);
 
   if (loading) {
     return (
@@ -467,11 +467,11 @@ export const SeriesDetailScreenMobile: React.FC = () => {
             ]}
           >
             <TouchableOpacity
-              onPress={handleToggleWatchlist}
+              onPress={handleTogglePlaylist}
               style={styles.quickActionButton}
             >
               <View style={styles.quickActionIcon}>
-                {isInWatchlist ? (
+                {isInPlaylist ? (
                   <NativeIcon name="check" size="lg" color="#a855f7" />
                 ) : (
                   <NativeIcon name="plus" size="lg" color="#ffffff" />

@@ -12,7 +12,7 @@ export { PodcastsScreen } from './PodcastsScreen';
 export { SearchScreen } from './SearchScreen';
 export { FavoritesScreen } from './FavoritesScreen';
 export { DownloadsScreen } from './DownloadsScreen';
-export { WatchlistScreen } from './WatchlistScreen';
+export { PlaylistScreen, PlaylistScreen as WatchlistScreen } from './WatchlistScreen';
 export { ChildrenScreen } from './ChildrenScreen';
 export { JudaismScreen } from './JudaismScreen';
 export { default as MorningRitualScreen } from './MorningRitualScreen';

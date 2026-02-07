@@ -31,7 +31,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   onComplete,
   minimumDuration = 3000,
 }) => {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [videoEnded, setVideoEnded] = useState(false);
   const fadeAnim = useRef(new Animated.Value(1)).current;
@@ -122,6 +122,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
           <Text style={styles.skipButtonText}>Skip</Text>
         </Pressable>
       )}
+
+      {/* Powered by attribution */}
+      <View style={styles.poweredByContainer}>
+        <Text style={styles.poweredByText}>{t('common.poweredBy')}</Text>
+        <Text style={styles.poweredByBrand}>Olorin.ai LLC</Text>
+      </View>
     </Animated.View>
   );
 };
@@ -158,6 +164,26 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 20,
     fontWeight: '600',
+  },
+  poweredByContainer: {
+    position: 'absolute',
+    bottom: 30,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 6,
+    writingDirection: 'ltr',
+  },
+  poweredByText: {
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  poweredByBrand: {
+    fontSize: 16,
+    color: '#A855F7',
+    fontWeight: '500',
   },
 });
 

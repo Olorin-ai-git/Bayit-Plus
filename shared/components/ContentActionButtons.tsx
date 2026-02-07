@@ -8,18 +8,18 @@ interface ContentActionButtonsProps {
   contentType: 'vod' | 'live' | 'podcast' | 'radio' | 'movie' | 'series' | 'channel';
   size?: 'small' | 'medium' | 'large';
   showFavorite?: boolean;
-  showWatchlist?: boolean;
+  showPlaylist?: boolean;
   initialIsFavorite?: boolean;
-  initialInWatchlist?: boolean;
+  initialInPlaylist?: boolean;
   onFavoriteChange?: (isFavorite: boolean) => void;
-  onWatchlistChange?: (inWatchlist: boolean) => void;
+  onPlaylistChange?: (inPlaylist: boolean) => void;
   favoritesService?: {
     toggleFavorite: (contentId: string, contentType: string) => Promise<{ is_favorite: boolean }>;
     isFavorite: (contentId: string) => Promise<{ is_favorite: boolean }>;
   };
-  watchlistService?: {
-    toggleWatchlist: (contentId: string, contentType: string) => Promise<{ in_watchlist: boolean }>;
-    isInWatchlist: (contentId: string) => Promise<{ in_watchlist: boolean }>;
+  playlistService?: {
+    toggleItem: (contentId: string, contentType: string) => Promise<{ in_playlist: boolean }>;
+    checkItem: (contentId: string) => Promise<{ in_playlist: boolean }>;
   };
   style?: any;
   buttonStyle?: any;
@@ -43,23 +43,23 @@ export function ContentActionButtons({
   contentType,
   size = 'medium',
   showFavorite = true,
-  showWatchlist = true,
+  showPlaylist = true,
   initialIsFavorite,
-  initialInWatchlist,
+  initialInPlaylist,
   onFavoriteChange,
-  onWatchlistChange,
+  onPlaylistChange,
   favoritesService,
-  watchlistService,
+  playlistService,
   style,
   buttonStyle,
   vertical = false,
 }: ContentActionButtonsProps) {
   const [isFavorite, setIsFavorite] = useState(initialIsFavorite ?? false);
-  const [inWatchlist, setInWatchlist] = useState(initialInWatchlist ?? false);
+  const [inPlaylist, setInPlaylist] = useState(initialInPlaylist ?? false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
-  const [watchlistLoading, setWatchlistLoading] = useState(false);
+  const [playlistLoading, setPlaylistLoading] = useState(false);
   const [favoriteHovered, setFavoriteHovered] = useState(false);
-  const [watchlistHovered, setWatchlistHovered] = useState(false);
+  const [playlistHovered, setPlaylistHovered] = useState(false);
 
   // Load initial states if services provided and no initial values given
   useEffect(() => {
@@ -72,17 +72,17 @@ export function ContentActionButtons({
           // Silently fail - user might not be logged in
         }
       }
-      if (initialInWatchlist === undefined && watchlistService) {
+      if (initialInPlaylist === undefined && playlistService) {
         try {
-          const result = await watchlistService.isInWatchlist(contentId);
-          setInWatchlist(result.in_watchlist);
+          const result = await playlistService.checkItem(contentId);
+          setInPlaylist(result.in_playlist);
         } catch (e) {
           // Silently fail - user might not be logged in
         }
       }
     };
     loadStates();
-  }, [contentId, initialIsFavorite, initialInWatchlist, favoritesService, watchlistService]);
+  }, [contentId, initialIsFavorite, initialInPlaylist, favoritesService, playlistService]);
 
   const handleFavoriteToggle = useCallback(async (e: any) => {
     e.preventDefault?.();
@@ -102,23 +102,23 @@ export function ContentActionButtons({
     }
   }, [contentId, contentType, favoritesService, favoriteLoading, onFavoriteChange]);
 
-  const handleWatchlistToggle = useCallback(async (e: any) => {
+  const handlePlaylistToggle = useCallback(async (e: any) => {
     e.preventDefault?.();
     e.stopPropagation?.();
 
-    if (!watchlistService || watchlistLoading) return;
+    if (!playlistService || playlistLoading) return;
 
-    setWatchlistLoading(true);
+    setPlaylistLoading(true);
     try {
-      const result = await watchlistService.toggleWatchlist(contentId, contentType);
-      setInWatchlist(result.in_watchlist);
-      onWatchlistChange?.(result.in_watchlist);
+      const result = await playlistService.toggleItem(contentId, contentType);
+      setInPlaylist(result.in_playlist);
+      onPlaylistChange?.(result.in_playlist);
     } catch (error) {
-      console.error('Failed to toggle watchlist:', error);
+      // Playlist toggle failed silently
     } finally {
-      setWatchlistLoading(false);
+      setPlaylistLoading(false);
     }
-  }, [contentId, contentType, watchlistService, watchlistLoading, onWatchlistChange]);
+  }, [contentId, contentType, playlistService, playlistLoading, onPlaylistChange]);
 
   const iconSize = ICON_SIZES[size];
   const buttonSize = BUTTON_SIZES[size];
@@ -159,15 +159,15 @@ export function ContentActionButtons({
         </Pressable>
       )}
 
-      {showWatchlist && watchlistService && (
+      {showPlaylist && playlistService && (
         <Pressable
-          onPress={handleWatchlistToggle}
-          onHoverIn={() => setWatchlistHovered(true)}
-          onHoverOut={() => setWatchlistHovered(false)}
-          disabled={watchlistLoading}
+          onPress={handlePlaylistToggle}
+          onHoverIn={() => setPlaylistHovered(true)}
+          onHoverOut={() => setPlaylistHovered(false)}
+          disabled={playlistLoading}
           className={`bg-black/50 justify-center items-center ${
-            inWatchlist ? 'bg-white/15' : ''
-          } ${watchlistHovered ? 'bg-white/20 scale-110' : ''} ${watchlistLoading ? 'opacity-50' : ''}`}
+            inPlaylist ? 'bg-white/15' : ''
+          } ${playlistHovered ? 'bg-white/20 scale-110' : ''} ${playlistLoading ? 'opacity-50' : ''}`}
           style={[
             {
               width: buttonSize,
@@ -182,13 +182,13 @@ export function ContentActionButtons({
             },
             buttonStyle,
           ]}
-          accessibilityLabel={inWatchlist ? 'Remove from watchlist' : 'Add to watchlist'}
+          accessibilityLabel={inPlaylist ? 'Remove from playlist' : 'Add to playlist'}
           accessibilityRole="button"
         >
           <Ionicons
-            name={inWatchlist ? 'bookmark' : 'bookmark-outline'}
+            name={inPlaylist ? 'bookmark' : 'bookmark-outline'}
             size={iconSize}
-            color={inWatchlist ? colors.primary : colors.textMuted}
+            color={inPlaylist ? colors.primary : colors.textMuted}
           />
         </Pressable>
       )}

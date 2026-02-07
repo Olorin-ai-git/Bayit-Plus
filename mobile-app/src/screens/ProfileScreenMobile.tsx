@@ -4,7 +4,7 @@
  * Mobile-optimized profile screen
  * Features:
  * - User profile information
- * - Quick stats (watchlist, favorites, downloads)
+ * - Quick stats (playlist, favorites, downloads)
  * - Settings and preferences
  * - Account management
  * - Responsive layout for phone/tablet
@@ -40,7 +40,7 @@ import logger from '@/utils/logger';
 const moduleLogger = logger.scope('ProfileScreenMobile');
 
 interface ProfileStats {
-  watchlistCount: number;
+  playlistCount: number;
   favoritesCount: number;
   downloadsCount: number;
   watchTimeMinutes: number;
@@ -57,7 +57,7 @@ export const ProfileScreenMobile: React.FC = () => {
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   const [stats, setStats] = useState<ProfileStats>({
-    watchlistCount: 0,
+    playlistCount: 0,
     favoritesCount: 0,
     downloadsCount: 0,
     watchTimeMinutes: 0,
@@ -73,7 +73,7 @@ export const ProfileScreenMobile: React.FC = () => {
     try {
       const response = await profilesService.getStats();
       setStats({
-        watchlistCount: response.watchlist_count ?? 0,
+        playlistCount: response.playlist_count ?? 0,
         favoritesCount: response.favorites_count ?? 0,
         downloadsCount: response.downloads_count ?? 0,
         watchTimeMinutes: response.watch_time_minutes ?? 0,
@@ -106,10 +106,10 @@ export const ProfileScreenMobile: React.FC = () => {
 
   const profileMenuItems = [
     {
-      id: 'watchlist',
-      title: t('profile.watchlist'),
-      onPress: () => navigation.navigate('Watchlist'),
-      badge: stats.watchlistCount,
+      id: 'playlist',
+      title: t('profile.playlist'),
+      onPress: () => navigation.navigate('Playlist'),
+      badge: stats.playlistCount,
     },
     {
       id: 'favorites',
@@ -258,8 +258,8 @@ export const ProfileScreenMobile: React.FC = () => {
         </GlassView>
 
         <GlassView style={styles.statItem}>
-          <Text style={styles.statValue}>{stats.watchlistCount}</Text>
-          <Text style={styles.statLabel}>{t('profile.watchlist')}</Text>
+          <Text style={styles.statValue}>{stats.playlistCount}</Text>
+          <Text style={styles.statLabel}>{t('profile.playlist')}</Text>
         </GlassView>
 
         <GlassView style={styles.statItem}>

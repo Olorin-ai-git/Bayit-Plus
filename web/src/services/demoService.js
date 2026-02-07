@@ -236,29 +236,29 @@ export const demoHistoryService = {
 };
 
 // ===========================================
-// WATCHLIST SERVICE (Demo)
+// PLAYLIST SERVICE (Demo)
 // ===========================================
-export const demoWatchlistService = {
-  getWatchlist: async () => {
+export const demoPlaylistService = {
+  getPlaylist: async () => {
     await delay();
     return { items: demoSeries.slice(0, 3) };
   },
-  addToWatchlist: async (contentId, contentType) => {
+  addItem: async (contentId, contentType) => {
     await delay();
-    return { message: 'Added to watchlist' };
+    return { message: 'Added to playlist' };
   },
-  removeFromWatchlist: async (contentId) => {
+  removeItem: async (contentId) => {
     await delay();
-    return { message: 'Removed from watchlist' };
+    return { message: 'Removed from playlist' };
   },
-  isInWatchlist: async (contentId) => {
+  checkItem: async (contentId) => {
     await delay();
-    return { in_watchlist: Math.random() > 0.5 };
+    return { in_playlist: Math.random() > 0.5 };
   },
-  toggleWatchlist: async (contentId, contentType = 'vod') => {
+  toggleItem: async (contentId, contentType = 'vod') => {
     await delay();
-    const inWatchlist = Math.random() > 0.5;
-    return { in_watchlist: inWatchlist, message: inWatchlist ? 'Added to watchlist' : 'Removed from watchlist' };
+    const inPlaylist = Math.random() > 0.5;
+    return { in_playlist: inPlaylist, message: inPlaylist ? 'Added to playlist' : 'Removed from playlist' };
   },
 };
 
@@ -1435,7 +1435,7 @@ export default {
   radio: demoRadioService,
   podcast: demoPodcastService,
   history: demoHistoryService,
-  watchlist: demoWatchlistService,
+  playlist: demoPlaylistService,
   subscription: demoSubscriptionService,
   chat: demoChatService,
   zman: demoZmanService,

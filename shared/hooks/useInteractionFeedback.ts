@@ -33,7 +33,7 @@ const feedbackTemplates = {
   pause: () => 'משהה',
   play: () => 'מפעיל',
   stop: () => 'עוצר',
-  add_to_watchlist: (title: string) => `הוסיף את ${title} לרשימת הצפייה`,
+  add_to_playlist: (title: string) => `הוסיף את ${title} לרשימת הצפייה`,
   subscribe: () => 'פותח דף מנוי',
   settings_changed: (setting: string) => `שינוי ${setting}`,
   share: (title: string) => `שיתוף ${title}`,
@@ -158,13 +158,13 @@ export function useInteractionFeedback(
   );
 
   /**
-   * Give feedback for adding to watchlist
+   * Give feedback for adding to playlist
    */
-  const feedbackAddWatchlist = useCallback(
+  const feedbackAddPlaylist = useCallback(
     (title: string) => {
       if (!shouldGiveFeedback) return;
 
-      const message = feedbackTemplates.add_to_watchlist(title);
+      const message = feedbackTemplates.add_to_playlist(title);
       setTimeout(() => {
         ttsService.speak(message, priority);
       }, delayMs);
@@ -241,7 +241,7 @@ export function useInteractionFeedback(
     feedbackGoBack,
     feedbackSearch,
     feedbackPlayback,
-    feedbackAddWatchlist,
+    feedbackAddPlaylist,
     feedbackSubscribe,
     feedbackSettingsChanged,
     feedbackShare,

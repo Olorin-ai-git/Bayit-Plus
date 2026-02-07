@@ -1,6 +1,6 @@
 """
 Profile Stats API Routes
-Get user profile statistics including watchlist, favorites, and watch time
+Get user profile statistics including playlist, favorites, and watch time
 """
 
 from fastapi import APIRouter, Depends
@@ -9,13 +9,14 @@ from pydantic import BaseModel
 from app.api.routes.favorites import Favorite
 from app.core.security import get_current_active_user
 from app.models.user import User
-from app.models.watchlist import WatchHistory, WatchlistItem
+from app.models.playlist import PlaylistItem
+from app.models.watchlist import WatchHistory
 
 router = APIRouter(prefix="/profile", tags=["profile"])
 
 
 class ProfileStatsResponse(BaseModel):
-    watchlist_count: int
+    playlist_count: int
     favorites_count: int
     downloads_count: int
     watch_time_minutes: int
@@ -28,8 +29,8 @@ async def get_profile_stats(
     """Get current user's profile statistics."""
     user_id = str(current_user.id)
 
-    # Count watchlist items
-    watchlist_count = await WatchlistItem.find(WatchlistItem.user_id == user_id).count()
+    # Count playlist items
+    playlist_count = await PlaylistItem.find(PlaylistItem.user_id == user_id).count()
 
     # Count favorites
     favorites_count = await Favorite.find(Favorite.user_id == user_id).count()
@@ -45,7 +46,7 @@ async def get_profile_stats(
     downloads_count = 0
 
     return ProfileStatsResponse(
-        watchlist_count=watchlist_count,
+        playlist_count=playlist_count,
         favorites_count=favorites_count,
         downloads_count=downloads_count,
         watch_time_minutes=watch_time_minutes,

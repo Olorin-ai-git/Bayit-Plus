@@ -8,7 +8,7 @@ from typing import Optional
 
 from pydantic import BaseModel, field_validator
 
-from app.models.content import Content, LiveChannel, Podcast, RadioStation
+from app.models.content import Content, LiveChannel, PodcastEpisode, RadioStation
 from app.models.playlist import CONTENT_ID_PATTERN, ContentType, PlaylistItem
 
 
@@ -40,6 +40,12 @@ class PlaylistReorderRequest(BaseModel):
         return v
 
 
+class PlaylistToggleRequest(BaseModel):
+    """Request body for toggling playlist membership."""
+
+    content_type: str = "vod"
+
+
 async def get_content_metadata(
     content_id: str, content_type: ContentType
 ) -> Optional[dict]:
@@ -57,9 +63,13 @@ async def get_content_metadata(
         if channel:
             return {"title": channel.name, "thumbnail": channel.thumbnail}
     elif content_type == ContentType.PODCAST:
-        podcast = await Podcast.get(content_id)
-        if podcast:
-            return {"title": podcast.title, "thumbnail": podcast.cover}
+        episode = await PodcastEpisode.get(content_id)
+        if episode:
+            return {
+                "title": episode.title,
+                "thumbnail": episode.thumbnail,
+                "duration": episode.duration,
+            }
     elif content_type == ContentType.RADIO:
         station = await RadioStation.get(content_id)
         if station:

@@ -28,10 +28,8 @@ export default function SeriesDetailPage() {
     selectedEpisode,
     loading,
     episodesLoading,
-    inWatchlist,
     setSelectedSeason,
     setSelectedEpisode,
-    toggleWatchlist,
   } = useSeriesData({ seriesId });
 
   const { isPreviewPlaying, showPoster, videoRef, startPreview, stopPreview, cleanup } =
@@ -103,14 +101,12 @@ export default function SeriesDetailPage() {
         selectedEpisode={selectedEpisode}
         selectedSeason={selectedSeason}
         episodes={episodes}
-        inWatchlist={inWatchlist}
         isPreviewPlaying={isPreviewPlaying}
         showPoster={showPoster}
         videoRef={videoRef}
         flexDirection={flexDirection}
         textAlign={textAlign}
         onPlay={handlePlay}
-        toggleWatchlist={toggleWatchlist}
         startPreview={startPreview}
       />
 

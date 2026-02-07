@@ -5,7 +5,7 @@
 
 import { View, Text, Image, Dimensions, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Play, Plus, Check } from 'lucide-react';
+import { Play } from 'lucide-react';
 import LinearGradient from 'react-native-linear-gradient';
 import { GlassView, GlassButton, GlassBadge, GlassTooltip } from '@bayit/shared/ui';
 import { SubtitleFlags } from '@bayit/shared/components';
@@ -19,14 +19,12 @@ interface SeriesHeroProps {
   selectedEpisode: Episode | null;
   selectedSeason: number;
   episodes: Episode[];
-  inWatchlist: boolean;
   isPreviewPlaying: boolean;
   showPoster: boolean;
   videoRef: React.RefObject<HTMLVideoElement>;
   flexDirection: 'row' | 'row-reverse';
   textAlign: 'left' | 'right' | 'center';
   onPlay: () => void;
-  toggleWatchlist: () => void;
   startPreview: () => void;
 }
 
@@ -35,14 +33,12 @@ export function SeriesHero({
   selectedEpisode,
   selectedSeason,
   episodes,
-  inWatchlist,
   isPreviewPlaying,
   showPoster,
   videoRef,
   flexDirection,
   textAlign,
   onPlay,
-  toggleWatchlist,
   startPreview,
 }: SeriesHeroProps) {
   const { t } = useTranslation();
@@ -167,22 +163,6 @@ export function SeriesHero({
                   : t('content.play')
               }
               disabled={episodes.length === 0}
-            />
-          </GlassTooltip>
-
-          <GlassTooltip
-            content={t('content.loadingSeries', 'Loading series information...')}
-            disabled={!!series}
-          >
-            <GlassButton
-              onPress={toggleWatchlist}
-              variant="ghost"
-              size="lg"
-              icon={
-                inWatchlist ? <Check size={20} color="#fff" /> : <Plus size={20} color="#fff" />
-              }
-              title={inWatchlist ? t('content.inList') : t('content.addToList')}
-              disabled={!series}
             />
           </GlassTooltip>
 

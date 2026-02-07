@@ -17,7 +17,8 @@ export function updateGestureForIntent(intent: VoiceIntent): void {
   switch (intent) {
     case 'SEARCH':
     case 'PLAYBACK':
-      // Both search and play-content trigger content lookup - show browsing
+    case 'WEB_SEARCH':
+      // Search and play-content trigger content lookup - show browsing
       store.setGestureState('browsing');
       break;
     case 'CHAT':
@@ -29,10 +30,17 @@ export function updateGestureForIntent(intent: VoiceIntent): void {
     case 'NAVIGATION':
     case 'SCROLL':
     case 'CONTROL':
+    case 'DISPLAY_CHANNELS':
       store.setGestureState('greeting');
       break;
+    case 'KIDS':
+      store.setGestureState('presenting');
+      break;
+    case 'PLAYLIST':
+      store.setGestureState('browsing');
+      break;
     default:
-      store.setGestureState('idle');
+      store.setGestureState(null);
   }
 }
 
@@ -107,6 +115,8 @@ export function getAnimationSequenceForIntent(
 ): AnimationSequence {
   switch (intent) {
     case 'SEARCH':
+    case 'CONTENT_QUERY':
+    case 'WEB_SEARCH':
       // No results → error shake
       if (context.count === 0 || !context.success) {
         return 'error_shake';
@@ -123,24 +133,23 @@ export function getAnimationSequenceForIntent(
       return 'process_command';
 
     case 'PLAYBACK':
-      // Playback commands → success celebration
+    case 'PLAYLIST':
+      // Playback and playlist commands → success celebration
       return 'success';
 
     case 'NAVIGATION':
-      // Navigation commands → acknowledge
+    case 'DISPLAY_CHANNELS':
+    case 'SCROLL':
+    case 'CONTROL':
+      // Navigation and control commands → acknowledge
       return 'acknowledge_new';
 
-    case 'HELP':
-      // Help requests → standard processing
-      return 'process_command';
-
-    case 'FILTER':
-      // Filter operations → acknowledge
-      return 'acknowledge_new';
-
-    case 'SETTINGS':
-      // Settings changes → acknowledge
-      return 'acknowledge_new';
+    case 'KIDS':
+      // Kids content → magical reveal (fun for children)
+      if (context.count === 0 || !context.success) {
+        return 'error_shake';
+      }
+      return 'magical_reveal';
 
     default:
       // Unknown intent → standard processing

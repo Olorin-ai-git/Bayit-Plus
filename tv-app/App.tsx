@@ -31,7 +31,6 @@ import {
   ProfileScreen,
   FavoritesScreen,
   DownloadsScreen,
-  WatchlistScreen,
   MorningRitualScreen,
   ProfileSelectionScreen,
   ChildrenScreen,
@@ -45,7 +44,7 @@ import {
   SupportScreen,
   SubscribeScreen,
 } from '@bayit/shared-screens';
-import { YoungstersScreen, FlowsScreen } from './src/screens';
+import { YoungstersScreen, FlowsScreen, PlaylistScreen } from './src/screens';
 import { useAuthStore, useChatbotStore } from '@bayit/shared-stores';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
@@ -82,7 +81,7 @@ export type RootStackParamList = {
   Subscribe: undefined;
   Favorites: undefined;
   Downloads: undefined;
-  Watchlist: undefined;
+  Playlist: undefined;
   EPG: undefined;
   MovieDetail: { movieId: string };
   SeriesDetail: { seriesId: string };
@@ -319,7 +318,7 @@ const AppContent: React.FC = () => {
             <Stack.Screen name="Search" component={SearchScreen} />
             <Stack.Screen name="Favorites" component={FavoritesScreen} />
             <Stack.Screen name="Downloads" component={DownloadsScreen} />
-            <Stack.Screen name="Watchlist" component={WatchlistScreen} />
+            <Stack.Screen name="Playlist" component={PlaylistScreen} />
             <Stack.Screen name="EPG" component={EPGScreen} />
             <Stack.Screen name="MovieDetail" component={MovieDetailScreen} />
             <Stack.Screen name="SeriesDetail" component={SeriesDetailScreen} />
@@ -379,10 +378,9 @@ const AppContentWithHandlers: React.FC = () => {
       navigation.navigate('Flows', { flowId: payload.flowId, autoStart: true });
     });
 
-    // Add to watchlist
-    registerActionHandler('add_to_watchlist', (payload: { contentId: string; contentType: string }) => {
-      console.log('[Chatbot] Add to watchlist:', payload);
-      // TODO: Integrate with watchlist API
+    // Add to playlist
+    registerActionHandler('add_to_playlist', (payload: { contentId: string; contentType: string }) => {
+      logger.info('Chatbot add to playlist action received', 'App', { payload });
     });
 
     // Cleanup handlers on unmount
@@ -391,7 +389,7 @@ const AppContentWithHandlers: React.FC = () => {
       unregisterActionHandler('search');
       unregisterActionHandler('play');
       unregisterActionHandler('start_flow');
-      unregisterActionHandler('add_to_watchlist');
+      unregisterActionHandler('add_to_playlist');
     };
   }, [navigation, registerActionHandler, unregisterActionHandler]);
 

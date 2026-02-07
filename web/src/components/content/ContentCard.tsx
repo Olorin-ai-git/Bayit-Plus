@@ -13,7 +13,7 @@ import AIEnhancedBadge from './AIEnhancedBadge';
 import ContentCardActions from './ContentCardActions';
 import { useDirection } from '@/hooks/useDirection';
 import { useResponsive } from '@/hooks/useResponsive';
-import { favoritesService, watchlistService } from '@/services/api';
+import { favoritesService, playlistService } from '@/services/api';
 import { getLocalizedCategory } from '@bayit/shared-utils/contentLocalization';
 import LinearGradient from 'react-native-linear-gradient';
 import logger from '@/utils/logger';
@@ -149,9 +149,9 @@ export default function ContentCard({ content, showProgress = false, showActions
 
   // Action button states
   const [isFavorite, setIsFavorite] = useState(false);
-  const [inWatchlist, setInWatchlist] = useState(false);
+  const [inPlaylist, setInPlaylist] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
-  const [watchlistLoading, setWatchlistLoading] = useState(false);
+  const [playlistLoading, setPlaylistLoading] = useState(false);
 
   // Check if this is a scraped article/business that should open in modal
   // Any content with city+state (location-based) or article/event type should open in modal
@@ -246,20 +246,20 @@ export default function ContentCard({ content, showProgress = false, showActions
     }
   };
 
-  const handleWatchlistToggle = async (e: React.MouseEvent) => {
+  const handlePlaylistToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (watchlistLoading) return;
-    setWatchlistLoading(true);
+    if (playlistLoading) return;
+    setPlaylistLoading(true);
 
     try {
-      const result = await watchlistService.toggleWatchlist(content.id, content.type || 'vod');
-      setInWatchlist(result.in_watchlist);
+      const result = await playlistService.toggleItem(content.id, content.type || 'vod');
+      setInPlaylist(result.in_playlist);
     } catch (error) {
-      logger.error('Failed to toggle watchlist', 'ContentCard', { contentId: content.id, contentType: content.type, error });
+      logger.error('Failed to toggle playlist', 'ContentCard', { contentId: content.id, contentType: content.type, error });
     } finally {
-      setWatchlistLoading(false);
+      setPlaylistLoading(false);
     }
   };
 
@@ -346,11 +346,11 @@ export default function ContentCard({ content, showProgress = false, showActions
                 contentType={content.type}
                 contentThumbnail={content.thumbnail}
                 isFavorite={isFavorite}
-                inWatchlist={inWatchlist}
+                inPlaylist={inPlaylist}
                 favoriteLoading={favoriteLoading}
-                watchlistLoading={watchlistLoading}
+                playlistLoading={playlistLoading}
                 onToggleFavorite={handleFavoriteToggle}
-                onToggleWatchlist={handleWatchlistToggle}
+                onTogglePlaylist={handlePlaylistToggle}
               />
             )}
 

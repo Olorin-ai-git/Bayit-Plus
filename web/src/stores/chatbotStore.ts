@@ -15,7 +15,7 @@ export interface ChatbotContext {
 }
 
 export interface ChatbotAction {
-  type: 'create_flow' | 'edit_flow' | 'start_flow' | 'search' | 'navigate' | 'download' | 'add_to_watchlist';
+  type: 'create_flow' | 'edit_flow' | 'start_flow' | 'search' | 'navigate' | 'download' | 'add_to_playlist';
   payload: Record<string, any>;
 }
 

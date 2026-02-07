@@ -137,11 +137,11 @@ COMMAND_PATTERNS = {
     },
     "favorites": {
         "patterns": [
-            r"(?:show|list|get|display)\s+(?:my\s+)?(?:favorite|saved|liked|watchlist)(?:s)?(?:\s+.*)?$",
-            r"(?:add to|save to)\s+(?:favorite|watchlist)(?:\s+.*)?$",
+            r"(?:show|list|get|display)\s+(?:my\s+)?(?:favorite|saved|liked|playlist)(?:s)?(?:\s+.*)?$",
+            r"(?:add to|save to)\s+(?:favorite|playlist)(?:\s+.*)?$",
         ],
         "type": "navigate",
-        "description": "Access favorites/watchlist",
+        "description": "Access favorites/playlist",
     },
     "recommend": {
         "patterns": [

@@ -3,11 +3,11 @@ Playlist Intent Handler
 Main router for playlist voice commands with add/remove sub-handlers.
 """
 
-from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, List
 
+from app.core.config import settings
 from app.core.logging_config import get_logger
-from app.models.playlist import MAX_PLAYLIST_ITEMS, ContentType, PlaylistItem, UserPlaylist
+from app.models.playlist import ContentType, PlaylistItem, get_next_position, recalculate_positions
 from ..context import VoiceContext
 from ..error_messages import get_error_message
 from ..playlist_keywords import detect_playlist_sub_action, extract_content_query
@@ -83,57 +83,63 @@ async def _handle_add(transcript: str, context: VoiceContext) -> Dict[str, Any]:
     thumbnail = top.get("thumbnail")
     duration = top.get("duration")
 
-    playlist = await UserPlaylist.get_or_create(context.user_id)
-
-    # Check duplicate by content_id
-    if any(item.content_id == content_id for item in playlist.items):
+    existing = await PlaylistItem.find_one(
+        PlaylistItem.user_id == context.user_id,
+        PlaylistItem.content_id == content_id,
+    )
+    if existing:
+        items = await _fetch_user_items(context.user_id)
         spoken = PLAYLIST_ALREADY_EXISTS_RESPONSES.get(
             context.language, PLAYLIST_ALREADY_EXISTS_RESPONSES["en"]
         ).format(title)
-        return _build_playlist_response(spoken, "add", playlist.items)
+        return _build_playlist_response(spoken, "add", items)
 
-    # Check size limit
-    if len(playlist.items) >= MAX_PLAYLIST_ITEMS:
+    current_count = await PlaylistItem.find(
+        PlaylistItem.user_id == context.user_id,
+    ).count()
+    if current_count >= settings.PLAYLIST_MAX_ITEMS:
+        items = await _fetch_user_items(context.user_id)
         spoken = PLAYLIST_FULL_RESPONSES.get(
             context.language, PLAYLIST_FULL_RESPONSES["en"]
-        ).format(MAX_PLAYLIST_ITEMS)
-        return _build_playlist_response(spoken, "add", playlist.items)
+        ).format(settings.PLAYLIST_MAX_ITEMS)
+        return _build_playlist_response(spoken, "add", items)
 
     try:
         parsed_type = ContentType(content_type_str)
     except ValueError:
         parsed_type = ContentType.VOD
 
+    next_pos = await get_next_position(context.user_id)
     new_item = PlaylistItem(
+        user_id=context.user_id,
         content_id=content_id,
         content_type=parsed_type,
         title=title,
         thumbnail=thumbnail,
         duration=duration,
-        position=len(playlist.items),
+        position=next_pos,
     )
-    playlist.items.append(new_item)
-    playlist.updated_at = datetime.utcnow()
-    await playlist.save()
+    await new_item.insert()
 
     logger.info(
         "Playlist item added",
         extra={"user_id": context.user_id, "content_id": content_id, "title": title},
     )
 
+    items = await _fetch_user_items(context.user_id)
     spoken = PLAYLIST_ADDED_RESPONSES.get(
         context.language, PLAYLIST_ADDED_RESPONSES["en"]
     ).format(title)
-    return _build_playlist_response(spoken, "add", playlist.items)
+    return _build_playlist_response(spoken, "add", items)
 
 
 async def _handle_remove(transcript: str, context: VoiceContext) -> Dict[str, Any]:
     """Remove content from the user's playlist by fuzzy title match."""
     content_query = extract_content_query(transcript, context.language).lower()
-    playlist = await UserPlaylist.get_or_create(context.user_id)
+    items = await _fetch_user_items(context.user_id)
 
     matched_item = None
-    for item in playlist.items:
+    for item in items:
         if content_query in item.title.lower() or item.title.lower() in content_query:
             matched_item = item
             break
@@ -142,22 +148,28 @@ async def _handle_remove(transcript: str, context: VoiceContext) -> Dict[str, An
         spoken = PLAYLIST_NOT_FOUND_RESPONSES.get(
             context.language, PLAYLIST_NOT_FOUND_RESPONSES["en"]
         )
-        return _build_playlist_response(spoken, "remove", playlist.items)
+        return _build_playlist_response(spoken, "remove", items)
 
-    playlist.items = [i for i in playlist.items if i.content_id != matched_item.content_id]
-    playlist.recalculate_positions()
-    playlist.updated_at = datetime.utcnow()
-    await playlist.save()
+    await matched_item.delete()
+    await recalculate_positions(context.user_id)
 
     logger.info(
         "Playlist item removed",
         extra={"user_id": context.user_id, "content_id": matched_item.content_id, "title": matched_item.title},
     )
 
+    remaining = await _fetch_user_items(context.user_id)
     spoken = PLAYLIST_REMOVED_RESPONSES.get(
         context.language, PLAYLIST_REMOVED_RESPONSES["en"]
     ).format(matched_item.title)
-    return _build_playlist_response(spoken, "remove", playlist.items)
+    return _build_playlist_response(spoken, "remove", remaining)
+
+
+async def _fetch_user_items(user_id: str) -> List[PlaylistItem]:
+    """Fetch all playlist items for a user sorted by position."""
+    return await PlaylistItem.find(
+        PlaylistItem.user_id == user_id,
+    ).sort("position").to_list()
 
 
 def _build_playlist_response(

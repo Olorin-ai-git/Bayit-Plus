@@ -1,19 +1,27 @@
 """
 Playlist REST API
-CRUD endpoints for user playlist management.
+Unified playlist endpoints (merged watchlist + ordered playback queue).
 """
 
-from datetime import datetime
+from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, Query
 
+from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user
-from app.models.playlist import CONTENT_ID_PATTERN, MAX_PLAYLIST_ITEMS, PlaylistItem, UserPlaylist
+from app.models.playlist import (
+    CONTENT_ID_PATTERN,
+    ContentType,
+    PlaylistItem,
+    get_next_position,
+    recalculate_positions,
+)
 from app.models.user import User
 from .playlist_helpers import (
     PlaylistAddRequest,
     PlaylistReorderRequest,
+    PlaylistToggleRequest,
     enrich_playlist_item,
     get_content_metadata,
 )
@@ -24,17 +32,23 @@ router = APIRouter()
 
 @router.get("")
 async def get_playlist(
+    content_type: Optional[str] = Query(None, description="Filter by content type"),
     current_user: User = Depends(get_current_active_user),
 ):
     """Get user's playlist with enriched content data."""
-    playlist = await UserPlaylist.find_one(
-        UserPlaylist.user_id == str(current_user.id)
+    user_id = str(current_user.id)
+    query = {"user_id": user_id}
+
+    if content_type:
+        query["content_type"] = content_type
+
+    items = (
+        await PlaylistItem.find(query)
+        .sort("position")
+        .to_list()
     )
 
-    if not playlist:
-        return {"items": []}
-
-    return {"items": [enrich_playlist_item(item) for item in playlist.items]}
+    return {"items": [enrich_playlist_item(item) for item in items]}
 
 
 @router.post("/items")
@@ -44,45 +58,54 @@ async def add_to_playlist(
 ):
     """Add content to playlist."""
     user_id = str(current_user.id)
-    playlist = await UserPlaylist.get_or_create(user_id)
 
-    if any(item.content_id == data.content_id for item in playlist.items):
+    existing = await PlaylistItem.find_one(
+        PlaylistItem.user_id == user_id,
+        PlaylistItem.content_id == data.content_id,
+    )
+    if existing:
+        items = await _get_user_items(user_id)
         return {
             "message": "Already in playlist",
-            "item_count": len(playlist.items),
-            "items": [enrich_playlist_item(i) for i in playlist.items],
+            "item_count": len(items),
+            "items": [enrich_playlist_item(i) for i in items],
         }
 
-    if len(playlist.items) >= MAX_PLAYLIST_ITEMS:
+    current_count = await PlaylistItem.find(
+        PlaylistItem.user_id == user_id
+    ).count()
+    if current_count >= settings.PLAYLIST_MAX_ITEMS:
         raise HTTPException(
             status_code=400,
-            detail=f"Playlist full ({MAX_PLAYLIST_ITEMS} items max)",
+            detail=f"Playlist full ({settings.PLAYLIST_MAX_ITEMS} items max)",
         )
 
     content_meta = await get_content_metadata(data.content_id, data.content_type)
     if not content_meta:
         raise HTTPException(status_code=404, detail="Content not found")
 
+    position = await get_next_position(user_id)
     new_item = PlaylistItem(
+        user_id=user_id,
         content_id=data.content_id,
         content_type=data.content_type,
         title=content_meta["title"],
         thumbnail=content_meta.get("thumbnail"),
         duration=content_meta.get("duration"),
-        position=len(playlist.items),
+        position=position,
     )
-    playlist.items.append(new_item)
-    playlist.updated_at = datetime.utcnow()
-    await playlist.save()
+    await new_item.insert()
 
     logger.info(
         "Playlist item added via API",
         extra={"user_id": user_id, "content_id": data.content_id},
     )
+
+    items = await _get_user_items(user_id)
     return {
         "message": "Added to playlist",
-        "item_count": len(playlist.items),
-        "items": [enrich_playlist_item(i) for i in playlist.items],
+        "item_count": len(items),
+        "items": [enrich_playlist_item(i) for i in items],
     }
 
 
@@ -93,29 +116,26 @@ async def remove_from_playlist(
 ):
     """Remove content from playlist."""
     user_id = str(current_user.id)
-    playlist = await UserPlaylist.find_one(UserPlaylist.user_id == user_id)
-
-    if not playlist:
+    item = await PlaylistItem.find_one(
+        PlaylistItem.user_id == user_id,
+        PlaylistItem.content_id == content_id,
+    )
+    if not item:
         raise HTTPException(status_code=404, detail="Not in playlist")
 
-    original_count = len(playlist.items)
-    playlist.items = [i for i in playlist.items if i.content_id != content_id]
-
-    if len(playlist.items) == original_count:
-        raise HTTPException(status_code=404, detail="Not in playlist")
-
-    playlist.recalculate_positions()
-    playlist.updated_at = datetime.utcnow()
-    await playlist.save()
+    await item.delete()
+    await recalculate_positions(user_id)
 
     logger.info(
         "Playlist item removed via API",
         extra={"user_id": user_id, "content_id": content_id},
     )
+
+    items = await _get_user_items(user_id)
     return {
         "message": "Removed from playlist",
-        "item_count": len(playlist.items),
-        "items": [enrich_playlist_item(i) for i in playlist.items],
+        "item_count": len(items),
+        "items": [enrich_playlist_item(i) for i in items],
     }
 
 
@@ -125,12 +145,7 @@ async def clear_playlist(
 ):
     """Clear all items from playlist."""
     user_id = str(current_user.id)
-    playlist = await UserPlaylist.find_one(UserPlaylist.user_id == user_id)
-
-    if playlist:
-        playlist.items = []
-        playlist.updated_at = datetime.utcnow()
-        await playlist.save()
+    await PlaylistItem.find(PlaylistItem.user_id == user_id).delete()
 
     logger.info("Playlist cleared via API", extra={"user_id": user_id})
     return {"message": "Playlist cleared", "item_count": 0, "items": []}
@@ -143,32 +158,104 @@ async def reorder_playlist_item(
 ):
     """Reorder an item in the playlist."""
     user_id = str(current_user.id)
-    playlist = await UserPlaylist.find_one(UserPlaylist.user_id == user_id)
+    items = await _get_user_items(user_id)
 
-    if not playlist:
+    if not items:
         raise HTTPException(status_code=404, detail="Playlist not found")
 
-    item_idx = next(
-        (i for i, item in enumerate(playlist.items) if item.content_id == data.content_id),
-        None,
+    target = next(
+        (i for i in items if i.content_id == data.content_id), None
     )
-    if item_idx is None:
+    if not target:
         raise HTTPException(status_code=404, detail="Item not in playlist")
 
-    new_pos = max(0, min(data.new_position, len(playlist.items) - 1))
-    item = playlist.items.pop(item_idx)
-    playlist.items.insert(new_pos, item)
+    # Remove target from list, insert at new position
+    items = [i for i in items if i.content_id != data.content_id]
+    new_pos = max(0, min(data.new_position, len(items)))
+    items.insert(new_pos, target)
 
-    playlist.recalculate_positions()
-    playlist.updated_at = datetime.utcnow()
-    await playlist.save()
+    # Update positions for all items
+    for idx, item in enumerate(items):
+        if item.position != idx:
+            item.position = idx
+            await item.save()
 
     logger.info(
         "Playlist reordered via API",
-        extra={"user_id": user_id, "content_id": data.content_id, "new_position": new_pos},
+        extra={
+            "user_id": user_id,
+            "content_id": data.content_id,
+            "new_position": new_pos,
+        },
     )
+
     return {
         "message": "Reordered",
-        "item_count": len(playlist.items),
-        "items": [enrich_playlist_item(i) for i in playlist.items],
+        "item_count": len(items),
+        "items": [enrich_playlist_item(i) for i in items],
     }
+
+
+@router.get("/check/{content_id}")
+async def check_playlist(
+    content_id: str = Path(..., pattern=CONTENT_ID_PATTERN),
+    current_user: User = Depends(get_current_active_user),
+):
+    """Check if content is in playlist."""
+    item = await PlaylistItem.find_one(
+        PlaylistItem.user_id == str(current_user.id),
+        PlaylistItem.content_id == content_id,
+    )
+    return {"in_playlist": item is not None}
+
+
+@router.post("/toggle/{content_id}")
+async def toggle_playlist(
+    content_id: str = Path(..., pattern=CONTENT_ID_PATTERN),
+    data: Optional[PlaylistToggleRequest] = None,
+    current_user: User = Depends(get_current_active_user),
+):
+    """Toggle playlist status for content."""
+    user_id = str(current_user.id)
+    content_type_str = data.content_type if data else "vod"
+
+    existing = await PlaylistItem.find_one(
+        PlaylistItem.user_id == user_id,
+        PlaylistItem.content_id == content_id,
+    )
+
+    if existing:
+        await existing.delete()
+        await recalculate_positions(user_id)
+        return {"in_playlist": False, "message": "Removed from playlist"}
+
+    try:
+        parsed_type = ContentType(content_type_str)
+    except ValueError:
+        parsed_type = ContentType.VOD
+
+    content_meta = await get_content_metadata(content_id, parsed_type)
+    title = content_meta["title"] if content_meta else content_id
+
+    position = await get_next_position(user_id)
+    new_item = PlaylistItem(
+        user_id=user_id,
+        content_id=content_id,
+        content_type=parsed_type,
+        title=title,
+        thumbnail=content_meta.get("thumbnail") if content_meta else None,
+        duration=content_meta.get("duration") if content_meta else None,
+        position=position,
+    )
+    await new_item.insert()
+
+    return {"in_playlist": True, "message": "Added to playlist"}
+
+
+async def _get_user_items(user_id: str) -> list[PlaylistItem]:
+    """Get sorted playlist items for a user."""
+    return (
+        await PlaylistItem.find(PlaylistItem.user_id == user_id)
+        .sort("position")
+        .to_list()
+    )

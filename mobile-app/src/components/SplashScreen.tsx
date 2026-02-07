@@ -150,6 +150,12 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
           <Text style={styles.skipText}>{t('common.skip', 'Skip')}</Text>
         </Pressable>
       )}
+
+      {/* Powered by attribution */}
+      <View style={[styles.poweredByContainer, { bottom: insets.bottom + 8 }]}>
+        <Text style={styles.poweredByText}>{t('common.poweredBy')}</Text>
+        <Text style={styles.poweredByBrand}>Olorin.ai LLC</Text>
+      </View>
     </Animated.View>
   );
 };
@@ -186,6 +192,25 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '600',
+  },
+  poweredByContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 4,
+    writingDirection: 'ltr',
+  },
+  poweredByText: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.6)',
+  },
+  poweredByBrand: {
+    fontSize: 12,
+    color: '#A855F7',
+    fontWeight: '500',
   },
 });
 

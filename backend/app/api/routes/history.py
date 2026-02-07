@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
 
 from app.core.security import get_current_active_user, get_optional_user
-from app.models.content import Content, PodcastEpisode
+from app.models.content import Content, Podcast, PodcastEpisode
 from app.models.user import User
 from app.models.watchlist import WatchHistory
 
@@ -38,13 +38,12 @@ async def get_history(
 
     result = []
     seen_content_ids = set()  # Deduplicate by content_id
+    seen_show_ids = set()  # Deduplicate podcast episodes by show
 
     for item in items:
-        # Skip duplicates
         if item.content_id in seen_content_ids:
             continue
 
-        # Fetch content based on type
         if item.content_type == "podcast":
             content = await PodcastEpisode.get(item.content_id)
         else:
@@ -52,19 +51,44 @@ async def get_history(
 
         if content:
             seen_content_ids.add(item.content_id)
-            result.append(
-                {
-                    "id": str(content.id),
-                    "title": content.title,
-                    "thumbnail": getattr(content, "thumbnail", None) or getattr(content, "cover", None),
-                    "duration": getattr(content, "duration", None),
-                    "type": item.content_type,
-                    "progress": item.progress_percent,
-                    "position": item.position,
-                    "completed": item.completed,
-                    "lastWatched": item.last_watched_at.isoformat(),
-                }
-            )
+
+            # For podcast episodes, resolve to the parent show for navigation
+            if item.content_type == "podcast" and hasattr(content, "podcast_id"):
+                # Skip if we already have an episode from this show
+                if content.podcast_id in seen_show_ids:
+                    continue
+                seen_show_ids.add(content.podcast_id)
+
+                show = await Podcast.get(content.podcast_id)
+                show_cover = getattr(show, "cover", None) if show else None
+                result.append(
+                    {
+                        "id": content.podcast_id,
+                        "episode_id": str(content.id),
+                        "title": content.title,
+                        "thumbnail": getattr(content, "thumbnail", None) or show_cover,
+                        "duration": getattr(content, "duration", None),
+                        "type": item.content_type,
+                        "progress": item.progress_percent,
+                        "position": item.position,
+                        "completed": item.completed,
+                        "lastWatched": item.last_watched_at.isoformat(),
+                    }
+                )
+            else:
+                result.append(
+                    {
+                        "id": str(content.id),
+                        "title": content.title,
+                        "thumbnail": getattr(content, "thumbnail", None) or getattr(content, "cover", None),
+                        "duration": getattr(content, "duration", None),
+                        "type": item.content_type,
+                        "progress": item.progress_percent,
+                        "position": item.position,
+                        "completed": item.completed,
+                        "lastWatched": item.last_watched_at.isoformat(),
+                    }
+                )
 
         # Limit to requested page size
         if len(result) >= limit:
@@ -107,13 +131,12 @@ async def get_continue_watching(
 
     result = []
     seen_content_ids = set()  # Deduplicate by content_id
+    seen_show_ids = set()  # Deduplicate podcast episodes by show
 
     for item in items:
-        # Skip duplicates
         if item.content_id in seen_content_ids:
             continue
 
-        # Fetch content based on type
         if item.content_type == "podcast":
             content = await PodcastEpisode.get(item.content_id)
         else:
@@ -121,17 +144,40 @@ async def get_continue_watching(
 
         if content:
             seen_content_ids.add(item.content_id)
-            result.append(
-                {
-                    "id": str(content.id),
-                    "title": content.title,
-                    "thumbnail": getattr(content, "thumbnail", None) or getattr(content, "cover", None),
-                    "duration": getattr(content, "duration", None),
-                    "type": item.content_type,
-                    "progress": item.progress_percent,
-                    "position": item.position,
-                }
-            )
+
+            # For podcast episodes, resolve to the parent show for navigation
+            if item.content_type == "podcast" and hasattr(content, "podcast_id"):
+                # Skip if we already have an episode from this show
+                if content.podcast_id in seen_show_ids:
+                    continue
+                seen_show_ids.add(content.podcast_id)
+
+                show = await Podcast.get(content.podcast_id)
+                show_cover = getattr(show, "cover", None) if show else None
+                result.append(
+                    {
+                        "id": content.podcast_id,
+                        "episode_id": str(content.id),
+                        "title": content.title,
+                        "thumbnail": getattr(content, "thumbnail", None) or show_cover,
+                        "duration": getattr(content, "duration", None),
+                        "type": item.content_type,
+                        "progress": item.progress_percent,
+                        "position": item.position,
+                    }
+                )
+            else:
+                result.append(
+                    {
+                        "id": str(content.id),
+                        "title": content.title,
+                        "thumbnail": getattr(content, "thumbnail", None) or getattr(content, "cover", None),
+                        "duration": getattr(content, "duration", None),
+                        "type": item.content_type,
+                        "progress": item.progress_percent,
+                        "position": item.position,
+                    }
+                )
 
         # Limit to 10 unique items
         if len(result) >= 10:

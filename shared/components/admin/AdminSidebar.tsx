@@ -64,7 +64,7 @@ const NAV_ITEMS: NavItem[] = [
       {
         key: 'transactions',
         labelKey: 'admin.nav.transactions',
-        icon: 'watchlist',
+        icon: 'clipboard',
         route: 'Transactions',
       },
       {
@@ -84,7 +84,7 @@ const NAV_ITEMS: NavItem[] = [
       {
         key: 'subscriptions-list',
         labelKey: 'admin.nav.subscriptionsList',
-        icon: 'watchlist',
+        icon: 'clipboard',
         route: 'Subscriptions',
       },
       {

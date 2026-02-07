@@ -38,7 +38,7 @@ export type RootStackParamList = {
   ProfileControls: { profileId?: string } | undefined;
   ProfileForm: { profileId?: string } | undefined;
   Favorites: undefined;
-  Watchlist: undefined;
+  Playlist: undefined;
   WatchHistory: undefined;
   Settings: undefined;
   FamilyControls: undefined;

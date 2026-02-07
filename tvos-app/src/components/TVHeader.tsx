@@ -92,7 +92,7 @@ export const TVHeader: React.FC<TVHeaderProps> = ({
     const pathToScreen: Record<string, string> = {
       '/profile': 'Profile',
       '/favorites': 'Favorites',
-      '/watchlist': 'Watchlist',
+      '/playlist': 'Playlist',
       '/settings': 'Settings',
     };
     const screen = pathToScreen[path] || 'Profile';

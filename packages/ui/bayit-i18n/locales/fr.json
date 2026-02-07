@@ -3481,7 +3481,7 @@
       "judaism": "Judaïsme",
       "profile": "Mon profil",
       "favorites": "Favoris",
-      "watchlist": "Liste de lecture",
+      "playlist": "Liste de lecture",
       "subscribe": "S'abonner",
       "downloads": "Téléchargements",
       "help": "Centre d'aide",
@@ -3751,7 +3751,6 @@
     "search": "Rechercher",
     "settings": "Paramètres",
     "favorites": "Favoris",
-    "watchlist": "Liste de lecture",
     "downloads": "Téléchargements",
     "recordings": "Mes enregistrements",
     "widgets": "Widgets",
@@ -4399,7 +4398,7 @@
     "remaining": "restant",
     "guest": "Invité",
     "morningRitual": "Rituel matinal",
-    "watchlist": "Liste de lecture",
+    "playlist": "Liste de lecture",
     "favorites": "Favoris",
     "settings": "Paramètres",
     "admin": "Admin",
@@ -5193,12 +5192,10 @@
     "clear": "Vider",
     "playAll": "Tout lire",
     "empty": "Votre liste est vide",
-    "emptyHint": "Utilisez les commandes vocales pour ajouter du contenu",
+    "emptyHint": "Cliquez sur le signet sur n'importe quelle fiche de contenu ou dites 'ajouter a la liste' pour commencer",
     "removeItem": "Retirer de la liste",
     "items": "elements",
-    "loading": "Chargement de la liste..."
-  },
-  "watchlist": {
+    "loading": "Chargement de la liste...",
     "filters": {
       "all": "Tout",
       "continue": "Continuer à regarder",
@@ -5209,13 +5206,11 @@
       "podcasts": "Podcasts",
       "radio": "Radio"
     },
-    "title": "Liste de lecture",
-    "items": "éléments",
-    "empty": "Votre liste de lecture est vide",
-    "emptyHint": "Commencez à regarder et les éléments apparaîtront ici",
-    "addedToWatchlist": "Ajouté à la liste",
     "watched": "vu",
-    "loading": "Chargement de la liste de lecture..."
+    "addedToPlaylist": "Ajouté à la liste",
+    "addEpisode": "Ajouter a la liste",
+    "removeEpisode": "Retirer de la liste",
+    "dragToReorder": "Glisser pour reorganiser"
   },
   "beta": {
     "credits": {
@@ -5426,7 +5421,7 @@
     "channel": "Chaîne",
     "station": "Station",
     "podcast": "Podcast",
-    "watchlist": "Liste de lecture",
+    "playlist": "Liste de lecture",
     "downloads": "Téléchargements"
   },
   "chapters": {
@@ -6675,8 +6670,8 @@
     "title": "Regarder",
     "continueWatching": "Continuer à regarder",
     "watchNow": "Regarder maintenant",
-    "addToWatchlist": "Ajouter à ma liste",
-    "removeFromWatchlist": "Retirer de ma liste",
+    "addToPlaylist": "Ajouter à ma liste",
+    "removeFromPlaylist": "Retirer de ma liste",
     "watchLater": "Regarder plus tard",
     "watchAgain": "Revoir",
     "markAsWatched": "Marquer comme vu",

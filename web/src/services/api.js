@@ -9,7 +9,6 @@ import {
   demoRadioService,
   demoPodcastService,
   demoHistoryService,
-  demoWatchlistService,
   demoSubscriptionService,
   demoChatService,
   demoZmanService,
@@ -379,14 +378,18 @@ const apiSubscriptionService = {
   getInvoices: () => api.get('/subscriptions/invoices'),
 }
 
-// Watchlist Service (API)
-const apiWatchlistService = {
-  getWatchlist: () => api.get('/watchlist'),
-  addToWatchlist: (contentId, contentType) => api.post('/watchlist', { content_id: contentId, content_type: contentType }),
-  removeFromWatchlist: (contentId) => api.delete(`/watchlist/${contentId}`),
-  isInWatchlist: (contentId) => api.get(`/watchlist/check/${contentId}`),
-  toggleWatchlist: (contentId, contentType = 'vod') =>
-    api.post(`/watchlist/toggle/${contentId}?content_type=${contentType}`),
+// Playlist Service (API)
+const apiPlaylistService = {
+  getPlaylist: () => api.get('/playlist'),
+  addItem: (contentId, contentType) =>
+    api.post('/playlist/items', { content_id: contentId, content_type: contentType }),
+  removeItem: (contentId) => api.delete(`/playlist/items/${contentId}`),
+  clearPlaylist: () => api.delete('/playlist'),
+  reorderItem: (contentId, newPosition) =>
+    api.put('/playlist/items/reorder', { content_id: contentId, new_position: newPosition }),
+  toggleItem: (contentId, contentType = 'vod') =>
+    api.post(`/playlist/toggle/${contentId}`, { content_type: contentType }),
+  checkItem: (contentId) => api.get(`/playlist/check/${contentId}`),
 }
 
 // Watch History Service (API)
@@ -753,7 +756,7 @@ export const radioService = isDemo ? demoRadioService : apiRadioService
 export const podcastService = isDemo ? demoPodcastService : apiPodcastService
 export const audiobookService = apiAudiobookService // No demo mode - requires real content
 export const subscriptionService = isDemo ? demoSubscriptionService : apiSubscriptionService
-export const watchlistService = isDemo ? demoWatchlistService : apiWatchlistService
+export const playlistService = apiPlaylistService
 export const historyService = isDemo ? demoHistoryService : apiHistoryService
 export const chatService = isDemo ? demoChatService : apiChatService
 export const zmanService = isDemo ? demoZmanService : apiZmanService

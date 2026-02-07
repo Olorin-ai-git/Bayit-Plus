@@ -1,14 +1,15 @@
 /**
  * Episode Card Component
- * Displays individual episode information with thumbnail and progress
+ * Displays individual episode information with thumbnail, progress, and playlist toggle
  */
 
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { Play } from 'lucide-react';
+import { Play, Bookmark } from 'lucide-react';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors } from '@olorin/design-tokens';
 import { SubtitleFlags } from '@bayit/shared/components';
+import { useEpisodePlaylistToggle } from '@/hooks/useEpisodePlaylistToggle';
 import type { Episode } from '../types/series.types';
 
 interface EpisodeCardProps {
@@ -27,23 +28,17 @@ export function EpisodeCard({
   flexDirection,
 }: EpisodeCardProps) {
   const { t } = useTranslation();
+  const { inPlaylist, handleTogglePlaylist } = useEpisodePlaylistToggle(episode.id, 'vod');
 
   return (
     <View
-      style={[
-        styles.container,
-        isSelected && styles.containerSelected,
-      ]}
+      style={[styles.container, isSelected && styles.containerSelected]}
       // @ts-ignore - Web onClick
       onClick={isSelected ? onPlay : onSelect}
     >
       <View style={styles.thumbnailContainer}>
         {episode.thumbnail ? (
-          <Image
-            source={{ uri: episode.thumbnail }}
-            style={styles.thumbnail}
-            resizeMode="cover"
-          />
+          <Image source={{ uri: episode.thumbnail }} style={styles.thumbnail} resizeMode="cover" />
         ) : (
           <View style={styles.placeholderContainer}>
             <NativeIcon name="vod" size="lg" color={colors.textMuted} />
@@ -83,15 +78,23 @@ export function EpisodeCard({
         <Text style={styles.episodeNumber}>
           {t('content.episode')} {episode.episode_number}
         </Text>
-        <Text style={styles.title} numberOfLines={2}>
-          {episode.title}
-        </Text>
+        <Text style={styles.title} numberOfLines={2}>{episode.title}</Text>
         {episode.description && (
-          <Text style={styles.description} numberOfLines={2}>
-            {episode.description}
-          </Text>
+          <Text style={styles.description} numberOfLines={2}>{episode.description}</Text>
         )}
       </View>
+
+      <Pressable
+        style={styles.bookmarkButton}
+        onPress={handleTogglePlaylist}
+        accessibilityLabel={inPlaylist ? t('playlist.removeEpisode') : t('playlist.addEpisode')}
+      >
+        <Bookmark
+          size={18}
+          color={inPlaylist ? '#a855f7' : 'rgba(255,255,255,0.7)'}
+          fill={inPlaylist ? '#a855f7' : 'transparent'}
+        />
+      </Pressable>
 
       {isSelected && (
         <View style={styles.selectedIndicator}>
@@ -123,91 +126,29 @@ const styles = StyleSheet.create({
     position: 'relative',
     backgroundColor: 'rgba(0,0,0,0.3)',
   },
-  thumbnail: {
-    width: '100%',
-    height: '100%',
-  },
-  placeholderContainer: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderIcon: {
-    fontSize: 32,
-    opacity: 0.5,
-  },
+  thumbnail: { width: '100%', height: '100%' },
+  placeholderContainer: { width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' },
   playOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)',
   },
   playButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: 'rgba(255,255,255,0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: 36, height: 36, borderRadius: 18,
+    backgroundColor: 'rgba(255,255,255,0.9)', justifyContent: 'center', alignItems: 'center',
   },
   durationBadge: {
-    position: 'absolute',
-    bottom: 4,
-    right: 4,
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    paddingHorizontal: 4,
-    paddingVertical: 2,
-    borderRadius: 4,
+    position: 'absolute', bottom: 4, right: 4,
+    backgroundColor: 'rgba(0,0,0,0.8)', paddingHorizontal: 4, paddingVertical: 2, borderRadius: 4,
   },
-  durationText: {
-    fontSize: 12,
-    color: '#ffffff',
-    fontWeight: '500',
-  },
+  durationText: { fontSize: 12, color: '#ffffff', fontWeight: '500' },
   progressContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 3,
-    backgroundColor: 'rgba(255,255,255,0.3)',
+    position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, backgroundColor: 'rgba(255,255,255,0.3)',
   },
-  progressBar: {
-    height: '100%',
-    backgroundColor: '#6B21A8',
-  },
-  contentContainer: {
-    flex: 1,
-    padding: 16,
-    justifyContent: 'center',
-  },
-  episodeNumber: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.7)',
-    marginBottom: 2,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#ffffff',
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.7)',
-    lineHeight: 18,
-  },
-  selectedIndicator: {
-    width: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#6B21A8',
-  },
+  progressBar: { height: '100%', backgroundColor: '#6B21A8' },
+  contentContainer: { flex: 1, padding: 16, justifyContent: 'center' },
+  episodeNumber: { fontSize: 12, color: 'rgba(255,255,255,0.7)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 },
+  title: { fontSize: 16, fontWeight: '600', color: '#ffffff', marginBottom: 8 },
+  description: { fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 18 },
+  bookmarkButton: { width: 40, justifyContent: 'center', alignItems: 'center' },
+  selectedIndicator: { width: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: '#6B21A8' },
 });

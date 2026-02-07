@@ -12,6 +12,9 @@ from typing import Optional
 from fastapi import APIRouter, BackgroundTasks, Header, HTTPException, Request
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 from .models import ElevenLabsWebhookEvent, WebhookResponse
 from .services import (pending_transcriptions, process_transcription_completed,
@@ -69,7 +72,7 @@ async def elevenlabs_webhook(
         )
 
     elif event.event_type == "transcription.failed":
-        print(f"[ElevenLabs Webhook] Transcription failed: {event.error}")
+        logger.error("ElevenLabs webhook transcription failed", extra={"error": event.error})
 
         if event.transcription_id and event.transcription_id in pending_transcriptions:
             pending_transcriptions[event.transcription_id]["status"] = "failed"
@@ -92,7 +95,7 @@ async def elevenlabs_webhook(
         )
 
     else:
-        print(f"[ElevenLabs Webhook] Unknown event type: {event.event_type}")
+        logger.warning("ElevenLabs webhook unknown event type", extra={"event_type": event.event_type})
         return WebhookResponse(
             event_type=event.event_type, message=f"Event received: {event.event_type}"
         )

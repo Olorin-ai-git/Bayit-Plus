@@ -46,7 +46,7 @@ describe('Navigation & Screens - E2E Tests', () => {
       'languageSettingsScreen',
       'notificationSettingsScreen',
       'favoritesScreen',
-      'watchlistScreen',
+      'playlistScreen',
       'downloadsScreen',
       'judaismScreen',
       'childrenScreen',

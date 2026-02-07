@@ -3,7 +3,7 @@
  * Contains demo watchlist data for development and testing purposes.
  */
 
-export interface WatchlistItem {
+export interface PlaylistItem {
   id: string;
   title: string;
   title_en?: string;
@@ -19,7 +19,7 @@ export interface WatchlistItem {
   progress?: number; // 0-100 for continue watching
 }
 
-export const demoWatchlist: WatchlistItem[] = [
+export const demoPlaylist: PlaylistItem[] = [
   {
     id: 'wl-1',
     title: 'פאודה עונה 4',

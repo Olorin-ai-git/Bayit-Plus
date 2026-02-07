@@ -16,21 +16,21 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 interface AudiobookHeroProps {
   audiobook: AudiobookWithChapters;
   selectedChapter: AudiobookChapter | null;
-  inWatchlist: boolean;
+  inPlaylist: boolean;
   flexDirection: 'row' | 'row-reverse';
   textAlign: 'left' | 'right' | 'center';
   onPlay: () => void;
-  toggleWatchlist: () => void;
+  togglePlaylist: () => void;
 }
 
 export function AudiobookHero({
   audiobook,
   selectedChapter,
-  inWatchlist,
+  inPlaylist,
   flexDirection,
   textAlign,
   onPlay,
-  toggleWatchlist,
+  togglePlaylist,
 }: AudiobookHeroProps) {
   const { t } = useTranslation();
   const backdropUrl = audiobook.backdrop || audiobook.thumbnail;
@@ -120,13 +120,13 @@ export function AudiobookHero({
           />
 
           <GlassButton
-            onPress={toggleWatchlist}
+            onPress={togglePlaylist}
             variant="ghost"
             size="lg"
             icon={
-              inWatchlist ? <Check size={20} color="#fff" /> : <Plus size={20} color="#fff" />
+              inPlaylist ? <Check size={20} color="#fff" /> : <Plus size={20} color="#fff" />
             }
-            title={inWatchlist ? t('content.inList') : t('content.addToList')}
+            title={inPlaylist ? t('content.inList') : t('content.addToList')}
           />
         </View>
 

@@ -9,7 +9,7 @@ import {
   demoRadioService,
   demoPodcastService,
   demoSubscriptionService,
-  demoWatchlistService,
+  demoPlaylistService,
   demoHistoryService,
   demoSearchService,
   demoFavoritesService,
@@ -122,15 +122,15 @@ const apiSubscriptionService = {
   setDefaultPaymentMethod: (methodId: string) => api.post(`/subscriptions/payment-methods/${methodId}/default`),
 };
 
-// Watchlist Service (API)
-const apiWatchlistService = {
-  getWatchlist: () => api.get('/watchlist'),
-  addToWatchlist: (contentId: string, contentType: string) =>
-    api.post('/watchlist', { content_id: contentId, content_type: contentType }),
-  removeFromWatchlist: (contentId: string) => api.delete(`/watchlist/${contentId}`),
-  isInWatchlist: (contentId: string) => api.get(`/watchlist/check/${contentId}`),
-  toggleWatchlist: (contentId: string, contentType: string = 'vod') =>
-    api.post(`/watchlist/toggle/${contentId}?content_type=${contentType}`),
+// Playlist Service (API)
+const apiPlaylistService = {
+  getPlaylist: () => api.get('/playlist'),
+  addItem: (contentId: string, contentType: string) =>
+    api.post('/playlist/items', { content_id: contentId, content_type: contentType }),
+  removeItem: (contentId: string) => api.delete(`/playlist/items/${contentId}`),
+  checkItem: (contentId: string) => api.get(`/playlist/check/${contentId}`),
+  toggleItem: (contentId: string, contentType: string = 'vod') =>
+    api.post(`/playlist/toggle/${contentId}?content_type=${contentType}`),
 };
 
 // History Service (API)
@@ -494,7 +494,8 @@ export const liveService = isDemo ? demoLiveService : apiLiveService;
 export const radioService = isDemo ? demoRadioService : apiRadioService;
 export const podcastService = isDemo ? demoPodcastService : apiPodcastService;
 export const subscriptionService = isDemo ? demoSubscriptionService : apiSubscriptionService;
-export const watchlistService = isDemo ? demoWatchlistService : apiWatchlistService;
+export const playlistService = isDemo ? demoPlaylistService : apiPlaylistService;
+export const watchlistService = playlistService;
 export const historyService = isDemo ? demoHistoryService : apiHistoryService;
 export const searchService = isDemo ? demoSearchService : apiSearchService;
 export const favoritesService = isDemo ? demoFavoritesService : apiFavoritesService;

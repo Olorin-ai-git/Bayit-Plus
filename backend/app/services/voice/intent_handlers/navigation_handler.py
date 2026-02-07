@@ -12,7 +12,8 @@ logger = get_logger(__name__)
 
 # Allowlisted navigation paths for security validation
 ALLOWED_NAVIGATION_PATHS = frozenset(
-    ['/', '/live', '/vod', '/radio', '/podcasts', '/favorites', '/search']
+    ['/', '/live', '/vod', '/radio', '/podcasts', '/favorites', '/search',
+     '/children', '/playlist', '/flows', '/judaism', '/downloads', '/profile']
 )
 
 NAVIGATION_MAPS: Dict[str, Dict[str, Dict[str, str]]] = {
@@ -23,6 +24,10 @@ NAVIGATION_MAPS: Dict[str, Dict[str, Dict[str, str]]] = {
         'רדיו': {'path': '/radio', 'spoken': 'עובר לרדיו'},
         'פודקאסטים': {'path': '/podcasts', 'spoken': 'עובר לפודקאסטים'},
         'מועדפים': {'path': '/favorites', 'spoken': 'עובר למועדפים'},
+        'ילדים': {'path': '/children', 'spoken': 'עובר לתוכן ילדים'},
+        'פלייליסט': {'path': '/playlist', 'spoken': 'עובר לרשימת הצפייה'},
+        'חיפוש': {'path': '/search', 'spoken': 'פותח חיפוש'},
+        'פרופיל': {'path': '/profile', 'spoken': 'עובר לפרופיל'},
     },
     'en': {
         'home': {'path': '/', 'spoken': 'Going to the home page'},
@@ -33,6 +38,11 @@ NAVIGATION_MAPS: Dict[str, Dict[str, Dict[str, str]]] = {
         'radio': {'path': '/radio', 'spoken': 'Going to radio'},
         'podcasts': {'path': '/podcasts', 'spoken': 'Going to podcasts'},
         'favorites': {'path': '/favorites', 'spoken': 'Going to favorites'},
+        'children': {'path': '/children', 'spoken': 'Going to kids content'},
+        'kids': {'path': '/children', 'spoken': 'Going to kids content'},
+        'playlist': {'path': '/playlist', 'spoken': 'Going to your playlist'},
+        'search': {'path': '/search', 'spoken': 'Opening search'},
+        'profile': {'path': '/profile', 'spoken': 'Going to your profile'},
     },
     'es': {
         'inicio': {'path': '/', 'spoken': 'Yendo a la pagina principal'},
@@ -40,6 +50,8 @@ NAVIGATION_MAPS: Dict[str, Dict[str, Dict[str, str]]] = {
         'peliculas': {'path': '/vod', 'spoken': 'Yendo a peliculas y series'},
         'radio': {'path': '/radio', 'spoken': 'Yendo a radio'},
         'podcasts': {'path': '/podcasts', 'spoken': 'Yendo a podcasts'},
+        'favoritos': {'path': '/favorites', 'spoken': 'Yendo a favoritos'},
+        'buscar': {'path': '/search', 'spoken': 'Abriendo busqueda'},
     },
 }
 

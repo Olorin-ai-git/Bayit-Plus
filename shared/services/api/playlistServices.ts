@@ -43,4 +43,10 @@ export const apiPlaylistService = {
       content_id: contentId,
       new_position: newPosition,
     }),
+
+  toggleItem: (contentId: string, contentType: string = 'vod'): Promise<{ in_playlist: boolean; message: string }> =>
+    api.post(`/playlist/toggle/${contentId}`, { content_type: contentType }),
+
+  checkItem: (contentId: string): Promise<{ in_playlist: boolean }> =>
+    api.get(`/playlist/check/${contentId}`),
 };

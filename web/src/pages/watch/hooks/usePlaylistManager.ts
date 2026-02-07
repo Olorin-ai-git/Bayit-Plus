@@ -6,6 +6,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { PlaylistItem, LocationState } from '../types/watch.types';
+import { playlistService } from '@/services/api';
 import logger from '@/utils/logger';
 
 interface UsePlaylistManagerResult {
@@ -66,11 +67,28 @@ export function usePlaylistManager(): UsePlaylistManagerResult {
   }, [playlist.length]);
 
   const handleContentEnded = useCallback(() => {
-    logger.info('Content ended, checking for next item', 'usePlaylistManager');
-    if (hasNextItem) {
-      playNextItem();
+    logger.info('Content ended, removing played item', 'usePlaylistManager');
+
+    const currentItem = playlist[playlistIndex];
+    if (currentItem?.content_id) {
+      playlistService.removeItem(currentItem.content_id).catch((error) => {
+        logger.error('Failed to auto-remove played item', 'usePlaylistManager', {
+          contentId: currentItem.content_id,
+          error,
+        });
+      });
     }
-  }, [hasNextItem, playNextItem]);
+
+    // Remove current item from local playlist; next item slides into same index
+    setPlaylist((prev) => {
+      const updated = prev.filter((_, i) => i !== playlistIndex);
+      if (playlistIndex >= updated.length && updated.length > 0) {
+        // Was the last item, no more to play
+        setPlaylistIndex(0);
+      }
+      return updated;
+    });
+  }, [playlistIndex, playlist]);
 
   const exitFlow = useCallback(() => {
     setPlaylist([]);

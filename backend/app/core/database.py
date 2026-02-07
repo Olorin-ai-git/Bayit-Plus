@@ -98,8 +98,8 @@ from app.models.notification_event import NotificationEvent, NotificationMetrics
 from app.models.passkey_credential import PasskeyCredential, PasskeySession, PasskeyChallenge
 from app.models.voice_config import VoiceConfiguration, VoiceProviderHealth
 from app.models.verification import VerificationToken
-from app.models.watchlist import Conversation, WatchHistory, WatchlistItem
-from app.models.playlist import UserPlaylist
+from app.models.watchlist import Conversation, WatchHistory
+from app.models.playlist import PlaylistItem
 from app.models.widget import Widget
 from app.models.youngsters_content import YoungstersContentSource
 from app.services.mcp_content_discovery import ContentDiscoveryQueue
@@ -225,7 +225,6 @@ async def connect_to_mongo():
         Audience,
         Subscription,
         Invoice,
-        WatchlistItem,
         WatchHistory,
         Conversation,
         Profile,
@@ -373,8 +372,8 @@ async def connect_to_mongo():
         # User dubbing session and quota models
         UserDubbingSession,
         UserQuota,
-        # Playlist model (voice-driven ordered playback queue)
-        UserPlaylist,
+        # Unified playlist model (merged watchlist + playlist)
+        PlaylistItem,
     ]
 
     # Conditionally add Olorin models based on database separation setting

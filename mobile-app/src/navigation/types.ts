@@ -18,7 +18,7 @@ export type RootStackParamList = {
   MorningRitual: undefined;
   Judaism: { category?: string };
   Children: undefined;
-  Watchlist: undefined;
+  Playlist: undefined;
   Favorites: undefined;
   Downloads: undefined;
   Recordings: undefined;

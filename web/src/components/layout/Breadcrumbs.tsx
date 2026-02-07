@@ -23,7 +23,7 @@ const ROUTE_LABELS: Record<string, string> = {
   '/profile': 'nav.profile',
   '/settings': 'nav.settings',
   '/favorites': 'nav.favorites',
-  '/watchlist': 'breadcrumbs.watchlist',
+  '/playlist': 'breadcrumbs.playlist',
   '/downloads': 'breadcrumbs.downloads',
   '/admin': 'nav.admin',
   '/login': 'account.login',

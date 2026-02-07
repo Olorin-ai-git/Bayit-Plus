@@ -22,7 +22,7 @@ ALLOWED_ROUTES: Dict[str, str] = {
     "podcasts": "/podcasts",
     "audiobooks": "/audiobooks",
     "favorites": "/favorites",
-    "watchlist": "/watchlist",
+    "playlist": "/playlist",
     "downloads": "/downloads",
     "search": "/search",
     "profile": "/profile",

@@ -10,8 +10,11 @@ import httpx
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user
 from app.models.user import User
+
+logger = get_logger(__name__)
 
 from .models import TranscriptionResponse, TranscriptionStatusResponse
 from .services import pending_transcriptions
@@ -51,24 +54,23 @@ async def transcribe_audio(
         # Check minimum audio size (very short recordings won't have meaningful speech)
         MIN_AUDIO_SIZE = 5000  # ~5KB minimum
         if len(content) < MIN_AUDIO_SIZE:
-            print(f"[STT] Audio too short: {len(content)} bytes (minimum: {MIN_AUDIO_SIZE})")
+            logger.warning("Audio too short for transcription", extra={"audio_bytes": len(content), "minimum_bytes": MIN_AUDIO_SIZE})
             raise HTTPException(
                 status_code=400,
                 detail="Recording too short. Please hold the button longer while speaking.",
             )
 
-        print(f"[STT] Received audio: {len(content)} bytes, type: {audio.content_type}")
+        logger.info("Received audio for transcription", extra={"audio_bytes": len(content), "content_type": audio.content_type})
 
         language_code = (language or "he").lower()
-        print(f"[STT] Received language parameter from client: {language}")
-        print(f"[STT] Transcribing audio with language hint: {language_code}")
+        logger.info("STT language parameters", extra={"client_language": language, "language_code": language_code})
 
         request_data = {
             "model_id": "scribe_v2",
             "language_code": language_code,
         }
 
-        print(f"[STT] Request data being sent to ElevenLabs: {request_data}")
+        logger.debug("ElevenLabs STT request data", extra={"request_data": request_data})
 
         async with httpx.AsyncClient() as http_client:
             response = await http_client.post(
@@ -89,9 +91,7 @@ async def transcribe_audio(
 
             if response.status_code != 200:
                 error_detail = response.text
-                print(
-                    f"[STT] ElevenLabs API error {response.status_code}: {error_detail}"
-                )
+                logger.error("ElevenLabs STT API error", extra={"status_code": response.status_code, "error_detail": error_detail})
                 raise HTTPException(
                     status_code=500,
                     detail=f"ElevenLabs API error: {error_detail}",
@@ -101,16 +101,15 @@ async def transcribe_audio(
             transcribed_text = result.get("text", "").strip()
             detected_language = language_code.lower()
 
-            print(f"[STT] ElevenLabs response language: {result.get('language')}")
-            print(f"[STT] Using language hint as authoritative: {detected_language}")
-            print(
-                f"[STT] Transcription result: text='{transcribed_text}', "
-                f"final_language='{detected_language}'"
-            )
-            print(f"[STT] Full API response: {result}")
+            logger.info("STT transcription result", extra={
+                "response_language": result.get("language"),
+                "authoritative_language": detected_language,
+                "transcribed_text": transcribed_text,
+            })
+            logger.debug("Full ElevenLabs STT API response", extra={"response": result})
 
             if not transcribed_text:
-                print(f"[STT] Empty transcription returned for audio size: {len(content)} bytes")
+                logger.warning("Empty transcription returned", extra={"audio_bytes": len(content)})
                 raise HTTPException(
                     status_code=400,
                     detail="No speech detected in audio. Please speak clearly and try again.",

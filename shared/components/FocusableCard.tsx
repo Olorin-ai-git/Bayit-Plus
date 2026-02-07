@@ -34,9 +34,9 @@ interface FavoritesService {
   isFavorite: (contentId: string) => Promise<{ is_favorite: boolean }>;
 }
 
-interface WatchlistService {
-  toggleWatchlist: (contentId: string, contentType: string) => Promise<{ in_watchlist: boolean }>;
-  isInWatchlist: (contentId: string) => Promise<{ in_watchlist: boolean }>;
+interface PlaylistService {
+  toggleItem: (contentId: string, contentType: string) => Promise<{ in_playlist: boolean }>;
+  checkItem: (contentId: string) => Promise<{ in_playlist: boolean }>;
 }
 
 interface FocusableCardProps {
@@ -50,7 +50,7 @@ interface FocusableCardProps {
   height?: number;
   showActions?: boolean;
   favoritesService?: FavoritesService;
-  watchlistService?: WatchlistService;
+  playlistService?: PlaylistService;
 }
 
 export const FocusableCard: React.FC<FocusableCardProps> = ({
@@ -64,7 +64,7 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
   height = DEFAULT_HEIGHT,
   showActions = true,
   favoritesService,
-  watchlistService,
+  playlistService,
 }) => {
   const { textAlign, isRTL } = useDirection();
   const { handleFocus, handleBlur, scaleTransform, focusStyle, isFocused } = useTVFocus({
@@ -73,9 +73,9 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
 
   // Action button states
   const [isFavorite, setIsFavorite] = useState(false);
-  const [inWatchlist, setInWatchlist] = useState(false);
+  const [inPlaylist, setInPlaylist] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
-  const [watchlistLoading, setWatchlistLoading] = useState(false);
+  const [playlistLoading, setPlaylistLoading] = useState(false);
 
   const handleFavoriteToggle = useCallback(async (e?: any) => {
     // Prevent event propagation on all platforms
@@ -95,25 +95,25 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
     }
   }, [id, contentType, favoritesService, favoriteLoading]);
 
-  const handleWatchlistToggle = useCallback(async (e?: any) => {
+  const handlePlaylistToggle = useCallback(async (e?: any) => {
     // Prevent event propagation on all platforms
     e?.preventDefault?.();
     e?.stopPropagation?.();
 
-    if (!id || !contentType || !watchlistService || watchlistLoading) return;
+    if (!id || !contentType || !playlistService || playlistLoading) return;
 
-    setWatchlistLoading(true);
+    setPlaylistLoading(true);
     try {
-      const result = await watchlistService.toggleWatchlist(id, contentType);
-      setInWatchlist(result.in_watchlist);
+      const result = await playlistService.toggleItem(id, contentType);
+      setInPlaylist(result.in_playlist);
     } catch (error) {
-      console.error('Failed to toggle watchlist:', error);
+      // Playlist toggle failed silently
     } finally {
-      setWatchlistLoading(false);
+      setPlaylistLoading(false);
     }
-  }, [id, contentType, watchlistService, watchlistLoading]);
+  }, [id, contentType, playlistService, playlistLoading]);
 
-  const showActionButtons = showActions && id && contentType && (favoritesService || watchlistService);
+  const showActionButtons = showActions && id && contentType && (favoritesService || playlistService);
 
   return (
     <TouchableOpacity
@@ -170,17 +170,17 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
                 />
               </Pressable>
             )}
-            {watchlistService && (
+            {playlistService && (
               <Pressable
-                onPress={handleWatchlistToggle}
-                disabled={watchlistLoading}
-                className={`${IS_TV_BUILD ? 'w-11 h-11 rounded-[22px]' : isMobilePhone ? 'w-6 h-6 rounded-xl' : 'w-8 h-8 rounded-2xl'} justify-center items-center ${inWatchlist ? 'bg-white/15' : 'bg-black/60'}`}
+                onPress={handlePlaylistToggle}
+                disabled={playlistLoading}
+                className={`${IS_TV_BUILD ? 'w-11 h-11 rounded-[22px]' : isMobilePhone ? 'w-6 h-6 rounded-xl' : 'w-8 h-8 rounded-2xl'} justify-center items-center ${inPlaylist ? 'bg-white/15' : 'bg-black/60'}`}
                 style={Platform.OS === 'web' ? { backdropFilter: 'blur(8px)', transition: 'all 0.2s ease' } as any : undefined}
               >
                 <Ionicons
-                  name={inWatchlist ? 'bookmark' : 'bookmark-outline'}
+                  name={inPlaylist ? 'bookmark' : 'bookmark-outline'}
                   size={IS_TV_BUILD ? 24 : 18}
-                  color={inWatchlist ? colors.primary : colors.text}
+                  color={inPlaylist ? colors.primary : colors.text}
                 />
               </Pressable>
             )}

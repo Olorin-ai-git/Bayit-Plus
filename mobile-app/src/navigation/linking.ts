@@ -76,7 +76,7 @@ export const linking: LinkingOptions<RootStackParamList> = {
       MorningRitual: 'morning-ritual',
       Judaism: 'judaism',
       Children: 'children',
-      Watchlist: 'watchlist',
+      Playlist: 'playlist',
       Favorites: 'favorites',
       Downloads: 'downloads',
 

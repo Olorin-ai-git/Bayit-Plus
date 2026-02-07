@@ -151,7 +151,7 @@ export function useVoiceResponseCoordinator(
               'favorites': '/favorites',
               'flows': '/flows',
               'judaism': '/judaism',
-              'watchlist': '/watchlist',
+              'playlist': '/playlist',
               'downloads': '/downloads',
             };
 

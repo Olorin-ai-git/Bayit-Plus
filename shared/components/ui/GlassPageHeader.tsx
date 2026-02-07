@@ -29,7 +29,7 @@ export type PageType =
   | 'settings'
   | 'profile'
   | 'favorites'
-  | 'watchlist'
+  | 'playlist'
   | 'downloads'
   | 'recordings'
   | 'support'
@@ -72,7 +72,7 @@ const PAGE_TYPE_TO_ICON: Record<PageType, string> = {
   settings: 'settings',
   profile: 'profile',
   favorites: 'favorites',
-  watchlist: 'watchlist',
+  playlist: 'clipboard',
   downloads: 'downloads',
   recordings: 'recordings',
   support: 'support',
@@ -102,7 +102,7 @@ const PAGE_TYPE_GLASS_LEVEL: Record<PageType, GlassLevel> = {
   settings: 'light',
   profile: 'light',
   favorites: 'light',
-  watchlist: 'light',
+  playlist: 'light',
   downloads: 'light',
   recordings: 'light',
   support: 'light',

@@ -12,9 +12,10 @@ import anthropic
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user
 from app.models.user import User
-from app.models.watchlist import Conversation
+from app.models.watchlist import Conversation  # Conversation lives in watchlist module
 from app.services.chat_search_tool import CHAT_TOOLS, execute_chat_tool
 
 from .helpers import (build_media_context, extract_json_from_response,
@@ -23,6 +24,8 @@ from .models import ChatRequest, ChatResponse
 from .prompts import get_system_prompt
 from .services import (align_message_with_action, extract_action_from_response,
                        get_recommendations_from_response)
+
+logger = get_logger(__name__)
 
 router = APIRouter()
 _anthropic_client: Optional[anthropic.Anthropic] = None
@@ -42,7 +45,7 @@ async def _execute_tools(
     """Execute tool calls and return results."""
     tool_results = []
     for tool_use in tool_use_blocks:
-        print(f"[CHAT] Tool called: {tool_use.name} with input: {tool_use.input}")
+        logger.info("Tool called", extra={"tool_name": tool_use.name, "input": tool_use.input})
         try:
             result = await execute_chat_tool(tool_use.name, tool_use.input)
             tool_results.append(
@@ -52,9 +55,9 @@ async def _execute_tools(
                     "content": json.dumps(result, ensure_ascii=False),
                 }
             )
-            print(f"[CHAT] Tool result: {len(result.get('results', []))} items found")
+            logger.info("Tool result", extra={"items_found": len(result.get("results", []))})
         except Exception as e:
-            print(f"[CHAT] Tool error: {e}")
+            logger.error("Tool execution error", extra={"error": str(e)})
             tool_results.append(
                 {
                     "type": "tool_result",
@@ -118,7 +121,7 @@ async def send_message(
 ) -> ChatResponse:
     """Send a message to the AI assistant."""
     lang = (request.language or "he").lower()
-    print(f"[CHAT] Received message: '{request.message}', language: {lang}")
+    logger.info("Received chat message", extra={"language": lang, "message_length": len(request.message)})
 
     conv = await _get_or_create_conversation(
         request.conversation_id, str(current_user.id)

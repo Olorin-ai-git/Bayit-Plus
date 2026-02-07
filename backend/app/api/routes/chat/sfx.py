@@ -8,8 +8,11 @@ using ElevenLabs Sound Generation API.
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 
+from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user
 from app.models.user import User
+
+logger = get_logger(__name__)
 
 from .models import SFXRequest
 
@@ -54,7 +57,7 @@ async def get_wizard_sfx(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        print(f"[SFX] Error generating sound effect: {e}")
+        logger.error("Error generating wizard sound effect", extra={"gesture": gesture, "error": str(e)})
         raise HTTPException(
             status_code=500, detail=f"Failed to generate sound effect: {str(e)}"
         )
@@ -110,7 +113,7 @@ async def generate_custom_sfx(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        print(f"[SFX] Error generating custom sound effect: {e}")
+        logger.error("Error generating custom sound effect", extra={"error": str(e)})
         raise HTTPException(
             status_code=500, detail=f"Failed to generate sound effect: {str(e)}"
         )

@@ -13,6 +13,8 @@ interface PlaylistState {
   removeItem: (contentId: string) => Promise<void>;
   clearPlaylist: () => Promise<void>;
   reorderItem: (contentId: string, newPosition: number) => Promise<void>;
+  toggleItem: (contentId: string, contentType?: string) => Promise<boolean>;
+  isInPlaylist: (contentId: string) => boolean;
   setVisible: (visible: boolean) => void;
   setItems: (items: PlaylistItem[]) => void;
   clearError: () => void;
@@ -93,6 +95,29 @@ export const usePlaylistStore = create<PlaylistState>((set) => ({
         isLoading: false,
       });
     }
+  },
+
+  toggleItem: async (contentId, contentType = 'vod') => {
+    set({ error: null });
+    try {
+      const result = await apiPlaylistService.toggleItem(contentId, contentType);
+      // Refresh the full playlist to stay in sync
+      const data = await apiPlaylistService.getPlaylist();
+      if (data && Array.isArray(data.items)) {
+        set({ items: data.items });
+      }
+      return result.in_playlist;
+    } catch (err: any) {
+      set({
+        error: err?.detail || err?.message || 'Failed to toggle item',
+      });
+      return false;
+    }
+  },
+
+  isInPlaylist: (contentId) => {
+    const { items } = usePlaylistStore.getState();
+    return items.some((item) => item.content_id === contentId);
   },
 
   setVisible: (visible) => set({ isVisible: visible }),
