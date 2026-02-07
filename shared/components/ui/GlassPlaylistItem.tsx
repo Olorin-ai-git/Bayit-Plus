@@ -1,18 +1,295 @@
-import React from 'react';
-import { View, Text, Image, Pressable, Platform, StyleSheet } from 'react-native';
-import { useTranslation } from 'react-i18next';
+/**
+ * GlassPlaylistItem - Individual item row for the GlassPlaylist overlay.
+ * Displays content thumbnail, title, type badge, and drag handle.
+ * Supports isDragging visual feedback for reorder interactions.
+ */
+
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  Pressable,
+  Platform,
+  StyleSheet,
+  Animated,
+} from 'react-native';
 import { NativeIcon } from '@olorin/shared-icons/native';
-import { colors, spacing, borderRadius } from '@olorin/design-tokens';
+import { useTranslation } from 'react-i18next';
+import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
+import type { PlaylistItem } from '../../services/api/playlistServices';
+
+interface PlaylistItemData {
+  id: string;
+  title: string;
+  thumbnail?: string;
+  type: string;
+  duration?: string;
+  progress?: number;
+}
+
+interface GlassPlaylistItemProps {
+  item: PlaylistItemData;
+  index: number;
+  isDragging?: boolean;
+  isActive?: boolean;
+  onPress?: () => void;
+  onRemove?: () => void;
+}
+
+const TYPE_ICON_MAP: Record<string, string> = {
+  movie: 'vod',
+  series: 'vod',
+  podcast: 'podcasts',
+  radio: 'radio',
+  live: 'live',
+  channel: 'live',
+};
+
+export const GlassPlaylistItem: React.FC<GlassPlaylistItemProps> = ({
+  item,
+  index,
+  isDragging = false,
+  isActive = false,
+  onPress,
+  onRemove,
+}) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+
+  // Pulsing animation for the play indicator when item is active (now playing)
+  useEffect(() => {
+    if (isActive) {
+      const pulse = Animated.loop(
+        Animated.sequence([
+          Animated.timing(pulseAnim, {
+            toValue: 0.4,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseAnim, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+        ])
+      );
+      pulse.start();
+      return () => pulse.stop();
+    }
+    pulseAnim.setValue(1);
+  }, [isActive, pulseAnim]);
+
+  const iconName = TYPE_ICON_MAP[item.type] || 'discover';
+
+  return (
+    <Pressable
+      onPress={onPress}
+      onHoverIn={() => setIsHovered(true)}
+      onHoverOut={() => setIsHovered(false)}
+      style={[
+        styles.container,
+        isActive && styles.containerActive,
+        isDragging && styles.containerDragging,
+        isHovered && !isDragging && styles.containerHovered,
+      ]}
+      accessibilityRole="button"
+      accessibilityLabel={item.title}
+    >
+      {/* Drag Handle */}
+      {Platform.OS === 'web' && (
+        <View
+          style={styles.dragHandle}
+          testID="drag-handle"
+        >
+          <Text style={styles.dragHandleText}>⋮⋮</Text>
+        </View>
+      )}
+
+      {/* Index Number */}
+      <Text style={styles.indexNumber}>{index + 1}</Text>
+
+      {/* Thumbnail */}
+      {item.thumbnail ? (
+        <Image source={{ uri: item.thumbnail }} style={styles.thumbnail} />
+      ) : (
+        <View style={styles.thumbnailFallback}>
+          <NativeIcon name={iconName} size="sm" color={colors.textMuted} />
+        </View>
+      )}
+
+      {/* Content Info */}
+      <View style={styles.content}>
+        <Text
+          style={[styles.title, isActive && styles.titleActive]}
+          numberOfLines={1}
+        >
+          {item.title}
+        </Text>
+        <View style={styles.meta}>
+          <NativeIcon name={iconName} size={12} color={colors.textMuted} />
+          {!!item.duration && (
+            <Text style={styles.metaText}>{item.duration}</Text>
+          )}
+        </View>
+      </View>
+
+      {/* Progress Indicator */}
+      {item.progress !== undefined && item.progress > 0 && (
+        <View style={styles.progressBadge}>
+          <Text style={styles.progressText}>{item.progress}%</Text>
+        </View>
+      )}
+
+      {/* Animated play indicator for now-playing item */}
+      {isActive && (
+        <Animated.View style={[styles.playIndicator, { opacity: pulseAnim }]}>
+          <NativeIcon name="play" size={14} color={colors.primary.DEFAULT} />
+        </Animated.View>
+      )}
+
+      {/* Remove button on hover */}
+      {isHovered && !isDragging && onRemove && (
+        <Pressable
+          onPress={(e: { stopPropagation?: () => void }) => {
+            e.stopPropagation?.();
+            onRemove();
+          }}
+          style={styles.removeButton}
+          accessibilityRole="button"
+          accessibilityLabel="Remove from playlist"
+        >
+          <NativeIcon name="x" size={14} color={colors.textMuted} />
+        </Pressable>
+      )}
+    </Pressable>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.sm,
+    paddingHorizontal: spacing.md,
+    gap: spacing.sm,
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  containerActive: {
+    backgroundColor: 'rgba(126, 34, 206, 0.15)',
+    borderColor: 'rgba(126, 34, 206, 0.3)',
+    borderLeftWidth: 3,
+    borderLeftColor: colors.primary.DEFAULT,
+  },
+  containerDragging: {
+    backgroundColor: 'rgba(126, 34, 206, 0.2)',
+    borderColor: colors.primary.DEFAULT,
+    opacity: 0.9,
+    // @ts-ignore - Web CSS
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
+  },
+  containerHovered: {
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+  },
+
+  // Drag handle
+  dragHandle: {
+    paddingHorizontal: spacing.xs,
+    paddingVertical: spacing.xs,
+    // @ts-ignore - Web CSS
+    cursor: 'grab',
+  },
+  dragHandleText: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.4)',
+    letterSpacing: -2,
+  },
+
+  // Index
+  indexNumber: {
+    width: 20,
+    fontSize: fontSize.xs,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+
+  // Thumbnail
+  thumbnail: {
+    width: 48,
+    height: 28,
+    borderRadius: borderRadius.sm,
+  },
+  thumbnailFallback: {
+    width: 48,
+    height: 28,
+    borderRadius: borderRadius.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  // Content
+  content: {
+    flex: 1,
+    gap: 2,
+  },
+  title: {
+    fontSize: fontSize.sm,
+    color: colors.text,
+    fontWeight: '500',
+  },
+  titleActive: {
+    color: colors.primary.DEFAULT,
+    fontWeight: '600',
+  },
+  meta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  metaText: {
+    fontSize: 11,
+    color: colors.textMuted,
+  },
+
+  // Progress badge
+  progressBadge: {
+    backgroundColor: 'rgba(126, 34, 206, 0.3)',
+    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+  },
+  progressText: {
+    fontSize: 10,
+    color: colors.primary.DEFAULT,
+    fontWeight: '600',
+  },
+
+  // Play indicator
+  playIndicator: {
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  // Remove button
+  removeButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 interface PlaylistItemRowProps {
-  item: {
-    content_id: string;
-    content_type: string;
-    title: string;
-    thumbnail?: string;
-  };
+  item: PlaylistItem;
   onRemove: (contentId: string) => void;
-  onPlay: (item: PlaylistItemRowProps['item']) => void;
+  onPlay: (item: { content_id: string; content_type: string; title: string }) => void;
   isDragging?: boolean;
 }
 
@@ -21,169 +298,44 @@ export const PlaylistItemRow: React.FC<PlaylistItemRowProps> = ({
   onRemove,
   onPlay,
   isDragging = false,
-}) => {
-  const { t } = useTranslation();
-
-  const handleRemove = (e: { stopPropagation: () => void }) => {
-    e.stopPropagation();
-    onRemove(item.content_id);
-  };
-
-  return (
-    <Pressable
-      onPress={() => onPlay(item)}
-      style={[
-        styles.itemRow,
-        isDragging && styles.itemRowDragging,
-      ]}
-      accessibilityRole="button"
-      accessibilityLabel={t('playlist.playItem', { title: item.title })}
-    >
-      {/* Drag handle - web only, uses testID for reliable DOM attribute */}
-      {Platform.OS === 'web' && (
-        <View
-          style={styles.dragHandle}
-          accessibilityLabel={t('playlist.dragToReorder')}
-          testID="drag-handle"
-        >
-          <Text style={styles.dragHandleText}>&#x22EE;&#x22EE;</Text>
-        </View>
-      )}
-      <View style={styles.playIconContainer}>
-        <NativeIcon name="play" size={14} color={colors.primary} />
-      </View>
-      <View style={styles.itemThumbnail}>
-        {item.thumbnail ? (
-          <Image
-            source={{ uri: item.thumbnail }}
-            style={styles.thumbnailImage}
-            resizeMode="cover"
-          />
-        ) : (
-          <View style={styles.thumbnailPlaceholder}>
-            <NativeIcon name="vod" size={18} color={colors.textMuted} />
-          </View>
-        )}
-      </View>
-      <View style={styles.itemInfo}>
-        <Text style={styles.itemTitle} numberOfLines={1}>
-          {item.title}
-        </Text>
-        <Text style={styles.itemType}>
-          {t(`contentTypes.${item.content_type}`, item.content_type)}
-        </Text>
-      </View>
-      <Pressable
-        onPress={handleRemove}
-        style={styles.removeButton}
-        accessibilityRole="button"
-        accessibilityLabel={t('playlist.removeItem')}
-      >
-        <NativeIcon name="x" size={16} color={colors.textMuted} />
-      </Pressable>
-    </Pressable>
-  );
-};
+}) => (
+  <GlassPlaylistItem
+    item={{
+      id: item.content_id,
+      title: item.title,
+      thumbnail: item.thumbnail,
+      type: item.content_type,
+      duration: item.duration != null ? String(item.duration) : undefined,
+    }}
+    index={item.position}
+    isDragging={isDragging}
+    onPress={() => onPlay(item)}
+    onRemove={() => onRemove(item.content_id)}
+  />
+);
 
 export const PlaylistEmpty: React.FC = () => {
   const { t } = useTranslation();
-
   return (
-    <View style={styles.emptyState}>
-      <NativeIcon name="music" size={48} color={colors.textMuted} />
-      <Text style={styles.emptyText}>{t('playlist.empty')}</Text>
-      <Text style={styles.emptyHint}>{t('playlist.emptyHint')}</Text>
+    <View style={emptyStyles.container}>
+      <NativeIcon name="playlist" size={40} color={colors.textMuted} />
+      <Text style={emptyStyles.text}>{t('playlist.empty')}</Text>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  itemRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: spacing.sm,
-    paddingHorizontal: spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.glassBorderLight,
-    gap: spacing.sm,
-    borderRadius: borderRadius.sm,
-  },
-  itemRowDragging: {
-    opacity: 0.85,
-    backgroundColor: 'rgba(107, 33, 168, 0.15)',
-    borderColor: colors.primary.DEFAULT,
-    borderWidth: 1,
-  },
-  dragHandle: {
-    width: 20,
-    height: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-    cursor: 'grab',
-  } as any,
-  dragHandleText: {
-    color: colors.textMuted,
-    fontSize: 12,
-    letterSpacing: 2,
-  },
-  playIconContainer: {
-    width: 24,
-    height: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  itemThumbnail: {
-    width: 56,
-    height: 40,
-    borderRadius: borderRadius.sm,
-    overflow: 'hidden',
-  },
-  thumbnailImage: {
-    width: '100%' as any,
-    height: '100%' as any,
-  },
-  thumbnailPlaceholder: {
-    width: '100%' as any,
-    height: '100%' as any,
-    backgroundColor: colors.glassMedium,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  itemInfo: {
-    flex: 1,
-  },
-  itemTitle: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  itemType: {
-    color: colors.textSecondary,
-    fontSize: 12,
-    marginTop: 2,
-  },
-  removeButton: {
-    padding: spacing.xs,
-  },
-  emptyState: {
+const emptyStyles = StyleSheet.create({
+  container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: spacing.lg,
+    gap: spacing.md,
+    paddingVertical: spacing.xl,
   },
-  emptyText: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '600',
-    marginTop: spacing.md,
-    textAlign: 'center',
-  },
-  emptyHint: {
+  text: {
+    fontSize: fontSize.sm,
     color: colors.textMuted,
-    fontSize: 14,
-    marginTop: spacing.xs,
-    textAlign: 'center',
   },
 });
 
-export default PlaylistItemRow;
+export default GlassPlaylistItem;

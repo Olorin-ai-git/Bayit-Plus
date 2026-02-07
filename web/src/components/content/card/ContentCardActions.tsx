@@ -116,8 +116,8 @@ export function ContentCardActions(props: ContentCardActionsProps) {
         />
       </button>
 
-      {/* Playlist Button */}
-      <button
+      {/* Playlist Button - hidden for radio (radio cannot be added to playlists) */}
+      {contentType !== 'radio' && <button
         onClick={handlePlaylistToggle}
         onMouseEnter={() => setPlaylistHovered(true)}
         onMouseLeave={() => setPlaylistHovered(false)}
@@ -140,7 +140,7 @@ export function ContentCardActions(props: ContentCardActionsProps) {
           color={inPlaylist ? '#a855f7' : '#ffffff'}
           fill={inPlaylist ? '#a855f7' : 'transparent'}
         />
-      </button>
+      </button>}
     </div>
   );
 }

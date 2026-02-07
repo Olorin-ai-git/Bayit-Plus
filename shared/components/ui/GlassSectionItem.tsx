@@ -74,7 +74,7 @@ export const GlassSectionItem: React.FC<GlassSectionItemProps> = ({
       <View style={[styles.mainRow, { flexDirection }]}>
         {/* Drag Handle (web only) */}
         {showDragHandle && (
-          <View style={styles.dragHandle} data-drag-handle="true">
+          <View style={styles.dragHandle} testID="drag-handle">
             <Text style={[
               isTV ? styles.dragHandleTextTV : styles.dragHandleText,
               { color: 'rgba(255, 255, 255, 0.6)', letterSpacing: -2 }

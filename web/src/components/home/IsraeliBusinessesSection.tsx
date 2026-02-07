@@ -147,7 +147,6 @@ export default function IsraeliBusinessesSection({
           // Set new timeout and store reference for cleanup
           retryTimeoutRef.current = setTimeout(() => {
             setRetryCount(prev => prev + 1);
-            loadLocationContent();
           }, delay);
         }
       }

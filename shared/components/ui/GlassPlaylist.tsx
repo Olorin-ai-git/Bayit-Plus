@@ -14,19 +14,28 @@ import { GlassErrorBanner } from './GlassErrorBanner';
 import { GlassReorderableList } from './GlassReorderableList';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
-import { useNavigate } from 'react-router-dom';
 import { usePlaylistStore } from '../../stores/playlistStore';
 import { useDirection } from '../../hooks/useDirection';
 import { PlaylistItemRow, PlaylistEmpty } from './GlassPlaylistItem';
 import { logger } from '../../utils/logger';
+import type { PlaylistItem } from '../../services/api/playlistServices';
 
 const OVERLAY_WIDTH = 380;
 const ANIMATION_DURATION = 300;
 
-export const GlassPlaylist: React.FC = () => {
+interface GlassPlaylistProps {
+  /** Called when a single item should be played. Receives the playlist item. */
+  onPlayItem?: (item: PlaylistItem) => void;
+  /** Called when Play All is pressed. Receives all items in order. */
+  onPlayAll?: (items: PlaylistItem[]) => void;
+}
+
+export const GlassPlaylist: React.FC<GlassPlaylistProps> = ({
+  onPlayItem,
+  onPlayAll,
+}) => {
   const { t } = useTranslation();
   const { isRTL } = useDirection();
-  const navigate = useNavigate();
 
   const isVisible = usePlaylistStore((s) => s.isVisible);
   const items = usePlaylistStore((s) => s.items);
@@ -71,58 +80,34 @@ export const GlassPlaylist: React.FC = () => {
   const handleRemoveItem = useCallback((contentId: string) => removeItem(contentId), [removeItem]);
 
   const handlePlayItem = useCallback((item: { content_id: string; content_type: string; title: string }) => {
-    const routeMap: Record<string, string> = {
-      live: `/live/${item.content_id}`,
-      radio: `/radio/${item.content_id}`,
-      podcast: `/podcasts/${item.content_id}`,
-      series: `/vod/series/${item.content_id}`,
-    };
-    const destination = routeMap[item.content_type] ?? `/vod/movie/${item.content_id}`;
     logger.info('Playlist item played', 'GlassPlaylist', {
       contentId: item.content_id,
       contentType: item.content_type,
-      destination,
     });
     setVisible(false);
-    navigate(destination);
-  }, [setVisible, navigate]);
+    // Find the full PlaylistItem to pass to the callback
+    const fullItem = items.find((i) => i.content_id === item.content_id);
+    if (fullItem && onPlayItem) {
+      onPlayItem(fullItem);
+    }
+  }, [setVisible, items, onPlayItem]);
 
   const handlePlayAll = useCallback(() => {
     if (items.length === 0) return;
-    const first = items[0];
-    const routeMap: Record<string, string> = {
-      live: `/live/${first.content_id}`,
-      radio: `/radio/${first.content_id}`,
-      podcast: `/podcasts/${first.content_id}`,
-      series: `/vod/series/${first.content_id}`,
-    };
-    const destination = routeMap[first.content_type] ?? `/vod/movie/${first.content_id}`;
     logger.info('Play All pressed', 'GlassPlaylist', { count: items.length });
     setVisible(false);
-    navigate(destination, {
-      state: {
-        flowId: 'playlist-play-all',
-        flowName: t('playlist.title'),
-        playlist: items.map((item) => ({
-          content_id: item.content_id,
-          content_type: item.content_type,
-          title: item.title,
-          thumbnail: item.thumbnail,
-        })),
-        currentIndex: 0,
-      },
-    });
-  }, [items, setVisible, navigate, t]);
+    if (onPlayAll) {
+      onPlayAll(items);
+    }
+  }, [items, setVisible, onPlayAll]);
 
   const handleReorder = useCallback((fromIndex: number, toIndex: number) => {
     const movedItem = items[fromIndex];
     if (!movedItem) return;
-    // Optimistic local reorder
     const reordered = [...items];
     reordered.splice(fromIndex, 1);
     reordered.splice(toIndex, 0, movedItem);
     setItems(reordered);
-    // Persist via API
     reorderItem(movedItem.content_id, toIndex);
   }, [items, setItems, reorderItem]);
 
@@ -148,9 +133,6 @@ export const GlassPlaylist: React.FC = () => {
       >
         <GlassView intensity="high" style={styles.panelInner}>
           <View style={styles.header}>
-            <View style={styles.headerTitle}>
-              <Text style={styles.titleText}>{t('playlist.title')}</Text>
-            </View>
             <View style={styles.headerActions}>
               {items.length > 0 && (
                 <>
@@ -256,16 +238,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.glassBorderLight,
-  },
-  headerTitle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-  },
-  titleText: {
-    color: colors.text,
-    fontSize: 18,
-    fontWeight: '700',
   },
   headerActions: {
     flexDirection: 'row',

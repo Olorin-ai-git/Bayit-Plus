@@ -5,7 +5,7 @@ interface FullscreenPlayerContent {
   title: string
   src: string
   poster?: string
-  type: 'movie' | 'series' | 'live' | 'vod' | 'audiobook'
+  type: 'movie' | 'series' | 'live' | 'vod' | 'audiobook' | 'podcast' | 'radio'
   contentId?: string
   episodeId?: string
   seriesId?: string

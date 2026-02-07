@@ -25,6 +25,7 @@ class ContentType(str, Enum):
     LIVE = "live"
     RADIO = "radio"
     PODCAST = "podcast"
+    AUDIOBOOK = "audiobook"
 
 
 class PlaylistItem(Document):

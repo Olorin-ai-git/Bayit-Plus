@@ -8,7 +8,7 @@ from typing import Optional
 
 from pydantic import BaseModel, field_validator
 
-from app.models.content import Content, LiveChannel, PodcastEpisode, RadioStation
+from app.models.content import Content, LiveChannel, Podcast, RadioStation
 from app.models.playlist import CONTENT_ID_PATTERN, ContentType, PlaylistItem
 
 
@@ -63,17 +63,24 @@ async def get_content_metadata(
         if channel:
             return {"title": channel.name, "thumbnail": channel.thumbnail}
     elif content_type == ContentType.PODCAST:
-        episode = await PodcastEpisode.get(content_id)
-        if episode:
+        podcast = await Podcast.get(content_id)
+        if podcast:
             return {
-                "title": episode.title,
-                "thumbnail": episode.thumbnail,
-                "duration": episode.duration,
+                "title": podcast.title,
+                "thumbnail": podcast.cover,
             }
     elif content_type == ContentType.RADIO:
         station = await RadioStation.get(content_id)
         if station:
             return {"title": station.name, "thumbnail": station.thumbnail}
+    elif content_type == ContentType.AUDIOBOOK:
+        content = await Content.get(content_id)
+        if content:
+            return {
+                "title": content.title,
+                "thumbnail": content.thumbnail,
+                "duration": content.duration,
+            }
     return None
 
 

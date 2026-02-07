@@ -26,6 +26,7 @@ interface AudioPlayerProps {
   artist?: string
   cover?: string
   isLive?: boolean
+  autoPlay?: boolean
   onEnded?: () => void
   onProgress?: (currentTime: number, duration: number) => void
   savedPosition?: number | null
@@ -40,6 +41,7 @@ export default function AudioPlayer({
   artist,
   cover,
   isLive = false,
+  autoPlay = false,
   onEnded,
   onProgress,
   savedPosition,
@@ -171,10 +173,22 @@ export default function AudioPlayer({
     audio.addEventListener('play', handlePlay)
     audio.addEventListener('pause', handlePause)
     audio.addEventListener('ended', handleEnded)
+
+    // Auto-play when triggered from overlay/playlist (user gesture already happened)
+    if (autoPlay) {
+      audio.play().catch((err) => {
+        if (err.name !== 'AbortError') {
+          logger.debug('Auto-play blocked, user can press play', 'AudioPlayer')
+        }
+      })
+    }
     audio.addEventListener('error', (e) => handleError(e))
 
     return () => {
       if (loadingTimeout) clearTimeout(loadingTimeout)
+      audio.pause()
+      audio.removeAttribute('src')
+      audio.load()
       audio.removeEventListener('canplay', handleCanPlay)
       audio.removeEventListener('loadedmetadata', handleLoadedMetadata)
       audio.removeEventListener('timeupdate', handleTimeUpdate)
@@ -183,7 +197,7 @@ export default function AudioPlayer({
       audio.removeEventListener('ended', handleEnded)
       audio.removeEventListener('error', handleError)
     }
-  }, [src, onEnded])
+  }, [src, autoPlay, onEnded])
 
   // Progress reporting: 10-second interval while playing
   useEffect(() => {

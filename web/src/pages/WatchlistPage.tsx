@@ -32,7 +32,6 @@ const FILTER_OPTIONS = [
   { id: 'kids', labelKey: 'playlist.filters.kids' },
   { id: 'judaism', labelKey: 'playlist.filters.judaism' },
   { id: 'podcasts', labelKey: 'playlist.filters.podcasts' },
-  { id: 'radio', labelKey: 'playlist.filters.radio' },
 ];
 
 export default function PlaylistPage() {

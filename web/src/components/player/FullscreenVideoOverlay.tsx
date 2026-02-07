@@ -11,9 +11,11 @@ import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore'
-import { contentService, liveService, chaptersService, historyService } from '@/services/api'
+import { usePlaylistPlaybackStore } from '@bayit/shared/stores'
+import { contentService, liveService, radioService, podcastService, chaptersService, historyService } from '@/services/api'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import VideoPlayer from './VideoPlayer'
+import AudioPlayer from './AudioPlayer'
 import logger from '@/utils/logger'
 import { useNotificationStore } from '@olorin/glass-ui/stores'
 import { QuizOverlay } from '@bayit/shared/components/quiz'
@@ -72,6 +74,7 @@ export default function FullscreenVideoOverlay() {
   // Quiz shows for all kids content regardless of profile type
   const shouldShowQuiz = content?.is_kids_content === true
   const isRTL = i18nInstance.dir() === 'rtl'
+  const isAudioContent = content?.type === 'podcast' || content?.type === 'radio'
 
   // Fetch stream URL when content changes (unless src is already provided)
   useEffect(() => {
@@ -94,17 +97,35 @@ export default function FullscreenVideoOverlay() {
       setLoading(true)
       setError(null)
       try {
-        let stream: { url?: string } | undefined
+        let streamUrl: string | undefined
 
-        if (content.type === 'live') {
-          stream = await liveService.getStreamUrl(content.id)
+        if (content.type === 'podcast') {
+          // Podcast episodes: GET /podcasts/{id} returns latestEpisode.audioUrl
+          const show = await podcastService.getShow(content.id)
+          streamUrl = show?.latestEpisode?.audioUrl
+        } else if (content.type === 'radio') {
+          const stream = await radioService.getStreamUrl(content.id)
+          streamUrl = stream?.url
+        } else if (content.type === 'live') {
+          const stream = await liveService.getStreamUrl(content.id)
+          streamUrl = stream?.url
         } else {
-          stream = await contentService.getStreamUrl(content.id)
+          const stream = await contentService.getStreamUrl(content.id)
+          streamUrl = stream?.url
         }
 
-        if (stream?.url) {
-          setStreamUrl(stream.url)
+        if (streamUrl) {
+          logger.info('Stream URL resolved', 'FullscreenVideoOverlay', {
+            contentId: content.id,
+            contentType: content.type,
+            isAudio: content.type === 'podcast' || content.type === 'radio',
+          })
+          setStreamUrl(streamUrl)
         } else {
+          logger.error('No stream URL in response', 'FullscreenVideoOverlay', {
+            contentId: content.id,
+            contentType: content.type,
+          })
           setError(i18n.t('errors.player.noStreamUrl'))
         }
       } catch (err: any) {
@@ -231,15 +252,42 @@ export default function FullscreenVideoOverlay() {
     [content?.id, content?.type, addNotification, t]
   )
 
+  // Advance to next playlist item or close the player
+  const advancePlaylistOrClose = useCallback(() => {
+    const playbackStore = usePlaylistPlaybackStore.getState()
+    if (playbackStore.isPlayAllActive) {
+      const nextItem = playbackStore.playNext()
+      if (nextItem) {
+        const { openPlayer } = useFullscreenPlayerStore.getState()
+        openPlayer({
+          id: nextItem.id,
+          title: nextItem.title,
+          src: '',
+          type: (nextItem.type as 'movie' | 'series' | 'live' | 'vod' | 'audiobook' | 'podcast' | 'radio') || 'vod',
+          poster: nextItem.thumbnail,
+        })
+        return true
+      }
+    }
+    return false
+  }, [])
+
   // Handle video ended
   const handleEnded = useCallback(() => {
     if (!content) return
 
-    // Show quiz for kids content if profile is a kids profile
+    // Show quiz for kids content - quiz handlers will advance playlist after
     if (shouldShowQuiz) {
       setShowQuiz(true)
+      return
     }
-  }, [content?.id, content?.type, shouldShowQuiz])
+
+    // If playlist "Play All" is active, advance to next item
+    if (!advancePlaylistOrClose()) {
+      // Not in playlist mode - default behavior (do nothing, player stays on last frame)
+      logger.debug('Content ended, no playlist active', 'FullscreenVideoOverlay')
+    }
+  }, [content?.id, content?.type, shouldShowQuiz, advancePlaylistOrClose])
 
   // Handle restart complete
   const handleRestartComplete = useCallback(() => {
@@ -249,15 +297,26 @@ export default function FullscreenVideoOverlay() {
     })
   }, [content?.id])
 
-  // Handle quiz close
+  // Handle quiz close - after quiz, check for next playlist item
   const handleQuizClose = useCallback(() => {
     setShowQuiz(false)
-    closePlayer()
-  }, [closePlayer])
+    if (!advancePlaylistOrClose()) {
+      closePlayer()
+    }
+  }, [closePlayer, advancePlaylistOrClose])
 
-  // Handle quiz complete
+  // Handle quiz complete - same as quiz close
   const handleQuizComplete = useCallback(() => {
     setShowQuiz(false)
+    if (!advancePlaylistOrClose()) {
+      closePlayer()
+    }
+  }, [closePlayer, advancePlaylistOrClose])
+
+  // Handle manual player close (ESC key, close button, etc.)
+  // Resets playlist play-all state if active
+  const handleManualClose = useCallback(() => {
+    usePlaylistPlaybackStore.getState().stopPlayAll()
     closePlayer()
   }, [closePlayer])
 
@@ -267,22 +326,22 @@ export default function FullscreenVideoOverlay() {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        closePlayer()
+        handleManualClose()
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [isOpen, closePlayer])
+  }, [isOpen, handleManualClose])
 
-  // Request fullscreen on open
+  // Request fullscreen on open (skip for audio-only content like podcasts/radio)
   useEffect(() => {
-    if (isOpen && containerRef.current) {
+    if (isOpen && containerRef.current && !isAudioContent) {
       containerRef.current.requestFullscreen?.().catch(() => {
         // Fullscreen request may fail, continue anyway
       })
     }
-  }, [isOpen])
+  }, [isOpen, isAudioContent])
 
   if (!isOpen || !content) return null
 
@@ -292,7 +351,7 @@ export default function FullscreenVideoOverlay() {
       style={webStyles.container}
       onClick={(e) => e.stopPropagation()}
     >
-      <Pressable onPress={closePlayer} style={styles.closeButton}>
+      <Pressable onPress={handleManualClose} style={styles.closeButton}>
         <X size={24} color={colors.text} />
       </Pressable>
 
@@ -306,16 +365,30 @@ export default function FullscreenVideoOverlay() {
       {error && !loading && (
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>{error}</Text>
-          <Pressable onPress={closePlayer} style={styles.errorButton}>
+          <Pressable onPress={handleManualClose} style={styles.errorButton}>
             <Text style={styles.errorButtonText}>{t('common.close')}</Text>
           </Pressable>
         </View>
       )}
 
+      {/* Audio Player for podcast/radio content */}
+      {streamUrl && !loading && !error && isAudioContent && (
+        <View style={styles.audioPlayerContainer}>
+          <AudioPlayer
+            src={streamUrl}
+            title={content.title}
+            cover={content.poster}
+            isLive={content.type === 'radio'}
+            autoPlay={true}
+            onEnded={handleEnded}
+            onProgress={handleProgress}
+          />
+        </View>
+      )}
+
       {/* Video Player - YouTube iframe or native player */}
-      {streamUrl && !loading && !error && (
+      {streamUrl && !loading && !error && !isAudioContent && (
         isYouTubeUrl(streamUrl) ? (
-          // YouTube content - use iframe embed
           <div style={webStyles.youtubeContainer}>
             <iframe
               src={`https://www.youtube.com/embed/${getYouTubeVideoId(streamUrl)}?autoplay=1&rel=0&modestbranding=1`}
@@ -326,9 +399,7 @@ export default function FullscreenVideoOverlay() {
             />
           </div>
         ) : (
-          // Regular video content - use native player
           (() => {
-            // Detect HLS content to skip native text tracks (HLS has embedded subtitles)
             const isHLS = streamUrl.toLowerCase().includes('.m3u8');
 
             logger.info('Rendering VideoPlayer with initial subtitle', 'FullscreenVideoOverlay', {
@@ -353,8 +424,6 @@ export default function FullscreenVideoOverlay() {
                 savedPosition={savedPosition}
                 onRestartComplete={handleRestartComplete}
                 initialSubtitleLang={content.initialSubtitleLang}
-                initialSplitMode={content.initialSplitMode}
-                initialSplitLanguages={content.initialSplitLanguages}
                 isHLS={isHLS}
               />
             );
@@ -396,6 +465,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 10001,
+  },
+  audioPlayerContainer: {
+    flex: 1,
   },
   loadingContainer: {
     flex: 1,
@@ -441,6 +513,8 @@ const webStyles: Record<string, React.CSSProperties> = {
     bottom: 0,
     backgroundColor: '#000',
     zIndex: 10000,
+    display: 'flex',
+    flexDirection: 'column',
   },
   youtubeContainer: {
     position: 'absolute',

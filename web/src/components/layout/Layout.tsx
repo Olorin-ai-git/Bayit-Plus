@@ -1,93 +1,36 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated } from 'react-native';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import GlassSidebar from './GlassSidebar';
 import Breadcrumbs from './Breadcrumbs';
 import Chatbot from '../chat/Chatbot';
 import SoundwaveParticles from '../content/SoundwaveParticles';
-import MobileBottomNav from '../mobile/MobileBottomNav';
 import { WidgetManager } from '../widgets';
+import { GlassPlaylist } from '@bayit/shared/ui';
+import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
+import { usePlaylistPlaybackStore } from '@bayit/shared/stores';
 import { useVoiceListeningContext } from '@bayit/shared-contexts';
 import { ttsService } from '@bayit/shared-services';
 import { colors, spacing } from '@olorin/design-tokens';
 import { useTizenRemoteKeys } from '@/hooks/useTizenRemoteKeys';
+import { useSamsungVoice } from '@/hooks/useSamsungVoice';
+import { useChatbotStore } from '@/stores/chatbotStore';
 import { useDirection } from '@/hooks/useDirection';
-import { useResponsive } from '@/hooks/useResponsive';
-import { useSupportStore } from '@bayit/shared/stores/supportStore';
-import { VoiceResponseBubble } from '@/components/voice/VoiceResponseBubble';
 import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
 import { useVoiceSupport } from '@bayit/shared-hooks';
 import { supportConfig } from '@bayit/shared-config/supportConfig';
 import logger from '@/utils/logger';
-import { usePlaylistVoiceActions } from '@/hooks/usePlaylistVoiceActions';
-import { GlassPlaylist } from '@bayit/shared/components/ui/GlassPlaylist';
 
 // Check if this is a TV build (set by webpack)
 declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
 export default function Layout() {
-  // Responsive state
-  const responsive = useResponsive();
-  const { isMobile } = responsive;
-
-  // Sidebar state: always expanded by default on desktop/TV, hidden on mobile
+  // Sidebar state: always expanded by default on both web and TV
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const { isRTL } = useDirection();
-
-  // Current transcript from voice support store (set by voice pipeline services)
-  const currentTranscript = useSupportStore((s) => s.currentTranscript);
-
-  // Playlist voice action handler
-  const { handlePlaylistAction } = usePlaylistVoiceActions();
-
-  // Voice action execution - navigate, search, playback, scroll
-  const navigate = useNavigate();
-  const pendingVoiceAction = useSupportStore((s) => s.pendingVoiceAction);
-  const lastProcessedActionRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (!pendingVoiceAction) return;
-
-    // Deduplication: prevent processing the same action twice
-    const actionKey = `${pendingVoiceAction.type}:${JSON.stringify(pendingVoiceAction.payload)}`;
-    if (lastProcessedActionRef.current === actionKey) return;
-
-    const action = useSupportStore.getState().consumeVoiceAction();
-    if (!action) return;
-
-    lastProcessedActionRef.current = actionKey;
-
-    try {
-      switch (action.type) {
-        case 'navigate':
-          if (action.payload.path && typeof action.payload.path === 'string') {
-            navigate(action.payload.path);
-          }
-          break;
-        case 'search':
-          if (action.payload.query && typeof action.payload.query === 'string') {
-            navigate(`/search?q=${encodeURIComponent(action.payload.query)}`);
-          }
-          break;
-        case 'playback':
-          break;
-        case 'scroll':
-          window.scrollBy({
-            top: action.payload.direction === 'up' ? -500 : 500,
-            behavior: 'smooth',
-          });
-          break;
-        case 'playlist':
-          handlePlaylistAction(action.payload);
-          break;
-      }
-    } catch (error) {
-      logger.error('Failed to execute voice action', 'Layout', { actionType: action.type, error });
-    }
-  }, [pendingVoiceAction, navigate]);
 
   // Voice Support for floating wizard hat FAB
   const {
@@ -95,99 +38,23 @@ export default function Layout() {
     isVoiceModalOpen,
     isSupported: voiceSupported,
     closeVoiceModal,
-    openVoiceModal,
     startListening,
     stopListening,
     interrupt,
-    playIntro,
+    activateVoiceAssistant,
   } = useVoiceSupport();
 
-  const handleVoiceAvatarPress = useCallback(async () => {
-    // Dispatch custom event to toggle topbar microphone button state
-    logger.debug('Wizard avatar pressed - opening voice modal and starting listening', 'Layout');
+  const handleVoiceAvatarPress = useCallback(() => {
+    logger.debug('Wizard avatar pressed - activating voice assistant', 'Layout');
+    // Activate voice assistant (handles intro + modal + listening)
+    activateVoiceAssistant();
+  }, [activateVoiceAssistant]);
 
-    // Toggle microphone button state
-    window.dispatchEvent(new CustomEvent('bayit:toggle-voice'));
-
-    // Open modal
-    openVoiceModal();
-
-    // CRITICAL: Request microphone permission SYNCHRONOUSLY first
-    // This MUST happen in the same event loop tick as the user gesture
-    // to trigger the browser's permission dialog
-    try {
-      logger.debug('Requesting microphone permission synchronously', 'Layout');
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(track => track.stop()); // Immediately release
-      logger.debug('Microphone permission granted', 'Layout');
-    } catch (error: any) {
-      logger.error('Microphone permission denied', 'Layout', error);
-
-      // Show user-friendly error message based on error type
-      const errorName = error?.name || 'UnknownError';
-      const errorMessage = error?.message || 'Unknown error';
-
-      let userMessage = '';
-      let instructions = '';
-
-      if (errorName === 'NotFoundError') {
-        userMessage = 'Microphone not found or not accessible';
-        instructions = 'Please check:\n' +
-          '1. System Preferences → Security & Privacy → Microphone\n' +
-          '2. Enable Chrome to access microphone\n' +
-          '3. Restart Chrome\n' +
-          '4. Try again';
-      } else if (errorName === 'NotAllowedError' || errorName === 'PermissionDeniedError') {
-        userMessage = 'Microphone permission denied';
-        instructions = 'Please allow microphone access when prompted, or:\n' +
-          '1. Click the lock icon in the address bar\n' +
-          '2. Allow microphone access\n' +
-          '3. Reload the page';
-      } else if (errorName === 'NotReadableError' || errorName === 'TrackStartError') {
-        userMessage = 'Microphone is in use by another application';
-        instructions = 'Please close other applications using the microphone and try again.';
-      } else {
-        userMessage = 'Could not access microphone';
-        instructions = `Error: ${errorMessage}`;
-      }
-
-      // Show alert with instructions
-      alert(`${userMessage}\n\n${instructions}`);
-
-      // Log detailed error for debugging
-      logger.error('Microphone access failed', 'Layout', {
-        errorName,
-        errorMessage,
-        userMessage,
-      });
-
-      closeVoiceModal();
-      window.dispatchEvent(new CustomEvent('bayit:voice-stopped')); // Force mic button off
-      return; // Stop if permission denied
-    }
-
-    // Now proceed with intro and listening (permission already granted)
-    try {
-      await playIntro();
-      logger.debug('Intro completed, starting listening', 'Layout');
-      await startListening();
-    } catch (error) {
-      logger.warn('Intro or listening failed', 'Layout', error);
-    }
-  }, [openVoiceModal, playIntro, startListening, closeVoiceModal]);
-
-  // Handle closing the voice modal - stop listening, interrupt TTS, and force mic button off
   const handleCloseVoiceModal = useCallback(() => {
-    logger.debug('Voice modal closing - stopping listening and forcing microphone button off', 'Layout');
-    // Stop microphone listening
-    stopListening();
-    // Interrupt any ongoing TTS playback
-    interrupt();
-    // Dispatch directional event to force topbar microphone button OFF (not toggle)
-    window.dispatchEvent(new CustomEvent('bayit:voice-stopped'));
+    logger.debug('Voice modal closing', 'Layout');
     // Close the modal
     closeVoiceModal();
-  }, [closeVoiceModal, stopListening, interrupt]);
+  }, [closeVoiceModal]);
 
   const toggleSidebar = useCallback(() => {
     setIsSidebarExpanded(prev => !prev);
@@ -207,6 +74,38 @@ export default function Layout() {
     enabled: IS_TV_BUILD,
   });
 
+  // Samsung Voice Integration (Bixby)
+  // When user says "Hey Bixby, search for X", the search query is sent to chatbot
+  const { sendMessage, toggleOpen } = useChatbotStore();
+
+  const handleBixbySearch = useCallback((query: string) => {
+    logger.debug('Bixby search received', 'Layout', query);
+    toggleOpen(); // Open chatbot
+    sendMessage(query); // Send the voice query to chatbot
+  }, [sendMessage, toggleOpen]);
+
+  const handleBixbyCommand = useCallback((command: string, data?: any) => {
+    logger.debug('Bixby command', 'Layout', { command, data });
+    // Could handle play/pause/etc commands here
+  }, []);
+
+  // Bixby voice integration disabled - requires voicecontrol privilege
+  const bixbyAvailable = false;
+  const bixbyError: string | null = null;
+  // const { isAvailable: bixbyAvailable, error: bixbyError } = useSamsungVoice({
+  //   enabled: IS_TV_BUILD,
+  //   onSearch: handleBixbySearch,
+  //   onCommand: handleBixbyCommand,
+  //   currentState: 'Home',
+  // });
+
+  // Log Bixby availability
+  useEffect(() => {
+    if (IS_TV_BUILD) {
+      logger.debug('Bixby voice integration available', 'Layout', bixbyAvailable);
+    }
+  }, [bixbyAvailable]);
+
   // Voice listening context - shared across all pages
   const { isListening, isAwake, isProcessing, audioLevel } = useVoiceListeningContext();
 
@@ -222,25 +121,26 @@ export default function Layout() {
     }
   }, [isProcessing, isAwake]);
 
-  // Particles panel visible ONLY when wizard (voice modal) is active
-  const showParticlesPanel = !isMobile && voiceSupported && supportConfig.voiceAssistant.enabled && isVoiceModalOpen;
-
-  // Animation for voice panel slide in
-  const voicePanelAnim = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(voicePanelAnim, {
-      toValue: showParticlesPanel ? 1 : 0,
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
-  }, [showParticlesPanel, voicePanelAnim]);
-
   // TTS event state - tracks when system is speaking
   const [voiceResponse, setVoiceResponse] = useState<string>('');
   const [voiceError, setVoiceError] = useState<boolean>(false);
   const [isResponding, setIsResponding] = useState<boolean>(false);
   const [isTTSSpeaking, setIsTTSSpeaking] = useState<boolean>(false);
+
+  // Animation for voice panel slide up/down
+  const voicePanelAnim = useRef(new Animated.Value(0)).current;
+
+  // Voice panel is visible when any voice activity is happening
+  const isVoiceActive = isListening || isAwake || isProcessing || isResponding || isTTSSpeaking;
+
+  // Animate the voice panel visibility
+  useEffect(() => {
+    Animated.timing(voicePanelAnim, {
+      toValue: isVoiceActive ? 1 : 0,
+      duration: 300,
+      useNativeDriver: false, // height animation doesn't support native driver
+    }).start();
+  }, [isVoiceActive, voicePanelAnim]);
 
   // Listen for TTS events to track response speaking state
   useEffect(() => {
@@ -286,15 +186,45 @@ export default function Layout() {
     };
   }, []);
 
+  // Playlist direct playback: open fullscreen player without page navigation
+  const openPlayer = useFullscreenPlayerStore((s) => s.openPlayer);
+  const startPlayAll = usePlaylistPlaybackStore((s) => s.startPlayAll);
+
+  const handlePlaylistItem = useCallback((item: { content_id: string; content_type: string; title: string; thumbnail?: string }) => {
+    openPlayer({
+      id: item.content_id,
+      title: item.title,
+      src: '',
+      type: (item.content_type as 'movie' | 'series' | 'live' | 'vod' | 'audiobook' | 'podcast' | 'radio') || 'vod',
+      poster: item.thumbnail,
+    });
+  }, [openPlayer]);
+
+  const handlePlaylistPlayAll = useCallback((items: Array<{ content_id: string; content_type: string; title: string; thumbnail?: string; duration?: number }>) => {
+    const playbackItems = items.map((item) => ({
+      id: item.content_id,
+      title: item.title,
+      thumbnail: item.thumbnail,
+      type: item.content_type,
+      duration: item.duration != null ? String(item.duration) : undefined,
+    }));
+    const firstItem = startPlayAll(playbackItems);
+    if (firstItem) {
+      openPlayer({
+        id: firstItem.id,
+        title: firstItem.title,
+        src: '',
+        type: (firstItem.type as 'movie' | 'series' | 'live' | 'vod' | 'audiobook' | 'podcast' | 'radio') || 'vod',
+        poster: firstItem.thumbnail,
+      });
+    }
+  }, [openPlayer, startPlayAll]);
+
   // Calculate content margin based on sidebar state
   // Sidebar widths must match GlassSidebar: TV uses 80/280, web uses 64/220
-  // Mobile: sidebar is overlay (drawer), so no margin
-  const getSidebarWidth = () => {
-    if (IS_TV_BUILD) return isSidebarExpanded ? 280 : 80;
-    if (isMobile) return 0; // Sidebar is overlay on mobile
-    return isSidebarExpanded ? 220 : 64;
-  };
-  const sidebarWidth = getSidebarWidth();
+  const collapsedWidth = IS_TV_BUILD ? 80 : 64;
+  const expandedWidth = IS_TV_BUILD ? 280 : 220;
+  const sidebarWidth = isSidebarExpanded ? expandedWidth : collapsedWidth;
 
   return (
     <View style={styles.container}>
@@ -305,26 +235,23 @@ export default function Layout() {
         <View style={[styles.blurCircle, styles.blurCircleSuccess]} />
       </View>
 
-      {/* Sidebar - Hidden on mobile, always visible on web/TV */}
-      {!isMobile && (
-        <GlassSidebar
-          isExpanded={isSidebarExpanded}
-          onToggle={toggleSidebar}
-        />
-      )}
+      {/* Sidebar - Always visible on web, toggleable on TV */}
+      <GlassSidebar
+        isExpanded={isSidebarExpanded}
+        onToggle={toggleSidebar}
+      />
 
       {/* Main content wrapper with sidebar offset */}
       <View style={[
         styles.contentWrapper,
         isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth },
-        isMobile && { paddingBottom: 64 }, // Space for bottom nav
       ]}>
         <Header />
 
         {/* Breadcrumbs Navigation */}
         <Breadcrumbs />
 
-        {/* Voice Soundwave Particles - visible only when wizard (voice modal) is active */}
+        {/* Voice Soundwave Particles - visible only when voice control is active */}
         <Animated.View
           style={[
             styles.voicePanelWrapper,
@@ -350,16 +277,13 @@ export default function Layout() {
         <View style={styles.main}>
           <Outlet />
         </View>
-        {!IS_TV_BUILD && !isMobile && <Footer />}
+        {!IS_TV_BUILD && <Footer />}
       </View>
-
-      {/* Mobile Bottom Navigation - only on mobile */}
-      {isMobile && !IS_TV_BUILD && <MobileBottomNav />}
 
       {/* Chatbot enabled on both web and TV for voice interaction */}
       <Chatbot />
 
-      {/* Voice Avatar FAB - Floating wizard hat for voice support (all screen sizes) */}
+      {/* Voice Avatar FAB - Floating wizard hat for voice support */}
       {voiceSupported && supportConfig.voiceAssistant.enabled && (
         <VoiceAvatarFAB
           onPress={handleVoiceAvatarPress}
@@ -376,19 +300,14 @@ export default function Layout() {
         onInterrupt={interrupt}
       />
 
-      {/* Voice Response Bubble - shows wizard response text */}
-      <VoiceResponseBubble
-        transcript={currentTranscript}
-        responseText={voiceResponse}
-        isVisible={isTTSSpeaking}
-        isRTL={isRTL}
-      />
-
-      {/* Playlist slide-in overlay */}
-      <GlassPlaylist />
-
       {/* Widget Manager - renders floating overlay widgets */}
       <WidgetManager />
+
+      {/* Playlist slide-in overlay - plays directly in fullscreen player */}
+      <GlassPlaylist
+        onPlayItem={handlePlaylistItem}
+        onPlayAll={handlePlaylistPlayAll}
+      />
     </View>
   );
 }
@@ -457,7 +376,5 @@ const styles = StyleSheet.create({
   voicePanelWrapper: {
     overflow: 'hidden',
     width: '100%',
-    position: 'relative',
-    zIndex: 9999, // Above modal and all other elements
   },
 });

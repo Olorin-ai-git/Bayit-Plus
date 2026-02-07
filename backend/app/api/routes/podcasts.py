@@ -511,6 +511,34 @@ async def get_podcast(
 
         show = await Podcast.get(show_id)
         if not show or not show.is_active:
+            # Playlist items store episode IDs - try as episode
+            episode = await PodcastEpisode.get(show_id)
+            if episode:
+                parent = await Podcast.get(episode.podcast_id)
+                return {
+                    "id": str(episode.id),
+                    "title": episode.title,
+                    "description": episode.description,
+                    "author": parent.author if parent else None,
+                    "cover": episode.thumbnail or (parent.cover if parent else None),
+                    "category": None,
+                    "website": parent.website if parent else None,
+                    "episodeCount": 1,
+                    "episodes": [
+                        {
+                            "id": str(episode.id),
+                            "title": episode.title,
+                            "description": episode.description,
+                            "audioUrl": episode.audio_url,
+                            "duration": episode.duration,
+                            "episodeNumber": episode.episode_number,
+                            "seasonNumber": episode.season_number,
+                            "publishedAt": episode.published_at.strftime("%d/%m/%Y"),
+                            "thumbnail": episode.thumbnail or (parent.cover if parent else None),
+                        }
+                    ],
+                    "latestEpisode": {"audioUrl": episode.audio_url},
+                }
             raise HTTPException(status_code=404, detail="Podcast not found")
 
         # Beta access check

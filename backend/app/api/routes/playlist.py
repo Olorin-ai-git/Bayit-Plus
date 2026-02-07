@@ -57,6 +57,12 @@ async def add_to_playlist(
     current_user: User = Depends(get_current_active_user),
 ):
     """Add content to playlist."""
+    if data.content_type == ContentType.RADIO:
+        raise HTTPException(
+            status_code=400,
+            detail="Radio stations cannot be added to playlists",
+        )
+
     user_id = str(current_user.id)
 
     existing = await PlaylistItem.find_one(
@@ -218,6 +224,12 @@ async def toggle_playlist(
     """Toggle playlist status for content."""
     user_id = str(current_user.id)
     content_type_str = data.content_type if data else "vod"
+
+    if content_type_str == "radio":
+        raise HTTPException(
+            status_code=400,
+            detail="Radio stations cannot be added to playlists",
+        )
 
     existing = await PlaylistItem.find_one(
         PlaylistItem.user_id == user_id,
