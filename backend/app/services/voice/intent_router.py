@@ -134,12 +134,14 @@ class IntentRouter:
         kids_keywords = KIDS_KEYWORDS.get(self.language, KIDS_KEYWORDS["en"])
         if any(kw in transcript_lower for kw in kids_keywords):
             return VoiceIntent.KIDS, 0.9
+        # Search patterns - checked BEFORE navigation because NAVIGATION_KEYWORDS
+        # includes category words (movies, audiobooks, etc.) that also appear in
+        # search queries like "do you have Harry Potter audiobooks?"
+        if any(kw in transcript_lower for kw in SEARCH_KEYWORDS):
+            return VoiceIntent.SEARCH, 0.8
         # Navigation patterns
         if any(kw in transcript_lower for kw in NAVIGATION_KEYWORDS):
             return VoiceIntent.NAVIGATION, 0.95
-        # Search patterns
-        if any(kw in transcript_lower for kw in SEARCH_KEYWORDS):
-            return VoiceIntent.SEARCH, 0.8
         # Bare playback control (play, pause, stop, resume)
         if any(kw in transcript_lower for kw in PLAYBACK_KEYWORDS):
             return VoiceIntent.PLAYBACK, 0.9

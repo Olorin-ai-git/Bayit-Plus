@@ -23,10 +23,13 @@ NAVIGATION_KEYWORDS = [
 # Search patterns (3 languages)
 SEARCH_KEYWORDS = [
     'חפש', 'מצא', 'איפה', 'הצג',
+    'יש לכם', 'האם יש', 'האם אתם',
     'אקשן', 'קומדיה', 'דרמה', 'דוקומנטרים',
     'search', 'find', 'show', 'where',
+    'do you have', 'is there', 'are there', 'have you got', 'any available',
     'action', 'comedy', 'drama', 'documentary',
-    'buscar', 'encontrar', 'mostrar'
+    'buscar', 'encontrar', 'mostrar',
+    'tienen', 'hay algún', 'hay alguna',
 ]
 
 # Playback control patterns (3 languages)
