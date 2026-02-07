@@ -1,0 +1,195 @@
+import BayitDesignSystem
+import BayitLocalization
+import SwiftUI
+
+/// User profile screen showing avatar, stats, and preferences
+struct ProfileView: View {
+    @Environment(RepositoryProvider.self) private var repos
+    @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
+    @State private var viewModel: ProfileViewModel?
+
+    var body: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            if let vm = viewModel {
+                LazyVStack(spacing: DesignTokens.Spacing.lg) {
+                    if vm.isLoading && vm.profile == nil {
+                        loadingState
+                    } else if let error = vm.error, vm.profile == nil {
+                        ErrorStateView(message: error) {
+                            Task { await viewModel?.load() }
+                        }
+                    } else if let profile = vm.profile {
+                        profileHeader(profile)
+                        statsSection(vm.stats)
+                        menuSection
+                    }
+                }
+                .padding(.vertical, DesignTokens.Spacing.lg)
+            }
+        }
+        .background(DesignTokens.Background.primary)
+        .task {
+            if viewModel == nil {
+                viewModel = ProfileViewModel(repository: repos.user)
+            }
+            await viewModel?.load()
+        }
+    }
+
+    private func profileHeader(_ profile: ProfileResponse) -> some View {
+        VStack(spacing: DesignTokens.Spacing.md) {
+            avatarView(profile.avatar)
+
+            Text(profile.displayName ?? profile.email ?? "")
+                .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
+                .foregroundColor(DesignTokens.Text.primary)
+
+            if let email = profile.email {
+                Text(email)
+                    .font(.system(size: DesignTokens.FontSize.sm))
+                    .foregroundColor(DesignTokens.Text.secondary)
+            }
+
+            if profile.isBetaUser == true, let credits = profile.betaCredits {
+                GlassBadge(
+                    text: "Beta 500 - \(credits) credits",
+                    variant: .primary
+                )
+            }
+        }
+        .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    private func avatarView(_ url: String?) -> some View {
+        Group {
+            if let urlStr = url, let imageURL = URL(string: urlStr) {
+                AsyncImage(url: imageURL) { phase in
+                    switch phase {
+                    case .success(let image):
+                        image.resizable().aspectRatio(contentMode: .fill)
+                    default:
+                        avatarPlaceholder
+                    }
+                }
+            } else {
+                avatarPlaceholder
+            }
+        }
+        .frame(width: 96, height: 96)
+        .clipShape(Circle())
+        .overlay(Circle().stroke(DesignTokens.Glass.border, lineWidth: 2))
+    }
+
+    private var avatarPlaceholder: some View {
+        Circle()
+            .fill(DesignTokens.Glass.bg)
+            .overlay(
+                Image(systemName: "person.fill")
+                    .font(.system(size: 36))
+                    .foregroundColor(DesignTokens.Text.secondary)
+            )
+    }
+
+    private func statsSection(_ stats: ProfileStats?) -> some View {
+        HStack(spacing: DesignTokens.Spacing.md) {
+            statCard(
+                label: localization.t("profile.watched"),
+                value: "\(stats?.totalWatched ?? 0)"
+            )
+            statCard(
+                label: localization.t("profile.favorites"),
+                value: "\(stats?.totalFavorites ?? 0)"
+            )
+            statCard(
+                label: localization.t("profile.streak"),
+                value: "\(stats?.streakDays ?? 0)"
+            )
+        }
+        .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    private func statCard(label: String, value: String) -> some View {
+        GlassCard {
+            VStack(spacing: DesignTokens.Spacing.xs) {
+                Text(value)
+                    .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
+                    .foregroundColor(DesignTokens.Primary.default)
+
+                Text(label)
+                    .font(.system(size: DesignTokens.FontSize.xs))
+                    .foregroundColor(DesignTokens.Text.secondary)
+                    .lineLimit(1)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(DesignTokens.Spacing.md)
+        }
+    }
+
+    private var menuSection: some View {
+        VStack(spacing: DesignTokens.Spacing.sm) {
+            menuRow(icon: "heart.fill", title: "profile.favorites") {
+                coordinator.pushToCurrentTab(.favorites)
+            }
+            menuRow(icon: "list.bullet", title: "profile.playlist") {
+                coordinator.pushToCurrentTab(.playlist)
+            }
+            menuRow(icon: "arrow.down.circle.fill", title: "profile.downloads") {
+                coordinator.pushToCurrentTab(.downloads)
+            }
+            menuRow(icon: "record.circle", title: "profile.recordings") {
+                coordinator.pushToCurrentTab(.recordings)
+            }
+            menuRow(icon: "gearshape.fill", title: "profile.settings") {
+                coordinator.pushToCurrentTab(.settings)
+            }
+        }
+        .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    private func menuRow(icon: String, title: String, action: @escaping () -> Void) -> some View {
+        GlassCard {
+            Button(action: action) {
+                HStack(spacing: DesignTokens.Spacing.md) {
+                    Image(systemName: icon)
+                        .font(.system(size: DesignTokens.FontSize.lg))
+                        .foregroundColor(DesignTokens.Primary.default)
+                        .frame(width: 32)
+
+                    Text(localization.t(title))
+                        .font(.system(size: DesignTokens.FontSize.md))
+                        .foregroundColor(DesignTokens.Text.primary)
+
+                    Spacer()
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: DesignTokens.FontSize.sm))
+                        .foregroundColor(DesignTokens.Text.muted)
+                }
+                .padding(DesignTokens.Spacing.md)
+            }
+        }
+    }
+
+    private var loadingState: some View {
+        VStack(spacing: DesignTokens.Spacing.xl) {
+            Circle()
+                .fill(DesignTokens.Glass.bg)
+                .frame(width: 96, height: 96)
+
+            RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                .fill(DesignTokens.Glass.bg)
+                .frame(width: 200, height: 24)
+
+            HStack(spacing: DesignTokens.Spacing.md) {
+                ForEach(0..<3, id: \.self) { _ in
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                        .fill(DesignTokens.Glass.bg)
+                        .frame(height: 80)
+                }
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+        }
+        .padding(.top, DesignTokens.Spacing.xxl)
+    }
+}

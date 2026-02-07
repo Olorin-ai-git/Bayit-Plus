@@ -107,6 +107,30 @@ export const config = {
     minBodyTextSizePt: 28,
     minTitleTextSizePt: 48,
     minButtonTextSizePt: 24,
+
+    // Multi-window player settings
+    player: {
+      controlsAutoHideMs: 3000,
+      errorRetryMaxAttempts: 3,
+      errorRetryBaseDelayMs: 1000,
+      seekStepSeconds: 30,
+      bufferMinMs: 2000,
+      bufferMaxMs: 10000,
+      bufferPlaybackMs: 1000,
+      bufferRebufferMs: 2000,
+      progressBarHeight: 6,
+      controlButtonSize: 64,
+      controlIconSize: 28,
+    },
+  },
+
+  // Timing constants (TV-optimized)
+  timing: {
+    windowAnimationMs: 300,
+    voiceFeedbackDelayMs: 500,
+    voiceListenTimeoutMs: 5000,
+    debounceSearchMs: 500,
+    pollIntervalMs: 30000,
   },
 
   // Voice settings (TV-optimized)

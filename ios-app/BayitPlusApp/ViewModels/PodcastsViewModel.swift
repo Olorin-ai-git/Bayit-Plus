@@ -30,9 +30,9 @@ final class PodcastsViewModel {
 
         do {
             async let showsResult = repository.fetchPodcasts(
+                category: selectedCategory,
                 page: 1,
-                limit: pageSize,
-                category: selectedCategory
+                limit: pageSize
             )
             async let categoriesResult = repository.fetchCategories()
 
@@ -56,9 +56,9 @@ final class PodcastsViewModel {
 
         do {
             let response = try await repository.fetchPodcasts(
+                category: selectedCategory,
                 page: nextPage,
-                limit: pageSize,
-                category: selectedCategory
+                limit: pageSize
             )
             shows.append(contentsOf: response.shows)
             currentPage = nextPage
@@ -79,9 +79,9 @@ final class PodcastsViewModel {
 
         do {
             let response = try await repository.fetchPodcasts(
+                category: category,
                 page: 1,
-                limit: pageSize,
-                category: category
+                limit: pageSize
             )
             shows = response.shows
             hasMore = response.page < response.pages

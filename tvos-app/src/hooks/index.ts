@@ -49,7 +49,24 @@ export type {
 // Beta 500 enrollment check
 export { useBetaUser } from './useBetaUser';
 
+// AI Recommendations
+export { useAIRecommendations, RECOMMENDATION_CATEGORIES } from './useAIRecommendations';
+export type { RecommendationItem, RecommendationCategory } from './useAIRecommendations';
+
+// AI Search
+export { useAISearch } from './useAISearch';
+export type { SearchResult } from './useAISearch';
+
+// Voice Search
+export { useSearchVoice } from './useSearchVoice';
+
 // Existing hooks
 export { useAudioCapture } from './useAudioCapture';
 export { useTVConstantListening } from './useTVConstantListening';
 export type { UseTVConstantListeningReturn, UseTVConstantListeningOptions } from './useTVConstantListening';
+
+// Window hook (extracted from multiWindowStore)
+export { useWindow } from './useWindow';
+
+// Voice helper hooks (extracted from voiceStore)
+export { useVoiceSession, useAudioDucking, useWakeWord } from './useVoiceHelpers';

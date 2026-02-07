@@ -18,7 +18,12 @@ class SceneSearchIntentHandler: INExtension, INPlayMediaIntentHandling {
 
     // MARK: - Configuration
 
-    private let apiBaseURL = "https://api.bayit.tv/api/v1"
+    private var apiBaseURL: String {
+        if let url = Bundle.main.object(forInfoDictionaryKey: "APIBaseURL") as? String, !url.isEmpty {
+            return url
+        }
+        return "https://api.bayit.tv/api/v1"
+    }
 
     // MARK: - INPlayMediaIntentHandling
 

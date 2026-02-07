@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, StyleSheet, SafeAreaView, TVFocusGuideView } from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { colors, spacing, fontSize } from '@olorin/design-tokens';
-import { GlassView, GlassToggle, GlassButton } from '@bayit/glass';
-import { useFamilyControlsStore } from '../../../shared/stores/familyControlsStore';
-import { FamilyPinModal } from '../../../shared/components/family-controls/FamilyPinModal';
-import { AgeSlider } from '../../../shared/components/family-controls/AgeSlider';
-import { ContentRatingSelector } from '../../../shared/components/family-controls/ContentRatingSelector';
-import { TimeRangePicker } from '../../../shared/components/family-controls/TimeRangePicker';
+import React, { useState, useEffect} from 'react';
+import { View, Text, ScrollView,SafeAreaView, TVFocusGuideView} from 'react-native';
+import { useTranslation} from 'react-i18next';
+import { colors, spacing, fontSize} from '@olorin/design-tokens';
+import { GlassView, GlassToggle, GlassButton} from '@bayit/glass';
+import { useFamilyControlsStore} from '../../../shared/stores/familyControlsStore';
+import { FamilyPinModal} from '../../../shared/components/family-controls/FamilyPinModal';
+import { AgeSlider} from '../../../shared/components/family-controls/AgeSlider';
+import { ContentRatingSelector} from '../../../shared/components/family-controls/ContentRatingSelector';
+import { TimeRangePicker} from '../../../shared/components/family-controls/TimeRangePicker';
+import { styles } from './styles/FamilyControlsScreen.styles';
 
 /**
  * Family Controls Screen - tvOS (Apple TV)
@@ -22,7 +23,7 @@ import { TimeRangePicker } from '../../../shared/components/family-controls/Time
  * - Time-based viewing restrictions
  */
 export default function FamilyControlsScreen() {
-  const { t } = useTranslation();
+  const { t} = useTranslation();
 
   const {
     controls,
@@ -37,22 +38,22 @@ export default function FamilyControlsScreen() {
     updateYoungstersAgeLimit,
     updateContentRating,
     updateViewingHours: updateViewingHoursAction,
-  } = useFamilyControlsStore();
+ } = useFamilyControlsStore();
 
   const [showPinModal, setShowPinModal] = useState(false);
   const [showChangePinModal, setShowChangePinModal] = useState(false);
 
   useEffect(() => {
     loadControls();
-  }, [loadControls]);
+ }, [loadControls]);
 
   const handleSetupPin = () => {
     setShowPinModal(true);
-  };
+ };
 
   const handleChangePin = () => {
     setShowChangePinModal(true);
-  };
+ };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -193,79 +194,3 @@ export default function FamilyControlsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  focusGuide: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: spacing.xxl, // Larger horizontal padding for TV
-    paddingTop: spacing.xl,
-    paddingBottom: spacing.xxl,
-  },
-  header: {
-    marginBottom: spacing.xxl,
-  },
-  title: {
-    fontSize: fontSize['4xl'], // Larger for 10-foot UI
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  subtitle: {
-    fontSize: fontSize.xl, // Larger for 10-foot UI
-    color: colors.textMuted,
-  },
-  section: {
-    marginBottom: spacing.xxl, // More spacing for TV
-    padding: spacing.xxl,
-  },
-  sectionHeader: {
-    fontSize: fontSize['2xl'], // Larger for 10-foot UI
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: spacing.md,
-  },
-  sectionTitleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-  },
-  description: {
-    fontSize: fontSize.lg, // Larger for 10-foot UI
-    color: colors.textMuted,
-    lineHeight: fontSize.lg * 1.6,
-    marginBottom: spacing.lg,
-  },
-  pinButton: {
-    marginTop: spacing.lg,
-    minHeight: 60, // Larger touch target for Siri Remote
-  },
-  sliderContainer: {
-    marginTop: spacing.lg,
-  },
-  timePickerContainer: {
-    marginTop: spacing.lg,
-  },
-  errorContainer: {
-    marginTop: spacing.xl,
-    padding: spacing.xl,
-    backgroundColor: colors.errorBackground,
-    borderRadius: 12,
-  },
-  error: {
-    color: colors.error,
-    fontSize: fontSize.lg, // Larger for 10-foot UI
-    textAlign: 'center',
-  },
-  bottomSpacing: {
-    height: spacing.xxl * 2, // Extra spacing for TV safe area
-  },
-});

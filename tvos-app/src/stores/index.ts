@@ -6,7 +6,6 @@
 // Multi-Window Store (adapted from mobile PiP)
 export {
   useMultiWindowStore,
-  useWindow,
   type Window,
   type WindowContent,
   type WindowPosition,
@@ -15,14 +14,17 @@ export {
   type WindowState,
 } from './multiWindowStore';
 
+// useWindow hook (extracted to hooks/)
+export { useWindow } from '../hooks/useWindow';
+
 // Voice Store (TV-specific)
 export {
   useVoiceStore,
-  useVoiceSession,
-  useAudioDucking,
-  useWakeWord,
   type VoiceSessionMetrics,
   type VoiceResponse,
   type VoiceError,
   type VoiceErrorType,
 } from './voiceStore';
+
+// Voice helper hooks (extracted to hooks/)
+export { useVoiceSession, useAudioDucking, useWakeWord } from '../hooks/useVoiceHelpers';

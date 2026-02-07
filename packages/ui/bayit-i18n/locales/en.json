@@ -7984,5 +7984,191 @@
     "logo": "Bayit+",
     "subtitlesButton": "CC",
     "closeButton": "×"
+  },
+  "tvos": {
+    "home": {
+      "continueWatching": "Continue Watching",
+      "trendingNow": "Trending Now",
+      "liveTV": "Live TV",
+      "forYou": "For You",
+      "newReleases": "New Releases",
+      "radioStations": "Radio Stations",
+      "podcasts": "Podcasts",
+      "moviesAndSeries": "Movies & Series"
+    },
+    "radio": {
+      "title": "Radio Stations",
+      "loading": "Loading stations...",
+      "empty": "No stations available",
+      "genre": "Genre",
+      "allGenres": "All Genres",
+      "nowPlaying": "Now Playing",
+      "liveIndicator": "LIVE"
+    },
+    "podcasts": {
+      "title": "Podcasts",
+      "loading": "Loading podcasts...",
+      "empty": "No podcasts available",
+      "episodes": "episodes",
+      "latestEpisode": "Latest:",
+      "subscribe": "Subscribe",
+      "subscribed": "Subscribed"
+    },
+    "vod": {
+      "title": "Movies & Series",
+      "loading": "Loading content...",
+      "empty": "No content available",
+      "movies": "Movies",
+      "series": "Series",
+      "allContent": "All Content"
+    },
+    "search": {
+      "title": "Search",
+      "voiceSearch": "Voice Search",
+      "listening": "Listening...",
+      "placeholder": "Search for content...",
+      "noResults": "No results found",
+      "tryDifferent": "Try a different search term",
+      "searching": "Searching...",
+      "searchForContent": "Search for content",
+      "useVoiceOrType": "Use voice search or type to find movies, shows, and more"
+    },
+    "profile": {
+      "title": "Profile",
+      "watchHistory": "Watch History",
+      "watchHistorySubtitle": "View your recently watched content",
+      "favorites": "Favorites",
+      "settings": "Settings",
+      "settingsSubtitle": "App preferences and configuration",
+      "signOut": "Sign Out",
+      "signOutSubtitle": "Log out of your account",
+      "signOutConfirm": "Are you sure you want to sign out?",
+      "hoursWatched": "Hours Watched",
+      "profileOptions": "Profile Options",
+      "loadingProfile": "Loading profile..."
+    },
+    "settings": {
+      "title": "Settings",
+      "general": "General",
+      "audio": "Audio & Subtitles",
+      "display": "Display",
+      "about": "About",
+      "version": "Version",
+      "language": "Language",
+      "subtitles": "Subtitles",
+      "autoPlay": "Auto-Play",
+      "notifications": "Notifications",
+      "voiceSettings": "Voice Settings",
+      "voiceControl": "Voice Control",
+      "enableVoiceCommands": "Enable voice commands",
+      "wakeWord": "Wake Word",
+      "wakeWordSubtitle": "Optional wake word detection",
+      "speechRate": "Speech Rate",
+      "displaySettings": "Display Settings",
+      "safeZones": "Safe Zones",
+      "focusScale": "Focus Scale",
+      "multiWindow": "Multi-Window",
+      "maxWindows": "Max Windows",
+      "defaultLayout": "Default Layout",
+      "appInfo": "Bayit+ for tvOS v1.0.0"
+    },
+    "children": {
+      "title": "Kids Zone",
+      "safeMode": "Safe Mode",
+      "ageGroup": "Age Group",
+      "contentType": "Content Type",
+      "educational": "Educational",
+      "cartoons": "Cartoons",
+      "allContent": "All Kids Content",
+      "loading": "Loading kids content...",
+      "empty": "No kids content available"
+    },
+    "judaism": {
+      "title": "Torah & Judaism",
+      "category": "Category",
+      "allCategories": "All Categories",
+      "dailyStudy": "Daily Study",
+      "shiurim": "Shiurim",
+      "loading": "Loading content...",
+      "empty": "No content available",
+      "holidayOccasion": "Holiday / Occasion"
+    },
+    "flows": {
+      "title": "Content Flows",
+      "loading": "Loading flows...",
+      "empty": "No flows available",
+      "items": "items",
+      "startFlow": "Start Flow"
+    },
+    "favorites": {
+      "title": "Favorites",
+      "loading": "Loading favorites...",
+      "empty": "No favorites yet",
+      "emptyHint": "Add content to favorites to see it here",
+      "removeConfirm": "Remove from favorites?"
+    },
+    "player": {
+      "loading": "Loading player...",
+      "unableToLoad": "Unable to load content",
+      "tryAgain": "Please try again later",
+      "info": "Info",
+      "description": "Description",
+      "cast": "Cast",
+      "director": "Director",
+      "resume": "Resume",
+      "playFromStart": "Play from Start",
+      "live": "LIVE",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "close": "Close"
+    },
+    "aiSearch": {
+      "title": "AI Search",
+      "subtitle": "Search with AI",
+      "searchPlaceholder": "Ask anything about content...",
+      "voiceSearch": "Voice Search",
+      "noResults": "No results found",
+      "searching": "Searching...",
+      "creditsUsed": "Credits used",
+      "filterAll": "All",
+      "filterMovies": "Movies",
+      "filterSeries": "Series",
+      "filterLiveTV": "Live TV",
+      "filterRadio": "Radio",
+      "filterPodcasts": "Podcasts",
+      "enrollRequired": "Beta 500 Enrollment Required",
+      "enrollDescription": "Join the Beta 500 program to access AI-powered search"
+    },
+    "aiRecommendations": {
+      "title": "AI Recommendations",
+      "subtitle": "Personalized for you",
+      "refresh": "Refresh",
+      "refreshing": "Refreshing...",
+      "noRecommendations": "No recommendations yet",
+      "basedOn": "Based on your viewing history",
+      "liveTV": "Live TV",
+      "movies": "Movies & Series",
+      "radio": "Radio",
+      "podcasts": "Podcasts",
+      "seeAll": "See All",
+      "relevance": "Relevance",
+      "notEnrolled": "Beta 500 Required",
+      "enrollPrompt": "Join the Beta 500 program to access personalized AI recommendations",
+      "error": "Failed to load recommendations",
+      "featureName": "AI Recommendations",
+      "sections": {
+        "live_tv": "Live TV",
+        "vod": "Movies & Series",
+        "radio": "Radio",
+        "podcasts": "Podcasts"
+      }
+    },
+    "common": {
+      "newBadge": "NEW",
+      "noContent": "No content available",
+      "seeAll": "See All",
+      "retry": "Retry",
+      "back": "Back"
+    }
   }
 }

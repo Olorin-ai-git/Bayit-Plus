@@ -10,6 +10,7 @@
 
 import React, { useState } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '@bayit/shared-services';
 import { TVHeader } from '../components/TVHeader';
@@ -30,6 +31,7 @@ interface VODItem {
 const CATEGORIES = ['All', 'Movies', 'Series', 'Action', 'Comedy', 'Drama', 'Documentary'];
 
 export const VODScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [focusedIndex, setFocusedIndex] = useState(0);
 
@@ -78,7 +80,7 @@ export const VODScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
       <TVHeader currentScreen="vod" navigation={navigation} />
 
       <View style={styles.content}>
-        <Text style={styles.title}>Movies & Series</Text>
+        <Text style={styles.title}>{t('tvos.vod.title', 'Movies & Series')}</Text>
 
         {/* Category Filters */}
         <FlatList
@@ -93,7 +95,7 @@ export const VODScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         {/* VOD Grid */}
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Loading content...</Text>
+            <Text style={styles.loadingText}>{t('tvos.vod.loading', 'Loading content...')}</Text>
           </View>
         ) : vodItems && vodItems.length > 0 ? (
           <FlatList
@@ -107,7 +109,7 @@ export const VODScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           />
         ) : (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No content available</Text>
+            <Text style={styles.emptyText}>{t('tvos.vod.empty', 'No content available')}</Text>
           </View>
         )}
       </View>

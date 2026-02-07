@@ -15,6 +15,7 @@
 import Foundation
 import AVFoundation
 import React
+import os.log
 
 @objc(TTSModule)
 class TTSModule: NSObject, AVSpeechSynthesizerDelegate {
@@ -215,7 +216,7 @@ class TTSModule: NSObject, AVSpeechSynthesizerDelegate {
 
       isDucking = true
     } catch {
-      print("Failed to duck background audio: \(error)")
+      os_log(.error, "TTSModule: Failed to duck background audio: %{public}@", "\(error)")
     }
   }
 
@@ -229,7 +230,7 @@ class TTSModule: NSObject, AVSpeechSynthesizerDelegate {
 
       isDucking = false
     } catch {
-      print("Failed to restore background audio: \(error)")
+      os_log(.error, "TTSModule: Failed to restore background audio: %{public}@", "\(error)")
     }
   }
 

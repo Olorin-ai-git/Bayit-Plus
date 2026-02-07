@@ -7,6 +7,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
 import Video, { VideoRef } from 'react-native-video';
+import { logger } from '../../utils/logger';
 import { useRemotionWizard } from '../../../../shared/hooks/useRemotionWizard';
 import { AnimationSequence } from '../../../../shared/remotion/utils/sequencing';
 
@@ -56,7 +57,7 @@ export interface RemotionWizardProps {
  *
  * function VoiceModal() {
  *   const handleComplete = () => {
- *     console.log('Animation complete');
+ *     logger.info('Animation complete', { module: 'RemotionWizard' });
  *   };
  *
  *   return <RemotionWizard onComplete={handleComplete} focusable={false} />;
@@ -86,7 +87,7 @@ export const RemotionWizard: React.FC<RemotionWizardProps> = ({
 
   // Handle video errors
   const handleError = useCallback((error: any) => {
-    console.error('[tvOS] Remotion video playback error:', error);
+    logger.error('Remotion video playback error', { module: 'RemotionWizard', error: error instanceof Error ? error.message : String(error) });
   }, []);
 
   // Update playback speed when it changes
@@ -106,7 +107,7 @@ export const RemotionWizard: React.FC<RemotionWizardProps> = ({
   const videoSource = SEQUENCE_VIDEOS[currentSequence];
 
   if (!videoSource) {
-    console.warn(`[tvOS] No video found for sequence: ${currentSequence}`);
+    logger.warn('No video found for sequence', { module: 'RemotionWizard', sequence: currentSequence });
     return null;
   }
 

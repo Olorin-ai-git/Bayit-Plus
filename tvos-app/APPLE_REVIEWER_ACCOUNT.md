@@ -2,8 +2,10 @@
 
 ## Account Credentials
 
-**Email:** `apple-reviewer@olorin.ai`
-**Password:** `AppleReviewer1234!`
+**Email:** `<from-secret-manager:APPLE_REVIEWER_EMAIL>`
+**Password:** `<from-secret-manager:APPLE_REVIEWER_PASSWORD>`
+
+> Retrieve credentials from Google Cloud Secret Manager before App Store submission.
 
 **Role:** Admin (Full Platform Access)
 **Beta 500 Program:** Enrolled
@@ -19,8 +21,8 @@
 2. Click **"Sign In"**
 3. Select **Email/Password** login (not Google OAuth)
 4. Enter:
-   - Email: `apple-reviewer@olorin.ai`
-   - Password: `AppleReviewer1234!`
+   - Email: `<from-secret-manager:APPLE_REVIEWER_EMAIL>`
+   - Password: `<from-secret-manager:APPLE_REVIEWER_PASSWORD>`
 5. Click **"Sign In"**
 
 ### iOS Mobile App
@@ -168,7 +170,7 @@ As an admin user, this account can:
 
 ### Login Issues
 - Ensure using **Email/Password** login, NOT Google OAuth
-- Password is case-sensitive: `AppleReviewer1234!`
+- Password is case-sensitive (retrieve from secret manager)
 - Check internet connection
 - Try logging in via web first (https://bayit.tv)
 

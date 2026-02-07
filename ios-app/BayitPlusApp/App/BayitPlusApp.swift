@@ -1,6 +1,7 @@
 import BayitAuth
 import BayitCore
 import BayitLocalization
+import BayitMedia
 import BayitNetworking
 import FirebaseCore
 import SwiftUI
@@ -12,6 +13,7 @@ struct BayitPlusApp: App {
     @State private var localizationManager: LocalizationManager
     @State private var apiClient: APIClient
     @State private var repositories: RepositoryProvider
+    @State private var mediaPlayer = MediaPlayer()
 
     init() {
         FirebaseApp.configure()
@@ -47,6 +49,7 @@ struct BayitPlusApp: App {
                 .environment(authManager)
                 .environment(localizationManager)
                 .environment(repositories)
+                .environment(mediaPlayer)
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
                 .onOpenURL { url in

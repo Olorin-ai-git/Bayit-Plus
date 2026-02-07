@@ -4,6 +4,7 @@
  */
 
 import { API_BASE_URL } from '../config/appConfig';
+import { secureStorageService } from './secureStorageService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { logger } from '../utils/logger';
 const AUTH_TOKEN_KEY = '@bayit_auth_token';
@@ -20,13 +21,22 @@ class HttpClient {
   }
 
   /**
-   * Get authentication token from storage
+   * Get authentication token from secure storage (Keychain)
+   * Falls back to AsyncStorage for tokens not yet migrated
    */
   private async getAuthToken(): Promise<string | null> {
     try {
+      const secureToken = await secureStorageService.getValidAccessToken();
+      if (secureToken) {
+        return secureToken;
+      }
+      // Fallback to AsyncStorage during migration period
       return await AsyncStorage.getItem(AUTH_TOKEN_KEY);
     } catch (error) {
-      logger.error('Failed to get auth token', { error });
+      logger.error('Failed to get auth token', {
+        module: 'HttpClient',
+        error: error instanceof Error ? error.message : String(error),
+      });
       return null;
     }
   }

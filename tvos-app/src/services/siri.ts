@@ -20,6 +20,7 @@
  */
 
 import { NativeModules, Platform } from 'react-native';
+import { logger } from '../utils/logger';
 
 const { SiriModule } = NativeModules;
 
@@ -38,9 +39,9 @@ class SiriService {
 
     try {
       await SiriModule.donatePlayIntent(contentId, contentTitle, contentType);
-      console.log('[SiriService] Play intent donated to Scene Search:', contentTitle);
+      logger.info('Play intent donated to Scene Search', { module: 'SiriService', contentTitle });
     } catch (error) {
-      console.error('[SiriService] Failed to donate play intent:', error);
+      logger.error('Failed to donate play intent', { module: 'SiriService', error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -57,9 +58,9 @@ class SiriService {
 
     try {
       await SiriModule.donateSearchIntent(query);
-      console.log('[SiriService] Search intent donated to Scene Search:', query);
+      logger.info('Search intent donated to Scene Search', { module: 'SiriService', query });
     } catch (error) {
-      console.error('[SiriService] Failed to donate search intent:', error);
+      logger.error('Failed to donate search intent', { module: 'SiriService', error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -77,9 +78,9 @@ class SiriService {
     try {
       // On tvOS, this maps to Top Shelf item interaction
       await SiriModule.donateWidgetIntent(widgetType, channelId, channelName);
-      console.log('[SiriService] Top Shelf intent donated:', channelName);
+      logger.info('Top Shelf intent donated', { module: 'SiriService', channelName });
     } catch (error) {
-      console.error('[SiriService] Failed to donate Top Shelf intent:', error);
+      logger.error('Failed to donate Top Shelf intent', { module: 'SiriService', error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -96,9 +97,9 @@ class SiriService {
 
     try {
       await SiriModule.donateResumeIntent();
-      console.log('[SiriService] Resume watching intent donated to Scene Search');
+      logger.info('Resume watching intent donated to Scene Search', { module: 'SiriService' });
     } catch (error) {
-      console.error('[SiriService] Failed to donate resume watching intent:', error);
+      logger.error('Failed to donate resume watching intent', { module: 'SiriService', error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -113,10 +114,10 @@ class SiriService {
 
     try {
       const result = await SiriModule.deleteAllShortcuts();
-      console.log(`[SiriService] Deleted ${result.deleted} Scene Search intents`);
+      logger.info('Deleted Scene Search intents', { module: 'SiriService', deletedCount: result.deleted });
       return result.deleted;
     } catch (error) {
-      console.error('[SiriService] Failed to delete Scene Search intents:', error);
+      logger.error('Failed to delete Scene Search intents', { module: 'SiriService', error: error instanceof Error ? error.message : String(error) });
       return 0;
     }
   }
@@ -134,7 +135,7 @@ class SiriService {
       const result = await SiriModule.getSuggestedShortcuts();
       return result.shortcuts || [];
     } catch (error) {
-      console.error('[SiriService] Failed to get Scene Search items:', error);
+      logger.error('Failed to get Scene Search items', { module: 'SiriService', error: error instanceof Error ? error.message : String(error) });
       return [];
     }
   }
@@ -159,10 +160,10 @@ class SiriService {
     try {
       // Parse NSUserActivity from Scene Search
       const result = await SiriModule.parseUserActivity(userActivity);
-      console.log('[SiriService] Scene Search launch handled:', result);
+      logger.info('Scene Search launch handled', { module: 'SiriService', type: result?.type });
       return result;
     } catch (error) {
-      console.error('[SiriService] Failed to handle Scene Search launch:', error);
+      logger.error('Failed to handle Scene Search launch', { module: 'SiriService', error: error instanceof Error ? error.message : String(error) });
       return null;
     }
   }
@@ -185,9 +186,9 @@ class SiriService {
 
     try {
       await SiriModule.updateTopShelf(items);
-      console.log(`[SiriService] Top Shelf updated with ${items.length} items`);
+      logger.info('Top Shelf updated', { module: 'SiriService', itemCount: items.length });
     } catch (error) {
-      console.error('[SiriService] Failed to update Top Shelf:', error);
+      logger.error('Failed to update Top Shelf', { module: 'SiriService', error: error instanceof Error ? error.message : String(error) });
     }
   }
 }

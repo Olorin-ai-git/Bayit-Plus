@@ -10,6 +10,7 @@
  */
 
 import { NativeModules, Platform } from 'react-native';
+import { logger } from '../utils/logger';
 import { config } from '../config/appConfig';
 
 const { TTSModule } = NativeModules;
@@ -38,7 +39,7 @@ class TTSService {
    */
   async speak(text: string, options: TTSOptions = {}): Promise<void> {
     if (!TTSModule) {
-      console.warn('[TTSService] TTSModule not available on tvOS');
+      logger.warn('TTSModule not available on tvOS', { module: 'TTSService' });
       return;
     }
 
@@ -51,9 +52,9 @@ class TTSService {
 
     try {
       await TTSModule.speak(text, language, rate);
-      console.log('[TTSService] Speaking (TV mode):', text);
+      logger.info('Speaking (TV mode)', { module: 'TTSService', textLength: text.length, language });
     } catch (error) {
-      console.error('[TTSService] Failed to speak:', error);
+      logger.error('Failed to speak', { module: 'TTSService', error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -68,9 +69,9 @@ class TTSService {
 
     try {
       await TTSModule.stop();
-      console.log('[TTSService] Stopped speaking');
+      logger.info('Stopped speaking', { module: 'TTSService' });
     } catch (error) {
-      console.error('[TTSService] Failed to stop:', error);
+      logger.error('Failed to stop', { module: 'TTSService', error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -84,9 +85,9 @@ class TTSService {
 
     try {
       await TTSModule.pause();
-      console.log('[TTSService] Paused speaking');
+      logger.info('Paused speaking', { module: 'TTSService' });
     } catch (error) {
-      console.error('[TTSService] Failed to pause:', error);
+      logger.error('Failed to pause', { module: 'TTSService', error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -100,9 +101,9 @@ class TTSService {
 
     try {
       await TTSModule.resume();
-      console.log('[TTSService] Resumed speaking');
+      logger.info('Resumed speaking', { module: 'TTSService' });
     } catch (error) {
-      console.error('[TTSService] Failed to resume:', error);
+      logger.error('Failed to resume', { module: 'TTSService', error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -118,7 +119,7 @@ class TTSService {
       const result = await TTSModule.isSpeaking();
       return result.speaking;
     } catch (error) {
-      console.error('[TTSService] Failed to check speaking status:', error);
+      logger.error('Failed to check speaking status', { module: 'TTSService', error: error instanceof Error ? error.message : String(error) });
       return false;
     }
   }
@@ -136,7 +137,7 @@ class TTSService {
       const result = await TTSModule.getAvailableVoices(language);
       return result.voices;
     } catch (error) {
-      console.error('[TTSService] Failed to get voices:', error);
+      logger.error('Failed to get voices', { module: 'TTSService', language, error: error instanceof Error ? error.message : String(error) });
       return [];
     }
   }

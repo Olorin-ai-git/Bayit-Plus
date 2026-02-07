@@ -15,7 +15,12 @@ class TopShelfProvider: TVTopShelfContentProvider {
 
     // MARK: - Configuration
 
-    private let apiBaseURL = "https://api.bayit.tv/api/v1"
+    private var apiBaseURL: String {
+        if let url = Bundle.main.object(forInfoDictionaryKey: "APIBaseURL") as? String, !url.isEmpty {
+            return url
+        }
+        return "https://api.bayit.tv/api/v1"
+    }
     private let cacheKey = "TopShelfLastUpdate"
     private let cacheDuration: TimeInterval = 12 * 60 * 60 // 12 hours
     private let maxItems = 7

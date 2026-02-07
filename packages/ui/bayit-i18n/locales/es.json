@@ -7978,5 +7978,191 @@
     "logo": "Bayit+",
     "subtitlesButton": "CC",
     "closeButton": "×"
+  },
+  "tvos": {
+    "home": {
+      "continueWatching": "Seguir viendo",
+      "trendingNow": "Tendencias ahora",
+      "liveTV": "TV en vivo",
+      "forYou": "Para ti",
+      "newReleases": "Nuevos lanzamientos",
+      "radioStations": "Estaciones de radio",
+      "podcasts": "Podcasts",
+      "moviesAndSeries": "Peliculas y series"
+    },
+    "radio": {
+      "title": "Estaciones de radio",
+      "loading": "Cargando estaciones...",
+      "empty": "No hay estaciones disponibles",
+      "genre": "Genero",
+      "allGenres": "Todos los generos",
+      "nowPlaying": "Reproduciendo ahora",
+      "liveIndicator": "EN VIVO"
+    },
+    "podcasts": {
+      "title": "Podcasts",
+      "loading": "Cargando podcasts...",
+      "empty": "No hay podcasts disponibles",
+      "episodes": "episodios",
+      "latestEpisode": "Ultimo:",
+      "subscribe": "Suscribirse",
+      "subscribed": "Suscrito"
+    },
+    "vod": {
+      "title": "Peliculas y series",
+      "loading": "Cargando contenido...",
+      "empty": "No hay contenido disponible",
+      "movies": "Peliculas",
+      "series": "Series",
+      "allContent": "Todo el contenido"
+    },
+    "search": {
+      "title": "Buscar",
+      "voiceSearch": "Busqueda por voz",
+      "listening": "Escuchando...",
+      "placeholder": "Buscar contenido...",
+      "noResults": "No se encontraron resultados",
+      "tryDifferent": "Intenta con un termino de busqueda diferente",
+      "searching": "Buscando...",
+      "searchForContent": "Buscar contenido",
+      "useVoiceOrType": "Usa la busqueda por voz o escribe para encontrar peliculas, programas y mas"
+    },
+    "profile": {
+      "title": "Perfil",
+      "watchHistory": "Historial de reproduccion",
+      "watchHistorySubtitle": "Ver tu contenido visto recientemente",
+      "favorites": "Favoritos",
+      "settings": "Configuracion",
+      "settingsSubtitle": "Preferencias y configuracion de la aplicacion",
+      "signOut": "Cerrar sesion",
+      "signOutSubtitle": "Salir de tu cuenta",
+      "signOutConfirm": "Estas seguro de que deseas cerrar sesion?",
+      "hoursWatched": "Horas vistas",
+      "profileOptions": "Opciones de perfil",
+      "loadingProfile": "Cargando perfil..."
+    },
+    "settings": {
+      "title": "Configuracion",
+      "general": "General",
+      "audio": "Audio y subtitulos",
+      "display": "Pantalla",
+      "about": "Acerca de",
+      "version": "Version",
+      "language": "Idioma",
+      "subtitles": "Subtitulos",
+      "autoPlay": "Reproduccion automatica",
+      "notifications": "Notificaciones",
+      "voiceSettings": "Configuracion de voz",
+      "voiceControl": "Control de voz",
+      "enableVoiceCommands": "Activar comandos de voz",
+      "wakeWord": "Palabra de activacion",
+      "wakeWordSubtitle": "Deteccion opcional de palabra de activacion",
+      "speechRate": "Velocidad de voz",
+      "displaySettings": "Configuracion de pantalla",
+      "safeZones": "Zonas seguras",
+      "focusScale": "Escala de enfoque",
+      "multiWindow": "Multi-ventana",
+      "maxWindows": "Ventanas maximas",
+      "defaultLayout": "Diseno predeterminado",
+      "appInfo": "Bayit+ para tvOS v1.0.0"
+    },
+    "children": {
+      "title": "Zona infantil",
+      "safeMode": "Modo seguro",
+      "ageGroup": "Grupo de edad",
+      "contentType": "Tipo de contenido",
+      "educational": "Educativo",
+      "cartoons": "Dibujos animados",
+      "allContent": "Todo el contenido infantil",
+      "loading": "Cargando contenido infantil...",
+      "empty": "No hay contenido infantil disponible"
+    },
+    "judaism": {
+      "title": "Tora y Judaismo",
+      "category": "Categoria",
+      "allCategories": "Todas las categorias",
+      "dailyStudy": "Estudio diario",
+      "shiurim": "Shiurim",
+      "loading": "Cargando contenido...",
+      "empty": "No hay contenido disponible",
+      "holidayOccasion": "Festividad / Ocasion"
+    },
+    "flows": {
+      "title": "Flujos de contenido",
+      "loading": "Cargando flujos...",
+      "empty": "No hay flujos disponibles",
+      "items": "elementos",
+      "startFlow": "Iniciar flujo"
+    },
+    "favorites": {
+      "title": "Favoritos",
+      "loading": "Cargando favoritos...",
+      "empty": "Sin favoritos todavia",
+      "emptyHint": "Agrega contenido a favoritos para verlo aqui",
+      "removeConfirm": "Eliminar de favoritos?"
+    },
+    "player": {
+      "loading": "Cargando reproductor...",
+      "unableToLoad": "No se puede cargar el contenido",
+      "tryAgain": "Por favor intenta de nuevo mas tarde",
+      "info": "Informacion",
+      "description": "Descripcion",
+      "cast": "Reparto",
+      "director": "Director",
+      "resume": "Reanudar",
+      "playFromStart": "Reproducir desde el inicio",
+      "live": "EN VIVO",
+      "mute": "Silenciar",
+      "unmute": "Activar sonido",
+      "close": "Cerrar"
+    },
+    "aiSearch": {
+      "title": "Busqueda IA",
+      "subtitle": "Buscar con IA",
+      "searchPlaceholder": "Pregunta cualquier cosa sobre contenido...",
+      "voiceSearch": "Busqueda por voz",
+      "noResults": "No se encontraron resultados",
+      "searching": "Buscando...",
+      "creditsUsed": "Creditos utilizados",
+      "filterAll": "Todos",
+      "filterMovies": "Peliculas",
+      "filterSeries": "Series",
+      "filterLiveTV": "TV en vivo",
+      "filterRadio": "Radio",
+      "filterPodcasts": "Podcasts",
+      "enrollRequired": "Se requiere inscripcion en Beta 500",
+      "enrollDescription": "Unete al programa Beta 500 para acceder a la busqueda con IA"
+    },
+    "aiRecommendations": {
+      "title": "Recomendaciones IA",
+      "subtitle": "Personalizado para ti",
+      "refresh": "Actualizar",
+      "refreshing": "Actualizando...",
+      "noRecommendations": "Sin recomendaciones todavia",
+      "basedOn": "Basado en tu historial de reproduccion",
+      "liveTV": "TV en vivo",
+      "movies": "Peliculas y series",
+      "radio": "Radio",
+      "podcasts": "Podcasts",
+      "seeAll": "Ver todo",
+      "relevance": "Relevancia",
+      "notEnrolled": "Se requiere Beta 500",
+      "enrollPrompt": "Unete al programa Beta 500 para acceder a recomendaciones IA personalizadas",
+      "error": "Error al cargar recomendaciones",
+      "featureName": "Recomendaciones IA",
+      "sections": {
+        "live_tv": "TV en vivo",
+        "vod": "Peliculas y series",
+        "radio": "Radio",
+        "podcasts": "Podcasts"
+      }
+    },
+    "common": {
+      "newBadge": "NUEVO",
+      "noContent": "No hay contenido disponible",
+      "seeAll": "Ver todo",
+      "retry": "Reintentar",
+      "back": "Volver"
+    }
   }
 }

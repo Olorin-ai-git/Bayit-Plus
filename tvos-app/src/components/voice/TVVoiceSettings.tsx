@@ -1,13 +1,9 @@
-/**
- * TV Voice Settings Component
- * Grid-based settings: language selection, wake word toggle, TTS rate slider, avatar display
- */
-
+/** TV Voice Settings - language selection, wake word toggle, TTS rate slider, avatar display */
 import React, { useState } from 'react';
-import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { voiceComponentStyles } from './voiceStyles';
 import { TVAvatarPreferences } from './TVAvatarPreferences';
+import { styles } from './styles/TVVoiceSettings.styles';
 
 interface TVVoiceSettingsProps {
   language: string;
@@ -47,15 +43,11 @@ export const TVVoiceSettings: React.FC<TVVoiceSettingsProps> = ({
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.sectionTitle}>
-        {t('voice.settings', 'Voice Settings')}
-      </Text>
+      <Text style={styles.sectionTitle}>{t('voice.settings', 'Voice Settings')}</Text>
 
       {/* Language Selection */}
       <View style={styles.settingGroup}>
-        <Text style={styles.settingLabel}>
-          {t('voice.language', 'Language')}
-        </Text>
+        <Text style={styles.settingLabel}>{t('voice.language', 'Language')}</Text>
         <View style={styles.languageGrid}>
           {languages.map((lang) => {
             const isSelected = language === lang.code;
@@ -96,9 +88,7 @@ export const TVVoiceSettings: React.FC<TVVoiceSettingsProps> = ({
 
       {/* Wake Word Toggle */}
       <View style={styles.settingGroup}>
-        <Text style={styles.settingLabel}>
-          {t('voice.wake_word', 'Wake Word Detection')}
-        </Text>
+        <Text style={styles.settingLabel}>{t('voice.wake_word', 'Wake Word Detection')}</Text>
         <Pressable
           onPress={handleWakeWordToggle}
           onFocus={() => setFocusedSetting('wakeword')}
@@ -199,23 +189,5 @@ export const TVVoiceSettings: React.FC<TVVoiceSettingsProps> = ({
     </ScrollView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 60, paddingVertical: 40, backgroundColor: '#000000' },
-  sectionTitle: { fontSize: 48, fontWeight: '700', color: '#FFFFFF', marginBottom: 40 },
-  settingGroup: { marginBottom: 48 },
-  settingLabel: { fontSize: 28, fontWeight: '600', color: '#A855F7', marginBottom: 16 },
-  languageGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
-  languageButton: { paddingHorizontal: 24, paddingVertical: 16, borderRadius: 12, borderWidth: 4, minHeight: 80, minWidth: 140, justifyContent: 'center', alignItems: 'center' },
-  languageButtonText: { fontSize: 24, color: '#FFFFFF', textAlign: 'center' },
-  toggleButton: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 32, paddingVertical: 20, borderRadius: 12, borderWidth: 4, minHeight: 100, gap: 20 },
-  toggleIcon: { color: '#FFFFFF' },
-  toggleLabel: { fontSize: 28, fontWeight: '600', color: '#FFFFFF' },
-  rateControlContainer: { flexDirection: 'row', alignItems: 'center', gap: 20 },
-  rateButton: { width: 100, height: 100, borderRadius: 12, borderWidth: 4, backgroundColor: 'rgba(168, 85, 247, 0.2)', justifyContent: 'center', alignItems: 'center' },
-  rateButtonText: { fontSize: 40, fontWeight: '700', color: '#A855F7' },
-  rateDisplay: { flex: 1, alignItems: 'center', paddingVertical: 20 },
-  rateValue: { fontSize: 32, fontWeight: '700', color: '#A855F7' },
-});
 
 export default TVVoiceSettings;

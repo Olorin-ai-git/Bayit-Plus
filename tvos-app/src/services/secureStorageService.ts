@@ -2,98 +2,23 @@
  * Secure Storage Service - tvOS
  *
  * Manages secure storage of sensitive credentials (OAuth tokens, refresh tokens)
- * Uses tvOS-specific secure storage:
- * - tvOS: Keychain (via react-native-keychain)
- *
- * SECURITY: Never store sensitive credentials in AsyncStorage or plain text
- * NOTE: tvOS Keychain works identically to iOS Keychain
+ * using tvOS Keychain (via react-native-keychain).
+ * SECURITY: Never store sensitive credentials in AsyncStorage or plain text.
  */
 
 import * as Keychain from 'react-native-keychain';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logger } from '../utils/logger';
+import { migrateFromAsyncStorage } from './secureStorageMigration';
+import type { OAuthCredentials } from '../types/secureStorage.types';
+
+export type { OAuthCredentials } from '../types/secureStorage.types';
 
 const SERVICE_NAME = 'BayitPlusTVOS';
 
-const LEGACY_ASYNC_STORAGE_KEYS = {
-  OAUTH_TOKEN: 'oauth_token',
-  OAUTH_REFRESH_TOKEN: 'oauth_refresh_token',
-  OAUTH_EXPIRY: 'oauth_expiry',
-  OAUTH_USER_ID: 'oauth_user_id',
-};
-
-const MIGRATION_FLAG_KEY = 'keychain_migration_complete';
-
-/**
- * Interface for stored oauth credentials
- */
-export interface OAuthCredentials {
-  accessToken: string;
-  refreshToken?: string;
-  expiresAt?: number;
-  userId?: string;
-}
-
-/**
- * Migrate credentials from AsyncStorage to Keychain (one-time migration)
- */
-async function migrateFromAsyncStorage(): Promise<void> {
-  try {
-    const migrationComplete = await AsyncStorage.getItem(MIGRATION_FLAG_KEY);
-    if (migrationComplete === 'true') {
-      return;
-    }
-
-    console.log('[SecureStorage] Starting migration from AsyncStorage to Keychain');
-
-    const accessToken = await AsyncStorage.getItem(LEGACY_ASYNC_STORAGE_KEYS.OAUTH_TOKEN);
-
-    if (accessToken) {
-      const refreshToken = await AsyncStorage.getItem(
-        LEGACY_ASYNC_STORAGE_KEYS.OAUTH_REFRESH_TOKEN
-      );
-      const expiryStr = await AsyncStorage.getItem(LEGACY_ASYNC_STORAGE_KEYS.OAUTH_EXPIRY);
-      const userId = await AsyncStorage.getItem(LEGACY_ASYNC_STORAGE_KEYS.OAUTH_USER_ID);
-
-      const credentials: OAuthCredentials = {
-        accessToken,
-        refreshToken: refreshToken || undefined,
-        expiresAt: expiryStr ? parseInt(expiryStr, 10) : undefined,
-        userId: userId || undefined,
-      };
-
-      await Keychain.setGenericPassword(
-        SERVICE_NAME,
-        JSON.stringify(credentials),
-        {
-          service: SERVICE_NAME,
-          accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED,
-        }
-      );
-
-      await AsyncStorage.multiRemove([
-        LEGACY_ASYNC_STORAGE_KEYS.OAUTH_TOKEN,
-        LEGACY_ASYNC_STORAGE_KEYS.OAUTH_REFRESH_TOKEN,
-        LEGACY_ASYNC_STORAGE_KEYS.OAUTH_EXPIRY,
-        LEGACY_ASYNC_STORAGE_KEYS.OAUTH_USER_ID,
-      ]);
-
-      console.log('[SecureStorage] Successfully migrated credentials to Keychain');
-    }
-
-    await AsyncStorage.setItem(MIGRATION_FLAG_KEY, 'true');
-  } catch (error) {
-    console.error('[SecureStorage] Migration from AsyncStorage failed:', error);
-  }
-}
-
 /**
  * Secure storage service for OAuth credentials (tvOS)
- *
- * Uses tvOS Keychain for secure credential storage
- * Protection against:
- * - Device theft / physical access
- * - App reverse engineering
- * - Memory dump attacks
+ * Uses tvOS Keychain for secure credential storage.
+ * Protects against device theft, reverse engineering, and memory dump attacks.
  */
 export const secureStorageService = {
   /**
@@ -121,9 +46,9 @@ export const secureStorageService = {
         throw new Error('tvOS Keychain storage returned false');
       }
 
-      console.log('[SecureStorage] OAuth credentials stored securely in tvOS Keychain');
+      logger.info('OAuth credentials stored securely in tvOS Keychain', { module: 'SecureStorage' });
     } catch (error) {
-      console.error('[SecureStorage] Failed to store OAuth credentials in tvOS Keychain:', error);
+      logger.error('Failed to store OAuth credentials in tvOS Keychain', { module: 'SecureStorage', error: error instanceof Error ? error.message : String(error) });
       throw new Error('Failed to securely store credentials');
     }
   },
@@ -143,7 +68,7 @@ export const secureStorageService = {
 
       return JSON.parse(credentials.password) as OAuthCredentials;
     } catch (error) {
-      console.error('[SecureStorage] Failed to retrieve OAuth credentials from tvOS Keychain:', error);
+      logger.error('Failed to retrieve OAuth credentials from tvOS Keychain', { module: 'SecureStorage', error: error instanceof Error ? error.message : String(error) });
       return null;
     }
   },
@@ -158,9 +83,9 @@ export const secureStorageService = {
         service: SERVICE_NAME,
       });
 
-      console.log('[SecureStorage] OAuth credentials deleted from tvOS Keychain');
+      logger.info('OAuth credentials deleted from tvOS Keychain', { module: 'SecureStorage' });
     } catch (error) {
-      console.error('[SecureStorage] Failed to delete OAuth credentials from tvOS Keychain:', error);
+      logger.error('Failed to delete OAuth credentials from tvOS Keychain', { module: 'SecureStorage', error: error instanceof Error ? error.message : String(error) });
       throw new Error('Failed to delete credentials');
     }
   },
@@ -177,7 +102,7 @@ export const secureStorageService = {
 
       return Date.now() > credentials.expiresAt;
     } catch (error) {
-      console.error('[SecureStorage] Failed to check token expiry:', error);
+      logger.error('Failed to check token expiry', { module: 'SecureStorage', error: error instanceof Error ? error.message : String(error) });
       return true;
     }
   },
@@ -198,14 +123,13 @@ export const secureStorageService = {
 
       return null;
     } catch (error) {
-      console.error('[SecureStorage] Failed to get valid access token:', error);
+      logger.error('Failed to get valid access token', { module: 'SecureStorage', error: error instanceof Error ? error.message : String(error) });
       return null;
     }
   },
 
   /**
-   * Check if biometric authentication is available for this device
-   * NOTE: tvOS does not support biometric authentication
+   * Check if biometric authentication is available (tvOS does not support biometrics)
    */
   async getBiometricType(): Promise<Keychain.BIOMETRY_TYPE | null> {
     // tvOS does not support Touch ID or Face ID

@@ -6,7 +6,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -30,7 +30,7 @@ export function ControlsSourceSection({
       </Text>
 
       {/* Household Inheritance Option */}
-      <TouchableOpacity
+      <Pressable
         style={[styles.radioOption, isInheriting && styles.radioOptionSelected]}
         onPress={onToggle}
         disabled={isLoading}
@@ -53,10 +53,10 @@ export function ControlsSourceSection({
             {t('profileControls.sourceSection.inheritHouseholdDesc', 'Use household-wide family controls')}
           </Text>
         </View>
-      </TouchableOpacity>
+      </Pressable>
 
       {/* Custom Controls Option */}
-      <TouchableOpacity
+      <Pressable
         style={[styles.radioOption, !isInheriting && styles.radioOptionSelected]}
         onPress={onToggle}
         disabled={isLoading}
@@ -79,7 +79,7 @@ export function ControlsSourceSection({
             {t('profileControls.sourceSection.customControlsDesc', 'Use profile-specific family controls')}
           </Text>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }

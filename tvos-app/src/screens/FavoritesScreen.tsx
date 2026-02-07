@@ -8,15 +8,17 @@
  * - Quick access to favorites
  */
 
-import React, { useState } from 'react';
-import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
-import { Star } from 'lucide-react-native';
-import { api } from '@bayit/shared-services';
-import { TVHeader } from '../components/TVHeader';
-import { ContentCard } from '../components/ContentCard';
-import { queryKeys } from '../config/queryClient';
-import { config } from '../config/appConfig';
+import React, { useState} from 'react';
+import { View, Text, FlatList, Pressable, StyleSheet} from 'react-native';
+import { useQuery} from '@tanstack/react-query';
+import { useTranslation} from 'react-i18next';
+import { Star} from 'lucide-react-native';
+import { api} from '@bayit/shared-services';
+import { TVHeader} from '../components/TVHeader';
+import { ContentCard} from '../components/ContentCard';
+import { queryKeys} from '../config/queryClient';
+import { config} from '../config/appConfig';
+import { styles } from './styles/FavoritesScreen.styles';
 
 interface FavoriteItem {
   id: string;
@@ -29,41 +31,42 @@ interface FavoriteItem {
 
 const CATEGORIES = ['All', 'Movies', 'Series', 'Live TV', 'Radio', 'Podcasts'];
 
-export const FavoritesScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+export const FavoritesScreen: React.FC<{ navigation: any}> = ({ navigation}) => {
+  const { t} = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [focusedIndex, setFocusedIndex] = useState(0);
 
-  const { data: favorites, isLoading } = useQuery({
+  const { data: favorites, isLoading} = useQuery({
     queryKey: queryKeys.user.favorites(selectedCategory),
     queryFn: async () => {
       const response = await api.get('/user/favorites', {
         params: {
           category: selectedCategory === 'All' ? undefined : selectedCategory.toLowerCase(),
-        },
-      });
+       },
+     });
       return response.data;
-    },
-  });
+   },
+ });
 
   const handleItemSelect = (item: FavoriteItem) => {
     switch (item.type) {
       case 'movie':
       case 'series':
-        navigation.navigate('Player', { vodId: item.id });
+        navigation.navigate('Player', { vodId: item.id});
         break;
       case 'channel':
-        navigation.navigate('Player', { channelId: item.id });
+        navigation.navigate('Player', { channelId: item.id});
         break;
       case 'radio':
-        navigation.navigate('Player', { stationId: item.id });
+        navigation.navigate('Player', { stationId: item.id});
         break;
       case 'podcast':
-        navigation.navigate('Player', { podcastId: item.id });
+        navigation.navigate('Player', { podcastId: item.id});
         break;
-    }
-  };
+   }
+ };
 
-  const renderCategory = ({ item }: { item: string }) => {
+  const renderCategory = ({ item}: { item: string}) => {
     const isSelected = selectedCategory === item;
     return (
       <Pressable onPress={() => setSelectedCategory(item)} style={styles.categoryButton}>
@@ -74,9 +77,9 @@ export const FavoritesScreen: React.FC<{ navigation: any }> = ({ navigation }) =
         </View>
       </Pressable>
     );
-  };
+ };
 
-  const renderItem = ({ item, index }: { item: FavoriteItem; index: number }) => (
+  const renderItem = ({ item, index}: { item: FavoriteItem; index: number}) => (
     <ContentCard
       id={item.id}
       title={item.title}
@@ -96,7 +99,7 @@ export const FavoritesScreen: React.FC<{ navigation: any }> = ({ navigation }) =
       <View style={styles.content}>
         <View style={styles.headerRow}>
           <Star size={48} color="#A855F7" />
-          <Text style={styles.title}>Favorites</Text>
+          <Text style={styles.title}>{t('tvos.favorites.title')}</Text>
         </View>
 
         {/* Category Filters */}
@@ -112,7 +115,7 @@ export const FavoritesScreen: React.FC<{ navigation: any }> = ({ navigation }) =
         {/* Favorites Grid */}
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Loading favorites...</Text>
+            <Text style={styles.loadingText}>{t('tvos.favorites.loading')}</Text>
           </View>
         ) : favorites && favorites.length > 0 ? (
           <FlatList
@@ -127,9 +130,9 @@ export const FavoritesScreen: React.FC<{ navigation: any }> = ({ navigation }) =
         ) : (
           <View style={styles.emptyContainer}>
             <Star size={64} color="rgba(255,255,255,0.3)" />
-            <Text style={styles.emptyText}>No favorites yet</Text>
+            <Text style={styles.emptyText}>{t('tvos.favorites.empty')}</Text>
             <Text style={styles.emptySubtext}>
-              Add content to favorites to see it here
+              {t('tvos.favorites.emptyHint')}
             </Text>
           </View>
         )}
@@ -138,84 +141,3 @@ export const FavoritesScreen: React.FC<{ navigation: any }> = ({ navigation }) =
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: config.tv.safeZoneMarginPt,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    marginTop: 24,
-    marginBottom: 24,
-  },
-  title: {
-    fontSize: config.tv.minTitleTextSizePt,
-    fontWeight: '700',
-    color: '#ffffff',
-  },
-  categoriesContent: {
-    gap: 12,
-    marginBottom: 32,
-  },
-  categoryButton: {
-    marginRight: 12,
-  },
-  category: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  categorySelected: {
-    backgroundColor: '#A855F7',
-    borderColor: '#A855F7',
-  },
-  categoryText: {
-    fontSize: config.tv.minButtonTextSizePt,
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.7)',
-  },
-  categoryTextSelected: {
-    color: '#ffffff',
-  },
-  gridContent: {
-    paddingBottom: config.tv.safeZoneMarginPt,
-  },
-  gridRow: {
-    gap: 16,
-    marginBottom: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: config.tv.minBodyTextSizePt,
-    color: 'rgba(255,255,255,0.7)',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 16,
-  },
-  emptyText: {
-    fontSize: config.tv.minTitleTextSizePt,
-    fontWeight: '700',
-    color: 'rgba(255,255,255,0.8)',
-  },
-  emptySubtext: {
-    fontSize: config.tv.minBodyTextSizePt,
-    fontWeight: '400',
-    color: 'rgba(255,255,255,0.5)',
-  },
-});

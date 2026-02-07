@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { AvatarMode } from '@bayit/shared/types/voiceAvatar';
 import { getAvatarModeConfig, AVATAR_MODE_CONFIGS } from '@bayit/shared/constants/voiceAvatarModes';
@@ -74,9 +74,9 @@ export const TVAvatarModeCard: React.FC<TVAvatarModeCardProps> = ({ mode, isSele
   const config = getAvatarModeConfig(mode, 'tv');
 
   return (
-    <TouchableOpacity
+    <Pressable
       style={[styles.modeCard, isSelected && styles.modeCardSelected]}
-      onPress={() => onSelect(mode)} activeOpacity={0.7}
+      onPress={() => onSelect(mode)}
       hasTVPreferredFocus={isSelected}
     >
       <View style={[styles.modeIconContainer, { backgroundColor: getModeColor(mode) }]}>
@@ -89,7 +89,7 @@ export const TVAvatarModeCard: React.FC<TVAvatarModeCardProps> = ({ mode, isSele
           <Text style={styles.selectedBadgeText}>OK</Text>
         </View>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

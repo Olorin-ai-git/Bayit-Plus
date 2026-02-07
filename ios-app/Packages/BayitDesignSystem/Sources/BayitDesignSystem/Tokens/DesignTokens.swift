@@ -125,6 +125,12 @@ public enum DesignTokens {
         public static let disabled = Color.white.opacity(0.3)
     }
 
+    // MARK: - Background Colors
+    public enum Background {
+        public static let primary = Color(hex: 0x0D0D1A)
+        public static let elevated = Color(hex: 0x1A1A2E)
+    }
+
     // MARK: - Spacing (4-point grid)
     public enum Spacing {
         public static let xxs: CGFloat = 2

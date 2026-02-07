@@ -11,6 +11,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export type BadgeVariant = 'new' | 'rating' | 'subtitles';
 
@@ -21,11 +22,12 @@ export interface GlassBadgeTVProps {
 }
 
 export const GlassBadgeTV: React.FC<GlassBadgeTVProps> = ({ variant, value, style }) => {
+  const { t } = useTranslation();
   const getBadgeContent = () => {
     switch (variant) {
       case 'new':
         return {
-          text: 'NEW',
+          text: t('tvos.common.newBadge', 'NEW'),
           backgroundColor: '#A855F7', // Purple
           color: '#ffffff',
         };

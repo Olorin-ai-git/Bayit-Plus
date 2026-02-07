@@ -1,10 +1,13 @@
 import BayitAuth
+import BayitMedia
 import SwiftUI
 
 /// Root content view - shows auth flow or main tab view
 struct ContentView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(AuthManager.self) private var authManager
+    @Environment(RepositoryProvider.self) private var repositories
+    @Environment(MediaPlayer.self) private var mediaPlayer
 
     var body: some View {
         @Bindable var coord = coordinator
@@ -34,48 +37,17 @@ struct ContentView: View {
     private func fullscreenView(for route: Route) -> some View {
         switch route {
         case .player(let contentId, let contentType):
-            PlayerPlaceholderView(
+            PlayerView(
                 contentId: contentId,
-                contentType: contentType
+                contentType: contentType,
+                player: mediaPlayer,
+                repository: repositories.media,
+                contentRepository: repositories.content
             )
         case .search:
             SearchView()
         default:
             EmptyView()
-        }
-    }
-}
-
-// MARK: - Placeholder views (replaced in Phase 3)
-
-struct PlayerPlaceholderView: View {
-    let contentId: String
-    let contentType: ContentType
-
-    @Environment(NavigationCoordinator.self) private var coordinator
-
-    var body: some View {
-        ZStack {
-            Color.black.ignoresSafeArea()
-
-            VStack(spacing: 16) {
-                Image(systemName: "play.circle.fill")
-                    .font(.system(size: 64))
-                    .foregroundStyle(.white.opacity(0.6))
-
-                Text("Player")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundStyle(.white)
-
-                Text("Content: \(contentId)")
-                    .font(.system(size: 14))
-                    .foregroundStyle(.white.opacity(0.5))
-
-                Button("Dismiss") {
-                    coordinator.dismissFullscreen()
-                }
-                .foregroundStyle(.purple)
-            }
         }
     }
 }

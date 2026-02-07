@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 interface FamilyControl {
@@ -38,7 +38,7 @@ export function CustomControlsSelection({
 
       {availableControls && availableControls.length > 0 ? (
         availableControls.map((control) => (
-          <TouchableOpacity
+          <Pressable
             key={control.id}
             style={[styles.controlOption, selectedControlsId === control.id && styles.controlOptionSelected]}
             onPress={() => onSelectControls(control.id)}
@@ -65,7 +65,7 @@ export function CustomControlsSelection({
                 </Text>
               </View>
             </View>
-          </TouchableOpacity>
+          </Pressable>
         ))
       ) : (
         <Text style={styles.noControlsText}>

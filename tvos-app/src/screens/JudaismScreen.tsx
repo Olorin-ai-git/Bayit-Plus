@@ -8,15 +8,17 @@
  * - Educational series
  */
 
-import React, { useState } from 'react';
-import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
-import { BookOpen, Star as StarIcon } from 'lucide-react-native';
-import { api } from '@bayit/shared-services';
-import { TVHeader } from '../components/TVHeader';
-import { ContentCard } from '../components/ContentCard';
-import { queryKeys } from '../config/queryClient';
-import { config } from '../config/appConfig';
+import React, { useState} from 'react';
+import { View, Text, FlatList, Pressable, StyleSheet} from 'react-native';
+import { useQuery} from '@tanstack/react-query';
+import { useTranslation} from 'react-i18next';
+import { BookOpen, Star as StarIcon} from 'lucide-react-native';
+import { api} from '@bayit/shared-services';
+import { TVHeader} from '../components/TVHeader';
+import { ContentCard} from '../components/ContentCard';
+import { queryKeys} from '../config/queryClient';
+import { config} from '../config/appConfig';
+import { styles } from './styles/JudaismScreen.styles';
 
 interface JewishContent {
   id: string;
@@ -49,32 +51,33 @@ const HOLIDAYS = [
   'Passover',
 ];
 
-export const JudaismScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+export const JudaismScreen: React.FC<{ navigation: any}> = ({ navigation}) => {
+  const { t} = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedHoliday, setSelectedHoliday] = useState('All Year');
   const [focusedIndex, setFocusedIndex] = useState(0);
 
-  const { data: jewishContent, isLoading } = useQuery({
+  const { data: jewishContent, isLoading} = useQuery({
     queryKey: queryKeys.jewish.content(selectedCategory, selectedHoliday),
     queryFn: async () => {
       const response = await api.get('/content/jewish', {
         params: {
           category: selectedCategory === 'All' ? undefined : selectedCategory,
           holiday: selectedHoliday === 'All Year' ? undefined : selectedHoliday,
-        },
-      });
+       },
+     });
       return response.data;
-    },
-  });
+   },
+ });
 
   const handleItemSelect = (item: JewishContent) => {
     navigation.navigate('Player', {
       vodId: item.id,
       category: 'jewish',
-    });
-  };
+   });
+ };
 
-  const renderCategory = ({ item }: { item: string }) => {
+  const renderCategory = ({ item}: { item: string}) => {
     const isSelected = selectedCategory === item;
     return (
       <Pressable onPress={() => setSelectedCategory(item)} style={styles.filterButton}>
@@ -85,9 +88,9 @@ export const JudaismScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         </View>
       </Pressable>
     );
-  };
+ };
 
-  const renderHoliday = ({ item }: { item: string }) => {
+  const renderHoliday = ({ item}: { item: string}) => {
     const isSelected = selectedHoliday === item;
     return (
       <Pressable onPress={() => setSelectedHoliday(item)} style={styles.filterButton}>
@@ -98,9 +101,9 @@ export const JudaismScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         </View>
       </Pressable>
     );
-  };
+ };
 
-  const renderItem = ({ item, index }: { item: JewishContent; index: number }) => (
+  const renderItem = ({ item, index}: { item: JewishContent; index: number}) => (
     <ContentCard
       id={item.id}
       title={item.title}
@@ -123,14 +126,14 @@ export const JudaismScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
           <View style={styles.iconContainer}>
             <BookOpen size={48} color="#A855F7" />
           </View>
-          <Text style={styles.title}>Torah & Judaism</Text>
+          <Text style={styles.title}>{t('tvos.judaism.title')}</Text>
           <View style={styles.starBadge}>
             <StarIcon size={24} color="#fbbf24" fill="#fbbf24" />
           </View>
         </View>
 
         {/* Category Filters */}
-        <Text style={styles.filterLabel}>Category</Text>
+        <Text style={styles.filterLabel}>{t('tvos.judaism.category')}</Text>
         <FlatList
           horizontal
           data={CATEGORIES}
@@ -141,7 +144,7 @@ export const JudaismScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         />
 
         {/* Holiday Filters */}
-        <Text style={styles.filterLabel}>Holiday / Occasion</Text>
+        <Text style={styles.filterLabel}>{t('tvos.judaism.holidayOccasion')}</Text>
         <FlatList
           horizontal
           data={HOLIDAYS}
@@ -154,7 +157,7 @@ export const JudaismScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         {/* Content Grid */}
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <Text style={styles.loadingText}>Loading content...</Text>
+            <Text style={styles.loadingText}>{t('tvos.judaism.loading')}</Text>
           </View>
         ) : jewishContent && jewishContent.length > 0 ? (
           <FlatList
@@ -169,7 +172,7 @@ export const JudaismScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
         ) : (
           <View style={styles.emptyContainer}>
             <BookOpen size={64} color="rgba(255,255,255,0.3)" />
-            <Text style={styles.emptyText}>No content available</Text>
+            <Text style={styles.emptyText}>{t('tvos.judaism.empty')}</Text>
           </View>
         )}
       </View>
@@ -177,101 +180,3 @@ export const JudaismScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#000000',
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: config.tv.safeZoneMarginPt,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    marginTop: 24,
-    marginBottom: 24,
-  },
-  iconContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(168,85,247,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: config.tv.minTitleTextSizePt,
-    fontWeight: '700',
-    color: '#ffffff',
-    flex: 1,
-  },
-  starBadge: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(251,191,36,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  filterLabel: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.8)',
-    marginBottom: 12,
-  },
-  filtersContent: {
-    gap: 12,
-    marginBottom: 24,
-  },
-  filterButton: {
-    marginRight: 12,
-  },
-  filter: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  filterSelected: {
-    backgroundColor: '#A855F7',
-    borderColor: '#A855F7',
-  },
-  filterText: {
-    fontSize: config.tv.minButtonTextSizePt,
-    fontWeight: '600',
-    color: 'rgba(255,255,255,0.7)',
-  },
-  filterTextSelected: {
-    color: '#ffffff',
-  },
-  gridContent: {
-    paddingBottom: config.tv.safeZoneMarginPt,
-  },
-  gridRow: {
-    gap: 16,
-    marginBottom: 16,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: config.tv.minBodyTextSizePt,
-    color: 'rgba(255,255,255,0.7)',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 16,
-  },
-  emptyText: {
-    fontSize: config.tv.minTitleTextSizePt,
-    color: 'rgba(255,255,255,0.8)',
-  },
-});

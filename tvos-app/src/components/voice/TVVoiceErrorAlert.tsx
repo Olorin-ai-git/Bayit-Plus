@@ -5,11 +5,11 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useVoiceStore } from '../../stores/voiceStore';
 import { useTranslation } from 'react-i18next';
 import LinearGradient from 'react-native-linear-gradient';
-import { voiceComponentStyles } from './voiceStyles';
+import { styles } from './styles/TVVoiceErrorAlert.styles';
 
 interface TVVoiceErrorAlertProps {
   onRetry?: () => void;
@@ -133,72 +133,5 @@ export const TVVoiceErrorAlert: React.FC<TVVoiceErrorAlertProps> = ({
     </LinearGradient>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    width: 400,
-    minHeight: 300,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#DC2626',
-    paddingHorizontal: 32,
-    paddingVertical: 40,
-    alignItems: 'center',
-  },
-  content: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  icon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: 'rgba(220, 38, 38, 0.3)',
-    borderWidth: 3,
-    borderColor: '#DC2626',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20,
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#FCA5A5',
-    textAlign: 'center',
-    lineHeight: 74,
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: '700',
-    color: '#FCA5A5',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  description: {
-    fontSize: 24,
-    fontWeight: '500',
-    color: '#FFFFFF',
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 32,
-  },
-  recoveryHint: {
-    fontSize: 18,
-    fontWeight: '400',
-    color: '#FCA5A5',
-    textAlign: 'center',
-    marginBottom: 24,
-    fontStyle: 'italic',
-  },
-  buttonContainer: {
-    width: '100%',
-    flexDirection: 'row',
-    gap: 12,
-    justifyContent: 'center',
-  },
-  button: { paddingHorizontal: 28, paddingVertical: 16, borderRadius: 12, borderWidth: 2, minHeight: 60, justifyContent: 'center', alignItems: 'center' },
-  retryButton: { backgroundColor: 'rgba(16, 185, 129, 0.2)' },
-  retryButtonText: { fontSize: 24, fontWeight: '600', color: '#10B981' },
-  dismissButton: { backgroundColor: 'rgba(239, 68, 68, 0.2)' },
-  dismissButtonText: { fontSize: 24, fontWeight: '600', color: '#FCA5A5' },
-});
 
 export default TVVoiceErrorAlert;

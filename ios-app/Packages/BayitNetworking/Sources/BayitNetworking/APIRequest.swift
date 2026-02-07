@@ -42,7 +42,9 @@ public struct APIRequest<Body: Encodable & Sendable>: Sendable {
 public typealias EmptyRequest = APIRequest<EmptyBody>
 
 /// An empty `Encodable` sentinel for body-less requests.
-public struct EmptyBody: Encodable, Sendable {}
+public struct EmptyBody: Encodable, Sendable {
+    public init() {}
+}
 
 public extension APIRequest where Body == EmptyBody {
 

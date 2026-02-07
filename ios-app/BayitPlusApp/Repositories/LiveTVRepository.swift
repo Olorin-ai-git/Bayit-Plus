@@ -36,7 +36,7 @@ protocol LiveTVRepository: Sendable {
     func fetchEPG(
         channelId: String,
         date: String?
-    ) async throws -> EPGResponse
+    ) async throws -> ChannelEPGResponse
 
     /// Fetch live stream URL for a specific channel.
     ///
@@ -91,7 +91,7 @@ final class APILiveTVRepository: LiveTVRepository, @unchecked Sendable {
     func fetchEPG(
         channelId: String,
         date: String?
-    ) async throws -> EPGResponse {
+    ) async throws -> ChannelEPGResponse {
         var queryItems: [URLQueryItem] = []
 
         if let date {
@@ -101,7 +101,7 @@ final class APILiveTVRepository: LiveTVRepository, @unchecked Sendable {
         return try await client.get(
             "/api/v1/live/\(channelId)/epg",
             queryItems: queryItems,
-            as: EPGResponse.self
+            as: ChannelEPGResponse.self
         )
     }
 

@@ -21,7 +21,7 @@ final class RadioViewModel {
         error = nil
 
         do {
-            let response = try await repository.fetchStations()
+            let response = try await repository.fetchStations(cultureId: nil, genre: nil)
             stations = response.stations
         } catch {
             self.error = error.localizedDescription
@@ -36,7 +36,7 @@ final class RadioViewModel {
         isLoading = true
 
         do {
-            let response = try await repository.fetchStations()
+            let response = try await repository.fetchStations(cultureId: nil, genre: nil)
             stations = response.stations
         } catch {
             self.error = error.localizedDescription

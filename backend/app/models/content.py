@@ -208,6 +208,12 @@ class Content(Document):
     )
     review_flagged_at: Optional[datetime] = None
 
+    # Public domain source tracking
+    source_id: Optional[str] = None
+    source_provider: Optional[str] = None  # "nasa", "dvids", "nara"
+    source_metadata: Optional[Dict[str, Any]] = None
+    last_synced_at: Optional[datetime] = None
+
     # Analytics
     view_count: int = 0
     avg_rating: float = 0.0
@@ -315,6 +321,13 @@ class Content(Document):
             "visibility_mode",
             ("visibility_mode", "is_published"),
             ("visibility_mode", "is_published", "section_ids"),
+            # Public domain source tracking index
+            IndexModel(
+                [("source_provider", pymongo.ASCENDING), ("source_id", pymongo.ASCENDING)],
+                unique=True,
+                sparse=True,
+                name="source_provider_source_id_unique",
+            ),
             # Beta content indexes
             IndexModel("is_beta_content", sparse=True),
             IndexModel([("is_beta_content", 1), ("is_published", 1)], sparse=True),

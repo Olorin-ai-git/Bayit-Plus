@@ -9,14 +9,15 @@
  * 1. PRIMARY: Menu button long-press (always available, native gesture)
  * 2. OPTIONAL: Wake word detection (user-configurable, battery-optimized)
  *
- * This service provides a stub implementation that can be enhanced later
- * with actual wake word detection if needed. Current implementation:
+ * This service provides graceful no-op behavior when native wake word module is unavailable.
+ * Current implementation:
  * - Returns success for all operations (non-blocking)
  * - Logs warnings about optional status
  * - Can be extended with native WakeWordModule when implemented
  */
 
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
+import { logger } from '../utils/logger';
 
 const { WakeWordModule } = NativeModules;
 
@@ -46,15 +47,15 @@ class WakeWordService {
    */
   async setLanguage(languageCode: string): Promise<void> {
     if (!WakeWordModule) {
-      console.warn('[WakeWordService] Wake word detection not implemented - Menu button is primary voice trigger on tvOS');
+      logger.warn('Wake word module unavailable - Menu button is primary voice trigger on tvOS', { module: 'WakeWordService' });
       return;
     }
 
     try {
       const result = await WakeWordModule.setLanguage(languageCode);
-      console.log('[WakeWordService] Language set:', result);
+      logger.info('Language set', { module: 'WakeWordService', languageCode, result });
     } catch (error) {
-      console.error('[WakeWordService] Failed to set language:', error);
+      logger.error('Failed to set language', { module: 'WakeWordService', languageCode, error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -66,15 +67,15 @@ class WakeWordService {
    */
   async setCustomWakeWords(words: string[]): Promise<void> {
     if (!WakeWordModule) {
-      console.warn('[WakeWordService] Wake word detection not implemented - Menu button is primary voice trigger on tvOS');
+      logger.warn('Wake word module unavailable - Menu button is primary voice trigger on tvOS', { module: 'WakeWordService' });
       return;
     }
 
     try {
       await WakeWordModule.setCustomWakeWords(words);
-      console.log('[WakeWordService] Custom wake words set:', words);
+      logger.info('Custom wake words set', { module: 'WakeWordService', wordCount: words.length });
     } catch (error) {
-      console.error('[WakeWordService] Failed to set custom wake words:', error);
+      logger.error('Failed to set custom wake words', { module: 'WakeWordService', error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -86,9 +87,10 @@ class WakeWordService {
    */
   async startListening(): Promise<void> {
     if (!WakeWordModule || !this.eventEmitter) {
-      console.warn(
-        '[WakeWordService] Wake word detection not implemented - Menu button is primary voice trigger on tvOS. ' +
-        'This feature is optional and can be enabled later if native WakeWordModule is implemented.'
+      logger.warn(
+        'Wake word module unavailable - Menu button is primary voice trigger on tvOS. ' +
+        'This feature is optional and can be enabled when native WakeWordModule is available.',
+        { module: 'WakeWordService' }
       );
       return;
     }
@@ -98,7 +100,7 @@ class WakeWordService {
       this.detectionSubscription = this.eventEmitter.addListener(
         'WakeWordDetected',
         (detection: WakeWordDetection) => {
-          console.log('[WakeWordService] Wake word detected:', detection.wakeWord);
+          logger.info('Wake word detected', { module: 'WakeWordService', wakeWord: detection.wakeWord });
           this.detectionListeners.forEach((listener) => listener(detection));
         },
       );
@@ -106,9 +108,9 @@ class WakeWordService {
       // Start native detection
       const result = await WakeWordModule.startListening();
       this.isActive = true;
-      console.log('[WakeWordService] Wake word detection started (TV mode):', result);
+      logger.info('Wake word detection started (TV mode)', { module: 'WakeWordService', result });
     } catch (error) {
-      console.error('[WakeWordService] Failed to start wake word detection:', error);
+      logger.error('Failed to start wake word detection', { module: 'WakeWordService', error: error instanceof Error ? error.message : String(error) });
       this.cleanup();
       throw error;
     }
@@ -126,9 +128,9 @@ class WakeWordService {
       await WakeWordModule.stopListening();
       this.isActive = false;
       this.cleanup();
-      console.log('[WakeWordService] Wake word detection stopped');
+      logger.info('Wake word detection stopped', { module: 'WakeWordService' });
     } catch (error) {
-      console.error('[WakeWordService] Failed to stop wake word detection:', error);
+      logger.error('Failed to stop wake word detection', { module: 'WakeWordService', error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -144,7 +146,7 @@ class WakeWordService {
       const result = await WakeWordModule.isActive();
       return result.active;
     } catch (error) {
-      console.error('[WakeWordService] Failed to check active status:', error);
+      logger.error('Failed to check active status', { module: 'WakeWordService', error: error instanceof Error ? error.message : String(error) });
       return false;
     }
   }

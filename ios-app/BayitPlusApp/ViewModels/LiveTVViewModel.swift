@@ -21,7 +21,7 @@ final class LiveTVViewModel {
         error = nil
 
         do {
-            let response = try await repository.fetchChannels()
+            let response = try await repository.fetchChannels(cultureId: nil, category: nil)
             channels = response.channels
         } catch {
             self.error = error.localizedDescription
@@ -36,7 +36,7 @@ final class LiveTVViewModel {
         isLoading = true
 
         do {
-            let response = try await repository.fetchChannels()
+            let response = try await repository.fetchChannels(cultureId: nil, category: nil)
             channels = response.channels
         } catch {
             self.error = error.localizedDescription

@@ -2,6 +2,7 @@
 """
 Create Missing Series Parents Script
 Creates parent series records for orphaned episodes and links them.
+Uses raw motor client to avoid Beanie index conflicts.
 """
 
 import asyncio
@@ -13,11 +14,11 @@ from pathlib import Path
 backend_dir = Path(__file__).resolve().parent.parent.parent / "backend"
 sys.path.insert(0, str(backend_dir))
 
+from bson import ObjectId
+from motor.motor_asyncio import AsyncIOMotorClient
+
 from app.core.config import get_settings
 from app.core.logging_config import get_logger
-from app.models.content import Content
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
 
 logger = get_logger(__name__)
 
@@ -39,38 +40,39 @@ async def create_missing_series_parents(dry_run: bool = False):
     logger.info("Connecting to MongoDB")
     client = AsyncIOMotorClient(settings.MONGODB_URI)
     db = client[settings.MONGODB_DB_NAME]
+    collection = db.content
 
-    await init_beanie(database=db, document_models=[Content])
+    logger.info("Connected to database (raw motor, no Beanie init)")
 
-    logger.info("Connected to database")
-
-    # Find all orphaned episodes (series_id exists but parent doesn't)
-    all_episodes = await Content.find(
+    # Find all episodes (have series_id, season, episode)
+    all_episodes = await collection.find(
         {
             "series_id": {"$ne": None},
             "season": {"$ne": None},
             "episode": {"$ne": None},
         }
-    ).to_list()
+    ).to_list(length=None)
 
     logger.info(f"Found {len(all_episodes)} total episodes")
 
     # Group orphaned episodes by series name
-    orphan_groups: dict[str, list[Content]] = {}
+    orphan_groups: dict[str, list[dict]] = {}
 
     for ep in all_episodes:
         # Check if parent exists
+        series_id = ep.get("series_id")
         try:
-            parent = await Content.get(ep.series_id)
+            parent = await collection.find_one({"_id": ObjectId(series_id)})
             if parent:
                 continue  # Valid parent, skip
         except Exception:
             pass
 
         # Orphaned - extract series name
-        series_name = extract_series_name(ep.title)
+        title = ep.get("title", "")
+        series_name = extract_series_name(title)
         if not series_name:
-            logger.warning(f"Could not extract series name from: {ep.title}")
+            logger.warning(f"Could not extract series name from: {title}")
             continue
 
         if series_name not in orphan_groups:
@@ -89,45 +91,49 @@ async def create_missing_series_parents(dry_run: bool = False):
         sample = episodes[0]
 
         # Calculate total seasons/episodes
-        seasons = set(ep.season for ep in episodes)
+        seasons = set(ep.get("season") for ep in episodes)
         total_episodes = len(episodes)
 
         if len(examples) < 10:
             examples.append({
                 "series_name": series_name,
                 "episode_count": len(episodes),
-                "seasons": sorted(seasons),
+                "seasons": sorted(s for s in seasons if s is not None),
             })
 
         if not dry_run:
-            # Create parent series record
-            parent = Content(
-                title=series_name,
-                is_series=True,
-                season=None,
-                episode=None,
-                series_id=None,
-                total_seasons=len(seasons),
-                total_episodes=total_episodes,
+            now = datetime.utcnow()
+            # Create parent series document
+            parent_doc = {
+                "title": series_name,
+                "is_series": True,
+                "season": None,
+                "episode": None,
+                "series_id": None,
+                "total_seasons": len(seasons),
+                "total_episodes": total_episodes,
                 # Copy metadata from sample episode
-                stream_url=sample.stream_url,
-                stream_type=sample.stream_type,
-                is_published=sample.is_published,
-                category_id=sample.category_id,
-                section_ids=sample.section_ids,
-                primary_section_id=sample.primary_section_id,
-                content_format="series",
-                thumbnail=sample.thumbnail,
-                backdrop=sample.backdrop,
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow(),
-            )
-            await parent.insert()
+                "stream_url": sample.get("stream_url"),
+                "stream_type": sample.get("stream_type"),
+                "is_published": sample.get("is_published", False),
+                "category_id": sample.get("category_id"),
+                "section_ids": sample.get("section_ids", []),
+                "primary_section_id": sample.get("primary_section_id"),
+                "content_format": "series",
+                "thumbnail": sample.get("thumbnail"),
+                "backdrop": sample.get("backdrop"),
+                "created_at": now,
+                "updated_at": now,
+            }
+            result = await collection.insert_one(parent_doc)
+            parent_id = str(result.inserted_id)
 
             # Update all episodes to point to new parent
             for ep in episodes:
-                ep.series_id = str(parent.id)
-                await ep.save()
+                await collection.update_one(
+                    {"_id": ep["_id"]},
+                    {"$set": {"series_id": parent_id}},
+                )
                 linked_episodes += 1
 
         created_parents += 1
@@ -150,6 +156,8 @@ async def create_missing_series_parents(dry_run: bool = False):
             print(f"  Episodes: {ex['episode_count']}")
             print(f"  Seasons: {ex['seasons']}")
             print()
+
+    client.close()
 
     return {
         "orphan_series": len(orphan_groups),

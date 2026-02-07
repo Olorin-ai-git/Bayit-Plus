@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TVFocusGuideView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, TVFocusGuideView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useProfileControlsStore } from '../../../shared/stores/profileControlsStore';
@@ -128,7 +128,7 @@ export default function ProfileControlsScreen() {
         {error && (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>{error}</Text>
-            <TouchableOpacity
+            <Pressable
               onPress={() => {
                 clearProfileControlsError();
                 clearFamilyControlsError();
@@ -138,7 +138,7 @@ export default function ProfileControlsScreen() {
               <Text style={styles.dismissButtonText}>
                 {t('common.dismiss', 'Dismiss')}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         )}
 

@@ -6,7 +6,7 @@
  */
 
 import React, { createContext, useContext, ReactNode } from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Pressable, Text, StyleSheet } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 // Navigation context for route tracking
@@ -92,16 +92,16 @@ export const Link: React.FC<LinkProps> = ({ to, style, children }) => {
   // If children is a string, wrap in Text
   if (typeof children === 'string') {
     return (
-      <TouchableOpacity onPress={handlePress} style={style}>
+      <Pressable onPress={handlePress} style={style}>
         <Text>{children}</Text>
-      </TouchableOpacity>
+      </Pressable>
     );
   }
 
   return (
-    <TouchableOpacity onPress={handlePress} style={style}>
+    <Pressable onPress={handlePress} style={style}>
       {children}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 
@@ -126,9 +126,9 @@ export const NavLink: React.FC<NavLinkProps> = ({ to, style, children, onClick }
   const content = typeof children === 'function' ? children({ isActive }) : children;
 
   return (
-    <TouchableOpacity onPress={handlePress} style={computedStyle}>
+    <Pressable onPress={handlePress} style={computedStyle}>
       {content}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

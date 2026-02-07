@@ -54,7 +54,7 @@ struct ScheduleEntry: Decodable, Sendable, Identifiable {
 }
 
 /// Response from GET /api/v1/live/{channel_id}/epg
-struct EPGResponse: Decodable, Sendable {
+struct ChannelEPGResponse: Decodable, Sendable {
     let channelId: String
     let date: String
     let entries: [EPGEntry]

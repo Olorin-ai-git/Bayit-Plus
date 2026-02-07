@@ -19,48 +19,14 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useVoiceStore } from '../stores/voiceStore';
+import type { ConversationEntry, ConversationContextData, UseConversationContextResult } from './types/conversationContext.types';
 
 import logger from '@/utils/logger';
 
+// Re-export types for backward compatibility
+export type { ConversationEntry, ConversationContextData, UseConversationContextResult } from './types/conversationContext.types';
+
 const moduleLogger = logger.scope('useConversationContext');
-
-export interface ConversationEntry {
-  id: string;
-  command: string;
-  timestamp: number;
-  success: boolean;
-  responseText?: string;
-  context?: Record<string, any>;
-}
-
-export interface ConversationContextData {
-  currentWindow?: number;
-  lastPlayedContent?: {
-    id: string;
-    title: string;
-    type: 'live' | 'vod' | 'podcast';
-  };
-  lastNavigatedScreen?: string;
-  lastSearchQuery?: string;
-  deviceState?: {
-    volumeLevel?: number;
-    isPlaying?: boolean;
-    currentPosition?: number;
-  };
-}
-
-export interface UseConversationContextResult {
-  history: ConversationEntry[];
-  context: ConversationContextData;
-  addToHistory: (command: string, success: boolean, response?: string) => void;
-  updateContext: (updates: Partial<ConversationContextData>) => void;
-  getLastNCommands: (n: number) => ConversationEntry[];
-  getLastCommand: () => ConversationEntry | null;
-  getContextSummary: () => string;
-  clearHistory: () => void;
-  clearContext: () => void;
-  isContextRelevant: (maxAgeMs?: number) => boolean;
-}
 
 /**
  * Hook for managing conversation history and context

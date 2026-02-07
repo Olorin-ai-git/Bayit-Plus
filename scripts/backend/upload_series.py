@@ -45,9 +45,6 @@ backend_dir = os.path.join(project_root, 'backend')
 sys.path.insert(0, backend_dir)
 
 from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
-from app.models.content import Content
-from app.models.content_taxonomy import ContentSection
 from app.core.config import settings
 from google.cloud import storage
 
@@ -395,10 +392,25 @@ def _extract_type_c_metadata(parts: Tuple, path_obj: Path) -> Dict:
 
 
 def _clean_series_name(metadata: Dict):
-    """Clean series name in metadata."""
+    """Clean series name in metadata, stripping torrent release metadata."""
     if metadata['series_name']:
-        metadata['series_name'] = metadata['series_name'].replace('.', ' ').replace('_', ' ')
-        metadata['series_name'] = ' '.join(metadata['series_name'].split()).strip()
+        name = metadata['series_name']
+        # Replace dots/underscores with spaces
+        name = name.replace('.', ' ').replace('_', ' ')
+        # Strip torrent release info: S01.COMPLETE, resolution, codec, source, group
+        # Remove season pack markers (S01 COMPLETE, Season 1 Complete, etc.)
+        name = re.sub(r'\s+S\d+\s+COMPLETE.*$', '', name, flags=re.IGNORECASE)
+        name = re.sub(r'\s+Season\s+\d+\s+Complete.*$', '', name, flags=re.IGNORECASE)
+        # Remove resolution (720p, 1080p, 2160p, 4K)
+        name = re.sub(r'\s+\d{3,4}p\b.*$', '', name, flags=re.IGNORECASE)
+        name = re.sub(r'\s+4K\b.*$', '', name, flags=re.IGNORECASE)
+        # Remove source/codec tags that start a chain (AMZN, WEBRip, BluRay, etc.)
+        name = re.sub(r'\s+(AMZN|NF|HULU|ATVP|DSNP|PMTP|WEB|WEBRip|BluRay|BDRip|HDTV|DVDRip|BRRip)\b.*$', '', name, flags=re.IGNORECASE)
+        # Remove group tags [TGx], [eztv], -GroupName at end
+        name = re.sub(r'\s*\[.*?\]\s*$', '', name)
+        name = re.sub(r'\s*-[A-Za-z0-9]+\s*$', '', name)
+        # Collapse whitespace
+        metadata['series_name'] = ' '.join(name.split()).strip()
 
 
 async def get_tmdb_series_metadata(title: str, year: Optional[int] = None) -> Optional[Dict]:
@@ -553,14 +565,22 @@ async def find_or_create_series_parent(
 ) -> str:
     """Find existing series parent or create new one."""
 
-    # Check if series parent exists
+    # Check if series parent exists (check both old and new field names)
     existing = await db.content.find_one({
         'title': series_name,
         'is_series': True,
-        'content_type': 'series',
+        'content_format': 'series',
         'season': None,
         'episode': None,
     })
+    if not existing:
+        # Fallback: check by title + is_series without format filter
+        existing = await db.content.find_one({
+            'title': {'$regex': f'^{re.escape(series_name)}$', '$options': 'i'},
+            'is_series': True,
+            'season': None,
+            'episode': None,
+        })
 
     if existing:
         logger.info(f"    Found existing series parent: {existing['_id']}")
@@ -581,7 +601,7 @@ async def find_or_create_series_parent(
         'is_series': True,
         'is_published': True,
         'is_featured': False,
-        'content_type': 'series',
+        'content_format': 'series',
         'season': None,
         'episode': None,
         'stream_url': '',
@@ -654,32 +674,37 @@ async def upload_series(source_dir: str = None, source_url: str = None, dry_run:
 
     client = AsyncIOMotorClient(mongodb_url)
     db = client['bayit_plus']
-    await init_beanie(
-        database=db,
-        document_models=[Content, ContentSection]
-    )
-    logger.info("Connected to MongoDB Atlas")
+    logger.info("Connected to MongoDB Atlas (raw motor, no Beanie init)")
 
-    # Get or create Series category
-    series_category = await ContentSection.find_one({"name": "Series"})
+    # Get existing Series category (prefer original Hebrew-named one used by existing series)
+    series_category = await db.content_sections.find_one({"slug": "series", "name": "סדרות"})
+    if not series_category:
+        series_category = await db.content_sections.find_one({"slug": "series"})
+    if not series_category:
+        series_category = await db.content_sections.find_one({"name": "Series"})
     if not series_category:
         if dry_run:
             logger.info("[DRY RUN] Would create 'Series' category")
             category_id = "dry-run-category-id"
         else:
-            series_category = ContentSection(
-                name="Series",
-                name_he="סדרות",
-                slug="series",
-                icon="tv",
-                is_active=True,
-                order=2,
-            )
-            await series_category.insert()
-            category_id = str(series_category.id)
+            from bson import ObjectId
+            now = datetime.now(UTC)
+            cat_doc = {
+                '_id': ObjectId(),
+                'name': "סדרות",
+                'name_he': "סדרות",
+                'slug': "series",
+                'icon': "tv",
+                'is_active': True,
+                'order': 2,
+                'created_at': now,
+                'updated_at': now,
+            }
+            result = await db.content_sections.insert_one(cat_doc)
+            category_id = str(result.inserted_id)
             logger.info(f"Created 'Series' category: {category_id}")
     else:
-        category_id = str(series_category.id)
+        category_id = str(series_category['_id'])
         logger.info(f"Using existing 'Series' category: {category_id}")
 
     # Scan for video files
@@ -824,7 +849,7 @@ async def upload_series(source_dir: str = None, source_url: str = None, dry_run:
                     'is_series': True,
                     'is_published': True,
                     'is_featured': False,
-                    'content_type': 'episode',
+                    'content_format': 'series',
                     'series_id': series_id,
                     'season': season,
                     'episode': episode,

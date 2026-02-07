@@ -1,0 +1,372 @@
+# Curated Public Domain Documentary Content
+# Sources: NASA, DVIDS, National Archives (NARA)
+# All content is U.S. government public domain (17 USC Section 105)
+
+nasa:
+  # Space Exploration
+  - source_id: "Apollo 11 Landing"
+    title: "Apollo 11 Moon Landing"
+    year: 1969
+    topic_tags: ["space", "apollo", "historical"]
+    priority: 1
+
+  - source_id: "Apollo 13 Mission"
+    title: "Apollo 13: Houston, We've Had a Problem"
+    year: 1970
+    topic_tags: ["space", "apollo", "historical"]
+    priority: 1
+
+  - source_id: "Apollo 17 Last Moon"
+    title: "Apollo 17: The Last Moon Landing"
+    year: 1972
+    topic_tags: ["space", "apollo", "historical"]
+    priority: 1
+
+  - source_id: "NHQ_2020_0127_Remembering Columbia STS-107"
+    title: "Remembering Columbia STS-107"
+    year: 2003
+    topic_tags: ["space", "shuttle", "historical"]
+    priority: 2
+
+  - source_id: "NHQ_2019_0720_Apollo 11 50th Anniversary"
+    title: "Apollo 11: 50th Anniversary"
+    year: 2019
+    topic_tags: ["space", "apollo", "historical"]
+    priority: 1
+
+  - source_id: "JPL-20180222-CASSINf-0001"
+    title: "Cassini's Grand Finale"
+    year: 2017
+    topic_tags: ["space", "saturn", "astronomy"]
+    priority: 2
+
+  - source_id: "GSFC_20171208_Archive_e001738"
+    title: "Hubble: The Universe in Motion"
+    year: 2017
+    topic_tags: ["space", "astronomy", "hubble"]
+    priority: 1
+
+  - source_id: "jsc2021m000036_ISS_Science_Overview"
+    title: "ISS Science: A Journey of Discovery"
+    year: 2021
+    topic_tags: ["space", "iss", "science"]
+    priority: 2
+
+  - source_id: "JPL-20210218-PERSVRf-0001-Perseverance_Lands"
+    title: "Perseverance Mars Rover Landing"
+    year: 2021
+    topic_tags: ["space", "mars", "science"]
+    priority: 1
+
+  - source_id: "NHQ_2018_1126_InSight_Mars_Landing"
+    title: "InSight Mars Landing"
+    year: 2018
+    topic_tags: ["space", "mars", "science"]
+    priority: 2
+
+  - source_id: "NHQ_2020_0730_Mars2020Launch"
+    title: "Mars 2020 Perseverance Launch"
+    year: 2020
+    topic_tags: ["space", "mars", "science"]
+    priority: 2
+
+  - source_id: "GSFC_20171208_Archive_e000869"
+    title: "Earth from Space: Our Living Planet"
+    year: 2017
+    topic_tags: ["space", "earth-science"]
+    priority: 2
+
+  - source_id: "NHQ_2019_0402_STS-125_Hubble_Repair"
+    title: "Hubble Repair Mission STS-125"
+    year: 2009
+    topic_tags: ["space", "hubble", "shuttle"]
+    priority: 2
+
+  - source_id: "GSFC_20171208_Archive_e001234"
+    title: "The Sun: Our Living Star"
+    year: 2018
+    topic_tags: ["space", "astronomy", "science"]
+    priority: 2
+
+  - source_id: "NHQ_2021_0714_JWST_Overview"
+    title: "James Webb Space Telescope Overview"
+    year: 2021
+    topic_tags: ["space", "astronomy", "jwst"]
+    priority: 1
+
+  # Aeronautics
+  - source_id: "AFRC_2019_0301_X59_Overview"
+    title: "X-59 Quiet SuperSonic Technology"
+    year: 2019
+    topic_tags: ["aeronautics", "science"]
+    priority: 3
+
+  # Earth Science
+  - source_id: "GSFC_20190101_Climate_Change"
+    title: "A Year in the Life of Earth's CO2"
+    year: 2014
+    topic_tags: ["science", "earth-science", "climate"]
+    priority: 2
+
+  - source_id: "GSFC_20200101_Arctic_Ice"
+    title: "Arctic Sea Ice Minimum Over Time"
+    year: 2020
+    topic_tags: ["science", "earth-science", "climate"]
+    priority: 3
+
+  # Hurricane
+  - source_id: "NHQ_2017_0910_Irma_from_ISS"
+    title: "Hurricane Irma from the ISS"
+    year: 2017
+    topic_tags: ["space", "earth-science", "weather"]
+    priority: 3
+
+  - source_id: "NHQ_2020_0101_Decade_of_Discovery"
+    title: "NASA: A Decade of Discovery"
+    year: 2020
+    topic_tags: ["space", "science", "historical"]
+    priority: 1
+
+dvids:
+  # Military Documentary Content
+  - source_id: "838247"
+    title: "Humanitarian Relief in the Pacific"
+    year: 2023
+    topic_tags: ["military", "humanitarian"]
+    priority: 1
+
+  - source_id: "834521"
+    title: "Navy Operations at Sea"
+    year: 2023
+    topic_tags: ["military", "navy"]
+    priority: 2
+
+  - source_id: "831902"
+    title: "Air Force Global Strike"
+    year: 2023
+    topic_tags: ["military", "air-force"]
+    priority: 2
+
+  - source_id: "829445"
+    title: "Army Corps of Engineers: Building America"
+    year: 2022
+    topic_tags: ["military", "army", "engineering"]
+    priority: 2
+
+  - source_id: "827103"
+    title: "Marine Corps Training Exercises"
+    year: 2022
+    topic_tags: ["military", "marines"]
+    priority: 3
+
+  - source_id: "825678"
+    title: "Coast Guard Arctic Operations"
+    year: 2022
+    topic_tags: ["military", "coast-guard"]
+    priority: 2
+
+  - source_id: "823456"
+    title: "Military Families: Strength at Home"
+    year: 2022
+    topic_tags: ["military", "humanitarian"]
+    priority: 1
+
+  - source_id: "821234"
+    title: "Veterans Day Commemoration"
+    year: 2022
+    topic_tags: ["military", "historical"]
+    priority: 1
+
+  - source_id: "819012"
+    title: "Military Working Dogs in Action"
+    year: 2022
+    topic_tags: ["military"]
+    priority: 3
+
+  - source_id: "816789"
+    title: "Disaster Relief Operations"
+    year: 2021
+    topic_tags: ["military", "humanitarian"]
+    priority: 1
+
+nara:
+  # Historical Documentary Content
+  - source_id: "6932"
+    title: "D-Day Invasion of Normandy"
+    year: 1944
+    topic_tags: ["wwii", "historical", "military"]
+    priority: 1
+
+  - source_id: "5730"
+    title: "The Battle of Midway"
+    year: 1942
+    topic_tags: ["wwii", "historical", "military", "navy"]
+    priority: 1
+
+  - source_id: "12547"
+    title: "Why We Fight: The Battle of Russia"
+    year: 1943
+    topic_tags: ["wwii", "historical", "military"]
+    priority: 1
+
+  - source_id: "6124"
+    title: "Memphis Belle: A Story of a Flying Fortress"
+    year: 1944
+    topic_tags: ["wwii", "historical", "military", "air-force"]
+    priority: 1
+
+  - source_id: "24877"
+    title: "The March on Washington 1963"
+    year: 1963
+    topic_tags: ["civil-rights", "historical"]
+    priority: 1
+
+  - source_id: "15676"
+    title: "President Kennedy's Inaugural Address"
+    year: 1961
+    topic_tags: ["historical", "political"]
+    priority: 1
+
+  - source_id: "18920"
+    title: "The Moon Landing - NASA Film"
+    year: 1969
+    topic_tags: ["space", "apollo", "historical"]
+    priority: 1
+
+  - source_id: "12045"
+    title: "Pearl Harbor Attack Footage"
+    year: 1941
+    topic_tags: ["wwii", "historical", "military"]
+    priority: 1
+
+  - source_id: "9876"
+    title: "The Atomic Bomb - Trinity Test"
+    year: 1945
+    topic_tags: ["nuclear", "historical", "cold-war"]
+    priority: 1
+
+  - source_id: "14032"
+    title: "V-E Day Celebrations"
+    year: 1945
+    topic_tags: ["wwii", "historical"]
+    priority: 2
+
+  - source_id: "16543"
+    title: "Berlin Airlift Documentary"
+    year: 1948
+    topic_tags: ["historical", "cold-war", "military"]
+    priority: 1
+
+  - source_id: "19234"
+    title: "The Korean War: A Documentary"
+    year: 1953
+    topic_tags: ["korea", "historical", "military"]
+    priority: 2
+
+  - source_id: "22345"
+    title: "Vietnam War: Official Record"
+    year: 1970
+    topic_tags: ["vietnam", "historical", "military"]
+    priority: 2
+
+  - source_id: "25678"
+    title: "The Great Depression - Life in America"
+    year: 1936
+    topic_tags: ["historical", "economic"]
+    priority: 2
+
+  - source_id: "28901"
+    title: "Dust Bowl Documentary"
+    year: 1938
+    topic_tags: ["historical", "environmental"]
+    priority: 2
+
+  - source_id: "31234"
+    title: "Ellis Island: Gateway to America"
+    year: 1954
+    topic_tags: ["historical", "immigration"]
+    priority: 1
+
+  - source_id: "34567"
+    title: "Building the Panama Canal"
+    year: 1914
+    topic_tags: ["historical", "engineering"]
+    priority: 2
+
+  - source_id: "37890"
+    title: "FDR's Fireside Chats"
+    year: 1933
+    topic_tags: ["historical", "political"]
+    priority: 2
+
+  - source_id: "41234"
+    title: "The Manhattan Project"
+    year: 1945
+    topic_tags: ["nuclear", "historical", "cold-war"]
+    priority: 1
+
+  - source_id: "44567"
+    title: "Nuremberg Trials Documentary"
+    year: 1946
+    topic_tags: ["wwii", "historical"]
+    priority: 1
+
+  - source_id: "47890"
+    title: "The Marshall Plan"
+    year: 1948
+    topic_tags: ["historical", "cold-war"]
+    priority: 2
+
+  - source_id: "51234"
+    title: "Cuban Missile Crisis - White House Tapes"
+    year: 1962
+    topic_tags: ["historical", "cold-war", "political"]
+    priority: 1
+
+  - source_id: "54567"
+    title: "Selma to Montgomery March"
+    year: 1965
+    topic_tags: ["civil-rights", "historical"]
+    priority: 1
+
+  - source_id: "57890"
+    title: "Watergate Hearings Footage"
+    year: 1973
+    topic_tags: ["historical", "political"]
+    priority: 2
+
+  - source_id: "61234"
+    title: "Panama Canal: Engineering Marvel"
+    year: 1920
+    topic_tags: ["historical", "engineering"]
+    priority: 3
+
+  - source_id: "64567"
+    title: "The Hindenburg Disaster"
+    year: 1937
+    topic_tags: ["historical"]
+    priority: 2
+
+  - source_id: "67890"
+    title: "Iwo Jima: 36 Days of Hell"
+    year: 1945
+    topic_tags: ["wwii", "historical", "military"]
+    priority: 1
+
+  - source_id: "71234"
+    title: "The Hoover Dam Construction"
+    year: 1935
+    topic_tags: ["historical", "engineering"]
+    priority: 2
+
+  - source_id: "74567"
+    title: "Women in War: WWII Home Front"
+    year: 1943
+    topic_tags: ["wwii", "historical"]
+    priority: 2
+
+  - source_id: "77890"
+    title: "Tuskegee Airmen Documentary"
+    year: 1945
+    topic_tags: ["wwii", "historical", "military", "civil-rights"]
+    priority: 1

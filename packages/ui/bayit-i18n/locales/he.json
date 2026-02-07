@@ -8092,5 +8092,191 @@
     "logo": "Bayit+",
     "subtitlesButton": "CC",
     "closeButton": "×"
+  },
+  "tvos": {
+    "home": {
+      "continueWatching": "המשך צפייה",
+      "trendingNow": "פופולרי עכשיו",
+      "liveTV": "שידור חי",
+      "forYou": "בשבילך",
+      "newReleases": "חדשים",
+      "radioStations": "תחנות רדיו",
+      "podcasts": "פודקאסטים",
+      "moviesAndSeries": "סרטים וסדרות"
+    },
+    "radio": {
+      "title": "תחנות רדיו",
+      "loading": "טוען תחנות...",
+      "empty": "אין תחנות זמינות",
+      "genre": "ז'אנר",
+      "allGenres": "כל הז'אנרים",
+      "nowPlaying": "מושמע כעת",
+      "liveIndicator": "שידור חי"
+    },
+    "podcasts": {
+      "title": "פודקאסטים",
+      "loading": "טוען פודקאסטים...",
+      "empty": "אין פודקאסטים זמינים",
+      "episodes": "פרקים",
+      "latestEpisode": "אחרון:",
+      "subscribe": "הרשמה",
+      "subscribed": "רשום"
+    },
+    "vod": {
+      "title": "סרטים וסדרות",
+      "loading": "טוען תוכן...",
+      "empty": "אין תוכן זמין",
+      "movies": "סרטים",
+      "series": "סדרות",
+      "allContent": "כל התוכן"
+    },
+    "search": {
+      "title": "חיפוש",
+      "voiceSearch": "חיפוש קולי",
+      "listening": "מאזין...",
+      "placeholder": "חפש תוכן...",
+      "noResults": "לא נמצאו תוצאות",
+      "tryDifferent": "נסה מונח חיפוש אחר",
+      "searching": "מחפש...",
+      "searchForContent": "חפש תוכן",
+      "useVoiceOrType": "השתמש בחיפוש קולי או הקלד כדי למצוא סרטים, תוכניות ועוד"
+    },
+    "profile": {
+      "title": "פרופיל",
+      "watchHistory": "היסטוריית צפייה",
+      "watchHistorySubtitle": "צפה בתוכן שצפית לאחרונה",
+      "favorites": "מועדפים",
+      "settings": "הגדרות",
+      "settingsSubtitle": "העדפות אפליקציה והגדרות",
+      "signOut": "התנתקות",
+      "signOutSubtitle": "התנתק מהחשבון שלך",
+      "signOutConfirm": "האם אתה בטוח שברצונך להתנתק?",
+      "hoursWatched": "שעות צפייה",
+      "profileOptions": "אפשרויות פרופיל",
+      "loadingProfile": "טוען פרופיל..."
+    },
+    "settings": {
+      "title": "הגדרות",
+      "general": "כללי",
+      "audio": "שמע וכתוביות",
+      "display": "תצוגה",
+      "about": "אודות",
+      "version": "גרסה",
+      "language": "שפה",
+      "subtitles": "כתוביות",
+      "autoPlay": "הפעלה אוטומטית",
+      "notifications": "התראות",
+      "voiceSettings": "הגדרות קול",
+      "voiceControl": "שליטה קולית",
+      "enableVoiceCommands": "הפעל פקודות קוליות",
+      "wakeWord": "מילת השכמה",
+      "wakeWordSubtitle": "זיהוי מילת השכמה אופציונלי",
+      "speechRate": "קצב דיבור",
+      "displaySettings": "הגדרות תצוגה",
+      "safeZones": "אזורים בטוחים",
+      "focusScale": "קנה מידה מיקוד",
+      "multiWindow": "ריבוי חלונות",
+      "maxWindows": "מקסימום חלונות",
+      "defaultLayout": "פריסה ברירת מחדל",
+      "appInfo": "Bayit+ עבור tvOS v1.0.0"
+    },
+    "children": {
+      "title": "אזור ילדים",
+      "safeMode": "מצב בטוח",
+      "ageGroup": "קבוצת גיל",
+      "contentType": "סוג תוכן",
+      "educational": "חינוכי",
+      "cartoons": "סרטי אנימציה",
+      "allContent": "כל תוכן הילדים",
+      "loading": "טוען תוכן ילדים...",
+      "empty": "אין תוכן ילדים זמין"
+    },
+    "judaism": {
+      "title": "תורה ויהדות",
+      "category": "קטגוריה",
+      "allCategories": "כל הקטגוריות",
+      "dailyStudy": "לימוד יומי",
+      "shiurim": "שיעורים",
+      "loading": "טוען תוכן...",
+      "empty": "אין תוכן זמין",
+      "holidayOccasion": "חג / אירוע"
+    },
+    "flows": {
+      "title": "זרמי תוכן",
+      "loading": "טוען זרמים...",
+      "empty": "אין זרמים זמינים",
+      "items": "פריטים",
+      "startFlow": "התחל זרם"
+    },
+    "favorites": {
+      "title": "מועדפים",
+      "loading": "טוען מועדפים...",
+      "empty": "אין מועדפים עדיין",
+      "emptyHint": "הוסף תוכן למועדפים כדי לראות אותו כאן",
+      "removeConfirm": "להסיר מהמועדפים?"
+    },
+    "player": {
+      "loading": "טוען נגן...",
+      "unableToLoad": "לא ניתן לטעון תוכן",
+      "tryAgain": "אנא נסה שוב מאוחר יותר",
+      "info": "מידע",
+      "description": "תיאור",
+      "cast": "שחקנים",
+      "director": "במאי",
+      "resume": "המשך",
+      "playFromStart": "הפעל מההתחלה",
+      "live": "שידור חי",
+      "mute": "השתק",
+      "unmute": "בטל השתקה",
+      "close": "סגור"
+    },
+    "aiSearch": {
+      "title": "חיפוש AI",
+      "subtitle": "חפש עם AI",
+      "searchPlaceholder": "שאל כל דבר על תוכן...",
+      "voiceSearch": "חיפוש קולי",
+      "noResults": "לא נמצאו תוצאות",
+      "searching": "מחפש...",
+      "creditsUsed": "קרדיטים שנוצלו",
+      "filterAll": "הכל",
+      "filterMovies": "סרטים",
+      "filterSeries": "סדרות",
+      "filterLiveTV": "שידור חי",
+      "filterRadio": "רדיו",
+      "filterPodcasts": "פודקאסטים",
+      "enrollRequired": "נדרשת הרשמה לבטא 500",
+      "enrollDescription": "הצטרף לתוכנית בטא 500 כדי לגשת לחיפוש מבוסס AI"
+    },
+    "aiRecommendations": {
+      "title": "המלצות AI",
+      "subtitle": "מותאם אישית עבורך",
+      "refresh": "רענן",
+      "refreshing": "מרענן...",
+      "noRecommendations": "אין המלצות עדיין",
+      "basedOn": "מבוסס על היסטוריית הצפייה שלך",
+      "liveTV": "שידור חי",
+      "movies": "סרטים וסדרות",
+      "radio": "רדיו",
+      "podcasts": "פודקאסטים",
+      "seeAll": "ראה הכל",
+      "relevance": "רלוונטיות",
+      "notEnrolled": "נדרש בטא 500",
+      "enrollPrompt": "הצטרף לתוכנית בטא 500 כדי לגשת להמלצות AI מותאמות אישית",
+      "error": "טעינת ההמלצות נכשלה",
+      "featureName": "המלצות AI",
+      "sections": {
+        "live_tv": "שידור חי",
+        "vod": "סרטים וסדרות",
+        "radio": "רדיו",
+        "podcasts": "פודקאסטים"
+      }
+    },
+    "common": {
+      "newBadge": "חדש",
+      "noContent": "אין תוכן זמין",
+      "seeAll": "ראה הכל",
+      "retry": "נסה שוב",
+      "back": "חזור"
+    }
   }
 }

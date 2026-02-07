@@ -7,7 +7,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { View, Text, Pressable, Dimensions, StyleSheet } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
 import { X, Volume2, VolumeX, Minimize2, Maximize2, RefreshCw } from 'lucide-react-native';
-import { useWindow } from '../../stores/multiWindowStore';
+import { useWindow } from '../../hooks/useWindow';
 import { useMultiWindowFocus } from './useMultiWindowFocus';
 import { WindowContent } from './WindowContent';
 import config from '@/config/appConfig';

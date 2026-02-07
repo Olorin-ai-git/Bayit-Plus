@@ -56,43 +56,43 @@ struct MainTabView: View {
         case .podcastDetail:
             ScreenPlaceholder(title: "Podcast Detail", subtitle: "Episodes")
         case .epg:
-            ScreenPlaceholder(title: "EPG", subtitle: "Program Guide")
+            EPGView()
         case .profile:
-            ScreenPlaceholder(title: "Profile", subtitle: "User Profile")
+            ProfileView()
         case .favorites:
-            ScreenPlaceholder(title: "Favorites", subtitle: "My Favorites")
+            FavoritesView()
         case .playlist:
-            ScreenPlaceholder(title: "Playlist", subtitle: "My Playlist")
+            PlaylistView()
         case .downloads:
-            ScreenPlaceholder(title: "Downloads", subtitle: "Offline Content")
+            DownloadsView()
         case .recordings:
-            ScreenPlaceholder(title: "Recordings", subtitle: "DVR")
+            RecordingsView()
         case .settings:
-            ScreenPlaceholder(title: "Settings", subtitle: "App Settings")
+            ScreenPlaceholder(title: "Settings", subtitle: "Phase 6")
         case .languageSettings:
-            ScreenPlaceholder(title: "Language", subtitle: "Language Settings")
+            ScreenPlaceholder(title: "Language", subtitle: "Phase 6")
         case .notificationSettings:
-            ScreenPlaceholder(title: "Notifications", subtitle: "Notification Settings")
+            ScreenPlaceholder(title: "Notifications", subtitle: "Phase 6")
         case .billing:
-            ScreenPlaceholder(title: "Billing", subtitle: "Payment & Billing")
+            ScreenPlaceholder(title: "Billing", subtitle: "Phase 6")
         case .subscription:
-            ScreenPlaceholder(title: "Subscription", subtitle: "Manage Plan")
+            ScreenPlaceholder(title: "Subscription", subtitle: "Phase 6")
         case .security:
-            ScreenPlaceholder(title: "Security", subtitle: "Account Security")
+            ScreenPlaceholder(title: "Security", subtitle: "Phase 6")
         case .children:
-            ScreenPlaceholder(title: "Children", subtitle: "Kids Content")
+            ChildrenView()
         case .youngsters:
-            ScreenPlaceholder(title: "Youngsters", subtitle: "Teen Content")
+            YoungtersView()
         case .judaism:
-            ScreenPlaceholder(title: "Judaism", subtitle: "Religious Content")
+            JudaismView()
         case .flows:
-            ScreenPlaceholder(title: "Flows", subtitle: "Content Flows")
+            FlowsView()
         case .morningRitual:
-            ScreenPlaceholder(title: "Morning Ritual", subtitle: "Daily Ritual")
+            MorningRitualView()
         case .voiceOnboarding:
-            ScreenPlaceholder(title: "Voice Setup", subtitle: "Voice Commands")
+            ScreenPlaceholder(title: "Voice Setup", subtitle: "Phase 5")
         case .support:
-            ScreenPlaceholder(title: "Support", subtitle: "Help & Support")
+            ScreenPlaceholder(title: "Support", subtitle: "Phase 6")
         default:
             ScreenPlaceholder(title: "Screen", subtitle: "")
         }

@@ -1,12 +1,21 @@
 /**
  * WindowContent - Content renderer for multi-window system
- * Extracted from MultiWindowContainer to keep file under 200 lines
+ * Routes window content types to real player components
  */
 
 import React from 'react';
 import { View, Text, Pressable, Linking, StyleSheet } from 'react-native';
 import type { Window } from '../../stores/multiWindowStore';
+import { useMultiWindowStore } from '../../stores/multiWindowStore';
+import { useTranslation } from 'react-i18next';
+import { colors, spacing } from '@olorin/design-tokens';
 import config from '@/config/appConfig';
+import {
+  WindowLivePlayer,
+  WindowVODPlayer,
+  WindowPodcastPlayer,
+  WindowRadioPlayer,
+} from './players';
 
 interface WindowContentProps {
   window: Window;
@@ -15,18 +24,22 @@ interface WindowContentProps {
   error: string | null;
 }
 
-export function WindowContent({ window, streamUrl, loading, error }: WindowContentProps) {
-  // Render loading state
+export function WindowContent({ window: win, streamUrl, loading, error }: WindowContentProps) {
+  const { t } = useTranslation();
+  const activeAudioWindow = useMultiWindowStore((s) => s.activeAudioWindow);
+  const closeWindow = useMultiWindowStore((s) => s.closeWindow);
+  const isAudioActive = activeAudioWindow === win.id;
+  const handleClose = () => closeWindow(win.id);
+
   if (loading) {
     return (
       <View style={styles.centerContent}>
         <View style={styles.spinner} />
-        <Text style={styles.loadingText}>Loading...</Text>
+        <Text style={styles.loadingText}>{t('tvos.player.loading')}</Text>
       </View>
     );
   }
 
-  // Render error state
   if (error) {
     return (
       <View style={styles.centerContent}>
@@ -35,87 +48,99 @@ export function WindowContent({ window, streamUrl, loading, error }: WindowConte
     );
   }
 
-  const { content_type } = window.content;
+  const { content_type } = win.content;
 
-  // Render content based on type (placeholder for now - will be replaced with actual TV players)
   switch (content_type) {
     case 'live_channel':
     case 'live':
       if (!streamUrl) {
         return (
           <View style={styles.centerContent}>
-            <Text style={styles.errorText}>Stream unavailable</Text>
+            <Text style={styles.errorText}>{t('tvos.player.streamUnavailable')}</Text>
           </View>
         );
       }
       return (
-        <View style={styles.contentPlaceholder}>
-          <Text style={styles.placeholderText}>Live TV Player</Text>
-          <Text style={styles.placeholderSubtext}>{window.title}</Text>
-          <Text style={styles.placeholderSubtext} numberOfLines={1}>
-            {streamUrl}
-          </Text>
-        </View>
+        <WindowLivePlayer
+          windowId={win.id}
+          channelUrl={streamUrl}
+          channelName={win.title}
+          isAudioActive={isAudioActive}
+          onClose={handleClose}
+        />
       );
 
     case 'vod':
       if (!streamUrl) {
         return (
           <View style={styles.centerContent}>
-            <Text style={styles.errorText}>Content unavailable</Text>
+            <Text style={styles.errorText}>{t('tvos.player.contentUnavailable')}</Text>
           </View>
         );
       }
       return (
-        <View style={styles.contentPlaceholder}>
-          <Text style={styles.placeholderText}>VOD Player</Text>
-          <Text style={styles.placeholderSubtext}>{window.title}</Text>
-        </View>
+        <WindowVODPlayer
+          windowId={win.id}
+          contentUrl={streamUrl}
+          title={win.title}
+          isAudioActive={isAudioActive}
+          onClose={handleClose}
+        />
       );
 
     case 'podcast':
       if (!streamUrl) {
         return (
           <View style={styles.centerContent}>
-            <Text style={styles.errorText}>Podcast unavailable</Text>
+            <Text style={styles.errorText}>{t('tvos.player.podcastUnavailable')}</Text>
           </View>
         );
       }
       return (
-        <View style={styles.contentPlaceholder}>
-          <Text style={styles.placeholderText}>Podcast Player</Text>
-          <Text style={styles.placeholderSubtext}>{window.title}</Text>
-        </View>
+        <WindowPodcastPlayer
+          windowId={win.id}
+          audioUrl={streamUrl}
+          title={win.title}
+          artworkUrl={win.cover_url ?? ''}
+          isAudioActive={isAudioActive}
+          onClose={handleClose}
+        />
       );
 
     case 'radio':
       if (!streamUrl) {
         return (
           <View style={styles.centerContent}>
-            <Text style={styles.errorText}>Station unavailable</Text>
+            <Text style={styles.errorText}>{t('tvos.player.stationUnavailable')}</Text>
           </View>
         );
       }
       return (
-        <View style={styles.contentPlaceholder}>
-          <Text style={styles.placeholderText}>Radio Player</Text>
-          <Text style={styles.placeholderSubtext}>{window.title}</Text>
-        </View>
+        <WindowRadioPlayer
+          windowId={win.id}
+          streamUrl={streamUrl}
+          stationName={win.title}
+          isAudioActive={isAudioActive}
+          onClose={handleClose}
+        />
       );
 
     case 'iframe':
-      if (!window.content.iframe_url) {
+      if (!win.content.iframe_url) {
         return (
           <View style={styles.centerContent}>
-            <Text style={styles.errorText}>iFrame URL not configured</Text>
+            <Text style={styles.errorText}>{t('tvos.player.iframeNotConfigured')}</Text>
           </View>
         );
       }
       return (
         <View style={styles.centerContent}>
-          <Text style={styles.iframeText}>External content</Text>
-          <Pressable style={styles.iframeButton} onPress={() => Linking.openURL(window.content.iframe_url!)}>
-            <Text style={styles.iframeButtonText}>Open URL</Text>
+          <Text style={styles.iframeText}>{t('tvos.player.externalContent')}</Text>
+          <Pressable
+            style={({ focused }) => [styles.iframeButton, focused && styles.iframeButtonFocused]}
+            onPress={() => Linking.openURL(win.content.iframe_url!)}
+          >
+            <Text style={styles.iframeButtonText}>{t('tvos.player.openUrl')}</Text>
           </Pressable>
         </View>
       );
@@ -123,56 +148,32 @@ export function WindowContent({ window, streamUrl, loading, error }: WindowConte
     case 'custom':
       return (
         <View style={styles.centerContent}>
-          <Text style={styles.errorText}>Component "{window.content.component_name}" not available</Text>
+          <Text style={styles.errorText}>
+            {t('tvos.player.componentNotAvailable', { name: win.content.component_name })}
+          </Text>
         </View>
       );
 
     default:
       return (
         <View style={styles.centerContent}>
-          <Text style={styles.errorText}>No content configured</Text>
+          <Text style={styles.errorText}>{t('tvos.player.noContent')}</Text>
         </View>
       );
   }
 }
 
+const fs = config.tv.minButtonTextSizePt;
 const styles = StyleSheet.create({
-  centerContent: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.8)',
-  },
-  spinner: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 3,
-    borderColor: 'rgba(255,255,255,0.3)',
-    borderTopColor: '#fff',
-  },
-  loadingText: { marginTop: 16, fontSize: 16, color: 'rgba(255,255,255,0.6)' },
-  errorText: { fontSize: 16, color: 'rgba(255,255,255,0.6)', paddingHorizontal: 24, textAlign: 'center' },
-  contentPlaceholder: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
-  placeholderText: {
-    fontSize: config.tv.minTitleTextSizePt,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 16,
-  },
-  placeholderSubtext: {
-    fontSize: config.tv.minBodyTextSizePt,
-    color: 'rgba(255,255,255,0.7)',
-    marginTop: 8,
-  },
-  iframeText: { fontSize: 16, color: 'rgba(255,255,255,0.6)', marginBottom: 16 },
+  centerContent: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.glassOverlay },
+  spinner: { width: 32, height: 32, borderRadius: 16, borderWidth: 3, borderColor: colors.glassBorderLight, borderTopColor: colors.white },
+  loadingText: { marginTop: spacing.md, fontSize: fs, color: colors.textMuted },
+  errorText: { fontSize: fs, color: colors.textMuted, paddingHorizontal: spacing.lg, textAlign: 'center' },
+  iframeText: { fontSize: fs, color: colors.textMuted, marginBottom: spacing.md },
   iframeButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: spacing.lg, paddingVertical: spacing.sm,
+    backgroundColor: colors.glassMedium, borderRadius: 12, borderWidth: 1, borderColor: colors.glassBorderLight,
   },
-  iframeButtonText: { fontSize: 16, color: '#fff', fontWeight: '500' },
+  iframeButtonFocused: { borderColor: colors.primary[500], backgroundColor: colors.glassPurpleLight },
+  iframeButtonText: { fontSize: fs, color: colors.white, fontWeight: '500' },
 });

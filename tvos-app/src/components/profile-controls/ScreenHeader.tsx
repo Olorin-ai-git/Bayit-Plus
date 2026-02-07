@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -19,7 +19,7 @@ export function ScreenHeader({ title, onBack }: ScreenHeaderProps) {
 
   return (
     <View style={styles.header}>
-      <TouchableOpacity
+      <Pressable
         onPress={onBack}
         style={styles.backButton}
         hasTVPreferredFocus
@@ -30,7 +30,7 @@ export function ScreenHeader({ title, onBack }: ScreenHeaderProps) {
       >
         <Ionicons name="arrow-back" size={32} color="#ffffff" />
         <Text style={styles.backButtonText}>{t('common.back', 'Back')}</Text>
-      </TouchableOpacity>
+      </Pressable>
       <Text style={styles.headerTitle}>{title}</Text>
     </View>
   );

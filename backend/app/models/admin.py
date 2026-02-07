@@ -293,6 +293,7 @@ class AuditAction(str, Enum):
     AUDIOBOOK_FEATURED = "audiobook_featured"
     AUDIOBOOK_STREAM_STARTED = "audiobook_stream_started"
     CONTENT_IMPORTED = "content_imported"
+    DOCUMENTARY_IMPORTED = "documentary_imported"
     # Widget Management
     WIDGET_CREATED = "widget_created"
     WIDGET_UPDATED = "widget_updated"
