@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
 import { useTranslation } from 'react-i18next'
+import { useResponsive } from '@/hooks/useResponsive'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { GlassView } from '@bayit/shared/ui'
 import { RecordingStatusIndicator } from './RecordingStatusIndicator'
@@ -120,6 +121,7 @@ export default function VideoPlayerOverlays({
   isPlaying = false,
 }: VideoPlayerOverlaysProps) {
   const { t, i18n } = useTranslation()
+  const { isMobile } = useResponsive()
 
   // Omri overlay state - only for specific user and VOD content
   const [showOmriOverlay, setShowOmriOverlay] = useState(false)
@@ -195,8 +197,8 @@ export default function VideoPlayerOverlays({
         />
       )}
 
-      {/* Trivia Overlay (VOD only) */}
-      {!isLive && triviaEnabled && (
+      {/* Trivia Overlay (VOD only, hidden on mobile - too small for card) */}
+      {!isLive && !isMobile && triviaEnabled && (
         <TriviaOverlay
           fact={currentFact}
           onDismiss={onDismissFact}

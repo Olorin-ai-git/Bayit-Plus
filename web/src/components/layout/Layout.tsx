@@ -7,6 +7,7 @@ import GlassSidebar from './GlassSidebar';
 import Breadcrumbs from './Breadcrumbs';
 import Chatbot from '../chat/Chatbot';
 import SoundwaveParticles from '../content/SoundwaveParticles';
+import MobileBottomNav from '../mobile/MobileBottomNav';
 import { WidgetManager } from '../widgets';
 import { GlassPlaylist } from '@bayit/shared/ui';
 import { useFullscreenPlayerStore } from '@/stores/fullscreenPlayerStore';
@@ -18,6 +19,7 @@ import { useTizenRemoteKeys } from '@/hooks/useTizenRemoteKeys';
 import { useSamsungVoice } from '@/hooks/useSamsungVoice';
 import { useChatbotStore } from '@/stores/chatbotStore';
 import { useDirection } from '@/hooks/useDirection';
+import { useResponsive } from '@/hooks/useResponsive';
 import { VoiceAvatarFAB, VoiceChatModal } from '@bayit/shared/components/support';
 import { useVoiceSupport } from '@bayit/shared-hooks';
 import { supportConfig } from '@bayit/shared-config/supportConfig';
@@ -28,7 +30,10 @@ declare const __TV__: boolean;
 const IS_TV_BUILD = typeof __TV__ !== 'undefined' && __TV__;
 
 export default function Layout() {
-  // Sidebar state: always expanded by default on both web and TV
+  // Responsive state
+  const { isMobile } = useResponsive();
+
+  // Sidebar state: always expanded by default on desktop/TV, hidden on mobile
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const { isRTL } = useDirection();
 
@@ -222,9 +227,13 @@ export default function Layout() {
 
   // Calculate content margin based on sidebar state
   // Sidebar widths must match GlassSidebar: TV uses 80/280, web uses 64/220
-  const collapsedWidth = IS_TV_BUILD ? 80 : 64;
-  const expandedWidth = IS_TV_BUILD ? 280 : 220;
-  const sidebarWidth = isSidebarExpanded ? expandedWidth : collapsedWidth;
+  // Mobile: sidebar is overlay (drawer), so no margin needed
+  const getSidebarWidth = () => {
+    if (IS_TV_BUILD) return isSidebarExpanded ? 280 : 80;
+    if (isMobile) return 0;
+    return isSidebarExpanded ? 220 : 64;
+  };
+  const sidebarWidth = getSidebarWidth();
 
   return (
     <View style={styles.container}>
@@ -235,16 +244,19 @@ export default function Layout() {
         <View style={[styles.blurCircle, styles.blurCircleSuccess]} />
       </View>
 
-      {/* Sidebar - Always visible on web, toggleable on TV */}
-      <GlassSidebar
-        isExpanded={isSidebarExpanded}
-        onToggle={toggleSidebar}
-      />
+      {/* Sidebar - Hidden on mobile (uses drawer), always visible on web/TV */}
+      {!isMobile && (
+        <GlassSidebar
+          isExpanded={isSidebarExpanded}
+          onToggle={toggleSidebar}
+        />
+      )}
 
       {/* Main content wrapper with sidebar offset */}
       <View style={[
         styles.contentWrapper,
         isRTL ? { marginRight: sidebarWidth } : { marginLeft: sidebarWidth },
+        isMobile && { paddingBottom: 64 },
       ]}>
         <Header />
 
@@ -277,14 +289,17 @@ export default function Layout() {
         <View style={styles.main}>
           <Outlet />
         </View>
-        {!IS_TV_BUILD && <Footer />}
+        {!IS_TV_BUILD && !isMobile && <Footer />}
       </View>
+
+      {/* Mobile Bottom Navigation - only on mobile */}
+      {isMobile && !IS_TV_BUILD && <MobileBottomNav />}
 
       {/* Chatbot enabled on both web and TV for voice interaction */}
       <Chatbot />
 
-      {/* Voice Avatar FAB - Floating wizard hat for voice support */}
-      {voiceSupported && supportConfig.voiceAssistant.enabled && (
+      {/* Voice Avatar FAB - Floating wizard hat for voice support (desktop/TV only) */}
+      {!isMobile && voiceSupported && supportConfig.voiceAssistant.enabled && (
         <VoiceAvatarFAB
           onPress={handleVoiceAvatarPress}
           visible={!isVoiceModalOpen}

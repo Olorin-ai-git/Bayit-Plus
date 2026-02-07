@@ -126,8 +126,8 @@ export default function RightControls({
           renderLiveSplitSubtitleControls={renderLiveSplitSubtitleControls}
           renderDubbingControls={renderDubbingControls}
           renderCatchUpButton={renderCatchUpButton}
-          renderChannelChatButton={renderChannelChatButton}
-          renderLiveTriviaButton={renderLiveTriviaButton}
+          renderChannelChatButton={!responsive.isMobile ? renderChannelChatButton : undefined}
+          renderLiveTriviaButton={!responsive.isMobile ? renderLiveTriviaButton : undefined}
           error={liveFeatureError}
           onDismissError={onDismissLiveFeatureError}
         />

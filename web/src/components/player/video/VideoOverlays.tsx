@@ -6,6 +6,7 @@
  */
 
 import { View, ActivityIndicator, StyleSheet } from 'react-native'
+import { useResponsive } from '@/hooks/useResponsive'
 import { z } from 'zod'
 import { colors } from '@olorin/design-tokens'
 import { RecordingStatusIndicator } from '../RecordingStatusIndicator'
@@ -55,6 +56,8 @@ export default function VideoOverlays({
   onDismissTrivia,
   isRTL = false,
 }: VideoOverlaysProps) {
+  const { isMobile } = useResponsive()
+
   return (
     <>
       {/* Recording Status Indicator */}
@@ -77,8 +80,8 @@ export default function VideoOverlays({
       {/* Live Subtitle Overlay (Premium) */}
       {isLive && <LiveSubtitleOverlay cues={visibleLiveSubtitles} />}
 
-      {/* Trivia Overlay (VOD only) */}
-      {!isLive && triviaEnabled && onDismissTrivia && (
+      {/* Trivia Overlay (VOD only, hidden on mobile) */}
+      {!isLive && !isMobile && triviaEnabled && onDismissTrivia && (
         <TriviaOverlay
           fact={currentTriviaFact || null}
           onDismiss={onDismissTrivia}
