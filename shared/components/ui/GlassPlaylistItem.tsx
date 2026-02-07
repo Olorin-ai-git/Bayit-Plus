@@ -39,12 +39,12 @@ export const PlaylistItemRow: React.FC<PlaylistItemRowProps> = ({
       accessibilityRole="button"
       accessibilityLabel={t('playlist.playItem', { title: item.title })}
     >
-      {/* Drag handle - web only */}
+      {/* Drag handle - web only, uses testID for reliable DOM attribute */}
       {Platform.OS === 'web' && (
         <View
           style={styles.dragHandle}
           accessibilityLabel={t('playlist.dragToReorder')}
-          {...{ 'data-drag-handle': 'true' } as any}
+          testID="drag-handle"
         >
           <Text style={styles.dragHandleText}>&#x22EE;&#x22EE;</Text>
         </View>

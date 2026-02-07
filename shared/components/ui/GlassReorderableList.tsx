@@ -81,8 +81,6 @@ export function GlassReorderableList<T>({
 
   // Web-only drag handlers
   const handleDragStart = useCallback((index: number, clientY: number) => {
-    if (Platform.OS !== 'web' || !enableDragDrop) return;
-
     const heights = items.map((item) => {
       const ref = itemRefs.current.get(keyExtractor(item));
       return ref?.height || 60;
@@ -95,7 +93,7 @@ export function GlassReorderableList<T>({
       startY: clientY,
       itemHeights: heights,
     });
-  }, [items, keyExtractor, enableDragDrop]);
+  }, [items, keyExtractor]);
 
   const handleDragMove = useCallback((clientY: number) => {
     if (!dragState.isDragging) return;
@@ -129,7 +127,38 @@ export function GlassReorderableList<T>({
     });
   }, [dragState, calculateTargetIndex, onReorder]);
 
-  // Set up global mouse event listeners for web drag
+  // Native mousedown listener on container - bypasses Pressable's responder system
+  React.useEffect(() => {
+    if (Platform.OS !== 'web' || !enableDragDrop) return;
+
+    const el = containerRef.current as unknown as HTMLElement;
+    if (!el?.addEventListener) return;
+
+    const onMouseDown = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      // testID renders as data-testid in RN Web
+      if (!target.closest('[data-testid="drag-handle"]')) return;
+
+      // Walk up to find which direct child of the container was clicked
+      let node: HTMLElement | null = target;
+      while (node && node.parentElement !== el) {
+        node = node.parentElement;
+      }
+      if (!node) return;
+
+      const idx = Array.from(el.children).indexOf(node);
+      if (idx < 0 || idx >= items.length) return;
+
+      e.preventDefault();
+      e.stopPropagation();
+      handleDragStart(idx, e.clientY);
+    };
+
+    el.addEventListener('mousedown', onMouseDown, true);
+    return () => el.removeEventListener('mousedown', onMouseDown, true);
+  }, [enableDragDrop, handleDragStart, items.length]);
+
+  // Set up global mouse event listeners for web drag move/end
   React.useEffect(() => {
     if (Platform.OS !== 'web' || !dragState.isDragging) return;
 
@@ -171,23 +200,11 @@ export function GlassReorderableList<T>({
           itemStyle.transform = [{ translateY: dragState.dragY }];
         }
 
-        const webDragProps = Platform.OS === 'web' && enableDragDrop ? {
-          onMouseDown: (e: React.MouseEvent) => {
-            // Only start drag if target is a drag handle
-            const target = e.target as HTMLElement;
-            if (target.closest('[data-drag-handle="true"]')) {
-              e.preventDefault();
-              handleDragStart(index, e.clientY);
-            }
-          },
-        } : {};
-
         return (
           <View
             key={key}
             style={[styles.item, itemStyle]}
             onLayout={(e) => handleItemLayout(key, e)}
-            {...webDragProps}
           >
             {renderItem(item, index, isDragging)}
           </View>
