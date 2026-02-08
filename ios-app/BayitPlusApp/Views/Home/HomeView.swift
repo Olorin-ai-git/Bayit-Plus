@@ -39,6 +39,30 @@ struct HomeView: View {
 
     @ViewBuilder
     private func contentSections(_ vm: HomeViewModel) -> some View {
+        // Page header with Home icon and title
+        PageHeader(icon: "house.fill", title: "Home")
+
+        // Culture clocks
+        HStack(spacing: DesignTokens.Spacing.md) {
+            CultureClock(
+                flagEmoji: "🇮🇱",
+                locationLabel: "Time in Israel",
+                timezone: TimeZone(identifier: "Asia/Jerusalem")!,
+                isIsraeli: true
+            )
+
+            Spacer()
+
+            CultureClock(
+                flagEmoji: "🇺🇸",
+                locationLabel: "Time in New York, NY",
+                timezone: TimeZone(identifier: "America/New_York")!,
+                isIsraeli: false
+            )
+        }
+        .padding(.horizontal, DesignTokens.Spacing.lg)
+        .padding(.bottom, DesignTokens.Spacing.md)
+
         if let hero = vm.hero {
             HeroSection(hero: hero)
         }

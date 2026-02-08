@@ -44,6 +44,8 @@ struct MainTabView: View {
             RadioView()
         case .podcasts:
             PodcastsView()
+        case .widgets:
+            ScreenPlaceholder(title: "Widgets", subtitle: "Manage your widgets")
         }
     }
 

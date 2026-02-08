@@ -7,6 +7,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
     case vod
     case radio
     case podcasts
+    case widgets
 
     public var id: String { rawValue }
 
@@ -17,6 +18,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .vod: return "VOD"
         case .radio: return "Radio"
         case .podcasts: return "Podcasts"
+        case .widgets: return "Widgets"
         }
     }
 
@@ -27,6 +29,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .vod: return "film"
         case .radio: return "radio"
         case .podcasts: return "headphones"
+        case .widgets: return "square.grid.2x2"
         }
     }
 
@@ -37,6 +40,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .vod: return "film.fill"
         case .radio: return "radio.fill"
         case .podcasts: return "headphones"
+        case .widgets: return "square.grid.2x2.fill"
         }
     }
 }
