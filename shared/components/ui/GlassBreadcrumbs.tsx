@@ -22,8 +22,8 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
   isRTL = false,
   maxItems = 10,
 }) => {
-  // Don't render if only one item or empty
-  if (items.length <= 1) {
+  // Don't render if empty
+  if (items.length === 0) {
     return null;
   }
 
@@ -50,6 +50,8 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
           >
             <Pressable
               onPress={() => !isLast && onNavigate(item.path)}
+              // @ts-ignore - Web-specific click handler for RN Web ScrollView compatibility
+              onClick={() => !isLast && onNavigate(item.path)}
               style={({ pressed, hovered }: any) => [
                 styles.itemButton,
                 isRTL && styles.itemButtonRTL,
