@@ -85,7 +85,7 @@ export const liveService = {
   getChannel: async (channelId: string): Promise<Channel> => {
     return apiRequest(`/live/${channelId}`);
   },
-  getStreamUrl: async (channelId: string): Promise<{ url: string }> => {
+  getStreamUrl: async (channelId: string): Promise<{ stream_url: string; stream_type?: string }> => {
     return apiRequest(`/live/${channelId}/stream`);
   },
 };

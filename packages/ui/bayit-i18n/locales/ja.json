@@ -3567,6 +3567,8 @@
     },
     "streamError": "ストリームエラー",
     "streamLoadFailed": "ストリームの読み込みに失敗しました。再試行してください。",
+    "streamUnavailableTitle": "ストリーム利用不可",
+    "streamUnavailable": "このストリームは一時的に利用できません。後でもう一度お試しください。",
     "trivia": {
       "invalidChannel": "無効なチャンネルID"
     },

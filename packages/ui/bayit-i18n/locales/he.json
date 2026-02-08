@@ -4310,6 +4310,8 @@
     },
     "streamError": "שגיאת שידור",
     "streamLoadFailed": "טעינת השידור נכשלה. אנא נסה שוב.",
+    "streamUnavailableTitle": "שידור לא זמין",
+    "streamUnavailable": "שידור זה אינו זמין כרגע. אנא נסה שוב מאוחר יותר.",
     "trivia": {
       "invalidChannel": "מזהה ערוץ לא תקין"
     },

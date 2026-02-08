@@ -4165,6 +4165,8 @@
     },
     "streamError": "Error de transmisión",
     "streamLoadFailed": "Error al cargar la transmisión. Por favor intenta de nuevo.",
+    "streamUnavailableTitle": "Transmisión no disponible",
+    "streamUnavailable": "Esta transmisión no está disponible temporalmente. Por favor intenta más tarde.",
     "trivia": {
       "invalidChannel": "ID de canal inválido"
     },

@@ -49,7 +49,7 @@ export function useContentLoader(
     setLoading(true);
     try {
       let data: ContentData;
-      let stream: { url?: string } | undefined;
+      let stream: { url?: string; stream_url?: string; stream_type?: string } | undefined;
 
       // If initial content data was provided (scraped articles/events), use it
       if (initialContentData) {
@@ -131,7 +131,10 @@ export function useContentLoader(
             stream = await contentService.getStreamUrl(contentId);
         }
 
-        const streamUrlValue = stream?.url || null;
+        const streamUrlValue = stream?.stream_url || stream?.url || null;
+        if (stream?.stream_type) {
+          setStreamType(stream.stream_type);
+        }
         const isTranscodedValue = stream?.is_transcoded || false;
         const directUrlValue = stream?.direct_url || null;
         logger.debug('Setting stream URL', 'useContentLoader', {
@@ -150,12 +153,30 @@ export function useContentLoader(
           contentType
         });
 
+        const errorStatus = error?.status || error?.response?.status;
+
         // Handle 401 Unauthorized - user needs to sign in
-        if (error?.status === 401 || error?.response?.status === 401) {
+        if (errorStatus === 401) {
           addNotification({
             level: 'warning',
             message: t('auth.signInRequired', 'Please sign in to watch this content'),
             title: t('auth.signInRequiredTitle', 'Sign In Required'),
+            duration: 5000,
+          });
+        } else if (errorStatus === 403) {
+          // Handle 403 Forbidden - subscription required
+          addNotification({
+            level: 'warning',
+            message: t('player.subscription.upgradeInfo', 'Upgrade your subscription to access premium content'),
+            title: t('player.subscription.requiredTitle', 'Subscription Required'),
+            duration: 7000,
+          });
+        } else if (errorStatus === 503) {
+          // Handle 503 - stream temporarily unavailable
+          addNotification({
+            level: 'warning',
+            message: t('errors.streamUnavailable', 'This stream is temporarily unavailable. Please try again later.'),
+            title: t('errors.streamUnavailableTitle', 'Stream Unavailable'),
             duration: 5000,
           });
         } else {

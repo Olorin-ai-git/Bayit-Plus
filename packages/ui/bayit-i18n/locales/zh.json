@@ -3512,6 +3512,8 @@
     },
     "streamError": "流媒体错误",
     "streamLoadFailed": "加载流媒体失败，请重试。",
+    "streamUnavailableTitle": "流媒体不可用",
+    "streamUnavailable": "此流媒体暂时不可用。请稍后再试。",
     "trivia": {
       "invalidChannel": "无效的频道 ID"
     },

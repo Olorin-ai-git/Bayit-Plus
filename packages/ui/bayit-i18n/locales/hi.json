@@ -3321,6 +3321,8 @@
     },
     "streamError": "स्ट्रीम त्रुटि",
     "streamLoadFailed": "स्ट्रीम लोड करने में विफल। कृपया पुनः प्रयास करें।",
+    "streamUnavailableTitle": "स्ट्रीम अनुपलब्ध",
+    "streamUnavailable": "यह स्ट्रीम अस्थायी रूप से अनुपलब्ध है। कृपया बाद में पुनः प्रयास करें।",
     "trivia": {
       "invalidChannel": "अमान्य चैनल आईडी"
     },

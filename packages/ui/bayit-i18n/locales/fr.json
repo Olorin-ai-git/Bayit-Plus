@@ -3446,6 +3446,8 @@
     },
     "streamError": "Erreur de flux",
     "streamLoadFailed": "Échec du chargement du flux. Veuillez réessayer.",
+    "streamUnavailableTitle": "Flux indisponible",
+    "streamUnavailable": "Ce flux est temporairement indisponible. Veuillez réessayer plus tard.",
     "trivia": {
       "invalidChannel": "ID de chaîne invalide"
     },

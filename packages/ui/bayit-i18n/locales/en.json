@@ -4360,6 +4360,8 @@
     },
     "streamError": "Stream Error",
     "streamLoadFailed": "Failed to load stream. Please try again.",
+    "streamUnavailableTitle": "Stream Unavailable",
+    "streamUnavailable": "This stream is temporarily unavailable. Please try again later.",
     "trivia": {
       "invalidChannel": "Invalid channel ID"
     },

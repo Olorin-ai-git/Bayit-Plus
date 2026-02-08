@@ -243,8 +243,14 @@ async def get_stream_url(
                     or getattr(channel, "attribution_text", None),
             }
 
+    if not channel.stream_url:
+        raise HTTPException(
+            status_code=503,
+            detail="Stream is temporarily unavailable for this channel",
+        )
+
     return {
-        "url": channel.stream_url,
-        "type": channel.stream_type,
+        "stream_url": channel.stream_url,
+        "stream_type": channel.stream_type,
         "is_drm_protected": channel.is_drm_protected,
     }
