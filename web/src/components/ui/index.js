@@ -16,7 +16,6 @@ export {
   GlassBadge,
   GlassTabs,
   AnimatedLogo,
-  DemoBanner,
 } from '@bayit/shared';
 
 // Re-export types

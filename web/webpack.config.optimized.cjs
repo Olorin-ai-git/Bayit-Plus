@@ -16,8 +16,6 @@ module.exports = (env, argv) => {
   require('dotenv').config({
     path: path.resolve(__dirname, isProduction ? '.env.production' : '.env')
   });
-  // Demo mode is controlled by VITE_APP_MODE env var, not webpack mode
-  const isDemoMode = process.env.VITE_APP_MODE === 'demo';
   // TV platform targets
   const isWebOS = process.env.TARGET === 'webos';
   const isTizen = process.env.TARGET === 'tizen';
@@ -214,8 +212,7 @@ module.exports = (env, argv) => {
     },
     plugins: [
       new webpack.DefinePlugin({
-        // Use isDemoMode to control demo data, not just webpack mode
-        __DEV__: isDemoMode || !isProduction,
+        __DEV__: !isProduction,
         // TV platform build flags for conditional code
         __WEBOS__: isWebOS,
         __TIZEN__: isTizen,
@@ -225,7 +222,7 @@ module.exports = (env, argv) => {
         'process.env.VITE_APP_MODE': JSON.stringify(process.env.VITE_APP_MODE),
         'process.env.TARGET': JSON.stringify(process.env.TARGET || 'web'),
         // Also support import.meta.env syntax
-        'import.meta.env.VITE_APP_MODE': JSON.stringify(isTV ? 'demo' : process.env.VITE_APP_MODE),
+        'import.meta.env.VITE_APP_MODE': JSON.stringify(process.env.VITE_APP_MODE),
         // Use environment variable for API URL (Firebase Hosting rewrites handle routing)
         'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || '/api/v1'),
         // Picovoice Porcupine wake word access key

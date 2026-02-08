@@ -48,7 +48,7 @@ import { YoungstersScreen, FlowsScreen, PlaylistScreen } from './src/screens';
 import { useAuthStore, useChatbotStore } from '@bayit/shared-stores';
 import { ProfileProvider } from '@bayit/shared-contexts';
 import { ModalProvider } from '@bayit/shared-contexts';
-import { GlassTopBar, GlassSidebar, DemoBanner } from '@bayit/shared';
+import { GlassTopBar, GlassSidebar } from '@bayit/shared';
 import { VoiceAvatarFAB, VoiceChatModal } from '../shared/components/support';
 import { useVoiceSupport } from '@bayit/shared-hooks';
 import { supportConfig } from '../shared/config/supportConfig';
@@ -244,9 +244,6 @@ const AppContent: React.FC = () => {
   return (
     <View className="flex-1 bg-[#0d0d1a]">
       <StatusBar hidden />
-
-      {/* Demo Mode Banner */}
-      <DemoBanner />
 
       {/* Glass Top Bar */}
       <GlassTopBar onMenuPress={() => setSidebarExpanded(!sidebarExpanded)} sidebarExpanded={sidebarExpanded} />

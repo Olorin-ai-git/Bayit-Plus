@@ -14,7 +14,6 @@ export * from './search';
 export { AnimatedLogo } from './AnimatedLogo';
 export { ContentActionButtons } from './ContentActionButtons';
 export { ContentRow } from './ContentRow';
-export { DemoBanner } from './DemoBanner';
 export { DualClock } from './DualClock';
 export { FocusableCard } from './FocusableCard';
 export { GlassCarousel } from './GlassCarousel';

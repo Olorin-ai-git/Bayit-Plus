@@ -1,26 +1,6 @@
 import axios from 'axios';
 import { Platform } from 'react-native';
 import { useAuthStore } from '../stores/authStore';
-import { isDemo } from '../config/appConfig';
-import {
-  demoAuthService,
-  demoContentService,
-  demoLiveService,
-  demoRadioService,
-  demoPodcastService,
-  demoSubscriptionService,
-  demoPlaylistService,
-  demoHistoryService,
-  demoSearchService,
-  demoFavoritesService,
-  demoZmanService,
-  demoTrendingService,
-  demoRitualService,
-  demoSubtitlesService,
-  demoChaptersService,
-  demoPartyService,
-  demoChatService,
-} from './demoServices';
 
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {
@@ -41,7 +21,7 @@ const API_BASE_URL = getApiBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 5000,  // 5 second timeout for faster fallback to demo data
+  timeout: 5000,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -483,33 +463,32 @@ const apiChatService = {
 };
 
 // ===========================================
-// CONDITIONAL SERVICE EXPORTS
-// In demo mode: use mock services only, no API calls
-// In production mode: use API services only, fail fast
+// SERVICE EXPORTS
+// Service exports
 // ===========================================
 
-export const authService = isDemo ? demoAuthService : apiAuthService;
-export const contentService = isDemo ? demoContentService : apiContentService;
-export const liveService = isDemo ? demoLiveService : apiLiveService;
-export const radioService = isDemo ? demoRadioService : apiRadioService;
-export const podcastService = isDemo ? demoPodcastService : apiPodcastService;
-export const subscriptionService = isDemo ? demoSubscriptionService : apiSubscriptionService;
-export const playlistService = isDemo ? demoPlaylistService : apiPlaylistService;
+export const authService = apiAuthService;
+export const contentService = apiContentService;
+export const liveService = apiLiveService;
+export const radioService = apiRadioService;
+export const podcastService = apiPodcastService;
+export const subscriptionService = apiSubscriptionService;
+export const playlistService = apiPlaylistService;
 export const watchlistService = playlistService;
-export const historyService = isDemo ? demoHistoryService : apiHistoryService;
-export const searchService = isDemo ? demoSearchService : apiSearchService;
-export const favoritesService = isDemo ? demoFavoritesService : apiFavoritesService;
-export const zmanService = isDemo ? demoZmanService : apiZmanService;
-export const trendingService = isDemo ? demoTrendingService : apiTrendingService;
-export const ritualService = isDemo ? demoRitualService : apiRitualService;
-export const subtitlesService = isDemo ? demoSubtitlesService : apiSubtitlesService;
-export const chaptersService = isDemo ? demoChaptersService : apiChaptersService;
-export const partyService = isDemo ? demoPartyService : apiPartyService;
-export const chatService = isDemo ? demoChatService : apiChatService;
-export const profilesService = apiProfilesService; // No demo mode for profiles - requires real auth
-export const childrenService = apiChildrenService; // No demo mode for children
-export const youngstersService = apiYoungstersService; // No demo mode for youngsters
-export const judaismService = apiJudaismService; // No demo mode for judaism
-export const flowsService = apiFlowsService; // No demo mode for flows
+export const historyService = apiHistoryService;
+export const searchService = apiSearchService;
+export const favoritesService = apiFavoritesService;
+export const zmanService = apiZmanService;
+export const trendingService = apiTrendingService;
+export const ritualService = apiRitualService;
+export const subtitlesService = apiSubtitlesService;
+export const chaptersService = apiChaptersService;
+export const partyService = apiPartyService;
+export const chatService = apiChatService;
+export const profilesService = apiProfilesService;
+export const childrenService = apiChildrenService;
+export const youngstersService = apiYoungstersService;
+export const judaismService = apiJudaismService;
+export const flowsService = apiFlowsService;
 
 export default api;

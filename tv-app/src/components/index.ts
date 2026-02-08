@@ -7,7 +7,6 @@
 export {
   AnimatedLogo,
   ContentRow,
-  DemoBanner,
   DualClock,
   FocusableCard,
   GlassCarousel,

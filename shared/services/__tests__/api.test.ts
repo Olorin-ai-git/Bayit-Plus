@@ -21,11 +21,6 @@ jest.mock('../../stores/authStore', () => ({
   },
 }));
 
-// Mock app config
-jest.mock('../../config/appConfig', () => ({
-  isDemo: false,
-}));
-
 // Mock Platform
 jest.mock('react-native/Libraries/Utilities/Platform', () => ({
   OS: 'web',

@@ -1,27 +1,7 @@
 import axios from 'axios'
 import i18n from 'i18next'
-import { config, isDemo } from '../config/appConfig'
+import { config } from '../config/appConfig'
 import { useAuthStore } from '@bayit/shared-stores/authStore'
-import {
-  demoAuthService,
-  demoContentService,
-  demoLiveService,
-  demoRadioService,
-  demoPodcastService,
-  demoHistoryService,
-  demoSubscriptionService,
-  demoChatService,
-  demoZmanService,
-  demoTrendingService,
-  demoChaptersService,
-  demoSubtitlesService,
-  demoRitualService,
-  demoPartyService,
-  demoFavoritesService,
-  demoDownloadsService,
-  demoJudaismService,
-  demoChildrenService,
-} from './demoService'
 import logger, {
   getCorrelationId,
   generateCorrelationId,
@@ -752,37 +732,36 @@ const apiPartyService = {
 }
 
 // ===========================================
-// CONDITIONAL SERVICE EXPORTS
-// In demo mode: use mock services only, no API calls
-// In production mode: use API services only, fail fast
+// SERVICE EXPORTS
+// Service exports
 // ===========================================
 
-export const authService = apiAuthService // Always use real auth - no demo mode
-export const contentService = isDemo ? demoContentService : apiContentService
-export const liveService = isDemo ? demoLiveService : apiLiveService
-export const radioService = isDemo ? demoRadioService : apiRadioService
-export const podcastService = isDemo ? demoPodcastService : apiPodcastService
-export const audiobookService = apiAudiobookService // No demo mode - requires real content
-export const subscriptionService = isDemo ? demoSubscriptionService : apiSubscriptionService
+export const authService = apiAuthService
+export const contentService = apiContentService
+export const liveService = apiLiveService
+export const radioService = apiRadioService
+export const podcastService = apiPodcastService
+export const audiobookService = apiAudiobookService
+export const subscriptionService = apiSubscriptionService
 export const playlistService = apiPlaylistService
-export const historyService = isDemo ? demoHistoryService : apiHistoryService
-export const chatService = isDemo ? demoChatService : apiChatService
-export const zmanService = isDemo ? demoZmanService : apiZmanService
-export const trendingService = isDemo ? demoTrendingService : apiTrendingService
-export const chaptersService = isDemo ? demoChaptersService : apiChaptersService
-export const sceneSearchService = apiSceneSearchService // No demo mode - requires indexed content
-export const subtitlesService = isDemo ? demoSubtitlesService : apiSubtitlesService
-export const subtitlePreferencesService = apiSubtitlePreferencesService // No demo mode - requires auth
-export const ritualService = isDemo ? demoRitualService : apiRitualService
-export const partyService = isDemo ? demoPartyService : apiPartyService
-export const favoritesService = isDemo ? demoFavoritesService : apiFavoritesService
-export const downloadsService = isDemo ? demoDownloadsService : apiDownloadsService
-export const profilesService = apiProfilesService // No demo mode for profiles - requires real auth
-export const childrenService = isDemo ? demoChildrenService : apiChildrenService
-export const youngstersService = apiYoungstersService // No demo mode - requires real content
-export const judaismService = isDemo ? demoJudaismService : apiJudaismService
-export const quizService = apiQuizService // No demo mode - requires kids profile auth
-export const rewardsService = apiRewardsService // No demo mode - requires kids profile auth
-export const widgetService = apiWidgetService // No demo mode - requires auth
+export const historyService = apiHistoryService
+export const chatService = apiChatService
+export const zmanService = apiZmanService
+export const trendingService = apiTrendingService
+export const chaptersService = apiChaptersService
+export const sceneSearchService = apiSceneSearchService
+export const subtitlesService = apiSubtitlesService
+export const subtitlePreferencesService = apiSubtitlePreferencesService
+export const ritualService = apiRitualService
+export const partyService = apiPartyService
+export const favoritesService = apiFavoritesService
+export const downloadsService = apiDownloadsService
+export const profilesService = apiProfilesService
+export const childrenService = apiChildrenService
+export const youngstersService = apiYoungstersService
+export const judaismService = apiJudaismService
+export const quizService = apiQuizService
+export const rewardsService = apiRewardsService
+export const widgetService = apiWidgetService
 
 export default api

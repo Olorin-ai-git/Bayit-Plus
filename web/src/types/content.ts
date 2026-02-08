@@ -452,13 +452,3 @@ export interface PodcastEpisodeFilters {
   page_size?: number
 }
 
-// ============ DEMO DATA TYPES ============
-
-export interface DemoDataOptions {
-  content?: Content[]
-  categories?: Category[]
-  liveChannels?: LiveChannel[]
-  radioStations?: RadioStation[]
-  podcasts?: Podcast[]
-  episodes?: PodcastEpisode[]
-}

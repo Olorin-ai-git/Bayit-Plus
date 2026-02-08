@@ -9,10 +9,9 @@ import { Platform } from 'react-native';
 import { logger } from '../utils/logger';
 
 // Get app mode from environment or default to production
-const APP_MODE: 'demo' | 'production' =
-  (process.env.APP_MODE as 'demo' | 'production') || 'production';
+const APP_MODE: 'development' | 'production' =
+  (process.env.APP_MODE as 'development' | 'production') || 'production';
 
-export const isDemo = APP_MODE === 'demo';
 export const isProduction = APP_MODE === 'production';
 
 // Production API URL - set via REACT_APP_API_BASE_URL environment variable at build time.
@@ -42,18 +41,12 @@ export const API_BASE_URL = getApiBaseUrl();
 
 export const config = {
   mode: APP_MODE,
-  isDemo,
   isProduction,
 
   api: {
-    enabled: !isDemo,
+    enabled: true,
     failFast: isProduction,
     timeout: isProduction ? 5000 : 30000,
-  },
-
-  mock: {
-    enabled: isDemo,
-    delay: isDemo ? 300 : 0,
   },
 
   features: {

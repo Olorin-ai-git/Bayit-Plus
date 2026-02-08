@@ -10,10 +10,6 @@ import { Platform } from "react-native";
  * Environment Configuration
  */
 export const Config = {
-  // Set to true to use demo data (no backend required)
-  // Set to false to connect to live backend API
-  USE_DEMO_MODE: false,
-
   // Backend API URLs
   API_URLS: {
     // Production API (Firebase Hosting -> Cloud Run)
@@ -29,7 +25,7 @@ export const Config = {
   },
 
   // API timeout (milliseconds)
-  API_TIMEOUT: 5000, // 5 seconds - will fallback to demo data on timeout
+  API_TIMEOUT: 5000,
 };
 
 /**
@@ -50,13 +46,6 @@ export const getApiBaseUrl = (): string => {
   }
 
   return Config.API_URLS.development.ios;
-};
-
-/**
- * Check if app should use demo mode
- */
-export const shouldUseDemoMode = (): boolean => {
-  return Config.USE_DEMO_MODE;
 };
 
 export default Config;

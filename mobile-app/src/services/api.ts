@@ -3,7 +3,7 @@
  * Connects to the Bayit+ backend API
  */
 
-import { getApiBaseUrl, shouldUseDemoMode } from '../config/apiConfig';
+import { getApiBaseUrl } from '../config/apiConfig';
 
 const API_BASE_URL = getApiBaseUrl();
 

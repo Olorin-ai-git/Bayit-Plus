@@ -4,7 +4,6 @@
 
 export {
   APP_MODE,
-  isDemo,
   isProduction,
   config,
 } from './appConfig';

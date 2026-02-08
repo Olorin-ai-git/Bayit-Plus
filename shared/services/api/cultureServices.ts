@@ -1,8 +1,5 @@
 /**
  * Culture Services - Jerusalem, Tel Aviv, Culture API endpoints
- *
- * Note: Demo services contain sample data for demo mode.
- * These are used when isDemo=true in appConfig.
  */
 
 import { api, contentApi } from './client';

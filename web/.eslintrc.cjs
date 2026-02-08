@@ -31,7 +31,7 @@ module.exports = {
       'warn',
       {
         argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_|^demo|^config$|^is[A-Z]',
+        varsIgnorePattern: '^_|^config$|^is[A-Z]',
         ignoreRestSiblings: true,
       },
     ],
@@ -39,14 +39,14 @@ module.exports = {
       'warn',
       {
         argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_|^demo|^config$|^is[A-Z]',
+        varsIgnorePattern: '^_|^config$|^is[A-Z]',
         ignoreRestSiblings: true,
       },
     ],
   },
   overrides: [
     {
-      files: ['**/demoService.js', '**/demo*.js', '**/*Shim.js'],
+      files: ['**/*Shim.js'],
       rules: {
         'no-unused-vars': 'off',
         '@typescript-eslint/no-unused-vars': 'off',

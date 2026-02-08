@@ -42,89 +42,60 @@ import { securityService } from './securityService';
 import { triviaApi } from './triviaServices';
 import { apiPlaylistService } from './playlistServices';
 
-// Import demo services
-import {
-  demoAuthService,
-  demoContentService,
-  demoLiveService,
-  demoRadioService,
-  demoPodcastService,
-  demoSubscriptionService,
-  demoHistoryService,
-  demoSearchService,
-  demoFavoritesService,
-  demoZmanService,
-  demoTrendingService,
-  demoRitualService,
-  demoSubtitlesService,
-  demoChaptersService,
-  demoPartyService,
-  demoRecordingService,
-  demoChatService,
-  demoDownloadsService,
-  demoJerusalemService,
-  demoTelAvivService,
-  demoCultureService,
-} from '../demoService';
-
-// Import config
-import { isDemo } from '../../config/appConfig';
-
 // ===========================================
-// CONDITIONAL SERVICE EXPORTS
-// In demo mode: use mock services only, no API calls
-// In production mode: use API services only, fail fast
+// SERVICE EXPORTS
+// Service exports
 // ===========================================
 
-// Auth services - Always use real auth, no demo mode
+// Auth services
 export const authService = apiAuthService;
 export const verificationService = apiVerificationService;
 
-// Content services - Conditional
-export const contentService = isDemo ? demoContentService : apiContentService;
-export const liveService = isDemo ? demoLiveService : apiLiveService;
-export const radioService = isDemo ? demoRadioService : apiRadioService;
-export const podcastService = isDemo ? demoPodcastService : apiPodcastService;
+// Content services
+export const contentService = apiContentService;
+export const liveService = apiLiveService;
+export const radioService = apiRadioService;
+export const podcastService = apiPodcastService;
 
-// User services - Mixed (some require real auth)
-export const subscriptionService = isDemo ? demoSubscriptionService : apiSubscriptionService;
-export const historyService = isDemo ? demoHistoryService : apiHistoryService;
-export const favoritesService = isDemo ? demoFavoritesService : apiFavoritesService;
-export const profilesService = apiProfilesService; // No demo mode - requires real auth
-export const childrenService = apiChildrenService; // No demo mode for children
-export const youngstersService = apiYoungstersService; // No demo mode for youngsters
+// User services
+export const subscriptionService = apiSubscriptionService;
+export const historyService = apiHistoryService;
+export const favoritesService = apiFavoritesService;
+export const profilesService = apiProfilesService;
+export const childrenService = apiChildrenService;
+export const youngstersService = apiYoungstersService;
 
-// Media services - Conditional
-export const searchService = isDemo ? demoSearchService : apiSearchService;
-export const subtitlesService = isDemo ? demoSubtitlesService : apiSubtitlesService;
-export const subtitlePreferencesService = apiSubtitlePreferencesService; // No demo mode - requires auth
-export const chaptersService = isDemo ? demoChaptersService : apiChaptersService;
+// Media services
+export const searchService = apiSearchService;
+export const subtitlesService = apiSubtitlesService;
+export const subtitlePreferencesService = apiSubtitlePreferencesService;
+export const chaptersService = apiChaptersService;
 
-// Specialty services - Mixed
-export const zmanService = isDemo ? demoZmanService : apiZmanService;
-export const trendingService = isDemo ? demoTrendingService : apiTrendingService;
-export const ritualService = isDemo ? demoRitualService : apiRitualService;
-export const judaismService = apiJudaismService; // No demo mode for judaism
-export const flowsService = apiFlowsService; // No demo mode for flows
+// Specialty services
+export const zmanService = apiZmanService;
+export const trendingService = apiTrendingService;
+export const ritualService = apiRitualService;
+export const judaismService = apiJudaismService;
+export const flowsService = apiFlowsService;
 
-// Social services - Conditional
-export const chatService = isDemo ? demoChatService : apiChatService;
-export const partyService = isDemo ? demoPartyService : apiPartyService;
-export const recordingService = isDemo ? demoRecordingService : apiRecordingService;
-export const downloadsService = isDemo ? demoDownloadsService : apiDownloadsService;
+// Social services
+export const chatService = apiChatService;
+export const partyService = apiPartyService;
+export const recordingService = apiRecordingService;
+export const downloadsService = apiDownloadsService;
 
-// Culture services - Conditional
-export const jerusalemService = isDemo ? demoJerusalemService : apiJerusalemService;
-export const telAvivService = isDemo ? demoTelAvivService : apiTelAvivService;
-export const cultureService = isDemo ? demoCultureService : apiCultureService;
+// Culture services
+export const jerusalemService = apiJerusalemService;
+export const telAvivService = apiTelAvivService;
+export const cultureService = apiCultureService;
 
-// Security services - No demo mode (requires real auth)
+// Security services
 export { securityService };
 
-// Trivia services - No demo mode
+// Trivia services
 export { triviaApi };
 
-// Playlist services - No demo mode (requires real auth)
+// Playlist services
 export const playlistService = apiPlaylistService;
 
 // Backward-compat alias: watchlist now routes through playlist

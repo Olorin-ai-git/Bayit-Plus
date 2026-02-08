@@ -119,7 +119,7 @@ export const HomeScreen: React.FC = () => {
       // Check authentication for user-specific content
       const { isAuthenticated } = useAuthStore.getState();
 
-      // Load all content in parallel - demo service handles mock data
+      // Load all content in parallel
       // Only fetch continue watching if authenticated
       const [featuredRes, liveRes, historyRes, categoriesRes] = await Promise.all([
         contentService.getFeatured(),

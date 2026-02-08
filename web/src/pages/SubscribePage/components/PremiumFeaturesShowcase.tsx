@@ -12,7 +12,6 @@ import { sanitizeI18n } from '@/utils/security/sanitizeI18n';
 import { config } from '@bayit/shared-config/appConfig';
 import { WidgetsIntroVideo } from '@bayit/shared/widgets/WidgetsIntroVideo';
 import { VideoShowcaseCard } from './VideoShowcaseCard';
-import { WidgetDemoCard } from './WidgetDemoCard';
 import { PremiumFeatureCard } from './PremiumFeatureCard';
 
 export const PremiumFeaturesShowcase: React.FC = () => {
@@ -89,12 +88,6 @@ export const PremiumFeaturesShowcase: React.FC = () => {
             t('subscribe.premiumShowcase.videoDescription')
           )}
           onPlay={() => setShowVideoModal(true)}
-        />
-        <WidgetDemoCard
-          title={sanitizeI18n(t('subscribe.premiumShowcase.widgetTitle'))}
-          description={sanitizeI18n(
-            t('subscribe.premiumShowcase.widgetDescription')
-          )}
         />
       </View>
 

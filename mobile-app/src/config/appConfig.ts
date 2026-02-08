@@ -6,10 +6,9 @@
 import { Platform } from "react-native";
 
 // Get app mode from environment or default to production
-const APP_MODE: "demo" | "production" =
-  (process.env.APP_MODE as "demo" | "production") || "production";
+const APP_MODE: "development" | "production" =
+  (process.env.APP_MODE as "development" | "production") || "production";
 
-export const isDemo = APP_MODE === "demo";
 export const isProduction = APP_MODE === "production";
 
 // Get correct API URL based on platform
@@ -31,18 +30,12 @@ export const API_BASE_URL = getApiBaseUrl();
 
 export const config = {
   mode: APP_MODE,
-  isDemo,
   isProduction,
 
   api: {
-    enabled: !isDemo,
+    enabled: true,
     failFast: isProduction,
     timeout: isProduction ? 5000 : 30000,
-  },
-
-  mock: {
-    enabled: isDemo,
-    delay: isDemo ? 300 : 0,
   },
 
   features: {
