@@ -105,16 +105,17 @@ function SectionSkeleton() {
   );
 }
 
-// Hero skeleton with Avatar placeholder
+// Hero skeleton with placeholder backdrop
 function HeroSkeleton() {
   const { t } = useTranslation();
-  const placeholderImage = 'https://image.tmdb.org/t/p/original/s16H6tpK2utvwDtzZ8Qy4qm5Emw.jpg';
+  const placeholderImage = import.meta.env.VITE_PLACEHOLDER_IMAGE_URL || '/assets/images/Bayit-Plus-Logo-Transparent.png';
 
   return (
     <View style={styles.skeletonHero}>
       <img
         src={placeholderImage}
         alt={t('common.loading')}
+        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
         style={{
           width: '100%',
           height: '100%',

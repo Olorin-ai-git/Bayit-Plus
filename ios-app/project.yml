@@ -71,6 +71,7 @@ targets:
               - bayitplus
         NSSpeechRecognitionUsageDescription: "Bayit+ uses speech recognition for voice commands"
         NSMicrophoneUsageDescription: "Bayit+ uses the microphone for voice commands"
+        NSLocationWhenInUseUsageDescription: "Bayit+ uses your location to show Israeli community content near you"
 
 schemes:
   BayitPlusApp:

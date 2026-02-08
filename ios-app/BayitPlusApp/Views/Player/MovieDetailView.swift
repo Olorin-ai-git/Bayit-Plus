@@ -138,10 +138,13 @@ struct MovieDetailView: View {
                 ))
             }
 
-            if viewModel?.hasTrailer == true {
+            if viewModel?.hasTrailer == true, let trailerUrl = detail.trailerUrl {
                 GlassButton("Trailer", variant: .secondary, size: .large,
                              icon: Image(systemName: "film")) {
-                    // Trailer playback handled in Phase 3
+                    coordinator.presentFullscreen(.player(
+                        contentId: trailerUrl,
+                        contentType: .movie
+                    ))
                 }
             }
         }
@@ -188,29 +191,9 @@ struct MovieDetailView: View {
     }
 
     private func relatedSubtitle(_ item: RelatedItem) -> String? {
-        var parts: [String] = []
-        if let year = item.year { parts.append(String(year)) }
-        if let duration = item.duration { parts.append(duration) }
+        let parts = [item.year.map(String.init), item.duration].compactMap { $0 }
         return parts.isEmpty ? nil : parts.joined(separator: " | ")
     }
 
-    private var loadingState: some View {
-        VStack(spacing: DesignTokens.Spacing.lg) {
-            RoundedRectangle(cornerRadius: 0)
-                .fill(DesignTokens.Glass.bg)
-                .frame(height: 280)
-
-            VStack(spacing: DesignTokens.Spacing.md) {
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
-                    .fill(DesignTokens.Glass.bg)
-                    .frame(height: 24)
-                    .padding(.horizontal, DesignTokens.Spacing.lg)
-
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
-                    .fill(DesignTokens.Glass.bg)
-                    .frame(height: 60)
-                    .padding(.horizontal, DesignTokens.Spacing.lg)
-            }
-        }
-    }
+    private var loadingState: some View { MovieDetailLoadingView() }
 }

@@ -6,6 +6,7 @@ import SwiftUI
 struct HomeView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(AppLocationProvider.self) private var locationProvider
     @State private var viewModel: HomeViewModel?
 
     var body: some View {
@@ -34,9 +35,11 @@ struct HomeView: View {
         }
         .task {
             if viewModel == nil {
+                locationProvider.requestLocationIfNeeded()
                 viewModel = HomeViewModel(
                     repository: repos.content,
-                    liveTVRepository: repos.liveTV
+                    liveTVRepository: repos.liveTV,
+                    locationProvider: locationProvider
                 )
             }
             await viewModel?.loadFeatured()

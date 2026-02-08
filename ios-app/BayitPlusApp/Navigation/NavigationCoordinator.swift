@@ -98,7 +98,9 @@ public final class NavigationCoordinator {
              .audiobookDetail, .trending, .interactiveSubtitles,
              .chapters, .chatbot, .avatarMode, .betaCredits,
              .subscriptionGate, .household, .devicePairing,
-             .helpCenter, .rewards, .passkeyManagement, .onboardingAI:
+             .helpCenter, .rewards, .passkeyManagement, .onboardingAI,
+             .friends, .watchParty, .watchPartyDetail,
+             .chess, .directMessages, .conversation:
             pushToCurrentTab(route)
         }
     }

@@ -915,6 +915,80 @@ class DatabaseConfig(BaseSettings):
         env_prefix = "OLORIN_"
 
 
+class SocialWebSocketConfig(BaseSettings):
+    """WebSocket security configuration for social features (party, chess, DM)."""
+
+    auth_timeout_seconds: int = Field(
+        default=10,
+        ge=1,
+        le=60,
+        description="Timeout for WebSocket auth message (seconds)",
+    )
+    max_connections_per_user: int = Field(
+        default=5,
+        ge=1,
+        le=20,
+        description="Maximum concurrent WebSocket connections per user",
+    )
+    max_message_size_bytes: int = Field(
+        default=8192,
+        ge=512,
+        le=65536,
+        description="Maximum inbound message size in bytes",
+    )
+    party_messages_per_minute: int = Field(
+        default=30,
+        ge=1,
+        le=120,
+        description="Rate limit: party messages per connection per minute",
+    )
+    chess_moves_per_minute: int = Field(
+        default=60,
+        ge=1,
+        le=120,
+        description="Rate limit: chess messages per connection per minute",
+    )
+    dm_messages_per_minute: int = Field(
+        default=30,
+        ge=1,
+        le=120,
+        description="Rate limit: DM messages per connection per minute",
+    )
+    dm_max_message_length: int = Field(
+        default=2000,
+        ge=1,
+        le=10000,
+        description="Maximum character length for a direct message",
+    )
+    friends_requests_per_minute: int = Field(
+        default=10,
+        ge=1,
+        le=60,
+        description="Rate limit: friend requests per user per minute",
+    )
+    friends_search_per_minute: int = Field(
+        default=15,
+        ge=1,
+        le=60,
+        description="Rate limit: friend search requests per user per minute",
+    )
+    max_pending_friend_requests: int = Field(
+        default=50,
+        ge=1,
+        le=200,
+        description="Maximum outbound pending friend requests per user",
+    )
+    rate_limit_warning_threshold: int = Field(
+        default=3,
+        ge=1,
+        le=10,
+        description="Number of rate limit warnings before closing connection",
+    )
+
+    class Config:
+        env_prefix = "SOCIAL_WS_"
+
+
 class ChannelChatConfig(BaseSettings):
     """Channel live chat configuration for WebSocket chat on live TV channels."""
 
@@ -1358,6 +1432,10 @@ class OlorinSettings(BaseSettings):
     i18n: I18nConfig = Field(
         default_factory=I18nConfig,
         description="Internationalization configuration for multilingual support",
+    )
+    social_ws: SocialWebSocketConfig = Field(
+        default_factory=SocialWebSocketConfig,
+        description="Social WebSocket security configuration (party, chess, DM)",
     )
     channel_chat: ChannelChatConfig = Field(
         default_factory=ChannelChatConfig,

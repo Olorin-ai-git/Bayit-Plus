@@ -32,6 +32,13 @@ public protocol EnvironmentConfiguration: Sendable {
     var apiRetryableStatusCodes: Set<Int> { get }
     var webSocketBaseURL: URL { get }
     var environment: AppEnvironment { get }
+
+    // MARK: - WebSocket Configuration
+    var webSocketMaxConcurrentConnections: Int { get }
+    var webSocketPingInterval: TimeInterval { get }
+    var webSocketMaxReconnectAttempts: Int { get }
+    var webSocketReconnectBaseDelay: TimeInterval { get }
+    var webSocketInactiveGracePeriod: TimeInterval { get }
 }
 
 /// Resolves configuration from Info.plist and environment
@@ -43,6 +50,11 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
     public let apiRetryableStatusCodes: Set<Int>
     public let webSocketBaseURL: URL
     public let environment: AppEnvironment
+    public let webSocketMaxConcurrentConnections: Int
+    public let webSocketPingInterval: TimeInterval
+    public let webSocketMaxReconnectAttempts: Int
+    public let webSocketReconnectBaseDelay: TimeInterval
+    public let webSocketInactiveGracePeriod: TimeInterval
 
     public init() {
         let env = AppEnvironment.current
@@ -73,6 +85,21 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
         let retryDelayValue = info["API_RETRY_BASE_DELAY"] as? String
             ?? ProcessInfo.processInfo.environment["API_RETRY_BASE_DELAY"]
 
+        let wsMaxConnValue = info["WS_MAX_CONCURRENT_CONNECTIONS"] as? String
+            ?? ProcessInfo.processInfo.environment["WS_MAX_CONCURRENT_CONNECTIONS"]
+
+        let wsPingValue = info["WS_PING_INTERVAL"] as? String
+            ?? ProcessInfo.processInfo.environment["WS_PING_INTERVAL"]
+
+        let wsMaxReconnectValue = info["WS_MAX_RECONNECT_ATTEMPTS"] as? String
+            ?? ProcessInfo.processInfo.environment["WS_MAX_RECONNECT_ATTEMPTS"]
+
+        let wsReconnectDelayValue = info["WS_RECONNECT_BASE_DELAY"] as? String
+            ?? ProcessInfo.processInfo.environment["WS_RECONNECT_BASE_DELAY"]
+
+        let wsGracePeriodValue = info["WS_INACTIVE_GRACE_PERIOD"] as? String
+            ?? ProcessInfo.processInfo.environment["WS_INACTIVE_GRACE_PERIOD"]
+
         self.environment = env
         self.apiBaseURL = apiURL
         self.apiTimeout = TimeInterval(timeoutValue ?? "") ?? 30.0
@@ -80,6 +107,11 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
         self.apiRetryBaseDelay = TimeInterval(retryDelayValue ?? "") ?? 1.0
         self.apiRetryableStatusCodes = [408, 429, 500, 502, 503, 504]
         self.webSocketBaseURL = wsURL
+        self.webSocketMaxConcurrentConnections = Int(wsMaxConnValue ?? "") ?? 5
+        self.webSocketPingInterval = TimeInterval(wsPingValue ?? "") ?? 30.0
+        self.webSocketMaxReconnectAttempts = Int(wsMaxReconnectValue ?? "") ?? 5
+        self.webSocketReconnectBaseDelay = TimeInterval(wsReconnectDelayValue ?? "") ?? 1.0
+        self.webSocketInactiveGracePeriod = TimeInterval(wsGracePeriodValue ?? "") ?? 10.0
     }
 
     private static func defaultAPIBaseURL(for env: AppEnvironment) -> String {

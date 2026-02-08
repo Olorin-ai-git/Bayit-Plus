@@ -27,4 +27,21 @@ public protocol NetworkConfiguration: Sendable {
     /// Content-Type is always set to `application/json` by the client,
     /// but additional static headers can be injected here.
     var defaultHeaders: [String: String] { get }
+
+    // MARK: - WebSocket Configuration
+
+    /// Maximum number of concurrent WebSocket connections allowed.
+    var webSocketMaxConcurrentConnections: Int { get }
+
+    /// Interval in seconds between WebSocket ping/keepalive messages.
+    var webSocketPingInterval: TimeInterval { get }
+
+    /// Maximum number of reconnection attempts before giving up.
+    var webSocketMaxReconnectAttempts: Int { get }
+
+    /// Base delay in seconds for WebSocket reconnection backoff.
+    var webSocketReconnectBaseDelay: TimeInterval { get }
+
+    /// Grace period in seconds before disconnecting WebSockets when app becomes inactive.
+    var webSocketInactiveGracePeriod: TimeInterval { get }
 }

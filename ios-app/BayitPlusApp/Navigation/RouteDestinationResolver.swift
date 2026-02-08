@@ -1,0 +1,118 @@
+import BayitVoice
+import SwiftUI
+
+/// Resolves Route enum values to their destination SwiftUI views.
+/// Extracted from MainTabView to keep each file under 200 lines.
+struct RouteDestinationResolver {
+    @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(RepositoryProvider.self) private var repos
+
+    @ViewBuilder
+    func view(for route: Route) -> some View {
+        switch route {
+        case .movieDetail(let movieId):
+            MovieDetailView(movieId: movieId)
+        case .seriesDetail(let seriesId):
+            SeriesDetailView(seriesId: seriesId)
+        case .podcastDetail(let showId):
+            PodcastDetailView(showId: showId)
+        case .epg:
+            EPGView()
+        case .profile:
+            ProfileView()
+        case .favorites:
+            FavoritesView()
+        case .playlist:
+            PlaylistView()
+        case .downloads:
+            DownloadsView()
+        case .recordings:
+            RecordingsView()
+        case .settings:
+            SettingsView()
+        case .languageSettings:
+            LanguageSettingsView()
+        case .notificationSettings:
+            NotificationSettingsView()
+        case .billing:
+            BillingView()
+        case .subscription:
+            SubscriptionView()
+        case .security:
+            SecurityView()
+        case .children:
+            ChildrenView()
+        case .youngsters:
+            YoungtersView()
+        case .judaism:
+            JudaismView()
+        case .flows:
+            FlowsView()
+        case .morningRitual:
+            MorningRitualView()
+        case .voiceOnboarding:
+            VoiceOnboardingView(speechService: SpeechRecognitionService())
+        case .support:
+            SupportView()
+        case .trivia(let contentId):
+            QuizOverlayView(contentId: contentId, profileId: nil, onDismiss: { coordinator.pop() })
+        case .llmSearch:
+            LLMSearchView()
+        case .familyControls:
+            FamilyControlsView()
+        case .shabbatMode:
+            ZmanimView()
+        case .jerusalemContent:
+            CultureContentView()
+        case .telAvivContent:
+            CultureContentView()
+        case .audiobooks:
+            AudiobooksView()
+        case .audiobookDetail(let audiobookId):
+            AudiobookDetailView(audiobookId: audiobookId)
+        case .trending:
+            TrendingView()
+        case .interactiveSubtitles(let contentId):
+            InteractiveSubtitlesView(contentId: contentId)
+        case .chapters(let contentId):
+            ChapterNavigationView(contentId: contentId)
+        case .chatbot:
+            ChatbotView(repository: repos.chat)
+        case .avatarMode:
+            AvatarModeView(stateMachine: AvatarStateMachine(), repository: repos.chat)
+        case .betaCredits:
+            CreditBalanceWidgetView()
+        case .subscriptionGate(let contentId, let requiredTier):
+            SubscriptionGateView(contentId: contentId, requiredTier: requiredTier)
+        case .household:
+            HouseholdView()
+        case .devicePairing:
+            DevicePairingView()
+        case .helpCenter:
+            HelpView()
+        case .rewards:
+            RewardsView()
+        case .passkeyManagement:
+            PasskeyManagementView()
+        case .onboardingAI:
+            OnboardingAIView()
+        case .friends:
+            FriendsView(repository: repos.friends)
+        case .watchParty:
+            WatchPartyView(repository: repos.watchParty)
+        case .watchPartyDetail:
+            WatchPartyView(repository: repos.watchParty)
+        case .chess(let gameId):
+            ChessView(gameId: gameId)
+        case .directMessages:
+            DirectMessagesView()
+        case .conversation(let friendId):
+            ConversationView(friendId: friendId)
+        default:
+            ErrorStateView(
+                message: "Screen not available",
+                onRetry: { coordinator.pop() }
+            )
+        }
+    }
+}

@@ -15,6 +15,7 @@ struct BayitPlusApp: App {
     @State private var apiClient: APIClient
     @State private var repositories: RepositoryProvider
     @State private var mediaPlayer = MediaPlayer()
+    @State private var locationProvider: AppLocationProvider
 
     init() {
         FirebaseApp.configure()
@@ -30,17 +31,26 @@ struct BayitPlusApp: App {
             logger: apiLogger
         )
 
+        let locProvider = AppLocationProvider()
+
         let client = APIClient(
             configuration: networkConfig,
             authTokenProvider: authMgr.authTokenProvider,
-            locationProvider: AppLocationProvider(),
+            locationProvider: locProvider,
             logger: apiLogger
         )
+
+        let wsManager = WebSocketManager(configuration: networkConfig, logger: apiLogger)
 
         _authManager = State(initialValue: authMgr)
         _localizationManager = State(initialValue: LocalizationManager())
         _apiClient = State(initialValue: client)
-        _repositories = State(initialValue: RepositoryProvider(client: client))
+        _repositories = State(initialValue: RepositoryProvider(
+            client: client,
+            webSocketManager: wsManager,
+            authTokenProvider: authMgr.authTokenProvider
+        ))
+        _locationProvider = State(initialValue: locProvider)
     }
 
     var body: some Scene {
@@ -51,6 +61,7 @@ struct BayitPlusApp: App {
                 .environment(localizationManager)
                 .environment(repositories)
                 .environment(mediaPlayer)
+                .environment(locationProvider)
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
                 .onOpenURL { url in

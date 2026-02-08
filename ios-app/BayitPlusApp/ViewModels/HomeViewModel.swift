@@ -22,10 +22,16 @@ final class HomeViewModel {
 
     private let repository: any ContentRepository
     private let liveTVRepository: any LiveTVRepository
+    private let locationProvider: AppLocationProvider
 
-    init(repository: any ContentRepository, liveTVRepository: any LiveTVRepository) {
+    init(
+        repository: any ContentRepository,
+        liveTVRepository: any LiveTVRepository,
+        locationProvider: AppLocationProvider
+    ) {
         self.repository = repository
         self.liveTVRepository = liveTVRepository
+        self.locationProvider = locationProvider
     }
 
     @MainActor
@@ -138,13 +144,16 @@ final class HomeViewModel {
 
     @MainActor
     private func loadLocationContent() async {
-        // TODO: Get user's location from LocationProvider
-        // For now, use a default location (e.g., New York)
-        let defaultCity = "New York"
-        let defaultState = "NY"
+        guard let location = await locationProvider.currentLocation(),
+              let city = location.city else {
+            israelisInCity = nil
+            israeliBusinesses = nil
+            return
+        }
+        let state = location.state ?? ""
 
-        async let israelisTask = loadIsraelisInCity(city: defaultCity, state: defaultState)
-        async let businessesTask = loadIsraeliBusinesses(city: defaultCity, state: defaultState)
+        async let israelisTask = loadIsraelisInCity(city: city, state: state)
+        async let businessesTask = loadIsraeliBusinesses(city: city, state: state)
 
         await israelisTask
         await businessesTask

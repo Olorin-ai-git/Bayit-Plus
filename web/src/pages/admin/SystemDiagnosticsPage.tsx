@@ -12,6 +12,7 @@ import { GlassRadar, GlassGauge, GlassHeartbeat } from '@olorin/glass-ui';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '@/hooks/useDirection';
 import { useSystemHealth } from '@/hooks/useSystemHealth';
+import AnomalyDetailsModal from './components/AnomalyDetailsModal';
 import type { ClientStatus, ServiceHealth } from '@/services/diagnosticsApi';
 import type { RadarAgent, RadarAnomaly } from '@olorin/glass-ui';
 
@@ -183,7 +184,6 @@ export default function SystemDiagnosticsPage() {
 
   const handleAnomalySelected = (anomaly: RadarAnomaly) => {
     setSelectedAnomaly(anomaly);
-    // TODO: Show anomaly details modal
   };
 
   const handleServiceCheck = async (_serviceName: string) => {
@@ -319,6 +319,15 @@ export default function SystemDiagnosticsPage() {
       </GlassCard>
 
       <View style={styles.spacer} />
+
+      {/* Anomaly Details Modal */}
+      <AnomalyDetailsModal
+        anomaly={selectedAnomaly}
+        service={selectedAnomaly ? services[selectedAnomaly.id] : undefined}
+        visible={selectedAnomaly !== null}
+        onClose={() => setSelectedAnomaly(null)}
+        onPing={handleServiceCheck}
+      />
     </ScrollView>
   );
 }

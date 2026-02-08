@@ -1,7 +1,7 @@
 """Direct message model for friend-to-friend messaging."""
 
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List, Literal, Optional
 
 from beanie import Document
 from pydantic import BaseModel, Field
@@ -17,7 +17,7 @@ class DirectMessage(Document):
     receiver_name: str
     receiver_avatar: Optional[str] = None
     message: str
-    message_type: str = "text"  # text, emoji, system
+    message_type: Literal["text"] = "text"
 
     # Translation fields
     source_language: str = "he"
@@ -45,8 +45,8 @@ class DirectMessage(Document):
 class DirectMessageCreate(BaseModel):
     """Request model for sending a direct message."""
 
-    message: str
-    message_type: str = "text"
+    message: str = Field(..., max_length=2000)
+    message_type: Literal["text"] = "text"
 
 
 class DirectMessageResponse(BaseModel):

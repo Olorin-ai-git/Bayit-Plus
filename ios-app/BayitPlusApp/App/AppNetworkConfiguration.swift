@@ -26,4 +26,12 @@ struct AppNetworkConfiguration: NetworkConfiguration {
             "X-Client-Version": Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0.0.0",
         ]
     }
+
+    // MARK: - WebSocket Configuration
+
+    var webSocketMaxConcurrentConnections: Int { appConfig.webSocketMaxConcurrentConnections }
+    var webSocketPingInterval: TimeInterval { appConfig.webSocketPingInterval }
+    var webSocketMaxReconnectAttempts: Int { appConfig.webSocketMaxReconnectAttempts }
+    var webSocketReconnectBaseDelay: TimeInterval { appConfig.webSocketReconnectBaseDelay }
+    var webSocketInactiveGracePeriod: TimeInterval { appConfig.webSocketInactiveGracePeriod }
 }

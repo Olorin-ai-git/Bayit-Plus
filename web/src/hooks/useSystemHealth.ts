@@ -1,10 +1,8 @@
 /**
- * useSystemHealth Hook
- * WebSocket connection and diagnostics data management
+ * useSystemHealth Hook - WebSocket connection and diagnostics data management
  */
-
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { getClients, getBackendServices, type ClientStatus, type ServiceHealth } from '../services/diagnosticsApi';
+import { getClients, getBackendServices, getAnalytics, type ClientStatus, type ServiceHealth } from '../services/diagnosticsApi';
 import { useAuthStore } from '../stores/authStore';
 import logger from '../utils/logger';
 
@@ -56,24 +54,26 @@ export function useSystemHealth(): UseSystemHealthReturn {
       setLoading(true);
       setError(null);
 
-      const [servicesData, clientsData] = await Promise.all([
+      const [servicesData, clientsData, analyticsData] = await Promise.all([
         getBackendServices(),
-        getClients()
+        getClients(),
+        getAnalytics('1h').catch(() => null)
       ]);
 
       setServices(servicesData ?? {});
       setClients(clientsData ?? {});
 
-      // Calculate metrics from client data
+      // Calculate metrics from client data and analytics
       const allClients = Object.values(clientsData ?? {}).flat();
       if (allClients.length > 0) {
         const avgCpu = allClients.reduce((sum, c) => sum + (c.metrics.cpu_usage || 0), 0) / allClients.length;
         const avgMemory = allClients.reduce((sum, c) => sum + (c.metrics.memory_usage || 0), 0) / allClients.length;
+        const diskUsage = analyticsData?.avg_metrics?.disk_usage ?? 0;
 
         setMetrics({
           cpu_usage: avgCpu,
           memory_usage: avgMemory,
-          disk_usage: 0, // TODO: Add disk usage tracking
+          disk_usage: diskUsage,
           active_requests: allClients.reduce((sum, c) => sum + c.metrics.active_users, 0)
         });
       }
@@ -115,18 +115,19 @@ export function useSystemHealth(): UseSystemHealthReturn {
             setServices(diagnosticsData.services ?? {});
             setClients(diagnosticsData.clients ?? {});
 
-            // Update metrics
+            // Update metrics from WS data; preserve existing disk_usage from analytics
             const allClients = Object.values(diagnosticsData.clients ?? {}).flat();
             if (allClients.length > 0) {
               const avgCpu = allClients.reduce((sum, c) => sum + (c.metrics.cpu_usage || 0), 0) / allClients.length;
               const avgMemory = allClients.reduce((sum, c) => sum + (c.metrics.memory_usage || 0), 0) / allClients.length;
+              const wsDiskUsage = (data.data as any)?.metrics?.disk_usage;
 
-              setMetrics({
+              setMetrics((prev) => ({
                 cpu_usage: avgCpu,
                 memory_usage: avgMemory,
-                disk_usage: 0,
+                disk_usage: wsDiskUsage ?? prev?.disk_usage ?? 0,
                 active_requests: allClients.reduce((sum, c) => sum + c.metrics.active_users, 0)
-              });
+              }));
             }
           } else if (data.type === 'pong') {
             log.debug('Received pong from server');
@@ -160,9 +161,6 @@ export function useSystemHealth(): UseSystemHealthReturn {
     }
   }, [token]);
 
-  /**
-   * Disconnect WebSocket
-   */
   const disconnectWebSocket = useCallback(() => {
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current);
@@ -177,9 +175,6 @@ export function useSystemHealth(): UseSystemHealthReturn {
     setIsLive(false);
   }, []);
 
-  /**
-   * Manual refresh
-   */
   const refresh = useCallback(async () => {
     await loadInitialData();
 
@@ -199,13 +194,5 @@ export function useSystemHealth(): UseSystemHealthReturn {
     };
   }, [loadInitialData, connectWebSocket, disconnectWebSocket]);
 
-  return {
-    services,
-    clients,
-    metrics,
-    loading,
-    error,
-    isLive,
-    refresh
-  };
+  return { services, clients, metrics, loading, error, isLive, refresh };
 }

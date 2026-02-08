@@ -3,9 +3,13 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from app.core.exceptions import FriendshipError
+from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.user import User
 from app.services.friendship_service import FriendshipService
+
+logger = get_logger(__name__)
 
 router = APIRouter(prefix="/friends", tags=["friends"])
 
@@ -36,8 +40,11 @@ async def send_friend_request(
             message=request.message,
         )
         return {"success": True, "request": friend_request.dict()}
-    except Exception as e:
+    except FriendshipError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("Send friend request failed", extra={"error": str(e), "user_id": str(user.id)})
+        raise HTTPException(status_code=400, detail="Failed to send friend request")
 
 
 @router.post("/request/accept")
@@ -50,8 +57,11 @@ async def accept_friend_request(
             request_id=request.request_id, user_id=str(user.id)
         )
         return {"success": True, "friendship": friendship.dict()}
-    except Exception as e:
+    except FriendshipError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("Accept friend request failed", extra={"error": str(e), "user_id": str(user.id)})
+        raise HTTPException(status_code=400, detail="Failed to accept friend request")
 
 
 @router.post("/request/reject")
@@ -64,8 +74,11 @@ async def reject_friend_request(
             request_id=request.request_id, user_id=str(user.id)
         )
         return {"success": True, "request": rejected.dict()}
-    except Exception as e:
+    except FriendshipError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("Reject friend request failed", extra={"error": str(e), "user_id": str(user.id)})
+        raise HTTPException(status_code=400, detail="Failed to reject friend request")
 
 
 @router.post("/request/cancel")
@@ -78,8 +91,11 @@ async def cancel_friend_request(
             request_id=request.request_id, user_id=str(user.id)
         )
         return {"success": True, "request": cancelled.dict()}
-    except Exception as e:
+    except FriendshipError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("Cancel friend request failed", extra={"error": str(e), "user_id": str(user.id)})
+        raise HTTPException(status_code=400, detail="Failed to cancel friend request")
 
 
 @router.delete("/{friend_id}")
@@ -88,8 +104,11 @@ async def remove_friend(friend_id: str, user: User = Depends(get_current_user)):
     try:
         await FriendshipService.remove_friend(str(user.id), friend_id)
         return {"success": True}
-    except Exception as e:
+    except FriendshipError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error("Remove friend failed", extra={"error": str(e), "user_id": str(user.id)})
+        raise HTTPException(status_code=400, detail="Failed to remove friend")
 
 
 @router.get("/list")

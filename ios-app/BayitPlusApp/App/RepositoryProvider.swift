@@ -36,8 +36,13 @@ final class RepositoryProvider {
     let reward: any RewardRepository
     let devicePairing: any DevicePairingRepository
     let widget: any WidgetRepository
+    let friends: any FriendsRepository
+    let watchParty: any WatchPartyRepository
+    let chess: any ChessRepository
+    let directMessages: any DirectMessageRepository
+    let authTokenProvider: AuthTokenProvider
 
-    init(client: APIClient) {
+    init(client: APIClient, webSocketManager: WebSocketManager, authTokenProvider: AuthTokenProvider) {
         self.content = APIContentRepository(client: client)
         self.liveTV = APILiveTVRepository(client: client)
         self.radio = APIRadioRepository(client: client)
@@ -67,5 +72,10 @@ final class RepositoryProvider {
         self.reward = APIRewardRepository(client: client)
         self.devicePairing = APIDevicePairingRepository(client: client)
         self.widget = APIWidgetRepository(client: client)
+        self.friends = APIFriendsRepository(client: client)
+        self.watchParty = APIWatchPartyRepository(client: client)
+        self.chess = APIChessRepository(client: client, webSocketManager: webSocketManager)
+        self.directMessages = APIDirectMessageRepository(client: client, webSocketManager: webSocketManager)
+        self.authTokenProvider = authTokenProvider
     }
 }

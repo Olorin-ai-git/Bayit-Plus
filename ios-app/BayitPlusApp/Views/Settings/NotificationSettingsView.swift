@@ -10,6 +10,10 @@ struct NotificationSettingsView: View {
     @State private var liveEvents = true
     @State private var recommendations = true
     @State private var appUpdates = true
+    @State private var directMessages = true
+    @State private var friendActivity = true
+    @State private var watchPartyInvitations = true
+    @State private var chessActivity = true
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -70,6 +74,30 @@ struct NotificationSettingsView: View {
                 title: localization.t("settings.appUpdates"),
                 subtitle: localization.t("settings.appUpdatesDescription"),
                 isOn: $appUpdates
+            )
+            notificationToggle(
+                icon: "message",
+                title: localization.t("settings.directMessages"),
+                subtitle: localization.t("settings.directMessagesDescription"),
+                isOn: $directMessages
+            )
+            notificationToggle(
+                icon: "person.2",
+                title: localization.t("settings.friendActivity"),
+                subtitle: localization.t("settings.friendActivityDescription"),
+                isOn: $friendActivity
+            )
+            notificationToggle(
+                icon: "party.popper",
+                title: localization.t("settings.watchPartyInvitations"),
+                subtitle: localization.t("settings.watchPartyInvitationsDescription"),
+                isOn: $watchPartyInvitations
+            )
+            notificationToggle(
+                icon: "crown",
+                title: localization.t("settings.chessActivity"),
+                subtitle: localization.t("settings.chessActivityDescription"),
+                isOn: $chessActivity
             )
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
