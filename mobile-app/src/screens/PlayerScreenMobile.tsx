@@ -155,22 +155,27 @@ export const PlayerScreenMobile: React.FC = () => {
     const fetchStreamUrl = async () => {
       try {
         setStreamLoading(true);
-        const response = await fetch(`${API_BASE_URL}/content/${id}/stream`);
+        const endpoint = type === 'live'
+          ? `${API_BASE_URL}/live/${id}/stream`
+          : `${API_BASE_URL}/content/${id}/stream`;
+        const response = await fetch(endpoint);
         if (response.ok) {
           const data = await response.json();
-          const url = data.url;
-          setStreamUrl(url);
-          setIsYouTube(isYouTubeUrl(url));
+          const url = data.stream_url || data.url;
+          if (url) {
+            setStreamUrl(url);
+            setIsYouTube(isYouTubeUrl(url));
+          } else {
+            moduleLogger.error("Stream response missing URL", { data });
+            setStreamUrl(null);
+          }
         } else {
-          // Fallback to direct stream endpoint
-          setStreamUrl(`${API_BASE_URL.replace("/api/v1", "")}/stream/${id}`);
-          setIsYouTube(false);
+          moduleLogger.error("Stream fetch failed", { status: response.status, endpoint });
+          setStreamUrl(null);
         }
       } catch (error) {
         moduleLogger.error("Failed to fetch stream URL:", error);
-        // Fallback
-        setStreamUrl(`${API_BASE_URL.replace("/api/v1", "")}/stream/${id}`);
-        setIsYouTube(false);
+        setStreamUrl(null);
       } finally {
         setStreamLoading(false);
       }
@@ -179,7 +184,7 @@ export const PlayerScreenMobile: React.FC = () => {
     if (id) {
       fetchStreamUrl();
     }
-  }, [id]);
+  }, [id, type]);
 
   // Fetch available subtitles
   useEffect(() => {
@@ -356,14 +361,10 @@ export const PlayerScreenMobile: React.FC = () => {
             // Disable caching for sensitive data
             cacheEnabled={false}
           />
-        ) : (
+        ) : streamUrl ? (
           <Video
             ref={videoRef}
-            source={{
-              uri:
-                streamUrl ||
-                `${API_BASE_URL.replace("/api/v1", "")}/stream/${id}`,
-            }}
+            source={{ uri: streamUrl }}
             className="absolute inset-0"
             resizeMode="contain"
             paused={!isPlaying}
@@ -377,6 +378,20 @@ export const PlayerScreenMobile: React.FC = () => {
                 : { type: "language", value: subtitles }
             }
           />
+        ) : (
+          <View className="absolute inset-0 justify-center items-center bg-black">
+            <Text style={{ color: colors.error }} className="text-base text-center px-8">
+              {t("errors.streamLoadFailed", "Failed to load stream. Please try again.")}
+            </Text>
+            <Pressable
+              onPress={() => navigation.goBack()}
+              className="mt-4 px-6 py-3 rounded-lg bg-white/10"
+            >
+              <Text style={{ color: colors.text }} className="text-base">
+                {t("common.goBack", "Go Back")}
+              </Text>
+            </Pressable>
+          </View>
         )}
 
         {/* Controls layer with integrated tap handling */}
