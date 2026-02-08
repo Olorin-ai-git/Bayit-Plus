@@ -27,7 +27,7 @@ struct VoiceAvatarFAB: View {
                     )
 
                 // Wizard hat icon
-                if let hatImage = UIImage(named: "wizard-hat") {
+                if let hatImage = loadWizardHat() {
                     Image(uiImage: hatImage)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
@@ -76,5 +76,20 @@ struct VoiceAvatarFAB: View {
         ) {
             bounceOffset = -5
         }
+    }
+
+    private func loadWizardHat() -> UIImage? {
+        // Try loading from bundle resources
+        if let path = Bundle.main.path(forResource: "wizard-hat", ofType: "png"),
+           let image = UIImage(contentsOfFile: path) {
+            return image
+        }
+
+        // Try loading from asset catalog
+        if let image = UIImage(named: "wizard-hat") {
+            return image
+        }
+
+        return nil
     }
 }
