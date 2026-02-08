@@ -72,7 +72,7 @@ struct MovieDetailView: View {
                 HStack(spacing: DesignTokens.Spacing.md) {
                     if let year = detail.year { metadataTag(String(year)) }
                     if let duration = detail.duration { metadataTag(duration) }
-                    if let rating = detail.rating { metadataTag(rating) }
+                    if let rating = detail.rating { metadataTag(rating.value) }
                     if let genre = detail.genre { metadataTag(genre) }
                 }
             }

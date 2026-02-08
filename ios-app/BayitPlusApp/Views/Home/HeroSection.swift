@@ -72,7 +72,7 @@ struct HeroSection: View {
                 }
 
                 if let rating = hero.rating {
-                    Text(rating)
+                    Text(rating.value)
                         .font(.system(size: DesignTokens.FontSize.xs, weight: .bold))
                         .foregroundColor(DesignTokens.Text.primary)
                         .padding(.horizontal, DesignTokens.Spacing.sm)

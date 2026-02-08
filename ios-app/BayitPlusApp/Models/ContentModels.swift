@@ -1,5 +1,23 @@
 import Foundation
 
+// MARK: - Flexible Rating
+
+/// Decodes a rating value that may arrive as a number (7.654) or string ("PG-13") from the API.
+struct FlexibleRating: Decodable, Sendable {
+    let value: String
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let doubleValue = try? container.decode(Double.self) {
+            value = String(format: "%.1f", doubleValue)
+        } else if let stringValue = try? container.decode(String.self) {
+            value = stringValue
+        } else {
+            value = ""
+        }
+    }
+}
+
 // MARK: - Featured / Home
 
 /// Response from GET /api/v1/content/featured
@@ -19,7 +37,7 @@ struct HeroContent: Decodable, Sendable, Identifiable {
     let category: String?
     let year: Int?
     let duration: String?
-    let rating: String?
+    let rating: FlexibleRating?
 }
 
 /// Spotlight carousel item
@@ -32,7 +50,7 @@ struct SpotlightItem: Decodable, Sendable, Identifiable {
     let category: String?
     let year: Int?
     let duration: String?
-    let rating: String?
+    let rating: FlexibleRating?
     let isSeries: Bool?
     let totalEpisodes: Int?
     let availableSubtitleLanguages: [String]?
@@ -98,7 +116,7 @@ struct ContentDetail: Decodable, Sendable, Identifiable {
     let category: String?
     let duration: String?
     let year: Int?
-    let rating: String?
+    let rating: FlexibleRating?
     let genre: String?
     let cast: [String]?
     let director: String?

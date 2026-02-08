@@ -25,7 +25,7 @@ struct SpotlightSection: View {
         var parts: [String] = []
         if let year = item.year { parts.append(String(year)) }
         if let duration = item.duration { parts.append(duration) }
-        if let rating = item.rating { parts.append(rating) }
+        if let rating = item.rating { parts.append(rating.value) }
         return parts.isEmpty ? nil : parts.joined(separator: " | ")
     }
 
