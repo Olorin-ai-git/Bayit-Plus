@@ -3687,6 +3687,53 @@
     },
     "loadingChannels": "Chargement des chaînes..."
   },
+  "forgotPasswordPage": {
+    "title": "Mot de passe oublie",
+    "subtitle": "Entrez votre adresse e-mail et nous vous enverrons un lien pour reinitialiser votre mot de passe.",
+    "email": "E-mail",
+    "emailPlaceholder": "Entrez votre adresse e-mail",
+    "submit": "Envoyer le lien",
+    "submitting": "Envoi...",
+    "backToLogin": "Retour a la connexion",
+    "successTitle": "Verifiez votre e-mail",
+    "successMessage": "Nous avons envoye un lien de reinitialisation a {{email}}.",
+    "successHint": "Vous n'avez pas recu l'e-mail ? Verifiez votre dossier spam ou reessayez dans quelques minutes.",
+    "errors": {
+      "emailRequired": "L'e-mail est obligatoire",
+      "requestFailed": "Echec de l'envoi du lien. Veuillez reessayer."
+    }
+  },
+  "resetPasswordPage": {
+    "title": "Reinitialiser le mot de passe",
+    "subtitle": "Entrez votre nouveau mot de passe ci-dessous.",
+    "newPassword": "Nouveau mot de passe",
+    "newPasswordPlaceholder": "Entrez le nouveau mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "confirmPasswordPlaceholder": "Saisissez a nouveau le mot de passe",
+    "submit": "Reinitialiser",
+    "submitting": "Reinitialisation...",
+    "backToLogin": "Retour a la connexion",
+    "requestNewLink": "Demander un nouveau lien",
+    "successTitle": "Mot de passe reinitialise",
+    "successMessage": "Votre mot de passe a ete mis a jour. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+    "signIn": "Se connecter",
+    "requirements": {
+      "title": "Exigences du mot de passe",
+      "minLength": "Au moins 8 caracteres",
+      "uppercase": "Une lettre majuscule",
+      "lowercase": "Une lettre minuscule",
+      "digit": "Un chiffre",
+      "special": "Un caractere special"
+    },
+    "errors": {
+      "invalidToken": "Ce lien a expire ou est invalide. Veuillez en demander un nouveau.",
+      "missingToken": "Lien de reinitialisation invalide ou manquant. Veuillez demander une nouvelle reinitialisation.",
+      "passwordRequired": "Le mot de passe est obligatoire",
+      "confirmRequired": "Veuillez confirmer votre mot de passe",
+      "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "resetFailed": "Echec de la reinitialisation. Veuillez reessayer."
+    }
+  },
   "login": {
     "title": "Bon retour",
     "subtitle": "Connectez-vous pour continuer sur Bayit+",

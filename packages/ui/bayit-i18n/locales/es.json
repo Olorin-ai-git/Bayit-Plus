@@ -4698,6 +4698,53 @@
     },
     "loadingChannels": "Cargando canales..."
   },
+  "forgotPasswordPage": {
+    "title": "Olvidaste tu contrasena",
+    "subtitle": "Ingresa tu correo electronico y te enviaremos un enlace para restablecer tu contrasena.",
+    "email": "Correo electronico",
+    "emailPlaceholder": "Ingresa tu correo electronico",
+    "submit": "Enviar enlace de restablecimiento",
+    "submitting": "Enviando...",
+    "backToLogin": "Volver al inicio de sesion",
+    "successTitle": "Revisa tu correo",
+    "successMessage": "Hemos enviado un enlace para restablecer tu contrasena a {{email}}.",
+    "successHint": "No recibiste el correo? Revisa tu carpeta de spam o intentalo de nuevo en unos minutos.",
+    "errors": {
+      "emailRequired": "El correo electronico es obligatorio",
+      "requestFailed": "No se pudo enviar el enlace. Intentalo de nuevo."
+    }
+  },
+  "resetPasswordPage": {
+    "title": "Restablecer contrasena",
+    "subtitle": "Ingresa tu nueva contrasena a continuacion.",
+    "newPassword": "Nueva contrasena",
+    "newPasswordPlaceholder": "Ingresa la nueva contrasena",
+    "confirmPassword": "Confirmar contrasena",
+    "confirmPasswordPlaceholder": "Vuelve a ingresar la contrasena",
+    "submit": "Restablecer contrasena",
+    "submitting": "Restableciendo...",
+    "backToLogin": "Volver al inicio de sesion",
+    "requestNewLink": "Solicitar un nuevo enlace",
+    "successTitle": "Contrasena restablecida exitosamente",
+    "successMessage": "Tu contrasena ha sido actualizada. Ahora puedes iniciar sesion con tu nueva contrasena.",
+    "signIn": "Iniciar sesion",
+    "requirements": {
+      "title": "Requisitos de contrasena",
+      "minLength": "Al menos 8 caracteres",
+      "uppercase": "Una letra mayuscula",
+      "lowercase": "Una letra minuscula",
+      "digit": "Un numero",
+      "special": "Un caracter especial"
+    },
+    "errors": {
+      "invalidToken": "Este enlace ha expirado o no es valido. Solicita uno nuevo.",
+      "missingToken": "Enlace de restablecimiento invalido o faltante. Solicita un nuevo restablecimiento.",
+      "passwordRequired": "La contrasena es obligatoria",
+      "confirmRequired": "Confirma tu contrasena",
+      "passwordMismatch": "Las contrasenas no coinciden",
+      "resetFailed": "No se pudo restablecer la contrasena. Intentalo de nuevo."
+    }
+  },
   "login": {
     "title": "Bienvenido de Nuevo",
     "subtitle": "Inicia sesión para continuar en Bayit+",

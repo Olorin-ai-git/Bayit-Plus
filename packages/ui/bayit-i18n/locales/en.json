@@ -4877,6 +4877,53 @@
     },
     "loadingChannels": "Loading channels..."
   },
+  "forgotPasswordPage": {
+    "title": "Forgot Password",
+    "subtitle": "Enter your email and we'll send you a link to reset your password.",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email address",
+    "submit": "Send Reset Link",
+    "submitting": "Sending...",
+    "backToLogin": "Back to Login",
+    "successTitle": "Check Your Email",
+    "successMessage": "We've sent a password reset link to {{email}}.",
+    "successHint": "Didn't receive the email? Check your spam folder or try again in a few minutes.",
+    "errors": {
+      "emailRequired": "Email is required",
+      "requestFailed": "Failed to send reset link. Please try again."
+    }
+  },
+  "resetPasswordPage": {
+    "title": "Reset Password",
+    "subtitle": "Enter your new password below.",
+    "newPassword": "New Password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter new password",
+    "submit": "Reset Password",
+    "submitting": "Resetting...",
+    "backToLogin": "Back to Login",
+    "requestNewLink": "Request a New Link",
+    "successTitle": "Password Reset Successfully",
+    "successMessage": "Your password has been updated. You can now sign in with your new password.",
+    "signIn": "Sign In",
+    "requirements": {
+      "title": "Password Requirements",
+      "minLength": "At least 8 characters",
+      "uppercase": "One uppercase letter",
+      "lowercase": "One lowercase letter",
+      "digit": "One number",
+      "special": "One special character"
+    },
+    "errors": {
+      "invalidToken": "This reset link has expired or is invalid. Please request a new one.",
+      "missingToken": "Invalid or missing reset link. Please request a new password reset.",
+      "passwordRequired": "Password is required",
+      "confirmRequired": "Please confirm your password",
+      "passwordMismatch": "Passwords do not match",
+      "resetFailed": "Failed to reset password. Please try again."
+    }
+  },
   "login": {
     "title": "Welcome Back",
     "subtitle": "Sign in to continue to Bayit+",

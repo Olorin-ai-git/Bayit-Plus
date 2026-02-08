@@ -28,7 +28,10 @@ struct HomeView: View {
         }
         .task {
             if viewModel == nil {
-                viewModel = HomeViewModel(repository: repos.content)
+                viewModel = HomeViewModel(
+                    repository: repos.content,
+                    liveTVRepository: repos.liveTV
+                )
             }
             await viewModel?.loadFeatured()
         }
@@ -44,6 +47,53 @@ struct HomeView: View {
             SpotlightSection(items: vm.spotlight, coordinator: coordinator)
         }
 
+        // Continue Watching (only if has items)
+        if !vm.continueWatching.isEmpty {
+            ContinueWatchingRow(items: vm.continueWatching, coordinator: coordinator)
+        }
+
+        // Live TV row
+        if !vm.liveChannels.isEmpty {
+            LiveTVRow(channels: vm.liveChannels, coordinator: coordinator)
+        }
+
+        // Location-based sections
+        if let israelisResponse = vm.israelisInCity,
+           let content = israelisResponse.content,
+           let newsArticles = content.newsArticles, !newsArticles.isEmpty {
+            let items = newsArticles + (content.communityEvents ?? [])
+            LocationContentRow(
+                title: "Israelis in Your City",
+                items: items,
+                coverage: israelisResponse.coverage
+            )
+        }
+
+        if let businessesResponse = vm.israeliBusinesses,
+           let content = businessesResponse.content,
+           let businesses = content.newsArticles, !businesses.isEmpty {
+            LocationContentRow(
+                title: "Israeli Businesses Near You",
+                items: businesses,
+                coverage: businessesResponse.coverage
+            )
+        }
+
+        // Trending content
+        if let trending = vm.trendingContent, !trending.items.isEmpty {
+            TrendingRow(items: trending.items, coordinator: coordinator)
+        }
+
+        // City-specific content
+        if let jerusalem = vm.jerusalemContent, !jerusalem.items.isEmpty {
+            CityContentRow(title: "Jerusalem", items: jerusalem.items)
+        }
+
+        if let telAviv = vm.telAvivContent, !telAviv.items.isEmpty {
+            CityContentRow(title: "Tel Aviv", items: telAviv.items)
+        }
+
+        // Category rows (movies, series, podcasts, audiobooks)
         ForEach(vm.categories) { category in
             CategoryRow(category: category, coordinator: coordinator)
         }

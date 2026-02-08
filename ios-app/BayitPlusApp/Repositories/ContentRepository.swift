@@ -44,6 +44,49 @@ protocol ContentRepository: Sendable {
         page: Int,
         limit: Int
     ) async throws -> SearchResponse
+
+    /// Fetch Israelis in a specific city (location-based content).
+    ///
+    /// - Parameters:
+    ///   - city: City name.
+    ///   - state: State code.
+    /// - Returns: Location-based content response with news and events.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchIsraelisInCity(city: String, state: String) async throws -> IsraelisInCityResponse
+
+    /// Fetch Israeli businesses in a specific city.
+    ///
+    /// - Parameters:
+    ///   - city: City name.
+    ///   - state: State code.
+    /// - Returns: Business content response.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchIsraeliBusinesses(city: String, state: String) async throws -> IsraeliBusinessesResponse
+
+    /// Fetch Tel Aviv specific content.
+    ///
+    /// - Returns: City content response for Tel Aviv.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchTelAvivContent() async throws -> CityContentResponse
+
+    /// Fetch Jerusalem specific content.
+    ///
+    /// - Returns: City content response for Jerusalem.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchJerusalemContent() async throws -> CityContentResponse
+
+    /// Fetch trending content for a culture.
+    ///
+    /// - Parameter cultureId: Culture ID (e.g., "israeli", "jewish").
+    /// - Returns: Trending content response.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchTrending(cultureId: String) async throws -> TrendingResponse
+
+    /// Fetch continue watching list for authenticated user.
+    ///
+    /// - Returns: Continue watching response with progress data.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchContinueWatching() async throws -> ContinueWatchingResponse
 }
 
 /// Production implementation of `ContentRepository` using `APIClient`.
@@ -115,6 +158,60 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
             body: EmptyBody(),
             queryItems: queryItems,
             as: SearchResponse.self
+        )
+    }
+
+    func fetchIsraelisInCity(city: String, state: String) async throws -> IsraelisInCityResponse {
+        let queryItems = [
+            URLQueryItem(name: "city", value: city),
+            URLQueryItem(name: "state", value: state)
+        ]
+
+        return try await client.get(
+            "/api/v1/content/israelis-in-city",
+            queryItems: queryItems,
+            as: IsraelisInCityResponse.self
+        )
+    }
+
+    func fetchIsraeliBusinesses(city: String, state: String) async throws -> IsraeliBusinessesResponse {
+        let queryItems = [
+            URLQueryItem(name: "city", value: city),
+            URLQueryItem(name: "state", value: state)
+        ]
+
+        return try await client.get(
+            "/api/v1/content/israeli-businesses-in-city",
+            queryItems: queryItems,
+            as: IsraeliBusinessesResponse.self
+        )
+    }
+
+    func fetchTelAvivContent() async throws -> CityContentResponse {
+        return try await client.get(
+            "/api/v1/tel-aviv/content",
+            as: CityContentResponse.self
+        )
+    }
+
+    func fetchJerusalemContent() async throws -> CityContentResponse {
+        return try await client.get(
+            "/api/v1/jerusalem/content",
+            as: CityContentResponse.self
+        )
+    }
+
+    func fetchTrending(cultureId: String) async throws -> TrendingResponse {
+        return try await client.get(
+            "/api/v1/cultures/\(cultureId)/trending",
+            as: TrendingResponse.self
+        )
+    }
+
+    func fetchContinueWatching() async throws -> ContinueWatchingResponse {
+        return try await client.get(
+            "/api/v1/history/continue",
+            as: ContinueWatchingResponse.self
         )
     }
 }

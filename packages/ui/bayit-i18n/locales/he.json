@@ -4837,6 +4837,53 @@
     },
     "loadingChannels": "טוען ערוצים..."
   },
+  "forgotPasswordPage": {
+    "title": "שכחתי סיסמה",
+    "subtitle": "הזינו את כתובת האימייל שלכם ונשלח לכם קישור לאיפוס הסיסמה.",
+    "email": "אימייל",
+    "emailPlaceholder": "הזינו את כתובת האימייל",
+    "submit": "שליחת קישור איפוס",
+    "submitting": "שולח...",
+    "backToLogin": "חזרה להתחברות",
+    "successTitle": "בדקו את האימייל",
+    "successMessage": "שלחנו קישור לאיפוס סיסמה אל {{email}}.",
+    "successHint": "לא קיבלתם את האימייל? בדקו בתיקיית הספאם או נסו שוב בעוד מספר דקות.",
+    "errors": {
+      "emailRequired": "נדרש אימייל",
+      "requestFailed": "שליחת הקישור נכשלה. אנא נסו שוב."
+    }
+  },
+  "resetPasswordPage": {
+    "title": "איפוס סיסמה",
+    "subtitle": "הזינו את הסיסמה החדשה שלכם.",
+    "newPassword": "סיסמה חדשה",
+    "newPasswordPlaceholder": "הזינו סיסמה חדשה",
+    "confirmPassword": "אימות סיסמה",
+    "confirmPasswordPlaceholder": "הזינו שוב את הסיסמה",
+    "submit": "איפוס סיסמה",
+    "submitting": "מאפס...",
+    "backToLogin": "חזרה להתחברות",
+    "requestNewLink": "בקשת קישור חדש",
+    "successTitle": "הסיסמה אופסה בהצלחה",
+    "successMessage": "הסיסמה שלכם עודכנה. כעת תוכלו להתחבר עם הסיסמה החדשה.",
+    "signIn": "התחברות",
+    "requirements": {
+      "title": "דרישות סיסמה",
+      "minLength": "לפחות 8 תווים",
+      "uppercase": "אות גדולה אחת",
+      "lowercase": "אות קטנה אחת",
+      "digit": "ספרה אחת",
+      "special": "תו מיוחד אחד"
+    },
+    "errors": {
+      "invalidToken": "קישור האיפוס פג תוקף או אינו תקין. אנא בקשו קישור חדש.",
+      "missingToken": "קישור איפוס חסר או לא תקין. אנא בקשו איפוס סיסמה חדש.",
+      "passwordRequired": "נדרשת סיסמה",
+      "confirmRequired": "אנא אשרו את הסיסמה",
+      "passwordMismatch": "הסיסמאות אינן תואמות",
+      "resetFailed": "איפוס הסיסמה נכשל. אנא נסו שוב."
+    }
+  },
   "login": {
     "title": "ברוך שובך",
     "subtitle": "התחבר כדי להמשיך ל-Bayit+",
