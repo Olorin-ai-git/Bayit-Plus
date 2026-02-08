@@ -261,7 +261,9 @@ const apiAuthService = {
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),
   updateProfile: (updates) => api.patch('/auth/profile', updates),
-  resetPassword: (email) => api.post('/auth/reset-password', { email }),
+  requestPasswordReset: (email) => api.post('/auth/password-reset/request', { email }),
+  confirmPasswordReset: (token, newPassword) =>
+    api.post('/auth/password-reset/confirm', { token, new_password: newPassword }),
   refreshToken: (refreshToken) => api.post('/auth/refresh', { refresh_token: refreshToken }),
   getGoogleAuthUrl: async (redirectUri) => {
     const response = await api.get('/auth/google/url', { params: { redirect_uri: redirectUri } });

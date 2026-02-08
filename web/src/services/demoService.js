@@ -56,9 +56,13 @@ export const demoAuthService = {
     await delay();
     return { ...demoUser, ...updates };
   },
-  resetPassword: async (email) => {
+  requestPasswordReset: async (email) => {
     await delay();
-    return { message: 'Password reset email sent' };
+    return { message: 'If your email is registered, you will receive a password reset link shortly.' };
+  },
+  confirmPasswordReset: async (token, newPassword) => {
+    await delay();
+    return { message: 'Password has been reset successfully.' };
   },
   getGoogleAuthUrl: async () => {
     await delay();
