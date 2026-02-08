@@ -9,16 +9,23 @@ struct HeroSection: View {
         ZStack(alignment: .bottomLeading) {
             heroImage
 
+            // Stronger gradient for better text readability
             LinearGradient(
-                colors: [.clear, DesignTokens.Background.primary],
-                startPoint: .center,
+                colors: [
+                    .clear,
+                    DesignTokens.Background.primary.opacity(0.3),
+                    DesignTokens.Background.primary.opacity(0.8),
+                    DesignTokens.Background.primary
+                ],
+                startPoint: .top,
                 endPoint: .bottom
             )
 
             heroMetadata
-                .padding(DesignTokens.Spacing.xl)
+                .padding(.horizontal, DesignTokens.Spacing.lg)
+                .padding(.bottom, DesignTokens.Spacing.lg)
         }
-        .frame(height: 400)
+        .frame(height: 320)  // Reduced from 400 for better mobile UX
         .clipped()
     }
 
@@ -50,44 +57,53 @@ struct HeroSection: View {
     }
 
     private var heroMetadata: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
             if let title = hero.title {
                 Text(title)
-                    .font(.system(size: DesignTokens.FontSize.hero, weight: .bold))
+                    .font(.system(size: 28, weight: .bold))  // Smaller than hero size for mobile
                     .foregroundColor(DesignTokens.Text.primary)
                     .lineLimit(2)
+                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
             }
 
-            HStack(spacing: DesignTokens.Spacing.md) {
+            HStack(spacing: DesignTokens.Spacing.sm) {
                 if let year = hero.year {
-                    Text(String(year))
-                        .font(.system(size: DesignTokens.FontSize.sm))
-                        .foregroundColor(DesignTokens.Text.secondary)
+                    metadataText(String(year))
                 }
 
                 if let duration = hero.duration {
-                    Text(duration)
-                        .font(.system(size: DesignTokens.FontSize.sm))
-                        .foregroundColor(DesignTokens.Text.secondary)
+                    metadataText(duration)
                 }
 
                 if let rating = hero.rating {
-                    Text(rating.value)
-                        .font(.system(size: DesignTokens.FontSize.xs, weight: .bold))
-                        .foregroundColor(DesignTokens.Text.primary)
-                        .padding(.horizontal, DesignTokens.Spacing.sm)
-                        .padding(.vertical, 2)
-                        .background(DesignTokens.Glass.bgMedium)
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                    ratingBadge(rating.value)
                 }
             }
 
             if let description = hero.description {
                 Text(description)
                     .font(.system(size: DesignTokens.FontSize.sm))
-                    .foregroundColor(DesignTokens.Text.muted)
-                    .lineLimit(2)
+                    .foregroundColor(DesignTokens.Text.secondary)
+                    .lineLimit(3)
+                    .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
             }
         }
+    }
+
+    private func metadataText(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: DesignTokens.FontSize.sm))
+            .foregroundColor(DesignTokens.Text.secondary)
+            .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
+    }
+
+    private func ratingBadge(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: DesignTokens.FontSize.xs, weight: .semibold))
+            .foregroundColor(DesignTokens.Text.primary)
+            .padding(.horizontal, DesignTokens.Spacing.sm)
+            .padding(.vertical, 3)
+            .background(DesignTokens.Glass.bgStrong)
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
     }
 }
