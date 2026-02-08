@@ -9,7 +9,7 @@ struct LiveTVView: View {
 
     private let columns = [
         GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
-        GridItem(.flexible(), spacing: DesignTokens.Spacing.md)
+        GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
     ]
 
     var body: some View {
@@ -51,6 +51,7 @@ struct LiveTVView: View {
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.top, DesignTokens.Spacing.md)
+        .padding(.bottom, DesignTokens.Spacing.xxxxl)
     }
 
     private var loadingGrid: some View {
@@ -73,45 +74,40 @@ private struct ChannelCard: View {
 
     var body: some View {
         Button(action: onTap) {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-                ZStack(alignment: .topTrailing) {
-                    thumbnailImage
-                        .aspectRatio(16 / 9, contentMode: .fill)
-                        .clipped()
-
-                    GlassBadge(text: "LIVE", variant: .live)
-                        .padding(DesignTokens.Spacing.sm)
-                }
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(channel.name ?? "Channel")
-                        .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
-                        .foregroundColor(DesignTokens.Text.primary)
-                        .lineLimit(1)
-
-                    if let show = channel.currentShow {
-                        Text(show)
-                            .font(.system(size: DesignTokens.FontSize.xs))
-                            .foregroundColor(DesignTokens.Text.muted)
-                            .lineLimit(1)
-                    }
-                }
-                .padding(.horizontal, DesignTokens.Spacing.sm)
-                .padding(.bottom, DesignTokens.Spacing.sm)
+            VStack(alignment: .leading, spacing: 0) {
+                logoArea
+                channelInfo
             }
             .glassCard()
         }
         .buttonStyle(.plain)
     }
 
-    private var thumbnailImage: some View {
+    private var logoArea: some View {
+        ZStack(alignment: .topTrailing) {
+            GeometryReader { geo in
+                channelLogo
+                    .frame(width: geo.size.width, height: geo.size.height)
+            }
+            .aspectRatio(16 / 9, contentMode: .fit)
+            .clipped()
+
+            GlassBadge(text: "LIVE", variant: .live)
+                .padding(DesignTokens.Spacing.sm)
+        }
+    }
+
+    private var channelLogo: some View {
         Group {
             if let urlStr = channel.logo ?? channel.thumbnail,
                let url = URL(string: urlStr) {
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .success(let img):
-                        img.resizable().aspectRatio(contentMode: .fill)
+                        img.resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .padding(DesignTokens.Spacing.md)
                     default:
                         channelPlaceholder
                     }
@@ -120,6 +116,7 @@ private struct ChannelCard: View {
                 channelPlaceholder
             }
         }
+        .background(DesignTokens.Glass.bgMedium)
     }
 
     private var channelPlaceholder: some View {
@@ -129,5 +126,24 @@ private struct ChannelCard: View {
                 .font(.system(size: 32))
                 .foregroundColor(DesignTokens.Text.muted)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private var channelInfo: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(channel.name ?? "Channel")
+                .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                .foregroundColor(DesignTokens.Text.primary)
+                .lineLimit(1)
+
+            if let show = channel.currentShow {
+                Text(show)
+                    .font(.system(size: DesignTokens.FontSize.xs))
+                    .foregroundColor(DesignTokens.Text.muted)
+                    .lineLimit(1)
+            }
+        }
+        .padding(.horizontal, DesignTokens.Spacing.sm)
+        .padding(.vertical, DesignTokens.Spacing.sm)
     }
 }
