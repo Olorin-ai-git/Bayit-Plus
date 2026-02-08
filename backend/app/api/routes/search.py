@@ -17,10 +17,13 @@ import logging
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 
-from app.core.security import get_optional_user
+from app.core.security import get_current_admin_user, get_optional_user
 from app.models.search_analytics import SearchQuery
 from app.models.user import User
+from app.services.search_cache import get_cache
 from app.services.unified_search_service import (SearchFilters, SearchResults,
                                                  UnifiedSearchService)
 
@@ -53,6 +56,7 @@ async def unified_search_endpoint(
     search_in_subtitles: bool = Query(False, description="Enable subtitle text search"),
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(20, ge=1, le=50, description="Results per page"),
+    no_cache: bool = Query(False, description="Bypass search cache"),
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
@@ -99,6 +103,7 @@ async def unified_search_endpoint(
                 current_user.subscription_tier if current_user else None
             ),
             is_beta_user=is_beta_user,
+            no_cache=no_cache,
         )
 
         # Log search analytics
@@ -117,7 +122,10 @@ async def unified_search_endpoint(
             platform=None,  # Could be extracted from User-Agent header
         )
 
-        return results
+        return JSONResponse(
+            content=jsonable_encoder(results),
+            headers={"Cache-Control": "no-store"},
+        )
 
     except Exception as e:
         logger.error(f"Unified search failed: {e}", exc_info=True)
@@ -196,3 +204,18 @@ async def get_filter_options():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get filter options: {str(e)}",
         )
+
+
+@router.delete("/cache", status_code=status.HTTP_200_OK)
+async def clear_search_cache(
+    current_user: User = Depends(get_current_admin_user),
+):
+    """Clear the in-memory search cache. Admin only."""
+    cache = get_cache()
+    stats = cache.get_stats()
+    cache.invalidate()
+    logger.info(
+        "Search cache cleared by admin",
+        extra={"admin_id": str(current_user.id), "entries_cleared": stats["total_entries"]},
+    )
+    return {"cleared": stats["total_entries"]}

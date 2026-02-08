@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, ActivityIndicator, Pressable, useWindowDimensions, StyleSheet } from 'react-native'
+import { View, Text, ActivityIndicator, Pressable, StyleSheet } from 'react-native'
+import { useResponsive } from '@/hooks/useResponsive'
 import { Outlet, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { Menu } from 'lucide-react'
@@ -15,8 +16,7 @@ const SIDEBAR_MAX_WIDTH = 400
 export default function AdminLayout() {
   const { isAuthenticated, isLoading, isAdmin } = useAuthStore()
   const { t, i18n } = useTranslation()
-  const { width } = useWindowDimensions()
-  const isMobile = width < 768
+  const { isMobile } = useResponsive()
   const isRTL = i18n.language === 'he' || i18n.language === 'ar'
 
   const [sidebarOpen, setSidebarOpen] = useState(!isMobile)

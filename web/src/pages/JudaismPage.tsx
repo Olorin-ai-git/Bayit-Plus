@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, Image, ActivityIndicator, ScrollView, useWindowDimensions, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Image, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
 import { Link } from 'react-router-dom';
 import { Play, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -209,7 +210,7 @@ export default function JudaismPage() {
   const [content, setContent] = useState<JudaismItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { width } = useWindowDimensions();
+  const { width } = useResponsive();
 
   const numColumns = width >= 1280 ? 5 : width >= 1024 ? 4 : width >= 768 ? 3 : 2;
 

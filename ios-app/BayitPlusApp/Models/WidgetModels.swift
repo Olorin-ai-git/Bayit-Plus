@@ -99,6 +99,8 @@ struct WidgetItem: Decodable, Sendable, Identifiable {
     let position: WidgetPosition?
     let content: WidgetContent?
     let isVisible: Bool?
+    let isMinimized: Bool?
+    let coverUrl: String?
     let createdAt: String?
     let updatedAt: String?
 }

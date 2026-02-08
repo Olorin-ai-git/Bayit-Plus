@@ -516,6 +516,7 @@ class Settings(BaseSettings):
     GOOGLE_REDIRECT_URI: str = (
         ""  # Required if using Google OAuth, no localhost defaults
     )
+    GOOGLE_IOS_CLIENT_ID: str = ""  # iOS Google Sign-In SDK client ID
 
     # Audible OAuth Integration (optional - enables audiobook syncing for premium users)
     # Obtain credentials from https://developer.amazon.com/
@@ -1014,6 +1015,8 @@ class Settings(BaseSettings):
     SEARCH_SUBTITLE_RESULT_LIMIT: int = 50  # Max subtitle search results
     SEARCH_DEFAULT_PAGE_SIZE: int = 20  # Default results per page
     SEARCH_MAX_PAGE_SIZE: int = 50  # Maximum results per page
+    SEARCH_MIN_TEXT_SCORE: float = 5.0  # Minimum text relevance score to include in results
+    SEARCH_TITLE_BOOST_THRESHOLD: float = 8.0  # Score threshold for title-quality matches
 
     # Chat Translation Configuration
     CHAT_TRANSLATION_ENABLED: bool = True

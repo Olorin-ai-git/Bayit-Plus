@@ -22,6 +22,7 @@ final class ProactiveSuggestionEngine {
     private var evaluationTask: Task<Void, Never>?
     private let minimumInterval: TimeInterval
     private let calendar = Calendar.current
+    private var dismissedTypes: Set<SuggestionType> = []
 
     // MARK: - Init
 
@@ -60,6 +61,10 @@ final class ProactiveSuggestionEngine {
 
     @MainActor
     func dismissSuggestion() {
+        if let type = currentSuggestion?.type {
+            dismissedTypes.insert(type)
+        }
+        lastSuggestionDate = Date()
         currentSuggestion = nil
         logger.info("Suggestion dismissed by user")
     }
@@ -104,11 +109,16 @@ final class ProactiveSuggestionEngine {
         let hour = calendar.component(.hour, from: Date())
         let weekday = calendar.component(.weekday, from: Date())
 
-        if let timeSuggestion = timeBasedSuggestion(hour: hour, weekday: weekday) {
+        if !dismissedTypes.contains(.timeBased),
+           let timeSuggestion = timeBasedSuggestion(hour: hour, weekday: weekday) {
             return timeSuggestion
         }
 
-        return contextBasedSuggestion()
+        if !dismissedTypes.contains(.contextBased) {
+            return contextBasedSuggestion()
+        }
+
+        return nil
     }
 
     private func timeBasedSuggestion(hour: Int, weekday: Int) -> ProactiveSuggestion? {

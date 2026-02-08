@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, Pressable, Image, ActivityIndicator, useWindowDimensions, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, ActivityIndicator, StyleSheet } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
 import { Link } from 'react-router-dom';
 import { Download, Play, Trash2, HardDrive } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -138,7 +139,7 @@ export default function DownloadsPage() {
   const [downloads, setDownloads] = useState<DownloadItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [storageInfo, setStorageInfo] = useState({ used: 0, total: 32 });
-  const { width } = useWindowDimensions();
+  const { width } = useResponsive();
 
   // Localized pause text
   const pausedText = t('downloads.paused');

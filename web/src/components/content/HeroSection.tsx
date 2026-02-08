@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, Image, Pressable, useWindowDimensions, Platform } from 'react-native'
+import { View, Text, StyleSheet, Image, Pressable, Platform } from 'react-native'
+import { useResponsive } from '@/hooks/useResponsive'
 import { Link } from 'react-router-dom'
 import { Play, Info, Plus } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
@@ -24,7 +25,7 @@ interface HeroSectionProps {
 
 export default function HeroSection({ content }: HeroSectionProps) {
   const { t } = useTranslation()
-  const { height: windowHeight } = useWindowDimensions()
+  const { height: windowHeight } = useResponsive()
   const openPlayer = useFullscreenPlayerStore((state) => state.openPlayer)
 
   const handlePlay = () => {

@@ -8,27 +8,17 @@ struct PlaylistView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: PlaylistViewModel?
+    @State private var isEditing = false
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            if let vm = viewModel {
-                if vm.isLoading && vm.items.isEmpty {
-                    loadingList
-                } else if let error = vm.error, vm.items.isEmpty {
-                    ErrorStateView(message: error) {
-                        Task { await viewModel?.load() }
-                    }
-                } else if vm.items.isEmpty {
-                    emptyState
-                } else {
-                    contentList(vm)
-                }
+        VStack(spacing: 0) {
+            if let vm = viewModel, !vm.items.isEmpty {
+                headerBar(vm)
             }
+
+            contentBody
         }
         .background(DesignTokens.Background.primary)
-        .refreshable {
-            await viewModel?.load()
-        }
         .task {
             if viewModel == nil {
                 viewModel = PlaylistViewModel(repository: repos.user)
@@ -37,60 +27,133 @@ struct PlaylistView: View {
         }
     }
 
-    private func contentList(_ vm: PlaylistViewModel) -> some View {
-        LazyVStack(spacing: DesignTokens.Spacing.sm) {
-            ForEach(vm.items) { item in
-                playlistRow(item, vm: vm)
+    @ViewBuilder
+    private var contentBody: some View {
+        if let vm = viewModel {
+            if vm.isLoading && vm.items.isEmpty {
+                ScrollView { loadingList }
+            } else if let error = vm.error, vm.items.isEmpty {
+                ScrollView {
+                    ErrorStateView(message: error) {
+                        Task { await viewModel?.load() }
+                    }
+                }
+            } else if vm.items.isEmpty {
+                ScrollView { emptyState }
+            } else {
+                playlistList(vm)
+            }
+        }
+    }
+
+    private func headerBar(_ vm: PlaylistViewModel) -> some View {
+        HStack(spacing: DesignTokens.Spacing.md) {
+            GlassButton(
+                localization.t("playlist.playAll"),
+                variant: .primary,
+                size: .small,
+                icon: Image(systemName: "play.fill")
+            ) {
+                if let first = vm.items.first {
+                    coordinator.pushToCurrentTab(
+                        .movieDetail(movieId: first.contentId)
+                    )
+                }
+            }
+
+            Spacer()
+
+            GlassButton(
+                localization.t("playlist.clear"),
+                variant: .destructive,
+                size: .small,
+                icon: Image(systemName: "trash")
+            ) {
+                Task { await vm.clearAll() }
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
-        .padding(.vertical, DesignTokens.Spacing.md)
+        .padding(.vertical, DesignTokens.Spacing.sm)
     }
 
-    private func playlistRow(_ item: PlaylistItem, vm: PlaylistViewModel) -> some View {
-        GlassCard {
-            Button {
-                coordinator.pushToCurrentTab(
-                    .movieDetail(movieId: item.contentId)
-                )
-            } label: {
-                HStack(spacing: DesignTokens.Spacing.md) {
-                    thumbnailView(item.thumbnail)
-
-                    VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-                        Text(item.title ?? "")
-                            .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
-                            .foregroundColor(DesignTokens.Text.primary)
-                            .lineLimit(2)
-
-                        if let duration = item.duration {
-                            Text(duration)
-                                .font(.system(size: DesignTokens.FontSize.sm))
-                                .foregroundColor(DesignTokens.Text.secondary)
+    private func playlistList(_ vm: PlaylistViewModel) -> some View {
+        List {
+            ForEach(vm.items) { item in
+                playlistRow(item, vm: vm)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(
+                        top: DesignTokens.Spacing.xs,
+                        leading: DesignTokens.Spacing.lg,
+                        bottom: DesignTokens.Spacing.xs,
+                        trailing: DesignTokens.Spacing.lg
+                    ))
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            Task {
+                                await vm.removeItem(
+                                    contentId: item.contentId
+                                )
+                            }
+                        } label: {
+                            Label(
+                                localization.t("playlist.removeItem"),
+                                systemImage: "trash"
+                            )
                         }
                     }
-
-                    Spacer()
-
-                    Image(systemName: "line.3.horizontal")
-                        .foregroundColor(DesignTokens.Text.muted)
-                }
-                .padding(DesignTokens.Spacing.md)
+            }
+            .onMove { source, destination in
+                vm.moveItem(from: source, to: destination)
             }
         }
-        .contextMenu {
-            Button(role: .destructive) {
-                Task {
-                    await vm.removeItem(
-                        contentId: item.contentId
-                    )
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .environment(\.editMode, .constant(.active))
+        .refreshable {
+            await viewModel?.load()
+        }
+    }
+
+    private func playlistRow(
+        _ item: PlaylistItem,
+        vm: PlaylistViewModel
+    ) -> some View {
+        Button {
+            coordinator.pushToCurrentTab(
+                .movieDetail(movieId: item.contentId)
+            )
+        } label: {
+            HStack(spacing: DesignTokens.Spacing.md) {
+                thumbnailView(item.thumbnail)
+
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
+                    Text(item.title ?? "")
+                        .font(.system(
+                            size: DesignTokens.FontSize.md,
+                            weight: .medium
+                        ))
+                        .foregroundColor(DesignTokens.Text.primary)
+                        .lineLimit(2)
+
+                    if let duration = item.duration {
+                        Text(duration)
+                            .font(.system(size: DesignTokens.FontSize.sm))
+                            .foregroundColor(DesignTokens.Text.secondary)
+                    }
                 }
-            } label: {
-                Label(
-                    localization.t("playlist.remove"),
-                    systemImage: "trash"
-                )
+
+                Spacer()
             }
+            .padding(DesignTokens.Spacing.md)
+            .background(DesignTokens.Glass.bg)
+            .clipShape(
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                    .stroke(DesignTokens.Glass.border, lineWidth: 1)
+            )
         }
     }
 

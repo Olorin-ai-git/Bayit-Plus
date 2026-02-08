@@ -6,7 +6,8 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Search, X, TrendingUp, Sparkles } from 'lucide-react';
@@ -52,7 +53,7 @@ export default function SearchPage() {
   const { t, i18n } = useTranslation();
   const { isRTL, textAlign } = useDirection();
   const navigate = useNavigate();
-  const { width } = useWindowDimensions();
+  const { width } = useResponsive();
   const [searchParams, setSearchParams] = useSearchParams();
   const isPremium = useAuthStore((state) => state.isPremium());
 
@@ -85,24 +86,17 @@ export default function SearchPage() {
     setIsInitialLoad(false);
   }, []);
 
-  // Perform search
+  // Perform search (empty query returns all content)
   const performSearch = useCallback(async (searchQuery: string) => {
-    if (!searchQuery.trim()) {
-      setResults([]);
-      return;
-    }
-
     setLoading(true);
 
     try {
       // Build filters based on content type
       const filters: any = {};
       if (contentType === 'all') {
-        // Include all content types when "All" is selected
         filters.content_types = ['vod', 'live', 'radio', 'podcast'];
       } else if (contentType === 'vod') {
         filters.content_types = ['vod'];
-        // Don't filter by is_series - include both movies and series
       } else if (contentType === 'live') {
         filters.content_types = ['live'];
       } else if (contentType === 'radio') {
@@ -113,15 +107,13 @@ export default function SearchPage() {
 
       // Call appropriate search API based on semantic mode
       let response;
-      if (semanticMode && isPremium) {
-        // Use LLM semantic search for premium users
+      if (semanticMode && isPremium && searchQuery.trim()) {
         response = await contentService.searchLLM({
           query: searchQuery,
           filters,
           limit: 50,
         });
       } else {
-        // Use standard search
         response = await contentService.search({
           query: searchQuery,
           ...filters,
@@ -132,15 +124,17 @@ export default function SearchPage() {
 
       setResults(response.results || []);
 
-      // Save to recent searches using functional update to avoid dependency
-      setRecentSearches(prevRecent => {
-        const updatedRecent = [
-          searchQuery,
-          ...prevRecent.filter(s => s !== searchQuery)
-        ].slice(0, 5);
-        localStorage.setItem('recentSearches', JSON.stringify(updatedRecent));
-        return updatedRecent;
-      });
+      // Save to recent searches only for actual queries
+      if (searchQuery.trim()) {
+        setRecentSearches(prevRecent => {
+          const updatedRecent = [
+            searchQuery,
+            ...prevRecent.filter(s => s !== searchQuery)
+          ].slice(0, 5);
+          localStorage.setItem('recentSearches', JSON.stringify(updatedRecent));
+          return updatedRecent;
+        });
+      }
 
       logger.info('Search completed', 'SearchPage', {
         query: searchQuery,
@@ -159,16 +153,13 @@ export default function SearchPage() {
     if (isInitialLoad) return;
 
     const timer = setTimeout(() => {
+      performSearch(query);
       if (query.trim()) {
-        performSearch(query);
-        // Update URL
         searchParams.set('q', query);
-        setSearchParams(searchParams, { replace: true });
       } else {
-        setResults([]);
         searchParams.delete('q');
-        setSearchParams(searchParams, { replace: true });
       }
+      setSearchParams(searchParams, { replace: true });
     }, 300);
 
     return () => clearTimeout(timer);
@@ -307,8 +298,8 @@ export default function SearchPage() {
           />
         </ScrollView>
 
-        {/* Trending Searches - Hidden on mobile */}
-        {!isMobile && query.trim().length === 0 && (
+        {/* Trending Searches - shown when no query, not loading, on desktop */}
+        {!isMobile && !query.trim() && !loading && results.length > 0 && (
           <View style={styles.trendingSection}>
             <View style={styles.trendingHeader}>
               <TrendingUp size={16} color={colors.primary.DEFAULT} />
@@ -330,62 +321,67 @@ export default function SearchPage() {
           </View>
         )}
 
-        {/* Search Results Section - Always visible when query exists */}
-        {query.trim().length > 0 && (
-          <View style={styles.resultsSection}>
-            {/* Results Header */}
-            <View style={styles.resultsHeader}>
-              <Search size={20} color={colors.primary.DEFAULT} />
-              <Text style={styles.resultsTitle}>
-                {t('search.resultsTitle', 'Search Results')}
+        {/* Search Results Section - Always visible */}
+        <View style={styles.resultsSection}>
+          {/* Results Header */}
+          <View style={styles.resultsHeader}>
+            <Search size={20} color={colors.primary.DEFAULT} />
+            <Text style={styles.resultsTitle}>
+              {query.trim()
+                ? t('search.resultsTitle', 'Search Results')
+                : t('search.browseAll', 'Browse All')}
+            </Text>
+          </View>
+
+          {loading ? (
+            <View style={styles.loadingContainer}>
+              <GlassLoadingSpinner size={64} />
+              <Text style={styles.loadingText}>
+                {t('search.searching', 'Searching...')}
               </Text>
             </View>
-
-            {loading ? (
-              // Loading
-              <View style={styles.loadingContainer}>
-                <GlassLoadingSpinner size={64} />
-                <Text style={styles.loadingText}>
-                  {t('search.searching', 'Searching...')}
-                </Text>
-              </View>
-            ) : results.length === 0 ? (
-              // No Results
-              <GlassCard style={styles.emptyCard}>
-                <NativeIcon name="search" size="xl" color={colors.textMuted} />
-                <Text style={styles.emptyTitle}>
-                  {t('search.noResults', 'No results found')}
-                </Text>
+          ) : results.length === 0 ? (
+            <GlassCard style={styles.emptyCard}>
+              <NativeIcon name="search" size="xl" color={colors.textMuted} />
+              <Text style={styles.emptyTitle}>
+                {query.trim()
+                  ? t('search.noResults', 'No results found')
+                  : t('search.noContent', 'No content available')}
+              </Text>
+              {query.trim() && (
                 <Text style={styles.emptyText}>
                   {t('search.tryDifferent', 'Try different search terms')}
                 </Text>
-              </GlassCard>
-            ) : (
-              // Results Grid
-              <>
-                <Text style={styles.resultsCount}>
-                  {t('search.resultsFound', '{{count}} results found for "{{query}}"', {
-                    count: results.length,
-                    query: query,
-                  })}
-                </Text>
+              )}
+            </GlassCard>
+          ) : (
+            <>
+              <Text style={styles.resultsCount}>
+                {query.trim()
+                  ? t('search.resultsFound', '{{count}} results found for "{{query}}"', {
+                      count: results.length,
+                      query: query,
+                    })
+                  : t('search.totalContent', '{{count}} items', {
+                      count: results.length,
+                    })}
+              </Text>
 
-                <View style={styles.resultsGrid}>
-                  {results.map((result, index) => (
-                    <View
-                      key={result.id}
-                      style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}
-                    >
-                      <Pressable onPress={() => handleResultClick(result)}>
-                        <ContentCard content={result} />
-                      </Pressable>
-                    </View>
-                  ))}
-                </View>
-              </>
-            )}
-          </View>
-        )}
+              <View style={styles.resultsGrid}>
+                {results.map((result, index) => (
+                  <View
+                    key={result.id}
+                    style={{ width: `${100 / numColumns}%`, padding: spacing.xs }}
+                  >
+                    <Pressable onPress={() => handleResultClick(result)}>
+                      <ContentCard content={result} />
+                    </Pressable>
+                  </View>
+                ))}
+              </View>
+            </>
+          )}
+        </View>
       </View>
     </ScrollView>
   );

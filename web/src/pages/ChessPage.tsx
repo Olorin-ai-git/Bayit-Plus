@@ -2,7 +2,8 @@
  * Chess game page - Multiplayer chess with AI assistance and voice chat.
  */
 import React, { useState, useEffect } from 'react';
-import { View, Text, useWindowDimensions, ScrollView, Image, Animated, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Image, Animated, StyleSheet } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { useDirection } from '../hooks/useDirection';
@@ -32,7 +33,7 @@ interface ChessPageState {
 export default function ChessPage() {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
-  const { width } = useWindowDimensions();
+  const { width } = useResponsive();
   const user = useAuthStore((state) => state.user);
   const token = useAuthStore((state) => state.token);
   const location = useLocation();

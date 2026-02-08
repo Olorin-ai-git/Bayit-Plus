@@ -108,6 +108,11 @@ api.interceptors.request.use((config) => {
   // Add Accept-Language header based on app's i18n language (not browser default)
   config.headers['Accept-Language'] = i18n.language || 'he'
 
+  // Prevent browser from caching GET responses (stale search results, etc.)
+  if (config.method === 'get') {
+    config.headers['Cache-Control'] = 'no-cache'
+  }
+
   // Add correlation ID - use existing or generate new one
   let correlationId = getCorrelationId()
   if (!correlationId) {

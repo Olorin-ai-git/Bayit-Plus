@@ -104,15 +104,17 @@ export function useWidgetsPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await adminWidgetsService.getMyWidgets('/');
-      const response = Array.isArray(data) ? data : data?.items || [];
+      const response = await adminWidgetsService.getMyWidgets('/');
+      // Centralized api already returns response.data, so response IS the data object
+      // Backend returns {items: Widget[], total: number}
+      const widgets = Array.isArray(response) ? response : response?.items || [];
 
       // Only show personal widgets (user's own widgets)
-      const personal = response.filter((w: Widget) => w.type === 'personal');
+      const personal = widgets.filter((w: Widget) => w.type === 'personal');
 
       setWidgets(personal);
     } catch (err) {
-      logger.error('Failed to load widgets', 'UserWidgetsPage', err);
+      logger.error('Failed to load widgets', 'useWidgetsPage', err);
       setError(t('common.error'));
     } finally {
       setLoading(false);

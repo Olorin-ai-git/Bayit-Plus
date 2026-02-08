@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { View, Text, Pressable, Image, StyleSheet, useWindowDimensions } from 'react-native';
+import { View, Text, Pressable, Image, StyleSheet } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Camera, Zap, Shield, Star, Download } from 'lucide-react';
@@ -27,8 +28,7 @@ export function HeroSection({ isRTL, stats, statsLoading, onAvatarUploadSuccess 
   const [avatarUploading, setAvatarUploading] = useState(false);
 
   // Mobile detection for responsive sizing
-  const { width } = useWindowDimensions();
-  const isMobile = width < 768;
+  const { width, isMobile } = useResponsive();
 
   // Mobile-responsive avatar and camera button sizes
   const avatarSize = isMobile ? 120 : 100; // Larger on mobile for better visibility

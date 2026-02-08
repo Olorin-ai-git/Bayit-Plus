@@ -292,7 +292,8 @@ async def upload_movies(source_dir: str = None, source_url: str = None, dry_run:
     db = client['bayit_plus']  # Always use bayit_plus database
     await init_beanie(
         database=db,
-        document_models=[Content, ContentSection]
+        document_models=[Content, ContentSection],
+        skip_indexes=True,
     )
     logger.info("Connected to MongoDB Atlas")
 
@@ -424,6 +425,7 @@ async def upload_movies(source_dir: str = None, source_url: str = None, dry_run:
             content_data = {
                 'title': tmdb_data['title'] if tmdb_data else title,
                 'description': tmdb_data.get('description', '') if tmdb_data else '',
+                'content_type': 'movie',
                 'stream_url': stream_url,
                 'thumbnail': tmdb_data.get('thumbnail') if tmdb_data else None,
                 'backdrop': tmdb_data.get('backdrop') if tmdb_data else None,
@@ -436,6 +438,8 @@ async def upload_movies(source_dir: str = None, source_url: str = None, dry_run:
                 'rating': tmdb_data.get('rating') if tmdb_data else None,
                 'tmdb_id': tmdb_data.get('tmdb_id') if tmdb_data else None,
                 'file_hash': file_hash,
+                'has_subtitles': False,
+                'available_subtitle_languages': [],
             }
 
             if dry_run:

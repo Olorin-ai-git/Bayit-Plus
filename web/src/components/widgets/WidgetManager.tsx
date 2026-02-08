@@ -271,9 +271,23 @@ export default function WidgetManager() {
   // Get visible widgets
   const visibleWidgets = getVisibleWidgets();
 
-  // Render nothing if no visible widgets
-  if (visibleWidgets.length === 0) {
+  // Check if we have any minimized widgets to show in the dock
+  const hasMinimizedWidgets = visibleWidgets.some((w) => {
+    const state = getWidgetState(w.id);
+    return state?.isMinimized;
+  });
+
+  // Render nothing if no visible widgets and no minimized widgets
+  if (visibleWidgets.length === 0 && !hasMinimizedWidgets) {
     return null;
+  }
+
+  // If only minimized widgets exist, just render the dock
+  if (visibleWidgets.length > 0 && visibleWidgets.every((w) => {
+    const state = getWidgetState(w.id);
+    return state?.isMinimized;
+  })) {
+    return <MinimizedWidgetDock />;
   }
 
   // Separate minimized vs non-minimized widgets for mobile layout

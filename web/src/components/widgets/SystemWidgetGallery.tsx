@@ -7,7 +7,8 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, useWindowDimensions, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
 import { useTranslation } from 'react-i18next';
 import { Plus, Check, Tv, Globe, Mic, Radio, Film, RefreshCw, Eye, EyeOff, RotateCcw, Trash2 } from 'lucide-react';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
@@ -190,7 +191,7 @@ function SystemWidgetCard({
 export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps) {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection } = useDirection();
-  const { width } = useWindowDimensions();
+  const { width } = useResponsive();
   const [widgets, setWidgets] = useState<AvailableSystemWidget[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -239,8 +240,8 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
     setError(null);
     try {
       const response = await adminWidgetsService.getAvailableSystemWidgets();
-      const data = response?.data || response;
-      setWidgets(data?.items || []);
+      // Centralized api already returns response.data, so response IS the data object
+      setWidgets(response?.items || []);
     } catch (err) {
       logger.error('Failed to load available system widgets', 'SystemWidgetGallery', err);
       setError(t('common.error'));

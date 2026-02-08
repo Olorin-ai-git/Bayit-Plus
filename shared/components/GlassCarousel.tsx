@@ -249,6 +249,7 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
           onFocus={handleFocus}
           onBlur={handleBlur}
           style={styles.touchable}
+          pointerEvents="box-none"
           // @ts-ignore - tvOS specific focus navigation
           hasTVPreferredFocus={Platform.isTV}
           nextFocusLeft={leftArrowNode || undefined}
@@ -595,7 +596,7 @@ const styles = StyleSheet.create({
     right: isMobilePhone ? 12 : 80,
   },
   playButtonLeft: {
-    left: isMobilePhone ? 12 : 80,
+    left: isMobilePhone ? 12 : (Platform.OS === 'web' ? 100 : 80),
   },
   playButton: {
     alignItems: 'center',
@@ -612,7 +613,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '50%',
     marginTop: Platform.isTV ? -40 : (isMobilePhone ? -16 : -24),
-    zIndex: 10,
+    zIndex: 20,
   },
   navButtonLeft: {
     left: Platform.isTV ? 24 : (isMobilePhone ? 8 : 16),

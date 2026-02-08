@@ -14,12 +14,35 @@ struct MainTabView: View {
 
             glassTabBar
 
+            // Floating restored widgets (PiP windows) - shown on all tabs except widgets
+            if let vm = dockViewModel, coordinator.selectedTab != .widgets {
+                ForEach(vm.restoredWidgets) { widget in
+                    PiPWidgetContainerView(
+                        widget: widget,
+                        onMinimize: {
+                            withAnimation(.spring(duration: 0.3, bounce: 0.15)) {
+                                vm.minimizeWidget(widgetId: widget.id)
+                            }
+                        },
+                        onClose: {
+                            withAnimation(.spring(duration: 0.3, bounce: 0.15)) {
+                                vm.minimizeWidget(widgetId: widget.id)
+                            }
+                        }
+                    )
+                }
+            }
+
             // Floating widget dock (left edge, vertically centered) - hidden on widgets tab
             if let vm = dockViewModel, coordinator.selectedTab != .widgets {
                 PiPWidgetManagerView(
-                    widgets: vm.widgets,
+                    widgets: vm.minimizedWidgets,
                     isDockVisible: vm.isDockVisible,
-                    onToggleMinimize: { _ in },
+                    onToggleMinimize: { widgetId in
+                        withAnimation(.spring(duration: 0.3, bounce: 0.15)) {
+                            vm.toggleMinimize(widgetId: widgetId)
+                        }
+                    },
                     onCloseDock: { vm.hideDock() }
                 )
                 .allowsHitTesting(true)

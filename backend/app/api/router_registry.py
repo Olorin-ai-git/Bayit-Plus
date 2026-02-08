@@ -45,6 +45,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_uploads, admin_widgets,
                                 admin_youngsters_content, audiobooks, audible_integration,
                                 auth, avatar_dialogue, chapters, chat,
+                                mobile_auth,
                                 channel_chat, chess, children, content, content_taxonomy,
                                 cultures, device_pairing, devices,
                                 diagnostics, direct_messages, downloads, dubbing, epg,
@@ -108,6 +109,11 @@ def register_all_routers(app: FastAPI) -> None:
     # Authentication Routes
     # ============================================
     app.include_router(auth.router, prefix=f"{prefix}/auth", tags=["auth"])
+    app.include_router(
+        mobile_auth.router,
+        prefix=f"{prefix}/auth",
+        tags=["auth-mobile"],
+    )
     app.include_router(
         password_reset.router,
         prefix=f"{prefix}/auth/password-reset",

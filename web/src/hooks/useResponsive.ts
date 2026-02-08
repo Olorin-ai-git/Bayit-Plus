@@ -2,11 +2,11 @@
  * useResponsive Hook
  *
  * Provides responsive utilities for adapting UI to different screen sizes.
- * Handles mobile, tablet, and desktop breakpoints with grid column calculations.
+ * Uses browser window.innerWidth directly (not RN useWindowDimensions)
+ * to avoid incorrect initial values on React Native Web.
  */
 
-import { useWindowDimensions } from 'react-native';
-import { useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   BREAKPOINTS,
   MOBILE_BREAKPOINT,
@@ -49,45 +49,53 @@ export interface ResponsiveState {
 }
 
 /**
- * Hook that provides responsive state and utilities
+ * Get current browser dimensions with fallback for SSR
+ */
+function getWindowDimensions() {
+  if (typeof window !== 'undefined') {
+    return { width: window.innerWidth, height: window.innerHeight };
+  }
+  return { width: 1024, height: 768 };
+}
+
+/**
+ * Hook that provides responsive state and utilities.
+ * Uses browser window.innerWidth directly to avoid React Native Web
+ * useWindowDimensions returning incorrect values on initial render.
  */
 export function useResponsive(): ResponsiveState {
-  const { width, height } = useWindowDimensions();
+  const [dimensions, setDimensions] = useState(getWindowDimensions);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setDimensions(getWindowDimensions());
+    };
+    // Sync on mount in case SSR fallback was used
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const { width, height } = dimensions;
+
+  const getColumns = useCallback((options?: ColumnOptions): number => {
+    const bp = getBreakpoint(width);
+    const columnConfig = options || GRID_COLUMNS;
+
+    if (bp === '2xl' && columnConfig['2xl']) return columnConfig['2xl'];
+    if (bp === 'xl' && columnConfig.xl) return columnConfig.xl;
+    if (bp === 'lg' && columnConfig.lg) return columnConfig.lg;
+    if (bp === 'md' && columnConfig.md) return columnConfig.md;
+    if (bp === 'sm' && columnConfig.sm) return columnConfig.sm;
+    if (columnConfig.xs) return columnConfig.xs;
+
+    return GRID_COLUMNS[bp];
+  }, [width]);
 
   const state = useMemo(() => {
     const isMobile = width < MOBILE_BREAKPOINT;
     const isTablet = width >= MOBILE_BREAKPOINT && width < TABLET_BREAKPOINT;
     const isDesktop = width >= TABLET_BREAKPOINT;
-    const isPortrait = height > width;
-    const isLandscape = width >= height;
-    const breakpoint = getBreakpoint(width);
-
-    const getColumns = (options?: ColumnOptions): number => {
-      const columnConfig = options || GRID_COLUMNS;
-
-      // Find the appropriate column count for current breakpoint
-      if (breakpoint === '2xl' && columnConfig['2xl']) {
-        return columnConfig['2xl'];
-      }
-      if (breakpoint === 'xl' && columnConfig.xl) {
-        return columnConfig.xl;
-      }
-      if (breakpoint === 'lg' && columnConfig.lg) {
-        return columnConfig.lg;
-      }
-      if (breakpoint === 'md' && columnConfig.md) {
-        return columnConfig.md;
-      }
-      if (breakpoint === 'sm' && columnConfig.sm) {
-        return columnConfig.sm;
-      }
-      if (columnConfig.xs) {
-        return columnConfig.xs;
-      }
-
-      // Fallback to default grid columns
-      return GRID_COLUMNS[breakpoint];
-    };
 
     return {
       width,
@@ -95,12 +103,12 @@ export function useResponsive(): ResponsiveState {
       isMobile,
       isTablet,
       isDesktop,
-      isPortrait,
-      isLandscape,
-      breakpoint,
+      isPortrait: height > width,
+      isLandscape: width >= height,
+      breakpoint: getBreakpoint(width),
       getColumns,
     };
-  }, [width, height]);
+  }, [width, height, getColumns]);
 
   return state;
 }

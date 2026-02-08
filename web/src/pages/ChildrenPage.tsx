@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, Pressable, Image, TextInput, ActivityIndicator, useWindowDimensions, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, TextInput, ActivityIndicator, StyleSheet } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Play, Clock, Baby, Lock, Radio } from 'lucide-react';
@@ -264,7 +265,7 @@ export default function ChildrenPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showExitModal, setShowExitModal] = useState(false);
   const [showSubcategories, setShowSubcategories] = useState(false);
-  const { width } = useWindowDimensions();
+  const { width } = useResponsive();
 
   const numColumns = width >= 1280 ? 5 : width >= 1024 ? 4 : width >= 768 ? 3 : 2;
 

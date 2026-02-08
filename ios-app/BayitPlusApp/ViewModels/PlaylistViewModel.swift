@@ -42,6 +42,24 @@ final class PlaylistViewModel {
     }
 
     @MainActor
+    func clearAll() async {
+        do {
+            _ = try await repository.clearPlaylist()
+            items.removeAll()
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
+
+    @MainActor
+    func moveItem(from source: IndexSet, to destination: Int) {
+        items.move(fromOffsets: source, toOffset: destination)
+        Task {
+            await syncReorderToBackend()
+        }
+    }
+
+    @MainActor
     func reorderItem(contentId: String, newPosition: Int) async {
         do {
             let request = PlaylistReorderRequest(
@@ -68,6 +86,19 @@ final class PlaylistViewModel {
         } catch {
             self.error = error.localizedDescription
             return nil
+        }
+    }
+
+    /// Sync the local reorder to backend after drag-and-drop.
+    @MainActor
+    private func syncReorderToBackend() async {
+        for (index, item) in items.enumerated() {
+            if item.position != index {
+                await reorderItem(
+                    contentId: item.contentId,
+                    newPosition: index
+                )
+            }
         }
     }
 }

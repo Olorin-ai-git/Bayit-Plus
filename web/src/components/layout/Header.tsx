@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, Pressable, useWindowDimensions, Image } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useState, useCallback, useEffect } from 'react';
 import { Search, Shield, ListMusic } from 'lucide-react';
@@ -40,8 +41,8 @@ export default function Header() {
   const { preferences } = useVoiceSettingsStore();
   const { isRemoteControlEnabled } = useModeEnforcement();
   const navigate = useNavigate();
-  const { width } = useWindowDimensions();
-  const isMobile = width < 768 && !IS_TV_BUILD;
+  const { isMobile: responsiveIsMobile } = useResponsive();
+  const isMobile = responsiveIsMobile && !IS_TV_BUILD;
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
 
   // Check localStorage directly as fallback for hydration

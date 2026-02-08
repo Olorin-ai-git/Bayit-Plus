@@ -97,6 +97,7 @@ class UnifiedSearchService:
         limit: int = 20,
         user_subscription_tier: Optional[str] = None,
         is_beta_user: Optional[bool] = None,
+        no_cache: bool = False,
     ) -> SearchResults:
         """
         Main search entry point.
@@ -124,10 +125,11 @@ class UnifiedSearchService:
             "is_beta_user": is_beta_user,
         }
 
-        cached = self.cache.get_cached_results(query, cache_key_data)
-        if cached:
-            cached["cache_hit"] = True
-            return SearchResults(**cached)
+        if not no_cache:
+            cached = self.cache.get_cached_results(query, cache_key_data)
+            if cached:
+                cached["cache_hit"] = True
+                return SearchResults(**cached)
 
         # Execute search based on filters
         if filters.search_in_subtitles and query.strip():
@@ -238,13 +240,62 @@ class UnifiedSearchService:
         )
 
         if query.strip():
-            # Text search with scoring
-            results = (
-                await Content.find(mongo_query)
-                .sort([("score", {"$meta": "textScore"})])
-                .limit(1000)  # Get many results for merging
-                .to_list()
+            # Text search with scoring and relevance filtering
+            collection = Content.get_pymongo_collection()
+
+            # First try phrase search for multi-word queries
+            phrase_results = []
+            words = query.strip().split()
+            if len(words) > 1:
+                phrase_query = self._build_mongo_query(
+                    query, filters, user_subscription_tier, is_beta_user,
+                    use_phrase=True,
+                )
+                phrase_results = (
+                    await collection.find(
+                        phrase_query,
+                        {"score": {"$meta": "textScore"}},
+                    )
+                    .sort([("score", {"$meta": "textScore"})])
+                    .limit(200)
+                    .to_list(length=200)
+                )
+
+            # Fall back to word search if phrase search found nothing
+            if phrase_results:
+                raw_results = phrase_results
+            else:
+                raw_results = (
+                    await collection.find(
+                        mongo_query,
+                        {"score": {"$meta": "textScore"}},
+                    )
+                    .sort([("score", {"$meta": "textScore"})])
+                    .limit(200)
+                    .to_list(length=200)
+                )
+
+            # Filter by minimum text score to exclude irrelevant matches
+            min_score = settings.SEARCH_MIN_TEXT_SCORE
+            title_threshold = settings.SEARCH_TITLE_BOOST_THRESHOLD
+            filtered = [r for r in raw_results if r.get("score", 0) >= min_score]
+
+            # If high-quality title matches exist, raise the bar for others
+            has_title_matches = any(
+                r.get("score", 0) >= title_threshold for r in filtered
             )
+            if has_title_matches:
+                top_score = max(r.get("score", 0) for r in filtered)
+                # Keep results scoring at least 50% of the top score
+                score_floor = top_score * 0.5
+                filtered = [
+                    r for r in filtered if r.get("score", 0) >= score_floor
+                ]
+
+            results = []
+            for raw in filtered:
+                content = Content.model_validate(raw)
+                results.append(content)
         else:
             # Metadata-only search
             results = (
@@ -278,7 +329,7 @@ class UnifiedSearchService:
                 }
             )
 
-        # Beta content filter
+        # Beta content filter (None = admin, bypasses filter)
         if is_beta_user is True:
             conditions.append({"is_beta_content": True})
         elif is_beta_user is False:
@@ -312,7 +363,7 @@ class UnifiedSearchService:
                 }
             )
 
-        # Beta content filter
+        # Beta content filter (None = admin, bypasses filter)
         if is_beta_user is True:
             conditions.append({"is_beta_content": True})
         elif is_beta_user is False:
@@ -347,7 +398,7 @@ class UnifiedSearchService:
                 }
             )
 
-        # Beta content filter
+        # Beta content filter (None = admin, bypasses filter)
         if is_beta_user is True:
             conditions.append({"is_beta_content": True})
         elif is_beta_user is False:
@@ -436,15 +487,21 @@ class UnifiedSearchService:
         filters: SearchFilters,
         user_subscription_tier: Optional[str],
         is_beta_user: Optional[bool] = None,
+        use_phrase: bool = False,
     ) -> Dict[str, Any]:
         """
         Build MongoDB query from search query and filters.
+
+        Args:
+            use_phrase: If True, wrap multi-word queries in quotes for
+                        MongoDB phrase matching (exact word sequence).
         """
         conditions = []
 
         # Text search condition
         if query.strip():
-            conditions.append({"$text": {"$search": query}})
+            search_term = f'"{query}"' if use_phrase else query
+            conditions.append({"$text": {"$search": search_term}})
 
         # Always filter by published
         conditions.append({"is_published": True})

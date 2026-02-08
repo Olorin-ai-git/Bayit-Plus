@@ -3,7 +3,8 @@
  * Responsive grid layout for audiobook display
  */
 
-import { View, Text, StyleSheet, FlatList, Pressable, useWindowDimensions } from 'react-native'
+import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native'
+import { useResponsive } from '@/hooks/useResponsive'
 import { useTranslation } from 'react-i18next'
 import { ChevronLeft, ChevronRight, Book } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -118,7 +119,7 @@ export default function AudiobooksPageGrid({
   searchQuery = '',
 }: AudiobooksPageGridProps) {
   const { t } = useTranslation()
-  const { width } = useWindowDimensions()
+  const { width } = useResponsive()
 
   const numColumns = width >= 1280 ? 5 : width >= 1024 ? 4 : width >= 768 ? 3 : 2
 

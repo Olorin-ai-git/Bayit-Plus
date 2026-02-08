@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable, Image } from 'react-native';
 import { useResponsive } from '@/hooks/useResponsive';
 import { Link } from 'react-router-dom';
-import { Star, Play, X } from 'lucide-react';
+import { Play, X, List } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
-import { favoritesService } from '@/services/api';
+import { playlistService } from '@/services/api';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassCard, GlassView, GlassPageHeader, GlassEmptyState } from '@bayit/shared/ui';
@@ -28,7 +28,7 @@ const TYPE_ROUTES: Record<string, string> = {
   radio: 'radio',
 };
 
-interface FavoriteItem {
+interface PlaylistItem {
   id: string;
   type: string;
   title: string;
@@ -38,17 +38,18 @@ interface FavoriteItem {
   subtitle_en?: string;
   subtitle_es?: string;
   thumbnail?: string;
+  position?: number;
 }
 
-function FavoriteCard({ item, onRemove }: { item: FavoriteItem; onRemove: (id: string) => void }) {
+function PlaylistCard({ item, onRemove }: { item: PlaylistItem; onRemove: (id: string) => void }) {
   const { i18n } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
 
   const getLocalizedText = (field: 'title' | 'subtitle') => {
     const lang = i18n.language;
     if (lang === 'he') return item[field] || item.title;
-    if (lang === 'es') return item[`${field}_es` as keyof FavoriteItem] || item[`${field}_en` as keyof FavoriteItem] || item[field];
-    return item[`${field}_en` as keyof FavoriteItem] || item[field];
+    if (lang === 'es') return item[`${field}_es` as keyof PlaylistItem] || item[`${field}_en` as keyof PlaylistItem] || item[field];
+    return item[`${field}_en` as keyof PlaylistItem] || item[field];
   };
 
   const route = `/${TYPE_ROUTES[item.type] || 'vod'}/${item.id}`;
@@ -77,6 +78,13 @@ function FavoriteCard({ item, onRemove }: { item: FavoriteItem; onRemove: (id: s
             <View style={styles.typeBadge}>
               <NativeIcon name={TYPE_ICON_NAMES[item.type] || 'discover'} size="sm" color={colors.background} />
             </View>
+
+            {/* Position Badge */}
+            {item.position !== undefined && (
+              <View style={styles.positionBadge}>
+                <Text style={styles.positionText}>{item.position + 1}</Text>
+              </View>
+            )}
 
             {/* Hover Overlay */}
             {isHovered && (
@@ -113,26 +121,26 @@ function FavoriteCard({ item, onRemove }: { item: FavoriteItem; onRemove: (id: s
   );
 }
 
-export default function FavoritesPage() {
+export default function PlaylistPage() {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
-  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [playlist, setPlaylist] = useState<PlaylistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const { width } = useResponsive();
 
   const numColumns = width >= 1280 ? 6 : width >= 1024 ? 5 : width >= 768 ? 4 : width >= 640 ? 3 : 2;
 
   useEffect(() => {
-    loadFavorites();
+    loadPlaylist();
   }, []);
 
-  const loadFavorites = async () => {
+  const loadPlaylist = async () => {
     setLoading(true);
     try {
-      const data = await favoritesService.getFavorites();
-      setFavorites(data.items || []);
+      const data = await playlistService.getPlaylist();
+      setPlaylist(data.items || []);
     } catch (error) {
-      logger.error('Failed to load favorites', 'FavoritesPage', error);
+      logger.error('Failed to load playlist', 'PlaylistPage', error);
     } finally {
       setLoading(false);
     }
@@ -140,10 +148,10 @@ export default function FavoritesPage() {
 
   const handleRemove = async (id: string) => {
     try {
-      await favoritesService.removeFavorite(id);
-      setFavorites((prev) => prev.filter((item) => item.id !== id));
+      await playlistService.removeItem(id);
+      setPlaylist((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
-      logger.error('Failed to remove favorite', 'FavoritesPage', error);
+      logger.error('Failed to remove playlist item', 'PlaylistPage', error);
     }
   };
 
@@ -151,21 +159,21 @@ export default function FavoritesPage() {
     <View style={styles.container}>
       {/* Header */}
       <GlassPageHeader
-        title={t('favorites.title')}
-        pageType="favorites"
-        badge={favorites.length}
+        title={t('playlist.title')}
+        pageType="playlist"
+        badge={playlist.length}
         isRTL={isRTL}
       />
 
       {/* Loading State */}
       {loading ? (
         <LoadingState
-          message={t('favorites.loading', 'Loading favorites...')}
-          spinnerColor={colors.warning}
+          message={t('playlist.loading', 'Loading playlist...')}
+          spinnerColor={colors.primary.DEFAULT}
         />
-      ) : favorites.length > 0 ? (
+      ) : playlist.length > 0 ? (
         <FlatList
-          data={favorites}
+          data={playlist}
           keyExtractor={(item) => item.id}
           numColumns={numColumns}
           key={numColumns}
@@ -173,16 +181,16 @@ export default function FavoritesPage() {
           columnWrapperStyle={numColumns > 1 ? styles.gridRow : undefined}
           renderItem={({ item }) => (
             <View style={[styles.gridItem, { maxWidth: `${100 / numColumns}%` }]}>
-              <FavoriteCard item={item} onRemove={handleRemove} />
+              <PlaylistCard item={item} onRemove={handleRemove} />
             </View>
           )}
         />
       ) : (
         <GlassEmptyState
-          variant="no-favorites"
-          icon={<Star size={72} color="rgba(245, 158, 11, 0.5)" strokeWidth={1.5} />}
-          title={t('favorites.empty')}
-          description={t('favorites.emptyHint')}
+          variant="no-playlist"
+          icon={<List size={72} color="rgba(139, 92, 246, 0.5)" strokeWidth={1.5} />}
+          title={t('playlist.empty')}
+          description={t('playlist.emptyHint')}
         />
       )}
     </View>
@@ -198,43 +206,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
     width: '100%',
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.sm,
-    marginBottom: spacing.xl,
-  },
-  headerIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: borderRadius.full,
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: fontSize['3xl'],
-    fontWeight: 'bold',
-    color: colors.text,
-  },
-  headerSubtitle: {
-    fontSize: fontSize.sm,
-    color: colors.textSecondary,
-  },
-  loadingGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: spacing.lg,
-  },
-  skeletonCard: {
-    flex: 1,
-    minWidth: 150,
-    maxWidth: '16.66%',
-    aspectRatio: 16 / 9,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: borderRadius.lg,
-    marginHorizontal: spacing.xs,
-  },
   gridContent: {
     gap: spacing.md,
   },
@@ -243,27 +214,6 @@ const styles = StyleSheet.create({
   },
   gridItem: {
     flex: 1,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 64,
-  },
-  emptyCard: {
-    padding: spacing['3xl'],
-    alignItems: 'center',
-  },
-  emptyTitle: {
-    fontSize: fontSize.xl,
-    fontWeight: '600',
-    color: colors.text,
-    marginTop: spacing.lg,
-    marginBottom: spacing.sm,
-  },
-  emptyHint: {
-    fontSize: fontSize.base,
-    color: colors.textSecondary,
   },
   cardLinkWrapper: {
     textDecoration: 'none',
@@ -292,9 +242,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  placeholderIcon: {
-    fontSize: fontSize['3xl'],
-  },
   typeBadge: {
     position: 'absolute',
     top: spacing.sm,
@@ -304,8 +251,23 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     borderRadius: borderRadius.lg,
   },
-  typeBadgeText: {
+  positionBadge: {
+    position: 'absolute',
+    top: spacing.sm,
+    left: spacing.sm,
+    backgroundColor: 'rgba(139, 92, 246, 0.9)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+    minWidth: 28,
+    height: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  positionText: {
     fontSize: fontSize.sm,
+    fontWeight: 'bold',
+    color: colors.text,
   },
   hoverOverlay: {
     position: 'absolute',
@@ -348,5 +310,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(239, 68, 68, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 10,
   },
 });

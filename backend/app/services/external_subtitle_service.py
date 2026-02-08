@@ -12,6 +12,7 @@ from beanie import PydanticObjectId
 from app.models.content import Content
 from app.models.subtitles import (SubtitleCueModel, SubtitleSearchCacheDoc,
                                   SubtitleTrackDoc)
+from app.services.live_translation.constants import LANGUAGE_NAMES
 from app.services.opensubtitles_service import get_opensubtitles_service
 from app.services.subtitle_service import parse_subtitles
 from app.services.tmdb_service import TMDBService

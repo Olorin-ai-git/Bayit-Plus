@@ -31,6 +31,15 @@ protocol WidgetRepository: Sendable {
     /// - Returns: Confirmation message.
     /// - Throws: `NetworkError` if the request fails.
     func removeSystemWidget(widgetId: String) async throws -> WidgetDeleteResponse
+
+    /// Toggle the minimized state of a widget.
+    ///
+    /// - Parameters:
+    ///   - widgetId: The widget ID to toggle.
+    ///   - isMinimized: Whether the widget should be minimized.
+    /// - Returns: Confirmation message.
+    /// - Throws: `NetworkError` if the request fails.
+    func toggleMinimize(widgetId: String, isMinimized: Bool) async throws -> MessageResponse
 }
 
 /// Production implementation of `WidgetRepository` using `APIClient`.
@@ -73,6 +82,15 @@ final class APIWidgetRepository: WidgetRepository, @unchecked Sendable {
         return try await client.delete(
             "/api/v1/widgets/system/\(widgetId)/remove",
             as: WidgetDeleteResponse.self
+        )
+    }
+
+    func toggleMinimize(widgetId: String, isMinimized: Bool) async throws -> MessageResponse {
+        return try await client.post(
+            "/api/v1/widgets/\(widgetId)/minimize",
+            body: EmptyBody(),
+            queryItems: [URLQueryItem(name: "is_minimized", value: String(isMinimized))],
+            as: MessageResponse.self
         )
     }
 }

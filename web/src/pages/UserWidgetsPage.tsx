@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, useWindowDimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDirection } from '@/hooks/useDirection';
@@ -19,7 +20,7 @@ export default function UserWidgetsPage() {
   const { t } = useTranslation();
   const { isRTL, textAlign, flexDirection, justifyContent } = useDirection();
   const navigate = useNavigate();
-  const { width } = useWindowDimensions();
+  const { width } = useResponsive();
 
   // All state and handlers from custom hook
   const {

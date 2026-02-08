@@ -16,7 +16,8 @@
  */
 
 import { useState, useCallback } from 'react';
-import { View, Text, Pressable, useWindowDimensions } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp, GripHorizontal } from 'lucide-react';
@@ -35,8 +36,7 @@ const MAX_HEIGHT = 500;
 
 export default function Footer() {
   const { t, i18n } = useTranslation();
-  const { width } = useWindowDimensions();
-  const isMobile = width < 768;
+  const { isMobile } = useResponsive();
   const isRTL = i18n.language === 'he' || i18n.language === 'ar';
 
   const [isExpanded, setIsExpanded] = useState(false);

@@ -47,6 +47,9 @@ protocol UserRepository: Sendable {
     /// Remove a content item from the playlist.
     func removePlaylistItem(contentId: String) async throws -> MessageResponse
 
+    /// Clear all items from the playlist.
+    func clearPlaylist() async throws -> MessageResponse
+
     // MARK: - Downloads
 
     /// Fetch the user's download list.
@@ -180,6 +183,13 @@ final class APIUserRepository: UserRepository, @unchecked Sendable {
     func removePlaylistItem(contentId: String) async throws -> MessageResponse {
         return try await client.delete(
             "/api/v1/playlist/items/\(contentId)",
+            as: MessageResponse.self
+        )
+    }
+
+    func clearPlaylist() async throws -> MessageResponse {
+        return try await client.delete(
+            "/api/v1/playlist",
             as: MessageResponse.self
         )
     }

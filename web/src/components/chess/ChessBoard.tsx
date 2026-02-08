@@ -5,7 +5,8 @@
  * Fully localized with RTL/LTR support.
  */
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, Pressable, useWindowDimensions, Platform, Image, Animated, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Platform, Image, Animated, StyleSheet } from 'react-native';
+import { useResponsive } from '@/hooks/useResponsive';
 import { Chess } from 'chess.js';
 import { colors, spacing } from '@olorin/design-tokens';
 import { useTranslation } from 'react-i18next';
@@ -52,7 +53,7 @@ export default function ChessBoard({
   showHints = false
 }: ChessBoardProps) {
   const { t } = useTranslation();
-  const { width } = useWindowDimensions();
+  const { width } = useResponsive();
   const [chess] = useState(new Chess());
   const [selectedSquare, setSelectedSquare] = useState<string | null>(null);
   const [legalMoves, setLegalMoves] = useState<string[]>([]);
