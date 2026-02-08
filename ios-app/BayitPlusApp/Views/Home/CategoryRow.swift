@@ -13,19 +13,45 @@ struct CategoryRow: View {
                 .foregroundColor(DesignTokens.Text.primary)
                 .padding(.horizontal, DesignTokens.Spacing.lg)
 
-            GlassCarousel(items: category.items, itemWidth: 160) { item in
+            GlassCarousel(items: category.items, itemWidth: itemWidth) { item in
                 GlassContentCard(
                     thumbnailURL: item.thumbnail,
                     title: item.title,
                     subtitle: itemSubtitle(for: item),
                     badge: itemBadge(for: item),
-                    aspectRatio: 2 / 3,
-                    width: 160
+                    aspectRatio: itemAspectRatio(for: item),
+                    width: itemWidth
                 ) {
                     navigateToItem(item)
                 }
             }
         }
+    }
+
+    /// Determine item width based on content type
+    /// Podcasts and audiobooks use smaller square cards (140px), movies/series use portrait cards (160px)
+    private var itemWidth: CGFloat {
+        let categoryNameLower = category.name.lowercased()
+        if categoryNameLower.contains("podcast") || categoryNameLower.contains("audiobook") {
+            return 140
+        }
+        return 160
+    }
+
+    /// Determine aspect ratio based on content type
+    /// Podcasts and audiobooks use 1:1 (square), movies/series use 2:3 (portrait)
+    private func itemAspectRatio(for item: ContentItem) -> CGFloat {
+        if let type = item.type?.lowercased() {
+            if type.contains("podcast") || type.contains("audiobook") {
+                return 1.0  // Square
+            }
+        }
+        // Check category name as fallback
+        let categoryNameLower = category.name.lowercased()
+        if categoryNameLower.contains("podcast") || categoryNameLower.contains("audiobook") {
+            return 1.0  // Square
+        }
+        return 2.0 / 3.0  // Portrait (default for movies/series)
     }
 
     private func itemSubtitle(for item: ContentItem) -> String? {
