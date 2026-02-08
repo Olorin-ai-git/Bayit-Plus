@@ -4,6 +4,7 @@ import BayitLocalization
 import BayitMedia
 import BayitNetworking
 import FirebaseCore
+import GoogleSignIn
 import SwiftUI
 
 @main
@@ -53,6 +54,9 @@ struct BayitPlusApp: App {
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
                 .onOpenURL { url in
+                    if GIDSignIn.sharedInstance.handle(url) {
+                        return
+                    }
                     coordinator.handleDeepLink(url)
                 }
                 .task {

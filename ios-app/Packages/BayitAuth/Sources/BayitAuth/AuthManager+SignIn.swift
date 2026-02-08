@@ -18,7 +18,10 @@ extension AuthManager {
 
             let rootVC = try await resolveRootViewController()
 
-            let googleConfig = GIDConfiguration(clientID: configuration.googleClientID)
+            let googleConfig = GIDConfiguration(
+                clientID: configuration.googleClientID,
+                serverClientID: configuration.googleServerClientID
+            )
             GIDSignIn.sharedInstance.configuration = googleConfig
 
             try Task.checkCancellation()

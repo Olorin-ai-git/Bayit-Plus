@@ -6,8 +6,12 @@ import Foundation
 /// from its configuration system (Info.plist, environment, xcconfig).
 public protocol AuthConfiguration: Sendable {
 
-    /// Google OAuth client ID from Firebase/Google Cloud Console.
+    /// Google OAuth client ID (iOS) from Firebase/Google Cloud Console.
     var googleClientID: String { get }
+
+    /// Google OAuth server/web client ID from Firebase Console (Sign-in method > Google).
+    /// Required for Firebase Auth to validate the Google ID token audience.
+    var googleServerClientID: String { get }
 
     /// The app's bundle identifier, used for Apple Sign-In and Keychain grouping.
     var bundleID: String { get }
@@ -27,6 +31,7 @@ public protocol AuthConfiguration: Sendable {
 /// for security-critical configuration.
 public struct AppAuthConfiguration: AuthConfiguration, Sendable {
     public let googleClientID: String
+    public let googleServerClientID: String
     public let bundleID: String
     public let keychainServiceName: String
     public let keychainAccessGroup: String?
@@ -38,6 +43,12 @@ public struct AppAuthConfiguration: AuthConfiguration, Sendable {
             ?? ProcessInfo.processInfo.environment["GOOGLE_CLIENT_ID"],
               !clientID.isEmpty else {
             fatalError("Missing required GOOGLE_CLIENT_ID in Info.plist or environment")
+        }
+
+        guard let serverClientID = info["GOOGLE_SERVER_CLIENT_ID"] as? String
+            ?? ProcessInfo.processInfo.environment["GOOGLE_SERVER_CLIENT_ID"],
+              !serverClientID.isEmpty else {
+            fatalError("Missing required GOOGLE_SERVER_CLIENT_ID in Info.plist or environment")
         }
 
         guard let bundle = Bundle.main.bundleIdentifier,
@@ -53,6 +64,7 @@ public struct AppAuthConfiguration: AuthConfiguration, Sendable {
             ?? ProcessInfo.processInfo.environment["KEYCHAIN_ACCESS_GROUP"]
 
         self.googleClientID = clientID
+        self.googleServerClientID = serverClientID
         self.bundleID = bundle
         self.keychainServiceName = keychainService
         self.keychainAccessGroup = accessGroup
@@ -61,11 +73,13 @@ public struct AppAuthConfiguration: AuthConfiguration, Sendable {
     /// Creates a configuration with explicit values for dependency injection.
     public init(
         googleClientID: String,
+        googleServerClientID: String,
         bundleID: String,
         keychainServiceName: String,
         keychainAccessGroup: String? = nil
     ) {
         self.googleClientID = googleClientID
+        self.googleServerClientID = googleServerClientID
         self.bundleID = bundleID
         self.keychainServiceName = keychainServiceName
         self.keychainAccessGroup = keychainAccessGroup

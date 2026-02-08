@@ -18,9 +18,9 @@ final class AuthFlowUITests: XCTestCase {
         XCTAssertTrue(logo.waitForExistence(timeout: 5))
     }
 
-    func testLoginScreenDisplaysSubtitle() {
-        let subtitle = app.staticTexts["Premium Jewish Streaming"]
-        XCTAssertTrue(subtitle.waitForExistence(timeout: 5))
+    func testLoginScreenDisplaysWelcomeBack() {
+        let title = app.staticTexts["Welcome Back"]
+        XCTAssertTrue(title.waitForExistence(timeout: 5))
     }
 
     func testLoginScreenDisplaysSocialButtons() {
@@ -31,9 +31,9 @@ final class AuthFlowUITests: XCTestCase {
     }
 
     func testLoginScreenDisplaysEmailFields() {
-        let emailField = app.textFields["Email"]
+        let emailField = app.textFields["Enter your email"]
         XCTAssertTrue(emailField.waitForExistence(timeout: 5))
-        XCTAssertTrue(app.secureTextFields["Password"].exists)
+        XCTAssertTrue(app.secureTextFields["Enter your password"].exists)
     }
 
     func testLoginScreenDisplaysSignInButton() {
@@ -43,7 +43,7 @@ final class AuthFlowUITests: XCTestCase {
 
     func testLoginScreenDisplaysRegisterLink() {
         let register = app.buttons.matching(
-            NSPredicate(format: "label CONTAINS 'Sign up'")
+            NSPredicate(format: "label CONTAINS[c] 'Sign Up'")
         )
         XCTAssertGreaterThan(register.count, 0)
     }
@@ -51,7 +51,7 @@ final class AuthFlowUITests: XCTestCase {
     // MARK: - Email Input
 
     func testEmailFieldAcceptsInput() {
-        let emailField = app.textFields["Email"]
+        let emailField = app.textFields["Enter your email"]
         XCTAssertTrue(emailField.waitForExistence(timeout: 5))
         emailField.tap()
         emailField.typeText("test@example.com")
@@ -59,7 +59,7 @@ final class AuthFlowUITests: XCTestCase {
     }
 
     func testPasswordFieldAcceptsInput() {
-        let passwordField = app.secureTextFields["Password"]
+        let passwordField = app.secureTextFields["Enter your password"]
         XCTAssertTrue(passwordField.waitForExistence(timeout: 5))
         passwordField.tap()
         passwordField.typeText("password123")
@@ -69,7 +69,7 @@ final class AuthFlowUITests: XCTestCase {
 
     func testTapSignUpNavigatesToRegister() {
         let signUp = app.buttons.matching(
-            NSPredicate(format: "label CONTAINS 'Sign up'")
+            NSPredicate(format: "label CONTAINS[c] 'Sign Up'")
         ).firstMatch
         XCTAssertTrue(signUp.waitForExistence(timeout: 5))
         signUp.tap()

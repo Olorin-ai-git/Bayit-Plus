@@ -2,246 +2,179 @@ import BayitAuth
 import BayitDesignSystem
 import SwiftUI
 
-/// Login screen with Google, Apple, and email sign-in
+/// Login screen matching web app design at /login
 struct LoginView: View {
     @Environment(AuthManager.self) private var authManager
 
     @State private var email = ""
     @State private var password = ""
+    @State private var showPassword = false
 
     let onRegister: () -> Void
     let onLoginSuccess: () -> Void
 
     var body: some View {
-        VStack(spacing: 32) {
-            Spacer()
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: DesignTokens.Spacing.xl) {
+                Spacer(minLength: DesignTokens.Spacing.xxxl)
 
-            logoSection
+                AuthComponents.LogoSection()
+
+                glassCard
+
+                termsFooter
+
+                Spacer(minLength: DesignTokens.Spacing.xl)
+            }
+            .padding(.horizontal, DesignTokens.Spacing.xl)
+        }
+    }
+
+    // MARK: - Glass Card
+
+    private var glassCard: some View {
+        VStack(spacing: DesignTokens.Spacing.lg) {
+            cardHeader
+            errorMessage
+            emailField
+            passwordField
+            signInButton
+            AuthComponents.OrDivider()
             socialButtons
-            divider
-            emailFields
-
-            if let error = authManager.error {
-                Text(error.userFacingMessage)
-                    .font(.system(size: 13))
-                    .foregroundStyle(DesignTokens.Colors.Semantic.error)
-                    .padding(.horizontal, 24)
-            }
-
-            loginButton
-                .padding(.horizontal, 24)
-
-            registerLink
-
-            Spacer()
+            signUpLink
         }
+        .authGlassCard()
     }
 
-    // MARK: - Logo
-
-    private var logoSection: some View {
-        VStack(spacing: 12) {
-            Image(systemName: "play.tv.fill")
-                .font(.system(size: 56))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [
-                            DesignTokens.Colors.Primary.base,
-                            DesignTokens.Colors.Primary.light,
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-
-            Text("Bayit+")
-                .font(.system(size: 36, weight: .bold))
+    private var cardHeader: some View {
+        VStack(spacing: DesignTokens.Spacing.sm) {
+            Text("Welcome Back")
+                .font(.system(size: DesignTokens.FontSize.xxxl, weight: .bold))
                 .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
 
-            Text("Premium Jewish Streaming")
-                .font(.system(size: 16))
+            Text("Sign in to continue to Bayit+")
+                .font(.system(size: 15))
                 .foregroundStyle(DesignTokens.Colors.Text.secondary)
+                .multilineTextAlignment(.center)
         }
     }
 
-    // MARK: - Social Buttons
+    // MARK: - Error
 
-    private var socialButtons: some View {
-        VStack(spacing: 12) {
-            socialButton(
-                title: "Continue with Google",
-                iconName: "g.circle.fill",
-                backgroundColor: .white.opacity(0.1)
-            ) {
-                Task { try await handleGoogleSignIn() }
-            }
-
-            socialButton(
-                title: "Continue with Apple",
-                iconName: "apple.logo",
-                backgroundColor: .white.opacity(0.1)
-            ) {
-                Task { try await handleAppleSignIn() }
-            }
+    @ViewBuilder
+    private var errorMessage: some View {
+        if let error = authManager.error {
+            AuthComponents.ErrorBanner(message: error.userFacingMessage)
         }
-        .padding(.horizontal, 24)
     }
 
-    // MARK: - Divider
+    // MARK: - Fields
 
-    private var divider: some View {
-        HStack {
-            Rectangle()
-                .fill(Color.white.opacity(0.2))
-                .frame(height: 1)
-            Text("or")
-                .font(.system(size: 14))
-                .foregroundStyle(DesignTokens.Colors.Text.muted)
-            Rectangle()
-                .fill(Color.white.opacity(0.2))
-                .frame(height: 1)
-        }
-        .padding(.horizontal, 24)
-    }
+    private var emailField: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+            Text("Email")
+                .font(.system(size: 14, weight: .medium))
+                .foregroundStyle(Color.white.opacity(0.7))
 
-    // MARK: - Email Fields
-
-    private var emailFields: some View {
-        VStack(spacing: 12) {
-            formField(
-                icon: "envelope",
-                placeholder: "Email",
+            AuthComponents.GlassTextField(
+                placeholder: "Enter your email",
                 text: $email,
                 contentType: .emailAddress,
                 keyboardType: .emailAddress
             )
+        }
+    }
 
-            secureFormField(
-                icon: "lock",
-                placeholder: "Password",
+    private var passwordField: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+            HStack {
+                Text("Password")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundStyle(Color.white.opacity(0.7))
+                Spacer()
+                Button("Forgot password?") {}
+                    .font(.system(size: 13, weight: .medium))
+                    .foregroundStyle(DesignTokens.Colors.Primary.base)
+            }
+
+            AuthComponents.GlassSecureField(
+                placeholder: "Enter your password",
                 text: $password,
+                showText: $showPassword,
                 contentType: .password
             )
         }
-        .padding(.horizontal, 24)
     }
 
-    // MARK: - Login Button
+    // MARK: - Sign In Button
 
-    private var loginButton: some View {
+    private var signInButton: some View {
         Button(action: { Task { try await handleEmailLogin() } }) {
             HStack {
                 if authManager.isLoading {
                     ProgressView()
-                        .tint(.white)
+                        .tint(.black)
                         .scaleEffect(0.8)
                 }
                 Text("Sign In")
                     .font(.system(size: 16, weight: .semibold))
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .foregroundStyle(.white)
+            .frame(height: 52)
+            .foregroundStyle(.black)
             .background(DesignTokens.Colors.Primary.base)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.default))
         }
         .disabled(authManager.isLoading)
+        .opacity(authManager.isLoading ? 0.7 : 1.0)
     }
 
-    // MARK: - Register Link
+    // MARK: - Social Buttons
 
-    private var registerLink: some View {
-        Button(action: onRegister) {
-            Text("Don't have an account? ")
-                .foregroundStyle(DesignTokens.Colors.Text.secondary)
-            + Text("Sign up")
-                .foregroundStyle(DesignTokens.Colors.Primary.light)
-                .bold()
-        }
-        .font(.system(size: 14))
-    }
-
-    // MARK: - Form Fields
-
-    private func formField(
-        icon: String,
-        placeholder: String,
-        text: Binding<String>,
-        contentType: UITextContentType? = nil,
-        keyboardType: UIKeyboardType = .default
-    ) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.system(size: 16))
-                .foregroundStyle(DesignTokens.Colors.Text.muted)
-            TextField(placeholder, text: text)
-                .textContentType(contentType)
-                .keyboardType(keyboardType)
-                .autocorrectionDisabled()
-                .textInputAutocapitalization(.never)
-        }
-        .font(.system(size: 14))
-        .foregroundStyle(.white)
-        .padding(.vertical, 12)
-        .padding(.horizontal, 16)
-        .background(DesignTokens.Colors.Glass.background)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                .stroke(DesignTokens.Colors.Glass.border, lineWidth: 1)
-        )
-    }
-
-    private func secureFormField(
-        icon: String,
-        placeholder: String,
-        text: Binding<String>,
-        contentType: UITextContentType? = nil
-    ) -> some View {
-        HStack(spacing: 8) {
-            Image(systemName: icon)
-                .font(.system(size: 16))
-                .foregroundStyle(DesignTokens.Colors.Text.muted)
-            SecureField(placeholder, text: text)
-                .textContentType(contentType)
-        }
-        .font(.system(size: 14))
-        .foregroundStyle(.white)
-        .padding(.vertical, 12)
-        .padding(.horizontal, 16)
-        .background(DesignTokens.Colors.Glass.background)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                .stroke(DesignTokens.Colors.Glass.border, lineWidth: 1)
-        )
-    }
-
-    // MARK: - Social Button
-
-    private func socialButton(
-        title: String,
-        iconName: String,
-        backgroundColor: Color,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                Image(systemName: iconName)
-                    .font(.system(size: 20))
-                Text(title)
-                    .font(.system(size: 15, weight: .medium))
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .foregroundStyle(.white)
-            .background(backgroundColor)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
-            .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                    .stroke(Color.white.opacity(0.15), lineWidth: 1)
+    private var socialButtons: some View {
+        VStack(spacing: DesignTokens.Spacing.md) {
+            AuthComponents.SocialButton(
+                title: "Continue with Google",
+                iconName: "g.circle.fill",
+                action: { Task { try await handleGoogleSignIn() } }
+            )
+            AuthComponents.SocialButton(
+                title: "Continue with Apple",
+                iconName: "apple.logo",
+                action: { Task { try await handleAppleSignIn() } }
             )
         }
+    }
+
+    // MARK: - Sign Up Link
+
+    private var signUpLink: some View {
+        VStack(spacing: 0) {
+            Rectangle()
+                .fill(Color.white.opacity(0.08))
+                .frame(height: 1)
+                .padding(.bottom, DesignTokens.Spacing.lg)
+
+            Button(action: onRegister) {
+                Text("Don't have an account? ")
+                    .foregroundStyle(DesignTokens.Colors.Text.muted)
+                + Text("Sign Up")
+                    .foregroundStyle(DesignTokens.Colors.Primary.base)
+                    .bold()
+            }
+            .font(.system(size: 14))
+        }
+    }
+
+    // MARK: - Terms Footer
+
+    private var termsFooter: some View {
+        Text("By continuing, you agree to our Terms of Service and Privacy Policy")
+            .font(.system(size: 12))
+            .foregroundStyle(DesignTokens.Colors.Text.secondary)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: 320)
     }
 
     // MARK: - Actions
