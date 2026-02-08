@@ -9,22 +9,28 @@ struct HomeView: View {
     @State private var viewModel: HomeViewModel?
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            if let vm = viewModel {
-                LazyVStack(spacing: DesignTokens.Spacing.xl) {
-                    if vm.isLoading && vm.categories.isEmpty {
-                        loadingState
-                    } else if let error = vm.error, vm.categories.isEmpty {
-                        errorState(error)
-                    } else {
-                        contentSections(vm)
+        VStack(spacing: 0) {
+            // Top navigation bar
+            TopNavigationBar()
+
+            // Main content
+            ScrollView(.vertical, showsIndicators: false) {
+                if let vm = viewModel {
+                    LazyVStack(spacing: DesignTokens.Spacing.xl) {
+                        if vm.isLoading && vm.categories.isEmpty {
+                            loadingState
+                        } else if let error = vm.error, vm.categories.isEmpty {
+                            errorState(error)
+                        } else {
+                            contentSections(vm)
+                        }
                     }
                 }
             }
-        }
-        .background(DesignTokens.Background.primary)
-        .refreshable {
-            await viewModel?.refresh()
+            .background(DesignTokens.Background.primary)
+            .refreshable {
+                await viewModel?.refresh()
+            }
         }
         .task {
             if viewModel == nil {
@@ -63,12 +69,9 @@ struct HomeView: View {
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.bottom, DesignTokens.Spacing.md)
 
-        if let hero = vm.hero {
-            HeroSection(hero: hero)
-        }
-
+        // Hero carousel (auto-rotating, 6-second intervals)
         if !vm.spotlight.isEmpty {
-            SpotlightSection(items: vm.spotlight, coordinator: coordinator)
+            HeroCarousel(items: vm.spotlight, coordinator: coordinator)
         }
 
         // Continue Watching (only if has items)
