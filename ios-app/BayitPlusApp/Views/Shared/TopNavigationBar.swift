@@ -22,7 +22,7 @@ struct TopNavigationBar: View {
                     Text("Logout")
                         .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 }
-                .foregroundColor(DesignTokens.Error.default)
+                .foregroundColor(DesignTokens.ErrorColor.default)
                 .padding(.horizontal, DesignTokens.Spacing.md)
                 .padding(.vertical, DesignTokens.Spacing.sm)
                 .background(DesignTokens.Glass.bgMedium)

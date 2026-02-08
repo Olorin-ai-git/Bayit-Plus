@@ -92,8 +92,23 @@ struct SettingsView: View {
             navRow(icon: "lock.shield", title: localization.t("settings.security")) {
                 coordinator.pushToCurrentTab(.security)
             }
+            navRow(icon: "person.3", title: localization.t("settings.familyControls")) {
+                coordinator.pushToCurrentTab(.familyControls)
+            }
+            navRow(icon: "house.lodge", title: localization.t("settings.household")) {
+                coordinator.pushToCurrentTab(.household)
+            }
+            navRow(icon: "link", title: localization.t("settings.devicePairing")) {
+                coordinator.pushToCurrentTab(.devicePairing)
+            }
+            navRow(icon: "key", title: localization.t("settings.passkeys")) {
+                coordinator.pushToCurrentTab(.passkeyManagement)
+            }
             navRow(icon: "questionmark.circle", title: localization.t("settings.support")) {
                 coordinator.pushToCurrentTab(.support)
+            }
+            navRow(icon: "lifepreserver", title: localization.t("settings.helpCenter")) {
+                coordinator.pushToCurrentTab(.helpCenter)
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)

@@ -46,6 +46,65 @@ public enum Route: Hashable {
 
     // Support
     case support
+
+    // Trivia & Quiz
+    case trivia(contentId: String)
+
+    // LLM Search
+    case llmSearch
+
+    // Family Controls
+    case familyControls
+
+    // Shabbat Mode
+    case shabbatMode
+
+    // Culture Content
+    case jerusalemContent
+    case telAvivContent
+
+    // Audiobooks
+    case audiobooks
+    case audiobookDetail(audiobookId: String)
+
+    // Trending
+    case trending
+
+    // Interactive Subtitles
+    case interactiveSubtitles(contentId: String)
+
+    // Chapter Navigation
+    case chapters(contentId: String)
+
+    // AI Chat
+    case chatbot
+
+    // Avatar Mode
+    case avatarMode
+
+    // Beta Credits
+    case betaCredits
+
+    // Subscription Gate
+    case subscriptionGate(contentId: String, requiredTier: String)
+
+    // Household
+    case household
+
+    // Device Pairing
+    case devicePairing
+
+    // Help Center
+    case helpCenter
+
+    // Rewards
+    case rewards
+
+    // Passkey Management
+    case passkeyManagement
+
+    // Onboarding AI
+    case onboardingAI
 }
 
 /// Content types for player navigation
@@ -151,6 +210,61 @@ public enum DeepLink {
 
         case "voiceOnboarding":
             return .voiceOnboarding
+
+        case "trivia":
+            guard let contentId = pathComponents.dropFirst().first else { return nil }
+            return .trivia(contentId: contentId)
+
+        case "llmSearch":
+            return .llmSearch
+
+        case "familyControls":
+            return .familyControls
+
+        case "shabbatMode":
+            return .shabbatMode
+
+        case "jerusalem":
+            return .jerusalemContent
+
+        case "telAviv":
+            return .telAvivContent
+
+        case "audiobooks":
+            if let audiobookId = pathComponents.dropFirst().first {
+                return .audiobookDetail(audiobookId: audiobookId)
+            }
+            return .audiobooks
+
+        case "trending":
+            return .trending
+
+        case "chatbot":
+            return .chatbot
+
+        case "avatarMode":
+            return .avatarMode
+
+        case "betaCredits":
+            return .betaCredits
+
+        case "household":
+            return .household
+
+        case "devicePairing":
+            return .devicePairing
+
+        case "helpCenter":
+            return .helpCenter
+
+        case "rewards":
+            return .rewards
+
+        case "passkeyManagement":
+            return .passkeyManagement
+
+        case "onboardingAI":
+            return .onboardingAI
 
         default:
             return .home

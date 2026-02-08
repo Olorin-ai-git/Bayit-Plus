@@ -21,6 +21,7 @@ struct ProfileView: View {
                         }
                     } else if let profile = vm.profile {
                         profileHeader(profile)
+                        creditBalanceSection(profile)
                         statsSection(vm.stats)
                         menuSection
                     }
@@ -126,6 +127,43 @@ struct ProfileView: View {
         }
     }
 
+    @ViewBuilder
+    private func creditBalanceSection(_ profile: ProfileResponse) -> some View {
+        if profile.isBetaUser == true {
+            GlassCard {
+                Button {
+                    coordinator.pushToCurrentTab(.betaCredits)
+                } label: {
+                    HStack(spacing: DesignTokens.Spacing.md) {
+                        Image(systemName: "sparkles")
+                            .font(.system(size: DesignTokens.FontSize.xl))
+                            .foregroundColor(DesignTokens.Primary.default)
+
+                        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
+                            Text(localization.t("profile.betaCredits"))
+                                .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                                .foregroundColor(DesignTokens.Text.primary)
+
+                            if let credits = profile.betaCredits {
+                                Text("\(credits) \(localization.t("profile.creditsRemaining"))")
+                                    .font(.system(size: DesignTokens.FontSize.sm))
+                                    .foregroundColor(DesignTokens.Text.secondary)
+                            }
+                        }
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: DesignTokens.FontSize.sm))
+                            .foregroundColor(DesignTokens.Text.muted)
+                    }
+                    .padding(DesignTokens.Spacing.md)
+                }
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+        }
+    }
+
     private var menuSection: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
             menuRow(icon: "heart.fill", title: "profile.favorites") {
@@ -139,6 +177,12 @@ struct ProfileView: View {
             }
             menuRow(icon: "record.circle", title: "profile.recordings") {
                 coordinator.pushToCurrentTab(.recordings)
+            }
+            menuRow(icon: "star.fill", title: "profile.rewards") {
+                coordinator.pushToCurrentTab(.rewards)
+            }
+            menuRow(icon: "house.lodge.fill", title: "profile.household") {
+                coordinator.pushToCurrentTab(.household)
             }
             menuRow(icon: "gearshape.fill", title: "profile.settings") {
                 coordinator.pushToCurrentTab(.settings)

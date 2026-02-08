@@ -18,6 +18,23 @@ final class RepositoryProvider {
     let category: any CategoryRepository
     let voice: any VoiceRepository
     let settings: any SettingsRepository
+    let trivia: any TriviaRepository
+    let chat: any ChatRepository
+    let liveDubbing: any LiveDubbingRepository
+    let culture: any CultureRepository
+    let shabbat: any ShabbatRepository
+    let familyControls: any FamilyControlsRepository
+    let securitySettings: any SecurityRepository
+    let passkey: any PasskeyRepository
+    let betaCredits: any BetaCreditsRepository
+    let subtitle: any SubtitleRepository
+    let chapter: any ChapterRepository
+    let audiobook: any AudiobookRepository
+    let trendingRepo: any TrendingRepository
+    let llmSearch: any LLMSearchRepository
+    let household: any HouseholdRepository
+    let reward: any RewardRepository
+    let devicePairing: any DevicePairingRepository
 
     init(client: APIClient) {
         self.content = APIContentRepository(client: client)
@@ -31,5 +48,22 @@ final class RepositoryProvider {
         self.category = APICategoryRepository(client: client)
         self.voice = APIVoiceRepository(client: client)
         self.settings = APISettingsRepository(client: client)
+        self.trivia = APITriviaRepository(client: client)
+        self.chat = APIChatRepository(client: client)
+        self.liveDubbing = APILiveDubbingRepository(client: client)
+        self.culture = APICultureRepository(client: client)
+        self.shabbat = APIShabbatRepository(client: client)
+        self.familyControls = APIFamilyControlsRepository(client: client)
+        self.securitySettings = APISecurityRepository(client: client)
+        self.passkey = APIPasskeyRepository(client: client)
+        self.betaCredits = APIBetaCreditsRepository(client: client)
+        self.subtitle = APISubtitleRepository(client: client)
+        self.chapter = APIChapterRepository(client: client)
+        self.audiobook = APIAudiobookRepository(client: client)
+        self.trendingRepo = APITrendingRepository(client: client)
+        self.llmSearch = APILLMSearchRepository(client: client)
+        self.household = APIHouseholdRepository(client: client)
+        self.reward = APIRewardRepository(client: client)
+        self.devicePairing = APIDevicePairingRepository(client: client)
     }
 }

@@ -1,14 +1,17 @@
 import BayitAuth
 import BayitDesignSystem
+import LocalAuthentication
 import SwiftUI
 
 /// Login screen matching web app design at /login
 struct LoginView: View {
     @Environment(AuthManager.self) private var authManager
+    @Environment(RepositoryProvider.self) private var repos
 
     @State private var email = ""
     @State private var password = ""
     @State private var showPassword = false
+    @State private var biometricService = BiometricAuthService()
 
     let onRegister: () -> Void
     let onLoginSuccess: () -> Void
@@ -134,6 +137,15 @@ struct LoginView: View {
 
     private var socialButtons: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
+            // Face ID / Touch ID button (if available)
+            if biometricService.isBiometricAvailable() {
+                AuthComponents.SocialButton(
+                    title: biometricButtonTitle,
+                    iconName: biometricIconName,
+                    action: { Task { await handleBiometricSignIn() } }
+                )
+            }
+
             AuthComponents.SocialButton(
                 title: "Continue with Google",
                 iconName: "g.circle.fill",
@@ -144,6 +156,22 @@ struct LoginView: View {
                 iconName: "apple.logo",
                 action: { Task { try await handleAppleSignIn() } }
             )
+        }
+    }
+
+    private var biometricButtonTitle: String {
+        switch biometricService.biometricType() {
+        case .faceID: return "Sign in with Face ID"
+        case .touchID: return "Sign in with Touch ID"
+        case .none: return "Sign in with Biometric"
+        }
+    }
+
+    private var biometricIconName: String {
+        switch biometricService.biometricType() {
+        case .faceID: return "faceid"
+        case .touchID: return "touchid"
+        case .none: return "lock.shield"
         }
     }
 
@@ -192,6 +220,44 @@ struct LoginView: View {
     private func handleEmailLogin() async throws {
         guard !email.isEmpty, !password.isEmpty else { return }
         try await authManager.signInWithEmail(email: email, password: password)
+
+        // Store credentials in Keychain for future biometric sign-in (if device supports it)
+        if biometricService.isBiometricAvailable() {
+            KeychainHelper.storeEmail(email)
+            KeychainHelper.storePassword(password)
+        }
+
         onLoginSuccess()
+    }
+
+    private func handleBiometricSignIn() async {
+        do {
+            // First authenticate with Face ID / Touch ID
+            let authenticated = try await biometricService.authenticate(
+                reason: "Sign in to Bayit+"
+            )
+
+            guard authenticated else { return }
+
+            // Retrieve stored credentials from iOS Keychain
+            guard let storedEmail = KeychainHelper.retrieveEmail(),
+                  let storedPassword = KeychainHelper.retrievePassword() else {
+                // No stored credentials - user needs to sign in normally first
+                return
+            }
+
+            // Sign in using stored credentials
+            try await authManager.signInWithEmail(
+                email: storedEmail,
+                password: storedPassword
+            )
+            onLoginSuccess()
+
+        } catch {
+            // Biometric auth failed or was cancelled - do nothing (user can try other methods)
+            if (error as NSError).code != LAError.userCancel.rawValue {
+                // Only show error if it wasn't a user cancellation
+            }
+        }
     }
 }

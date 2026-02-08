@@ -50,7 +50,13 @@ public final class NavigationCoordinator {
              .recordings, .settings, .languageSettings,
              .notificationSettings, .billing, .subscription,
              .security, .children, .youngsters, .judaism,
-             .flows, .morningRitual, .voiceOnboarding, .support:
+             .flows, .morningRitual, .voiceOnboarding, .support,
+             .trivia, .llmSearch, .familyControls, .shabbatMode,
+             .jerusalemContent, .telAvivContent, .audiobooks,
+             .audiobookDetail, .trending, .interactiveSubtitles,
+             .chapters, .chatbot, .avatarMode, .betaCredits,
+             .subscriptionGate, .household, .devicePairing,
+             .helpCenter, .rewards, .passkeyManagement, .onboardingAI:
             pushToCurrentTab(route)
         }
     }

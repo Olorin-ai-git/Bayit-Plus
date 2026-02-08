@@ -45,7 +45,7 @@ struct MainTabView: View {
         case .podcasts:
             PodcastsView()
         case .widgets:
-            ScreenPlaceholder(title: "Widgets", subtitle: "Manage your widgets")
+            PiPWidgetManagerView()
         }
     }
 
@@ -96,6 +96,87 @@ struct MainTabView: View {
             VoiceOnboardingView(speechService: SpeechRecognitionService())
         case .support:
             SupportView()
+
+        // Trivia & Quiz
+        case .trivia(let contentId):
+            QuizOverlayView(contentId: contentId)
+
+        // LLM Search
+        case .llmSearch:
+            LLMSearchView()
+
+        // Family Controls
+        case .familyControls:
+            FamilyControlsView()
+
+        // Shabbat Mode
+        case .shabbatMode:
+            ZmanimView()
+
+        // Culture Content
+        case .jerusalemContent:
+            CultureContentView(cultureId: "jerusalem")
+        case .telAvivContent:
+            CultureContentView(cultureId: "tel-aviv")
+
+        // Audiobooks
+        case .audiobooks:
+            AudiobooksView()
+        case .audiobookDetail(let audiobookId):
+            AudiobookDetailView(audiobookId: audiobookId)
+
+        // Trending
+        case .trending:
+            ScreenPlaceholder(title: "Trending", subtitle: "Trending Content")
+
+        // Interactive Subtitles
+        case .interactiveSubtitles(let contentId):
+            InteractiveSubtitlesOverlay(contentId: contentId)
+
+        // Chapter Navigation
+        case .chapters(let contentId):
+            ChapterListView(contentId: contentId)
+
+        // AI Chat
+        case .chatbot:
+            ChatbotView()
+
+        // Avatar Mode
+        case .avatarMode:
+            AvatarModeView()
+
+        // Beta Credits
+        case .betaCredits:
+            CreditBalanceWidgetView()
+
+        // Subscription Gate
+        case .subscriptionGate(let contentId, let requiredTier):
+            SubscriptionGateView(contentId: contentId, requiredTier: requiredTier)
+
+        // Household
+        case .household:
+            HouseholdView()
+
+        // Device Pairing
+        case .devicePairing:
+            DevicePairingView()
+
+        // Help Center
+        case .helpCenter:
+            HelpView()
+
+        // Rewards
+        case .rewards:
+            RewardsView()
+
+        // Passkey Management
+        case .passkeyManagement:
+            PasskeyManagementView()
+
+        // Onboarding AI
+        case .onboardingAI:
+            OnboardingAIView()
+
         default:
             ScreenPlaceholder(title: "Screen", subtitle: "")
         }

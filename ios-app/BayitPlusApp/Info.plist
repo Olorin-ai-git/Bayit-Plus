@@ -47,6 +47,8 @@
 	<string>Bayit+ uses the microphone for voice commands</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Bayit+ uses speech recognition for voice commands</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Bayit+ uses Face ID to securely sign you in</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
