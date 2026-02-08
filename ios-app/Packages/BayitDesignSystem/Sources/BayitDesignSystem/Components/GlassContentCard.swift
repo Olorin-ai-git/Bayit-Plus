@@ -105,7 +105,7 @@ public struct GlassContentCard: View {
         }
         .padding(.horizontal, DesignTokens.Spacing.xs)
         .padding(.vertical, 2)
-        .background(Color.black.opacity(0.7))
+        .background(DesignTokens.Glass.bg)
         .clipShape(Capsule())
     }
 

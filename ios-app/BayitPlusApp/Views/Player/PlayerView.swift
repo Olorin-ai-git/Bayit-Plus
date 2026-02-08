@@ -24,6 +24,7 @@ struct PlayerView: View {
     @State private var showSubtitlePicker = false
     @State private var subtitlesVM: InteractiveSubtitlesViewModel?
     @State private var selectedSubtitleLanguage: String?
+    @State private var subtitleLoadTask: Task<Void, Never>?
 
     let contentId: String
     let contentType: ContentType
@@ -86,6 +87,7 @@ struct PlayerView: View {
             nowPlayingService.clear()
             remoteCommandService.unregister()
             controlsTimer?.cancel()
+            subtitleLoadTask?.cancel()
         }
         .onChange(of: viewModel.player.currentTime) { _, _ in
             updateNowPlaying()
@@ -256,7 +258,9 @@ struct PlayerView: View {
                 .frame(width: 44, height: 44)
         }
         .accessibilityLabel("Subtitles")
-        .accessibilityValue(selectedSubtitleLanguage ?? "Off")
+        .accessibilityValue(
+            selectedSubtitleLanguage.flatMap { SubtitleLanguages.info(for: $0)?.name } ?? "Off"
+        )
     }
 
     private var availableSubtitleLanguages: [String] {
@@ -265,13 +269,14 @@ struct PlayerView: View {
 
     private func handleSubtitleSelection(_ language: String?) {
         selectedSubtitleLanguage = language
+        subtitleLoadTask?.cancel()
         if let language {
             if subtitlesVM == nil {
                 subtitlesVM = InteractiveSubtitlesViewModel(
                     repository: repositories.subtitle
                 )
             }
-            Task {
+            subtitleLoadTask = Task {
                 await subtitlesVM?.loadCues(contentId: contentId, language: language)
             }
         } else {

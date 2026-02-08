@@ -1,8 +1,9 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Sheet view listing available subtitle languages for the player.
-/// Shows flag + native name for each language, a highlight on the selected language,
+/// Shows language badge + native name for each language, a highlight on the selected language,
 /// and an "Off" option to disable subtitles.
 struct SubtitleLanguagePickerView: View {
     let availableLanguages: [String]
@@ -10,6 +11,7 @@ struct SubtitleLanguagePickerView: View {
     let onSelect: (String?) -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
         NavigationStack {
@@ -23,18 +25,20 @@ struct SubtitleLanguagePickerView: View {
                 .padding(DesignTokens.Spacing.lg)
             }
             .background(DesignTokens.Background.primary)
-            .navigationTitle("Subtitles")
+            .navigationTitle(localization.t("player.subtitles"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundStyle(DesignTokens.Text.secondary)
+                            .frame(width: 44, height: 44)
                     }
-                    .accessibilityLabel("Close subtitle picker")
+                    .accessibilityLabel(localization.t("player.subtitles"))
                 }
             }
         }
+        .environment(\.layoutDirection, localization.layoutDirection)
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
     }
@@ -51,7 +55,7 @@ struct SubtitleLanguagePickerView: View {
                     .font(.system(size: 24))
                     .foregroundStyle(DesignTokens.Text.secondary)
 
-                Text("Off")
+                Text(localization.t("player.subtitlesOff"))
                     .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.primary)
 
@@ -67,6 +71,8 @@ struct SubtitleLanguagePickerView: View {
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(localization.t("player.subtitlesOff"))
+        .accessibilityValue(selectedLanguage == nil ? "Selected" : "")
     }
 
     // MARK: - Language Row
@@ -78,8 +84,12 @@ struct SubtitleLanguagePickerView: View {
             dismiss()
         } label: {
             HStack(spacing: DesignTokens.Spacing.md) {
-                Text(info.flag)
-                    .font(.system(size: 24))
+                Text(info.badge)
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .bold))
+                    .foregroundStyle(.white)
+                    .frame(width: 32, height: 24)
+                    .background(DesignTokens.Primary.p700)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(info.nativeName)
@@ -103,6 +113,9 @@ struct SubtitleLanguagePickerView: View {
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(info.name) subtitles")
+        .accessibilityValue(isSelected ? "Selected" : "")
     }
 
     // MARK: - Helpers
