@@ -47,6 +47,7 @@ struct VODView: View {
                     title: item.title,
                     subtitle: vodSubtitle(for: item),
                     badge: item.isSeries == true ? "Series" : nil,
+                    subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
                     aspectRatio: 2 / 3,
                     width: .infinity
                 ) {

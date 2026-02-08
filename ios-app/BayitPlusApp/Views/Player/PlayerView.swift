@@ -21,6 +21,9 @@ struct PlayerView: View {
     @State private var remoteCommandService = RemoteCommandService()
     @State private var dubbingMixer = DubbingMixer()
     @State private var isDubbingEnabled = false
+    @State private var showSubtitlePicker = false
+    @State private var subtitlesVM: InteractiveSubtitlesViewModel?
+    @State private var selectedSubtitleLanguage: String?
 
     let contentId: String
     let contentType: ContentType
@@ -57,6 +60,17 @@ struct PlayerView: View {
                 errorOverlay(error)
             }
 
+            // Subtitle overlay (above video, below controls)
+            if let vm = subtitlesVM, let lang = selectedSubtitleLanguage {
+                InteractiveSubtitlesOverlay(
+                    viewModel: vm,
+                    contentId: contentId,
+                    currentTime: viewModel.player.currentTime,
+                    language: lang
+                )
+                .allowsHitTesting(showControls)
+            }
+
             // Controls overlay
             if showControls && !viewModel.isLoading && viewModel.errorMessage == nil {
                 controlsOverlay
@@ -75,6 +89,15 @@ struct PlayerView: View {
         }
         .onChange(of: viewModel.player.currentTime) { _, _ in
             updateNowPlaying()
+        }
+        .sheet(isPresented: $showSubtitlePicker) {
+            SubtitleLanguagePickerView(
+                availableLanguages: availableSubtitleLanguages,
+                selectedLanguage: selectedSubtitleLanguage,
+                onSelect: { language in
+                    handleSubtitleSelection(language)
+                }
+            )
         }
     }
 
@@ -158,6 +181,7 @@ struct PlayerView: View {
 
             Spacer()
 
+            subtitleToggle
             dubbingToggle
 
             AirPlayView()
@@ -218,6 +242,41 @@ struct PlayerView: View {
         }
         .accessibilityLabel("Live dubbing")
         .accessibilityValue(isDubbingEnabled ? "On" : "Off")
+    }
+
+    // MARK: - Subtitles
+
+    private var subtitleToggle: some View {
+        Button { showSubtitlePicker = true } label: {
+            Image(systemName: selectedSubtitleLanguage != nil ? "cc.circle.fill" : "cc.circle")
+                .font(.system(size: 18))
+                .foregroundStyle(
+                    selectedSubtitleLanguage != nil ? DesignTokens.Primary.p400 : .white
+                )
+                .frame(width: 44, height: 44)
+        }
+        .accessibilityLabel("Subtitles")
+        .accessibilityValue(selectedSubtitleLanguage ?? "Off")
+    }
+
+    private var availableSubtitleLanguages: [String] {
+        viewModel.availableSubtitleLanguages
+    }
+
+    private func handleSubtitleSelection(_ language: String?) {
+        selectedSubtitleLanguage = language
+        if let language {
+            if subtitlesVM == nil {
+                subtitlesVM = InteractiveSubtitlesViewModel(
+                    repository: repositories.subtitle
+                )
+            }
+            Task {
+                await subtitlesVM?.loadCues(contentId: contentId, language: language)
+            }
+        } else {
+            subtitlesVM = nil
+        }
     }
 
     // MARK: - Helpers

@@ -1,21 +1,26 @@
 import SwiftUI
 
 /// Content card for movies, series, podcasts with thumbnail and metadata
-/// Features glass overlay, optional badge, and tap interaction
+/// Features glass overlay, optional badge, subtitle language flags, and tap interaction
 public struct GlassContentCard: View {
     let thumbnailURL: String?
     let title: String?
     let subtitle: String?
     let badge: String?
+    let subtitleFlags: [String]?
     let aspectRatio: CGFloat
     let width: CGFloat
     let onTap: () -> Void
+
+    /// Maximum number of flags displayed before showing "+N" overflow
+    private let maxVisibleFlags = 5
 
     public init(
         thumbnailURL: String?,
         title: String?,
         subtitle: String? = nil,
         badge: String? = nil,
+        subtitleFlags: [String]? = nil,
         aspectRatio: CGFloat = 16/9,
         width: CGFloat = 280,
         onTap: @escaping () -> Void = {}
@@ -24,6 +29,7 @@ public struct GlassContentCard: View {
         self.title = title
         self.subtitle = subtitle
         self.badge = badge
+        self.subtitleFlags = subtitleFlags
         self.aspectRatio = aspectRatio
         self.width = width
         self.onTap = onTap
@@ -61,11 +67,53 @@ public struct GlassContentCard: View {
                     .padding(DesignTokens.Spacing.sm)
             }
 
+            if let flags = subtitleFlags, !flags.isEmpty {
+                subtitleFlagsOverlay(flags)
+            }
+
             VStack {
                 Spacer()
                 metadataOverlay
             }
         }
+    }
+
+    private func subtitleFlagsOverlay(_ flags: [String]) -> some View {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                subtitleFlagsPill(flags)
+                    .padding(DesignTokens.Spacing.xs)
+            }
+        }
+        .padding(.bottom, metadataHeight)
+    }
+
+    private func subtitleFlagsPill(_ flags: [String]) -> some View {
+        HStack(spacing: 2) {
+            let visible = Array(flags.prefix(maxVisibleFlags))
+            ForEach(visible, id: \.self) { flag in
+                Text(flag)
+                    .font(.system(size: DesignTokens.FontSize.xs))
+            }
+            if flags.count > maxVisibleFlags {
+                Text("+\(flags.count - maxVisibleFlags)")
+                    .font(.system(size: DesignTokens.FontSize.xs, weight: .medium))
+                    .foregroundColor(DesignTokens.Text.secondary)
+            }
+        }
+        .padding(.horizontal, DesignTokens.Spacing.xs)
+        .padding(.vertical, 2)
+        .background(Color.black.opacity(0.7))
+        .clipShape(Capsule())
+    }
+
+    /// Estimated metadata overlay height for flag positioning above it
+    private var metadataHeight: CGFloat {
+        (title != nil || subtitle != nil)
+            ? (DesignTokens.Spacing.md * 2 + DesignTokens.FontSize.md + DesignTokens.Spacing.xs)
+            : 0
     }
 
     private var thumbnailImage: some View {

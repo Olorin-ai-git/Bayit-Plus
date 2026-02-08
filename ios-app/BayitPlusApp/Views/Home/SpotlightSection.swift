@@ -13,6 +13,7 @@ struct SpotlightSection: View {
                 title: item.title,
                 subtitle: spotlightSubtitle(for: item),
                 badge: item.isSeries == true ? "Series" : nil,
+                subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
                 aspectRatio: 16 / 9,
                 width: 300
             ) {

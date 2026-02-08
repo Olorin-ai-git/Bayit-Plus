@@ -19,6 +19,7 @@ final class MediaPlayerViewModel {
     private(set) var initialPosition: TimeInterval = 0
     private(set) var availableQualities: [QualityVariant] = []
     private(set) var currentQuality: String?
+    private(set) var availableSubtitleLanguages: [String] = []
 
     let player: MediaPlayer
     let contentId: String
@@ -64,6 +65,7 @@ final class MediaPlayerViewModel {
             let detail = try await contentRepository.fetchContentDetail(id: contentId)
             title = detail.title
             subtitle = detail.category
+            availableSubtitleLanguages = detail.availableSubtitleLanguages ?? []
             if let backdropStr = detail.backdrop, let url = URL(string: backdropStr) {
                 artworkURL = url
             }

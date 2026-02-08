@@ -147,6 +147,7 @@ struct TrendingRowView: View {
                         thumbnailURL: item.thumbnail,
                         title: item.title,
                         subtitle: item.category,
+                        subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
                         aspectRatio: 2 / 3,
                         width: 160
                     ) {

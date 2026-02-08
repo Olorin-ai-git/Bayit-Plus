@@ -7,6 +7,7 @@ struct InteractiveSubtitlesOverlay: View {
     @Bindable var viewModel: InteractiveSubtitlesViewModel
     let contentId: String
     let currentTime: Double
+    var language: String?
 
     var body: some View {
         VStack {
@@ -30,7 +31,7 @@ struct InteractiveSubtitlesOverlay: View {
             viewModel.updateActiveCue(currentTime: newTime)
         }
         .task {
-            await viewModel.loadCues(contentId: contentId, language: nil)
+            await viewModel.loadCues(contentId: contentId, language: language)
         }
     }
 

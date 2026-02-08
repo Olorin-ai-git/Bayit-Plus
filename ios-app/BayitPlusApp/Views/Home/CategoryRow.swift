@@ -19,6 +19,7 @@ struct CategoryRow: View {
                     title: item.title,
                     subtitle: itemSubtitle(for: item),
                     badge: itemBadge(for: item),
+                    subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
                     aspectRatio: itemAspectRatio(for: item),
                     width: itemWidth
                 ) {
