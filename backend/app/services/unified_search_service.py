@@ -24,6 +24,15 @@ from app.services.search_cache import get_cache
 
 logger = logging.getLogger(__name__)
 
+# MongoDB English text index stop words (subset used for AND-query building).
+# When building AND-mode queries we strip these so only meaningful terms remain.
+ENGLISH_STOP_WORDS = frozenset({
+    "a", "an", "and", "are", "as", "at", "be", "but", "by", "for",
+    "if", "in", "into", "is", "it", "no", "not", "of", "on", "or",
+    "such", "that", "the", "their", "then", "there", "these", "they",
+    "this", "to", "was", "will", "with",
+})
+
 
 class SearchFilters(BaseModel):
     """Advanced search filters"""
@@ -261,22 +270,49 @@ class UnifiedSearchService:
                     .to_list(length=200)
                 )
 
-            # Fall back to word search if phrase search found nothing
+            # Fall back to AND-word search, then OR-word search
+            is_or_fallback = False
             if phrase_results:
                 raw_results = phrase_results
             else:
-                raw_results = (
-                    await collection.find(
-                        mongo_query,
-                        {"score": {"$meta": "textScore"}},
+                # Try AND-word search: require ALL non-stop words
+                and_results = []
+                if len(words) > 1:
+                    and_query = self._build_mongo_query(
+                        query, filters, user_subscription_tier,
+                        is_beta_user, use_and_words=True,
                     )
-                    .sort([("score", {"$meta": "textScore"})])
-                    .limit(200)
-                    .to_list(length=200)
-                )
+                    and_results = (
+                        await collection.find(
+                            and_query,
+                            {"score": {"$meta": "textScore"}},
+                        )
+                        .sort([("score", {"$meta": "textScore"})])
+                        .limit(200)
+                        .to_list(length=200)
+                    )
+
+                if and_results:
+                    raw_results = and_results
+                else:
+                    # Last resort: OR-word search (original query)
+                    is_or_fallback = True
+                    raw_results = (
+                        await collection.find(
+                            mongo_query,
+                            {"score": {"$meta": "textScore"}},
+                        )
+                        .sort([("score", {"$meta": "textScore"})])
+                        .limit(200)
+                        .to_list(length=200)
+                    )
 
             # Filter by minimum text score to exclude irrelevant matches
             min_score = settings.SEARCH_MIN_TEXT_SCORE
+            # Raise the bar for OR-word fallback (less precise matches)
+            if is_or_fallback and len(words) > 1:
+                or_score_multiplier = 1.5
+                min_score = min_score * or_score_multiplier
             title_threshold = settings.SEARCH_TITLE_BOOST_THRESHOLD
             filtered = [r for r in raw_results if r.get("score", 0) >= min_score]
 
@@ -333,7 +369,7 @@ class UnifiedSearchService:
         if is_beta_user is True:
             conditions.append({"is_beta_content": True})
         elif is_beta_user is False:
-            conditions.append({"is_beta_content": False})
+            conditions.append({"is_beta_content": {"$ne": True}})
 
         mongo_query = {"$and": conditions} if len(conditions) > 1 else conditions[0]
 
@@ -367,7 +403,7 @@ class UnifiedSearchService:
         if is_beta_user is True:
             conditions.append({"is_beta_content": True})
         elif is_beta_user is False:
-            conditions.append({"is_beta_content": False})
+            conditions.append({"is_beta_content": {"$ne": True}})
 
         mongo_query = {"$and": conditions} if len(conditions) > 1 else conditions[0]
 
@@ -402,7 +438,7 @@ class UnifiedSearchService:
         if is_beta_user is True:
             conditions.append({"is_beta_content": True})
         elif is_beta_user is False:
-            conditions.append({"is_beta_content": False})
+            conditions.append({"is_beta_content": {"$ne": True}})
 
         mongo_query = {"$and": conditions} if len(conditions) > 1 else conditions[0]
 
@@ -488,6 +524,7 @@ class UnifiedSearchService:
         user_subscription_tier: Optional[str],
         is_beta_user: Optional[bool] = None,
         use_phrase: bool = False,
+        use_and_words: bool = False,
     ) -> Dict[str, Any]:
         """
         Build MongoDB query from search query and filters.
@@ -495,12 +532,24 @@ class UnifiedSearchService:
         Args:
             use_phrase: If True, wrap multi-word queries in quotes for
                         MongoDB phrase matching (exact word sequence).
+            use_and_words: If True, quote each non-stop word individually
+                          so MongoDB requires ALL terms (AND semantics).
         """
         conditions = []
 
         # Text search condition
         if query.strip():
-            search_term = f'"{query}"' if use_phrase else query
+            if use_and_words:
+                # Quote each meaningful word so MongoDB $text requires ALL
+                meaningful = [
+                    w for w in query.strip().split()
+                    if w.lower() not in ENGLISH_STOP_WORDS
+                ]
+                search_term = " ".join(f'"{w}"' for w in meaningful)
+            elif use_phrase:
+                search_term = f'"{query}"'
+            else:
+                search_term = query
             conditions.append({"$text": {"$search": search_term}})
 
         # Always filter by published
@@ -558,10 +607,11 @@ class UnifiedSearchService:
             conditions.append({"is_kids_content": filters.is_kids_content})
 
         # Beta content filter (None = admin, bypasses filter)
+        # Use $ne True instead of == False to also match None/missing values
         if is_beta_user is True:
             conditions.append({"is_beta_content": True})
         elif is_beta_user is False:
-            conditions.append({"is_beta_content": False})
+            conditions.append({"is_beta_content": {"$ne": True}})
 
         # Combine all conditions
         if len(conditions) == 1:

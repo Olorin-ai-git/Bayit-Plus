@@ -24,17 +24,17 @@ struct ChessMove: Identifiable, Sendable {
 /// WebSocket handling is in `ChessViewModel+WebSocket.swift`.
 @Observable
 final class ChessViewModel {
-    private(set) var game: ChessGame?
-    private(set) var board: [[Character?]] = Array(
+    var game: ChessGame?
+    var board: [[Character?]] = Array(
         repeating: Array(repeating: nil, count: 8), count: 8
     )
-    private(set) var currentTurn: PlayerColor = .white
-    private(set) var gameStatus: ChessGameStatus = .waiting
-    private(set) var moveHistory: [ChessMove] = []
-    private(set) var capturedPieces: (white: [Character], black: [Character]) = ([], [])
-    private(set) var isLoading = false
-    private(set) var error: String?
-    private(set) var drawOffered = false
+    var currentTurn: PlayerColor = .white
+    var gameStatus: ChessGameStatus = .waiting
+    var moveHistory: [ChessMove] = []
+    var capturedPieces: (white: [Character], black: [Character]) = ([], [])
+    var isLoading = false
+    var error: String?
+    var drawOffered = false
 
     var selectedSquare: (row: Int, col: Int)?
 

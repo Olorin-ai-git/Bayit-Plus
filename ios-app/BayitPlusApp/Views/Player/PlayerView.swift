@@ -30,7 +30,8 @@ struct PlayerView: View {
     let contentType: ContentType
 
     init(contentId: String, contentType: ContentType, player: MediaPlayer,
-         repository: any MediaRepository, contentRepository: any ContentRepository) {
+         repository: any MediaRepository, contentRepository: any ContentRepository,
+         liveTVRepository: any LiveTVRepository) {
         self.contentId = contentId
         self.contentType = contentType
         _viewModel = State(initialValue: MediaPlayerViewModel(
@@ -38,7 +39,8 @@ struct PlayerView: View {
             contentType: contentType,
             player: player,
             repository: repository,
-            contentRepository: contentRepository
+            contentRepository: contentRepository,
+            liveTVRepository: liveTVRepository
         ))
     }
 

@@ -26,46 +26,23 @@
 				<string>bayitplus</string>
 			</array>
 		</dict>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf</string>
-			</array>
-		</dict>
 	</array>
+	<key>CFBundleVersion</key>
+	<string>1</string>
 	<key>GOOGLE_CLIENT_ID</key>
-	<string>624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com</string>
-	<key>GIDClientID</key>
 	<string>624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com</string>
 	<key>GOOGLE_SERVER_CLIENT_ID</key>
 	<string>624470113582-7p34b1tpqlfob5sh4cl9eoospmvao1at.apps.googleusercontent.com</string>
-	<key>CFBundleVersion</key>
-	<string>1</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Bayit+ uses your location to show Israeli community content near you</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bayit+ uses the microphone for voice commands</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Bayit+ uses speech recognition for voice commands</string>
-	<key>NSFaceIDUsageDescription</key>
-	<string>Bayit+ uses Face ID to securely sign you in</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
-	</dict>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-			</dict>
-		</dict>
 	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string></string>

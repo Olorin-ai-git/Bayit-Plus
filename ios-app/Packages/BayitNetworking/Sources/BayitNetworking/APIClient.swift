@@ -15,7 +15,7 @@ public actor APIClient {
 
     // MARK: - Dependencies
 
-    let configuration: NetworkConfiguration
+    public let configuration: NetworkConfiguration
     let authTokenProvider: AuthTokenProvider
     let locationProvider: LocationProvider
     let logger: APILogger

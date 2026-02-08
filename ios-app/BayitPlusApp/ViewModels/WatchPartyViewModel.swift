@@ -6,13 +6,13 @@ import Observation
 /// ViewModel for Watch Parties -- handles REST operations and WebSocket real-time messaging.
 @Observable
 final class WatchPartyViewModel {
-    private(set) var activeParty: WatchParty?
-    private(set) var myParties: [WatchParty] = []
-    private(set) var chatMessages: [PartyChatMessage] = []
-    private(set) var participants: [ParticipantState] = []
-    private(set) var isLoading = false
-    private(set) var isConnected = false
-    private(set) var error: String?
+    var activeParty: WatchParty?
+    var myParties: [WatchParty] = []
+    var chatMessages: [PartyChatMessage] = []
+    var participants: [ParticipantState] = []
+    var isLoading = false
+    var isConnected = false
+    var error: String?
 
     var showCreateSheet = false
     var showJoinSheet = false

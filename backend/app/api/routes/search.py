@@ -124,7 +124,11 @@ async def unified_search_endpoint(
 
         return JSONResponse(
             content=jsonable_encoder(results),
-            headers={"Cache-Control": "no-store"},
+            headers={
+                "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            },
         )
 
     except Exception as e:

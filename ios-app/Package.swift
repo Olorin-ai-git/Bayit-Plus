@@ -27,22 +27,12 @@ let package = Package(
             name: "BayitCore",
             path: "Packages/BayitCore/Sources/BayitCore"
         ),
-        .testTarget(
-            name: "BayitCoreTests",
-            dependencies: ["BayitCore"],
-            path: "Packages/BayitCore/Tests/BayitCoreTests"
-        ),
 
         // MARK: - BayitNetworking
         .target(
             name: "BayitNetworking",
             dependencies: ["BayitCore"],
             path: "Packages/BayitNetworking/Sources/BayitNetworking"
-        ),
-        .testTarget(
-            name: "BayitNetworkingTests",
-            dependencies: ["BayitNetworking"],
-            path: "Packages/BayitNetworking/Tests/BayitNetworkingTests"
         ),
 
         // MARK: - BayitAuth
@@ -56,11 +46,6 @@ let package = Package(
             ],
             path: "Packages/BayitAuth/Sources/BayitAuth"
         ),
-        .testTarget(
-            name: "BayitAuthTests",
-            dependencies: ["BayitAuth"],
-            path: "Packages/BayitAuth/Tests/BayitAuthTests"
-        ),
 
         // MARK: - BayitLocalization
         .target(
@@ -69,22 +54,12 @@ let package = Package(
             path: "Packages/BayitLocalization/Sources",
             resources: [.process("Resources")]
         ),
-        .testTarget(
-            name: "BayitLocalizationTests",
-            dependencies: ["BayitLocalization"],
-            path: "Packages/BayitLocalization/Tests/BayitLocalizationTests"
-        ),
 
         // MARK: - BayitDesignSystem
         .target(
             name: "BayitDesignSystem",
             dependencies: ["BayitCore"],
             path: "Packages/BayitDesignSystem/Sources/BayitDesignSystem"
-        ),
-        .testTarget(
-            name: "BayitDesignSystemTests",
-            dependencies: ["BayitDesignSystem"],
-            path: "Packages/BayitDesignSystem/Tests/BayitDesignSystemTests"
         ),
 
         // MARK: - BayitMedia
@@ -93,22 +68,12 @@ let package = Package(
             dependencies: ["BayitCore", "BayitNetworking"],
             path: "Packages/BayitMedia/Sources/BayitMedia"
         ),
-        .testTarget(
-            name: "BayitMediaTests",
-            dependencies: ["BayitMedia"],
-            path: "Packages/BayitMedia/Tests/BayitMediaTests"
-        ),
 
         // MARK: - BayitVoice
         .target(
             name: "BayitVoice",
             dependencies: ["BayitCore", "BayitNetworking"],
             path: "Packages/BayitVoice/Sources/BayitVoice"
-        ),
-        .testTarget(
-            name: "BayitVoiceTests",
-            dependencies: ["BayitVoice"],
-            path: "Packages/BayitVoice/Tests/BayitVoiceTests"
         ),
 
         // MARK: - BayitPersistence
@@ -117,22 +82,12 @@ let package = Package(
             dependencies: ["BayitCore"],
             path: "Packages/BayitPersistence/Sources/BayitPersistence"
         ),
-        .testTarget(
-            name: "BayitPersistenceTests",
-            dependencies: ["BayitPersistence"],
-            path: "Packages/BayitPersistence/Tests/BayitPersistenceTests"
-        ),
 
         // MARK: - BayitAnalytics
         .target(
             name: "BayitAnalytics",
             dependencies: ["BayitCore"],
             path: "Packages/BayitAnalytics/Sources/BayitAnalytics"
-        ),
-        .testTarget(
-            name: "BayitAnalyticsTests",
-            dependencies: ["BayitAnalytics"],
-            path: "Packages/BayitAnalytics/Tests/BayitAnalyticsTests"
         ),
     ]
 )

@@ -9,10 +9,10 @@ import Observation
 @Observable
 final class DirectMessagesViewModel {
     private(set) var conversations: [ConversationSummary] = []
-    private(set) var messages: [DirectMessageModel] = []
+    var messages: [DirectMessageModel] = []
     private(set) var isLoading = false
     private(set) var error: String?
-    private(set) var typingUsers: Set<String> = []
+    var typingUsers: Set<String> = []
     private(set) var totalUnreadCount = 0
 
     var searchQuery = ""

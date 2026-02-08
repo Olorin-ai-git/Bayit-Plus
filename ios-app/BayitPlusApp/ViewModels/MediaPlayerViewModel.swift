@@ -29,6 +29,7 @@ final class MediaPlayerViewModel {
 
     private let repository: any MediaRepository
     private let contentRepository: any ContentRepository
+    private let liveTVRepository: any LiveTVRepository
     private var progressTrackingTask: Task<Void, Never>?
     private let progressIntervalSeconds: TimeInterval = 15
 
@@ -39,13 +40,15 @@ final class MediaPlayerViewModel {
         contentType: ContentType,
         player: MediaPlayer,
         repository: any MediaRepository,
-        contentRepository: any ContentRepository
+        contentRepository: any ContentRepository,
+        liveTVRepository: any LiveTVRepository
     ) {
         self.contentId = contentId
         self.contentType = contentType
         self.player = player
         self.repository = repository
         self.contentRepository = contentRepository
+        self.liveTVRepository = liveTVRepository
     }
 
     deinit {
@@ -61,25 +64,46 @@ final class MediaPlayerViewModel {
         errorMessage = nil
 
         do {
-            // Load content detail for metadata
-            let detail = try await contentRepository.fetchContentDetail(id: contentId)
-            title = detail.title
-            subtitle = detail.category
-            availableSubtitleLanguages = detail.availableSubtitleLanguages ?? []
-            if let backdropStr = detail.backdrop, let url = URL(string: backdropStr) {
-                artworkURL = url
-            }
-
-            // Load stream URL based on content type
-            let streamURL = try await resolveStreamURL(detail: detail)
-            guard let url = URL(string: streamURL) else {
-                errorMessage = "Invalid stream URL"
-                isLoading = false
-                return
-            }
-
             let mediaType = mapContentType(contentType)
-            player.load(url: url, contentType: mediaType)
+
+            switch contentType {
+            case .live, .liveTV:
+                let channel = try await liveTVRepository.fetchChannelDetail(id: contentId)
+                title = channel.name
+                subtitle = channel.currentShow
+                if let logoStr = channel.thumbnail ?? channel.logo,
+                   let url = URL(string: logoStr) {
+                    artworkURL = url
+                }
+
+                let stream = try await repository.fetchLiveStream(channelId: contentId)
+                currentQuality = stream.quality
+                availableQualities = stream.availableQualities ?? []
+                let streamURLStr = stream.url ?? channel.streamUrl ?? ""
+                guard let url = URL(string: streamURLStr), !streamURLStr.isEmpty else {
+                    errorMessage = "Invalid stream URL"
+                    isLoading = false
+                    return
+                }
+                player.load(url: url, contentType: mediaType)
+
+            default:
+                let detail = try await contentRepository.fetchContentDetail(id: contentId)
+                title = detail.title
+                subtitle = detail.category
+                availableSubtitleLanguages = detail.availableSubtitleLanguages ?? []
+                if let backdropStr = detail.backdrop, let url = URL(string: backdropStr) {
+                    artworkURL = url
+                }
+
+                let streamURL = try await resolveStreamURL(detail: detail)
+                guard let url = URL(string: streamURL), !streamURL.isEmpty else {
+                    errorMessage = "Invalid stream URL"
+                    isLoading = false
+                    return
+                }
+                player.load(url: url, contentType: mediaType)
+            }
 
             // Fetch resume position from watch history
             await loadResumePosition()

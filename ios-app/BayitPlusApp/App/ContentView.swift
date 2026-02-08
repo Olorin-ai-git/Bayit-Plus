@@ -59,7 +59,8 @@ struct ContentView: View {
                 contentType: contentType,
                 player: mediaPlayer,
                 repository: repositories.media,
-                contentRepository: repositories.content
+                contentRepository: repositories.content,
+                liveTVRepository: repositories.liveTV
             )
         case .search:
             SearchView()

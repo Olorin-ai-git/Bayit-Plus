@@ -37,6 +37,10 @@ targets:
         product: BayitLocalization
       - package: BayitPlus
         product: BayitDesignSystem
+      - package: BayitPlus
+        product: BayitMedia
+      - package: BayitPlus
+        product: BayitVoice
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: tv.bayit.plus
