@@ -18,6 +18,20 @@ struct MainTabView: View {
             .toolbar(.hidden, for: .tabBar)
 
             glassTabBar
+
+            // Floating wizard hat FAB (bottom-right corner)
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    VoiceAvatarFAB {
+                        // Open chatbot/voice assistant
+                        coordinator.navigate(to: .chatbot)
+                    }
+                    .padding(.trailing, 20)
+                    .padding(.bottom, 90)  // Above tab bar
+                }
+            }
         }
     }
 
@@ -99,7 +113,7 @@ struct MainTabView: View {
 
         // Trivia & Quiz
         case .trivia(let contentId):
-            QuizOverlayView(contentId: contentId)
+            QuizOverlayView(contentId: contentId, profileId: nil, onDismiss: { coordinator.pop() })
 
         // LLM Search
         case .llmSearch:
