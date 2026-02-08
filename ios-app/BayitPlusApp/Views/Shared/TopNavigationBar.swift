@@ -31,16 +31,31 @@ struct TopNavigationBar: View {
 
             Spacer()
 
-            // Language selector button (flag)
+            // Playlist button
             Button {
-                coordinator.navigate(to: .languageSettings)
+                coordinator.navigate(to: .playlist)
             } label: {
-                Text("🇺🇸")  // TODO: Dynamic based on current language
-                    .font(.system(size: 24))
+                Image(systemName: "music.note.list")
+                    .font(.system(size: 20))
+                    .foregroundColor(DesignTokens.Text.primary)
                     .frame(width: 44, height: 44)
                     .background(DesignTokens.Glass.bgMedium)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
             }
+            .accessibilityLabel("Playlist")
+
+            // Language selector button (flag)
+            Button {
+                coordinator.navigate(to: .languageSettings)
+            } label: {
+                Image(systemName: "globe")
+                    .font(.system(size: 20))
+                    .foregroundColor(DesignTokens.Text.primary)
+                    .frame(width: 44, height: 44)
+                    .background(DesignTokens.Glass.bgMedium)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+            }
+            .accessibilityLabel("Language settings")
 
             // Widgets menu button
             Button {
@@ -53,6 +68,7 @@ struct TopNavigationBar: View {
                     .background(DesignTokens.Glass.bgMedium)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
             }
+            .accessibilityLabel("Widgets")
 
             // Search button
             Button {
@@ -65,6 +81,7 @@ struct TopNavigationBar: View {
                     .background(DesignTokens.Glass.bgMedium)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
             }
+            .accessibilityLabel("Search")
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.vertical, DesignTokens.Spacing.sm)

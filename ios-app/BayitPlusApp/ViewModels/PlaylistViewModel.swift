@@ -2,16 +2,14 @@ import Foundation
 import Observation
 
 /// ViewModel for the Playlist screen - manages user playlist items.
+/// The backend returns all playlist items in a single response (no pagination).
 @Observable
 final class PlaylistViewModel {
     private(set) var items: [PlaylistItem] = []
-    private(set) var total: Int = 0
     private(set) var isLoading = false
     private(set) var error: String?
-    private(set) var currentPage = 1
 
     private let repository: any UserRepository
-    private let pageSize = 20
 
     init(repository: any UserRepository) {
         self.repository = repository
@@ -22,36 +20,10 @@ final class PlaylistViewModel {
         guard !isLoading else { return }
         isLoading = true
         error = nil
-        currentPage = 1
 
         do {
-            let response = try await repository.fetchPlaylist(
-                page: currentPage,
-                limit: pageSize
-            )
+            let response = try await repository.fetchPlaylist()
             items = response.items
-            total = response.total ?? response.items.count
-        } catch {
-            self.error = error.localizedDescription
-        }
-
-        isLoading = false
-    }
-
-    @MainActor
-    func loadMore() async {
-        guard !isLoading, items.count < total else { return }
-        isLoading = true
-
-        do {
-            let nextPage = currentPage + 1
-            let response = try await repository.fetchPlaylist(
-                page: nextPage,
-                limit: pageSize
-            )
-            items.append(contentsOf: response.items)
-            currentPage = nextPage
-            total = response.total ?? total
         } catch {
             self.error = error.localizedDescription
         }
@@ -63,17 +35,19 @@ final class PlaylistViewModel {
     func removeItem(contentId: String) async {
         do {
             _ = try await repository.removePlaylistItem(contentId: contentId)
-            items.removeAll { $0.contentId == contentId || $0.id == contentId }
-            total = max(0, total - 1)
+            items.removeAll { $0.contentId == contentId }
         } catch {
             self.error = error.localizedDescription
         }
     }
 
     @MainActor
-    func reorder(itemIds: [String]) async {
+    func reorderItem(contentId: String, newPosition: Int) async {
         do {
-            let request = PlaylistReorderRequest(itemIds: itemIds)
+            let request = PlaylistReorderRequest(
+                contentId: contentId,
+                newPosition: newPosition
+            )
             _ = try await repository.reorderPlaylist(request: request)
         } catch {
             self.error = error.localizedDescription
@@ -84,10 +58,12 @@ final class PlaylistViewModel {
     func toggleItem(contentId: String, contentType: String?) async -> Bool? {
         do {
             let request = PlaylistToggleRequest(
-                contentId: contentId,
                 contentType: contentType
             )
-            let response = try await repository.togglePlaylistItem(request: request)
+            let response = try await repository.togglePlaylistItem(
+                contentId: contentId,
+                request: request
+            )
             return response.inPlaylist
         } catch {
             self.error = error.localizedDescription

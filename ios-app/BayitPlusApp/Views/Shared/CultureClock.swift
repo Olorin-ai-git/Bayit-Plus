@@ -12,30 +12,29 @@ struct CultureClock: View {
     @State private var timer: Timer?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-            HStack(spacing: DesignTokens.Spacing.xs) {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+            HStack(spacing: DesignTokens.Spacing.sm) {
                 Text(flagEmoji)
-                    .font(.system(size: 20))
+                    .font(.system(size: DesignTokens.FontSize.xl))
 
                 Text(locationLabel)
-                    .font(.system(size: DesignTokens.FontSize.xs))
-                    .foregroundColor(DesignTokens.Text.muted)
+                    .font(.system(size: DesignTokens.FontSize.sm))
+                    .foregroundColor(DesignTokens.Text.secondary)
             }
 
             Text(timeString)
-                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .font(.system(size: DesignTokens.FontSize.xxxl, weight: .bold, design: .rounded))
                 .foregroundColor(DesignTokens.Text.primary)
                 .monospacedDigit()
 
-            if isWeekend {
-                Text(isIsraeli ? "Shabbat" : "Weekend")
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundColor(.black)
-                    .padding(.horizontal, DesignTokens.Spacing.sm)
-                    .padding(.vertical, 2)
-                    .background(Color(red: 1.0, green: 0.84, blue: 0.0))  // Gold
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-            }
+            Text(isIsraeli ? "Shabbat" : "Weekend")
+                .font(.system(size: DesignTokens.FontSize.xs, weight: .semibold))
+                .foregroundColor(.black)
+                .padding(.horizontal, DesignTokens.Spacing.sm)
+                .padding(.vertical, DesignTokens.Spacing.xxs)
+                .background(DesignTokens.gold)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                .opacity(isWeekend ? 1 : 0)
         }
         .onAppear {
             startTimer()

@@ -107,6 +107,66 @@ public enum Route: Hashable {
     case onboardingAI
 }
 
+// MARK: - Breadcrumb Labels
+
+extension Route {
+    /// Human-readable label for breadcrumb display
+    var breadcrumbLabel: String {
+        switch self {
+        case .home: return "Home"
+        case .liveTV: return "Live TV"
+        case .vod: return "VOD"
+        case .radio: return "Radio"
+        case .podcasts: return "Podcasts"
+        case .player: return "Player"
+        case .movieDetail: return "Movie"
+        case .seriesDetail: return "Series"
+        case .podcastDetail: return "Podcast"
+        case .epg: return "TV Guide"
+        case .search: return "Search"
+        case .profile: return "Profile"
+        case .favorites: return "Favorites"
+        case .playlist: return "Playlist"
+        case .downloads: return "Downloads"
+        case .recordings: return "Recordings"
+        case .settings: return "Settings"
+        case .languageSettings: return "Language"
+        case .notificationSettings: return "Notifications"
+        case .billing: return "Billing"
+        case .subscription: return "Subscription"
+        case .security: return "Security"
+        case .children: return "Children"
+        case .youngsters: return "Youngsters"
+        case .judaism: return "Judaism"
+        case .flows: return "Flows"
+        case .morningRitual: return "Morning Ritual"
+        case .voiceOnboarding: return "Voice Setup"
+        case .support: return "Support"
+        case .trivia: return "Trivia"
+        case .llmSearch: return "AI Search"
+        case .familyControls: return "Family Controls"
+        case .shabbatMode: return "Shabbat"
+        case .jerusalemContent: return "Jerusalem"
+        case .telAvivContent: return "Tel Aviv"
+        case .audiobooks: return "Audiobooks"
+        case .audiobookDetail: return "Audiobook"
+        case .trending: return "Trending"
+        case .interactiveSubtitles: return "Subtitles"
+        case .chapters: return "Chapters"
+        case .chatbot: return "AI Chat"
+        case .avatarMode: return "Avatar"
+        case .betaCredits: return "Credits"
+        case .subscriptionGate: return "Subscribe"
+        case .household: return "Household"
+        case .devicePairing: return "Devices"
+        case .helpCenter: return "Help"
+        case .rewards: return "Rewards"
+        case .passkeyManagement: return "Passkeys"
+        case .onboardingAI: return "Setup"
+        }
+    }
+}
+
 /// Content types for player navigation
 public enum ContentType: String, Hashable, Codable, Sendable {
     case live

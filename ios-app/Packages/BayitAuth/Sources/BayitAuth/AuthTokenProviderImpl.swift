@@ -4,13 +4,14 @@ import BayitNetworking
 
 /// Thread-safe implementation of `AuthTokenProvider` from BayitNetworking.
 ///
-/// Reads the cached token from Keychain and auto-refreshes via Firebase Auth
-/// when the token is expired or about to expire.
+/// Reads the cached backend JWT from Keychain and auto-refreshes via
+/// the backend refresh endpoint when the token is expired or about to expire.
 public actor AuthTokenProviderImpl: AuthTokenProvider {
 
     private let keychainService: KeychainService
     private let logger: APILogger
     private let tokenKeychainKey: String
+    private let refreshTokenKeychainKey: String
 
     /// Number of seconds before expiration at which the token is proactively refreshed.
     private let refreshMarginSeconds: TimeInterval = 300 // 5 minutes
@@ -18,56 +19,74 @@ public actor AuthTokenProviderImpl: AuthTokenProvider {
     public init(
         keychainService: KeychainService,
         logger: APILogger,
-        tokenKeychainKey: String = "bayit_firebase_id_token"
+        tokenKeychainKey: String,
+        refreshTokenKeychainKey: String
     ) {
         self.keychainService = keychainService
         self.logger = logger
         self.tokenKeychainKey = tokenKeychainKey
+        self.refreshTokenKeychainKey = refreshTokenKeychainKey
     }
 
-    /// Returns the current Bearer token, refreshing if needed.
+    /// Returns the current backend Bearer token, refreshing if needed.
     ///
-    /// Returns `nil` if the user is not authenticated (no Firebase user).
+    /// Returns `nil` if the user is not authenticated (no cached token).
     /// Throws on transient failures (Keychain errors, network errors).
     public func currentToken() async throws -> String? {
-        guard let firebaseUser = Auth.auth().currentUser else {
+        guard Auth.auth().currentUser != nil else {
             return nil
         }
 
-        // Try reading the cached token from Keychain
+        // Try reading the cached backend JWT from Keychain
         if let cached = try? keychainService.load(for: tokenKeychainKey) {
             if !isTokenExpiringSoon(cached) {
                 return cached
             }
         }
 
-        // Token missing or expiring soon -- force refresh via Firebase
-        return try await refreshAndCacheToken(for: firebaseUser)
+        // Token missing or expiring soon -- refresh via backend
+        return try await refreshAndCacheToken()
     }
 
     // MARK: - Internal Helpers
 
-    /// Refreshes the ID token from Firebase and persists it to Keychain.
-    private func refreshAndCacheToken(for user: FirebaseAuth.User) async throws -> String {
+    /// Refreshes the backend JWT using the stored refresh token.
+    private func refreshAndCacheToken() async throws -> String {
+        guard let refreshToken = try? keychainService.load(
+            for: refreshTokenKeychainKey
+        ) else {
+            logger.warning(
+                "No refresh token available for backend JWT refresh",
+                metadata: [:]
+            )
+            throw AuthError.notAuthenticated
+        }
+
         do {
-            let result = try await user.getIDTokenResult(forcingRefresh: true)
-            let token = result.token
-
-            try keychainService.save(token: token, for: tokenKeychainKey)
-
-            logger.debug(
-                "Refreshed and cached Firebase ID token",
-                metadata: ["user_id": user.uid]
+            let response = try await BackendTokenExchangeClient.refreshBackendToken(
+                refreshToken: refreshToken,
+                logger: logger
             )
 
-            return token
+            try keychainService.save(
+                token: response.accessToken, for: tokenKeychainKey
+            )
+            if let newRefresh = response.refreshToken {
+                try keychainService.save(
+                    token: newRefresh, for: refreshTokenKeychainKey
+                )
+            }
+
+            logger.debug(
+                "Refreshed and cached backend JWT",
+                metadata: [:]
+            )
+
+            return response.accessToken
         } catch {
             logger.error(
-                "Firebase token refresh failed",
-                metadata: [
-                    "user_id": user.uid,
-                    "error": error.localizedDescription,
-                ]
+                "Backend JWT refresh failed",
+                metadata: ["error": error.localizedDescription]
             )
             throw AuthError.tokenRefreshFailed(underlying: error.localizedDescription)
         }

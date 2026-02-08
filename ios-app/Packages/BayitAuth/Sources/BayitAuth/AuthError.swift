@@ -12,6 +12,8 @@ public enum AuthError: LocalizedError, Sendable {
     case keychainDeleteFailed(status: OSStatus)
     case keychainItemNotFound
     case profileSelectionFailed(underlying: String)
+    case profileLoadFailed(underlying: String)
+    case profileCreateFailed(underlying: String)
     case betaCreditsFetchFailed(underlying: String)
     case invalidFirebaseUser
     case missingIDToken
@@ -36,6 +38,10 @@ public enum AuthError: LocalizedError, Sendable {
             return "An unexpected error occurred"
         case .profileSelectionFailed:
             return "Could not select profile. Please try again."
+        case .profileLoadFailed:
+            return "Could not load profiles. Please try again."
+        case .profileCreateFailed:
+            return "Could not create profile. Please try again."
         case .betaCreditsFetchFailed:
             return "Could not load beta credits"
         case .invalidFirebaseUser, .missingIDToken:
@@ -69,6 +75,10 @@ public enum AuthError: LocalizedError, Sendable {
             return "Keychain item not found"
         case .profileSelectionFailed(let underlying):
             return "Profile selection failed: \(underlying)"
+        case .profileLoadFailed(let underlying):
+            return "Profile load failed: \(underlying)"
+        case .profileCreateFailed(let underlying):
+            return "Profile creation failed: \(underlying)"
         case .betaCreditsFetchFailed(let underlying):
             return "Beta credits fetch failed: \(underlying)"
         case .invalidFirebaseUser:

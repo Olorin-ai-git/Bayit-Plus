@@ -10,60 +10,65 @@ struct HeroCarousel: View {
     @State private var timer: Timer?
 
     var body: some View {
-        ZStack(alignment: .bottomLeading) {
-            // Current hero image
-            if !items.isEmpty {
-                heroImage(items[currentIndex])
-            }
-
-            // Gradient overlay for text readability
-            LinearGradient(
-                colors: [
-                    .clear,
-                    DesignTokens.Background.primary.opacity(0.3),
-                    DesignTokens.Background.primary.opacity(0.8),
-                    DesignTokens.Background.primary
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-
-            // Navigation arrows
-            HStack {
-                navigationButton(direction: .previous)
-                Spacer()
-                navigationButton(direction: .next)
-            }
-            .padding(.horizontal, DesignTokens.Spacing.md)
-
-            // Hero metadata and Watch Now button
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+        GeometryReader { geometry in
+            ZStack(alignment: .bottomLeading) {
+                // Current hero image (constrained to exact container width)
                 if !items.isEmpty {
-                    heroMetadata(items[currentIndex])
+                    heroImage(items[currentIndex])
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
                 }
 
-                // Watch Now button
-                Button {
+                // Gradient overlay for text readability
+                LinearGradient(
+                    colors: [
+                        .clear,
+                        DesignTokens.Background.primary.opacity(0.3),
+                        DesignTokens.Background.primary.opacity(0.8),
+                        DesignTokens.Background.primary
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
+                // Navigation arrows (vertically centered to avoid overlap with bottom metadata)
+                HStack {
+                    navigationButton(direction: .previous)
+                    Spacer()
+                    navigationButton(direction: .next)
+                }
+                .frame(maxHeight: .infinity, alignment: .center)
+                .padding(.horizontal, DesignTokens.Spacing.md)
+
+                // Hero metadata and Watch Now button
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
                     if !items.isEmpty {
-                        navigateToItem(items[currentIndex])
+                        heroMetadata(items[currentIndex])
                     }
-                } label: {
-                    HStack(spacing: DesignTokens.Spacing.xs) {
-                        Image(systemName: "play.fill")
-                            .font(.system(size: 16))
 
-                        Text("Watch Now")
-                            .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                    // Watch Now button
+                    Button {
+                        if !items.isEmpty {
+                            navigateToItem(items[currentIndex])
+                        }
+                    } label: {
+                        HStack(spacing: DesignTokens.Spacing.xs) {
+                            Image(systemName: "play.fill")
+                                .font(.system(size: 16))
+
+                            Text("Watch Now")
+                                .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                        }
+                        .foregroundColor(.black)
+                        .padding(.horizontal, DesignTokens.Spacing.lg)
+                        .padding(.vertical, DesignTokens.Spacing.md)
+                        .background(Color.white)
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
                     }
-                    .foregroundColor(.black)
-                    .padding(.horizontal, DesignTokens.Spacing.lg)
-                    .padding(.vertical, DesignTokens.Spacing.md)
-                    .background(Color.white)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
                 }
+                .padding(.horizontal, DesignTokens.Spacing.lg)
+                .padding(.bottom, DesignTokens.Spacing.lg)
             }
-            .padding(.horizontal, DesignTokens.Spacing.lg)
-            .padding(.bottom, DesignTokens.Spacing.lg)
         }
         .frame(height: 320)
         .clipped()
@@ -91,7 +96,8 @@ struct HeroCarousel: View {
                 heroPlaceholder
             }
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .clipped()
     }
 
     private var heroPlaceholder: some View {

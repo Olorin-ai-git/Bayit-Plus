@@ -42,14 +42,6 @@ struct PlaylistView: View {
             ForEach(vm.items) { item in
                 playlistRow(item, vm: vm)
             }
-
-            if vm.items.count < vm.total {
-                Color.clear
-                    .frame(height: 1)
-                    .onAppear {
-                        Task { await vm.loadMore() }
-                    }
-            }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.vertical, DesignTokens.Spacing.md)
@@ -58,11 +50,9 @@ struct PlaylistView: View {
     private func playlistRow(_ item: PlaylistItem, vm: PlaylistViewModel) -> some View {
         GlassCard {
             Button {
-                if let contentId = item.contentId {
-                    coordinator.pushToCurrentTab(
-                        .movieDetail(movieId: contentId)
-                    )
-                }
+                coordinator.pushToCurrentTab(
+                    .movieDetail(movieId: item.contentId)
+                )
             } label: {
                 HStack(spacing: DesignTokens.Spacing.md) {
                     thumbnailView(item.thumbnail)
@@ -92,7 +82,7 @@ struct PlaylistView: View {
             Button(role: .destructive) {
                 Task {
                     await vm.removeItem(
-                        contentId: item.contentId ?? item.id
+                        contentId: item.contentId
                     )
                 }
             } label: {

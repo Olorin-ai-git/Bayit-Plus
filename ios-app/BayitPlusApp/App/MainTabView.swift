@@ -4,20 +4,26 @@ import SwiftUI
 /// Main tab view with glass tab bar at the bottom
 struct MainTabView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(RepositoryProvider.self) private var repos
+    @State private var isVoiceModalPresented = false
+    @State private var dockViewModel: WidgetDockViewModel?
 
     var body: some View {
-        @Bindable var coord = coordinator
-
         ZStack(alignment: .bottom) {
-            TabView(selection: $coord.selectedTab) {
-                ForEach(AppTab.allCases) { tab in
-                    tabContent(for: tab)
-                        .tag(tab)
-                }
-            }
-            .toolbar(.hidden, for: .tabBar)
+            tabContent(for: coordinator.selectedTab)
 
             glassTabBar
+
+            // Floating widget dock (left edge, vertically centered) - hidden on widgets tab
+            if let vm = dockViewModel, coordinator.selectedTab != .widgets {
+                PiPWidgetManagerView(
+                    widgets: vm.widgets,
+                    isDockVisible: vm.isDockVisible,
+                    onToggleMinimize: { _ in },
+                    onCloseDock: { vm.hideDock() }
+                )
+                .allowsHitTesting(true)
+            }
 
             // Floating wizard hat FAB (bottom-right corner)
             VStack {
@@ -25,13 +31,27 @@ struct MainTabView: View {
                 HStack {
                     Spacer()
                     VoiceAvatarFAB {
-                        // Open chatbot/voice assistant
-                        coordinator.navigate(to: .chatbot)
+                        isVoiceModalPresented = true
                     }
                     .padding(.trailing, 20)
                     .padding(.bottom, 90)  // Above tab bar
                 }
             }
+        }
+        .task {
+            if dockViewModel == nil {
+                dockViewModel = WidgetDockViewModel(repository: repos.widget)
+            }
+            await dockViewModel?.loadWidgets()
+        }
+        .sheet(isPresented: $isVoiceModalPresented) {
+            VoiceAssistantSheet(
+                chatRepository: repos.chat,
+                onDismiss: { isVoiceModalPresented = false }
+            )
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
+            .presentationBackground(.ultraThinMaterial)
         }
     }
 
@@ -40,7 +60,10 @@ struct MainTabView: View {
         NavigationStack(path: binding(for: tab)) {
             tabRootView(for: tab)
                 .navigationDestination(for: Route.self) { route in
-                    destinationView(for: route)
+                    VStack(spacing: 0) {
+                        BreadcrumbBar()
+                        destinationView(for: route)
+                    }
                 }
         }
     }
@@ -59,7 +82,7 @@ struct MainTabView: View {
         case .podcasts:
             PodcastsView()
         case .widgets:
-            PiPWidgetManagerView()
+            WidgetsView()
         }
     }
 
@@ -129,9 +152,9 @@ struct MainTabView: View {
 
         // Culture Content
         case .jerusalemContent:
-            CultureContentView(cultureId: "jerusalem")
+            CultureContentView()
         case .telAvivContent:
-            CultureContentView(cultureId: "tel-aviv")
+            CultureContentView()
 
         // Audiobooks
         case .audiobooks:
@@ -143,21 +166,21 @@ struct MainTabView: View {
         case .trending:
             ScreenPlaceholder(title: "Trending", subtitle: "Trending Content")
 
-        // Interactive Subtitles
-        case .interactiveSubtitles(let contentId):
-            InteractiveSubtitlesOverlay(contentId: contentId)
+        // Interactive Subtitles (launched from player controls)
+        case .interactiveSubtitles:
+            ScreenPlaceholder(title: "Interactive Subtitles", subtitle: "Available during playback")
 
-        // Chapter Navigation
-        case .chapters(let contentId):
-            ChapterListView(contentId: contentId)
+        // Chapter Navigation (launched from player controls)
+        case .chapters:
+            ScreenPlaceholder(title: "Chapters", subtitle: "Available during playback")
 
         // AI Chat
         case .chatbot:
-            ChatbotView()
+            ChatbotView(repository: repos.chat)
 
         // Avatar Mode
         case .avatarMode:
-            AvatarModeView()
+            AvatarModeView(stateMachine: AvatarStateMachine(), repository: repos.chat)
 
         // Beta Credits
         case .betaCredits:

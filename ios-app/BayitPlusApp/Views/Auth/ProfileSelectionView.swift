@@ -19,6 +19,7 @@ private let avatarColors: [Color] = [
 struct ProfileSelectionView: View {
     @Environment(AuthManager.self) private var authManager
     @State private var isManageMode = false
+    @State private var showAddProfile = false
 
     let onProfileSelected: () -> Void
 
@@ -35,6 +36,16 @@ struct ProfileSelectionView: View {
             manageButton
 
             Spacer()
+        }
+        .sheet(isPresented: $showAddProfile) {
+            AddProfileSheetView()
+        }
+        .task {
+            do {
+                try await authManager.loadProfiles()
+            } catch {
+                // Profiles will fall back to whatever is cached locally
+            }
         }
     }
 
@@ -74,7 +85,7 @@ struct ProfileSelectionView: View {
     // MARK: - Add Profile
 
     private var addProfileCard: some View {
-        Button {} label: {
+        Button { showAddProfile = true } label: {
             VStack(spacing: DesignTokens.Spacing.sm) {
                 ZStack {
                     RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)

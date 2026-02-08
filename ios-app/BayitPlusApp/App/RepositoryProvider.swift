@@ -35,6 +35,7 @@ final class RepositoryProvider {
     let household: any HouseholdRepository
     let reward: any RewardRepository
     let devicePairing: any DevicePairingRepository
+    let widget: any WidgetRepository
 
     init(client: APIClient) {
         self.content = APIContentRepository(client: client)
@@ -65,5 +66,6 @@ final class RepositoryProvider {
         self.household = APIHouseholdRepository(client: client)
         self.reward = APIRewardRepository(client: client)
         self.devicePairing = APIDevicePairingRepository(client: client)
+        self.widget = APIWidgetRepository(client: client)
     }
 }

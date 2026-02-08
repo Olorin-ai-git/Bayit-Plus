@@ -6,16 +6,29 @@ import FirebaseAuth
 extension AuthManager {
 
     /// Processes a successful Firebase auth result:
-    /// 1. Gets the ID token
-    /// 2. Saves to Keychain
+    /// 1. Gets the Firebase ID token (for Firebase features)
+    /// 2. Exchanges the provider token with the backend for a JWT
     /// 3. Builds the BayitUser from Firebase user data
-    func handleFirebaseAuthResult(_ result: AuthDataResult) async throws {
+    func handleFirebaseAuthResult(
+        _ result: AuthDataResult,
+        providerToken: ProviderToken? = nil
+    ) async throws {
         let firebaseUser = result.user
 
         let tokenResult = try await firebaseUser.getIDTokenResult(forcingRefresh: false)
-        let idToken = tokenResult.token
+        let firebaseIDToken = tokenResult.token
 
-        try keychainService.save(token: idToken, for: tokenKeychainKey)
+        // Cache Firebase ID token (still used for Firebase-specific features)
+        try keychainService.save(token: firebaseIDToken, for: tokenKeychainKey)
+
+        // Exchange provider token with backend for a backend-issued JWT
+        let backendToken: String
+        if let providerToken = providerToken {
+            backendToken = try await exchangeForBackendJWT(providerToken: providerToken)
+        } else {
+            // Fallback: use Firebase ID token directly (email sign-in handled separately)
+            backendToken = firebaseIDToken
+        }
 
         let bayitUser = BayitUser(
             id: firebaseUser.uid,
@@ -40,8 +53,53 @@ extension AuthManager {
         }
 
         user = bayitUser
-        token = idToken
+        token = backendToken
         isLoading = false
+    }
+
+    /// Exchanges a provider-specific token with the backend for a JWT.
+    func exchangeForBackendJWT(providerToken: ProviderToken) async throws -> String {
+        let response: BackendTokenExchangeClient.TokenExchangeResponse
+
+        switch providerToken {
+        case .google(let idToken):
+            response = try await BackendTokenExchangeClient.exchangeGoogleToken(
+                idToken: idToken,
+                logger: logger
+            )
+
+        case .apple(let identityToken, let fullName, let email):
+            response = try await BackendTokenExchangeClient.exchangeAppleToken(
+                identityToken: identityToken,
+                fullName: fullName,
+                email: email,
+                logger: logger
+            )
+
+        case .emailPassword(let accessToken, let refreshToken):
+            // Email sign-in already returns backend tokens directly
+            try keychainService.save(
+                token: accessToken, for: backendTokenKeychainKey
+            )
+            if let refresh = refreshToken {
+                try keychainService.save(
+                    token: refresh, for: refreshTokenKeychainKey
+                )
+            }
+            return accessToken
+        }
+
+        // Store backend JWT and refresh token
+        try keychainService.save(
+            token: response.accessToken, for: backendTokenKeychainKey
+        )
+        if let refreshToken = response.refreshToken {
+            try keychainService.save(
+                token: refreshToken, for: refreshTokenKeychainKey
+            )
+        }
+
+        return response.accessToken
     }
 
     /// Parses the user role from Firebase custom claims.
@@ -66,7 +124,10 @@ extension AuthManager {
             user = cachedUser
         }
 
-        if let cachedToken = try? keychainService.load(for: tokenKeychainKey) {
+        // Prefer backend JWT over Firebase ID token
+        if let backendJWT = try? keychainService.load(for: backendTokenKeychainKey) {
+            token = backendJWT
+        } else if let cachedToken = try? keychainService.load(for: tokenKeychainKey) {
             token = cachedToken
         }
     }
@@ -79,8 +140,17 @@ extension AuthManager {
             if firebaseUser == nil {
                 self.clearState()
                 try? self.keychainService.delete(for: self.tokenKeychainKey)
+                try? self.keychainService.delete(for: self.backendTokenKeychainKey)
+                try? self.keychainService.delete(for: self.refreshTokenKeychainKey)
                 try? self.keychainService.delete(for: self.userKeychainKey)
             }
         }
     }
+}
+
+/// Represents the provider-specific token to exchange with the backend.
+enum ProviderToken {
+    case google(idToken: String)
+    case apple(identityToken: String, fullName: String?, email: String?)
+    case emailPassword(accessToken: String, refreshToken: String?)
 }

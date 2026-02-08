@@ -102,9 +102,9 @@ struct InteractiveSubtitlesOverlay: View {
 }
 
 /// Simple wrapping horizontal layout for word-level subtitle display
-private struct WrappingHStack: View {
+private struct WrappingHStack<Content: View>: View {
     let words: [SubtitleWord]
-    let content: (SubtitleWord) -> some View
+    @ViewBuilder let content: (SubtitleWord) -> Content
 
     var body: some View {
         HStack(spacing: 4) {

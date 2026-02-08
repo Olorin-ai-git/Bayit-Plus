@@ -32,16 +32,16 @@ protocol UserRepository: Sendable {
 
     // MARK: - Playlists
 
-    /// Fetch the user's playlist.
-    func fetchPlaylist(page: Int, limit: Int) async throws -> PlaylistResponse
+    /// Fetch the user's playlist (backend returns all items, no pagination).
+    func fetchPlaylist() async throws -> PlaylistResponse
 
     /// Toggle a content item in the playlist.
-    func togglePlaylistItem(request: PlaylistToggleRequest) async throws -> PlaylistToggleResponse
+    func togglePlaylistItem(contentId: String, request: PlaylistToggleRequest) async throws -> PlaylistToggleResponse
 
     /// Check if a content item is in the playlist.
     func checkPlaylistItem(contentId: String) async throws -> PlaylistCheckResponse
 
-    /// Reorder playlist items.
+    /// Reorder a playlist item to a new position.
     func reorderPlaylist(request: PlaylistReorderRequest) async throws -> MessageResponse
 
     /// Remove a content item from the playlist.
@@ -147,21 +147,16 @@ final class APIUserRepository: UserRepository, @unchecked Sendable {
 
     // MARK: - Playlists
 
-    func fetchPlaylist(page: Int, limit: Int) async throws -> PlaylistResponse {
-        let queryItems = [
-            URLQueryItem(name: "page", value: String(page)),
-            URLQueryItem(name: "limit", value: String(limit))
-        ]
+    func fetchPlaylist() async throws -> PlaylistResponse {
         return try await client.get(
             "/api/v1/playlist",
-            queryItems: queryItems,
             as: PlaylistResponse.self
         )
     }
 
-    func togglePlaylistItem(request: PlaylistToggleRequest) async throws -> PlaylistToggleResponse {
+    func togglePlaylistItem(contentId: String, request: PlaylistToggleRequest) async throws -> PlaylistToggleResponse {
         return try await client.post(
-            "/api/v1/playlist/toggle",
+            "/api/v1/playlist/toggle/\(contentId)",
             body: request,
             as: PlaylistToggleResponse.self
         )
@@ -176,7 +171,7 @@ final class APIUserRepository: UserRepository, @unchecked Sendable {
 
     func reorderPlaylist(request: PlaylistReorderRequest) async throws -> MessageResponse {
         return try await client.put(
-            "/api/v1/playlist/reorder",
+            "/api/v1/playlist/items/reorder",
             body: request,
             as: MessageResponse.self
         )
@@ -184,7 +179,7 @@ final class APIUserRepository: UserRepository, @unchecked Sendable {
 
     func removePlaylistItem(contentId: String) async throws -> MessageResponse {
         return try await client.delete(
-            "/api/v1/playlist/\(contentId)",
+            "/api/v1/playlist/items/\(contentId)",
             as: MessageResponse.self
         )
     }

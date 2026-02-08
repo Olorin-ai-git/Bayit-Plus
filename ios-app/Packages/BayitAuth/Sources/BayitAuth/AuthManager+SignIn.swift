@@ -9,6 +9,8 @@ import AuthenticationServices
 extension AuthManager {
 
     /// Initiates Google Sign-In via the Google SDK and Firebase Auth.
+    /// After Firebase auth, exchanges the Google ID token with the backend
+    /// for a backend-issued JWT.
     public func signInWithGoogle() async throws {
         isLoading = true
         error = nil
@@ -42,7 +44,12 @@ extension AuthManager {
             )
 
             let authResult = try await Auth.auth().signIn(with: credential)
-            try await handleFirebaseAuthResult(authResult)
+
+            // Pass the Google ID token for backend JWT exchange
+            try await handleFirebaseAuthResult(
+                authResult,
+                providerToken: .google(idToken: idToken)
+            )
 
             logger.info(
                 "Google sign-in succeeded",
@@ -66,6 +73,8 @@ extension AuthManager {
     }
 
     /// Initiates Apple Sign-In via ASAuthorizationController and Firebase Auth.
+    /// After Firebase auth, exchanges the Apple identity token with the backend
+    /// for a backend-issued JWT.
     public func signInWithApple() async throws {
         isLoading = true
         error = nil
@@ -95,7 +104,26 @@ extension AuthManager {
             )
 
             let authResult = try await Auth.auth().signIn(with: credential)
-            try await handleFirebaseAuthResult(authResult)
+
+            // Build full name from Apple's PersonNameComponents
+            let fullName: String? = {
+                guard let nameComponents = appleIDCredential.fullName else {
+                    return nil
+                }
+                let formatter = PersonNameComponentsFormatter()
+                let name = formatter.string(from: nameComponents)
+                return name.isEmpty ? nil : name
+            }()
+
+            // Pass the Apple identity token for backend JWT exchange
+            try await handleFirebaseAuthResult(
+                authResult,
+                providerToken: .apple(
+                    identityToken: identityToken,
+                    fullName: fullName,
+                    email: appleIDCredential.email
+                )
+            )
 
             logger.info(
                 "Apple sign-in succeeded",
@@ -118,7 +146,8 @@ extension AuthManager {
         }
     }
 
-    /// Signs in with email and password via Firebase Auth.
+    /// Signs in with email and password via both the backend API and Firebase Auth.
+    /// The backend login endpoint returns a JWT directly, so no token exchange is needed.
     public func signInWithEmail(email: String, password: String) async throws {
         isLoading = true
         error = nil
@@ -126,11 +155,28 @@ extension AuthManager {
         do {
             try Task.checkCancellation()
 
+            // First authenticate with Firebase (for Firebase state tracking)
             let authResult = try await Auth.auth().signIn(
                 withEmail: email,
                 password: password
             )
-            try await handleFirebaseAuthResult(authResult)
+
+            // Then authenticate with the backend to get a backend JWT
+            // The backend /auth/login endpoint returns JWT directly
+            let backendResponse = try await BackendTokenExchangeClient.loginWithEmail(
+                email: email,
+                password: password,
+                logger: logger
+            )
+
+            // Handle Firebase result with the backend tokens
+            try await handleFirebaseAuthResult(
+                authResult,
+                providerToken: .emailPassword(
+                    accessToken: backendResponse.accessToken,
+                    refreshToken: backendResponse.refreshToken
+                )
+            )
 
             logger.info(
                 "Email sign-in succeeded",

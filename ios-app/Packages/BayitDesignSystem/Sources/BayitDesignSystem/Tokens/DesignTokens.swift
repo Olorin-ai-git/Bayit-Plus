@@ -174,7 +174,7 @@ public enum DesignTokens {
 // MARK: - Color Hex Extension
 
 extension Color {
-    init(hex: UInt, alpha: Double = 1.0) {
+    public init(hex: UInt, alpha: Double = 1.0) {
         self.init(
             .sRGB,
             red: Double((hex >> 16) & 0xFF) / 255.0,

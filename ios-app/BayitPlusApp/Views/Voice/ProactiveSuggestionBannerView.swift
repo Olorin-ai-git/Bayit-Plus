@@ -47,7 +47,7 @@ struct ProactiveSuggestionBannerView: View {
                     "",
                     variant: .secondary,
                     size: .small,
-                    icon: "xmark"
+                    icon: Image(systemName: "xmark")
                 ) {
                     viewModel.dismiss()
                 }
@@ -57,7 +57,7 @@ struct ProactiveSuggestionBannerView: View {
                     "",
                     variant: .primary,
                     size: .small,
-                    icon: "checkmark"
+                    icon: Image(systemName: "checkmark")
                 ) {
                     viewModel.execute()
                 }
