@@ -107,6 +107,51 @@ public enum DeepLink {
         case "settings":
             return .settings
 
+        case "languageSettings":
+            return .languageSettings
+
+        case "notificationSettings":
+            return .notificationSettings
+
+        case "billing":
+            return .billing
+
+        case "subscription":
+            return .subscription
+
+        case "security":
+            return .security
+
+        case "support":
+            return .support
+
+        case "playlist":
+            return .playlist
+
+        case "downloads":
+            return .downloads
+
+        case "recordings":
+            return .recordings
+
+        case "children":
+            return .children
+
+        case "youngsters":
+            return .youngsters
+
+        case "judaism":
+            return .judaism
+
+        case "flows":
+            return .flows
+
+        case "morningRitual":
+            return .morningRitual
+
+        case "voiceOnboarding":
+            return .voiceOnboarding
+
         default:
             return .home
         }

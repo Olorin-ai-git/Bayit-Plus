@@ -159,9 +159,10 @@ struct MainTabView: View {
                     : Color.clear
             )
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .accessibilityLabel(tab.title)
-            .accessibilityAddTraits(isSelected ? .isSelected : [])
         }
+        .accessibilityIdentifier("tab_\(tab.rawValue)")
+        .accessibilityLabel(tab.title)
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
