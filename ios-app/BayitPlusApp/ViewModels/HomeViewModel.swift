@@ -11,7 +11,7 @@ final class HomeViewModel {
     private(set) var spotlight: [SpotlightItem] = []
     private(set) var categories: [ContentCategory] = []
     private(set) var liveChannels: [LiveChannelItem] = []
-    private(set) var continueWatching: [ContinueWatchingItem] = []
+    private(set) var continueWatching: [WatchHistoryItem] = []
     private(set) var israelisInCity: IsraelisInCityResponse?
     private(set) var israeliBusinesses: IsraeliBusinessesResponse?
     private(set) var telAvivContent: CityContentResponse?

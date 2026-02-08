@@ -104,23 +104,4 @@ struct TrendingItem: Decodable, Sendable, Identifiable {
 }
 
 // MARK: - Continue Watching
-
-/// Response from GET /api/v1/history/continue
-struct ContinueWatchingResponse: Decodable, Sendable {
-    let items: [ContinueWatchingItem]
-    let total: Int?
-}
-
-/// A continue watching item with progress
-struct ContinueWatchingItem: Decodable, Sendable, Identifiable {
-    let id: String
-    let title: String?
-    let thumbnail: String?
-    let type: String?
-    let duration: String?
-    let year: Int?
-    let category: String?
-    let progress: Double?  // 0-100
-    let isSeries: Bool?
-    let totalEpisodes: Int?
-}
+// Note: ContinueWatchingResponse and WatchHistoryItem are defined in MediaModels.swift
