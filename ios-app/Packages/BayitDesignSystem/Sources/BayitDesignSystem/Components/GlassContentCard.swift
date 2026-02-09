@@ -187,7 +187,7 @@ public struct GlassContentCard: View {
             .background {
                 ZStack {
                     badgeColor(for: text)
-                    VisualEffectBlur(style: .systemUltraThinMaterialDark)
+                    VisualEffectBlur()
                 }
             }
             .clipShape(Capsule())
@@ -225,7 +225,7 @@ public struct GlassContentCard: View {
         .background {
             ZStack {
                 DesignTokens.Glass.bgStrong
-                VisualEffectBlur(style: .systemUltraThinMaterialDark)
+                VisualEffectBlur()
             }
         }
     }

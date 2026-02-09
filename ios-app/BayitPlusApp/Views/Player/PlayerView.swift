@@ -13,7 +13,7 @@ import SwiftUI
 struct PlayerView: View {
 
     @Environment(NavigationCoordinator.self) private var coordinator
-    @Environment(RepositoryProvider.self) fileprivate var repositories
+    @Environment(RepositoryProvider.self) var repositories
     @Environment(AuthManager.self) private var authManager
 
     @State private var viewModel: MediaPlayerViewModel
@@ -43,11 +43,11 @@ struct PlayerView: View {
     @State private var showDubbingControls = false
 
     // Split subtitle state
-    @State fileprivate var splitModeEnabled = false
-    @State fileprivate var splitLanguages: [String] = []
-    @State fileprivate var showSplitLanguagePicker = false
-    @State fileprivate var primarySubtitleCues: [SubtitleCue] = []
-    @State fileprivate var secondarySubtitleCues: [SubtitleCue] = []
+    @State var splitModeEnabled = false
+    @State var splitLanguages: [String] = []
+    @State var showSplitLanguagePicker = false
+    @State var primarySubtitleCues: [SubtitleCue] = []
+    @State var secondarySubtitleCues: [SubtitleCue] = []
 
     let contentId: String
     let contentType: ContentType
@@ -211,10 +211,21 @@ struct PlayerView: View {
             .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showDubbingControls) {
-            if let vm = liveDubbingVM, mediaContentType.isLive {
+            if let vm = liveDubbingVM {
                 LiveDubbingControlsView(viewModel: vm, channelId: contentId)
                     .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
+            } else {
+                VStack(spacing: DesignTokens.Spacing.md) {
+                    Text("Live Dubbing")
+                        .font(.headline)
+                    Text("Live dubbing is only available for live channels")
+                        .foregroundStyle(.secondary)
+                    GlassButton("OK", variant: .primary) {
+                        showDubbingControls = false
+                    }
+                }
+                .padding(DesignTokens.Spacing.xl)
             }
         }
         .alert("Recording Error", isPresented: $showRecordingError) {
@@ -606,66 +617,12 @@ struct PlayerView: View {
         )
     }
 
-    // MARK: - Split Subtitle Toggle Button
-
-    private var splitSubtitleToggle: some View {
-        Button {
-            if splitModeEnabled {
-                // Disable split mode
-                splitModeEnabled = false
-                splitLanguages = []
-                primarySubtitleCues = []
-                secondarySubtitleCues = []
-            } else {
-                // Show language picker
-                showSplitLanguagePicker = true
-            }
-        } label: {
-            Image(systemName: splitModeEnabled ? "square.split.2x1.fill" : "square.split.2x1")
-                .font(.system(size: 18))
-                .foregroundStyle(
-                    splitModeEnabled ? DesignTokens.Primary.p400 : .white
-                )
-                .frame(width: 44, height: 44)
-        }
-        .accessibilityLabel("Split screen subtitles")
-        .accessibilityValue(splitModeEnabled ? "On" : "Off")
-    }
-
-    // MARK: - Load Split Subtitle Cues
-
-    private func loadSplitSubtitleCues() async {
-        guard splitLanguages.count == 2 else { return }
-
-        async let primary = loadCuesForLanguage(splitLanguages[0])
-        async let secondary = loadCuesForLanguage(splitLanguages[1])
-
-        let (primaryResult, secondaryResult) = await (primary, secondary)
-        primarySubtitleCues = primaryResult
-        secondarySubtitleCues = secondaryResult
-    }
-
-    private func loadCuesForLanguage(_ language: String) async -> [SubtitleCue] {
-        do {
-            let response = try await repositories.subtitle.fetchCues(
-                contentId: contentId,
-                language: language,
-                hebrewMode: .standard,
-                englishMode: .standard
-            )
-            return response.cues ?? []
-        } catch {
-            print("Failed to load \(language) cues: \(error)")
-            return []
-        }
-    }
-
     // MARK: - Recording
 
     private func startRecording() async {
-        // Premium check
+        // Premium check (allow premium subscribers and admin users)
         guard let user = authManager.user,
-              user.subscriptionTier.isPremium else {
+              user.subscriptionTier.isPremium || user.role.isAdmin else {
             recordingErrorMessage = "Premium subscription required"
             showRecordingError = true
             return

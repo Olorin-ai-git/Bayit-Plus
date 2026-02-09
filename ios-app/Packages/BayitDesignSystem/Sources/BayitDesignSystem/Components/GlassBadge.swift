@@ -49,7 +49,7 @@ public struct GlassBadge: View {
             .background {
                 ZStack {
                     variant.color.opacity(0.85)
-                    VisualEffectBlur(style: .systemUltraThinMaterialDark)
+                    VisualEffectBlur()
                         .opacity(0.4)
                 }
             }

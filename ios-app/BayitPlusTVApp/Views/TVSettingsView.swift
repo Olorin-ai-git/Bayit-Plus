@@ -21,13 +21,15 @@ struct TVSettingsView: View {
                 signOutSection
             }
             .listStyle(.grouped)
-            .scrollContentBackground(.hidden)
             .background(DesignTokens.Background.primary)
             .task {
                 if viewModel == nil {
-                    viewModel = SettingsViewModel(repository: repos.settings)
+                    viewModel = SettingsViewModel(
+                        settingsRepository: repos.settings,
+                        userRepository: repos.user
+                    )
                 }
-                await viewModel?.loadSettings()
+                await viewModel?.load()
             }
         }
     }
@@ -87,18 +89,18 @@ struct TVSettingsView: View {
     private var playbackSection: some View {
         Section {
             HStack {
-                Text("Subtitle Language")
+                Text("Subtitles")
                     .foregroundStyle(DesignTokens.Text.secondary)
                 Spacer()
-                Text(viewModel?.subtitleLanguage ?? "Off")
+                Text(viewModel?.subtitles == true ? "On" : "Off")
                     .foregroundStyle(DesignTokens.Text.primary)
             }
 
             HStack {
-                Text("Video Quality")
+                Text("Autoplay")
                     .foregroundStyle(DesignTokens.Text.secondary)
                 Spacer()
-                Text(viewModel?.videoQuality ?? "Auto")
+                Text(viewModel?.autoplay == true ? "On" : "Off")
                     .foregroundStyle(DesignTokens.Text.primary)
             }
         } header: {

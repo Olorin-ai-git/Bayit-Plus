@@ -45,7 +45,7 @@ public struct GlassCardModifier: ViewModifier {
             .background {
                 ZStack {
                     Color.black.opacity(0.6)
-                    VisualEffectBlur(style: .systemUltraThinMaterialDark)
+                    VisualEffectBlur()
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: radius))

@@ -58,7 +58,7 @@ public struct GlassSearchBar: View {
         .background {
             ZStack {
                 DesignTokens.Glass.bg
-                VisualEffectBlur(style: .systemUltraThinMaterialDark)
+                VisualEffectBlur()
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))

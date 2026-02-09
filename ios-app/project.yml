@@ -102,6 +102,8 @@ targets:
         CFBundleURLTypes:
           - CFBundleURLSchemes:
               - bayitplus
+        GOOGLE_CLIENT_ID: "624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com"
+        GOOGLE_SERVER_CLIENT_ID: "624470113582-7p34b1tpqlfob5sh4cl9eoospmvao1at.apps.googleusercontent.com"
 
 schemes:
   BayitPlusApp:

@@ -34,7 +34,7 @@ struct TVWatchPartyView: View {
         }
     }
 
-    private func activePartyContent(_ party: WatchPartyRoom, _ vm: WatchPartyViewModel) -> some View {
+    private func activePartyContent(_ party: WatchParty, _ vm: WatchPartyViewModel) -> some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             partyHeader(party)
 
@@ -50,7 +50,7 @@ struct TVWatchPartyView: View {
         .padding(.vertical, TVDesignTokens.Spacing.lg)
     }
 
-    private func partyHeader(_ party: WatchPartyRoom) -> some View {
+    private func partyHeader(_ party: WatchParty) -> some View {
         VStack(spacing: TVDesignTokens.Spacing.md) {
             Image(systemName: "tv.and.hifispeaker.fill").font(.system(size: TVDesignTokens.FontSize.hero)).foregroundStyle(DesignTokens.Primary.default)
             Text(party.contentTitle ?? party.contentId).font(.system(size: TVDesignTokens.FontSize.display, weight: .bold)).foregroundStyle(DesignTokens.Text.primary)
@@ -58,7 +58,7 @@ struct TVWatchPartyView: View {
         }.frame(maxWidth: .infinity).padding(.vertical, TVDesignTokens.Spacing.xl)
     }
 
-    private func participantsList(_ participants: [WatchPartyParticipant]) -> some View {
+    private func participantsList(_ participants: [ParticipantState]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             Text("PARTICIPANTS")
                 .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
@@ -75,16 +75,16 @@ struct TVWatchPartyView: View {
         }
     }
 
-    private func participantCard(_ participant: WatchPartyParticipant) -> some View {
-        let initial = String((participant.displayName ?? "?").prefix(1)).uppercased()
+    private func participantCard(_ participant: ParticipantState) -> some View {
+        let initial = String(participant.userName.prefix(1)).uppercased()
         return VStack(spacing: TVDesignTokens.Spacing.sm) {
             Circle().fill(DesignTokens.Glass.bgMedium).frame(width: 80, height: 80)
                 .overlay(Text(initial).font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold)).foregroundStyle(DesignTokens.Primary.p400))
-            Text(participant.displayName ?? "User").font(.system(size: TVDesignTokens.FontSize.base)).foregroundStyle(DesignTokens.Text.primary)
+            Text(participant.userName).font(.system(size: TVDesignTokens.FontSize.base)).foregroundStyle(DesignTokens.Text.primary)
         }
     }
 
-    private func chatSection(_ messages: [ChatMessage]) -> some View {
+    private func chatSection(_ messages: [PartyChatMessage]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             Text("CHAT")
                 .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
@@ -99,10 +99,10 @@ struct TVWatchPartyView: View {
         }
     }
 
-    private func chatMessageRow(_ message: ChatMessage) -> some View {
+    private func chatMessageRow(_ message: PartyChatMessage) -> some View {
         HStack(alignment: .top, spacing: TVDesignTokens.Spacing.md) {
-            Text(message.userName ?? "User").font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold)).foregroundStyle(DesignTokens.Primary.default)
-            Text(message.message ?? "").font(.system(size: TVDesignTokens.FontSize.base)).foregroundStyle(DesignTokens.Text.primary)
+            Text(message.userName).font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold)).foregroundStyle(DesignTokens.Primary.default)
+            Text(message.message).font(.system(size: TVDesignTokens.FontSize.base)).foregroundStyle(DesignTokens.Text.primary)
         }.padding(TVDesignTokens.Spacing.md).frame(maxWidth: .infinity, alignment: .leading).background(DesignTokens.Glass.bg).clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))
     }
 
@@ -152,7 +152,7 @@ struct TVWatchPartyView: View {
         }
     }
 
-    private func partyCard(_ party: WatchPartyRoom) -> some View {
+    private func partyCard(_ party: WatchParty) -> some View {
         Button {} label: {
             HStack(spacing: TVDesignTokens.Spacing.lg) {
                 VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {

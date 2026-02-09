@@ -37,7 +37,7 @@ public struct GlassNavigationBar<LeadingContent: View, TrailingContent: View>: V
         .background {
             ZStack {
                 Color.black.opacity(0.8)
-                VisualEffectBlur(style: .systemThinMaterialDark)
+                VisualEffectBlur()
             }
             .ignoresSafeArea(edges: .top)
         }

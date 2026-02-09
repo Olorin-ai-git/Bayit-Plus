@@ -17,11 +17,14 @@ final class SearchViewModel {
     private(set) var recentSearches: [String] = []
 
     private let searchRepository: any SearchRepository
+    #if os(iOS)
     private let recentSearchesService: RecentSearchesService
+    #endif
     private let logger = BayitLogger(category: "SearchViewModel")
     private var searchTask: Task<Void, Never>?
     private let debounceInterval: Duration = .milliseconds(300)
 
+    #if os(iOS)
     init(
         searchRepository: any SearchRepository,
         recentSearchesService: RecentSearchesService = RecentSearchesService()
@@ -29,12 +32,19 @@ final class SearchViewModel {
         self.searchRepository = searchRepository
         self.recentSearchesService = recentSearchesService
     }
+    #else
+    init(searchRepository: any SearchRepository) {
+        self.searchRepository = searchRepository
+    }
+    #endif
 
     /// Load trending searches from API and recent from UserDefaults on view appear,
     /// then trigger an initial browse-all search.
     @MainActor
     func loadInitialData() async {
+        #if os(iOS)
         recentSearches = recentSearchesService.load()
+        #endif
 
         do {
             trendingSearches = try await searchRepository.fetchTrendingSearches(limit: 10)
@@ -83,7 +93,9 @@ final class SearchViewModel {
     /// Clear all recent searches.
     @MainActor
     func clearRecentSearches() {
+        #if os(iOS)
         recentSearchesService.clear()
+        #endif
         recentSearches = []
     }
 
@@ -121,9 +133,11 @@ final class SearchViewModel {
                 results = filteredResults
                 totalResults = filteredResults.count
                 hasSearched = true
+                #if os(iOS)
                 if !trimmedQuery.isEmpty {
                     recentSearches = recentSearchesService.save(trimmedQuery, existing: recentSearches)
                 }
+                #endif
             }
         } catch is CancellationError {
             return

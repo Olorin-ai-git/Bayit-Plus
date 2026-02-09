@@ -116,8 +116,8 @@ extension PlayerView {
             let response = try await repositories.subtitle.fetchCues(
                 contentId: contentId,
                 language: language,
-                hebrewMode: .standard,
-                englishMode: .standard
+                hebrewMode: SubtitleHebrewMode.standard,
+                englishMode: SubtitleEnglishMode.standard
             )
             return response.cues ?? []
         } catch {

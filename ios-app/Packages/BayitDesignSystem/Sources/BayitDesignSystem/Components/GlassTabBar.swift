@@ -41,7 +41,7 @@ public struct GlassTabBar: View {
         .background {
             ZStack {
                 Color.black.opacity(0.85)
-                VisualEffectBlur(style: .systemThinMaterialDark)
+                VisualEffectBlur()
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.xl))

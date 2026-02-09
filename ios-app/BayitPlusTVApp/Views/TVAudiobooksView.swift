@@ -35,20 +35,13 @@ struct TVAudiobooksView: View {
     private func contentShelf(_ vm: AudiobooksViewModel) -> some View {
         GlassContentShelf(title: "Audiobooks", items: vm.items) { audiobook in
             GlassFocusPoster(
-                thumbnailURL: audiobook.coverImage,
+                thumbnailURL: audiobook.thumbnail,
                 title: audiobook.title ?? "Audiobook",
                 subtitle: audiobook.author,
-                badge: progressBadge(audiobook),
+                badge: audiobook.duration,
                 aspectRatio: 2 / 3
             )
         }
-    }
-
-    private func progressBadge(_ audiobook: AudiobookItem) -> String? {
-        guard let progress = audiobook.progress, progress > 0, progress < 100 else {
-            return nil
-        }
-        return "\(Int(progress))%"
     }
 
     private var emptyState: some View {

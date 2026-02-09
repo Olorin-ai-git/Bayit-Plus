@@ -28,13 +28,13 @@ public struct GlassChip: View {
                     if isSelected {
                         ZStack {
                             DesignTokens.Primary.default
-                            VisualEffectBlur(style: .systemUltraThinMaterialDark)
+                            VisualEffectBlur()
                                 .opacity(0.3)
                         }
                     } else {
                         ZStack {
                             DesignTokens.Glass.bg
-                            VisualEffectBlur(style: .systemUltraThinMaterialDark)
+                            VisualEffectBlur()
                         }
                     }
                 }

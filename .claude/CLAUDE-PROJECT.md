@@ -813,13 +813,33 @@ REACT_APP_API_URL=https://api.bayitplus.com
 
 ---
 
-## iOS Build & Run Requirements
+## iOS & tvOS Build & Run Requirements
+
+### MANDATORY: Simulator Device and Bundle ID
+
+**iOS Simulator MUST ALWAYS use iPhone 17 Pro. No other device is permitted.**
+
+**Bundle ID for both iOS and tvOS: `tv.bayit.plus`**
+
+| Platform | Simulator Device | Bundle ID |
+|----------|-----------------|-----------|
+| **iOS** | iPhone 17 Pro | `tv.bayit.plus` |
+| **tvOS** | Apple TV 4K (3rd generation) | `tv.bayit.plus` |
+
+**Forbidden:**
+```bash
+# NEVER use other simulator devices for iOS
+-destination 'platform=iOS Simulator,name=iPhone 16'      # WRONG
+-destination 'platform=iOS Simulator,name=iPhone SE'       # WRONG
+-destination 'platform=iOS Simulator,name=iPhone 17'       # WRONG (must be Pro)
+-destination 'platform=iOS Simulator,name=iPhone 17 Plus'  # WRONG
+```
 
 ### MANDATORY: Always Build with Xcode, Never Metro
 
 **iOS development MUST use native Xcode builds. Metro bundler is STRICTLY FORBIDDEN for iOS.**
 
-**Build Command:**
+**Build Command (iOS):**
 ```bash
 cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app
 xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusApp \
@@ -840,6 +860,7 @@ npx expo start                # WRONG
 **After EVERY successful build (`** BUILD SUCCEEDED **`), you MUST immediately install and launch the app on the simulator. No exceptions.**
 
 ```bash
+# iOS - Build, Install, Launch
 # 1. Build
 xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusApp \
   -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
@@ -855,7 +876,7 @@ xcrun simctl launch "iPhone 17 Pro" tv.bayit.plus
 **Workflow:**
 1. Build with `xcodebuild` -- if it fails, fix errors and rebuild
 2. On `** BUILD SUCCEEDED **` -- immediately install with `xcrun simctl install`
-3. Immediately launch with `xcrun simctl launch`
+3. Immediately launch with `xcrun simctl launch` using bundle ID `tv.bayit.plus`
 4. Never skip steps 2-3 after a successful build
 
 **Why?**
@@ -863,11 +884,17 @@ xcrun simctl launch "iPhone 17 Pro" tv.bayit.plus
 - Catches runtime issues that compile-time checks miss
 - Keeps the simulator in sync with the latest code
 - Provides immediate feedback loop for iterative development
+- iPhone 17 Pro is the reference device for all UI testing
 
 ---
 
 ## Version History
 
+- **1.0.2** (2026-02-09) - Mandatory simulator device and bundle ID
+  - iOS Simulator MUST always use iPhone 17 Pro (no other device)
+  - Bundle ID for both iOS and tvOS: `tv.bayit.plus`
+  - Added tvOS simulator device (Apple TV 4K 3rd gen)
+  - Added forbidden device examples
 - **1.0.1** (2026-02-08) - iOS build and run requirements
   - Added mandatory Xcode-only build requirement (no Metro)
   - Added mandatory install and launch after every successful build

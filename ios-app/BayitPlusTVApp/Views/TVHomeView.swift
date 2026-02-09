@@ -27,7 +27,7 @@ struct TVHomeView: View {
                 viewModel = HomeViewModel(
                     repository: repos.content,
                     liveTVRepository: repos.liveTV,
-                    locationProvider: nil
+                    locationProvider: TVLocationProvider()
                 )
             }
             await viewModel?.loadFeatured()
@@ -48,7 +48,7 @@ struct TVHomeView: View {
                     GlassFocusPoster(
                         thumbnailURL: item.thumbnail,
                         title: item.title ?? "Untitled",
-                        subtitle: item.subtitle
+                        subtitle: item.type
                     )
                 }
             }

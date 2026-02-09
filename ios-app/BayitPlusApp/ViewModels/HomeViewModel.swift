@@ -1,3 +1,4 @@
+import BayitNetworking
 import Foundation
 import Observation
 
@@ -22,12 +23,12 @@ final class HomeViewModel {
 
     private let repository: any ContentRepository
     private let liveTVRepository: any LiveTVRepository
-    private let locationProvider: AppLocationProvider
+    private let locationProvider: any LocationProvider
 
     init(
         repository: any ContentRepository,
         liveTVRepository: any LiveTVRepository,
-        locationProvider: AppLocationProvider
+        locationProvider: any LocationProvider
     ) {
         self.repository = repository
         self.liveTVRepository = liveTVRepository

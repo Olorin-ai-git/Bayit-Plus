@@ -39,7 +39,7 @@ struct TVRadioView: View {
         }
     }
 
-    private func stationsGrid(_ stations: [RadioStation]) -> some View {
+    private func stationsGrid(_ stations: [RadioStationItem]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
             Text("Radio")
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
@@ -48,7 +48,7 @@ struct TVRadioView: View {
 
             LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
                 ForEach(stations) { station in
-                    TVRadioStationCard(station: station)
+                    TVRadioStationItemCard(station: station)
                 }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -71,8 +71,8 @@ struct TVRadioView: View {
 
 // MARK: - Radio Station Card
 
-private struct TVRadioStationCard: View {
-    let station: RadioStation
+private struct TVRadioStationItemCard: View {
+    let station: RadioStationItem
     @Environment(\.isFocused) private var isFocused
 
     var body: some View {

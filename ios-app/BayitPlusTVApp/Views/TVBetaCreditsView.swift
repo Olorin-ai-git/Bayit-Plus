@@ -64,17 +64,17 @@ struct TVBetaCreditsView: View {
         .padding(TVDesignTokens.Spacing.xxl)
         .frame(maxWidth: 600)
         .background(DesignTokens.Glass.bg)
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.large))
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
     }
 
     private func progressBar(_ vm: BetaCreditsViewModel) -> some View {
         GeometryReader { geo in
             ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.small)
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm)
                     .fill(DesignTokens.Glass.bgStrong)
                     .frame(height: 12)
 
-                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.small)
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm)
                     .fill(statusColor(vm))
                     .frame(width: geo.size.width * vm.progressPercentage, height: 12)
             }
