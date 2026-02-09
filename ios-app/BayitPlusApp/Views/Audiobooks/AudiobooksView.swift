@@ -24,6 +24,8 @@ struct AudiobooksView: View {
                 } else {
                     contentView(vm)
                 }
+            } else {
+                ScreenLoadingView()
             }
         }
         .background(DesignTokens.Background.primary)

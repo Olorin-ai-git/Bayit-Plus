@@ -24,6 +24,8 @@ struct SettingsView: View {
                     }
                 }
                 .padding(.vertical, DesignTokens.Spacing.lg)
+            } else {
+                ScreenLoadingView()
             }
         }
         .background(DesignTokens.Background.primary)

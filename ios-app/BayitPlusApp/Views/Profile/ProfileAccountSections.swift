@@ -50,11 +50,7 @@ extension ProfileView {
 
                     Divider().background(DesignTokens.Glass.border)
 
-                    accountRow(
-                        icon: "phone.fill",
-                        label: localization.t("profile.phoneNumber"),
-                        value: profile.phoneNumber ?? localization.t("profile.notSet")
-                    )
+                    phoneNumberRow(profile)
                 }
                 .padding(DesignTokens.Spacing.md)
             }
@@ -78,6 +74,44 @@ extension ProfileView {
                     .foregroundColor(DesignTokens.Text.primary)
             }
             Spacer()
+        }
+    }
+
+    func phoneNumberRow(_ profile: ProfileResponse) -> some View {
+        Button {
+            coordinator.pushToCurrentTab(.phoneVerification)
+        } label: {
+            HStack(spacing: DesignTokens.Spacing.md) {
+                Image(systemName: "phone.fill")
+                    .font(.system(size: DesignTokens.FontSize.lg))
+                    .foregroundColor(DesignTokens.Primary.default)
+                    .frame(width: 32)
+
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
+                    Text(localization.t("profile.phoneNumber"))
+                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .foregroundColor(DesignTokens.Text.muted)
+                    HStack(spacing: DesignTokens.Spacing.xs) {
+                        Text(profile.phoneNumber ?? localization.t("profile.notSet"))
+                            .font(.system(size: DesignTokens.FontSize.md))
+                            .foregroundColor(DesignTokens.Text.primary)
+
+                        if let phoneNumber = profile.phoneNumber, !phoneNumber.isEmpty {
+                            if profile.phoneVerified == true {
+                                GlassBadge(text: localization.t("profile.verified"), variant: .success)
+                            } else {
+                                GlassBadge(text: localization.t("profile.notVerified"), variant: .warning)
+                            }
+                        }
+                    }
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: DesignTokens.FontSize.sm))
+                    .foregroundColor(DesignTokens.Text.muted)
+            }
         }
     }
 

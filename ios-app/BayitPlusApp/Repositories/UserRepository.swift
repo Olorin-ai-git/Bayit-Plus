@@ -77,6 +77,17 @@ protocol UserRepository: Sendable {
 
     /// Delete a recording.
     func deleteRecording(recordingId: String) async throws -> MessageResponse
+
+    // MARK: - Verification
+
+    /// Send phone verification code via SMS.
+    func sendPhoneVerification(phoneNumber: String) async throws -> PhoneVerificationSendResponse
+
+    /// Verify phone with SMS code.
+    func verifyPhone(code: String) async throws -> PhoneVerificationResponse
+
+    /// Get current verification status.
+    func getVerificationStatus() async throws -> VerificationStatusResponse
 }
 
 /// Production implementation of `UserRepository` using `APIClient`.
@@ -254,6 +265,33 @@ final class APIUserRepository: UserRepository, @unchecked Sendable {
         return try await client.delete(
             "/api/v1/recordings/\(recordingId)",
             as: MessageResponse.self
+        )
+    }
+
+    // MARK: - Verification
+
+    func sendPhoneVerification(phoneNumber: String) async throws -> PhoneVerificationSendResponse {
+        let request = PhoneVerificationRequest(phoneNumber: phoneNumber)
+        return try await client.post(
+            "/api/v1/verification/phone/send",
+            body: request,
+            as: PhoneVerificationSendResponse.self
+        )
+    }
+
+    func verifyPhone(code: String) async throws -> PhoneVerificationResponse {
+        let request = PhoneVerificationCodeRequest(code: code)
+        return try await client.post(
+            "/api/v1/verification/phone/verify",
+            body: request,
+            as: PhoneVerificationResponse.self
+        )
+    }
+
+    func getVerificationStatus() async throws -> VerificationStatusResponse {
+        return try await client.get(
+            "/api/v1/verification/status",
+            as: VerificationStatusResponse.self
         )
     }
 }

@@ -28,6 +28,8 @@ struct FavoritesView: View {
                 } else {
                     contentGrid(vm)
                 }
+            } else {
+                ScreenLoadingView()
             }
         }
         .background(DesignTokens.Background.primary)

@@ -65,6 +65,19 @@ struct TopNavigationBar: View {
                 .accessibilityLabel("Beta Credits")
             }
 
+            // Recordings button
+            Button {
+                coordinator.navigate(to: .recordings)
+            } label: {
+                Image(systemName: "record.circle")
+                    .font(.system(size: 20))
+                    .foregroundColor(DesignTokens.Text.primary)
+                    .frame(width: 44, height: 44)
+                    .background(DesignTokens.Glass.bgMedium)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+            }
+            .accessibilityLabel("Recordings")
+
             // Search button
             Button {
                 coordinator.presentFullscreen(.search)

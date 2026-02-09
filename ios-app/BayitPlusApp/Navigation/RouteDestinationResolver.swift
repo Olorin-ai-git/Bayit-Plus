@@ -110,6 +110,8 @@ struct RouteDestinationResolver {
             ConversationView(friendId: friendId)
         case .mfaSetup:
             MFASetupView()
+        case .phoneVerification:
+            PhoneVerificationView()
         default:
             ErrorStateView(
                 message: "Screen not available",

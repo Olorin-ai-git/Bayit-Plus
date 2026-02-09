@@ -20,6 +20,8 @@ struct OnboardingAIView: View {
                     stepContent(vm)
                     navigationButtons(vm)
                 }
+            } else {
+                ScreenLoadingView()
             }
         }
         .task {

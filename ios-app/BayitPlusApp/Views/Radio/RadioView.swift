@@ -26,6 +26,8 @@ struct RadioView: View {
                 } else {
                     stationGrid(vm.stations)
                 }
+            } else {
+                ScreenLoadingView()
             }
         }
         .background(DesignTokens.Background.primary)

@@ -21,6 +21,8 @@ struct MovieDetailView: View {
                 } else if let detail = vm.detail {
                     detailContent(detail, vm: vm)
                 }
+            } else {
+                ScreenLoadingView()
             }
         }
         .background(DesignTokens.Background.primary)

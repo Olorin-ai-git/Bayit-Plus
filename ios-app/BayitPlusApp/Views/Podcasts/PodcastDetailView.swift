@@ -22,6 +22,8 @@ struct PodcastDetailView: View {
                 } else {
                     emptyState
                 }
+            } else {
+                ScreenLoadingView()
             }
         }
         .background(DesignTokens.Background.primary)

@@ -18,6 +18,8 @@ struct SearchView: View {
             ScrollView(.vertical, showsIndicators: false) {
                 if let vm = viewModel {
                     searchContent(vm)
+                } else {
+                    ScreenLoadingView()
                 }
             }
         }

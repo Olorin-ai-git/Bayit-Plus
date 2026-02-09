@@ -27,6 +27,8 @@ struct VODView: View {
                 } else {
                     contentGrid(vm)
                 }
+            } else {
+                ScreenLoadingView()
             }
         }
         .background(DesignTokens.Background.primary)

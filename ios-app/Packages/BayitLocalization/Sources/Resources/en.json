@@ -6686,7 +6686,10 @@
     "household": "Household",
     "displayName": "Display Name",
     "phoneNumber": "Phone Number",
-    "mfa": "Multi-Factor Authentication"
+    "mfa": "Multi-Factor Authentication",
+    "notSet": "Not Set",
+    "verified": "Verified",
+    "notVerified": "Not Verified"
   },
   "mfa": {
     "title": "Multi-Factor Authentication",
@@ -6701,7 +6704,25 @@
     "manualEntry": "Or enter this code manually:",
     "smsCodeSent": "A verification code has been sent to your phone",
     "enterCode": "Enter 6-digit code",
-    "verify": "Verify"
+    "verify": "Verify",
+    "phoneVerificationRequired": "Phone Verification Required",
+    "verifyPhoneToEnableMFA": "You must verify your phone number before enabling multi-factor authentication.",
+    "addPhoneToEnableMFA": "You must add and verify a phone number before enabling multi-factor authentication.",
+    "verifyPhone": "Verify Phone Number"
+  },
+  "verification": {
+    "phoneTitle": "Verify Phone Number",
+    "phoneDescription": "Enter your phone number to receive a verification code",
+    "enterCode": "Enter the verification code sent to your phone",
+    "phonePlaceholder": "+1 555-123-4567",
+    "phoneHint": "Enter your phone number with country code",
+    "sendCode": "Send Verification Code",
+    "codePlaceholder": "000000",
+    "codeSentTo": "Code sent to",
+    "verify": "Verify",
+    "resendIn": "Resend in",
+    "resendCode": "Resend Code",
+    "changeNumber": "Change Phone Number"
   },
   "profileControls": {
     "title": "Profile Family Controls",

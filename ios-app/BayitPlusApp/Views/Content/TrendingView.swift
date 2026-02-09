@@ -21,6 +21,8 @@ struct TrendingView: View {
                 } else {
                     TrendingRowView()
                 }
+            } else {
+                ScreenLoadingView()
             }
         }
         .background(DesignTokens.Background.primary)

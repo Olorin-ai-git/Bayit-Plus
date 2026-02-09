@@ -26,6 +26,8 @@ struct PodcastsView: View {
                 } else {
                     contentView(vm)
                 }
+            } else {
+                ScreenLoadingView()
             }
         }
         .background(DesignTokens.Background.primary)

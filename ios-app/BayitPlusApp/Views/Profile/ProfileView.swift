@@ -6,10 +6,10 @@ import SwiftUI
 /// User profile screen showing avatar, stats, and preferences
 struct ProfileView: View {
     @Environment(RepositoryProvider.self) private var repos
-    @Environment(NavigationCoordinator.self) private var coordinator
-    @Environment(LocalizationManager.self) private var localization
+    @Environment(NavigationCoordinator.self) var coordinator
+    @Environment(LocalizationManager.self) var localization
     @Environment(AuthManager.self) var authManager
-    @State private var viewModel: ProfileViewModel?
+    @State var viewModel: ProfileViewModel?
     @State var biometricVM: BiometricViewModel?
 
     var body: some View {
@@ -32,6 +32,8 @@ struct ProfileView: View {
                     }
                 }
                 .padding(.vertical, DesignTokens.Spacing.lg)
+            } else {
+                ScreenLoadingView()
             }
         }
         .background(DesignTokens.Background.primary)

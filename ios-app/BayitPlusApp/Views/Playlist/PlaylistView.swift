@@ -43,6 +43,8 @@ struct PlaylistView: View {
             } else {
                 playlistList(vm)
             }
+        } else {
+            ScreenLoadingView()
         }
     }
 

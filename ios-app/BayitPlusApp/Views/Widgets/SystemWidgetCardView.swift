@@ -25,28 +25,35 @@ struct SystemWidgetCardView: View {
     // MARK: - Icon Circle
 
     private var contentIcon: some View {
-        Group {
+        let _ = print("🔍 Widget '\(widget.title)': coverUrl='\(widget.coverUrl ?? "nil")', icon='\(widget.icon ?? "nil")'")
+
+        return Group {
             // Try coverUrl first (backend resolved poster), then icon, then placeholder
             if let posterUrl = widget.coverUrl ?? widget.icon, let url = URL(string: posterUrl) {
-                let _ = print("🖼️ Loading poster for \(widget.title): coverUrl=\(widget.coverUrl ?? "nil"), icon=\(widget.icon ?? "nil"), final URL=\(url)")
+                let _ = print("✅ Created URL for \(widget.title): \(url)")
                 // Show actual poster image
                 AsyncImage(url: url) { phase in
                     switch phase {
                     case .empty:
+                        let _ = print("⏳ AsyncImage empty for \(widget.title)")
                         placeholderIcon
                     case .success(let image):
+                        let _ = print("🎉 AsyncImage SUCCESS for \(widget.title)")
                         image
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(width: 56, height: 56)
                             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-                    case .failure:
+                    case .failure(let error):
+                        let _ = print("❌ AsyncImage FAILED for \(widget.title): \(error)")
                         placeholderIcon
                     @unknown default:
+                        let _ = print("⚠️ AsyncImage unknown for \(widget.title)")
                         placeholderIcon
                     }
                 }
             } else {
+                let _ = print("⛔ No URL for \(widget.title) - showing placeholder")
                 // Fall back to generic icon
                 placeholderIcon
             }

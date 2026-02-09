@@ -13,18 +13,37 @@ struct LiveTVView: View {
     ]
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            PageHeader(icon: "tv.fill", title: "Live TV")
+        VStack(spacing: 0) {
+            GlassNavigationBar(
+                title: "Live TV",
+                trailing: {
+                    Button {
+                        coordinator.navigate(to: .epg)
+                    } label: {
+                        Image(systemName: "calendar")
+                            .font(.system(size: 20))
+                            .foregroundColor(DesignTokens.Text.primary)
+                            .frame(width: 44, height: 44)
+                            .background(DesignTokens.Glass.bgMedium)
+                            .clipShape(Circle())
+                    }
+                    .accessibilityLabel("TV Guide")
+                }
+            )
 
-            if let vm = viewModel {
-                if vm.isLoading && vm.channels.isEmpty {
-                    loadingGrid
-                } else if let error = vm.error, vm.channels.isEmpty {
-                    ErrorStateView(message: error) {
-                        Task { await vm.refresh() }
+            ScrollView(.vertical, showsIndicators: false) {
+                if let vm = viewModel {
+                    if vm.isLoading && vm.channels.isEmpty {
+                        loadingGrid
+                    } else if let error = vm.error, vm.channels.isEmpty {
+                        ErrorStateView(message: error) {
+                            Task { await vm.refresh() }
+                        }
+                    } else {
+                        channelGrid(vm.channels)
                     }
                 } else {
-                    channelGrid(vm.channels)
+                    ScreenLoadingView()
                 }
             }
         }

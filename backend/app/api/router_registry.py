@@ -228,8 +228,9 @@ def register_all_routers(app: FastAPI) -> None:
         prefix=f"{prefix}/recordings",
         tags=["series-recording-rules"],
     )
-    app.include_router(profiles.router, prefix=f"{prefix}/profiles", tags=["profiles"])
+    # IMPORTANT: Register /me routes BEFORE /{profile_id} to avoid path variable capture
     app.include_router(profiles_me.router, prefix=f"{prefix}/profiles", tags=["profiles"])
+    app.include_router(profiles.router, prefix=f"{prefix}/profiles", tags=["profiles"])
     app.include_router(profiles_preferences.router, prefix=f"{prefix}/profiles", tags=["profiles"])
     app.include_router(children.router, prefix=f"{prefix}/children", tags=["children"])
     app.include_router(

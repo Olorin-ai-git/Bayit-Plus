@@ -23,6 +23,8 @@ struct WidgetsView: View {
                     personalWidgetsSection(vm)
                 }
                 .padding(.bottom, DesignTokens.Spacing.xxxl)
+            } else {
+                ScreenLoadingView()
             }
         }
         .background(DesignTokens.Background.primary)

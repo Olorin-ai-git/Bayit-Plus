@@ -34,6 +34,17 @@ async def enable_totp(
     current_user: User = Depends(get_current_active_user),
 ):
     """Generate TOTP secret and provisioning URI for authenticator app setup."""
+    if not current_user.phone_number:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Phone number required. Add a phone number to your profile before enabling MFA.",
+        )
+    if not current_user.phone_verified:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Phone number not verified. Verify your phone number before enabling MFA.",
+        )
+
     secret = pyotp.random_base32()
     provisioning_uri = pyotp.totp.TOTP(secret).provisioning_uri(
         name=current_user.email,
@@ -115,9 +126,15 @@ async def send_sms_mfa(
 ):
     """Send SMS verification code for MFA setup."""
     if not current_user.phone_number:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Phone number not set. Update your profile first.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Phone number required. Add a phone number to your profile before enabling SMS MFA.",
+        )
     if not current_user.phone_verified:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Phone number not verified. Verify your phone first.")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Phone number not verified. Verify your phone number before enabling SMS MFA.",
+        )
 
     if current_user.last_verification_attempt:
         hour_ago = datetime.now(timezone.utc) - timedelta(hours=1)

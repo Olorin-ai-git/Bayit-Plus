@@ -10,18 +10,24 @@ struct RecordingsView: View {
     @State private var viewModel: RecordingsViewModel?
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            if let vm = viewModel {
-                if vm.isLoading && vm.items.isEmpty {
-                    loadingList
-                } else if let error = vm.error, vm.items.isEmpty {
-                    ErrorStateView(message: error) {
-                        Task { await viewModel?.load() }
+        VStack(spacing: 0) {
+            PageHeader(icon: "record.circle", title: "Recordings")
+
+            ScrollView(.vertical, showsIndicators: false) {
+                if let vm = viewModel {
+                    if vm.isLoading && vm.items.isEmpty {
+                        loadingList
+                    } else if let error = vm.error, vm.items.isEmpty {
+                        ErrorStateView(message: error) {
+                            Task { await viewModel?.load() }
+                        }
+                    } else if vm.items.isEmpty {
+                        emptyState
+                    } else {
+                        contentList(vm)
                     }
-                } else if vm.items.isEmpty {
-                    emptyState
                 } else {
-                    contentList(vm)
+                    ScreenLoadingView()
                 }
             }
         }

@@ -21,6 +21,8 @@ struct HomeView: View {
                         contentSections(vm)
                     }
                 }
+            } else {
+                ScreenLoadingView()
             }
         }
         .background(DesignTokens.Background.primary)

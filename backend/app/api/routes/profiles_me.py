@@ -50,14 +50,18 @@ async def _get_active_profile(current_user: User) -> Profile:
 
 async def _fetch_beta_credits(current_user: User) -> Optional[int]:
     """Fetch beta credit balance if the user is a beta participant."""
-    if not current_user.is_beta_user:
+    try:
+        if not current_user.is_beta_user:
+            return None
+        from app.models.beta_credit import BetaCredit
+        credit = await BetaCredit.find_one(
+            BetaCredit.user_id == str(current_user.id),
+            BetaCredit.is_expired == False
+        )
+        return credit.remaining_credits if credit else None
+    except Exception as e:
+        logger.error(f"Failed to fetch beta credits: {e}", extra={"user_id": str(current_user.id)})
         return None
-    from app.models.beta_credit import BetaCredit
-    credit = await BetaCredit.find_one(
-        BetaCredit.user_id == str(current_user.id),
-        BetaCredit.is_expired == False
-    )
-    return credit.remaining_credits if credit else None
 
 
 def _build_response(profile: Profile, user: User, beta_credits: Optional[int]) -> MyProfileResponse:
@@ -86,14 +90,22 @@ async def get_my_profile(
     current_user: User = Depends(get_current_active_user),
 ):
     """Get the current user's active profile merged with user-level data."""
-    profile = await _get_active_profile(current_user)
-    beta_credits = await _fetch_beta_credits(current_user)
+    logger.info(f"GET /me called for user {str(current_user.id)}")
 
-    logger.info(
-        "Profile /me fetched",
-        extra={"user_id": str(current_user.id), "profile_id": str(profile.id)},
-    )
-    return _build_response(profile, current_user, beta_credits)
+    try:
+        profile = await _get_active_profile(current_user)
+        logger.info(f"Profile retrieved: {str(profile.id)}")
+
+        beta_credits = await _fetch_beta_credits(current_user)
+        logger.info(f"Beta credits fetched: {beta_credits}")
+
+        response = _build_response(profile, current_user, beta_credits)
+        logger.info(f"Response built successfully")
+
+        return response
+    except Exception as e:
+        logger.error(f"Error in /me endpoint: {e}", exc_info=True)
+        raise
 
 
 @router.put("/me", response_model=MyProfileResponse)
