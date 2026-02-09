@@ -100,7 +100,8 @@ public final class NavigationCoordinator {
              .subscriptionGate, .household, .devicePairing,
              .helpCenter, .rewards, .passkeyManagement, .onboardingAI,
              .friends, .watchParty, .watchPartyDetail,
-             .chess, .directMessages, .conversation:
+             .chess, .directMessages, .conversation,
+             .mfaSetup:
             pushToCurrentTab(route)
         }
     }

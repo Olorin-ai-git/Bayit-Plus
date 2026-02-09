@@ -207,7 +207,9 @@ public struct GlassContentCard: View {
                 Text(title)
                     .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                     .foregroundColor(DesignTokens.Text.primary)
-                    .lineLimit(1)
+                    .lineLimit(2)
+                    .truncationMode(.tail)
+                    .multilineTextAlignment(.leading)
             }
 
             if let subtitle = subtitle {
@@ -215,6 +217,7 @@ public struct GlassContentCard: View {
                     .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundColor(DesignTokens.Text.secondary)
                     .lineLimit(1)
+                    .truncationMode(.tail)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

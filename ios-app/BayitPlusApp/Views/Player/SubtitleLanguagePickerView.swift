@@ -120,14 +120,19 @@ struct SubtitleLanguagePickerView: View {
     private func languageRow(_ info: SubtitleLanguageInfo) -> some View {
         let isSelected = selectedLanguage == info.code
         let hasAI = aiLanguages.contains(info.code)
+        let hasModePicker = info.code == "he" || info.code == "en"
 
         return VStack(spacing: 0) {
             Button {
                 onSelect(info.code)
-                if let onDismiss {
-                    onDismiss()
-                } else {
-                    dismiss()
+                // For Hebrew/English, stay open so user can interact with mode chips
+                // Only dismiss for other languages or if language was already selected
+                if !hasModePicker || isSelected {
+                    if let onDismiss {
+                        onDismiss()
+                    } else {
+                        dismiss()
+                    }
                 }
             } label: {
                 HStack(spacing: DesignTokens.Spacing.md) {

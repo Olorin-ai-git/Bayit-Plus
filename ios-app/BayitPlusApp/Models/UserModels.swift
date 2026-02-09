@@ -14,6 +14,11 @@ struct ProfileResponse: Decodable, Sendable, Identifiable {
     let createdAt: String?
     let updatedAt: String?
     let preferences: ProfilePreferences?
+    let phoneNumber: String?
+    let phoneVerified: Bool?
+    let hasPassword: Bool?
+    let authProvider: String?
+    let emailVerified: Bool?
 }
 
 /// User preferences nested within ProfileResponse
@@ -32,6 +37,7 @@ struct ProfileUpdateRequest: Encodable, Sendable {
     let avatar: String?
     let language: String?
     let preferences: ProfilePreferencesUpdate?
+    let phoneNumber: String?
 }
 
 /// Preferences update nested within ProfileUpdateRequest

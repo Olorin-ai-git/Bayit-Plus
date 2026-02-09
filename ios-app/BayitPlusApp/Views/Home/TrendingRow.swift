@@ -8,15 +8,41 @@ struct TrendingRow: View {
     let coordinator: NavigationCoordinator
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            header
-            topicsCarousel
-            sourcesFooter
+        GeometryReader { geo in
+            ZStack(alignment: .topLeading) {
+                // Masada panoramic background
+                Image("Masada")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: geo.size.width, height: geo.size.height)
+                    .clipped()
+
+                // Gradient overlay for readability
+                LinearGradient(
+                    stops: [
+                        .init(color: .black.opacity(0.5), location: 0),
+                        .init(color: .black.opacity(0.2), location: 0.3),
+                        .init(color: .black.opacity(0.4), location: 0.6),
+                        .init(color: .black.opacity(0.75), location: 1.0)
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
+                // Content overlay
+                VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
+                    header
+                    topicsCarousel
+                    sourcesFooter
+                }
+                .padding(.vertical, DesignTokens.Spacing.md)
+            }
         }
-        .padding(.vertical, DesignTokens.Spacing.md)
-        .background(
+        .frame(height: 340)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.xl))
+        .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.xl)
-                .fill(DesignTokens.Glass.purpleLight)
+                .stroke(Color.white.opacity(0.1), lineWidth: 1)
         )
         .padding(.horizontal, DesignTokens.Spacing.md)
     }
@@ -25,11 +51,13 @@ struct TrendingRow: View {
         HStack(spacing: DesignTokens.Spacing.sm) {
             Text(localizedTitle)
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
-                .foregroundColor(DesignTokens.Text.primary)
+                .foregroundColor(.white)
+                .shadow(color: .black.opacity(0.6), radius: 3, x: 0, y: 1)
 
             Image(systemName: "flame.fill")
                 .font(.system(size: DesignTokens.FontSize.lg))
                 .foregroundColor(.orange)
+                .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
     }
@@ -93,13 +121,12 @@ private struct TrendingTopicCard: View {
         }
         .frame(width: 240, height: 180)
         .padding(DesignTokens.Spacing.base)
-        .background(
+        .background(Color.white.opacity(0.08))
+        .background(.ultraThinMaterial.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+        .overlay(
             RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                .fill(Color(hex: 0x6B21A8).opacity(0.15))
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                        .strokeBorder(DesignTokens.Primary.p500.opacity(0.2), lineWidth: 2)
-                )
+                .stroke(Color.white.opacity(0.12), lineWidth: 0.5)
         )
     }
 
@@ -116,7 +143,7 @@ private struct TrendingTopicCard: View {
                 .padding(.vertical, 3)
                 .background(
                     Capsule()
-                        .fill(Color(hex: 0x6B21A8).opacity(0.3))
+                        .fill(DesignTokens.Primary.p500.opacity(0.4))
                         .overlay(
                             Capsule()
                                 .strokeBorder(DesignTokens.Primary.p500.opacity(0.6), lineWidth: 1)

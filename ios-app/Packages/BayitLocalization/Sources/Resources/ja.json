@@ -6745,7 +6745,28 @@
     "betaCredits": "ベータクレジット",
     "creditsRemaining": "クレジット残り",
     "streak": "連続日数",
-    "watched": "視聴済み"
+    "watched": "視聴済み",
+    "recordings": "録画",
+    "rewards": "特典",
+    "household": "世帯",
+    "displayName": "表示名",
+    "phoneNumber": "電話番号",
+    "mfa": "多要素認証"
+  },
+  "mfa": {
+    "title": "多要素認証",
+    "description": "アカウントを保護するためにセキュリティの追加レイヤーを追加します",
+    "active": "MFA有効",
+    "disable": "MFAを無効にする",
+    "authenticatorApp": "認証アプリ",
+    "authenticatorDescription": "Google AuthenticatorやAuthyなどのアプリを使用してください",
+    "sms": "SMS認証",
+    "smsDescription": "テキストメッセージでコードを受け取る",
+    "scanQRCode": "認証アプリでこのQRコードをスキャンしてください",
+    "manualEntry": "または手動でこのコードを入力：",
+    "smsCodeSent": "確認コードがお使いの電話に送信されました",
+    "enterCode": "6桁のコードを入力",
+    "verify": "確認"
   },
   "profiles": {
     "addProfile": "プロフィールを追加",

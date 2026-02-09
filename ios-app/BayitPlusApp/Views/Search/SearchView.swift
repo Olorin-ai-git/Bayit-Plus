@@ -1,43 +1,37 @@
 import BayitDesignSystem
 import SwiftUI
 
-/// Search screen with real-time search and results grid
+/// Search screen with unified search, content type filter pills,
+/// trending/recent suggestions, and rich results grid.
 struct SearchView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @State private var viewModel: SearchViewModel?
 
-    private let columns = [
-        GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
-        GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
-        GridItem(.flexible(), spacing: DesignTokens.Spacing.md)
-    ]
-
     var body: some View {
         VStack(spacing: 0) {
             searchBar
+            if let vm = viewModel {
+                filterPills(vm)
+            }
 
             ScrollView(.vertical, showsIndicators: false) {
                 if let vm = viewModel {
-                    if vm.isSearching {
-                        searchingState
-                    } else if vm.hasSearched && vm.results.isEmpty {
-                        emptyState
-                    } else if !vm.results.isEmpty {
-                        resultsGrid(vm.results)
-                    } else {
-                        searchPrompt
-                    }
+                    searchContent(vm)
                 }
             }
         }
         .background(DesignTokens.Background.primary)
         .task {
             if viewModel == nil {
-                viewModel = SearchViewModel(repository: repos.content)
+                let vm = SearchViewModel(searchRepository: repos.search)
+                viewModel = vm
+                await vm.loadInitialData()
             }
         }
     }
+
+    // MARK: - Search Bar
 
     private var searchBar: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
@@ -69,36 +63,66 @@ struct SearchView: View {
         .padding(.vertical, DesignTokens.Spacing.md)
     }
 
-    private func resultsGrid(_ results: [SearchResult]) -> some View {
-        LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
-            ForEach(results) { result in
-                ZStack(alignment: .topTrailing) {
-                    GlassContentCard(
-                        thumbnailURL: result.thumbnail,
-                        title: result.title,
-                        subtitle: resultSubtitle(result),
-                        badge: result.type,
-                        subtitleFlags: result.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
-                        aspectRatio: 2 / 3,
-                        width: .infinity
-                    ) {
-                        navigateToResult(result)
-                    }
+    // MARK: - Filter Pills
 
-                    if let languages = result.availableSubtitleLanguages, !languages.isEmpty {
-                        SubtitleFlagsPill(
-                            languages: languages,
-                            aiLanguages: aiLanguages(for: result),
-                            size: .small
-                        )
-                        .padding(DesignTokens.Spacing.xs)
+    private func filterPills(_ vm: SearchViewModel) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                ForEach(SearchContentTypeFilter.allCases, id: \.self) { filter in
+                    GlassChip(
+                        title: filter.displayLabel,
+                        isSelected: vm.selectedFilter == filter
+                    ) {
+                        vm.onFilterChanged(filter)
                     }
+                    .accessibilityLabel("\(filter.displayLabel) filter")
+                    .accessibilityAddTraits(vm.selectedFilter == filter ? .isSelected : [])
                 }
             }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
         }
-        .padding(.horizontal, DesignTokens.Spacing.lg)
-        .padding(.top, DesignTokens.Spacing.md)
+        .padding(.bottom, DesignTokens.Spacing.sm)
     }
+
+    // MARK: - Content States
+
+    @ViewBuilder
+    private func searchContent(_ vm: SearchViewModel) -> some View {
+        if vm.isSearching {
+            searchingState
+        } else if showSuggestions(vm) {
+            SearchSuggestionsView(
+                trendingSearches: vm.trendingSearches,
+                recentSearches: vm.recentSearches,
+                onSelect: { vm.selectSuggestion($0) },
+                onClearRecent: { vm.clearRecentSearches() }
+            )
+        } else if !vm.results.isEmpty {
+            resultsHeader(vm)
+            SearchResultsGridView(results: vm.results) { route in
+                coordinator.navigate(to: route)
+            }
+        } else if vm.hasSearched {
+            emptyState
+        }
+    }
+
+    private func resultsHeader(_ vm: SearchViewModel) -> some View {
+        Text("\(vm.totalResults) results")
+            .font(.system(size: DesignTokens.FontSize.sm))
+            .foregroundColor(DesignTokens.Text.muted)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+            .padding(.top, DesignTokens.Spacing.sm)
+            .accessibilityLabel("\(vm.totalResults) results found")
+    }
+
+    private func showSuggestions(_ vm: SearchViewModel) -> Bool {
+        let trimmed = vm.query.trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty && !vm.hasSearched
+    }
+
+    // MARK: - States
 
     private var searchingState: some View {
         VStack(spacing: DesignTokens.Spacing.lg) {
@@ -132,47 +156,5 @@ struct SearchView: View {
         .frame(maxWidth: .infinity)
         .padding(.top, 80)
         .accessibilityElement(children: .combine)
-    }
-
-    private var searchPrompt: some View {
-        VStack(spacing: DesignTokens.Spacing.lg) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 64))
-                .foregroundColor(DesignTokens.Text.muted.opacity(0.4))
-                .accessibilityHidden(true)
-
-            Text("Search for content")
-                .font(.system(size: DesignTokens.FontSize.lg))
-                .foregroundColor(DesignTokens.Text.muted)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 100)
-        .accessibilityElement(children: .combine)
-    }
-
-    private func resultSubtitle(_ result: SearchResult) -> String? {
-        var parts: [String] = []
-        if let year = result.year { parts.append(String(year)) }
-        if let duration = result.duration { parts.append(duration) }
-        return parts.isEmpty ? nil : parts.joined(separator: " | ")
-    }
-
-    private func aiLanguages(for result: SearchResult) -> Set<String> {
-        var aiLangs = Set<String>()
-        if result.availableSubtitleLanguages?.contains("he") == true {
-            aiLangs.insert("he")
-        }
-        if result.availableSubtitleLanguages?.contains("en") == true {
-            aiLangs.insert("en")
-        }
-        return aiLangs
-    }
-
-    private func navigateToResult(_ result: SearchResult) {
-        if result.type == "series" {
-            coordinator.navigate(to: .seriesDetail(seriesId: result.id))
-        } else {
-            coordinator.navigate(to: .movieDetail(movieId: result.id))
-        }
     }
 }

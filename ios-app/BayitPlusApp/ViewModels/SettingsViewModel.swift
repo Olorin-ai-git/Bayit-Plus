@@ -75,7 +75,7 @@ final class SettingsViewModel {
             _ = try await userRepository.updateProfile(
                 request: ProfileUpdateRequest(
                     displayName: nil, avatar: nil, language: nil,
-                    preferences: update
+                    preferences: update, phoneNumber: nil
                 )
             )
         } catch {
@@ -95,7 +95,7 @@ final class SettingsViewModel {
             _ = try await userRepository.updateProfile(
                 request: ProfileUpdateRequest(
                     displayName: nil, avatar: nil, language: nil,
-                    preferences: update
+                    preferences: update, phoneNumber: nil
                 )
             )
         } catch {

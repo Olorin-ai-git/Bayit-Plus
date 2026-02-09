@@ -6223,7 +6223,28 @@
     "betaCredits": "বিটা ক্রেডিট",
     "creditsRemaining": "ক্রেডিট অবশিষ্ট",
     "streak": "দিনের ধারা",
-    "watched": "দেখা হয়েছে"
+    "watched": "দেখা হয়েছে",
+    "recordings": "রেকর্ডিং",
+    "rewards": "পুরস্কার",
+    "household": "পরিবার",
+    "displayName": "প্রদর্শন নাম",
+    "phoneNumber": "ফোন নম্বর",
+    "mfa": "মাল্টি-ফ্যাক্টর প্রমাণীকরণ"
+  },
+  "mfa": {
+    "title": "মাল্টি-ফ্যাক্টর প্রমাণীকরণ",
+    "description": "আপনার অ্যাকাউন্ট সুরক্ষিত রাখতে অতিরিক্ত নিরাপত্তা স্তর যোগ করুন",
+    "active": "MFA সক্রিয়",
+    "disable": "MFA নিষ্ক্রিয় করুন",
+    "authenticatorApp": "প্রমাণীকরণ অ্যাপ",
+    "authenticatorDescription": "Google Authenticator বা Authy এর মতো অ্যাপ ব্যবহার করুন",
+    "sms": "SMS যাচাইকরণ",
+    "smsDescription": "টেক্সট বার্তার মাধ্যমে কোড পান",
+    "scanQRCode": "আপনার প্রমাণীকরণ অ্যাপ দিয়ে এই QR কোড স্ক্যান করুন",
+    "manualEntry": "অথবা এই কোড ম্যানুয়ালি লিখুন:",
+    "smsCodeSent": "আপনার ফোনে একটি যাচাইকরণ কোড পাঠানো হয়েছে",
+    "enterCode": "6 সংখ্যার কোড লিখুন",
+    "verify": "যাচাই করুন"
   },
   "profiles": {
     "addProfile": "প্রোফাইল যোগ করুন",

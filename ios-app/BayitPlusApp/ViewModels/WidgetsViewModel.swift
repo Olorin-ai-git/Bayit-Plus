@@ -123,6 +123,7 @@ final class WidgetsViewModel {
             title: existing.title,
             description: existing.description,
             icon: existing.icon,
+            coverUrl: existing.coverUrl,
             content: existing.content,
             isAdded: isAdded
         )

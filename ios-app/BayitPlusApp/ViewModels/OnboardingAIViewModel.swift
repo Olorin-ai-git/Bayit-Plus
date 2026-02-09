@@ -124,7 +124,8 @@ final class OnboardingAIViewModel {
                     displayName: trimmedName,
                     avatar: selectedAvatar,
                     language: preferredLanguage,
-                    preferences: preferences
+                    preferences: preferences,
+                    phoneNumber: nil
                 )
             )
             isComplete = true

@@ -6248,7 +6248,28 @@
     "betaCredits": "Beta积分",
     "creditsRemaining": "积分剩余",
     "streak": "连续天数",
-    "watched": "已观看"
+    "watched": "已观看",
+    "recordings": "录制",
+    "rewards": "奖励",
+    "household": "家庭",
+    "displayName": "显示名称",
+    "phoneNumber": "电话号码",
+    "mfa": "多因素认证"
+  },
+  "mfa": {
+    "title": "多因素认证",
+    "description": "添加额外的安全层以保护您的账户",
+    "active": "MFA已启用",
+    "disable": "禁用MFA",
+    "authenticatorApp": "认证器应用",
+    "authenticatorDescription": "使用Google Authenticator或Authy等应用",
+    "sms": "短信验证",
+    "smsDescription": "通过短信接收验证码",
+    "scanQRCode": "使用认证器应用扫描此二维码",
+    "manualEntry": "或手动输入此代码：",
+    "smsCodeSent": "验证码已发送到您的手机",
+    "enterCode": "输入6位数字代码",
+    "verify": "验证"
   },
   "profiles": {
     "addProfile": "添加档案",

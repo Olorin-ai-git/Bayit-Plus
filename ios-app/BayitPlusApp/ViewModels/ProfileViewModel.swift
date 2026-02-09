@@ -44,7 +44,8 @@ final class ProfileViewModel {
                 displayName: displayName,
                 avatar: avatar,
                 language: language,
-                preferences: nil
+                preferences: nil,
+                phoneNumber: nil
             )
             profile = try await repository.updateProfile(request: request)
         } catch {
@@ -64,13 +65,52 @@ final class ProfileViewModel {
                 displayName: nil,
                 avatar: nil,
                 language: nil,
-                preferences: preferences
+                preferences: preferences,
+                phoneNumber: nil
             )
             profile = try await repository.updateProfile(request: request)
         } catch {
             self.error = error.localizedDescription
         }
 
+        isSaving = false
+    }
+
+    @MainActor
+    func updateDisplayName(_ name: String) async {
+        isSaving = true
+        error = nil
+        do {
+            let request = ProfileUpdateRequest(
+                displayName: name,
+                avatar: nil,
+                language: nil,
+                preferences: nil,
+                phoneNumber: nil
+            )
+            profile = try await repository.updateProfile(request: request)
+        } catch {
+            self.error = error.localizedDescription
+        }
+        isSaving = false
+    }
+
+    @MainActor
+    func updatePhoneNumber(_ phone: String) async {
+        isSaving = true
+        error = nil
+        do {
+            let request = ProfileUpdateRequest(
+                displayName: nil,
+                avatar: nil,
+                language: nil,
+                preferences: nil,
+                phoneNumber: phone
+            )
+            profile = try await repository.updateProfile(request: request)
+        } catch {
+            self.error = error.localizedDescription
+        }
         isSaving = false
     }
 }

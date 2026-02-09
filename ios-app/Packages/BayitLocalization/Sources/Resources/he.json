@@ -6549,7 +6549,28 @@
     "betaCredits": "קרדיטי בטא",
     "creditsRemaining": "קרדיטים נותרו",
     "streak": "רצף ימים",
-    "watched": "נצפה"
+    "watched": "נצפה",
+    "recordings": "הקלטות",
+    "rewards": "תגמולים",
+    "household": "משק בית",
+    "displayName": "שם תצוגה",
+    "phoneNumber": "מספר טלפון",
+    "mfa": "אימות דו-שלבי"
+  },
+  "mfa": {
+    "title": "אימות דו-שלבי",
+    "description": "הוסיפו שכבת אבטחה נוספת כדי להגן על חשבונכם",
+    "active": "אימות דו-שלבי פעיל",
+    "disable": "ביטול אימות דו-שלבי",
+    "authenticatorApp": "אפליקציית אימות",
+    "authenticatorDescription": "השתמשו באפליקציה כמו Google Authenticator או Authy",
+    "sms": "אימות SMS",
+    "smsDescription": "קבלו קוד בהודעת טקסט",
+    "scanQRCode": "סרקו את קוד ה-QR באפליקציית האימות שלכם",
+    "manualEntry": "או הזינו קוד זה ידנית:",
+    "smsCodeSent": "קוד אימות נשלח לטלפון שלכם",
+    "enterCode": "הזינו קוד בן 6 ספרות",
+    "verify": "אמת"
   },
   "profiles": {
     "addProfile": "הוסף פרופיל",

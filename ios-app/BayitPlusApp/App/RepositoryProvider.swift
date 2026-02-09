@@ -43,6 +43,7 @@ final class RepositoryProvider {
     let directMessages: any DirectMessageRepository
     let stats: any StatsRepository
     let news: any NewsRepository
+    let search: any SearchRepository
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
@@ -83,6 +84,7 @@ final class RepositoryProvider {
         self.directMessages = APIDirectMessageRepository(client: client, webSocketManager: webSocketManager)
         self.stats = APIStatsRepository(client: client)
         self.news = APINewsRepository(client: client)
+        self.search = APISearchRepository(client: client)
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         self.offlineCache = OfflineCacheService()

@@ -113,8 +113,14 @@ struct AvailableSystemWidget: Decodable, Sendable, Identifiable {
     let title: String
     let description: String?
     let icon: String?
+    let coverUrl: String?
     let content: WidgetContent?
     let isAdded: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, description, icon, content, isAdded
+        case coverUrl = "cover_url"
+    }
 }
 
 // MARK: - API Response Types

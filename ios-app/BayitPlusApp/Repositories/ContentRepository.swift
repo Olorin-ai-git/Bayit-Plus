@@ -38,6 +38,7 @@ protocol ContentRepository: Sendable {
     ///   - limit: Number of results per page.
     /// - Returns: Search results with total count.
     /// - Throws: `NetworkError` if the request fails.
+    @available(*, deprecated, message: "Use SearchRepository.unifiedSearch() instead")
     func searchContent(
         query: String,
         type: String?,

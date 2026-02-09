@@ -156,6 +156,19 @@ struct AIGenerationJobResponse: Decodable, Sendable {
         case contentId = "content_id"
         case generatedAt = "generated_at"
     }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        jobId = try container.decodeIfPresent(String.self, forKey: .jobId)
+        let decodedStatus = try container.decode(JobStatus.self, forKey: .status)
+        status = decodedStatus
+        let defaultProgress = decodedStatus == .completed ? 100 : 0
+        progress = try container.decodeIfPresent(Int.self, forKey: .progress) ?? defaultProgress
+        errorMessage = try container.decodeIfPresent(String.self, forKey: .errorMessage)
+        message = try container.decodeIfPresent(String.self, forKey: .message)
+        contentId = try container.decode(String.self, forKey: .contentId)
+        generatedAt = try container.decodeIfPresent(String.self, forKey: .generatedAt)
+    }
 }
 
 /// Job status enumeration matching backend JobStatus enum.

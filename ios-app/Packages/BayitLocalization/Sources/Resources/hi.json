@@ -6237,7 +6237,28 @@
     "betaCredits": "बीटा क्रेडिट",
     "creditsRemaining": "क्रेडिट शेष",
     "streak": "दिन की लकीर",
-    "watched": "देखा गया"
+    "watched": "देखा गया",
+    "recordings": "रिकॉर्डिंग",
+    "rewards": "पुरस्कार",
+    "household": "परिवार",
+    "displayName": "प्रदर्शन नाम",
+    "phoneNumber": "फोन नंबर",
+    "mfa": "बहु-कारक प्रमाणीकरण"
+  },
+  "mfa": {
+    "title": "बहु-कारक प्रमाणीकरण",
+    "description": "अपने खाते की सुरक्षा के लिए सुरक्षा की एक अतिरिक्त परत जोड़ें",
+    "active": "MFA सक्रिय",
+    "disable": "MFA अक्षम करें",
+    "authenticatorApp": "प्रमाणक ऐप",
+    "authenticatorDescription": "Google Authenticator या Authy जैसे ऐप का उपयोग करें",
+    "sms": "SMS सत्यापन",
+    "smsDescription": "टेक्स्ट संदेश द्वारा कोड प्राप्त करें",
+    "scanQRCode": "अपने प्रमाणक ऐप से इस QR कोड को स्कैन करें",
+    "manualEntry": "या यह कोड मैन्युअल रूप से दर्ज करें:",
+    "smsCodeSent": "आपके फोन पर एक सत्यापन कोड भेजा गया है",
+    "enterCode": "6 अंकों का कोड दर्ज करें",
+    "verify": "सत्यापित करें"
   },
   "profiles": {
     "addProfile": "प्रोफ़ाइल जोड़ें",

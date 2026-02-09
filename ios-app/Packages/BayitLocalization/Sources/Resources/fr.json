@@ -6748,7 +6748,28 @@
     "betaCredits": "Crédits Bêta",
     "creditsRemaining": "crédits restants",
     "streak": "Série de jours",
-    "watched": "Visionné"
+    "watched": "Visionné",
+    "recordings": "Enregistrements",
+    "rewards": "Récompenses",
+    "household": "Foyer",
+    "displayName": "Nom d'affichage",
+    "phoneNumber": "Numero de telephone",
+    "mfa": "Authentification multifacteur"
+  },
+  "mfa": {
+    "title": "Authentification multifacteur",
+    "description": "Ajoutez une couche de securite supplementaire pour proteger votre compte",
+    "active": "MFA actif",
+    "disable": "Desactiver MFA",
+    "authenticatorApp": "Application d'authentification",
+    "authenticatorDescription": "Utilisez une application comme Google Authenticator ou Authy",
+    "sms": "Verification par SMS",
+    "smsDescription": "Recevez un code par message texte",
+    "scanQRCode": "Scannez ce code QR avec votre application d'authentification",
+    "manualEntry": "Ou entrez ce code manuellement :",
+    "smsCodeSent": "Un code de verification a ete envoye a votre telephone",
+    "enterCode": "Entrez le code a 6 chiffres",
+    "verify": "Verifier"
   },
   "profiles": {
     "title": "Profils",

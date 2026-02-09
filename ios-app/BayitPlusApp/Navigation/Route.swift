@@ -117,6 +117,9 @@ public enum Route: Hashable {
     // Direct Messages
     case directMessages
     case conversation(friendId: String)
+
+    // MFA Setup
+    case mfaSetup
 }
 
 // MARK: - Breadcrumb Labels
@@ -181,6 +184,7 @@ extension Route {
         case .chess: return "Chess"
         case .directMessages: return "Messages"
         case .conversation: return "Conversation"
+        case .mfaSetup: return "MFA Setup"
         }
     }
 }

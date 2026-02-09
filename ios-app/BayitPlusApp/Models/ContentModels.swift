@@ -147,6 +147,7 @@ struct RelatedItem: Decodable, Sendable, Identifiable {
 // MARK: - Search
 
 /// Response from POST /api/v1/content/search
+@available(*, deprecated, message: "Use UnifiedSearchResponse from SearchModels.swift instead")
 struct SearchResponse: Decodable, Sendable {
     let query: String
     let results: [SearchResult]
@@ -154,6 +155,7 @@ struct SearchResponse: Decodable, Sendable {
 }
 
 /// A search result item
+@available(*, deprecated, message: "Use UnifiedSearchResult from SearchModels.swift instead")
 struct SearchResult: Decodable, Sendable, Identifiable {
     let id: String
     let title: String?
@@ -167,6 +169,7 @@ struct SearchResult: Decodable, Sendable, Identifiable {
 }
 
 /// Search request body
+@available(*, deprecated, message: "Use SearchRepository.unifiedSearch() instead")
 struct SearchRequest: Encodable, Sendable {
     let query: String
     let type: String?

@@ -25,13 +25,42 @@ struct SystemWidgetCardView: View {
     // MARK: - Icon Circle
 
     private var contentIcon: some View {
+        Group {
+            // Try coverUrl first (backend resolved poster), then icon, then placeholder
+            if let posterUrl = widget.coverUrl ?? widget.icon, let url = URL(string: posterUrl) {
+                let _ = print("🖼️ Loading poster for \(widget.title): coverUrl=\(widget.coverUrl ?? "nil"), icon=\(widget.icon ?? "nil"), final URL=\(url)")
+                // Show actual poster image
+                AsyncImage(url: url) { phase in
+                    switch phase {
+                    case .empty:
+                        placeholderIcon
+                    case .success(let image):
+                        image
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: 56, height: 56)
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                    case .failure:
+                        placeholderIcon
+                    @unknown default:
+                        placeholderIcon
+                    }
+                }
+            } else {
+                // Fall back to generic icon
+                placeholderIcon
+            }
+        }
+    }
+
+    private var placeholderIcon: some View {
         ZStack {
             Circle()
                 .fill(iconColor.opacity(0.15))
-                .frame(width: 40, height: 40)
+                .frame(width: 56, height: 56)
 
             Image(systemName: iconName)
-                .font(.system(size: 18))
+                .font(.system(size: 20))
                 .foregroundColor(iconColor)
         }
     }
