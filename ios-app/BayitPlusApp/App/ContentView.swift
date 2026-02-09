@@ -60,7 +60,8 @@ struct ContentView: View {
                 player: mediaPlayer,
                 repository: repositories.media,
                 contentRepository: repositories.content,
-                liveTVRepository: repositories.liveTV
+                liveTVRepository: repositories.liveTV,
+                radioRepository: repositories.radio
             )
         case .search:
             SearchView()

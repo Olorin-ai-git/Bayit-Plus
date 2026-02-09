@@ -30,6 +30,7 @@ final class MediaPlayerViewModel {
     private let repository: any MediaRepository
     private let contentRepository: any ContentRepository
     private let liveTVRepository: any LiveTVRepository
+    private let radioRepository: any RadioRepository
     private var progressTrackingTask: Task<Void, Never>?
     private let progressIntervalSeconds: TimeInterval = 15
 
@@ -41,7 +42,8 @@ final class MediaPlayerViewModel {
         player: MediaPlayer,
         repository: any MediaRepository,
         contentRepository: any ContentRepository,
-        liveTVRepository: any LiveTVRepository
+        liveTVRepository: any LiveTVRepository,
+        radioRepository: any RadioRepository
     ) {
         self.contentId = contentId
         self.contentType = contentType
@@ -49,6 +51,7 @@ final class MediaPlayerViewModel {
         self.repository = repository
         self.contentRepository = contentRepository
         self.liveTVRepository = liveTVRepository
+        self.radioRepository = radioRepository
     }
 
     deinit {
@@ -80,6 +83,23 @@ final class MediaPlayerViewModel {
                 currentQuality = stream.quality
                 availableQualities = stream.availableQualities ?? []
                 let streamURLStr = stream.url ?? channel.streamUrl ?? ""
+                guard let url = URL(string: streamURLStr), !streamURLStr.isEmpty else {
+                    errorMessage = "Invalid stream URL"
+                    isLoading = false
+                    return
+                }
+                player.load(url: url, contentType: mediaType)
+
+            case .radio:
+                let station = try await radioRepository.fetchStationDetail(id: contentId)
+                title = station.name
+                subtitle = station.currentShow
+                if let logoStr = station.logo, let url = URL(string: logoStr) {
+                    artworkURL = url
+                }
+
+                let stream = try await repository.fetchRadioStream(stationId: contentId)
+                let streamURLStr = stream.url ?? ""
                 guard let url = URL(string: streamURLStr), !streamURLStr.isEmpty else {
                     errorMessage = "Invalid stream URL"
                     isLoading = false

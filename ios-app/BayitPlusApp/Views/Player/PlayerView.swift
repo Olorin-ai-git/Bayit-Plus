@@ -33,7 +33,7 @@ struct PlayerView: View {
 
     init(contentId: String, contentType: ContentType, player: MediaPlayer,
          repository: any MediaRepository, contentRepository: any ContentRepository,
-         liveTVRepository: any LiveTVRepository) {
+         liveTVRepository: any LiveTVRepository, radioRepository: any RadioRepository) {
         self.contentId = contentId
         self.contentType = contentType
         _viewModel = State(initialValue: MediaPlayerViewModel(
@@ -42,7 +42,8 @@ struct PlayerView: View {
             player: player,
             repository: repository,
             contentRepository: contentRepository,
-            liveTVRepository: liveTVRepository
+            liveTVRepository: liveTVRepository,
+            radioRepository: radioRepository
         ))
     }
 
@@ -319,6 +320,7 @@ struct PlayerView: View {
                     selectedSubtitleLanguage != nil ? DesignTokens.Primary.p400 : .white
                 )
                 .frame(width: 44, height: 44)
+                .background(Color.red.opacity(0.5)) // DEBUG: Make visible
         }
         .accessibilityLabel("Subtitles")
         .accessibilityValue(
