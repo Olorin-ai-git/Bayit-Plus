@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { View, Text, ScrollView, Image, Pressable, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Image, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDirection } from '@/hooks/useDirection';
@@ -163,35 +163,33 @@ export default function LivePage() {
                 style={{ width: `${100 / numColumns}%`, padding: spacing.xs } as any}
               >
                 <View style={styles.channelCardWrapper}>
-                  <Pressable onPress={() => navigate(`/live/${channel.id}`)}>
-                    <GlassCard autoSize style={styles.channelCard}>
-                      {/* Channel Thumbnail */}
-                      <View style={styles.channelThumbnail}>
-                        {(channel.thumbnail || channel.logo) ? (
-                          <Image
-                            source={{ uri: channel.thumbnail || channel.logo }}
-                            style={styles.channelImage}
-                            resizeMode="contain"
-                          />
-                        ) : (
-                          <View style={styles.channelPlaceholder}>
-                            <LiveTVIcon size={32} color={colors.textMuted} />
-                          </View>
-                        )}
-                      </View>
-                      {/* Channel Info */}
-                      <View style={styles.channelInfo}>
-                        <Text style={styles.channelName} numberOfLines={1}>
-                          {channel.name}
+                  <GlassCard autoSize style={styles.channelCard} onPress={() => navigate(`/live/${channel.id}`)}>
+                    {/* Channel Thumbnail */}
+                    <View style={styles.channelThumbnail}>
+                      {(channel.thumbnail || channel.logo) ? (
+                        <Image
+                          source={{ uri: channel.thumbnail || channel.logo }}
+                          style={styles.channelImage}
+                          resizeMode="contain"
+                        />
+                      ) : (
+                        <View style={styles.channelPlaceholder}>
+                          <LiveTVIcon size={32} color={colors.textMuted} />
+                        </View>
+                      )}
+                    </View>
+                    {/* Channel Info */}
+                    <View style={styles.channelInfo}>
+                      <Text style={styles.channelName} numberOfLines={1}>
+                        {channel.name}
+                      </Text>
+                      {channel.currentShow && (
+                        <Text style={styles.channelShow} numberOfLines={1}>
+                          {channel.currentShow}
                         </Text>
-                        {channel.currentShow && (
-                          <Text style={styles.channelShow} numberOfLines={1}>
-                            {channel.currentShow}
-                          </Text>
-                        )}
-                      </View>
-                    </GlassCard>
-                  </Pressable>
+                      )}
+                    </View>
+                  </GlassCard>
                   {/* AI Enhanced Badge for educational channels */}
                   {channel.is_ai_enhanced && (
                     <View style={styles.aiEnhancedBadgeWrapper}>

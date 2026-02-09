@@ -2,6 +2,7 @@ import AuthenticationServices
 import BayitAuth
 import BayitDesignSystem
 import SwiftUI
+import UIKit
 
 /// tvOS authentication view.
 /// Apple TV supports Apple Sign-In and email/password login.
@@ -29,18 +30,20 @@ struct TVAuthView: View {
             .ignoresSafeArea()
 
             VStack(spacing: DesignTokens.Spacing.xxxl) {
-                Text("Bayit+")
-                    .font(.system(size: DesignTokens.FontSize.hero, weight: .bold))
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [
-                                DesignTokens.Colors.Primary.light,
-                                DesignTokens.Colors.Primary.base,
-                            ],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
+                VStack(spacing: DesignTokens.Spacing.sm) {
+                    if let logoImage = UIImage(named: "logo") ?? Self.loadBundleLogo() {
+                        Image(uiImage: logoImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 200, height: 100)
+                    }
+
+                    (Text("Bayit")
+                        .foregroundColor(.white)
+                    + Text("+")
+                        .foregroundColor(DesignTokens.Colors.Primary.base))
+                        .font(.system(size: DesignTokens.FontSize.hero, weight: .bold))
+                }
 
                 VStack(spacing: DesignTokens.Spacing.xl) {
                     TextField("Email", text: $email)
@@ -112,5 +115,13 @@ struct TVAuthView: View {
             }
             isLoading = false
         }
+    }
+
+    // MARK: - Logo
+
+    private static func loadBundleLogo() -> UIImage? {
+        guard let url = Bundle.main.url(forResource: "logo", withExtension: "png"),
+              let data = try? Data(contentsOf: url) else { return nil }
+        return UIImage(data: data)
     }
 }
