@@ -20,6 +20,7 @@ from app.api.routes.websocket_helpers import (check_authentication_message,
 from app.core.config import settings
 from app.models.content import LiveChannel
 from app.models.live_feature_quota import FeatureType, UsageSessionStatus
+from app.services.live_dubbing.stream_audio_capture import StreamAudioCapture
 from app.services.live_feature_quota_service import live_feature_quota_service
 from app.services.live_translation import LiveTranslationService
 from app.services.rate_limiter_live import get_rate_limiter
@@ -191,6 +192,11 @@ _quota_cache = QuotaCache()
 # Allowed language codes for source_lang parameter (security validation)
 ALLOWED_LANGUAGES = {"he", "en", "ar", "es", "ru", "fr", "de", "it", "pt", "yi", "ja", "bn", "ta", "hi"}
 
+# Allowed values for audio_source, platform, and hebrew_mode parameters
+ALLOWED_AUDIO_SOURCES = {"client", "server"}
+ALLOWED_PLATFORMS = {"web", "ios", "tvos", "android"}
+ALLOWED_HEBREW_MODES = {"regular", "nikud", "shoresh"}
+
 
 def validate_language_code(lang: str) -> str:
     """
@@ -240,87 +246,139 @@ def cache_quota_check(
     _quota_cache.set(user_id, allowed, error_msg, usage_stats)
 
 
-async def create_audio_stream_with_quota_updates(websocket, session, user):
+async def _send_heartbeat_and_update_quota(websocket, session, user, timing_state):
     """
-    Generator yields audio chunks and updates quota periodically.
-    Also sends periodic pings to maintain connection health.
+    Shared heartbeat ping and quota update logic for audio streams.
+
+    Args:
+        websocket: The WebSocket connection
+        session: Active quota session
+        user: Authenticated user
+        timing_state: Dict with 'last_ping' and 'last_update' timestamps (mutated in place)
+
+    Raises:
+        WebSocketDisconnect: If quota is exceeded
     """
-    last_update = asyncio.get_event_loop().time()
-    last_ping = asyncio.get_event_loop().time()
     heartbeat_interval = settings.olorin.subtitle.heartbeat_interval_seconds
     quota_update_interval = settings.olorin.subtitle.quota_update_interval_seconds
+    current = asyncio.get_event_loop().time()
+
+    # Heartbeat ping
+    if current - timing_state["last_ping"] >= heartbeat_interval:
+        try:
+            await websocket.send_json({"type": "ping", "timestamp": current})
+            timing_state["last_ping"] = current
+        except Exception as e:
+            logger.warning(f"Failed to send heartbeat ping: {e}")
+
+    # Quota update
+    if session and current - timing_state["last_update"] >= quota_update_interval:
+        try:
+            await live_feature_quota_service.update_session(
+                session_id=session.session_id,
+                audio_seconds_delta=quota_update_interval,
+                segments_delta=0,
+            )
+
+            cached_result = get_cached_quota_check(str(user.id))
+            if cached_result is not None:
+                allowed, error_msg, _ = cached_result
+            else:
+                allowed, error_msg, usage_stats = (
+                    await live_feature_quota_service.check_quota(
+                        user_id=str(user.id),
+                        feature_type=FeatureType.SUBTITLE,
+                        estimated_duration_minutes=0,
+                    )
+                )
+                cache_quota_check(str(user.id), allowed, error_msg, usage_stats)
+
+            if not allowed:
+                _quota_cache.clear(str(user.id))
+                await websocket.send_json(
+                    {
+                        "type": "quota_exceeded",
+                        "message": "Usage limit reached",
+                        "recoverable": False,
+                    }
+                )
+                raise WebSocketDisconnect(code=4029, reason="Quota exceeded")
+            timing_state["last_update"] = current
+        except WebSocketDisconnect:
+            raise
+        except Exception as e:
+            logger.error(f"Error updating usage: {e}")
+
+
+async def create_audio_stream_with_quota_updates(websocket, session, user):
+    """
+    Generator yields audio chunks from client-sent audio and updates
+    quota periodically. Also sends periodic pings to maintain connection health.
+    """
+    now = asyncio.get_event_loop().time()
+    timing = {"last_ping": now, "last_update": now}
 
     try:
         while True:
-            # Use receive() to handle both binary (audio) and text (pong) messages
             message = await websocket.receive()
-            current = asyncio.get_event_loop().time()
 
-            # Handle text messages (e.g., pong responses) - skip them
             if message.get("type") == "websocket.receive":
                 if "text" in message:
-                    # Text message (pong response) - just ignore it
                     continue
                 elif "bytes" in message:
                     audio_chunk = message["bytes"]
                 else:
                     continue
             else:
-                # Disconnect or other message type
                 break
 
-            # Send heartbeat ping at configured interval
-            if current - last_ping >= heartbeat_interval:
-                try:
-                    await websocket.send_json({"type": "ping", "timestamp": current})
-                    last_ping = current
-                except Exception as e:
-                    logger.warning(f"Failed to send heartbeat ping: {e}")
-
-            if session and current - last_update >= quota_update_interval:
-                try:
-                    await live_feature_quota_service.update_session(
-                        session_id=session.session_id,
-                        audio_seconds_delta=quota_update_interval,
-                        segments_delta=0,
-                    )
-
-                    # Try to get cached quota check first
-                    cached_result = get_cached_quota_check(str(user.id))
-                    if cached_result is not None:
-                        allowed, error_msg, _ = cached_result
-                    else:
-                        # Cache miss - perform actual quota check
-                        allowed, error_msg, usage_stats = (
-                            await live_feature_quota_service.check_quota(
-                                user_id=str(user.id),
-                                feature_type=FeatureType.SUBTITLE,
-                                estimated_duration_minutes=0,
-                            )
-                        )
-                        # Cache the result
-                        cache_quota_check(str(user.id), allowed, error_msg, usage_stats)
-
-                    if not allowed:
-                        # Clear cache on quota exceeded
-                        _quota_cache.clear(str(user.id))
-
-                        await websocket.send_json(
-                            {
-                                "type": "quota_exceeded",
-                                "message": "Usage limit reached",
-                                "recoverable": False,
-                            }
-                        )
-                        raise WebSocketDisconnect(code=4029, reason="Quota exceeded")
-                    last_update = current
-                except Exception as e:
-                    logger.error(f"Error updating usage: {e}")
+            await _send_heartbeat_and_update_quota(websocket, session, user, timing)
             yield audio_chunk
     except WebSocketDisconnect:
         logger.info(f"WebSocket disconnected: user={user.id}")
     except Exception as e:
         logger.error(f"Error receiving audio: {str(e)}")
+
+
+async def create_server_audio_stream(audio_capture, websocket, session, user):
+    """
+    Generator yields audio chunks from server-side FFmpeg capture and
+    updates quota periodically. Monitors WebSocket for client disconnect.
+    """
+    now = asyncio.get_event_loop().time()
+    timing = {"last_ping": now, "last_update": now}
+
+    disconnect_event = asyncio.Event()
+
+    async def _monitor_disconnect():
+        try:
+            while not disconnect_event.is_set():
+                msg = await websocket.receive()
+                if msg.get("type") == "websocket.disconnect":
+                    disconnect_event.set()
+                    break
+        except Exception:
+            disconnect_event.set()
+
+    monitor_task = asyncio.create_task(_monitor_disconnect())
+
+    try:
+        async for chunk in audio_capture.read_chunks():
+            if disconnect_event.is_set():
+                break
+
+            await _send_heartbeat_and_update_quota(websocket, session, user, timing)
+            yield chunk
+    except WebSocketDisconnect:
+        logger.info(f"WebSocket disconnected (server audio): user={user.id}")
+    except Exception as e:
+        logger.error(f"Error in server audio stream: {str(e)}")
+    finally:
+        monitor_task.cancel()
+        try:
+            await monitor_task
+        except asyncio.CancelledError:
+            pass
 
 
 @router.websocket("/ws/live/{channel_id}/subtitles")
@@ -333,6 +391,8 @@ async def websocket_live_subtitles(
     enable_predictive: bool = Query(
         True, description="Enable predictive subtitles (partial + final)"
     ),
+    audio_source: str = Query("client", description="Audio source: client (browser sends) or server (FFmpeg HLS)"),
+    platform: str = Query("web", description="Client platform: web, ios, tvos, android"),
 ):
     """
     Live subtitle translation. Client sends: auth message + binary audio chunks.
@@ -402,6 +462,28 @@ async def websocket_live_subtitles(
         )
         return
 
+    # Validate audio_source, platform, and hebrew_mode parameters
+    if audio_source not in ALLOWED_AUDIO_SOURCES:
+        await websocket.send_json(
+            {"type": "error", "message": "Invalid audio_source parameter", "recoverable": False}
+        )
+        await websocket.close(code=4002, reason="Invalid audio_source parameter")
+        return
+
+    if platform not in ALLOWED_PLATFORMS:
+        await websocket.send_json(
+            {"type": "error", "message": "Invalid platform parameter", "recoverable": False}
+        )
+        await websocket.close(code=4002, reason="Invalid platform parameter")
+        return
+
+    if hebrew_mode not in ALLOWED_HEBREW_MODES:
+        await websocket.send_json(
+            {"type": "error", "message": "Invalid hebrew_mode parameter", "recoverable": False}
+        )
+        await websocket.close(code=4002, reason="Invalid hebrew_mode parameter")
+        return
+
     # Check rate limit (5 connections per minute)
     rate_limiter = await get_rate_limiter()
     allowed, error_msg, reset_in = await rate_limiter.check_websocket_connection(
@@ -464,7 +546,7 @@ async def websocket_live_subtitles(
             feature_type=FeatureType.SUBTITLE,
             source_language=source_lang,
             target_language=target_lang,
-            platform="web",
+            platform=platform,
         )
     except Exception as e:
         logger.error(f"Failed to start quota session: {e}")
@@ -506,6 +588,21 @@ async def websocket_live_subtitles(
             f"(predictive: {enable_predictive})"
         )
 
+        # Select audio source: client-sent or server-captured
+        audio_capture = None
+        if audio_source == "server":
+            audio_capture = StreamAudioCapture(
+                stream_url=channel.stream_url, channel_id=channel_id
+            )
+            await audio_capture.start()
+            audio_stream = create_server_audio_stream(
+                audio_capture, websocket, session, user
+            )
+        else:
+            audio_stream = create_audio_stream_with_quota_updates(
+                websocket, session, user
+            )
+
         # Process audio and stream subtitles
         consecutive_errors = 0
         max_consecutive_errors = 5
@@ -513,7 +610,7 @@ async def websocket_live_subtitles(
             async for (
                 subtitle_cue
             ) in translation_service.process_live_audio_to_subtitles(
-                create_audio_stream_with_quota_updates(websocket, session, user),
+                audio_stream,
                 source_lang=source_lang,
                 target_lang=target_lang,
                 enable_predictive_subtitles=enable_predictive,
@@ -572,6 +669,9 @@ async def websocket_live_subtitles(
                 )
             except Exception:
                 pass
+        finally:
+            if audio_capture is not None:
+                await audio_capture.stop()
     except Exception as e:
         logger.error(f"Failed to initialize service: {str(e)}")
         await end_quota_session(session, UsageSessionStatus.ERROR)

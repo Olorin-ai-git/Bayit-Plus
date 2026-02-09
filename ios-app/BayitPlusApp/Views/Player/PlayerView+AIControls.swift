@@ -25,7 +25,8 @@ extension PlayerView {
             isSplitLanguagesReady: selectedSecondaryLanguage != nil,
             onLanguageBadgeTap: { showAILanguagePicker = true },
             isSubtitlesEnabled: selectedSubtitleLanguage != nil,
-            isSubtitlesConnecting: false,
+            isSubtitlesConnecting: liveSubtitlesVM?.isConnecting ?? false,
+            isSubtitlesPremiumLocked: liveSubtitlesVM?.isPremiumRequired ?? false,
             isSplitEnabled: splitModeEnabled,
             isDubbingEnabled: liveDubbingVM?.isEnabled ?? false,
             isDubbingConnecting: liveDubbingVM?.isConnecting ?? false,
@@ -54,6 +55,7 @@ extension PlayerView {
         if selectedSubtitleLanguage != nil {
             handleSubtitleSelection(nil)
         } else {
+            // Disable dubbing when enabling subtitles (mutual exclusivity)
             if liveDubbingVM?.isEnabled == true {
                 liveDubbingVM?.toggleDubbing(channelId: contentId)
             }
@@ -72,6 +74,10 @@ extension PlayerView {
             // Disable active subtitles/split when enabling dubbing (mutual exclusivity)
             if selectedSubtitleLanguage != nil {
                 handleSubtitleSelection(nil)
+            }
+            if liveSubtitlesVM?.isEnabled == true {
+                liveSubtitlesVM?.toggleSubtitles(channelId: contentId)
+                selectedSubtitleLanguage = nil
             }
             if splitModeEnabled {
                 splitModeEnabled = false
@@ -145,6 +151,10 @@ extension PlayerView {
 
         if selectedSubtitleLanguage != nil {
             handleSubtitleSelection(newLanguage)
+        }
+
+        if liveSubtitlesVM?.isEnabled == true {
+            liveSubtitlesVM?.selectLanguage(newLanguage, channelId: contentId)
         }
 
         if liveDubbingVM?.isEnabled == true {

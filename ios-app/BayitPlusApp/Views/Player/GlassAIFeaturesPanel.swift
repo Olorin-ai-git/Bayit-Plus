@@ -17,6 +17,7 @@ struct GlassAIFeaturesPanel: View {
     let onLanguageBadgeTap: () -> Void
     let isSubtitlesEnabled: Bool
     let isSubtitlesConnecting: Bool
+    let isSubtitlesPremiumLocked: Bool
     let isSplitEnabled: Bool
     let isDubbingEnabled: Bool
     let isDubbingConnecting: Bool
@@ -177,6 +178,7 @@ struct GlassAIFeaturesPanel: View {
     }
 
     private var subtitleControlState: GlassLiveControlButton.ControlState {
+        if isSubtitlesPremiumLocked { return .premiumLocked }
         if isSubtitlesConnecting { return .connecting }
         if isSubtitlesEnabled { return .enabled }
         return .idle

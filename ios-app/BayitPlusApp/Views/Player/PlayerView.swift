@@ -32,6 +32,7 @@ struct PlayerView: View {
     @State private var subtitleLoadTask: Task<Void, Never>?
     @State var triviaVM: TriviaFactsViewModel?
     @State var liveDubbingVM: LiveDubbingViewModel?
+    @State var liveSubtitlesVM: LiveSubtitlesViewModel?
 
     // Recording state
     @State private var isRecording = false
@@ -134,6 +135,16 @@ struct PlayerView: View {
                 .allowsHitTesting(false)
             }
 
+            // Live subtitle overlay (above dubbing overlay, below controls)
+            if let vm = liveSubtitlesVM, vm.isEnabled, vm.showOverlay {
+                LiveSubtitleOverlayView(
+                    translatedText: vm.activeCueText,
+                    originalText: vm.originalCueText,
+                    isVisible: vm.showOverlay
+                )
+                .allowsHitTesting(false)
+            }
+
             // Split subtitle overlay (side-by-side dual subtitles)
             if splitModeEnabled && splitLanguages.count == 2 {
                 SplitSubtitleOverlayView(
@@ -207,6 +218,7 @@ struct PlayerView: View {
             subtitleLoadTask?.cancel()
             recordingTimer?.cancel()
             triviaVM?.disconnectLiveTrivia()
+            liveSubtitlesVM?.cleanup()
         }
         .onChange(of: viewModel.player.currentTime) { _, _ in
             updateNowPlaying()
@@ -276,6 +288,17 @@ struct PlayerView: View {
             if let message = recordingErrorMessage {
                 Text(message)
             }
+        }
+        .alert(
+            localization.t("subtitles.quotaExceeded.title"),
+            isPresented: Binding(
+                get: { liveSubtitlesVM?.isQuotaExceeded ?? false },
+                set: { if !$0 { liveSubtitlesVM?.dismissQuotaExceeded() } }
+            )
+        ) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(liveSubtitlesVM?.error ?? localization.t("subtitles.quotaExceeded.message"))
         }
     }
 
@@ -518,6 +541,21 @@ struct PlayerView: View {
     }
 
     func handleSubtitleSelection(_ language: String?) {
+        // Live channels use WebSocket-based subtitles
+        if mediaContentType.isLive {
+            if let language {
+                liveSubtitlesVM?.selectLanguage(language, channelId: contentId)
+                if liveSubtitlesVM?.isEnabled != true {
+                    liveSubtitlesVM?.toggleSubtitles(channelId: contentId)
+                }
+            } else if liveSubtitlesVM?.isEnabled == true {
+                liveSubtitlesVM?.toggleSubtitles(channelId: contentId)
+            }
+            selectedSubtitleLanguage = language
+            return
+        }
+
+        // VOD content uses REST-based subtitle cues
         selectedSubtitleLanguage = language
         subtitleLoadTask?.cancel()
         if let language {
@@ -543,7 +581,7 @@ struct PlayerView: View {
             offlineCache: repositories.offlineCache
         )
 
-        // Initialize live dubbing and trivia for live content
+        // Initialize live dubbing, subtitles, and trivia for live content
         if mediaContentType.isLive {
             // Dubbing WebSocket
             let dubbingWS = LiveDubbingWebSocketService(
@@ -553,6 +591,16 @@ struct PlayerView: View {
             liveDubbingVM = LiveDubbingViewModel(
                 repository: repositories.liveDubbing,
                 webSocketService: dubbingWS
+            )
+
+            // Live subtitles WebSocket (server-side audio capture)
+            let subtitleWS = LiveSubtitlesWebSocketService(
+                configuration: repositories.configuration,
+                authTokenProvider: repositories.authTokenProvider
+            )
+            liveSubtitlesVM = LiveSubtitlesViewModel(
+                webSocketService: subtitleWS,
+                authManager: authManager
             )
 
             // Live trivia WebSocket is connected on-demand via AI panel toggle
