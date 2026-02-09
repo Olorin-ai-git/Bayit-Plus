@@ -187,7 +187,8 @@ struct MovieDetailView: View {
                             title: item.title,
                             subtitle: relatedSubtitle(item),
                             aspectRatio: 2 / 3,
-                            width: 120
+                            width: 120,
+                            placeholderIcon: .movie
                         ) {
                             coordinator.navigate(to: .movieDetail(movieId: item.id))
                         }

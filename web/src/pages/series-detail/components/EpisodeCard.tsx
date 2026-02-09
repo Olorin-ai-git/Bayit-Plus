@@ -9,6 +9,7 @@ import { Play, Bookmark } from 'lucide-react';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors } from '@olorin/design-tokens';
 import { SubtitleFlags } from '@bayit/shared/components';
+import { useResponsive } from '@/hooks/useResponsive';
 import { useEpisodePlaylistToggle } from '@/hooks/useEpisodePlaylistToggle';
 import type { Episode } from '../types/series.types';
 
@@ -28,15 +29,16 @@ export function EpisodeCard({
   flexDirection,
 }: EpisodeCardProps) {
   const { t } = useTranslation();
+  const { isMobile } = useResponsive();
   const { inPlaylist, handleTogglePlaylist } = useEpisodePlaylistToggle(episode.id, 'vod');
 
   return (
     <View
-      style={[styles.container, isSelected && styles.containerSelected]}
+      style={[styles.container, isMobile && styles.containerMobile, isSelected && styles.containerSelected]}
       // @ts-ignore - Web onClick
       onClick={isSelected ? onPlay : onSelect}
     >
-      <View style={styles.thumbnailContainer}>
+      <View style={[styles.thumbnailContainer, isMobile && styles.thumbnailMobile]}>
         {episode.thumbnail ? (
           <Image source={{ uri: episode.thumbnail }} style={styles.thumbnail} resizeMode="cover" />
         ) : (
@@ -74,33 +76,35 @@ export function EpisodeCard({
         )}
       </View>
 
-      <View style={styles.contentContainer}>
-        <Text style={styles.episodeNumber}>
-          {t('content.episode')} {episode.episode_number}
-        </Text>
-        <Text style={styles.title} numberOfLines={2}>{episode.title}</Text>
-        {episode.description && (
-          <Text style={styles.description} numberOfLines={2}>{episode.description}</Text>
+      <View style={isMobile ? styles.mobileBottomRow : styles.desktopInfoRow}>
+        <View style={[styles.contentContainer, isMobile && styles.contentContainerMobile]}>
+          <Text style={styles.episodeNumber}>
+            {t('content.episode')} {episode.episode_number}
+          </Text>
+          <Text style={[styles.title, isMobile && styles.titleMobile]} numberOfLines={2}>{episode.title}</Text>
+          {episode.description && (
+            <Text style={styles.description} numberOfLines={isMobile ? 1 : 2}>{episode.description}</Text>
+          )}
+        </View>
+
+        <Pressable
+          style={[styles.bookmarkButton, isMobile && styles.bookmarkButtonMobile]}
+          onPress={handleTogglePlaylist}
+          accessibilityLabel={inPlaylist ? t('playlist.removeEpisode') : t('playlist.addEpisode')}
+        >
+          <Bookmark
+            size={18}
+            color={inPlaylist ? '#a855f7' : 'rgba(255,255,255,0.7)'}
+            fill={inPlaylist ? '#a855f7' : 'transparent'}
+          />
+        </Pressable>
+
+        {isSelected && (
+          <View style={[styles.selectedIndicator, isMobile && styles.selectedIndicatorMobile]}>
+            <Play size={16} color="#fff" fill="#fff" />
+          </View>
         )}
       </View>
-
-      <Pressable
-        style={styles.bookmarkButton}
-        onPress={handleTogglePlaylist}
-        accessibilityLabel={inPlaylist ? t('playlist.removeEpisode') : t('playlist.addEpisode')}
-      >
-        <Bookmark
-          size={18}
-          color={inPlaylist ? '#a855f7' : 'rgba(255,255,255,0.7)'}
-          fill={inPlaylist ? '#a855f7' : 'transparent'}
-        />
-      </Pressable>
-
-      {isSelected && (
-        <View style={styles.selectedIndicator}>
-          <Play size={16} color="#fff" fill="#fff" />
-        </View>
-      )}
     </View>
   );
 }
@@ -145,10 +149,18 @@ const styles = StyleSheet.create({
     position: 'absolute', bottom: 0, left: 0, right: 0, height: 3, backgroundColor: 'rgba(255,255,255,0.3)',
   },
   progressBar: { height: '100%', backgroundColor: '#6B21A8' },
-  contentContainer: { flex: 1, padding: 16, justifyContent: 'center' },
+  contentContainer: { flex: 1, padding: 16, justifyContent: 'center', minWidth: 0 },
+  contentContainerMobile: { padding: 10 },
   episodeNumber: { fontSize: 12, color: 'rgba(255,255,255,0.7)', marginBottom: 2, textTransform: 'uppercase', letterSpacing: 0.5 },
   title: { fontSize: 16, fontWeight: '600', color: '#ffffff', marginBottom: 8 },
+  titleMobile: { fontSize: 14, marginBottom: 4 },
   description: { fontSize: 14, color: 'rgba(255,255,255,0.7)', lineHeight: 18 },
   bookmarkButton: { width: 40, justifyContent: 'center', alignItems: 'center' },
+  bookmarkButtonMobile: { width: 32 },
   selectedIndicator: { width: 40, justifyContent: 'center', alignItems: 'center', backgroundColor: '#6B21A8' },
+  selectedIndicatorMobile: { width: 32 },
+  containerMobile: { flexDirection: 'column' },
+  thumbnailMobile: { width: '100%', height: 180 },
+  desktopInfoRow: { flex: 1, flexDirection: 'row', minWidth: 0 },
+  mobileBottomRow: { flexDirection: 'row', alignItems: 'center' },
 });

@@ -19,7 +19,9 @@ struct InteractiveSubtitlesView: View {
                     viewModel: vm,
                     contentId: contentId,
                     currentTime: 0,
-                    isTriviaActive: false
+                    isTriviaActive: false,
+                    language: nil,
+                    repository: repos.subtitle
                 )
             } else {
                 ProgressView()

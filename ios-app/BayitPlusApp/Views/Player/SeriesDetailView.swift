@@ -189,7 +189,8 @@ struct SeriesDetailView: View {
                             thumbnailURL: item.thumbnail,
                             title: item.title,
                             aspectRatio: 2 / 3,
-                            width: 120
+                            width: 120,
+                            placeholderIcon: .series
                         ) {
                             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
                         }

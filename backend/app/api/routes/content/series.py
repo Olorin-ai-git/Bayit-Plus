@@ -210,8 +210,8 @@ async def get_series_details(
         "total_episodes": series.total_episodes or len(episodes),
         "trailer_url": series.trailer_url,
         "preview_url": series.preview_url,
-        "tmdb_id": series.tmdb_id,
-        "imdb_id": series.imdb_id,
+        "tmdb_id": str(series.tmdb_id) if series.tmdb_id is not None else None,
+        "imdb_id": str(series.imdb_id) if series.imdb_id is not None else None,
         "available_subtitle_languages": series.available_subtitle_languages or [],
         "has_subtitles": bool(
             series.available_subtitle_languages

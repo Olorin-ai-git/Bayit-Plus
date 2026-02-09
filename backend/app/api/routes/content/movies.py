@@ -194,8 +194,8 @@ async def get_movie_details(
         "preview_url": movie.preview_url,
         "stream_url": stream_url,
         "direct_url": movie.stream_url,  # Always provide direct URL
-        "tmdb_id": movie.tmdb_id,
-        "imdb_id": movie.imdb_id,
+        "tmdb_id": str(movie.tmdb_id) if movie.tmdb_id is not None else None,
+        "imdb_id": str(movie.imdb_id) if movie.imdb_id is not None else None,
         "imdb_rating": movie.imdb_rating,
         "imdb_votes": movie.imdb_votes,
         "available_subtitle_languages": movie.available_subtitle_languages or [],

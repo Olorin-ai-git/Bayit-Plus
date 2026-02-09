@@ -14,7 +14,7 @@ protocol SubtitleRepository: Sendable {
 /// Production implementation of `SubtitleRepository` using `APIClient`.
 final class APISubtitleRepository: SubtitleRepository, @unchecked Sendable {
 
-    private let client: APIClient
+    internal let client: APIClient
 
     init(client: APIClient) {
         self.client = client

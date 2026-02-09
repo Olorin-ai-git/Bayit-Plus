@@ -6,6 +6,7 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors } from '@olorin/design-tokens';
+import { useResponsive } from '@/hooks/useResponsive';
 import { EpisodeCard } from './EpisodeCard';
 import type { Episode } from '../types/series.types';
 
@@ -29,9 +30,10 @@ export function EpisodeList({
   onEpisodePlay,
 }: EpisodeListProps) {
   const { t } = useTranslation();
+  const { isMobile } = useResponsive();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isMobile && styles.containerMobile]}>
       {episodes.length > 0 && (
         <Text style={styles.title}>
           {t('content.season')} {selectedSeason} • {episodes.length} {t('content.episodes')}
@@ -66,6 +68,9 @@ const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 48,
     paddingVertical: 24,
+  },
+  containerMobile: {
+    paddingHorizontal: 16,
   },
   title: {
     fontSize: 18,

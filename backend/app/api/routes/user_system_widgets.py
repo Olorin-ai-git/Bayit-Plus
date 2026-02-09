@@ -5,23 +5,123 @@ Enables the opt-in model where users can browse available system widgets
 and choose which ones to add to their collection.
 """
 
-from typing import Optional
+from typing import Dict, List, Optional
 
 from bson import ObjectId
 from fastapi import APIRouter, Depends, HTTPException
 
+from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user, get_optional_user
+from app.models.content import Content, LiveChannel, Podcast, RadioStation
 from app.models.user import User
 from app.models.user_system_widget import (UserSystemWidget,
                                            UserSystemWidgetPositionUpdate,
                                            UserSystemWidgetPreferencesUpdate)
-from app.models.widget import Widget, WidgetPosition, WidgetType
+from app.models.widget import Widget, WidgetContentType, WidgetPosition, WidgetType
+
+logger = get_logger(__name__)
 
 router = APIRouter()
 
 
+async def _resolve_cover_urls(widgets: List[Widget]) -> Dict[str, str]:
+    """Resolve cover images from referenced content for a batch of widgets."""
+    cover_map: Dict[str, str] = {}
+
+    # Collect IDs by content type for batch fetching
+    channel_ids: List[str] = []
+    station_ids: List[str] = []
+    podcast_ids: List[str] = []
+    vod_ids: List[str] = []
+
+    for w in widgets:
+        if w.cover_url:
+            cover_map[str(w.id)] = w.cover_url
+            continue
+        if not w.content:
+            continue
+        ct = w.content.content_type
+        if ct in (WidgetContentType.LIVE_CHANNEL, WidgetContentType.LIVE):
+            if w.content.live_channel_id:
+                channel_ids.append(w.content.live_channel_id)
+        elif ct == WidgetContentType.RADIO:
+            if w.content.station_id:
+                station_ids.append(w.content.station_id)
+        elif ct == WidgetContentType.PODCAST:
+            if w.content.podcast_id:
+                podcast_ids.append(w.content.podcast_id)
+        elif ct == WidgetContentType.VOD:
+            if w.content.content_id:
+                vod_ids.append(w.content.content_id)
+
+    # Batch fetch referenced content
+    if channel_ids:
+        channels = await LiveChannel.find(
+            {"_id": {"$in": [ObjectId(i) for i in channel_ids]}}
+        ).to_list()
+        for ch in channels:
+            cover_map[str(ch.id)] = ch.logo or ch.thumbnail or ""
+
+    if station_ids:
+        stations = await RadioStation.find(
+            {"_id": {"$in": [ObjectId(i) for i in station_ids]}}
+        ).to_list()
+        for st in stations:
+            if st.logo:
+                cover_map[str(st.id)] = st.logo
+
+    if podcast_ids:
+        podcasts = await Podcast.find(
+            {"_id": {"$in": [ObjectId(i) for i in podcast_ids]}}
+        ).to_list()
+        for p in podcasts:
+            if p.cover:
+                cover_map[str(p.id)] = p.cover
+
+    if vod_ids:
+        vod_items = await Content.find(
+            {"_id": {"$in": [ObjectId(i) for i in vod_ids]}}
+        ).to_list()
+        for v in vod_items:
+            cover_map[str(v.id)] = v.poster_url or v.thumbnail or ""
+
+    # Map content IDs back to widget IDs
+    result: Dict[str, str] = {}
+    for w in widgets:
+        wid = str(w.id)
+        if w.cover_url:
+            result[wid] = w.cover_url
+            continue
+        if not w.content:
+            continue
+        ref_id = _get_content_ref_id(w)
+        if ref_id and ref_id in cover_map and cover_map[ref_id]:
+            result[wid] = cover_map[ref_id]
+
+    return result
+
+
+def _get_content_ref_id(w: Widget) -> Optional[str]:
+    """Get the referenced content ID from a widget."""
+    if not w.content:
+        return None
+    ct = w.content.content_type
+    if ct in (WidgetContentType.LIVE_CHANNEL, WidgetContentType.LIVE):
+        return w.content.live_channel_id
+    elif ct == WidgetContentType.RADIO:
+        return w.content.station_id
+    elif ct == WidgetContentType.PODCAST:
+        return w.content.podcast_id
+    elif ct == WidgetContentType.VOD:
+        return w.content.content_id
+    return None
+
+
 def _widget_dict(
-    w: Widget, is_added: bool = False, user_prefs: Optional[UserSystemWidget] = None
+    w: Widget,
+    is_added: bool = False,
+    user_prefs: Optional[UserSystemWidget] = None,
+    cover_url: Optional[str] = None,
 ) -> dict:
     """Convert Widget document to API response dict with user subscription info."""
     result = {
@@ -31,6 +131,7 @@ def _widget_dict(
         "title": w.title,
         "description": w.description,
         "icon": w.icon,
+        "cover_url": cover_url or w.cover_url,
         "content": {
             "content_type": w.content.content_type.value if w.content else None,
             "live_channel_id": (
@@ -135,8 +236,8 @@ async def get_available_system_widgets(
     else:
         subscribed_ids = set()
 
-    # Filter by role and subscription, add is_added flag
-    result = []
+    # Filter by role and subscription
+    filtered_widgets = []
     for widget in system_widgets:
         # Check role targeting
         if widget.visible_to_roles:
@@ -154,8 +255,22 @@ async def get_available_system_widgets(
             ):
                 continue
 
+        filtered_widgets.append(widget)
+
+    # Batch resolve cover images from referenced content
+    cover_urls = await _resolve_cover_urls(filtered_widgets)
+
+    # Build response with cover URLs
+    result = []
+    for widget in filtered_widgets:
         is_added = str(widget.id) in subscribed_ids
-        result.append(_widget_dict(widget, is_added=is_added))
+        result.append(
+            _widget_dict(
+                widget,
+                is_added=is_added,
+                cover_url=cover_urls.get(str(widget.id)),
+            )
+        )
 
     return {
         "items": result,
@@ -198,19 +313,31 @@ async def get_my_system_widgets(
     widget_lookup = {str(w.id): w for w in widgets}
     sub_lookup = {sub.widget_id: sub for sub in user_subscriptions}
 
-    # Build result with user preferences applied
-    result = []
+    # Filter by page targeting
+    page_filtered = []
     for sub in user_subscriptions:
         widget = widget_lookup.get(sub.widget_id)
         if not widget:
             continue
-
-        # Check page targeting if specified
         if page_path and widget.target_pages:
             if not any(page_path.startswith(target) for target in widget.target_pages):
                 continue
+        page_filtered.append((widget, sub))
 
-        result.append(_widget_dict(widget, is_added=True, user_prefs=sub))
+    # Batch resolve cover images
+    cover_urls = await _resolve_cover_urls([w for w, _ in page_filtered])
+
+    # Build result with user preferences applied
+    result = []
+    for widget, sub in page_filtered:
+        result.append(
+            _widget_dict(
+                widget,
+                is_added=True,
+                user_prefs=sub,
+                cover_url=cover_urls.get(str(widget.id)),
+            )
+        )
 
     return {
         "items": result,

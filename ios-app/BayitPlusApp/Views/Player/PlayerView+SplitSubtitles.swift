@@ -112,22 +112,17 @@ extension PlayerView {
     }
 
     private func loadCuesForLanguage(_ language: String) async -> [SubtitleCue] {
-        // TODO: Implement actual subtitle loading via repository
-        // For now, return empty array
-        return []
-
-        // Real implementation would be:
-        // do {
-        //     let cues = try await repositories.subtitle.getCues(
-        //         contentId: contentId,
-        //         language: language,
-        //         hebrewMode: .regular,
-        //         englishMode: .regular
-        //     )
-        //     return cues
-        // } catch {
-        //     print("Failed to load \(language) cues: \(error)")
-        //     return []
-        // }
+        do {
+            let response = try await repositories.subtitle.fetchCues(
+                contentId: contentId,
+                language: language,
+                hebrewMode: .standard,
+                englishMode: .standard
+            )
+            return response.cues ?? []
+        } catch {
+            print("Failed to load \(language) cues: \(error)")
+            return []
+        }
     }
 }

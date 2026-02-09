@@ -31,7 +31,6 @@ const navLinkKeys = [
   { to: '/radio', key: 'nav.radio' },
   { to: '/podcasts', key: 'nav.podcasts' },
   { to: '/children', key: 'nav.children' },
-  { to: '/widgets', key: 'nav.widgets' },
 ];
 
 export default function Header() {
@@ -283,7 +282,7 @@ export default function Header() {
   );
 
   return (
-    <GlassView style={styles.header}>
+    <GlassView style={styles.header} intensity="subtle" noBorder>
       <View style={styles.container}>
         <View style={styles.headerContent}>
           {/* document.dir handles visual direction - keep natural order */}
@@ -303,8 +302,6 @@ const styles = StyleSheet.create({
     top: 0,
     zIndex: 100,
     marginTop: 3,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.05)',
     overflow: 'hidden',
   },
   container: {

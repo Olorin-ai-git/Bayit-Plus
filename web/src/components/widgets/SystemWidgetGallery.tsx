@@ -7,7 +7,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useTranslation } from 'react-i18next';
@@ -112,10 +112,18 @@ function SystemWidgetCard({
       style={styles.cardWrapper}
     >
       <GlassCard style={[styles.cardInner, isHovered && styles.cardHovered]}>
-        {/* Icon */}
-        <View style={styles.iconContainer}>
-          {getContentTypeIcon(widget.content?.content_type)}
-        </View>
+        {/* Poster / Icon */}
+        {widget.cover_url ? (
+          <Image
+            source={{ uri: widget.cover_url }}
+            style={styles.posterImage}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={styles.iconContainer}>
+            {getContentTypeIcon(widget.content?.content_type)}
+          </View>
+        )}
 
         {/* Content */}
         <View style={styles.cardContent}>
@@ -384,6 +392,13 @@ const styles = StyleSheet.create({
   cardHovered: {
     backgroundColor: colors.glassPurpleLight,
     borderColor: colors.glassBorder,
+  },
+  posterImage: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: colors.glassBorderLight,
   },
   iconContainer: {
     width: 48,

@@ -12,7 +12,7 @@ import SwiftUI
 struct PlayerView: View {
 
     @Environment(NavigationCoordinator.self) private var coordinator
-    @Environment(RepositoryProvider.self) private var repositories
+    @Environment(RepositoryProvider.self) fileprivate var repositories
 
     @State private var viewModel: MediaPlayerViewModel
     @State private var showControls = true
@@ -27,6 +27,13 @@ struct PlayerView: View {
     @State private var subtitleLoadTask: Task<Void, Never>?
     @State private var triviaVM: TriviaFactsViewModel?
     @State private var liveDubbingVM: LiveDubbingViewModel?
+
+    // Split subtitle state
+    @State fileprivate var splitModeEnabled = false
+    @State fileprivate var splitLanguages: [String] = []
+    @State fileprivate var showSplitLanguagePicker = false
+    @State fileprivate var primarySubtitleCues: [SubtitleCue] = []
+    @State fileprivate var secondarySubtitleCues: [SubtitleCue] = []
 
     let contentId: String
     let contentType: ContentType
@@ -84,7 +91,23 @@ struct PlayerView: View {
                     contentId: contentId,
                     currentTime: viewModel.player.currentTime,
                     isTriviaActive: triviaVM?.activeFact != nil,
-                    language: lang
+                    language: lang,
+                    repository: repositories.subtitle
+                )
+                .allowsHitTesting(showControls)
+            }
+
+            // Split subtitle overlay (side-by-side dual subtitles)
+            if splitModeEnabled && splitLanguages.count == 2 {
+                SplitSubtitleOverlayView(
+                    currentTime: viewModel.player.currentTime,
+                    primaryCues: primarySubtitleCues,
+                    secondaryCues: secondarySubtitleCues,
+                    primaryLanguage: splitLanguages[0],
+                    secondaryLanguage: splitLanguages[1],
+                    enabled: splitModeEnabled,
+                    settings: SubtitleSettings(),
+                    safeAreaBottom: 0
                 )
                 .allowsHitTesting(showControls)
             }
@@ -116,6 +139,23 @@ struct PlayerView: View {
         }
         .onChange(of: viewModel.player.currentTime) { _, _ in
             updateNowPlaying()
+        }
+        .sheet(isPresented: $showSplitLanguagePicker) {
+            SplitSubtitleLanguagePickerView(
+                availableLanguages: availableSubtitleLanguages,
+                sourceLanguage: "he",
+                selectedLanguages: $splitLanguages,
+                splitModeEnabled: $splitModeEnabled,
+                onConfirm: { languages in
+                    splitLanguages = languages
+                    splitModeEnabled = true
+                    Task {
+                        await loadSplitSubtitleCues()
+                    }
+                }
+            )
+            .presentationDetents([.large])
+            .presentationDragIndicator(.visible)
         }
     }
 
@@ -244,6 +284,7 @@ struct PlayerView: View {
             Spacer()
 
             subtitleToggle
+            splitSubtitleToggle
             dubbingToggle
 
             AirPlayView()
@@ -314,12 +355,21 @@ struct PlayerView: View {
                 showSubtitlePicker = true
             }
         } label: {
-            Image(systemName: selectedSubtitleLanguage != nil ? "captions.bubble.fill" : "captions.bubble")
-                .font(.system(size: 18))
-                .foregroundStyle(
-                    selectedSubtitleLanguage != nil ? DesignTokens.Primary.p400 : .white
-                )
-                .frame(width: 44, height: 44)
+            ZStack(alignment: .bottomTrailing) {
+                Image(systemName: selectedSubtitleLanguage != nil ? "captions.bubble.fill" : "captions.bubble")
+                    .font(.system(size: 18))
+                    .foregroundStyle(
+                        selectedSubtitleLanguage != nil ? DesignTokens.Primary.p400 : .white
+                    )
+                    .frame(width: 44, height: 44)
+
+                // Show flag emoji when subtitle is selected
+                if let language = selectedSubtitleLanguage {
+                    Text(SubtitleLanguages.emojiFlag(for: language))
+                        .font(.system(size: 12))
+                        .offset(x: 4, y: 4)
+                }
+            }
         }
         .accessibilityLabel("Subtitles")
         .accessibilityValue(
@@ -433,5 +483,59 @@ struct PlayerView: View {
             duration: viewModel.player.duration,
             rate: viewModel.player.rate
         )
+    }
+
+    // MARK: - Split Subtitle Toggle Button
+
+    private var splitSubtitleToggle: some View {
+        Button {
+            if splitModeEnabled {
+                // Disable split mode
+                splitModeEnabled = false
+                splitLanguages = []
+                primarySubtitleCues = []
+                secondarySubtitleCues = []
+            } else {
+                // Show language picker
+                showSplitLanguagePicker = true
+            }
+        } label: {
+            Image(systemName: splitModeEnabled ? "square.split.2x1.fill" : "square.split.2x1")
+                .font(.system(size: 18))
+                .foregroundStyle(
+                    splitModeEnabled ? DesignTokens.Primary.p400 : .white
+                )
+                .frame(width: 44, height: 44)
+        }
+        .accessibilityLabel("Split screen subtitles")
+        .accessibilityValue(splitModeEnabled ? "On" : "Off")
+    }
+
+    // MARK: - Load Split Subtitle Cues
+
+    private func loadSplitSubtitleCues() async {
+        guard splitLanguages.count == 2 else { return }
+
+        async let primary = loadCuesForLanguage(splitLanguages[0])
+        async let secondary = loadCuesForLanguage(splitLanguages[1])
+
+        let (primaryResult, secondaryResult) = await (primary, secondary)
+        primarySubtitleCues = primaryResult
+        secondarySubtitleCues = secondaryResult
+    }
+
+    private func loadCuesForLanguage(_ language: String) async -> [SubtitleCue] {
+        do {
+            let response = try await repositories.subtitle.fetchCues(
+                contentId: contentId,
+                language: language,
+                hebrewMode: .standard,
+                englishMode: .standard
+            )
+            return response.cues ?? []
+        } catch {
+            print("Failed to load \(language) cues: \(error)")
+            return []
+        }
     }
 }

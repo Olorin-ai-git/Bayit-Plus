@@ -20,7 +20,8 @@ struct LiveTVRow: View {
                     subtitle: channel.currentShow,
                     badge: "LIVE",
                     aspectRatio: 1.0,  // Square
-                    width: 140
+                    width: 140,
+                    placeholderIcon: .live
                 ) {
                     coordinator.navigate(to: .player(
                         contentId: channel.id,

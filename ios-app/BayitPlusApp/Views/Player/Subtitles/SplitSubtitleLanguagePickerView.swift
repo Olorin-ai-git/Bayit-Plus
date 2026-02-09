@@ -163,7 +163,7 @@ struct SplitSubtitleLanguagePickerView: View {
             Text(position)
                 .font(.system(size: 10, weight: .semibold))
                 .foregroundColor(DesignTokens.Text.muted)
-                .letterSpacing(0.5)
+                .tracking(0.5)
         }
         .frame(maxWidth: .infinity)
     }

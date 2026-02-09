@@ -25,11 +25,11 @@ extension APISubtitleRepository {
 
         return try await client.post(
             "/api/v1/subtitles/\(contentId)/nikud",
+            body: EmptyRequest(),
             queryItems: [
                 URLQueryItem(name: "language", value: language),
                 URLQueryItem(name: "force", value: String(force))
             ],
-            body: EmptyRequest(),
             as: AIGenerationJobResponse.self
         )
     }
@@ -47,11 +47,11 @@ extension APISubtitleRepository {
     ) async throws -> AIGenerationJobResponse {
         return try await client.post(
             "/api/v1/subtitles/\(contentId)/shoresh",
+            body: EmptyRequest(),
             queryItems: [
                 URLQueryItem(name: "language", value: language),
                 URLQueryItem(name: "force", value: String(force))
             ],
-            body: EmptyRequest(),
             as: AIGenerationJobResponse.self
         )
     }
@@ -69,11 +69,11 @@ extension APISubtitleRepository {
     ) async throws -> AIGenerationJobResponse {
         return try await client.post(
             "/api/v1/subtitles/\(contentId)/engrew",
+            body: EmptyRequest(),
             queryItems: [
                 URLQueryItem(name: "language", value: language),
                 URLQueryItem(name: "force", value: String(force))
             ],
-            body: EmptyRequest(),
             as: AIGenerationJobResponse.self
         )
     }

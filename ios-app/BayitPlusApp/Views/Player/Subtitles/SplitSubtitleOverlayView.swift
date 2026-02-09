@@ -23,15 +23,23 @@ struct SplitSubtitleOverlayView: View {
     }
 
     private var activePrimaryCues: [SubtitleCue] {
-        primaryCues.filter { cue in
-            currentTime >= cue.start_time && currentTime <= cue.end_time
+        let active = primaryCues.filter { cue in
+            currentTime >= (cue.startTime ?? 0) && currentTime <= (cue.endTime ?? 0)
         }
+        if !active.isEmpty {
+            print("🔵 Primary (\(primaryLanguage)) at \(currentTime)s: \(active.first?.text ?? "") [\(active.first?.startTime ?? 0)-\(active.first?.endTime ?? 0)]")
+        }
+        return active
     }
 
     private var activeSecondaryCues: [SubtitleCue] {
-        secondaryCues.filter { cue in
-            currentTime >= cue.start_time && currentTime <= cue.end_time
+        let active = secondaryCues.filter { cue in
+            currentTime >= (cue.startTime ?? 0) && currentTime <= (cue.endTime ?? 0)
         }
+        if !active.isEmpty {
+            print("🟠 Secondary (\(secondaryLanguage)) at \(currentTime)s: \(active.first?.text ?? "") [\(active.first?.startTime ?? 0)-\(active.first?.endTime ?? 0)]")
+        }
+        return active
     }
 
     var body: some View {
@@ -53,7 +61,7 @@ struct SplitSubtitleOverlayView: View {
                     // Divider
                     Rectangle()
                         .fill(Color.white.opacity(0.25))
-                        .frame(width: 2)
+                        .frame(width: 2, height: 60)
                         .cornerRadius(1)
 
                     // Right pane (secondary language)
@@ -66,10 +74,11 @@ struct SplitSubtitleOverlayView: View {
                     )
                     .frame(maxWidth: .infinity)
                 }
-                .padding(.horizontal, UIScreen.main.bounds.width * 0.1)
-                .padding(.bottom, safeAreaBottom + (settings.position == .bottom ? 96 : 0))
-                .padding(.top, settings.position == .top ? 32 : 0)
+                .frame(height: 80)
+                .padding(.horizontal, DesignTokens.Spacing.lg)
+                .padding(.bottom, 120 + safeAreaBottom)
             }
+            .frame(maxHeight: .infinity, alignment: .bottom)
             .allowsHitTesting(false)
         }
     }

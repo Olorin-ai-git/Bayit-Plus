@@ -105,34 +105,6 @@ function SectionSkeleton() {
   );
 }
 
-// Hero skeleton with placeholder backdrop
-function HeroSkeleton() {
-  const { t } = useTranslation();
-  const placeholderImage = import.meta.env.VITE_PLACEHOLDER_IMAGE_URL || '/assets/images/Bayit-Plus-Logo-Transparent.png';
-
-  return (
-    <View style={styles.skeletonHero}>
-      <img
-        src={placeholderImage}
-        alt={t('common.loading')}
-        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          position: 'absolute',
-          top: 0,
-          left: 0,
-        }}
-      />
-      <View style={styles.skeletonHeroOverlay} />
-      <View style={styles.skeletonLoadingContainer}>
-        <View style={styles.loadingSpinner} />
-        <Text style={styles.skeletonLoadingText}>{t('common.loading')}</Text>
-      </View>
-    </View>
-  );
-}
 
 export default function HomePage() {
   const { t, i18n } = useTranslation();
@@ -361,7 +333,7 @@ export default function HomePage() {
       {/* Hero Carousel Section */}
       <View style={styles.carouselSection}>
         {carouselLoading ? (
-          <HeroSkeleton />
+          <HeroCarouselSkeleton height={IS_TV_BUILD ? 550 : 600} />
         ) : (
           <GlassCarousel
             items={carouselItems}
@@ -566,38 +538,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   // Skeleton
-  skeletonHero: {
-    height: IS_TV_BUILD ? 550 : 600,
-    backgroundColor: 'rgba(255, 255, 255, 0.03)',
-    position: 'relative',
-    overflow: 'hidden',
-    borderRadius: 16,
-  },
-  skeletonHeroOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    // Use backgroundImage instead of background shorthand for React Native Web
-    backgroundImage: 'linear-gradient(to bottom, rgba(10, 10, 20, 0.3) 0%, rgba(10, 10, 20, 0.6) 50%, rgba(10, 10, 20, 0.95) 100%)' as any,
-  },
-  skeletonLoadingContainer: {
-    position: 'absolute',
-    bottom: IS_TV_BUILD ? 120 : 80,
-    left: IS_TV_BUILD ? spacing.xl * 2 : spacing.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  skeletonLoadingText: {
-    fontSize: IS_TV_BUILD ? 28 : 22,
-    fontWeight: '600',
-    color: colors.text,
-    textShadowColor: 'rgba(0, 0, 0, 0.8)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
   skeletonSection: {
     marginTop: spacing.xl,
     paddingHorizontal: spacing.md,
@@ -618,13 +558,5 @@ const styles = StyleSheet.create({
     aspectRatio: 16 / 9,
     backgroundColor: 'rgba(255, 255, 255, 0.03)',
     borderRadius: 12,
-  },
-  loadingSpinner: {
-    width: IS_TV_BUILD ? 32 : 24,
-    height: IS_TV_BUILD ? 32 : 24,
-    borderRadius: '50%',
-    borderWidth: 3,
-    borderColor: 'rgba(107, 33, 168, 0.3)',
-    borderTopColor: '#7e22ce',
   },
 });

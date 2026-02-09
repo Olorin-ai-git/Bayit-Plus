@@ -1,5 +1,16 @@
 import SwiftUI
 
+/// SF Symbol name used as placeholder when a thumbnail is missing
+public enum ContentPlaceholderIcon: String, Sendable {
+    case movie = "film"
+    case series = "tv"
+    case podcast = "mic.fill"
+    case audiobook = "headphones"
+    case radio = "radio"
+    case live = "antenna.radiowaves.left.and.right"
+    case general = "photo"
+}
+
 /// Content card for movies, series, podcasts with thumbnail and metadata
 /// Features glass overlay, optional badge, subtitle language flags, and tap interaction
 public struct GlassContentCard: View {
@@ -10,10 +21,14 @@ public struct GlassContentCard: View {
     let subtitleFlags: [String]?
     let aspectRatio: CGFloat
     let width: CGFloat
+    let placeholderIcon: ContentPlaceholderIcon
     let onTap: () -> Void
 
     /// Maximum number of flags displayed before showing "+N" overflow
     private let maxVisibleFlags = 5
+
+    /// Fixed height derived from width and aspect ratio for consistent card sizing
+    private var cardHeight: CGFloat { width / aspectRatio }
 
     public init(
         thumbnailURL: String?,
@@ -23,6 +38,7 @@ public struct GlassContentCard: View {
         subtitleFlags: [String]? = nil,
         aspectRatio: CGFloat = 16/9,
         width: CGFloat = 280,
+        placeholderIcon: ContentPlaceholderIcon = .general,
         onTap: @escaping () -> Void = {}
     ) {
         self.thumbnailURL = thumbnailURL
@@ -32,28 +48,26 @@ public struct GlassContentCard: View {
         self.subtitleFlags = subtitleFlags
         self.aspectRatio = aspectRatio
         self.width = width
+        self.placeholderIcon = placeholderIcon
         self.onTap = onTap
     }
 
     public var body: some View {
         Button(action: onTap) {
-            VStack(alignment: .leading, spacing: 0) {
-                thumbnailSection
-                    .frame(width: width)
-                    .aspectRatio(aspectRatio, contentMode: .fit)
-                    .clipped()
-            }
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
-            .overlay(
-                RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                    .stroke(DesignTokens.Glass.border, lineWidth: 1)
-            )
-            .shadow(
-                color: DesignTokens.Glass.purpleGlow,
-                radius: 4,
-                x: 0,
-                y: 2
-            )
+            thumbnailSection
+                .frame(width: width, height: cardHeight)
+                .clipped()
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+                .overlay(
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
+                        .stroke(DesignTokens.Glass.border, lineWidth: 1)
+                )
+                .shadow(
+                    color: DesignTokens.Glass.purpleGlow,
+                    radius: 4,
+                    x: 0,
+                    y: 2
+                )
         }
         .buttonStyle(ScaleButtonStyle())
     }
@@ -140,14 +154,28 @@ public struct GlassContentCard: View {
     }
 
     private var placeholderGradient: some View {
-        LinearGradient(
-            colors: [
-                DesignTokens.Glass.purpleLight,
-                DesignTokens.Glass.purpleStrong
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
+        ZStack {
+            LinearGradient(
+                colors: [
+                    DesignTokens.Glass.purpleLight,
+                    DesignTokens.Glass.purpleStrong
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            Image(systemName: placeholderIcon.rawValue)
+                .font(.system(size: width * 0.25, weight: .thin))
+                .foregroundStyle(
+                    .linearGradient(
+                        colors: [
+                            Color.white.opacity(0.25),
+                            Color.white.opacity(0.08)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+        }
     }
 
     private func badgeView(_ text: String) -> some View {

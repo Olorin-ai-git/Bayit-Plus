@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Pressable, ScrollView, Platform, StyleSheet } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
 
@@ -101,16 +100,11 @@ export const GlassBreadcrumbs: React.FC<GlassBreadcrumbsProps> = ({
     );
   }
 
-  // Native: Use gradient fallback
+  // Native: Use solid dark background (avoids native-only LinearGradient dependency)
   return (
-    <LinearGradient
-      colors={['rgba(0, 0, 0, 0.2)', 'rgba(0, 0, 0, 0.3)']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 0 }}
-      style={styles.containerNative}
-    >
+    <View style={[styles.containerNative, styles.nativeBg]}>
       {renderContent()}
-    </LinearGradient>
+    </View>
   );
 };
 
@@ -132,6 +126,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(139, 92, 246, 0.2)',
+  },
+  nativeBg: {
+    backgroundColor: 'rgba(0, 0, 0, 0.25)',
   },
   scrollContent: {
     flexDirection: 'row',

@@ -22,7 +22,8 @@ struct CategoryRow: View {
                         badge: itemBadge(for: item),
                         subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
                         aspectRatio: itemAspectRatio(for: item),
-                        width: itemWidth
+                        width: itemWidth,
+                        placeholderIcon: placeholderIcon(for: item)
                     ) {
                         navigateToItem(item)
                     }
@@ -94,6 +95,25 @@ struct CategoryRow: View {
             aiLangs.insert("en")
         }
         return aiLangs
+    }
+
+    private func placeholderIcon(for item: ContentItem) -> ContentPlaceholderIcon {
+        if item.isSeries == true {
+            return .series
+        }
+        if let type = item.type?.lowercased() {
+            if type.contains("podcast") { return .podcast }
+            if type.contains("audiobook") { return .audiobook }
+            if type.contains("radio") { return .radio }
+            if type.contains("live") { return .live }
+        }
+        let name = category.name.lowercased()
+        if name.contains("series") { return .series }
+        if name.contains("podcast") { return .podcast }
+        if name.contains("audiobook") { return .audiobook }
+        if name.contains("radio") { return .radio }
+        if name.contains("live") { return .live }
+        return .movie
     }
 
     private func navigateToItem(_ item: ContentItem) {

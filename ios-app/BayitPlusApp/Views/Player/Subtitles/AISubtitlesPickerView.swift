@@ -7,14 +7,14 @@ struct AISubtitlesPickerView: View {
     @Environment(\.dismiss) private var dismiss
 
     let contentId: String
-    let currentMode: HebrewMode
+    let currentMode: SubtitleHebrewMode
     let hasHebrew: Bool
     let hasNikud: Bool
     let hasShoresh: Bool
     let hasEngrew: Bool
     let isAdmin: Bool
     let repository: SubtitleRepository
-    let onModeSelect: (HebrewMode) -> Void
+    let onModeSelect: (SubtitleHebrewMode) -> Void
     let onGenerationComplete: () -> Void
 
     @State private var showFirstTimeHint = false
@@ -27,7 +27,7 @@ struct AISubtitlesPickerView: View {
 
     private let hebrewModeOptions: [HebrewModeOption] = [
         HebrewModeOption(
-            mode: .regular,
+            mode: .standard,
             iconName: "gear",
             title: "Regular Hebrew",
             description: "Standard Hebrew text without vowel marks",
@@ -121,7 +121,7 @@ struct AISubtitlesPickerView: View {
     private func modeOptionRow(_ option: HebrewModeOption) -> some View {
         let isAvailable = isModeAvailable(option.mode)
         let isSelected = option.mode == currentMode
-        let canShowGenerateButton = !isAvailable && option.mode != .regular && isAdmin && hasHebrew
+        let canShowGenerateButton = !isAvailable && option.mode != .standard && isAdmin && hasHebrew
 
         return Button {
             if isAvailable {
@@ -174,7 +174,7 @@ struct AISubtitlesPickerView: View {
                     .padding(.leading, 52)
 
                 // Generate button or status
-                if !isAvailable && option.mode != .regular {
+                if !isAvailable && option.mode != .standard {
                     if let generatableMode = option.mode.asGeneratable,
                        generatingMode == generatableMode {
                         generationProgressView
@@ -358,9 +358,9 @@ struct AISubtitlesPickerView: View {
 
     // MARK: - Helper Methods
 
-    private func isModeAvailable(_ mode: HebrewMode) -> Bool {
+    private func isModeAvailable(_ mode: SubtitleHebrewMode) -> Bool {
         switch mode {
-        case .regular: return true
+        case .standard: return true
         case .nikud: return hasNikud
         case .shoresh: return hasShoresh
         case .engrew: return hasEngrew
@@ -544,18 +544,13 @@ struct AISubtitlesPickerView: View {
 
 // MARK: - Supporting Types
 
-enum HebrewMode: String, CaseIterable {
-    case regular
-    case nikud
-    case shoresh
-    case engrew
-
+extension SubtitleHebrewMode {
     var asGeneratable: GeneratableHebrewMode? {
         switch self {
         case .nikud: return .nikud
         case .shoresh: return .shoresh
         case .engrew: return .engrew
-        case .regular: return nil
+        case .standard: return nil
         }
     }
 }
@@ -567,7 +562,7 @@ enum GeneratableHebrewMode: String {
 }
 
 struct HebrewModeOption {
-    let mode: HebrewMode
+    let mode: SubtitleHebrewMode
     let iconName: String
     let title: String
     let description: String

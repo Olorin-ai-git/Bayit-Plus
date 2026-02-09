@@ -2949,6 +2949,30 @@
       "reject": "Reject"
     }
   },
+  "aiCompanion": {
+    "title": "AI Learning Companion",
+    "vocabulary": "Vocabulary",
+    "context": "Episode Context",
+    "quiz": "Quick Quiz",
+    "nowPlaying": "Now Playing",
+    "upNext": "Up Next",
+    "timeRemaining": "Time Remaining",
+    "openAiTools": "Open AI Tools",
+    "noVocabulary": "No vocabulary words available for this episode",
+    "noContext": "No episode context available",
+    "noQuiz": "No quiz questions available for this episode",
+    "checkAnswer": "Check Answer",
+    "concepts": "Key Concepts"
+  },
+  "audible": {
+    "accountLinked": "Your Audible account is now linked to Bayit+",
+    "connected": "Connected!",
+    "connecting": "Connecting Audible...",
+    "connectionFailed": "Connection Failed",
+    "pleaseWait": "Please wait while we link your account.",
+    "connect": "Connect Audible",
+    "disconnect": "Disconnect Audible"
+  },
   "audiobooks": {
     "audiobook": "Audiobook",
     "chapter": "Chapter",
@@ -3092,6 +3116,283 @@
     "sortOrder": "Order",
     "subscription": "Subscription"
   },
+  "auth": {
+    "loginRequired": "Login Required",
+    "loginToWatch": "Please sign in to watch {{title}}",
+    "login": "Login",
+    "signUp": "Sign Up",
+    "signInRequired": "Sign In Required",
+    "signInRequiredTitle": "Please sign in to continue"
+  },
+  "avatar": {
+    "dialogue": {
+      "wake": {
+        "here": "I am here.",
+        "service": "At your service.",
+        "speak": "Speak, and I shall listen.",
+        "yes": "Yes?",
+        "seek": "What do you seek?",
+        "listening": "I'm listening.",
+        "awaits": "The wizard awaits.",
+        "hmm": "Hmm?"
+      },
+      "listening": {
+        "see": "Hmm, let me see...",
+        "moment": "One moment...",
+        "archives": "Consulting the archives...",
+        "yes": "Ah, yes...",
+        "find": "Let me find that...",
+        "interesting": "Interesting...",
+        "let": "Let me think about that..."
+      },
+      "processing": {
+        "vast": "The scrolls are vast... patience.",
+        "depths": "Searching the depths...",
+        "deeper": "This requires a deeper look...",
+        "ancient": "Consulting ancient knowledge...",
+        "seek": "I'm searching the library...",
+        "moment": "One moment...",
+        "consulting": "Consulting the archives..."
+      },
+      "presenting": {
+        "here": "Here you are.",
+        "channels": "As you wish. Your channels.",
+        "behold": "Behold.",
+        "summoned": "I've summoned them for you.",
+        "exactly": "Here — exactly as requested.",
+        "found": "I found it for you."
+      },
+      "presentingList": {
+        "found": "I found {{count}} that may interest you...",
+        "podcasts": "Your podcasts have new tales to tell.",
+        "treasures": "Several treasures match your request...",
+        "archives": "The archives reveal these...",
+        "results": "Here is what I found..."
+      },
+      "presentingSingle": {
+        "seek": "This is what you seek.",
+        "found": "Found it.",
+        "exactly": "Here — exactly as you described.",
+        "this": "Ah! This one.",
+        "precisely": "Precisely what you asked for."
+      },
+      "fuzzySearch": {
+        "said": "You said '{{query}}'... I found these in your collection.",
+        "possibilities": "Ah — '{{query}}.' Several possibilities here.",
+        "appears": "The word '{{query}}' appears in these titles...",
+        "matches": "Searching for '{{query}}'... here are the matches."
+      },
+      "nothingFound": {
+        "rephrase": "Hmm. The archives reveal nothing. Perhaps rephrase?",
+        "another": "I searched, but found no match. Shall we try another way?",
+        "describe": "Nothing by that name. Could you describe it differently?",
+        "limits": "Even wizards have limits. I couldn't find that.",
+        "silent": "The scrolls are silent on this matter.",
+        "elsewhere": "I found nothing here. Perhaps search elsewhere?",
+        "sorry": "Sorry, that's not in my scrolls."
+      },
+      "clarification": {
+        "catch": "I didn't quite catch that. Once more?",
+        "hearing": "My hearing isn't what it was. Again?",
+        "again": "Say that again for me.",
+        "uncertain": "I'm uncertain what you mean. Could you clarify?",
+        "guess": "Did you say '{{guess}}', or something else?",
+        "didYouMean": "Did you mean {{guess}}?",
+        "unclear": "Your request isn't clear. Could you clarify?",
+        "whichOne": "Which one interests you?"
+      },
+      "confirmation": {
+        "play": "Shall I play it?",
+        "continue": "Want me to continue?",
+        "list": "Should I read through the list?",
+        "details": "Would you like more details?",
+        "done": "Done.",
+        "completed": "Completed.",
+        "understood": "Understood."
+      },
+      "dismissal": {
+        "rests": "The wizard rests. Call when you need me.",
+        "next": "Until next time.",
+        "here": "I'll be here.",
+        "farewell": "Farewell for now.",
+        "word": "I am but a word away.",
+        "rest": "I'll rest here if you need me.",
+        "return": "Call, and I shall return."
+      },
+      "dismissalLate": {
+        "late": "The hour grows late. Sweet dreams.",
+        "goodnight": "Goodnight. May your dreams be peaceful.",
+        "rest": "Rest well. The wizard watches over you."
+      },
+      "interruption": {
+        "got": "Got it — what would you like instead?",
+        "understood": "Understood. I await your new command.",
+        "well": "Very well. What now?",
+        "stopped": "Stopped. What do you seek?",
+        "speak": "Speak, and I shall listen.",
+        "course": "Of course, what's the new request?"
+      },
+      "error": {
+        "technical": "Something went awry. Shall we try again?",
+        "apologies": "The magic faltered. Once more?",
+        "failed": "An unexpected obstacle. Let me try differently."
+      },
+      "personality": {
+        "deliver": "You ask much... but I deliver.",
+        "hidden": "Ah! Hidden, but not from me.",
+        "manners": "Manners. I appreciate that.",
+        "already": "You already asked me this, but very well...",
+        "worthy": "A worthy challenge for a wizard.",
+        "wisdom": "Remember, even the wisest wizard once started as a student.",
+        "patience": "Patience reveals what haste conceals.",
+        "magic": "Magic flows everywhere — you just need to know where to look."
+      },
+      "idleTimeout": {
+        "there": "Still there? Or shall I rest?",
+        "awaits": "The wizard awaits your command...",
+        "remain": "I remain at your service.",
+        "still": "Still here?",
+        "anything": "Anything else?",
+        "resting": "I'll rest until you need me again."
+      },
+      "greeting": {
+        "morning": "Good morning. What do you seek?",
+        "afternoon": "Good afternoon. How may I help?",
+        "evening": "Good evening. I am at your service.",
+        "night": "The hour grows late. What do you need?"
+      },
+      "waiting": {
+        "moment": "One moment, please...",
+        "patience": "Patience... the scrolls are vast.",
+        "searching": "Searching through the archives..."
+      },
+      "success": {
+        "aha": "Aha! Found it!",
+        "found": "Success! Here it is.",
+        "excellent": "Excellent! Just as I suspected."
+      },
+      "warning": {
+        "caution": "A moment of caution...",
+        "careful": "Careful now...",
+        "wait": "Wait — let me explain something first."
+      },
+      "magicalReveal": {
+        "behold": "Behold what the magic reveals!",
+        "witness": "Witness this...",
+        "observe": "Observe closely now..."
+      },
+      "agreement": {
+        "yes": "Yes, indeed.",
+        "indeed": "Indeed, you are correct.",
+        "certainly": "Certainly. As you wish."
+      },
+      "disagreement": {
+        "no": "I'm afraid not.",
+        "afraid": "That doesn't seem right.",
+        "unfortunately": "Unfortunately, that won't work."
+      },
+      "clarificationNeeded": {
+        "pardon": "Pardon? Say that again.",
+        "didntCatch": "I didn't quite catch that.",
+        "sayAgain": "Could you say that once more?"
+      }
+    },
+    "states": {
+      "dormant": "Resting",
+      "listening": "Listening",
+      "processing": "Thinking",
+      "responding": "Speaking",
+      "confused": "Confused",
+      "interrupted": "Interrupted"
+    },
+    "gestures": {
+      "idle": "Idle",
+      "greeting": "Greeting",
+      "listening": "Listening",
+      "attentive": "Attentive",
+      "thinking": "Thinking",
+      "presenting": "Presenting",
+      "conjuring": "Conjuring",
+      "browsing": "Browsing",
+      "confused": "Confused",
+      "shrugging": "Shrugging",
+      "farewell": "Farewell",
+      "cheering": "Cheering",
+      "clapping": "Clapping",
+      "crying": "Crying",
+      "facepalm": "Facepalm",
+      "emphatic": "Emphatic",
+      "reading": "Reading",
+      "confirmation": "Confirming",
+      "single_result": "Pointing",
+      "waiting": "Waiting",
+      "success": "Success",
+      "clarification": "Clarifying",
+      "warning": "Warning",
+      "magical_reveal": "Revealing",
+      "agreement": "Agreeing",
+      "disagreement": "Disagreeing"
+    },
+    "accessibility": {
+      "avatarLabel": "Olorin wizard assistant",
+      "speakingLabel": "Wizard is speaking",
+      "listeningLabel": "Wizard is listening",
+      "processingLabel": "Wizard is processing your request",
+      "focusHint": "Press select to interact with the wizard"
+    }
+  },
+  "badges": {
+    "aiEnhanced": "AI Enhanced",
+    "aiEnhancedTooltip": "This content has AI learning features"
+  },
+  "bar": {
+    "translate": "Translate",
+    "stop": "Stop",
+    "startTranslation": "Start translation",
+    "targetLanguage": "Target language",
+    "toggleSubtitles": "Toggle subtitles",
+    "close": "Close Bayit+ Bar",
+    "logo": "Bayit+",
+    "subtitlesButton": "CC",
+    "closeButton": "×"
+  },
+  "beta": {
+    "credits": "Credits",
+    "beta500": "Beta 500",
+    "creditsExplanation": "Credits are used for AI-powered features like search, recommendations, and dubbing.",
+    "criticalMessage": "Your credits are almost depleted. Upgrade to continue using AI features.",
+    "criticalTitle": "Credits Critical",
+    "current": "Current",
+    "deficit": "Deficit",
+    "insufficientTitle": "Insufficient Credits",
+    "lowMessage": "You are running low on credits. Consider upgrading your plan.",
+    "lowTitle": "Credits Low",
+    "remaining": "remaining",
+    "required": "Required",
+    "upgrade": "Upgrade",
+    "upgradeMessage": "Upgrade to Premium for unlimited AI credits and exclusive features.",
+    "upgradeTitle": "Upgrade to Premium",
+    "usage": "Usage"
+  },
+  "billing": {
+    "currentPlan": "Current Plan",
+    "noSubscription": "No active subscription",
+    "noTransactions": "No transactions yet",
+    "payment": "Payment",
+    "period": "Billing Period",
+    "plan": "Plan",
+    "renewsOn": "Renews on",
+    "status": "Status",
+    "transactions": "Transaction History"
+  },
+  "biometric": {
+    "authenticate": "Authenticate",
+    "authenticated": "Authenticated",
+    "enableDescription": "Use biometric authentication to quickly access your account.",
+    "reason": "Verify your identity",
+    "unavailable": "Biometric Authentication Unavailable",
+    "unavailableDescription": "Your device does not support biometric authentication."
+  },
   "breadcrumbs": {
     "series": "Series",
     "movie": "Movie",
@@ -3101,6 +3402,86 @@
     "podcast": "Podcast",
     "playlist": "Playlist",
     "downloads": "Downloads"
+  },
+  "cancelled": {
+    "description": "Your payment has been cancelled.",
+    "helpText": "No charges were made to your account.",
+    "retry": "Try Again",
+    "title": "Payment Cancelled"
+  },
+  "catchup": {
+    "overlay": {
+      "title": "Just joined?",
+      "description": "You joined {{programName}} in progress",
+      "creditContext": "This will use {{cost}} of your {{balance}} credits",
+      "lowBalanceWarning": "Low credits remaining",
+      "acceptButton": "Catch Me Up ({{cost}} credits)",
+      "declineButton": "No Thanks",
+      "accept": "Accept",
+      "balanceContext": "Balance Context",
+      "decline": "Decline",
+      "lowBalance": "Low Balance",
+      "thisProgram": "This Program"
+    },
+    "button": {
+      "credits": "Catch Up ({{cost}} credits)",
+      "label": "Catch up summary ({{cost}} credits)",
+      "title": "Catch Up"
+    },
+    "generating": "Generating summary...",
+    "summary": {
+      "title": "What You Missed",
+      "keyPoints": "Key Points",
+      "windowInfo": "Last {{minutes}} minutes",
+      "creditsUsed": "Used {{count}} credits",
+      "creditsRemaining": "{{count}} credits remaining",
+      "close": "Close",
+      "cached": "Cached",
+      "remaining": "Remaining",
+      "window": "Window"
+    },
+    "error": {
+      "failed": "Could not generate summary",
+      "retry": "Try Again",
+      "insufficientCredits": "Not enough credits"
+    },
+    "timeline": {
+      "title": "Transcript Timeline",
+      "segmentCount": "{{count}} segments",
+      "count": "{{count}} segments",
+      "window": "Last {{minutes}} min",
+      "buttonLabel": "Show transcript timeline",
+      "buttonTitle": "Timeline",
+      "empty": "No transcripts available yet",
+      "loading": "Loading transcripts..."
+    }
+  },
+  "channelChat": {
+    "title": "Live Chat",
+    "participants": "{{count}} watching",
+    "inputPlaceholder": "Type a message...",
+    "sendButton": "Send",
+    "rateLimitWarning": "Slow down! Wait {{seconds}}s",
+    "autoTranslationBadge": "Auto-Translation (Beta)",
+    "showOriginal": "Show Original",
+    "showTranslation": "Show Translation",
+    "error": "Chat unavailable",
+    "retry": "Retry",
+    "upgradeBeta": "Upgrade to Beta 500 for auto-translation",
+    "inputLabel": "Chat message input",
+    "moderationDelete": "Message removed by moderator",
+    "participants_one": "{{count}} viewer",
+    "participants_other": "{{count}} viewers",
+    "userJoined": "{{name}} joined the chat",
+    "userLeft": "A user left the chat",
+    "placeholder": "Send a message...",
+    "send": "Send",
+    "translationBeta": "Translation (Beta)"
+  },
+  "channels": {
+    "kanEducational": "Kan Educational",
+    "kanEducationalDesc": "Israeli educational channel - math, science, and learning",
+    "attribution": "Streaming content provided by Kan - Israeli Public Broadcasting Corp."
   },
   "chapters": {
     "title": "Chapters",
@@ -3219,7 +3600,14 @@
     "hard": "Hard",
     "chessBot": "Chess Bot",
     "disconnected": "Disconnected",
-    "theirTurn": "Their turn"
+    "theirTurn": "Their turn",
+    "acceptDraw": "Accept Draw",
+    "blackTurn": "Black's turn",
+    "declineDraw": "Decline Draw",
+    "drawOffered": "Draw offered",
+    "opponent": "Opponent",
+    "whiteTurn": "White's turn",
+    "you": "You"
   },
   "children": {
     "title": "Kids",
@@ -3612,254 +4000,37 @@
     "minutesShort": "min",
     "notAvailable": "N/A"
   },
-  "badges": {
-    "aiEnhanced": "AI Enhanced",
-    "aiEnhancedTooltip": "This content has AI learning features"
-  },
-  "aiCompanion": {
-    "title": "AI Learning Companion",
-    "vocabulary": "Vocabulary",
-    "context": "Episode Context",
-    "quiz": "Quick Quiz",
-    "nowPlaying": "Now Playing",
-    "upNext": "Up Next",
-    "timeRemaining": "Time Remaining",
-    "openAiTools": "Open AI Tools",
-    "noVocabulary": "No vocabulary words available for this episode",
-    "noContext": "No episode context available",
-    "noQuiz": "No quiz questions available for this episode",
-    "checkAnswer": "Check Answer",
-    "concepts": "Key Concepts"
-  },
-  "channels": {
-    "kanEducational": "Kan Educational",
-    "kanEducationalDesc": "Israeli educational channel - math, science, and learning",
-    "attribution": "Streaming content provided by Kan - Israeli Public Broadcasting Corp."
-  },
-  "widgets": {
-    "empty": "No widgets yet",
-    "emptyHint": "Your widgets will appear here",
-    "emptyPersonal": "No personal widgets yet",
-    "emptyPersonalHint": "Create your first personal widget or add system widgets above",
-    "itemsTotal": "total widgets",
-    "systemWidgets": "System Widgets",
-    "systemWidgetsHint": "Browse and add widgets to your collection",
-    "myWidgets": "My Personal Widgets",
-    "myWidgetsHint": "Widgets you have created",
-    "personalWidgets": "My Widgets",
-    "noSystemWidgets": "No system widgets available",
-    "added": "Added",
-    "add": "Add",
-    "remove": "Remove",
-    "show": "Show",
-    "hidden": "Hidden",
-    "addToCollection": "Add to My Widgets",
-    "removeFromCollection": "Remove from My Widgets",
-    "addToMyWidgets": "Add to my widgets",
-    "removeFromMyWidgets": "Remove from my widgets",
-    "widgetAdded": "Widget added",
-    "widgetRemoved": "Widget removed",
-    "contentTypes": {
-      "liveChannel": "Live Channel",
-      "iframe": "Web Content",
-      "podcast": "Podcast",
-      "radio": "Radio",
-      "vod": "Video",
-      "custom": "Custom",
-      "widget": "Widget",
-      "liveStream": "Live Stream"
-    },
-    "form": {
-      "title": "Create Widget",
-      "basicInfo": "Basic Information",
-      "titlePlaceholder": "Widget Title",
-      "titleRequired": "Widget Title is required",
-      "descriptionPlaceholder": "Description (optional)",
-      "iconPlaceholder": "Icon emoji (e.g., 📺)",
-      "content": "Content",
-      "fromLibrary": "From Library",
-      "iframe": "iFrame",
-      "selectContent": "Select Content (Channels, Podcasts, Shows, etc.)",
-      "iframeUrl": "iFrame URL",
-      "iframeUrlRequired": "iFrame URL is required",
-      "iframeTitle": "iFrame Title",
-      "positionSize": "Position & Size",
-      "behavior": "Behavior",
-      "mutedByDefault": "Muted by Default",
-      "closable": "Closable",
-      "draggable": "Draggable",
-      "widgetOrder": "Widget Order",
-      "orderPlaceholder": "Order (0 = first)",
-      "saveWidget": "Save Widget",
-      "saving": "Saving...",
-      "cancel": "Cancel",
-      "change": "Change",
-      "errors": {
-        "contentRequired": "Please select content",
-        "iframeUrlRequired": "iFrame URL is required",
-        "nameExists": "A widget with this name already exists",
-        "titleRequired": "Title is required"
-      },
-      "validating": "Validating..."
-    },
-    "intro": {
-      "title": "Welcome to Widgets",
-      "description": "Discover powerful floating widgets to customize your viewing experience",
-      "watchVideo": "Watch Introduction",
-      "skip": "Skip",
-      "dismiss": "Don't show again",
-      "videoUnavailable": "Video temporarily unavailable",
-      "loadingMartyJr": "Loading Marty Jr...",
-      "loadingWidgets": "Loading widgets intro..."
-    },
-    "contentPicker": {
-      "noContent": "No content available",
-      "tryAnotherTab": "Try selecting another category"
-    },
-    "delete": "Delete",
-    "hide": "Hide",
-    "resetPosition": "Reset position",
-    "pinToWidget": "Pin to Widget",
-    "customIframe": "Custom URL Widget",
-    "pasteUrl": "Paste a URL to watch",
-    "urlRequired": "Please enter a URL",
-    "invalidProtocol": "Only HTTP and HTTPS URLs are allowed",
-    "domainNotAllowed": "This domain is not in the allowed list",
-    "invalidUrl": "Invalid URL format",
-    "urlValid": "URL is valid",
-    "allowedDomains": "Allowed domains:",
-    "changeUrl": "Change URL",
-    "minimize": "Minimize",
-    "expandWidget": "Expand widget",
-    "select": "Select",
-    "selectAll": "Select All",
-    "cancelSelection": "Cancel",
-    "deleteSelected": "Delete",
-    "bulkDeleteConfirm": "Delete selected widgets?",
-    "bulkDeleted": "Widgets deleted",
-    "showDock": "Show Dock",
-    "hideDock": "Hide Dock"
-  },
-  "liveCategories": {
-    "educational": "Educational"
-  },
-  "taxonomy": {
-    "sections": {
-      "movies": "Movies",
-      "series": "Series",
-      "israeli-movies": "Israeli Movies",
-      "israeli-series": "Israeli Series",
-      "kids": "Kids",
-      "youngsters": "Youngsters",
-      "music": "Music",
-      "documentaries": "Documentaries",
-      "podcasts": "Podcasts",
-      "live": "Live TV",
-      "audiobooks": "Audiobooks",
-      "israeli-cities": "Israeli Cities",
-      "judaism": "Judaism"
-    },
-    "subcategories": {
-      "learning-hebrew": "Learning Hebrew",
-      "learning-hebrew.description": "Learning to read, write and vocabulary in Hebrew for kids",
-      "young-science": "Young Science",
-      "young-science.description": "Experiments and scientific explanations adapted for children",
-      "math-fun": "Fun Math",
-      "math-fun.description": "Learning numbers and arithmetic in a fun and playful way",
-      "nature-animals": "Nature & Animals",
-      "nature-animals.description": "The world of animals and nature for curious children",
-      "interactive": "Interactive",
-      "interactive.description": "Interactive and participatory content for children",
-      "hebrew-songs": "Hebrew Songs",
-      "hebrew-songs.description": "Classic and new Israeli children's songs",
-      "nursery-rhymes": "Nursery Rhymes",
-      "nursery-rhymes.description": "Songs and melodies for toddlers and babies",
-      "kids-movies": "Kids Movies",
-      "kids-movies.description": "Full-length movies suitable for children",
-      "kids-series": "Kids Series",
-      "kids-series.description": "Animated series and TV shows for children",
-      "jewish-holidays": "Jewish Holidays",
-      "jewish-holidays.description": "Content about Jewish holidays and traditions for children",
-      "torah-stories": "Torah Stories",
-      "torah-stories.description": "Stories from the Torah and Jewish tradition",
-      "bedtime-stories": "Bedtime Stories",
-      "bedtime-stories.description": "Relaxing stories for bedtime",
-      "tiktok-trends": "TikTok Trends",
-      "tiktok-trends.description": "Hot trends and challenges on TikTok",
-      "viral-videos": "Viral Videos",
-      "viral-videos.description": "Popular viral videos on social media",
-      "memes": "Memes",
-      "memes.description": "Funny memes and internet culture",
-      "israel-news": "Israel News",
-      "israel-news.description": "Israel news adapted for teens",
-      "world-news": "World News",
-      "world-news.description": "International news for youth",
-      "science-news": "Science News",
-      "science-news.description": "Scientific discoveries and technological innovation",
-      "sports-news": "Sports News",
-      "sports-news.description": "Sports updates and game results",
-      "music-culture": "Music Culture",
-      "music-culture.description": "Music scene, artists and festivals",
-      "film-culture": "Film Culture",
-      "film-culture.description": "Cinema, series and reviews",
-      "art-culture": "Art Culture",
-      "art-culture.description": "Art, galleries and creativity",
-      "food-culture": "Food Culture",
-      "food-culture.description": "Cooking, recipes and food culture",
-      "study-help": "Study Help",
-      "study-help.description": "Help with exams, summaries and test prep",
-      "career-prep": "Career Prep",
-      "career-prep.description": "University and career preparation",
-      "life-skills": "Life Skills",
-      "life-skills.description": "Life skills, money management and independence",
-      "teen-movies": "Teen Movies",
-      "teen-movies.description": "Recommended movies for teenagers",
-      "teen-series": "Teen Series",
-      "teen-series.description": "Popular series for teenagers",
-      "gaming": "Gaming",
-      "gaming.description": "Video games, e-sports and gaming",
-      "coding": "Coding",
-      "coding.description": "Programming, coding and software development",
-      "gadgets": "Gadgets",
-      "gadgets.description": "Gadgets, technology and reviews",
-      "bar-bat-mitzvah": "Bar/Bat Mitzvah",
-      "bar-bat-mitzvah.description": "Preparation and celebrations for Bar/Bat Mitzvah",
-      "teen-torah": "Teen Torah",
-      "teen-torah.description": "Torah classes and weekly portion for teens",
-      "jewish-history": "Jewish History",
-      "jewish-history.description": "History of the Jewish people",
-      "cartoons": "Cartoons",
-      "cartoons.description": "Animated cartoons for children",
-      "educational": "Educational",
-      "educational.description": "Educational content for children",
-      "hebrew-learning": "Hebrew Learning",
-      "hebrew-learning.description": "Learning Hebrew language for children",
-      "stories": "Stories",
-      "stories.description": "Children's stories and tales",
-      "jewish-kids": "Jewish Kids",
-      "jewish-kids.description": "Jewish content for young children",
-      "music": "Music",
-      "music.description": "Songs and music for children",
-      "shiurim": "Shiurim",
-      "shiurim.description": "Torah lessons and lectures",
-      "tefila": "Tefila",
-      "tefila.description": "Prayer and liturgy",
-      "jewish-music": "Jewish Music",
-      "jewish-music.description": "Jewish and Israeli music",
-      "holidays": "Holidays",
-      "holidays.description": "Jewish holidays and celebrations",
-      "jewish-docs": "Jewish Documentaries",
-      "jewish-docs.description": "Documentaries about Jewish life and culture",
-      "title": "Subcategories",
-      "ageGroups": {
-        "title": "Age Groups"
-      }
-    }
-  },
   "components": {
     "select": {
       "default": "Select..."
     }
+  },
+  "comprehension": {
+    "title": "Comprehension Questions",
+    "enable": "Enable Comprehension Questions",
+    "enable_desc": "Show comprehension questions during playback to improve Hebrew",
+    "frequency": {
+      "title": "Question Frequency",
+      "off": "Off",
+      "off_desc": "No comprehension questions",
+      "low": "Low",
+      "low_desc": "One question every 15 minutes",
+      "normal": "Normal",
+      "normal_desc": "One question every 10 minutes (recommended)",
+      "high": "High",
+      "high_desc": "One question every 5 minutes"
+    },
+    "info_message": "Comprehension questions help improve your Hebrew understanding and deepen your connection to the content",
+    "scene_end": "What happened in this scene?",
+    "skip": "Skip",
+    "submit": "Submit Answer",
+    "correct": "Correct!",
+    "incorrect": "Incorrect",
+    "points_earned": "You earned {{points}} points",
+    "explanation": "Explanation",
+    "loading": "Loading question...",
+    "insufficient_credits": "Insufficient credits for comprehension question",
+    "error": "Error loading question"
   },
   "content": {
     "play": "Play",
@@ -3996,6 +4167,31 @@
     "assistant_response": "I recommend Fauda - an excellent thriller series!",
     "morning_greeting": "Good morning! Today the weather is nice, there are some important news from Israel, and I've selected content especially for you."
   },
+  "devices": {
+    "activeNow": "Active now",
+    "confirmDisconnect": "Disconnect Device?",
+    "daysAgo": "{{count}} days ago",
+    "disconnect": "Disconnect",
+    "disconnectSuccess": "Device Disconnected",
+    "disconnectSuccessMessage": "Device has been successfully disconnected.",
+    "disconnectSuccessWithSessions": "Disconnect Success With Sessions",
+    "hoursAgo": "{{count}} hours ago",
+    "loading": "Loading devices...",
+    "minutesAgo": "{{count}} minutes ago",
+    "noDevices": "No devices connected",
+    "noDevicesDescription": "Devices will appear here when you log in on different platforms",
+    "registeredDevices": "Registered Devices",
+    "thisDevice": "This device"
+  },
+  "dm": {
+    "messagePlaceholder": "Type a message...",
+    "noConversations": "No conversations yet",
+    "searchConversations": "Search conversations",
+    "searchPlaceholder": "Search messages...",
+    "translate": "Translate",
+    "translateMessage": "Translate message",
+    "typing": "typing..."
+  },
   "downloads": {
     "title": "Downloads",
     "items": "items",
@@ -4003,7 +4199,8 @@
     "empty": "No downloads",
     "emptyHint": "Download content for offline viewing",
     "paused": "Paused",
-    "loading": "Loading downloads..."
+    "loading": "Loading downloads...",
+    "delete": "Delete"
   },
   "dubbing": {
     "title": "Live Dubbing",
@@ -4164,6 +4361,149 @@
     "premiumRequired": "Premium subscription required",
     "selectInputLanguage": "Select input language"
   },
+  "email": {
+    "greeting": "Hello",
+    "footer": {
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "support": "Support",
+      "unsubscribe": "Unsubscribe from these emails"
+    },
+    "welcome": {
+      "subject": "Welcome to Bayit+!",
+      "title": "Welcome to Bayit+",
+      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
+      "cta": "Go to Dashboard"
+    },
+    "verification": {
+      "subject": "Verify Your Email",
+      "title": "Verify Your Email Address",
+      "body": "Please click the button below to verify your email address.",
+      "cta": "Verify Email",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't create an account, you can safely ignore this email."
+    },
+    "verification_resend": {
+      "subject": "Email Verification (Resent)",
+      "title": "Verify Your Email Address",
+      "body": "Here's a new verification link as requested.",
+      "cta": "Verify Email"
+    },
+    "password_reset": {
+      "subject": "Reset Your Password",
+      "title": "Reset Your Password",
+      "body": "We received a request to reset your password. Click the button below to create a new password.",
+      "cta": "Reset Password",
+      "expiry": "This link will expire in {expiry_hours} hours.",
+      "security": "If you didn't request this, your account is still safe. You can ignore this email."
+    },
+    "password_changed": {
+      "subject": "Password Changed",
+      "title": "Your Password Has Been Changed",
+      "body": "Your password was successfully changed.",
+      "security": "If you didn't make this change, please contact support immediately."
+    },
+    "account_locked": {
+      "subject": "Account Locked",
+      "title": "Your Account Has Been Locked",
+      "body": "Your account has been temporarily locked due to security concerns.",
+      "cta": "Unlock Account"
+    },
+    "beta_invitation": {
+      "subject": "You're Invited to Bayit+ Beta!",
+      "title": "You're Invited to the Beta Program",
+      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
+      "credits": "{credits} AI credits included",
+      "duration": "Access for {days} days",
+      "cta": "Join Beta Program"
+    },
+    "beta_welcome": {
+      "subject": "Welcome to Bayit+ Beta!",
+      "title": "Welcome to the Beta Program",
+      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
+      "cta": "Get Started"
+    },
+    "payment_confirmation": {
+      "subject": "Payment Confirmation",
+      "title": "Payment Received",
+      "body": "Your payment has been processed successfully.",
+      "transaction": "Transaction ID",
+      "plan": "Plan",
+      "amount": "Amount",
+      "date": "Payment Date",
+      "next_billing": "Next Billing Date"
+    },
+    "subscription_activated": {
+      "subject": "Subscription Activated",
+      "title": "Your Subscription is Active",
+      "body": "Your subscription has been activated. Here's what you get:",
+      "cta": "Start Watching"
+    },
+    "subscription_cancelled": {
+      "subject": "Subscription Cancelled",
+      "title": "Subscription Cancelled",
+      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
+      "cta": "Reactivate Subscription"
+    },
+    "payment_failed": {
+      "subject": "Payment Failed",
+      "title": "Payment Failed",
+      "body": "We were unable to process your payment. Please update your payment method.",
+      "cta": "Update Payment Method"
+    },
+    "trial_expiring": {
+      "subject": "Your Trial is Expiring Soon",
+      "title": "Trial Ending in {days_remaining} Days",
+      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
+      "cta": "Upgrade Now"
+    },
+    "support": {
+      "created_subject": "Ticket #{ticket_id} Created",
+      "created_title": "Support Ticket Created",
+      "created_body": "Your support ticket has been created. We'll get back to you soon.",
+      "response_subject": "New Response on Ticket #{ticket_id}",
+      "response_title": "New Response on Your Ticket",
+      "escalation_subject": "Ticket #{ticket_id} Escalated",
+      "escalation_title": "Your Ticket Has Been Escalated",
+      "resolved_subject": "Ticket #{ticket_id} Resolved",
+      "resolved_title": "Your Ticket Has Been Resolved",
+      "resolved_body": "Your support ticket has been resolved."
+    },
+    "new_message": {
+      "subject": "New Message from {sender_name}",
+      "title": "You Have a New Message",
+      "cta": "Read Message"
+    },
+    "content_digest": {
+      "subject": "Your {digest_period} Content Digest",
+      "title": "Your Content Digest",
+      "cta": "Browse Content"
+    },
+    "gdpr": {
+      "deletion_subject": "Data Deletion Confirmation",
+      "deletion_title": "Your Data Has Been Deleted",
+      "deletion_body": "As requested, your personal data has been permanently deleted.",
+      "categories_label": "Deleted Data Categories"
+    },
+    "admin": {
+      "account_created_subject": "Admin Account Created",
+      "account_created_title": "Admin Account Created",
+      "role_change_subject": "Role Changed",
+      "role_change_title": "Your Role Has Been Updated"
+    },
+    "campaign": {
+      "default_subject": "News from Bayit+"
+    },
+    "newsletter": {
+      "default_subject": "Bayit+ Newsletter"
+    },
+    "reengagement": {
+      "subject": "We Miss You!",
+      "title": "It's Been a While",
+      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
+      "cta": "Come Back"
+    }
+  },
   "empty": {
     "noContent": "No content available",
     "tryAnotherCategory": "Try selecting another category",
@@ -4256,7 +4596,8 @@
     "live": "LIVE",
     "scheduleUnavailable": "The TV programming schedule is currently unavailable. Please check back later or contact support if this persists.",
     "noProgramsAvailable": "No programs are available for the selected time range. Try adjusting your filters or check back later.",
-    "loading": "Loading TV guide..."
+    "loading": "Loading TV guide...",
+    "empty": "No programs available"
   },
   "errors": {
     "networkError": "Network Error",
@@ -4365,19 +4706,142 @@
     "initializationFailed": "Failed to Initialize",
     "reloadButton": "Reload"
   },
-  "status": {
-    "pleaseLogin": "Please log in to use Bayit+ Companion",
-    "quotaExhausted": "Daily quota of {{limit}} minutes exhausted. Upgrade to premium.",
-    "connected": "Connected",
-    "dubbingFailed": "Failed to start dubbing. Please try again.",
-    "dubbingError": "Dubbing error: {{error}}"
+  "familyControls": {
+    "title": "Family Controls",
+    "pinSetup": "PIN Setup",
+    "familyPin": "Family PIN",
+    "createPin": "Create Family PIN",
+    "verifyPin": "Verify Family PIN",
+    "updatePin": "Update Family PIN",
+    "pinConfigured": "Family PIN is configured",
+    "pinNotConfigured": "No Family PIN set up yet",
+    "enterPin": "Enter PIN",
+    "confirmPin": "Confirm PIN",
+    "placeholders": {
+      "currentPin": "Current PIN",
+      "enterPin": "Enter PIN",
+      "enterNewPin": "Enter new PIN",
+      "confirmNewPin": "Confirm new PIN"
+    },
+    "kidsSection": "Kids (0-12 years)",
+    "kidsEnabled": "Enable Kids Mode",
+    "kidsAgeLimit": "Age Limit",
+    "youngstersSection": "Youngsters (12-17 years)",
+    "youngstersEnabled": "Enable Youngsters Mode",
+    "youngstersAgeLimit": "Age Limit",
+    "contentRatings": "Content Ratings",
+    "maxContentRating": "Maximum Content Rating",
+    "contentBlockedAbove": "Content rated above {{rating}} will be blocked",
+    "viewingHours": "Viewing Hours",
+    "viewingHoursEnabled": "Enable Time Restrictions",
+    "startHour": "Start Hour",
+    "endHour": "End Hour",
+    "ratings": {
+      "G": "G - General Audiences",
+      "PG": "PG - Parental Guidance Suggested",
+      "PG13": "PG-13 - Parents Strongly Cautioned",
+      "R": "R - Restricted",
+      "TVMA": "TV-MA - Mature Audience Only"
+    },
+    "errors": {
+      "pinMismatch": "PINs do not match",
+      "pinTooShort": "PIN must be at least 4 digits",
+      "newPinTooShort": "New PIN must be at least 4 digits",
+      "invalidPin": "Invalid PIN",
+      "failedToSetPin": "Failed to set PIN",
+      "failedToUpdatePin": "Failed to update PIN. Check old PIN.",
+      "sectionDisabled": "This section is disabled by family controls",
+      "outsideViewingHours": "Access restricted outside viewing hours",
+      "contentRatingTooHigh": "Content rating exceeds allowed limit"
+    },
+    "household": {
+      "title": "Household Management",
+      "subtitle": "Manage your family household and shared controls",
+      "create": "Create Household",
+      "createButton": "Create Household",
+      "createHousehold": "Create Household",
+      "createDescription": "Create a household to manage family controls for multiple accounts. Parents can set age-appropriate content limits for all household members.",
+      "name": "Household Name",
+      "householdName": "Household Name",
+      "namePlaceholder": "e.g., Smith Family",
+      "creating": "Creating...",
+      "members": "Members",
+      "memberCount": "{{count}} member",
+      "memberCount_plural": "{{count}} members",
+      "inviteMember": "Invite Member",
+      "removeMember": "Remove Member",
+      "remove": "Remove",
+      "confirmRemoveMember": "Are you sure you want to remove this member from your household?",
+      "delete": "Delete Household",
+      "confirmDelete": "Are you sure you want to delete this household? This action cannot be undone.",
+      "role": "Role",
+      "roleParent": "Parent",
+      "roleChild": "Child",
+      "roleGuardian": "Guardian",
+      "roles": {
+        "parent": "Parent",
+        "child": "Child",
+        "guardian": "Guardian"
+      },
+      "sharedControls": "Shared Controls",
+      "email": "Email Address",
+      "emailPlaceholder": "family@example.com",
+      "sendInvitation": "Send Invitation",
+      "pendingInvitations": "Pending Invitations",
+      "expires": "Expires",
+      "invitation": {
+        "title": "Invitation",
+        "email": "Email Address",
+        "send": "Send Invitation",
+        "accept": "Accept Invitation",
+        "code": "Invitation Code",
+        "expires": "Expires",
+        "pending": "Pending Invitations"
+      },
+      "acceptingInvitation": "Accepting Invitation",
+      "invitationAccepted": "You've successfully joined {{name}}!",
+      "invitationExpired": "This invitation has expired. Please request a new invitation.",
+      "invalidInvitationLink": "Invalid invitation link. Please check the URL.",
+      "invalidInvitationCode": "Invalid invitation code. Please check the link.",
+      "invitationAcceptFailed": "Failed to accept invitation. Please try again.",
+      "mustBeLoggedIn": "You must be logged in to accept a household invitation.",
+      "redirectingToHousehold": "Redirecting to your household...",
+      "goToHousehold": "Go to Household",
+      "success": "Success!",
+      "error": "Error"
+    },
+    "profile": {
+      "title": "Profile Controls",
+      "override": "Override Controls",
+      "inherit": "Inherit Controls",
+      "inheritHousehold": "Inherit from Household",
+      "inheritAccount": "Inherit from Account",
+      "hierarchy": "Control Hierarchy",
+      "source": "Controls Source"
+    },
+    "ageLimits": "Age Limits",
+    "allowedHours": "Allowed Viewing Hours",
+    "contentRating": "Content Rating",
+    "createPinDescription": "Create a PIN to protect family settings",
+    "enterPinDescription": "Enter your family PIN to access settings",
+    "from": "From",
+    "kidsMaxAge": "Kids Max Age",
+    "ratingG": "G - General Audiences",
+    "ratingNC17": "NC-17 - Adults Only",
+    "ratingPG": "PG - Parental Guidance",
+    "ratingPG13": "PG-13 - Parents Strongly Cautioned",
+    "ratingR": "R - Restricted",
+    "saveSettings": "Save Settings",
+    "to": "To",
+    "youngstersMaxAge": "Youngsters Max Age"
   },
   "favorites": {
     "title": "Favorites",
     "items": "items",
     "empty": "No favorites yet",
     "emptyHint": "Add items to your favorites",
-    "loading": "Loading favorites..."
+    "loading": "Loading favorites...",
+    "remove": "Remove from Favorites"
   },
   "flows": {
     "title": "Flows",
@@ -4528,7 +4992,8 @@
     },
     "tv": {
       "useCompanion": "For full customization, use the Bayit+ app on your phone or visit bayit.plus on your computer."
-    }
+    },
+    "empty": "No flows available"
   },
   "footer": {
     "brandDescription": "Your home in the USA. TV broadcasts, VOD, radio and podcasts in Hebrew.",
@@ -4634,12 +5099,27 @@
     "gamesCount": "{{count}} games",
     "alreadyFriends": "Friends"
   },
+  "gate": {
+    "contentLocked": "Content Locked",
+    "recommended": "Recommended",
+    "startTrial": "Start Free Trial",
+    "subscribe": "Subscribe",
+    "trialSubtitle": "Try all premium features free for 7 days",
+    "trialTitle": "Free Trial Available",
+    "upgradeRequired": "Upgrade required to access this content"
+  },
   "googleLogin": {
     "cancelledError": "Google sign-in was cancelled",
     "missingCode": "Authentication code is missing",
     "loginError": "Error signing in with Google",
     "redirecting": "Redirecting to login page...",
     "connecting": "Connecting with Google..."
+  },
+  "greeting": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening",
+    "night": "Good night"
   },
   "help": {
     "subtitle": "How can we help you?",
@@ -4714,12 +5194,30 @@
         "title": "Family Profiles",
         "description": "Create profiles for each family member with personalized recommendations"
       }
-    }
+    },
+    "contactDescription": "Get in touch with our support team.",
+    "needMoreHelp": "Need More Help?",
+    "noFAQ": "No FAQ available"
   },
   "hero": {
     "watch": "Watch",
     "moreInfo": "More Info",
     "addToList": "Add to List"
+  },
+  "highlights": {
+    "title": "Highlights",
+    "noHighlights": "No highlights detected yet",
+    "fetchError": "Failed to load highlights",
+    "types": {
+      "emotional": "Emotional",
+      "entity": "Entity",
+      "keyword": "Keyword",
+      "dramatic": "Dramatic"
+    },
+    "button": {
+      "label": "Show Highlights",
+      "title": "Highlights"
+    }
   },
   "home": {
     "continueWatching": "Continue Watching",
@@ -4773,6 +5271,55 @@
     "no_businesses_found": "No Israeli businesses found in {{city}}",
     "businesses_load_error": "Unable to load business listings. Please try again."
   },
+  "household": {
+    "title": "Household Management",
+    "subtitle": "Manage your family household and shared controls",
+    "create": "Create Household",
+    "createButton": "Create Household",
+    "createHousehold": "Create Household",
+    "createDescription": "Create a household to manage family controls for multiple accounts. Parents can set age-appropriate content limits for all household members.",
+    "name": "Household Name",
+    "householdName": "Household Name",
+    "namePlaceholder": "e.g., Smith Family",
+    "creating": "Creating...",
+    "members": "Members",
+    "memberCount": "{{count}} member",
+    "memberCount_plural": "{{count}} members",
+    "inviteMember": "Invite Member",
+    "removeMember": "Remove Member",
+    "remove": "Remove",
+    "confirmRemoveMember": "Are you sure you want to remove this member from your household?",
+    "delete": "Delete Household",
+    "confirmDelete": "Are you sure you want to delete this household? This action cannot be undone.",
+    "role": "Role",
+    "roleParent": "Parent",
+    "roleChild": "Child",
+    "roleGuardian": "Guardian",
+    "sharedControls": "Shared Controls",
+    "email": "Email Address",
+    "emailPlaceholder": "family@example.com",
+    "sendInvitation": "Send Invitation",
+    "pendingInvitations": "Pending Invitations",
+    "expires": "Expires",
+    "acceptingInvitation": "Accepting Invitation",
+    "invitationAccepted": "You've successfully joined {{name}}!",
+    "invitationExpired": "This invitation has expired. Please request a new invitation.",
+    "invalidInvitationLink": "Invalid invitation link. Please check the URL.",
+    "invalidInvitationCode": "Invalid invitation code. Please check the link.",
+    "invitationAcceptFailed": "Failed to accept invitation. Please try again.",
+    "mustBeLoggedIn": "You must be logged in to accept a household invitation.",
+    "redirectingToHousehold": "Redirecting to your household...",
+    "goToHousehold": "Go to Household",
+    "success": "Success!",
+    "error": "Error",
+    "addButton": "Add",
+    "addMember": "Add Member",
+    "membersTitle": "Members",
+    "myHousehold": "My Household",
+    "owner": "Owner",
+    "unknown": "Unknown",
+    "userIdPlaceholder": "Enter user email or ID"
+  },
   "jerusalem": {
     "title": "Jerusalem Connection",
     "subtitle": "Stay connected to the heart of Israel",
@@ -4823,15 +5370,7 @@
       "shabbatRecipes": "Recipes",
       "prayers": "Prayers"
     },
-    "calendar": {
-      "dafYomi": "Daf Yomi",
-      "holiday": "Holiday",
-      "ofOmer": "of the Omer",
-      "omerDay": "Day",
-      "parasha": "Parasha",
-      "shabbat": "Shabbat",
-      "title": "Jewish Calendar"
-    },
+    "calendar": "Jewish Calendar",
     "community": {
       "empty": "No organizations found",
       "emptyHint": "Try selecting a different region",
@@ -4841,10 +5380,7 @@
       "synagogues": "Synagogues",
       "title": "Community Directory"
     },
-    "news": {
-      "empty": "No news available",
-      "title": "Jewish News"
-    }
+    "news": "Jewish News"
   },
   "live": {
     "title": "Live TV",
@@ -4861,6 +5397,191 @@
     },
     "loadingChannels": "Loading channels..."
   },
+  "liveAiDataFlow": {
+    "subtitle": "End-to-end pipeline visualization for Live AI features",
+    "tabs": {
+      "dubbing": "Dubbing",
+      "translation": "Translation",
+      "trivia": "Trivia"
+    },
+    "title": "Live AI Data Flow",
+    "services": {
+      "elevenlabs": "ElevenLabs",
+      "googleCloud": "Google Cloud",
+      "googleTranslate": "Google Translate",
+      "openai": "OpenAI",
+      "claude": "Claude",
+      "spacy": "spaCy",
+      "redis": "Redis",
+      "tavily": "Tavily"
+    },
+    "translation": {
+      "nodes": {
+        "auth": {
+          "title": "WebSocket Auth + Rate Limit",
+          "input": "WebSocket connection request with JWT token",
+          "output": "Authenticated session with rate limit applied"
+        },
+        "quota": {
+          "title": "Quota Check (30s cache)",
+          "input": "User ID and feature type",
+          "output": "Quota validation result (cached 30s)"
+        },
+        "stt": {
+          "title": "STT (ElevenLabs Scribe v2)",
+          "input": "Raw audio stream from channel",
+          "output": "Transcribed text segments with timestamps"
+        },
+        "dedup": {
+          "title": "Deduplication (70% overlap)",
+          "input": "New transcript segment",
+          "output": "Filtered unique segments (70% overlap threshold)"
+        },
+        "predictive": {
+          "title": "Predictive Subtitle Emit (optional)",
+          "input": "Original language transcript",
+          "output": "Early subtitle display before translation"
+        },
+        "translate": {
+          "title": "Translation (Google/OpenAI/Claude)",
+          "input": "Original language text segment",
+          "output": "Translated text in target language"
+        },
+        "chunk": {
+          "title": "Text Chunking (max 80 chars)",
+          "input": "Translated text of any length",
+          "output": "Chunks of max 80 characters for display"
+        },
+        "emit": {
+          "title": "Final Subtitle Emit",
+          "input": "Chunked translated subtitle",
+          "output": "WebSocket event to client with subtitle data"
+        }
+      }
+    },
+    "dubbing": {
+      "nodes": {
+        "auth": {
+          "title": "WebSocket Auth + Rate Limit",
+          "input": "WebSocket connection request with JWT token",
+          "output": "Authenticated session with rate limit applied"
+        },
+        "quota": {
+          "title": "Quota Check",
+          "input": "User ID and dubbing feature type",
+          "output": "Quota validation result"
+        },
+        "session": {
+          "title": "Session Init + ChannelSTTManager Subscribe",
+          "input": "Channel ID and language preferences",
+          "output": "Subscribed to shared STT channel manager"
+        },
+        "stt": {
+          "title": "Shared STT (1 per channel, 99% cost save)",
+          "input": "Channel audio stream (shared across users)",
+          "output": "Shared transcript for all channel subscribers"
+        },
+        "transcriptEmit": {
+          "title": "Transcript Emit to Client",
+          "input": "Shared STT transcript segment",
+          "output": "WebSocket event with original transcript"
+        },
+        "translate": {
+          "title": "Translation",
+          "input": "Original transcript text",
+          "output": "Translated text in user's target language"
+        },
+        "translationEmit": {
+          "title": "Translation Emit to Client",
+          "input": "Translated text segment",
+          "output": "WebSocket event with translated text"
+        },
+        "tts": {
+          "title": "TTS Streaming (new conn per transcript)",
+          "input": "Translated text for speech synthesis",
+          "output": "Streaming audio chunks from ElevenLabs"
+        },
+        "encode": {
+          "title": "Audio Encoding (base64)",
+          "input": "Raw audio buffer from TTS",
+          "output": "Base64-encoded audio ready for transport"
+        },
+        "audioEmit": {
+          "title": "Dubbed Audio Emit",
+          "input": "Encoded audio chunk",
+          "output": "WebSocket event with dubbed audio data"
+        }
+      }
+    },
+    "trivia": {
+      "nodes": {
+        "auth": {
+          "title": "WebSocket Auth + Rate Limit",
+          "input": "WebSocket connection request with JWT token",
+          "output": "Authenticated session with rate limit applied"
+        },
+        "quota": {
+          "title": "Quota Check (fact-based)",
+          "input": "User ID and trivia feature type",
+          "output": "Quota validation (per-fact billing)"
+        },
+        "topic": {
+          "title": "Topic Detection (NER)",
+          "input": "Transcript text from live channel",
+          "output": "Detected named entities and topics"
+        },
+        "mention": {
+          "title": "Mention Tracking (min 2, 60-min cooldown)",
+          "input": "Detected entity with mention count",
+          "output": "Eligible topic (2+ mentions, not in cooldown)"
+        },
+        "session": {
+          "title": "Session Management (FIFO max 100)",
+          "input": "New trivia session request",
+          "output": "Session slot allocated (FIFO eviction at 100)"
+        },
+        "cache": {
+          "title": "Fact Cache Lookup (24h TTL)",
+          "input": "Topic entity for fact lookup",
+          "output": "Cached fact if available (24h TTL)"
+        },
+        "search": {
+          "title": "Web Search (cache miss only)",
+          "input": "Topic entity needing fresh facts",
+          "output": "Web search results from Tavily"
+        },
+        "extract": {
+          "title": "Fact Extraction (cache miss only)",
+          "input": "Web search results for topic",
+          "output": "Structured trivia fact extracted by AI"
+        },
+        "tracking": {
+          "title": "Session Tracking + Interval (15s min)",
+          "input": "Generated trivia fact",
+          "output": "Fact queued with 15s minimum interval"
+        },
+        "emit": {
+          "title": "Trivia Fact Emit (multilingual)",
+          "input": "Trivia fact with translations",
+          "output": "WebSocket event with multilingual trivia"
+        }
+      }
+    }
+  },
+  "liveCategories": {
+    "educational": "Educational"
+  },
+  "liveSearch": {
+    "liveTitle": "Live Search",
+    "placeholder": "Search transcripts...",
+    "enterQuery": "Enter a search term",
+    "noResults": "No matching transcripts",
+    "resultsCount": "{{count}} results",
+    "button": {
+      "label": "Search Transcripts",
+      "title": "Search"
+    }
+  },
   "liveTV": {
     "title": "Live TV",
     "channels": "Live TV Channels",
@@ -4875,6 +5596,37 @@
       "documentary": "Documentary"
     },
     "loadingChannels": "Loading channels..."
+  },
+  "location": {
+    "consentModal": {
+      "title": "Enable Location Services",
+      "description": "We'd like to show you content relevant to your area.\n\nWe will:\n• Detect your city and state\n• Show local Israeli community content\n• Cache your location for 24 hours\n\nWe will NOT:\n• Track your exact location\n• Share your location with third parties\n• Store your location permanently without consent\n\nYou can change this anytime in settings.",
+      "accept": "Allow Location Access",
+      "decline": "Not Now",
+      "privacyNote": "Your privacy is important. Location data is encrypted and never sold."
+    },
+    "permissionBanner": {
+      "title": "Discover Israeli Content Near You",
+      "description": "Enable location services to see Israeli community events, news, and stories from your area. Your privacy is protected - we only detect your city.",
+      "ariaLabel": "Location services prompt",
+      "enable": "Enable Location",
+      "notNow": "Not Now",
+      "dismiss": "Dismiss location prompt",
+      "close": "Close banner"
+    },
+    "status": {
+      "detecting": "Detecting your location...",
+      "detected": "Location detected: {{city}}, {{state}}",
+      "denied": "Location access denied",
+      "unavailable": "Location services unavailable",
+      "error": "Failed to detect location"
+    },
+    "errors": {
+      "permissionDenied": "Location access denied. Please enable location in your browser settings.",
+      "timeout": "Location request timed out. Please try again.",
+      "unavailable": "Location services are not available in your browser.",
+      "failed": "Failed to get location. Please try again."
+    }
   },
   "login": {
     "title": "Welcome Back",
@@ -4999,6 +5751,36 @@
       "generate_recap_failed": "Failed to generate recap"
     }
   },
+  "onboarding": {
+    "autoplay": "Autoplay",
+    "back": "Back",
+    "chooseAvatar": "Choose Your Avatar",
+    "enableVoice": "Enable Voice Commands",
+    "finish": "Finish",
+    "language": "Language",
+    "namePlaceholder": "Enter your name",
+    "next": "Next",
+    "profileTitle": "Set Up Your Profile",
+    "subtitles": "Subtitles",
+    "tasteSubtitle": "Select your favorite genres and categories",
+    "tasteTitle": "What Do You Like?",
+    "voiceSubtitle": "Set up voice commands for hands-free control",
+    "voiceTitle": "Voice Control",
+    "wakeWord": "Wake Word",
+    "welcomeSubtitle": "Let's personalize your experience",
+    "welcomeTitle": "Welcome to Bayit+"
+  },
+  "pairing": {
+    "codePlaceholder": "Enter pairing code",
+    "enterCode": "Enter Code",
+    "expiresAt": "Expires at",
+    "noDevices": "No paired devices",
+    "pairedDevices": "Paired Devices",
+    "regenerate": "Regenerate",
+    "scanCode": "Scan this code on your other device",
+    "unknownDevice": "Unknown Device",
+    "verify": "Verify"
+  },
   "passkey": {
     "manager": {
       "title": "Passkeys",
@@ -5038,6 +5820,45 @@
       "error": "Failed to generate QR code",
       "expired": "QR code expired. Please try again."
     }
+  },
+  "passkeys": {
+    "addPasskey": "Add Passkey",
+    "description": "Passkeys provide secure, passwordless authentication.",
+    "deviceNamePlaceholder": "Device name",
+    "noPasskeys": "No passkeys registered",
+    "register": "Register",
+    "registered": "Registered Passkeys",
+    "title": "Passkeys",
+    "unknownDevice": "Unknown Device"
+  },
+  "payment": {
+    "pending": {
+      "title": "Complete Your Subscription",
+      "description": "Choose a plan to start your 7-day free trial and access all of Bayit+",
+      "timeElapsed": "Checking payment status... ({{seconds}}s)",
+      "takingLonger": "Payment confirmation is taking longer than expected. Please try refreshing or contact support if you've already paid.",
+      "helpText": "Need help? Contact support@bayit.tv or refresh this page if you already completed payment."
+    },
+    "continueToPayment": "Continue to Payment",
+    "success": {
+      "title": "Payment Successful!",
+      "description": "Welcome to Bayit+! Your subscription is now active.",
+      "redirecting": "Redirecting in {{seconds}} seconds...",
+      "continue": "Continue to Bayit+"
+    },
+    "cancelled": {
+      "title": "Payment Cancelled",
+      "description": "Your subscription was not completed. You can try again when you're ready.",
+      "retry": "Try Again",
+      "helpText": "Questions? Contact support@bayit.tv for assistance."
+    }
+  },
+  "pending": {
+    "description": "Your payment is being processed. Please wait...",
+    "helpText": "This usually takes a few seconds. Do not close this page.",
+    "takingLonger": "This is taking longer than expected...",
+    "timeElapsed": "Time elapsed: {{time}}",
+    "title": "Payment Processing"
   },
   "placeholder": {
     "email": "your@email.com",
@@ -5242,6 +6063,31 @@
     "selectLanguage": "Select Language",
     "selectOutputLanguage": "Select Output Language"
   },
+  "playlist": {
+    "title": "My Playlist",
+    "clear": "Clear",
+    "playAll": "Play All",
+    "empty": "Your playlist is empty",
+    "emptyHint": "Use the bookmark icon on any content card or say 'add to playlist' to start building your list",
+    "removeItem": "Remove from playlist",
+    "playItem": "Play {{title}}",
+    "items": "items",
+    "loading": "Loading playlist...",
+    "filters": {
+      "all": "All",
+      "continue": "Continue Watching",
+      "movies": "Movies",
+      "series": "Series",
+      "kids": "Kids",
+      "judaism": "Judaism",
+      "podcasts": "Podcasts",
+      "radio": "Radio"
+    },
+    "watched": "watched",
+    "addEpisode": "Add to Playlist",
+    "removeEpisode": "Remove from Playlist",
+    "dragToReorder": "Drag to reorder"
+  },
   "podcast": {
     "selectLanguage": "Select Language",
     "switchToLanguage": "Switch to {{language}}",
@@ -5348,6 +6194,200 @@
       "errorResolve": "Could not resolve this URL",
       "errorAdd": "Could not add podcast",
       "errorDuplicate": "This podcast already exists"
+    }
+  },
+  "portal": {
+    "nav": {
+      "home": "Home",
+      "features": "Features",
+      "solutions": "Solutions",
+      "pricing": "Pricing",
+      "demo": "Live Demo",
+      "contact": "Contact",
+      "getStarted": "Get Started"
+    },
+    "hero": {
+      "ctaExplore": "Explore Features",
+      "ctaDemo": "Request Demo"
+    },
+    "cta": {
+      "title": "Ready to Get Started?",
+      "subtitle": "Let's discuss how we can help transform your business",
+      "button": "Contact Us"
+    },
+    "contactPage": {
+      "title": "Get In Touch",
+      "subtitle": "Interested in our solutions? Let's talk",
+      "formTitle": "Send Us a Message",
+      "infoTitle": "Contact Information",
+      "form": {
+        "name": "Full Name",
+        "email": "Email Address",
+        "company": "Company Name",
+        "phone": "Phone Number",
+        "message": "Your Message",
+        "messagePlaceholder": "Tell us about your needs..."
+      },
+      "submit": "Send Message",
+      "sending": "Sending...",
+      "success": "Message sent successfully! We'll get back to you soon.",
+      "error": "Failed to send message. Please try again.",
+      "scheduleTitle": "Prefer to Schedule a Call?",
+      "scheduleSubtitle": "Book a personalized demo with our team",
+      "scheduleCta": "Schedule Demo Call"
+    },
+    "pricingPage": {
+      "title": "Affordable",
+      "titleHighlight": "Pricing Plans",
+      "subtitle": "Choose the plan that fits your needs",
+      "comparisonTitle": "Feature Comparison",
+      "faqTitle": "Frequently Asked Questions",
+      "faq": {
+        "q1": "How is pricing calculated?",
+        "a1": "Pricing is based on your specific needs and usage. Contact us for a custom quote.",
+        "q2": "Can I upgrade my plan later?",
+        "a2": "Yes, you can upgrade at any time. We'll help migrate your data seamlessly.",
+        "q3": "What support is included?",
+        "a3": "All plans include email support. Professional and Enterprise plans include priority support with dedicated account managers."
+      },
+      "professional": {
+        "name": "Professional",
+        "price": "Contact for Quote",
+        "priceNote": "Custom pricing",
+        "description": "For growing businesses with advanced needs",
+        "cta": "Get Quote"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Custom",
+        "priceNote": "Volume-based",
+        "description": "For large organizations and enterprise deployments",
+        "cta": "Contact Sales"
+      },
+      "ctaTitle": "Ready to Get Started?",
+      "ctaSubtitle": "Let's discuss your needs and find the perfect plan",
+      "ctaButton": "Contact Sales"
+    },
+    "featuresPage": {
+      "title": "Powerful",
+      "titleHighlight": "Features",
+      "subtitle": "Everything you need to succeed",
+      "techSpecsTitle": "Technical Specifications",
+      "workflowTitle": "How It Works",
+      "workflow": {
+        "s1": {
+          "title": "Import",
+          "description": "Upload and organize your content"
+        },
+        "s2": {
+          "title": "Configure",
+          "description": "Set up your preferences and settings"
+        },
+        "s3": {
+          "title": "Deploy",
+          "description": "Go live with your solution"
+        },
+        "s4": {
+          "title": "Monitor",
+          "description": "Track performance and optimize"
+        }
+      },
+      "ctaTitle": "Ready to Explore Features?",
+      "ctaSubtitle": "See all features in action with a personalized demo",
+      "ctaButton": "Schedule Demo"
+    },
+    "demoPage": {
+      "title": "See Our",
+      "titleHighlight": "Platform",
+      "subtitle": "Experience the power of our solution",
+      "scheduleCta": "Schedule Live Demo",
+      "stepsTitle": "How It Works",
+      "steps": {
+        "analyze": {
+          "title": "Analyze",
+          "description": "Track and improve performance"
+        }
+      },
+      "featuresTitle": "Platform Highlights",
+      "platformsTitle": "Available On",
+      "ctaTitle": "Ready for Your Custom Demo?",
+      "ctaSubtitle": "Schedule a personalized demonstration tailored to your needs",
+      "ctaButton": "Schedule Demo"
+    },
+    "workflow": {
+      "sectionTitle": "Intelligent Workflow",
+      "sectionSubtitle": "Streamlined process in 4 steps",
+      "step1": {
+        "title": "Setup",
+        "description": "Configure your account and preferences"
+      },
+      "step2": {
+        "title": "Configure",
+        "description": "Customize settings for your needs"
+      },
+      "step3": {
+        "title": "Deploy",
+        "description": "Launch your solution"
+      },
+      "step4": {
+        "title": "Monitor",
+        "description": "Track performance and optimize"
+      }
+    }
+  },
+  "privacy": {
+    "children": {
+      "content": "While our content is suitable for all ages, Olorin.ai LLC does not knowingly collect personal identifiable information from children under the age of 13. If you are a parent and believe your child has provided us with personal information, please contact us.",
+      "title": "5. Children\\"
+    },
+    "collection": {
+      "audio": {
+        "data": "Data Collected: Brief audio samples of the TV broadcast.",
+        "intro": "If you utilize features requiring audio synchronization, the App may request Microphone access.",
+        "purpose": "Purpose: To match the audio fingerprint of the public broadcast for synchronization purposes.",
+        "retention": "Retention: Like visual data, audio samples are processed in real-time and immediately deleted. We do not listen to or record user conversations.",
+        "title": "Title"
+      },
+      "camera": {
+        "data": "Data",
+        "intro": "To provide our core service—synchronizing translated audio with your TV—Bayit+ requires access to your device\\",
+        "purpose": "Purpose",
+        "retention": "Retention: This data is ephemeral. The frames are processed instantly in memory and are permanently deleted immediately after the synchronization is established. We do not view, store, or archive images of your home or family.",
+        "title": "A. Camera & Visual Synchronization Data"
+      },
+      "title": "2. Information We Collect & How We Use It",
+      "usage": {
+        "aggregate": "Aggregate",
+        "content": "We may collect non-identifiable technical data to improve App stability, including:",
+        "crash": "Crash logs and performance metrics.",
+        "device": "Device type and operating system version.",
+        "title": "C. Usage & Technical Data"
+      }
+    },
+    "contact": {
+      "intro": "If you have any questions about this Privacy Policy, please contact us at:",
+      "title": "7. Contact Us"
+    },
+    "intro": {
+      "commitment": "We built Bayit+ with a \"Privacy-First\" architecture. We do not record your living room. Our technology uses your device\\",
+      "content": "Content",
+      "title": "1. Introduction"
+    },
+    "lastUpdated": "Last Updated: January 27, 2026",
+    "retention": {
+      "account": "Account Data: Retained only as long as your account is active to manage your subscription and preferences.",
+      "sync": "Sync",
+      "title": "4. Data Retention"
+    },
+    "rights": {
+      "content": "Depending on your location, you may have the right to request access to, correction of, or deletion of your personal data. You may delete your Bayit+ account at any time within the App settings.",
+      "title": "6. Your Rights"
+    },
+    "sharing": {
+      "ai": "AI Processing: Services used to generate real-time text and audio translations from public broadcast feeds.",
+      "cloud": "Cloud",
+      "noSale": "Olorin.ai LLC does not sell your personal data. We partner with trusted third-party service providers to deliver our infrastructure. These providers are authorized to use your data only as necessary to provide these services to us:",
+      "title": "3. Data Sharing and Third Parties"
     }
   },
   "profile": {
@@ -5636,7 +6676,45 @@
     "completeVerification": "Complete verification to unlock all features",
     "unlockPremium": "Unlock Premium Features",
     "unlockPremiumDescription": "Upgrade to enjoy exclusive content and features",
-    "unknown": "Unknown Player"
+    "unknown": "Unknown Player",
+    "betaCredits": "Beta Credits",
+    "creditsRemaining": "credits remaining",
+    "streak": "Day Streak",
+    "watched": "Watched"
+  },
+  "profileControls": {
+    "title": "Profile Family Controls",
+    "subtitle": "Manage family controls for this profile",
+    "sourceSection": {
+      "title": "Controls Source",
+      "inheritHousehold": "Inherit from Household",
+      "inheritHouseholdDesc": "Use household-wide family controls",
+      "customControls": "Custom Controls",
+      "customControlsDesc": "Use profile-specific family controls"
+    },
+    "selectControls": {
+      "title": "Select Controls",
+      "controlsLabel": "Family Controls {{id}}",
+      "kidsAge": "Kids: {{age}}",
+      "youngstersAge": "Youngsters: {{age}}",
+      "rating": "Rating: {{rating}}",
+      "noControls": "No family controls available. Create controls in Family Controls settings."
+    },
+    "effectiveControls": {
+      "title": "Active Controls",
+      "kidsEnabled": "Kids Content",
+      "youngstersEnabled": "Youngsters Content",
+      "contentRating": "Content Rating Limit",
+      "viewingHours": "Viewing Hours",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "ageLimit": "Age limit: {{age}}",
+      "noRestriction": "No restriction",
+      "noControls": "No family controls active for this profile"
+    },
+    "errors": {
+      "noControlsAvailable": "No family controls available. Create controls first."
+    }
   },
   "profiles": {
     "addProfile": "Add Profile",
@@ -5647,6 +6725,37 @@
     "manage": "Manage Profiles",
     "whoIsWatching": "Who's Watching?",
     "manageProfiles": "Manage Profiles"
+  },
+  "quiz": {
+    "title": "Quiz Time!",
+    "questionOf": "Question {{current}} of {{total}}",
+    "correct": "Correct!",
+    "incorrect": "Not quite!",
+    "score": "You got {{score}} out of {{total}}!",
+    "pointsEarned": "+{{points}} points",
+    "badgeEarned": "Badge Earned!",
+    "perfectScore": "Perfect Score!",
+    "tryAgain": "Try Again",
+    "continue": "Continue",
+    "skip": "Skip Quiz",
+    "loading": "Loading quiz...",
+    "error": "Could not load quiz",
+    "retry": "Try Again",
+    "submitting": "Checking answers...",
+    "greatJob": "Great job!",
+    "keepLearning": "Keep learning and playing!",
+    "nextQuestion": "Next Question",
+    "viewResults": "View Results",
+    "answersReview": "Your Answers",
+    "explanation": "Explanation",
+    "timeBonus": "Time Bonus",
+    "streakBonus": "Streak Bonus",
+    "newBadge": "New Badge!",
+    "totalScore": "Total Score"
+  },
+  "quota": {
+    "subtitleExceeded": "Subtitle quota exceeded. Please try again later.",
+    "dubbingExceeded": "Dubbing quota exceeded. Please try again later."
   },
   "radio": {
     "title": "Radio",
@@ -5732,7 +6841,10 @@
     "sortDate": "Date",
     "sortSize": "Size",
     "sortDuration": "Duration",
-    "sortTitle": "Title"
+    "sortTitle": "Title",
+    "delete": "Delete",
+    "empty": "No recordings yet",
+    "stop": "Stop Recording"
   },
   "register": {
     "title": "Create Account",
@@ -5774,6 +6886,41 @@
       "googleFailed": "Sign up with Google failed. Please try again."
     }
   },
+  "rewards": {
+    "title": "My Rewards",
+    "totalPoints": "Total Points",
+    "badges": "Badges",
+    "quizzesCompleted": "Quizzes Completed",
+    "perfectScores": "Perfect Scores",
+    "currentStreak": "Current Streak",
+    "longestStreak": "Longest Streak",
+    "days": "days",
+    "noBadges": "Complete quizzes to earn badges!",
+    "locked": "Keep playing to unlock!",
+    "earnedOn": "Earned on {{date}}",
+    "pointsBonus": "+{{points}} bonus points",
+    "rarity": {
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    },
+    "badgeNames": {
+      "first_quiz": "First Quiz",
+      "quiz_rookie": "Quiz Rookie",
+      "quiz_fan": "Quiz Fan",
+      "quiz_master": "Quiz Master",
+      "perfect_start": "Perfect Start",
+      "perfectionist": "Perfectionist",
+      "streak_3": "On Fire",
+      "streak_7": "Week Warrior",
+      "streak_30": "Monthly Master"
+    },
+    "level": "Level",
+    "points": "Points",
+    "streak": "Streak"
+  },
   "ritual": {
     "title": "Morning Ritual",
     "greeting": "Good Morning!",
@@ -5788,7 +6935,14 @@
     "noContentNow": "No content available right now",
     "typeLive": "Live",
     "typeRadio": "Radio",
-    "typeVideo": "Video"
+    "typeVideo": "Video",
+    "aiBrief": "AI Daily Brief",
+    "days": "days",
+    "goodMorning": "Good Morning",
+    "loadBrief": "Load Daily Brief",
+    "streak": "Streak",
+    "subtitle": "Your personalized morning experience",
+    "todayContent": "Today's Content"
   },
   "search": {
     "title": "Search",
@@ -5924,11 +7078,30 @@
     "exampleQuery4": "Kids shows in Hebrew for ages 5-7",
     "poweredByAI": "🤖 Powered by Claude AI. Results may vary based on query interpretation."
   },
+  "security": {
+    "changePassword": "Change Password",
+    "confirmPassword": "Confirm New Password",
+    "current": "Current",
+    "currentPassword": "Current Password",
+    "devices": "Active Devices",
+    "newPassword": "New Password",
+    "noDevices": "No devices found",
+    "unknownDevice": "Unknown Device",
+    "updatePassword": "Update Password"
+  },
+  "semantic": {
+    "info": "AI-powered search understands meaning, not just keywords",
+    "infoTitle": "Semantic Search",
+    "keyword": "Keyword",
+    "semantic": "Semantic"
+  },
   "settings": {
     "title": "Settings",
     "language": "Language",
     "appLanguage": "App Language",
     "selectLanguage": "Select Language",
+    "chooseLanguage": "Choose Your Language",
+    "languageDescription": "Select your preferred language for the app interface",
     "languages": {
       "en": "English",
       "he": "עברית",
@@ -5989,121 +7162,52 @@
       "small": "Small",
       "medium": "Medium",
       "large": "Large"
-    }
+    },
+    "account": "Account",
+    "appUpdates": "App Updates",
+    "appUpdatesDescription": "Get notified about new features and improvements",
+    "billing": "Billing",
+    "chessActivity": "Chess Activity",
+    "chessActivityDescription": "Notifications about your chess games and challenges",
+    "devicePairing": "Device Pairing",
+    "directMessages": "Direct Messages",
+    "directMessagesDescription": "Get notified when you receive a message",
+    "friendActivity": "Friend Activity",
+    "friendActivityDescription": "Updates when friends join or watch content",
+    "helpCenter": "Help Center",
+    "household": "Household",
+    "liveEvents": "Live Events",
+    "liveEventsDescription": "Alerts for upcoming live broadcasts",
+    "newContent": "New Content",
+    "newContentDescription": "Get notified when new movies, series, or shows are added",
+    "notificationDescription": "Choose which notifications you want to receive",
+    "notificationFooter": "You can change these settings at any time.",
+    "notificationPreferences": "Notification Preferences",
+    "notificationSettings": "Notification Settings",
+    "passkeys": "Passkeys",
+    "preferences": "Preferences",
+    "recommendations": "Recommendations",
+    "recommendationsDescription": "Personalized content suggestions based on your viewing",
+    "security": "Security",
+    "subscription": "Subscription",
+    "support": "Support",
+    "version": "Version",
+    "watchPartyInvitations": "Watch Party Invitations",
+    "watchPartyInvitationsDescription": "Notifications when friends invite you to watch together"
   },
-  "familyControls": {
-    "title": "Family Controls",
-    "pinSetup": "PIN Setup",
-    "familyPin": "Family PIN",
-    "createPin": "Create Family PIN",
-    "verifyPin": "Verify Family PIN",
-    "updatePin": "Update Family PIN",
-    "pinConfigured": "Family PIN is configured",
-    "pinNotConfigured": "No Family PIN set up yet",
-    "enterPin": "Enter PIN",
-    "confirmPin": "Confirm PIN",
-    "placeholders": {
-      "currentPin": "Current PIN",
-      "enterPin": "Enter PIN",
-      "enterNewPin": "Enter new PIN",
-      "confirmNewPin": "Confirm new PIN"
-    },
-    "kidsSection": "Kids (0-12 years)",
-    "kidsEnabled": "Enable Kids Mode",
-    "kidsAgeLimit": "Age Limit",
-    "youngstersSection": "Youngsters (12-17 years)",
-    "youngstersEnabled": "Enable Youngsters Mode",
-    "youngstersAgeLimit": "Age Limit",
-    "contentRatings": "Content Ratings",
-    "maxContentRating": "Maximum Content Rating",
-    "contentBlockedAbove": "Content rated above {{rating}} will be blocked",
-    "viewingHours": "Viewing Hours",
-    "viewingHoursEnabled": "Enable Time Restrictions",
-    "startHour": "Start Hour",
-    "endHour": "End Hour",
-    "ratings": {
-      "G": "G - General Audiences",
-      "PG": "PG - Parental Guidance Suggested",
-      "PG13": "PG-13 - Parents Strongly Cautioned",
-      "R": "R - Restricted",
-      "TVMA": "TV-MA - Mature Audience Only"
-    },
-    "errors": {
-      "pinMismatch": "PINs do not match",
-      "pinTooShort": "PIN must be at least 4 digits",
-      "newPinTooShort": "New PIN must be at least 4 digits",
-      "invalidPin": "Invalid PIN",
-      "failedToSetPin": "Failed to set PIN",
-      "failedToUpdatePin": "Failed to update PIN. Check old PIN.",
-      "sectionDisabled": "This section is disabled by family controls",
-      "outsideViewingHours": "Access restricted outside viewing hours",
-      "contentRatingTooHigh": "Content rating exceeds allowed limit"
-    },
-    "household": {
-      "title": "Household Management",
-      "subtitle": "Manage your family household and shared controls",
-      "create": "Create Household",
-      "createButton": "Create Household",
-      "createHousehold": "Create Household",
-      "createDescription": "Create a household to manage family controls for multiple accounts. Parents can set age-appropriate content limits for all household members.",
-      "name": "Household Name",
-      "householdName": "Household Name",
-      "namePlaceholder": "e.g., Smith Family",
-      "creating": "Creating...",
-      "members": "Members",
-      "memberCount": "{{count}} member",
-      "memberCount_plural": "{{count}} members",
-      "inviteMember": "Invite Member",
-      "removeMember": "Remove Member",
-      "remove": "Remove",
-      "confirmRemoveMember": "Are you sure you want to remove this member from your household?",
-      "delete": "Delete Household",
-      "confirmDelete": "Are you sure you want to delete this household? This action cannot be undone.",
-      "role": "Role",
-      "roleParent": "Parent",
-      "roleChild": "Child",
-      "roleGuardian": "Guardian",
-      "roles": {
-        "parent": "Parent",
-        "child": "Child",
-        "guardian": "Guardian"
-      },
-      "sharedControls": "Shared Controls",
-      "email": "Email Address",
-      "emailPlaceholder": "family@example.com",
-      "sendInvitation": "Send Invitation",
-      "pendingInvitations": "Pending Invitations",
-      "expires": "Expires",
-      "invitation": {
-        "title": "Invitation",
-        "email": "Email Address",
-        "send": "Send Invitation",
-        "accept": "Accept Invitation",
-        "code": "Invitation Code",
-        "expires": "Expires",
-        "pending": "Pending Invitations"
-      },
-      "acceptingInvitation": "Accepting Invitation",
-      "invitationAccepted": "You've successfully joined {{name}}!",
-      "invitationExpired": "This invitation has expired. Please request a new invitation.",
-      "invalidInvitationLink": "Invalid invitation link. Please check the URL.",
-      "invalidInvitationCode": "Invalid invitation code. Please check the link.",
-      "invitationAcceptFailed": "Failed to accept invitation. Please try again.",
-      "mustBeLoggedIn": "You must be logged in to accept a household invitation.",
-      "redirectingToHousehold": "Redirecting to your household...",
-      "goToHousehold": "Go to Household",
-      "success": "Success!",
-      "error": "Error"
-    },
-    "profile": {
-      "title": "Profile Controls",
-      "override": "Override Controls",
-      "inherit": "Inherit Controls",
-      "inheritHousehold": "Inherit from Household",
-      "inheritAccount": "Inherit from Account",
-      "hierarchy": "Control Hierarchy",
-      "source": "Controls Source"
-    }
+  "shabbat": {
+    "activate": "Activate",
+    "active": "Active",
+    "autoMode": "Auto Mode",
+    "autoModeDescription": "Automatically activate Shabbat mode based on candle lighting times",
+    "candleLighting": "Candle Lighting",
+    "dailyTimes": "Daily Times",
+    "deactivate": "Deactivate",
+    "havdalah": "Havdalah",
+    "inactive": "Inactive",
+    "manualToggle": "Manual Toggle",
+    "recommendedContent": "Recommended Content",
+    "settings": "Settings"
   },
   "stats": {
     "statistics": "Statistics",
@@ -6134,6 +7238,13 @@
     "theirWins": "Their Wins",
     "totalGamesPlayed": "Total: {{count}} games",
     "recentGames": "Recent Games"
+  },
+  "status": {
+    "pleaseLogin": "Please log in to use Bayit+ Companion",
+    "quotaExhausted": "Daily quota of {{limit}} minutes exhausted. Upgrade to premium.",
+    "connected": "Connected",
+    "dubbingFailed": "Failed to start dubbing. Please try again.",
+    "dubbingError": "Dubbing error: {{error}}"
   },
   "subscribe": {
     "title": "Choose Your Plan",
@@ -6189,6 +7300,14 @@
         "support": "Support"
       }
     }
+  },
+  "subscription": {
+    "cancel": "Cancel Subscription",
+    "choosePlan": "Choose Your Plan",
+    "current": "Current",
+    "monthly": "Monthly",
+    "subscribe": "Subscribe",
+    "yearly": "Yearly"
   },
   "subtitles": {
     "nikud": "Nikud",
@@ -6302,6 +7421,18 @@
       "serverError": "Server error - please try again later"
     }
   },
+  "success": {
+    "continue": "Continue",
+    "description": "Your payment has been processed successfully.",
+    "redirecting": "Redirecting...",
+    "title": "Payment Successful"
+  },
+  "suggestions": {
+    "categoriesTitle": "Categories",
+    "clearRecent": "Clear Recent",
+    "recentTitle": "Recent Searches",
+    "trendingTitle": "Trending"
+  },
   "support": {
     "title": "Support Center",
     "subtitle": "How can we help you today?",
@@ -6331,34 +7462,14 @@
       "placeholder": "Search documentation...",
       "noResults": "No results found"
     },
-    "faq": {
-      "title": "Frequently Asked Questions",
-      "loading": "Loading FAQ...",
-      "loadError": "Failed to load FAQ",
-      "empty": "No FAQ items in this category",
-      "categories": {
-        "all": "All Topics",
-        "general": "General",
-        "billing": "Billing",
-        "technical": "Technical",
-        "features": "Features"
-      }
-    },
+    "faq": "FAQ",
     "videos": {
       "title": "Tutorial Videos",
       "subtitle": "Learn how to use Bayit+ features",
       "widgetsIntro": "Getting Started with Widgets",
       "widgetsDescription": "Learn how to create, customize, and manage floating widgets"
     },
-    "contact": {
-      "voiceTitle": "Voice Support",
-      "voiceDescription": "Click the avatar button or say \"Jarvis\" to start a voice conversation with our AI assistant.",
-      "ticketTitle": "Create Support Ticket",
-      "ticketDescription": "Need human assistance? Create a support ticket and our team will respond within 24 hours.",
-      "createTicket": "Create Ticket",
-      "emailTitle": "Email Support",
-      "emailDescription": "Prefer email? Reach us at support@bayit.tv for any questions or concerns."
-    },
+    "contact": "Contact",
     "ticket": {
       "title": "Create Support Ticket",
       "subject": "Subject",
@@ -6392,21 +7503,7 @@
         "submit": "Failed to create ticket. Please try again."
       }
     },
-    "tickets": {
-      "title": "My Support Tickets",
-      "loading": "Loading tickets...",
-      "loadError": "Failed to load tickets",
-      "empty": "No support tickets yet",
-      "emptyFilter": "No tickets with this status",
-      "create": "New Ticket",
-      "createFirst": "Create Your First Ticket",
-      "filter": {
-        "all": "All",
-        "open": "Open",
-        "inProgress": "In Progress",
-        "resolved": "Resolved"
-      }
-    },
+    "tickets": "My Tickets",
     "voice": {
       "title": "Voice Assistant",
       "listening": "I'm listening...",
@@ -6419,6 +7516,128 @@
     },
     "wizard": {
       "role": "Your Guide"
+    },
+    "email": "Email Support",
+    "message": "Message",
+    "newTicket": "New Ticket",
+    "noFAQ": "No FAQ available",
+    "noTickets": "No tickets yet",
+    "subject": "Subject",
+    "submit": "Submit",
+    "ticketCreated": "Ticket created successfully",
+    "website": "Website"
+  },
+  "taxonomy": {
+    "sections": {
+      "movies": "Movies",
+      "series": "Series",
+      "israeli-movies": "Israeli Movies",
+      "israeli-series": "Israeli Series",
+      "kids": "Kids",
+      "youngsters": "Youngsters",
+      "music": "Music",
+      "documentaries": "Documentaries",
+      "podcasts": "Podcasts",
+      "live": "Live TV",
+      "audiobooks": "Audiobooks",
+      "israeli-cities": "Israeli Cities",
+      "judaism": "Judaism"
+    },
+    "subcategories": {
+      "learning-hebrew": "Learning Hebrew",
+      "learning-hebrew.description": "Learning to read, write and vocabulary in Hebrew for kids",
+      "young-science": "Young Science",
+      "young-science.description": "Experiments and scientific explanations adapted for children",
+      "math-fun": "Fun Math",
+      "math-fun.description": "Learning numbers and arithmetic in a fun and playful way",
+      "nature-animals": "Nature & Animals",
+      "nature-animals.description": "The world of animals and nature for curious children",
+      "interactive": "Interactive",
+      "interactive.description": "Interactive and participatory content for children",
+      "hebrew-songs": "Hebrew Songs",
+      "hebrew-songs.description": "Classic and new Israeli children's songs",
+      "nursery-rhymes": "Nursery Rhymes",
+      "nursery-rhymes.description": "Songs and melodies for toddlers and babies",
+      "kids-movies": "Kids Movies",
+      "kids-movies.description": "Full-length movies suitable for children",
+      "kids-series": "Kids Series",
+      "kids-series.description": "Animated series and TV shows for children",
+      "jewish-holidays": "Jewish Holidays",
+      "jewish-holidays.description": "Content about Jewish holidays and traditions for children",
+      "torah-stories": "Torah Stories",
+      "torah-stories.description": "Stories from the Torah and Jewish tradition",
+      "bedtime-stories": "Bedtime Stories",
+      "bedtime-stories.description": "Relaxing stories for bedtime",
+      "tiktok-trends": "TikTok Trends",
+      "tiktok-trends.description": "Hot trends and challenges on TikTok",
+      "viral-videos": "Viral Videos",
+      "viral-videos.description": "Popular viral videos on social media",
+      "memes": "Memes",
+      "memes.description": "Funny memes and internet culture",
+      "israel-news": "Israel News",
+      "israel-news.description": "Israel news adapted for teens",
+      "world-news": "World News",
+      "world-news.description": "International news for youth",
+      "science-news": "Science News",
+      "science-news.description": "Scientific discoveries and technological innovation",
+      "sports-news": "Sports News",
+      "sports-news.description": "Sports updates and game results",
+      "music-culture": "Music Culture",
+      "music-culture.description": "Music scene, artists and festivals",
+      "film-culture": "Film Culture",
+      "film-culture.description": "Cinema, series and reviews",
+      "art-culture": "Art Culture",
+      "art-culture.description": "Art, galleries and creativity",
+      "food-culture": "Food Culture",
+      "food-culture.description": "Cooking, recipes and food culture",
+      "study-help": "Study Help",
+      "study-help.description": "Help with exams, summaries and test prep",
+      "career-prep": "Career Prep",
+      "career-prep.description": "University and career preparation",
+      "life-skills": "Life Skills",
+      "life-skills.description": "Life skills, money management and independence",
+      "teen-movies": "Teen Movies",
+      "teen-movies.description": "Recommended movies for teenagers",
+      "teen-series": "Teen Series",
+      "teen-series.description": "Popular series for teenagers",
+      "gaming": "Gaming",
+      "gaming.description": "Video games, e-sports and gaming",
+      "coding": "Coding",
+      "coding.description": "Programming, coding and software development",
+      "gadgets": "Gadgets",
+      "gadgets.description": "Gadgets, technology and reviews",
+      "bar-bat-mitzvah": "Bar/Bat Mitzvah",
+      "bar-bat-mitzvah.description": "Preparation and celebrations for Bar/Bat Mitzvah",
+      "teen-torah": "Teen Torah",
+      "teen-torah.description": "Torah classes and weekly portion for teens",
+      "jewish-history": "Jewish History",
+      "jewish-history.description": "History of the Jewish people",
+      "cartoons": "Cartoons",
+      "cartoons.description": "Animated cartoons for children",
+      "educational": "Educational",
+      "educational.description": "Educational content for children",
+      "hebrew-learning": "Hebrew Learning",
+      "hebrew-learning.description": "Learning Hebrew language for children",
+      "stories": "Stories",
+      "stories.description": "Children's stories and tales",
+      "jewish-kids": "Jewish Kids",
+      "jewish-kids.description": "Jewish content for young children",
+      "music": "Music",
+      "music.description": "Songs and music for children",
+      "shiurim": "Shiurim",
+      "shiurim.description": "Torah lessons and lectures",
+      "tefila": "Tefila",
+      "tefila.description": "Prayer and liturgy",
+      "jewish-music": "Jewish Music",
+      "jewish-music.description": "Jewish and Israeli music",
+      "holidays": "Holidays",
+      "holidays.description": "Jewish holidays and celebrations",
+      "jewish-docs": "Jewish Documentaries",
+      "jewish-docs.description": "Documentaries about Jewish life and culture",
+      "title": "Subcategories",
+      "ageGroups": {
+        "title": "Age Groups"
+      }
     }
   },
   "telAviv": {
@@ -6522,10 +7741,33 @@
     "securityNote": "Your credentials are sent securely and are never stored on the TV.",
     "footer": "Having trouble? Make sure you scanned a fresh QR code from your TV."
   },
+  "uploads": {
+    "status": {
+      "pending": "Pending",
+      "inProgress": "In Progress",
+      "uploading": "Uploading",
+      "processing": "Processing",
+      "queued": "Queued",
+      "completed": "Completed",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    }
+  },
+  "validation": {
+    "authorRequired": "Author is required",
+    "orderRange": "Order must be between 1 and 100",
+    "streamUrlRequired": "Stream URL is required",
+    "titleRequired": "Title is required"
+  },
   "video": {
     "watchTrailer": "Watch Trailer",
     "closeTrailer": "Close Trailer",
     "deleteConfirm": "Delete this episode?"
+  },
+  "viewMode": {
+    "cards": "Cards",
+    "grid": "Grid",
+    "list": "List"
   },
   "vod": {
     "title": "Movies & Series",
@@ -6742,30 +7984,131 @@
     "voiceInputHint": "Voice Input Hint",
     "watching": "Watching"
   },
-  "playlist": {
-    "title": "My Playlist",
-    "clear": "Clear",
-    "playAll": "Play All",
-    "empty": "Your playlist is empty",
-    "emptyHint": "Use the bookmark icon on any content card or say 'add to playlist' to start building your list",
-    "removeItem": "Remove from playlist",
-    "playItem": "Play {{title}}",
-    "items": "items",
-    "loading": "Loading playlist...",
-    "filters": {
-      "all": "All",
-      "continue": "Continue Watching",
-      "movies": "Movies",
-      "series": "Series",
-      "kids": "Kids",
-      "judaism": "Judaism",
-      "podcasts": "Podcasts",
-      "radio": "Radio"
+  "widget": {
+    "103fmEpisodes": "103FM Episodes",
+    "audioUnavailable": "Audio unavailable",
+    "contentUnavailable": "Content unavailable",
+    "errorLoadingContent": "Error loading content",
+    "iframeNotConfigured": "iFrame URL not configured",
+    "loadingEpisodes": "Loading episodes...",
+    "loadingNews": "Loading news...",
+    "noContentConfigured": "No content configured",
+    "noEpisodesFound": "No episodes found",
+    "podcastUnavailable": "Podcast unavailable",
+    "stationUnavailable": "Station unavailable",
+    "streamUnavailable": "Stream unavailable",
+    "unknownComponent": "Unknown component: {{componentName}}",
+    "ynetBreakingNews": "מבזקי Ynet"
+  },
+  "widgets": {
+    "empty": "No widgets yet",
+    "emptyHint": "Your widgets will appear here",
+    "emptyPersonal": "No personal widgets yet",
+    "emptyPersonalHint": "Create your first personal widget or add system widgets above",
+    "itemsTotal": "total widgets",
+    "systemWidgets": "System Widgets",
+    "systemWidgetsHint": "Browse and add widgets to your collection",
+    "myWidgets": "My Personal Widgets",
+    "myWidgetsHint": "Widgets you have created",
+    "personalWidgets": "My Widgets",
+    "noSystemWidgets": "No system widgets available",
+    "added": "Added",
+    "add": "Add",
+    "remove": "Remove",
+    "show": "Show",
+    "hidden": "Hidden",
+    "addToCollection": "Add to My Widgets",
+    "removeFromCollection": "Remove from My Widgets",
+    "addToMyWidgets": "Add to my widgets",
+    "removeFromMyWidgets": "Remove from my widgets",
+    "widgetAdded": "Widget added",
+    "widgetRemoved": "Widget removed",
+    "contentTypes": {
+      "liveChannel": "Live Channel",
+      "iframe": "Web Content",
+      "podcast": "Podcast",
+      "radio": "Radio",
+      "vod": "Video",
+      "custom": "Custom",
+      "widget": "Widget",
+      "liveStream": "Live Stream"
     },
-    "watched": "watched",
-    "addEpisode": "Add to Playlist",
-    "removeEpisode": "Remove from Playlist",
-    "dragToReorder": "Drag to reorder"
+    "form": {
+      "title": "Create Widget",
+      "basicInfo": "Basic Information",
+      "titlePlaceholder": "Widget Title",
+      "titleRequired": "Widget Title is required",
+      "descriptionPlaceholder": "Description (optional)",
+      "iconPlaceholder": "Icon emoji (e.g., 📺)",
+      "content": "Content",
+      "fromLibrary": "From Library",
+      "iframe": "iFrame",
+      "selectContent": "Select Content (Channels, Podcasts, Shows, etc.)",
+      "iframeUrl": "iFrame URL",
+      "iframeUrlRequired": "iFrame URL is required",
+      "iframeTitle": "iFrame Title",
+      "positionSize": "Position & Size",
+      "behavior": "Behavior",
+      "mutedByDefault": "Muted by Default",
+      "closable": "Closable",
+      "draggable": "Draggable",
+      "widgetOrder": "Widget Order",
+      "orderPlaceholder": "Order (0 = first)",
+      "saveWidget": "Save Widget",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "change": "Change",
+      "errors": {
+        "contentRequired": "Please select content",
+        "iframeUrlRequired": "iFrame URL is required",
+        "nameExists": "A widget with this name already exists",
+        "titleRequired": "Title is required"
+      },
+      "validating": "Validating..."
+    },
+    "intro": {
+      "title": "Welcome to Widgets",
+      "description": "Discover powerful floating widgets to customize your viewing experience",
+      "watchVideo": "Watch Introduction",
+      "skip": "Skip",
+      "dismiss": "Don't show again",
+      "videoUnavailable": "Video temporarily unavailable",
+      "loadingMartyJr": "Loading Marty Jr...",
+      "loadingWidgets": "Loading widgets intro..."
+    },
+    "contentPicker": {
+      "noContent": "No content available",
+      "tryAnotherTab": "Try selecting another category"
+    },
+    "delete": "Delete",
+    "hide": "Hide",
+    "resetPosition": "Reset position",
+    "pinToWidget": "Pin to Widget",
+    "customIframe": "Custom URL Widget",
+    "pasteUrl": "Paste a URL to watch",
+    "urlRequired": "Please enter a URL",
+    "invalidProtocol": "Only HTTP and HTTPS URLs are allowed",
+    "domainNotAllowed": "This domain is not in the allowed list",
+    "invalidUrl": "Invalid URL format",
+    "urlValid": "URL is valid",
+    "allowedDomains": "Allowed domains:",
+    "changeUrl": "Change URL",
+    "minimize": "Minimize",
+    "expandWidget": "Expand widget",
+    "select": "Select",
+    "selectAll": "Select All",
+    "cancelSelection": "Cancel",
+    "deleteSelected": "Delete",
+    "bulkDeleteConfirm": "Delete selected widgets?",
+    "bulkDeleted": "Widgets deleted",
+    "showDock": "Show Dock",
+    "hideDock": "Hide Dock",
+    "audiobook": "Audiobook",
+    "liveTVStream": "Live TV Stream",
+    "noContent": "No content available",
+    "podcastEpisode": "Podcast Episode",
+    "radioStation": "Radio Station",
+    "webContent": "Web Content"
   },
   "youngsters": {
     "title": "Youngsters",
@@ -6812,1176 +8155,5 @@
     "loading": "Loading content...",
     "news": "News",
     "trending": "Trending"
-  },
-  "catchup": {
-    "overlay": {
-      "title": "Just joined?",
-      "description": "You joined {{programName}} in progress",
-      "creditContext": "This will use {{cost}} of your {{balance}} credits",
-      "lowBalanceWarning": "Low credits remaining",
-      "acceptButton": "Catch Me Up ({{cost}} credits)",
-      "declineButton": "No Thanks",
-      "accept": "Accept",
-      "balanceContext": "Balance Context",
-      "decline": "Decline",
-      "lowBalance": "Low Balance",
-      "thisProgram": "This Program"
-    },
-    "button": {
-      "credits": "Catch Up ({{cost}} credits)",
-      "label": "Catch up summary ({{cost}} credits)",
-      "title": "Catch Up"
-    },
-    "generating": "Generating summary...",
-    "summary": {
-      "title": "What You Missed",
-      "keyPoints": "Key Points",
-      "windowInfo": "Last {{minutes}} minutes",
-      "creditsUsed": "Used {{count}} credits",
-      "creditsRemaining": "{{count}} credits remaining",
-      "close": "Close",
-      "cached": "Cached",
-      "remaining": "Remaining",
-      "window": "Window"
-    },
-    "error": {
-      "failed": "Could not generate summary",
-      "retry": "Try Again",
-      "insufficientCredits": "Not enough credits"
-    },
-    "timeline": {
-      "title": "Transcript Timeline",
-      "segmentCount": "{{count}} segments",
-      "count": "{{count}} segments",
-      "window": "Last {{minutes}} min",
-      "buttonLabel": "Show transcript timeline",
-      "buttonTitle": "Timeline",
-      "empty": "No transcripts available yet",
-      "loading": "Loading transcripts..."
-    }
-  },
-  "highlights": {
-    "title": "Highlights",
-    "noHighlights": "No highlights detected yet",
-    "fetchError": "Failed to load highlights",
-    "types": {
-      "emotional": "Emotional",
-      "entity": "Entity",
-      "keyword": "Keyword",
-      "dramatic": "Dramatic"
-    },
-    "button": {
-      "label": "Show Highlights",
-      "title": "Highlights"
-    }
-  },
-  "liveSearch": {
-    "liveTitle": "Live Search",
-    "placeholder": "Search transcripts...",
-    "enterQuery": "Enter a search term",
-    "noResults": "No matching transcripts",
-    "resultsCount": "{{count}} results",
-    "button": {
-      "label": "Search Transcripts",
-      "title": "Search"
-    }
-  },
-  "quota": {
-    "subtitleExceeded": "Subtitle quota exceeded. Please try again later.",
-    "dubbingExceeded": "Dubbing quota exceeded. Please try again later."
-  },
-  "validation": {
-    "authorRequired": "Author is required",
-    "orderRange": "Order must be between 1 and 100",
-    "streamUrlRequired": "Stream URL is required",
-    "titleRequired": "Title is required"
-  },
-  "audible": {
-    "accountLinked": "Your Audible account is now linked to Bayit+",
-    "connected": "Connected!",
-    "connecting": "Connecting Audible...",
-    "connectionFailed": "Connection Failed",
-    "pleaseWait": "Please wait while we link your account.",
-    "connect": "Connect Audible",
-    "disconnect": "Disconnect Audible"
-  },
-  "beta": {
-    "credits": {
-      "error": "Failed to load credits",
-      "label": "AI Credits",
-      "loading": "Loading credits...",
-      "remaining": "{{count}} credits remaining",
-      "upgrade": "Upgrade",
-      "upgradeAction": "Upgrade Action",
-      "warningCritical": "Warning Critical",
-      "warningLow": "Warning Low"
-    }
-  },
-  "cancelled": {
-    "description": "Your payment has been cancelled.",
-    "helpText": "No charges were made to your account.",
-    "retry": "Try Again",
-    "title": "Payment Cancelled"
-  },
-  "devices": {
-    "activeNow": "Active now",
-    "confirmDisconnect": "Disconnect Device?",
-    "daysAgo": "{{count}} days ago",
-    "disconnect": "Disconnect",
-    "disconnectSuccess": "Device Disconnected",
-    "disconnectSuccessMessage": "Device has been successfully disconnected.",
-    "disconnectSuccessWithSessions": "Disconnect Success With Sessions",
-    "hoursAgo": "{{count}} hours ago",
-    "loading": "Loading devices...",
-    "minutesAgo": "{{count}} minutes ago",
-    "noDevices": "No devices connected",
-    "noDevicesDescription": "Devices will appear here when you log in on different platforms",
-    "registeredDevices": "Registered Devices",
-    "thisDevice": "This device"
-  },
-  "liveAiDataFlow": {
-    "subtitle": "End-to-end pipeline visualization for Live AI features",
-    "tabs": {
-      "dubbing": "Dubbing",
-      "translation": "Translation",
-      "trivia": "Trivia"
-    },
-    "title": "Live AI Data Flow",
-    "services": {
-      "elevenlabs": "ElevenLabs",
-      "googleCloud": "Google Cloud",
-      "googleTranslate": "Google Translate",
-      "openai": "OpenAI",
-      "claude": "Claude",
-      "spacy": "spaCy",
-      "redis": "Redis",
-      "tavily": "Tavily"
-    },
-    "translation": {
-      "nodes": {
-        "auth": {
-          "title": "WebSocket Auth + Rate Limit",
-          "input": "WebSocket connection request with JWT token",
-          "output": "Authenticated session with rate limit applied"
-        },
-        "quota": {
-          "title": "Quota Check (30s cache)",
-          "input": "User ID and feature type",
-          "output": "Quota validation result (cached 30s)"
-        },
-        "stt": {
-          "title": "STT (ElevenLabs Scribe v2)",
-          "input": "Raw audio stream from channel",
-          "output": "Transcribed text segments with timestamps"
-        },
-        "dedup": {
-          "title": "Deduplication (70% overlap)",
-          "input": "New transcript segment",
-          "output": "Filtered unique segments (70% overlap threshold)"
-        },
-        "predictive": {
-          "title": "Predictive Subtitle Emit (optional)",
-          "input": "Original language transcript",
-          "output": "Early subtitle display before translation"
-        },
-        "translate": {
-          "title": "Translation (Google/OpenAI/Claude)",
-          "input": "Original language text segment",
-          "output": "Translated text in target language"
-        },
-        "chunk": {
-          "title": "Text Chunking (max 80 chars)",
-          "input": "Translated text of any length",
-          "output": "Chunks of max 80 characters for display"
-        },
-        "emit": {
-          "title": "Final Subtitle Emit",
-          "input": "Chunked translated subtitle",
-          "output": "WebSocket event to client with subtitle data"
-        }
-      }
-    },
-    "dubbing": {
-      "nodes": {
-        "auth": {
-          "title": "WebSocket Auth + Rate Limit",
-          "input": "WebSocket connection request with JWT token",
-          "output": "Authenticated session with rate limit applied"
-        },
-        "quota": {
-          "title": "Quota Check",
-          "input": "User ID and dubbing feature type",
-          "output": "Quota validation result"
-        },
-        "session": {
-          "title": "Session Init + ChannelSTTManager Subscribe",
-          "input": "Channel ID and language preferences",
-          "output": "Subscribed to shared STT channel manager"
-        },
-        "stt": {
-          "title": "Shared STT (1 per channel, 99% cost save)",
-          "input": "Channel audio stream (shared across users)",
-          "output": "Shared transcript for all channel subscribers"
-        },
-        "transcriptEmit": {
-          "title": "Transcript Emit to Client",
-          "input": "Shared STT transcript segment",
-          "output": "WebSocket event with original transcript"
-        },
-        "translate": {
-          "title": "Translation",
-          "input": "Original transcript text",
-          "output": "Translated text in user's target language"
-        },
-        "translationEmit": {
-          "title": "Translation Emit to Client",
-          "input": "Translated text segment",
-          "output": "WebSocket event with translated text"
-        },
-        "tts": {
-          "title": "TTS Streaming (new conn per transcript)",
-          "input": "Translated text for speech synthesis",
-          "output": "Streaming audio chunks from ElevenLabs"
-        },
-        "encode": {
-          "title": "Audio Encoding (base64)",
-          "input": "Raw audio buffer from TTS",
-          "output": "Base64-encoded audio ready for transport"
-        },
-        "audioEmit": {
-          "title": "Dubbed Audio Emit",
-          "input": "Encoded audio chunk",
-          "output": "WebSocket event with dubbed audio data"
-        }
-      }
-    },
-    "trivia": {
-      "nodes": {
-        "auth": {
-          "title": "WebSocket Auth + Rate Limit",
-          "input": "WebSocket connection request with JWT token",
-          "output": "Authenticated session with rate limit applied"
-        },
-        "quota": {
-          "title": "Quota Check (fact-based)",
-          "input": "User ID and trivia feature type",
-          "output": "Quota validation (per-fact billing)"
-        },
-        "topic": {
-          "title": "Topic Detection (NER)",
-          "input": "Transcript text from live channel",
-          "output": "Detected named entities and topics"
-        },
-        "mention": {
-          "title": "Mention Tracking (min 2, 60-min cooldown)",
-          "input": "Detected entity with mention count",
-          "output": "Eligible topic (2+ mentions, not in cooldown)"
-        },
-        "session": {
-          "title": "Session Management (FIFO max 100)",
-          "input": "New trivia session request",
-          "output": "Session slot allocated (FIFO eviction at 100)"
-        },
-        "cache": {
-          "title": "Fact Cache Lookup (24h TTL)",
-          "input": "Topic entity for fact lookup",
-          "output": "Cached fact if available (24h TTL)"
-        },
-        "search": {
-          "title": "Web Search (cache miss only)",
-          "input": "Topic entity needing fresh facts",
-          "output": "Web search results from Tavily"
-        },
-        "extract": {
-          "title": "Fact Extraction (cache miss only)",
-          "input": "Web search results for topic",
-          "output": "Structured trivia fact extracted by AI"
-        },
-        "tracking": {
-          "title": "Session Tracking + Interval (15s min)",
-          "input": "Generated trivia fact",
-          "output": "Fact queued with 15s minimum interval"
-        },
-        "emit": {
-          "title": "Trivia Fact Emit (multilingual)",
-          "input": "Trivia fact with translations",
-          "output": "WebSocket event with multilingual trivia"
-        }
-      }
-    }
-  },
-  "pending": {
-    "description": "Your payment is being processed. Please wait...",
-    "helpText": "This usually takes a few seconds. Do not close this page.",
-    "takingLonger": "This is taking longer than expected...",
-    "timeElapsed": "Time elapsed: {{time}}",
-    "title": "Payment Processing"
-  },
-  "privacy": {
-    "children": {
-      "content": "While our content is suitable for all ages, Olorin.ai LLC does not knowingly collect personal identifiable information from children under the age of 13. If you are a parent and believe your child has provided us with personal information, please contact us.",
-      "title": "5. Children\\"
-    },
-    "collection": {
-      "audio": {
-        "data": "Data Collected: Brief audio samples of the TV broadcast.",
-        "intro": "If you utilize features requiring audio synchronization, the App may request Microphone access.",
-        "purpose": "Purpose: To match the audio fingerprint of the public broadcast for synchronization purposes.",
-        "retention": "Retention: Like visual data, audio samples are processed in real-time and immediately deleted. We do not listen to or record user conversations.",
-        "title": "Title"
-      },
-      "camera": {
-        "data": "Data",
-        "intro": "To provide our core service—synchronizing translated audio with your TV—Bayit+ requires access to your device\\",
-        "purpose": "Purpose",
-        "retention": "Retention: This data is ephemeral. The frames are processed instantly in memory and are permanently deleted immediately after the synchronization is established. We do not view, store, or archive images of your home or family.",
-        "title": "A. Camera & Visual Synchronization Data"
-      },
-      "title": "2. Information We Collect & How We Use It",
-      "usage": {
-        "aggregate": "Aggregate",
-        "content": "We may collect non-identifiable technical data to improve App stability, including:",
-        "crash": "Crash logs and performance metrics.",
-        "device": "Device type and operating system version.",
-        "title": "C. Usage & Technical Data"
-      }
-    },
-    "contact": {
-      "intro": "If you have any questions about this Privacy Policy, please contact us at:",
-      "title": "7. Contact Us"
-    },
-    "intro": {
-      "commitment": "We built Bayit+ with a \"Privacy-First\" architecture. We do not record your living room. Our technology uses your device\\",
-      "content": "Content",
-      "title": "1. Introduction"
-    },
-    "lastUpdated": "Last Updated: January 27, 2026",
-    "retention": {
-      "account": "Account Data: Retained only as long as your account is active to manage your subscription and preferences.",
-      "sync": "Sync",
-      "title": "4. Data Retention"
-    },
-    "rights": {
-      "content": "Depending on your location, you may have the right to request access to, correction of, or deletion of your personal data. You may delete your Bayit+ account at any time within the App settings.",
-      "title": "6. Your Rights"
-    },
-    "sharing": {
-      "ai": "AI Processing: Services used to generate real-time text and audio translations from public broadcast feeds.",
-      "cloud": "Cloud",
-      "noSale": "Olorin.ai LLC does not sell your personal data. We partner with trusted third-party service providers to deliver our infrastructure. These providers are authorized to use your data only as necessary to provide these services to us:",
-      "title": "3. Data Sharing and Third Parties"
-    }
-  },
-  "semantic": {
-    "info": "AI-powered search understands meaning, not just keywords",
-    "infoTitle": "Semantic Search",
-    "keyword": "Keyword",
-    "semantic": "Semantic"
-  },
-  "success": {
-    "continue": "Continue",
-    "description": "Your payment has been processed successfully.",
-    "redirecting": "Redirecting...",
-    "title": "Payment Successful"
-  },
-  "suggestions": {
-    "categoriesTitle": "Categories",
-    "clearRecent": "Clear Recent",
-    "recentTitle": "Recent Searches",
-    "trendingTitle": "Trending"
-  },
-  "viewMode": {
-    "cards": "Cards",
-    "grid": "Grid",
-    "list": "List"
-  },
-  "widget": {
-    "103fmEpisodes": "103FM Episodes",
-    "audioUnavailable": "Audio unavailable",
-    "contentUnavailable": "Content unavailable",
-    "errorLoadingContent": "Error loading content",
-    "iframeNotConfigured": "iFrame URL not configured",
-    "loadingEpisodes": "Loading episodes...",
-    "loadingNews": "Loading news...",
-    "noContentConfigured": "No content configured",
-    "noEpisodesFound": "No episodes found",
-    "podcastUnavailable": "Podcast unavailable",
-    "stationUnavailable": "Station unavailable",
-    "streamUnavailable": "Stream unavailable",
-    "unknownComponent": "Unknown component: {{componentName}}",
-    "ynetBreakingNews": "מבזקי Ynet"
-  },
-  "auth": {
-    "loginRequired": "Login Required",
-    "loginToWatch": "Please sign in to watch {{title}}",
-    "login": "Login",
-    "signUp": "Sign Up",
-    "signInRequired": "Sign In Required",
-    "signInRequiredTitle": "Please sign in to continue"
-  },
-  "email": {
-    "greeting": "Hello",
-    "footer": {
-      "privacy": "Privacy Policy",
-      "terms": "Terms of Service",
-      "support": "Support",
-      "unsubscribe": "Unsubscribe from these emails"
-    },
-    "welcome": {
-      "subject": "Welcome to Bayit+!",
-      "title": "Welcome to Bayit+",
-      "body": "Thank you for joining Bayit+. We're excited to have you on board!",
-      "cta": "Go to Dashboard"
-    },
-    "verification": {
-      "subject": "Verify Your Email",
-      "title": "Verify Your Email Address",
-      "body": "Please click the button below to verify your email address.",
-      "cta": "Verify Email",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't create an account, you can safely ignore this email."
-    },
-    "verification_resend": {
-      "subject": "Email Verification (Resent)",
-      "title": "Verify Your Email Address",
-      "body": "Here's a new verification link as requested.",
-      "cta": "Verify Email"
-    },
-    "password_reset": {
-      "subject": "Reset Your Password",
-      "title": "Reset Your Password",
-      "body": "We received a request to reset your password. Click the button below to create a new password.",
-      "cta": "Reset Password",
-      "expiry": "This link will expire in {expiry_hours} hours.",
-      "security": "If you didn't request this, your account is still safe. You can ignore this email."
-    },
-    "password_changed": {
-      "subject": "Password Changed",
-      "title": "Your Password Has Been Changed",
-      "body": "Your password was successfully changed.",
-      "security": "If you didn't make this change, please contact support immediately."
-    },
-    "account_locked": {
-      "subject": "Account Locked",
-      "title": "Your Account Has Been Locked",
-      "body": "Your account has been temporarily locked due to security concerns.",
-      "cta": "Unlock Account"
-    },
-    "beta_invitation": {
-      "subject": "You're Invited to Bayit+ Beta!",
-      "title": "You're Invited to the Beta Program",
-      "body": "Congratulations! You've been selected for the exclusive Bayit+ Beta 500 program.",
-      "credits": "{credits} AI credits included",
-      "duration": "Access for {days} days",
-      "cta": "Join Beta Program"
-    },
-    "beta_welcome": {
-      "subject": "Welcome to Bayit+ Beta!",
-      "title": "Welcome to the Beta Program",
-      "body": "You're now part of the exclusive Bayit+ Beta 500 community!",
-      "cta": "Get Started"
-    },
-    "payment_confirmation": {
-      "subject": "Payment Confirmation",
-      "title": "Payment Received",
-      "body": "Your payment has been processed successfully.",
-      "transaction": "Transaction ID",
-      "plan": "Plan",
-      "amount": "Amount",
-      "date": "Payment Date",
-      "next_billing": "Next Billing Date"
-    },
-    "subscription_activated": {
-      "subject": "Subscription Activated",
-      "title": "Your Subscription is Active",
-      "body": "Your subscription has been activated. Here's what you get:",
-      "cta": "Start Watching"
-    },
-    "subscription_cancelled": {
-      "subject": "Subscription Cancelled",
-      "title": "Subscription Cancelled",
-      "body": "Your subscription has been cancelled. You'll continue to have access until {access_until}.",
-      "cta": "Reactivate Subscription"
-    },
-    "payment_failed": {
-      "subject": "Payment Failed",
-      "title": "Payment Failed",
-      "body": "We were unable to process your payment. Please update your payment method.",
-      "cta": "Update Payment Method"
-    },
-    "trial_expiring": {
-      "subject": "Your Trial is Expiring Soon",
-      "title": "Trial Ending in {days_remaining} Days",
-      "body": "Your free trial is expiring soon. Upgrade now to keep enjoying all features.",
-      "cta": "Upgrade Now"
-    },
-    "support": {
-      "created_subject": "Ticket #{ticket_id} Created",
-      "created_title": "Support Ticket Created",
-      "created_body": "Your support ticket has been created. We'll get back to you soon.",
-      "response_subject": "New Response on Ticket #{ticket_id}",
-      "response_title": "New Response on Your Ticket",
-      "escalation_subject": "Ticket #{ticket_id} Escalated",
-      "escalation_title": "Your Ticket Has Been Escalated",
-      "resolved_subject": "Ticket #{ticket_id} Resolved",
-      "resolved_title": "Your Ticket Has Been Resolved",
-      "resolved_body": "Your support ticket has been resolved."
-    },
-    "new_message": {
-      "subject": "New Message from {sender_name}",
-      "title": "You Have a New Message",
-      "cta": "Read Message"
-    },
-    "content_digest": {
-      "subject": "Your {digest_period} Content Digest",
-      "title": "Your Content Digest",
-      "cta": "Browse Content"
-    },
-    "gdpr": {
-      "deletion_subject": "Data Deletion Confirmation",
-      "deletion_title": "Your Data Has Been Deleted",
-      "deletion_body": "As requested, your personal data has been permanently deleted.",
-      "categories_label": "Deleted Data Categories"
-    },
-    "admin": {
-      "account_created_subject": "Admin Account Created",
-      "account_created_title": "Admin Account Created",
-      "role_change_subject": "Role Changed",
-      "role_change_title": "Your Role Has Been Updated"
-    },
-    "campaign": {
-      "default_subject": "News from Bayit+"
-    },
-    "newsletter": {
-      "default_subject": "Bayit+ Newsletter"
-    },
-    "reengagement": {
-      "subject": "We Miss You!",
-      "title": "It's Been a While",
-      "body": "We noticed you haven't visited in {days_inactive} days. Here's what you've been missing:",
-      "cta": "Come Back"
-    }
-  },
-  "greeting": {
-    "morning": "Good morning",
-    "afternoon": "Good afternoon",
-    "evening": "Good evening",
-    "night": "Good night"
-  },
-  "location": {
-    "consentModal": {
-      "title": "Enable Location Services",
-      "description": "We'd like to show you content relevant to your area.\n\nWe will:\n• Detect your city and state\n• Show local Israeli community content\n• Cache your location for 24 hours\n\nWe will NOT:\n• Track your exact location\n• Share your location with third parties\n• Store your location permanently without consent\n\nYou can change this anytime in settings.",
-      "accept": "Allow Location Access",
-      "decline": "Not Now",
-      "privacyNote": "Your privacy is important. Location data is encrypted and never sold."
-    },
-    "permissionBanner": {
-      "title": "Discover Israeli Content Near You",
-      "description": "Enable location services to see Israeli community events, news, and stories from your area. Your privacy is protected - we only detect your city.",
-      "ariaLabel": "Location services prompt",
-      "enable": "Enable Location",
-      "notNow": "Not Now",
-      "dismiss": "Dismiss location prompt",
-      "close": "Close banner"
-    },
-    "status": {
-      "detecting": "Detecting your location...",
-      "detected": "Location detected: {{city}}, {{state}}",
-      "denied": "Location access denied",
-      "unavailable": "Location services unavailable",
-      "error": "Failed to detect location"
-    },
-    "errors": {
-      "permissionDenied": "Location access denied. Please enable location in your browser settings.",
-      "timeout": "Location request timed out. Please try again.",
-      "unavailable": "Location services are not available in your browser.",
-      "failed": "Failed to get location. Please try again."
-    }
-  },
-  "payment": {
-    "pending": {
-      "title": "Complete Your Subscription",
-      "description": "Choose a plan to start your 7-day free trial and access all of Bayit+",
-      "timeElapsed": "Checking payment status... ({{seconds}}s)",
-      "takingLonger": "Payment confirmation is taking longer than expected. Please try refreshing or contact support if you've already paid.",
-      "helpText": "Need help? Contact support@bayit.tv or refresh this page if you already completed payment."
-    },
-    "continueToPayment": "Continue to Payment",
-    "success": {
-      "title": "Payment Successful!",
-      "description": "Welcome to Bayit+! Your subscription is now active.",
-      "redirecting": "Redirecting in {{seconds}} seconds...",
-      "continue": "Continue to Bayit+"
-    },
-    "cancelled": {
-      "title": "Payment Cancelled",
-      "description": "Your subscription was not completed. You can try again when you're ready.",
-      "retry": "Try Again",
-      "helpText": "Questions? Contact support@bayit.tv for assistance."
-    }
-  },
-  "portal": {
-    "nav": {
-      "home": "Home",
-      "features": "Features",
-      "solutions": "Solutions",
-      "pricing": "Pricing",
-      "demo": "Live Demo",
-      "contact": "Contact",
-      "getStarted": "Get Started"
-    },
-    "hero": {
-      "ctaExplore": "Explore Features",
-      "ctaDemo": "Request Demo"
-    },
-    "cta": {
-      "title": "Ready to Get Started?",
-      "subtitle": "Let's discuss how we can help transform your business",
-      "button": "Contact Us"
-    },
-    "contactPage": {
-      "title": "Get In Touch",
-      "subtitle": "Interested in our solutions? Let's talk",
-      "formTitle": "Send Us a Message",
-      "infoTitle": "Contact Information",
-      "form": {
-        "name": "Full Name",
-        "email": "Email Address",
-        "company": "Company Name",
-        "phone": "Phone Number",
-        "message": "Your Message",
-        "messagePlaceholder": "Tell us about your needs..."
-      },
-      "submit": "Send Message",
-      "sending": "Sending...",
-      "success": "Message sent successfully! We'll get back to you soon.",
-      "error": "Failed to send message. Please try again.",
-      "scheduleTitle": "Prefer to Schedule a Call?",
-      "scheduleSubtitle": "Book a personalized demo with our team",
-      "scheduleCta": "Schedule Demo Call"
-    },
-    "pricingPage": {
-      "title": "Affordable",
-      "titleHighlight": "Pricing Plans",
-      "subtitle": "Choose the plan that fits your needs",
-      "comparisonTitle": "Feature Comparison",
-      "faqTitle": "Frequently Asked Questions",
-      "faq": {
-        "q1": "How is pricing calculated?",
-        "a1": "Pricing is based on your specific needs and usage. Contact us for a custom quote.",
-        "q2": "Can I upgrade my plan later?",
-        "a2": "Yes, you can upgrade at any time. We'll help migrate your data seamlessly.",
-        "q3": "What support is included?",
-        "a3": "All plans include email support. Professional and Enterprise plans include priority support with dedicated account managers."
-      },
-      "professional": {
-        "name": "Professional",
-        "price": "Contact for Quote",
-        "priceNote": "Custom pricing",
-        "description": "For growing businesses with advanced needs",
-        "cta": "Get Quote"
-      },
-      "enterprise": {
-        "name": "Enterprise",
-        "price": "Custom",
-        "priceNote": "Volume-based",
-        "description": "For large organizations and enterprise deployments",
-        "cta": "Contact Sales"
-      },
-      "ctaTitle": "Ready to Get Started?",
-      "ctaSubtitle": "Let's discuss your needs and find the perfect plan",
-      "ctaButton": "Contact Sales"
-    },
-    "featuresPage": {
-      "title": "Powerful",
-      "titleHighlight": "Features",
-      "subtitle": "Everything you need to succeed",
-      "techSpecsTitle": "Technical Specifications",
-      "workflowTitle": "How It Works",
-      "workflow": {
-        "s1": {
-          "title": "Import",
-          "description": "Upload and organize your content"
-        },
-        "s2": {
-          "title": "Configure",
-          "description": "Set up your preferences and settings"
-        },
-        "s3": {
-          "title": "Deploy",
-          "description": "Go live with your solution"
-        },
-        "s4": {
-          "title": "Monitor",
-          "description": "Track performance and optimize"
-        }
-      },
-      "ctaTitle": "Ready to Explore Features?",
-      "ctaSubtitle": "See all features in action with a personalized demo",
-      "ctaButton": "Schedule Demo"
-    },
-    "demoPage": {
-      "title": "See Our",
-      "titleHighlight": "Platform",
-      "subtitle": "Experience the power of our solution",
-      "scheduleCta": "Schedule Live Demo",
-      "stepsTitle": "How It Works",
-      "steps": {
-        "analyze": {
-          "title": "Analyze",
-          "description": "Track and improve performance"
-        }
-      },
-      "featuresTitle": "Platform Highlights",
-      "platformsTitle": "Available On",
-      "ctaTitle": "Ready for Your Custom Demo?",
-      "ctaSubtitle": "Schedule a personalized demonstration tailored to your needs",
-      "ctaButton": "Schedule Demo"
-    },
-    "workflow": {
-      "sectionTitle": "Intelligent Workflow",
-      "sectionSubtitle": "Streamlined process in 4 steps",
-      "step1": {
-        "title": "Setup",
-        "description": "Configure your account and preferences"
-      },
-      "step2": {
-        "title": "Configure",
-        "description": "Customize settings for your needs"
-      },
-      "step3": {
-        "title": "Deploy",
-        "description": "Launch your solution"
-      },
-      "step4": {
-        "title": "Monitor",
-        "description": "Track performance and optimize"
-      }
-    }
-  },
-  "uploads": {
-    "status": {
-      "pending": "Pending",
-      "inProgress": "In Progress",
-      "uploading": "Uploading",
-      "processing": "Processing",
-      "queued": "Queued",
-      "completed": "Completed",
-      "failed": "Failed",
-      "cancelled": "Cancelled"
-    }
-  },
-  "channelChat": {
-    "title": "Live Chat",
-    "participants": "{{count}} watching",
-    "inputPlaceholder": "Type a message...",
-    "sendButton": "Send",
-    "rateLimitWarning": "Slow down! Wait {{seconds}}s",
-    "autoTranslationBadge": "Auto-Translation (Beta)",
-    "showOriginal": "Show Original",
-    "showTranslation": "Show Translation",
-    "error": "Chat unavailable",
-    "retry": "Retry",
-    "upgradeBeta": "Upgrade to Beta 500 for auto-translation",
-    "inputLabel": "Chat message input",
-    "moderationDelete": "Message removed by moderator",
-    "participants_one": "{{count}} viewer",
-    "participants_other": "{{count}} viewers",
-    "userJoined": "{{name}} joined the chat",
-    "userLeft": "A user left the chat",
-    "placeholder": "Send a message...",
-    "send": "Send",
-    "translationBeta": "Translation (Beta)"
-  },
-  "avatar": {
-    "dialogue": {
-      "wake": {
-        "here": "I am here.",
-        "service": "At your service.",
-        "speak": "Speak, and I shall listen.",
-        "yes": "Yes?",
-        "seek": "What do you seek?",
-        "listening": "I'm listening.",
-        "awaits": "The wizard awaits.",
-        "hmm": "Hmm?"
-      },
-      "listening": {
-        "see": "Hmm, let me see...",
-        "moment": "One moment...",
-        "archives": "Consulting the archives...",
-        "yes": "Ah, yes...",
-        "find": "Let me find that...",
-        "interesting": "Interesting...",
-        "let": "Let me think about that..."
-      },
-      "processing": {
-        "vast": "The scrolls are vast... patience.",
-        "depths": "Searching the depths...",
-        "deeper": "This requires a deeper look...",
-        "ancient": "Consulting ancient knowledge...",
-        "seek": "I'm searching the library...",
-        "moment": "One moment...",
-        "consulting": "Consulting the archives..."
-      },
-      "presenting": {
-        "here": "Here you are.",
-        "channels": "As you wish. Your channels.",
-        "behold": "Behold.",
-        "summoned": "I've summoned them for you.",
-        "exactly": "Here — exactly as requested.",
-        "found": "I found it for you."
-      },
-      "presentingList": {
-        "found": "I found {{count}} that may interest you...",
-        "podcasts": "Your podcasts have new tales to tell.",
-        "treasures": "Several treasures match your request...",
-        "archives": "The archives reveal these...",
-        "results": "Here is what I found..."
-      },
-      "presentingSingle": {
-        "seek": "This is what you seek.",
-        "found": "Found it.",
-        "exactly": "Here — exactly as you described.",
-        "this": "Ah! This one.",
-        "precisely": "Precisely what you asked for."
-      },
-      "fuzzySearch": {
-        "said": "You said '{{query}}'... I found these in your collection.",
-        "possibilities": "Ah — '{{query}}.' Several possibilities here.",
-        "appears": "The word '{{query}}' appears in these titles...",
-        "matches": "Searching for '{{query}}'... here are the matches."
-      },
-      "nothingFound": {
-        "rephrase": "Hmm. The archives reveal nothing. Perhaps rephrase?",
-        "another": "I searched, but found no match. Shall we try another way?",
-        "describe": "Nothing by that name. Could you describe it differently?",
-        "limits": "Even wizards have limits. I couldn't find that.",
-        "silent": "The scrolls are silent on this matter.",
-        "elsewhere": "I found nothing here. Perhaps search elsewhere?",
-        "sorry": "Sorry, that's not in my scrolls."
-      },
-      "clarification": {
-        "catch": "I didn't quite catch that. Once more?",
-        "hearing": "My hearing isn't what it was. Again?",
-        "again": "Say that again for me.",
-        "uncertain": "I'm uncertain what you mean. Could you clarify?",
-        "guess": "Did you say '{{guess}}', or something else?",
-        "didYouMean": "Did you mean {{guess}}?",
-        "unclear": "Your request isn't clear. Could you clarify?",
-        "whichOne": "Which one interests you?"
-      },
-      "confirmation": {
-        "play": "Shall I play it?",
-        "continue": "Want me to continue?",
-        "list": "Should I read through the list?",
-        "details": "Would you like more details?",
-        "done": "Done.",
-        "completed": "Completed.",
-        "understood": "Understood."
-      },
-      "dismissal": {
-        "rests": "The wizard rests. Call when you need me.",
-        "next": "Until next time.",
-        "here": "I'll be here.",
-        "farewell": "Farewell for now.",
-        "word": "I am but a word away.",
-        "rest": "I'll rest here if you need me.",
-        "return": "Call, and I shall return."
-      },
-      "dismissalLate": {
-        "late": "The hour grows late. Sweet dreams.",
-        "goodnight": "Goodnight. May your dreams be peaceful.",
-        "rest": "Rest well. The wizard watches over you."
-      },
-      "interruption": {
-        "got": "Got it — what would you like instead?",
-        "understood": "Understood. I await your new command.",
-        "well": "Very well. What now?",
-        "stopped": "Stopped. What do you seek?",
-        "speak": "Speak, and I shall listen.",
-        "course": "Of course, what's the new request?"
-      },
-      "error": {
-        "technical": "Something went awry. Shall we try again?",
-        "apologies": "The magic faltered. Once more?",
-        "failed": "An unexpected obstacle. Let me try differently."
-      },
-      "personality": {
-        "deliver": "You ask much... but I deliver.",
-        "hidden": "Ah! Hidden, but not from me.",
-        "manners": "Manners. I appreciate that.",
-        "already": "You already asked me this, but very well...",
-        "worthy": "A worthy challenge for a wizard.",
-        "wisdom": "Remember, even the wisest wizard once started as a student.",
-        "patience": "Patience reveals what haste conceals.",
-        "magic": "Magic flows everywhere — you just need to know where to look."
-      },
-      "idleTimeout": {
-        "there": "Still there? Or shall I rest?",
-        "awaits": "The wizard awaits your command...",
-        "remain": "I remain at your service.",
-        "still": "Still here?",
-        "anything": "Anything else?",
-        "resting": "I'll rest until you need me again."
-      },
-      "greeting": {
-        "morning": "Good morning. What do you seek?",
-        "afternoon": "Good afternoon. How may I help?",
-        "evening": "Good evening. I am at your service.",
-        "night": "The hour grows late. What do you need?"
-      },
-      "waiting": {
-        "moment": "One moment, please...",
-        "patience": "Patience... the scrolls are vast.",
-        "searching": "Searching through the archives..."
-      },
-      "success": {
-        "aha": "Aha! Found it!",
-        "found": "Success! Here it is.",
-        "excellent": "Excellent! Just as I suspected."
-      },
-      "warning": {
-        "caution": "A moment of caution...",
-        "careful": "Careful now...",
-        "wait": "Wait — let me explain something first."
-      },
-      "magicalReveal": {
-        "behold": "Behold what the magic reveals!",
-        "witness": "Witness this...",
-        "observe": "Observe closely now..."
-      },
-      "agreement": {
-        "yes": "Yes, indeed.",
-        "indeed": "Indeed, you are correct.",
-        "certainly": "Certainly. As you wish."
-      },
-      "disagreement": {
-        "no": "I'm afraid not.",
-        "afraid": "That doesn't seem right.",
-        "unfortunately": "Unfortunately, that won't work."
-      },
-      "clarificationNeeded": {
-        "pardon": "Pardon? Say that again.",
-        "didntCatch": "I didn't quite catch that.",
-        "sayAgain": "Could you say that once more?"
-      }
-    },
-    "states": {
-      "dormant": "Resting",
-      "listening": "Listening",
-      "processing": "Thinking",
-      "responding": "Speaking",
-      "confused": "Confused",
-      "interrupted": "Interrupted"
-    },
-    "gestures": {
-      "idle": "Idle",
-      "greeting": "Greeting",
-      "listening": "Listening",
-      "attentive": "Attentive",
-      "thinking": "Thinking",
-      "presenting": "Presenting",
-      "conjuring": "Conjuring",
-      "browsing": "Browsing",
-      "confused": "Confused",
-      "shrugging": "Shrugging",
-      "farewell": "Farewell",
-      "cheering": "Cheering",
-      "clapping": "Clapping",
-      "crying": "Crying",
-      "facepalm": "Facepalm",
-      "emphatic": "Emphatic",
-      "reading": "Reading",
-      "confirmation": "Confirming",
-      "single_result": "Pointing",
-      "waiting": "Waiting",
-      "success": "Success",
-      "clarification": "Clarifying",
-      "warning": "Warning",
-      "magical_reveal": "Revealing",
-      "agreement": "Agreeing",
-      "disagreement": "Disagreeing"
-    },
-    "accessibility": {
-      "avatarLabel": "Olorin wizard assistant",
-      "speakingLabel": "Wizard is speaking",
-      "listeningLabel": "Wizard is listening",
-      "processingLabel": "Wizard is processing your request",
-      "focusHint": "Press select to interact with the wizard"
-    }
-  },
-  "quiz": {
-    "title": "Quiz Time!",
-    "questionOf": "Question {{current}} of {{total}}",
-    "correct": "Correct!",
-    "incorrect": "Not quite!",
-    "score": "You got {{score}} out of {{total}}!",
-    "pointsEarned": "+{{points}} points",
-    "badgeEarned": "Badge Earned!",
-    "perfectScore": "Perfect Score!",
-    "tryAgain": "Try Again",
-    "continue": "Continue",
-    "skip": "Skip Quiz",
-    "loading": "Loading quiz...",
-    "error": "Could not load quiz",
-    "retry": "Try Again",
-    "submitting": "Checking answers...",
-    "greatJob": "Great job!",
-    "keepLearning": "Keep learning and playing!",
-    "nextQuestion": "Next Question",
-    "viewResults": "View Results",
-    "answersReview": "Your Answers",
-    "explanation": "Explanation",
-    "timeBonus": "Time Bonus",
-    "streakBonus": "Streak Bonus",
-    "newBadge": "New Badge!",
-    "totalScore": "Total Score"
-  },
-  "rewards": {
-    "title": "My Rewards",
-    "totalPoints": "Total Points",
-    "badges": "Badges",
-    "quizzesCompleted": "Quizzes Completed",
-    "perfectScores": "Perfect Scores",
-    "currentStreak": "Current Streak",
-    "longestStreak": "Longest Streak",
-    "days": "days",
-    "noBadges": "Complete quizzes to earn badges!",
-    "locked": "Keep playing to unlock!",
-    "earnedOn": "Earned on {{date}}",
-    "pointsBonus": "+{{points}} bonus points",
-    "rarity": {
-      "common": "Common",
-      "uncommon": "Uncommon",
-      "rare": "Rare",
-      "epic": "Epic",
-      "legendary": "Legendary"
-    },
-    "badgeNames": {
-      "first_quiz": "First Quiz",
-      "quiz_rookie": "Quiz Rookie",
-      "quiz_fan": "Quiz Fan",
-      "quiz_master": "Quiz Master",
-      "perfect_start": "Perfect Start",
-      "perfectionist": "Perfectionist",
-      "streak_3": "On Fire",
-      "streak_7": "Week Warrior",
-      "streak_30": "Monthly Master"
-    }
-  },
-  "household": {
-    "title": "Household Management",
-    "subtitle": "Manage your family household and shared controls",
-    "create": "Create Household",
-    "createButton": "Create Household",
-    "createHousehold": "Create Household",
-    "createDescription": "Create a household to manage family controls for multiple accounts. Parents can set age-appropriate content limits for all household members.",
-    "name": "Household Name",
-    "householdName": "Household Name",
-    "namePlaceholder": "e.g., Smith Family",
-    "creating": "Creating...",
-    "members": "Members",
-    "memberCount": "{{count}} member",
-    "memberCount_plural": "{{count}} members",
-    "inviteMember": "Invite Member",
-    "removeMember": "Remove Member",
-    "remove": "Remove",
-    "confirmRemoveMember": "Are you sure you want to remove this member from your household?",
-    "delete": "Delete Household",
-    "confirmDelete": "Are you sure you want to delete this household? This action cannot be undone.",
-    "role": "Role",
-    "roleParent": "Parent",
-    "roleChild": "Child",
-    "roleGuardian": "Guardian",
-    "sharedControls": "Shared Controls",
-    "email": "Email Address",
-    "emailPlaceholder": "family@example.com",
-    "sendInvitation": "Send Invitation",
-    "pendingInvitations": "Pending Invitations",
-    "expires": "Expires",
-    "acceptingInvitation": "Accepting Invitation",
-    "invitationAccepted": "You've successfully joined {{name}}!",
-    "invitationExpired": "This invitation has expired. Please request a new invitation.",
-    "invalidInvitationLink": "Invalid invitation link. Please check the URL.",
-    "invalidInvitationCode": "Invalid invitation code. Please check the link.",
-    "invitationAcceptFailed": "Failed to accept invitation. Please try again.",
-    "mustBeLoggedIn": "You must be logged in to accept a household invitation.",
-    "redirectingToHousehold": "Redirecting to your household...",
-    "goToHousehold": "Go to Household",
-    "success": "Success!",
-    "error": "Error"
-  },
-  "profileControls": {
-    "title": "Profile Family Controls",
-    "subtitle": "Manage family controls for this profile",
-    "sourceSection": {
-      "title": "Controls Source",
-      "inheritHousehold": "Inherit from Household",
-      "inheritHouseholdDesc": "Use household-wide family controls",
-      "customControls": "Custom Controls",
-      "customControlsDesc": "Use profile-specific family controls"
-    },
-    "selectControls": {
-      "title": "Select Controls",
-      "controlsLabel": "Family Controls {{id}}",
-      "kidsAge": "Kids: {{age}}",
-      "youngstersAge": "Youngsters: {{age}}",
-      "rating": "Rating: {{rating}}",
-      "noControls": "No family controls available. Create controls in Family Controls settings."
-    },
-    "effectiveControls": {
-      "title": "Active Controls",
-      "kidsEnabled": "Kids Content",
-      "youngstersEnabled": "Youngsters Content",
-      "contentRating": "Content Rating Limit",
-      "viewingHours": "Viewing Hours",
-      "enabled": "Enabled",
-      "disabled": "Disabled",
-      "ageLimit": "Age limit: {{age}}",
-      "noRestriction": "No restriction",
-      "noControls": "No family controls active for this profile"
-    },
-    "errors": {
-      "noControlsAvailable": "No family controls available. Create controls first."
-    }
-  },
-  "comprehension": {
-    "title": "Comprehension Questions",
-    "enable": "Enable Comprehension Questions",
-    "enable_desc": "Show comprehension questions during playback to improve Hebrew",
-    "frequency": {
-      "title": "Question Frequency",
-      "off": "Off",
-      "off_desc": "No comprehension questions",
-      "low": "Low",
-      "low_desc": "One question every 15 minutes",
-      "normal": "Normal",
-      "normal_desc": "One question every 10 minutes (recommended)",
-      "high": "High",
-      "high_desc": "One question every 5 minutes"
-    },
-    "info_message": "Comprehension questions help improve your Hebrew understanding and deepen your connection to the content",
-    "scene_end": "What happened in this scene?",
-    "skip": "Skip",
-    "submit": "Submit Answer",
-    "correct": "Correct!",
-    "incorrect": "Incorrect",
-    "points_earned": "You earned {{points}} points",
-    "explanation": "Explanation",
-    "loading": "Loading question...",
-    "insufficient_credits": "Insufficient credits for comprehension question",
-    "error": "Error loading question"
-  },
-  "bar": {
-    "translate": "Translate",
-    "stop": "Stop",
-    "startTranslation": "Start translation",
-    "targetLanguage": "Target language",
-    "toggleSubtitles": "Toggle subtitles",
-    "close": "Close Bayit+ Bar",
-    "logo": "Bayit+",
-    "subtitlesButton": "CC",
-    "closeButton": "×"
   }
 }

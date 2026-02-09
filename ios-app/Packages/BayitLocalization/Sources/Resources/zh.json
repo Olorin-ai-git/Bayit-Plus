@@ -2867,6 +2867,254 @@
       "reject": "拒绝"
     }
   },
+  "audible": {
+    "accountLinked": "您的 Audible 帐户已成功关联到 Bayit+",
+    "connected": "已连接！",
+    "connecting": "正在连接 Audible...",
+    "connectionFailed": "连接失败",
+    "pleaseWait": "请稍候，正在关联您的帐户。",
+    "connect": "连接 Audible",
+    "disconnect": "断开 Audible"
+  },
+  "audiobooks": {
+    "audiobook": "有声书",
+    "chapter": "章节",
+    "chapters": "章节",
+    "playChapter": "播放章节",
+    "noChapters": "无可用章节",
+    "notFound": "未找到有声书",
+    "author": "作者",
+    "narrator": "朗读者",
+    "duration": "时长",
+    "isbn": "ISBN",
+    "available": "可用",
+    "averageRating": "平均评分",
+    "description": "发现来自世界各地的有声书",
+    "details": "详情",
+    "filters": "筛选",
+    "loadError": "加载有声书失败",
+    "loading": "正在加载有声书...",
+    "noAudiobooks": "暂无有声书",
+    "quality": "音频质量",
+    "sortBy": "排序方式",
+    "sortOrder": "排列顺序",
+    "subscription": "订阅",
+    "title": "有声书",
+    "tryLater": "稍后重试"
+  },
+  "auth": {
+    "loginRequired": "需要登录",
+    "loginToWatch": "请登录以观看 {{title}}",
+    "login": "登录",
+    "signUp": "注册",
+    "signInRequired": "需要登录",
+    "signInRequiredTitle": "请登录以继续"
+  },
+  "avatar": {
+    "dialogue": {
+      "wake": {
+        "here": "我在这里。",
+        "service": "随时为您服务。",
+        "listening": "正在聆听。",
+        "hmm": "嗯？",
+        "yes": "是的？"
+      },
+      "listening": {
+        "see": "嗯，让我看看...",
+        "interesting": "有趣...",
+        "let": "让我想想..."
+      },
+      "processing": {
+        "vast": "卷轴浩瀚...请耐心等待。",
+        "seek": "正在搜索图书馆...",
+        "moment": "请稍等...",
+        "consulting": "正在查阅档案..."
+      },
+      "presenting": {
+        "here": "给你。",
+        "found": "我为你找到了这个。",
+        "behold": "请看。",
+        "exactly": "正是你要求的。"
+      },
+      "presentingList": {
+        "found": "我找到了 {{count}} 个可能感兴趣的...",
+        "gathered": "我收集了 {{count}} 个选项。",
+        "choices": "这里有 {{count}} 个选择。"
+      },
+      "nothingFound": {
+        "rephrase": "嗯。档案中没有发现任何东西。也许换个说法？",
+        "elsewhere": "这里没有找到。要在别处搜索吗？",
+        "sorry": "抱歉，这不在我的卷轴中。"
+      },
+      "interruption": {
+        "got": "明白了——你想要什么？",
+        "speak": "请说，我在听。",
+        "course": "当然，有什么新的请求？"
+      },
+      "clarification": {
+        "didYouMean": "你是指 {{guess}} 吗？",
+        "unclear": "你的请求不太清楚。能说明一下吗？",
+        "whichOne": "这些中哪个是你感兴趣的？"
+      },
+      "confirmation": {
+        "done": "完成。",
+        "completed": "已完成。",
+        "understood": "明白了。"
+      },
+      "dismissal": {
+        "rest": "如果需要我，我会在这里。",
+        "return": "呼唤我，我就会回来。",
+        "farewell": "再见。"
+      },
+      "error": {
+        "technical": "出了点问题。请重试。",
+        "apologies": "抱歉，遇到了一个错误。",
+        "failed": "操作失败。再试一次？"
+      },
+      "idleTimeout": {
+        "still": "你还在吗？",
+        "anything": "还有别的吗？",
+        "resting": "我会休息，直到你再次需要我。"
+      },
+      "personality": {
+        "wisdom": "记住，即使是最聪明的法师也曾是学徒。",
+        "patience": "耐心能揭示急躁所隐藏的东西。",
+        "magic": "魔法无处不在——只需知道去哪里寻找。"
+      },
+      "greeting": {
+        "morning": "早上好。你在寻找什么？",
+        "afternoon": "下午好。我能帮你什么？",
+        "evening": "晚上好。你对什么感兴趣？",
+        "night": "晚安。我能帮你什么？"
+      },
+      "waiting": {
+        "moment": "请稍等...",
+        "patience": "耐心...卷轴浩瀚。",
+        "searching": "正在搜索档案..."
+      },
+      "success": {
+        "aha": "啊哈！找到了！",
+        "found": "成功！就是这个。",
+        "excellent": "太好了！正如我所料。"
+      },
+      "warning": {
+        "caution": "请注意一下...",
+        "careful": "小心点...",
+        "wait": "等等——让我先解释一下。"
+      },
+      "magicalReveal": {
+        "behold": "看看魔法揭示了什么！",
+        "witness": "见证这一刻...",
+        "observe": "仔细观察..."
+      },
+      "agreement": {
+        "yes": "是的，确实如此。",
+        "indeed": "的确，你说得对。",
+        "certainly": "当然。如你所愿。"
+      },
+      "disagreement": {
+        "no": "恐怕不行。",
+        "afraid": "那似乎不对。",
+        "unfortunately": "不幸的是，那行不通。"
+      },
+      "clarificationNeeded": {
+        "pardon": "什么？请再说一遍。",
+        "didntCatch": "我没听清楚。",
+        "sayAgain": "能再说一遍吗？"
+      }
+    },
+    "states": {
+      "dormant": "休息中",
+      "listening": "正在聆听",
+      "processing": "正在处理",
+      "responding": "正在回应",
+      "confused": "困惑中",
+      "interrupted": "已中断"
+    },
+    "gestures": {
+      "idle": "空闲",
+      "greeting": "问候",
+      "listening": "聆听",
+      "attentive": "专注",
+      "thinking": "思考",
+      "presenting": "展示",
+      "conjuring": "施法",
+      "browsing": "浏览",
+      "confused": "困惑",
+      "shrugging": "耸肩",
+      "farewell": "告别",
+      "cheering": "欢呼",
+      "clapping": "鼓掌",
+      "crying": "哭泣",
+      "facepalm": "捂脸",
+      "emphatic": "强调",
+      "reading": "阅读",
+      "confirmation": "确认",
+      "single_result": "指向",
+      "waiting": "等待",
+      "success": "成功",
+      "clarification": "澄清",
+      "warning": "警告",
+      "magical_reveal": "揭示",
+      "agreement": "同意",
+      "disagreement": "不同意"
+    },
+    "accessibility": {
+      "avatarLabel": "奥洛林巫师助手",
+      "speakingLabel": "奥洛林正在说话",
+      "listeningLabel": "奥洛林正在聆听",
+      "processingLabel": "奥洛林正在处理",
+      "gestureLabel": "奥洛林 {{gesture}}"
+    }
+  },
+  "bar": {
+    "translate": "翻译",
+    "stop": "停止",
+    "startTranslation": "开始翻译",
+    "targetLanguage": "目标语言",
+    "toggleSubtitles": "切换字幕",
+    "close": "关闭 Bayit+ 栏",
+    "logo": "Bayit+",
+    "subtitlesButton": "CC",
+    "closeButton": "×"
+  },
+  "beta": {
+    "credits": "积分",
+    "beta500": "Beta 500",
+    "creditsExplanation": "积分用于AI功能，如搜索、推荐和配音。",
+    "criticalMessage": "您的积分即将用完。升级以继续使用AI功能。",
+    "criticalTitle": "积分严重不足",
+    "current": "当前",
+    "deficit": "不足",
+    "insufficientTitle": "积分不足",
+    "lowMessage": "积分即将用完。请考虑升级。",
+    "lowTitle": "积分不足",
+    "remaining": "剩余",
+    "required": "需要",
+    "upgrade": "升级",
+    "upgradeMessage": "升级到高级版获得无限AI积分。",
+    "upgradeTitle": "升级到高级版",
+    "usage": "使用量"
+  },
+  "billing": {
+    "currentPlan": "当前计划",
+    "noSubscription": "没有活跃订阅",
+    "noTransactions": "暂无交易",
+    "payment": "付款",
+    "period": "计费周期",
+    "plan": "计划",
+    "renewsOn": "续订日期",
+    "status": "状态",
+    "transactions": "交易记录"
+  },
+  "biometric": {
+    "authenticate": "认证",
+    "authenticated": "已认证",
+    "enableDescription": "使用生物识别认证快速访问您的账户。",
+    "reason": "验证您的身份",
+    "unavailable": "生物识别认证不可用",
+    "unavailableDescription": "您的设备不支持生物识别认证。"
+  },
   "breadcrumbs": {
     "series": "剧集",
     "movie": "电影",
@@ -2876,6 +3124,81 @@
     "podcast": "播客",
     "playlist": "播放列表",
     "downloads": "下载"
+  },
+  "cancelled": {
+    "description": "您的付款已被取消。",
+    "helpText": "您的账户未产生任何费用。",
+    "retry": "重试",
+    "title": "付款已取消"
+  },
+  "catchup": {
+    "overlay": {
+      "title": "刚加入？",
+      "description": "您在 {{programName}} 进行中加入",
+      "creditContext": "这将使用您 {{balance}} 积分中的 {{cost}} 积分",
+      "lowBalanceWarning": "积分余额不足",
+      "acceptButton": "帮我补看（{{cost}} 积分）",
+      "declineButton": "不用了",
+      "accept": "接受",
+      "balanceContext": "余额详情",
+      "decline": "拒绝",
+      "lowBalance": "余额不足",
+      "thisProgram": "此节目"
+    },
+    "button": {
+      "credits": "补看（{{cost}} 积分）",
+      "label": "补看（{{cost}} 积分）",
+      "title": "快速回顾"
+    },
+    "generating": "正在生成摘要...",
+    "summary": {
+      "title": "您错过的内容",
+      "keyPoints": "要点",
+      "windowInfo": "最近 {{minutes}} 分钟",
+      "creditsUsed": "已使用 {{count}} 积分",
+      "creditsRemaining": "剩余 {{count}} 积分",
+      "close": "关闭",
+      "cached": "已缓存",
+      "remaining": "剩余",
+      "window": "时间窗口"
+    },
+    "error": {
+      "failed": "无法生成摘要",
+      "retry": "重试",
+      "insufficientCredits": "积分不足"
+    },
+    "timeline": {
+      "title": "字幕时间线",
+      "segmentCount": "{{count}} 个片段",
+      "count": "{{count}} 个片段",
+      "window": "最近 {{minutes}} 分钟",
+      "buttonLabel": "显示字幕时间线",
+      "buttonTitle": "时间线",
+      "empty": "暂无可用字幕",
+      "loading": "正在加载字幕..."
+    }
+  },
+  "channelChat": {
+    "title": "实时聊天",
+    "participants": "{{count}} 人正在观看",
+    "inputPlaceholder": "输入消息...",
+    "sendButton": "发送",
+    "rateLimitWarning": "请稍慢！等待 {{seconds}} 秒",
+    "autoTranslationBadge": "自动翻译（测试版）",
+    "showOriginal": "显示原文",
+    "showTranslation": "显示翻译",
+    "error": "聊天不可用",
+    "retry": "重试",
+    "upgradeBeta": "升级到 Beta 500 以使用自动翻译",
+    "inputLabel": "聊天消息输入",
+    "moderationDelete": "消息已被管理员删除",
+    "participants_one": "{{count}} 位观众",
+    "participants_other": "{{count}} 位观众",
+    "userJoined": "{{name}} 加入了聊天",
+    "userLeft": "有用户离开了聊天",
+    "placeholder": "发送消息...",
+    "send": "发送",
+    "translationBeta": "翻译（测试版）"
   },
   "chapters": {
     "title": "章节",
@@ -2985,7 +3308,14 @@
     "hard": "困难",
     "chessBot": "国际象棋机器人",
     "disconnected": "已断开连接",
-    "theirTurn": "对方回合"
+    "theirTurn": "对方回合",
+    "acceptDraw": "接受和棋",
+    "blackTurn": "黑方回合",
+    "declineDraw": "拒绝和棋",
+    "drawOffered": "提议和棋",
+    "opponent": "对手",
+    "whiteTurn": "白方回合",
+    "you": "你"
   },
   "children": {
     "title": "儿童",
@@ -3028,6 +3358,151 @@
       "syncYouTube": "同步 YouTube",
       "tagVod": "标记点播",
       "pendingModeration": "待审核"
+    }
+  },
+  "cities": {
+    "jerusalem": {
+      "title": "耶路撒冷",
+      "subtitle": "探索永恒之城",
+      "loadingContent": "正在加载耶路撒冷内容...",
+      "noContent": "目前无可用内容",
+      "errorLoading": "加载耶路撒冷内容失败",
+      "sources": "来源",
+      "categories": {
+        "history": "历史遗迹",
+        "religion": "宗教遗产",
+        "culture": "文化活动",
+        "events": "本地活动",
+        "food": "美食佳肴",
+        "markets": "传统市场",
+        "arts": "艺术画廊"
+      }
+    },
+    "telAviv": {
+      "title": "特拉维夫",
+      "subtitle": "体验充满活力的城市",
+      "loadingContent": "正在加载特拉维夫内容...",
+      "noContent": "目前无可用内容",
+      "errorLoading": "加载特拉维夫内容失败",
+      "sources": "来源",
+      "categories": {
+        "beaches": "海滩与海滨",
+        "nightlife": "夜生活与娱乐",
+        "culture": "文化活动",
+        "music": "音乐与演唱会",
+        "food": "餐饮与美食",
+        "tech": "科技与创新",
+        "events": "本地活动"
+      }
+    },
+    "privacy": {
+      "lastUpdated": "最后更新：2026年1月27日",
+      "intro": {
+        "title": "1. 简介",
+        "content": "Olorin.ai LLC（\"我们\"、\"我们的\"或\"公司\"）致力于保护您的隐私。本隐私政策解释了我们的移动应用程序Bayit+（\"应用\"）如何收集、使用和保护您的信息。",
+        "commitment": "我们以\"隐私优先\"的架构构建了Bayit+。我们不会录制您的客厅。我们的技术仅使用您设备的传感器来将我们的音频服务与您的电视同步。"
+      },
+      "collection": {
+        "title": "2. 我们收集的信息及使用方式",
+        "camera": {
+          "title": "A. 摄像头和视觉同步数据",
+          "intro": "为了提供我们的核心服务——将翻译音频与您的电视同步——Bayit+需要访问您设备的摄像头。",
+          "data": "收集的数据：当您激活\"同步模式\"时，应用会从您的电视屏幕捕获约3秒的视频帧序列。",
+          "purpose": "目的：这些帧被传输到我们的安全云服务器，仅用于识别您正在观看的公共电视频道并计算广播延迟（时间延迟）。",
+          "retention": "保留：此数据是临时的。帧在内存中即时处理，并在建立同步后立即永久删除。我们不会查看、存储或归档您家或家人的图像。"
+        },
+        "audio": {
+          "title": "B. 音频数据（如适用）",
+          "intro": "如果您使用需要音频同步的功能，应用可能会请求麦克风访问。",
+          "data": "收集的数据：电视广播的简短音频样本。",
+          "purpose": "目的：匹配公共广播的音频指纹以进行同步。",
+          "retention": "保留：与视觉数据一样，音频样本实时处理并立即删除。我们不会收听或录制用户对话。"
+        },
+        "usage": {
+          "title": "C. 使用和技术数据",
+          "content": "我们可能会收集非可识别的技术数据以改进应用稳定性，包括：",
+          "device": "设备类型和操作系统版本。",
+          "crash": "崩溃日志和性能指标。",
+          "aggregate": "关于正在观看哪些频道的汇总数据（例如，\"50%的用户正在观看12频道\"）。"
+        }
+      },
+      "sharing": {
+        "title": "3. 数据共享和第三方",
+        "noSale": "Olorin.ai LLC不出售您的个人数据。我们与受信任的第三方服务提供商合作以提供我们的基础设施。这些提供商仅被授权在必要时使用您的数据为我们提供这些服务：",
+        "cloud": "云基础设施：托管服务（例如AWS）用于处理同步请求。",
+        "ai": "AI处理：用于从公共广播馈送生成实时文本和音频翻译的服务。"
+      },
+      "retention": {
+        "title": "4. 数据保留",
+        "sync": "同步数据（图像/音频）：0天。处理后立即删除。",
+        "account": "账户数据：仅在您的账户处于活跃状态时保留，以管理您的订阅和偏好。"
+      },
+      "children": {
+        "title": "5. 儿童隐私",
+        "content": "虽然我们的内容适合所有年龄段，但Olorin.ai LLC不会故意收集13岁以下儿童的个人可识别信息。如果您是家长并认为您的孩子向我们提供了个人信息，请联系我们。"
+      },
+      "rights": {
+        "title": "6. 您的权利",
+        "content": "根据您的位置，您可能有权请求访问、更正或删除您的个人数据。您可以随时在应用设置中删除您的Bayit+账户。"
+      },
+      "contact": {
+        "title": "7. 联系我们",
+        "intro": "如果您对本隐私政策有任何疑问，请联系我们："
+      }
+    },
+    "beta": {
+      "credits": {
+        "loading": "正在加载积分余额...",
+        "error": "无法加载积分余额",
+        "label": "AI积分",
+        "remaining": "剩余积分",
+        "warningCritical": "警告：积分即将用尽",
+        "warningLow": "提示：积分余额较低",
+        "upgrade": "升级套餐",
+        "upgradeAction": "升级以获取更多积分"
+      },
+      "settings": {
+        "title": "测试计划",
+        "description": "管理您的Beta 500注册并查看计划详情。提前获取AI驱动功能的访问权限。",
+        "enrolledTitle": "您已加入Beta 500！",
+        "statusPendingVerification": "待验证",
+        "statusActive": "活跃",
+        "statusExpired": "已过期",
+        "pendingMessage": "我们正在验证您的注册。审批后您将收到邮件。",
+        "expiresOn": "到期日期：{{date}}",
+        "loadingStatus": "正在加载计划状态...",
+        "errorLoading": "无法加载计划信息。请重试。",
+        "programStatus": "计划状态",
+        "slots": "名额已满",
+        "slotsAvailable": "{{count}}个名额可用",
+        "programFull": "全部500个名额已满"
+      },
+      "enrollment": {
+        "title": "加入Beta 500",
+        "subtitle": "成为500个家庭之一体验AI驱动功能",
+        "programFull": "计划已满",
+        "joinButton": "加入Beta 500",
+        "exclusiveAccess": "独家访问",
+        "limitedSlots": "限500个家庭",
+        "slotsAvailable": "{{available}}/{{total}}个名额可用",
+        "freeCredits": "免费AI积分",
+        "creditsAmount": "5,000积分（价值$50）",
+        "duration": "测试期限",
+        "durationValue": "90天",
+        "features": "AI功能",
+        "featuresValue": "实时配音、AI搜索、推荐",
+        "whatYouGet": "您将获得",
+        "benefits": {
+          "liveDubbing": "观看时实时音频翻译",
+          "aiSearch": "智能内容发现",
+          "aiRecommendations": "个性化建议",
+          "prioritySupport": "直接联系开发团队"
+        },
+        "disclaimer": "Beta 500是限时计划。积分在测试期间不可续期。",
+        "waitlistMessage": "目前全部500个名额已满。加入候补名单，当有名额时会通知您。",
+        "enrollmentSuccess": "欢迎加入Beta 500！请检查邮箱验证您的账户。",
+        "enrollmentError": "无法注册。请稍后重试。"
+      }
     }
   },
   "clock": {
@@ -3307,6 +3782,31 @@
     "assistant_response": "我推荐《法乌达》- 一部优秀的惊悚剧集！",
     "morning_greeting": "早上好！今天天气不错，以色列有一些重要新闻，我为您精选了一些内容。"
   },
+  "devices": {
+    "activeNow": "当前活跃",
+    "confirmDisconnect": "断开设备连接？",
+    "daysAgo": "{{count}}天前",
+    "disconnect": "断开连接",
+    "disconnectSuccess": "设备已断开",
+    "disconnectSuccessMessage": "设备已成功断开连接。",
+    "disconnectSuccessWithSessions": "设备已断开并结束会话",
+    "hoursAgo": "{{count}}小时前",
+    "loading": "正在加载设备...",
+    "minutesAgo": "{{count}}分钟前",
+    "noDevices": "无已连接的设备",
+    "noDevicesDescription": "当您在不同平台登录时，设备将显示在这里",
+    "registeredDevices": "已注册设备",
+    "thisDevice": "此设备"
+  },
+  "dm": {
+    "messagePlaceholder": "输入消息...",
+    "noConversations": "暂无对话",
+    "searchConversations": "搜索对话",
+    "searchPlaceholder": "搜索消息...",
+    "translate": "翻译",
+    "translateMessage": "翻译消息",
+    "typing": "正在输入..."
+  },
   "downloads": {
     "title": "下载",
     "items": "项目",
@@ -3314,7 +3814,305 @@
     "empty": "无下载",
     "emptyHint": "下载内容以供离线观看",
     "paused": "已暂停",
-    "loading": "正在加载下载..."
+    "loading": "正在加载下载...",
+    "delete": "删除"
+  },
+  "dubbing": {
+    "title": "实时配音",
+    "enabled": "实时配音已启用",
+    "selectLanguage": "选择语言",
+    "originalAudio": "原始音频",
+    "dubbedAudio": "配音音频",
+    "selectVoice": "选择声音",
+    "adjustVolume": "调整音量",
+    "tapToSelect": "点击选择此语言",
+    "languages": {
+      "en": "英语",
+      "es": "西班牙语",
+      "he": "希伯来语",
+      "ar": "阿拉伯语",
+      "ru": "俄语",
+      "fr": "法语",
+      "de": "德语"
+    },
+    "onboarding": {
+      "title": "实时配音介绍",
+      "description": "用您的语言体验直播内容。我们的AI在您观看时实时翻译和播放音频。",
+      "feature1": "支持7种语言",
+      "feature2": "实时处理",
+      "feature3": "调整音频平衡",
+      "tryNow": "立即体验",
+      "later": "以后再说"
+    },
+    "consent": {
+      "title": "音频处理同意",
+      "message": "实时配音使用AI服务实时处理您的音频。音频仅用于翻译，不会永久存储。",
+      "accept": "我同意",
+      "decline": "不，谢谢"
+    },
+    "errors": {
+      "connectionFailed": {
+        "title": "连接失败"
+      },
+      "connectionFailedMessage": "无法连接到配音服务",
+      "connectionFailedAction": "请检查您的网络连接并重试",
+      "notAuthenticated": "未认证",
+      "notAuthenticatedMessage": "请重新登录",
+      "notAuthenticatedAction": "登录以使用实时配音",
+      "premiumRequired": {
+        "title": "高级功能"
+      },
+      "premiumRequiredMessage": "实时配音需要高级订阅",
+      "premiumRequiredAction": "升级到高级版以使用此功能",
+      "channelUnavailable": {
+        "title": "频道不可用"
+      },
+      "channelUnavailableMessage": "此频道不支持配音",
+      "audioCaptureError": "麦克风错误",
+      "audioCaptureErrorMessage": "无法访问您的麦克风",
+      "sttServiceError": "语音识别错误",
+      "sttServiceErrorMessage": "语音识别失败",
+      "ttsServiceError": "配音错误",
+      "ttsServiceErrorMessage": "生成配音音频失败",
+      "translationTimeout": "翻译超时",
+      "translationTimeoutMessage": "翻译耗时过长，正在重试",
+      "websocketClosed": "连接断开",
+      "websocketClosedMessage": "配音连接已关闭",
+      "rateLimitExceeded": "尝试次数过多",
+      "rateLimitExceededMessage": "请稍后重试",
+      "sessionTimeout": "会话过期",
+      "sessionTimeoutMessage": "您的配音会话已过期",
+      "audioCaptureTitle": "麦克风访问被拒绝",
+      "authFailed": {
+        "title": "认证错误"
+      },
+      "rateLimitTitle": "请求过多",
+      "sessionTitle": "会话已过期",
+      "sttTitle": "语音识别错误",
+      "translationAction": "系统将继续使用原始音频",
+      "translationTitle": "翻译超时",
+      "ttsTitle": "文字转语音错误",
+      "websocketTitle": "连接丢失"
+    },
+    "active": "实时配音已激活",
+    "clickToEnable": "点击启用实时配音",
+    "controls": {
+      "liveDubbing": "实时配音",
+      "enableDubbing": "启用实时配音",
+      "enableSubtitles": "启用实时字幕",
+      "selectLanguage": "选择语言",
+      "selectVoice": "选择语音",
+      "originalVolume": "原始音频",
+      "dubbedVolume": "配音音频",
+      "tooltips": {
+        "enableDubbing": "实时翻译和配音音频",
+        "enableSubtitles": "实时显示翻译字幕",
+        "selectLanguage": "选择您喜欢的翻译语言",
+        "selectVoice": "选择配音的声音",
+        "originalVolume": "调整原始音频音量（0 = 静音）",
+        "dubbedVolume": "调整配音音频音量（1 = 最大音量）"
+      }
+    },
+    "inputLanguageTooltip": "检查输入语言",
+    "latency": {
+      "badge": {
+        "accessibilityHint": "双击可切换延迟详情面板",
+        "title": "延迟监控",
+        "tooltip": "实时音频处理延迟。视频自动延迟以实现完美同步。"
+      },
+      "breakdown": {
+        "cacheHitRate": "缓存命中率",
+        "provider": "提供商",
+        "title": "延迟细分"
+      },
+      "components": {
+        "buffer": "音频缓冲",
+        "network": "网络",
+        "stt": "语音转文字",
+        "sync": "视频同步",
+        "translation": "翻译",
+        "tts": "文字转语音",
+        "capture": "音频捕获",
+        "captureDesc": "从视频捕获音频的时间",
+        "sttDesc": "将语音转换为文字",
+        "translationDesc": "翻译到目标语言",
+        "ttsDesc": "生成配音音频",
+        "networkDesc": "数据传输延迟",
+        "bufferDesc": "音频处理缓冲",
+        "syncDesc": "视频延迟以实现完美同步"
+      },
+      "graph": {
+        "noData": "暂无数据...",
+        "title": "延迟历史",
+        "tooltip": "处理延迟的60秒滚动历史",
+        "xAxis": "时间（秒前）",
+        "yAxis": "延迟（毫秒）"
+      },
+      "status": {
+        "excellent": "优秀",
+        "good": "良好",
+        "fair": "一般",
+        "poor": "较差"
+      },
+      "info": {
+        "autoSync": "自动同步",
+        "autoSyncDesc": "视频自动延迟以匹配音频处理时间，确保完美的唇形同步和字幕时间。",
+        "howItWorks": "工作原理",
+        "howItWorksDesc": "系统测量实际处理延迟，并以相同的量延迟视频流。这就是专业广播翻译的工作方式。",
+        "noManualAdjustment": "无需手动调整",
+        "noManualAdjustmentDesc": "与其他系统不同，您无需手动同步音频和视频。一切都是自动的。",
+        "whyDelay": "为什么有延迟？",
+        "whyDelayDesc": "实时翻译和配音需要时间（通常为600-800毫秒）。与其显示不同步的内容，我们延迟视频以匹配。您看到的内容略微落后于直播，但完全同步。",
+        "professionalQuality": "专业品质",
+        "professionalQualityDesc": "这与专业广播公司用于现场国际报道的方法相同。"
+      }
+    },
+    "noVoicesAvailable": "无可用语音",
+    "premiumRequired": "需要高级订阅",
+    "selectInputLanguage": "选择输入语言"
+  },
+  "email": {
+    "greeting": "您好",
+    "footer": {
+      "privacy": "隐私政策",
+      "terms": "服务条款",
+      "support": "客户支持",
+      "unsubscribe": "退订这些邮件"
+    },
+    "welcome": {
+      "subject": "欢迎加入 Bayit+！",
+      "title": "欢迎来到 Bayit+",
+      "body": "感谢您加入 Bayit+。我们很高兴您的到来！",
+      "cta": "前往控制台"
+    },
+    "verification": {
+      "subject": "验证您的邮箱",
+      "title": "验证您的邮箱地址",
+      "body": "请点击下方按钮验证您的邮箱地址。",
+      "cta": "验证邮箱",
+      "expiry": "此链接将在 {expiry_hours} 小时后失效。",
+      "security": "如果您没有创建帐户，可以安全地忽略此邮件。"
+    },
+    "verification_resend": {
+      "subject": "邮箱验证（重新发送）",
+      "title": "验证您的邮箱地址",
+      "body": "根据您的请求，这是新的验证链接。",
+      "cta": "验证邮箱"
+    },
+    "password_reset": {
+      "subject": "重置您的密码",
+      "title": "重置您的密码",
+      "body": "我们收到了重置您密码的请求。请点击下方按钮创建新密码。",
+      "cta": "重置密码",
+      "expiry": "此链接将在 {expiry_hours} 小时后失效。",
+      "security": "如果您没有请求此操作，您的帐户仍然安全。您可以忽略此邮件。"
+    },
+    "password_changed": {
+      "subject": "密码已更改",
+      "title": "您的密码已更改",
+      "body": "您的密码已成功更改。",
+      "security": "如果这不是您本人的操作，请立即联系客服。"
+    },
+    "account_locked": {
+      "subject": "帐户已锁定",
+      "title": "您的帐户已被锁定",
+      "body": "由于安全原因，您的帐户已被暂时锁定。",
+      "cta": "解锁帐户"
+    },
+    "beta_invitation": {
+      "subject": "您已被邀请加入 Bayit+ 测试版！",
+      "title": "您已被邀请加入测试计划",
+      "body": "恭喜！您已被选中参加独家 Bayit+ Beta 500 计划。",
+      "credits": "包含 {credits} 个 AI 积分",
+      "duration": "访问权限有效期 {days} 天",
+      "cta": "加入测试计划"
+    },
+    "beta_welcome": {
+      "subject": "欢迎加入 Bayit+ 测试版！",
+      "title": "欢迎加入测试计划",
+      "body": "您现在是独家 Bayit+ Beta 500 社区的一员！",
+      "cta": "开始使用"
+    },
+    "payment_confirmation": {
+      "subject": "付款确认",
+      "title": "已收到付款",
+      "body": "您的付款已成功处理。",
+      "transaction": "交易编号",
+      "plan": "套餐",
+      "amount": "金额",
+      "date": "付款日期",
+      "next_billing": "下次账单日期"
+    },
+    "subscription_activated": {
+      "subject": "订阅已激活",
+      "title": "您的订阅已激活",
+      "body": "您的订阅已激活。以下是您将获得的权益：",
+      "cta": "开始观看"
+    },
+    "subscription_cancelled": {
+      "subject": "订阅已取消",
+      "title": "订阅已取消",
+      "body": "您的订阅已取消。您将继续拥有访问权限至 {access_until}。",
+      "cta": "重新激活订阅"
+    },
+    "payment_failed": {
+      "subject": "付款失败",
+      "title": "付款失败",
+      "body": "我们无法处理您的付款。请更新您的付款方式。",
+      "cta": "更新付款方式"
+    },
+    "trial_expiring": {
+      "subject": "您的试用即将到期",
+      "title": "试用将在 {days_remaining} 天后结束",
+      "body": "您的免费试用即将到期。立即升级以继续享受所有功能。",
+      "cta": "立即升级"
+    },
+    "support": {
+      "created_subject": "工单 #{ticket_id} 已创建",
+      "created_title": "客服工单已创建",
+      "created_body": "您的客服工单已创建。我们将尽快回复您。",
+      "response_subject": "工单 #{ticket_id} 有新回复",
+      "response_title": "您的工单有新回复",
+      "escalation_subject": "工单 #{ticket_id} 已升级",
+      "escalation_title": "您的工单已被升级处理",
+      "resolved_subject": "工单 #{ticket_id} 已解决",
+      "resolved_title": "您的工单已解决",
+      "resolved_body": "您的客服工单已解决。"
+    },
+    "new_message": {
+      "subject": "来自 {sender_name} 的新消息",
+      "title": "您有一条新消息",
+      "cta": "阅读消息"
+    },
+    "content_digest": {
+      "subject": "您的{digest_period}内容摘要",
+      "title": "您的内容摘要",
+      "cta": "浏览内容"
+    },
+    "gdpr": {
+      "deletion_subject": "数据删除确认",
+      "deletion_title": "您的数据已被删除",
+      "deletion_body": "根据您的请求，您的个人数据已被永久删除。",
+      "categories_label": "已删除的数据类别"
+    },
+    "admin": {
+      "account_created_subject": "管理员帐户已创建",
+      "account_created_title": "管理员帐户已创建",
+      "role_change_subject": "角色已更改",
+      "role_change_title": "您的角色已更新"
+    },
+    "campaign": {
+      "default_subject": "来自 Bayit+ 的新闻"
+    },
+    "newsletter": {
+      "default_subject": "Bayit+ 通讯"
+    },
+    "reengagement": {
+      "subject": "我们想念您！",
+      "title": "好久不见",
+      "body": "我们注意到您已经 {days_inactive} 天没有访问了。以下是您错过的内容：",
+      "cta": "回来看看"
+    }
   },
   "empty": {
     "noContent": "无可用内容",
@@ -3408,7 +4206,8 @@
     "live": "直播",
     "scheduleUnavailable": "电视节目时间表当前不可用。请稍后再试或联系客服。",
     "noProgramsAvailable": "所选时间范围内没有可用节目。请尝试调整筛选器或稍后再试。",
-    "loading": "加载节目指南..."
+    "loading": "加载节目指南...",
+    "empty": "没有可用节目"
   },
   "errors": {
     "networkError": "网络错误",
@@ -3517,19 +4316,144 @@
     "initializationFailed": "初始化失败",
     "reloadButton": "重新加载"
   },
-  "status": {
-    "pleaseLogin": "请登录以使用 Bayit+ Companion",
-    "quotaExhausted": "每日 {{limit}} 分钟配额已用完。升级到高级版。",
-    "connected": "已连接",
-    "dubbingFailed": "配音启动失败，请重试。",
-    "dubbingError": "配音错误：{{error}}"
+  "familyControls": {
+    "title": "Family Controls",
+    "pinSetup": "PIN Setup",
+    "familyPin": "Family PIN",
+    "createPin": "Create Family PIN",
+    "verifyPin": "Verify Family PIN",
+    "updatePin": "Update Family PIN",
+    "pinConfigured": "Family PIN is configured",
+    "pinNotConfigured": "No Family PIN set up yet",
+    "enterPin": "Enter PIN",
+    "confirmPin": "Confirm PIN",
+    "kidsSection": "Kids (0-12 years)",
+    "kidsEnabled": "Enable Kids Mode",
+    "kidsAgeLimit": "Age Limit",
+    "youngstersSection": "Youngsters (12-17 years)",
+    "youngstersEnabled": "Enable Youngsters Mode",
+    "youngstersAgeLimit": "Age Limit",
+    "contentRatings": "Content Ratings",
+    "maxContentRating": "Maximum Content Rating",
+    "viewingHours": "Viewing Hours",
+    "viewingHoursEnabled": "Enable Time Restrictions",
+    "startHour": "Start Hour",
+    "endHour": "End Hour",
+    "ratings": {
+      "G": "G - General Audiences",
+      "PG": "PG - Parental Guidance Suggested",
+      "PG13": "PG-13 - Parents Strongly Cautioned",
+      "R": "R - Restricted",
+      "TVMA": "TV-MA - Mature Audience Only"
+    },
+    "errors": {
+      "pinMismatch": "PINs do not match",
+      "pinTooShort": "PIN must be at least 4 digits",
+      "invalidPin": "Invalid PIN",
+      "sectionDisabled": "此部分已被家长控制禁用",
+      "outsideViewingHours": "观看时间外访问受限",
+      "contentRatingTooHigh": "内容评级超出允许限制",
+      "newPinTooShort": "新PIN码至少需要4位数字",
+      "failedToSetPin": "设置PIN码失败",
+      "failedToUpdatePin": "更新PIN码失败。请检查旧PIN码。"
+    },
+    "household": {
+      "title": "Household",
+      "create": "Create Household",
+      "name": "Household Name",
+      "members": "Members",
+      "inviteMember": "Invite Member",
+      "removeMember": "Remove Member",
+      "role": "Role",
+      "roles": {
+        "parent": "Parent",
+        "child": "Child",
+        "guardian": "Guardian"
+      },
+      "sharedControls": "Shared Controls",
+      "invitation": {
+        "title": "Invitation",
+        "email": "Email Address",
+        "send": "Send Invitation",
+        "accept": "Accept Invitation",
+        "code": "Invitation Code",
+        "expires": "Expires",
+        "pending": "Pending Invitations"
+      }
+    },
+    "profile": {
+      "title": "Profile Controls",
+      "override": "Override Controls",
+      "inherit": "Inherit Controls",
+      "inheritHousehold": "Inherit from Household",
+      "inheritAccount": "Inherit from Account",
+      "hierarchy": "Control Hierarchy",
+      "source": "Controls Source"
+    },
+    "contentBlockedAbove": "评级高于 {{rating}} 的内容将被屏蔽",
+    "placeholders": {
+      "currentPin": "当前PIN码",
+      "enterPin": "输入PIN码",
+      "enterNewPin": "输入新PIN码",
+      "confirmNewPin": "确认新PIN码"
+    },
+    "profileControls": {
+      "title": "个人资料家庭控制",
+      "subtitle": "管理此个人资料的家庭控制",
+      "sourceSection": {
+        "title": "控制来源",
+        "inheritHousehold": "从家庭继承",
+        "inheritHouseholdDesc": "使用家庭级别的家庭控制",
+        "customControls": "自定义控制",
+        "customControlsDesc": "使用个人资料专用的家庭控制"
+      },
+      "selectControls": {
+        "title": "选择控制",
+        "controlsLabel": "家庭控制 {{id}}",
+        "kidsAge": "儿童：{{age}}",
+        "youngstersAge": "青少年：{{age}}",
+        "rating": "评级：{{rating}}",
+        "noControls": "没有可用的家庭控制。请在家庭控制设置中创建控制。"
+      },
+      "effectiveControls": {
+        "title": "活动控制",
+        "kidsEnabled": "儿童内容",
+        "youngstersEnabled": "青少年内容",
+        "contentRating": "内容评级限制",
+        "viewingHours": "观看时间",
+        "enabled": "已启用",
+        "disabled": "已禁用",
+        "ageLimit": "年龄限制：{{age}}",
+        "noRestriction": "无限制",
+        "noControls": "此个人资料没有活动的家庭控制"
+      },
+      "errors": {
+        "noControlsAvailable": "没有可用的家庭控制。请先创建控制。"
+      }
+    },
+    "ageLimits": "年龄限制",
+    "allowedHours": "允许观看时段",
+    "contentRating": "内容分级",
+    "createPinDescription": "创建PIN码以保护家庭设置",
+    "enterPinDescription": "输入家庭PIN码以访问设置",
+    "from": "从",
+    "kidsMaxAge": "儿童最大年龄",
+    "ratingG": "G - 普通观众",
+    "ratingNC17": "NC-17 - 仅限成人",
+    "ratingPG": "PG - 家长指导",
+    "ratingPG13": "PG-13 - 家长强烈注意",
+    "ratingR": "R - 限制级",
+    "saveSettings": "保存设置",
+    "to": "到",
+    "youngstersMaxAge": "青少年最大年龄"
   },
   "favorites": {
     "title": "收藏",
     "items": "项目",
     "empty": "暂无收藏",
     "emptyHint": "将项目添加到您的收藏",
-    "loading": "正在加载收藏..."
+    "loading": "正在加载收藏...",
+    "remove": "从收藏中移除"
   },
   "flows": {
     "title": "流程",
@@ -3680,7 +4604,8 @@
     },
     "tv": {
       "useCompanion": "如需完整自定义功能，请使用手机上的 Bayit+ 应用或访问 bayit.plus。"
-    }
+    },
+    "empty": "没有可用流程"
   },
   "footer": {
     "brandDescription": "美国的您的家。希伯来语的电视广播、点播、广播和播客。",
@@ -3786,12 +4711,27 @@
     "gamesCount": "{{count}} 场游戏",
     "alreadyFriends": "好友"
   },
+  "gate": {
+    "contentLocked": "内容已锁定",
+    "recommended": "推荐",
+    "startTrial": "开始免费试用",
+    "subscribe": "订阅",
+    "trialSubtitle": "免费试用所有高级功能7天",
+    "trialTitle": "可免费试用",
+    "upgradeRequired": "需要升级才能访问此内容"
+  },
   "googleLogin": {
     "cancelledError": "Google 登录已取消",
     "missingCode": "缺少认证码",
     "loginError": "Google 登录出错",
     "redirecting": "正在跳转到登录页面...",
     "connecting": "正在连接 Google..."
+  },
+  "greeting": {
+    "morning": "早上好",
+    "afternoon": "下午好",
+    "evening": "晚上好",
+    "night": "晚安"
   },
   "help": {
     "subtitle": "我们能帮您什么？",
@@ -3866,12 +4806,30 @@
         "title": "家庭档案",
         "description": "为每个家庭成员创建档案，获得个性化推荐"
       }
-    }
+    },
+    "contactDescription": "联系我们的支持团队。",
+    "needMoreHelp": "需要更多帮助？",
+    "noFAQ": "暂无常见问题"
   },
   "hero": {
     "watch": "观看",
     "moreInfo": "更多信息",
     "addToList": "添加到列表"
+  },
+  "highlights": {
+    "title": "精彩片段",
+    "noHighlights": "暂未检测到精彩片段",
+    "fetchError": "无法加载精彩片段",
+    "types": {
+      "emotional": "情感",
+      "entity": "实体",
+      "keyword": "关键词",
+      "dramatic": "戏剧性"
+    },
+    "button": {
+      "label": "显示精彩片段",
+      "title": "精彩片段"
+    }
   },
   "home": {
     "continueWatching": "继续观看",
@@ -3926,6 +4884,15 @@
     "businesses_load_error": "无法加载企业列表。请重试。",
     "podcasts": "播客"
   },
+  "household": {
+    "addButton": "添加",
+    "addMember": "添加成员",
+    "membersTitle": "成员",
+    "myHousehold": "我的家庭",
+    "owner": "所有者",
+    "unknown": "未知",
+    "userIdPlaceholder": "输入用户邮箱或ID"
+  },
   "jerusalem": {
     "title": "耶路撒冷连接",
     "subtitle": "与以色列的心脏保持联系",
@@ -3976,15 +4943,7 @@
       "shabbatRecipes": "食谱",
       "prayers": "祈祷"
     },
-    "calendar": {
-      "dafYomi": "每日一页",
-      "holiday": "节日",
-      "ofOmer": "俄梅尔",
-      "omerDay": "天",
-      "parasha": "每周读经",
-      "shabbat": "安息日",
-      "title": "犹太历"
-    },
+    "calendar": "犹太日历",
     "community": {
       "empty": "未找到组织",
       "emptyHint": "尝试选择不同的地区",
@@ -3994,10 +4953,7 @@
       "synagogues": "犹太会堂",
       "title": "社区目录"
     },
-    "news": {
-      "empty": "暂无新闻",
-      "title": "犹太新闻"
-    }
+    "news": "犹太新闻"
   },
   "live": {
     "title": "直播电视",
@@ -4014,6 +4970,188 @@
     },
     "loadingChannels": "正在加载频道..."
   },
+  "liveAiDataFlow": {
+    "subtitle": "实时AI功能的端到端管道可视化",
+    "tabs": {
+      "dubbing": "配音",
+      "translation": "翻译",
+      "trivia": "趣味问答"
+    },
+    "title": "实时AI数据流",
+    "services": {
+      "elevenlabs": "ElevenLabs",
+      "googleCloud": "Google Cloud",
+      "googleTranslate": "Google Translate",
+      "openai": "OpenAI",
+      "claude": "Claude",
+      "spacy": "spaCy",
+      "redis": "Redis",
+      "tavily": "Tavily"
+    },
+    "translation": {
+      "nodes": {
+        "auth": {
+          "title": "WebSocket Auth + Rate Limit",
+          "input": "WebSocket connection request with JWT token",
+          "output": "Authenticated session with rate limit applied"
+        },
+        "quota": {
+          "title": "Quota Check (30s cache)",
+          "input": "User ID and feature type",
+          "output": "Quota validation result (cached 30s)"
+        },
+        "stt": {
+          "title": "STT (ElevenLabs Scribe v2)",
+          "input": "Raw audio stream from channel",
+          "output": "Transcribed text segments with timestamps"
+        },
+        "dedup": {
+          "title": "Deduplication (70% overlap)",
+          "input": "New transcript segment",
+          "output": "Filtered unique segments (70% overlap threshold)"
+        },
+        "predictive": {
+          "title": "Predictive Subtitle Emit (optional)",
+          "input": "Original language transcript",
+          "output": "Early subtitle display before translation"
+        },
+        "translate": {
+          "title": "Translation (Google/OpenAI/Claude)",
+          "input": "Original language text segment",
+          "output": "Translated text in target language"
+        },
+        "chunk": {
+          "title": "Text Chunking (max 80 chars)",
+          "input": "Translated text of any length",
+          "output": "Chunks of max 80 characters for display"
+        },
+        "emit": {
+          "title": "Final Subtitle Emit",
+          "input": "Chunked translated subtitle",
+          "output": "WebSocket event to client with subtitle data"
+        }
+      }
+    },
+    "dubbing": {
+      "nodes": {
+        "auth": {
+          "title": "WebSocket Auth + Rate Limit",
+          "input": "WebSocket connection request with JWT token",
+          "output": "Authenticated session with rate limit applied"
+        },
+        "quota": {
+          "title": "Quota Check",
+          "input": "User ID and dubbing feature type",
+          "output": "Quota validation result"
+        },
+        "session": {
+          "title": "Session Init + ChannelSTTManager Subscribe",
+          "input": "Channel ID and language preferences",
+          "output": "Subscribed to shared STT channel manager"
+        },
+        "stt": {
+          "title": "Shared STT (1 per channel, 99% cost save)",
+          "input": "Channel audio stream (shared across users)",
+          "output": "Shared transcript for all channel subscribers"
+        },
+        "transcriptEmit": {
+          "title": "Transcript Emit to Client",
+          "input": "Shared STT transcript segment",
+          "output": "WebSocket event with original transcript"
+        },
+        "translate": {
+          "title": "Translation",
+          "input": "Original transcript text",
+          "output": "Translated text in user's target language"
+        },
+        "translationEmit": {
+          "title": "Translation Emit to Client",
+          "input": "Translated text segment",
+          "output": "WebSocket event with translated text"
+        },
+        "tts": {
+          "title": "TTS Streaming (new conn per transcript)",
+          "input": "Translated text for speech synthesis",
+          "output": "Streaming audio chunks from ElevenLabs"
+        },
+        "encode": {
+          "title": "Audio Encoding (base64)",
+          "input": "Raw audio buffer from TTS",
+          "output": "Base64-encoded audio ready for transport"
+        },
+        "audioEmit": {
+          "title": "Dubbed Audio Emit",
+          "input": "Encoded audio chunk",
+          "output": "WebSocket event with dubbed audio data"
+        }
+      }
+    },
+    "trivia": {
+      "nodes": {
+        "auth": {
+          "title": "WebSocket Auth + Rate Limit",
+          "input": "WebSocket connection request with JWT token",
+          "output": "Authenticated session with rate limit applied"
+        },
+        "quota": {
+          "title": "Quota Check (fact-based)",
+          "input": "User ID and trivia feature type",
+          "output": "Quota validation (per-fact billing)"
+        },
+        "topic": {
+          "title": "Topic Detection (NER)",
+          "input": "Transcript text from live channel",
+          "output": "Detected named entities and topics"
+        },
+        "mention": {
+          "title": "Mention Tracking (min 2, 60-min cooldown)",
+          "input": "Detected entity with mention count",
+          "output": "Eligible topic (2+ mentions, not in cooldown)"
+        },
+        "session": {
+          "title": "Session Management (FIFO max 100)",
+          "input": "New trivia session request",
+          "output": "Session slot allocated (FIFO eviction at 100)"
+        },
+        "cache": {
+          "title": "Fact Cache Lookup (24h TTL)",
+          "input": "Topic entity for fact lookup",
+          "output": "Cached fact if available (24h TTL)"
+        },
+        "search": {
+          "title": "Web Search (cache miss only)",
+          "input": "Topic entity needing fresh facts",
+          "output": "Web search results from Tavily"
+        },
+        "extract": {
+          "title": "Fact Extraction (cache miss only)",
+          "input": "Web search results for topic",
+          "output": "Structured trivia fact extracted by AI"
+        },
+        "tracking": {
+          "title": "Session Tracking + Interval (15s min)",
+          "input": "Generated trivia fact",
+          "output": "Fact queued with 15s minimum interval"
+        },
+        "emit": {
+          "title": "Trivia Fact Emit (multilingual)",
+          "input": "Trivia fact with translations",
+          "output": "WebSocket event with multilingual trivia"
+        }
+      }
+    }
+  },
+  "liveSearch": {
+    "liveTitle": "实时搜索",
+    "placeholder": "搜索字幕...",
+    "enterQuery": "输入搜索词",
+    "noResults": "无匹配字幕",
+    "resultsCount": "{{count}} 个结果",
+    "button": {
+      "label": "搜索字幕",
+      "title": "搜索"
+    }
+  },
   "liveTV": {
     "title": "直播电视",
     "channels": "直播电视频道",
@@ -4028,6 +5166,37 @@
       "documentary": "纪录片"
     },
     "loadingChannels": "加载频道..."
+  },
+  "location": {
+    "consentModal": {
+      "title": "启用位置服务",
+      "description": "我们希望向您展示与您所在地区相关的内容。\n\n我们将会：\n• 检测您的城市和州\n• 显示当地以色列社区内容\n• 缓存您的位置24小时\n\n我们不会：\n• 追踪您的精确位置\n• 将您的位置信息分享给第三方\n• 未经同意永久存储您的位置\n\n您可以随时在设置中更改此选项。",
+      "accept": "允许访问位置",
+      "decline": "暂时不用",
+      "privacyNote": "您的隐私对我们非常重要。位置数据经过加密处理，绝不会被出售。"
+    },
+    "permissionBanner": {
+      "title": "发现您附近的以色列内容",
+      "description": "启用位置服务以查看您所在地区的以色列社区活动、新闻和故事。您的隐私受到保护——我们仅检测您所在的城市。",
+      "enable": "启用位置",
+      "notNow": "暂时不用",
+      "close": "关闭",
+      "ariaLabel": "无障碍标签",
+      "dismiss": "忽略"
+    },
+    "status": {
+      "detecting": "正在检测您的位置...",
+      "detected": "已检测到位置：{{city}}，{{state}}",
+      "denied": "位置访问被拒绝",
+      "unavailable": "位置服务不可用",
+      "error": "位置检测失败"
+    },
+    "errors": {
+      "permissionDenied": "位置访问被拒绝。请在浏览器设置中启用位置权限。",
+      "timeout": "位置请求超时。请重试。",
+      "unavailable": "您的浏览器不支持位置服务。",
+      "failed": "获取位置失败。请重试。"
+    }
   },
   "login": {
     "title": "欢迎回来",
@@ -4121,6 +5290,143 @@
     "liveChannel": "直播",
     "vodLabel": "电影",
     "podcastsLabel": "播客"
+  },
+  "olorin": {
+    "errors": {
+      "session_not_found": "未找到会话",
+      "session_different_partner": "会话属于其他合作伙伴",
+      "session_invalid_status": "会话状态为{status}，无法添加转录",
+      "max_sessions_reached": "已达到最大并发会话数（{limit}）",
+      "invalid_api_key": "无效的API密钥",
+      "missing_api_key": "缺少{header}头",
+      "capability_disabled": "功能'{capability}'当前已禁用",
+      "capability_not_enabled": "功能'{capability}'未对此合作伙伴启用",
+      "source_language_not_supported": "不支持源语言'{language}'。支持：{supported}",
+      "target_language_not_supported": "不支持目标语言'{language}'。支持：{supported}",
+      "partner_not_found": "未找到合作伙伴",
+      "partner_registration_failed": "注册合作伙伴失败",
+      "no_updates_provided": "未提供更新",
+      "webhook_config_failed": "配置Webhook失败",
+      "webhook_url_not_configured": "未配置Webhook URL",
+      "webhook_secret_not_configured": "未配置Webhook密钥",
+      "search_failed": "搜索失败",
+      "indexing_failed": "索引失败",
+      "detection_failed": "检测失败",
+      "explanation_failed": "获取解释失败",
+      "reference_not_found": "未找到引用'{reference_id}'",
+      "enrichment_failed": "丰富失败",
+      "get_references_failed": "获取引用失败",
+      "create_session_failed": "创建会话失败",
+      "add_transcript_failed": "添加转录失败",
+      "generate_recap_failed": "生成回顾失败"
+    }
+  },
+  "onboarding": {
+    "autoplay": "自动播放",
+    "back": "返回",
+    "chooseAvatar": "选择你的头像",
+    "enableVoice": "启用语音命令",
+    "finish": "完成",
+    "language": "语言",
+    "namePlaceholder": "输入您的名字",
+    "next": "下一步",
+    "profileTitle": "设置你的个人资料",
+    "subtitles": "字幕",
+    "tasteSubtitle": "选择您喜欢的类型和分类",
+    "tasteTitle": "你喜欢什么？",
+    "voiceSubtitle": "设置语音命令进行免提控制",
+    "voiceTitle": "语音控制",
+    "wakeWord": "唤醒词",
+    "welcomeSubtitle": "让我们个性化您的体验",
+    "welcomeTitle": "欢迎来到Bayit+"
+  },
+  "pairing": {
+    "codePlaceholder": "输入配对码",
+    "enterCode": "输入代码",
+    "expiresAt": "到期时间",
+    "noDevices": "没有已配对设备",
+    "pairedDevices": "已配对设备",
+    "regenerate": "重新生成",
+    "scanCode": "在另一台设备上扫描此代码",
+    "unknownDevice": "未知设备",
+    "verify": "验证"
+  },
+  "passkey": {
+    "manager": {
+      "title": "密钥",
+      "subtitle": "管理您的密钥以安全访问内容"
+    },
+    "unsupported": "此设备不支持密钥",
+    "fetchError": "加载密钥失败",
+    "registerError": "注册密钥失败",
+    "deleteError": "删除密钥失败",
+    "cancelled": "密钥操作已取消",
+    "noPasskeys": "尚未注册密钥。添加一个以解锁私密内容。",
+    "unknownDevice": "未知设备",
+    "created": "已创建",
+    "lastUsed": "上次使用",
+    "never": "从未",
+    "addPasskey": "添加密钥",
+    "deleteConfirmTitle": "删除密钥？",
+    "deleteConfirmText": "此密钥将无法再解锁内容。您可以稍后重新添加。",
+    "unlock": "解锁",
+    "unlockContent": "解锁私密内容",
+    "unlockDescription": "使用您的密钥访问私密电影和剧集",
+    "auth": {
+      "title": "解锁内容",
+      "description": "使用您的指纹、面容或设备PIN解锁私密电影和剧集。",
+      "unlock": "使用密钥解锁",
+      "authenticating": "认证中...",
+      "success": "内容已解锁！",
+      "cancelled": "认证已取消",
+      "error": "认证失败。请重试。"
+    },
+    "qr": {
+      "useQR": "使用手机解锁",
+      "scanWithPhone": "用手机扫描",
+      "instruction": "打开手机相机扫描二维码进行认证",
+      "error": "生成二维码失败",
+      "expired": "二维码已过期。请重试。"
+    }
+  },
+  "passkeys": {
+    "addPasskey": "添加通行密钥",
+    "description": "通行密钥提供安全的无密码认证。",
+    "deviceNamePlaceholder": "设备名称",
+    "noPasskeys": "没有已注册的通行密钥",
+    "register": "注册",
+    "registered": "已注册的通行密钥",
+    "title": "通行密钥",
+    "unknownDevice": "未知设备"
+  },
+  "payment": {
+    "pending": {
+      "title": "完成您的订阅",
+      "description": "选择计划开始7天免费试用并访问所有Bayit+内容",
+      "timeElapsed": "正在检查付款状态... ({{seconds}}秒)",
+      "takingLonger": "付款确认时间比预期长。如果您已付款，请尝试刷新或联系支持。",
+      "helpText": "需要帮助？请联系 support@bayit.tv 或刷新此页面（如果您已完成付款）。"
+    },
+    "continueToPayment": "继续付款",
+    "success": {
+      "title": "付款成功！",
+      "description": "欢迎使用Bayit+！您的订阅现已激活。",
+      "redirecting": "{{seconds}}秒后重定向...",
+      "continue": "继续访问Bayit+"
+    },
+    "cancelled": {
+      "title": "付款已取消",
+      "description": "您的订阅未完成。准备好后可以重试。",
+      "retry": "重试",
+      "helpText": "有疑问？请联系 support@bayit.tv 获取帮助。"
+    }
+  },
+  "pending": {
+    "description": "您的付款正在处理中，请稍候...",
+    "helpText": "通常需要几秒钟，请勿关闭此页面。",
+    "takingLonger": "处理时间比预期更长...",
+    "timeElapsed": "已用时间：{{time}}",
+    "title": "付款处理中"
   },
   "placeholder": {
     "email": "your@email.com",
@@ -4325,6 +5631,53 @@
     "selectLanguage": "选择语言",
     "selectOutputLanguage": "选择输出语言"
   },
+  "playlist": {
+    "title": "我的播放列表",
+    "clear": "清空",
+    "playAll": "播放全部",
+    "empty": "您的播放列表为空",
+    "emptyHint": "点击任意内容卡片上的书签图标或说'添加到播放列表'来开始创建您的列表",
+    "removeItem": "从列表中移除",
+    "playItem": "播放 {{title}}",
+    "items": "项目",
+    "loading": "正在加载播放列表...",
+    "filters": {
+      "all": "全部",
+      "continue": "继续观看",
+      "movies": "电影",
+      "series": "剧集",
+      "kids": "儿童",
+      "judaism": "犹太教",
+      "podcasts": "播客",
+      "radio": "广播"
+    },
+    "watched": "已观看",
+    "addEpisode": "添加到播放列表",
+    "removeEpisode": "从播放列表移除",
+    "dragToReorder": "拖动重新排序"
+  },
+  "podcast": {
+    "selectLanguage": "选择语言",
+    "switchToLanguage": "切换到{{language}}",
+    "premiumRequiredForTranslation": "播客翻译需要高级订阅",
+    "player": {
+      "switchingLanguage": "切换中..."
+    },
+    "languages": {
+      "he": {
+        "short": "希",
+        "full": "希伯来语"
+      },
+      "en": {
+        "short": "英",
+        "full": "英语"
+      },
+      "es": {
+        "short": "西",
+        "full": "西班牙语"
+      }
+    }
+  },
   "podcasts": {
     "title": "播客",
     "episodes": "集",
@@ -4409,6 +5762,200 @@
       "errorResolve": "无法解析此URL",
       "errorAdd": "无法添加播客",
       "errorDuplicate": "此播客已存在"
+    }
+  },
+  "portal": {
+    "nav": {
+      "home": "首页",
+      "features": "功能",
+      "solutions": "解决方案",
+      "pricing": "定价",
+      "demo": "实时演示",
+      "contact": "联系我们",
+      "getStarted": "开始使用"
+    },
+    "hero": {
+      "ctaExplore": "探索功能",
+      "ctaDemo": "请求演示"
+    },
+    "cta": {
+      "title": "准备好开始了吗？",
+      "subtitle": "让我们讨论如何帮助改变您的业务",
+      "button": "联系我们"
+    },
+    "contactPage": {
+      "title": "联系我们",
+      "subtitle": "对我们的解决方案感兴趣？让我们交谈",
+      "formTitle": "给我们发消息",
+      "infoTitle": "联系信息",
+      "form": {
+        "name": "全名",
+        "email": "电子邮件地址",
+        "company": "公司名称",
+        "phone": "电话号码",
+        "message": "您的消息",
+        "messagePlaceholder": "告诉我们您的需求..."
+      },
+      "submit": "发送消息",
+      "sending": "发送中...",
+      "success": "消息已成功发送！我们很快会与您联系。",
+      "error": "发送消息失败。请重试。",
+      "scheduleTitle": "更喜欢安排通话？",
+      "scheduleSubtitle": "与我们的团队预订个性化演示",
+      "scheduleCta": "安排演示通话"
+    },
+    "pricingPage": {
+      "title": "实惠的",
+      "titleHighlight": "定价计划",
+      "subtitle": "选择适合您需求的计划",
+      "comparisonTitle": "功能比较",
+      "faqTitle": "常见问题",
+      "faq": {
+        "q1": "定价如何计算？",
+        "a1": "定价基于您的具体需求和使用情况。联系我们获取定制报价。",
+        "q2": "我以后可以升级我的计划吗？",
+        "a2": "是的，您可以随时升级。我们将帮助您无缝迁移数据。",
+        "q3": "包含什么支持？",
+        "a3": "所有计划都包括电子邮件支持。专业版和企业版计划包括专属客户经理的优先支持。"
+      },
+      "professional": {
+        "name": "专业版",
+        "price": "联系获取报价",
+        "priceNote": "定制定价",
+        "description": "适用于有高级需求的成长型企业",
+        "cta": "获取报价"
+      },
+      "enterprise": {
+        "name": "企业版",
+        "price": "定制",
+        "priceNote": "基于使用量",
+        "description": "适用于大型组织和企业部署",
+        "cta": "联系销售"
+      },
+      "ctaTitle": "准备好开始了吗？",
+      "ctaSubtitle": "让我们讨论您的需求并找到完美的计划",
+      "ctaButton": "联系销售"
+    },
+    "featuresPage": {
+      "title": "强大的",
+      "titleHighlight": "功能",
+      "subtitle": "成功所需的一切",
+      "techSpecsTitle": "技术规格",
+      "workflowTitle": "工作原理",
+      "workflow": {
+        "s1": {
+          "title": "导入",
+          "description": "上传和组织您的内容"
+        },
+        "s2": {
+          "title": "配置",
+          "description": "设置您的偏好和设置"
+        },
+        "s3": {
+          "title": "部署",
+          "description": "启动您的解决方案"
+        },
+        "s4": {
+          "title": "监控",
+          "description": "跟踪性能并优化"
+        }
+      },
+      "ctaTitle": "准备好探索功能了吗？",
+      "ctaSubtitle": "通过个性化演示查看所有功能的实际应用",
+      "ctaButton": "安排演示"
+    },
+    "demoPage": {
+      "title": "查看我们的",
+      "titleHighlight": "平台",
+      "subtitle": "体验我们解决方案的强大功能",
+      "scheduleCta": "安排实时演示",
+      "stepsTitle": "工作原理",
+      "steps": {
+        "analyze": {
+          "title": "分析",
+          "description": "跟踪和改进性能"
+        }
+      },
+      "featuresTitle": "平台亮点",
+      "platformsTitle": "可用平台",
+      "ctaTitle": "准备好您的定制演示了吗？",
+      "ctaSubtitle": "安排根据您的需求定制的个性化演示",
+      "ctaButton": "安排演示"
+    },
+    "workflow": {
+      "sectionTitle": "智能工作流",
+      "sectionSubtitle": "4步精简流程",
+      "step1": {
+        "title": "设置",
+        "description": "配置您的帐户和偏好"
+      },
+      "step2": {
+        "title": "自定义",
+        "description": "根据您的需求自定义设置"
+      },
+      "step3": {
+        "title": "部署",
+        "description": "启动您的解决方案"
+      },
+      "step4": {
+        "title": "监控",
+        "description": "跟踪性能并优化"
+      }
+    }
+  },
+  "privacy": {
+    "children": {
+      "content": "虽然我们的内容适合所有年龄段，但Olorin.ai LLC不会故意收集13岁以下儿童的个人身份信息。如果您是父母并认为您的孩子向我们提供了个人信息，请与我们联系。",
+      "title": "5. 儿童"
+    },
+    "collection": {
+      "audio": {
+        "data": "收集的数据：电视广播的简短音频样本。",
+        "intro": "如果您使用需要音频同步的功能，应用可能会请求麦克风访问权限。",
+        "purpose": "目的：匹配公共广播的音频指纹以进行同步。",
+        "retention": "保留：与视觉数据类似，音频样本实时处理并立即删除。我们不会监听或录制用户对话。",
+        "title": "B. 音频同步数据"
+      },
+      "camera": {
+        "data": "收集的数据：设备摄像头的单帧图像。",
+        "intro": "为提供我们的核心服务——将翻译音频与您的电视同步——Bayit+需要访问您的设备摄像头。",
+        "purpose": "目的：识别电视上正在播放的节目。",
+        "retention": "保留：这些数据是临时性的。帧在内存中即时处理，并在同步建立后立即永久删除。我们不会查看、存储或归档您家庭或家人的图像。",
+        "title": "A. 摄像头和视觉同步数据"
+      },
+      "title": "2. 我们收集的信息及使用方式",
+      "usage": {
+        "aggregate": "汇总数据",
+        "content": "我们可能会收集不可识别的技术数据以改善应用稳定性，包括：",
+        "crash": "崩溃日志和性能指标。",
+        "device": "设备类型和操作系统版本。",
+        "title": "C. 使用和技术数据"
+      }
+    },
+    "contact": {
+      "intro": "如果您对本隐私政策有任何疑问，请通过以下方式联系我们：",
+      "title": "7. 联系我们"
+    },
+    "intro": {
+      "commitment": "我们以\\\"隐私优先\\\"架构构建了Bayit+。我们不会录制您的客厅。我们的技术使用您的设备在本地处理所有内容。",
+      "content": "内容",
+      "title": "1. 简介"
+    },
+    "lastUpdated": "最后更新: 2026年1月27日",
+    "retention": {
+      "account": "账户数据：仅在您的账户处于活跃状态时保留，用于管理您的订阅和偏好设置。",
+      "sync": "同步数据：实时处理并立即删除。",
+      "title": "4. 数据保留"
+    },
+    "rights": {
+      "content": "根据您所在地区，您可能有权请求访问、更正或删除您的个人数据。您可以随时在应用设置中删除您的Bayit+账户。",
+      "title": "6. 您的权利"
+    },
+    "sharing": {
+      "ai": "AI处理：用于从公共广播源生成实时文本和音频翻译的服务。",
+      "cloud": "云服务：用于数据处理的安全云基础设施。",
+      "noSale": "Olorin.ai LLC不会出售您的个人数据。我们与可信赖的第三方服务提供商合作以提供我们的基础设施。这些提供商仅被授权在向我们提供这些服务所必需的范围内使用您的数据：",
+      "title": "3. 数据共享和第三方"
     }
   },
   "profile": {
@@ -4697,7 +6244,11 @@
       "daysAgo_one": "1天前",
       "daysAgo_other": "{{count}}天前"
     },
-    "unknown": "未知播放器"
+    "unknown": "未知播放器",
+    "betaCredits": "Beta积分",
+    "creditsRemaining": "积分剩余",
+    "streak": "连续天数",
+    "watched": "已观看"
   },
   "profiles": {
     "addProfile": "添加档案",
@@ -4708,6 +6259,37 @@
     "manage": "管理档案",
     "whoIsWatching": "谁在观看？",
     "manageProfiles": "管理档案"
+  },
+  "quiz": {
+    "title": "答题时间",
+    "questionOf": "第 {{current}} 题，共 {{total}} 题",
+    "correct": "正确",
+    "incorrect": "不太对",
+    "score": "你答对了 {{total}} 题中的 {{score}} 题",
+    "pointsEarned": "+{{points}} 分",
+    "badgeEarned": "获得徽章",
+    "perfectScore": "满分",
+    "tryAgain": "再试一次",
+    "continue": "继续",
+    "skip": "跳过答题",
+    "loading": "正在加载答题...",
+    "error": "无法加载答题",
+    "retry": "重试",
+    "submitting": "正在检查答案...",
+    "greatJob": "做得好",
+    "keepLearning": "继续学习和玩耍",
+    "nextQuestion": "下一题",
+    "viewResults": "查看结果",
+    "answersReview": "你的答案",
+    "explanation": "解释",
+    "timeBonus": "时间奖励",
+    "streakBonus": "连胜奖励",
+    "newBadge": "新徽章",
+    "totalScore": "总分"
+  },
+  "quota": {
+    "subtitleExceeded": "字幕配额已用完。请稍后重试。",
+    "dubbingExceeded": "配音配额已用完。请稍后重试。"
   },
   "radio": {
     "title": "广播",
@@ -4793,7 +6375,10 @@
     "sortDate": "日期",
     "sortSize": "大小",
     "sortDuration": "时长",
-    "sortTitle": "标题"
+    "sortTitle": "标题",
+    "delete": "删除",
+    "empty": "暂无录制",
+    "stop": "停止录制"
   },
   "register": {
     "title": "创建账户",
@@ -4835,6 +6420,41 @@
       "googleFailed": "Google 注册失败。请重试。"
     }
   },
+  "rewards": {
+    "title": "我的奖励",
+    "totalPoints": "总积分",
+    "badges": "徽章",
+    "quizzesCompleted": "完成的答题",
+    "perfectScores": "满分次数",
+    "currentStreak": "当前连胜",
+    "longestStreak": "最长连胜",
+    "days": "天",
+    "noBadges": "完成答题以获得徽章",
+    "locked": "继续玩以解锁",
+    "earnedOn": "获得于 {{date}}",
+    "pointsBonus": "+{{points}} 奖励积分",
+    "rarity": {
+      "common": "普通",
+      "uncommon": "不常见",
+      "rare": "稀有",
+      "epic": "史诗",
+      "legendary": "传说"
+    },
+    "badgeNames": {
+      "first_quiz": "第一次答题",
+      "quiz_rookie": "答题新手",
+      "quiz_fan": "答题爱好者",
+      "quiz_master": "答题大师",
+      "perfect_start": "完美开局",
+      "perfectionist": "完美主义者",
+      "streak_3": "火力全开",
+      "streak_7": "周冠军",
+      "streak_30": "月度大师"
+    },
+    "level": "等级",
+    "points": "积分",
+    "streak": "连胜"
+  },
   "ritual": {
     "title": "早间仪式",
     "greeting": "早上好！",
@@ -4849,7 +6469,14 @@
     "noContentNow": "当前无可用内容",
     "typeLive": "直播",
     "typeRadio": "广播",
-    "typeVideo": "视频"
+    "typeVideo": "视频",
+    "aiBrief": "AI每日简报",
+    "days": "天",
+    "goodMorning": "早上好",
+    "loadBrief": "加载每日简报",
+    "streak": "连续",
+    "subtitle": "您的个性化早晨体验",
+    "todayContent": "今日内容"
   },
   "search": {
     "title": "搜索",
@@ -4985,11 +6612,30 @@
     "exampleQuery4": "适合5-7岁的希伯来语儿童节目",
     "poweredByAI": "🤖 由Claude AI提供支持。结果可能因查询解读而异。"
   },
+  "security": {
+    "changePassword": "更改密码",
+    "confirmPassword": "确认新密码",
+    "current": "当前",
+    "currentPassword": "当前密码",
+    "devices": "活跃设备",
+    "newPassword": "新密码",
+    "noDevices": "未找到设备",
+    "unknownDevice": "未知设备",
+    "updatePassword": "更新密码"
+  },
+  "semantic": {
+    "info": "AI驱动的搜索理解含义，而不仅仅是关键词",
+    "infoTitle": "语义搜索",
+    "keyword": "关键词",
+    "semantic": "语义"
+  },
   "settings": {
     "title": "设置",
     "language": "语言",
     "appLanguage": "应用语言",
     "selectLanguage": "选择语言",
+    "chooseLanguage": "选择您的语言",
+    "languageDescription": "选择您偏好的应用界面语言",
     "languages": {
       "en": "English",
       "he": "עברית",
@@ -5050,7 +6696,52 @@
       "large": "大"
     },
     "familyAndSafety": "Family & Safety",
-    "familyControls": "Family Controls"
+    "familyControls": "Family Controls",
+    "account": "账户",
+    "appUpdates": "应用更新",
+    "appUpdatesDescription": "获取新功能和改进通知",
+    "billing": "账单",
+    "chessActivity": "棋类活动",
+    "chessActivityDescription": "关于棋类游戏和挑战的通知",
+    "devicePairing": "设备配对",
+    "directMessages": "私信",
+    "directMessagesDescription": "收到消息时通知",
+    "friendActivity": "好友活动",
+    "friendActivityDescription": "好友加入或观看内容时更新",
+    "helpCenter": "帮助中心",
+    "household": "家庭",
+    "liveEvents": "直播活动",
+    "liveEventsDescription": "即将到来的直播提醒",
+    "newContent": "新内容",
+    "newContentDescription": "有新电影、剧集或节目时通知",
+    "notificationDescription": "选择您要接收的通知",
+    "notificationFooter": "您可以随时更改这些设置。",
+    "notificationPreferences": "通知偏好",
+    "notificationSettings": "通知设置",
+    "passkeys": "通行密钥",
+    "preferences": "偏好设置",
+    "recommendations": "推荐",
+    "recommendationsDescription": "基于观看历史的个性化推荐",
+    "security": "安全",
+    "subscription": "订阅",
+    "support": "支持",
+    "version": "版本",
+    "watchPartyInvitations": "观影派对邀请",
+    "watchPartyInvitationsDescription": "好友邀请你一起观看时的通知"
+  },
+  "shabbat": {
+    "activate": "激活",
+    "active": "活跃",
+    "autoMode": "自动模式",
+    "autoModeDescription": "根据点蜡烛时间自动激活安息日模式",
+    "candleLighting": "点蜡烛",
+    "dailyTimes": "每日时间",
+    "deactivate": "停用",
+    "havdalah": "哈夫达拉",
+    "inactive": "未激活",
+    "manualToggle": "手动切换",
+    "recommendedContent": "推荐内容",
+    "settings": "设置"
   },
   "stats": {
     "statistics": "统计",
@@ -5081,6 +6772,13 @@
     "theirWins": "对方胜场",
     "totalGamesPlayed": "总计：{{count}} 场游戏",
     "recentGames": "最近游戏"
+  },
+  "status": {
+    "pleaseLogin": "请登录以使用 Bayit+ Companion",
+    "quotaExhausted": "每日 {{limit}} 分钟配额已用完。升级到高级版。",
+    "connected": "已连接",
+    "dubbingFailed": "配音启动失败，请重试。",
+    "dubbingError": "配音错误：{{error}}"
   },
   "subscribe": {
     "title": "选择您的套餐",
@@ -5136,6 +6834,14 @@
         "support": "支持"
       }
     }
+  },
+  "subscription": {
+    "cancel": "取消订阅",
+    "choosePlan": "选择您的计划",
+    "current": "当前",
+    "monthly": "月度",
+    "subscribe": "订阅",
+    "yearly": "年度"
   },
   "subtitles": {
     "nikud": "希伯来语标点",
@@ -5235,6 +6941,18 @@
       "retry": "重试"
     }
   },
+  "success": {
+    "continue": "继续",
+    "description": "您的付款已成功处理。",
+    "redirecting": "正在重定向...",
+    "title": "付款成功"
+  },
+  "suggestions": {
+    "categoriesTitle": "分类",
+    "clearRecent": "清除最近",
+    "recentTitle": "最近搜索",
+    "trendingTitle": "热门"
+  },
   "support": {
     "title": "支持中心",
     "subtitle": "今天我们能帮您什么？",
@@ -5264,28 +6982,8 @@
       "placeholder": "搜索文档...",
       "noResults": "未找到结果"
     },
-    "faq": {
-      "title": "常见问题",
-      "loading": "加载常见问题...",
-      "loadError": "加载常见问题失败",
-      "empty": "此分类暂无常见问题",
-      "categories": {
-        "all": "所有话题",
-        "general": "综合",
-        "billing": "账单",
-        "technical": "技术",
-        "features": "功能"
-      }
-    },
-    "contact": {
-      "voiceTitle": "语音支持",
-      "voiceDescription": "点击头像按钮或说 \"Jarvis\" 开始与我们的 AI 助手语音对话。",
-      "ticketTitle": "创建支持工单",
-      "ticketDescription": "需要人工帮助？创建支持工单，我们的团队将在24小时内回复。",
-      "createTicket": "创建工单",
-      "emailTitle": "邮件支持",
-      "emailDescription": "更喜欢邮件？如有任何问题或疑虑，请联系 support@bayit.tv。"
-    },
+    "faq": "常见问题",
+    "contact": "联系",
     "ticket": {
       "title": "创建支持工单",
       "subject": "主题",
@@ -5319,21 +7017,7 @@
         "submit": "创建工单失败。请重试。"
       }
     },
-    "tickets": {
-      "title": "我的支持工单",
-      "loading": "加载工单中...",
-      "loadError": "加载工单失败",
-      "empty": "暂无支持工单",
-      "emptyFilter": "无此状态的工单",
-      "create": "新工单",
-      "createFirst": "创建您的第一个工单",
-      "filter": {
-        "all": "全部",
-        "open": "待处理",
-        "inProgress": "处理中",
-        "resolved": "已解决"
-      }
-    },
+    "tickets": "我的工单",
     "voice": {
       "title": "语音助手",
       "listening": "我在听...",
@@ -5352,782 +7036,16 @@
       "subtitle": "了解如何使用Bayit+功能",
       "widgetsIntro": "小组件入门",
       "widgetsDescription": "了解如何创建、自定义和管理浮动小组件"
-    }
-  },
-  "telAviv": {
-    "title": "特拉维夫连接",
-    "subtitle": "永不停歇的城市",
-    "noContent": "无可用特拉维夫内容",
-    "sources": "来源",
-    "beachLive": "海滩摄像头",
-    "categories": {
-      "beaches": "海滩",
-      "nightlife": "夜生活",
-      "culture": "文化与艺术",
-      "music": "音乐现场",
-      "food": "美食",
-      "tech": "科技与创业",
-      "events": "活动",
-      "general": "特拉维夫"
-    }
-  },
-  "trending": {
-    "title": "以色列热门话题",
-    "noTopics": "无可用热门话题",
-    "topStory": "头条新闻",
-    "sources": "来源",
-    "categories": {
-      "security": "安全",
-      "politics": "政治",
-      "tech": "科技",
-      "culture": "文化",
-      "sports": "体育",
-      "economy": "经济",
-      "entertainment": "娱乐",
-      "weather": "天气",
-      "health": "健康",
-      "general": "综合"
-    }
-  },
-  "trivia": {
-    "didYouKnow": "你知道吗？",
-    "dismissHint": "关闭小知识",
-    "wantToKnowMore": "想了解更多吗？",
-    "followUpHint": "点击查看更深入的后续趣事",
-    "settings": {
-      "displayLanguages": "显示语言",
-      "languageHint": "选择1-3种语言显示每个事实",
-      "language": "语言",
-      "selectLanguage": "选择此语言",
-      "deselectLanguage": "取消选择此语言",
-      "title": "趣味知识",
-      "enabled": "显示趣味知识",
-      "enabledDescription": "在播放时显示有趣的事实",
-      "frequency": "频率",
-      "frequencyHint": "更改趣味知识显示频率",
-      "categories": "分类",
-      "category": "分类",
-      "selectCategory": "点击选择此分类",
-      "deselectCategory": "点击取消选择此分类",
-      "displayDuration": "显示时长",
-      "durationHint": "更改趣味知识显示时长",
-      "seconds": "秒"
     },
-    "categories": {
-      "cast": "演员",
-      "production": "制作",
-      "location": "地点",
-      "cultural": "文化",
-      "historical": "历史"
-    },
-    "frequency": {
-      "off": "关闭",
-      "low": "低",
-      "normal": "正常",
-      "high": "高"
-    },
-    "errors": {
-      "loadFailed": "加载趣味知识失败",
-      "saveFailed": "保存趣味知识偏好失败"
-    }
-  },
-  "tvLogin": {
-    "invalidQR": "无效的二维码。请从电视重新扫描。",
-    "sessionInvalid": "此二维码已过期。请在电视上生成新的。",
-    "verificationFailed": "验证会话失败。请重试。",
-    "fillAllFields": "请填写所有字段",
-    "loginFailed": "登录失败。请检查您的凭据。",
-    "notLoggedIn": "您尚未在此设备上登录。",
-    "enterCredentials": "请输入您的凭据以授权您的电视。",
-    "authFailed": "授权失败。",
-    "verifying": "验证中...",
-    "verifyingDescription": "正在连接到您的电视...",
-    "loginTitle": "登录您的电视",
-    "loginDescription": "输入您的凭据以授权您的电视",
-    "authorizing": "授权中...",
-    "authorizingDescription": "正在登录您的电视...",
-    "authorizeTV": "授权电视",
-    "success": "成功！",
-    "successDescription": "您的电视现已登录。您可以关闭此页面。",
-    "goToHome": "返回首页",
-    "error": "出现问题",
-    "tryAgain": "重试",
-    "securityNote": "您的凭据安全发送，绝不存储在电视上。",
-    "footer": "遇到问题？请确保您扫描的是电视上最新生成的二维码。"
-  },
-  "video": {
-    "watchTrailer": "观看预告片",
-    "closeTrailer": "关闭预告片",
-    "deleteConfirm": "删除此剧集？"
-  },
-  "vod": {
-    "title": "电影与剧集",
-    "movies": "电影",
-    "series": "剧集",
-    "searchPlaceholder": "搜索电影和剧集...",
-    "noMovies": "未找到电影",
-    "noSeries": "未找到剧集",
-    "loadError": "加载内容失败",
-    "showOnlyWithSubtitles": "仅显示有字幕的",
-    "categories": {
-      "all": "全部",
-      "drama": "剧情",
-      "comedy": "喜剧",
-      "action": "动作",
-      "documentary": "纪录片",
-      "kids": "儿童"
-    },
-    "allCategories": "全部",
-    "emptyTitle": "无可用内容",
-    "emptyDescription": "请选择其他分类",
-    "allContent": "全部内容",
-    "noContent": "无可用内容",
-    "noContentInCategory": "此分类下无内容",
-    "filters": "筛选",
-    "loadingContent": "正在加载电影和剧集..."
-  },
-  "voice": {
-    "listening": "正在听...",
-    "speaking": "正在说话",
-    "ready": "准备就绪",
-    "tapToSpeak": "点击说话",
-    "processing": "处理中...",
-    "transcribing": "转录中...",
-    "tapToStop": "点击停止录音",
-    "pleaseWait": "请稍候...",
-    "transcriptionNotAvailable": "转录不可用",
-    "transcriptionFailed": "转录失败",
-    "micPermissionDenied": "麦克风权限被拒绝",
-    "error": "无法听清，请重试",
-    "avatarPreferences": {
-      "currentMode": "当前模式",
-      "title": "头像显示"
-    },
-    "features": {
-      "animations": "✨ 动画",
-      "transcript": "💬 转录",
-      "waveform": "〰️ 波形",
-      "wizard": "🧙 向导"
-    },
-    "wizardResponse": "助手回复",
-    "dismissResponse": "关闭语音回复",
-    "dismissResponseHint": "点击隐藏助手回复"
-  },
-  "voiceMode": {
-    "voiceOnly": "仅语音",
-    "voiceOnlyDesc": "无遥控器 - 完全语音导航",
-    "hybrid": "混合",
-    "hybridDesc": "语音 + 遥控器 - 操作时有语音反馈",
-    "classic": "经典",
-    "classicDesc": "无语音 - 仅遥控器"
-  },
-  "voiceOnboarding": {
-    "welcome": {
-      "title": "欢迎使用语音控制",
-      "description": "用语音控制 Bayit+，解放双手"
-    },
-    "features": {
-      "voiceCommands": "语音命令",
-      "voiceCommandsDesc": "用自然语言导航、搜索和控制播放",
-      "tts": "文字转语音",
-      "ttsDesc": "聆听响应和内容描述",
-      "wakeWord": "唤醒词",
-      "wakeWordDesc": "说 'Bayit' 随时激活语音控制"
-    },
-    "getStarted": "开始使用",
-    "permissions": {
-      "title": "麦克风权限",
-      "description": "语音控制需要麦克风权限来听取您的命令",
-      "privacy": "您的语音数据安全处理，不会被存储"
-    },
-    "permissionsGranted": "麦克风权限已授予",
-    "permissionRequired": {
-      "title": "需要权限",
-      "message": "请在设备设置中启用麦克风权限以使用语音控制"
-    },
-    "grantPermissions": "授予权限",
-    "testWakeWord": {
-      "title": "测试唤醒词",
-      "description": "说 'Bayit' 测试语音激活",
-      "success": "太棒了！语音激活正常工作"
-    },
-    "startTest": "开始测试",
-    "complete": {
-      "title": "一切就绪！",
-      "description": "语音控制已启用。试试这些命令：",
-      "tryCommands": "试试这些命令",
-      "examples": {
-        "search": "\"搜索 Fauda\"",
-        "play": "\"播放新闻\"",
-        "navigate": "\"转到直播电视\"",
-        "control": "\"暂停\" 或 \"调高音量\""
-      },
-      "startUsing": "开始使用语音控制"
-    },
-    "skip": "暂时跳过"
-  },
-  "watch": {
-    "notFound": "未找到内容",
-    "backToHome": "返回首页",
-    "episodes": "剧集",
-    "addToList": "添加到列表",
-    "like": "喜欢",
-    "share": "分享",
-    "cast": "演员",
-    "episodesList": "剧集",
-    "schedule": "时间表",
-    "now": "现在",
-    "related": "相关内容",
-    "deleteEpisode": "删除剧集",
-    "confirmDeleteEpisode": "删除此剧集？",
-    "playlist": "播放列表",
-    "streamError": "无法加载流媒体，请稍后重试。",
-    "streamUnavailable": "流媒体不可用"
-  },
-  "watchParty": {
-    "title": "观影派对",
-    "create": "创建派对",
-    "join": "加入派对",
-    "active": "派对进行中",
-    "createTitle": "创建观影派对",
-    "joinTitle": "加入派对",
-    "enterCode": "输入房间代码",
-    "roomCode": "房间代码",
-    "copyCode": "复制代码",
-    "codeCopied": "代码已复制！",
-    "participants": "参与者",
-    "host": "主持人",
-    "you": "您",
-    "leave": "离开派对",
-    "end": "结束派对",
-    "chat": "聊天",
-    "sendMessage": "发送消息",
-    "typeMessage": "输入消息...",
-    "synced": "已同步",
-    "syncing": "同步中...",
-    "hostPaused": "主持人已暂停",
-    "userJoined": "{{name}} 加入了",
-    "userLeft": "{{name}} 离开了",
-    "partyEnded": "派对已结束",
-    "connecting": "连接中...",
-    "options": {
-      "chatEnabled": "启用聊天",
-      "syncPlayback": "同步播放"
-    },
-    "errors": {
-      "invalidCode": "无效代码",
-      "partyFull": "派对已满",
-      "partyEnded": "派对已结束",
-      "connectionError": "连接错误",
-      "createFailed": "创建派对失败",
-      "joinFailed": "加入派对失败"
-    },
-    "audio": {
-      "mute": "静音",
-      "unmute": "取消静音",
-      "speaking": "正在说话",
-      "connecting": "正在连接音频...",
-      "noAudio": "音频不可用",
-      "muteHint": "静音您的麦克风",
-      "unmuteHint": "取消静音麦克风以说话"
-    },
-    "textOnlyMode": "仅文字聊天",
-    "endParty": "结束派对",
-    "roomCodeHint": "输入8位房间代码加入派对",
-    "muteHint": "静音您的麦克风",
-    "unmuteHint": "取消静音麦克风以说话",
-    "toggleEmoji": "切换表情选择器",
-    "toggleEmojiHint": "打开表情快速选择器进行互动",
-    "sendEmoji": "发送{{emoji}}",
-    "sendEmojiHint": "发送表情互动到聊天",
-    "emojiPicker": "表情选择器",
-    "chatInput": "聊天消息输入",
-    "chatInputHint": "输入消息发送到派对聊天",
-    "sendMessageHint": "发送您的消息到派对聊天",
-    "copyCodeHint": "复制房间代码到剪贴板",
-    "share": "分享",
-    "shareHint": "分享派对链接或复制代码",
-    "copied": "已复制！",
-    "endPartyHint": "结束所有参与者的派对",
-    "leaveParty": "离开派对",
-    "leavePartyHint": "离开派对但不结束",
-    "buttonHint": "打开菜单创建或加入观影派对",
-    "createHint": "创建新的观影派对",
-    "joinHint": "用代码加入现有观影派对",
-    "emojiPickerHint": "显示快速表情互动",
-    "chatEnabledHint": "为参与者启用聊天",
-    "syncPlaybackHint": "保持播放与主持人同步",
-    "createPartyHint": "使用所选选项创建派对",
-    "joinPartyHint": "用输入的代码加入派对",
-    "closePanelHint": "关闭观影派对面板",
-    "cancelHint": "取消并关闭对话框",
-    "viewPartyHint": "打开观影派对面板",
-    "panel": "观影派对面板",
-    "activeLabel": "观影派对 - 进行中",
-    "buffering": "缓冲中...",
-    "hostActiveLabel": "观影派对 - 您正在主持",
-    "hosting": "主持中",
-    "listening": "收听中",
-    "placeholder": {
-      "roomCode": "ABCD1234"
-    },
-    "roomCodeLabel": "房间代码",
-    "startVoice": "开始语音",
-    "stopVoice": "停止语音",
-    "voiceInputHint": "语音输入提示",
-    "watching": "观看中"
-  },
-  "playlist": {
-    "title": "我的播放列表",
-    "clear": "清空",
-    "playAll": "播放全部",
-    "empty": "您的播放列表为空",
-    "emptyHint": "点击任意内容卡片上的书签图标或说'添加到播放列表'来开始创建您的列表",
-    "removeItem": "从列表中移除",
-    "playItem": "播放 {{title}}",
-    "items": "项目",
-    "loading": "正在加载播放列表...",
-    "filters": {
-      "all": "全部",
-      "continue": "继续观看",
-      "movies": "电影",
-      "series": "剧集",
-      "kids": "儿童",
-      "judaism": "犹太教",
-      "podcasts": "播客",
-      "radio": "广播"
-    },
-    "watched": "已观看",
-    "addEpisode": "添加到播放列表",
-    "removeEpisode": "从播放列表移除",
-    "dragToReorder": "拖动重新排序"
-  },
-  "widgets": {
-    "empty": "暂无小组件",
-    "emptyHint": "您的小组件将显示在此处",
-    "emptyPersonal": "暂无个人小组件",
-    "emptyPersonalHint": "创建您的第一个个人小组件或添加上方的系统小组件",
-    "itemsTotal": "总小组件",
-    "systemWidgets": "系统小组件",
-    "systemWidgetsHint": "浏览并添加小组件到您的收藏",
-    "myWidgets": "我的个人小组件",
-    "myWidgetsHint": "您创建的小组件",
-    "personalWidgets": "我的小组件",
-    "noSystemWidgets": "无可用系统小组件",
-    "added": "已添加",
-    "add": "添加",
-    "remove": "移除",
-    "show": "显示",
-    "hidden": "已隐藏",
-    "addToCollection": "添加到我的小组件",
-    "removeFromCollection": "从我的小组件移除",
-    "addToMyWidgets": "添加到我的小部件",
-    "removeFromMyWidgets": "从我的小部件中移除",
-    "widgetAdded": "小部件已添加",
-    "widgetRemoved": "小部件已移除",
-    "contentTypes": {
-      "liveChannel": "直播频道",
-      "iframe": "网页内容",
-      "podcast": "播客",
-      "radio": "广播",
-      "vod": "视频",
-      "custom": "自定义",
-      "widget": "小部件",
-      "audiobook": "有声书",
-      "liveStream": "直播流"
-    },
-    "form": {
-      "title": "创建小组件",
-      "basicInfo": "基本信息",
-      "titlePlaceholder": "小组件标题",
-      "titleRequired": "小组件标题为必填项",
-      "descriptionPlaceholder": "描述（可选）",
-      "iconPlaceholder": "图标表情（如📺）",
-      "content": "内容",
-      "fromLibrary": "从资料库",
-      "iframe": "iFrame",
-      "selectContent": "选择内容（频道、播客、节目等）",
-      "iframeUrl": "iFrame URL",
-      "iframeUrlRequired": "iFrame URL 为必填项",
-      "iframeTitle": "iFrame 标题",
-      "positionSize": "位置与大小",
-      "behavior": "行为",
-      "mutedByDefault": "默认静音",
-      "closable": "可关闭",
-      "draggable": "可拖动",
-      "widgetOrder": "小组件顺序",
-      "orderPlaceholder": "顺序（0 = 第一个）",
-      "saveWidget": "保存小组件",
-      "saving": "保存中...",
-      "cancel": "取消",
-      "change": "更改",
-      "errors": {
-        "contentRequired": "请选择内容",
-        "iframeUrlRequired": "iFrame URL为必填项",
-        "nameExists": "已存在同名小部件",
-        "titleRequired": "标题为必填项"
-      },
-      "validating": "验证中..."
-    },
-    "intro": {
-      "title": "欢迎使用小组件",
-      "description": "发现强大的浮动小组件，定制您的观看体验",
-      "watchVideo": "观看介绍",
-      "skip": "跳过",
-      "dismiss": "不再显示",
-      "videoUnavailable": "视频暂不可用",
-      "loadingMartyJr": "正在加载 Marty Jr...",
-      "loadingWidgets": "正在加载小组件介绍..."
-    },
-    "contentPicker": {
-      "noContent": "无可用内容",
-      "tryAnotherTab": "尝试选择其他分类"
-    },
-    "delete": "删除",
-    "hide": "隐藏",
-    "resetPosition": "重置位置",
-    "select": "选择",
-    "selectAll": "全选",
-    "cancelSelection": "取消",
-    "deleteSelected": "删除",
-    "bulkDeleteConfirm": "删除选中的小组件？",
-    "bulkDeleted": "小组件已删除",
-    "showDock": "显示停靠栏",
-    "hideDock": "隐藏停靠栏"
-  },
-  "beta": {
-    "credits": {
-      "loading": "正在加载信用余额...",
-      "error": "无法加载信用余额",
-      "label": "AI积分",
-      "remaining": "剩余",
-      "warningCritical": "🚨 严重：积分即将用完",
-      "warningLow": "⚠️ 警告：积分余额不足",
-      "upgrade": "升级套餐",
-      "upgradeAction": "升级以获取更多积分",
-      "remainingCredits": "积分"
-    }
-  },
-  "catchup": {
-    "overlay": {
-      "title": "刚加入？",
-      "description": "您在 {{programName}} 进行中加入",
-      "creditContext": "这将使用您 {{balance}} 积分中的 {{cost}} 积分",
-      "lowBalanceWarning": "积分余额不足",
-      "acceptButton": "帮我补看（{{cost}} 积分）",
-      "declineButton": "不用了",
-      "accept": "接受",
-      "balanceContext": "余额详情",
-      "decline": "拒绝",
-      "lowBalance": "余额不足",
-      "thisProgram": "此节目"
-    },
-    "button": {
-      "credits": "补看（{{cost}} 积分）",
-      "label": "补看（{{cost}} 积分）",
-      "title": "快速回顾"
-    },
-    "generating": "正在生成摘要...",
-    "summary": {
-      "title": "您错过的内容",
-      "keyPoints": "要点",
-      "windowInfo": "最近 {{minutes}} 分钟",
-      "creditsUsed": "已使用 {{count}} 积分",
-      "creditsRemaining": "剩余 {{count}} 积分",
-      "close": "关闭",
-      "cached": "已缓存",
-      "remaining": "剩余",
-      "window": "时间窗口"
-    },
-    "error": {
-      "failed": "无法生成摘要",
-      "retry": "重试",
-      "insufficientCredits": "积分不足"
-    },
-    "timeline": {
-      "title": "字幕时间线",
-      "segmentCount": "{{count}} 个片段",
-      "count": "{{count}} 个片段",
-      "window": "最近 {{minutes}} 分钟",
-      "buttonLabel": "显示字幕时间线",
-      "buttonTitle": "时间线",
-      "empty": "暂无可用字幕",
-      "loading": "正在加载字幕..."
-    }
-  },
-  "highlights": {
-    "title": "精彩片段",
-    "noHighlights": "暂未检测到精彩片段",
-    "fetchError": "无法加载精彩片段",
-    "types": {
-      "emotional": "情感",
-      "entity": "实体",
-      "keyword": "关键词",
-      "dramatic": "戏剧性"
-    },
-    "button": {
-      "label": "显示精彩片段",
-      "title": "精彩片段"
-    }
-  },
-  "liveSearch": {
-    "liveTitle": "实时搜索",
-    "placeholder": "搜索字幕...",
-    "enterQuery": "输入搜索词",
-    "noResults": "无匹配字幕",
-    "resultsCount": "{{count}} 个结果",
-    "button": {
-      "label": "搜索字幕",
-      "title": "搜索"
-    }
-  },
-  "audiobooks": {
-    "audiobook": "有声书",
-    "chapter": "章节",
-    "chapters": "章节",
-    "playChapter": "播放章节",
-    "noChapters": "无可用章节",
-    "notFound": "未找到有声书",
-    "author": "作者",
-    "narrator": "朗读者",
-    "duration": "时长",
-    "isbn": "ISBN",
-    "available": "可用",
-    "averageRating": "平均评分",
-    "description": "发现来自世界各地的有声书",
-    "details": "详情",
-    "filters": "筛选",
-    "loadError": "加载有声书失败",
-    "loading": "正在加载有声书...",
-    "noAudiobooks": "暂无有声书",
-    "quality": "音频质量",
-    "sortBy": "排序方式",
-    "sortOrder": "排列顺序",
-    "subscription": "订阅",
-    "title": "有声书",
-    "tryLater": "稍后重试"
-  },
-  "podcast": {
-    "selectLanguage": "选择语言",
-    "switchToLanguage": "切换到{{language}}",
-    "premiumRequiredForTranslation": "播客翻译需要高级订阅",
-    "player": {
-      "switchingLanguage": "切换中..."
-    },
-    "languages": {
-      "he": {
-        "short": "希",
-        "full": "希伯来语"
-      },
-      "en": {
-        "short": "英",
-        "full": "英语"
-      },
-      "es": {
-        "short": "西",
-        "full": "西班牙语"
-      }
-    }
-  },
-  "youngsters": {
-    "title": "青少年",
-    "items": "项目",
-    "empty": "无可用内容",
-    "emptyHint": "尝试其他分类",
-    "exitYoungstersMode": "退出青少年模式",
-    "exitDescription": "输入家长代码以退出",
-    "parentCode": "家长代码",
-    "confirm": "确认",
-    "wrongCode": "代码不正确",
-    "noContent": "无可用内容",
-    "tryAnotherCategory": "尝试选择其他分类",
-    "categories": {
-      "all": "全部",
-      "trending": "热门",
-      "news": "新闻",
-      "culture": "文化",
-      "educational": "教育",
-      "music": "音乐",
-      "entertainment": "娱乐",
-      "sports": "体育",
-      "tech": "科技",
-      "judaism": "犹太教"
-    },
-    "ageGroups": {
-      "middle-school": "初中 (12-14)",
-      "high-school": "高中 (15-17)"
-    },
-    "moderation": {
-      "pending": "待审核",
-      "approved": "已批准",
-      "rejected": "已拒绝"
-    },
-    "admin": {
-      "stats": "青少年内容管理器",
-      "seedContent": "导入内容",
-      "importArchive": "导入 Archive.org",
-      "syncPodcasts": "同步播客",
-      "syncYouTube": "同步 YouTube",
-      "tagVod": "标记点播",
-      "pendingModeration": "待审核"
-    },
-    "loading": "正在加载内容...",
-    "news": "新闻",
-    "trending": "热门"
-  },
-  "dubbing": {
-    "title": "实时配音",
-    "enabled": "实时配音已启用",
-    "selectLanguage": "选择语言",
-    "originalAudio": "原始音频",
-    "dubbedAudio": "配音音频",
-    "selectVoice": "选择声音",
-    "adjustVolume": "调整音量",
-    "tapToSelect": "点击选择此语言",
-    "languages": {
-      "en": "英语",
-      "es": "西班牙语",
-      "he": "希伯来语",
-      "ar": "阿拉伯语",
-      "ru": "俄语",
-      "fr": "法语",
-      "de": "德语"
-    },
-    "onboarding": {
-      "title": "实时配音介绍",
-      "description": "用您的语言体验直播内容。我们的AI在您观看时实时翻译和播放音频。",
-      "feature1": "支持7种语言",
-      "feature2": "实时处理",
-      "feature3": "调整音频平衡",
-      "tryNow": "立即体验",
-      "later": "以后再说"
-    },
-    "consent": {
-      "title": "音频处理同意",
-      "message": "实时配音使用AI服务实时处理您的音频。音频仅用于翻译，不会永久存储。",
-      "accept": "我同意",
-      "decline": "不，谢谢"
-    },
-    "errors": {
-      "connectionFailed": {
-        "title": "连接失败"
-      },
-      "connectionFailedMessage": "无法连接到配音服务",
-      "connectionFailedAction": "请检查您的网络连接并重试",
-      "notAuthenticated": "未认证",
-      "notAuthenticatedMessage": "请重新登录",
-      "notAuthenticatedAction": "登录以使用实时配音",
-      "premiumRequired": {
-        "title": "高级功能"
-      },
-      "premiumRequiredMessage": "实时配音需要高级订阅",
-      "premiumRequiredAction": "升级到高级版以使用此功能",
-      "channelUnavailable": {
-        "title": "频道不可用"
-      },
-      "channelUnavailableMessage": "此频道不支持配音",
-      "audioCaptureError": "麦克风错误",
-      "audioCaptureErrorMessage": "无法访问您的麦克风",
-      "sttServiceError": "语音识别错误",
-      "sttServiceErrorMessage": "语音识别失败",
-      "ttsServiceError": "配音错误",
-      "ttsServiceErrorMessage": "生成配音音频失败",
-      "translationTimeout": "翻译超时",
-      "translationTimeoutMessage": "翻译耗时过长，正在重试",
-      "websocketClosed": "连接断开",
-      "websocketClosedMessage": "配音连接已关闭",
-      "rateLimitExceeded": "尝试次数过多",
-      "rateLimitExceededMessage": "请稍后重试",
-      "sessionTimeout": "会话过期",
-      "sessionTimeoutMessage": "您的配音会话已过期",
-      "audioCaptureTitle": "麦克风访问被拒绝",
-      "authFailed": {
-        "title": "认证错误"
-      },
-      "rateLimitTitle": "请求过多",
-      "sessionTitle": "会话已过期",
-      "sttTitle": "语音识别错误",
-      "translationAction": "系统将继续使用原始音频",
-      "translationTitle": "翻译超时",
-      "ttsTitle": "文字转语音错误",
-      "websocketTitle": "连接丢失"
-    },
-    "active": "实时配音已激活",
-    "clickToEnable": "点击启用实时配音",
-    "controls": {
-      "liveDubbing": "实时配音",
-      "enableDubbing": "启用实时配音",
-      "enableSubtitles": "启用实时字幕",
-      "selectLanguage": "选择语言",
-      "selectVoice": "选择语音",
-      "originalVolume": "原始音频",
-      "dubbedVolume": "配音音频",
-      "tooltips": {
-        "enableDubbing": "实时翻译和配音音频",
-        "enableSubtitles": "实时显示翻译字幕",
-        "selectLanguage": "选择您喜欢的翻译语言",
-        "selectVoice": "选择配音的声音",
-        "originalVolume": "调整原始音频音量（0 = 静音）",
-        "dubbedVolume": "调整配音音频音量（1 = 最大音量）"
-      }
-    },
-    "inputLanguageTooltip": "检查输入语言",
-    "latency": {
-      "badge": {
-        "accessibilityHint": "双击可切换延迟详情面板",
-        "title": "延迟监控",
-        "tooltip": "实时音频处理延迟。视频自动延迟以实现完美同步。"
-      },
-      "breakdown": {
-        "cacheHitRate": "缓存命中率",
-        "provider": "提供商",
-        "title": "延迟细分"
-      },
-      "components": {
-        "buffer": "音频缓冲",
-        "network": "网络",
-        "stt": "语音转文字",
-        "sync": "视频同步",
-        "translation": "翻译",
-        "tts": "文字转语音",
-        "capture": "音频捕获",
-        "captureDesc": "从视频捕获音频的时间",
-        "sttDesc": "将语音转换为文字",
-        "translationDesc": "翻译到目标语言",
-        "ttsDesc": "生成配音音频",
-        "networkDesc": "数据传输延迟",
-        "bufferDesc": "音频处理缓冲",
-        "syncDesc": "视频延迟以实现完美同步"
-      },
-      "graph": {
-        "noData": "暂无数据...",
-        "title": "延迟历史",
-        "tooltip": "处理延迟的60秒滚动历史",
-        "xAxis": "时间（秒前）",
-        "yAxis": "延迟（毫秒）"
-      },
-      "status": {
-        "excellent": "优秀",
-        "good": "良好",
-        "fair": "一般",
-        "poor": "较差"
-      },
-      "info": {
-        "autoSync": "自动同步",
-        "autoSyncDesc": "视频自动延迟以匹配音频处理时间，确保完美的唇形同步和字幕时间。",
-        "howItWorks": "工作原理",
-        "howItWorksDesc": "系统测量实际处理延迟，并以相同的量延迟视频流。这就是专业广播翻译的工作方式。",
-        "noManualAdjustment": "无需手动调整",
-        "noManualAdjustmentDesc": "与其他系统不同，您无需手动同步音频和视频。一切都是自动的。",
-        "whyDelay": "为什么有延迟？",
-        "whyDelayDesc": "实时翻译和配音需要时间（通常为600-800毫秒）。与其显示不同步的内容，我们延迟视频以匹配。您看到的内容略微落后于直播，但完全同步。",
-        "professionalQuality": "专业品质",
-        "professionalQualityDesc": "这与专业广播公司用于现场国际报道的方法相同。"
-      }
-    },
-    "noVoicesAvailable": "无可用语音",
-    "premiumRequired": "需要高级订阅",
-    "selectInputLanguage": "选择输入语言"
+    "email": "邮件支持",
+    "message": "消息",
+    "newTicket": "新工单",
+    "noFAQ": "暂无FAQ",
+    "noTickets": "暂无工单",
+    "subject": "主题",
+    "submit": "提交",
+    "ticketCreated": "工单创建成功",
+    "website": "网站"
   },
   "taxonomy": {
     "sections": {
@@ -6241,719 +7159,106 @@
       "title": "子分类"
     }
   },
-  "passkey": {
-    "manager": {
-      "title": "密钥",
-      "subtitle": "管理您的密钥以安全访问内容"
-    },
-    "unsupported": "此设备不支持密钥",
-    "fetchError": "加载密钥失败",
-    "registerError": "注册密钥失败",
-    "deleteError": "删除密钥失败",
-    "cancelled": "密钥操作已取消",
-    "noPasskeys": "尚未注册密钥。添加一个以解锁私密内容。",
-    "unknownDevice": "未知设备",
-    "created": "已创建",
-    "lastUsed": "上次使用",
-    "never": "从未",
-    "addPasskey": "添加密钥",
-    "deleteConfirmTitle": "删除密钥？",
-    "deleteConfirmText": "此密钥将无法再解锁内容。您可以稍后重新添加。",
-    "unlock": "解锁",
-    "unlockContent": "解锁私密内容",
-    "unlockDescription": "使用您的密钥访问私密电影和剧集",
-    "auth": {
-      "title": "解锁内容",
-      "description": "使用您的指纹、面容或设备PIN解锁私密电影和剧集。",
-      "unlock": "使用密钥解锁",
-      "authenticating": "认证中...",
-      "success": "内容已解锁！",
-      "cancelled": "认证已取消",
-      "error": "认证失败。请重试。"
-    },
-    "qr": {
-      "useQR": "使用手机解锁",
-      "scanWithPhone": "用手机扫描",
-      "instruction": "打开手机相机扫描二维码进行认证",
-      "error": "生成二维码失败",
-      "expired": "二维码已过期。请重试。"
+  "telAviv": {
+    "title": "特拉维夫连接",
+    "subtitle": "永不停歇的城市",
+    "noContent": "无可用特拉维夫内容",
+    "sources": "来源",
+    "beachLive": "海滩摄像头",
+    "categories": {
+      "beaches": "海滩",
+      "nightlife": "夜生活",
+      "culture": "文化与艺术",
+      "music": "音乐现场",
+      "food": "美食",
+      "tech": "科技与创业",
+      "events": "活动",
+      "general": "特拉维夫"
     }
   },
-  "olorin": {
-    "errors": {
-      "session_not_found": "未找到会话",
-      "session_different_partner": "会话属于其他合作伙伴",
-      "session_invalid_status": "会话状态为{status}，无法添加转录",
-      "max_sessions_reached": "已达到最大并发会话数（{limit}）",
-      "invalid_api_key": "无效的API密钥",
-      "missing_api_key": "缺少{header}头",
-      "capability_disabled": "功能'{capability}'当前已禁用",
-      "capability_not_enabled": "功能'{capability}'未对此合作伙伴启用",
-      "source_language_not_supported": "不支持源语言'{language}'。支持：{supported}",
-      "target_language_not_supported": "不支持目标语言'{language}'。支持：{supported}",
-      "partner_not_found": "未找到合作伙伴",
-      "partner_registration_failed": "注册合作伙伴失败",
-      "no_updates_provided": "未提供更新",
-      "webhook_config_failed": "配置Webhook失败",
-      "webhook_url_not_configured": "未配置Webhook URL",
-      "webhook_secret_not_configured": "未配置Webhook密钥",
-      "search_failed": "搜索失败",
-      "indexing_failed": "索引失败",
-      "detection_failed": "检测失败",
-      "explanation_failed": "获取解释失败",
-      "reference_not_found": "未找到引用'{reference_id}'",
-      "enrichment_failed": "丰富失败",
-      "get_references_failed": "获取引用失败",
-      "create_session_failed": "创建会话失败",
-      "add_transcript_failed": "添加转录失败",
-      "generate_recap_failed": "生成回顾失败"
+  "trending": {
+    "title": "以色列热门话题",
+    "noTopics": "无可用热门话题",
+    "topStory": "头条新闻",
+    "sources": "来源",
+    "categories": {
+      "security": "安全",
+      "politics": "政治",
+      "tech": "科技",
+      "culture": "文化",
+      "sports": "体育",
+      "economy": "经济",
+      "entertainment": "娱乐",
+      "weather": "天气",
+      "health": "健康",
+      "general": "综合"
     }
   },
-  "cities": {
-    "jerusalem": {
-      "title": "耶路撒冷",
-      "subtitle": "探索永恒之城",
-      "loadingContent": "正在加载耶路撒冷内容...",
-      "noContent": "目前无可用内容",
-      "errorLoading": "加载耶路撒冷内容失败",
-      "sources": "来源",
-      "categories": {
-        "history": "历史遗迹",
-        "religion": "宗教遗产",
-        "culture": "文化活动",
-        "events": "本地活动",
-        "food": "美食佳肴",
-        "markets": "传统市场",
-        "arts": "艺术画廊"
-      }
+  "trivia": {
+    "didYouKnow": "你知道吗？",
+    "dismissHint": "关闭小知识",
+    "wantToKnowMore": "想了解更多吗？",
+    "followUpHint": "点击查看更深入的后续趣事",
+    "settings": {
+      "displayLanguages": "显示语言",
+      "languageHint": "选择1-3种语言显示每个事实",
+      "language": "语言",
+      "selectLanguage": "选择此语言",
+      "deselectLanguage": "取消选择此语言",
+      "title": "趣味知识",
+      "enabled": "显示趣味知识",
+      "enabledDescription": "在播放时显示有趣的事实",
+      "frequency": "频率",
+      "frequencyHint": "更改趣味知识显示频率",
+      "categories": "分类",
+      "category": "分类",
+      "selectCategory": "点击选择此分类",
+      "deselectCategory": "点击取消选择此分类",
+      "displayDuration": "显示时长",
+      "durationHint": "更改趣味知识显示时长",
+      "seconds": "秒"
     },
-    "telAviv": {
-      "title": "特拉维夫",
-      "subtitle": "体验充满活力的城市",
-      "loadingContent": "正在加载特拉维夫内容...",
-      "noContent": "目前无可用内容",
-      "errorLoading": "加载特拉维夫内容失败",
-      "sources": "来源",
-      "categories": {
-        "beaches": "海滩与海滨",
-        "nightlife": "夜生活与娱乐",
-        "culture": "文化活动",
-        "music": "音乐与演唱会",
-        "food": "餐饮与美食",
-        "tech": "科技与创新",
-        "events": "本地活动"
-      }
+    "categories": {
+      "cast": "演员",
+      "production": "制作",
+      "location": "地点",
+      "cultural": "文化",
+      "historical": "历史"
     },
-    "privacy": {
-      "lastUpdated": "最后更新：2026年1月27日",
-      "intro": {
-        "title": "1. 简介",
-        "content": "Olorin.ai LLC（\"我们\"、\"我们的\"或\"公司\"）致力于保护您的隐私。本隐私政策解释了我们的移动应用程序Bayit+（\"应用\"）如何收集、使用和保护您的信息。",
-        "commitment": "我们以\"隐私优先\"的架构构建了Bayit+。我们不会录制您的客厅。我们的技术仅使用您设备的传感器来将我们的音频服务与您的电视同步。"
-      },
-      "collection": {
-        "title": "2. 我们收集的信息及使用方式",
-        "camera": {
-          "title": "A. 摄像头和视觉同步数据",
-          "intro": "为了提供我们的核心服务——将翻译音频与您的电视同步——Bayit+需要访问您设备的摄像头。",
-          "data": "收集的数据：当您激活\"同步模式\"时，应用会从您的电视屏幕捕获约3秒的视频帧序列。",
-          "purpose": "目的：这些帧被传输到我们的安全云服务器，仅用于识别您正在观看的公共电视频道并计算广播延迟（时间延迟）。",
-          "retention": "保留：此数据是临时的。帧在内存中即时处理，并在建立同步后立即永久删除。我们不会查看、存储或归档您家或家人的图像。"
-        },
-        "audio": {
-          "title": "B. 音频数据（如适用）",
-          "intro": "如果您使用需要音频同步的功能，应用可能会请求麦克风访问。",
-          "data": "收集的数据：电视广播的简短音频样本。",
-          "purpose": "目的：匹配公共广播的音频指纹以进行同步。",
-          "retention": "保留：与视觉数据一样，音频样本实时处理并立即删除。我们不会收听或录制用户对话。"
-        },
-        "usage": {
-          "title": "C. 使用和技术数据",
-          "content": "我们可能会收集非可识别的技术数据以改进应用稳定性，包括：",
-          "device": "设备类型和操作系统版本。",
-          "crash": "崩溃日志和性能指标。",
-          "aggregate": "关于正在观看哪些频道的汇总数据（例如，\"50%的用户正在观看12频道\"）。"
-        }
-      },
-      "sharing": {
-        "title": "3. 数据共享和第三方",
-        "noSale": "Olorin.ai LLC不出售您的个人数据。我们与受信任的第三方服务提供商合作以提供我们的基础设施。这些提供商仅被授权在必要时使用您的数据为我们提供这些服务：",
-        "cloud": "云基础设施：托管服务（例如AWS）用于处理同步请求。",
-        "ai": "AI处理：用于从公共广播馈送生成实时文本和音频翻译的服务。"
-      },
-      "retention": {
-        "title": "4. 数据保留",
-        "sync": "同步数据（图像/音频）：0天。处理后立即删除。",
-        "account": "账户数据：仅在您的账户处于活跃状态时保留，以管理您的订阅和偏好。"
-      },
-      "children": {
-        "title": "5. 儿童隐私",
-        "content": "虽然我们的内容适合所有年龄段，但Olorin.ai LLC不会故意收集13岁以下儿童的个人可识别信息。如果您是家长并认为您的孩子向我们提供了个人信息，请联系我们。"
-      },
-      "rights": {
-        "title": "6. 您的权利",
-        "content": "根据您的位置，您可能有权请求访问、更正或删除您的个人数据。您可以随时在应用设置中删除您的Bayit+账户。"
-      },
-      "contact": {
-        "title": "7. 联系我们",
-        "intro": "如果您对本隐私政策有任何疑问，请联系我们："
-      }
-    },
-    "beta": {
-      "credits": {
-        "loading": "正在加载积分余额...",
-        "error": "无法加载积分余额",
-        "label": "AI积分",
-        "remaining": "剩余积分",
-        "warningCritical": "警告：积分即将用尽",
-        "warningLow": "提示：积分余额较低",
-        "upgrade": "升级套餐",
-        "upgradeAction": "升级以获取更多积分"
-      },
-      "settings": {
-        "title": "测试计划",
-        "description": "管理您的Beta 500注册并查看计划详情。提前获取AI驱动功能的访问权限。",
-        "enrolledTitle": "您已加入Beta 500！",
-        "statusPendingVerification": "待验证",
-        "statusActive": "活跃",
-        "statusExpired": "已过期",
-        "pendingMessage": "我们正在验证您的注册。审批后您将收到邮件。",
-        "expiresOn": "到期日期：{{date}}",
-        "loadingStatus": "正在加载计划状态...",
-        "errorLoading": "无法加载计划信息。请重试。",
-        "programStatus": "计划状态",
-        "slots": "名额已满",
-        "slotsAvailable": "{{count}}个名额可用",
-        "programFull": "全部500个名额已满"
-      },
-      "enrollment": {
-        "title": "加入Beta 500",
-        "subtitle": "成为500个家庭之一体验AI驱动功能",
-        "programFull": "计划已满",
-        "joinButton": "加入Beta 500",
-        "exclusiveAccess": "独家访问",
-        "limitedSlots": "限500个家庭",
-        "slotsAvailable": "{{available}}/{{total}}个名额可用",
-        "freeCredits": "免费AI积分",
-        "creditsAmount": "5,000积分（价值$50）",
-        "duration": "测试期限",
-        "durationValue": "90天",
-        "features": "AI功能",
-        "featuresValue": "实时配音、AI搜索、推荐",
-        "whatYouGet": "您将获得",
-        "benefits": {
-          "liveDubbing": "观看时实时音频翻译",
-          "aiSearch": "智能内容发现",
-          "aiRecommendations": "个性化建议",
-          "prioritySupport": "直接联系开发团队"
-        },
-        "disclaimer": "Beta 500是限时计划。积分在测试期间不可续期。",
-        "waitlistMessage": "目前全部500个名额已满。加入候补名单，当有名额时会通知您。",
-        "enrollmentSuccess": "欢迎加入Beta 500！请检查邮箱验证您的账户。",
-        "enrollmentError": "无法注册。请稍后重试。"
-      }
-    }
-  },
-  "quota": {
-    "subtitleExceeded": "字幕配额已用完。请稍后重试。",
-    "dubbingExceeded": "配音配额已用完。请稍后重试。"
-  },
-  "validation": {
-    "authorRequired": "作者为必填项",
-    "orderRange": "顺序必须在1到100之间",
-    "streamUrlRequired": "流媒体URL为必填项",
-    "titleRequired": "标题为必填项"
-  },
-  "audible": {
-    "accountLinked": "您的 Audible 帐户已成功关联到 Bayit+",
-    "connected": "已连接！",
-    "connecting": "正在连接 Audible...",
-    "connectionFailed": "连接失败",
-    "pleaseWait": "请稍候，正在关联您的帐户。",
-    "connect": "连接 Audible",
-    "disconnect": "断开 Audible"
-  },
-  "cancelled": {
-    "description": "您的付款已被取消。",
-    "helpText": "您的账户未产生任何费用。",
-    "retry": "重试",
-    "title": "付款已取消"
-  },
-  "devices": {
-    "activeNow": "当前活跃",
-    "confirmDisconnect": "断开设备连接？",
-    "daysAgo": "{{count}}天前",
-    "disconnect": "断开连接",
-    "disconnectSuccess": "设备已断开",
-    "disconnectSuccessMessage": "设备已成功断开连接。",
-    "disconnectSuccessWithSessions": "设备已断开并结束会话",
-    "hoursAgo": "{{count}}小时前",
-    "loading": "正在加载设备...",
-    "minutesAgo": "{{count}}分钟前",
-    "noDevices": "无已连接的设备",
-    "noDevicesDescription": "当您在不同平台登录时，设备将显示在这里",
-    "registeredDevices": "已注册设备",
-    "thisDevice": "此设备"
-  },
-  "liveAiDataFlow": {
-    "subtitle": "实时AI功能的端到端管道可视化",
-    "tabs": {
-      "dubbing": "配音",
-      "translation": "翻译",
-      "trivia": "趣味问答"
-    },
-    "title": "实时AI数据流",
-    "services": {
-      "elevenlabs": "ElevenLabs",
-      "googleCloud": "Google Cloud",
-      "googleTranslate": "Google Translate",
-      "openai": "OpenAI",
-      "claude": "Claude",
-      "spacy": "spaCy",
-      "redis": "Redis",
-      "tavily": "Tavily"
-    },
-    "translation": {
-      "nodes": {
-        "auth": {
-          "title": "WebSocket Auth + Rate Limit",
-          "input": "WebSocket connection request with JWT token",
-          "output": "Authenticated session with rate limit applied"
-        },
-        "quota": {
-          "title": "Quota Check (30s cache)",
-          "input": "User ID and feature type",
-          "output": "Quota validation result (cached 30s)"
-        },
-        "stt": {
-          "title": "STT (ElevenLabs Scribe v2)",
-          "input": "Raw audio stream from channel",
-          "output": "Transcribed text segments with timestamps"
-        },
-        "dedup": {
-          "title": "Deduplication (70% overlap)",
-          "input": "New transcript segment",
-          "output": "Filtered unique segments (70% overlap threshold)"
-        },
-        "predictive": {
-          "title": "Predictive Subtitle Emit (optional)",
-          "input": "Original language transcript",
-          "output": "Early subtitle display before translation"
-        },
-        "translate": {
-          "title": "Translation (Google/OpenAI/Claude)",
-          "input": "Original language text segment",
-          "output": "Translated text in target language"
-        },
-        "chunk": {
-          "title": "Text Chunking (max 80 chars)",
-          "input": "Translated text of any length",
-          "output": "Chunks of max 80 characters for display"
-        },
-        "emit": {
-          "title": "Final Subtitle Emit",
-          "input": "Chunked translated subtitle",
-          "output": "WebSocket event to client with subtitle data"
-        }
-      }
-    },
-    "dubbing": {
-      "nodes": {
-        "auth": {
-          "title": "WebSocket Auth + Rate Limit",
-          "input": "WebSocket connection request with JWT token",
-          "output": "Authenticated session with rate limit applied"
-        },
-        "quota": {
-          "title": "Quota Check",
-          "input": "User ID and dubbing feature type",
-          "output": "Quota validation result"
-        },
-        "session": {
-          "title": "Session Init + ChannelSTTManager Subscribe",
-          "input": "Channel ID and language preferences",
-          "output": "Subscribed to shared STT channel manager"
-        },
-        "stt": {
-          "title": "Shared STT (1 per channel, 99% cost save)",
-          "input": "Channel audio stream (shared across users)",
-          "output": "Shared transcript for all channel subscribers"
-        },
-        "transcriptEmit": {
-          "title": "Transcript Emit to Client",
-          "input": "Shared STT transcript segment",
-          "output": "WebSocket event with original transcript"
-        },
-        "translate": {
-          "title": "Translation",
-          "input": "Original transcript text",
-          "output": "Translated text in user's target language"
-        },
-        "translationEmit": {
-          "title": "Translation Emit to Client",
-          "input": "Translated text segment",
-          "output": "WebSocket event with translated text"
-        },
-        "tts": {
-          "title": "TTS Streaming (new conn per transcript)",
-          "input": "Translated text for speech synthesis",
-          "output": "Streaming audio chunks from ElevenLabs"
-        },
-        "encode": {
-          "title": "Audio Encoding (base64)",
-          "input": "Raw audio buffer from TTS",
-          "output": "Base64-encoded audio ready for transport"
-        },
-        "audioEmit": {
-          "title": "Dubbed Audio Emit",
-          "input": "Encoded audio chunk",
-          "output": "WebSocket event with dubbed audio data"
-        }
-      }
-    },
-    "trivia": {
-      "nodes": {
-        "auth": {
-          "title": "WebSocket Auth + Rate Limit",
-          "input": "WebSocket connection request with JWT token",
-          "output": "Authenticated session with rate limit applied"
-        },
-        "quota": {
-          "title": "Quota Check (fact-based)",
-          "input": "User ID and trivia feature type",
-          "output": "Quota validation (per-fact billing)"
-        },
-        "topic": {
-          "title": "Topic Detection (NER)",
-          "input": "Transcript text from live channel",
-          "output": "Detected named entities and topics"
-        },
-        "mention": {
-          "title": "Mention Tracking (min 2, 60-min cooldown)",
-          "input": "Detected entity with mention count",
-          "output": "Eligible topic (2+ mentions, not in cooldown)"
-        },
-        "session": {
-          "title": "Session Management (FIFO max 100)",
-          "input": "New trivia session request",
-          "output": "Session slot allocated (FIFO eviction at 100)"
-        },
-        "cache": {
-          "title": "Fact Cache Lookup (24h TTL)",
-          "input": "Topic entity for fact lookup",
-          "output": "Cached fact if available (24h TTL)"
-        },
-        "search": {
-          "title": "Web Search (cache miss only)",
-          "input": "Topic entity needing fresh facts",
-          "output": "Web search results from Tavily"
-        },
-        "extract": {
-          "title": "Fact Extraction (cache miss only)",
-          "input": "Web search results for topic",
-          "output": "Structured trivia fact extracted by AI"
-        },
-        "tracking": {
-          "title": "Session Tracking + Interval (15s min)",
-          "input": "Generated trivia fact",
-          "output": "Fact queued with 15s minimum interval"
-        },
-        "emit": {
-          "title": "Trivia Fact Emit (multilingual)",
-          "input": "Trivia fact with translations",
-          "output": "WebSocket event with multilingual trivia"
-        }
-      }
-    }
-  },
-  "pending": {
-    "description": "您的付款正在处理中，请稍候...",
-    "helpText": "通常需要几秒钟，请勿关闭此页面。",
-    "takingLonger": "处理时间比预期更长...",
-    "timeElapsed": "已用时间：{{time}}",
-    "title": "付款处理中"
-  },
-  "privacy": {
-    "children": {
-      "content": "虽然我们的内容适合所有年龄段，但Olorin.ai LLC不会故意收集13岁以下儿童的个人身份信息。如果您是父母并认为您的孩子向我们提供了个人信息，请与我们联系。",
-      "title": "5. 儿童"
-    },
-    "collection": {
-      "audio": {
-        "data": "收集的数据：电视广播的简短音频样本。",
-        "intro": "如果您使用需要音频同步的功能，应用可能会请求麦克风访问权限。",
-        "purpose": "目的：匹配公共广播的音频指纹以进行同步。",
-        "retention": "保留：与视觉数据类似，音频样本实时处理并立即删除。我们不会监听或录制用户对话。",
-        "title": "B. 音频同步数据"
-      },
-      "camera": {
-        "data": "收集的数据：设备摄像头的单帧图像。",
-        "intro": "为提供我们的核心服务——将翻译音频与您的电视同步——Bayit+需要访问您的设备摄像头。",
-        "purpose": "目的：识别电视上正在播放的节目。",
-        "retention": "保留：这些数据是临时性的。帧在内存中即时处理，并在同步建立后立即永久删除。我们不会查看、存储或归档您家庭或家人的图像。",
-        "title": "A. 摄像头和视觉同步数据"
-      },
-      "title": "2. 我们收集的信息及使用方式",
-      "usage": {
-        "aggregate": "汇总数据",
-        "content": "我们可能会收集不可识别的技术数据以改善应用稳定性，包括：",
-        "crash": "崩溃日志和性能指标。",
-        "device": "设备类型和操作系统版本。",
-        "title": "C. 使用和技术数据"
-      }
-    },
-    "contact": {
-      "intro": "如果您对本隐私政策有任何疑问，请通过以下方式联系我们：",
-      "title": "7. 联系我们"
-    },
-    "intro": {
-      "commitment": "我们以\\\"隐私优先\\\"架构构建了Bayit+。我们不会录制您的客厅。我们的技术使用您的设备在本地处理所有内容。",
-      "content": "内容",
-      "title": "1. 简介"
-    },
-    "lastUpdated": "最后更新: 2026年1月27日",
-    "retention": {
-      "account": "账户数据：仅在您的账户处于活跃状态时保留，用于管理您的订阅和偏好设置。",
-      "sync": "同步数据：实时处理并立即删除。",
-      "title": "4. 数据保留"
-    },
-    "rights": {
-      "content": "根据您所在地区，您可能有权请求访问、更正或删除您的个人数据。您可以随时在应用设置中删除您的Bayit+账户。",
-      "title": "6. 您的权利"
-    },
-    "sharing": {
-      "ai": "AI处理：用于从公共广播源生成实时文本和音频翻译的服务。",
-      "cloud": "云服务：用于数据处理的安全云基础设施。",
-      "noSale": "Olorin.ai LLC不会出售您的个人数据。我们与可信赖的第三方服务提供商合作以提供我们的基础设施。这些提供商仅被授权在向我们提供这些服务所必需的范围内使用您的数据：",
-      "title": "3. 数据共享和第三方"
-    }
-  },
-  "semantic": {
-    "info": "AI驱动的搜索理解含义，而不仅仅是关键词",
-    "infoTitle": "语义搜索",
-    "keyword": "关键词",
-    "semantic": "语义"
-  },
-  "success": {
-    "continue": "继续",
-    "description": "您的付款已成功处理。",
-    "redirecting": "正在重定向...",
-    "title": "付款成功"
-  },
-  "suggestions": {
-    "categoriesTitle": "分类",
-    "clearRecent": "清除最近",
-    "recentTitle": "最近搜索",
-    "trendingTitle": "热门"
-  },
-  "viewMode": {
-    "cards": "卡片",
-    "grid": "网格",
-    "list": "列表"
-  },
-  "widget": {
-    "103fmEpisodes": "103FM 节目",
-    "audioUnavailable": "音频不可用",
-    "contentUnavailable": "内容不可用",
-    "errorLoadingContent": "加载内容时出错",
-    "iframeNotConfigured": "iFrame URL 未配置",
-    "loadingEpisodes": "正在加载剧集...",
-    "loadingNews": "正在加载新闻...",
-    "noContentConfigured": "未配置内容",
-    "noEpisodesFound": "未找到剧集",
-    "podcastUnavailable": "播客不可用",
-    "stationUnavailable": "电台不可用",
-    "streamUnavailable": "直播流不可用",
-    "unknownComponent": "未知组件：{{componentName}}",
-    "ynetBreakingNews": "מבזקי Ynet"
-  },
-  "auth": {
-    "loginRequired": "需要登录",
-    "loginToWatch": "请登录以观看 {{title}}",
-    "login": "登录",
-    "signUp": "注册",
-    "signInRequired": "需要登录",
-    "signInRequiredTitle": "请登录以继续"
-  },
-  "email": {
-    "greeting": "您好",
-    "footer": {
-      "privacy": "隐私政策",
-      "terms": "服务条款",
-      "support": "客户支持",
-      "unsubscribe": "退订这些邮件"
-    },
-    "welcome": {
-      "subject": "欢迎加入 Bayit+！",
-      "title": "欢迎来到 Bayit+",
-      "body": "感谢您加入 Bayit+。我们很高兴您的到来！",
-      "cta": "前往控制台"
-    },
-    "verification": {
-      "subject": "验证您的邮箱",
-      "title": "验证您的邮箱地址",
-      "body": "请点击下方按钮验证您的邮箱地址。",
-      "cta": "验证邮箱",
-      "expiry": "此链接将在 {expiry_hours} 小时后失效。",
-      "security": "如果您没有创建帐户，可以安全地忽略此邮件。"
-    },
-    "verification_resend": {
-      "subject": "邮箱验证（重新发送）",
-      "title": "验证您的邮箱地址",
-      "body": "根据您的请求，这是新的验证链接。",
-      "cta": "验证邮箱"
-    },
-    "password_reset": {
-      "subject": "重置您的密码",
-      "title": "重置您的密码",
-      "body": "我们收到了重置您密码的请求。请点击下方按钮创建新密码。",
-      "cta": "重置密码",
-      "expiry": "此链接将在 {expiry_hours} 小时后失效。",
-      "security": "如果您没有请求此操作，您的帐户仍然安全。您可以忽略此邮件。"
-    },
-    "password_changed": {
-      "subject": "密码已更改",
-      "title": "您的密码已更改",
-      "body": "您的密码已成功更改。",
-      "security": "如果这不是您本人的操作，请立即联系客服。"
-    },
-    "account_locked": {
-      "subject": "帐户已锁定",
-      "title": "您的帐户已被锁定",
-      "body": "由于安全原因，您的帐户已被暂时锁定。",
-      "cta": "解锁帐户"
-    },
-    "beta_invitation": {
-      "subject": "您已被邀请加入 Bayit+ 测试版！",
-      "title": "您已被邀请加入测试计划",
-      "body": "恭喜！您已被选中参加独家 Bayit+ Beta 500 计划。",
-      "credits": "包含 {credits} 个 AI 积分",
-      "duration": "访问权限有效期 {days} 天",
-      "cta": "加入测试计划"
-    },
-    "beta_welcome": {
-      "subject": "欢迎加入 Bayit+ 测试版！",
-      "title": "欢迎加入测试计划",
-      "body": "您现在是独家 Bayit+ Beta 500 社区的一员！",
-      "cta": "开始使用"
-    },
-    "payment_confirmation": {
-      "subject": "付款确认",
-      "title": "已收到付款",
-      "body": "您的付款已成功处理。",
-      "transaction": "交易编号",
-      "plan": "套餐",
-      "amount": "金额",
-      "date": "付款日期",
-      "next_billing": "下次账单日期"
-    },
-    "subscription_activated": {
-      "subject": "订阅已激活",
-      "title": "您的订阅已激活",
-      "body": "您的订阅已激活。以下是您将获得的权益：",
-      "cta": "开始观看"
-    },
-    "subscription_cancelled": {
-      "subject": "订阅已取消",
-      "title": "订阅已取消",
-      "body": "您的订阅已取消。您将继续拥有访问权限至 {access_until}。",
-      "cta": "重新激活订阅"
-    },
-    "payment_failed": {
-      "subject": "付款失败",
-      "title": "付款失败",
-      "body": "我们无法处理您的付款。请更新您的付款方式。",
-      "cta": "更新付款方式"
-    },
-    "trial_expiring": {
-      "subject": "您的试用即将到期",
-      "title": "试用将在 {days_remaining} 天后结束",
-      "body": "您的免费试用即将到期。立即升级以继续享受所有功能。",
-      "cta": "立即升级"
-    },
-    "support": {
-      "created_subject": "工单 #{ticket_id} 已创建",
-      "created_title": "客服工单已创建",
-      "created_body": "您的客服工单已创建。我们将尽快回复您。",
-      "response_subject": "工单 #{ticket_id} 有新回复",
-      "response_title": "您的工单有新回复",
-      "escalation_subject": "工单 #{ticket_id} 已升级",
-      "escalation_title": "您的工单已被升级处理",
-      "resolved_subject": "工单 #{ticket_id} 已解决",
-      "resolved_title": "您的工单已解决",
-      "resolved_body": "您的客服工单已解决。"
-    },
-    "new_message": {
-      "subject": "来自 {sender_name} 的新消息",
-      "title": "您有一条新消息",
-      "cta": "阅读消息"
-    },
-    "content_digest": {
-      "subject": "您的{digest_period}内容摘要",
-      "title": "您的内容摘要",
-      "cta": "浏览内容"
-    },
-    "gdpr": {
-      "deletion_subject": "数据删除确认",
-      "deletion_title": "您的数据已被删除",
-      "deletion_body": "根据您的请求，您的个人数据已被永久删除。",
-      "categories_label": "已删除的数据类别"
-    },
-    "admin": {
-      "account_created_subject": "管理员帐户已创建",
-      "account_created_title": "管理员帐户已创建",
-      "role_change_subject": "角色已更改",
-      "role_change_title": "您的角色已更新"
-    },
-    "campaign": {
-      "default_subject": "来自 Bayit+ 的新闻"
-    },
-    "newsletter": {
-      "default_subject": "Bayit+ 通讯"
-    },
-    "reengagement": {
-      "subject": "我们想念您！",
-      "title": "好久不见",
-      "body": "我们注意到您已经 {days_inactive} 天没有访问了。以下是您错过的内容：",
-      "cta": "回来看看"
-    }
-  },
-  "greeting": {
-    "morning": "早上好",
-    "afternoon": "下午好",
-    "evening": "晚上好",
-    "night": "晚安"
-  },
-  "location": {
-    "consentModal": {
-      "title": "启用位置服务",
-      "description": "我们希望向您展示与您所在地区相关的内容。\n\n我们将会：\n• 检测您的城市和州\n• 显示当地以色列社区内容\n• 缓存您的位置24小时\n\n我们不会：\n• 追踪您的精确位置\n• 将您的位置信息分享给第三方\n• 未经同意永久存储您的位置\n\n您可以随时在设置中更改此选项。",
-      "accept": "允许访问位置",
-      "decline": "暂时不用",
-      "privacyNote": "您的隐私对我们非常重要。位置数据经过加密处理，绝不会被出售。"
-    },
-    "permissionBanner": {
-      "title": "发现您附近的以色列内容",
-      "description": "启用位置服务以查看您所在地区的以色列社区活动、新闻和故事。您的隐私受到保护——我们仅检测您所在的城市。",
-      "enable": "启用位置",
-      "notNow": "暂时不用",
-      "close": "关闭",
-      "ariaLabel": "无障碍标签",
-      "dismiss": "忽略"
-    },
-    "status": {
-      "detecting": "正在检测您的位置...",
-      "detected": "已检测到位置：{{city}}，{{state}}",
-      "denied": "位置访问被拒绝",
-      "unavailable": "位置服务不可用",
-      "error": "位置检测失败"
+    "frequency": {
+      "off": "关闭",
+      "low": "低",
+      "normal": "正常",
+      "high": "高"
     },
     "errors": {
-      "permissionDenied": "位置访问被拒绝。请在浏览器设置中启用位置权限。",
-      "timeout": "位置请求超时。请重试。",
-      "unavailable": "您的浏览器不支持位置服务。",
-      "failed": "获取位置失败。请重试。"
+      "loadFailed": "加载趣味知识失败",
+      "saveFailed": "保存趣味知识偏好失败"
     }
+  },
+  "tvLogin": {
+    "invalidQR": "无效的二维码。请从电视重新扫描。",
+    "sessionInvalid": "此二维码已过期。请在电视上生成新的。",
+    "verificationFailed": "验证会话失败。请重试。",
+    "fillAllFields": "请填写所有字段",
+    "loginFailed": "登录失败。请检查您的凭据。",
+    "notLoggedIn": "您尚未在此设备上登录。",
+    "enterCredentials": "请输入您的凭据以授权您的电视。",
+    "authFailed": "授权失败。",
+    "verifying": "验证中...",
+    "verifyingDescription": "正在连接到您的电视...",
+    "loginTitle": "登录您的电视",
+    "loginDescription": "输入您的凭据以授权您的电视",
+    "authorizing": "授权中...",
+    "authorizingDescription": "正在登录您的电视...",
+    "authorizeTV": "授权电视",
+    "success": "成功！",
+    "successDescription": "您的电视现已登录。您可以关闭此页面。",
+    "goToHome": "返回首页",
+    "error": "出现问题",
+    "tryAgain": "重试",
+    "securityNote": "您的凭据安全发送，绝不存储在电视上。",
+    "footer": "遇到问题？请确保您扫描的是电视上最新生成的二维码。"
   },
   "uploads": {
     "title": "上传管理",
@@ -7243,530 +7548,398 @@
       }
     }
   },
-  "payment": {
-    "pending": {
-      "title": "完成您的订阅",
-      "description": "选择计划开始7天免费试用并访问所有Bayit+内容",
-      "timeElapsed": "正在检查付款状态... ({{seconds}}秒)",
-      "takingLonger": "付款确认时间比预期长。如果您已付款，请尝试刷新或联系支持。",
-      "helpText": "需要帮助？请联系 support@bayit.tv 或刷新此页面（如果您已完成付款）。"
-    },
-    "continueToPayment": "继续付款",
-    "success": {
-      "title": "付款成功！",
-      "description": "欢迎使用Bayit+！您的订阅现已激活。",
-      "redirecting": "{{seconds}}秒后重定向...",
-      "continue": "继续访问Bayit+"
-    },
-    "cancelled": {
-      "title": "付款已取消",
-      "description": "您的订阅未完成。准备好后可以重试。",
-      "retry": "重试",
-      "helpText": "有疑问？请联系 support@bayit.tv 获取帮助。"
-    }
+  "validation": {
+    "authorRequired": "作者为必填项",
+    "orderRange": "顺序必须在1到100之间",
+    "streamUrlRequired": "流媒体URL为必填项",
+    "titleRequired": "标题为必填项"
   },
-  "portal": {
-    "nav": {
-      "home": "首页",
-      "features": "功能",
-      "solutions": "解决方案",
-      "pricing": "定价",
-      "demo": "实时演示",
-      "contact": "联系我们",
-      "getStarted": "开始使用"
-    },
-    "hero": {
-      "ctaExplore": "探索功能",
-      "ctaDemo": "请求演示"
-    },
-    "cta": {
-      "title": "准备好开始了吗？",
-      "subtitle": "让我们讨论如何帮助改变您的业务",
-      "button": "联系我们"
-    },
-    "contactPage": {
-      "title": "联系我们",
-      "subtitle": "对我们的解决方案感兴趣？让我们交谈",
-      "formTitle": "给我们发消息",
-      "infoTitle": "联系信息",
-      "form": {
-        "name": "全名",
-        "email": "电子邮件地址",
-        "company": "公司名称",
-        "phone": "电话号码",
-        "message": "您的消息",
-        "messagePlaceholder": "告诉我们您的需求..."
-      },
-      "submit": "发送消息",
-      "sending": "发送中...",
-      "success": "消息已成功发送！我们很快会与您联系。",
-      "error": "发送消息失败。请重试。",
-      "scheduleTitle": "更喜欢安排通话？",
-      "scheduleSubtitle": "与我们的团队预订个性化演示",
-      "scheduleCta": "安排演示通话"
-    },
-    "pricingPage": {
-      "title": "实惠的",
-      "titleHighlight": "定价计划",
-      "subtitle": "选择适合您需求的计划",
-      "comparisonTitle": "功能比较",
-      "faqTitle": "常见问题",
-      "faq": {
-        "q1": "定价如何计算？",
-        "a1": "定价基于您的具体需求和使用情况。联系我们获取定制报价。",
-        "q2": "我以后可以升级我的计划吗？",
-        "a2": "是的，您可以随时升级。我们将帮助您无缝迁移数据。",
-        "q3": "包含什么支持？",
-        "a3": "所有计划都包括电子邮件支持。专业版和企业版计划包括专属客户经理的优先支持。"
-      },
-      "professional": {
-        "name": "专业版",
-        "price": "联系获取报价",
-        "priceNote": "定制定价",
-        "description": "适用于有高级需求的成长型企业",
-        "cta": "获取报价"
-      },
-      "enterprise": {
-        "name": "企业版",
-        "price": "定制",
-        "priceNote": "基于使用量",
-        "description": "适用于大型组织和企业部署",
-        "cta": "联系销售"
-      },
-      "ctaTitle": "准备好开始了吗？",
-      "ctaSubtitle": "让我们讨论您的需求并找到完美的计划",
-      "ctaButton": "联系销售"
-    },
-    "featuresPage": {
-      "title": "强大的",
-      "titleHighlight": "功能",
-      "subtitle": "成功所需的一切",
-      "techSpecsTitle": "技术规格",
-      "workflowTitle": "工作原理",
-      "workflow": {
-        "s1": {
-          "title": "导入",
-          "description": "上传和组织您的内容"
-        },
-        "s2": {
-          "title": "配置",
-          "description": "设置您的偏好和设置"
-        },
-        "s3": {
-          "title": "部署",
-          "description": "启动您的解决方案"
-        },
-        "s4": {
-          "title": "监控",
-          "description": "跟踪性能并优化"
-        }
-      },
-      "ctaTitle": "准备好探索功能了吗？",
-      "ctaSubtitle": "通过个性化演示查看所有功能的实际应用",
-      "ctaButton": "安排演示"
-    },
-    "demoPage": {
-      "title": "查看我们的",
-      "titleHighlight": "平台",
-      "subtitle": "体验我们解决方案的强大功能",
-      "scheduleCta": "安排实时演示",
-      "stepsTitle": "工作原理",
-      "steps": {
-        "analyze": {
-          "title": "分析",
-          "description": "跟踪和改进性能"
-        }
-      },
-      "featuresTitle": "平台亮点",
-      "platformsTitle": "可用平台",
-      "ctaTitle": "准备好您的定制演示了吗？",
-      "ctaSubtitle": "安排根据您的需求定制的个性化演示",
-      "ctaButton": "安排演示"
-    },
-    "workflow": {
-      "sectionTitle": "智能工作流",
-      "sectionSubtitle": "4步精简流程",
-      "step1": {
-        "title": "设置",
-        "description": "配置您的帐户和偏好"
-      },
-      "step2": {
-        "title": "自定义",
-        "description": "根据您的需求自定义设置"
-      },
-      "step3": {
-        "title": "部署",
-        "description": "启动您的解决方案"
-      },
-      "step4": {
-        "title": "监控",
-        "description": "跟踪性能并优化"
-      }
-    }
+  "video": {
+    "watchTrailer": "观看预告片",
+    "closeTrailer": "关闭预告片",
+    "deleteConfirm": "删除此剧集？"
   },
-  "channelChat": {
-    "title": "实时聊天",
-    "participants": "{{count}} 人正在观看",
-    "inputPlaceholder": "输入消息...",
-    "sendButton": "发送",
-    "rateLimitWarning": "请稍慢！等待 {{seconds}} 秒",
-    "autoTranslationBadge": "自动翻译（测试版）",
-    "showOriginal": "显示原文",
-    "showTranslation": "显示翻译",
-    "error": "聊天不可用",
-    "retry": "重试",
-    "upgradeBeta": "升级到 Beta 500 以使用自动翻译",
-    "inputLabel": "聊天消息输入",
-    "moderationDelete": "消息已被管理员删除",
-    "participants_one": "{{count}} 位观众",
-    "participants_other": "{{count}} 位观众",
-    "userJoined": "{{name}} 加入了聊天",
-    "userLeft": "有用户离开了聊天",
-    "placeholder": "发送消息...",
-    "send": "发送",
-    "translationBeta": "翻译（测试版）"
+  "viewMode": {
+    "cards": "卡片",
+    "grid": "网格",
+    "list": "列表"
   },
-  "avatar": {
-    "dialogue": {
-      "wake": {
-        "here": "我在这里。",
-        "service": "随时为您服务。",
-        "listening": "正在聆听。",
-        "hmm": "嗯？",
-        "yes": "是的？"
-      },
-      "listening": {
-        "see": "嗯，让我看看...",
-        "interesting": "有趣...",
-        "let": "让我想想..."
-      },
-      "processing": {
-        "vast": "卷轴浩瀚...请耐心等待。",
-        "seek": "正在搜索图书馆...",
-        "moment": "请稍等...",
-        "consulting": "正在查阅档案..."
-      },
-      "presenting": {
-        "here": "给你。",
-        "found": "我为你找到了这个。",
-        "behold": "请看。",
-        "exactly": "正是你要求的。"
-      },
-      "presentingList": {
-        "found": "我找到了 {{count}} 个可能感兴趣的...",
-        "gathered": "我收集了 {{count}} 个选项。",
-        "choices": "这里有 {{count}} 个选择。"
-      },
-      "nothingFound": {
-        "rephrase": "嗯。档案中没有发现任何东西。也许换个说法？",
-        "elsewhere": "这里没有找到。要在别处搜索吗？",
-        "sorry": "抱歉，这不在我的卷轴中。"
-      },
-      "interruption": {
-        "got": "明白了——你想要什么？",
-        "speak": "请说，我在听。",
-        "course": "当然，有什么新的请求？"
-      },
-      "clarification": {
-        "didYouMean": "你是指 {{guess}} 吗？",
-        "unclear": "你的请求不太清楚。能说明一下吗？",
-        "whichOne": "这些中哪个是你感兴趣的？"
-      },
-      "confirmation": {
-        "done": "完成。",
-        "completed": "已完成。",
-        "understood": "明白了。"
-      },
-      "dismissal": {
-        "rest": "如果需要我，我会在这里。",
-        "return": "呼唤我，我就会回来。",
-        "farewell": "再见。"
-      },
-      "error": {
-        "technical": "出了点问题。请重试。",
-        "apologies": "抱歉，遇到了一个错误。",
-        "failed": "操作失败。再试一次？"
-      },
-      "idleTimeout": {
-        "still": "你还在吗？",
-        "anything": "还有别的吗？",
-        "resting": "我会休息，直到你再次需要我。"
-      },
-      "personality": {
-        "wisdom": "记住，即使是最聪明的法师也曾是学徒。",
-        "patience": "耐心能揭示急躁所隐藏的东西。",
-        "magic": "魔法无处不在——只需知道去哪里寻找。"
-      },
-      "greeting": {
-        "morning": "早上好。你在寻找什么？",
-        "afternoon": "下午好。我能帮你什么？",
-        "evening": "晚上好。你对什么感兴趣？",
-        "night": "晚安。我能帮你什么？"
-      },
-      "waiting": {
-        "moment": "请稍等...",
-        "patience": "耐心...卷轴浩瀚。",
-        "searching": "正在搜索档案..."
-      },
-      "success": {
-        "aha": "啊哈！找到了！",
-        "found": "成功！就是这个。",
-        "excellent": "太好了！正如我所料。"
-      },
-      "warning": {
-        "caution": "请注意一下...",
-        "careful": "小心点...",
-        "wait": "等等——让我先解释一下。"
-      },
-      "magicalReveal": {
-        "behold": "看看魔法揭示了什么！",
-        "witness": "见证这一刻...",
-        "observe": "仔细观察..."
-      },
-      "agreement": {
-        "yes": "是的，确实如此。",
-        "indeed": "的确，你说得对。",
-        "certainly": "当然。如你所愿。"
-      },
-      "disagreement": {
-        "no": "恐怕不行。",
-        "afraid": "那似乎不对。",
-        "unfortunately": "不幸的是，那行不通。"
-      },
-      "clarificationNeeded": {
-        "pardon": "什么？请再说一遍。",
-        "didntCatch": "我没听清楚。",
-        "sayAgain": "能再说一遍吗？"
-      }
+  "vod": {
+    "title": "电影与剧集",
+    "movies": "电影",
+    "series": "剧集",
+    "searchPlaceholder": "搜索电影和剧集...",
+    "noMovies": "未找到电影",
+    "noSeries": "未找到剧集",
+    "loadError": "加载内容失败",
+    "showOnlyWithSubtitles": "仅显示有字幕的",
+    "categories": {
+      "all": "全部",
+      "drama": "剧情",
+      "comedy": "喜剧",
+      "action": "动作",
+      "documentary": "纪录片",
+      "kids": "儿童"
     },
-    "states": {
-      "dormant": "休息中",
-      "listening": "正在聆听",
-      "processing": "正在处理",
-      "responding": "正在回应",
-      "confused": "困惑中",
-      "interrupted": "已中断"
-    },
-    "gestures": {
-      "idle": "空闲",
-      "greeting": "问候",
-      "listening": "聆听",
-      "attentive": "专注",
-      "thinking": "思考",
-      "presenting": "展示",
-      "conjuring": "施法",
-      "browsing": "浏览",
-      "confused": "困惑",
-      "shrugging": "耸肩",
-      "farewell": "告别",
-      "cheering": "欢呼",
-      "clapping": "鼓掌",
-      "crying": "哭泣",
-      "facepalm": "捂脸",
-      "emphatic": "强调",
-      "reading": "阅读",
-      "confirmation": "确认",
-      "single_result": "指向",
-      "waiting": "等待",
-      "success": "成功",
-      "clarification": "澄清",
-      "warning": "警告",
-      "magical_reveal": "揭示",
-      "agreement": "同意",
-      "disagreement": "不同意"
-    },
-    "accessibility": {
-      "avatarLabel": "奥洛林巫师助手",
-      "speakingLabel": "奥洛林正在说话",
-      "listeningLabel": "奥洛林正在聆听",
-      "processingLabel": "奥洛林正在处理",
-      "gestureLabel": "奥洛林 {{gesture}}"
-    }
+    "allCategories": "全部",
+    "emptyTitle": "无可用内容",
+    "emptyDescription": "请选择其他分类",
+    "allContent": "全部内容",
+    "noContent": "无可用内容",
+    "noContentInCategory": "此分类下无内容",
+    "filters": "筛选",
+    "loadingContent": "正在加载电影和剧集..."
   },
-  "quiz": {
-    "title": "答题时间",
-    "questionOf": "第 {{current}} 题，共 {{total}} 题",
-    "correct": "正确",
-    "incorrect": "不太对",
-    "score": "你答对了 {{total}} 题中的 {{score}} 题",
-    "pointsEarned": "+{{points}} 分",
-    "badgeEarned": "获得徽章",
-    "perfectScore": "满分",
-    "tryAgain": "再试一次",
-    "continue": "继续",
-    "skip": "跳过答题",
-    "loading": "正在加载答题...",
-    "error": "无法加载答题",
-    "retry": "重试",
-    "submitting": "正在检查答案...",
-    "greatJob": "做得好",
-    "keepLearning": "继续学习和玩耍",
-    "nextQuestion": "下一题",
-    "viewResults": "查看结果",
-    "answersReview": "你的答案",
-    "explanation": "解释",
-    "timeBonus": "时间奖励",
-    "streakBonus": "连胜奖励",
-    "newBadge": "新徽章",
-    "totalScore": "总分"
-  },
-  "rewards": {
-    "title": "我的奖励",
-    "totalPoints": "总积分",
-    "badges": "徽章",
-    "quizzesCompleted": "完成的答题",
-    "perfectScores": "满分次数",
-    "currentStreak": "当前连胜",
-    "longestStreak": "最长连胜",
-    "days": "天",
-    "noBadges": "完成答题以获得徽章",
-    "locked": "继续玩以解锁",
-    "earnedOn": "获得于 {{date}}",
-    "pointsBonus": "+{{points}} 奖励积分",
-    "rarity": {
-      "common": "普通",
-      "uncommon": "不常见",
-      "rare": "稀有",
-      "epic": "史诗",
-      "legendary": "传说"
+  "voice": {
+    "listening": "正在听...",
+    "speaking": "正在说话",
+    "ready": "准备就绪",
+    "tapToSpeak": "点击说话",
+    "processing": "处理中...",
+    "transcribing": "转录中...",
+    "tapToStop": "点击停止录音",
+    "pleaseWait": "请稍候...",
+    "transcriptionNotAvailable": "转录不可用",
+    "transcriptionFailed": "转录失败",
+    "micPermissionDenied": "麦克风权限被拒绝",
+    "error": "无法听清，请重试",
+    "avatarPreferences": {
+      "currentMode": "当前模式",
+      "title": "头像显示"
     },
-    "badgeNames": {
-      "first_quiz": "第一次答题",
-      "quiz_rookie": "答题新手",
-      "quiz_fan": "答题爱好者",
-      "quiz_master": "答题大师",
-      "perfect_start": "完美开局",
-      "perfectionist": "完美主义者",
-      "streak_3": "火力全开",
-      "streak_7": "周冠军",
-      "streak_30": "月度大师"
-    }
+    "features": {
+      "animations": "✨ 动画",
+      "transcript": "💬 转录",
+      "waveform": "〰️ 波形",
+      "wizard": "🧙 向导"
+    },
+    "wizardResponse": "助手回复",
+    "dismissResponse": "关闭语音回复",
+    "dismissResponseHint": "点击隐藏助手回复"
   },
-  "familyControls": {
-    "title": "Family Controls",
-    "pinSetup": "PIN Setup",
-    "familyPin": "Family PIN",
-    "createPin": "Create Family PIN",
-    "verifyPin": "Verify Family PIN",
-    "updatePin": "Update Family PIN",
-    "pinConfigured": "Family PIN is configured",
-    "pinNotConfigured": "No Family PIN set up yet",
-    "enterPin": "Enter PIN",
-    "confirmPin": "Confirm PIN",
-    "kidsSection": "Kids (0-12 years)",
-    "kidsEnabled": "Enable Kids Mode",
-    "kidsAgeLimit": "Age Limit",
-    "youngstersSection": "Youngsters (12-17 years)",
-    "youngstersEnabled": "Enable Youngsters Mode",
-    "youngstersAgeLimit": "Age Limit",
-    "contentRatings": "Content Ratings",
-    "maxContentRating": "Maximum Content Rating",
-    "viewingHours": "Viewing Hours",
-    "viewingHoursEnabled": "Enable Time Restrictions",
-    "startHour": "Start Hour",
-    "endHour": "End Hour",
-    "ratings": {
-      "G": "G - General Audiences",
-      "PG": "PG - Parental Guidance Suggested",
-      "PG13": "PG-13 - Parents Strongly Cautioned",
-      "R": "R - Restricted",
-      "TVMA": "TV-MA - Mature Audience Only"
+  "voiceMode": {
+    "voiceOnly": "仅语音",
+    "voiceOnlyDesc": "无遥控器 - 完全语音导航",
+    "hybrid": "混合",
+    "hybridDesc": "语音 + 遥控器 - 操作时有语音反馈",
+    "classic": "经典",
+    "classicDesc": "无语音 - 仅遥控器"
+  },
+  "voiceOnboarding": {
+    "welcome": {
+      "title": "欢迎使用语音控制",
+      "description": "用语音控制 Bayit+，解放双手"
+    },
+    "features": {
+      "voiceCommands": "语音命令",
+      "voiceCommandsDesc": "用自然语言导航、搜索和控制播放",
+      "tts": "文字转语音",
+      "ttsDesc": "聆听响应和内容描述",
+      "wakeWord": "唤醒词",
+      "wakeWordDesc": "说 'Bayit' 随时激活语音控制"
+    },
+    "getStarted": "开始使用",
+    "permissions": {
+      "title": "麦克风权限",
+      "description": "语音控制需要麦克风权限来听取您的命令",
+      "privacy": "您的语音数据安全处理，不会被存储"
+    },
+    "permissionsGranted": "麦克风权限已授予",
+    "permissionRequired": {
+      "title": "需要权限",
+      "message": "请在设备设置中启用麦克风权限以使用语音控制"
+    },
+    "grantPermissions": "授予权限",
+    "testWakeWord": {
+      "title": "测试唤醒词",
+      "description": "说 'Bayit' 测试语音激活",
+      "success": "太棒了！语音激活正常工作"
+    },
+    "startTest": "开始测试",
+    "complete": {
+      "title": "一切就绪！",
+      "description": "语音控制已启用。试试这些命令：",
+      "tryCommands": "试试这些命令",
+      "examples": {
+        "search": "\"搜索 Fauda\"",
+        "play": "\"播放新闻\"",
+        "navigate": "\"转到直播电视\"",
+        "control": "\"暂停\" 或 \"调高音量\""
+      },
+      "startUsing": "开始使用语音控制"
+    },
+    "skip": "暂时跳过"
+  },
+  "watch": {
+    "notFound": "未找到内容",
+    "backToHome": "返回首页",
+    "episodes": "剧集",
+    "addToList": "添加到列表",
+    "like": "喜欢",
+    "share": "分享",
+    "cast": "演员",
+    "episodesList": "剧集",
+    "schedule": "时间表",
+    "now": "现在",
+    "related": "相关内容",
+    "deleteEpisode": "删除剧集",
+    "confirmDeleteEpisode": "删除此剧集？",
+    "playlist": "播放列表",
+    "streamError": "无法加载流媒体，请稍后重试。",
+    "streamUnavailable": "流媒体不可用"
+  },
+  "watchParty": {
+    "title": "观影派对",
+    "create": "创建派对",
+    "join": "加入派对",
+    "active": "派对进行中",
+    "createTitle": "创建观影派对",
+    "joinTitle": "加入派对",
+    "enterCode": "输入房间代码",
+    "roomCode": "房间代码",
+    "copyCode": "复制代码",
+    "codeCopied": "代码已复制！",
+    "participants": "参与者",
+    "host": "主持人",
+    "you": "您",
+    "leave": "离开派对",
+    "end": "结束派对",
+    "chat": "聊天",
+    "sendMessage": "发送消息",
+    "typeMessage": "输入消息...",
+    "synced": "已同步",
+    "syncing": "同步中...",
+    "hostPaused": "主持人已暂停",
+    "userJoined": "{{name}} 加入了",
+    "userLeft": "{{name}} 离开了",
+    "partyEnded": "派对已结束",
+    "connecting": "连接中...",
+    "options": {
+      "chatEnabled": "启用聊天",
+      "syncPlayback": "同步播放"
     },
     "errors": {
-      "pinMismatch": "PINs do not match",
-      "pinTooShort": "PIN must be at least 4 digits",
-      "invalidPin": "Invalid PIN",
-      "sectionDisabled": "此部分已被家长控制禁用",
-      "outsideViewingHours": "观看时间外访问受限",
-      "contentRatingTooHigh": "内容评级超出允许限制",
-      "newPinTooShort": "新PIN码至少需要4位数字",
-      "failedToSetPin": "设置PIN码失败",
-      "failedToUpdatePin": "更新PIN码失败。请检查旧PIN码。"
+      "invalidCode": "无效代码",
+      "partyFull": "派对已满",
+      "partyEnded": "派对已结束",
+      "connectionError": "连接错误",
+      "createFailed": "创建派对失败",
+      "joinFailed": "加入派对失败"
     },
-    "household": {
-      "title": "Household",
-      "create": "Create Household",
-      "name": "Household Name",
-      "members": "Members",
-      "inviteMember": "Invite Member",
-      "removeMember": "Remove Member",
-      "role": "Role",
-      "roles": {
-        "parent": "Parent",
-        "child": "Child",
-        "guardian": "Guardian"
-      },
-      "sharedControls": "Shared Controls",
-      "invitation": {
-        "title": "Invitation",
-        "email": "Email Address",
-        "send": "Send Invitation",
-        "accept": "Accept Invitation",
-        "code": "Invitation Code",
-        "expires": "Expires",
-        "pending": "Pending Invitations"
-      }
+    "audio": {
+      "mute": "静音",
+      "unmute": "取消静音",
+      "speaking": "正在说话",
+      "connecting": "正在连接音频...",
+      "noAudio": "音频不可用",
+      "muteHint": "静音您的麦克风",
+      "unmuteHint": "取消静音麦克风以说话"
     },
-    "profile": {
-      "title": "Profile Controls",
-      "override": "Override Controls",
-      "inherit": "Inherit Controls",
-      "inheritHousehold": "Inherit from Household",
-      "inheritAccount": "Inherit from Account",
-      "hierarchy": "Control Hierarchy",
-      "source": "Controls Source"
+    "textOnlyMode": "仅文字聊天",
+    "endParty": "结束派对",
+    "roomCodeHint": "输入8位房间代码加入派对",
+    "muteHint": "静音您的麦克风",
+    "unmuteHint": "取消静音麦克风以说话",
+    "toggleEmoji": "切换表情选择器",
+    "toggleEmojiHint": "打开表情快速选择器进行互动",
+    "sendEmoji": "发送{{emoji}}",
+    "sendEmojiHint": "发送表情互动到聊天",
+    "emojiPicker": "表情选择器",
+    "chatInput": "聊天消息输入",
+    "chatInputHint": "输入消息发送到派对聊天",
+    "sendMessageHint": "发送您的消息到派对聊天",
+    "copyCodeHint": "复制房间代码到剪贴板",
+    "share": "分享",
+    "shareHint": "分享派对链接或复制代码",
+    "copied": "已复制！",
+    "endPartyHint": "结束所有参与者的派对",
+    "leaveParty": "离开派对",
+    "leavePartyHint": "离开派对但不结束",
+    "buttonHint": "打开菜单创建或加入观影派对",
+    "createHint": "创建新的观影派对",
+    "joinHint": "用代码加入现有观影派对",
+    "emojiPickerHint": "显示快速表情互动",
+    "chatEnabledHint": "为参与者启用聊天",
+    "syncPlaybackHint": "保持播放与主持人同步",
+    "createPartyHint": "使用所选选项创建派对",
+    "joinPartyHint": "用输入的代码加入派对",
+    "closePanelHint": "关闭观影派对面板",
+    "cancelHint": "取消并关闭对话框",
+    "viewPartyHint": "打开观影派对面板",
+    "panel": "观影派对面板",
+    "activeLabel": "观影派对 - 进行中",
+    "buffering": "缓冲中...",
+    "hostActiveLabel": "观影派对 - 您正在主持",
+    "hosting": "主持中",
+    "listening": "收听中",
+    "placeholder": {
+      "roomCode": "ABCD1234"
     },
-    "contentBlockedAbove": "评级高于 {{rating}} 的内容将被屏蔽",
-    "placeholders": {
-      "currentPin": "当前PIN码",
-      "enterPin": "输入PIN码",
-      "enterNewPin": "输入新PIN码",
-      "confirmNewPin": "确认新PIN码"
-    },
-    "profileControls": {
-      "title": "个人资料家庭控制",
-      "subtitle": "管理此个人资料的家庭控制",
-      "sourceSection": {
-        "title": "控制来源",
-        "inheritHousehold": "从家庭继承",
-        "inheritHouseholdDesc": "使用家庭级别的家庭控制",
-        "customControls": "自定义控制",
-        "customControlsDesc": "使用个人资料专用的家庭控制"
-      },
-      "selectControls": {
-        "title": "选择控制",
-        "controlsLabel": "家庭控制 {{id}}",
-        "kidsAge": "儿童：{{age}}",
-        "youngstersAge": "青少年：{{age}}",
-        "rating": "评级：{{rating}}",
-        "noControls": "没有可用的家庭控制。请在家庭控制设置中创建控制。"
-      },
-      "effectiveControls": {
-        "title": "活动控制",
-        "kidsEnabled": "儿童内容",
-        "youngstersEnabled": "青少年内容",
-        "contentRating": "内容评级限制",
-        "viewingHours": "观看时间",
-        "enabled": "已启用",
-        "disabled": "已禁用",
-        "ageLimit": "年龄限制：{{age}}",
-        "noRestriction": "无限制",
-        "noControls": "此个人资料没有活动的家庭控制"
-      },
-      "errors": {
-        "noControlsAvailable": "没有可用的家庭控制。请先创建控制。"
-      }
-    }
+    "roomCodeLabel": "房间代码",
+    "startVoice": "开始语音",
+    "stopVoice": "停止语音",
+    "voiceInputHint": "语音输入提示",
+    "watching": "观看中"
   },
-  "bar": {
-    "translate": "翻译",
-    "stop": "停止",
-    "startTranslation": "开始翻译",
-    "targetLanguage": "目标语言",
-    "toggleSubtitles": "切换字幕",
-    "close": "关闭 Bayit+ 栏",
-    "logo": "Bayit+",
-    "subtitlesButton": "CC",
-    "closeButton": "×"
+  "widget": {
+    "103fmEpisodes": "103FM 节目",
+    "audioUnavailable": "音频不可用",
+    "contentUnavailable": "内容不可用",
+    "errorLoadingContent": "加载内容时出错",
+    "iframeNotConfigured": "iFrame URL 未配置",
+    "loadingEpisodes": "正在加载剧集...",
+    "loadingNews": "正在加载新闻...",
+    "noContentConfigured": "未配置内容",
+    "noEpisodesFound": "未找到剧集",
+    "podcastUnavailable": "播客不可用",
+    "stationUnavailable": "电台不可用",
+    "streamUnavailable": "直播流不可用",
+    "unknownComponent": "未知组件：{{componentName}}",
+    "ynetBreakingNews": "מבזקי Ynet"
+  },
+  "widgets": {
+    "empty": "暂无小组件",
+    "emptyHint": "您的小组件将显示在此处",
+    "emptyPersonal": "暂无个人小组件",
+    "emptyPersonalHint": "创建您的第一个个人小组件或添加上方的系统小组件",
+    "itemsTotal": "总小组件",
+    "systemWidgets": "系统小组件",
+    "systemWidgetsHint": "浏览并添加小组件到您的收藏",
+    "myWidgets": "我的个人小组件",
+    "myWidgetsHint": "您创建的小组件",
+    "personalWidgets": "我的小组件",
+    "noSystemWidgets": "无可用系统小组件",
+    "added": "已添加",
+    "add": "添加",
+    "remove": "移除",
+    "show": "显示",
+    "hidden": "已隐藏",
+    "addToCollection": "添加到我的小组件",
+    "removeFromCollection": "从我的小组件移除",
+    "addToMyWidgets": "添加到我的小部件",
+    "removeFromMyWidgets": "从我的小部件中移除",
+    "widgetAdded": "小部件已添加",
+    "widgetRemoved": "小部件已移除",
+    "contentTypes": {
+      "liveChannel": "直播频道",
+      "iframe": "网页内容",
+      "podcast": "播客",
+      "radio": "广播",
+      "vod": "视频",
+      "custom": "自定义",
+      "widget": "小部件",
+      "audiobook": "有声书",
+      "liveStream": "直播流"
+    },
+    "form": {
+      "title": "创建小组件",
+      "basicInfo": "基本信息",
+      "titlePlaceholder": "小组件标题",
+      "titleRequired": "小组件标题为必填项",
+      "descriptionPlaceholder": "描述（可选）",
+      "iconPlaceholder": "图标表情（如📺）",
+      "content": "内容",
+      "fromLibrary": "从资料库",
+      "iframe": "iFrame",
+      "selectContent": "选择内容（频道、播客、节目等）",
+      "iframeUrl": "iFrame URL",
+      "iframeUrlRequired": "iFrame URL 为必填项",
+      "iframeTitle": "iFrame 标题",
+      "positionSize": "位置与大小",
+      "behavior": "行为",
+      "mutedByDefault": "默认静音",
+      "closable": "可关闭",
+      "draggable": "可拖动",
+      "widgetOrder": "小组件顺序",
+      "orderPlaceholder": "顺序（0 = 第一个）",
+      "saveWidget": "保存小组件",
+      "saving": "保存中...",
+      "cancel": "取消",
+      "change": "更改",
+      "errors": {
+        "contentRequired": "请选择内容",
+        "iframeUrlRequired": "iFrame URL为必填项",
+        "nameExists": "已存在同名小部件",
+        "titleRequired": "标题为必填项"
+      },
+      "validating": "验证中..."
+    },
+    "intro": {
+      "title": "欢迎使用小组件",
+      "description": "发现强大的浮动小组件，定制您的观看体验",
+      "watchVideo": "观看介绍",
+      "skip": "跳过",
+      "dismiss": "不再显示",
+      "videoUnavailable": "视频暂不可用",
+      "loadingMartyJr": "正在加载 Marty Jr...",
+      "loadingWidgets": "正在加载小组件介绍..."
+    },
+    "contentPicker": {
+      "noContent": "无可用内容",
+      "tryAnotherTab": "尝试选择其他分类"
+    },
+    "delete": "删除",
+    "hide": "隐藏",
+    "resetPosition": "重置位置",
+    "select": "选择",
+    "selectAll": "全选",
+    "cancelSelection": "取消",
+    "deleteSelected": "删除",
+    "bulkDeleteConfirm": "删除选中的小组件？",
+    "bulkDeleted": "小组件已删除",
+    "showDock": "显示停靠栏",
+    "hideDock": "隐藏停靠栏",
+    "audiobook": "有声书",
+    "liveTVStream": "电视直播",
+    "noContent": "没有可用内容",
+    "podcastEpisode": "播客节目",
+    "radioStation": "电台",
+    "webContent": "网页内容"
+  },
+  "youngsters": {
+    "title": "青少年",
+    "items": "项目",
+    "empty": "无可用内容",
+    "emptyHint": "尝试其他分类",
+    "exitYoungstersMode": "退出青少年模式",
+    "exitDescription": "输入家长代码以退出",
+    "parentCode": "家长代码",
+    "confirm": "确认",
+    "wrongCode": "代码不正确",
+    "noContent": "无可用内容",
+    "tryAnotherCategory": "尝试选择其他分类",
+    "categories": {
+      "all": "全部",
+      "trending": "热门",
+      "news": "新闻",
+      "culture": "文化",
+      "educational": "教育",
+      "music": "音乐",
+      "entertainment": "娱乐",
+      "sports": "体育",
+      "tech": "科技",
+      "judaism": "犹太教"
+    },
+    "ageGroups": {
+      "middle-school": "初中 (12-14)",
+      "high-school": "高中 (15-17)"
+    },
+    "moderation": {
+      "pending": "待审核",
+      "approved": "已批准",
+      "rejected": "已拒绝"
+    },
+    "admin": {
+      "stats": "青少年内容管理器",
+      "seedContent": "导入内容",
+      "importArchive": "导入 Archive.org",
+      "syncPodcasts": "同步播客",
+      "syncYouTube": "同步 YouTube",
+      "tagVod": "标记点播",
+      "pendingModeration": "待审核"
+    },
+    "loading": "正在加载内容...",
+    "news": "新闻",
+    "trending": "热门"
   }
 }

@@ -73,7 +73,7 @@ struct SubtitlePaneView: View {
     }
 
     private func cueView(_ cue: SubtitleCue) -> some View {
-        Text(cue.text)
+        Text(cue.text ?? "")
             .font(.system(size: fontSize, weight: .semibold))
             .foregroundColor(Color(settings.textColor))
             .multilineTextAlignment(isRTL ? .trailing : .leading)
