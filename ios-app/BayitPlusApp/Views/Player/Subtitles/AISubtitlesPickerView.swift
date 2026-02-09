@@ -2,7 +2,7 @@ import BayitDesignSystem
 import SwiftUI
 
 /// Modal for selecting Hebrew AI subtitle display modes and triggering generation.
-/// Supports regular, nikud, shoresh, and engrew modes with AI generation for admins.
+/// Supports regular, nikud, shoresh, and heblish modes with AI generation for admins.
 struct AISubtitlesPickerView: View {
     @Environment(\.dismiss) private var dismiss
 
@@ -11,7 +11,7 @@ struct AISubtitlesPickerView: View {
     let hasHebrew: Bool
     let hasNikud: Bool
     let hasShoresh: Bool
-    let hasEngrew: Bool
+    let hasHeblish: Bool
     let isAdmin: Bool
     let repository: SubtitleRepository
     let onModeSelect: (SubtitleHebrewMode) -> Void
@@ -51,11 +51,11 @@ struct AISubtitlesPickerView: View {
             isAI: true
         ),
         HebrewModeOption(
-            mode: .engrew,
+            mode: .heblish,
             iconName: "globe",
-            title: "Engrew (English Mix)",
-            description: "Modern slang with English words transliterated",
-            example: "אני הולך לסרף (Surf) על הווייבס (Waves)",
+            title: "Heblish (English Mix)",
+            description: "Hebrew with English words mixed in",
+            example: "אני going לשחק basketball עם חברים",
             isAI: true
         ),
     ]
@@ -363,7 +363,7 @@ struct AISubtitlesPickerView: View {
         case .standard: return true
         case .nikud: return hasNikud
         case .shoresh: return hasShoresh
-        case .engrew: return hasEngrew
+        case .heblish: return hasHeblish
         }
     }
 
@@ -394,9 +394,9 @@ struct AISubtitlesPickerView: View {
                     return
                 }
 
-                // Check for engrew job
-                if let job = activeJobs.engrewJob {
-                    await handleActiveJob(job: job, mode: .engrew)
+                // Check for heblish job
+                if let job = activeJobs.heblishJob {
+                    await handleActiveJob(job: job, mode: .heblish)
                     return
                 }
             } catch {
@@ -450,8 +450,8 @@ struct AISubtitlesPickerView: View {
                 result = try await repo.generateNikud(contentId: contentId, language: "he", force: false)
             case .shoresh:
                 result = try await repo.generateShoresh(contentId: contentId, language: "he", force: false)
-            case .engrew:
-                result = try await repo.generateEngrew(contentId: contentId, language: "he", force: false)
+            case .heblish:
+                result = try await repo.generateHeblish(contentId: contentId, language: "he", force: false)
             }
 
             // Check if already completed
@@ -549,7 +549,7 @@ extension SubtitleHebrewMode {
         switch self {
         case .nikud: return .nikud
         case .shoresh: return .shoresh
-        case .engrew: return .engrew
+        case .heblish: return .heblish
         case .standard: return nil
         }
     }
@@ -558,7 +558,7 @@ extension SubtitleHebrewMode {
 enum GeneratableHebrewMode: String {
     case nikud
     case shoresh
-    case engrew
+    case heblish
 }
 
 struct HebrewModeOption {

@@ -8,13 +8,12 @@ struct JerusalemRowView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            // Header with dark gradient overlay
+            // Header with panoramic background image
             ZStack(alignment: .bottomLeading) {
-                Image(systemName: "building.columns.fill")
+                Image("Jerusalem")
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(height: 120)
-                    .foregroundColor(DesignTokens.Glass.bgMedium)
                     .clipped()
 
                 LinearGradient(

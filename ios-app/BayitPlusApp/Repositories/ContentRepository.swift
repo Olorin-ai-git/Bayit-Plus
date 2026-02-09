@@ -75,12 +75,12 @@ protocol ContentRepository: Sendable {
     /// - Throws: `NetworkError` if the request fails.
     func fetchJerusalemContent() async throws -> CityContentResponse
 
-    /// Fetch trending content for a culture.
+    /// Fetch trending culture content (news topics) for a culture.
     ///
     /// - Parameter cultureId: Culture ID (e.g., "israeli", "jewish").
-    /// - Returns: Trending content response.
+    /// - Returns: Array of culture trending items (news topics).
     /// - Throws: `NetworkError` if the request fails.
-    func fetchTrending(cultureId: String) async throws -> TrendingResponse
+    func fetchTrending(cultureId: String) async throws -> [CultureTrendingItem]
 
     /// Fetch continue watching list for authenticated user.
     ///
@@ -201,10 +201,10 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
         )
     }
 
-    func fetchTrending(cultureId: String) async throws -> TrendingResponse {
+    func fetchTrending(cultureId: String) async throws -> [CultureTrendingItem] {
         return try await client.get(
             "/api/v1/cultures/\(cultureId)/trending",
-            as: TrendingResponse.self
+            as: [CultureTrendingItem].self
         )
     }
 

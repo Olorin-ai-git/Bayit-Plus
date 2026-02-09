@@ -103,9 +103,9 @@ struct HomeView: View {
             )
         }
 
-        // Trending content
-        if let trending = vm.trendingContent, !trending.items.isEmpty {
-            TrendingRow(items: trending.items, coordinator: coordinator)
+        // Trending content (What's Hot in Israel)
+        if !vm.trendingContent.isEmpty {
+            TrendingRow(items: vm.trendingContent, coordinator: coordinator)
         }
 
         // City-specific content

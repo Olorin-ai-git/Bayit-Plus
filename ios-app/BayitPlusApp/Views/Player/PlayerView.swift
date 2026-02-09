@@ -194,6 +194,22 @@ struct PlayerView: View {
                         withAnimation(.spring(duration: 0.3)) {
                             showSubtitlePicker = false
                         }
+                    },
+                    currentHebrewMode: subtitlesVM?.hebrewMode ?? .standard,
+                    currentEnglishMode: subtitlesVM?.englishMode ?? .standard,
+                    hasNikud: subtitlesVM?.hasNikud ?? false,
+                    hasShoresh: subtitlesVM?.hasShoresh ?? false,
+                    hasHeblish: subtitlesVM?.hasHeblish ?? false,
+                    hasEngrew: false,  // English AI modes not yet implemented
+                    onHebrewModeSelect: { mode in
+                        Task {
+                            await subtitlesVM?.setHebrewMode(mode, contentId: contentId, language: selectedSubtitleLanguage)
+                        }
+                    },
+                    onEnglishModeSelect: { mode in
+                        Task {
+                            await subtitlesVM?.setEnglishMode(mode, contentId: contentId, language: selectedSubtitleLanguage)
+                        }
                     }
                 )
                 .frame(maxHeight: UIScreen.main.bounds.height * 0.7)

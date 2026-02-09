@@ -67,7 +67,7 @@ struct InteractiveSubtitlesOverlay: View {
                     hasHebrew: true,
                     hasNikud: viewModel.hasNikud,
                     hasShoresh: viewModel.hasShoresh,
-                    hasEngrew: viewModel.hasEngrew,
+                    hasHeblish: viewModel.hasHeblish,
                     isAdmin: viewModel.isAdmin,
                     repository: repository,
                     onModeSelect: { mode in

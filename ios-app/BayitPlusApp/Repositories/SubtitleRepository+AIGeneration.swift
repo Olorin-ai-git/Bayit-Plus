@@ -56,15 +56,37 @@ extension APISubtitleRepository {
         )
     }
 
-    /// Start AI generation for engrew (English word injections) subtitles.
+    /// Start AI generation for heblish (Hebrew with English words) subtitles.
     /// - Parameters:
     ///   - contentId: Content identifier
     ///   - language: Language code (default: "he")
     ///   - force: Force regeneration even if already exists
     /// - Returns: Job status response with job_id for polling
-    func generateEngrew(
+    func generateHeblish(
         contentId: String,
         language: String = "he",
+        force: Bool = false
+    ) async throws -> AIGenerationJobResponse {
+        return try await client.post(
+            "/api/v1/subtitles/\(contentId)/heblish",
+            body: EmptyRequest(),
+            queryItems: [
+                URLQueryItem(name: "language", value: language),
+                URLQueryItem(name: "force", value: String(force))
+            ],
+            as: AIGenerationJobResponse.self
+        )
+    }
+
+    /// Start AI generation for engrew (English with Hebrew words) subtitles.
+    /// - Parameters:
+    ///   - contentId: Content identifier
+    ///   - language: Language code (default: "en")
+    ///   - force: Force regeneration even if already exists
+    /// - Returns: Job status response with job_id for polling
+    func generateEngrew(
+        contentId: String,
+        language: String = "en",
         force: Bool = false
     ) async throws -> AIGenerationJobResponse {
         return try await client.post(
@@ -104,7 +126,7 @@ extension APISubtitleRepository {
     /// Get any active generation jobs for content.
     /// Returns status for all AI generation job types if active.
     /// - Parameter contentId: Content identifier
-    /// - Returns: Active jobs for nikud, shoresh, and engrew
+    /// - Returns: Active jobs for nikud, shoresh, heblish, and engrew
     func getActiveJobs(contentId: String) async throws -> ActiveJobsResponse {
         return try await client.get(
             "/api/v1/subtitles/\(contentId)/job/active",
@@ -156,12 +178,14 @@ struct ActiveJobsResponse: Decodable, Sendable {
     let contentId: String
     let nikudJob: AIGenerationJobResponse?
     let shoreshJob: AIGenerationJobResponse?
+    let heblishJob: AIGenerationJobResponse?
     let engrewJob: AIGenerationJobResponse?
 
     enum CodingKeys: String, CodingKey {
         case contentId = "content_id"
         case nikudJob = "nikud_job"
         case shoreshJob = "shoresh_job"
+        case heblishJob = "heblish_job"
         case engrewJob = "engrew_job"
     }
 }

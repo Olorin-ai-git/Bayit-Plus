@@ -16,7 +16,7 @@ final class InteractiveSubtitlesViewModel {
     private(set) var showTranslation = false
     private(set) var hasNikud = false
     private(set) var hasShoresh = false
-    private(set) var hasEngrew = false
+    private(set) var hasHeblish = false
 
     /// Check if user is admin (from auth store or user session)
     /// TODO: Wire to actual auth store when available
@@ -54,7 +54,7 @@ final class InteractiveSubtitlesViewModel {
             // Check which AI modes have generated subtitles
             hasNikud = cues.contains { $0.textNikud != nil }
             hasShoresh = cues.contains { $0.textShoresh != nil }
-            hasEngrew = cues.contains { $0.textEngrew != nil }
+            hasHeblish = cues.contains { $0.textHeblish != nil }
 
             await offlineCache.save(response, forKey: cacheKey)
         } catch {
@@ -64,7 +64,7 @@ final class InteractiveSubtitlesViewModel {
                 // Check which AI modes have generated subtitles from cache
                 hasNikud = cues.contains { $0.textNikud != nil }
                 hasShoresh = cues.contains { $0.textShoresh != nil }
-                hasEngrew = cues.contains { $0.textEngrew != nil }
+                hasHeblish = cues.contains { $0.textHeblish != nil }
             }
         }
     }
@@ -91,8 +91,8 @@ final class InteractiveSubtitlesViewModel {
             return cue.textNikud ?? cue.text ?? ""
         case .shoresh:
             return cue.textShoresh ?? cue.text ?? ""
-        case .engrew:
-            return cue.textEngrew ?? cue.text ?? ""
+        case .heblish:
+            return cue.textHeblish ?? cue.text ?? ""
         }
     }
 

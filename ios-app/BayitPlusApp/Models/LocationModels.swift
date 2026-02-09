@@ -81,26 +81,29 @@ struct CityContentItem: Decodable, Sendable, Identifiable {
     let category: String?
 }
 
-// MARK: - Trending Content
+// MARK: - Trending Content (Culture News Topics)
 
-/// Response from GET /api/v1/cultures/{culture_id}/trending
-struct TrendingResponse: Decodable, Sendable {
-    let items: [TrendingItem]
-    let total: Int?
-    let cultureId: String?
-}
-
-/// A trending content item
-struct TrendingItem: Decodable, Sendable, Identifiable {
+/// A culture content item from GET /api/v1/cultures/{culture_id}/trending
+/// The API returns a raw JSON array of these items (not wrapped in an object).
+struct CultureTrendingItem: Decodable, Sendable, Identifiable, Equatable {
     let id: String
-    let title: String?
-    let thumbnail: String?
-    let duration: String?
-    let year: Int?
-    let category: String?
-    let type: String?
-    let isSeries: Bool?
-    let totalEpisodes: Int?
+    let cultureId: String?
+    let cityId: String?
+    let sourceId: String?
+    let sourceName: String?
+    let title: String
+    let titleNative: String?
+    let titleLocalized: [String: String]?
+    let url: String?
+    let publishedAt: String?
+    let summary: String?
+    let summaryNative: String?
+    let summaryLocalized: [String: String]?
+    let imageUrl: String?
+    let category: String
+    let categoryLabel: [String: String]?
+    let tags: [String]?
+    let relevanceScore: Double?
 }
 
 // MARK: - Continue Watching

@@ -154,13 +154,12 @@ struct SubtitleModePicker: View {
             case .standard: return true
             case .nikud: return cue.textNikud != nil
             case .shoresh: return cue.hasShoreshVersion == true
-            case .engrew: return cue.hasEngrewVersion == true
+            case .heblish: return cue.hasHeblishVersion == true
             }
         } else if let englishMode = mode as? SubtitleEnglishMode {
             switch englishMode {
             case .standard: return true
-            case .grammarFlip: return cue.hasGrammarFlipVersion == true
-            case .slangSynthesis: return cue.hasSlangSynthesisVersion == true
+            case .engrew: return cue.hasEngrewVersion == true
             }
         }
 
@@ -169,9 +168,9 @@ struct SubtitleModePicker: View {
 
     private func isAIMode<T: RawRepresentable>(_ mode: T) -> Bool where T.RawValue == String {
         if let hebrewMode = mode as? SubtitleHebrewMode {
-            return hebrewMode == .shoresh || hebrewMode == .engrew
+            return hebrewMode == .nikud || hebrewMode == .shoresh || hebrewMode == .heblish
         } else if let englishMode = mode as? SubtitleEnglishMode {
-            return englishMode == .grammarFlip || englishMode == .slangSynthesis
+            return englishMode == .engrew
         }
         return false
     }

@@ -16,7 +16,7 @@ final class HomeViewModel {
     private(set) var israeliBusinesses: IsraeliBusinessesResponse?
     private(set) var telAvivContent: CityContentResponse?
     private(set) var jerusalemContent: CityContentResponse?
-    private(set) var trendingContent: TrendingResponse?
+    private(set) var trendingContent: [CultureTrendingItem] = []
     private(set) var isLoading = false
     private(set) var error: String?
 
@@ -138,7 +138,7 @@ final class HomeViewModel {
         do {
             trendingContent = try await repository.fetchTrending(cultureId: "israeli")
         } catch {
-            trendingContent = nil
+            trendingContent = []
         }
     }
 

@@ -1,7 +1,7 @@
 import Foundation
 
 // MARK: - Trending Topics & Headlines
-// Note: TrendingResponse and TrendingItem are defined in LocationModels.swift.
+// Note: CultureTrendingItem is defined in LocationModels.swift.
 
 /// A trending topic with relevance scoring.
 struct TrendingTopic: Decodable, Sendable, Identifiable {

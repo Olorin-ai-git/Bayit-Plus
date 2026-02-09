@@ -14,7 +14,18 @@ struct SubtitleLanguagePickerView: View {
     let onRefresh: () -> Void
     var onDismiss: (() -> Void)?
 
+    // Mode selection parameters
+    var currentHebrewMode: SubtitleHebrewMode = .standard
+    var currentEnglishMode: SubtitleEnglishMode = .standard
+    var hasNikud: Bool = false
+    var hasShoresh: Bool = false
+    var hasHeblish: Bool = false
+    var hasEngrew: Bool = false
+    var onHebrewModeSelect: ((SubtitleHebrewMode) -> Void)?
+    var onEnglishModeSelect: ((SubtitleEnglishMode) -> Void)?
+
     @State private var showModePickerForLanguage: String?
+    @State private var selectedModeForGeneration: ModeSelectionItem?
 
     @Environment(\.dismiss) private var dismiss
     @Environment(LocalizationManager.self) private var localization
@@ -177,32 +188,154 @@ struct SubtitleLanguagePickerView: View {
     // MARK: - Mode Chips
 
     private func modeChips(for language: String) -> some View {
-        HStack(spacing: DesignTokens.Spacing.sm) {
-            Text("Modes:")
-                .font(.system(size: DesignTokens.FontSize.xs))
-                .foregroundStyle(DesignTokens.Text.muted)
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
+            Text("AI Modes:")
+                .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                .foregroundStyle(DesignTokens.Primary.p400)
+                .padding(.leading, DesignTokens.Spacing.xs)
 
-            if language == "he" {
-                ForEach(SubtitleHebrewMode.allCases, id: \.self) { mode in
-                    GlassChip(
-                        title: mode.displayName,
-                        isSelected: false
-                    ) {
-                        showModePickerForLanguage = language
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: DesignTokens.Spacing.md) {
+                    if language == "he" {
+                        ForEach(SubtitleHebrewMode.allCases, id: \.self) { mode in
+                            hebrewModeChip(mode: mode)
+                        }
+                    } else if language == "en" {
+                        ForEach(SubtitleEnglishMode.allCases, id: \.self) { mode in
+                            englishModeChip(mode: mode)
+                        }
                     }
                 }
-            } else if language == "en" {
-                ForEach(SubtitleEnglishMode.allCases, id: \.self) { mode in
-                    GlassChip(
-                        title: mode.displayName,
-                        isSelected: false
-                    ) {
-                        showModePickerForLanguage = language
-                    }
-                }
+                .padding(.horizontal, DesignTokens.Spacing.xs)
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.md)
+        .sheet(item: $selectedModeForGeneration) { selection in
+            if selection.language == "he", let mode = selection.mode as? SubtitleHebrewMode {
+                AISubtitlesPickerView(
+                    contentId: contentId,
+                    currentMode: mode,
+                    hasHebrew: true,
+                    hasNikud: hasNikud,
+                    hasShoresh: hasShoresh,
+                    hasHeblish: hasHeblish,
+                    isAdmin: true, // TODO: Get from auth
+                    repository: repository,
+                    onModeSelect: { selectedMode in
+                        onHebrewModeSelect?(selectedMode)
+                        selectedModeForGeneration = nil
+                        dismiss()
+                    },
+                    onGenerationComplete: {
+                        onRefresh()
+                        selectedModeForGeneration = nil
+                    }
+                )
+            }
+        }
+    }
+
+    private func hebrewModeChip(mode: SubtitleHebrewMode) -> some View {
+        let isSelected = mode == currentHebrewMode
+        let isAvailable = isModeAvailable(mode, language: "he")
+        let isAI = mode != .standard
+
+        return Button {
+            if isAvailable {
+                // Mode is available - select it directly
+                onHebrewModeSelect?(mode)
+                dismiss()
+            } else {
+                // Mode not available - show generation modal
+                selectedModeForGeneration = ModeSelectionItem(language: "he", mode: mode)
+            }
+        } label: {
+            HStack(spacing: DesignTokens.Spacing.xs) {
+                if isAI {
+                    Image(systemName: isAvailable ? "sparkles" : "lock.fill")
+                        .font(.system(size: 12))
+                        .foregroundStyle(isSelected ? .white : DesignTokens.Primary.p400)
+                }
+                Text(mode.displayName)
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                    .foregroundStyle(isSelected ? .white : (isAvailable ? .white : .gray))
+            }
+            .padding(.horizontal, DesignTokens.Spacing.md)
+            .padding(.vertical, DesignTokens.Spacing.sm)
+            .background(
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                    .fill(isSelected ? DesignTokens.Primary.p500 : (isAI ? Color.purple.opacity(0.25) : Color.white.opacity(0.1)))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                    .stroke(
+                        isSelected ? DesignTokens.Primary.p400 : (isAI ? Color.purple.opacity(0.5) : Color.white.opacity(0.2)),
+                        lineWidth: isSelected ? 2 : 1
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+        .disabled(!isAvailable && !isAI) // Only allow interaction with standard and AI modes
+    }
+
+    private func englishModeChip(mode: SubtitleEnglishMode) -> some View {
+        let isSelected = mode == currentEnglishMode
+        let isAvailable = isModeAvailable(mode, language: "en")
+        let isAI = mode != .standard
+
+        return Button {
+            if isAvailable {
+                // Mode is available - select it directly
+                onEnglishModeSelect?(mode)
+                dismiss()
+            } else {
+                // Mode not available - would show generation modal (when implemented)
+                // For now, just select standard
+                onEnglishModeSelect?(.standard)
+                dismiss()
+            }
+        } label: {
+            HStack(spacing: DesignTokens.Spacing.xs) {
+                if isAI {
+                    Image(systemName: isAvailable ? "sparkles" : "lock.fill")
+                        .font(.system(size: 12))
+                        .foregroundStyle(isSelected ? .white : DesignTokens.Primary.p400)
+                }
+                Text(mode.displayName)
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                    .foregroundStyle(isSelected ? .white : (isAvailable ? .white : .gray))
+            }
+            .padding(.horizontal, DesignTokens.Spacing.md)
+            .padding(.vertical, DesignTokens.Spacing.sm)
+            .background(
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                    .fill(isSelected ? DesignTokens.Primary.p500 : (isAI ? Color.purple.opacity(0.25) : Color.white.opacity(0.1)))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                    .stroke(
+                        isSelected ? DesignTokens.Primary.p400 : (isAI ? Color.purple.opacity(0.5) : Color.white.opacity(0.2)),
+                        lineWidth: isSelected ? 2 : 1
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func isModeAvailable(_ mode: SubtitleHebrewMode, language: String) -> Bool {
+        switch mode {
+        case .standard: return true
+        case .nikud: return hasNikud
+        case .shoresh: return hasShoresh
+        case .heblish: return hasHeblish
+        }
+    }
+
+    private func isModeAvailable(_ mode: SubtitleEnglishMode, language: String) -> Bool {
+        switch mode {
+        case .standard: return true
+        case .engrew: return hasEngrew
+        }
     }
 
     // MARK: - Helpers
@@ -221,4 +354,13 @@ struct SubtitleLanguagePickerView: View {
             VisualEffectBlur(style: .systemUltraThinMaterialDark)
         }
     }
+}
+
+// MARK: - Supporting Types
+
+/// Represents a mode selection for AI subtitle generation modal
+struct ModeSelectionItem: Identifiable {
+    let id = UUID()
+    let language: String
+    let mode: Any  // SubtitleHebrewMode or SubtitleEnglishMode
 }

@@ -350,7 +350,7 @@ private final class MockContentRepository: ContentRepository {
     func fetchContinueWatching() async throws -> WatchHistoryResponse { fatalError() }
     func fetchTelAvivContent() async throws -> CityContentResponse { fatalError() }
     func fetchJerusalemContent() async throws -> CityContentResponse { fatalError() }
-    func fetchTrending(cultureId: String?) async throws -> TrendingResponse { fatalError() }
+    func fetchTrending(cultureId: String) async throws -> [CultureTrendingItem] { fatalError() }
     func fetchIsraelisInCity(city: String, state: String) async throws -> IsraelisInCityResponse { fatalError() }
     func fetchIsraeliBusinesses(city: String, state: String) async throws -> IsraeliBusinessesResponse { fatalError() }
 }

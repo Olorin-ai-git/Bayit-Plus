@@ -40,7 +40,7 @@ final class HomeViewModelTests: XCTestCase {
         XCTAssertNil(viewModel.israeliBusinesses)
         XCTAssertNil(viewModel.telAvivContent)
         XCTAssertNil(viewModel.jerusalemContent)
-        XCTAssertNil(viewModel.trendingContent)
+        XCTAssertEqual(viewModel.trendingContent, [])
         XCTAssertFalse(viewModel.isLoading)
         XCTAssertNil(viewModel.error)
     }
@@ -200,7 +200,7 @@ final class HomeViewModelTests: XCTestCase {
 
         try? await Task.sleep(for: .milliseconds(100))
 
-        XCTAssertNotNil(viewModel.trendingContent)
+        XCTAssertEqual(viewModel.trendingContent.isEmpty, true)
 
         expectation.fulfill()
         await fulfillment(of: [expectation], timeout: 5.0)
@@ -274,9 +274,9 @@ private final class MockContentRepository: ContentRepository {
         }
     }
 
-    func fetchTrending(cultureId: String?) async throws -> TrendingResponse {
+    func fetchTrending(cultureId: String) async throws -> [CultureTrendingItem] {
         if shouldSucceed {
-            return TrendingResponse(items: [])
+            return []
         } else {
             throw NSError(domain: "test", code: 1, userInfo: [NSLocalizedDescriptionKey: "Mock error"])
         }
