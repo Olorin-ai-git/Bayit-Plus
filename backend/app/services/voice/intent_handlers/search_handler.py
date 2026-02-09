@@ -7,7 +7,7 @@ import re
 from typing import Any, Dict, List
 
 from app.core.logging_config import get_logger
-from app.services.unified_search_service import SearchFilters, UnifiedSearchService
+from app.services.search import SearchFilters, create_search_pipeline
 from app.services.vod_llm_search_service import VODLLMSearchService
 from app.services.llm_search_service import LLMSearchService
 from ..context import VoiceContext
@@ -160,13 +160,13 @@ async def _execute_complex_vod_search(query: str, context: VoiceContext) -> List
 async def _execute_simple_vod_search(query: str, context: VoiceContext) -> List[Dict]:
     """Execute simple VOD search using UnifiedSearchService."""
     try:
-        search_service = UnifiedSearchService()
+        pipeline = create_search_pipeline()
         filters = SearchFilters(
             content_types=["vod"],
             subscription_tier=context.subscription_tier,
-            is_kids_content=False
+            is_kids_content=False,
         )
-        search_results = await search_service.search(query=query, filters=filters, limit=10)
+        search_results = await pipeline.search(query=query, filters=filters, limit=10)
         return search_results.results
     except Exception as e:
         logger.error(

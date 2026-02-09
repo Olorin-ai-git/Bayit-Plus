@@ -1161,6 +1161,139 @@ class SearchIndexConfig(BaseSettings):
         env_prefix = "SEARCH_INDEX_"
 
 
+class SearchRankingConfig(BaseSettings):
+    """Search pipeline ranking and scoring configuration."""
+
+    # Atlas Search index names
+    content_search_index: str = Field(
+        default="content_search",
+        description="Atlas Search index name for content collection",
+    )
+    live_channels_search_index: str = Field(
+        default="live_channels_search",
+        description="Atlas Search index name for live_channels collection",
+    )
+    podcasts_search_index: str = Field(
+        default="podcasts_search",
+        description="Atlas Search index name for podcasts collection",
+    )
+    radio_stations_search_index: str = Field(
+        default="radio_stations_search",
+        description="Atlas Search index name for radio_stations collection",
+    )
+
+    # Feature flags
+    atlas_search_enabled: bool = Field(
+        default=True,
+        description="Enable Atlas Search ($search) instead of $text fallback",
+    )
+    hybrid_search_enabled: bool = Field(
+        default=True,
+        description="Enable Pinecone vector search alongside Atlas Search",
+    )
+
+    # Reciprocal Rank Fusion parameters
+    rrf_k: int = Field(
+        default=60, ge=1, le=200,
+        description="RRF constant K (standard=60)",
+    )
+    atlas_weight: float = Field(
+        default=1.0, ge=0.0, le=5.0,
+        description="Atlas Search weight in RRF fusion",
+    )
+    pinecone_weight: float = Field(
+        default=0.8, ge=0.0, le=5.0,
+        description="Pinecone weight in RRF fusion",
+    )
+
+    # Scoring weights (must sum to <= 1.0 with relevance_weight)
+    title_exact_match_multiplier: float = Field(
+        default=3.0, ge=1.0, le=10.0,
+        description="Multiplier for exact title matches",
+    )
+    relevance_weight: float = Field(
+        default=0.70, ge=0.0, le=1.0,
+        description="Weight for text relevance score",
+    )
+    popularity_weight: float = Field(
+        default=0.10, ge=0.0, le=1.0,
+        description="Weight for popularity signal",
+    )
+    freshness_weight: float = Field(
+        default=0.05, ge=0.0, le=1.0,
+        description="Weight for content freshness",
+    )
+    rating_weight: float = Field(
+        default=0.10, ge=0.0, le=1.0,
+        description="Weight for avg_rating signal",
+    )
+    featured_boost: float = Field(
+        default=0.05, ge=0.0, le=1.0,
+        description="Additive boost for featured content",
+    )
+
+    # Fuzzy matching thresholds
+    fuzzy_edits_short: int = Field(
+        default=0, ge=0, le=2,
+        description="Max edit distance for queries < 4 chars",
+    )
+    fuzzy_edits_medium: int = Field(
+        default=1, ge=0, le=2,
+        description="Max edit distance for queries 4-6 chars",
+    )
+    fuzzy_edits_long: int = Field(
+        default=2, ge=0, le=2,
+        description="Max edit distance for queries 7+ chars",
+    )
+
+    # Atlas Search field boosts
+    title_boost: float = Field(
+        default=10.0, ge=1.0, le=50.0,
+        description="Boost factor for title field matches",
+    )
+    phrase_boost: float = Field(
+        default=15.0, ge=1.0, le=50.0,
+        description="Boost factor for phrase matches on titles",
+    )
+    description_boost: float = Field(
+        default=5.0, ge=1.0, le=20.0,
+        description="Boost factor for description field matches",
+    )
+    cast_boost: float = Field(
+        default=3.0, ge=1.0, le=20.0,
+        description="Boost factor for cast/director/author matches",
+    )
+
+    # Semantic search thresholds
+    semantic_min_score: float = Field(
+        default=0.7, ge=0.0, le=1.0,
+        description="Minimum Pinecone similarity score to include",
+    )
+    semantic_max_results: int = Field(
+        default=50, ge=10, le=200,
+        description="Maximum results to fetch from Pinecone",
+    )
+
+    # Freshness decay
+    freshness_half_life_days: int = Field(
+        default=365, ge=30, le=3650,
+        description="Half-life in days for freshness exponential decay",
+    )
+    popularity_normalization_cap: int = Field(
+        default=10000, ge=100, le=1000000,
+        description="View count cap for log-normalized popularity",
+    )
+
+    # Atlas over-fetch factor for re-ranking
+    atlas_overfetch_multiplier: int = Field(
+        default=3, ge=1, le=10,
+        description="Fetch N*limit from Atlas for re-ranking headroom",
+    )
+
+    class Config:
+        env_prefix = "SEARCH_RANKING_"
+
+
 class CatchupConfig(BaseSettings):
     """Catchup service configuration for live transcript accumulation."""
 
@@ -1456,6 +1589,10 @@ class OlorinSettings(BaseSettings):
     search_index: SearchIndexConfig = Field(
         default_factory=SearchIndexConfig,
         description="Search index service for live transcript search",
+    )
+    search_ranking: SearchRankingConfig = Field(
+        default_factory=SearchRankingConfig,
+        description="Search pipeline ranking and scoring configuration",
     )
     catchup: CatchupConfig = Field(
         default_factory=CatchupConfig,

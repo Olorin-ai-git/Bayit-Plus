@@ -7,18 +7,17 @@ Provides discovery endpoints for:
 - Autocomplete
 """
 
-import logging
-
 from fastapi import APIRouter, HTTPException, Query, status
 
+from app.core.logging_config import get_logger
 from app.models.search_analytics import SearchQuery
-from app.services.unified_search_service import UnifiedSearchService
+from app.services.search import create_search_pipeline
 
 router = APIRouter(prefix="/search", tags=["search", "suggestions"])
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 # Service instance
-unified_search = UnifiedSearchService()
+_pipeline = create_search_pipeline()
 
 
 @router.get("/suggestions")
@@ -35,18 +34,16 @@ async def get_search_suggestions(
     - Popular search terms
 
     Example:
-    - Query "Gal" → ["Gal Gadot", "Gal Gadot Movies", "Galaxy Quest"]
+    - Query "Gal" -> ["Gal Gadot", "Gal Gadot Movies", "Galaxy Quest"]
     """
     try:
-        suggestions = await unified_search.get_suggestions(query, limit)
-
+        suggestions = await _pipeline.get_suggestions(query, limit)
         return {"query": query, "suggestions": suggestions}
-
     except Exception as e:
-        logger.error(f"Suggestions failed: {e}", exc_info=True)
+        logger.error("Suggestions failed", extra={"error": str(e)}, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get suggestions: {str(e)}",
+            detail="An internal error occurred while fetching suggestions",
         )
 
 
@@ -59,22 +56,13 @@ async def get_trending_searches(
 
     Returns popular searches from the last 7 days, used to populate
     the trending searches section in the search suggestions UI.
-
-    Example response:
-    {"trending": ["Fauda", "Shtisel", "Tehran", ...]}
     """
     try:
-        # Get popular searches from last 7 days
         popular = await SearchQuery.get_popular_queries(limit=limit, days=7)
-
-        # Extract just the query strings
         trending = [item.get("query", "") for item in popular if item.get("query")]
-
         return {"trending": trending}
-
     except Exception as e:
-        logger.error(f"Failed to get trending searches: {e}", exc_info=True)
-        # Return empty array on error (graceful degradation)
+        logger.error("Failed to get trending searches", extra={"error": str(e)}, exc_info=True)
         return {"trending": []}
 
 
@@ -84,18 +72,9 @@ async def get_search_categories():
     Get predefined search categories with metadata.
 
     Returns category suggestions for the search suggestions panel.
-    Each category includes a label, emoji, and pre-applied filters.
-
-    Example response:
-    {
-      "categories": [
-        {"id": "movies", "label": "Movies", "icon": "vod", "filters": {"content_types": ["vod"]}},
-        ...
-      ]
-    }
+    Each category includes a label, icon, and pre-applied filters.
     """
     try:
-        # Predefined categories with filters
         # Icons reference @olorin/shared-icons names (rendered by frontend)
         categories = [
             {
@@ -137,8 +116,6 @@ async def get_search_categories():
         ]
 
         return {"categories": categories}
-
     except Exception as e:
-        logger.error(f"Failed to get categories: {e}", exc_info=True)
-        # Return empty array on error (graceful degradation)
+        logger.error("Failed to get categories", extra={"error": str(e)}, exc_info=True)
         return {"categories": []}

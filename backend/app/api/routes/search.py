@@ -1,37 +1,29 @@
-"""
-Unified Search API Routes (Core Endpoints).
+"""Unified Search API Routes: text search, subtitle search, filter options."""
 
-Provides core search functionality:
-- Unified text search across all content
-- Subtitle dialogue search
-- Filter options metadata
-
-Additional search features in separate routers:
-- search_analytics.py - Click tracking, popular queries, metrics
-- search_suggestions.py - Autocomplete, trending, categories
-- search_scenes.py - Scene/timestamp search
-- search_llm.py - LLM natural language search
-"""
-
-import logging
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
+from app.core.logging_config import get_logger
 from app.core.security import get_current_admin_user, get_optional_user
 from app.models.search_analytics import SearchQuery
 from app.models.user import User
+from app.services.search import (
+    SearchFilters,
+    SearchResults,
+    SortField,
+    SortOrder,
+    create_search_pipeline,
+)
 from app.services.search_cache import get_cache
-from app.services.unified_search_service import (SearchFilters, SearchResults,
-                                                 UnifiedSearchService)
 
 router = APIRouter(prefix="/search", tags=["search"])
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 # Service instance
-unified_search = UnifiedSearchService()
+_pipeline = create_search_pipeline()
 
 
 @router.get("/unified", response_model=SearchResults)
@@ -54,28 +46,26 @@ async def unified_search_endpoint(
     ),
     is_kids_content: Optional[bool] = Query(None, description="Filter kids content"),
     search_in_subtitles: bool = Query(False, description="Enable subtitle text search"),
+    sort_by: SortField = Query(SortField.RELEVANCE, description="Sort field"),
+    sort_order: SortOrder = Query(SortOrder.DESC, description="Sort direction"),
     page: int = Query(1, ge=1, description="Page number"),
     limit: int = Query(20, ge=1, le=50, description="Results per page"),
     no_cache: bool = Query(False, description="Bypass search cache"),
     current_user: Optional[User] = Depends(get_optional_user),
 ):
     """
-    Unified search across all content with advanced filtering.
+    Unified search across all content with advanced filtering and sorting.
 
     Features:
     - Full-text search on titles, descriptions, cast, director
+    - Fuzzy matching, phrase matching, Hebrew nikud handling
     - Subtitle dialogue search (when enabled)
     - Multi-criteria filtering (genre, year, rating, language)
+    - Explicit sorting (relevance, date, rating, popularity, title, year)
     - Pagination support
     - Result caching
-
-    Examples:
-    - Search for "Fauda" → Returns series and all seasons
-    - Search with genre="Comedy" and year_min=1990 → Filtered results
-    - Search with search_in_subtitles=true → Searches dialogue text
     """
     try:
-        # Build filters
         filters = SearchFilters(
             content_types=content_types,
             genres=genres,
@@ -88,17 +78,19 @@ async def unified_search_endpoint(
             search_in_subtitles=search_in_subtitles,
         )
 
-        # Determine beta content access
         is_beta_user = (
-            current_user.is_beta_user if current_user and not current_user.is_admin_user() else None
+            current_user.is_beta_user
+            if current_user and not current_user.is_admin_user()
+            else None
         )
 
-        # Execute search
-        results = await unified_search.search(
+        results = await _pipeline.search(
             query=query,
             filters=filters,
             page=page,
             limit=limit,
+            sort_by=sort_by,
+            sort_order=sort_order,
             user_subscription_tier=(
                 current_user.subscription_tier if current_user else None
             ),
@@ -106,7 +98,6 @@ async def unified_search_endpoint(
             no_cache=no_cache,
         )
 
-        # Log search analytics
         await SearchQuery.log_search(
             query=query,
             search_type=(
@@ -116,10 +107,10 @@ async def unified_search_endpoint(
             ),
             result_count=results.total,
             execution_time_ms=results.execution_time_ms,
-            filters=filters.dict(),
+            filters=filters.model_dump(),
             user_id=str(current_user.id) if current_user else None,
             cache_hit=results.cache_hit,
-            platform=None,  # Could be extracted from User-Agent header
+            platform=None,
         )
 
         return JSONResponse(
@@ -132,10 +123,10 @@ async def unified_search_endpoint(
         )
 
     except Exception as e:
-        logger.error(f"Unified search failed: {e}", exc_info=True)
+        logger.error("Unified search failed", extra={"error": str(e)}, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Search failed: {str(e)}",
+            detail="An internal error occurred during search",
         )
 
 
@@ -147,24 +138,14 @@ async def search_in_subtitles(
     limit: int = Query(20, ge=1, le=50, description="Maximum results"),
     current_user: Optional[User] = Depends(get_optional_user),
 ):
-    """
-    Search for specific dialogue within subtitle files.
-
-    Returns content with matching subtitle cues highlighted.
-    Useful for finding specific quotes or topics discussed in content.
-
-    Example:
-    - Search "Shalom" → Returns all content with that word in subtitles
-    - Shows timestamp and highlighted text for each match
-    """
+    """Search for specific dialogue within subtitle files."""
     try:
         filters = SearchFilters(content_types=content_types, search_in_subtitles=True)
 
-        results = await unified_search.search(
-            query=query, filters=filters, page=1, limit=limit
+        results = await _pipeline.search(
+            query=query, filters=filters, page=1, limit=limit,
         )
 
-        # Log analytics
         await SearchQuery.log_search(
             query=query,
             search_type="subtitle",
@@ -177,36 +158,23 @@ async def search_in_subtitles(
         return results
 
     except Exception as e:
-        logger.error(f"Subtitle search failed: {e}", exc_info=True)
+        logger.error("Subtitle search failed", extra={"error": str(e)}, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Subtitle search failed: {str(e)}",
+            detail="An internal error occurred during subtitle search",
         )
 
 
 @router.get("/filters/options")
 async def get_filter_options():
-    """
-    Get available filter options for advanced search.
-
-    Returns:
-    - All unique genres
-    - Year range (min/max)
-    - Available subtitle languages
-    - Content types
-    - Subscription tiers
-
-    Use this to populate filter UI dropdowns and checkboxes.
-    """
+    """Get available filter options for advanced search UI."""
     try:
-        options = await unified_search.get_filter_options()
-        return options
-
+        return await _pipeline.get_filter_options()
     except Exception as e:
-        logger.error(f"Failed to get filter options: {e}", exc_info=True)
+        logger.error("Failed to get filter options", extra={"error": str(e)}, exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get filter options: {str(e)}",
+            detail="An internal error occurred while fetching filter options",
         )
 
 
