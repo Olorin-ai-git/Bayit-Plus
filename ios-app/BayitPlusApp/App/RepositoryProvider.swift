@@ -1,3 +1,4 @@
+import BayitCore
 import BayitNetworking
 import BayitVoice
 import Foundation
@@ -40,9 +41,12 @@ final class RepositoryProvider {
     let watchParty: any WatchPartyRepository
     let chess: any ChessRepository
     let directMessages: any DirectMessageRepository
+    let stats: any StatsRepository
     let authTokenProvider: AuthTokenProvider
+    let configuration: any EnvironmentConfiguration
+    let offlineCache: OfflineCacheService
 
-    init(client: APIClient, webSocketManager: WebSocketManager, authTokenProvider: AuthTokenProvider) {
+    init(client: APIClient, webSocketManager: WebSocketManager, authTokenProvider: AuthTokenProvider, configuration: any EnvironmentConfiguration) {
         self.content = APIContentRepository(client: client)
         self.liveTV = APILiveTVRepository(client: client)
         self.radio = APIRadioRepository(client: client)
@@ -76,6 +80,9 @@ final class RepositoryProvider {
         self.watchParty = APIWatchPartyRepository(client: client)
         self.chess = APIChessRepository(client: client, webSocketManager: webSocketManager)
         self.directMessages = APIDirectMessageRepository(client: client, webSocketManager: webSocketManager)
+        self.stats = APIStatsRepository(client: client)
         self.authTokenProvider = authTokenProvider
+        self.configuration = configuration
+        self.offlineCache = OfflineCacheService()
     }
 }

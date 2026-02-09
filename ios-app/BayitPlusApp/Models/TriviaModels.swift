@@ -3,7 +3,7 @@ import Foundation
 // MARK: - Trivia
 
 /// A trivia fact with multilingual text variants.
-struct TriviaFact: Decodable, Sendable, Identifiable {
+struct TriviaFact: Codable, Sendable, Identifiable {
     let id: String
     let text: String?
     let textHe: String?
@@ -15,7 +15,7 @@ struct TriviaFact: Decodable, Sendable, Identifiable {
 }
 
 /// Response from GET /api/v1/content/{id}/trivia
-struct TriviaResponse: Decodable, Sendable {
+struct TriviaResponse: Codable, Sendable {
     let trivia: [TriviaFact]
     let contentId: String?
     let isEnriched: Bool?

@@ -18,7 +18,8 @@ struct InteractiveSubtitlesView: View {
                 InteractiveSubtitlesOverlay(
                     viewModel: vm,
                     contentId: contentId,
-                    currentTime: 0
+                    currentTime: 0,
+                    isTriviaActive: false
                 )
             } else {
                 ProgressView()
@@ -27,7 +28,10 @@ struct InteractiveSubtitlesView: View {
         }
         .task {
             if viewModel == nil {
-                viewModel = InteractiveSubtitlesViewModel(repository: repos.subtitle)
+                viewModel = InteractiveSubtitlesViewModel(
+                    repository: repos.subtitle,
+                    offlineCache: repos.offlineCache
+                )
             }
         }
         .accessibilityLabel("Interactive subtitles for content")

@@ -25,6 +25,8 @@ struct PlayerView: View {
     @State private var subtitlesVM: InteractiveSubtitlesViewModel?
     @State private var selectedSubtitleLanguage: String?
     @State private var subtitleLoadTask: Task<Void, Never>?
+    @State private var triviaVM: TriviaFactsViewModel?
+    @State private var liveDubbingVM: LiveDubbingViewModel?
 
     let contentId: String
     let contentType: ContentType
@@ -63,12 +65,24 @@ struct PlayerView: View {
                 errorOverlay(error)
             }
 
-            // Subtitle overlay (above video, below controls)
+            // Trivia overlay (above video, below subtitles)
+            if let vm = triviaVM, !mediaContentType.isLive {
+                TriviaFactsOverlayView(
+                    viewModel: vm,
+                    contentId: contentId,
+                    currentTime: viewModel.player.currentTime,
+                    isSubtitlesActive: selectedSubtitleLanguage != nil,
+                    currentLanguage: selectedSubtitleLanguage ?? "en"
+                )
+            }
+
+            // Subtitle overlay (above trivia, below controls)
             if let vm = subtitlesVM, let lang = selectedSubtitleLanguage {
                 InteractiveSubtitlesOverlay(
                     viewModel: vm,
                     contentId: contentId,
                     currentTime: viewModel.player.currentTime,
+                    isTriviaActive: triviaVM?.activeFact != nil,
                     language: lang
                 )
                 .allowsHitTesting(showControls)
@@ -80,7 +94,10 @@ struct PlayerView: View {
             }
         }
         .statusBarHidden(true)
-        .task { await viewModel.load() }
+        .task {
+            await viewModel.load()
+            initializeViewModels()
+        }
         .onDisappear {
             Task {
                 await viewModel.cleanup()
@@ -97,9 +114,15 @@ struct PlayerView: View {
         .sheet(isPresented: $showSubtitlePicker) {
             SubtitleLanguagePickerView(
                 availableLanguages: availableSubtitleLanguages,
+                aiLanguages: aiSubtitleLanguages,
                 selectedLanguage: selectedSubtitleLanguage,
+                contentId: contentId,
+                repository: repositories.subtitle,
                 onSelect: { language in
                     handleSubtitleSelection(language)
+                },
+                onRefresh: {
+                    Task { await viewModel.load() }
                 }
             )
         }
@@ -269,13 +292,27 @@ struct PlayerView: View {
         viewModel.availableSubtitleLanguages
     }
 
+    private var aiSubtitleLanguages: Set<String> {
+        var aiLangs = Set<String>()
+        // Assume Hebrew and English may have AI versions if available
+        if availableSubtitleLanguages.contains("he") {
+            aiLangs.insert("he")
+        }
+        if availableSubtitleLanguages.contains("en") {
+            aiLangs.insert("en")
+        }
+        return aiLangs
+    }
+
     private func handleSubtitleSelection(_ language: String?) {
         selectedSubtitleLanguage = language
         subtitleLoadTask?.cancel()
         if let language {
             if subtitlesVM == nil {
                 subtitlesVM = InteractiveSubtitlesViewModel(
-                    repository: repositories.subtitle
+                    repository: repositories.subtitle,
+                    offlineCache: repositories.offlineCache,
+                    shoreshParser: DefaultShoreshParser()
                 )
             }
             subtitleLoadTask = Task {
@@ -283,6 +320,28 @@ struct PlayerView: View {
             }
         } else {
             subtitlesVM = nil
+        }
+    }
+
+    private func initializeViewModels() {
+        // Initialize trivia for VOD content
+        if !mediaContentType.isLive {
+            triviaVM = TriviaFactsViewModel(
+                repository: repositories.trivia,
+                offlineCache: repositories.offlineCache
+            )
+        }
+
+        // Initialize live dubbing for live content
+        if mediaContentType.isLive {
+            let wsService = LiveDubbingWebSocketService(
+                configuration: repositories.configuration,
+                authTokenProvider: repositories.authTokenProvider
+            )
+            liveDubbingVM = LiveDubbingViewModel(
+                repository: repositories.liveDubbing,
+                webSocketService: wsService
+            )
         }
     }
 

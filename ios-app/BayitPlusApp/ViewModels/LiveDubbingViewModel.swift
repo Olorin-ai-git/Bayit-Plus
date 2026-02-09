@@ -1,12 +1,17 @@
+import BayitAuth
 import BayitCore
 import Foundation
 import Observation
 
-/// ViewModel for Live Dubbing - manages dubbing availability, language selection,
-/// WebSocket connection, and overlay display for translated audio captions.
+/// ViewModel for Live Dubbing - manages availability, voice selection, WebSocket connection,
+/// and premium subscription requirements.
 @Observable
 final class LiveDubbingViewModel {
     private(set) var availability: DubbingAvailability?
+    private(set) var voices: [DubbingVoice] = []
+    private(set) var selectedVoice: DubbingVoice?
+    private(set) var syncDelayMs: Int = 0
+    private(set) var qualityTier: DubbingQualityTier?
     private(set) var isEnabled = false
     private(set) var selectedLanguage: String = "en"
     private(set) var isLoading = false
@@ -14,19 +19,23 @@ final class LiveDubbingViewModel {
     private(set) var overlayText: String?
     private(set) var translatedText: String?
     private(set) var showOverlay = false
+    private(set) var isPremiumRequired = false
 
     let webSocketService: LiveDubbingWebSocketService
     private let repository: any LiveDubbingRepository
+    private let authManager: AuthManager?
     private var overlayDismissTask: Task<Void, Never>?
     private let logger = BayitLogger(category: "LiveDubbing")
     private let overlayDuration: Duration = .seconds(4)
 
     init(
         repository: any LiveDubbingRepository,
-        webSocketService: LiveDubbingWebSocketService
+        webSocketService: LiveDubbingWebSocketService,
+        authManager: AuthManager? = nil
     ) {
         self.repository = repository
         self.webSocketService = webSocketService
+        self.authManager = authManager
     }
 
     @MainActor
@@ -36,9 +45,22 @@ final class LiveDubbingViewModel {
 
         do {
             availability = try await repository.checkAvailability(channelId: channelId)
+            voices = availability?.availableVoices ?? []
+
+            if let defaultVoiceId = availability?.defaultVoiceId {
+                selectedVoice = voices.first { $0.id == defaultVoiceId }
+            } else {
+                selectedVoice = voices.first
+            }
+
+            if let defaultDelay = availability?.defaultSyncDelayMs {
+                syncDelayMs = defaultDelay
+            }
+
             logger.info("Dubbing availability loaded", context: [
                 "channelId": channelId,
-                "isAvailable": String(availability?.isAvailable ?? false)
+                "isAvailable": String(availability?.isAvailable ?? false),
+                "voiceCount": String(voices.count)
             ])
         } catch {
             self.error = error.localizedDescription
@@ -52,14 +74,40 @@ final class LiveDubbingViewModel {
 
     @MainActor
     func toggleDubbing(channelId: String) {
+        // Check premium subscription
+        if let tier = authManager?.user?.subscriptionTier {
+            let isPremium = tier == .premium || tier == .family
+            if !isPremium {
+                isPremiumRequired = true
+                return
+            }
+        }
+
         if isEnabled {
             webSocketService.disconnect()
             isEnabled = false
             showOverlay = false
             overlayDismissTask?.cancel()
         } else {
-            webSocketService.connect(channelId: channelId, targetLanguage: selectedLanguage)
+            webSocketService.connect(
+                channelId: channelId,
+                targetLanguage: selectedLanguage,
+                voiceId: selectedVoice?.id
+            )
             isEnabled = true
+        }
+    }
+
+    @MainActor
+    func selectVoice(_ voice: DubbingVoice, channelId: String) {
+        selectedVoice = voice
+        if isEnabled {
+            webSocketService.disconnect()
+            webSocketService.connect(
+                channelId: channelId,
+                targetLanguage: selectedLanguage,
+                voiceId: voice.id
+            )
         }
     }
 
@@ -68,7 +116,27 @@ final class LiveDubbingViewModel {
         selectedLanguage = language
         if isEnabled {
             webSocketService.disconnect()
-            webSocketService.connect(channelId: channelId, targetLanguage: language)
+            webSocketService.connect(
+                channelId: channelId,
+                targetLanguage: language,
+                voiceId: selectedVoice?.id
+            )
+        }
+    }
+
+    @MainActor
+    func updateSyncStatus(currentVideoTimeMs: Int) {
+        webSocketService.sendSyncStatus(currentVideoTimeMs: currentVideoTimeMs)
+    }
+
+    @MainActor
+    func handleConnectionInfo(_ info: DubbingConnectionMessage) {
+        if let delay = info.syncDelayMs {
+            syncDelayMs = delay
+        }
+        if let tierString = info.qualityTier,
+           let tier = DubbingQualityTier(rawValue: tierString) {
+            qualityTier = tier
         }
     }
 
@@ -85,6 +153,11 @@ final class LiveDubbingViewModel {
                 self.showOverlay = false
             }
         }
+    }
+
+    @MainActor
+    func dismissPremiumGate() {
+        isPremiumRequired = false
     }
 
     @MainActor

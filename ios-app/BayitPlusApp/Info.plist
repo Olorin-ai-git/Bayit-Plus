@@ -37,6 +37,10 @@
 	<string>Bayit+ uses your location to show Israeli community content near you</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bayit+ uses the microphone for voice commands</string>
+	<key>NSPrivacyPolicyURL</key>
+	<string>https://bayit.tv/policy</string>
+	<key>NSSiriUsageDescription</key>
+	<string>Bayit+ uses Siri for voice commands to control playback and search content</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Bayit+ uses speech recognition for voice commands</string>
 	<key>UIApplicationSceneManifest</key>

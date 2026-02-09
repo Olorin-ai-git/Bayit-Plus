@@ -1,3 +1,4 @@
+#if os(iOS)
 import AVFoundation
 import BayitCore
 import Foundation
@@ -5,6 +6,7 @@ import Observation
 import UIKit
 
 /// ViewModel managing proactive voice suggestion display and TTS readout.
+/// Available on iOS only. Depends on ProactiveSuggestionEngine from Services.
 ///
 /// Coordinates between the ProactiveSuggestionEngine and the UI banner,
 /// handling text-to-speech announcements, auto-dismiss timing, and user actions.
@@ -153,3 +155,4 @@ final class ProactiveVoiceViewModel {
         suggestion?.action?.payload?["route"]
     }
 }
+#endif

@@ -93,6 +93,12 @@ public struct GlassButton: View {
         }
         .disabled(isDisabled || isLoading)
         .opacity(isDisabled ? 0.5 : 1.0)
+        #if os(tvOS)
+        .tvFocusStyle(
+            scale: 1.03,
+            shadowRadius: 8
+        )
+        #endif
     }
 
     @ViewBuilder

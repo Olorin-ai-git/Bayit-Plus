@@ -1,9 +1,11 @@
+#if os(iOS)
 import BayitVoice
 import Foundation
 import Observation
 
 /// ViewModel for the voice onboarding flow.
 /// Guides users through permission requests and language selection.
+/// Available on iOS only -- tvOS does not support microphone input.
 @Observable
 final class VoiceOnboardingViewModel {
 
@@ -68,6 +70,7 @@ final class VoiceOnboardingViewModel {
 
     var isComplete: Bool { currentStep == .complete }
 }
+#endif
 
 // MARK: - Supported Languages
 

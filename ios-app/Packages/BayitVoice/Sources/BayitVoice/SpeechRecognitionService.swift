@@ -1,3 +1,4 @@
+#if os(iOS)
 import AVFoundation
 import BayitCore
 import Foundation
@@ -8,6 +9,9 @@ import Speech
 /// Ported from mobile-app/ios/BayitPlus/SpeechModule.swift.
 /// Removes RCT bridge, uses AsyncStream for results, supports
 /// multi-language (he-IL, en-US, es-ES).
+///
+/// Available on iOS only. tvOS does not support Speech.framework
+/// or microphone input.
 public final class SpeechRecognitionService: Sendable {
 
     private let logger = BayitLogger(category: "SpeechRecognition")
@@ -163,6 +167,7 @@ public final class SpeechRecognitionService: Sendable {
         request.endAudio()
     }
 }
+#endif
 
 // MARK: - Errors
 

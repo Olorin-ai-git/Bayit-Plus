@@ -72,15 +72,27 @@ struct SearchView: View {
     private func resultsGrid(_ results: [SearchResult]) -> some View {
         LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
             ForEach(results) { result in
-                GlassContentCard(
-                    thumbnailURL: result.thumbnail,
-                    title: result.title,
-                    subtitle: resultSubtitle(result),
-                    badge: result.type,
-                    aspectRatio: 2 / 3,
-                    width: .infinity
-                ) {
-                    navigateToResult(result)
+                ZStack(alignment: .topTrailing) {
+                    GlassContentCard(
+                        thumbnailURL: result.thumbnail,
+                        title: result.title,
+                        subtitle: resultSubtitle(result),
+                        badge: result.type,
+                        subtitleFlags: result.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
+                        aspectRatio: 2 / 3,
+                        width: .infinity
+                    ) {
+                        navigateToResult(result)
+                    }
+
+                    if let languages = result.availableSubtitleLanguages, !languages.isEmpty {
+                        SubtitleFlagsPill(
+                            languages: languages,
+                            aiLanguages: aiLanguages(for: result),
+                            size: .small
+                        )
+                        .padding(DesignTokens.Spacing.xs)
+                    }
                 }
             }
         }
@@ -143,6 +155,17 @@ struct SearchView: View {
         if let year = result.year { parts.append(String(year)) }
         if let duration = result.duration { parts.append(duration) }
         return parts.isEmpty ? nil : parts.joined(separator: " | ")
+    }
+
+    private func aiLanguages(for result: SearchResult) -> Set<String> {
+        var aiLangs = Set<String>()
+        if result.availableSubtitleLanguages?.contains("he") == true {
+            aiLangs.insert("he")
+        }
+        if result.availableSubtitleLanguages?.contains("en") == true {
+            aiLangs.insert("en")
+        }
+        return aiLangs
     }
 
     private func navigateToResult(_ result: SearchResult) {

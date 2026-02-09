@@ -71,5 +71,8 @@ public struct GlassSearchBar: View {
         )
         .animation(.easeInOut(duration: 0.2), value: isFocused)
         .animation(.easeInOut(duration: 0.2), value: text.isEmpty)
+        #if os(tvOS)
+        .tvFocusStyle(scale: 1.02, shadowRadius: 6)
+        #endif
     }
 }

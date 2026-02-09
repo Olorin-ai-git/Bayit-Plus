@@ -14,16 +14,27 @@ struct CategoryRow: View {
                 .padding(.horizontal, DesignTokens.Spacing.lg)
 
             GlassCarousel(items: category.items, itemWidth: itemWidth) { item in
-                GlassContentCard(
-                    thumbnailURL: item.thumbnail,
-                    title: item.title,
-                    subtitle: itemSubtitle(for: item),
-                    badge: itemBadge(for: item),
-                    subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
-                    aspectRatio: itemAspectRatio(for: item),
-                    width: itemWidth
-                ) {
-                    navigateToItem(item)
+                ZStack(alignment: .topTrailing) {
+                    GlassContentCard(
+                        thumbnailURL: item.thumbnail,
+                        title: item.title,
+                        subtitle: itemSubtitle(for: item),
+                        badge: itemBadge(for: item),
+                        subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
+                        aspectRatio: itemAspectRatio(for: item),
+                        width: itemWidth
+                    ) {
+                        navigateToItem(item)
+                    }
+
+                    if let languages = item.availableSubtitleLanguages, !languages.isEmpty {
+                        SubtitleFlagsPill(
+                            languages: languages,
+                            aiLanguages: aiLanguages(for: item),
+                            size: .small
+                        )
+                        .padding(DesignTokens.Spacing.xs)
+                    }
                 }
             }
         }
@@ -70,6 +81,19 @@ struct CategoryRow: View {
             return "Series"
         }
         return nil
+    }
+
+    private func aiLanguages(for item: ContentItem) -> Set<String> {
+        var aiLangs = Set<String>()
+        // Assume Hebrew and English may have AI versions if available
+        // In production, this would check actual subtitle metadata
+        if item.availableSubtitleLanguages?.contains("he") == true {
+            aiLangs.insert("he")
+        }
+        if item.availableSubtitleLanguages?.contains("en") == true {
+            aiLangs.insert("en")
+        }
+        return aiLangs
     }
 
     private func navigateToItem(_ item: ContentItem) {

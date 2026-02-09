@@ -1,0 +1,99 @@
+#if os(iOS)
+import BayitCore
+import Foundation
+import Observation
+
+/// ViewModel for trivia facts - manages fact loading, active fact tracking, and auto-dismiss.
+/// Available on iOS only. Depends on OfflineCacheService.
+@Observable
+final class TriviaFactsViewModel {
+    private(set) var facts: [TriviaFact] = []
+    private(set) var activeFact: TriviaFact?
+    private(set) var isLoading = false
+    private(set) var error: String?
+
+    private let repository: any TriviaRepository
+    private let offlineCache: OfflineCacheService
+    private var autoDismissTask: Task<Void, Never>?
+    private let logger = BayitLogger(category: "TriviaFacts")
+    private let displayWindow: TimeInterval = 30.0 // Configurable display window
+
+    init(repository: any TriviaRepository, offlineCache: OfflineCacheService) {
+        self.repository = repository
+        self.offlineCache = offlineCache
+    }
+
+    @MainActor
+    func loadFacts(contentId: String, language: String?) async {
+        isLoading = true
+        error = nil
+
+        let cacheKey = "trivia_\(contentId)_\(language ?? "default")"
+
+        do {
+            let response = try await repository.fetchTrivia(
+                contentId: contentId,
+                language: language ?? "en"
+            )
+            facts = response.trivia
+
+            await offlineCache.save(response, forKey: cacheKey)
+
+            logger.info("Trivia facts loaded", context: [
+                "contentId": contentId,
+                "factCount": String(facts.count)
+            ])
+        } catch {
+            if let cached = await offlineCache.load(forKey: cacheKey, as: TriviaResponse.self) {
+                facts = cached.trivia
+                logger.info("Using cached trivia facts", context: ["contentId": contentId])
+            } else {
+                self.error = error.localizedDescription
+                logger.error("Failed to load trivia facts", error: error, context: [
+                    "contentId": contentId
+                ])
+            }
+        }
+
+        isLoading = false
+    }
+
+    @MainActor
+    func updateActiveFact(currentTime: Double) {
+        autoDismissTask?.cancel()
+
+        let currentFact = facts.first { fact in
+            guard let timestampStr = fact.timestamp,
+                  let timestamp = Double(timestampStr) else { return false }
+            let timeDiff = abs(currentTime - timestamp)
+            return timeDiff <= displayWindow
+        }
+
+        if currentFact?.id != activeFact?.id {
+            activeFact = currentFact
+
+            if activeFact != nil {
+                let duration: TimeInterval = 15.0
+                autoDismissTask = Task {
+                    try? await Task.sleep(for: .seconds(duration))
+                    if !Task.isCancelled {
+                        await self.dismissFact()
+                    }
+                }
+            }
+        }
+    }
+
+    @MainActor
+    func dismissFact() {
+        activeFact = nil
+        autoDismissTask?.cancel()
+    }
+
+    @MainActor
+    func cleanup() {
+        autoDismissTask?.cancel()
+        activeFact = nil
+    }
+}
+#endif

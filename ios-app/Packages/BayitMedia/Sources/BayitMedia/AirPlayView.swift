@@ -1,3 +1,4 @@
+#if os(iOS)
 import AVKit
 import SwiftUI
 import UIKit
@@ -6,6 +7,8 @@ import UIKit
 ///
 /// Ported from mobile-app/ios/BayitPlus/AirPlayPicker.swift,
 /// removing RCT bridge and converting to UIViewRepresentable.
+///
+/// Available on iOS only. tvOS manages AirPlay routing through the system.
 public struct AirPlayView: UIViewRepresentable {
 
     private let tintColor: UIColor
@@ -35,3 +38,4 @@ public struct AirPlayView: UIViewRepresentable {
         uiView.activeTintColor = activeTintColor
     }
 }
+#endif

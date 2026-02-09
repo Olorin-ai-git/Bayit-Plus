@@ -1,35 +1,45 @@
 import BayitCore
+import BayitNetworking
 import Foundation
 import Observation
 
 /// WebSocket service for real-time live dubbing audio and translation streams.
-///
-/// Connects to the live-dubbing/stream endpoint and receives audio data,
-/// translated text, and latency metrics via WebSocket messages.
+/// Implements auth-first protocol with token refresh and sync status reporting.
 @Observable
 final class LiveDubbingWebSocketService {
     private(set) var isConnected = false
     private(set) var latency: DubbingLatencyMessage?
     private(set) var currentAudio: DubbingAudioMessage?
+    private(set) var connectionInfo: DubbingConnectionMessage?
     private(set) var error: String?
 
     private var webSocketTask: URLSessionWebSocketTask?
+    private let urlSession: URLSession
     private let configuration: any EnvironmentConfiguration
+    private let authTokenProvider: AuthTokenProvider
     private let logger = BayitLogger(category: "LiveDubbingWebSocket")
 
-    init(configuration: any EnvironmentConfiguration) {
+    init(configuration: any EnvironmentConfiguration, authTokenProvider: AuthTokenProvider) {
         self.configuration = configuration
+        self.authTokenProvider = authTokenProvider
+        self.urlSession = URLSession(configuration: .default)
     }
 
     @MainActor
-    func connect(channelId: String, targetLanguage: String) {
+    func connect(channelId: String, targetLanguage: String, voiceId: String?) {
         let wsURL = configuration.webSocketBaseURL
             .appendingPathComponent("live-dubbing/stream")
         var urlComponents = URLComponents(url: wsURL, resolvingAgainstBaseURL: false)
-        urlComponents?.queryItems = [
+        var queryItems = [
             URLQueryItem(name: "channel_id", value: channelId),
-            URLQueryItem(name: "target_language", value: targetLanguage)
+            URLQueryItem(name: "target_language", value: targetLanguage),
+            URLQueryItem(name: "platform", value: "ios")
         ]
+        if let voiceId = voiceId {
+            queryItems.append(URLQueryItem(name: "voice_id", value: voiceId))
+        }
+        urlComponents?.queryItems = queryItems
+
         guard let url = urlComponents?.url else {
             error = "Failed to construct WebSocket URL"
             logger.error("Invalid WebSocket URL construction", context: [
@@ -39,16 +49,20 @@ final class LiveDubbingWebSocketService {
             return
         }
 
-        let session = URLSession(configuration: .default)
-        webSocketTask = session.webSocketTask(with: url)
+        webSocketTask = urlSession.webSocketTask(with: url)
         webSocketTask?.resume()
-        isConnected = true
-        error = nil
-        logger.info("WebSocket connected", context: [
-            "channelId": channelId,
-            "targetLanguage": targetLanguage
-        ])
+
+        Task {
+            await sendAuthMessage()
+        }
+
         receiveMessages()
+
+        logger.info("WebSocket connection initiated", context: [
+            "channelId": channelId,
+            "targetLanguage": targetLanguage,
+            "voiceId": voiceId ?? "default"
+        ])
     }
 
     @MainActor
@@ -56,7 +70,57 @@ final class LiveDubbingWebSocketService {
         webSocketTask?.cancel(with: .normalClosure, reason: nil)
         webSocketTask = nil
         isConnected = false
+        connectionInfo = nil
         logger.info("WebSocket disconnected")
+    }
+
+    @MainActor
+    func sendSyncStatus(currentVideoTimeMs: Int) {
+        guard isConnected else { return }
+
+        let message = DubbingSyncStatusMessage(currentVideoTimeMs: currentVideoTimeMs)
+        guard let data = try? JSONEncoder().encode(message),
+              let jsonString = String(data: data, encoding: .utf8) else {
+            return
+        }
+
+        webSocketTask?.send(.string(jsonString)) { error in
+            if let error = error {
+                Task { @MainActor in
+                    self.logger.error("Failed to send sync status", error: error)
+                }
+            }
+        }
+    }
+
+    private func sendAuthMessage() async {
+        guard let token = try? await authTokenProvider.currentToken() else {
+            await MainActor.run {
+                error = "No auth token available"
+                isConnected = false
+            }
+            return
+        }
+
+        let authMessage = DubbingWebSocketAuthMessage(token: token)
+        guard let data = try? JSONEncoder().encode(authMessage),
+              let jsonString = String(data: data, encoding: .utf8) else {
+            return
+        }
+
+        webSocketTask?.send(.string(jsonString)) { error in
+            if let error = error {
+                Task { @MainActor in
+                    self.error = "Authentication failed: \(error.localizedDescription)"
+                    self.isConnected = false
+                    self.logger.error("Auth message send failed", error: error)
+                }
+            } else {
+                Task { @MainActor in
+                    self.logger.info("Auth message sent")
+                }
+            }
+        }
     }
 
     private func receiveMessages() {
@@ -69,10 +133,7 @@ final class LiveDubbingWebSocketService {
                 Task { @MainActor in
                     self?.error = err.localizedDescription
                     self?.isConnected = false
-                    self?.logger.error(
-                        "WebSocket receive failed",
-                        error: err
-                    )
+                    self?.logger.error("WebSocket receive failed", error: err)
                 }
             }
         }
@@ -85,10 +146,27 @@ final class LiveDubbingWebSocketService {
             let decoder = JSONDecoder()
             decoder.keyDecodingStrategy = .convertFromSnakeCase
 
-            if let audio = try? decoder.decode(DubbingAudioMessage.self, from: data) {
+            // Try to decode as connection message first
+            if let conn = try? decoder.decode(DubbingConnectionMessage.self, from: data) {
+                Task { @MainActor in
+                    self.connectionInfo = conn
+                    self.isConnected = true
+                    self.error = nil
+                    self.logger.info("Connection established", context: [
+                        "sessionId": conn.sessionId ?? "unknown",
+                        "syncDelayMs": String(conn.syncDelayMs ?? 0)
+                    ])
+                }
+            } else if let audio = try? decoder.decode(DubbingAudioMessage.self, from: data) {
                 Task { @MainActor in self.currentAudio = audio }
             } else if let lat = try? decoder.decode(DubbingLatencyMessage.self, from: data) {
                 Task { @MainActor in self.latency = lat }
+            } else if text.contains("\"error\"") {
+                Task { @MainActor in
+                    self.error = "Server error received"
+                    self.isConnected = false
+                    self.logger.error("Server error message", context: ["message": text])
+                }
             }
         case .data:
             break

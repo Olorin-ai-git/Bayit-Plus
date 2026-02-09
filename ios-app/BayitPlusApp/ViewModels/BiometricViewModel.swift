@@ -1,3 +1,4 @@
+#if os(iOS)
 import Foundation
 import Observation
 import UIKit
@@ -7,6 +8,8 @@ import UIKit
 /// Coordinates between the on-device `BiometricAuthService` for local
 /// biometric evaluation and the `SecurityRepository` for persisting
 /// the biometric preference on the backend.
+///
+/// Available on iOS only. tvOS does not support biometric authentication.
 @Observable
 final class BiometricViewModel {
     private(set) var biometricType: BiometricAuthService.BiometricType = .none
@@ -107,3 +110,4 @@ final class BiometricViewModel {
         isProcessing = false
     }
 }
+#endif

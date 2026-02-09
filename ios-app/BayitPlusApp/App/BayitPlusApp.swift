@@ -48,7 +48,8 @@ struct BayitPlusApp: App {
         _repositories = State(initialValue: RepositoryProvider(
             client: client,
             webSocketManager: wsManager,
-            authTokenProvider: authMgr.authTokenProvider
+            authTokenProvider: authMgr.authTokenProvider,
+            configuration: appConfig
         ))
         _locationProvider = State(initialValue: locProvider)
     }

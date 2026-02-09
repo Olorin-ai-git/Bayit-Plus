@@ -4,7 +4,8 @@ import PackageDescription
 let package = Package(
     name: "BayitPlus",
     platforms: [
-        .iOS(.v17)
+        .iOS(.v17),
+        .tvOS(.v17)
     ],
     products: [
         .library(name: "BayitCore", targets: ["BayitCore"]),
@@ -88,6 +89,20 @@ let package = Package(
             name: "BayitAnalytics",
             dependencies: ["BayitCore"],
             path: "Packages/BayitAnalytics/Sources/BayitAnalytics"
+        ),
+
+        // MARK: - Tests
+
+        .testTarget(
+            name: "BayitCoreTests",
+            dependencies: ["BayitCore"],
+            path: "Packages/BayitCore/Tests/BayitCoreTests"
+        ),
+
+        .testTarget(
+            name: "BayitNetworkingTests",
+            dependencies: ["BayitNetworking", "BayitCore"],
+            path: "Packages/BayitNetworking/Tests/BayitNetworkingTests"
         ),
     ]
 )

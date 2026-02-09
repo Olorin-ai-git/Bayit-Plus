@@ -36,5 +36,8 @@ public struct GlassCard<Content: View>: View {
                 x: 0,
                 y: 2
             )
+            #if os(tvOS)
+            .tvFocusStyle()
+            #endif
     }
 }

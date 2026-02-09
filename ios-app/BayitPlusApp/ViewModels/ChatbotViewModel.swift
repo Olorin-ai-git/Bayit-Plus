@@ -1,3 +1,4 @@
+#if os(iOS)
 import AVFoundation
 import BayitCore
 import Foundation
@@ -6,6 +7,7 @@ import Speech
 import UIKit
 
 /// ViewModel for the AI chatbot conversation interface.
+/// Available on iOS only. Depends on Speech.framework for voice input.
 ///
 /// Manages message history, API communication, voice input via Speech framework,
 /// and contextual suggestions. Uses ChatRepository for all backend communication.
@@ -219,3 +221,4 @@ final class ChatbotViewModel {
         logger.info("Voice input stopped", context: ["transcript": voiceTranscript])
     }
 }
+#endif

@@ -1,3 +1,4 @@
+#if os(iOS)
 import BayitCore
 import Foundation
 import Observation
@@ -9,6 +10,9 @@ import Observation
 /// idle -> listening -> processing -> speaking -> idle
 ///
 /// Coordinates STT, TTS, WebSocket streaming, and intent routing.
+///
+/// Available on iOS only. tvOS does not support microphone input
+/// required for the speech recognition pipeline.
 @Observable
 @MainActor
 public final class VoiceOrchestrator {
@@ -264,6 +268,7 @@ public final class VoiceOrchestrator {
         ttsService.stop()
     }
 }
+#endif
 
 // MARK: - Voice Repository Protocol
 

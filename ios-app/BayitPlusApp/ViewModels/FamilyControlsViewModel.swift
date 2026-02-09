@@ -1,6 +1,8 @@
 import Foundation
 import Observation
+#if os(iOS)
 import UIKit
+#endif
 
 /// ViewModel for the Family Controls screen.
 ///
@@ -75,7 +77,9 @@ final class FamilyControlsViewModel {
             try await repository.setPin(FamilyPinRequest(pin: pin))
             isPinSet = true
             isPinVerified = true
+            #if os(iOS)
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            #endif
         } catch {
             self.error = error.localizedDescription
         }
@@ -99,10 +103,14 @@ final class FamilyControlsViewModel {
             )
             if response.valid == true {
                 isPinVerified = true
-                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                #if os(iOS)
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            #endif
             } else {
                 error = "Invalid PIN"
+                #if os(iOS)
                 UIImpactFeedbackGenerator(style: .heavy).impactOccurred()
+                #endif
             }
         } catch {
             self.error = error.localizedDescription
@@ -134,7 +142,9 @@ final class FamilyControlsViewModel {
             let saved = try await repository.updatePreferences(update)
             preferences = saved
             successMessage = "Settings saved"
+            #if os(iOS)
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            #endif
         } catch {
             self.error = error.localizedDescription
         }

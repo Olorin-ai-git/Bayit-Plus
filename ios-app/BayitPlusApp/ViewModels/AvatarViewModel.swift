@@ -1,3 +1,4 @@
+#if os(iOS)
 import AVFoundation
 import BayitCore
 import Foundation
@@ -7,6 +8,7 @@ import UIKit
 
 /// ViewModel managing the AI avatar experience including state, dialogue,
 /// voice recognition, TTS output, and user preferences.
+/// Available on iOS only. Depends on Speech.framework for voice input.
 @Observable
 final class AvatarViewModel {
 
@@ -242,3 +244,4 @@ private enum SpeechError: LocalizedError {
         }
     }
 }
+#endif

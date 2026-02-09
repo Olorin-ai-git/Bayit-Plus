@@ -1,3 +1,4 @@
+#if os(iOS)
 import Foundation
 import Observation
 import UIKit
@@ -6,6 +7,8 @@ import UIKit
 ///
 /// Uses the `PasskeyAuthService` for WebAuthn operations and the
 /// `PasskeyRepository` for backend CRUD operations on credentials.
+///
+/// Available on iOS only. Depends on PasskeyAuthService.
 @Observable
 final class PasskeyViewModel {
     private(set) var credentials: [PasskeyCredential] = []
@@ -88,3 +91,4 @@ final class PasskeyViewModel {
         isDeleting = false
     }
 }
+#endif

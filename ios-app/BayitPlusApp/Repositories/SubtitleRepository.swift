@@ -3,7 +3,8 @@ import Foundation
 
 /// Repository protocol for subtitle cues, translation, and preferences API operations.
 protocol SubtitleRepository: Sendable {
-    func fetchCues(contentId: String, language: String?, withNikud: Bool?) async throws -> SubtitleCuesResponse
+    func fetchCues(contentId: String, language: String?, hebrewMode: SubtitleHebrewMode?, englishMode: SubtitleEnglishMode?) async throws -> SubtitleCuesResponse
+    func fetchExternalSubtitles(contentId: String) async throws -> ExternalSubtitleImportResponse
     func translateWord(word: String, sourceLang: String?, targetLang: String?) async throws -> TranslationResult
     func translatePhrase(phrase: String, sourceLang: String?, targetLang: String?) async throws -> TranslationResult
     func fetchPreferences(contentId: String) async throws -> SubtitlePreferencesResponse
@@ -22,19 +23,31 @@ final class APISubtitleRepository: SubtitleRepository, @unchecked Sendable {
     func fetchCues(
         contentId: String,
         language: String?,
-        withNikud: Bool?
+        hebrewMode: SubtitleHebrewMode?,
+        englishMode: SubtitleEnglishMode?
     ) async throws -> SubtitleCuesResponse {
         var queryItems: [URLQueryItem] = []
         if let language {
             queryItems.append(URLQueryItem(name: "language", value: language))
         }
-        if let withNikud {
-            queryItems.append(URLQueryItem(name: "nikud", value: String(withNikud)))
+        if let hebrewMode {
+            queryItems.append(URLQueryItem(name: "hebrew_mode", value: hebrewMode.rawValue))
+        }
+        if let englishMode {
+            queryItems.append(URLQueryItem(name: "english_mode", value: englishMode.rawValue))
         }
         return try await client.get(
             "/api/v1/subtitles/\(contentId)/cues",
             queryItems: queryItems,
             as: SubtitleCuesResponse.self
+        )
+    }
+
+    func fetchExternalSubtitles(contentId: String) async throws -> ExternalSubtitleImportResponse {
+        return try await client.post(
+            "/api/v1/subtitles/\(contentId)/fetch-external",
+            body: EmptyRequest(),
+            as: ExternalSubtitleImportResponse.self
         )
     }
 
@@ -87,3 +100,7 @@ final class APISubtitleRepository: SubtitleRepository, @unchecked Sendable {
         )
     }
 }
+
+// MARK: - Helper Types
+
+private struct EmptyRequest: Encodable, Sendable {}

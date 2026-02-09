@@ -11,6 +11,10 @@ extension AuthManager {
     /// Initiates Google Sign-In via the Google SDK and Firebase Auth.
     /// After Firebase auth, exchanges the Google ID token with the backend
     /// for a backend-issued JWT.
+    ///
+    /// Available on iOS only. tvOS does not support the Google Sign-In
+    /// presenting flow that requires a UIViewController.
+    #if os(iOS)
     public func signInWithGoogle() async throws {
         isLoading = true
         error = nil
@@ -71,6 +75,7 @@ extension AuthManager {
             throw wrapped
         }
     }
+    #endif
 
     /// Initiates Apple Sign-In via ASAuthorizationController and Firebase Auth.
     /// After Firebase auth, exchanges the Apple identity token with the backend
@@ -201,7 +206,9 @@ extension AuthManager {
 
     // MARK: - Helpers
 
+    #if os(iOS)
     /// Resolves the current key window's root view controller for presenting sign-in UI.
+    /// Available on iOS only. tvOS uses a different presentation model.
     private func resolveRootViewController() async throws -> UIViewController {
         guard let windowScene = await MainActor.run(body: {
             UIApplication.shared.connectedScenes
@@ -219,4 +226,5 @@ extension AuthManager {
 
         return rootVC
     }
+    #endif
 }

@@ -8,16 +8,27 @@ struct SpotlightSection: View {
 
     var body: some View {
         GlassCarousel(items: items, itemWidth: 300) { item in
-            GlassContentCard(
-                thumbnailURL: item.backdrop ?? item.thumbnail,
-                title: item.title,
-                subtitle: spotlightSubtitle(for: item),
-                badge: item.isSeries == true ? "Series" : nil,
-                subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
-                aspectRatio: 16 / 9,
-                width: 300
-            ) {
-                navigateToItem(item)
+            ZStack(alignment: .topTrailing) {
+                GlassContentCard(
+                    thumbnailURL: item.backdrop ?? item.thumbnail,
+                    title: item.title,
+                    subtitle: spotlightSubtitle(for: item),
+                    badge: item.isSeries == true ? "Series" : nil,
+                    subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
+                    aspectRatio: 16 / 9,
+                    width: 300
+                ) {
+                    navigateToItem(item)
+                }
+
+                if let languages = item.availableSubtitleLanguages, !languages.isEmpty {
+                    SubtitleFlagsPill(
+                        languages: languages,
+                        aiLanguages: aiLanguages(for: item),
+                        size: .medium
+                    )
+                    .padding(DesignTokens.Spacing.sm)
+                }
             }
         }
     }
@@ -28,6 +39,17 @@ struct SpotlightSection: View {
         if let duration = item.duration { parts.append(duration) }
         if let rating = item.rating { parts.append(rating.value) }
         return parts.isEmpty ? nil : parts.joined(separator: " | ")
+    }
+
+    private func aiLanguages(for item: SpotlightItem) -> Set<String> {
+        var aiLangs = Set<String>()
+        if item.availableSubtitleLanguages?.contains("he") == true {
+            aiLangs.insert("he")
+        }
+        if item.availableSubtitleLanguages?.contains("en") == true {
+            aiLangs.insert("en")
+        }
+        return aiLangs
     }
 
     private func navigateToItem(_ item: SpotlightItem) {

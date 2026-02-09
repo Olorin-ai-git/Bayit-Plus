@@ -42,16 +42,27 @@ struct VODView: View {
     private func contentGrid(_ vm: VODViewModel) -> some View {
         LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
             ForEach(vm.items) { item in
-                GlassContentCard(
-                    thumbnailURL: item.thumbnail,
-                    title: item.title,
-                    subtitle: vodSubtitle(for: item),
-                    badge: item.isSeries == true ? "Series" : nil,
-                    subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
-                    aspectRatio: 2 / 3,
-                    width: .infinity
-                ) {
-                    navigateToItem(item)
+                ZStack(alignment: .topTrailing) {
+                    GlassContentCard(
+                        thumbnailURL: item.thumbnail,
+                        title: item.title,
+                        subtitle: vodSubtitle(for: item),
+                        badge: item.isSeries == true ? "Series" : nil,
+                        subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
+                        aspectRatio: 2 / 3,
+                        width: .infinity
+                    ) {
+                        navigateToItem(item)
+                    }
+
+                    if let languages = item.availableSubtitleLanguages, !languages.isEmpty {
+                        SubtitleFlagsPill(
+                            languages: languages,
+                            aiLanguages: aiLanguages(for: item),
+                            size: .small
+                        )
+                        .padding(DesignTokens.Spacing.xs)
+                    }
                 }
                 .onAppear {
                     if item.id == vm.items.last?.id {
@@ -88,6 +99,17 @@ struct VODView: View {
         if let year = item.year { parts.append(String(year)) }
         if let duration = item.duration { parts.append(duration) }
         return parts.isEmpty ? nil : parts.joined(separator: " | ")
+    }
+
+    private func aiLanguages(for item: ContentItem) -> Set<String> {
+        var aiLangs = Set<String>()
+        if item.availableSubtitleLanguages?.contains("he") == true {
+            aiLangs.insert("he")
+        }
+        if item.availableSubtitleLanguages?.contains("en") == true {
+            aiLangs.insert("en")
+        }
+        return aiLangs
     }
 
     private func navigateToItem(_ item: ContentItem) {

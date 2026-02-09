@@ -161,6 +161,8 @@ struct SearchResult: Decodable, Sendable, Identifiable {
     let year: Int?
     let category: String?
     let type: String?
+    let availableSubtitleLanguages: [String]?
+    let hasSubtitles: Bool?
 }
 
 /// Search request body
