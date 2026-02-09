@@ -2,9 +2,11 @@ import ActivityKit
 import BayitCore
 import BayitWidgetShared
 import Foundation
+import Observation
 
 /// Manages Live Activities for now-playing media on the Lock Screen
 /// and Dynamic Island.
+@Observable
 @MainActor
 final class LiveActivityManager {
 

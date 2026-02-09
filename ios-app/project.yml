@@ -135,6 +135,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: tv.bayit.plus.widgets
         PRODUCT_NAME: "Bayit+ Widgets"
         CODE_SIGN_ENTITLEMENTS: Extensions/WidgetExtension/BayitWidgets.entitlements
+        INFOPLIST_FILE: Extensions/WidgetExtension/Info.plist
+        GENERATE_INFOPLIST_FILE: "NO"
         SWIFT_VERSION: "5.9"
         IPHONEOS_DEPLOYMENT_TARGET: "17.0"
 

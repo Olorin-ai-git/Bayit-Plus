@@ -589,7 +589,7 @@ struct PlayerView: View {
 
     // MARK: - Helpers
 
-    private var mediaContentType: MediaContentType {
+    var mediaContentType: MediaContentType {
         switch contentType {
         case .live, .liveTV: return .liveTV
         case .radio: return .radio
