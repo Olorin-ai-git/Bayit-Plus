@@ -121,7 +121,9 @@ class LiveSubtitlePipeline:
 
                 # FINAL SUBTITLE: Yield translated subtitle
                 for i, trans_chunk in enumerate(translated_chunks):
-                    orig_chunk = original_chunks[i] if i < len(original_chunks) else ""
+                    # Clamp index so every final cue carries original text even
+                    # when the translation produces more chunks than the source.
+                    orig_chunk = original_chunks[min(i, len(original_chunks) - 1)]
                     # Stagger chunks by 0.3 seconds each for natural reading
                     chunk_timestamp = current_time + (i * 0.3)
 

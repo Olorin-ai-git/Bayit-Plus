@@ -23,6 +23,40 @@ enum BackendTokenExchangeClient {
         }
     }
 
+    struct LoginResponse: Decodable {
+        let accessToken: String
+        let refreshToken: String?
+        let user: BackendUserData
+
+        private enum CodingKeys: String, CodingKey {
+            case accessToken = "access_token"
+            case refreshToken = "refresh_token"
+            case user
+        }
+
+        struct BackendUserData: Decodable {
+            let id: String
+            let email: String
+            let name: String
+            let role: String
+            let isActive: Bool
+            let isBetaUser: Bool?
+            let isVerified: Bool?
+            let profileImageUrl: String?
+
+            private enum CodingKeys: String, CodingKey {
+                case id
+                case email
+                case name
+                case role
+                case isActive = "is_active"
+                case isBetaUser = "is_beta_user"
+                case isVerified = "is_verified"
+                case profileImageUrl = "profile_image_url"
+            }
+        }
+    }
+
     struct PasskeyAuthOptionsResponse: Decodable {
         let challenge: String
         let challengeId: String
@@ -90,12 +124,12 @@ enum BackendTokenExchangeClient {
     /// Authenticates with email and password directly with the backend.
     ///
     /// Calls `POST /api/v1/auth/login` on the backend, which returns
-    /// backend-issued JWTs directly (no provider token exchange needed).
+    /// backend-issued JWTs and user data directly (no provider token exchange needed).
     static func loginWithEmail(
         email: String,
         password: String,
         logger: APILogger
-    ) async throws -> TokenExchangeResponse {
+    ) async throws -> LoginResponse {
         let config = AppConfiguration()
         let url = config.apiBaseURL.appendingPathComponent("auth/login")
 
@@ -104,13 +138,29 @@ enum BackendTokenExchangeClient {
             "password": password,
         ]
 
-        return try await performExchange(
-            url: url,
-            body: body,
-            timeout: config.apiTimeout,
-            logger: logger,
-            provider: "email"
-        )
+        let bodyData = try JSONEncoder().encode(body)
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+        request.timeoutInterval = config.apiTimeout
+        request.httpBody = bodyData
+
+        logger.debug("Logging in with email", metadata: ["provider": "email"])
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.emailSignInFailed(underlying: "Invalid response type")
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+            throw AuthError.emailSignInFailed(underlying: "HTTP \(httpResponse.statusCode): \(errorMessage)")
+        }
+
+        return try JSONDecoder().decode(LoginResponse.self, from: data)
     }
 
     /// Refreshes a backend JWT using the refresh token.

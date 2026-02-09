@@ -149,10 +149,17 @@ final class LiveSubtitlesViewModel {
             // Partial (pre-translation) cues only carry source-language text.
             // Update the original pane immediately; the translated pane waits
             // for the final subtitle so it never shows the wrong language.
-            originalCueText = cue.originalText
+            if let original = cue.originalText, !original.isEmpty {
+                originalCueText = original
+            }
         } else {
             activeCueText = cue.text ?? ""
-            originalCueText = cue.originalText
+            // Only update original if non-empty; translated text may produce
+            // more chunks than the source, leaving trailing chunks with no
+            // paired original text.
+            if let original = cue.originalText, !original.isEmpty {
+                originalCueText = original
+            }
         }
         showOverlay = true
 

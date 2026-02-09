@@ -153,8 +153,9 @@ extension AuthManager {
         }
     }
 
-    /// Signs in with email and password via both the backend API and Firebase Auth.
-    /// The backend login endpoint returns a JWT directly, so no token exchange is needed.
+    /// Signs in with email and password via the backend API only.
+    /// The backend login endpoint returns a JWT directly, so no Firebase or token exchange is needed.
+    /// Firebase Auth is skipped for email/password since the backend is the authoritative source.
     public func signInWithEmail(email: String, password: String) async throws {
         isLoading = true
         error = nil
@@ -162,32 +163,58 @@ extension AuthManager {
         do {
             try Task.checkCancellation()
 
-            // First authenticate with Firebase (for Firebase state tracking)
-            let authResult = try await Auth.auth().signIn(
-                withEmail: email,
-                password: password
-            )
-
-            // Then authenticate with the backend to get a backend JWT
-            // The backend /auth/login endpoint returns JWT directly
-            let backendResponse = try await BackendTokenExchangeClient.loginWithEmail(
+            // Authenticate with the backend to get JWT and user data
+            // The backend /auth/login endpoint returns JWT and user data directly
+            let loginResponse = try await BackendTokenExchangeClient.loginWithEmail(
                 email: email,
                 password: password,
                 logger: logger
             )
 
-            // Handle Firebase result with the backend tokens
-            try await handleFirebaseAuthResult(
-                authResult,
-                providerToken: .emailPassword(
-                    accessToken: backendResponse.accessToken,
-                    refreshToken: backendResponse.refreshToken
-                )
+            // Store backend tokens in keychain
+            try keychainService.save(
+                token: loginResponse.accessToken,
+                for: backendTokenKeychainKey
             )
+            if let refresh = loginResponse.refreshToken {
+                try keychainService.save(
+                    token: refresh,
+                    for: refreshTokenKeychainKey
+                )
+            }
+
+            // Build BayitUser from login response
+            let bayitUser = BayitUser(
+                id: loginResponse.user.id,
+                email: loginResponse.user.email,
+                displayName: loginResponse.user.name,
+                photoURL: loginResponse.user.profileImageUrl != nil ? URL(string: loginResponse.user.profileImageUrl!) : nil,
+                role: UserRole(rawValue: loginResponse.user.role) ?? .user,
+                isActive: loginResponse.user.isActive,
+                subscription: nil,
+                isBetaUser: loginResponse.user.isBetaUser ?? false,
+                isVerified: loginResponse.user.isVerified ?? false,
+                createdAt: nil,
+                lastLogin: nil
+            )
+
+            // Cache user data in Keychain
+            if let userData = try? JSONEncoder().encode(bayitUser) {
+                try? keychainService.save(
+                    token: String(data: userData, encoding: .utf8) ?? "",
+                    for: userKeychainKey
+                )
+            }
+
+            // Update state
+            user = bayitUser
+            token = loginResponse.accessToken
+            stampSessionTimestamp()
+            isLoading = false
 
             logger.info(
                 "Email sign-in succeeded",
-                metadata: ["user_id": authResult.user.uid]
+                metadata: ["user_id": bayitUser.id]
             )
         } catch is CancellationError {
             isLoading = false
