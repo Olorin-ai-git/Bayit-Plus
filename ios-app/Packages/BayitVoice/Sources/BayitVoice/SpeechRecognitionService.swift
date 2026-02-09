@@ -169,6 +169,7 @@ public final class SpeechRecognitionService: Sendable {
 }
 #endif
 
+#if os(iOS)
 // MARK: - Errors
 
 public enum SpeechError: Error, LocalizedError, Sendable {
@@ -193,3 +194,4 @@ public enum SpeechError: Error, LocalizedError, Sendable {
         }
     }
 }
+#endif

@@ -41,13 +41,13 @@ struct TVSearchView: View {
             }
             .task {
                 if viewModel == nil {
-                    viewModel = SearchViewModel(repository: repos.content)
+                    viewModel = SearchViewModel(searchRepository: repos.search)
                 }
             }
         }
     }
 
-    private func resultsGrid(_ results: [SearchResult]) -> some View {
+    private func resultsGrid(_ results: [UnifiedSearchResult]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
             Text("\(results.count) Results")
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
@@ -60,7 +60,7 @@ struct TVSearchView: View {
                         thumbnailURL: result.thumbnail,
                         title: result.title ?? "Untitled",
                         subtitle: resultSubtitle(result),
-                        badge: result.type,
+                        badge: result.contentType,
                         aspectRatio: 2 / 3
                     )
                 }
@@ -112,7 +112,7 @@ struct TVSearchView: View {
         .frame(maxWidth: .infinity, minHeight: 400)
     }
 
-    private func resultSubtitle(_ result: SearchResult) -> String? {
+    private func resultSubtitle(_ result: UnifiedSearchResult) -> String? {
         var parts: [String] = []
         if let year = result.year { parts.append(String(year)) }
         if let duration = result.duration { parts.append(duration) }

@@ -4,15 +4,16 @@ Scans all VOD content for missing metadata and enriches it using TMDB API
 """
 
 import asyncio
+import re
 import sys
+import traceback
 from pathlib import Path
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+# Add backend directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
 
 import logging
 
-from app.api.routes.content.utils import is_series_content
 from app.core.config import settings
 from app.models.content import Content
 from app.services.tmdb_service import tmdb_service
@@ -24,14 +25,81 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Regex patterns for episode title formats
+EPISODE_TITLE_PATTERNS = [
+    # "SeriesName-Season1-Episode5" or "SeriesName-S01-E05"
+    re.compile(
+        r"^(.+?)[-_ ]*(?:Season|S)\s*\d+[-_ ]*(?:Episode|E|Ep)\s*\d+",
+        re.IGNORECASE,
+    ),
+    # "SeriesName S01E05"
+    re.compile(r"^(.+?)[-_ ]*S\d+E\d+", re.IGNORECASE),
+    # "SeriesName - Episode 5" or "SeriesName Episode 5"
+    re.compile(r"^(.+?)[-_ ]*(?:Episode|Ep)\s*\d+", re.IGNORECASE),
+]
 
-async def connect_db():
-    """Connect to MongoDB"""
-    client = AsyncIOMotorClient(settings.MONGODB_URL)
+
+def extract_series_name(title: str) -> str:
+    """
+    Extract the series name from an episode title.
+    e.g. "HaBurganim-Season1-Episode5" -> "HaBurganim"
+         "The Son-Season1-Episode2" -> "The Son"
+         "Rain Dogs-Season1-Episode1" -> "Rain Dogs"
+    Falls back to original title if no pattern matches.
+    """
+    for pattern in EPISODE_TITLE_PATTERNS:
+        match = pattern.match(title)
+        if match:
+            series_name = match.group(1).strip().rstrip("-_ ")
+            if series_name:
+                return series_name
+    return title
+
+
+def is_episode_content(content: Content) -> bool:
+    """Check if content is an individual episode (not a series parent)."""
+    if content.content_type and content.content_type.lower() == "episode":
+        return True
+    if content.episode is not None:
+        return True
+    if content.series_id:
+        return True
+    return False
+
+
+def is_series_type(content: Content) -> bool:
+    """
+    Determine if content is series-type using category_name and content_type.
+    The is_series field was removed; we use category and structural fields.
+    """
+    # Check content_type field
+    ct = (content.content_type or "").lower()
+    if ct in ("series", "episode"):
+        return True
+
+    # Check category_name for series keywords
+    cat = (content.category_name or "").lower()
+    series_keywords = ["series", "סדרות", "israeli series", "סדרות ישראליות"]
+    if any(kw in cat for kw in series_keywords):
+        return True
+
+    # Check structural fields
+    if content.season is not None or content.series_id:
+        return True
+    if content.total_episodes and content.total_episodes > 0:
+        return True
+
+    return False
+
+
+async def connect_db() -> AsyncIOMotorClient:
+    """Connect to MongoDB and return the client."""
+    client = AsyncIOMotorClient(settings.MONGODB_URI)
     database = client[settings.MONGODB_DB_NAME]
 
     await init_beanie(database=database, document_models=[Content])
-    logger.info("✅ Connected to MongoDB")
+    logger.info("Connected to MongoDB")
+    return client
 
 
 def needs_enrichment(content: Content) -> tuple[bool, list[str]]:
@@ -73,129 +141,173 @@ def needs_enrichment(content: Content) -> tuple[bool, list[str]]:
     return len(missing) > 0, missing
 
 
-async def enrich_content(content: Content, dry_run: bool = False) -> bool:
+async def save_updates(
+    content: Content, updated_fields_map: dict, db_client: AsyncIOMotorClient
+) -> bool:
+    """
+    Save updated fields using direct MongoDB $set instead of Beanie save().
+    This avoids full-document replace which can trigger validation/index conflicts.
+    """
+    if not updated_fields_map:
+        return False
+
+    db = db_client[settings.MONGODB_DB_NAME]
+    result = await db.content.update_one(
+        {"_id": content.id},
+        {"$set": updated_fields_map},
+    )
+    return result.modified_count > 0
+
+
+async def enrich_content(
+    content: Content, db_client: AsyncIOMotorClient, dry_run: bool = False
+) -> bool:
     """
     Enrich a single content item with TMDB metadata.
     Returns True if successful, False otherwise.
     """
     try:
-        logger.info(f"📝 Processing: {content.title} (ID: {content.id})")
+        logger.info(f"Processing: {content.title} (ID: {content.id})")
 
-        # Determine content type
-        is_series = is_series_content(content.model_dump()) or content.season is not None
+        is_series = is_series_type(content)
+        is_episode = is_episode_content(content)
+
+        # For episodes, extract the series name for TMDB search
+        search_title = content.title
+        if is_episode:
+            extracted = extract_series_name(content.title)
+            if extracted != content.title:
+                logger.info(
+                    f"   Episode detected - extracted series name: '{extracted}'"
+                )
+                search_title = extracted
+
+        # Use title_en if the primary title is non-Latin (Hebrew, etc.)
+        if content.title_en and not search_title[0].isascii():
+            search_title = content.title_en
+            logger.info(f"   Using English title for TMDB search: '{search_title}'")
 
         # Fetch metadata from TMDB
-        if is_series:
-            logger.info(f"   🎬 Fetching TV series metadata for: {content.title}")
+        if is_series or is_episode:
+            logger.info(f"   Fetching TV series metadata for: {search_title}")
             metadata = await tmdb_service.enrich_series_content(
-                title=content.title, year=content.year
+                title=search_title, year=content.year
             )
         else:
-            logger.info(f"   🎬 Fetching movie metadata for: {content.title}")
+            logger.info(f"   Fetching movie metadata for: {search_title}")
             metadata = await tmdb_service.enrich_movie_content(
-                title=content.title, year=content.year
+                title=search_title, year=content.year
             )
 
         if not metadata.get("tmdb_id"):
-            logger.warning(f"   ⚠️  No TMDB results found for: {content.title}")
+            logger.warning(f"   No TMDB results found for: {search_title}")
             return False
 
-        # Update fields
-        updated_fields = []
+        # Build $set update map (only changed fields)
+        updates = {}
+        updated_field_names = []
 
         if metadata.get("tmdb_id") and not content.tmdb_id:
-            content.tmdb_id = metadata["tmdb_id"]
-            updated_fields.append("tmdb_id")
+            updates["tmdb_id"] = metadata["tmdb_id"]
+            updated_field_names.append("tmdb_id")
 
         if metadata.get("imdb_id") and not content.imdb_id:
-            content.imdb_id = metadata["imdb_id"]
-            updated_fields.append("imdb_id")
+            updates["imdb_id"] = metadata["imdb_id"]
+            updated_field_names.append("imdb_id")
 
         if metadata.get("overview") and not content.description:
-            content.description = metadata["overview"]
-            updated_fields.append("description")
+            updates["description"] = metadata["overview"]
+            updated_field_names.append("description")
 
         if metadata.get("poster") and not content.poster_url:
-            content.poster_url = metadata["poster"]
-            # Also set as thumbnail if missing
+            updates["poster_url"] = metadata["poster"]
             if not content.thumbnail:
-                content.thumbnail = metadata["poster"]
-            updated_fields.append("poster/thumbnail")
+                updates["thumbnail"] = metadata["poster"]
+            updated_field_names.append("poster/thumbnail")
 
         if metadata.get("backdrop") and not content.backdrop:
-            content.backdrop = metadata["backdrop"]
-            updated_fields.append("backdrop")
+            updates["backdrop"] = metadata["backdrop"]
+            updated_field_names.append("backdrop")
 
         if metadata.get("genres") and (not content.genres or len(content.genres) == 0):
-            content.genres = metadata["genres"]
-            # Set primary genre as well
+            updates["genres"] = metadata["genres"]
             if metadata["genres"]:
-                content.genre = metadata["genres"][0]
-            updated_fields.append("genres")
+                updates["genre"] = metadata["genres"][0]
+            updated_field_names.append("genres")
 
         if metadata.get("cast") and (not content.cast or len(content.cast) == 0):
-            content.cast = metadata["cast"]
-            updated_fields.append("cast")
+            updates["cast"] = metadata["cast"]
+            updated_field_names.append("cast")
 
         if metadata.get("director") and not content.director:
-            content.director = metadata["director"]
-            updated_fields.append("director")
+            updates["director"] = metadata["director"]
+            updated_field_names.append("director")
 
         if metadata.get("imdb_rating") is not None and content.imdb_rating is None:
-            content.imdb_rating = metadata["imdb_rating"]
-            updated_fields.append("imdb_rating")
+            updates["imdb_rating"] = metadata["imdb_rating"]
+            updated_field_names.append("imdb_rating")
 
         if metadata.get("imdb_votes") is not None and content.imdb_votes is None:
-            content.imdb_votes = metadata["imdb_votes"]
-            updated_fields.append("imdb_votes")
+            updates["imdb_votes"] = metadata["imdb_votes"]
+            updated_field_names.append("imdb_votes")
 
         if metadata.get("release_year") and not content.year:
-            content.year = metadata["release_year"]
-            updated_fields.append("year")
+            updates["year"] = metadata["release_year"]
+            updated_field_names.append("year")
 
         if metadata.get("trailer_url") and not content.trailer_url:
-            content.trailer_url = metadata["trailer_url"]
-            updated_fields.append("trailer")
+            updates["trailer_url"] = metadata["trailer_url"]
+            updated_field_names.append("trailer")
 
         if metadata.get("runtime") and not content.duration:
-            # Convert runtime minutes to HH:MM:SS format
             runtime_min = metadata["runtime"]
             hours = runtime_min // 60
             minutes = runtime_min % 60
-            content.duration = f"{hours}:{minutes:02d}:00"
-            updated_fields.append("duration")
+            updates["duration"] = f"{hours}:{minutes:02d}:00"
+            updated_field_names.append("duration")
 
-        # Series-specific fields
-        if is_series:
+        # Series-specific fields (only for parent series, not episodes)
+        if is_series and not is_episode:
             if metadata.get("total_seasons") and not content.total_seasons:
-                content.total_seasons = metadata["total_seasons"]
-                updated_fields.append("total_seasons")
+                updates["total_seasons"] = metadata["total_seasons"]
+                updated_field_names.append("total_seasons")
 
             if metadata.get("total_episodes") and not content.total_episodes:
-                content.total_episodes = metadata["total_episodes"]
-                updated_fields.append("total_episodes")
+                updates["total_episodes"] = metadata["total_episodes"]
+                updated_field_names.append("total_episodes")
 
-        # Set content type
+        # Set content type if missing
         if not content.content_type:
-            content.content_type = "series" if is_series else "movie"
-            updated_fields.append("content_type")
+            if is_episode:
+                updates["content_type"] = "episode"
+            elif is_series:
+                updates["content_type"] = "series"
+            else:
+                updates["content_type"] = "movie"
+            updated_field_names.append("content_type")
 
-        if not updated_fields:
-            logger.info(f"   ℹ️  No updates needed for: {content.title}")
+        if not updates:
+            logger.info(f"   No updates needed for: {content.title}")
             return False
 
-        logger.info(f"   ✅ Updated fields: {', '.join(updated_fields)}")
+        logger.info(f"   Updated fields: {', '.join(updated_field_names)}")
 
         if not dry_run:
-            await content.save()
-            logger.info(f"   💾 Saved to database")
+            saved = await save_updates(content, updates, db_client)
+            if saved:
+                logger.info("   Saved to database")
+            else:
+                logger.warning("   No document modified (already up to date)")
         else:
-            logger.info(f"   🔍 DRY RUN - No changes saved")
+            logger.info("   DRY RUN - No changes saved")
 
         return True
 
     except Exception as e:
-        logger.error(f"   ❌ Error enriching {content.title}: {str(e)}")
+        logger.error(
+            f"   Error enriching {content.title}: {type(e).__name__}: {repr(e)}"
+        )
+        logger.debug(traceback.format_exc())
         return False
 
 
@@ -208,13 +320,13 @@ async def main(dry_run: bool = False, limit: int = None):
         limit: Maximum number of items to process (None for all)
     """
     try:
-        await connect_db()
+        db_client = await connect_db()
 
         # Query all content (excluding audiobooks and podcasts)
-        logger.info("🔍 Scanning VOD library...")
+        logger.info("Scanning VOD library...")
 
         all_content = await Content.find_all().to_list()
-        logger.info(f"📊 Total content items: {len(all_content)}")
+        logger.info(f"Total content items: {len(all_content)}")
 
         # Filter content that needs enrichment (exclude audiobooks and podcasts)
         needs_update = []
@@ -231,12 +343,14 @@ async def main(dry_run: bool = False, limit: int = None):
                 needs_update.append((content, missing))
 
         if excluded_count > 0:
-            logger.info(f"⏭️  Excluded {excluded_count} audiobooks/podcasts from enrichment")
+            logger.info(
+                f"Excluded {excluded_count} audiobooks/podcasts from enrichment"
+            )
 
-        logger.info(f"📋 Content needing enrichment: {len(needs_update)}")
+        logger.info(f"Content needing enrichment: {len(needs_update)}")
 
         if not needs_update:
-            logger.info("✨ All content already has complete metadata!")
+            logger.info("All content already has complete metadata!")
             return
 
         # Show summary
@@ -244,7 +358,7 @@ async def main(dry_run: bool = False, limit: int = None):
         logger.info("ENRICHMENT SUMMARY")
         logger.info("=" * 80)
         for content, missing in needs_update[:10]:  # Show first 10
-            logger.info(f"  • {content.title}: Missing {', '.join(missing)}")
+            logger.info(f"  {content.title}: Missing {', '.join(missing)}")
         if len(needs_update) > 10:
             logger.info(f"  ... and {len(needs_update) - 10} more")
         logger.info("=" * 80 + "\n")
@@ -252,7 +366,7 @@ async def main(dry_run: bool = False, limit: int = None):
         # Apply limit if specified
         if limit:
             needs_update = needs_update[:limit]
-            logger.info(f"🎯 Processing first {limit} items")
+            logger.info(f"Processing first {limit} items")
 
         # Process each content
         success_count = 0
@@ -262,7 +376,7 @@ async def main(dry_run: bool = False, limit: int = None):
         for idx, (content, missing) in enumerate(needs_update, 1):
             logger.info(f"\n[{idx}/{len(needs_update)}] {'-'*60}")
 
-            success = await enrich_content(content, dry_run=dry_run)
+            success = await enrich_content(content, db_client, dry_run=dry_run)
 
             if success:
                 success_count += 1
@@ -278,18 +392,19 @@ async def main(dry_run: bool = False, limit: int = None):
         logger.info("\n" + "=" * 80)
         logger.info("ENRICHMENT COMPLETE")
         logger.info("=" * 80)
-        logger.info(f"✅ Successfully enriched: {success_count}")
-        logger.info(f"❌ Failed: {failed_count}")
-        logger.info(f"⏭️  Skipped (no changes): {skipped_count}")
-        logger.info(f"📊 Total processed: {len(needs_update)}")
+        logger.info(f"Successfully enriched: {success_count}")
+        logger.info(f"Failed: {failed_count}")
+        logger.info(f"Skipped (no changes): {skipped_count}")
+        logger.info(f"Total processed: {len(needs_update)}")
         logger.info("=" * 80)
 
         if dry_run:
-            logger.info("\n🔍 DRY RUN MODE - No changes were saved to database")
+            logger.info("\nDRY RUN MODE - No changes were saved to database")
             logger.info("Run without --dry-run to apply changes")
 
     except Exception as e:
-        logger.error(f"❌ Fatal error: {str(e)}")
+        logger.error(f"Fatal error: {type(e).__name__}: {repr(e)}")
+        logger.error(traceback.format_exc())
         raise
     finally:
         await tmdb_service.close()

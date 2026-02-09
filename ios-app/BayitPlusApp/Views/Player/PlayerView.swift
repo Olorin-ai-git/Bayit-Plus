@@ -1,4 +1,5 @@
 import AVKit
+import BayitAuth
 import BayitDesignSystem
 import BayitMedia
 import BayitVoice
@@ -13,6 +14,7 @@ struct PlayerView: View {
 
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(RepositoryProvider.self) fileprivate var repositories
+    @Environment(AuthManager.self) private var authManager
 
     @State private var viewModel: MediaPlayerViewModel
     @State private var showControls = true
@@ -27,6 +29,18 @@ struct PlayerView: View {
     @State private var subtitleLoadTask: Task<Void, Never>?
     @State private var triviaVM: TriviaFactsViewModel?
     @State private var liveDubbingVM: LiveDubbingViewModel?
+
+    // Recording state
+    @State private var isRecording = false
+    @State private var recordingSessionId: String?
+    @State private var recordingStartTime: Date?
+    @State private var recordingDuration: TimeInterval = 0
+    @State private var recordingTimer: Task<Void, Never>?
+    @State private var showRecordingError = false
+    @State private var recordingErrorMessage: String?
+
+    // Dubbing controls state
+    @State private var showDubbingControls = false
 
     // Split subtitle state
     @State fileprivate var splitModeEnabled = false
@@ -74,7 +88,7 @@ struct PlayerView: View {
             }
 
             // Trivia overlay (above video, below subtitles)
-            if let vm = triviaVM, !mediaContentType.isLive {
+            if let vm = triviaVM {
                 TriviaFactsOverlayView(
                     viewModel: vm,
                     contentId: contentId,
@@ -84,7 +98,7 @@ struct PlayerView: View {
                 )
             }
 
-            // Subtitle overlay (above trivia, below controls)
+            // Subtitle overlay (above trivia, below dubbing/controls)
             if let vm = subtitlesVM, let lang = selectedSubtitleLanguage {
                 InteractiveSubtitlesOverlay(
                     viewModel: vm,
@@ -95,6 +109,16 @@ struct PlayerView: View {
                     repository: repositories.subtitle
                 )
                 .allowsHitTesting(showControls)
+            }
+
+            // Live dubbing overlay (above subtitles, below controls)
+            if let vm = liveDubbingVM, vm.isEnabled, vm.showOverlay {
+                LiveDubbingOverlayView(
+                    originalText: vm.overlayText,
+                    translatedText: vm.translatedText,
+                    isVisible: vm.showOverlay
+                )
+                .allowsHitTesting(false)
             }
 
             // Split subtitle overlay (side-by-side dual subtitles)
@@ -117,6 +141,33 @@ struct PlayerView: View {
                 controlsOverlay
             }
 
+            // Recording indicator overlay
+            if isRecording {
+                VStack {
+                    HStack {
+                        Spacer()
+                        GlassCard(radius: DesignTokens.Radius.md, padding: DesignTokens.Spacing.sm) {
+                            HStack(spacing: DesignTokens.Spacing.xs) {
+                                Circle()
+                                    .fill(Color.red)
+                                    .frame(width: 8, height: 8)
+                                    .opacity(0.8)
+                                    .animation(
+                                        .easeInOut(duration: 1.0).repeatForever(autoreverses: true),
+                                        value: isRecording
+                                    )
+                                Text(formatRecordingDuration(recordingDuration))
+                                    .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                                    .foregroundStyle(.white)
+                            }
+                        }
+                        .padding(.trailing, DesignTokens.Spacing.base)
+                    }
+                    .padding(.top, DesignTokens.Spacing.base)
+                    Spacer()
+                }
+            }
+
             // Subtitle picker overlay
             if showSubtitlePicker {
                 subtitlePickerOverlay
@@ -136,6 +187,8 @@ struct PlayerView: View {
             remoteCommandService.unregister()
             controlsTimer?.cancel()
             subtitleLoadTask?.cancel()
+            recordingTimer?.cancel()
+            triviaVM?.disconnectLiveTrivia()
         }
         .onChange(of: viewModel.player.currentTime) { _, _ in
             updateNowPlaying()
@@ -156,6 +209,20 @@ struct PlayerView: View {
             )
             .presentationDetents([.large])
             .presentationDragIndicator(.visible)
+        }
+        .sheet(isPresented: $showDubbingControls) {
+            if let vm = liveDubbingVM, mediaContentType.isLive {
+                LiveDubbingControlsView(viewModel: vm, channelId: contentId)
+                    .presentationDetents([.medium, .large])
+                    .presentationDragIndicator(.visible)
+            }
+        }
+        .alert("Recording Error", isPresented: $showRecordingError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            if let message = recordingErrorMessage {
+                Text(message)
+            }
         }
     }
 
@@ -301,6 +368,7 @@ struct PlayerView: View {
 
             subtitleToggle
             splitSubtitleToggle
+            recordingButton
             dubbingToggle
 
             AirPlayView()
@@ -341,26 +409,51 @@ struct PlayerView: View {
 
     // MARK: - Dubbing
 
-    private var dubbingToggle: some View {
+    // MARK: - Recording Button
+
+    private var recordingButton: some View {
         Button {
-            isDubbingEnabled.toggle()
             Task {
-                if isDubbingEnabled {
-                    await dubbingMixer.configureAudioSession()
+                if isRecording {
+                    await stopRecording()
                 } else {
-                    await dubbingMixer.stopPlayback()
+                    await startRecording()
                 }
             }
         } label: {
-            Image(systemName: isDubbingEnabled ? "waveform.fill" : "waveform")
+            Image(systemName: isRecording ? "circle.fill" : "circle")
+                .font(.system(size: 18))
+                .foregroundStyle(isRecording ? Color.red : .white)
+                .frame(width: 44, height: 44)
+                .overlay {
+                    if isRecording {
+                        Circle()
+                            .stroke(Color.red, lineWidth: 2)
+                            .scaleEffect(1.2)
+                            .opacity(0.5)
+                            .animation(
+                                .easeInOut(duration: 1.0).repeatForever(autoreverses: true),
+                                value: isRecording
+                            )
+                    }
+                }
+        }
+        .accessibilityLabel(isRecording ? "Stop recording" : "Start recording")
+    }
+
+    private var dubbingToggle: some View {
+        Button {
+            showDubbingControls = true
+        } label: {
+            Image(systemName: liveDubbingVM?.isEnabled == true ? "waveform.fill" : "waveform")
                 .font(.system(size: 18))
                 .foregroundStyle(
-                    isDubbingEnabled ? DesignTokens.Primary.p400 : .white
+                    liveDubbingVM?.isEnabled == true ? DesignTokens.Primary.p400 : .white
                 )
                 .frame(width: 44, height: 44)
         }
         .accessibilityLabel("Live dubbing")
-        .accessibilityValue(isDubbingEnabled ? "On" : "Off")
+        .accessibilityValue(liveDubbingVM?.isEnabled == true ? "On" : "Off")
     }
 
     // MARK: - Subtitles
@@ -429,24 +522,36 @@ struct PlayerView: View {
     }
 
     private func initializeViewModels() {
-        // Initialize trivia for VOD content
-        if !mediaContentType.isLive {
-            triviaVM = TriviaFactsViewModel(
-                repository: repositories.trivia,
-                offlineCache: repositories.offlineCache
-            )
-        }
+        // Initialize trivia for ALL content (VOD and live)
+        triviaVM = TriviaFactsViewModel(
+            repository: repositories.trivia,
+            offlineCache: repositories.offlineCache
+        )
 
-        // Initialize live dubbing for live content
+        // Initialize live dubbing and trivia for live content
         if mediaContentType.isLive {
-            let wsService = LiveDubbingWebSocketService(
+            // Dubbing WebSocket
+            let dubbingWS = LiveDubbingWebSocketService(
                 configuration: repositories.configuration,
                 authTokenProvider: repositories.authTokenProvider
             )
             liveDubbingVM = LiveDubbingViewModel(
                 repository: repositories.liveDubbing,
-                webSocketService: wsService
+                webSocketService: dubbingWS
             )
+
+            // Trivia WebSocket
+            if let triviaVM = triviaVM {
+                let triviaWS = LiveTriviaWebSocketService(
+                    configuration: repositories.configuration,
+                    authTokenProvider: repositories.authTokenProvider
+                )
+                triviaVM.connectLiveTrivia(
+                    channelId: contentId,
+                    language: selectedSubtitleLanguage ?? "en",
+                    webSocketService: triviaWS
+                )
+            }
         }
     }
 
@@ -552,6 +657,91 @@ struct PlayerView: View {
         } catch {
             print("Failed to load \(language) cues: \(error)")
             return []
+        }
+    }
+
+    // MARK: - Recording
+
+    private func startRecording() async {
+        // Premium check
+        guard let user = authManager.user,
+              user.subscriptionTier.isPremium else {
+            recordingErrorMessage = "Premium subscription required"
+            showRecordingError = true
+            return
+        }
+
+        // Live content check
+        guard mediaContentType.isLive else {
+            recordingErrorMessage = "Recording is only available for live channels"
+            showRecordingError = true
+            return
+        }
+
+        do {
+            let request = RecordingStartRequest(
+                channelId: contentId,
+                programId: nil,
+                duration: nil
+            )
+            let response = try await repositories.user.startRecording(request: request)
+
+            if let sessionId = response.recordingId {
+                isRecording = true
+                recordingSessionId = sessionId
+                recordingStartTime = Date()
+                startRecordingTimer()
+            } else {
+                recordingErrorMessage = response.message ?? "Failed to start recording"
+                showRecordingError = true
+            }
+
+        } catch {
+            recordingErrorMessage = "Failed to start recording: \(error.localizedDescription)"
+            showRecordingError = true
+        }
+    }
+
+    private func stopRecording() async {
+        guard let sessionId = recordingSessionId else { return }
+
+        do {
+            _ = try await repositories.user.stopRecording(recordingId: sessionId)
+
+            isRecording = false
+            recordingSessionId = nil
+            recordingStartTime = nil
+            recordingDuration = 0
+            recordingTimer?.cancel()
+
+        } catch {
+            recordingErrorMessage = "Failed to stop recording: \(error.localizedDescription)"
+            showRecordingError = true
+        }
+    }
+
+    private func startRecordingTimer() {
+        recordingTimer = Task {
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(1))
+                if let startTime = recordingStartTime {
+                    await MainActor.run {
+                        recordingDuration = Date().timeIntervalSince(startTime)
+                    }
+                }
+            }
+        }
+    }
+
+    private func formatRecordingDuration(_ duration: TimeInterval) -> String {
+        let hours = Int(duration) / 3600
+        let minutes = (Int(duration) % 3600) / 60
+        let seconds = Int(duration) % 60
+
+        if hours > 0 {
+            return String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+        } else {
+            return String(format: "%02d:%02d", minutes, seconds)
         }
     }
 }

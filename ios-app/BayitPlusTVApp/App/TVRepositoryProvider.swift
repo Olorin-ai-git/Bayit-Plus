@@ -23,6 +23,19 @@ final class TVRepositoryProvider {
     let audiobook: any AudiobookRepository
     let trendingRepo: any TrendingRepository
     let llmSearch: any LLMSearchRepository
+    let podcasts: any PodcastRepository
+    let user: any UserRepository
+    let betaCredits: any BetaCreditsRepository
+    let culture: any CultureRepository
+    let trivia: any TriviaRepository
+    let friends: any FriendsRepository
+    let reward: any RewardRepository
+    let search: any SearchRepository
+    let watchParty: any WatchPartyRepository
+    let household: any HouseholdRepository
+    let news: any NewsRepository
+    let stats: any StatsRepository
+    let security: any SecurityRepository
     let authTokenProvider: AuthTokenProvider
 
     init(
@@ -44,6 +57,19 @@ final class TVRepositoryProvider {
         self.audiobook = APIAudiobookRepository(client: client)
         self.trendingRepo = APITrendingRepository(client: client)
         self.llmSearch = APILLMSearchRepository(client: client)
+        self.podcasts = APIPodcastRepository(client: client)
+        self.user = APIUserRepository(client: client)
+        self.betaCredits = APIBetaCreditsRepository(client: client)
+        self.culture = APICultureRepository(client: client)
+        self.trivia = APITriviaRepository(client: client)
+        self.friends = APIFriendsRepository(client: client)
+        self.reward = APIRewardRepository(client: client)
+        self.search = APISearchRepository(client: client)
+        self.watchParty = APIWatchPartyRepository(client: client)
+        self.household = APIHouseholdRepository(client: client)
+        self.news = APINewsRepository(client: client)
+        self.stats = APIStatsRepository(client: client)
+        self.security = APISecurityRepository(client: client)
         self.authTokenProvider = authTokenProvider
     }
 }

@@ -29,7 +29,20 @@ class EPGService:
             timezone: Timezone for time calculations (default: UTC)
 
         Returns:
-            Dictionary with programs and channels
+            Dictionary with channels array containing programs grouped by channel
+            Matches iOS EPGResponse structure:
+            {
+                "channels": [
+                    {
+                        "id": "...",
+                        "channelId": "...",
+                        "channelName": "...",
+                        "channelLogo": "...",
+                        "programs": [...]
+                    }
+                ],
+                "date": "2026-02-09"
+            }
         """
         # Calculate default time window if not provided
         if start_time is None:
@@ -61,18 +74,33 @@ class EPGService:
                 await LiveChannel.find({"is_active": True}).sort("order").to_list()
             )
 
-        # Convert to dict format
-        programs_data = [self._program_to_dict(program) for program in programs]
-        channels_data = [self._channel_to_dict(channel) for channel in channels]
+        # Group programs by channel_id
+        programs_by_channel: Dict[str, List[Dict[str, Any]]] = {}
+        for program in programs:
+            channel_id = program.channel_id
+            if channel_id not in programs_by_channel:
+                programs_by_channel[channel_id] = []
+            programs_by_channel[channel_id].append(self._program_to_dict(program))
 
+        # Build channel schedules (iOS EPGChannelSchedule structure)
+        channel_schedules = []
+        for channel in channels:
+            channel_id = str(channel.id)
+            channel_programs = programs_by_channel.get(channel_id, [])
+
+            channel_schedule = {
+                "id": channel_id,
+                "channelId": channel_id,
+                "channelName": channel.name or channel.name_en,
+                "channelLogo": channel.logo or channel.thumbnail,
+                "programs": channel_programs,
+            }
+            channel_schedules.append(channel_schedule)
+
+        # Return iOS-compatible structure
         return {
-            "programs": programs_data,
-            "channels": channels_data,
-            "current_time": datetime.utcnow().isoformat(),
-            "time_window": {
-                "start": start_time.isoformat(),
-                "end": end_time.isoformat(),
-            },
+            "channels": channel_schedules,
+            "date": start_time.strftime("%Y-%m-%d"),
         }
 
     async def search_epg(
@@ -197,27 +225,28 @@ class EPGService:
         return self._program_to_dict(program) if program else None
 
     def _program_to_dict(self, program: EPGEntry) -> Dict[str, Any]:
-        """Convert EPGEntry to dictionary"""
+        """
+        Convert EPGEntry to dictionary matching iOS EPGProgram structure
+
+        Uses camelCase for iOS Swift codegen compatibility
+        """
+        now = datetime.utcnow()
         return {
             "id": str(program.id),
-            "channel_id": program.channel_id,
+            "channelId": program.channel_id,
+            "channelName": None,  # Channel name populated at schedule level
             "title": program.title,
             "description": program.description,
-            "start_time": program.start_time.isoformat(),
-            "end_time": program.end_time.isoformat(),
-            "duration_seconds": int(
-                (program.end_time - program.start_time).total_seconds()
-            ),
-            "category": program.category,
             "thumbnail": program.thumbnail,
-            "cast": program.cast or [],
-            "genres": program.genres or [],
+            "startTime": program.start_time.isoformat(),
+            "endTime": program.end_time.isoformat(),
+            "duration": int((program.end_time - program.start_time).total_seconds()),
+            "genre": program.genres[0] if program.genres else None,
+            "category": program.category,
             "rating": program.rating,
-            "director": program.director,
-            "recording_id": program.recording_id,
-            "is_past": program.end_time < datetime.utcnow(),
-            "is_now": program.start_time <= datetime.utcnow() <= program.end_time,
-            "is_future": program.start_time > datetime.utcnow(),
+            "isLive": program.start_time <= now <= program.end_time,
+            "hasRecording": program.recording_id is not None,
+            "hasCatchUp": False,  # Catch-up availability checked separately
         }
 
     def _channel_to_dict(self, channel: LiveChannel) -> Dict[str, Any]:

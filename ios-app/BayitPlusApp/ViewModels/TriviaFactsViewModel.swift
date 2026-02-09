@@ -17,6 +17,7 @@ final class TriviaFactsViewModel {
     private var autoDismissTask: Task<Void, Never>?
     private let logger = BayitLogger(category: "TriviaFacts")
     private let displayWindow: TimeInterval = 30.0 // Configurable display window
+    private var liveWebSocketService: LiveTriviaWebSocketService?
 
     init(repository: any TriviaRepository, offlineCache: OfflineCacheService) {
         self.repository = repository
@@ -94,6 +95,37 @@ final class TriviaFactsViewModel {
     func cleanup() {
         autoDismissTask?.cancel()
         activeFact = nil
+    }
+
+    func connectLiveTrivia(channelId: String, language: String, webSocketService: LiveTriviaWebSocketService) {
+        self.liveWebSocketService = webSocketService
+
+        webSocketService.onFactReceived = { [weak self] fact in
+            Task { @MainActor in
+                self?.facts.append(fact)
+                self?.displayFact(fact)
+            }
+        }
+
+        webSocketService.connect(channelId: channelId, targetLanguage: language)
+    }
+
+    func disconnectLiveTrivia() {
+        liveWebSocketService?.disconnect()
+        liveWebSocketService = nil
+    }
+
+    @MainActor
+    private func displayFact(_ fact: TriviaFact) {
+        activeFact = fact
+
+        let duration: TimeInterval = 15.0
+        autoDismissTask = Task {
+            try? await Task.sleep(for: .seconds(duration))
+            if !Task.isCancelled {
+                await self.dismissFact()
+            }
+        }
     }
 }
 #endif

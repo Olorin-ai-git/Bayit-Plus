@@ -11,93 +11,87 @@ struct TVMainTabView: View {
 
         TabView(selection: $coord.selectedTab) {
             TVHomeView()
-                .tabItem {
-                    Label(TVTab.home.title, systemImage: TVTab.home.iconName)
-                }
+                .tabItem { Label(TVTab.home.title, systemImage: TVTab.home.iconName) }
                 .tag(TVTab.home)
 
             TVLiveTVView()
-                .tabItem {
-                    Label(TVTab.liveTV.title, systemImage: TVTab.liveTV.iconName)
-                }
+                .tabItem { Label(TVTab.liveTV.title, systemImage: TVTab.liveTV.iconName) }
                 .tag(TVTab.liveTV)
 
             TVVODView()
-                .tabItem {
-                    Label(TVTab.vod.title, systemImage: TVTab.vod.iconName)
-                }
+                .tabItem { Label(TVTab.vod.title, systemImage: TVTab.vod.iconName) }
                 .tag(TVTab.vod)
 
             TVPodcastsView()
-                .tabItem {
-                    Label(TVTab.podcasts.title, systemImage: TVTab.podcasts.iconName)
-                }
+                .tabItem { Label(TVTab.podcasts.title, systemImage: TVTab.podcasts.iconName) }
                 .tag(TVTab.podcasts)
 
             TVAudiobooksView()
-                .tabItem {
-                    Label(TVTab.audiobooks.title, systemImage: TVTab.audiobooks.iconName)
-                }
+                .tabItem { Label(TVTab.audiobooks.title, systemImage: TVTab.audiobooks.iconName) }
                 .tag(TVTab.audiobooks)
 
             TVChildrenView()
-                .tabItem {
-                    Label(TVTab.children.title, systemImage: TVTab.children.iconName)
-                }
+                .tabItem { Label(TVTab.children.title, systemImage: TVTab.children.iconName) }
                 .tag(TVTab.children)
 
             TVJudaismView()
-                .tabItem {
-                    Label(TVTab.judaism.title, systemImage: TVTab.judaism.iconName)
-                }
+                .tabItem { Label(TVTab.judaism.title, systemImage: TVTab.judaism.iconName) }
                 .tag(TVTab.judaism)
 
             TVFlowsView()
-                .tabItem {
-                    Label(TVTab.flows.title, systemImage: TVTab.flows.iconName)
-                }
+                .tabItem { Label(TVTab.flows.title, systemImage: TVTab.flows.iconName) }
                 .tag(TVTab.flows)
 
+            TVCultureView()
+                .tabItem { Label(TVTab.culture.title, systemImage: TVTab.culture.iconName) }
+                .tag(TVTab.culture)
+
             TVHouseholdView()
-                .tabItem {
-                    Label(TVTab.household.title, systemImage: TVTab.household.iconName)
-                }
+                .tabItem { Label(TVTab.household.title, systemImage: TVTab.household.iconName) }
                 .tag(TVTab.household)
 
             TVRecordingsView()
-                .tabItem {
-                    Label(TVTab.recordings.title, systemImage: TVTab.recordings.iconName)
-                }
+                .tabItem { Label(TVTab.recordings.title, systemImage: TVTab.recordings.iconName) }
                 .tag(TVTab.recordings)
 
             TVEPGView()
-                .tabItem {
-                    Label(TVTab.epg.title, systemImage: TVTab.epg.iconName)
-                }
+                .tabItem { Label(TVTab.epg.title, systemImage: TVTab.epg.iconName) }
                 .tag(TVTab.epg)
 
             TVFavoritesView()
-                .tabItem {
-                    Label(TVTab.favorites.title, systemImage: TVTab.favorites.iconName)
-                }
+                .tabItem { Label(TVTab.favorites.title, systemImage: TVTab.favorites.iconName) }
                 .tag(TVTab.favorites)
 
             TVWatchPartyView()
-                .tabItem {
-                    Label(TVTab.watchParty.title, systemImage: TVTab.watchParty.iconName)
-                }
+                .tabItem { Label(TVTab.watchParty.title, systemImage: TVTab.watchParty.iconName) }
                 .tag(TVTab.watchParty)
 
+            TVTriviaView()
+                .tabItem { Label(TVTab.trivia.title, systemImage: TVTab.trivia.iconName) }
+                .tag(TVTab.trivia)
+
+            TVFriendsView()
+                .tabItem { Label(TVTab.friends.title, systemImage: TVTab.friends.iconName) }
+                .tag(TVTab.friends)
+
+            TVRewardsView()
+                .tabItem { Label(TVTab.rewards.title, systemImage: TVTab.rewards.iconName) }
+                .tag(TVTab.rewards)
+
+            TVBetaCreditsView()
+                .tabItem { Label(TVTab.betaCredits.title, systemImage: TVTab.betaCredits.iconName) }
+                .tag(TVTab.betaCredits)
+
             TVSearchView()
-                .tabItem {
-                    Label(TVTab.search.title, systemImage: TVTab.search.iconName)
-                }
+                .tabItem { Label(TVTab.search.title, systemImage: TVTab.search.iconName) }
                 .tag(TVTab.search)
 
+            TVProfileView()
+                .tabItem { Label(TVTab.profile.title, systemImage: TVTab.profile.iconName) }
+                .tag(TVTab.profile)
+
             TVSettingsView()
-                .tabItem {
-                    Label(TVTab.settings.title, systemImage: TVTab.settings.iconName)
-                }
+                .tabItem { Label(TVTab.settings.title, systemImage: TVTab.settings.iconName) }
                 .tag(TVTab.settings)
         }
     }

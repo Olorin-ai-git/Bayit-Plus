@@ -101,7 +101,7 @@ public final class NavigationCoordinator {
              .helpCenter, .rewards, .passkeyManagement, .onboardingAI,
              .friends, .watchParty, .watchPartyDetail,
              .chess, .directMessages, .conversation,
-             .mfaSetup:
+             .mfaSetup, .phoneVerification:
             pushToCurrentTab(route)
         }
     }

@@ -102,6 +102,7 @@ struct SearchView: View {
         } else if !vm.results.isEmpty {
             resultsHeader(vm)
             SearchResultsGridView(results: vm.results) { route in
+                coordinator.dismissFullscreen()
                 coordinator.navigate(to: route)
             }
         } else if vm.hasSearched {

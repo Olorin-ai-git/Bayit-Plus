@@ -34,6 +34,7 @@ def get_current_premium_user(
 
 @router.get("")
 async def get_epg_data(
+    date: Optional[str] = Query(None),
     channel_ids: Optional[List[str]] = Query(None),
     start_time: Optional[str] = Query(None),
     end_time: Optional[str] = Query(None),
@@ -44,17 +45,18 @@ async def get_epg_data(
     Get EPG data for specified channels and time range
 
     Query Parameters:
+    - date: Date in YYYY-MM-DD format (returns full day schedule)
     - channel_ids: Optional list of channel IDs (comma-separated)
     - start_time: ISO 8601 datetime string (default: now - 2 hours)
     - end_time: ISO 8601 datetime string (default: now + 4 hours)
     - timezone: Timezone name (default: UTC)
 
-    Returns:
-    - programs: List of EPG programs
-    - channels: List of live channels
-    - current_time: Current server time (UTC)
-    - time_window: Requested time window
+    Returns iOS-compatible structure:
+    - channels: Array of channel schedules with programs grouped by channel
+    - date: Request date (YYYY-MM-DD)
     """
+    from datetime import timedelta
+
     epg_service = EPGService()
 
     # Parse datetime strings
@@ -62,14 +64,21 @@ async def get_epg_data(
     end_dt = None
 
     try:
-        if start_time:
-            start_dt = datetime.fromisoformat(start_time.replace("Z", "+00:00"))
-        if end_time:
-            end_dt = datetime.fromisoformat(end_time.replace("Z", "+00:00"))
+        # If date parameter provided (iOS format: yyyy-MM-dd), get full day schedule
+        if date:
+            date_obj = datetime.strptime(date, "%Y-%m-%d")
+            start_dt = date_obj.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_dt = start_dt + timedelta(days=1)
+        else:
+            # Otherwise use start_time/end_time if provided
+            if start_time:
+                start_dt = datetime.fromisoformat(start_time.replace("Z", "+00:00"))
+            if end_time:
+                end_dt = datetime.fromisoformat(end_time.replace("Z", "+00:00"))
     except ValueError as e:
         raise HTTPException(
             status_code=400,
-            detail=f"Invalid datetime format. Use ISO 8601 format. Error: {str(e)}",
+            detail=f"Invalid date/time format. Use YYYY-MM-DD for date or ISO 8601 for timestamps. Error: {str(e)}",
         )
 
     # Fetch EPG data

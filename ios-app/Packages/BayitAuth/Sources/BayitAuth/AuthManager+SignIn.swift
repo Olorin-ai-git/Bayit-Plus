@@ -1,7 +1,9 @@
 import Foundation
 import UIKit
 import FirebaseAuth
+#if canImport(GoogleSignIn)
 import GoogleSignIn
+#endif
 import AuthenticationServices
 
 // MARK: - Sign-In Methods

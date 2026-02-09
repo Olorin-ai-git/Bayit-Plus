@@ -1,3 +1,4 @@
+#if os(iOS)
 import UIKit
 
 /// Centralized haptic feedback service providing impact, notification,
@@ -19,3 +20,4 @@ enum HapticFeedbackService {
         UISelectionFeedbackGenerator().selectionChanged()
     }
 }
+#endif

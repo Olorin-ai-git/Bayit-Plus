@@ -85,7 +85,7 @@ struct MFASetupView: View {
             VStack(spacing: DesignTokens.Spacing.md) {
                 HStack(spacing: DesignTokens.Spacing.sm) {
                     Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundColor(DesignTokens.WarningColor.default)
+                        .foregroundColor(DesignTokens.Warning.default)
                     Text(localization.t("mfa.phoneVerificationRequired"))
                         .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
                         .foregroundColor(DesignTokens.Text.primary)

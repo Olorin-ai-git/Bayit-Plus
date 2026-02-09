@@ -30,7 +30,8 @@ final class SearchViewModel {
         self.recentSearchesService = recentSearchesService
     }
 
-    /// Load trending searches from API and recent from UserDefaults on view appear.
+    /// Load trending searches from API and recent from UserDefaults on view appear,
+    /// then trigger an initial browse-all search.
     @MainActor
     func loadInitialData() async {
         recentSearches = recentSearchesService.load()
@@ -40,6 +41,8 @@ final class SearchViewModel {
         } catch {
             logger.error("Failed to load trending searches", error: error)
         }
+
+        await performSearch()
     }
 
     /// Debounced handler for query text changes.
@@ -47,15 +50,6 @@ final class SearchViewModel {
     @MainActor
     func onQueryChanged() {
         searchTask?.cancel()
-
-        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        if trimmed.isEmpty {
-            results = []
-            totalResults = 0
-            hasSearched = false
-            return
-        }
 
         searchTask = Task {
             try? await Task.sleep(for: debounceInterval)
@@ -70,9 +64,6 @@ final class SearchViewModel {
         guard filter != selectedFilter else { return }
         selectedFilter = filter
         searchTask?.cancel()
-
-        let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
 
         searchTask = Task {
             await performSearch()
@@ -111,7 +102,6 @@ final class SearchViewModel {
     @MainActor
     private func performSearch() async {
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmedQuery.isEmpty else { return }
 
         isSearching = true
         error = nil
@@ -124,10 +114,16 @@ final class SearchViewModel {
                 limit: 30
             )
             if !Task.isCancelled {
-                results = response.results
-                totalResults = response.total
+                var filteredResults = response.results
+                if selectedFilter == .vod {
+                    filteredResults = filteredResults.filter { $0.isSeries != true }
+                }
+                results = filteredResults
+                totalResults = filteredResults.count
                 hasSearched = true
-                recentSearches = recentSearchesService.save(trimmedQuery, existing: recentSearches)
+                if !trimmedQuery.isEmpty {
+                    recentSearches = recentSearchesService.save(trimmedQuery, existing: recentSearches)
+                }
             }
         } catch is CancellationError {
             return

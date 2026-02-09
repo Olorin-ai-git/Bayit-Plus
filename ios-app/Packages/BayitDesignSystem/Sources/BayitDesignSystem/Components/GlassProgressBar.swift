@@ -68,7 +68,9 @@ public struct GlassProgressBar: View {
             }
             .frame(height: thumbSize)
             .contentShape(Rectangle())
+            #if !os(tvOS)
             .gesture(seekGesture(width: width))
+            #endif
             .onAppear { barWidth = width }
             .onChange(of: geometry.size.width) { _, newWidth in
                 barWidth = newWidth
@@ -78,6 +80,7 @@ public struct GlassProgressBar: View {
         .animation(.easeInOut(duration: 0.15), value: isDragging)
     }
 
+    #if !os(tvOS)
     private func seekGesture(width: CGFloat) -> some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
@@ -93,6 +96,7 @@ public struct GlassProgressBar: View {
                 onSeekEnd?(fraction)
             }
     }
+    #endif
 
     private func clamp(_ value: Double) -> Double {
         min(max(value, 0), 1)

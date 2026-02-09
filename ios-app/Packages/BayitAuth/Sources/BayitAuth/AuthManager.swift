@@ -1,7 +1,9 @@
 import Foundation
 import UIKit
 import FirebaseAuth
+#if canImport(GoogleSignIn)
 import GoogleSignIn
+#endif
 import BayitCore
 import BayitNetworking
 
@@ -83,7 +85,9 @@ public final class AuthManager {
     public func signOut() async {
         do {
             try Auth.auth().signOut()
+            #if canImport(GoogleSignIn)
             GIDSignIn.sharedInstance.signOut()
+            #endif
         } catch {
             logger.error(
                 "Sign-out encountered an error",

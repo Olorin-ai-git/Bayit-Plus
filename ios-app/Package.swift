@@ -43,7 +43,11 @@ let package = Package(
                 "BayitCore",
                 "BayitNetworking",
                 .product(name: "FirebaseAuth", package: "firebase-ios-sdk"),
-                .product(name: "GoogleSignIn", package: "GoogleSignIn-iOS"),
+                .product(
+                    name: "GoogleSignIn",
+                    package: "GoogleSignIn-iOS",
+                    condition: .when(platforms: [.iOS])
+                ),
             ],
             path: "Packages/BayitAuth/Sources/BayitAuth"
         ),

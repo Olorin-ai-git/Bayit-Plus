@@ -78,9 +78,15 @@ public struct GlassShadowModifier: ViewModifier {
 public struct VisualEffectBlur: UIViewRepresentable {
     let style: UIBlurEffect.Style
 
+    #if os(tvOS)
+    public init(style: UIBlurEffect.Style = .dark) {
+        self.style = style
+    }
+    #else
     public init(style: UIBlurEffect.Style = .systemUltraThinMaterialDark) {
         self.style = style
     }
+    #endif
 
     public func makeUIView(context: Context) -> UIVisualEffectView {
         UIVisualEffectView(effect: UIBlurEffect(style: style))
@@ -91,13 +97,21 @@ public struct VisualEffectBlur: UIViewRepresentable {
     }
 }
 
+// MARK: - Platform Default Blur Style
+
+#if os(tvOS)
+public let defaultGlassBlurStyle: UIBlurEffect.Style = .dark
+#else
+public let defaultGlassBlurStyle: UIBlurEffect.Style = .systemUltraThinMaterialDark
+#endif
+
 // MARK: - View Extensions
 
 extension View {
     /// Apply glass background with configurable opacity and blur
     public func glassBackground(
         opacity: Double = 0.6,
-        blur: UIBlurEffect.Style = .systemUltraThinMaterialDark
+        blur: UIBlurEffect.Style = defaultGlassBlurStyle
     ) -> some View {
         modifier(GlassBackgroundModifier(opacity: opacity, blurStyle: blur))
     }
