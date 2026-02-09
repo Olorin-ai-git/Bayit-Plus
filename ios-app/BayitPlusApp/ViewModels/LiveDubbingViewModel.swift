@@ -14,6 +14,7 @@ final class LiveDubbingViewModel {
     private(set) var syncDelayMs: Int = 0
     private(set) var qualityTier: DubbingQualityTier?
     private(set) var isEnabled = false
+    private(set) var isConnecting = false
     private(set) var selectedLanguage: String = "en"
     private(set) var isLoading = false
     private(set) var error: String?
@@ -87,15 +88,18 @@ final class LiveDubbingViewModel {
         if isEnabled {
             webSocketService.disconnect()
             isEnabled = false
+            isConnecting = false
             showOverlay = false
             overlayDismissTask?.cancel()
         } else {
+            isConnecting = true
             webSocketService.connect(
                 channelId: channelId,
                 targetLanguage: selectedLanguage,
                 voiceId: selectedVoice?.id
             )
             isEnabled = true
+            observeConnection()
         }
     }
 
@@ -152,6 +156,23 @@ final class LiveDubbingViewModel {
             try? await Task.sleep(for: overlayDuration)
             if !Task.isCancelled {
                 self.showOverlay = false
+            }
+        }
+    }
+
+    private func observeConnection() {
+        Task { @MainActor in
+            // Poll WebSocket isConnected until connected or disabled
+            while isConnecting && isEnabled {
+                if webSocketService.isConnected {
+                    isConnecting = false
+                    return
+                }
+                if webSocketService.error != nil {
+                    isConnecting = false
+                    return
+                }
+                try? await Task.sleep(for: .milliseconds(100))
             }
         }
     }

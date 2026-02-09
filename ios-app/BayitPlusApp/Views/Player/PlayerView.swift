@@ -1,6 +1,7 @@
 import AVKit
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import BayitVoice
 import SwiftUI
@@ -15,6 +16,8 @@ struct PlayerView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(RepositoryProvider.self) var repositories
     @Environment(AuthManager.self) private var authManager
+    @Environment(LocalizationManager.self) private var localization
+    @Environment(\.scenePhase) private var scenePhase
 
     @State private var viewModel: MediaPlayerViewModel
     @State private var showControls = true
@@ -23,12 +26,12 @@ struct PlayerView: View {
     @State private var remoteCommandService = RemoteCommandService()
     @State private var dubbingMixer = DubbingMixer()
     @State private var isDubbingEnabled = false
-    @State private var showSubtitlePicker = false
+    @State var showSubtitlePicker = false
     @State private var subtitlesVM: InteractiveSubtitlesViewModel?
-    @State private var selectedSubtitleLanguage: String?
+    @State var selectedSubtitleLanguage: String?
     @State private var subtitleLoadTask: Task<Void, Never>?
-    @State private var triviaVM: TriviaFactsViewModel?
-    @State private var liveDubbingVM: LiveDubbingViewModel?
+    @State var triviaVM: TriviaFactsViewModel?
+    @State var liveDubbingVM: LiveDubbingViewModel?
 
     // Recording state
     @State private var isRecording = false
@@ -40,7 +43,10 @@ struct PlayerView: View {
     @State private var recordingErrorMessage: String?
 
     // Dubbing controls state
-    @State private var showDubbingControls = false
+    @State var showDubbingControls = false
+
+    // AI panel state
+    @State var showAIPanel = false
 
     // Split subtitle state
     @State var splitModeEnabled = false
@@ -48,6 +54,10 @@ struct PlayerView: View {
     @State var showSplitLanguagePicker = false
     @State var primarySubtitleCues: [SubtitleCue] = []
     @State var secondarySubtitleCues: [SubtitleCue] = []
+
+    // PiP state
+    @State private var isPiPActive = false
+    @State private var pipController = PiPController()
 
     let contentId: String
     let contentType: ContentType
@@ -177,8 +187,13 @@ struct PlayerView: View {
         .task {
             await viewModel.load()
             initializeViewModels()
+            setupPiP()
         }
         .onDisappear {
+            pipController.stop()
+            pipController.onDidStart = nil
+            pipController.onDidStop = nil
+            pipController.onRestoreUserInterface = nil
             Task {
                 await viewModel.cleanup()
                 await dubbingMixer.cleanup()
@@ -192,6 +207,14 @@ struct PlayerView: View {
         }
         .onChange(of: viewModel.player.currentTime) { _, _ in
             updateNowPlaying()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .background,
+               PiPController.isSupported,
+               viewModel.player.avPlayer.currentItem != nil,
+               !isPiPActive {
+                pipController.start()
+            }
         }
         .sheet(isPresented: $showSplitLanguagePicker) {
             SplitSubtitleLanguagePickerView(
@@ -332,6 +355,10 @@ struct PlayerView: View {
         VStack {
             topBar
             Spacer()
+            if mediaContentType.isLive {
+                glassAIFeaturesPanel
+                    .padding(.bottom, DesignTokens.Spacing.sm)
+            }
             GlassPlayerControls(
                 isPlaying: viewModel.player.state == .playing,
                 isLive: mediaContentType.isLive,
@@ -377,24 +404,25 @@ struct PlayerView: View {
 
             Spacer()
 
-            subtitleToggle
-            splitSubtitleToggle
             recordingButton
-            dubbingToggle
 
             AirPlayView()
                 .frame(width: 36, height: 36)
 
             if PiPController.isSupported {
                 Button {
-                    // PiP handled via AVPlayerViewController's built-in support
+                    pipController.toggle()
                 } label: {
-                    Image(systemName: "pip.enter")
+                    Image(systemName: isPiPActive ? "pip.exit" : "pip.enter")
                         .font(.system(size: 18))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(isPiPActive ? DesignTokens.Primary.p400 : .white)
                         .frame(width: 44, height: 44)
                 }
-                .accessibilityLabel("Picture in Picture")
+                .accessibilityLabel(
+                    isPiPActive
+                        ? localization.t("exitPiP")
+                        : localization.t("enterPiP")
+                )
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.base)
@@ -452,50 +480,7 @@ struct PlayerView: View {
         .accessibilityLabel(isRecording ? "Stop recording" : "Start recording")
     }
 
-    private var dubbingToggle: some View {
-        Button {
-            showDubbingControls = true
-        } label: {
-            Image(systemName: liveDubbingVM?.isEnabled == true ? "waveform.fill" : "waveform")
-                .font(.system(size: 18))
-                .foregroundStyle(
-                    liveDubbingVM?.isEnabled == true ? DesignTokens.Primary.p400 : .white
-                )
-                .frame(width: 44, height: 44)
-        }
-        .accessibilityLabel("Live dubbing")
-        .accessibilityValue(liveDubbingVM?.isEnabled == true ? "On" : "Off")
-    }
-
     // MARK: - Subtitles
-
-    private var subtitleToggle: some View {
-        Button {
-            withAnimation(.spring(duration: 0.3)) {
-                showSubtitlePicker = true
-            }
-        } label: {
-            ZStack(alignment: .bottomTrailing) {
-                Image(systemName: selectedSubtitleLanguage != nil ? "captions.bubble.fill" : "captions.bubble")
-                    .font(.system(size: 18))
-                    .foregroundStyle(
-                        selectedSubtitleLanguage != nil ? DesignTokens.Primary.p400 : .white
-                    )
-                    .frame(width: 44, height: 44)
-
-                // Show flag emoji when subtitle is selected
-                if let language = selectedSubtitleLanguage {
-                    Text(SubtitleLanguages.emojiFlag(for: language))
-                        .font(.system(size: 12))
-                        .offset(x: 4, y: 4)
-                }
-            }
-        }
-        .accessibilityLabel("Subtitles")
-        .accessibilityValue(
-            selectedSubtitleLanguage.flatMap { SubtitleLanguages.info(for: $0)?.name } ?? "Off"
-        )
-    }
 
     private var availableSubtitleLanguages: [String] {
         viewModel.availableSubtitleLanguages
@@ -513,7 +498,7 @@ struct PlayerView: View {
         return aiLangs
     }
 
-    private func handleSubtitleSelection(_ language: String?) {
+    func handleSubtitleSelection(_ language: String?) {
         selectedSubtitleLanguage = language
         subtitleLoadTask?.cancel()
         if let language {
@@ -551,18 +536,37 @@ struct PlayerView: View {
                 webSocketService: dubbingWS
             )
 
-            // Trivia WebSocket
-            if let triviaVM = triviaVM {
-                let triviaWS = LiveTriviaWebSocketService(
-                    configuration: repositories.configuration,
-                    authTokenProvider: repositories.authTokenProvider
-                )
-                triviaVM.connectLiveTrivia(
-                    channelId: contentId,
-                    language: selectedSubtitleLanguage ?? "en",
-                    webSocketService: triviaWS
+            // Live trivia WebSocket is connected on-demand via AI panel toggle
+        }
+    }
+
+    // MARK: - PiP
+
+    private func setupPiP() {
+        guard PiPController.isSupported else { return }
+
+        let layer = AVPlayerLayer(player: viewModel.player.avPlayer)
+        pipController.setup(with: layer)
+
+        pipController.onDidStart = { [weak pipController] in
+            _ = pipController
+            isPiPActive = true
+        }
+        pipController.onDidStop = { [weak pipController] in
+            _ = pipController
+            isPiPActive = false
+        }
+        pipController.onRestoreUserInterface = { [weak coordinator] completion in
+            guard let coordinator else {
+                completion(true)
+                return
+            }
+            if coordinator.fullscreenRoute == nil {
+                coordinator.presentFullscreen(
+                    .player(contentId: contentId, contentType: contentType)
                 )
             }
+            completion(true)
         }
     }
 

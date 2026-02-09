@@ -86,6 +86,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
 final class TVNavigationCoordinator {
     var selectedTab: TVTab = .home
     var showingAuth: Bool = false
+    var showingSplash: Bool = true
     var paths: [TVTab: NavigationPath] = [:]
 
     init() {

@@ -13,8 +13,8 @@ struct VideoPlayerView: UIViewControllerRepresentable {
         let controller = AVPlayerViewController()
         controller.player = player
         controller.showsPlaybackControls = false
-        controller.allowsPictureInPicturePlayback = true
-        controller.canStartPictureInPictureAutomaticallyFromInline = true
+        controller.allowsPictureInPicturePlayback = false
+        controller.canStartPictureInPictureAutomaticallyFromInline = false
         controller.videoGravity = .resizeAspect
         return controller
     }

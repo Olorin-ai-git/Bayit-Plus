@@ -102,3 +102,4 @@ private final class AppleSignInDelegate: NSObject, ASAuthorizationControllerDele
         }
     }
 }
+

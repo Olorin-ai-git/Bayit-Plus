@@ -11,6 +11,8 @@ final class TriviaFactsViewModel {
     private(set) var activeFact: TriviaFact?
     private(set) var isLoading = false
     private(set) var error: String?
+    private(set) var isEnabled = false
+    private(set) var isConnected = false
 
     private let repository: any TriviaRepository
     private let offlineCache: OfflineCacheService
@@ -97,6 +99,24 @@ final class TriviaFactsViewModel {
         activeFact = nil
     }
 
+    @MainActor
+    func toggleTrivia(
+        channelId: String,
+        language: String,
+        webSocketService: LiveTriviaWebSocketService
+    ) {
+        if isEnabled {
+            disconnectLiveTrivia()
+        } else {
+            isEnabled = true
+            connectLiveTrivia(
+                channelId: channelId,
+                language: language,
+                webSocketService: webSocketService
+            )
+        }
+    }
+
     func connectLiveTrivia(channelId: String, language: String, webSocketService: LiveTriviaWebSocketService) {
         self.liveWebSocketService = webSocketService
 
@@ -107,12 +127,27 @@ final class TriviaFactsViewModel {
             }
         }
 
+        webSocketService.onConnectionStatusChanged = { [weak self] status in
+            Task { @MainActor in
+                switch status {
+                case .connected:
+                    self?.isConnected = true
+                case .disconnected, .error:
+                    self?.isConnected = false
+                case .connecting:
+                    break
+                }
+            }
+        }
+
         webSocketService.connect(channelId: channelId, targetLanguage: language)
     }
 
     func disconnectLiveTrivia() {
         liveWebSocketService?.disconnect()
         liveWebSocketService = nil
+        isEnabled = false
+        isConnected = false
     }
 
     @MainActor

@@ -3,7 +3,7 @@ import BayitDesignSystem
 import SwiftUI
 
 /// Root content view for the tvOS app.
-/// Shows auth flow when not authenticated, main tab view otherwise.
+/// Shows splash on first launch, then auth flow or main tab view.
 struct TVContentView: View {
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @Environment(AuthManager.self) private var authManager
@@ -13,7 +13,16 @@ struct TVContentView: View {
             DesignTokens.Colors.Background.primary
                 .ignoresSafeArea()
 
-            if coordinator.showingAuth {
+            if coordinator.showingSplash {
+                TVSplashView(
+                    onFinished: {
+                        withAnimation(.easeInOut(duration: 0.5)) {
+                            coordinator.showingSplash = false
+                        }
+                    }
+                )
+                .transition(.opacity)
+            } else if coordinator.showingAuth {
                 TVAuthView(
                     onAuthSuccess: {
                         withAnimation {
@@ -27,6 +36,7 @@ struct TVContentView: View {
                     .transition(.opacity)
             }
         }
+        .animation(.easeInOut, value: coordinator.showingSplash)
         .animation(.easeInOut, value: coordinator.showingAuth)
     }
 }
