@@ -10,8 +10,10 @@ struct InteractiveSubtitlesOverlay: View {
     let currentTime: Double
     let isTriviaActive: Bool
     var language: String?
+    let repository: SubtitleRepository
 
     @State private var showModePicker = false
+    @State private var showAISubtitlePicker = false
 
     var body: some View {
         VStack {
@@ -57,6 +59,30 @@ struct InteractiveSubtitlesOverlay: View {
                 )
             }
         }
+        .sheet(isPresented: $showAISubtitlePicker) {
+            if language == "he" {
+                AISubtitlesPickerView(
+                    contentId: contentId,
+                    currentMode: viewModel.hebrewMode,
+                    hasHebrew: true,
+                    hasNikud: viewModel.hasNikud,
+                    hasShoresh: viewModel.hasShoresh,
+                    hasEngrew: viewModel.hasEngrew,
+                    isAdmin: viewModel.isAdmin,
+                    repository: repository,
+                    onModeSelect: { mode in
+                        Task {
+                            await viewModel.setHebrewMode(mode, contentId: contentId, language: language ?? "he")
+                        }
+                    },
+                    onGenerationComplete: {
+                        Task {
+                            await viewModel.loadCues(contentId: contentId, language: language)
+                        }
+                    }
+                )
+            }
+        }
     }
 
     private func cueView(_ cue: SubtitleCue) -> some View {
@@ -74,15 +100,19 @@ struct InteractiveSubtitlesOverlay: View {
 
                     subtitleContent(cue)
 
-                    // Mode picker button
+                    // Mode picker button (AI picker for Hebrew, regular picker for other languages)
                     Button {
-                        showModePicker = true
+                        if language == "he" {
+                            showAISubtitlePicker = true
+                        } else {
+                            showModePicker = true
+                        }
                     } label: {
-                        Image(systemName: "gear")
+                        Image(systemName: language == "he" ? "sparkles" : "gear")
                             .font(.system(size: 14))
-                            .foregroundColor(DesignTokens.Text.muted)
+                            .foregroundColor(language == "he" ? DesignTokens.Primary.p400 : DesignTokens.Text.muted)
                     }
-                    .accessibilityLabel("Subtitle mode settings")
+                    .accessibilityLabel(language == "he" ? "AI subtitle mode settings" : "Subtitle mode settings")
                 }
             }
 
@@ -98,15 +128,18 @@ struct InteractiveSubtitlesOverlay: View {
                 WrappingHStack(words: words) { word in
                     wordButton(word)
                 }
+                .frame(maxWidth: UIScreen.main.bounds.width * 0.9)
                 .padding(.horizontal, DesignTokens.Spacing.md)
                 .padding(.vertical, DesignTokens.Spacing.sm)
                 .background(Color.black.opacity(0.6))
                 .cornerRadius(DesignTokens.Radius.sm)
-                .environment(\.layoutDirection, .rightToLeft)
+                .environment(\.layoutDirection, language == "he" ? .rightToLeft : .leftToRight)
             } else {
                 Text(viewModel.activeText)
                     .font(.system(size: DesignTokens.FontSize.lg))
                     .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: UIScreen.main.bounds.width * 0.9)
                     .padding(.horizontal, DesignTokens.Spacing.md)
                     .padding(.vertical, DesignTokens.Spacing.sm)
                     .background(Color.black.opacity(0.6))
@@ -137,16 +170,79 @@ struct InteractiveSubtitlesOverlay: View {
     }
 }
 
-/// Simple wrapping horizontal layout for word-level subtitle display
+/// Wrapping layout for word-level subtitle display that properly handles multi-line text
 private struct WrappingHStack<Content: View>: View {
     let words: [SubtitleWord]
     @ViewBuilder let content: (SubtitleWord) -> Content
 
     var body: some View {
-        HStack(spacing: 4) {
+        FlowLayout(spacing: 8) {
             ForEach(words, id: \.stableId) { word in
                 content(word)
             }
+        }
+    }
+}
+
+/// Custom flow layout that wraps content to multiple lines
+private struct FlowLayout: Layout {
+    var spacing: CGFloat = 8
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let result = FlowResult(
+            in: proposal.replacingUnspecifiedDimensions().width,
+            subviews: subviews,
+            spacing: spacing
+        )
+        return result.size
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let result = FlowResult(
+            in: bounds.width,
+            subviews: subviews,
+            spacing: spacing
+        )
+        for (index, subview) in subviews.enumerated() {
+            let position = result.positions[index]
+            subview.place(
+                at: CGPoint(x: bounds.minX + position.x, y: bounds.minY + position.y),
+                proposal: ProposedViewSize(result.sizes[index])
+            )
+        }
+    }
+
+    struct FlowResult {
+        var sizes: [CGSize] = []
+        var positions: [CGPoint] = []
+        var size: CGSize = .zero
+
+        init(in maxWidth: CGFloat, subviews: Subviews, spacing: CGFloat) {
+            var currentX: CGFloat = 0
+            var currentY: CGFloat = 0
+            var lineHeight: CGFloat = 0
+            var maxWidth: CGFloat = maxWidth
+
+            for subview in subviews {
+                let size = subview.sizeThatFits(.unspecified)
+                sizes.append(size)
+
+                if currentX + size.width > maxWidth && currentX > 0 {
+                    // Move to next line
+                    currentX = 0
+                    currentY += lineHeight + spacing
+                    lineHeight = 0
+                }
+
+                positions.append(CGPoint(x: currentX, y: currentY))
+                lineHeight = max(lineHeight, size.height)
+                currentX += size.width + spacing
+            }
+
+            self.size = CGSize(
+                width: maxWidth,
+                height: currentY + lineHeight
+            )
         }
     }
 }
