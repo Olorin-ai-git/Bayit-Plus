@@ -10,6 +10,7 @@ import CastButton from '../controls/CastButton'
 import AirPlayButton from '../controls/AirPlayButton'
 import ChromecastButton from '../controls/ChromecastButton'
 import CatchUpButton from '../catchup/CatchUpButton'
+import PiPButton from '../controls/PiPButton'
 import LiveFeatureButton from '../controls/LiveFeatureButton'
 import { MessageCircle, Lightbulb } from 'lucide-react'
 import { colors } from '@olorin/design-tokens'
@@ -21,6 +22,7 @@ import { SubtitleCue } from '../types'
 import { CastSessions } from './useCastSession'
 import { UsageStats } from '@/services/liveQuotaApi'
 import { castConfig } from '@/config/castConfig'
+import type { UsePictureInPictureReturn } from './usePictureInPicture'
 
 const DEBUG_CAST = import.meta.env.VITE_DEBUG_CAST === 'true'
 const FORCE_SHOW_CAST = import.meta.env.VITE_CAST_FORCE_SHOW === 'true'
@@ -81,6 +83,9 @@ interface UsePlayerControlRenderersParams {
 
   // Cast (unified and individual sessions)
   cast: CastSessions
+
+  // Picture-in-Picture
+  pip: UsePictureInPictureReturn
 
   // Recording
   setIsRecording: (recording: boolean) => void
@@ -154,6 +159,7 @@ export function usePlayerControlRenderers({
   liveSplitConnecting,
   dubbing,
   cast,
+  pip,
   setIsRecording,
   setRecordingDuration,
   channelChat,
@@ -371,6 +377,15 @@ export function usePlayerControlRenderers({
     onHoveredButtonChange,
   ])
 
+  const renderPiPButton = useCallback(() => {
+    return (
+      <PiPButton
+        pip={pip}
+        onHoveredButtonChange={onHoveredButtonChange}
+      />
+    )
+  }, [pip.isSupported, pip.isPiP, pip.togglePiP, onHoveredButtonChange])
+
   const renderChannelChatButton = useCallback(() => {
     if (!channelChat) return null
     const chatLabel = isLive
@@ -417,6 +432,7 @@ export function usePlayerControlRenderers({
     renderCastButton,
     renderAirPlayButton,
     renderChromecastButton,
+    renderPiPButton,
     renderChannelChatButton,
     renderLiveTriviaButton,
     renderCatchUpButton,
@@ -430,6 +446,7 @@ export function usePlayerControlRenderers({
     renderCastButton,
     renderAirPlayButton,
     renderChromecastButton,
+    renderPiPButton,
     renderChannelChatButton,
     renderLiveTriviaButton,
     renderCatchUpButton,

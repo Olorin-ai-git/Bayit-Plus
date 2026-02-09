@@ -28,3 +28,5 @@ export type {
   UseComprehensionQuizIntegrationReturn,
 } from './useComprehensionQuizIntegration'
 export { useWizardMediaEvents } from './useWizardMediaEvents'
+export { usePictureInPicture } from './usePictureInPicture'
+export type { UsePictureInPictureReturn } from './usePictureInPicture'

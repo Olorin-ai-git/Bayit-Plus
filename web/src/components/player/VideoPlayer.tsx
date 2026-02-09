@@ -29,6 +29,7 @@ import {
   useAudioTracks,
   useComprehensionQuizIntegration,
   useWizardMediaEvents,
+  usePictureInPicture,
 } from './hooks'
 import { SplitLanguages } from '@/types/subtitle'
 import { useChannelChatStore } from '@/stores/channelChatSlice'
@@ -198,6 +199,12 @@ export default function VideoPlayer({
     isHLS,
     originalStreamUrl: src, // Pass original .m3u8 URL for AirPlay HLS fix
     destroyHLS, // Pass HLS.js destroy callback for AirPlay source switch
+  })
+
+  // Picture-in-Picture support
+  const pip = usePictureInPicture({
+    videoRef,
+    disabled: isWidget,
   })
 
   // Playback session management for concurrent stream limit enforcement
@@ -430,6 +437,7 @@ export default function VideoPlayer({
     renderCastButton,
     renderAirPlayButton,
     renderChromecastButton,
+    renderPiPButton,
     renderChannelChatButton,
     renderLiveTriviaButton,
     renderCatchUpButton,
@@ -475,6 +483,7 @@ export default function VideoPlayer({
     liveSplitConnecting: liveSplit.isConnecting,
     dubbing,
     cast,
+    pip,
     setIsRecording,
     setRecordingDuration,
     channelChat: contentId ? {
@@ -605,6 +614,7 @@ export default function VideoPlayer({
         renderCastButton={renderCastButton}
         renderAirPlayButton={renderAirPlayButton}
         renderChromecastButton={renderChromecastButton}
+        renderPiPButton={renderPiPButton}
         renderChannelChatButton={renderChannelChatButton}
         renderLiveTriviaButton={renderLiveTriviaButton}
         renderCatchUpButton={renderCatchUpButton}

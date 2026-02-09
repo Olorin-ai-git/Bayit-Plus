@@ -42,6 +42,7 @@ interface VideoPlayerControlsOverlayProps {
   renderCastButton?: () => React.ReactNode
   renderAirPlayButton?: () => React.ReactNode
   renderChromecastButton?: () => React.ReactNode
+  renderPiPButton?: () => React.ReactNode
   renderChannelChatButton?: () => React.ReactNode
   renderLiveTriviaButton?: () => React.ReactNode
   renderCatchUpButton?: () => React.ReactNode
@@ -76,6 +77,7 @@ export default function VideoPlayerControlsOverlay({
   renderCastButton,
   renderAirPlayButton,
   renderChromecastButton,
+  renderPiPButton,
   renderChannelChatButton,
   renderLiveTriviaButton,
   renderCatchUpButton,
@@ -176,6 +178,7 @@ export default function VideoPlayerControlsOverlay({
             renderCastButton={renderCastButton}
             renderAirPlayButton={renderAirPlayButton}
             renderChromecastButton={renderChromecastButton}
+            renderPiPButton={renderPiPButton}
             renderChannelChatButton={renderChannelChatButton}
             renderLiveTriviaButton={renderLiveTriviaButton}
             renderCatchUpButton={renderCatchUpButton}

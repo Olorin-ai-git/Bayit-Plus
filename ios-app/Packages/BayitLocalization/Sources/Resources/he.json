@@ -5917,6 +5917,8 @@
     "showAIFeatures": "הצג תכונות AI",
     "hideAIFeatures": "הסתר תכונות AI",
     "enterFullscreen": "מסך מלא",
+    "enterPiP": "תמונה בתוך תמונה",
+    "exitPiP": "צא מתמונה בתוך תמונה",
     "errors": {
       "decodeError": "לא ניתן לפענח את זרם השמע",
       "loadAborted": "הטעינה בוטלה",

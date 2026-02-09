@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Image, Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useDirection } from '@/hooks/useDirection';
@@ -7,12 +7,9 @@ import { useResponsive } from '@/hooks/useResponsive';
 import { liveService } from '@/services/api';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import {
-  GlassView,
   GlassCard,
   GlassCategoryPill,
   GlassPageHeader,
-  GridSkeleton,
-  GlassLoadingSpinner,
   GlassEmptyState,
 } from '@bayit/shared/ui';
 import AnimatedCard from '@/components/common/AnimatedCard';
@@ -56,9 +53,6 @@ export default function LivePage() {
   const [channels, setChannels] = useState<Channel[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [loading, setLoading] = useState(true);
-  const nextLabel = t('live.next');
-  const liveLabel = t('common.live');
-
   const navigate = useNavigate();
   const numColumns = responsive.getColumns();
 
@@ -169,12 +163,35 @@ export default function LivePage() {
                 style={{ width: `${100 / numColumns}%`, padding: spacing.xs } as any}
               >
                 <View style={styles.channelCardWrapper}>
-                  <GlassCard
-                    title={channel.name}
-                    imageUrl={channel.thumbnail || channel.logo}
-                    subtitle={channel.currentShow}
-                    onPress={() => navigate(`/live/${channel.id}`)}
-                  />
+                  <Pressable onPress={() => navigate(`/live/${channel.id}`)}>
+                    <GlassCard autoSize style={styles.channelCard}>
+                      {/* Channel Thumbnail */}
+                      <View style={styles.channelThumbnail}>
+                        {(channel.thumbnail || channel.logo) ? (
+                          <Image
+                            source={{ uri: channel.thumbnail || channel.logo }}
+                            style={styles.channelImage}
+                            resizeMode="contain"
+                          />
+                        ) : (
+                          <View style={styles.channelPlaceholder}>
+                            <LiveTVIcon size={32} color={colors.textMuted} />
+                          </View>
+                        )}
+                      </View>
+                      {/* Channel Info */}
+                      <View style={styles.channelInfo}>
+                        <Text style={styles.channelName} numberOfLines={1}>
+                          {channel.name}
+                        </Text>
+                        {channel.currentShow && (
+                          <Text style={styles.channelShow} numberOfLines={1}>
+                            {channel.currentShow}
+                          </Text>
+                        )}
+                      </View>
+                    </GlassCard>
+                  </Pressable>
                   {/* AI Enhanced Badge for educational channels */}
                   {channel.is_ai_enhanced && (
                     <View style={styles.aiEnhancedBadgeWrapper}>
@@ -245,6 +262,42 @@ const styles = StyleSheet.create({
   },
   channelCardWrapper: {
     position: 'relative',
+  },
+  channelCard: {
+    width: '100%',
+    overflow: 'hidden',
+    padding: 0,
+  },
+  channelThumbnail: {
+    width: '100%',
+    aspectRatio: 16 / 9,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  channelImage: {
+    width: '80%',
+    height: '80%',
+  },
+  channelPlaceholder: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  channelInfo: {
+    padding: spacing.sm,
+  },
+  channelName: {
+    fontSize: fontSize.sm,
+    fontWeight: '600',
+    color: colors.text,
+    textAlign: 'center',
+  },
+  channelShow: {
+    fontSize: 11,
+    color: colors.textSecondary,
+    marginTop: 2,
+    textAlign: 'center',
   },
   widgetButtonWrapper: {
     position: 'absolute',

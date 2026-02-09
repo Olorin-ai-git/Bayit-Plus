@@ -41,6 +41,7 @@ interface RightControlsProps {
   renderCastButton?: () => React.ReactNode
   renderAirPlayButton?: () => React.ReactNode
   renderChromecastButton?: () => React.ReactNode
+  renderPiPButton?: () => React.ReactNode
   renderSubtitleControls?: () => React.ReactNode
   renderLiveSubtitleControls?: () => React.ReactNode
   renderLiveSplitSubtitleControls?: () => React.ReactNode
@@ -73,6 +74,7 @@ export default function RightControls({
   renderCastButton,
   renderAirPlayButton,
   renderChromecastButton,
+  renderPiPButton,
   renderSubtitleControls,
   renderLiveSubtitleControls,
   renderLiveSplitSubtitleControls,
@@ -110,6 +112,7 @@ export default function RightControls({
         {renderWatchPartyButton && renderWatchPartyButton()}
         {renderAirPlayButton && renderAirPlayButton()}
         {renderChromecastButton && renderChromecastButton()}
+        {renderPiPButton && renderPiPButton()}
         {renderRecordButton && renderRecordButton()}
 
         {/* Glass Live AI Panel (all AI features inside) */}
@@ -230,6 +233,9 @@ export default function RightControls({
           />
         </Pressable>
       )}
+
+      {/* Picture-in-Picture */}
+      {renderPiPButton && renderPiPButton()}
 
       {/* Fullscreen for VOD */}
       <Pressable

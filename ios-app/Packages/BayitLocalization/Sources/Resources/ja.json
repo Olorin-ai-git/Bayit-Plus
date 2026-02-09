@@ -6030,6 +6030,8 @@
     },
     "chat": "チャット",
     "enterFullscreen": "全画面表示",
+    "enterPiP": "ピクチャーインピクチャー",
+    "exitPiP": "ピクチャーインピクチャーを終了",
     "errors": {
       "decodeError": "音声ストリームをデコードできません",
       "loadAborted": "読み込みが中断されました",

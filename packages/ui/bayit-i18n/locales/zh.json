@@ -4360,6 +4360,8 @@
     },
     "chat": "聊天",
     "enterFullscreen": "进入全屏",
+    "enterPiP": "画中画",
+    "exitPiP": "退出画中画",
     "errors": {
       "decodeError": "无法解码音频流",
       "loadAborted": "加载已中止",

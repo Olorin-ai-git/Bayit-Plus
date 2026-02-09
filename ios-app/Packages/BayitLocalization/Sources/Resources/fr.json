@@ -6017,6 +6017,8 @@
     },
     "chat": "Discussion",
     "enterFullscreen": "Plein écran",
+    "enterPiP": "Image dans l'image",
+    "exitPiP": "Quitter l'image dans l'image",
     "errors": {
       "decodeError": "Impossible de décoder le flux audio",
       "loadAborted": "Le chargement a été interrompu",

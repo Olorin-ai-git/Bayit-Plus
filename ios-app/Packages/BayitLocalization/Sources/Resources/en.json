@@ -6048,6 +6048,8 @@
     "showAIFeatures": "Show AI Features",
     "hideAIFeatures": "Hide AI Features",
     "enterFullscreen": "Enter Fullscreen",
+    "enterPiP": "Picture-in-Picture",
+    "exitPiP": "Exit Picture-in-Picture",
     "errors": {
       "decodeError": "Cannot decode audio stream",
       "loadAborted": "Loading was aborted",

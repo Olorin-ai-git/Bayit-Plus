@@ -5781,6 +5781,8 @@
     "hideAIFeatures": "Ocultar Funciones de IA",
     "chat": "Chat",
     "enterFullscreen": "Pantalla completa",
+    "enterPiP": "Imagen en imagen",
+    "exitPiP": "Salir de imagen en imagen",
     "errors": {
       "decodeError": "No se puede decodificar la transmisión de audio",
       "loadAborted": "La carga fue interrumpida",
