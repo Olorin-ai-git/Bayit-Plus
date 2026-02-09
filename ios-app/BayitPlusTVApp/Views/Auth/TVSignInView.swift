@@ -30,23 +30,26 @@ struct TVSignInView: View {
             )
             .ignoresSafeArea()
 
-            VStack(spacing: TVDesignTokens.Spacing.xl) {
+            VStack(spacing: TVDesignTokens.Spacing.lg) {
+                Spacer()
+                    .frame(height: 80)
+
                 logoHeader
 
-                HStack(spacing: 0) {
+                HStack(alignment: .top, spacing: 0) {
                     TVCredentialPanel(onAuthSuccess: onAuthSuccess)
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .focusSection()
 
                     glassDivider
 
                     TVQRCodePanel(onAuthSuccess: onAuthSuccess, logger: logger)
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .focusSection()
                 }
-                .frame(maxHeight: .infinity)
             }
-            .padding(.top, TVDesignTokens.Spacing.xl)
+            .padding(.top, 60)
+            .padding(.bottom, 80)
         }
     }
 
