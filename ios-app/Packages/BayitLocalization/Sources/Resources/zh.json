@@ -5631,6 +5631,10 @@
     "liveLanguageMagic": "直播语言魔法",
     "retrying": "正在重试",
     "selectLanguage": "选择语言",
+    "primaryLanguage": "主要语言",
+    "secondaryLanguage": "次要语言",
+    "dualLanguageHint": "选择第二语言用于分屏",
+    "currentLanguage": "当前语言",
     "selectOutputLanguage": "选择输出语言"
   },
   "playlist": {

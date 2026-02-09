@@ -5932,6 +5932,10 @@
     "liveLanguageMagic": "קסם שפה חיה",
     "retrying": "ניסיון חוזר",
     "selectLanguage": "בחר שפה",
+    "primaryLanguage": "שפה ראשית",
+    "secondaryLanguage": "שפה משנית",
+    "dualLanguageHint": "בחר שפה שנייה למסך מפוצל",
+    "currentLanguage": "שפה נוכחית",
     "selectOutputLanguage": "בחר שפת פלט"
   },
   "playlist": {

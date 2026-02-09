@@ -1,5 +1,7 @@
+import BayitWidgetShared
 import Foundation
 import Observation
+import WidgetKit
 
 /// Singleton service that polls zmanim data and tracks Shabbat state.
 ///
@@ -136,6 +138,25 @@ final class ShabbatModeService {
         do {
             let response = try await repository.fetchZmanTime(timezone: timezone)
             shabbatData = response
+
+            // Sync Shabbat data to widget extension
+            let widgetData = SharedShabbatData(
+                isShabbat: response.isShabbat ?? false,
+                isErevShabbat: response.isErevShabbat ?? false,
+                candleLighting: response.candleLighting,
+                havdalah: response.havdalah,
+                countdown: response.countdown,
+                countdownLabel: response.countdownLabel,
+                parashaHebrew: response.parashaHebrew,
+                parashaEnglish: response.parashaEnglish,
+                city: nil
+            )
+            Task {
+                await WidgetDataStore.shared.writeShabbatData(widgetData)
+                WidgetCenter.shared.reloadTimelines(
+                    ofKind: WidgetConfigurationKeys.WidgetKind.shabbatMode
+                )
+            }
 
             if autoModeEnabled {
                 isShabbatActive = response.isShabbat ?? false

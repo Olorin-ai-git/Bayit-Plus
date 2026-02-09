@@ -38,6 +38,22 @@ public struct GlassLiveControlButton: View {
     private var isActive: Bool { state == .enabled || state == .connecting }
 
     public var body: some View {
+        buttonRow
+            .background(backgroundView)
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+            .overlay(borderOverlay)
+            .opacity(state == .disabled ? 0.6 : 1.0)
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(label)
+            .accessibilityValue(accessibilityValue)
+            .accessibilityHint(accessibilityHint)
+            #if os(tvOS)
+            .focusable()
+            .tvFocusStyle()
+            #endif
+    }
+
+    private var buttonRow: some View {
         HStack(spacing: 0) {
             mainButton
             if isSplitButton, let splitAction = onSplitTap {
@@ -53,21 +69,11 @@ public struct GlassLiveControlButton: View {
                 .buttonStyle(LiveControlButtonStyle())
             }
         }
-        .background(backgroundView)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                .stroke(borderColor, style: borderStroke)
-        )
-        .opacity(state == .disabled ? 0.6 : 1.0)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(label)
-        .accessibilityValue(accessibilityValue)
-        .accessibilityHint(accessibilityHint)
-        #if os(tvOS)
-        .focusable()
-        .tvFocusStyle()
-        #endif
+    }
+
+    private var borderOverlay: some View {
+        RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+            .stroke(borderColor, style: borderStroke)
     }
 
     // MARK: - Main Button
@@ -173,7 +179,8 @@ public struct GlassLiveControlButton: View {
         UIImpactFeedbackGenerator(style: style).impactOccurred()
     }
     #else
-    private func haptic(_ style: Any) {}
+    private enum HapticStyle { case light, medium, heavy }
+    private func haptic(_ style: HapticStyle) {}
     #endif
 }
 

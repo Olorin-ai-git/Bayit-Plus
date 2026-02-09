@@ -5606,6 +5606,10 @@
     "liveLanguageMagic": "লাইভ ভাষা ম্যাজিক",
     "retrying": "পুনরায় চেষ্টা",
     "selectLanguage": "ভাষা নির্বাচন করুন",
+    "primaryLanguage": "প্রাথমিক ভাষা",
+    "secondaryLanguage": "দ্বিতীয় ভাষা",
+    "dualLanguageHint": "স্প্লিট স্ক্রিনের জন্য দ্বিতীয় ভাষা নির্বাচন করুন",
+    "currentLanguage": "বর্তমান ভাষা",
     "selectOutputLanguage": "আউটপুট ভাষা নির্বাচন করুন"
   },
   "playlist": {

@@ -26,7 +26,8 @@ router = APIRouter()
 
 class InitPairingResponse(BaseModel):
     session_id: str
-    qr_code_data: str  # Base64 PNG
+    pairing_code: str  # URL string for client-side QR generation
+    qr_code_data: str  # Base64 PNG (server-generated)
     expires_at: str
     ws_url: str
 
@@ -87,6 +88,7 @@ async def init_pairing():
 
     return InitPairingResponse(
         session_id=session.session_id,
+        pairing_code=session.pairing_code,
         qr_code_data=session.qr_code_data,
         expires_at=session.expires_at.isoformat(),
         ws_url=ws_url,
@@ -255,7 +257,7 @@ async def pairing_websocket(websocket: WebSocket, session_id: str):
     - {"type": "connected", "session_id": "...", "expires_at": "..."}
     - {"type": "companion_connected", "device_info": {...}}
     - {"type": "authenticating"}
-    - {"type": "pairing_success", "user": {...}, "token": "..."}
+    - {"type": "pairing_success", "user": {...}, "access_token": "..."}
     - {"type": "pairing_failed", "reason": "..."}
     - {"type": "session_expired"}
     """

@@ -5872,6 +5872,10 @@
     "liveLanguageMagic": "Magia linguistica in diretta",
     "retrying": "Tentativo di ripresa",
     "selectLanguage": "Seleziona lingua",
+    "primaryLanguage": "Lingua principale",
+    "secondaryLanguage": "Lingua secondaria",
+    "dualLanguageHint": "Seleziona una seconda lingua per lo schermo diviso",
+    "currentLanguage": "Lingua corrente",
     "selectOutputLanguage": "Seleziona lingua di output"
   },
   "playlist": {

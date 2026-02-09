@@ -1,5 +1,6 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitNetworking
 import SwiftUI
 import UIKit
 
@@ -12,6 +13,10 @@ struct TVSignInView: View {
     @Environment(AuthManager.self) private var authManager
 
     let onAuthSuccess: () -> Void
+    let logger: APILogger
+
+    @Namespace private var credentialSection
+    @Namespace private var qrSection
 
     var body: some View {
         ZStack {
@@ -31,11 +36,13 @@ struct TVSignInView: View {
                 HStack(spacing: 0) {
                     TVCredentialPanel(onAuthSuccess: onAuthSuccess)
                         .frame(maxWidth: .infinity)
+                        .focusSection()
 
                     glassDivider
 
-                    TVQRCodePanel(onAuthSuccess: onAuthSuccess)
+                    TVQRCodePanel(onAuthSuccess: onAuthSuccess, logger: logger)
                         .frame(maxWidth: .infinity)
+                        .focusSection()
                 }
                 .frame(maxHeight: .infinity)
             }
@@ -52,7 +59,10 @@ struct TVSignInView: View {
                 Image(uiImage: logoImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 160, height: 80)
+                    .frame(
+                        width: TVDesignTokens.Logo.width,
+                        height: TVDesignTokens.Logo.height
+                    )
             }
 
             (Text("Bayit")

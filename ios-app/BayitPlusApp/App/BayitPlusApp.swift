@@ -3,6 +3,7 @@ import BayitCore
 import BayitLocalization
 import BayitMedia
 import BayitNetworking
+import BayitWidgetShared
 import FirebaseCore
 import GoogleSignIn
 import SwiftUI
@@ -15,6 +16,8 @@ struct BayitPlusApp: App {
     @State private var apiClient: APIClient
     @State private var repositories: RepositoryProvider
     @State private var mediaPlayer = MediaPlayer()
+    @State private var widgetSyncService = WidgetDataSyncService()
+    @State private var liveActivityManager = LiveActivityManager()
     @State private var locationProvider: AppLocationProvider
 
     init() {
@@ -62,6 +65,8 @@ struct BayitPlusApp: App {
                 .environment(localizationManager)
                 .environment(repositories)
                 .environment(mediaPlayer)
+                .environment(widgetSyncService)
+                .environment(liveActivityManager)
                 .environment(locationProvider)
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)

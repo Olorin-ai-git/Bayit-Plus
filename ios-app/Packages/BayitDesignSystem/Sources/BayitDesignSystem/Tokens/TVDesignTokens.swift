@@ -68,6 +68,25 @@ public enum TVDesignTokens {
         public static let shelfRowHeight: CGFloat = 320
     }
 
+    // MARK: - Logo
+
+    public enum Logo {
+        public static let width: CGFloat = 160
+        public static let height: CGFloat = 80
+    }
+
+    // MARK: - QR Code
+
+    public enum QRCode {
+        public static let size: CGFloat = 280
+    }
+
+    // MARK: - Form
+
+    public enum Form {
+        public static let maxWidth: CGFloat = 500
+    }
+
     // MARK: - Border Radius (larger for TV)
 
     public enum Radius {

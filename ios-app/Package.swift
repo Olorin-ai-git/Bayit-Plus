@@ -17,6 +17,7 @@ let package = Package(
         .library(name: "BayitVoice", targets: ["BayitVoice"]),
         .library(name: "BayitPersistence", targets: ["BayitPersistence"]),
         .library(name: "BayitAnalytics", targets: ["BayitAnalytics"]),
+        .library(name: "BayitWidgetShared", targets: ["BayitWidgetShared"]),
     ],
     dependencies: [
         .package(url: "https://github.com/firebase/firebase-ios-sdk.git", from: "11.0.0"),
@@ -95,6 +96,13 @@ let package = Package(
             path: "Packages/BayitAnalytics/Sources/BayitAnalytics"
         ),
 
+        // MARK: - BayitWidgetShared
+        .target(
+            name: "BayitWidgetShared",
+            dependencies: ["BayitCore"],
+            path: "Packages/BayitWidgetShared/Sources/BayitWidgetShared"
+        ),
+
         // MARK: - Tests
 
         .testTarget(
@@ -131,6 +139,12 @@ let package = Package(
             name: "BayitMediaTests",
             dependencies: ["BayitMedia", "BayitCore", "BayitNetworking"],
             path: "Packages/BayitMedia/Tests/BayitMediaTests"
+        ),
+
+        .testTarget(
+            name: "BayitWidgetSharedTests",
+            dependencies: ["BayitWidgetShared", "BayitCore"],
+            path: "Packages/BayitWidgetShared/Tests/BayitWidgetSharedTests"
         ),
     ]
 )

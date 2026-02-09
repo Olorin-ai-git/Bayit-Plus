@@ -6044,6 +6044,10 @@
     "liveLanguageMagic": "ライブ言語マジック",
     "retrying": "再試行中",
     "selectLanguage": "言語を選択",
+    "primaryLanguage": "主要言語",
+    "secondaryLanguage": "副言語",
+    "dualLanguageHint": "分割画面用の第二言語を選択",
+    "currentLanguage": "現在の言語",
     "selectOutputLanguage": "出力言語を選択"
   },
   "playlist": {

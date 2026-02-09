@@ -5693,6 +5693,10 @@
     "liveLanguageMagic": "நேரடி மொழி மாயம்",
     "retrying": "மீண்டும் முயற்சிக்கிறது",
     "selectLanguage": "மொழியைத் தேர்வுசெய்",
+    "primaryLanguage": "முதன்மை மொழி",
+    "secondaryLanguage": "இரண்டாம் மொழி",
+    "dualLanguageHint": "பிளவு திரைக்கு இரண்டாவது மொழியைத் தேர்ந்தெடுக்கவும்",
+    "currentLanguage": "தற்போதைய மொழி",
     "selectOutputLanguage": "வெளியீட்டு மொழியைத் தேர்வுசெய்"
   },
   "playlist": {

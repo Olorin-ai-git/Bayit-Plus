@@ -38,7 +38,7 @@ struct TVCredentialPanel: View {
                 .textContentType(.password)
                 .onSubmit { signInWithEmail() }
             }
-            .frame(maxWidth: 500)
+            .frame(maxWidth: TVDesignTokens.Form.maxWidth)
 
             if let errorMessage {
                 Text(errorMessage)
@@ -72,7 +72,7 @@ struct TVCredentialPanel: View {
                     signInWithApple()
                 }
             }
-            .frame(maxWidth: 500)
+            .frame(maxWidth: TVDesignTokens.Form.maxWidth)
         }
         .padding(TVDesignTokens.Spacing.xxxl)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -95,17 +95,33 @@ struct TVCredentialPanel: View {
         }
     }
 
+    // MARK: - Validation
+
+    private var isValidEmail: Bool {
+        let pattern = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+        return email.range(of: pattern, options: .regularExpression) != nil
+    }
+
     // MARK: - Actions
 
     private func signInWithEmail() {
-        guard !email.isEmpty, !password.isEmpty else { return }
+        let trimmedEmail = email.trimmingCharacters(
+            in: .whitespacesAndNewlines
+        )
+        guard !trimmedEmail.isEmpty, !password.isEmpty else { return }
+
+        guard isValidEmail else {
+            errorMessage = AuthError.invalidEmailFormat.userFacingMessage
+            return
+        }
+
         isLoading = true
         errorMessage = nil
 
         Task {
             do {
                 try await authManager.signInWithEmail(
-                    email: email,
+                    email: trimmedEmail,
                     password: password
                 )
                 onAuthSuccess()

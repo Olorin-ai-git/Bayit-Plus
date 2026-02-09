@@ -6063,6 +6063,10 @@
     "liveLanguageMagic": "Live Language Magic",
     "retrying": "Retry attempt",
     "selectLanguage": "Select Language",
+    "primaryLanguage": "Primary Language",
+    "secondaryLanguage": "Secondary Language",
+    "dualLanguageHint": "Select a second language for split screen",
+    "currentLanguage": "Current language",
     "selectOutputLanguage": "Select Output Language"
   },
   "playlist": {

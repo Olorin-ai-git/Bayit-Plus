@@ -3,19 +3,18 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// Horizontal scrollable panel displaying AI feature controls for live content.
-///
-/// Renders a sparkles expand/collapse toggle followed by a horizontal carousel
-/// of `GlassLiveControlButton` instances for Live Translate, Split Subtitles,
-/// Live Dubbing, and Live Trivia. Positioned above `GlassPlayerControls`.
+/// Horizontal scrollable panel displaying AI feature controls for live content
+/// with a language badge, sparkles toggle, and feature buttons.
 struct GlassAIFeaturesPanel: View {
 
     @Environment(LocalizationManager.self) private var localization
 
     let isExpanded: Bool
     let onToggleExpand: () -> Void
-
-    // Feature states
+    let currentLanguageCode: String
+    let isLiveContent: Bool
+    let isSplitLanguagesReady: Bool
+    let onLanguageBadgeTap: () -> Void
     let isSubtitlesEnabled: Bool
     let isSubtitlesConnecting: Bool
     let isSplitEnabled: Bool
@@ -24,10 +23,7 @@ struct GlassAIFeaturesPanel: View {
     let isDubbingPremiumLocked: Bool
     let isTriviaEnabled: Bool
     let isTriviaConnecting: Bool
-
-    // Actions
     let onSubtitlesTap: () -> Void
-    let onSubtitlesSplitTap: () -> Void
     let onSplitSubtitlesTap: () -> Void
     let onDubbingTap: () -> Void
     let onTriviaTap: () -> Void
@@ -58,33 +54,67 @@ struct GlassAIFeaturesPanel: View {
     // MARK: - Expand Toggle
 
     private var expandToggle: some View {
-        Button {
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            onToggleExpand()
-        } label: {
-            Image(systemName: "sparkles")
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(
-                    isExpanded ? DesignTokens.Primary.p400 : DesignTokens.Text.primary
-                )
-                .frame(width: 44, height: panelHeight)
+        HStack(spacing: 0) {
+            languageBadge
+            Button {
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                onToggleExpand()
+            } label: {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(
+                        isExpanded ? DesignTokens.Primary.p400 : DesignTokens.Text.primary
+                    )
+                    .frame(width: 44, height: panelHeight)
+            }
+            .accessibilityLabel(
+                isExpanded
+                    ? localization.t("player.hideAIFeatures")
+                    : localization.t("player.showAIFeatures")
+            )
+            if isExpanded {
+                languageChevron
+            }
         }
-        .accessibilityLabel(
-            isExpanded
-                ? localization.t("player.hideAIFeatures")
-                : localization.t("player.showAIFeatures")
-        )
     }
 
-    // MARK: - Divider
+    private var languageChevron: some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            onLanguageBadgeTap()
+        } label: {
+            Image(systemName: "chevron.down")
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.secondary)
+                .frame(width: 24, height: panelHeight)
+        }
+        .accessibilityLabel(localization.t("player.selectOutputLanguage"))
+    }
+
+    private var languageBadge: some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+            onLanguageBadgeTap()
+        } label: {
+            Text(SubtitleLanguages.flag(for: currentLanguageCode))
+                .font(.system(size: 11, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .frame(width: 28, height: 28)
+                .background(DesignTokens.Primary.p800.opacity(0.3))
+                .clipShape(Circle())
+        }
+        .padding(.leading, DesignTokens.Spacing.sm)
+        .accessibilityLabel(
+            localization.t("player.currentLanguage") + ": "
+            + (SubtitleLanguages.info(for: currentLanguageCode)?.name ?? currentLanguageCode)
+        )
+    }
 
     private var panelDivider: some View {
         Rectangle()
             .fill(DesignTokens.Glass.border)
             .frame(width: 1, height: panelHeight - 16)
     }
-
-    // MARK: - Scrollable Controls
 
     private var scrollableControls: some View {
         ScrollView(.horizontal, showsIndicators: false) {
@@ -98,17 +128,13 @@ struct GlassAIFeaturesPanel: View {
         }
     }
 
-    // MARK: - Buttons
-
     private var liveTranslateButton: some View {
         GlassLiveControlButton(
             icon: "captions.bubble",
             activeIcon: "captions.bubble.fill",
             label: localization.t("subtitles.liveTranslate"),
             state: subtitleControlState,
-            isSplitButton: true,
-            onTap: onSubtitlesTap,
-            onSplitTap: onSubtitlesSplitTap
+            onTap: onSubtitlesTap
         )
     }
 
@@ -117,9 +143,17 @@ struct GlassAIFeaturesPanel: View {
             icon: "square.split.2x1",
             activeIcon: "square.split.2x1.fill",
             label: localization.t("subtitles.splitScreen.title"),
-            state: isSplitEnabled ? .enabled : .idle,
+            state: splitSubtitleControlState,
             onTap: onSplitSubtitlesTap
         )
+    }
+
+    private var splitSubtitleControlState: GlassLiveControlButton.ControlState {
+        if isLiveContent {
+            if !isSplitLanguagesReady { return .disabled }
+            return isSplitEnabled ? .enabled : .idle
+        }
+        return isSplitEnabled ? .enabled : .idle
     }
 
     private var liveDubbingButton: some View {
@@ -142,8 +176,6 @@ struct GlassAIFeaturesPanel: View {
         )
     }
 
-    // MARK: - State Mapping
-
     private var subtitleControlState: GlassLiveControlButton.ControlState {
         if isSubtitlesConnecting { return .connecting }
         if isSubtitlesEnabled { return .enabled }
@@ -162,8 +194,6 @@ struct GlassAIFeaturesPanel: View {
         if isTriviaEnabled { return .enabled }
         return .idle
     }
-
-    // MARK: - Background
 
     private var panelBackground: some View {
         ZStack {

@@ -1,5 +1,6 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitNetworking
 import CoreImage.CIFilterBuiltins
 import SwiftUI
 import UIKit
@@ -10,6 +11,8 @@ struct TVQRCodePanel: View {
     @Environment(AuthManager.self) private var authManager
 
     let onAuthSuccess: () -> Void
+
+    let logger: APILogger
 
     @State private var viewModel: TVQRAuthViewModel?
 
@@ -31,7 +34,7 @@ struct TVQRCodePanel: View {
             if viewModel == nil {
                 let vm = TVQRAuthViewModel(
                     authManager: authManager,
-                    logger: TVAppAPILogger()
+                    logger: logger
                 )
                 viewModel = vm
                 await vm.initSession()
@@ -105,8 +108,8 @@ struct TVQRCodePanel: View {
                         .resizable()
                         .scaledToFit()
                         .frame(
-                            width: 280,
-                            height: 280
+                            width: TVDesignTokens.QRCode.size,
+                            height: TVDesignTokens.QRCode.size
                         )
                         .clipShape(RoundedRectangle(
                             cornerRadius: TVDesignTokens.Radius.md
@@ -117,6 +120,9 @@ struct TVQRCodePanel: View {
                             )
                             .fill(.white)
                             .padding(-TVDesignTokens.Spacing.sm)
+                        )
+                        .accessibilityLabel(
+                            "QR code for device pairing. Scan with your phone to sign in."
                         )
                 }
 
@@ -143,6 +149,7 @@ struct TVQRCodePanel: View {
                     .font(.system(size: TVDesignTokens.FontSize.display))
                     .foregroundStyle(DesignTokens.Primary.p400)
                     .symbolEffect(.pulse)
+                    .accessibilityLabel("Phone connected")
 
                 Text("Phone connected")
                     .font(.system(
@@ -178,6 +185,7 @@ struct TVQRCodePanel: View {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Colors.Semantic.success)
+                .accessibilityLabel("Sign-in successful")
 
             Text("Signed in successfully")
                 .font(.system(
@@ -197,6 +205,7 @@ struct TVQRCodePanel: View {
                 Image(systemName: "exclamationmark.triangle")
                     .font(.system(size: TVDesignTokens.FontSize.display))
                     .foregroundStyle(DesignTokens.Colors.Semantic.error)
+                    .accessibilityLabel("Error")
 
                 if let errorText = vm.error {
                     Text(errorText)
@@ -226,6 +235,7 @@ struct TVQRCodePanel: View {
                 Image(systemName: "clock.badge.exclamationmark")
                     .font(.system(size: TVDesignTokens.FontSize.display))
                     .foregroundStyle(DesignTokens.Colors.Semantic.warning)
+                    .accessibilityLabel("QR code expired")
 
                 Text("QR code expired")
                     .font(.system(

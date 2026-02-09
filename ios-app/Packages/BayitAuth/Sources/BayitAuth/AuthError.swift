@@ -21,6 +21,7 @@ public enum AuthError: LocalizedError, Sendable {
     case cancelled
     case devicePairingFailed(underlying: String)
     case sessionExpired
+    case invalidEmailFormat
 
     /// User-facing message suitable for display in the UI.
     /// Avoids exposing technical details.
@@ -56,6 +57,8 @@ public enum AuthError: LocalizedError, Sendable {
             return "Device pairing failed. Please try again."
         case .sessionExpired:
             return "Your session has expired. Please sign in again."
+        case .invalidEmailFormat:
+            return "Please enter a valid email address"
         }
     }
 
@@ -99,6 +102,8 @@ public enum AuthError: LocalizedError, Sendable {
             return "Device pairing failed: \(underlying)"
         case .sessionExpired:
             return "Session has expired"
+        case .invalidEmailFormat:
+            return "Invalid email format"
         }
     }
 }

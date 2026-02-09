@@ -6031,6 +6031,10 @@
     "liveLanguageMagic": "Magie linguistique en direct",
     "retrying": "Tentative de reconnexion",
     "selectLanguage": "Sélectionner la langue",
+    "primaryLanguage": "Langue principale",
+    "secondaryLanguage": "Langue secondaire",
+    "dualLanguageHint": "Sélectionnez une deuxième langue pour l'écran partagé",
+    "currentLanguage": "Langue actuelle",
     "selectOutputLanguage": "Sélectionner la langue de sortie"
   },
   "playlist": {

@@ -5620,6 +5620,10 @@
     "liveLanguageMagic": "लाइव भाषा जादू",
     "retrying": "पुनः प्रयास",
     "selectLanguage": "भाषा चुनें",
+    "primaryLanguage": "प्राथमिक भाषा",
+    "secondaryLanguage": "द्वितीयक भाषा",
+    "dualLanguageHint": "स्प्लिट स्क्रीन के लिए दूसरी भाषा चुनें",
+    "currentLanguage": "वर्तमान भाषा",
     "selectOutputLanguage": "आउटपुट भाषा चुनें"
   },
   "playlist": {

@@ -5796,6 +5796,10 @@
     "liveLanguageMagic": "Magia de idiomas en vivo",
     "retrying": "Reintentando",
     "selectLanguage": "Seleccionar idioma",
+    "primaryLanguage": "Idioma principal",
+    "secondaryLanguage": "Idioma secundario",
+    "dualLanguageHint": "Seleccione un segundo idioma para pantalla dividida",
+    "currentLanguage": "Idioma actual",
     "selectOutputLanguage": "Seleccionar idioma de salida"
   },
   "playlist": {

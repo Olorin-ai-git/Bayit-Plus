@@ -28,6 +28,7 @@ class PairingSession:
     session_id: str
     session_token: str
     qr_code_data: str  # Base64 PNG
+    pairing_code: str  # URL string for client-side QR generation
     created_at: datetime = field(default_factory=datetime.utcnow)
     expires_at: datetime = None
     tv_websocket: Optional[WebSocket] = None
@@ -68,16 +69,19 @@ class PairingManager:
         """Generate a secure session token for QR code"""
         return secrets.token_urlsafe(32)
 
-    def _generate_qr_code(self, data: dict, base_url: str) -> str:
-        """Generate QR code as base64 PNG"""
-        if not HAS_QRCODE:
-            # Return placeholder if qrcode not installed
-            return ""
-
-        # Create URL for companion to scan
-        qr_url = (
-            f"{base_url}/tv-login?session={data['session_id']}&token={data['token']}"
+    def _build_pairing_url(self, data: dict, base_url: str) -> str:
+        """Build the pairing URL that gets encoded into the QR code."""
+        return (
+            f"{base_url}/tv-login"
+            f"?session={data['session_id']}"
+            f"&token={data['token']}"
+            f"&expires={data['expires_at']}"
         )
+
+    def _generate_qr_code(self, pairing_url: str) -> str:
+        """Generate QR code as base64 PNG from a pairing URL."""
+        if not HAS_QRCODE:
+            return ""
 
         qr = qrcode.QRCode(
             version=1,
@@ -85,12 +89,11 @@ class PairingManager:
             box_size=10,
             border=4,
         )
-        qr.add_data(qr_url)
+        qr.add_data(pairing_url)
         qr.make(fit=True)
 
         img = qr.make_image(fill_color="#00d9ff", back_color="transparent")
 
-        # Convert to base64
         buffer = io.BytesIO()
         img.save(buffer, format="PNG")
         return base64.b64encode(buffer.getvalue()).decode("utf-8")
@@ -102,18 +105,25 @@ class PairingManager:
         async with self._lock:
             session_id = self._generate_session_id()
             session_token = self._generate_session_token()
+            created_at = datetime.utcnow()
+            expires_at = created_at + timedelta(minutes=5)
 
             qr_data = {
                 "session_id": session_id,
                 "token": session_token,
+                "expires_at": expires_at.isoformat(),
             }
 
-            qr_code = self._generate_qr_code(qr_data, base_url)
+            pairing_url = self._build_pairing_url(qr_data, base_url)
+            qr_code = self._generate_qr_code(pairing_url)
 
             session = PairingSession(
                 session_id=session_id,
                 session_token=session_token,
                 qr_code_data=qr_code,
+                pairing_code=pairing_url,
+                created_at=created_at,
+                expires_at=expires_at,
             )
 
             self._sessions[session_id] = session
@@ -233,7 +243,7 @@ class PairingManager:
                         {
                             "type": "pairing_success",
                             "user": user_data,
-                            "token": access_token,
+                            "access_token": access_token,
                         }
                     )
                 except Exception:

@@ -7,6 +7,7 @@ import SwiftUI
 ///
 /// Dubbing and live subtitles are mutually exclusive: enabling one disables the other.
 /// Trivia is independent and can coexist with either dubbing or subtitles.
+/// A unified `selectedAILanguage` flows to live translate, dubbing, and trivia.
 extension PlayerView {
 
     // MARK: - AI Features Panel View
@@ -19,6 +20,10 @@ extension PlayerView {
                     showAIPanel.toggle()
                 }
             },
+            currentLanguageCode: selectedAILanguage,
+            isLiveContent: mediaContentType.isLive,
+            isSplitLanguagesReady: selectedSecondaryLanguage != nil,
+            onLanguageBadgeTap: { showAILanguagePicker = true },
             isSubtitlesEnabled: selectedSubtitleLanguage != nil,
             isSubtitlesConnecting: false,
             isSplitEnabled: splitModeEnabled,
@@ -28,11 +33,6 @@ extension PlayerView {
             isTriviaEnabled: triviaVM?.isEnabled ?? false,
             isTriviaConnecting: isTriviaConnecting,
             onSubtitlesTap: { toggleLiveTranslation() },
-            onSubtitlesSplitTap: {
-                withAnimation(.spring(duration: 0.3)) {
-                    showSubtitlePicker = true
-                }
-            },
             onSplitSubtitlesTap: { toggleSplitSubtitles() },
             onDubbingTap: { toggleLiveDubbing() },
             onTriviaTap: { toggleLiveTrivia() }
@@ -48,31 +48,28 @@ extension PlayerView {
 
     // MARK: - Toggle Live Translation
 
-    /// Toggles live subtitles. If dubbing is active, disables dubbing first
-    /// (mutual exclusivity). User must re-enable dubbing manually.
+    /// Toggles live subtitles using `selectedAILanguage`. If dubbing is active,
+    /// disables dubbing first (mutual exclusivity).
     func toggleLiveTranslation() {
         if selectedSubtitleLanguage != nil {
-            // Disable subtitles
             handleSubtitleSelection(nil)
         } else {
-            // Enable subtitles with default language - disable dubbing (mutual exclusivity)
             if liveDubbingVM?.isEnabled == true {
                 liveDubbingVM?.toggleDubbing(channelId: contentId)
             }
-            // Enable subtitles directly with English default
-            handleSubtitleSelection("en")
+            handleSubtitleSelection(selectedAILanguage)
         }
     }
 
     // MARK: - Toggle Live Dubbing
 
-    /// Toggles live dubbing. If subtitles are active, disables them first
-    /// (mutual exclusivity). User must re-enable subtitles manually.
+    /// Toggles live dubbing using `selectedAILanguage`. If subtitles are active,
+    /// disables them first (mutual exclusivity).
     func toggleLiveDubbing() {
         guard let vm = liveDubbingVM else { return }
 
-        // Disable active subtitles/split when enabling dubbing (mutual exclusivity)
         if !vm.isEnabled {
+            // Disable active subtitles/split when enabling dubbing (mutual exclusivity)
             if selectedSubtitleLanguage != nil {
                 handleSubtitleSelection(nil)
             }
@@ -82,22 +79,38 @@ extension PlayerView {
                 primarySubtitleCues = []
                 secondarySubtitleCues = []
             }
+            // Ensure dubbing uses the unified AI language
+            vm.selectLanguage(selectedAILanguage, channelId: contentId)
         }
 
-        // Direct toggle - dubbing VM handles premium gate internally
         vm.toggleDubbing(channelId: contentId)
     }
 
     // MARK: - Toggle Split Subtitles
 
-    /// Toggles split subtitle mode. Independent of dubbing mutual exclusivity
-    /// since split subtitles are a subtitle variant.
+    /// Toggles split subtitle mode. For live content acts as a toggle when two
+    /// languages are selected. For VOD content opens the existing sheet picker.
     func toggleSplitSubtitles() {
         if splitModeEnabled {
             splitModeEnabled = false
             splitLanguages = []
             primarySubtitleCues = []
             secondarySubtitleCues = []
+            return
+        }
+
+        if mediaContentType.isLive {
+            guard let secondary = selectedSecondaryLanguage else { return }
+            // Auto-enable live translate if not active
+            if selectedSubtitleLanguage == nil {
+                if liveDubbingVM?.isEnabled == true {
+                    liveDubbingVM?.toggleDubbing(channelId: contentId)
+                }
+                handleSubtitleSelection(selectedAILanguage)
+            }
+            splitLanguages = [selectedAILanguage, secondary]
+            splitModeEnabled = true
+            Task { await loadSplitSubtitleCues() }
         } else {
             showSplitLanguagePicker = true
         }
@@ -105,8 +118,7 @@ extension PlayerView {
 
     // MARK: - Toggle Live Trivia
 
-    /// Toggles live trivia. Independent of dubbing/subtitles -
-    /// can coexist with either feature.
+    /// Toggles live trivia using `selectedAILanguage`. Independent of dubbing/subtitles.
     func toggleLiveTrivia() {
         guard let vm = triviaVM else { return }
 
@@ -119,9 +131,42 @@ extension PlayerView {
             )
             vm.toggleTrivia(
                 channelId: contentId,
-                language: selectedSubtitleLanguage ?? "en",
+                language: selectedAILanguage,
                 webSocketService: triviaWS
             )
+        }
+    }
+
+    // MARK: - AI Language Change
+
+    /// Propagates a new AI language to all active features (subtitles, dubbing, trivia, split).
+    func handleAILanguageChange(_ newLanguage: String) {
+        selectedAILanguage = newLanguage
+
+        if selectedSubtitleLanguage != nil {
+            handleSubtitleSelection(newLanguage)
+        }
+
+        if liveDubbingVM?.isEnabled == true {
+            liveDubbingVM?.selectLanguage(newLanguage, channelId: contentId)
+        }
+
+        if let vm = triviaVM, vm.isEnabled {
+            vm.disconnectLiveTrivia()
+            let triviaWS = LiveTriviaWebSocketService(
+                configuration: repositories.configuration,
+                authTokenProvider: repositories.authTokenProvider
+            )
+            vm.toggleTrivia(
+                channelId: contentId,
+                language: newLanguage,
+                webSocketService: triviaWS
+            )
+        }
+
+        if splitModeEnabled, splitLanguages.count == 2 {
+            splitLanguages[0] = newLanguage
+            Task { await loadSplitSubtitleCues() }
         }
     }
 }

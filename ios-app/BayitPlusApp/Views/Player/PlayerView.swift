@@ -47,6 +47,9 @@ struct PlayerView: View {
 
     // AI panel state
     @State var showAIPanel = false
+    @State var selectedAILanguage: String = "en"
+    @State var selectedSecondaryLanguage: String?
+    @State var showAILanguagePicker = false
 
     // Split subtitle state
     @State var splitModeEnabled = false
@@ -104,7 +107,7 @@ struct PlayerView: View {
                     contentId: contentId,
                     currentTime: viewModel.player.currentTime,
                     isSubtitlesActive: selectedSubtitleLanguage != nil,
-                    currentLanguage: selectedSubtitleLanguage ?? "en"
+                    currentLanguage: selectedAILanguage
                 )
             }
 
@@ -250,6 +253,22 @@ struct PlayerView: View {
                 }
                 .padding(DesignTokens.Spacing.xl)
             }
+        }
+        .sheet(isPresented: $showAILanguagePicker) {
+            GlassAILanguagePickerView(
+                selectedLanguage: selectedAILanguage,
+                secondaryLanguage: selectedSecondaryLanguage,
+                onSelectLanguage: { handleAILanguageChange($0) },
+                onSelectSecondaryLanguage: { lang in
+                    selectedSecondaryLanguage = lang
+                    if splitModeEnabled {
+                        splitLanguages = [selectedAILanguage, lang]
+                        Task { await loadSplitSubtitleCues() }
+                    }
+                }
+            )
+            .presentationDetents([.medium, .large])
+            .presentationDragIndicator(.visible)
         }
         .alert("Recording Error", isPresented: $showRecordingError) {
             Button("OK", role: .cancel) {}

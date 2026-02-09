@@ -1,5 +1,6 @@
 import BayitAuth
 import BayitCore
+import BayitNetworking
 import Foundation
 
 /// Status of the QR code device pairing session.
@@ -35,6 +36,8 @@ final class TVQRAuthViewModel {
     private let config: AppConfiguration
     private var webSocketTask: URLSessionWebSocketTask?
     private var refreshTask: Task<Void, Never>?
+    private var initTask: Task<Void, Never>?
+    private var lastInitTime: Date?
 
     // MARK: - Response Models
 
@@ -78,8 +81,24 @@ final class TVQRAuthViewModel {
 
     // MARK: - Session Lifecycle
 
+    /// Minimum interval between session init requests (client-side throttle).
+    private static let minInitInterval: TimeInterval = 5.0
+
+    /// Maximum allowed WebSocket message size in bytes (10 KB).
+    private static let maxWebSocketMessageSize = 10_240
+
     /// Initializes a new device pairing session with the backend.
     func initSession() async {
+        if let lastInit = lastInitTime,
+           Date().timeIntervalSince(lastInit) < Self.minInitInterval {
+            logger.debug(
+                "Session init throttled",
+                metadata: ["interval": "\(Self.minInitInterval)s"]
+            )
+            return
+        }
+        lastInitTime = Date()
+
         status = .loading
         error = nil
 
@@ -114,7 +133,7 @@ final class TVQRAuthViewModel {
             logger.debug(
                 "Device pairing session initialized",
                 metadata: [
-                    "session_id": decoded.sessionId,
+                    "session_id_prefix": String(decoded.sessionId.prefix(8)),
                     "expires_at": decoded.expiresAt,
                 ]
             )
@@ -149,11 +168,33 @@ final class TVQRAuthViewModel {
     // MARK: - WebSocket
 
     private func connectWebSocket(sessionId: String) {
-        let wsPath = "api/v1/auth/device-pairing/ws/\(sessionId)"
-        let wsURL = config.webSocketBaseURL.appendingPathComponent(wsPath)
+        guard var components = URLComponents(
+            url: config.webSocketBaseURL,
+            resolvingAgainstBaseURL: true
+        ) else {
+            logger.warning(
+                "Invalid WebSocket base URL",
+                metadata: ["url": config.webSocketBaseURL.absoluteString]
+            )
+            status = .failed
+            return
+        }
 
-        let session = URLSession(configuration: .default)
+        components.path = "/api/v1/auth/device-pairing/ws/\(sessionId)"
+
+        guard let wsURL = components.url else {
+            logger.warning("Failed to construct WebSocket URL", metadata: [:])
+            status = .failed
+            return
+        }
+
+        let sessionConfig = URLSessionConfiguration.default
+        sessionConfig.timeoutIntervalForRequest = config.apiTimeout
+        sessionConfig.waitsForConnectivity = true
+
+        let session = URLSession(configuration: sessionConfig)
         let task = session.webSocketTask(with: wsURL)
+        task.maximumMessageSize = Self.maxWebSocketMessageSize
         webSocketTask = task
         task.resume()
 
@@ -165,21 +206,29 @@ final class TVQRAuthViewModel {
         listenForMessages()
     }
 
+    private var isTerminalStatus: Bool {
+        status == .authenticated || status == .failed || status == .expired
+    }
+
     private func listenForMessages() {
+        guard !isTerminalStatus else { return }
+
         webSocketTask?.receive { [weak self] result in
-            guard let self else { return }
+            guard let self, !self.isTerminalStatus else { return }
 
             switch result {
             case .success(let message):
                 self.handleWebSocketMessage(message)
-                self.listenForMessages()
+                if !self.isTerminalStatus {
+                    self.listenForMessages()
+                }
 
             case .failure(let wsError):
                 self.logger.warning(
                     "WebSocket error in device pairing",
                     metadata: ["error": wsError.localizedDescription]
                 )
-                if self.status != .authenticated {
+                if !self.isTerminalStatus {
                     self.status = .failed
                     self.error = AuthError.devicePairingFailed(
                         underlying: wsError.localizedDescription
@@ -220,7 +269,11 @@ final class TVQRAuthViewModel {
             status = .companionConnected
             logger.info(
                 "Companion device connected for pairing",
-                metadata: ["session_id": sessionId ?? "unknown"]
+                metadata: [
+                    "session_id_prefix": String(
+                        (sessionId ?? "unknown").prefix(8)
+                    ),
+                ]
             )
 
         case "pairing_success":
@@ -231,14 +284,20 @@ final class TVQRAuthViewModel {
             error = AuthError.sessionExpired.userFacingMessage
             logger.info(
                 "Device pairing session expired",
-                metadata: ["session_id": sessionId ?? "unknown"]
+                metadata: [
+                    "session_id_prefix": String(
+                        (sessionId ?? "unknown").prefix(8)
+                    ),
+                ]
             )
+            cleanup()
 
         case "pairing_failed":
             status = .failed
             error = AuthError.devicePairingFailed(
                 underlying: "Companion device authentication failed"
             ).userFacingMessage
+            cleanup()
 
         default:
             logger.debug(
@@ -267,11 +326,13 @@ final class TVQRAuthViewModel {
                 user: user
             )
             status = .authenticated
+            cleanup()
         } catch {
             status = .failed
             self.error = AuthError.devicePairingFailed(
                 underlying: error.localizedDescription
             ).userFacingMessage
+            cleanup()
         }
     }
 
@@ -299,6 +360,14 @@ final class TVQRAuthViewModel {
             try? await Task.sleep(for: .seconds(delay))
             guard let self, !Task.isCancelled else { return }
             if self.status == .waitingForScan {
+                self.logger.info(
+                    "QR code expired, auto-refreshing",
+                    metadata: [
+                        "session_id_prefix": String(
+                            (self.sessionId ?? "unknown").prefix(8)
+                        ),
+                    ]
+                )
                 self.status = .expired
                 await self.retry()
             }
@@ -308,6 +377,8 @@ final class TVQRAuthViewModel {
     // MARK: - Cleanup
 
     private func cleanup() {
+        initTask?.cancel()
+        initTask = nil
         refreshTask?.cancel()
         refreshTask = nil
         webSocketTask?.cancel(with: .goingAway, reason: nil)

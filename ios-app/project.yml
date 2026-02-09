@@ -42,10 +42,15 @@ targets:
         product: BayitMedia
       - package: BayitPlus
         product: BayitVoice
+      - package: BayitPlus
+        product: BayitWidgetShared
+      - target: BayitWidgets
+        embed: true
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: tv.bayit.plus
         PRODUCT_NAME: "Bayit+"
+        CODE_SIGN_ENTITLEMENTS: BayitPlusApp/BayitPlusApp.entitlements
         MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: 1
         INFOPLIST_FILE: BayitPlusApp/Info.plist
@@ -105,11 +110,53 @@ targets:
         GOOGLE_CLIENT_ID: "624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com"
         GOOGLE_SERVER_CLIENT_ID: "624470113582-7p34b1tpqlfob5sh4cl9eoospmvao1at.apps.googleusercontent.com"
 
+  BayitWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Extensions/WidgetExtension
+        type: group
+    dependencies:
+      - package: BayitPlus
+        product: BayitCore
+      - package: BayitPlus
+        product: BayitNetworking
+      - package: BayitPlus
+        product: BayitLocalization
+      - package: BayitPlus
+        product: BayitDesignSystem
+      - package: BayitPlus
+        product: BayitWidgetShared
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+      - sdk: AppIntents.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: tv.bayit.plus.widgets
+        PRODUCT_NAME: "Bayit+ Widgets"
+        CODE_SIGN_ENTITLEMENTS: Extensions/WidgetExtension/BayitWidgets.entitlements
+        SWIFT_VERSION: "5.9"
+        IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+
 schemes:
   BayitPlusApp:
     build:
       targets:
         BayitPlusApp: all
+        BayitWidgets: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+    profile:
+      config: Release
+    archive:
+      config: Release
+
+  BayitWidgets:
+    build:
+      targets:
+        BayitWidgets: all
     run:
       config: Debug
     test:

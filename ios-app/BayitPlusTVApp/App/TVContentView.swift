@@ -1,5 +1,6 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitNetworking
 import SwiftUI
 
 /// Root content view for the tvOS app.
@@ -28,7 +29,8 @@ struct TVContentView: View {
                         withAnimation {
                             coordinator.showingAuth = false
                         }
-                    }
+                    },
+                    logger: TVAppAPILogger()
                 )
                 .transition(.opacity)
             } else {
