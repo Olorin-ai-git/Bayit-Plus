@@ -55,14 +55,12 @@ extension PlayerView {
             // Disable subtitles
             handleSubtitleSelection(nil)
         } else {
-            // Enable subtitles - disable dubbing (mutual exclusivity)
+            // Enable subtitles with default language - disable dubbing (mutual exclusivity)
             if liveDubbingVM?.isEnabled == true {
                 liveDubbingVM?.toggleDubbing(channelId: contentId)
             }
-            // Show subtitle picker for language selection
-            withAnimation(.spring(duration: 0.3)) {
-                showSubtitlePicker = true
-            }
+            // Enable subtitles directly with English default
+            handleSubtitleSelection("en")
         }
     }
 
@@ -71,16 +69,10 @@ extension PlayerView {
     /// Toggles live dubbing. If subtitles are active, disables them first
     /// (mutual exclusivity). User must re-enable subtitles manually.
     func toggleLiveDubbing() {
-        guard let vm = liveDubbingVM else {
-            showDubbingControls = true
-            return
-        }
+        guard let vm = liveDubbingVM else { return }
 
-        if vm.isEnabled {
-            // Disable dubbing - do NOT auto-re-enable subtitles
-            vm.toggleDubbing(channelId: contentId)
-        } else {
-            // Enable dubbing - disable live subtitles (mutual exclusivity)
+        // Disable active subtitles/split when enabling dubbing (mutual exclusivity)
+        if !vm.isEnabled {
             if selectedSubtitleLanguage != nil {
                 handleSubtitleSelection(nil)
             }
@@ -90,8 +82,10 @@ extension PlayerView {
                 primarySubtitleCues = []
                 secondarySubtitleCues = []
             }
-            showDubbingControls = true
         }
+
+        // Direct toggle - dubbing VM handles premium gate internally
+        vm.toggleDubbing(channelId: contentId)
     }
 
     // MARK: - Toggle Split Subtitles

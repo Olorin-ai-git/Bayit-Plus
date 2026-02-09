@@ -43,6 +43,11 @@ public final class AuthManager {
     let backendTokenKeychainKey = "bayit_backend_jwt"
     let refreshTokenKeychainKey = "bayit_backend_refresh_token"
     let userKeychainKey = "bayit_cached_user"
+    let sessionTimestampKeychainKey = "bayit_session_timestamp"
+
+    /// Maximum session age in days, read from Info.plist or environment.
+    /// Defaults to 7 days if not configured.
+    let sessionMaxAgeDays: Int
 
     /// Firebase auth state listener handle
     var authStateHandle: AuthStateDidChangeListenerHandle?
@@ -63,6 +68,11 @@ public final class AuthManager {
             refreshTokenKeychainKey: refreshTokenKeychainKey
         )
 
+        let info = Bundle.main.infoDictionary ?? [:]
+        let configuredDays = info["SESSION_MAX_AGE_DAYS"] as? String
+            ?? ProcessInfo.processInfo.environment["SESSION_MAX_AGE_DAYS"]
+        self.sessionMaxAgeDays = Int(configuredDays ?? "") ?? 7
+
         restoreCachedSession()
         listenForAuthStateChanges()
     }
@@ -78,6 +88,67 @@ public final class AuthManager {
     /// Provides the `AuthTokenProvider` for injection into BayitNetworking.
     public var authTokenProvider: AuthTokenProvider {
         tokenProvider
+    }
+
+    // MARK: - Session Expiry
+
+    /// Whether the stored session timestamp exceeds `sessionMaxAgeDays`.
+    var isSessionExpired: Bool {
+        guard let timestampString = try? keychainService.load(
+            for: sessionTimestampKeychainKey
+        ),
+              let timestamp = TimeInterval(timestampString) else {
+            return true
+        }
+        let sessionDate = Date(timeIntervalSince1970: timestamp)
+        let maxAge = TimeInterval(sessionMaxAgeDays * 86400)
+        return Date().timeIntervalSince(sessionDate) > maxAge
+    }
+
+    /// Stores the current time as the session timestamp in Keychain.
+    func stampSessionTimestamp() {
+        let timestamp = String(Date().timeIntervalSince1970)
+        try? keychainService.save(
+            token: timestamp, for: sessionTimestampKeychainKey
+        )
+    }
+
+    // MARK: - Device Pairing Sign-In
+
+    /// Signs in from a device pairing flow (QR code scan on companion device).
+    /// Stores the provided tokens and user in Keychain, matching the pattern
+    /// used by `handleFirebaseAuthResult`.
+    public func signInFromDevicePairing(
+        accessToken: String,
+        refreshToken: String?,
+        user pairingUser: BayitUser
+    ) throws {
+        try keychainService.save(
+            token: accessToken, for: backendTokenKeychainKey
+        )
+        if let refresh = refreshToken {
+            try keychainService.save(
+                token: refresh, for: refreshTokenKeychainKey
+            )
+        }
+
+        if let userData = try? JSONEncoder().encode(pairingUser) {
+            try? keychainService.save(
+                token: String(data: userData, encoding: .utf8) ?? "",
+                for: userKeychainKey
+            )
+        }
+
+        stampSessionTimestamp()
+
+        user = pairingUser
+        token = accessToken
+        isLoading = false
+
+        logger.info(
+            "Device pairing sign-in succeeded",
+            metadata: ["user_id": pairingUser.id]
+        )
     }
 
     // MARK: - Sign Out
@@ -99,6 +170,7 @@ public final class AuthManager {
         try? keychainService.delete(for: backendTokenKeychainKey)
         try? keychainService.delete(for: refreshTokenKeychainKey)
         try? keychainService.delete(for: userKeychainKey)
+        try? keychainService.delete(for: sessionTimestampKeychainKey)
 
         clearState()
         logger.info("User signed out", metadata: [:])

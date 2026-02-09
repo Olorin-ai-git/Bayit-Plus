@@ -23,7 +23,7 @@ struct TVContentView: View {
                 )
                 .transition(.opacity)
             } else if coordinator.showingAuth {
-                TVAuthView(
+                TVSignInView(
                     onAuthSuccess: {
                         withAnimation {
                             coordinator.showingAuth = false

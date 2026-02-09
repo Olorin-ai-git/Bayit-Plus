@@ -55,6 +55,8 @@ extension AuthManager {
         user = bayitUser
         token = backendToken
         isLoading = false
+
+        stampSessionTimestamp()
     }
 
     /// Exchanges a provider-specific token with the backend for a JWT.
@@ -117,7 +119,24 @@ extension AuthManager {
     }
 
     /// Restores a cached session from Keychain on launch.
+    /// Checks session expiry and clears state if the session is too old.
     func restoreCachedSession() {
+        guard !isSessionExpired else {
+            logger.info(
+                "Cached session expired, clearing credentials",
+                metadata: [
+                    "max_age_days": String(sessionMaxAgeDays)
+                ]
+            )
+            clearState()
+            try? keychainService.delete(for: tokenKeychainKey)
+            try? keychainService.delete(for: backendTokenKeychainKey)
+            try? keychainService.delete(for: refreshTokenKeychainKey)
+            try? keychainService.delete(for: userKeychainKey)
+            try? keychainService.delete(for: sessionTimestampKeychainKey)
+            return
+        }
+
         if let userJSON = try? keychainService.load(for: userKeychainKey),
            let userData = userJSON.data(using: .utf8),
            let cachedUser = try? JSONDecoder().decode(BayitUser.self, from: userData) {
@@ -143,6 +162,7 @@ extension AuthManager {
                 try? self.keychainService.delete(for: self.backendTokenKeychainKey)
                 try? self.keychainService.delete(for: self.refreshTokenKeychainKey)
                 try? self.keychainService.delete(for: self.userKeychainKey)
+                try? self.keychainService.delete(for: self.sessionTimestampKeychainKey)
             }
         }
     }

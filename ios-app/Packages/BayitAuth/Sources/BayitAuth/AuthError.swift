@@ -19,6 +19,8 @@ public enum AuthError: LocalizedError, Sendable {
     case missingIDToken
     case signOutFailed(underlying: String)
     case cancelled
+    case devicePairingFailed(underlying: String)
+    case sessionExpired
 
     /// User-facing message suitable for display in the UI.
     /// Avoids exposing technical details.
@@ -50,6 +52,10 @@ public enum AuthError: LocalizedError, Sendable {
             return "Could not sign out. Please try again."
         case .cancelled:
             return "Sign-in was cancelled"
+        case .devicePairingFailed:
+            return "Device pairing failed. Please try again."
+        case .sessionExpired:
+            return "Your session has expired. Please sign in again."
         }
     }
 
@@ -89,6 +95,10 @@ public enum AuthError: LocalizedError, Sendable {
             return "Sign-out failed: \(underlying)"
         case .cancelled:
             return "Authentication was cancelled"
+        case .devicePairingFailed(let underlying):
+            return "Device pairing failed: \(underlying)"
+        case .sessionExpired:
+            return "Session has expired"
         }
     }
 }
