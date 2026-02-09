@@ -227,8 +227,10 @@ async def generate_nikud_for_track(
 
     if track.has_nikud_version and not force:
         return {
+            "job_id": None,
             "message": "Nikud already generated",
             "status": "completed",
+            "progress": 100,
             "content_id": content_id,
             "generated_at": track.nikud_generated_at.isoformat() if track.nikud_generated_at else None,
         }
@@ -352,8 +354,10 @@ async def generate_shoresh_for_track(
 
     if track.has_shoresh_version and not force:
         return {
+            "job_id": None,
             "message": "Shoresh already generated",
             "status": "completed",
+            "progress": 100,
             "content_id": content_id,
             "generated_at": track.shoresh_generated_at.isoformat() if track.shoresh_generated_at else None,
         }
@@ -482,8 +486,10 @@ async def generate_heblish_for_track(
 
     if track.has_heblish_version and not force:
         return {
+            "job_id": None,
             "message": "Heblish already generated",
             "status": "completed",
+            "progress": 100,
             "content_id": content_id,
             "generated_at": track.heblish_generated_at.isoformat() if track.heblish_generated_at else None,
         }
@@ -612,8 +618,10 @@ async def generate_grammar_flip_for_track(
 
     if track.has_grammar_flip_version and not force:
         return {
+            "job_id": None,
             "message": "Grammar-flip already generated",
             "status": "completed",
+            "progress": 100,
             "content_id": content_id,
             "generated_at": track.grammar_flip_generated_at.isoformat() if track.grammar_flip_generated_at else None,
         }
@@ -743,8 +751,10 @@ async def generate_slang_synthesis_for_track(
 
     if track.has_slang_synthesis_version and not force:
         return {
+            "job_id": None,
             "message": "Slang synthesis already generated",
             "status": "completed",
+            "progress": 100,
             "content_id": content_id,
             "generated_at": track.slang_synthesis_generated_at.isoformat() if track.slang_synthesis_generated_at else None,
         }
@@ -877,8 +887,10 @@ async def generate_engrew_for_track(
 
     if track.has_engrew_version and not force:
         return {
+            "job_id": None,
             "message": "Engrew already generated",
             "status": "completed",
+            "progress": 100,
             "content_id": content_id,
             "generated_at": track.engrew_generated_at.isoformat() if track.engrew_generated_at else None,
         }

@@ -106,3 +106,26 @@ class Profile(Document):
             created_at=self.created_at,
             last_used_at=self.last_used_at,
         )
+
+    @classmethod
+    async def get_or_create_active_profile(cls, user, logger=None) -> "Profile":
+        """Get the active profile for a user, creating a default one if needed."""
+        profile = None
+        if user.active_profile_id:
+            try:
+                profile = await cls.get(user.active_profile_id)
+            except Exception as e:
+                if logger:
+                    logger.warning(
+                        f"Failed to get active profile {user.active_profile_id}: {e}",
+                        extra={"user_id": str(user.id)},
+                    )
+                user.active_profile_id = None
+        if not profile:
+            profile = await cls.find_one(cls.user_id == str(user.id))
+        if not profile:
+            profile = cls(user_id=str(user.id), name=user.name)
+            await profile.insert()
+            user.active_profile_id = str(profile.id)
+            await user.save()
+        return profile

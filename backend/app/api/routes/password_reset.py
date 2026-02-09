@@ -244,6 +244,7 @@ async def change_password(
 
     # Update password
     current_user.hashed_password = get_password_hash(change_request.new_password)
+    current_user.last_password_change = datetime.now(timezone.utc)
     await current_user.save()
 
     logger.info(f"Password changed for user: {current_user.email}")

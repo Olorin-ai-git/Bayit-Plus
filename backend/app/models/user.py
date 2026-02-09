@@ -180,6 +180,23 @@ class User(Document):
     password_reset_token: Optional[str] = None
     password_reset_expires: Optional[datetime] = None
 
+    # MFA / Two-Factor Authentication
+    two_factor_enabled: bool = False
+    two_factor_secret: Optional[str] = None  # TOTP secret (encrypted)
+    two_factor_method: Optional[Literal["totp", "sms"]] = None
+
+    # SMS MFA (separate from phone verification to avoid conflicts)
+    mfa_sms_code: Optional[str] = None
+    mfa_sms_sent_at: Optional[datetime] = None
+    mfa_failed_attempts: int = 0
+    mfa_locked_until: Optional[datetime] = None
+
+    # Biometric preference (server-side flag)
+    biometric_enabled: bool = False
+
+    # Password tracking
+    last_password_change: Optional[datetime] = None
+
     # Subscription info
     subscription_id: Optional[str] = None
     subscription_tier: Optional[str] = None  # basic, premium, family

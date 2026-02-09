@@ -45,7 +45,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 admin_uploads, admin_widgets,
                                 admin_youngsters_content, audiobooks, audible_integration,
                                 auth, avatar_dialogue, chapters, chat,
-                                mobile_auth,
+                                mfa, mobile_auth,
                                 channel_chat, chess, children, content, content_taxonomy,
                                 cultures, device_pairing, devices,
                                 diagnostics, direct_messages, downloads, dubbing, epg,
@@ -58,9 +58,10 @@ def register_all_routers(app: FastAPI) -> None:
                                 notifications,
                                 onboarding, party, password_reset,
                                 playback_session, podcasts, profile_controls, profile_stats,
-                                profiles, radio, recording_queries, recording_schedule_queries, recording_schedules, recordings,
+                                profiles, profiles_me, profiles_preferences,
+                                radio, recording_queries, recording_schedule_queries, recording_schedules, recordings,
                                 ritual, search,
-                                series_recording_rules,
+                                security_settings, series_recording_rules,
                                 search_analytics, search_llm, search_scenes,
                                 search_suggestions, stats, subscriptions,
                                 subtitle_preferences, support,
@@ -126,6 +127,16 @@ def register_all_routers(app: FastAPI) -> None:
         tags=["device-pairing"],
     )
     app.include_router(webauthn.router, prefix=f"{prefix}/webauthn", tags=["webauthn"])
+    app.include_router(
+        security_settings.router,
+        prefix=f"{prefix}/auth",
+        tags=["security-settings"],
+    )
+    app.include_router(
+        mfa.router,
+        prefix=f"{prefix}/auth",
+        tags=["mfa"],
+    )
     logger.debug("Registered auth routes")
 
     # ============================================
@@ -218,6 +229,8 @@ def register_all_routers(app: FastAPI) -> None:
         tags=["series-recording-rules"],
     )
     app.include_router(profiles.router, prefix=f"{prefix}/profiles", tags=["profiles"])
+    app.include_router(profiles_me.router, prefix=f"{prefix}/profiles", tags=["profiles"])
+    app.include_router(profiles_preferences.router, prefix=f"{prefix}/profiles", tags=["profiles"])
     app.include_router(children.router, prefix=f"{prefix}/children", tags=["children"])
     app.include_router(
         youngsters.router, prefix=f"{prefix}/youngsters", tags=["youngsters"]

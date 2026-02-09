@@ -1,3 +1,4 @@
+import BayitAuth
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
@@ -7,7 +8,9 @@ struct ProfileView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(AuthManager.self) var authManager
     @State private var viewModel: ProfileViewModel?
+    @State var biometricVM: BiometricViewModel?
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -22,6 +25,8 @@ struct ProfileView: View {
                     } else if let profile = vm.profile {
                         profileHeader(profile)
                         creditBalanceSection(profile)
+                        accountInfoSection(profile)
+                        securitySection(profile)
                         statsSection(vm.stats)
                         menuSection
                     }
@@ -34,7 +39,13 @@ struct ProfileView: View {
             if viewModel == nil {
                 viewModel = ProfileViewModel(repository: repos.user)
             }
+            if biometricVM == nil {
+                biometricVM = BiometricViewModel(
+                    securityRepository: repos.securitySettings
+                )
+            }
             await viewModel?.load()
+            await biometricVM?.load()
         }
     }
 
@@ -161,57 +172,6 @@ struct ProfileView: View {
                 }
             }
             .padding(.horizontal, DesignTokens.Spacing.lg)
-        }
-    }
-
-    private var menuSection: some View {
-        VStack(spacing: DesignTokens.Spacing.sm) {
-            menuRow(icon: "heart.fill", title: "profile.favorites") {
-                coordinator.pushToCurrentTab(.favorites)
-            }
-            menuRow(icon: "list.bullet", title: "profile.playlist") {
-                coordinator.pushToCurrentTab(.playlist)
-            }
-            menuRow(icon: "arrow.down.circle.fill", title: "profile.downloads") {
-                coordinator.pushToCurrentTab(.downloads)
-            }
-            menuRow(icon: "record.circle", title: "profile.recordings") {
-                coordinator.pushToCurrentTab(.recordings)
-            }
-            menuRow(icon: "star.fill", title: "profile.rewards") {
-                coordinator.pushToCurrentTab(.rewards)
-            }
-            menuRow(icon: "house.lodge.fill", title: "profile.household") {
-                coordinator.pushToCurrentTab(.household)
-            }
-            menuRow(icon: "gearshape.fill", title: "profile.settings") {
-                coordinator.pushToCurrentTab(.settings)
-            }
-        }
-        .padding(.horizontal, DesignTokens.Spacing.lg)
-    }
-
-    private func menuRow(icon: String, title: String, action: @escaping () -> Void) -> some View {
-        GlassCard {
-            Button(action: action) {
-                HStack(spacing: DesignTokens.Spacing.md) {
-                    Image(systemName: icon)
-                        .font(.system(size: DesignTokens.FontSize.lg))
-                        .foregroundColor(DesignTokens.Primary.default)
-                        .frame(width: 32)
-
-                    Text(localization.t(title))
-                        .font(.system(size: DesignTokens.FontSize.md))
-                        .foregroundColor(DesignTokens.Text.primary)
-
-                    Spacer()
-
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: DesignTokens.FontSize.sm))
-                        .foregroundColor(DesignTokens.Text.muted)
-                }
-                .padding(DesignTokens.Spacing.md)
-            }
         }
     }
 

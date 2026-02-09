@@ -14,6 +14,13 @@ protocol SecurityRepository: Sendable {
     func signOutAll() async throws
     func enableBiometric() async throws
     func disableBiometric() async throws
+    func sendSMS2FA() async throws
+    func verifySMS2FA(code: String) async throws
+}
+
+/// Shared request body for MFA code verification endpoints.
+private struct MFAVerifyRequest: Encodable, Sendable {
+    let code: String
 }
 
 /// Production implementation of `SecurityRepository` using `APIClient`.
@@ -63,12 +70,9 @@ final class APISecurityRepository: SecurityRepository, @unchecked Sendable {
     }
 
     func verify2FA(code: String) async throws {
-        struct VerifyRequest: Encodable, Sendable {
-            let code: String
-        }
         _ = try await client.post(
             "/api/v1/auth/2fa/verify",
-            body: VerifyRequest(code: code),
+            body: MFAVerifyRequest(code: code),
             as: MessageResponse.self
         )
     }
@@ -108,6 +112,22 @@ final class APISecurityRepository: SecurityRepository, @unchecked Sendable {
         _ = try await client.post(
             "/api/v1/auth/biometric/disable",
             body: EmptyBody(),
+            as: MessageResponse.self
+        )
+    }
+
+    func sendSMS2FA() async throws {
+        _ = try await client.post(
+            "/api/v1/auth/2fa/sms/send",
+            body: EmptyBody(),
+            as: MessageResponse.self
+        )
+    }
+
+    func verifySMS2FA(code: String) async throws {
+        _ = try await client.post(
+            "/api/v1/auth/2fa/sms/verify",
+            body: MFAVerifyRequest(code: code),
             as: MessageResponse.self
         )
     }

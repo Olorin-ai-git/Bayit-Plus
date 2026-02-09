@@ -108,6 +108,8 @@ struct RouteDestinationResolver {
             DirectMessagesView()
         case .conversation(let friendId):
             ConversationView(friendId: friendId)
+        case .mfaSetup:
+            MFASetupView()
         default:
             ErrorStateView(
                 message: "Screen not available",
