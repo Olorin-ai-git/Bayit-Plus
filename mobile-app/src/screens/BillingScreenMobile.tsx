@@ -16,10 +16,9 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  RefreshControl,
-  ActivityIndicator,
-  SafeAreaView,
+  RefreshControl,  SafeAreaView,
 } from 'react-native';
+import { GlassButton as GlassButtonImport , GlassLoadingSpinner} from '@bayit/shared/ui';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -212,12 +211,13 @@ export const BillingScreenMobile: React.FC = () => {
           <Text className="text-lg font-semibold text-white" style={{ textAlign }}>
             {t('billing.paymentMethods')}
           </Text>
-          <TouchableOpacity
+          <GlassButtonImport
             onPress={handleAddPaymentMethod}
-            className="px-4 py-2 rounded-lg bg-purple-600/30"
+            variant="secondary"
+            className="px-4 py-2"
           >
             <Text className="text-purple-600 text-sm font-semibold">+ {t('billing.addCard')}</Text>
-          </TouchableOpacity>
+          </GlassButtonImport>
         </View>
 
         {paymentMethods.length === 0 ? (
@@ -284,7 +284,7 @@ export const BillingScreenMobile: React.FC = () => {
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text className="text-white text-base mt-4">{t('common.loading')}</Text>
       </SafeAreaView>
     );

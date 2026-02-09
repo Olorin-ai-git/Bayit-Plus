@@ -5,9 +5,9 @@ import {
   FlatList,
   TouchableOpacity,
   Animated,
-  ActivityIndicator,
   Image,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../components/ui';
@@ -165,7 +165,7 @@ const DownloadCard: React.FC<{
           {item.status === 'downloading' && (
             <View className={`mt-1 items-center gap-1 ${isRTL ? 'flex-row' : 'flex-row-reverse'}`}>
               <Text className={`text-xs text-[${colors.primary}] font-semibold`}>{item.progress}%</Text>
-              <ActivityIndicator size="small" color={colors.primary} />
+              <GlassLoadingSpinner size="small" />
             </View>
           )}
         </View>
@@ -262,7 +262,7 @@ export const DownloadsScreen: React.FC = () => {
   if (isLoading) {
     return (
       <View className={`flex-1 bg-[${colors.background}] justify-center items-center`}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text className={`text-[${colors.text}] text-lg mt-4`}>{t('common.loading')}</Text>
       </View>
     );

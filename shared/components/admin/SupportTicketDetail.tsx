@@ -11,9 +11,9 @@ import {
   ScrollView,
   TextInput,
   Modal,
-  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassView } from '../ui';
 import { colors } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
@@ -311,7 +311,7 @@ export const SupportTicketDetail: React.FC<SupportTicketDetailProps> = ({
                   disabled={!newNote.trim() || loading}
                 >
                   {loading ? (
-                    <ActivityIndicator size="small" color="#000000" />
+                    <GlassLoadingSpinner size="small" />
                   ) : (
                     <Text className="font-semibold" style={{ fontSize: isTV ? 14 : 12, color: '#000000' }}>
                       {t('admin.support.detail.saveNote', 'Save Note')}

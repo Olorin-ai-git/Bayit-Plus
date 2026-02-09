@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
 import { GlassView } from './ui/GlassView';
@@ -287,7 +288,7 @@ export const DualClock: React.FC<DualClockProps> = ({
   if (loading) {
     return (
       <GlassView className="p-6 rounded-lg" intensity="light">
-        <ActivityIndicator color={colors.primary} />
+        <GlassLoadingSpinner size="small" />
       </GlassView>
     );
   }

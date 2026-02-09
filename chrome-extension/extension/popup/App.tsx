@@ -14,7 +14,7 @@ import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SubscriptionPage } from './pages/SubscriptionPage';
-import { GlassSpinner } from '@bayit/glass';
+import { GlassLoadingSpinner } from '@bayit/glass';
 import { logger } from '../lib/logger';
 
 type Page = 'onboarding' | 'auth' | 'dashboard' | 'settings' | 'subscription';
@@ -127,7 +127,7 @@ export function App() {
     return (
       <div className="flex items-center justify-center w-full h-screen bg-gradient-to-br from-gray-900 to-gray-800">
         <div className="text-center">
-          <GlassSpinner size="large" />
+          <GlassLoadingSpinner size="large" />
           <p className="mt-4 text-white/80 text-sm">
             {t('common.loading')}
           </p>

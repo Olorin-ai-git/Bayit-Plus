@@ -11,6 +11,9 @@ from typing import Any, Dict, List, Optional, Union
 import anthropic
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 def parse_duration_to_seconds(duration: Union[str, int, float]) -> float:
@@ -183,7 +186,7 @@ async def _generate_news_chapters(
         )
 
     except Exception as e:
-        print(f"Error generating chapters: {e}")
+        logger.error("Error generating chapters", extra={"error": str(e)})
         # Fallback to default news structure
         return _create_default_news_chapters(content_id, content_title, duration)
 
@@ -320,7 +323,7 @@ async def _generate_general_chapters(
         )
 
     except Exception as e:
-        print(f"Error generating chapters: {e}")
+        logger.error("Error generating chapters", extra={"error": str(e)})
         # Simple fallback - divide into 3 parts
         third = duration / 3
         return GeneratedChapters(
@@ -425,7 +428,7 @@ async def generate_chapters_from_transcript(
         )
 
     except Exception as e:
-        print(f"Error generating chapters from transcript: {e}")
+        logger.error("Error generating chapters from transcript", extra={"error": str(e)})
         return await generate_chapters_from_title(
             content_id, content_title, duration_seconds, None, True
         )

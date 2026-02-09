@@ -6,7 +6,8 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '@bayit/shared';
 import { colors, spacing } from '@olorin/design-tokens';
@@ -65,7 +66,7 @@ export const RecommendationsHeader: React.FC<RecommendationsHeaderProps> = ({
           accessibilityLabel={t('tvos.aiRecommendations.refresh')}
         >
           {isRefreshing ? (
-            <ActivityIndicator size="small" color={colors.white} />
+            <GlassLoadingSpinner size="small" />
           ) : (
             <Text style={styles.refreshButtonText}>
               {t('tvos.aiRecommendations.refresh')}

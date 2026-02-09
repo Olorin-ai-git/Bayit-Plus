@@ -12,8 +12,8 @@ import {
   Modal,
   TextInput,
   Switch,
-  ActivityIndicator,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -192,7 +192,7 @@ export const PlanManagementScreen: React.FC = () => {
     return (
       <AdminLayout title={t('admin.titles.planManagement', 'Plan Management')}>
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color={colors.primary} />
+          <GlassLoadingSpinner size="large" />
         </View>
       </AdminLayout>
     );
@@ -372,7 +372,7 @@ export const PlanManagementScreen: React.FC = () => {
                   disabled={saving}
                 >
                   {saving ? (
-                    <ActivityIndicator size="small" color={colors.text} />
+                    <GlassLoadingSpinner size="small" />
                   ) : (
                     <Text className="text-sm text-white font-semibold">{t('common.save', 'Save')}</Text>
                   )}

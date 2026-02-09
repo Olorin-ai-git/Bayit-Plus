@@ -9,12 +9,11 @@ import React, { useEffect, useState, useMemo } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
+  StyleSheet,} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { GlassView, GlassButton } from '@bayit/shared';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useDirection } from '@bayit/shared-hooks';
 import { colors, spacing } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -208,7 +207,7 @@ export const CreditBalanceWidget: React.FC<CreditBalanceWidgetProps> = ({
     return (
       <GlassView style={[styles.container, containerStyle]}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.white} />
+          <GlassLoadingSpinner size="large" />
           <Text style={styles.loadingText}>
             {t('beta.credits.loading')}
           </Text>

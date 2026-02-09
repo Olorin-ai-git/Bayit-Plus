@@ -5,7 +5,8 @@
  */
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { logger } from '../utils/logger';
 import { Colors } from '../theme/colors';
 
@@ -79,9 +80,8 @@ export class ProductionErrorBoundary extends Component<Props, State> {
               <Text style={styles.logoText}>Bayit+</Text>
             </View>
 
-            <ActivityIndicator
+            <GlassLoadingSpinner
               size="large"
-              color={Colors.Info.default}
               style={styles.loader}
             />
 

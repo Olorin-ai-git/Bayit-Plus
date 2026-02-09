@@ -3,7 +3,8 @@
  * Used across all content pages for consistent loading experience
  */
 
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { GlassCard } from '@bayit/shared/ui';
 import { colors, spacing } from '@olorin/design-tokens';
@@ -32,7 +33,7 @@ export function LoadingState({
       accessibilityState={{ busy: true }}
     >
       <GlassCard style={[styles.card, backgroundColor && { backgroundColor }]}>
-        <ActivityIndicator size="large" color={spinnerColor} />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.text}>
           {message || t('common.loading')}
         </Text>

@@ -5,9 +5,9 @@ import {
   FlatList,
   TouchableOpacity,
   Animated,
-  ActivityIndicator,
   Image,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -198,7 +198,7 @@ export const RadioScreen: React.FC = () => {
   if (isLoading) {
     return (
       <View className="flex-1 bg-black justify-center items-center">
-        <ActivityIndicator size="large" color="#a855f7" />
+        <GlassLoadingSpinner size="large" />
         <Text className="text-white text-lg mt-4">{t('common.loading')}</Text>
       </View>
     );

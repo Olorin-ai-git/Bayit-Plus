@@ -7,12 +7,12 @@ import {
   TextInput,
   ScrollView,
   Animated,
-  ActivityIndicator,
   Platform,
   Pressable,
   Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigation } from '@react-navigation/native';
 import { GlassView, GlassCard } from '../ui';
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -383,7 +383,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
             {isLoading && (
               <View className="mb-2 items-end">
                 <GlassCard className="max-w-[80%] p-4 rounded-2xl bg-white/10 rounded-tr">
-                  <ActivityIndicator size="small" color={colors.primary} />
+                  <GlassLoadingSpinner size="small" />
                 </GlassCard>
               </View>
             )}
@@ -418,7 +418,7 @@ export const Chatbot: React.FC<ChatbotProps> = ({ visible, onClose }) => {
               )}
               {isTranscribing && (
                 <View className="flex-row items-center gap-2">
-                  <ActivityIndicator size="small" color={colors.primary} />
+                  <GlassLoadingSpinner size="small" />
                   <Text className="text-sm text-purple-600">{t('voice.processing', 'מתמלל...')}</Text>
                 </View>
               )}

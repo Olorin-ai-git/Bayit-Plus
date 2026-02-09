@@ -3,11 +3,11 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
   Animated,
   ScrollView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
 import { searchService } from '../../services/api';
@@ -134,7 +134,7 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
           {t('search.trending', 'Trending Searches')}
         </Text>
         <View className="py-6 items-center">
-          <ActivityIndicator size="small" color="#a855f7" />
+          <GlassLoadingSpinner size="small" />
         </View>
       </View>
     );

@@ -7,6 +7,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 
+from app.core.logging_config import get_logger
 from app.models.admin import Permission
 from app.models.content import Content, Podcast
 from app.models.content_taxonomy import ContentSection
@@ -14,6 +15,8 @@ from app.models.user import User
 
 from .admin_content_utils import has_permission
 from app.api.routes.content.utils import is_series_content
+
+logger = get_logger(__name__)
 
 router = APIRouter()
 
@@ -34,8 +37,7 @@ async def get_content_hierarchical(
     current_user: User = Depends(has_permission(Permission.CONTENT_READ)),
 ):
     """Get content in hierarchical structure - only parent items (series and movies), not episodes."""
-    # Debug logging
-    print(f"[admin_content_vod_read] Query params: page={page}, page_size={page_size}, sort_by={sort_by}, sort_direction={sort_direction}, content_type={content_type}, search={search}, is_published={is_published}")
+    logger.debug("Query params received", extra={"page": page, "page_size": page_size, "sort_by": sort_by, "sort_direction": sort_direction, "content_type": content_type, "search": search, "is_published": is_published})
     # Build base query - exclude episodes (items with series_id set) and merged items
     query = Content.find(
         {
@@ -108,18 +110,18 @@ async def get_content_hierarchical(
     import time
     start_time = time.time()
 
-    print(f"[admin_content_vod_read] Sorting by: {sort_string} (from sort_by={sort_by}, sort_direction={sort_direction})")
-    print(f"[admin_content_vod_read] Content type filter: {content_type}")
+    logger.debug("Sort configuration", extra={"sort_string": sort_string, "sort_by": sort_by, "sort_direction": sort_direction})
+    logger.debug("Content type filter applied", extra={"content_type": content_type})
 
     count_start = time.time()
     total = await query.count()
-    print(f"[admin_content_vod_read] Count took: {(time.time() - count_start) * 1000:.0f}ms")
+    logger.debug("Count query completed", extra={"duration_ms": f"{(time.time() - count_start) * 1000:.0f}"})
 
     query_start = time.time()
     skip = (page - 1) * page_size
     items = await query.sort(sort_string).skip(skip).limit(page_size).to_list()
-    print(f"[admin_content_vod_read] Main query took: {(time.time() - query_start) * 1000:.0f}ms")
-    print(f"[admin_content_vod_read] Query executed: {len(items)} items returned out of {total} total")
+    logger.debug("Main query completed", extra={"duration_ms": f"{(time.time() - query_start) * 1000:.0f}"})
+    logger.debug("Query results", extra={"items_returned": len(items), "total": total})
 
     # Batch fetch all subtitle tracks for all content IDs (eliminates N+1 query problem)
     # Use projection to only fetch content_id and language (exclude massive 'cues' array)
@@ -132,7 +134,7 @@ async def get_content_hierarchical(
         {"content_id": {"$in": content_ids}},
         {"content_id": 1, "language": 1, "has_nikud_version": 1, "has_shoresh_version": 1, "has_heblish_version": 1, "has_grammar_flip_version": 1, "has_slang_synthesis_version": 1, "has_engrew_version": 1}
     ).to_list(None)
-    print(f"[admin_content_vod_read] Subtitle query took: {(time.time() - subtitle_start) * 1000:.0f}ms")
+    logger.debug("Subtitle query completed", extra={"duration_ms": f"{(time.time() - subtitle_start) * 1000:.0f}"})
 
     # Build subtitle map: content_id -> {languages: set, ai_languages: set}
     # ai_languages contains languages that have AI-generated versions (nikud, shoresh, heblish, grammarFlip, slangSynthesis)
@@ -172,7 +174,7 @@ async def get_content_hierarchical(
         ]
         aggregation_result = await db.content.aggregate(pipeline).to_list(None)
         episode_counts = {doc["_id"]: doc["count"] for doc in aggregation_result}
-        print(f"[admin_content_vod_read] Episode query took: {(time.time() - episode_start) * 1000:.0f}ms")
+        logger.debug("Episode count query completed", extra={"duration_ms": f"{(time.time() - episode_start) * 1000:.0f}"})
 
     # Build response with episode counts for series and subtitle availability
     result_items = []
@@ -215,7 +217,7 @@ async def get_content_hierarchical(
 
         result_items.append(item_data)
 
-    print(f"[admin_content_vod_read] TOTAL TIME: {(time.time() - start_time) * 1000:.0f}ms")
+    logger.debug("Hierarchical content request completed", extra={"total_duration_ms": f"{(time.time() - start_time) * 1000:.0f}"})
 
     return {
         "items": result_items,

@@ -1,4 +1,5 @@
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { Mic, Square, Send } from 'lucide-react'
 import { GlassInput, GlassBadge } from '@bayit/shared/ui'
@@ -69,7 +70,7 @@ export function ChatInputBar({
             <GlassBadge
               variant="primary"
               size="sm"
-              icon={<ActivityIndicator size="small" color={colors.primary} />}
+              icon={<GlassLoadingSpinner size="small" />}
             >
               {t('chatbot.transcribing')}
             </GlassBadge>

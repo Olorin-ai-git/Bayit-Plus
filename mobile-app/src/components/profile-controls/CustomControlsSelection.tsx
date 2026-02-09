@@ -5,9 +5,10 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Colors } from '../../theme/colors';
+import { GlassButton } from '@bayit/shared/ui';
 
 interface FamilyControl {
   id: string;
@@ -39,7 +40,7 @@ export function CustomControlsSelection({
 
       {availableControls && availableControls.length > 0 ? (
         availableControls.map((control) => (
-          <TouchableOpacity
+          <GlassButton
             key={control.id}
             style={[
               styles.controlOption,
@@ -47,6 +48,7 @@ export function CustomControlsSelection({
             ]}
             onPress={() => onSelectControls(control.id)}
             disabled={isLoading}
+            variant={selectedControlsId === control.id ? 'primary' : 'secondary'}
           >
             <View style={styles.radioCircle}>
               {selectedControlsId === control.id && <View style={styles.radioCircleSelected} />}
@@ -75,7 +77,7 @@ export function CustomControlsSelection({
                 </Text>
               </View>
             </View>
-          </TouchableOpacity>
+          </GlassButton>
         ))
       ) : (
         <Text style={styles.noControlsText}>

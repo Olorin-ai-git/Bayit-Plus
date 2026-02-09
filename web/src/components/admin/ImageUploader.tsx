@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react'
-import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, Pressable, Image } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { Upload, X, AlertCircle, CheckCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { GlassView, GlassInput, GlassButton } from '@bayit/shared/ui'
@@ -233,7 +234,7 @@ export function ImageUploader({
                 </Text>
                 {isUploading && (
                   <View style={styles.uploadingContainer}>
-                    <ActivityIndicator size="small" color={colors.primary} />
+                    <GlassLoadingSpinner size="small" />
                     <Text style={styles.uploadingText}>
                       {t('admin.content.editor.imageUpload.uploading')}
                     </Text>

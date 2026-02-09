@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, ScrollView, Image, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, Image, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useDirection } from '@bayit/shared-hooks'
 import { Heart, Share2, ArrowLeft } from 'lucide-react'
@@ -48,7 +48,7 @@ export default function AudiobookDetailScreenMobile({ route, navigation }: any) 
     }
   }
 
-  if (isLoading) return <GlassView style={[styles.container, { paddingTop: safeAreaPadding.top, justifyContent: 'center' }]}><ActivityIndicator size="large" color={colors.primary.DEFAULT} /></GlassView>
+  if (isLoading) return <GlassView style={[styles.container, { paddingTop: safeAreaPadding.top, justifyContent: 'center' }]}><GlassLoadingSpinner size="large" /></GlassView>
 
   if (error || !audiobook) return (
     <GlassView style={[styles.container, { paddingTop: safeAreaPadding.top, justifyContent: 'center', alignItems: 'center' }]}>

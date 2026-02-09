@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { useResponsive } from '@/hooks/useResponsive'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -233,7 +234,7 @@ export default function VideoPlayerOverlays({
         <View style={styles.loadingOverlay}>
           <GlassView style={styles.loadingCard} intensity="high">
             <View style={styles.spinnerContainer}>
-              <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+              <GlassLoadingSpinner size="large" />
             </View>
             <Text style={styles.loadingText}>{t('player.loading', 'Loading...')}</Text>
           </GlassView>

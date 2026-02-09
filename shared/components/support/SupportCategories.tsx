@@ -8,9 +8,9 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassView } from '../ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
@@ -149,7 +149,7 @@ export const SupportCategories: React.FC = () => {
   if (loading) {
     return (
       <View className="p-8 md:p-16 items-center justify-center gap-3 md:gap-4">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text className={`${isTV ? 'text-base' : 'text-sm'} text-gray-400`} style={{ textAlign }}>
           {t('support.categories.loading', 'Loading documentation...')}
         </Text>

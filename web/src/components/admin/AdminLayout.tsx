@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
-import { View, Text, ActivityIndicator, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useResponsive } from '@/hooks/useResponsive'
 import { Outlet, Navigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -59,7 +60,7 @@ export default function AdminLayout() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     )

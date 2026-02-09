@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { View, Text, Pressable, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Image } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { Trash2, Eye, EyeOff, RotateCcw, Check, Tv, Film, Radio, Mic, Globe, Zap, Target } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GlassCard, GlassButton } from '@bayit/shared/ui';
@@ -120,7 +121,7 @@ export default function WidgetCard({
               />
               {imageLoading && (
                 <View style={styles.loadingOverlay}>
-                  <ActivityIndicator size="large" color={colors.primary} />
+                  <GlassLoadingSpinner size="large" />
                 </View>
               )}
             </>

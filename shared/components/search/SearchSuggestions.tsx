@@ -3,10 +3,10 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
 import { searchService } from '../../services/api';
@@ -169,7 +169,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
     }`} style={{ backdropFilter: 'blur(20px)' } as any}>
       {isLoading ? (
         <View className="py-4 items-center">
-          <ActivityIndicator size="small" color="#a855f7" />
+          <GlassLoadingSpinner size="small" />
         </View>
       ) : (
         suggestions.map((suggestion, index) => (

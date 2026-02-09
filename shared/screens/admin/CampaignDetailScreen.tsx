@@ -12,9 +12,9 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
-  ActivityIndicator,
   Switch,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { AdminLayout } from '../../components/admin/AdminLayout';
@@ -209,7 +209,7 @@ export const CampaignDetailScreen: React.FC = () => {
     return (
       <AdminLayout title={t('admin.titles.campaignDetail', 'Campaign')}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <GlassLoadingSpinner size="large" />
         </View>
       </AdminLayout>
     );
@@ -537,7 +537,7 @@ export const CampaignDetailScreen: React.FC = () => {
           disabled={saving}
         >
           {saving ? (
-            <ActivityIndicator size="small" color={colors.text} />
+            <GlassLoadingSpinner size="small" />
           ) : (
             <Text style={styles.saveButtonText}>
               {isNewCampaign ? t('admin.campaigns.create', 'Create Campaign') : t('admin.campaigns.save', 'Save Changes')}

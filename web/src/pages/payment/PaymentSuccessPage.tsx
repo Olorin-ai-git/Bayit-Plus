@@ -7,7 +7,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { GlassButton } from '@bayit/glass-components';
+import { GlassButton } from '@bayit/shared/ui';
 import logger from '@/utils/logger';
 
 const paymentLogger = logger.scope('PaymentSuccess');

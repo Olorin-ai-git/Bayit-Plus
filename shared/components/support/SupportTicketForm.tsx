@@ -11,9 +11,9 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassView } from '../ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
@@ -248,7 +248,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
                 disabled={loading}
               >
                 {loading ? (
-                  <ActivityIndicator size="small" color={colors.background} />
+                  <GlassLoadingSpinner size="small" />
                 ) : (
                   <Text className={`${isTV ? 'text-base' : 'text-sm'} font-semibold text-black`}>
                     {t('support.ticket.submit', 'Submit Ticket')}

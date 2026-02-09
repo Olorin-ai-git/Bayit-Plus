@@ -15,11 +15,11 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { GlassView } from '@bayit/shared';
+import { GlassLoadingSpinner, GlassButton } from '@bayit/shared/ui';
 import { useDirection } from '@bayit/shared-hooks';
 import { colors } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -112,9 +112,9 @@ export const ChapterListMobile: React.FC<ChapterListMobileProps> = ({
     const categoryColor = getCategoryColor(item.category);
 
     return (
-      <TouchableOpacity
+      <GlassButton
+        variant="ghost"
         onPress={() => handleChapterPress(item)}
-        activeOpacity={0.7}
       >
         <GlassView className={`rounded-lg mb-2 p-4 ${isActive ? 'border border-[${colors.primary}]' : ''}`}>
           <View className={isRTL ? 'flex-row-reverse items-center' : 'flex-row items-center'}>
@@ -170,7 +170,7 @@ export const ChapterListMobile: React.FC<ChapterListMobileProps> = ({
             </View>
           </View>
         </GlassView>
-      </TouchableOpacity>
+      </GlassButton>
     );
   };
 
@@ -187,7 +187,7 @@ export const ChapterListMobile: React.FC<ChapterListMobileProps> = ({
 
   const renderLoadingState = () => (
     <View className="items-center py-8">
-      <ActivityIndicator size="large" color={colors.primary} />
+      <GlassLoadingSpinner size="large" />
       <Text className={`text-sm text-[${colors.textSecondary}]`} style={{ textAlign }}>
         {t('chapters.generating')}
       </Text>

@@ -6,7 +6,8 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { View, TextInput, TouchableOpacity, Text, FlatList } from 'react-native';
+import { View, TouchableOpacity, Text, FlatList } from 'react-native';
+import { GlassInput } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { NativeIcon } from '@olorin/shared-icons/native';
 
@@ -41,7 +42,7 @@ export function SearchBar({
 }: SearchBarProps) {
   const { t } = useTranslation();
   const [isFocused, setIsFocused] = useState(false);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<any>(null);
 
   const handleClear = () => {
     onChange('');
@@ -74,7 +75,7 @@ export function SearchBar({
         <NativeIcon name="search" size="lg" color="#9ca3af" />
 
         {/* Input Field */}
-        <TextInput
+        <GlassInput
           ref={inputRef}
           value={value}
           onChangeText={onChange}

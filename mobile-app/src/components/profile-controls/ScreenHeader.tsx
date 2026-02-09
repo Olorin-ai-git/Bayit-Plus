@@ -5,10 +5,11 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../theme/colors';
+import { GlassButton } from '@bayit/shared/ui';
 
 interface ScreenHeaderProps {
   title: string;
@@ -20,15 +21,16 @@ export function ScreenHeader({ title, onBack }: ScreenHeaderProps) {
 
   return (
     <View style={styles.header}>
-      <TouchableOpacity
+      <GlassButton
         onPress={onBack}
         style={styles.backButton}
+        variant="ghost"
         accessibilityRole="button"
         accessibilityLabel={t('common.back', 'Back')}
         accessibilityHint={t('accessibility.navigateBack', 'Navigate back to profiles list')}
       >
         <Ionicons name="arrow-back" size={24} color={Colors.white} />
-      </TouchableOpacity>
+      </GlassButton>
       <Text style={styles.headerTitle}>{title}</Text>
     </View>
   );

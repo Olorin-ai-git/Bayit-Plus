@@ -11,8 +11,11 @@ import anthropic
 import pytz
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.models.content import Content, LiveChannel, RadioStation
 from app.models.user import User
+
+logger = get_logger(__name__)
 
 # Initialize Claude client
 client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
@@ -242,7 +245,7 @@ async def generate_ai_brief(user: User) -> Dict[str, Any]:
         return brief
 
     except Exception as e:
-        print(f"Error generating AI brief: {e}")
+        logger.error("Error generating AI brief", extra={"error": str(e)})
         return {
             "greeting": "בוקר טוב! ☀️",
             "israel_update": israel_context["activity_message"],

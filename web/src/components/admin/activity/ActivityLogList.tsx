@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, ScrollView, ActivityIndicator, Pressable, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -43,7 +44,7 @@ const ActivityLogList: React.FC<ActivityLogListProps> = ({
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
       </View>
     );
   }

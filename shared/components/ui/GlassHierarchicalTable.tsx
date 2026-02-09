@@ -17,7 +17,8 @@
  */
 
 import React, { useState, useCallback, ReactNode, useRef, useEffect } from 'react';
-import { View, Text, Pressable, ActivityIndicator, StyleSheet, Image, Animated } from 'react-native';
+import { View, Text, Pressable, StyleSheet, Image, Animated } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { logger } from '../../utils/logger';
 import { ChevronRight, ChevronDown, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
@@ -583,7 +584,7 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
       <View style={styles.bodyContainer}>
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+            <GlassLoadingSpinner size="large" />
             <Text style={styles.loadingText}>Loading...</Text>
           </View>
         ) : rows.length === 0 ? (

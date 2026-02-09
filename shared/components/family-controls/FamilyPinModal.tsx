@@ -8,7 +8,8 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { GlassInput } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useFamilyControlsStore } from '../../stores/familyControlsStore';
 
@@ -111,7 +112,7 @@ export const FamilyPinModal: React.FC<FamilyPinModalProps> = ({
         {description && <Text style={styles.description}>{description}</Text>}
 
         {mode === 'update' && (
-          <TextInput
+          <GlassInput
             style={styles.input}
             placeholder={t('familyControls.placeholders.currentPin')}
             placeholderTextColor="#888"
@@ -123,7 +124,7 @@ export const FamilyPinModal: React.FC<FamilyPinModalProps> = ({
           />
         )}
 
-        <TextInput
+        <GlassInput
           style={styles.input}
           placeholder={mode === 'verify' ? t('familyControls.placeholders.enterPin') : t('familyControls.placeholders.enterNewPin')}
           placeholderTextColor="#888"
@@ -135,7 +136,7 @@ export const FamilyPinModal: React.FC<FamilyPinModalProps> = ({
         />
 
         {(mode === 'setup' || mode === 'update') && (
-          <TextInput
+          <GlassInput
             style={styles.input}
             placeholder={t('familyControls.placeholders.confirmNewPin')}
             placeholderTextColor="#888"

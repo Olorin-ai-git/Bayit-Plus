@@ -17,6 +17,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { colors, spacing } from '@olorin/design-tokens';
 import { Colors } from '../../theme/colors';
+import { GlassButton } from '@bayit/shared/ui';
 
 export interface InsufficientCreditsModalProps {
   visible: boolean;
@@ -91,26 +92,26 @@ export const InsufficientCreditsModal: React.FC<InsufficientCreditsModalProps> =
           {/* Action Buttons */}
           <View style={styles.actions}>
             {onUpgrade && (
-              <TouchableOpacity style={styles.upgradeButton} onPress={onUpgrade} activeOpacity={0.8}>
+              <GlassButton variant="primary" style={styles.upgradeButton} onPress={onUpgrade}>
                 <Text style={styles.upgradeButtonText}>
                   {t('beta.insufficientCredits.upgradeButton')}
                 </Text>
-              </TouchableOpacity>
+              </GlassButton>
             )}
 
             {onViewProfile && (
-              <TouchableOpacity style={styles.secondaryButton} onPress={onViewProfile} activeOpacity={0.8}>
+              <GlassButton variant="secondary" style={styles.secondaryButton} onPress={onViewProfile}>
                 <Text style={styles.secondaryButtonText}>
                   {t('beta.insufficientCredits.viewProfileButton')}
                 </Text>
-              </TouchableOpacity>
+              </GlassButton>
             )}
 
-            <TouchableOpacity style={styles.cancelButton} onPress={onClose} activeOpacity={0.7}>
+            <GlassButton variant="ghost" style={styles.cancelButton} onPress={onClose}>
               <Text style={styles.cancelButtonText}>
                 {t('beta.insufficientCredits.cancelButton')}
               </Text>
-            </TouchableOpacity>
+            </GlassButton>
           </View>
 
           {/* Help Text */}

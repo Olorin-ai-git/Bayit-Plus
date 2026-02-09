@@ -6,7 +6,8 @@
  */
 
 import React, { useCallback, memo } from 'react';
-import { View, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { SearchResultCard } from './SearchResultCard';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
@@ -47,7 +48,7 @@ export const SearchResultsCards = memo(function SearchResultsCards({
     () =>
       isLoadingMore ? (
         <View style={styles.loader}>
-          <ActivityIndicator size="small" color={colors.primary} />
+          <GlassLoadingSpinner size="small" />
           <Text style={styles.loaderText}>{t('search.loadingMore')}</Text>
         </View>
       ) : null,

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, Text, Pressable, ActivityIndicator, ScrollView, Image, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ScrollView, Image, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
@@ -114,7 +115,7 @@ export default function MorningRitualPage() {
       <View style={styles.container}>
         <View style={styles.loadingContainer}>
           <NativeIcon name="home" size="xl" color={colors.primary.DEFAULT} />
-          <ActivityIndicator color={colors.primary} size="large" />
+          <GlassLoadingSpinner size="large" />
           <Text style={styles.loadingText}>{t('ritual.preparingRitual')}</Text>
         </View>
       </View>

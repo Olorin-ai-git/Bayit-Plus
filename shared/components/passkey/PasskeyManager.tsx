@@ -11,10 +11,10 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
-  ActivityIndicator,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassView } from '../ui/GlassView';
 import { GlassButton } from '../ui/GlassButton';
 import { GlassModal } from '../ui/GlassModal';
@@ -169,7 +169,7 @@ export const PasskeyManager: React.FC<PasskeyManagerProps> = ({
 
       {isLoading ? (
         <View className="p-8 items-center">
-          <ActivityIndicator size="large" color={colors.primary} />
+          <GlassLoadingSpinner size="large" />
         </View>
       ) : (
         <>

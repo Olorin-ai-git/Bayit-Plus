@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Link, useSearchParams } from 'react-router-dom';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, ShieldCheck, AlertTriangle, Check, ChevronDown, Globe } from 'lucide-react';
 import { colors, spacing } from '@olorin/design-tokens';
@@ -221,7 +222,7 @@ export default function ResetPasswordPage() {
           disabled={isSubmitting || !allRulesMet}
         >
           {isSubmitting ? (
-            <ActivityIndicator color="#000" size="small" />
+            <GlassLoadingSpinner size="small" />
           ) : (
             <Text style={styles.submitButtonText}>{t('resetPasswordPage.submit')}</Text>
           )}

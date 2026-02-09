@@ -16,7 +16,8 @@
 
 import React, { Suspense } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import type { RootStackParamList } from './types';
 import MainTabNavigator from './MainTabNavigator';
 import { colors } from '@olorin/design-tokens';
@@ -102,7 +103,7 @@ const LazyScreenFallback: React.FC = () => (
       backgroundColor: colors.background,
     }}
   >
-    <ActivityIndicator size="large" color={colors.primary} />
+    <GlassLoadingSpinner size="large" />
   </View>
 );
 

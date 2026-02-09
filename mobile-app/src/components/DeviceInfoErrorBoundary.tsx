@@ -5,9 +5,10 @@
  */
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { logger } from '../utils/logger';
 import { Colors } from '../theme/colors';
+import { GlassButton } from '@bayit/shared/ui';
 
 interface Props {
   children: ReactNode;
@@ -81,11 +82,12 @@ export class DeviceInfoErrorBoundary extends Component<Props, State> {
             <Text style={styles.message}>
               Bayit+ encountered a temporary initialization issue.
             </Text>
-            <TouchableOpacity
+            <GlassButton
+              variant="primary"
               style={styles.button}
               onPress={this.handleRetry}>
               <Text style={styles.buttonText}>Retry</Text>
-            </TouchableOpacity>
+            </GlassButton>
           </View>
         </View>
       );

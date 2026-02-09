@@ -12,8 +12,8 @@ import {
   Modal,
   TextInput,
   ScrollView,
-  ActivityIndicator,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -281,7 +281,7 @@ export const EmailCampaignsScreen: React.FC = () => {
                 <View style={styles.modalActions}>
                   <TouchableOpacity style={styles.cancelButton} onPress={() => setShowComposer(false)}><Text style={styles.cancelButtonText}>{t('common.cancel', 'Cancel')}</Text></TouchableOpacity>
                   <TouchableOpacity style={[styles.saveButton, saving && styles.saveButtonDisabled]} onPress={handleSaveCampaign} disabled={saving}>
-                    {saving ? <ActivityIndicator size="small" color={colors.text} /> : <Text style={styles.saveButtonText}>{t('common.save', 'Save')}</Text>}
+                    {saving ? <GlassLoadingSpinner size="small" /> : <Text style={styles.saveButtonText}>{t('common.save', 'Save')}</Text>}
                   </TouchableOpacity>
                 </View>
               </ScrollView>

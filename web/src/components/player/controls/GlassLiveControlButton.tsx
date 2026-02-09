@@ -4,7 +4,8 @@
  */
 
 import { useState, useEffect, useRef, ReactNode } from 'react'
-import { View, Text, Pressable, ActivityIndicator, Animated, StyleSheet } from 'react-native'
+import { View, Text, Pressable, Animated, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { Icon } from '@olorin/shared-icons/web'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { isTV } from '@bayit/shared/utils/platform'
@@ -117,11 +118,7 @@ export function GlassLiveControlButton({
 
       {/* Loading indicator */}
       {isConnecting && (
-        <ActivityIndicator
-          size="small"
-          color={colors.primary}
-          style={styles.loader}
-        />
+        <GlassLoadingSpinner size="small" />
       )}
 
       {/* Active indicator - Pulsing green dot (shows during connecting AND connected) */}

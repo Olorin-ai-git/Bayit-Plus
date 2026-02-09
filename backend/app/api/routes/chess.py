@@ -5,11 +5,14 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
+from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user
 from app.models.chess import (BotDifficulty, ChessChatMessage, ChessGame,
                               GameMode, PlayerColor)
 from app.models.user import User
 from app.services.chess_service import chess_service
+
+logger = get_logger(__name__)
 
 router = APIRouter(prefix="/chess", tags=["chess"])
 
@@ -236,10 +239,7 @@ async def invite_player(
             created_at=datetime.utcnow().isoformat(),
         )
 
-        # Log the invite (in production, send via WebSocket to the invitee)
-        print(
-            f"[CHESS] Game invite created: {current_user.name} invited {friend.name} to game {game.game_code}"
-        )
+        logger.info("Game invite created", extra={"inviter": current_user.name, "invitee": friend.name, "game_code": game.game_code})
 
         # Try to send real-time notification via WebSocket if user is connected
         from app.services.connection_manager import connection_manager

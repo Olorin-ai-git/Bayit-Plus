@@ -39,7 +39,7 @@ def content_to_dict(content: Content) -> Dict[str, Any]:
         "requires_subscription": content.requires_subscription,
         "is_kids_content": content.is_kids_content,
         "age_rating": content.age_rating,
-        "available_subtitle_languages": content.available_subtitle_languages,
+        "available_subtitle_languages": list(dict.fromkeys(content.available_subtitle_languages or [])),
         "has_subtitles": content.has_subtitles,
         "view_count": content.view_count,
         "avg_rating": content.avg_rating,

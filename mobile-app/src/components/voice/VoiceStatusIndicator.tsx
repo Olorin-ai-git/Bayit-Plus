@@ -10,11 +10,11 @@ import {
   View,
   Text,
   Animated,
-  TouchableOpacity,
 } from 'react-native';
 import { colors } from '@olorin/design-tokens';
 import { useVoiceState } from '../../hooks/useVoiceFeatures';
 import { VoiceStage } from '../../services/voiceManager';
+import { GlassButton } from '@bayit/shared/ui';
 
 interface VoiceStatusIndicatorProps {
   onPress?: () => void;
@@ -90,10 +90,10 @@ export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
 
   if (compact) {
     return (
-      <TouchableOpacity
+      <GlassButton
+        variant="ghost"
         onPress={onPress}
         className="flex-row items-center gap-1.5 px-2 py-1"
-        activeOpacity={0.7}
       >
         <View
           className="w-2 h-2 rounded-full"
@@ -110,15 +110,15 @@ export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
             {getStageLabel()}
           </Text>
         )}
-      </TouchableOpacity>
+      </GlassButton>
     );
   }
 
   return (
-    <TouchableOpacity
+    <GlassButton
+      variant="ghost"
       onPress={onPress}
       className="flex-row items-center gap-2"
-      activeOpacity={0.7}
     >
       <Animated.View
         className="w-3 h-3 rounded-full"
@@ -136,6 +136,6 @@ export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
           {getStageLabel()}
         </Text>
       )}
-    </TouchableOpacity>
+    </GlassButton>
   );
 };

@@ -3,7 +3,8 @@
  * Shows when settings are being saved
  */
 
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 
 interface SavingIndicatorProps {
@@ -17,7 +18,7 @@ export function SavingIndicator({ visible }: SavingIndicatorProps) {
 
   return (
     <View style={styles.container}>
-      <ActivityIndicator size="small" color="#A855F7" />
+      <GlassLoadingSpinner size="small" />
       <Text style={styles.text}>{t('common.saving', 'Saving...')}</Text>
     </View>
   );

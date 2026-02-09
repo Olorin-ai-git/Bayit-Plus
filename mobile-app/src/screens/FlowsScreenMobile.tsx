@@ -17,12 +17,12 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator,
   SafeAreaView,
   RefreshControl,
   Modal,
   Animated,
 } from "react-native";
+import { GlassButton } from '@bayit/shared/ui';
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import LinearGradient from "react-native-linear-gradient";
@@ -32,6 +32,7 @@ import { useDirection } from "@bayit/shared-hooks";
 import api from "@bayit/shared-services/api";
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { Colors } from '../theme/colors';
 
 import logger from '@/utils/logger';
@@ -304,7 +305,7 @@ export const FlowsScreenMobile: React.FC = () => {
   if (loading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.loadingText}>{t("common.loading")}</Text>
       </SafeAreaView>
     );
@@ -391,23 +392,25 @@ export const FlowsScreenMobile: React.FC = () => {
               </View>
 
               <View style={styles.activeBannerActions}>
-                <TouchableOpacity
+                <GlassButton
                   style={styles.startButton}
                   onPress={() => handleStartFlow(activeFlow)}
+                  variant="primary"
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                     <NativeIcon name="play" size="sm" color={Colors.Text.primary} />
                     <Text style={styles.startButtonText}>{t("flows.start", "Start")}</Text>
                   </View>
-                </TouchableOpacity>
-                <TouchableOpacity
+                </GlassButton>
+                <GlassButton
                   style={styles.skipButton}
                   onPress={() => handleSkipToday(activeFlow)}
+                  variant="ghost"
                 >
                   <Text style={styles.skipButtonText}>
                     {t("flows.skipToday", "Skip Today")}
                   </Text>
-                </TouchableOpacity>
+                </GlassButton>
               </View>
             </LinearGradientComponent>
           </Animated.View>
@@ -516,26 +519,28 @@ export const FlowsScreenMobile: React.FC = () => {
                 </View>
 
                 <View style={styles.modalActions}>
-                  <TouchableOpacity
+                  <GlassButton
                     style={styles.modalStartButton}
                     onPress={() => {
                       setShowFlowModal(false);
                       handleStartFlow(selectedFlow);
                     }}
+                    variant="primary"
                   >
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
                       <NativeIcon name="play" size="md" color={Colors.Text.primary} />
                       <Text style={styles.modalStartButtonText}>{t("flows.start", "Start")}</Text>
                     </View>
-                  </TouchableOpacity>
-                  <TouchableOpacity
+                  </GlassButton>
+                  <GlassButton
                     style={styles.modalCloseButton}
                     onPress={() => setShowFlowModal(false)}
+                    variant="ghost"
                   >
                     <Text style={styles.modalCloseButtonText}>
                       {t("common.close", "Close")}
                     </Text>
-                  </TouchableOpacity>
+                  </GlassButton>
                 </View>
               </>
             )}

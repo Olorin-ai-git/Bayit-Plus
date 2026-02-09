@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Pressable, Image, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Edit2, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -236,7 +237,7 @@ export default function ProfileSelectionPage() {
   if (isLoading && profiles.length === 0) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.loadingText}>{t('profiles.loading')}</Text>
       </View>
     );

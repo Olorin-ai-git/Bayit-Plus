@@ -14,9 +14,7 @@ import {
   View,
   Text,
   ScrollView,
-  Pressable,
-  ActivityIndicator,
-  StyleSheet,
+  Pressable,  StyleSheet,
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -27,6 +25,7 @@ import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { GlassModal } from '@olorin/glass-ui/native';
 import { GlassButton } from '@bayit/glass';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { speechService, wakeWordService, ttsService } from '../services';
 import { VoiceWaveform } from '../components/voice';
 import { colors, spacing, fontSize } from '@olorin/design-tokens';
@@ -210,7 +209,7 @@ export default function VoiceOnboardingScreen() {
             </View>
 
             {isLoading ? (
-              <ActivityIndicator size="large" color={colors.primary} className="my-8" />
+              <GlassLoadingSpinner size="large" />
             ) : (
               <Pressable className="w-full bg-[#7e22ce] rounded-xl py-6 items-center" onPress={handleRequestPermissions}>
                 <Text className="text-lg font-bold text-white">{t('voiceOnboarding.grantPermissions')}</Text>

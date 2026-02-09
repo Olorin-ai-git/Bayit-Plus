@@ -24,7 +24,8 @@ import { useNavigation } from "@react-navigation/native";
 import { useTranslation } from "react-i18next";
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
 import LinearGradient from "react-native-linear-gradient";
-import { GlassView, GlassButton } from "@bayit/shared";
+import { GlassView } from "@bayit/shared";
+import { GlassButton } from "@bayit/shared/ui";
 import { useDirection } from "@bayit/shared-hooks";
 import { NativeIcon } from "@olorin/shared-icons/native";
 import { Colors } from "../theme/colors";
@@ -152,10 +153,10 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
       (requiredTier === "family" && plan.id === "family");
 
     return (
-      <TouchableOpacity
+      <GlassButton
+        variant={isRecommended ? "primary" : "secondary"}
         key={plan.id}
         onPress={() => handleSelectPlan(plan.id)}
-        activeOpacity={0.7}
         className={`bg-white/5 rounded-2xl p-6 border border-white/10 mb-3 ${
           isRecommended ? "border-purple-600 bg-purple-600/15" : ""
         } ${!meetsRequirement ? "opacity-50" : ""}`}
@@ -204,7 +205,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
             className="mt-2"
           />
         </View>
-      </TouchableOpacity>
+      </GlassButton>
     );
   };
 
@@ -224,12 +225,13 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                 className="flex-1 rounded-t-3xl overflow-hidden"
               >
                 {/* Close button */}
-                <TouchableOpacity
+                <GlassButton
+                  variant="ghost"
                   onPress={handleClose}
                   className={`absolute top-4 ${isRTL ? 'left-4' : 'right-4'} w-10 h-10 rounded-full bg-white/10 justify-center items-center z-10`}
                 >
                   <NativeIcon name="x" size="md" color={Colors.white} />
-                </TouchableOpacity>
+                </GlassButton>
 
                 <ScrollView
                   contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 64, paddingBottom: 24 }}

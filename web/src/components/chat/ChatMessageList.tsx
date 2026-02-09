@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react'
-import { View, Text, ScrollView, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, ScrollView, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { ChatRecommendations } from './ChatRecommendations'
 import type { Message } from './types'
@@ -72,7 +73,7 @@ export function ChatMessageList({
       {isLoading && (
         <View className="mb-2 items-end">
           <View className="bg-white/10 px-4 py-2 rounded-lg rounded-tl-sm">
-            <ActivityIndicator size="small" color={colors.primary} />
+            <GlassLoadingSpinner size="small" />
           </View>
         </View>
       )}

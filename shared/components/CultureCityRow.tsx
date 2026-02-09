@@ -13,12 +13,12 @@ import {
   ScrollView,
   TouchableOpacity,
   Animated,
-  ActivityIndicator,
   Linking,
   ImageBackground,
   Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { NativeIcon, IconName } from '@olorin/shared-icons/native';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { cultureService } from '../services/api';
@@ -269,7 +269,7 @@ export const CultureCityRow: React.FC<CultureCityRowProps> = ({
               </View>
             )}
             <View style={styles.loadingContainer}>
-              <ActivityIndicator color={accentColor} size="large" />
+              <GlassLoadingSpinner size="large" />
             </View>
           </View>
         </ImageBackground>

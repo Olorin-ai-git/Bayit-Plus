@@ -11,8 +11,8 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
-  ActivityIndicator,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { useNotifications } from '@olorin/glass-ui/hooks';

@@ -5,10 +5,10 @@ import {
   TouchableOpacity,
   Animated,
   Modal,
-  ActivityIndicator,
   ScrollView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from './ui/GlassView';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
@@ -225,7 +225,7 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
   if (isLoading) {
     return (
       <View className="w-full items-center py-4">
-        <ActivityIndicator color={colors.primary} size="small" />
+        <GlassLoadingSpinner size="small" />
       </View>
     );
   }
@@ -313,7 +313,7 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
           <GlassView className={`${isTV ? 'w-[400px]' : 'w-[300px]'} max-h-[60%] p-6 rounded-3xl`} intensity="heavy">
             {isTranslating ? (
               <View className="items-center py-8">
-                <ActivityIndicator color={colors.primary} />
+                <GlassLoadingSpinner size="small" />
                 <Text className="text-sm text-gray-400 mt-2">{t('subtitles.translating')}</Text>
               </View>
             ) : translation ? (

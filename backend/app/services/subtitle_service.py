@@ -9,6 +9,10 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
+from app.core.logging_config import get_logger
+
+logger = get_logger(__name__)
+
 
 @dataclass
 class SubtitleCue:
@@ -105,7 +109,7 @@ def parse_vtt(content: str) -> SubtitleTrack:
                         )
                     )
             except Exception as e:
-                print(f"Error parsing VTT cue at line {i}: {e}")
+                logger.error("Error parsing VTT cue", extra={"line": i, "error": str(e)})
                 i += 1
         else:
             i += 1
@@ -159,7 +163,7 @@ def parse_srt(content: str) -> SubtitleTrack:
                         )
                     )
         except Exception as e:
-            print(f"Error parsing SRT block: {e}")
+            logger.error("Error parsing SRT block", extra={"error": str(e)})
             continue
 
     return SubtitleTrack(cues=cues, format="srt")
@@ -192,7 +196,7 @@ async def fetch_subtitles(url: str) -> Optional[SubtitleTrack]:
             return parse_subtitles(content, format)
 
     except Exception as e:
-        print(f"Error fetching subtitles from {url}: {e}")
+        logger.error("Error fetching subtitles", extra={"url": url, "error": str(e)})
         return None
 
 

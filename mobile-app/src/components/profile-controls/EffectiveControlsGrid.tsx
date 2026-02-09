@@ -5,8 +5,9 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { Colors } from '../../theme/colors';
 
 interface EffectiveControls {
@@ -34,7 +35,7 @@ export function EffectiveControlsGrid({
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.white} />
+        <GlassLoadingSpinner size="large" />
       </View>
     );
   }

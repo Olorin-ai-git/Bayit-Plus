@@ -7,7 +7,8 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useResponsive } from '@/hooks/useResponsive';
 import { useTranslation } from 'react-i18next';
 import { Plus, Check, Tv, Globe, Mic, Radio, Film, RefreshCw, Eye, EyeOff, RotateCcw, Trash2 } from 'lucide-react';
@@ -285,7 +286,7 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </View>
     );

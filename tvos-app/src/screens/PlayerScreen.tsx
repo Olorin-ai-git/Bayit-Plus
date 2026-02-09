@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback} from 'react';
-import { View,ActivityIndicator, Text} from 'react-native';
+import { View, Text} from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useQuery} from '@tanstack/react-query';
 import { useTranslation} from 'react-i18next';
 import Video from 'react-native-video';
@@ -131,7 +132,7 @@ export const PlayerScreen: React.FC<PlayerScreenProps> = ({ route, navigation}) 
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#A855F7" />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.loadingText}>{t('tvos.player.loading')}</Text>
       </View>
     );
@@ -165,7 +166,7 @@ export const PlayerScreen: React.FC<PlayerScreenProps> = ({ route, navigation}) 
       {/* Buffering Indicator */}
       {buffering && (
         <View style={styles.bufferingContainer}>
-          <ActivityIndicator size="large" color="#ffffff" />
+          <GlassLoadingSpinner size="large" />
         </View>
       )}
 

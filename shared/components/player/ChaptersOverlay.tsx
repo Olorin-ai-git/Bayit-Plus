@@ -4,10 +4,10 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  ActivityIndicator,
   Animated,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { GlassView } from '../ui/GlassView';
 import { ChapterItem, Chapter } from './ChapterItem';
@@ -100,7 +100,7 @@ export const ChaptersOverlay: React.FC<ChaptersOverlayProps> = ({
         >
           {isLoading ? (
             <View className="flex-1 justify-center items-center py-24">
-              <ActivityIndicator size="large" color={colors.primary} />
+              <GlassLoadingSpinner size="large" />
               <Text className="text-sm text-gray-400 text-center">{t('chapters.generating')}</Text>
             </View>
           ) : chapters.length === 0 ? (

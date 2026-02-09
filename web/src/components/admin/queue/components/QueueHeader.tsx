@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { Trash2 } from 'lucide-react';
 import { colors, spacing } from '@olorin/design-tokens';
@@ -65,7 +66,7 @@ export const QueueHeader: React.FC<QueueHeaderProps> = ({
               disabled={clearingQueue}
             >
               {clearingQueue ? (
-                <ActivityIndicator size="small" color={colors.error.DEFAULT} />
+                <GlassLoadingSpinner size="small" />
               ) : (
                 <Trash2 size={16} color={colors.error.DEFAULT} />
               )}

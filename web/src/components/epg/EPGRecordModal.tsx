@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { Check, Clock, HardDrive, AlertCircle, Volume2, Repeat } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { DateTime } from 'luxon'
@@ -151,7 +152,7 @@ const EPGRecordModal: React.FC<EPGRecordModalProps> = ({
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator size="small" color={colors.text} />
+            <GlassLoadingSpinner size="small" />
           ) : (
             <Text style={styles.confirmButtonText}>{t('epg.scheduleRecording')}</Text>
           )}

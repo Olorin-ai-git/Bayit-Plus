@@ -17,6 +17,7 @@ import {
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { colors } from '@olorin/design-tokens';
 import { Colors } from '../../theme/colors';
+import { GlassButton } from '@bayit/shared/ui';
 
 export interface Chapter {
   id?: string;
@@ -91,7 +92,8 @@ export const ChapterMarkers: React.FC<ChapterMarkersProps> = ({
         if (chapter.start_time < 1) return null;
 
         return (
-          <TouchableOpacity
+          <GlassButton
+            variant="ghost"
             key={`${chapter.start_time}-${index}`}
             className="absolute w-6 h-6 justify-center items-center -top-2.5"
             style={{ left: position - 12 }}
@@ -102,7 +104,7 @@ export const ChapterMarkers: React.FC<ChapterMarkersProps> = ({
               className={`rounded-sm opacity-80 ${isActive ? 'w-1 h-4 opacity-100' : 'w-0.5 h-3'}`}
               style={{ backgroundColor: categoryColor }}
             />
-          </TouchableOpacity>
+          </GlassButton>
         );
       })}
     </View>

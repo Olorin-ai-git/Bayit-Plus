@@ -12,12 +12,11 @@ import {
   ScrollView,
   StyleSheet,
   SafeAreaView,
-  TextInput,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, fontSize } from '@olorin/design-tokens';
 import { GlassView, GlassButton } from '@bayit/glass';
-import { GlassModal } from '@olorin/glass-ui/native';
+import { GlassModal, GlassInput } from '@olorin/glass-ui/native';
 import { useHouseholdStore, HouseholdRole } from '../../../shared/stores/householdStore';
 import { setApiClient } from '../../../shared/services/householdApi';
 import api from '../services/api';
@@ -160,12 +159,12 @@ export default function HouseholdScreenMobile() {
             ) : (
               <View style={styles.formContainer}>
                 <Text style={styles.label}>{t('household.householdName')}</Text>
-                <TextInput
+                <GlassInput
                   value={householdName}
                   onChangeText={setHouseholdName}
                   placeholder={t('household.namePlaceholder')}
                   placeholderTextColor={colors.textMuted}
-                  style={styles.input}
+                  containerStyle={styles.inputContainer}
                 />
                 <View style={styles.buttonRow}>
                   <GlassButton
@@ -258,13 +257,13 @@ export default function HouseholdScreenMobile() {
               <GlassView style={styles.inviteFormContainer}>
                 <Text style={styles.formHeader}>{t('household.inviteMember')}</Text>
                 <Text style={styles.label}>{t('household.email')}</Text>
-                <TextInput
+                <GlassInput
                   value={inviteEmail}
                   onChangeText={setInviteEmail}
                   placeholder={t('household.emailPlaceholder')}
                   placeholderTextColor={colors.textMuted}
                   keyboardType="email-address"
-                  style={styles.input}
+                  containerStyle={styles.inputContainer}
                 />
                 {/* Role Selector - Simplified for mobile */}
                 <View style={styles.buttonRow}>
@@ -433,15 +432,8 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginBottom: spacing.sm,
   },
-  input: {
-    backgroundColor: colors.glassLight,
-    borderColor: colors.glassBorder,
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: spacing.md,
-    color: colors.text,
-    fontSize: fontSize.md,
-    marginBottom: spacing.md,
+  inputContainer: {
+    marginBottom: spacing.sm,
   },
   buttonRow: {
     flexDirection: 'row',

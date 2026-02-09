@@ -5,10 +5,10 @@ import {
   TouchableOpacity,
   Animated,
   Platform,
-  ActivityIndicator,
   StyleSheet,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassView, GlassModal } from './ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useVoiceSettingsStore } from '../stores/voiceSettingsStore';
@@ -444,7 +444,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
           )}
 
           {(isTranscribing || isSendingToServer) ? (
-            <ActivityIndicator size="small" color={colors.primary} />
+            <GlassLoadingSpinner size="small" />
           ) : (
             <Text
               style={[
@@ -506,7 +506,7 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
               ]}
             >
               {isTranscribing ? (
-                <ActivityIndicator size="large" color={colors.primary} />
+                <GlassLoadingSpinner size="large" />
               ) : (
                 <Text style={styles.modalIconText}>🎤</Text>
               )}

@@ -13,7 +13,6 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -25,6 +24,7 @@ import {
   GlassToggle,
   GlassModal,
   GlassErrorBanner,
+  GlassLoadingSpinner,
   colors,
   spacing,
   borderRadius,
@@ -145,7 +145,7 @@ export const EditProfileScreen: React.FC = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
       </View>
     );
   }
@@ -224,7 +224,7 @@ export const EditProfileScreen: React.FC = () => {
           style={styles.saveButton}
         >
           {isSaving ? (
-            <ActivityIndicator size="small" color={colors.text} />
+            <GlassLoadingSpinner size="small" />
           ) : (
             t('profile.edit.save')
           )}
@@ -239,7 +239,7 @@ export const EditProfileScreen: React.FC = () => {
           style={styles.deleteButton}
         >
           {isDeleting ? (
-            <ActivityIndicator size="small" color={colors.text} />
+            <GlassLoadingSpinner size="small" />
           ) : (
             t('profile.edit.deleteProfile')
           )}

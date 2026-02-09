@@ -5,13 +5,14 @@
  */
 
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, I18nManager } from 'react-native';
+import { View, Text, StyleSheet, I18nManager } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { AvatarMode } from '@bayit/shared/types/voiceAvatar';
 import { getAvatarModeConfig } from '@bayit/shared/constants/voiceAvatarModes';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { Colors } from '../../theme/colors';
+import { GlassButton } from '@bayit/shared/ui';
 
 interface AvatarModeCardProps {
   mode: AvatarMode;
@@ -69,10 +70,11 @@ export const AvatarModeCard: React.FC<AvatarModeCardProps> = ({ mode, isSelected
   const modeDesc = t(getModeDescription(mode));
 
   return (
-    <TouchableOpacity
+    <GlassButton
+      variant={isSelected ? 'primary' : 'secondary'}
       style={[styles.modeCard, isSelected && styles.modeCardSelected]}
       onPress={() => onSelect(mode)}
-      activeOpacity={0.7} accessible
+      accessible
       accessibilityLabel={`${modeName} avatar mode`} accessibilityRole="button"
       accessibilityState={{ selected: isSelected }}
       accessibilityHint={`Select ${modeName} avatar display mode. ${modeDesc}`}
@@ -95,7 +97,7 @@ export const AvatarModeCard: React.FC<AvatarModeCardProps> = ({ mode, isSelected
           <NativeIcon name="check" size="sm" color={colors.white} />
         </View>
       )}
-    </TouchableOpacity>
+    </GlassButton>
   );
 };
 

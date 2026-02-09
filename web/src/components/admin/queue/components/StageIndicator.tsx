@@ -4,7 +4,8 @@
  */
 
 import React, { useState } from 'react';
-import { View, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { colors, spacing } from '@olorin/design-tokens';
 import { UploadStages } from '../types';
 import { UPLOAD_STAGES, CRITICAL_STAGES } from '../constants';
@@ -97,7 +98,7 @@ export const StageIndicator: React.FC<StageIndicatorProps> = ({
                 <Icon size={isEnrichmentStage ? 10 : 12} color={iconColor} />
                 {isActive && (
                   <View style={styles.activityIndicator}>
-                    <ActivityIndicator size={8} color={colors.primary.DEFAULT} />
+                    <GlassLoadingSpinner size="small" />
                   </View>
                 )}
               </Pressable>

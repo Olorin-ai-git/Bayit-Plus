@@ -6,7 +6,8 @@
  */
 
 import { useRef, useState, useEffect, useCallback, useMemo } from 'react'
-import { View, Text, Pressable, Image, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, Pressable, Image, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react'
 import { Icon } from '@olorin/shared-icons/web'
@@ -335,7 +336,7 @@ export default function AudioPlayer({
   }, [])
 
   const renderPlayIcon = useCallback(() => {
-    if (loading) return <ActivityIndicator size="small" color={colors.background} />
+    if (loading) return <GlassLoadingSpinner size="small" />
     if (isPlaying) return <Pause size={sizes.iconLg} fill={colors.background} color={colors.background} />
     return <Play size={sizes.iconLg} fill={colors.background} color={colors.background} style={styles.playIcon} />
   }, [loading, isPlaying, sizes.iconLg])

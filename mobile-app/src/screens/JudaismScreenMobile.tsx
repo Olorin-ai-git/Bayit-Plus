@@ -16,9 +16,7 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  RefreshControl,
-  ActivityIndicator,
-  Image,
+  RefreshControl,  Image,
   ScrollView,
   SafeAreaView,
 } from 'react-native';
@@ -26,6 +24,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { judaismService } from '@bayit/shared-services';
+import { GlassLoadingSpinner, GlassButton } from '@bayit/shared/ui';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useDirection } from '@bayit/shared-hooks';
 import { JerusalemRow, TelAvivRow } from '@bayit/shared-components';
@@ -147,16 +146,18 @@ const CategoryPill: React.FC<CategoryPillProps> = ({
   }, [onPress]);
 
   return (
-    <TouchableOpacity
+    <GlassButton
       onPress={handlePress}
+      variant={isActive ? 'primary' : 'secondary'}
       className={`flex-row items-center px-4 py-2 bg-white/10 rounded-lg gap-1 min-h-[48px] ${isActive ? 'bg-purple-500/30 border border-purple-500' : ''}`}
-      activeOpacity={0.7}
     >
-      <Text className="text-base">{category.icon}</Text>
-      <Text className={`text-sm font-medium ${isActive ? 'text-purple-500' : 'text-white/60'}`}>
-        {getLocalizedText(category, 'name')}
-      </Text>
-    </TouchableOpacity>
+      <View className="flex-row items-center gap-1">
+        <Text className="text-base">{category.icon}</Text>
+        <Text className={`text-sm font-medium ${isActive ? 'text-purple-500' : 'text-white/60'}`}>
+          {getLocalizedText(category, 'name')}
+        </Text>
+      </View>
+    </GlassButton>
   );
 };
 
@@ -309,7 +310,7 @@ export const JudaismScreenMobile: React.FC = () => {
   if (isLoading && content.length === 0) {
     return (
       <SafeAreaView className="flex-1 bg-black justify-center items-center">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text className="text-white text-base mt-4">{t('common.loading')}</Text>
       </SafeAreaView>
     );

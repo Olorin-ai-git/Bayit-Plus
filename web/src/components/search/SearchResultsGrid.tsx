@@ -6,7 +6,8 @@
  */
 
 import React, { memo, useCallback, useState, useMemo } from 'react';
-import { View, Text, Image, FlatList, StyleSheet, Platform, ActivityIndicator } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet, Platform } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import type { SearchResult } from '../../../../shared/hooks/useSearch';
@@ -122,7 +123,7 @@ export const SearchResultsGrid = memo(function SearchResultsGrid({
     () =>
       isLoadingMore ? (
         <View style={styles.loader}>
-          <ActivityIndicator size="small" color={colors.primary} />
+          <GlassLoadingSpinner size="small" />
           <Text style={styles.loaderText}>{t('search.loadingMore')}</Text>
         </View>
       ) : null,

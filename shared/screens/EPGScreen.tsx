@@ -2,9 +2,9 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
-  ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { EPGGrid, EPGList, EPGTimeControls } from '../components/epg';
@@ -238,7 +238,7 @@ export const EPGScreen: React.FC = () => {
       {/* Loading State */}
       {loading && (
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color={colors.primary} />
+          <GlassLoadingSpinner size="large" />
           <Text className={`${isTV ? 'text-lg' : 'text-sm'} text-[${colors.text}] mt-4`}>{t('epg.loading', 'Loading TV guide...')}</Text>
         </View>
       )}

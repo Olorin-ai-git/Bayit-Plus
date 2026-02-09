@@ -1,5 +1,6 @@
 import { useState, ReactNode } from 'react';
-import { View, Text, StyleSheet, Pressable, ActivityIndicator, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -95,7 +96,7 @@ export default function DataTable({
           {/* Table Body */}
           {loading ? (
             <View style={styles.loadingContainer}>
-              <ActivityIndicator size="small" color={colors.primary} />
+              <GlassLoadingSpinner size="small" />
               <Text style={styles.loadingText}>{t('common.loading', 'Loading...')}</Text>
             </View>
           ) : data.length === 0 ? (

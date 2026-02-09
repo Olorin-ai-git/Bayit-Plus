@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { CheckCircle, XCircle, Smartphone, Tv, Lock } from 'lucide-react';
@@ -117,7 +118,7 @@ export default function TVLoginPage() {
 
   const renderVerifying = () => (
     <View style={styles.centeredContainer}>
-      <ActivityIndicator size="large" color={colors.primary} />
+      <GlassLoadingSpinner size="large" />
       <Text style={styles.titleText}>{t('tvLogin.verifying')}</Text>
       <Text style={styles.descriptionText}>
         {t('tvLogin.verifyingDescription')}
@@ -194,7 +195,7 @@ export default function TVLoginPage() {
 
   const renderAuthenticating = () => (
     <View style={styles.centeredContainer}>
-      <ActivityIndicator size="large" color={colors.primary} />
+      <GlassLoadingSpinner size="large" />
       <Text style={styles.titleText}>{t('tvLogin.authorizing')}</Text>
       <Text style={styles.descriptionText}>
         {t('tvLogin.authorizingDescription')}

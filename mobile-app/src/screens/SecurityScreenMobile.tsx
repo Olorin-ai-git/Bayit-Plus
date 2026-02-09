@@ -17,12 +17,11 @@ import {
   Text,
   ScrollView,
   TouchableOpacity,
-  RefreshControl,
-  ActivityIndicator,
-  SafeAreaView,
+  RefreshControl,  SafeAreaView,
   Switch,
   Platform,
 } from 'react-native';
+import { GlassButton as GlassButtonImport , GlassLoadingSpinner} from '@bayit/shared/ui';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -273,7 +272,7 @@ export const SecurityScreenMobile: React.FC = () => {
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 bg-black justify-center items-center">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text className="text-white text-base mt-4">{t('common.loading')}</Text>
       </SafeAreaView>
     );
@@ -437,14 +436,15 @@ export const SecurityScreenMobile: React.FC = () => {
           )}
 
           {loginHistory.length > 5 && (
-            <TouchableOpacity
+            <GlassButtonImport
               onPress={() => navigation.navigate('LoginHistory')}
+              variant="ghost"
               className="items-center py-4"
             >
               <Text className="text-sm text-purple-400 font-medium">
                 {t('security.viewAllHistory')}
               </Text>
-            </TouchableOpacity>
+            </GlassButtonImport>
           )}
         </View>
 

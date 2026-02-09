@@ -5,10 +5,10 @@ import {
   ScrollView,
   TouchableOpacity,
   Animated,
-  ActivityIndicator,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassView } from './ui/GlassView';
 import { trendingService } from '../services/api';
 import { isTV } from '../utils/platform';
@@ -117,7 +117,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
           </View>
         </View>
         <View className={`justify-center items-center ${isMobilePhone ? 'h-24' : 'h-36'}`}>
-          <ActivityIndicator color="#a855f7" size="large" />
+          <GlassLoadingSpinner size="large" />
         </View>
       </GlassView>
     );

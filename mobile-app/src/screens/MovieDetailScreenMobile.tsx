@@ -15,14 +15,13 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-  Image,
+  TouchableOpacity,  Image,
   SafeAreaView,
   Share,
   Dimensions,
   StatusBar,
 } from "react-native";
+import { GlassButton , GlassLoadingSpinner} from '@bayit/shared/ui';
 import { useTranslation } from "react-i18next";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
@@ -205,7 +204,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
   if (loading) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center bg-black">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
       </SafeAreaView>
     );
   }
@@ -216,11 +215,15 @@ export const MovieDetailScreenMobile: React.FC = () => {
         <Text className="text-lg text-white/60 mb-6">
           {t("content.notFound", "Content not found")}
         </Text>
-        <TouchableOpacity onPress={handleBack} className="px-6 py-3 bg-purple-600 rounded-lg">
+        <GlassButton
+          onPress={handleBack}
+          variant="primary"
+          className="px-6 py-3"
+        >
           <Text className="text-white font-semibold">
             {t("common.goBack", "Go Back")}
           </Text>
-        </TouchableOpacity>
+        </GlassButton>
       </SafeAreaView>
     );
   }
@@ -327,8 +330,9 @@ export const MovieDetailScreenMobile: React.FC = () => {
             className="flex-row justify-center gap-8 pb-6 border-b border-white/10"
             style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
           >
-            <TouchableOpacity
+            <GlassButton
               onPress={handleTogglePlaylist}
+              variant="ghost"
               className="items-center min-w-[60px]"
             >
               <View className="mb-1">
@@ -341,9 +345,10 @@ export const MovieDetailScreenMobile: React.FC = () => {
               <Text className="text-xs text-white/60">
                 {t("content.myList", "My List")}
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </GlassButton>
+            <GlassButton
               onPress={handleToggleFavorites}
+              variant="ghost"
               className="items-center min-w-[60px]"
             >
               <View className="mb-1">
@@ -352,9 +357,10 @@ export const MovieDetailScreenMobile: React.FC = () => {
               <Text className="text-xs text-white/60">
                 {t("content.favorite", "Favorite")}
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </GlassButton>
+            <GlassButton
               onPress={handleShare}
+              variant="ghost"
               className="items-center min-w-[60px]"
             >
               <View className="mb-1">
@@ -363,7 +369,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
               <Text className="text-xs text-white/60">
                 {t("content.share", "Share")}
               </Text>
-            </TouchableOpacity>
+            </GlassButton>
           </View>
 
           {/* Synopsis */}

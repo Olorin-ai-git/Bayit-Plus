@@ -5,7 +5,8 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react'
-import { View, Text, FlatList, Platform, ActivityIndicator } from 'react-native'
+import { View, Text, FlatList, Platform } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { FileText, X } from 'lucide-react-native'
 import { GlassButton } from '@bayit/shared/components/ui/GlassButton'
@@ -119,7 +120,7 @@ export function TranscriptTimeline({
 
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size={isTV ? 'large' : 'small'} color="#60A5FA" />
+          <GlassLoadingSpinner size={isTV ? 'large' : 'small'} />
         </View>
       ) : (
         <FlatList

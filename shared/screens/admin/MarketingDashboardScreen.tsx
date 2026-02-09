@@ -10,8 +10,8 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
-  ActivityIndicator,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { AdminLayout } from '../../components/admin/AdminLayout';
@@ -65,7 +65,7 @@ export const MarketingDashboardScreen: React.FC = () => {
     return (
       <AdminLayout title={t('admin.titles.marketingDashboard', 'Marketing Dashboard')}>
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color={colors.primary} />
+          <GlassLoadingSpinner size="large" />
         </View>
       </AdminLayout>
     );

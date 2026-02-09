@@ -6,7 +6,8 @@
  */
 
 import { useEffect, useCallback, useRef, useState } from 'react'
-import { View, Text, Pressable, FlatList, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable, FlatList } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { colors } from '@olorin/design-tokens'
 import { MessageCircle, AlertTriangle } from 'lucide-react'
@@ -188,7 +189,7 @@ export default function ChannelChatPanel({
         ListFooterComponent={
           isLoadingMore ? (
             <View style={styles.loadingMore}>
-              <ActivityIndicator size="small" color={colors.primary.DEFAULT} />
+              <GlassLoadingSpinner size="small" />
             </View>
           ) : null
         }

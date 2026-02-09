@@ -10,12 +10,12 @@ import {
   Modal,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  ActivityIndicator,
   Platform,
   ScrollView,
   I18nManager,
   StyleSheet,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import LinearGradient from 'react-native-linear-gradient';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -152,7 +152,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
           {buttons && buttons.length > 0 && (
             <View style={[styles.customButtonRow, isRTL && styles.customButtonRowRTL]}>
               {loading ? (
-                <ActivityIndicator size="small" color={modalColor} />
+                <GlassLoadingSpinner size="small" />
               ) : (
                 buttons.map(renderButton)
               )}
@@ -173,7 +173,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({
         <Text style={styles.standardMessage}>{message}</Text>
 
         {loading ? (
-          <ActivityIndicator size="small" color={modalColor} style={styles.loader} />
+          <GlassLoadingSpinner size="small" />
         ) : (
           <View style={[styles.standardButtonRow, isRTL && styles.standardButtonRowRTL]}>
             {buttons.map(renderButton)}

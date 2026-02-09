@@ -11,13 +11,12 @@ import {
   View,
   Text,
   FlatList,
-  StyleSheet,
-  ActivityIndicator,
-  Pressable,
+  StyleSheet,  Pressable,
   type ListRenderItemInfo,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { contentService } from '@bayit/shared-services/api';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import {
   GlassInput,
   GlassCard,
@@ -112,7 +111,7 @@ export const ContentPickerList: React.FC<ContentPickerListProps> = ({
         editable={!disabled}
       />
       {isLoading ? (
-        <ActivityIndicator size="small" color={colors.primary} style={styles.loader} />
+        <GlassLoadingSpinner size="small" />
       ) : (
         <FlatList
           data={items}

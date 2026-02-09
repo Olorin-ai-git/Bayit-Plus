@@ -7,9 +7,10 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useWatchPartyStore } from '@bayit/shared-stores/watchPartyStore';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassButton, GlassInput, GlassModal, GlassErrorBanner, spacing } from '@olorin/glass-ui/native';
 import { logger } from '../../utils/logger';
 import Colors from '../../theme/colors';
@@ -82,7 +83,7 @@ export const JoinPartyModal: React.FC<JoinPartyModalProps> = ({
           <GlassButton variant="primary" onPress={handleJoin}
             disabled={!canJoin} style={styles.actionBtn}>
             {isJoining
-              ? <ActivityIndicator size="small" color={Colors.Text.primary} />
+              ? <GlassLoadingSpinner size="small" />
               : t('watchParty.join')}
           </GlassButton>
         </View>

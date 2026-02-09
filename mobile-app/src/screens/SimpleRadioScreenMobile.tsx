@@ -12,9 +12,7 @@ import {
   Pressable,
   Dimensions,
   RefreshControl,
-  Image,
-  ActivityIndicator,
-} from 'react-native';
+  Image,} from 'react-native';
 import { Radio, Play, Pause, Heart, Volume2, AlertCircle } from 'lucide-react-native';
 import { radioService, RadioStation } from '../services/api';
 import { Colors } from '../theme/colors';
@@ -157,7 +155,7 @@ export function RadioScreenMobile() {
       {/* Loading State */}
       {loading && (
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={Colors.Info.default} />
+          <GlassLoadingSpinner size="large" />
           <Text style={styles.loadingText}>Loading radio stations...</Text>
         </View>
       )}

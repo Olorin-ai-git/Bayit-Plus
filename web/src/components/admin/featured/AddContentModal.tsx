@@ -10,10 +10,10 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  ActivityIndicator,
   Pressable,
   Image,
 } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { Search, Plus, Film } from 'lucide-react'
 import { GlassModal, GlassButton, GlassInput, GlassCheckbox } from '@bayit/shared/ui'
@@ -251,7 +251,7 @@ export default function AddContentModal({
         {/* Content Grid */}
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+            <GlassLoadingSpinner size="large" />
             <Text style={styles.loadingText}>{t('common.loading')}</Text>
           </View>
         ) : filteredItems.length === 0 ? (

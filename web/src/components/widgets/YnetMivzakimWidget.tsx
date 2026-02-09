@@ -11,10 +11,10 @@ import {
   Text,
   ScrollView,
   Pressable,
-  ActivityIndicator,
   Linking,
   StyleSheet,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { RefreshCw, ExternalLink, AlertCircle } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useTranslation } from 'react-i18next';
@@ -104,7 +104,7 @@ export function YnetMivzakimWidget({
     return (
       <View style={styles.container}>
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+          <GlassLoadingSpinner size="large" />
           <Text style={styles.loadingText}>{t('widget.loadingNews')}</Text>
         </View>
       </View>

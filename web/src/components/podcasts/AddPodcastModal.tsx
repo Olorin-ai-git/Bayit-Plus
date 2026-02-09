@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { View, Text, Image, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Rss, Music, Disc3, CheckCircle } from 'lucide-react';
 import { podcastService } from '@/services/api';

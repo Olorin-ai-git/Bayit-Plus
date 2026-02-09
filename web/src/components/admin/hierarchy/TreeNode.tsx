@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useCallback } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassChevron } from '@bayit/shared/ui/web';
 import { adminContentService } from '@/services/adminApi';
 import logger from '@/utils/logger';
@@ -122,7 +123,7 @@ export function EpisodeLoadingIndicator({ seriesId, isLoading, hasEpisodes }: Ep
 
   return (
     <View style={styles.loadingContainer}>
-      <ActivityIndicator size="small" color={colors.primary} />
+      <GlassLoadingSpinner size="small" />
     </View>
   );
 }

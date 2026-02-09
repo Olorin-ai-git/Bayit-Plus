@@ -18,9 +18,7 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  RefreshControl,
-  ActivityIndicator,
-  Image,
+  RefreshControl,  Image,
   ScrollView,
   SafeAreaView,
 } from 'react-native';
@@ -35,6 +33,7 @@ import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 import { Colors } from '../theme/colors';
+import { GlassButton , GlassLoadingSpinner} from '@bayit/shared/ui';
 
 import logger from '@/utils/logger';
 
@@ -168,22 +167,24 @@ const CategoryPill: React.FC<CategoryPillProps> = ({
   const isEmoji = categoryIconName.length > 1 && categoryIconName.charCodeAt(0) > 127;
 
   return (
-    <TouchableOpacity
+    <GlassButton
       onPress={handlePress}
+      variant={isActive ? 'primary' : 'secondary'}
       style={[styles.categoryPill, isActive && styles.categoryPillActive]}
-      activeOpacity={0.7}
     >
-      {isEmoji ? (
-        <Text style={styles.categoryEmoji}>
-          {categoryIconName}
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.xs }}>
+        {isEmoji ? (
+          <Text style={styles.categoryEmoji}>
+            {categoryIconName}
+          </Text>
+        ) : (
+          <NativeIcon name={categoryIconName} size="sm" color={isActive ? Colors.Primary.p500 : colors.textSecondary} />
+        )}
+        <Text style={[styles.categoryLabel, isActive && styles.categoryLabelActive]}>
+          {getLocalizedText(category, 'name')}
         </Text>
-      ) : (
-        <NativeIcon name={categoryIconName} size="sm" color={isActive ? Colors.Primary.p500 : colors.textSecondary} />
-      )}
-      <Text style={[styles.categoryLabel, isActive && styles.categoryLabelActive]}>
-        {getLocalizedText(category, 'name')}
-      </Text>
-    </TouchableOpacity>
+      </View>
+    </GlassButton>
   );
 };
 
@@ -327,7 +328,7 @@ export const YoungstersScreenMobile: React.FC = () => {
   if (isLoading && content.length === 0) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={Colors.Primary.p500} />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </SafeAreaView>
     );

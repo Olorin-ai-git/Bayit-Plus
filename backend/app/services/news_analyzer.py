@@ -11,6 +11,9 @@ from typing import Any, Dict, List, Optional
 import anthropic
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
+
+logger = get_logger(__name__)
 from app.services.news_scraper import (HeadlineItem, get_cached_headlines)
 
 
@@ -148,7 +151,7 @@ async def analyze_headlines(headlines: List[HeadlineItem]) -> TrendAnalysis:
         )
 
     except json.JSONDecodeError as e:
-        print(f"Failed to parse Claude response: {e}")
+        logger.error("Failed to parse Claude response for headline analysis", extra={"error": str(e)})
         return TrendAnalysis(
             topics=[],
             overall_mood="Unable to analyze",
@@ -156,7 +159,7 @@ async def analyze_headlines(headlines: List[HeadlineItem]) -> TrendAnalysis:
             sources=sources,
         )
     except Exception as e:
-        print(f"Error analyzing headlines: {e}")
+        logger.error("Error analyzing headlines", extra={"error": str(e)})
         return TrendAnalysis(
             topics=[],
             overall_mood="Error during analysis",

@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { useState, useEffect } from 'react'
 import { GlassView, GlassButton } from '@bayit/shared/ui'
@@ -108,7 +109,7 @@ export default function SubtitlesSection({ contentId, disabled }: SubtitlesSecti
           {t('admin.content.editor.sections.subtitles', 'Subtitles')}
         </Text>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color={colors.primary.DEFAULT} />
+          <GlassLoadingSpinner size="small" />
           <Text style={styles.loadingText}>
             {t('common.loading', 'Loading...')}
           </Text>

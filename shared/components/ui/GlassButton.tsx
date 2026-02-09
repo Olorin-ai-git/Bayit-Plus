@@ -4,12 +4,12 @@ import {
   Animated,
   Text,
   View,
-  ActivityIndicator,
   Platform,
   type ViewStyle,
   type TextStyle,
   type StyleProp,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassView } from './GlassView';
 import { useTVFocus } from '../hooks/useTVFocus';
 
@@ -183,11 +183,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
       }}
     >
       {loading ? (
-        <ActivityIndicator
-          size="small"
-          color="white"
-          style={{ marginHorizontal: 8 }}
-        />
+        <GlassLoadingSpinner size="small" />
       ) : (
         <>
           {icon && <View style={{ marginHorizontal: 4 }}>{icon}</View>}

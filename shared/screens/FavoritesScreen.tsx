@@ -5,9 +5,9 @@ import {
   FlatList,
   TouchableOpacity,
   Animated,
-  ActivityIndicator,
   Image,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '../components/ui';
@@ -258,7 +258,7 @@ export const FavoritesScreen: React.FC = () => {
   if (isLoading) {
     return (
       <View className={`flex-1 bg-[${colors.background}] justify-center items-center`}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text className={`text-[${colors.text}] text-lg mt-4`}>{t('common.loading')}</Text>
       </View>
     );

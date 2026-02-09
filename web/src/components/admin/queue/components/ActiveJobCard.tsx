@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { XCircle } from 'lucide-react';
 import { GlassBadge } from '@bayit/shared/ui';
@@ -51,7 +52,7 @@ export const ActiveJobCard: React.FC<ActiveJobCardProps> = ({
             disabled={cancellingJob}
           >
             {cancellingJob ? (
-              <ActivityIndicator size="small" color={colors.error.DEFAULT} />
+              <GlassLoadingSpinner size="small" />
             ) : (
               <XCircle size={20} color={colors.error.DEFAULT} />
             )}

@@ -113,6 +113,14 @@ struct SeriesDetailView: View {
 
     private func metadataSection(_ detail: SeriesDetail) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+            if let languages = detail.availableSubtitleLanguages, !languages.isEmpty {
+                SubtitleFlagsPill(
+                    languages: languages,
+                    aiLanguages: aiLanguages(for: languages),
+                    size: .medium
+                )
+            }
+
             if let description = detail.description {
                 Text(description)
                     .font(.system(size: DesignTokens.FontSize.md))
@@ -121,6 +129,13 @@ struct SeriesDetailView: View {
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    private func aiLanguages(for languages: [String]) -> Set<String> {
+        var aiLangs = Set<String>()
+        if languages.contains("he") { aiLangs.insert("he") }
+        if languages.contains("en") { aiLangs.insert("en") }
+        return aiLangs
     }
 
     private func seasonPicker(_ vm: SeriesDetailViewModel) -> some View {

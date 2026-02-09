@@ -17,12 +17,11 @@ import {
   FlatList,
   RefreshControl,
   Image,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
+  Pressable,} from 'react-native';
 import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared-hooks';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { favoritesService } from '@bayit/shared-services';
 import { GlassView } from '@bayit/shared';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
@@ -202,7 +201,7 @@ export const FavoritesScreenMobile: React.FC = () => {
   if (isLoading) {
     return (
       <View className="flex-1 bg-background justify-center items-center">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text className="text-base text-white mt-4">{t('common.loading')}</Text>
       </View>
     );

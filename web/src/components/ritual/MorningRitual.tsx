@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { View, Text, Pressable, Image, ActivityIndicator, ScrollView, StyleSheet } from 'react-native'
+import { View, Text, Pressable, Image, ScrollView, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { Sun, Calendar, Flame, Radio, Film } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -151,7 +152,7 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
       <View className="flex-1 bg-[#0a0a0f]">
         <View className="flex-1 items-center justify-center gap-4">
           <Sun size={64} color={colors.primary.DEFAULT} className="mb-4" />
-          <ActivityIndicator size="large" color="#A855F7" />
+          <GlassLoadingSpinner size="large" />
           <Text className="text-lg text-white mt-4">{t('ritual.preparingRitual')}</Text>
         </View>
       </View>

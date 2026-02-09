@@ -12,6 +12,7 @@ struct SubtitleLanguagePickerView: View {
     let repository: any SubtitleRepository
     let onSelect: (String?) -> Void
     let onRefresh: () -> Void
+    var onDismiss: (() -> Void)?
 
     @State private var showModePickerForLanguage: String?
 
@@ -47,7 +48,13 @@ struct SubtitleLanguagePickerView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button { dismiss() } label: {
+                    Button {
+                        if let onDismiss {
+                            onDismiss()
+                        } else {
+                            dismiss()
+                        }
+                    } label: {
                         Image(systemName: "xmark.circle.fill")
                             .foregroundStyle(DesignTokens.Text.secondary)
                             .frame(width: 44, height: 44)
@@ -66,7 +73,11 @@ struct SubtitleLanguagePickerView: View {
     private var offRow: some View {
         Button {
             onSelect(nil)
-            dismiss()
+            if let onDismiss {
+                onDismiss()
+            } else {
+                dismiss()
+            }
         } label: {
             HStack(spacing: DesignTokens.Spacing.md) {
                 Image(systemName: "slash.circle")
@@ -102,7 +113,11 @@ struct SubtitleLanguagePickerView: View {
         return VStack(spacing: 0) {
             Button {
                 onSelect(info.code)
-                dismiss()
+                if let onDismiss {
+                    onDismiss()
+                } else {
+                    dismiss()
+                }
             } label: {
                 HStack(spacing: DesignTokens.Spacing.md) {
                     // Emoji flag

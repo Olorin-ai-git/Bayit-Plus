@@ -14,13 +14,12 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  FlatList,
-  ActivityIndicator,
-  RefreshControl,
+  FlatList,  RefreshControl,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { partyService } from '@bayit/shared-services/api';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import {
   GlassButton,
   GlassInput,
@@ -155,7 +154,7 @@ export const WatchPartyScreen: React.FC = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
       </View>
     );
   }
@@ -264,7 +263,7 @@ export const WatchPartyScreen: React.FC = () => {
             style={styles.modalButton}
           >
             {isJoining ? (
-              <ActivityIndicator size="small" color={colors.text} />
+              <GlassLoadingSpinner size="small" />
             ) : (
               t('watchParty.join')
             )}

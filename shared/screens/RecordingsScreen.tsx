@@ -5,10 +5,10 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  ActivityIndicator,
   RefreshControl,
   Animated,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -235,7 +235,7 @@ export default function RecordingsScreen() {
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-black">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text className={`text-white ${isTV ? 'text-lg' : 'text-sm'} mt-4`}>{t('recordings.loading', 'Loading recordings...')}</Text>
       </View>
     );

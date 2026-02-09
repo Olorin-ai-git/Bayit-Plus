@@ -353,29 +353,35 @@ struct PiPWidgetContainerView: View {
         .padding(DesignTokens.Spacing.md)
     }
 
+    @ViewBuilder
     private var customContentView: some View {
-        VStack(spacing: DesignTokens.Spacing.sm) {
-            Spacer()
+        let componentName = widget.content?.componentName ?? ""
+        let isYnet = componentName == "ynet_mivzakim"
+            || widget.title.contains("Ynet")
+            || widget.title.contains("\u{05DE}\u{05D1}\u{05D6}\u{05E7}\u{05D9}")
 
-            Image(systemName: "square.grid.2x2")
-                .font(.system(size: 32))
-                .foregroundStyle(DesignTokens.Text.muted)
-
-            Text(widget.title)
-                .font(.system(size: DesignTokens.FontSize.base, weight: .medium))
-                .foregroundStyle(DesignTokens.Text.primary)
-                .lineLimit(2)
-                .multilineTextAlignment(.center)
-
-            if let componentName = widget.content?.componentName {
-                Text(componentName)
-                    .font(.system(size: DesignTokens.FontSize.xs))
+        if isYnet {
+            YnetMivzakimContentView()
+        } else {
+            VStack(spacing: DesignTokens.Spacing.sm) {
+                Spacer()
+                Image(systemName: "square.grid.2x2")
+                    .font(.system(size: 32))
                     .foregroundStyle(DesignTokens.Text.muted)
+                Text(widget.title)
+                    .font(.system(size: DesignTokens.FontSize.base, weight: .medium))
+                    .foregroundStyle(DesignTokens.Text.primary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                if let name = widget.content?.componentName {
+                    Text(name)
+                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+                Spacer()
             }
-
-            Spacer()
+            .padding(DesignTokens.Spacing.md)
         }
-        .padding(DesignTokens.Spacing.md)
     }
 
     private var placeholderView: some View {

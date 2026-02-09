@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
@@ -86,7 +87,7 @@ export default function GoogleCallbackPage() {
           </>
         ) : (
           <>
-            <ActivityIndicator size="large" color={colors.primary} style={styles.spinner} />
+            <GlassLoadingSpinner size="large" />
             <Text style={styles.connectingText}>{t('googleLogin.connecting')}</Text>
           </>
         )}

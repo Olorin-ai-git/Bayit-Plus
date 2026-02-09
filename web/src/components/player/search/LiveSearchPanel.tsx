@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useCallback, useRef, useEffect } from 'react'
-import { View, Text, TextInput, FlatList, Platform, ActivityIndicator } from 'react-native'
+import { View, Text, TextInput, FlatList, Platform } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { Search, X, FileText } from 'lucide-react-native'
 import { GlassButton } from '@bayit/shared/components/ui/GlassButton'
@@ -188,7 +189,7 @@ export function LiveSearchPanel({
       {/* Loading */}
       {loading && (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size={isTV ? 'large' : 'small'} color={ICON_COLORS.primary} />
+          <GlassLoadingSpinner size={isTV ? 'large' : 'small'} />
         </View>
       )}
 

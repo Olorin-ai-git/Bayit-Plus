@@ -10,10 +10,10 @@ import {
   View,
   Text,
   Animated,
-  ActivityIndicator,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassButton } from '../ui/GlassButton';
 import { GlassView } from '../ui/GlassView';
 import { useDirection } from '../../hooks/useDirection';
@@ -139,7 +139,7 @@ export const WidgetsIntroVideo: React.FC<WidgetsIntroVideoProps> = ({
         {/* Loading indicator */}
         {isLoading && !hasError && (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.primary} />
+            <GlassLoadingSpinner size="large" />
             <Text style={styles.loadingText}>
               {t('widgets.intro.loading')}
             </Text>

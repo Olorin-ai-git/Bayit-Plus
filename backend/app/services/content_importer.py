@@ -9,7 +9,10 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
+from app.core.logging_config import get_logger
 from app.models.content import (Content, LiveChannel, Podcast, RadioStation)
+
+logger = get_logger(__name__)
 
 # ============ FREE CONTENT SOURCES ============
 
@@ -410,7 +413,7 @@ class ContentImporter:
             return podcast
 
         except Exception as e:
-            print(f"Failed to import podcast from {rss_url}: {e}")
+            logger.error("Failed to import podcast from RSS feed", extra={"rss_url": rss_url, "error": str(e)})
             return None
 
     @staticmethod

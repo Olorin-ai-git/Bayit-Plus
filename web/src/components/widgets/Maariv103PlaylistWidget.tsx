@@ -7,7 +7,8 @@
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { Play, Pause, RefreshCw, AlertCircle, AlertTriangle, Music } from 'lucide-react';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import AudioPlayer from '@/components/player/AudioPlayer';
@@ -152,7 +153,7 @@ export function Maariv103PlaylistWidget({
   // Render loading state
   const renderLoading = () => (
     <View style={styles.centerContainer}>
-      <ActivityIndicator size="large" color={colors.text} />
+      <GlassLoadingSpinner size="large" />
       <Text style={styles.centerText}>{t('widget.loadingEpisodes')}</Text>
     </View>
   );
@@ -272,7 +273,7 @@ export function Maariv103PlaylistWidget({
                 disabled={loading}
               >
                 {loading ? (
-                  <ActivityIndicator size="small" color={colors.text} />
+                  <GlassLoadingSpinner size="small" />
                 ) : (
                   <Text style={styles.loadMoreText}>{t('common.loadMore')}</Text>
                 )}

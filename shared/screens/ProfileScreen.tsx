@@ -5,8 +5,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Switch,
-  ActivityIndicator,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { GlassView, GlassButton } from '../components/ui';
@@ -189,7 +189,7 @@ export const ProfileScreen: React.FC = () => {
     if (billingLoading) {
       return (
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color={colors.primary} />
+          <GlassLoadingSpinner size="large" />
         </View>
       );
     }

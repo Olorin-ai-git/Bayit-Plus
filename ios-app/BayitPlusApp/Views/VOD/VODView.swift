@@ -15,6 +15,8 @@ struct VODView: View {
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
+            PageHeader(icon: "film.fill", title: "VOD")
+
             if let vm = viewModel {
                 if vm.isLoading && vm.items.isEmpty {
                     loadingGrid

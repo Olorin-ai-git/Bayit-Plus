@@ -4,7 +4,8 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, Pressable, ScrollView } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useProfile } from '@bayit/shared-contexts';
@@ -144,7 +145,7 @@ export const ProfileFormScreen: React.FC = () => {
             disabled={saving || isLoading}
           >
             {saving ? (
-              <ActivityIndicator color="#fff" size="small" />
+              <GlassLoadingSpinner size="small" />
             ) : (
               <Text className="text-lg text-black font-bold">{t('common.save', 'Save')}</Text>
             )}

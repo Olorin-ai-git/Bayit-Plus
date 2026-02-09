@@ -5,7 +5,8 @@
  */
 
 import React from 'react'
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { useDirection } from '@/hooks/useDirection'
@@ -56,7 +57,7 @@ const RecordingActions: React.FC<RecordingActionsProps> = ({
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator size="small" color="#ffffff" />
+          <GlassLoadingSpinner size="small" />
         ) : (
           <Text style={styles.confirmButtonText}>{t('epg.scheduleRecording')}</Text>
         )}

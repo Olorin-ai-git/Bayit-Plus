@@ -11,8 +11,8 @@ import {
   TouchableOpacity,
   TextInput,
   Switch,
-  ActivityIndicator,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { settingsService } from '../../services/adminApi';
@@ -129,7 +129,7 @@ export const SettingsScreen: React.FC = () => {
     return (
       <AdminLayout title={t('admin.titles.settings', 'Settings')}>
         <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color={colors.primary} />
+          <GlassLoadingSpinner size="large" />
         </View>
       </AdminLayout>
     );
@@ -141,7 +141,7 @@ export const SettingsScreen: React.FC = () => {
       actions={
         hasChanges && (
           <TouchableOpacity className={`px-4 py-2 bg-green-600 rounded-md flex-row items-center ${saving ? 'opacity-60' : ''}`} onPress={handleSaveSettings} disabled={saving}>
-            {saving ? <ActivityIndicator size="small" color={colors.text} /> : <Text className="text-sm text-white font-semibold">💾 {t('admin.settings.save', 'Save Changes')}</Text>}
+            {saving ? <GlassLoadingSpinner size="small" /> : <Text className="text-sm text-white font-semibold">💾 {t('admin.settings.save', 'Save Changes')}</Text>}
           </TouchableOpacity>
         )
       }

@@ -9,10 +9,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
-  ActivityIndicator,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassModal } from '../ui/GlassModal';
 import { GlassButton } from '../ui/GlassButton';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
@@ -165,7 +165,7 @@ export const PasskeyAuthModal: React.FC<PasskeyAuthModalProps> = ({
       case 'authenticating':
         return (
           <View className="items-center p-8">
-            <ActivityIndicator size="large" color={colors.primary} />
+            <GlassLoadingSpinner size="large" />
             <Text className="text-lg text-white mt-4 text-center">{t('passkey.auth.authenticating')}</Text>
           </View>
         );
@@ -192,7 +192,7 @@ export const PasskeyAuthModal: React.FC<PasskeyAuthModalProps> = ({
                 <Text className="text-sm text-white/60 text-center mt-2">{t('passkey.qr.instruction')}</Text>
               </>
             ) : (
-              <ActivityIndicator size="large" color={colors.primary} />
+              <GlassLoadingSpinner size="large" />
             )}
           </View>
         );

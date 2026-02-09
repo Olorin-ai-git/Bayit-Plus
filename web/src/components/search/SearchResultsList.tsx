@@ -6,7 +6,8 @@
  */
 
 import React, { memo, useCallback } from 'react';
-import { View, Text, Image, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -95,7 +96,7 @@ export const SearchResultsList = memo(function SearchResultsList({
     () =>
       isLoadingMore ? (
         <View style={styles.loader}>
-          <ActivityIndicator size="small" color={colors.primary} />
+          <GlassLoadingSpinner size="small" />
           <Text style={styles.loaderText}>{t('search.loadingMore')}</Text>
         </View>
       ) : null,

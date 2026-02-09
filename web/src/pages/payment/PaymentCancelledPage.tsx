@@ -7,7 +7,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { GlassButton } from '@bayit/glass-components';
+import { GlassButton } from '@bayit/shared/ui';
 import { useAuthStore } from '@/stores/authStore';
 import logger from '@/utils/logger';
 

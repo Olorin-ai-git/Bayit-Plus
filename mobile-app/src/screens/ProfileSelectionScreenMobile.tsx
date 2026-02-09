@@ -14,14 +14,14 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
-  TextInput,
   ScrollView,
   SafeAreaView,
   Modal,
   Alert,
   Image,
 } from 'react-native';
+import { GlassButton , GlassLoadingSpinner} from '@bayit/shared/ui';
+import { GlassInput } from '@olorin/glass-ui/native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -120,7 +120,7 @@ const PinModal: React.FC<PinModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const [pin, setPin] = useState('');
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef<any>(null);
   const { isRTL } = useDirection();
 
   useEffect(() => {
@@ -150,10 +150,10 @@ const PinModal: React.FC<PinModalProps> = ({
         <View className="w-full max-w-[320px] p-4 rounded-2xl items-center" style={{ backgroundColor: colors.backgroundLight }}>
           <Text className="text-xl font-semibold text-white mb-4">{t('profiles.enterPin', 'Enter PIN')}</Text>
 
-          <TextInput
+          <GlassInput
             ref={inputRef}
-            className="w-full h-14 bg-white/10 rounded-lg px-4 text-2xl text-white tracking-[8px] mb-4"
-            style={{ textAlign: isRTL ? 'right' : 'center' }}
+            containerStyle={{ width: '100%', marginBottom: 16 }}
+            inputStyle={{ textAlign: isRTL ? 'right' : 'center', fontSize: 24, letterSpacing: 8 }}
             value={pin}
             onChangeText={setPin}
             keyboardType="number-pad"
@@ -167,40 +167,42 @@ const PinModal: React.FC<PinModalProps> = ({
           {error && <Text className="text-sm text-red-500 mb-4 text-center">{error}</Text>}
 
           <View className="flex-row gap-2 w-full">
-            <TouchableOpacity
-              className="flex-1 h-12 justify-center items-center rounded-lg bg-white/10"
+            <GlassButton
+              variant="secondary"
+              className="flex-1 h-12"
               onPress={() => {
                 ReactNativeHapticFeedback.trigger('impactLight');
                 onCancel();
               }}
             >
               <Text className="text-base text-gray-400">{t('common.cancel', 'Cancel')}</Text>
-            </TouchableOpacity>
+            </GlassButton>
 
             {hasBiometric && (
-              <TouchableOpacity
-                className="w-12 h-12 justify-center items-center rounded-lg bg-purple-600/20"
+              <GlassButton
+                variant="secondary"
+                className="w-12 h-12"
                 onPress={() => {
                   ReactNativeHapticFeedback.trigger('impactLight');
                   onBiometric();
                 }}
               >
                 <NativeIcon name="fingerprint" size="lg" color={Colors.Primary.p500} />
-              </TouchableOpacity>
+              </GlassButton>
             )}
 
-            <TouchableOpacity
-              className={`flex-1 h-12 justify-center items-center rounded-lg ${pin.length < 4 ? 'opacity-50' : ''}`}
-              style={{ backgroundColor: colors.primary }}
+            <GlassButton
+              variant="primary"
+              className="flex-1 h-12"
               onPress={handleSubmit}
               disabled={pin.length < 4 || isLoading}
             >
               {isLoading ? (
-                <ActivityIndicator size="small" color={colors.text} />
+                <GlassLoadingSpinner size="small" />
               ) : (
                 <Text className="text-base font-semibold text-white">{t('common.confirm', 'Confirm')}</Text>
               )}
-            </TouchableOpacity>
+            </GlassButton>
           </View>
         </View>
       </View>
@@ -327,7 +329,7 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
   if (isLoading && profiles.length === 0) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text className="mt-4 text-base text-gray-400">{t('common.loading', 'Loading...')}</Text>
       </SafeAreaView>
     );
@@ -388,8 +390,9 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
         </View>
 
         {/* Manage Profiles Button */}
-        <TouchableOpacity
-          className="mt-8 px-4 py-2 rounded min-h-[48px] justify-center border border-gray-400"
+        <GlassButton
+          variant="secondary"
+          className="mt-8 px-4 py-2 min-h-[48px]"
           onPress={() => {
             ReactNativeHapticFeedback.trigger('impactLight');
             setIsManageMode(!isManageMode);
@@ -400,7 +403,7 @@ export const ProfileSelectionScreenMobile: React.FC = () => {
               ? t('common.done', 'Done')
               : t('profiles.manageProfiles', 'Manage Profiles')}
           </Text>
-        </TouchableOpacity>
+        </GlassButton>
 
         {error && <Text className="mt-4 text-[14px] text-red-500 text-center">{error}</Text>}
       </ScrollView>

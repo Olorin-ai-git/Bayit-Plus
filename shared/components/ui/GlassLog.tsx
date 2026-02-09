@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { View, Text, ScrollView, Pressable, TextInput, Animated, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, Animated, StyleSheet } from 'react-native';
+import { GlassInput } from '@bayit/shared/ui';
 import { Search, X, ChevronDown, ChevronUp, Download, Trash2, Copy, CheckCircle, XCircle, Film, Layers } from 'lucide-react';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -419,7 +420,7 @@ export const GlassLog: React.FC<GlassLogProps> = ({
             {showSearch && (
               <View style={[styles.searchContainer, isRTL && styles.searchContainerRTL]}>
                 <Search size={16} color={colors.textMuted} />
-                <TextInput
+                <GlassInput
                   style={[styles.searchInput, isRTL && styles.searchInputRTL]}
                   placeholder={searchPlaceholder}
                   placeholderTextColor={colors.textMuted}

@@ -21,13 +21,13 @@ import {
   ScrollView,
   Image,
   Pressable,
-  ActivityIndicator,
 } from 'react-native';
 import { useNavigation, RouteProp, useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared-hooks';
 import { playlistService } from '@bayit/shared-services';
 import { GlassView, GlassCategoryPill } from '@bayit/shared';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { getLocalizedName } from '@bayit/shared-utils';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { useResponsive } from '../hooks/useResponsive';
@@ -221,7 +221,7 @@ export const PlaylistScreenMobile: React.FC = () => {
   if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+        <GlassLoadingSpinner size="large" />
         <Text className="mt-4" style={{ ...typography.body, color: colors.text }}>{t('common.loading')}</Text>
       </View>
     );

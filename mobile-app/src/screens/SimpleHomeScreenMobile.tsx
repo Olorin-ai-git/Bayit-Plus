@@ -12,9 +12,7 @@ import {
   Image,
   Pressable,
   Dimensions,
-  RefreshControl,
-  ActivityIndicator,
-  ImageBackground,
+  RefreshControl,  ImageBackground,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Home, Tv, Film, Radio, Mic, Play, ChevronRight, ChevronLeft, Clock, Star } from 'lucide-react-native';
@@ -283,7 +281,7 @@ function LiveChannelRow({ channels, loading }: { channels: Channel[]; loading: b
           <Text style={styles.sectionTitle}>Live TV</Text>
         </View>
         <View style={styles.loadingRow}>
-          <ActivityIndicator size="small" color={Colors.Primary.p600} />
+          <GlassLoadingSpinner size="small" />
         </View>
       </View>
     );

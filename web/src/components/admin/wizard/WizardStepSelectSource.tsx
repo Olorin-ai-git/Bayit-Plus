@@ -4,7 +4,8 @@
  */
 
 import React from 'react'
-import { View, Text, Pressable, ActivityIndicator, ScrollView, StyleSheet } from 'react-native'
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { ChevronRight, AlertCircle, ChevronLeft } from 'lucide-react'
 import { z } from 'zod'
@@ -60,7 +61,7 @@ export function WizardStepSelectSource({
       {/* Loading state */}
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator color="#9333ea" />
+          <GlassLoadingSpinner size="small" />
           <Text style={styles.loadingText}>{t('admin.importWizard.loadingSources')}</Text>
         </View>
       ) : error ? (

@@ -10,6 +10,10 @@ from typing import Optional
 import httpx
 import pytz
 
+from app.core.logging_config import get_logger
+
+logger = get_logger(__name__)
+
 # Israel timezone
 ISRAEL_TZ = pytz.timezone("Asia/Jerusalem")
 
@@ -165,7 +169,7 @@ async def fetch_shabbat_times(
                 )
 
     except Exception as e:
-        print(f"Error fetching Shabbat times: {e}")
+        logger.error("Error fetching Shabbat times", extra={"error": str(e)})
 
     return None
 

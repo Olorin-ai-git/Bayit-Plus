@@ -6,7 +6,8 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { SearchResult } from '../../hooks/useSearch';
 import SubtitleMatchCard from './SubtitleMatchCard';
@@ -84,7 +85,7 @@ export function SearchResults({
     if (loading) {
       return (
         <View className="py-8 items-center">
-          <ActivityIndicator size="large" color="#ffffff" />
+          <GlassLoadingSpinner size="large" />
         </View>
       );
     }
@@ -104,7 +105,7 @@ export function SearchResults({
     if (loading) {
       return (
         <View className="flex-1 items-center justify-center py-20">
-          <ActivityIndicator size="large" color="#ffffff" />
+          <GlassLoadingSpinner size="large" />
           <Text className="text-white/60 mt-4">{t('search.searching')}</Text>
         </View>
       );

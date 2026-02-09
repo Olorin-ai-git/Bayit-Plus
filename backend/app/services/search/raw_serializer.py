@@ -129,7 +129,7 @@ def _raw_vod(raw: dict, doc_id: str) -> Dict[str, Any]:
         "requires_subscription": raw.get("requires_subscription"),
         "is_kids_content": raw.get("is_kids_content"),
         "age_rating": raw.get("age_rating"),
-        "available_subtitle_languages": raw.get("available_subtitle_languages", []),
+        "available_subtitle_languages": list(dict.fromkeys(raw.get("available_subtitle_languages") or [])),
         "has_subtitles": raw.get("has_subtitles", False),
         "view_count": raw.get("view_count", 0),
         "avg_rating": raw.get("avg_rating", 0),

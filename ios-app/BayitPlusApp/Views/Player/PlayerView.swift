@@ -92,6 +92,11 @@ struct PlayerView: View {
             if showControls && !viewModel.isLoading && viewModel.errorMessage == nil {
                 controlsOverlay
             }
+
+            // Subtitle picker overlay
+            if showSubtitlePicker {
+                subtitlePickerOverlay
+            }
         }
         .statusBarHidden(true)
         .task {
@@ -111,21 +116,50 @@ struct PlayerView: View {
         .onChange(of: viewModel.player.currentTime) { _, _ in
             updateNowPlaying()
         }
-        .sheet(isPresented: $showSubtitlePicker) {
-            SubtitleLanguagePickerView(
-                availableLanguages: availableSubtitleLanguages,
-                aiLanguages: aiSubtitleLanguages,
-                selectedLanguage: selectedSubtitleLanguage,
-                contentId: contentId,
-                repository: repositories.subtitle,
-                onSelect: { language in
-                    handleSubtitleSelection(language)
-                },
-                onRefresh: {
-                    Task { await viewModel.load() }
+    }
+
+    // MARK: - Subtitle Picker Overlay
+
+    private var subtitlePickerOverlay: some View {
+        ZStack {
+            // Dimmed background
+            Color.black.opacity(0.6)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    withAnimation(.spring(duration: 0.3)) {
+                        showSubtitlePicker = false
+                    }
                 }
-            )
+
+            // Picker sheet from bottom
+            VStack {
+                Spacer()
+                SubtitleLanguagePickerView(
+                    availableLanguages: availableSubtitleLanguages,
+                    aiLanguages: aiSubtitleLanguages,
+                    selectedLanguage: selectedSubtitleLanguage,
+                    contentId: contentId,
+                    repository: repositories.subtitle,
+                    onSelect: { language in
+                        handleSubtitleSelection(language)
+                        withAnimation(.spring(duration: 0.3)) {
+                            showSubtitlePicker = false
+                        }
+                    },
+                    onRefresh: {
+                        Task { await viewModel.load() }
+                    },
+                    onDismiss: {
+                        withAnimation(.spring(duration: 0.3)) {
+                            showSubtitlePicker = false
+                        }
+                    }
+                )
+                .frame(maxHeight: UIScreen.main.bounds.height * 0.7)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
         }
+        .transition(.opacity)
     }
 
     // MARK: - Loading
@@ -274,7 +308,11 @@ struct PlayerView: View {
     // MARK: - Subtitles
 
     private var subtitleToggle: some View {
-        Button { showSubtitlePicker = true } label: {
+        Button {
+            withAnimation(.spring(duration: 0.3)) {
+                showSubtitlePicker = true
+            }
+        } label: {
             Image(systemName: selectedSubtitleLanguage != nil ? "cc.circle.fill" : "cc.circle")
                 .font(.system(size: 18))
                 .foregroundStyle(

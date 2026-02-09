@@ -26,8 +26,9 @@ export function SubtitleFlags({
 }: SubtitleFlagsProps) {
   const [tooltipVisible, setTooltipVisible] = useState(false);
 
-  // Filter out null/undefined and get language info
-  const languageData = languages
+  // Deduplicate, filter out null/undefined, and get language info
+  const uniqueLanguages = [...new Set(languages)];
+  const languageData = uniqueLanguages
     .map(code => getLanguageInfo(code))
     .filter(Boolean) as NonNullable<ReturnType<typeof getLanguageInfo>>[];
 

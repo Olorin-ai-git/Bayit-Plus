@@ -83,13 +83,17 @@ struct MainTabView: View {
     @ViewBuilder
     private func tabContent(for tab: AppTab) -> some View {
         NavigationStack(path: binding(for: tab)) {
-            tabRootView(for: tab)
-                .navigationDestination(for: Route.self) { route in
-                    VStack(spacing: 0) {
-                        BreadcrumbBar()
-                        resolver.view(for: route)
-                    }
+            VStack(spacing: 0) {
+                TopNavigationBar()
+                tabRootView(for: tab)
+            }
+            .navigationDestination(for: Route.self) { route in
+                VStack(spacing: 0) {
+                    TopNavigationBar()
+                    BreadcrumbBar()
+                    resolver.view(for: route)
                 }
+            }
         }
     }
 

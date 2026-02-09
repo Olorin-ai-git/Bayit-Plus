@@ -8,12 +8,12 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
   RefreshControl,
   ScrollView,
   StyleSheet,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassView } from '../ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
@@ -182,7 +182,7 @@ export const SupportTicketList: React.FC = () => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text style={[styles.loadingText, { textAlign }]}>
           {t('support.tickets.loading', 'Loading tickets...')}
         </Text>

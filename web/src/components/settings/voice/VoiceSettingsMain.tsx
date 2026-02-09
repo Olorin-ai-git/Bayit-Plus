@@ -3,7 +3,8 @@
  * Refactored modular voice settings orchestrator
  */
 
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { colors, spacing } from '@olorin/design-tokens';
 import { VoiceMode } from '@bayit/shared-types/voiceModes';
 import { useVoiceSettings } from './hooks';
@@ -25,7 +26,7 @@ export default function VoiceSettingsMain() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="small" color={colors.primary} />
+        <GlassLoadingSpinner size="small" />
       </View>
     );
   }

@@ -13,10 +13,10 @@ import {
   ScrollView,
   TouchableOpacity,
   Animated,
-  ActivityIndicator,
   ImageBackground,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { NativeIcon, IconName } from '@olorin/shared-icons/native';
 import { GlassView } from './ui/GlassView';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
@@ -221,7 +221,7 @@ export const CultureTrendingRow: React.FC<CultureTrendingRowProps> = ({
           <NativeIcon name="flame" size={isTV ? 24 : 20} color="#f97316" style={{ marginLeft: isRTL ? 0 : spacing.sm, marginRight: isRTL ? spacing.sm : 0 }} />
         </View>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator color={colors.primary} size="large" />
+          <GlassLoadingSpinner size="large" />
         </View>
       </GlassView>
     );

@@ -14,9 +14,7 @@ import {
   View,
   Text,
   ScrollView,
-  TouchableOpacity,
-  ActivityIndicator,
-  Image,
+  TouchableOpacity,  Image,
   SafeAreaView,
   Share,
   Dimensions,
@@ -24,6 +22,7 @@ import {
   Modal,
   FlatList,
 } from "react-native";
+import { GlassButton , GlassLoadingSpinner} from '@bayit/shared/ui';
 import { useTranslation } from "react-i18next";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
@@ -318,7 +317,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
   if (loading) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center bg-black">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
       </SafeAreaView>
     );
   }
@@ -329,11 +328,15 @@ export const SeriesDetailScreenMobile: React.FC = () => {
         <Text className="text-lg text-white/60 mb-6">
           {t("content.notFound", "Content not found")}
         </Text>
-        <TouchableOpacity onPress={handleBack} className="px-6 py-3 bg-purple-600 rounded-lg">
+        <GlassButton
+          onPress={handleBack}
+          variant="primary"
+          className="px-6 py-3"
+        >
           <Text className="text-white font-semibold">
             {t("common.goBack", "Go Back")}
           </Text>
-        </TouchableOpacity>
+        </GlassButton>
       </SafeAreaView>
     );
   }
@@ -436,7 +439,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
               {t("content.episodes", "Episodes")}
             </Text>
             {episodesLoading ? (
-              <ActivityIndicator size="small" color={colors.primary} />
+              <GlassLoadingSpinner size="small" />
             ) : (
               <FlatList
                 data={episodes}
@@ -466,8 +469,9 @@ export const SeriesDetailScreenMobile: React.FC = () => {
               { flexDirection: isRTL ? "row-reverse" : "row" },
             ]}
           >
-            <TouchableOpacity
+            <GlassButton
               onPress={handleTogglePlaylist}
+              variant="ghost"
               style={styles.quickActionButton}
             >
               <View style={styles.quickActionIcon}>
@@ -480,9 +484,10 @@ export const SeriesDetailScreenMobile: React.FC = () => {
               <Text style={styles.quickActionLabel}>
                 {t("content.myList", "My List")}
               </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </GlassButton>
+            <GlassButton
               onPress={handleShare}
+              variant="ghost"
               style={styles.quickActionButton}
             >
               <View style={styles.quickActionIcon}>
@@ -491,7 +496,7 @@ export const SeriesDetailScreenMobile: React.FC = () => {
               <Text style={styles.quickActionLabel}>
                 {t("content.share", "Share")}
               </Text>
-            </TouchableOpacity>
+            </GlassButton>
           </View>
 
           {/* Synopsis */}
@@ -621,9 +626,9 @@ export const SeriesDetailScreenMobile: React.FC = () => {
               <Text style={styles.seasonPickerTitle}>
                 {t("content.selectSeason", "Select Season")}
               </Text>
-              <TouchableOpacity onPress={() => setShowSeasonPicker(false)}>
+              <GlassButton onPress={() => setShowSeasonPicker(false)} variant="ghost">
                 <NativeIcon name="x" size="lg" color={Colors.Text.primary} />
-              </TouchableOpacity>
+              </GlassButton>
             </View>
             <ScrollView style={styles.seasonList}>
               {series.seasons.map((season) => (

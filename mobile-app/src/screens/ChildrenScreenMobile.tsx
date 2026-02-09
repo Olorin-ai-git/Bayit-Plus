@@ -16,9 +16,7 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  RefreshControl,
-  ActivityIndicator,
-  Image,
+  RefreshControl,  Image,
   ScrollView,
   SafeAreaView,
 } from 'react-native';
@@ -33,6 +31,7 @@ import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { Colors } from '../theme/colors';
+import { GlassButton , GlassLoadingSpinner} from '@bayit/shared/ui';
 
 import logger from '@/utils/logger';
 
@@ -163,20 +162,22 @@ const CategoryPill: React.FC<CategoryPillProps> = ({
   const isNativeIcon = ['rainbow', 'cartoons', 'educational', 'music', 'stories'].includes(categoryIcon);
 
   return (
-    <TouchableOpacity
+    <GlassButton
       onPress={handlePress}
+      variant={isActive ? 'primary' : 'secondary'}
       className={`flex-row items-center px-4 py-2 bg-white/10 rounded-lg gap-1 min-h-[48px] ${isActive ? 'bg-yellow-400/30 border border-yellow-400' : ''}`}
-      activeOpacity={0.7}
     >
-      {isNativeIcon ? (
-        <NativeIcon name={categoryIcon} size="md" color={isActive ? Colors.Special.gold : Colors.Text.muted} />
-      ) : (
-        <Text className="text-base">{categoryIcon}</Text>
-      )}
-      <Text className={`text-sm font-medium ${isActive ? 'text-yellow-400' : 'text-white/60'}`}>
-        {getLocalizedText(category, 'name')}
-      </Text>
-    </TouchableOpacity>
+      <View className="flex-row items-center gap-1">
+        {isNativeIcon ? (
+          <NativeIcon name={categoryIcon} size="md" color={isActive ? Colors.Special.gold : Colors.Text.muted} />
+        ) : (
+          <Text className="text-base">{categoryIcon}</Text>
+        )}
+        <Text className={`text-sm font-medium ${isActive ? 'text-yellow-400' : 'text-white/60'}`}>
+          {getLocalizedText(category, 'name')}
+        </Text>
+      </View>
+    </GlassButton>
   );
 };
 
@@ -314,7 +315,7 @@ export const ChildrenScreenMobile: React.FC = () => {
   if (isLoading && content.length === 0) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center" style={{ backgroundColor: Colors.Background.elevated }}>
-        <ActivityIndicator size="large" color={Colors.Special.gold} />
+        <GlassLoadingSpinner size="large" />
         <Text className="text-yellow-400 text-base mt-4">{t('common.loading')}</Text>
       </SafeAreaView>
     );

@@ -19,13 +19,13 @@ import {
   ScrollView,
   TouchableOpacity,
   Animated,
-  ActivityIndicator,
   Linking,
   ImageBackground,
   StyleSheet,
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { NativeIcon, IconName } from '@olorin/shared-icons/native';
 import { GlassView } from './ui/GlassView';
 import { GlassCard } from './ui/GlassCard';
@@ -193,7 +193,7 @@ export const TelAvivRow: React.FC<TelAvivRowProps> = ({
               </View>
             )}
             <View style={[styles.loadingContainer, isMobilePhone && styles.loadingContainerMobile]}>
-              <ActivityIndicator color={TELAVIV_COLOR} size="large" />
+              <GlassLoadingSpinner size="large" />
             </View>
           </View>
         </ImageBackground>

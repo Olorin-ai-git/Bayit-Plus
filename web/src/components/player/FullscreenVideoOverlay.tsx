@@ -6,7 +6,8 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { createPortal } from 'react-dom'
-import { View, Pressable, ActivityIndicator, Text, StyleSheet } from 'react-native'
+import { View, Pressable, Text, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import i18n from 'i18next'
@@ -357,7 +358,7 @@ export default function FullscreenVideoOverlay() {
 
       {loading && (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <GlassLoadingSpinner size="large" />
           <Text style={styles.loadingText}>{t('common.loading')}</Text>
         </View>
       )}

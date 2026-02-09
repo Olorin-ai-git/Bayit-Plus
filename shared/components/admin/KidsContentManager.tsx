@@ -4,7 +4,8 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../stores/authStore';
 import { apiClient } from '../../services/apiClient';
@@ -143,7 +144,7 @@ export const KidsContentManager: React.FC = () => {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-black/20 backdrop-blur-xl rounded-2xl p-6">
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <GlassLoadingSpinner size="large" />
         <Text className="text-white mt-4">{t('admin.kids.loadingStats')}</Text>
       </View>
     );
@@ -243,7 +244,7 @@ export const KidsContentManager: React.FC = () => {
               disabled={actionLoading !== null}
             >
               {actionLoading === 'seed' ? (
-                <ActivityIndicator size="small" color="white" />
+                <GlassLoadingSpinner size="small" />
               ) : (
                 <Text className="text-white font-semibold">
                   {t('children.admin.seedContent', 'Seed Content')}
@@ -257,7 +258,7 @@ export const KidsContentManager: React.FC = () => {
               disabled={actionLoading !== null}
             >
               {actionLoading === 'archive' ? (
-                <ActivityIndicator size="small" color="white" />
+                <GlassLoadingSpinner size="small" />
               ) : (
                 <Text className="text-white font-semibold">
                   {t('children.admin.importArchive', 'Import Archive.org')}
@@ -271,7 +272,7 @@ export const KidsContentManager: React.FC = () => {
               disabled={actionLoading !== null}
             >
               {actionLoading === 'podcasts' ? (
-                <ActivityIndicator size="small" color="white" />
+                <GlassLoadingSpinner size="small" />
               ) : (
                 <Text className="text-white font-semibold">
                   {t('children.admin.syncPodcasts', 'Sync Podcasts')}
@@ -285,7 +286,7 @@ export const KidsContentManager: React.FC = () => {
               disabled={actionLoading !== null}
             >
               {actionLoading === 'youtube' ? (
-                <ActivityIndicator size="small" color="white" />
+                <GlassLoadingSpinner size="small" />
               ) : (
                 <Text className="text-white font-semibold">
                   {t('children.admin.syncYouTube', 'Sync YouTube')}
@@ -299,7 +300,7 @@ export const KidsContentManager: React.FC = () => {
               disabled={actionLoading !== null}
             >
               {actionLoading === 'tagvod' ? (
-                <ActivityIndicator size="small" color="white" />
+                <GlassLoadingSpinner size="small" />
               ) : (
                 <Text className="text-white font-semibold">
                   {t('children.admin.tagVod', 'Tag VOD')}

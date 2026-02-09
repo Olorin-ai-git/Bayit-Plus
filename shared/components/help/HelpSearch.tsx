@@ -10,10 +10,10 @@ import {
   TextInput,
   TouchableOpacity,
   FlatList,
-  ActivityIndicator,
   Keyboard,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
@@ -244,7 +244,7 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
           autoCapitalize="none"
         />
         {loading && (
-          <ActivityIndicator size="small" color="#a855f7" />
+          <GlassLoadingSpinner size="small" />
         )}
         {query.length > 0 && !loading && (
           <TouchableOpacity onPress={handleClear} className="w-6 h-6 items-center justify-center">

@@ -4,7 +4,8 @@
  */
 
 import React, { useEffect, useState, useCallback } from 'react'
-import { View, Text, FlatList, Platform, ActivityIndicator } from 'react-native'
+import { View, Text, FlatList, Platform } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { Sparkles, X } from 'lucide-react-native'
 import { GlassButton } from '@bayit/shared/components/ui/GlassButton'
@@ -83,7 +84,7 @@ export function HighlightsPanel({ channelId, onClose, isRTL = false }: Highlight
           </Text>
         </View>
         <View style={styles.emptyContainer}>
-          <ActivityIndicator size={isTV ? 'large' : 'small'} color={ICON_COLORS.primary} />
+          <GlassLoadingSpinner size={isTV ? 'large' : 'small'} />
         </View>
       </View>
     )

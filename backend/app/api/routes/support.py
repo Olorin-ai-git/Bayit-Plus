@@ -8,7 +8,6 @@ Includes streaming endpoints for low-latency voice interactions.
 import asyncio
 import base64
 import json
-import logging
 import math
 from datetime import datetime
 from typing import Optional
@@ -19,6 +18,7 @@ from fastapi.responses import StreamingResponse
 from jose import JWTError, jwt
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.core.security import get_current_active_user, require_role
 from app.models.user import User
 from app.schemas.support import (ConversationRatingRequest,
@@ -36,7 +36,7 @@ from app.services.voice_pipeline_service import VoicePipelineService
 
 router = APIRouter()
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 # =============================================================================
@@ -74,7 +74,7 @@ async def support_chat(
         )
 
     except Exception as e:
-        print(f"[Support API] Chat error: {e}")
+        logger.error("Support chat error", extra={"error": str(e)})
         raise HTTPException(status_code=500, detail=f"Support chat error: {str(e)}")
 
 
@@ -574,7 +574,7 @@ async def list_docs(language: str = "en"):
                 "total_articles": len(articles),
             }
     except Exception as e:
-        print(f"[Support API] Error loading docs manifest: {e}")
+        logger.error("Error loading docs manifest", extra={"error": str(e)})
 
     return {"categories": [], "articles": [], "total_articles": 0}
 

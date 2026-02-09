@@ -1,4 +1,5 @@
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, Text } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { Film } from 'lucide-react';
 import { z } from 'zod';
@@ -48,7 +49,7 @@ export default function VODPageLoadingState({
         {/* Loading Card */}
         <View className={platformClass('flex-1 justify-center items-center min-h-[400px]')}>
           <GlassCard className={platformClass('p-12 items-center gap-6')}>
-            <ActivityIndicator size="large" color={colors.primary} />
+            <GlassLoadingSpinner size="large" />
             <Text className={platformClass('text-base text-white mt-4')}>{t('common.loading')}</Text>
           </GlassCard>
         </View>

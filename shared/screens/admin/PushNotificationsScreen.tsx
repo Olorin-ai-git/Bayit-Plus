@@ -11,8 +11,8 @@ import {
   Modal,
   TextInput,
   ScrollView,
-  ActivityIndicator,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -305,7 +305,7 @@ export const PushNotificationsScreen: React.FC = () => {
                 <View className="flex-row justify-end gap-2 mt-4">
                   <TouchableOpacity className="px-4 py-2 bg-[#1a1a1a] rounded-md" onPress={() => setShowComposer(false)}><Text className="text-sm text-[#cccccc]">{t('common.cancel', 'Cancel')}</Text></TouchableOpacity>
                   <TouchableOpacity className={`px-4 py-2 bg-[#00BFFF] rounded-md min-w-[80px] items-center ${saving ? 'opacity-60' : ''}`} onPress={handleSaveNotification} disabled={saving}>
-                    {saving ? <ActivityIndicator size="small" color={colors.text} /> : <Text className="text-sm text-white font-semibold">{t('common.save', 'Save')}</Text>}
+                    {saving ? <GlassLoadingSpinner size="small" /> : <Text className="text-sm text-white font-semibold">{t('common.save', 'Save')}</Text>}
                   </TouchableOpacity>
                 </View>
               </ScrollView>

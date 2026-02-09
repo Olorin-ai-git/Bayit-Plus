@@ -5,7 +5,8 @@
 
 import { useState, useRef, useCallback, useEffect, RefObject } from 'react'
 import { createPortal } from 'react-dom'
-import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator, Dimensions } from 'react-native'
+import { View, Text, StyleSheet, Pressable, ScrollView, Dimensions } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { Subtitles, Settings as SettingsIcon, X, Download, Check, AlertCircle } from 'lucide-react'
 import { Icon } from '@olorin/shared-icons/web'
@@ -439,7 +440,7 @@ export default function SubtitleControls({
               ]}
             >
               {isDownloading ? (
-                <ActivityIndicator size="small" color={colors.primary} style={{ marginRight: spacing.md }} />
+                <GlassLoadingSpinner size="small" />
               ) : (
                 <Download size={20} color={colors.primary} style={{ marginRight: spacing.md }} />
               )}

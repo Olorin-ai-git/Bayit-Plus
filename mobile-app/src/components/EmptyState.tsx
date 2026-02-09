@@ -22,7 +22,8 @@ import {
 import { useDirection } from '@bayit/shared-hooks';
 import { useAccessibility } from '../hooks/useAccessibility';
 import { useScaledFontSize } from '../hooks/useScaledFontSize';
-import { GlassView, GlassButton } from '@bayit/shared';
+import { GlassView } from '@bayit/shared';
+import { GlassButton } from '@bayit/shared/ui';
 import { colors, spacing } from '@olorin/design-tokens';
 
 interface EmptyStateProps {

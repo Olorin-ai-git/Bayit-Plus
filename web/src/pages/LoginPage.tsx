@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, ChevronDown, Globe } from 'lucide-react';
 import { useAuthStore } from '@bayit/shared-stores';
@@ -202,7 +203,7 @@ export default function LoginPage() {
             disabled={isLoading}
           >
             {isLoading ? (
-              <ActivityIndicator color="#000" size="small" />
+              <GlassLoadingSpinner size="small" />
             ) : (
               <Text style={styles.loginButtonText}>{t('login.submit')}</Text>
             )}

@@ -4,8 +4,8 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../stores/authStore';
@@ -116,7 +116,7 @@ export const LoginScreen: React.FC = () => {
             disabled={isLoading}
           >
             {isLoading ? (
-              <ActivityIndicator color="#000000" />
+              <GlassLoadingSpinner />
             ) : (
               <Text className="text-[#0d0d1a] text-xl font-bold">{t('login.submit')}</Text>
             )}

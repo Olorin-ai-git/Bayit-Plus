@@ -2,12 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
   Image,
   View,
-  ActivityIndicator,
   ImageProps,
   ImageURISource,
   Platform,
 } from 'react-native';
 import { colors } from '@olorin/design-tokens';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 
 interface OptimizedImageProps extends Omit<ImageProps, 'source'> {
   source: ImageURISource;
@@ -191,7 +191,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       {!isLoaded && (
         <View className="absolute inset-0 justify-center items-center" style={{ backgroundColor: placeholderColor }}>
           {showLoadingIndicator && (
-            <ActivityIndicator size="small" color={colors.primary} />
+            <GlassLoadingSpinner size="small" />
           )}
         </View>
       )}

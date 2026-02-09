@@ -4,7 +4,8 @@
  */
 
 import React from 'react'
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { CheckCircle } from 'lucide-react'
 import { z } from 'zod'
 import { colors, spacing, fontSize } from '@olorin/design-tokens'
@@ -31,7 +32,7 @@ export function WizardStepImporting({ progress }: WizardStepImportingProps) {
         </>
       ) : (
         <>
-          <ActivityIndicator size="large" color="#9333ea" />
+          <GlassLoadingSpinner size="large" />
           <Text style={styles.title}>Importing Content...</Text>
 
           {/* Progress bar */}

@@ -5,11 +5,11 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
-  ActivityIndicator,
   Image,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -258,7 +258,7 @@ export const RegisterScreen: React.FC = () => {
       {/* Loading Overlay */}
       {isLoading && (
         <View className="absolute inset-0 bg-black/50 justify-center items-center">
-          <ActivityIndicator size="large" color={colors.primary} />
+          <GlassLoadingSpinner size="large" />
         </View>
       )}
     </KeyboardAvoidingView>

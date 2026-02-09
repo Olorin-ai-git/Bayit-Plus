@@ -11,8 +11,8 @@ import {
   TextInput,
   Pressable,
   StyleSheet,
-  ActivityIndicator,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '@bayit/shared';
 import { colors, spacing } from '@olorin/design-tokens';
@@ -99,7 +99,7 @@ export const AISearchInput: React.FC<AISearchInputProps> = ({
           accessibilityState={{ selected: isListening }}
         >
           {isListening ? (
-            <ActivityIndicator size="small" color={colors.white} />
+            <GlassLoadingSpinner size="small" />
           ) : (
             <Text style={styles.voiceIcon}>M</Text>
           )}

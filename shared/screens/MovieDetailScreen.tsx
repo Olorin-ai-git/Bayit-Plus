@@ -3,8 +3,8 @@ import {
   View,
   Text,
   ScrollView,
-  ActivityIndicator,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import {
@@ -125,7 +125,7 @@ export default function MovieDetailScreen() {
   if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-[#0d0d1a]">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
       </View>
     );
   }

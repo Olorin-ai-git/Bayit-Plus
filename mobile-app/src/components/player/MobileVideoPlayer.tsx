@@ -11,9 +11,10 @@
  */
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { View, Text, ActivityIndicator, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import Video, { VideoRef } from 'react-native-video';
 import { Play, Pause } from 'lucide-react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { Colors } from '../../theme/colors';
 import logger from '@/utils/logger';
 import { useCastSession } from './hooks/useCastSession';
@@ -163,7 +164,7 @@ export default function MobileVideoPlayer({
       {/* Loading Indicator */}
       {loading && (
         <View className="absolute inset-0 justify-center items-center bg-black/70">
-          <ActivityIndicator size="large" color={Colors.white} />
+          <GlassLoadingSpinner size="large" />
           <Text className="mt-3 text-sm text-white font-medium">Loading...</Text>
         </View>
       )}

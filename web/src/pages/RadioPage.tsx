@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { View, Text, FlatList, Pressable, Image, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, ScrollView, StyleSheet } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';

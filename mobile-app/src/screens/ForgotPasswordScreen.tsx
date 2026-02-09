@@ -11,13 +11,12 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  Platform,
-  ActivityIndicator,
-  KeyboardAvoidingView,
+  Platform,  KeyboardAvoidingView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { authService } from '@bayit/shared-services/api';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import {
   GlassButton,
   GlassInput,
@@ -140,7 +139,7 @@ export const ForgotPasswordScreen: React.FC = () => {
             style={styles.resetButton}
           >
             {isLoading ? (
-              <ActivityIndicator size="small" color={colors.text} />
+              <GlassLoadingSpinner size="small" />
             ) : (
               t('forgotPassword.sendReset')
             )}

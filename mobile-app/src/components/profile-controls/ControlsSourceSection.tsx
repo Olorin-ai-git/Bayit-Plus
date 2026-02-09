@@ -5,10 +5,11 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../theme/colors';
+import { GlassButton } from '@bayit/shared/ui';
 
 interface ControlsSourceSectionProps {
   isInheriting: boolean;
@@ -30,10 +31,11 @@ export function ControlsSourceSection({
       </Text>
 
       {/* Household Inheritance Option */}
-      <TouchableOpacity
+      <GlassButton
         style={[styles.radioOption, isInheriting && styles.radioOptionSelected]}
         onPress={onToggle}
         disabled={isLoading}
+        variant={isInheriting ? 'primary' : 'secondary'}
         accessibilityRole="radio"
         accessibilityLabel={t('profileControls.sourceSection.inheritHousehold', 'Inherit from Household')}
         accessibilityHint={t('profileControls.sourceSection.inheritHouseholdDesc', 'Use household-wide family controls')}
@@ -53,13 +55,14 @@ export function ControlsSourceSection({
             {t('profileControls.sourceSection.inheritHouseholdDesc', 'Use household-wide family controls')}
           </Text>
         </View>
-      </TouchableOpacity>
+      </GlassButton>
 
       {/* Custom Controls Option */}
-      <TouchableOpacity
+      <GlassButton
         style={[styles.radioOption, !isInheriting && styles.radioOptionSelected]}
         onPress={onToggle}
         disabled={isLoading}
+        variant={!isInheriting ? 'primary' : 'secondary'}
         accessibilityRole="radio"
         accessibilityLabel={t('profileControls.sourceSection.customControls', 'Custom Controls')}
         accessibilityHint={t('profileControls.sourceSection.customControlsDesc', 'Use profile-specific family controls')}
@@ -79,7 +82,7 @@ export function ControlsSourceSection({
             {t('profileControls.sourceSection.customControlsDesc', 'Use profile-specific family controls')}
           </Text>
         </View>
-      </TouchableOpacity>
+      </GlassButton>
     </View>
   );
 }

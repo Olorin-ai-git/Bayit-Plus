@@ -3,7 +3,8 @@
  * Empty state display for loading, error, no results, and hint states
  */
 
-import { View, Text, ActivityIndicator } from 'react-native'
+import { View, Text } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { Search, AlertCircle } from 'lucide-react'
 import { colors } from '@olorin/design-tokens'
@@ -27,7 +28,7 @@ export default function SceneSearchEmptyState({
   if (loading) {
     return (
       <View style={styles.emptyState} accessibilityLiveRegion="polite">
-        <ActivityIndicator size={isTV ? 'large' : 'small'} color={colors.primary} />
+        <GlassLoadingSpinner size={isTV ? 'large' : 'small'} />
         <Text style={[styles.emptyText, isTV && styles.emptyTextTV]}>
           {t('player.sceneSearch.searching')}
         </Text>

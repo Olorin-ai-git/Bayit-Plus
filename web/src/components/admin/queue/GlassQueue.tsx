@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Upload } from 'lucide-react';
 import { GlassCard } from '@bayit/shared/ui';

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, Pressable, Image, TextInput, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, TextInput, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useResponsive } from '@/hooks/useResponsive';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -241,7 +242,7 @@ function ExitKidsModeModal({ isOpen, onClose, onVerify }: { isOpen: boolean; onC
         style={[styles.confirmButton, (pin.length < 4 || isLoading) && styles.confirmButtonDisabled]}
       >
         {isLoading ? (
-          <ActivityIndicator color="#854d0e" />
+          <GlassLoadingSpinner size="small" />
         ) : (
           <Text style={styles.confirmButtonText}>{t('children.confirm')}</Text>
         )}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { View, Text, Pressable, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { Link, useNavigate } from 'react-router-dom';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, ChevronDown, Globe, Check } from 'lucide-react';
 import { useAuthStore } from '@bayit/shared-stores';
@@ -265,7 +266,7 @@ export default function RegisterPage() {
               disabled={isLoading}
             >
               {isLoading ? (
-                <ActivityIndicator color="#000" size="small" />
+                <GlassLoadingSpinner size="small" />
               ) : (
                 <Text style={styles.registerButtonText}>{t('register.submit')}</Text>
               )}

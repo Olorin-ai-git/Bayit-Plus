@@ -12,8 +12,8 @@ import {
   StyleSheet,
   Pressable,
   ScrollView,
-  ActivityIndicator,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { Search, Tv, Radio, Podcast, Film, Headphones } from 'lucide-react';
 import { GlassModal, GlassInput } from '@bayit/shared/ui';
@@ -211,7 +211,7 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
     if (loading) {
       return (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <GlassLoadingSpinner size="large" />
           <Text style={styles.loadingText}>{t('common.loading')}</Text>
         </View>
       );

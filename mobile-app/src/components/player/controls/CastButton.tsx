@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { Pressable, ActivityIndicator, StyleSheet } from 'react-native'
+import { Pressable, StyleSheet } from 'react-native'
 import { Cast } from 'lucide-react-native'
 import { useTranslation } from 'react-i18next'
 import { colors } from '@olorin/design-tokens'
@@ -53,7 +53,7 @@ export default function CastButton({
       }
     >
       {castSession.isConnecting ? (
-        <ActivityIndicator size="small" color={iconColor} />
+        <GlassLoadingSpinner size="small" />
       ) : (
         <Cast size={size} color={iconColor} />
       )}

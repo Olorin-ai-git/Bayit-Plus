@@ -3,7 +3,8 @@
  * Save button with loading and success states
  */
 
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
 import { colors } from '@olorin/design-tokens';
@@ -20,7 +21,7 @@ export function SaveButton({ onSave, saving, saved, isRTL }: SaveButtonProps) {
       style={saved ? styles.savedBackground : styles.defaultBackground}
     >
       {saving ? (
-        <ActivityIndicator size="small" color={colors.background} />
+        <GlassLoadingSpinner size="small" />
       ) : saved ? (
         <View className="flex-row items-center gap-2" style={isRTL && styles.rowReverse}>
           <Check size={20} color="#22C55E" />

@@ -12,9 +12,7 @@ import {
   Pressable,
   Dimensions,
   RefreshControl,
-  Image,
-  ActivityIndicator,
-} from 'react-native';
+  Image,} from 'react-native';
 import { Film, Play, Search, Star, Clock, AlertCircle } from 'lucide-react-native';
 import { contentService, ContentItem } from '../services/api';
 import { Colors } from '../theme/colors';
@@ -146,7 +144,7 @@ export function VODScreenMobile() {
       {/* Loading State */}
       {loading && (
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={Colors.Info.default} />
+          <GlassLoadingSpinner size="large" />
           <Text style={styles.loadingText}>Loading content...</Text>
         </View>
       )}

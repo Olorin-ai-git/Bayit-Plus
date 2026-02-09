@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,6 +20,7 @@ import { EffectiveControlsGrid } from '../components/profile-controls/EffectiveC
 import { ScreenHeader } from '../components/profile-controls/ScreenHeader';
 import httpClient from '../services/httpClient';
 import { Colors } from '../theme/colors';
+import { GlassButton } from '@bayit/shared/ui';
 
 // Initialize API client with compatible HTTP client
 setProfileControlsApiClient(httpClient);
@@ -131,11 +132,12 @@ export default function ProfileControlsScreenMobile() {
           {error && (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>{error}</Text>
-              <TouchableOpacity
+              <GlassButton
                 onPress={() => {
                   clearProfileControlsError();
                   clearFamilyControlsError();
                 }}
+                variant="ghost"
                 accessibilityRole="button"
                 accessibilityLabel={t('common.dismiss', 'Dismiss')}
                 accessibilityHint={t('accessibility.dismissError', 'Dismiss error message')}
@@ -143,7 +145,7 @@ export default function ProfileControlsScreenMobile() {
                 <Text style={styles.dismissButton}>
                   {t('common.dismiss', 'Dismiss')}
                 </Text>
-              </TouchableOpacity>
+              </GlassButton>
             </View>
           )}
 

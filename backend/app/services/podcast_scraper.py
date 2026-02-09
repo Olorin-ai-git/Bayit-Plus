@@ -12,6 +12,10 @@ from typing import Dict, List, Optional
 import httpx
 from bs4 import BeautifulSoup
 
+from app.core.logging_config import get_logger
+
+logger = get_logger(__name__)
+
 
 @dataclass
 class PodcastEpisodeData:
@@ -143,7 +147,7 @@ async def fetch_rss_feed(rss_url: str) -> Optional[PodcastData]:
             return podcast
 
     except Exception as e:
-        print(f"Error fetching podcast from {rss_url}: {e}")
+        logger.error("Error fetching podcast from RSS feed", extra={"rss_url": rss_url, "error": str(e)})
         return None
 
 
@@ -208,6 +212,6 @@ async def scrape_all_podcasts() -> Dict[str, PodcastData]:
             result.category = config["category"]
             podcasts_dict[name] = result
         elif not isinstance(result, Exception):
-            print(f"No data returned for {name}")
+            logger.warning("No data returned for podcast", extra={"podcast_name": name})
 
     return podcasts_dict

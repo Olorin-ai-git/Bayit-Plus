@@ -17,14 +17,13 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  Platform,
-  ActivityIndicator,
-  KeyboardAvoidingView,
+  Platform,  KeyboardAvoidingView,
   Image,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '@bayit/shared-stores/authStore';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import {
   GlassButton,
   GlassInput,
@@ -213,7 +212,7 @@ export const LoginScreen: React.FC = () => {
             style={styles.signInButton}
           >
             {isLoading ? (
-              <ActivityIndicator size="small" color={colors.text} />
+              <GlassLoadingSpinner size="small" />
             ) : (
               t('login.signIn')
             )}

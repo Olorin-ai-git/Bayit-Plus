@@ -17,9 +17,7 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  RefreshControl,
-  ActivityIndicator,
-  Image,
+  RefreshControl,  Image,
   SafeAreaView,
   Animated,
   PanResponder,
@@ -29,6 +27,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { downloadsService, type Download } from '@bayit/shared-services';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { getLocalizedName, getLocalizedDescription } from '@bayit/shared-utils';
 import { useDirection } from '@bayit/shared-hooks';
 import { useNotifications } from '@olorin/glass-ui/hooks';
@@ -182,7 +181,7 @@ const SwipeableDownloadCard: React.FC<SwipeableDownloadCardProps> = ({
         <Text className="text-white text-xs font-semibold mt-1">Delete</Text>
       </View>
 
-      {/* Card */}
+      {/* Card - Keep TouchableOpacity for swipeable functionality */}
       <Animated.View
         className="bg-white/5 rounded-lg overflow-hidden"
         style={{ transform: [{ translateX }] }}
@@ -242,7 +241,7 @@ const SwipeableDownloadCard: React.FC<SwipeableDownloadCardProps> = ({
                   <Text className="text-[11px] font-semibold" style={{ color: colors.primary.DEFAULT }}>
                     {item.progress}%
                   </Text>
-                  <ActivityIndicator size="small" color={colors.primary.DEFAULT} />
+                  <GlassLoadingSpinner size="small" />
                 </View>
               )}
             </View>
@@ -420,7 +419,7 @@ export const DownloadsScreenMobile: React.FC = () => {
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center" style={{ backgroundColor: colors.background }}>
-        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+        <GlassLoadingSpinner size="large" />
         <Text className="text-base mt-4" style={{ color: colors.text }}>
           {t('common.loading')}
         </Text>

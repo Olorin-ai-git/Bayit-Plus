@@ -12,7 +12,6 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
@@ -23,6 +22,7 @@ import {
   GlassCard,
   GlassToggle,
   GlassErrorBanner,
+  GlassLoadingSpinner,
   colors,
   spacing,
   borderRadius,
@@ -161,7 +161,7 @@ export const AddProfileScreen: React.FC = () => {
           style={styles.createButton}
         >
           {isCreating ? (
-            <ActivityIndicator size="small" color={colors.text} />
+            <GlassLoadingSpinner size="small" />
           ) : (
             t('profile.add.create')
           )}

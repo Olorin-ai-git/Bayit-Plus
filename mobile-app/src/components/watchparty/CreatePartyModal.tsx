@@ -6,9 +6,10 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useWatchPartyStore } from '@bayit/shared-stores/watchPartyStore';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import {
   GlassButton, GlassInput, GlassModal, GlassErrorBanner,
   spacing,
@@ -102,7 +103,7 @@ export const CreatePartyModal: React.FC<CreatePartyModalProps> = ({
           <GlassButton variant="primary" onPress={handleCreate}
             disabled={!selectedContent || isCreating} style={styles.actionBtn}>
             {isCreating
-              ? <ActivityIndicator size="small" color={Colors.Text.primary} />
+              ? <GlassLoadingSpinner size="small" />
               : t('watchParty.create.submit')}
           </GlassButton>
         </View>

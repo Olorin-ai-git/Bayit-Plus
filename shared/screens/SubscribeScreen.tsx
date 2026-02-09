@@ -9,9 +9,9 @@ import {
   Text,
   ScrollView,
   Pressable,
-  ActivityIndicator,
   Platform,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { NativeIcon } from '@olorin/shared-icons/native';
@@ -382,7 +382,7 @@ export function SubscribeScreen() {
           } ${loading ? 'opacity-70' : ''}`}
         >
           {loading ? (
-            <ActivityIndicator size="small" color={colors.text} />
+            <GlassLoadingSpinner size="small" />
           ) : (
             <Text className="text-lg font-bold text-white">
               {t('subscribe.startTrial', 'התחל ניסיון חינם')}

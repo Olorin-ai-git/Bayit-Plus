@@ -10,9 +10,9 @@ import {
   TouchableOpacity,
   ScrollView,
   Animated,
-  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassView } from '../ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
@@ -249,7 +249,7 @@ export const SupportFAQ: React.FC = () => {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center gap-4">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text style={{ textAlign }} className={`${isTV ? 'text-base' : 'text-sm'} text-[#9ca3af]`}>
           {t('support.faq.loading', 'Loading FAQ...')}
         </Text>

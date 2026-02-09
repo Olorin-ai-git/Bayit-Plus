@@ -13,12 +13,12 @@ import {
   View,
   Text,
   Animated,
-  TouchableOpacity,
 } from 'react-native';
 import { colors } from '@olorin/design-tokens';
 import { Colors } from '../../theme/colors';
 import { VoiceCommandResponse } from '../../services/backendProxyService';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { GlassButton } from '@bayit/shared/ui';
 
 interface VoiceResponseDisplayProps {
   response: VoiceCommandResponse | null;
@@ -122,12 +122,13 @@ export const VoiceResponseDisplay: React.FC<VoiceResponseDisplayProps> = ({
               )}
             </View>
           </View>
-          <TouchableOpacity
+          <GlassButton
+            variant="ghost"
             onPress={handleDismiss}
             className="p-1"
           >
             <NativeIcon name="x" size="md" color={Colors.Dark.d600} />
-          </TouchableOpacity>
+          </GlassButton>
         </View>
 
         {/* Response Text */}

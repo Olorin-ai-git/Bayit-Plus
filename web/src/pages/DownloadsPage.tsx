@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, Text, FlatList, Pressable, Image, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Pressable, Image, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useResponsive } from '@/hooks/useResponsive';
 import { Link } from 'react-router-dom';
 import { Download, Play, Trash2, HardDrive } from 'lucide-react';
@@ -90,7 +91,7 @@ function DownloadCard({ item, onDelete, pausedText }: { item: DownloadItem; onDe
               <View style={styles.statusOverlay}>
                 {isDownloading && (
                   <>
-                    <ActivityIndicator size="large" color={colors.primary} />
+                    <GlassLoadingSpinner size="large" />
                     <Text style={styles.progressText}>{item.progress}%</Text>
                   </>
                 )}

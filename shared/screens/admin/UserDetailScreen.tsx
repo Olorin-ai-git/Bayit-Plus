@@ -12,9 +12,9 @@ import {
   TouchableOpacity,
   TextInput,
   Modal,
-  ActivityIndicator,
   Switch,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
@@ -286,7 +286,7 @@ export const UserDetailScreen: React.FC = () => {
     return (
       <AdminLayout title={t('admin.titles.userDetail', 'User Detail')}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary} />
+          <GlassLoadingSpinner size="large" />
         </View>
       </AdminLayout>
     );
@@ -470,7 +470,7 @@ export const UserDetailScreen: React.FC = () => {
                 disabled={saving}
               >
                 {saving ? (
-                  <ActivityIndicator size="small" color={colors.text} />
+                  <GlassLoadingSpinner size="small" />
                 ) : (
                   <Text style={styles.saveButtonText}>
                     {isNewUser ? t('admin.users.create', 'Create User') : t('admin.users.save', 'Save Changes')}

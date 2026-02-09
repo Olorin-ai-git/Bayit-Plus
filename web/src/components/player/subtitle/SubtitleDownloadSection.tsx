@@ -3,7 +3,8 @@
  * Download subtitles button and result messages
  */
 
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, Pressable, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { Download, Check, AlertCircle } from 'lucide-react'
 import { z } from 'zod'
@@ -87,7 +88,7 @@ export default function SubtitleDownloadSection({
         style={[styles.downloadButton, isDownloading && styles.downloadButtonDisabled]}
       >
         {isDownloading ? (
-          <ActivityIndicator size="small" color="#8b5cf6" style={styles.icon} />
+          <GlassLoadingSpinner size="small" />
         ) : (
           <Download size={20} color="#8b5cf6" style={styles.icon} />
         )}

@@ -14,6 +14,8 @@ struct LiveTVView: View {
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
+            PageHeader(icon: "tv.fill", title: "Live TV")
+
             if let vm = viewModel {
                 if vm.isLoading && vm.channels.isEmpty {
                     loadingGrid

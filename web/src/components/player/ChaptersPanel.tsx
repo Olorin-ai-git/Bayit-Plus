@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { View, Text, Pressable, ScrollView, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { List, X } from 'lucide-react'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -105,7 +106,7 @@ export default function ChaptersPanel({
         >
           {isLoading ? (
             <View style={styles.emptyState}>
-              <ActivityIndicator size="small" color={colors.primary.DEFAULT} />
+              <GlassLoadingSpinner size="small" />
               <Text style={styles.emptyText}>{t('chapters.generating')}</Text>
             </View>
           ) : chapters.length === 0 ? (

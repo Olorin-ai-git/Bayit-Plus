@@ -14,6 +14,8 @@ struct RadioView: View {
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
+            PageHeader(icon: "radio.fill", title: "Radio")
+
             if let vm = viewModel {
                 if vm.isLoading && vm.stations.isEmpty {
                     loadingGrid

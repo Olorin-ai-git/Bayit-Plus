@@ -6,9 +6,9 @@ import {
   Animated,
   Dimensions,
   Image,
-  ActivityIndicator,
   ScrollView,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import Video from 'react-native-video';
@@ -159,7 +159,7 @@ export default function MorningRitualScreen() {
           >
             <NativeIcon name="sun" size={isTV ? '4xl' : '3xl'} color="#fbbf24" />
           </Animated.View>
-          <ActivityIndicator color={colors.primary} size="large" />
+          <GlassLoadingSpinner size="large" />
           <Text className="text-white/70 text-lg mt-4">{t('ritual.preparingRitual')}</Text>
         </View>
       </View>

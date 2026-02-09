@@ -16,12 +16,11 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
-  ActivityIndicator,
-  SafeAreaView,
+  TouchableOpacity,  SafeAreaView,
   RefreshControl,
   Image,
 } from 'react-native';
+import { GlassButton , GlassLoadingSpinner} from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
@@ -324,26 +323,29 @@ export const EPGScreenMobile: React.FC = () => {
       {/* Time Controls */}
       <View className="mb-6">
         <View className="flex-row justify-center items-center gap-3 mb-2">
-          <TouchableOpacity
+          <GlassButton
             onPress={() => handleTimeShift(-2)}
-            className="px-3 py-2 bg-white/5 rounded-lg"
+            variant="secondary"
+            className="px-3 py-2"
           >
             <Text className="text-sm text-white">{isRTL ? '→' : '←'} 2h</Text>
-          </TouchableOpacity>
+          </GlassButton>
 
-          <TouchableOpacity
+          <GlassButton
             onPress={handleJumpToNow}
-            className="px-6 py-2 bg-purple-600 rounded-lg"
+            variant="primary"
+            className="px-6 py-2"
           >
             <Text className="text-sm font-semibold text-white">{t('epg.now', 'Now')}</Text>
-          </TouchableOpacity>
+          </GlassButton>
 
-          <TouchableOpacity
+          <GlassButton
             onPress={() => handleTimeShift(2)}
-            className="px-3 py-2 bg-white/5 rounded-lg"
+            variant="secondary"
+            className="px-3 py-2"
           >
             <Text className="text-sm text-white">2h {isRTL ? '←' : '→'}</Text>
-          </TouchableOpacity>
+          </GlassButton>
         </View>
 
         <TouchableOpacity
@@ -362,7 +364,7 @@ export const EPGScreenMobile: React.FC = () => {
   if (loading) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center bg-black">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text className="text-white text-base mt-3">{t('epg.loading', 'Loading TV guide...')}</Text>
       </SafeAreaView>
     );
@@ -374,9 +376,9 @@ export const EPGScreenMobile: React.FC = () => {
         <NativeIcon name="alertTriangle" size="xxxl" color={Colors.Error.default} />
         <Text className="text-xl font-semibold text-red-600 mb-2 mt-3">{t('epg.errorTitle', 'Error')}</Text>
         <Text className="text-sm text-white/60 text-center mb-6">{error}</Text>
-        <TouchableOpacity onPress={fetchEPGData} className="px-6 py-3 bg-purple-600 rounded-lg">
+        <GlassButton onPress={fetchEPGData} variant="primary" className="px-6 py-3">
           <Text className="text-base font-semibold text-white">{t('common.retry', 'Retry')}</Text>
-        </TouchableOpacity>
+        </GlassButton>
       </SafeAreaView>
     );
   }

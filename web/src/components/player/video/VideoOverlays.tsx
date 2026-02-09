@@ -5,7 +5,8 @@
  * File Size: Under 200 lines ✓
  */
 
-import { View, ActivityIndicator, StyleSheet } from 'react-native'
+import { View, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useResponsive } from '@/hooks/useResponsive'
 import { z } from 'zod'
 import { colors } from '@olorin/design-tokens'
@@ -92,7 +93,7 @@ export default function VideoOverlays({
       {loading && (
         <View style={styles.loadingOverlay}>
           <View style={styles.loadingSpinner}>
-            <ActivityIndicator size="large" color={colors.primary} />
+            <GlassLoadingSpinner size="large" />
           </View>
         </View>
       )}

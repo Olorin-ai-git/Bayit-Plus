@@ -3,11 +3,11 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
   BackHandler,
   Platform,
   Share,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 
 // TVEventHandler only exists on TV platforms
 let TVEventHandler: any = null;
@@ -384,7 +384,7 @@ export const PlayerScreen: React.FC = () => {
   if (isLoading) {
     return (
       <View className="flex-1 bg-black justify-center items-center">
-        <ActivityIndicator size="large" color="#a855f7" />
+        <GlassLoadingSpinner size="large" />
         <Text className="text-white text-lg mt-4">{t('player.loading')}</Text>
       </View>
     );

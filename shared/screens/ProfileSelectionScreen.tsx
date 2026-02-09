@@ -8,12 +8,12 @@ import {
   View,
   Text,
   TouchableOpacity,
-  ActivityIndicator,
   TextInput,
   ScrollView,
   Dimensions,
   Platform,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useProfile, Profile } from '../contexts/ProfileContext';
@@ -171,7 +171,7 @@ const PinModal: React.FC<PinModalProps> = ({
             disabled={pin.length < 4 || isLoading}
           >
             {isLoading ? (
-              <ActivityIndicator size="small" color="#ffffff" />
+              <GlassLoadingSpinner size="small" />
             ) : (
               <Text className="text-base font-semibold text-white">{t('common.confirm', 'Confirm')}</Text>
             )}
@@ -248,7 +248,7 @@ export const ProfileSelectionScreen: React.FC = () => {
   if (isLoading && profiles.length === 0) {
     return (
       <View className="flex-1 justify-center items-center bg-black">
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text className="mt-4 text-base text-gray-400">{t('common.loading', 'Loading...')}</Text>
       </View>
     );

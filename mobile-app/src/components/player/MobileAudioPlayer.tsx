@@ -10,9 +10,10 @@
  */
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
-import { View, Text, ActivityIndicator, Pressable, Image } from 'react-native';
+import { View, Text, Pressable, Image } from 'react-native';
 import Video, { VideoRef } from 'react-native-video';
 import { Play, Pause } from 'lucide-react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { Colors } from '../../theme/colors';
 import logger from '@/utils/logger';
 
@@ -112,7 +113,7 @@ export default function MobileAudioPlayer({
         {/* Controls */}
         <View className="mt-2 items-center">
           {loading ? (
-            <ActivityIndicator size="large" color={Colors.white} />
+            <GlassLoadingSpinner size="large" />
           ) : error ? (
             <Text className="text-xs font-medium text-center" style={{ color: Colors.Special.live }}>{error}</Text>
           ) : (

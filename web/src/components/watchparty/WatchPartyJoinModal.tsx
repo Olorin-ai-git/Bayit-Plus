@@ -4,7 +4,8 @@
  */
 
 import { useState } from 'react'
-import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { UserPlus } from 'lucide-react'
 import { colors } from '@olorin/design-tokens'
@@ -149,7 +150,7 @@ export default function WatchPartyJoinModal({
             accessibilityState={{ disabled: !canJoin, busy: loading }}
           >
             {loading ? (
-              <ActivityIndicator size={isTV ? 'large' : 'small'} color="#111122" />
+              <GlassLoadingSpinner size={isTV ? 'large' : 'small'} />
             ) : (
               <Text style={styles.joinButtonText}>{t('watchParty.join', 'Join')}</Text>
             )}

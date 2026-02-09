@@ -10,9 +10,9 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
-  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { NativeIcon } from '@olorin/shared-icons/native';
 
 export interface Column<T> {
@@ -237,7 +237,7 @@ export function DataTable<T>({
           {/* Loading State */}
           {loading && (
             <View className="p-8 items-center justify-center">
-              <ActivityIndicator size="large" color="#3B82F6" />
+              <GlassLoadingSpinner size="large" />
             </View>
           )}
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { Smartphone, Monitor, Tv, Tablet, Trash2, AlertCircle } from 'lucide-react';
 import { GlassView, GlassModal } from '@bayit/shared/ui';
@@ -83,7 +84,7 @@ export function DevicesTab({ isRTL }: DevicesTabProps) {
   if (loading && devices.length === 0) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.loadingText}>{t('devices.loading', 'Loading devices...')}</Text>
       </View>
     );
@@ -162,7 +163,7 @@ export function DevicesTab({ isRTL }: DevicesTabProps) {
                     disabled={isDisconnecting}
                   >
                     {isDisconnecting ? (
-                      <ActivityIndicator size="small" color={colors.error.DEFAULT} />
+                      <GlassLoadingSpinner size="small" />
                     ) : (
                       <Trash2 size={20} color={colors.error.DEFAULT} />
                     )}

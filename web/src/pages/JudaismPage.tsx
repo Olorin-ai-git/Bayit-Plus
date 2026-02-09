@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, Pressable, Image, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Image, ScrollView, StyleSheet } from 'react-native';
 import { useResponsive } from '@/hooks/useResponsive';
 import { Link } from 'react-router-dom';
 import { Play, User } from 'lucide-react';

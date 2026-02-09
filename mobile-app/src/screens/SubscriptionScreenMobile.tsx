@@ -17,16 +17,14 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
-  RefreshControl,
-  ActivityIndicator,
-  SafeAreaView,
+  RefreshControl,  SafeAreaView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { GlassView, GlassButton } from '@bayit/shared';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useDirection } from '@bayit/shared-hooks';
 import { useAuthStore } from '@bayit/shared-stores';
 import { subscriptionService } from '@bayit/shared-services';
@@ -249,7 +247,7 @@ export const SubscriptionScreenMobile: React.FC = () => {
   if (isLoading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </SafeAreaView>
     );
@@ -271,12 +269,13 @@ export const SubscriptionScreenMobile: React.FC = () => {
       >
         {/* Header */}
         <View style={[styles.header, isRTL && styles.headerRTL]}>
-          <TouchableOpacity
+          <GlassButton
             onPress={() => navigation.goBack()}
+            variant="ghost"
             style={styles.backButton}
           >
             <Text style={styles.backText}>{isRTL ? '‹' : '›'}</Text>
-          </TouchableOpacity>
+          </GlassButton>
           <Text style={[styles.title, { textAlign }]}>
             {t('subscription.title')}
           </Text>
@@ -311,14 +310,15 @@ export const SubscriptionScreenMobile: React.FC = () => {
               <Text style={[styles.cancelTitle, { textAlign }]}>
                 {t('subscription.manageSubscription')}
               </Text>
-              <TouchableOpacity
+              <GlassButton
                 onPress={handleCancelSubscription}
+                variant="secondary"
                 style={styles.cancelButton}
               >
                 <Text style={styles.cancelButtonText}>
                   {t('subscription.cancelSubscription')}
                 </Text>
-              </TouchableOpacity>
+              </GlassButton>
               <Text style={[styles.cancelNote, { textAlign }]}>
                 {t('subscription.cancelNote')}
               </Text>

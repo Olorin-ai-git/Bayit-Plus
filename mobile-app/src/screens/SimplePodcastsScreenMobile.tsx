@@ -11,9 +11,7 @@ import {
   StyleSheet,
   Pressable,
   RefreshControl,
-  Image,
-  ActivityIndicator,
-} from 'react-native';
+  Image,} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Mic, Play, Clock, Calendar, AlertCircle } from 'lucide-react-native';
 import { podcastService, Podcast } from '../services/api';
@@ -144,7 +142,7 @@ export function PodcastsScreenMobile() {
       {/* Loading State */}
       {loading && (
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color={Colors.Info.default} />
+          <GlassLoadingSpinner size="large" />
           <Text style={styles.loadingText}>{t('podcasts.loading')}</Text>
         </View>
       )}

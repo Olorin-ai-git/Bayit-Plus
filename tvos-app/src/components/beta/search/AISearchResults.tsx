@@ -12,9 +12,9 @@ import {
   FlatList,
   Image,
   Pressable,
-  ActivityIndicator,
   StyleSheet,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { GlassView } from '@bayit/shared';
 import { colors, spacing } from '@olorin/design-tokens';
@@ -46,7 +46,7 @@ export const AISearchResults: React.FC<AISearchResultsProps> = ({
   if (isLoading && results.length === 0) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#A855F7" />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.loadingText}>
           {t('tvos.aiSearch.searching')}
         </Text>

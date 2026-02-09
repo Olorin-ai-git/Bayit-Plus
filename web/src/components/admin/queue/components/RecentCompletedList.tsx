@@ -4,7 +4,8 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, Pressable, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { GlassBadge } from '@bayit/shared/ui';
@@ -59,7 +60,7 @@ export const RecentCompletedList: React.FC<RecentCompletedListProps> = ({
             disabled={clearingCompleted}
           >
             {clearingCompleted ? (
-              <ActivityIndicator size={14} color={colors.error.DEFAULT} />
+              <GlassLoadingSpinner size="small" />
             ) : (
               <Trash2 size={14} color={colors.error.DEFAULT} />
             )}

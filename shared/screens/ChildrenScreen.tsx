@@ -10,10 +10,10 @@ import {
   FlatList,
   TouchableOpacity,
   Animated,
-  ActivityIndicator,
   Image,
   ScrollView,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { GlassView, GlassCategoryPill } from '../components/ui';
@@ -215,7 +215,7 @@ export const ChildrenScreen: React.FC = () => {
   if (isLoading && content.length === 0) {
     return (
       <View className="flex-1 bg-[#1a1525] justify-center items-center">
-        <ActivityIndicator size="large" color="#ffd93d" />
+        <GlassLoadingSpinner size="large" />
         <Text className="text-[#ffd93d] text-lg mt-4">{t('common.loading')}</Text>
       </View>
     );

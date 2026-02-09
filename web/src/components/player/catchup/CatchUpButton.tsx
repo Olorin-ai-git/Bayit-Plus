@@ -5,7 +5,8 @@
  */
 
 import { useState } from 'react'
-import { Text, Pressable, StyleSheet, ActivityIndicator } from 'react-native'
+import { Text, Pressable, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius, fontSize, glass } from '@olorin/design-tokens'
 import { Clock } from 'lucide-react'
@@ -40,7 +41,7 @@ export default function CatchUpButton({
       accessibilityState={{ disabled }}
     >
       {isLoading ? (
-        <ActivityIndicator size="small" color={colors.text} />
+        <GlassLoadingSpinner size="small" />
       ) : (
         <Clock size={18} color={disabled ? colors.textDisabled : colors.text} />
       )}

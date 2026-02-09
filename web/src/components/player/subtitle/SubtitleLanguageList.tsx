@@ -3,7 +3,8 @@
  * List of available subtitle languages
  */
 
-import { View, Text, Pressable, ActivityIndicator, StyleSheet, Platform, PixelRatio } from 'react-native'
+import { View, Text, Pressable, StyleSheet, Platform, PixelRatio } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { z } from 'zod'
 import { Icon } from '@olorin/shared-icons/web'
@@ -216,7 +217,7 @@ export default function SubtitleLanguageList({
       {/* Available languages */}
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color={colors.primary} />
+          <GlassLoadingSpinner size="small" />
           <Text
             style={styles.loadingText}
             allowFontScaling={isIOS}

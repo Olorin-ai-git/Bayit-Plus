@@ -107,6 +107,14 @@ struct MovieDetailView: View {
 
     private func metadataSection(_ detail: ContentDetail) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
+            if let languages = detail.availableSubtitleLanguages, !languages.isEmpty {
+                SubtitleFlagsPill(
+                    languages: languages,
+                    aiLanguages: aiLanguages(for: languages),
+                    size: .medium
+                )
+            }
+
             if let description = detail.description {
                 Text(description)
                     .font(.system(size: DesignTokens.FontSize.md))
@@ -193,6 +201,13 @@ struct MovieDetailView: View {
     private func relatedSubtitle(_ item: RelatedItem) -> String? {
         let parts = [item.year.map(String.init), item.duration].compactMap { $0 }
         return parts.isEmpty ? nil : parts.joined(separator: " | ")
+    }
+
+    private func aiLanguages(for languages: [String]) -> Set<String> {
+        var aiLangs = Set<String>()
+        if languages.contains("he") { aiLangs.insert("he") }
+        if languages.contains("en") { aiLangs.insert("en") }
+        return aiLangs
     }
 
     private var loadingState: some View { MovieDetailLoadingView() }

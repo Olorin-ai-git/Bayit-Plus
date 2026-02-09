@@ -14,6 +14,8 @@ struct PodcastsView: View {
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
+            PageHeader(icon: "headphones", title: "Podcasts")
+
             if let vm = viewModel {
                 if vm.isLoading && vm.shows.isEmpty {
                     loadingState

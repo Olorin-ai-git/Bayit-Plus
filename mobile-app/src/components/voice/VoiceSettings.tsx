@@ -27,6 +27,7 @@ import { useConversationContextMobile } from '../../hooks/useConversationContext
 import { useSupportStore } from '../../stores/supportStore';
 import { AvatarPreferences } from './AvatarPreferences';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { GlassButton } from '@bayit/shared/ui';
 
 interface VoiceSettingsProps {
   onClose?: () => void;
@@ -107,7 +108,8 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
   return (
     <SafeAreaView className="flex-1 bg-slate-900">
       <View className="flex-row justify-between items-center px-4 py-3 border-b border-slate-800">
-        <TouchableOpacity
+        <GlassButton
+          variant="ghost"
           onPress={onClose}
           accessible
           accessibilityLabel="Close voice settings"
@@ -124,7 +126,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
           >
             Close
           </Text>
-        </TouchableOpacity>
+        </GlassButton>
         <Text
           className="text-lg font-semibold text-white"
           allowFontScaling={true}
@@ -177,8 +179,9 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
           </TouchableOpacity>
           <View className="flex-row gap-2 mt-3">
             {['en', 'he', 'es'].map((lang) => (
-              <TouchableOpacity
+              <GlassButton
                 key={lang}
+                variant={settings.language === lang ? 'primary' : 'secondary'}
                 className={`flex-1 py-2 px-3 rounded bg-slate-900 border ${
                   settings.language === lang
                     ? 'bg-blue-600 border-blue-600'
@@ -202,7 +205,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
                 >
                   {getLanguageName(lang)}
                 </Text>
-              </TouchableOpacity>
+              </GlassButton>
             ))}
           </View>
         </Section>
@@ -313,7 +316,8 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
 
         {/* Danger Zone */}
         <Section title="Advanced">
-          <TouchableOpacity
+          <GlassButton
+            variant="ghost"
             className="py-3 px-3 bg-red-900 rounded items-center mt-2 border border-red-800"
             onPress={handleClearHistory}
             accessible
@@ -328,8 +332,9 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
             >
               Clear Command History
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </GlassButton>
+          <GlassButton
+            variant="ghost"
             className="py-3 px-3 bg-red-900 rounded items-center mt-2 border border-red-800"
             onPress={handleResetSettings}
             accessible
@@ -344,7 +349,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
             >
               Reset to Defaults
             </Text>
-          </TouchableOpacity>
+          </GlassButton>
         </Section>
 
         <View className="h-5" />

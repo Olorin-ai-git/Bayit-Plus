@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, Pressable, ActivityIndicator, StyleSheet, Modal, ScrollView } from 'react-native'
+import { View, Text, TextInput, Pressable, StyleSheet, Modal, ScrollView } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { Search, Sparkles, X, Loader2, AlertCircle } from 'lucide-react'
 import { useAuthStore } from '@/stores/authStore'
@@ -125,7 +126,7 @@ const EPGSmartSearch: React.FC<EPGSmartSearchProps> = ({
               >
                 {isSearching ? (
                   <>
-                    <ActivityIndicator size="small" color="#ffffff" />
+                    <GlassLoadingSpinner size="small" />
                     <Text style={styles.searchButtonText}>{t('epg.searching')}</Text>
                   </>
                 ) : (

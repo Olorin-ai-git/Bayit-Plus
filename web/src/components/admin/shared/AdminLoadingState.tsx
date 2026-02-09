@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
+import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, fontSize } from '@olorin/design-tokens'
 
@@ -16,7 +17,7 @@ export default function AdminLoadingState({
   return (
     <View style={styles.container}>
       <View style={styles.loadingSpinner}>
-        <ActivityIndicator size="small" color={colors.primary} />
+        <GlassLoadingSpinner size="small" />
       </View>
       <Text style={[styles.loadingText, { textAlign: isRTL ? 'right' : 'left' }]}>
         {displayMessage}

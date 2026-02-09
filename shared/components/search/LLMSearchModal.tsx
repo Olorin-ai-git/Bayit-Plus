@@ -6,7 +6,8 @@
  */
 
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Modal, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
+import { GlassLoadingSpinner, GlassInput } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { NativeIcon } from '@olorin/shared-icons/native';
 
@@ -140,7 +141,7 @@ export function LLMSearchModal({
 
             {/* Query Input */}
             <View className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 p-4 mb-4">
-              <TextInput
+              <GlassInput
                 value={query}
                 onChangeText={setQuery}
                 placeholder={t('search.smartSearchPlaceholder')}
@@ -163,7 +164,7 @@ export function LLMSearchModal({
               activeOpacity={0.8}
             >
               {loading ? (
-                <ActivityIndicator color="#ffffff" />
+                <GlassLoadingSpinner size="small" />
               ) : (
                 <Text className="text-white font-bold text-center text-lg">{t('search.searchWithAI')}</Text>
               )}

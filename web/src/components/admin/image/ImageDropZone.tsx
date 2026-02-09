@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
-import { View, Text, Pressable, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
@@ -78,7 +79,7 @@ export function ImageDropZone({
             </Text>
             {isUploading && (
               <View style={styles.uploadingRow}>
-                <ActivityIndicator size="small" color={colors.primary} />
+                <GlassLoadingSpinner size="small" />
                 <Text style={styles.uploadingText}>
                   {t('admin.content.editor.imageUpload.uploading')}
                 </Text>

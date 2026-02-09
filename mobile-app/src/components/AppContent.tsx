@@ -4,8 +4,9 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { View, StatusBar, StyleSheet, Text, ActivityIndicator } from 'react-native';
+import { View, StatusBar, StyleSheet, Text } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import MainTabNavigator from '../navigation/MainTabNavigator';
 import { initializeI18n } from '../services/i18n';
 import { SplashScreen } from './SplashScreen';
@@ -33,7 +34,7 @@ export const AppContent: React.FC = () => {
   if (!i18nReady) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color={Colors.Primary.default} />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );

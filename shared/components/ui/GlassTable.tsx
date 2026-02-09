@@ -4,7 +4,8 @@
  */
 
 import React, { ReactNode, CSSProperties, useState, useCallback, useRef, useEffect } from 'react';
-import { View, Text, Pressable, ActivityIndicator, Platform, StyleSheet } from 'react-native';
+import { View, Text, Pressable, Platform, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { ChevronLeft, ChevronRight, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { GlassView } from './GlassView';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -246,7 +247,7 @@ export function GlassTable<T extends Record<string, any>>({
         {loading ? (
           <View style={styles.loadingContainer}>
             <View style={styles.loadingSpinner}>
-              <ActivityIndicator size="small" color={colors.primary} />
+              <GlassLoadingSpinner size="small" />
             </View>
             <Text style={styles.loadingText}>Loading...</Text>
           </View>

@@ -7,7 +7,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './src/config/queryClient';
@@ -47,7 +48,7 @@ export default function App() {
   if (!i18nReady) {
     return (
       <View style={styles.loading}>
-        <ActivityIndicator size="large" color={colors.primary['500']} />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );

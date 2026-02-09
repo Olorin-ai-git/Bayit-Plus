@@ -10,28 +10,22 @@ struct HomeView: View {
     @State private var viewModel: HomeViewModel?
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Top navigation bar
-            TopNavigationBar()
-
-            // Main content
-            ScrollView(.vertical, showsIndicators: false) {
-                if let vm = viewModel {
-                    LazyVStack(spacing: DesignTokens.Spacing.xl) {
-                        if vm.isLoading && vm.categories.isEmpty {
-                            loadingState
-                        } else if let error = vm.error, vm.categories.isEmpty {
-                            errorState(error)
-                        } else {
-                            contentSections(vm)
-                        }
+        ScrollView(.vertical, showsIndicators: false) {
+            if let vm = viewModel {
+                LazyVStack(spacing: DesignTokens.Spacing.xl) {
+                    if vm.isLoading && vm.categories.isEmpty {
+                        loadingState
+                    } else if let error = vm.error, vm.categories.isEmpty {
+                        errorState(error)
+                    } else {
+                        contentSections(vm)
                     }
                 }
             }
-            .background(DesignTokens.Background.primary)
-            .refreshable {
-                await viewModel?.refresh()
-            }
+        }
+        .background(DesignTokens.Background.primary)
+        .refreshable {
+            await viewModel?.refresh()
         }
         .task {
             if viewModel == nil {

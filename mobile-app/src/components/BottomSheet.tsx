@@ -11,9 +11,10 @@
  */
 
 import React from 'react';
-import { View, Modal, Pressable, ViewStyle } from 'react-native';
+import { View, ViewStyle } from 'react-native';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
 import { GlassView } from '@bayit/shared';
+import { GlassModal } from '@olorin/glass-ui/native';
 import { spacing, borderRadius } from '@olorin/design-tokens';
 
 export interface BottomSheetProps {
@@ -49,27 +50,18 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   dismissable = true,
 }) => {
   return (
-    <Modal
+    <GlassModal
       visible={visible}
-      transparent
-      animationType="none"
-      onRequestClose={onClose}
-      statusBarTranslucent
+      onClose={onClose}
+      dismissable={dismissable}
+      size="full"
+      buttons={[]}
     >
-      {/* Backdrop */}
-      <Pressable
-        className="flex-1 bg-black/50"
-        onPress={dismissable ? onClose : undefined}
-        accessible={false}
-      >
-        <View />
-      </Pressable>
-
       {/* Sheet */}
       <Animated.View
         entering={SlideInDown.duration(300).springify()}
         exiting={SlideOutDown.duration(250)}
-        className="absolute bottom-0 left-0 right-0 rounded-t-2xl overflow-hidden"
+        className="rounded-t-2xl overflow-hidden"
         style={[height === 'auto' ? {} : { height }, style]}
       >
         <GlassView intensity="high" className="px-4 pb-4">
@@ -84,6 +76,6 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
           {children}
         </GlassView>
       </Animated.View>
-    </Modal>
+    </GlassModal>
   );
 };

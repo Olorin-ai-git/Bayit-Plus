@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useState, useCallback } from 'react'
-import { View, Text, StyleSheet, FlatList, RefreshControl, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, FlatList, RefreshControl } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { useDirection } from '@bayit/shared-hooks'
 import { GlassView, GlassButton } from '@bayit/shared/ui'
@@ -98,7 +98,7 @@ export default function AudiobooksScreenMobile({ navigation }: any) {
 
       {isLoading && filteredAudiobooks.length === 0 && (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.primary.DEFAULT} />
+          <GlassLoadingSpinner size="large" />
         </View>
       )}
     </GlassView>

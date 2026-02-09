@@ -13,8 +13,8 @@ import {
   Image,
   FlatList,
   StyleSheet,
-  ActivityIndicator,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing } from '@olorin/design-tokens';
 import { config } from '../../../config/appConfig';
@@ -114,7 +114,7 @@ export const RecommendationSection: React.FC<RecommendationSectionProps> = ({
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{title}</Text>
         <View style={styles.loadingRow}>
-          <ActivityIndicator size="large" color={colors.white} />
+          <GlassLoadingSpinner size="large" />
         </View>
       </View>
     );

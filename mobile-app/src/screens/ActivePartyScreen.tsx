@@ -12,13 +12,12 @@ import {
   FlatList,
   StyleSheet,
   KeyboardAvoidingView,
-  Platform,
-  ActivityIndicator,
-  SafeAreaView,
+  Platform,  SafeAreaView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useWatchPartyStore } from '@bayit/shared-stores/watchPartyStore';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useAuthStore } from '@bayit/shared-stores/authStore';
 import {
   GlassButton,
@@ -107,7 +106,7 @@ export const ActivePartyScreen: React.FC = () => {
   if (isConnecting) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.loadingText}>{t('watchParty.connecting')}</Text>
       </View>
     );

@@ -10,9 +10,9 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassView } from '../ui';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { useDirection } from '../../hooks/useDirection';
@@ -144,7 +144,7 @@ export const SupportSearch: React.FC = () => {
           onBlur={() => setIsFocused(false)}
         />
         {loading && (
-          <ActivityIndicator size="small" color={colors.primary} />
+          <GlassLoadingSpinner size="small" />
         )}
       </GlassView>
 

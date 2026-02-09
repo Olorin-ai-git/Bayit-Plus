@@ -42,6 +42,7 @@ final class RepositoryProvider {
     let chess: any ChessRepository
     let directMessages: any DirectMessageRepository
     let stats: any StatsRepository
+    let news: any NewsRepository
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
@@ -81,6 +82,7 @@ final class RepositoryProvider {
         self.chess = APIChessRepository(client: client, webSocketManager: webSocketManager)
         self.directMessages = APIDirectMessageRepository(client: client, webSocketManager: webSocketManager)
         self.stats = APIStatsRepository(client: client)
+        self.news = APINewsRepository(client: client)
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         self.offlineCache = OfflineCacheService()

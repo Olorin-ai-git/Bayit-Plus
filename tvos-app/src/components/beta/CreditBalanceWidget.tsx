@@ -10,9 +10,9 @@ import {
   View,
   Text,
   Pressable,
-  ActivityIndicator,
   Animated,
 } from 'react-native';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { GlassView } from '@bayit/shared';
@@ -104,7 +104,7 @@ export const CreditBalanceWidget: React.FC<CreditBalanceWidgetProps> = ({
     return (
       <GlassView style={[styles.container, containerStyle]}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.white} />
+          <GlassLoadingSpinner size="large" />
           <Text style={styles.loadingText}>{t('beta.credits.loading')}</Text>
         </View>
       </GlassView>
