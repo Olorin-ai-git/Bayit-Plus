@@ -216,7 +216,10 @@ async def fetch_external_subtitles(
     """
     from app.core.logging_config import get_logger
     from app.models.content import Content
-    from app.services.opensubtitles_service import get_opensubtitles_service
+    from app.services.opensubtitles_service import (
+        OpenSubtitlesQuotaError,
+        get_opensubtitles_service,
+    )
     from app.services.subtitle_service import parse_srt
 
     logger = get_logger(__name__)
@@ -325,6 +328,13 @@ async def fetch_external_subtitles(
 
             logger.info(f"Imported {lang} subtitles", extra={"content_id": content_id})
 
+        except OpenSubtitlesQuotaError as e:
+            # Quota exceeded - stop processing and return error immediately
+            logger.error(f"OpenSubtitles quota exceeded: {e}")
+            raise HTTPException(
+                status_code=429,
+                detail=str(e),
+            )
         except Exception as e:
             logger.error(f"Error fetching {lang} subtitles", extra={"error": str(e)})
             failed.append({"language": lang, "reason": str(e)})

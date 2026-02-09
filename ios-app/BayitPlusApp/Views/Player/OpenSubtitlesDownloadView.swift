@@ -186,7 +186,17 @@ struct OpenSubtitlesDownloadView: View {
                 onSuccess()
             }
         } catch {
-            self.error = error.localizedDescription
+            // Parse user-friendly error messages
+            let errorDescription = error.localizedDescription
+            if errorDescription.contains("quota") || errorDescription.contains("100 subtitles") {
+                self.error = "OpenSubtitles daily quota reached (100/24h). Try again tomorrow."
+            } else if errorDescription.contains("429") || errorDescription.contains("Too Many Requests") {
+                self.error = "OpenSubtitles rate limit exceeded. Please wait a moment and try again."
+            } else if errorDescription.contains("decode") || errorDescription.contains("format") {
+                self.error = "No additional subtitles found for this content."
+            } else {
+                self.error = errorDescription
+            }
         }
 
         isLoading = false

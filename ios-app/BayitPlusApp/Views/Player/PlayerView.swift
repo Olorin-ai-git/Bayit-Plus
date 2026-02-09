@@ -295,7 +295,7 @@ struct PlayerView: View {
                 }
             }
         } label: {
-            Image(systemName: isDubbingEnabled ? "captions.bubble.fill" : "captions.bubble")
+            Image(systemName: isDubbingEnabled ? "waveform.fill" : "waveform")
                 .font(.system(size: 18))
                 .foregroundStyle(
                     isDubbingEnabled ? DesignTokens.Primary.p400 : .white
@@ -314,13 +314,12 @@ struct PlayerView: View {
                 showSubtitlePicker = true
             }
         } label: {
-            Image(systemName: selectedSubtitleLanguage != nil ? "cc.circle.fill" : "cc.circle")
+            Image(systemName: selectedSubtitleLanguage != nil ? "captions.bubble.fill" : "captions.bubble")
                 .font(.system(size: 18))
                 .foregroundStyle(
                     selectedSubtitleLanguage != nil ? DesignTokens.Primary.p400 : .white
                 )
                 .frame(width: 44, height: 44)
-                .background(Color.red.opacity(0.5)) // DEBUG: Make visible
         }
         .accessibilityLabel("Subtitles")
         .accessibilityValue(

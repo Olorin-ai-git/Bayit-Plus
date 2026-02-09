@@ -813,8 +813,64 @@ REACT_APP_API_URL=https://api.bayitplus.com
 
 ---
 
+## iOS Build & Run Requirements
+
+### MANDATORY: Always Build with Xcode, Never Metro
+
+**iOS development MUST use native Xcode builds. Metro bundler is STRICTLY FORBIDDEN for iOS.**
+
+**Build Command:**
+```bash
+cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app
+xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusApp \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+```
+
+**Forbidden:**
+```bash
+# NEVER use Metro for iOS
+npx react-native start        # WRONG
+npx react-native run-ios      # WRONG
+npm run ios                    # WRONG
+npx expo start                # WRONG
+```
+
+### MANDATORY: Install and Run After Every Successful Build
+
+**After EVERY successful build (`** BUILD SUCCEEDED **`), you MUST immediately install and launch the app on the simulator. No exceptions.**
+
+```bash
+# 1. Build
+xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusApp \
+  -destination 'platform=iOS Simulator,name=iPhone 17 Pro' build
+
+# 2. Install (immediately after build succeeds)
+xcrun simctl install "iPhone 17 Pro" \
+  /Users/olorin/Library/Developer/Xcode/DerivedData/BayitPlus-fkpjxovkgrzrlhcpbkanuocxtewu/Build/Products/Debug-iphonesimulator/Bayit+.app
+
+# 3. Launch (immediately after install)
+xcrun simctl launch "iPhone 17 Pro" tv.bayit.plus
+```
+
+**Workflow:**
+1. Build with `xcodebuild` -- if it fails, fix errors and rebuild
+2. On `** BUILD SUCCEEDED **` -- immediately install with `xcrun simctl install`
+3. Immediately launch with `xcrun simctl launch`
+4. Never skip steps 2-3 after a successful build
+
+**Why?**
+- Ensures the developer can immediately verify changes visually
+- Catches runtime issues that compile-time checks miss
+- Keeps the simulator in sync with the latest code
+- Provides immediate feedback loop for iterative development
+
+---
+
 ## Version History
 
+- **1.0.1** (2026-02-08) - iOS build and run requirements
+  - Added mandatory Xcode-only build requirement (no Metro)
+  - Added mandatory install and launch after every successful build
 - **1.0.0** (2026-01-12) - Initial project configuration
   - Defined tech stack and architecture
   - Established Glass UI and localization standards

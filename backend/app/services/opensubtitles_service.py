@@ -28,6 +28,11 @@ INITIAL_RETRY_DELAY = 1.0  # seconds
 MAX_RETRY_DELAY = 30.0  # seconds
 
 
+class OpenSubtitlesQuotaError(Exception):
+    """Raised when OpenSubtitles API quota is exhausted"""
+    pass
+
+
 class OpenSubtitlesService:
     """Service for fetching subtitles from OpenSubtitles.com API"""
 
@@ -226,9 +231,16 @@ class OpenSubtitlesService:
                     return None
 
             else:
+                error_text = response.text[:500]
+                # Check for quota errors in response
+                if "quota" in error_text.lower() or "100 subtitles" in error_text:
+                    logger.error(f"❌ OpenSubtitles quota exceeded: {error_text}")
+                    raise OpenSubtitlesQuotaError(
+                        "OpenSubtitles daily quota reached (100/24h). Please try again tomorrow."
+                    )
                 logger.error(
                     f"❌ OpenSubtitles API request failed: {endpoint} - "
-                    f"Status {response.status_code}: {response.text[:200]}"
+                    f"Status {response.status_code}: {error_text}"
                 )
                 return None
 
