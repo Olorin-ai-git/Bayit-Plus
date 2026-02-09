@@ -55,13 +55,14 @@ export function useSubtitles({ contentId, isLive = false, initialSubtitleLang, i
       setCurrentSubtitleLang,
     })
 
-  // Fetch subtitle cues for current language
+  // Fetch subtitle cues for current language (skipped for live - uses WebSocket)
   const { currentCues, cuesLoading, cuesError, retryFetchCues } = useSubtitleCues({
     contentId,
     currentSubtitleLang,
     hebrewMode,
     englishMode,
     subtitlesEnabled,
+    isLive,
   })
 
   // Split mode subtitle management

@@ -15,6 +15,7 @@ interface UseSubtitleCuesOptions {
   hebrewMode: HebrewMode
   englishMode: EnglishMode
   subtitlesEnabled: boolean
+  isLive?: boolean
 }
 
 export function useSubtitleCues({
@@ -23,6 +24,7 @@ export function useSubtitleCues({
   hebrewMode,
   englishMode,
   subtitlesEnabled,
+  isLive = false,
 }: UseSubtitleCuesOptions) {
   const addNotification = useNotificationStore((state) => state.add)
 
@@ -32,7 +34,7 @@ export function useSubtitleCues({
 
   // Fetch cues when language or mode changes
   useEffect(() => {
-    if (!contentId || !currentSubtitleLang || !subtitlesEnabled) {
+    if (!contentId || !currentSubtitleLang || !subtitlesEnabled || isLive) {
       setCurrentCues([])
       setCuesError(null)
       return
@@ -82,7 +84,7 @@ export function useSubtitleCues({
     }
 
     fetchCues()
-  }, [contentId, currentSubtitleLang, hebrewMode, englishMode, subtitlesEnabled])
+  }, [contentId, currentSubtitleLang, hebrewMode, englishMode, subtitlesEnabled, isLive])
 
   const retryFetchCues = useCallback(() => {
     if (!contentId || !currentSubtitleLang) return
