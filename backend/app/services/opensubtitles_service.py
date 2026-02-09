@@ -491,27 +491,19 @@ class OpenSubtitlesService:
             logger.error(f"❌ Invalid file_id format: {file_id}")
             return None
 
+        # Always use authenticated requests to get full tier quota (e.g. Light = 2000/day)
+        # Unauthenticated requests are limited to 100/day consumer pool
+        has_credentials = bool(self.username and self.password)
         data = await self._make_request(
             endpoint,
             method="POST",
             json_body={"file_id": file_id_int},
-            use_auth=False,  # Try with API key only first
+            use_auth=has_credentials,
         )
 
         if not data or not data.get("link"):
-            # If API key auth failed, try with full auth
-            if data is None:
-                logger.info("🔄 Retrying download with JWT authentication...")
-                data = await self._make_request(
-                    endpoint,
-                    method="POST",
-                    json_body={"file_id": file_id_int},
-                    use_auth=True,
-                )
-
-            if not data or not data.get("link"):
-                logger.error(f"❌ Failed to get download link for file_id: {file_id}")
-                return None
+            logger.error(f"❌ Failed to get download link for file_id: {file_id}")
+            return None
 
         download_url = data["link"]
         logger.info(f"📥 Downloading subtitle from: {download_url[:50]}...")

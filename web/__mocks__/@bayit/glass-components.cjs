@@ -8,6 +8,15 @@ const GlassSpinner = ({ size, color, ...props }) =>
     ...props,
   });
 
+const GlassLoadingSpinner = ({ size, color, ...props }) =>
+  React.createElement('div', {
+    'data-testid': 'glass-spinner',
+    'data-size': size,
+    'data-color': color,
+    ...props,
+  });
+
 module.exports = {
   GlassSpinner,
+  GlassLoadingSpinner,
 };

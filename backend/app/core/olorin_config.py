@@ -1228,7 +1228,7 @@ class SearchRankingConfig(BaseSettings):
         description="Weight for avg_rating signal",
     )
     featured_boost: float = Field(
-        default=0.05, ge=0.0, le=1.0,
+        default=0.01, ge=0.0, le=1.0,
         description="Additive boost for featured content",
     )
 

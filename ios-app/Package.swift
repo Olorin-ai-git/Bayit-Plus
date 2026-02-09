@@ -104,5 +104,29 @@ let package = Package(
             dependencies: ["BayitNetworking", "BayitCore"],
             path: "Packages/BayitNetworking/Tests/BayitNetworkingTests"
         ),
+
+        .testTarget(
+            name: "BayitAuthTests",
+            dependencies: ["BayitAuth", "BayitCore", "BayitNetworking"],
+            path: "Packages/BayitAuth/Tests/BayitAuthTests"
+        ),
+
+        .testTarget(
+            name: "BayitDesignSystemTests",
+            dependencies: ["BayitDesignSystem", "BayitCore"],
+            path: "Packages/BayitDesignSystem/Tests/BayitDesignSystemTests"
+        ),
+
+        .testTarget(
+            name: "BayitVoiceTests",
+            dependencies: ["BayitVoice", "BayitCore", "BayitNetworking"],
+            path: "Packages/BayitVoice/Tests/BayitVoiceTests"
+        ),
+
+        .testTarget(
+            name: "BayitMediaTests",
+            dependencies: ["BayitMedia", "BayitCore", "BayitNetworking"],
+            path: "Packages/BayitMedia/Tests/BayitMediaTests"
+        ),
     ]
 )

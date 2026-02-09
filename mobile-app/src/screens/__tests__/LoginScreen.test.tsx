@@ -46,6 +46,10 @@ jest.mock('@bayit/shared-stores/authStore', () => ({
 }));
 
 jest.mock('@bayit/shared/ui', () => ({
+  GlassSpinner: ({ size }: { size: string }) => {
+    const { View, Text } = require('react-native');
+    return <View testID="glass-spinner"><Text>{size}</Text></View>;
+  },
   GlassLoadingSpinner: ({ size }: { size: string }) => {
     const { View, Text } = require('react-native');
     return <View testID="glass-spinner"><Text>{size}</Text></View>;
