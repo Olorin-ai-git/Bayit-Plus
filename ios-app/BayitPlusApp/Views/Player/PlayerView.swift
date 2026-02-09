@@ -548,12 +548,10 @@ struct PlayerView: View {
         let layer = AVPlayerLayer(player: viewModel.player.avPlayer)
         pipController.setup(with: layer)
 
-        pipController.onDidStart = { [weak pipController] in
-            _ = pipController
+        pipController.onDidStart = {
             isPiPActive = true
         }
-        pipController.onDidStop = { [weak pipController] in
-            _ = pipController
+        pipController.onDidStop = {
             isPiPActive = false
         }
         pipController.onRestoreUserInterface = { [weak coordinator] completion in
