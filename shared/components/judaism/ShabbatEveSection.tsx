@@ -20,6 +20,7 @@ import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { judaismService } from '../../services/api';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
+import { logger } from '../../utils/logger';
 
 interface ShabbatStatus {
   status: 'regular' | 'erev_shabbat' | 'shabbat';
@@ -99,7 +100,7 @@ export const ShabbatEveSection: React.FC<ShabbatEveSectionProps> = ({
         setStatus(response.data);
       }
     } catch (err) {
-      console.error('Failed to load Shabbat data:', err);
+      logger.error('Failed to load Shabbat data', 'ShabbatEveSection', err);
     } finally {
       setIsLoading(false);
     }

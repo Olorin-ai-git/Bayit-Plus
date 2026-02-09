@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { I18nManager } from 'react-native';
 
 import type { LanguageCode } from './types';
+import { logger } from '../utils/logger';
 
 const LANGUAGE_KEY = '@olorin_language';
 
@@ -42,7 +43,7 @@ export async function saveLanguageNative(langCode: LanguageCode): Promise<void> 
     // Update native RTL
     updateNativeRTL(langCode);
   } catch (error) {
-    console.warn('Failed to save language:', error);
+    logger.warn('Failed to save language', 'I18nNative', error);
   }
 }
 
@@ -58,7 +59,7 @@ export async function loadSavedLanguageNative(): Promise<LanguageCode> {
       return saved as LanguageCode;
     }
   } catch (error) {
-    console.warn('Failed to load saved language:', error);
+    logger.warn('Failed to load saved language', 'I18nNative', error);
   }
   return 'he';
 }
@@ -87,7 +88,7 @@ export async function initNativeI18n(): Promise<void> {
       updateNativeRTL(lng);
     });
   } catch (error) {
-    console.warn('Failed to initialize native i18n:', error);
+    logger.warn('Failed to initialize native i18n', 'I18nNative', error);
   }
 }
 
@@ -111,7 +112,7 @@ function updateNativeRTL(langCode: LanguageCode): void {
       I18nManager.forceRTL(false);
     }
   } catch (error) {
-    console.warn('Failed to update native RTL:', error);
+    logger.warn('Failed to update native RTL', 'I18nNative', error);
   }
 }
 
@@ -131,7 +132,7 @@ export async function clearI18nPreferences(): Promise<void> {
   try {
     await AsyncStorage.removeItem(LANGUAGE_KEY);
   } catch (error) {
-    console.warn('Failed to clear i18n preferences:', error);
+    logger.warn('Failed to clear i18n preferences', 'I18nNative', error);
   }
 }
 

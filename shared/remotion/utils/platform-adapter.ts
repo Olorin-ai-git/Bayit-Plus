@@ -3,6 +3,8 @@
  * Detects Remotion support and provides platform-specific configuration
  */
 
+import { logger } from '../../utils/logger';
+
 /**
  * Detect if Remotion live rendering is supported on this platform
  * Checks for:
@@ -141,7 +143,7 @@ export function logPlatformInfo(): void {
   const hasMemory = hassufficientMemory();
   const remotionSupport = detectRemotionSupport();
 
-  console.log('[Remotion Platform Detection]', {
+  logger.debug('Platform detection results', 'RemotionPlatform', {
     renderingMode: config.renderingMode,
     useRemotion: config.useRemotion,
     remotionSupport,

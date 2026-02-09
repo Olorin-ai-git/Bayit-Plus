@@ -25,6 +25,7 @@ import {
   ChevronRight,
   Moon,
 } from 'lucide-react-native';
+import { Colors } from '../theme/colors';
 
 interface MenuItem {
   id: string;
@@ -66,7 +67,7 @@ function MenuItem({ item }: { item: MenuItem }) {
   return (
     <Pressable style={styles.menuItem}>
       <View style={styles.menuIconContainer}>
-        <IconComponent size={20} color="#4a9eff" />
+        <IconComponent size={20} color={Colors.Info.default} />
       </View>
       <View style={styles.menuContent}>
         <Text style={styles.menuTitle}>{item.title}</Text>
@@ -83,7 +84,7 @@ export function ProfileScreenMobile() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <User size={24} color="#4a9eff" strokeWidth={2} />
+          <User size={24} color={Colors.Info.default} strokeWidth={2} />
           <Text style={styles.headerTitle}>Profile</Text>
         </View>
       </View>
@@ -92,7 +93,7 @@ export function ProfileScreenMobile() {
       <View style={styles.profileCard}>
         <View style={styles.avatarContainer}>
           <View style={styles.avatar}>
-            <User size={40} color="#4a9eff" />
+            <User size={40} color={Colors.Info.default} />
           </View>
           <View style={styles.onlineIndicator} />
         </View>
@@ -133,7 +134,7 @@ export function ProfileScreenMobile() {
 
       {/* Sign Out */}
       <Pressable style={styles.signOutButton}>
-        <LogOut size={20} color="#e53935" />
+        <LogOut size={20} color={Colors.Error.e600} />
         <Text style={styles.signOutText}>Sign Out</Text>
       </Pressable>
 
@@ -146,7 +147,7 @@ export function ProfileScreenMobile() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0d0d1a' },
+  container: { flex: 1, backgroundColor: Colors.Background.primary },
   content: { paddingBottom: 20 },
   header: {
     flexDirection: 'row',
@@ -156,25 +157,25 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#fff' },
+  headerTitle: { fontSize: 24, fontWeight: 'bold', color: Colors.Text.primary },
   // Profile Card
   profileCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: Colors.Glass.bgLight,
     borderRadius: 16,
     padding: 16,
     marginHorizontal: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.Glass.borderLight,
   },
   avatarContainer: { position: 'relative', marginRight: 16 },
   avatar: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: 'rgba(74, 158, 255, 0.2)',
+    backgroundColor: Colors.Glass.borderLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -185,57 +186,57 @@ const styles = StyleSheet.create({
     width: 14,
     height: 14,
     borderRadius: 7,
-    backgroundColor: '#4caf50',
+    backgroundColor: Colors.Success.default,
     borderWidth: 2,
-    borderColor: '#0d0d1a',
+    borderColor: Colors.Background.primary,
   },
   profileInfo: { flex: 1 },
-  userName: { fontSize: 18, fontWeight: '600', color: '#fff', marginBottom: 2 },
-  userEmail: { fontSize: 13, color: 'rgba(255, 255, 255, 0.5)' },
+  userName: { fontSize: 18, fontWeight: '600', color: Colors.Text.primary, marginBottom: 2 },
+  userEmail: { fontSize: 13, color: Colors.Text.muted },
   signInButton: {
-    backgroundColor: '#4a9eff',
+    backgroundColor: Colors.Info.default,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
   },
-  signInText: { color: '#fff', fontWeight: '600', fontSize: 14 },
+  signInText: { color: Colors.Text.primary, fontWeight: '600', fontSize: 14 },
   // Subscription Banner
   subscriptionBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(74, 158, 255, 0.1)',
+    backgroundColor: Colors.Glass.borderLight,
     borderRadius: 12,
     padding: 16,
     marginHorizontal: 16,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: 'rgba(74, 158, 255, 0.3)',
+    borderColor: Colors.Glass.border,
   },
   subscriptionInfo: { flex: 1 },
-  subscriptionTitle: { fontSize: 16, fontWeight: '600', color: '#4a9eff', marginBottom: 2 },
-  subscriptionSubtitle: { fontSize: 12, color: 'rgba(255, 255, 255, 0.6)' },
+  subscriptionTitle: { fontSize: 16, fontWeight: '600', color: Colors.Info.default, marginBottom: 2 },
+  subscriptionSubtitle: { fontSize: 12, color: Colors.Text.muted },
   upgradeButton: {
-    backgroundColor: '#4a9eff',
+    backgroundColor: Colors.Info.default,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
   },
-  upgradeText: { color: '#fff', fontWeight: '600', fontSize: 14 },
+  upgradeText: { color: Colors.Text.primary, fontWeight: '600', fontSize: 14 },
   // Menu Section
   menuSection: { marginBottom: 24, paddingHorizontal: 16 },
   sectionTitle: {
     fontSize: 12,
     fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: Colors.Text.muted,
     textTransform: 'uppercase',
     letterSpacing: 1,
     marginBottom: 8,
   },
   menuCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: Colors.Glass.bgLight,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.Glass.borderLight,
     overflow: 'hidden',
   },
   menuItem: {
@@ -247,15 +248,15 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 8,
-    backgroundColor: 'rgba(74, 158, 255, 0.1)',
+    backgroundColor: Colors.Glass.borderLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
   },
   menuContent: { flex: 1 },
-  menuTitle: { fontSize: 15, fontWeight: '500', color: '#fff' },
-  menuSubtitle: { fontSize: 12, color: 'rgba(255, 255, 255, 0.5)', marginTop: 2 },
-  separator: { height: 1, backgroundColor: 'rgba(255, 255, 255, 0.05)', marginLeft: 64 },
+  menuTitle: { fontSize: 15, fontWeight: '500', color: Colors.Text.primary },
+  menuSubtitle: { fontSize: 12, color: Colors.Text.muted, marginTop: 2 },
+  separator: { height: 1, backgroundColor: Colors.Glass.bgLight, marginLeft: 64 },
   // Sign Out
   signOutButton: {
     flexDirection: 'row',
@@ -266,16 +267,16 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 16,
     padding: 16,
-    backgroundColor: 'rgba(229, 57, 53, 0.1)',
+    backgroundColor: Colors.Glass.bgLight,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: 'rgba(229, 57, 53, 0.3)',
+    borderColor: Colors.Error.e600,
   },
-  signOutText: { color: '#e53935', fontWeight: '600', fontSize: 16 },
+  signOutText: { color: Colors.Error.e600, fontWeight: '600', fontSize: 16 },
   // Version
   versionText: {
     textAlign: 'center',
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.3)',
+    color: Colors.Text.disabled,
   },
 });

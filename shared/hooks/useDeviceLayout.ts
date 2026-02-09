@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Dimensions, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isTV as isTVPlatform } from '../utils/platform';
+import { logger } from '../utils/logger';
 
 /**
  * Device layout types
@@ -119,7 +120,7 @@ export function useLayoutPreference() {
           setPreference(stored as LayoutMode);
         }
       } catch (err) {
-        console.error('Failed to load layout preference:', err);
+        logger.error('Failed to load layout preference', 'DeviceLayout', err);
       } finally {
         setLoading(false);
       }
@@ -133,7 +134,7 @@ export function useLayoutPreference() {
       setPreference(mode);
       await AsyncStorage.setItem(STORAGE_KEY, mode);
     } catch (err) {
-      console.error('Failed to save layout preference:', err);
+      logger.error('Failed to save layout preference', 'DeviceLayout', err);
     }
   }, []);
 
@@ -142,7 +143,7 @@ export function useLayoutPreference() {
       setPreference(null);
       await AsyncStorage.removeItem(STORAGE_KEY);
     } catch (err) {
-      console.error('Failed to clear layout preference:', err);
+      logger.error('Failed to clear layout preference', 'DeviceLayout', err);
     }
   }, []);
 

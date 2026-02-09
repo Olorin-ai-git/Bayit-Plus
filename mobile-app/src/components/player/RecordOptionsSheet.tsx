@@ -13,6 +13,7 @@ import { useDirection } from '@bayit/shared-hooks'
 import { GlassView } from '@bayit/shared'
 import { GlassModal, GlassToggle } from '@olorin/glass-ui/native'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
+import { Colors } from '../../theme/colors'
 import { AVAILABLE_LANGUAGES, LanguageOption } from '@bayit/shared-types/recording'
 import logger from '@/utils/logger'
 
@@ -127,7 +128,7 @@ export const RecordOptionsSheet: React.FC<RecordOptionsSheetProps> = ({
           accessibilityLabel={t('recordings.startRecording')}
           accessibilityRole="button"
         >
-          <Circle size={18} color="#fff" />
+          <Circle size={18} color={Colors.white} />
           <Text style={styles.startButtonText}>{t('recordings.startRecording')}</Text>
         </Pressable>
       </ScrollView>
@@ -183,5 +184,5 @@ const styles = StyleSheet.create({
   langText: { fontSize: fontSize.sm, fontWeight: '500', color: colors.textSecondary, flex: 1 },
   langTextSelected: { color: colors.text },
   startButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm, backgroundColor: 'rgba(239,68,68,0.9)', paddingVertical: spacing.md, minHeight: 48, borderRadius: borderRadius.lg, marginTop: spacing.lg },
-  startButtonText: { color: '#fff', fontSize: fontSize.md, fontWeight: '700' },
+  startButtonText: { color: Colors.white, fontSize: fontSize.md, fontWeight: '700' },
 })

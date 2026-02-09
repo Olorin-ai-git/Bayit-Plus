@@ -91,13 +91,16 @@ export function ContentCardActions(props: ContentCardActionsProps) {
       onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
     >
       {/* Favorite Button */}
-      <button
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label="Toggle favorite"
         onClick={handleFavoriteToggle}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleFavoriteToggle(e as any); }}
         onMouseEnter={() => setFavoriteHovered(true)}
         onMouseLeave={() => setFavoriteHovered(false)}
-        disabled={favoriteLoading}
         className={platformClass(
-          'w-8 h-8 rounded-full backdrop-blur-lg flex justify-center items-center transition-all duration-200 cursor-pointer hover:scale-110 border-none',
+          'w-8 h-8 rounded-full backdrop-blur-lg flex justify-center items-center transition-all duration-200 cursor-pointer hover:scale-110 border border-white/10',
           'w-8 h-8 rounded-full flex justify-center items-center'
         )}
         style={{
@@ -107,6 +110,8 @@ export function ContentCardActions(props: ContentCardActionsProps) {
             ? 'rgba(255, 255, 255, 0.25)'
             : 'rgba(0, 0, 0, 0.6)',
           transform: favoriteHovered ? 'scale(1.1)' : 'scale(1)',
+          opacity: favoriteLoading ? 0.5 : 1,
+          pointerEvents: favoriteLoading ? 'none' : 'auto',
         }}
       >
         <Star
@@ -114,16 +119,19 @@ export function ContentCardActions(props: ContentCardActionsProps) {
           color={isFavorite ? '#fbbf24' : '#ffffff'}
           fill={isFavorite ? '#fbbf24' : 'transparent'}
         />
-      </button>
+      </div>
 
       {/* Playlist Button - hidden for radio (radio cannot be added to playlists) */}
-      {contentType !== 'radio' && <button
+      {contentType !== 'radio' && <div
+        role="button"
+        tabIndex={0}
+        aria-label="Toggle playlist"
         onClick={handlePlaylistToggle}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handlePlaylistToggle(e as any); }}
         onMouseEnter={() => setPlaylistHovered(true)}
         onMouseLeave={() => setPlaylistHovered(false)}
-        disabled={playlistLoading}
         className={platformClass(
-          'w-8 h-8 rounded-full backdrop-blur-lg flex justify-center items-center transition-all duration-200 cursor-pointer hover:scale-110 border-none',
+          'w-8 h-8 rounded-full backdrop-blur-lg flex justify-center items-center transition-all duration-200 cursor-pointer hover:scale-110 border border-white/10',
           'w-8 h-8 rounded-full flex justify-center items-center'
         )}
         style={{
@@ -133,6 +141,8 @@ export function ContentCardActions(props: ContentCardActionsProps) {
             ? 'rgba(255, 255, 255, 0.25)'
             : 'rgba(0, 0, 0, 0.6)',
           transform: playlistHovered ? 'scale(1.1)' : 'scale(1)',
+          opacity: playlistLoading ? 0.5 : 1,
+          pointerEvents: playlistLoading ? 'none' : 'auto',
         }}
       >
         <Bookmark
@@ -140,7 +150,7 @@ export function ContentCardActions(props: ContentCardActionsProps) {
           color={inPlaylist ? '#a855f7' : '#ffffff'}
           fill={inPlaylist ? '#a855f7' : 'transparent'}
         />
-      </button>}
+      </div>}
     </div>
   );
 }

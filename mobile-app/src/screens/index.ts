@@ -4,6 +4,11 @@
  * Central export for all mobile-optimized screens
  */
 
+// Auth screens
+export * from './LoginScreen';
+export * from './RegisterScreen';
+export * from './ForgotPasswordScreen';
+
 // Main content screens
 export * from './HomeScreenMobile';
 export * from './LiveTVScreenMobile';
@@ -18,6 +23,8 @@ export * from './PlayerScreenMobile';
 export * from './ProfileScreenMobile';
 export * from './SearchScreenMobile';
 export * from './ProfileSelectionScreenMobile';
+export * from './AddProfileScreen';
+export * from './EditProfileScreen';
 export * from './BillingScreenMobile';
 export * from './SubscriptionScreenMobile';
 export * from './SecurityScreenMobile';
@@ -52,3 +59,7 @@ export * from './FlowsScreenMobile';
 
 // TV Guide
 export * from './EPGScreenMobile';
+
+// Watch Party
+export * from './WatchPartyScreen';
+export * from './ActivePartyScreen';

@@ -13,6 +13,7 @@
  */
 
 import { EventEmitter } from 'eventemitter3';
+import { logger } from '../utils/logger';
 
 export interface GazeData {
   isGazing: boolean;
@@ -126,7 +127,7 @@ class GazeDetectionService extends EventEmitter {
         return true;
       }
     } catch (error) {
-      console.warn('Hardware eye-tracking unavailable:', error);
+      logger.warn('Hardware eye-tracking unavailable', 'GazeDetection', error);
     }
 
     return false;

@@ -14,6 +14,7 @@ import {
 import Video, { OnLoadData } from 'react-native-video';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Colors } from '../theme/colors';
 import logger from '@/utils/logger';
 
 const moduleLogger = logger.scope('SplashScreen');
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: Colors.Background.primary,
     zIndex: 9999,
     justifyContent: 'center',
     alignItems: 'center',
@@ -189,7 +190,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   skipText: {
-    color: '#fff',
+    color: Colors.white,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -209,7 +210,7 @@ const styles = StyleSheet.create({
   },
   poweredByBrand: {
     fontSize: 12,
-    color: '#A855F7',
+    color: Colors.Primary.p500,
     fontWeight: '500',
   },
 });

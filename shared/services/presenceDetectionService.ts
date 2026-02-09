@@ -11,6 +11,7 @@
  */
 
 import { EventEmitter } from 'eventemitter3';
+import { logger } from '../utils/logger';
 
 export interface PresenceState {
   isPresent: boolean;
@@ -151,7 +152,7 @@ class PresenceDetectionService extends EventEmitter {
 
       return false;
     } catch (error) {
-      console.warn('Hardware presence detection unavailable:', error);
+      logger.warn('Hardware presence detection unavailable', 'PresenceDetection', error);
       return false;
     }
   }

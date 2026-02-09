@@ -12,6 +12,7 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, FlatList, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { ContentCard, ContentCardProps } from './ContentCard';
 import styles from './styles/ContentShelf.styles';
 
@@ -140,7 +141,7 @@ export const ContentShelf: React.FC<ContentShelfProps> = ({
                 seeAllFocused && styles.seeAllTextFocused,
               ]}
             >
-              {t('tvos.common.seeAll', 'See All')} →
+              {t('tvos.common.seeAll', 'See All')} <NativeIcon name="chevronRight" size="sm" color="#A855F7" context="tv" />
             </Text>
           </Pressable>
         )}

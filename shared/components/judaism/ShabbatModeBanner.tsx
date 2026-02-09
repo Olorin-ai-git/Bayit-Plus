@@ -21,6 +21,7 @@ import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
 import { judaismService } from '../../services/api';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
+import { logger } from '../../utils/logger';
 
 interface ShabbatTimes {
   city: string;
@@ -128,7 +129,7 @@ export const ShabbatModeBanner: React.FC<ShabbatModeBannerProps> = ({
         setShabbatTimes(response.data);
       }
     } catch (err) {
-      console.error('Failed to load Shabbat times for banner:', err);
+      logger.error('Failed to load Shabbat times for banner', 'ShabbatModeBanner', err);
     } finally {
       setIsLoading(false);
     }

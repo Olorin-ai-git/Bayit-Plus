@@ -5,6 +5,7 @@
 
 import type { NotificationLevel, Notification } from '../native/components/GlassToast/types';
 import { sanitizeForTTS } from './sanitization';
+import { logger } from './logger';
 
 interface TTSConfig {
   enabled: boolean;
@@ -101,7 +102,7 @@ class TTSAnnouncementQueue {
         await this.audioDuckingService.restore();
       }
     } catch (error) {
-      console.error('[TTS] Announcement failed:', error);
+      logger.error('Announcement failed', 'TTS', error);
     }
 
     // Process next item with small delay

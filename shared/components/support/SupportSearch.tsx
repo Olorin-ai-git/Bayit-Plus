@@ -103,7 +103,7 @@ export const SupportSearch: React.FC = () => {
 
       setResults(searchResults.slice(0, 10));
     } catch (err) {
-      console.error('[SupportSearch] Error searching:', err);
+      logger.error('Error searching', 'SupportSearch', err);
       setResults([]);
     } finally {
       setLoading(false);

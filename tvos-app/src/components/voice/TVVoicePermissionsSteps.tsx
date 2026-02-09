@@ -6,6 +6,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { styles } from './styles/TVVoicePermissionsSteps.styles';
 
 type PermissionStep = 'intro' | 'microphone' | 'speech' | 'complete';
@@ -31,9 +32,18 @@ export const TVVoicePermissionsSteps: React.FC<TVVoicePermissionsStepsProps> = (
         {t('voice.enable_description', 'Voice control lets you search, play content, and control playback using voice commands.')}
       </Text>
       <View style={styles.featuresList}>
-        <Text style={styles.featureItem}>✓ {t('voice.feature_search', 'Search by voice')}</Text>
-        <Text style={styles.featureItem}>✓ {t('voice.feature_play', 'Play content')}</Text>
-        <Text style={styles.featureItem}>✓ {t('voice.feature_control', 'Control playback')}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <NativeIcon name="check" size="sm" color="#4ade80" context="tv" />
+          <Text style={styles.featureItem}>{t('voice.feature_search', 'Search by voice')}</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <NativeIcon name="check" size="sm" color="#4ade80" context="tv" />
+          <Text style={styles.featureItem}>{t('voice.feature_play', 'Play content')}</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <NativeIcon name="check" size="sm" color="#4ade80" context="tv" />
+          <Text style={styles.featureItem}>{t('voice.feature_control', 'Control playback')}</Text>
+        </View>
       </View>
     </View>
   );

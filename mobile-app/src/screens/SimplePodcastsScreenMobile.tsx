@@ -17,6 +17,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { Mic, Play, Clock, Calendar, AlertCircle } from 'lucide-react-native';
 import { podcastService, Podcast } from '../services/api';
+import { Colors } from '../theme/colors';
 
 function PodcastCard({ podcast }: { podcast: Podcast }) {
   return (
@@ -25,7 +26,7 @@ function PodcastCard({ podcast }: { podcast: Podcast }) {
         {podcast.cover ? (
           <Image source={{ uri: podcast.cover }} style={styles.podcastCover} resizeMode="cover" />
         ) : (
-          <Mic size={28} color="#4a9eff" />
+          <Mic size={28} color={Colors.Info.default} />
         )}
       </View>
       <View style={styles.podcastInfo}>
@@ -43,7 +44,7 @@ function PodcastCard({ podcast }: { podcast: Podcast }) {
         </View>
       </View>
       <Pressable style={styles.playButton}>
-        <Play size={20} color="#fff" fill="#fff" />
+        <Play size={20} color={Colors.Text.primary} fill={Colors.Text.primary} />
       </Pressable>
     </Pressable>
   );
@@ -102,7 +103,7 @@ export function PodcastsScreenMobile() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Mic size={24} color="#4a9eff" strokeWidth={2} />
+          <Mic size={24} color={Colors.Info.default} strokeWidth={2} />
           <Text style={styles.headerTitle}>{t('podcasts.title')}</Text>
         </View>
         {podcasts.length > 0 && (
@@ -143,7 +144,7 @@ export function PodcastsScreenMobile() {
       {/* Loading State */}
       {loading && (
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color="#4a9eff" />
+          <ActivityIndicator size="large" color={Colors.Info.default} />
           <Text style={styles.loadingText}>{t('podcasts.loading')}</Text>
         </View>
       )}
@@ -151,7 +152,7 @@ export function PodcastsScreenMobile() {
       {/* Error State */}
       {error && !loading && (
         <View style={styles.centerContent}>
-          <AlertCircle size={48} color="#e53935" />
+          <AlertCircle size={48} color={Colors.Error.e600} />
           <Text style={styles.errorText}>{error}</Text>
           <Pressable style={styles.retryButton} onPress={loadPodcasts}>
             <Text style={styles.retryText}>{t('common.retry')}</Text>
@@ -165,12 +166,12 @@ export function PodcastsScreenMobile() {
           style={styles.scrollView}
           contentContainerStyle={styles.podcastsList}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4a9eff" />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.Info.default} />
           }
         >
           {filteredPodcasts.length === 0 ? (
             <View style={styles.emptyState}>
-              <Mic size={48} color="rgba(255, 255, 255, 0.3)" />
+              <Mic size={48} color={Colors.Text.disabled} />
               <Text style={styles.emptyText}>{t('podcasts.noPodcastsFound')}</Text>
             </View>
           ) : (
@@ -186,7 +187,7 @@ export function PodcastsScreenMobile() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0d0d1a' },
+  container: { flex: 1, backgroundColor: Colors.Background.primary },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -195,66 +196,66 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#fff' },
+  headerTitle: { fontSize: 24, fontWeight: 'bold', color: Colors.Text.primary },
   countBadge: {
-    backgroundColor: 'rgba(74, 158, 255, 0.2)',
+    backgroundColor: Colors.Glass.borderLight,
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
   },
-  countText: { color: '#4a9eff', fontSize: 14, fontWeight: '600' },
+  countText: { color: Colors.Info.default, fontSize: 14, fontWeight: '600' },
   categoryContainer: { maxHeight: 50 },
   categoryContent: { paddingHorizontal: 16, gap: 8 },
   categoryChip: {
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: Colors.Glass.bgLight,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.Glass.borderLight,
   },
-  categoryChipActive: { backgroundColor: 'rgba(74, 158, 255, 0.2)', borderColor: '#4a9eff' },
-  categoryText: { color: 'rgba(255, 255, 255, 0.7)', fontSize: 14, fontWeight: '500' },
-  categoryTextActive: { color: '#4a9eff' },
+  categoryChipActive: { backgroundColor: Colors.Glass.borderLight, borderColor: Colors.Info.default },
+  categoryText: { color: Colors.Text.secondary, fontSize: 14, fontWeight: '500' },
+  categoryTextActive: { color: Colors.Info.default },
   scrollView: { flex: 1 },
   podcastsList: { padding: 16, gap: 12 },
   podcastCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: Colors.Glass.bgLight,
     borderRadius: 12,
     padding: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.Glass.borderLight,
     gap: 16,
   },
   podcastIcon: {
     width: 56,
     height: 56,
     borderRadius: 12,
-    backgroundColor: 'rgba(74, 158, 255, 0.15)',
+    backgroundColor: Colors.Glass.borderLight,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
   },
   podcastCover: { width: 56, height: 56, borderRadius: 12 },
   podcastInfo: { flex: 1 },
-  podcastTitle: { fontSize: 16, fontWeight: '600', color: '#fff', marginBottom: 2 },
-  podcastHost: { fontSize: 13, color: '#4a9eff', marginBottom: 6 },
+  podcastTitle: { fontSize: 16, fontWeight: '600', color: Colors.Text.primary, marginBottom: 2 },
+  podcastHost: { fontSize: 13, color: Colors.Info.default, marginBottom: 6 },
   podcastMeta: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  episodeCount: { fontSize: 11, color: 'rgba(255, 255, 255, 0.5)' },
+  episodeCount: { fontSize: 11, color: Colors.Text.muted },
   categoryBadge: {
-    backgroundColor: 'rgba(74, 158, 255, 0.15)',
+    backgroundColor: Colors.Glass.borderLight,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 8,
   },
-  categoryBadgeText: { fontSize: 10, color: '#4a9eff' },
+  categoryBadgeText: { fontSize: 10, color: Colors.Info.default },
   playButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#4a9eff',
+    backgroundColor: Colors.Info.default,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -264,20 +265,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 16,
   },
-  loadingText: { color: 'rgba(255, 255, 255, 0.6)', fontSize: 16 },
-  errorText: { color: '#e53935', fontSize: 16, textAlign: 'center', paddingHorizontal: 32 },
+  loadingText: { color: Colors.Text.muted, fontSize: 16 },
+  errorText: { color: Colors.Error.e600, fontSize: 16, textAlign: 'center', paddingHorizontal: 32 },
   retryButton: {
-    backgroundColor: 'rgba(74, 158, 255, 0.2)',
+    backgroundColor: Colors.Glass.borderLight,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
   },
-  retryText: { color: '#4a9eff', fontSize: 16, fontWeight: '600' },
+  retryText: { color: Colors.Info.default, fontSize: 16, fontWeight: '600' },
   emptyState: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 64,
     gap: 16,
   },
-  emptyText: { color: 'rgba(255, 255, 255, 0.5)', fontSize: 16 },
+  emptyText: { color: Colors.Text.muted, fontSize: 16 },
 });

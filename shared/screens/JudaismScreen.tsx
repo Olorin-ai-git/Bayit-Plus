@@ -180,7 +180,7 @@ export const JudaismScreen: React.FC = () => {
         setCategories(response.categories);
       }
     } catch (err) {
-      console.error('Failed to load Judaism categories:', err);
+      logger.error('Failed to load Judaism categories', 'JudaismScreen', err);
     }
   };
 
@@ -194,7 +194,7 @@ export const JudaismScreen: React.FC = () => {
         setContent(response.content);
       }
     } catch (err) {
-      console.error('Failed to load Judaism content:', err);
+      logger.error('Failed to load Judaism content', 'JudaismScreen', err);
       setContent([]);
     } finally {
       setIsLoading(false);

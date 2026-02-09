@@ -135,7 +135,7 @@ export const ProfileScreen: React.FC = () => {
       setPaymentMethods(methodsRes.payment_methods || []);
       setBillingHistory(invoicesRes.invoices || []);
     } catch (error) {
-      console.error('Failed to load billing data:', error);
+      logger.error('Failed to load billing data', 'ProfileScreen', error);
     } finally {
       setBillingLoading(false);
     }

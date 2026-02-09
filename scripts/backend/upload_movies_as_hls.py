@@ -51,30 +51,15 @@ from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)
 
-# Movies to process - all missing from DB (19 total)
+# Movies to process - from ~/Downloads/Movies (not yet HLS)
 TARGET_MOVIES = [
-    # Original 10 from failed Hebrew-rename upload
-    "Avengers Infinity War (2018).avi",
-    "Back to the Future Part III (1990).avi",
-    "Dumbo (2019).mkv",
-    "Godzilla King of the Monsters (2019).mp4",
-    "How to Train Your Dragon 2 (2014).mp4",
-    "I Remember (Israeli).mp4",
-    "Jumanji The Next Level (2019).mp4",
-    "Mary Poppins Returns (2018).mkv",
-    "Spider-Man Into the Spider-Verse (2018).mkv",
-    "The Diary of Anne Frank (1959).avi",
-    # Additional missing movies found on USB
-    "Ant-Man and the Wasp (2018) Hebrew.avi",
-    "Avengers Endgame (2019).mp4",
-    "Back to the Future (1985).avi",
-    "Brave (2012).mkv",
-    "Captain America The First Avenger (2011).avi",
-    "Lemon Popsicle 9 The Party Goes On (2001).avi",
-    "Superman III (1983).avi",
-    "The Dark Knight Rises (2012).avi",
-    "The Last Summer (2019).avi",
-    "The Legend of Hercules (2014).avi",
+    "A_Christmas_Carol.mp4",
+    "Coco.mkv",
+    "Hotel_Transylvania_2.mp4",
+    "I_Dont_Know_How_She_Does_It.mp4",
+    "Jackie.mp4",
+    "Justice_League_2017.mp4",
+    "Ted.avi",
 ]
 
 # State directory for resume support

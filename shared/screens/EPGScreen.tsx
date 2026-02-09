@@ -72,7 +72,7 @@ export const EPGScreen: React.FC = () => {
       setChannels(response.channels);
       setPrograms(response.programs);
     } catch (err: any) {
-      console.error('Failed to fetch EPG data:', err);
+      logger.error('Failed to fetch EPG data', 'EPGScreen', err);
       setError(err.message || t('epg.errorLoading', 'Failed to load TV guide'));
     } finally {
       setLoading(false);

@@ -6,6 +6,8 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { logger } from '../utils/logger';
+import { Colors } from '../theme/colors';
 
 interface Props {
   children: ReactNode;
@@ -35,7 +37,7 @@ export class DeviceInfoErrorBoundary extends Component<Props, State> {
                               error.message?.includes('TurboModuleRegistry');
 
     if (isDeviceInfoError) {
-      console.warn('DeviceInfo error caught by boundary, attempting recovery');
+      logger.warn('DeviceInfo error caught by boundary, attempting recovery', 'DeviceInfoErrorBoundary');
       return { hasError: true, error };
     }
 
@@ -45,7 +47,7 @@ export class DeviceInfoErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log to crash reporting service
-    console.error('DeviceInfo Error Boundary caught error:', error, errorInfo);
+    logger.error('DeviceInfo Error Boundary caught error', 'DeviceInfoErrorBoundary', error);
 
     this.setState({
       error,
@@ -96,7 +98,7 @@ export class DeviceInfoErrorBoundary extends Component<Props, State> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: Colors.Background.primary,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
@@ -111,18 +113,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: Colors.white,
     marginBottom: 16,
   },
   message: {
     fontSize: 16,
-    color: '#cccccc',
+    color: Colors.Dark.d300,
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 24,
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: Colors.Info.default,
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 8,
@@ -130,6 +132,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#ffffff',
+    color: Colors.white,
   },
 });

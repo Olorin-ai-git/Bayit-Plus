@@ -91,11 +91,11 @@ export default function MovieDetailScreen() {
           setRecommendations(recs);
         }
       } catch (error) {
-        console.error('Failed to load recommendations:', error);
+        logger.error('Failed to load recommendations', 'MovieDetailScreen', error);
         // Non-blocking error - continue without recommendations
       }
     } catch (error) {
-      console.error('Failed to load movie:', error);
+      logger.error('Failed to load movie', 'MovieDetailScreen', error);
     } finally {
       setLoading(false);
     }
@@ -112,7 +112,7 @@ export default function MovieDetailScreen() {
 
   const handleCastPress = (castMember: any) => {
     // Navigate to cast member details (future enhancement)
-    console.log('Cast member pressed:', castMember.name);
+    logger.debug('Cast member pressed: ' + castMember.name, 'MovieDetailScreen');
   };
 
   const handleRecommendationPress = (item: any) => {

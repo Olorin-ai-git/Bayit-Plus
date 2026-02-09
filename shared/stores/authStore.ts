@@ -25,6 +25,8 @@ interface User {
   created_at?: string;
   last_login?: string;
   is_verified?: boolean;
+  email_verified?: boolean;
+  phone_verified?: boolean;
 }
 
 interface RegisterData {

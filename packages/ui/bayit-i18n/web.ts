@@ -9,6 +9,15 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { bayitResources, supportedLanguages, type BayitLanguage } from './index';
 
+/** Package-scoped logger for i18n warnings */
+const i18nLogger = {
+  warn: (message: string, data?: unknown) => {
+    if (process.env.NODE_ENV !== 'production' && typeof console !== 'undefined') {
+      console.warn(`[bayit-i18n] ${message}`, data ?? ''); // eslint-disable-line no-console
+    }
+  },
+};
+
 const LANGUAGE_KEY = 'bayit_language';
 
 /**
@@ -18,7 +27,7 @@ export function saveLanguageWeb(language: BayitLanguage): void {
   try {
     localStorage.setItem(LANGUAGE_KEY, language);
   } catch (error) {
-    console.warn('Failed to save language preference:', error);
+    i18nLogger.warn('Failed to save language preference', error);
   }
 }
 
@@ -33,7 +42,7 @@ export function loadLanguageWeb(): BayitLanguage | null {
     }
     return null;
   } catch (error) {
-    console.warn('Failed to load language preference:', error);
+    i18nLogger.warn('Failed to load language preference', error);
     return null;
   }
 }

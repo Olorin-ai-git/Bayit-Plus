@@ -14,11 +14,6 @@ const APP_MODE: 'development' | 'production' =
 
 export const isProduction = APP_MODE === 'production';
 
-// Production API URL - set via REACT_APP_API_BASE_URL environment variable at build time.
-// Fallback used only when env var is missing; logged as warning so builds can be fixed.
-const PRODUCTION_API_FALLBACK = 'https://bayit.tv/api/v1';
-const DEVELOPMENT_API_URL = 'http://localhost:8000/api/v1';
-
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {
   // Check for explicit environment variable first
@@ -27,17 +22,21 @@ const getApiBaseUrl = () => {
   }
 
   if (!__DEV__) {
-    logger.warn('REACT_APP_API_BASE_URL not set; using production fallback', {
-      fallback: PRODUCTION_API_FALLBACK,
-    });
-    return PRODUCTION_API_FALLBACK;
+    throw new Error(
+      '[tvOS AppConfig] REACT_APP_API_BASE_URL environment variable is required in production. ' +
+      'Set this at build time.',
+    );
   }
 
   // In development, tvOS simulators use localhost
-  return DEVELOPMENT_API_URL;
+  return 'http://localhost:8000/api/v1';
 };
 
 export const API_BASE_URL = getApiBaseUrl();
+
+// Timeout values from env
+const API_TIMEOUT_PROD = Number(process.env.BAYIT_API_TIMEOUT_MS) || (__DEV__ ? 5000 : (() => { throw new Error('[tvOS AppConfig] BAYIT_API_TIMEOUT_MS is required in production'); })());
+const API_TIMEOUT_DEV = Number(process.env.BAYIT_API_TIMEOUT_DEV_MS) || 30000;
 
 export const config = {
   mode: APP_MODE,
@@ -46,7 +45,7 @@ export const config = {
   api: {
     enabled: true,
     failFast: isProduction,
-    timeout: isProduction ? 5000 : 30000,
+    timeout: isProduction ? API_TIMEOUT_PROD : API_TIMEOUT_DEV,
   },
 
   features: {

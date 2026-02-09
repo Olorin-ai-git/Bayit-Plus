@@ -44,27 +44,12 @@ export function LLMSearchModal({
     setError(null);
 
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.bayit.tv/api/v1';
-      const response = await fetch(`${baseUrl}/search/llm`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query,
-          include_user_context: true,
-          limit: 20
-        })
+      const { api } = await import('../../services/api/client');
+      const data = await api.post('/search/llm', {
+        query,
+        include_user_context: true,
+        limit: 20,
       });
-
-      if (!response.ok) {
-        if (response.status === 403) {
-          throw new Error(t('search.premiumRequired'));
-        }
-        throw new Error(t('search.searchFailed'));
-      }
-
-      const data = await response.json();
 
       if (data.success) {
         setInterpretation(data.interpretation);
@@ -73,7 +58,11 @@ export function LLMSearchModal({
         throw new Error(data.error || t('search.searchFailed'));
       }
     } catch (err: any) {
-      setError(err.message || t('search.searchFailed'));
+      if (err?.status === 403 || err?.detail?.includes?.('premium')) {
+        setError(t('search.premiumRequired'));
+      } else {
+        setError(err.message || t('search.searchFailed'));
+      }
     } finally {
       setLoading(false);
     }

@@ -188,7 +188,8 @@ struct HeroCarousel: View {
         if item.isSeries == true {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
         } else {
-            coordinator.navigate(to: .movieDetail(movieId: item.id))
+            let contentType = ContentType(rawValue: item.type ?? "") ?? .movie
+            coordinator.navigate(to: .player(contentId: item.id, contentType: contentType))
         }
     }
 

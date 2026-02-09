@@ -5,6 +5,7 @@ import { useDirection } from '../hooks/useDirection';
 import { GlassView } from './ui/GlassView';
 import { colors, spacing, fontSize } from '@olorin/design-tokens';
 import { zmanService } from '../services/api';
+import { logger } from '../utils/logger';
 
 interface TimeData {
   israel: {
@@ -260,7 +261,7 @@ export const DualClock: React.FC<DualClockProps> = ({
       const data = await zmanService.getTime();
       setTimeData(data as TimeData);
     } catch (err) {
-      console.error('Failed to fetch time:', err);
+      logger.error('Failed to fetch time', 'DualClock', err);
       setTimeData(generateFallbackTime());
     } finally {
       setLoading(false);
@@ -408,7 +409,7 @@ export const MiniClock: React.FC = () => {
         setTime(data.israel.time);
         setIsShabbat(data.shabbat.is_shabbat);
       } catch (err) {
-        console.error('Failed to fetch time:', err);
+        logger.error('Failed to fetch time', 'DualClock', err);
       }
     };
 

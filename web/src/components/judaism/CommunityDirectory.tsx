@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Icon } from '@olorin/shared-icons/web';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
-import { GlassCard } from '@bayit/shared/ui';
+import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { colors } from '@olorin/design-tokens';
 import logger from '@/utils/logger';
 
@@ -163,9 +163,10 @@ export function CommunityDirectory() {
         </div>
 
         {/* Region Picker */}
-        <button
-          onClick={() => setShowRegionPicker(!showRegionPicker)}
-          className={`flex items-center gap-1 px-3 py-1.5 rounded-full cursor-pointer hover:opacity-80 transition-opacity `}
+        <GlassButton
+          onPress={() => setShowRegionPicker(!showRegionPicker)}
+          variant="ghost"
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full cursor-pointer hover:opacity-80 transition-all backdrop-blur-lg border border-white/10"
           style={{ backgroundColor: colors.glassLight }}
         >
           <MapPin size={14} color={colors.textMuted} />
@@ -175,7 +176,7 @@ export function CommunityDirectory() {
               : t('common.selectRegion', 'Select Region')}
           </span>
           <ChevronDown size={14} color={colors.textMuted} />
-        </button>
+        </GlassButton>
       </div>
 
       {/* Region Dropdown */}
@@ -185,18 +186,19 @@ export function CommunityDirectory() {
           style={{ backgroundColor: colors.glassStrong }}
         >
           {regions.map((region) => (
-            <button
+            <GlassButton
               key={region.id}
-              onClick={() => {
+              onPress={() => {
                 setSelectedRegion(region.id);
                 setShowRegionPicker(false);
               }}
-              className="w-full flex justify-between items-center p-2 rounded cursor-pointer hover:opacity-80 transition-opacity"
+              variant="ghost"
+              className="w-full flex justify-between items-center p-2 rounded cursor-pointer hover:bg-white/10 transition-all"
               style={{ backgroundColor: selectedRegion === region.id ? `${colors.primary}4D` : 'transparent' }}
             >
               <span style={{ color: colors.text }}>{getRegionName(region)}</span>
               <span className="text-sm" style={{ color: colors.textMuted }}>({region.organization_count})</span>
-            </button>
+            </GlassButton>
           ))}
         </div>
       )}
@@ -204,15 +206,16 @@ export function CommunityDirectory() {
       {/* Tabs */}
       <div className="flex gap-2 overflow-x-auto mb-4 pb-2">
         {tabs.map((tab) => (
-          <button
+          <GlassButton
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className="flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap cursor-pointer hover:opacity-80 transition-opacity"
+            onPress={() => setActiveTab(tab.id)}
+            variant={activeTab === tab.id ? 'primary' : 'ghost'}
+            className="flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap cursor-pointer hover:opacity-80 transition-all backdrop-blur-lg border border-white/10"
             style={{ backgroundColor: activeTab === tab.id ? colors.primary : colors.glassLight }}
           >
             {tab.icon}
             <span className="text-sm" style={{ color: colors.text }}>{tab.label}</span>
-          </button>
+          </GlassButton>
         ))}
       </div>
 

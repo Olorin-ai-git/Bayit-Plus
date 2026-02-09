@@ -183,7 +183,7 @@ export const ChildrenScreen: React.FC = () => {
         setCategories(response.data);
       }
     } catch (err) {
-      console.error('Failed to load children categories:', err);
+      logger.error('Failed to load children categories', 'ChildrenScreen', err);
     }
   };
 
@@ -197,7 +197,7 @@ export const ChildrenScreen: React.FC = () => {
         setContent(response.data);
       }
     } catch (err) {
-      console.error('Failed to load kids content:', err);
+      logger.error('Failed to load kids content', 'ChildrenScreen', err);
       setContent([]);
     } finally {
       setIsLoading(false);

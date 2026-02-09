@@ -48,6 +48,7 @@ struct SpotlightItem: Decodable, Sendable, Identifiable {
     let backdrop: String?
     let thumbnail: String?
     let category: String?
+    let type: String?
     let year: Int?
     let duration: String?
     let rating: FlexibleRating?

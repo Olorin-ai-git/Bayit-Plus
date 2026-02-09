@@ -364,7 +364,7 @@ export const WizardSprite: React.FC<WizardSpriteProps> = ({
 
   // Guard against invalid spritesheet - return null if config doesn't exist
   if (!config) {
-    console.error(`WizardSprite: Invalid spritesheet "${spritesheet}". Available spritesheets:`, Object.keys(SPRITESHEET_CONFIG));
+    logger.error(`WizardSprite: Invalid spritesheet "${spritesheet}". Available: ${Object.keys(SPRITESHEET_CONFIG).join(', ')}`, 'WizardSprite');
     return null;
   }
 

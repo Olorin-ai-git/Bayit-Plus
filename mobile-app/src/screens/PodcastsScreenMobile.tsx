@@ -34,6 +34,7 @@ import { getGridColumns } from '../utils/responsive';
 import { BottomSheet } from '../components';
 import { spacing, colors, typography } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Colors } from '../theme/colors';
 
 import logger from '@/utils/logger';
 
@@ -221,7 +222,7 @@ export const PodcastsScreenMobile: React.FC = () => {
               />
             ) : (
               <View style={[styles.cover, styles.coverPlaceholder]}>
-                <NativeIcon name="podcasts" size="xxl" color="#a855f7" />
+                <NativeIcon name="podcasts" size="xxl" color={Colors.Primary.p500} />
               </View>
             )}
 

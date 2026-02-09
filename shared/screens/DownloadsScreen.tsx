@@ -233,7 +233,7 @@ export const DownloadsScreen: React.FC = () => {
       const transformedDownloads = apiDownloads.map(transformDownload);
       setDownloads(transformedDownloads);
     } catch (err) {
-      console.error('Failed to load downloads:', err);
+      logger.error('Failed to load downloads', 'DownloadsScreen', err);
       setDownloads([]);
     } finally {
       setIsLoading(false);
@@ -255,7 +255,7 @@ export const DownloadsScreen: React.FC = () => {
       await downloadsService.deleteDownload(id);
       setDownloads(prev => prev.filter(item => item.id !== id));
     } catch (err) {
-      console.error('Failed to delete download:', err);
+      logger.error('Failed to delete download', 'DownloadsScreen', err);
     }
   };
 

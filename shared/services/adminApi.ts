@@ -356,19 +356,17 @@ export interface TopUser {
   total_cost: number;
 }
 
-// API Base URL configuration
-const getBaseUrl = () => {
-  if (__DEV__) {
-    if (Platform.OS === 'web') {
-      return 'http://localhost:8000/api/v1';
-    } else if (Platform.OS === 'android') {
-      return 'http://10.0.2.2:8000/api/v1';
-    } else {
-      return 'http://localhost:8000/api/v1';
-    }
+// Re-use the shared API base URL to avoid duplicating URL resolution logic
+import { API_BASE_URL } from './api/client';
+
+const ADMIN_API_TIMEOUT_MS = (() => {
+  const raw = typeof process !== 'undefined' ? process.env?.BAYIT_ADMIN_API_TIMEOUT_MS : undefined;
+  if (raw) {
+    const parsed = Number(raw);
+    if (!isNaN(parsed) && parsed > 0) return parsed;
   }
-  return 'https://api.bayit.tv/api/v1';
-};
+  return 10000;
+})();
 
 /**
  * Create an admin API instance with platform-specific auth store
@@ -378,8 +376,8 @@ const getBaseUrl = () => {
 const createAxiosInstance = (authStore: AuthStore): AxiosInstance => {
   // Create admin API instance
   const adminApi = axios.create({
-    baseURL: getBaseUrl(),
-    timeout: 10000, // Reduced from 15s to 10s
+    baseURL: API_BASE_URL,
+    timeout: ADMIN_API_TIMEOUT_MS,
     withCredentials: true, // Required for CSRF cookies
     headers: {
       'Content-Type': 'application/json',

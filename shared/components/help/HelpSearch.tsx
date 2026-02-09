@@ -18,6 +18,7 @@ import { NativeIcon } from '@olorin/shared-icons/native';
 import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 import { supportConfig } from '../../config/supportConfig';
+import { logger } from '../../utils/logger';
 
 interface SearchResult {
   id: string;
@@ -87,7 +88,7 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
         setPopularSearches(data.popular_searches.map((s: { query: string }) => s.query));
       }
     } catch (error) {
-      console.error('[HelpSearch] Error loading popular searches:', error);
+      logger.error('Error loading popular searches', 'HelpSearch', error);
     }
   };
 
@@ -145,7 +146,7 @@ export const HelpSearch: React.FC<HelpSearchProps> = ({
 
       setResults(combinedResults.slice(0, maxResults));
     } catch (error) {
-      console.error('[HelpSearch] Search error:', error);
+      logger.error('Search error', 'HelpSearch', error);
       setResults([]);
     } finally {
       setLoading(false);

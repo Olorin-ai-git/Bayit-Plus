@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { Colors } from '../theme/colors';
 
 export const SupportScreen: React.FC = () => {
   return (
@@ -14,10 +15,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#0d0d1a',
+    backgroundColor: Colors.Background.primary,
   },
   text: {
-    color: '#fff',
+    color: Colors.white,
     fontSize: 18,
   },
 });

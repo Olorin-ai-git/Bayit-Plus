@@ -27,9 +27,9 @@ import LinearGradient from "react-native-linear-gradient";
 import { GlassView, GlassButton } from "@bayit/shared";
 import { useDirection } from "@bayit/shared-hooks";
 import { NativeIcon } from "@olorin/shared-icons/native";
+import { Colors } from "../theme/colors";
 
-// Type assertion for LinearGradient React component
-const LinearGradientComponent = LinearGradient as any as React.FC<any>;
+const LinearGradientComponent = LinearGradient;
 
 interface SubscriptionPlan {
   id: string;
@@ -183,7 +183,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                 className={`flex-row items-center mb-1 ${isRTL ? 'flex-row-reverse' : ''}`}
               >
                 <View className="mr-2">
-                  <NativeIcon name="check" size="sm" color="#10B981" />
+                  <NativeIcon name="check" size="sm" color={Colors.Success.default} />
                 </View>
                 <Text className={`text-xs text-white flex-1 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                   {t(feature)}
@@ -228,7 +228,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                   onPress={handleClose}
                   className={`absolute top-4 ${isRTL ? 'left-4' : 'right-4'} w-10 h-10 rounded-full bg-white/10 justify-center items-center z-10`}
                 >
-                  <NativeIcon name="x" size="md" color="#FFFFFF" />
+                  <NativeIcon name="x" size="md" color={Colors.white} />
                 </TouchableOpacity>
 
                 <ScrollView
@@ -238,7 +238,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                   {/* Header */}
                   <View className="items-center mb-4">
                     <View className="mb-3">
-                      <NativeIcon name="lock" size="xxl" color="#a855f7" />
+                      <NativeIcon name="lock" size="xxl" color={Colors.Primary.p500} />
                     </View>
                     <Text className={`text-2xl font-bold text-white mb-1 ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                       {t("subscriptionGate.title")}
@@ -252,7 +252,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                   {contentTitle && (
                     <GlassView className="flex-row items-center p-3 rounded-lg mb-4">
                       <View className="mr-3">
-                        <NativeIcon name={getContentTypeIcon()} size="lg" color="#FFFFFF" />
+                        <NativeIcon name={getContentTypeIcon()} size="lg" color={Colors.white} />
                       </View>
                       <View className="flex-1">
                         <Text className={`text-xs text-gray-400 uppercase ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
@@ -272,7 +272,7 @@ export const SubscriptionGateModal: React.FC<SubscriptionGateModalProps> = ({
                   <GlassView className="p-4 rounded-lg mb-4 border border-purple-600">
                     <View className="flex-row items-center mb-2">
                       <View className="mr-2">
-                        <NativeIcon name="gem" size="md" color="#FFFFFF" />
+                        <NativeIcon name="gem" size="md" color={Colors.white} />
                       </View>
                       <Text className={`text-lg font-semibold text-white ${textAlign === 'right' ? 'text-right' : 'text-left'}`}>
                         {t("subscriptionGate.trialTitle")}

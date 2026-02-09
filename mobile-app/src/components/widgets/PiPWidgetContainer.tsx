@@ -26,7 +26,9 @@ import { X, Volume2, VolumeX, Minimize2, Maximize2, RefreshCw } from 'lucide-rea
 import { usePiPWidget } from '../../stores/pipWidgetStore';
 import { useDirection } from '@bayit/shared-hooks';
 import { MobileVideoPlayer, MobileAudioPlayer } from '../player';
+import { YnetMivzakimWidget } from './YnetMivzakimWidget';
 import type { Widget } from '../../stores/pipWidgetStore';
+import { Colors } from '../../theme/colors';
 
 interface PiPWidgetContainerProps {
   widgetId: string;
@@ -341,8 +343,13 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
           </View>
         );
 
-      case 'custom':
-        return renderError(`Component "${widget.content.component_name}" not available`);
+      case 'custom': {
+        const componentName = widget.content.component_name;
+        if (componentName === 'ynet_mivzakim' || componentName === 'YnetMivzakim') {
+          return <YnetMivzakimWidget />;
+        }
+        return renderError(`Component "${componentName}" not available`);
+      }
 
       default:
         return renderError('No content configured');
@@ -363,7 +370,7 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
             left: 0,
             ...Platform.select({
               ios: {
-                shadowColor: '#000',
+                shadowColor: Colors.black,
                 shadowOffset: { width: 0, height: 8 },
                 shadowOpacity: 0.4,
                 shadowRadius: 16,
@@ -387,26 +394,26 @@ export default function PiPWidgetContainer({ widgetId, streamUrl }: PiPWidgetCon
                 onPress={state === 'minimized' ? expand : minimize}
               >
                 {state === 'minimized' ? (
-                  <Maximize2 size={14} color="#fff" />
+                  <Maximize2 size={14} color={Colors.white} />
                 ) : (
-                  <Minimize2 size={14} color="#fff" />
+                  <Minimize2 size={14} color={Colors.white} />
                 )}
               </Pressable>
 
               {/* Refresh Button */}
               <Pressable className="w-8 h-8 rounded-full bg-white/10 justify-center items-center" onPress={handleRefresh}>
-                <RefreshCw size={14} color="#fff" />
+                <RefreshCw size={14} color={Colors.white} />
               </Pressable>
 
               {/* Mute Button */}
               <Pressable className="w-8 h-8 rounded-full bg-white/10 justify-center items-center" onPress={toggleMute}>
-                {isMuted ? <VolumeX size={14} color="#fff" /> : <Volume2 size={14} color="#fff" />}
+                {isMuted ? <VolumeX size={14} color={Colors.white} /> : <Volume2 size={14} color={Colors.white} />}
               </Pressable>
 
               {/* Close Button */}
               {widget.is_closable && (
                 <Pressable className="w-8 h-8 rounded-full bg-white/10 justify-center items-center" onPress={close}>
-                  <X size={14} color="#fff" />
+                  <X size={14} color={Colors.white} />
                 </Pressable>
               )}
             </View>

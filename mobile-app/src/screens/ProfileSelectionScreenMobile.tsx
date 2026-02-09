@@ -32,22 +32,12 @@ import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Colors, AvatarPalette } from '../theme/colors';
 
 import logger from '@/utils/logger';
 
 
 const moduleLogger = logger.scope('ProfileSelectionScreenMobile');
-
-const AVATAR_COLORS = [
-  '#a855f7',
-  '#ff6b6b',
-  '#4ecdc4',
-  '#ffd93d',
-  '#6c5ce7',
-  '#a8e6cf',
-  '#ff8b94',
-  '#ffaaa5',
-];
 
 interface ProfileCardProps {
   profile: Profile;
@@ -79,21 +69,21 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
     >
       <View
         className="w-20 h-20 rounded-xl justify-center items-center mb-2 border-[3px] border-transparent"
-        style={{ backgroundColor: profile.avatar_color || AVATAR_COLORS[0] }}
+        style={{ backgroundColor: profile.avatar_color || AvatarPalette[0] }}
       >
         {profile.avatar ? (
           <Text className="text-[40px]">{profile.avatar}</Text>
         ) : (
-          <Text className="text-[28px] font-bold text-white" style={{ textShadowColor: 'rgba(0, 0, 0, 0.3)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }}>{getInitials(profile.name)}</Text>
+          <Text className="text-[28px] font-bold text-white" style={{ textShadowColor: Colors.Text.disabled, textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }}>{getInitials(profile.name)}</Text>
         )}
         {profile.is_kids_profile && (
-          <View className="absolute -bottom-[5px] -right-[5px] bg-[#ffd93d] rounded-xl p-1">
-            <NativeIcon name="profile" size="xs" color="#000000" />
+          <View className="absolute -bottom-[5px] -right-[5px] rounded-xl p-1" style={{ backgroundColor: Colors.Special.gold }}>
+            <NativeIcon name="profile" size="xs" color={Colors.black} />
           </View>
         )}
         {profile.has_pin && (
           <View className="absolute -top-[5px] -right-[5px] bg-black/60 rounded-[10px] p-1">
-            <NativeIcon name="lock" size="xs" color="#ffffff" />
+            <NativeIcon name="lock" size="xs" color={Colors.white} />
           </View>
         )}
       </View>
@@ -102,7 +92,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       </Text>
       {isManageMode && (
         <View className="absolute top-0 left-[10px] w-20 h-20 rounded-xl bg-black/50 justify-center items-center">
-          <NativeIcon name="edit" size="lg" color="#ffffff" />
+          <NativeIcon name="edit" size="lg" color={Colors.white} />
         </View>
       )}
     </TouchableOpacity>
@@ -195,7 +185,7 @@ const PinModal: React.FC<PinModalProps> = ({
                   onBiometric();
                 }}
               >
-                <NativeIcon name="fingerprint" size="lg" color="#a855f7" />
+                <NativeIcon name="fingerprint" size="lg" color={Colors.Primary.p500} />
               </TouchableOpacity>
             )}
 

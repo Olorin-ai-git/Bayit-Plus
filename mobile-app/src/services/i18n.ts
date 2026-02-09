@@ -9,6 +9,7 @@
 import { initBayitI18nNative, saveLanguageNative, loadLanguageNative } from '@bayit/i18n/native';
 import type { TFunction } from 'i18next';
 import type { BayitLanguage } from '@bayit/i18n';
+import { logger } from '../utils/logger';
 
 // i18n instance (initialized on first call)
 let i18n: Awaited<ReturnType<typeof initBayitI18nNative>> | null = null;
@@ -26,7 +27,7 @@ export async function initializeI18n(): Promise<void> {
     // Note: initBayitI18nNative() already loads saved language from AsyncStorage
     // and sets it as the initial language, so no additional loading needed
   } catch (error) {
-    console.error('Failed to initialize i18n:', error);
+    logger.error('Failed to initialize i18n', 'I18nService', error);
     throw error; // Re-throw to let caller handle
   }
 }
@@ -37,12 +38,12 @@ export async function initializeI18n(): Promise<void> {
 export async function setLanguage(languageCode: string): Promise<boolean> {
   try {
     if (!i18n) {
-      console.error('i18n not initialized. Call initializeI18n() first.');
+      logger.error('i18n not initialized. Call initializeI18n() first.', 'I18nService');
       return false;
     }
 
     if (!isSupportedLanguage(languageCode)) {
-      console.warn(`Unsupported language: ${languageCode}`);
+      logger.warn(`Unsupported language: ${languageCode}`, 'I18nService');
       return false;
     }
 
@@ -50,7 +51,7 @@ export async function setLanguage(languageCode: string): Promise<boolean> {
     await saveLanguageNative(languageCode as BayitLanguage);
     return true;
   } catch (error) {
-    console.error('Failed to set language:', error);
+    logger.error('Failed to set language', 'I18nService', error);
     return false;
   }
 }
@@ -105,7 +106,7 @@ export function isSupportedLanguage(code: string): boolean {
  */
 export function t(key: string, options?: Record<string, any>): string {
   if (!i18n) {
-    console.warn('i18n not initialized. Returning key as-is.');
+    logger.warn('i18n not initialized. Returning key as-is.', 'I18nService');
     return key;
   }
   return i18n.t(key, options) as string;
@@ -126,7 +127,7 @@ export function getI18n() {
  */
 export function tNS(namespace: string, key: string, options?: Record<string, any>): string {
   if (!i18n) {
-    console.warn('i18n not initialized. Returning key as-is.');
+    logger.warn('i18n not initialized. Returning key as-is.', 'I18nService');
     return `${namespace}:${key}`;
   }
   return i18n.t(`${namespace}:${key}`, options) as string;

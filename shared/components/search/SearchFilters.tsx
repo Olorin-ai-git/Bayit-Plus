@@ -10,6 +10,7 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SearchFilters as SearchFiltersType } from '../../hooks/useSearch';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { logger } from '../../utils/logger';
 
 interface FilterOption {
   genres: string[];
@@ -36,12 +37,11 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
 
   const loadFilterOptions = async () => {
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.bayit.tv/api/v1';
-      const response = await fetch(`${baseUrl}/search/filters/options`);
-      const data = await response.json();
+      const { api } = await import('../../services/api/client');
+      const data = await api.get('/search/filters/options');
       setFilterOptions(data);
     } catch (error) {
-      console.error('Failed to load filter options:', error);
+      logger.error('Failed to load filter options', 'SearchFilters', error);
     } finally {
       setLoading(false);
     }

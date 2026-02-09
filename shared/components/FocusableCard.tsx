@@ -13,6 +13,7 @@ import { colors, spacing } from '@olorin/design-tokens';
 import { GlassPlaceholder } from '@olorin/glass-ui';
 import type { ContentType as GlassContentType } from '@olorin/design-tokens';
 import { useDirection } from '../hooks/useDirection';
+import { logger } from '../utils/logger';
 import { useTVFocus } from './hooks/useTVFocus';
 
 // Check if this is a TV build (set by webpack)
@@ -89,7 +90,7 @@ export const FocusableCard: React.FC<FocusableCardProps> = ({
       const result = await favoritesService.toggleFavorite(id, contentType);
       setIsFavorite(result.is_favorite);
     } catch (error) {
-      console.error('Failed to toggle favorite:', error);
+      logger.error('Failed to toggle favorite', 'FocusableCard', error);
     } finally {
       setFavoriteLoading(false);
     }

@@ -31,6 +31,7 @@ import { useResponsive } from '../hooks/useResponsive';
 import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, typography } from '@olorin/design-tokens';
+import { Colors } from '../theme/colors';
 import type { RootStackParamList } from '../navigation/types';
 
 import logger from '@/utils/logger';
@@ -155,13 +156,13 @@ export const FavoritesScreenMobile: React.FC = () => {
               />
             ) : (
               <View className="w-full aspect-video bg-white/5 justify-center items-center">
-                <NativeIcon name={iconName} size="xxl" color="#a855f7" />
+                <NativeIcon name={iconName} size="xxl" color={Colors.Primary.p500} />
               </View>
             )}
 
             {/* Type badge */}
             <View className={`absolute top-2 ${isRTL ? 'left-2' : 'right-2'} bg-black/70 rounded-xl px-2 py-1`}>
-              <NativeIcon name={iconName} size="sm" color="#ffffff" />
+              <NativeIcon name={iconName} size="sm" color={Colors.white} />
             </View>
 
             {/* Remove button */}
@@ -170,7 +171,7 @@ export const FavoritesScreenMobile: React.FC = () => {
               onPress={() => handleRemoveFavorite(item)}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <NativeIcon name="x" size="sm" color="#ffffff" />
+              <NativeIcon name="x" size="sm" color={Colors.white} />
             </Pressable>
 
             {/* Card info */}
@@ -215,7 +216,7 @@ export const FavoritesScreenMobile: React.FC = () => {
           className="w-12 h-12 rounded-full bg-yellow-500/20 justify-center items-center"
           style={{ marginLeft: isRTL ? 16 : 0, marginRight: isRTL ? 0 : 16 }}
         >
-          <NativeIcon name="star" size="lg" color="#eab308" />
+          <NativeIcon name="star" size="lg" color={Colors.Special.gold} />
         </View>
         <View className="flex-1">
           <Text className={`text-3xl font-bold text-white ${isRTL ? 'text-right' : 'text-left'}`} style={{ textAlign: isRTL ? 'right' : 'left' }}>
@@ -248,7 +249,7 @@ export const FavoritesScreenMobile: React.FC = () => {
           <View className="flex-1 justify-center items-center py-24 px-6">
             <GlassView className="p-8 items-center w-full">
               <View className="mb-4">
-                <NativeIcon name="star" size="xxl" color="#eab308" />
+                <NativeIcon name="star" size="xxl" color={Colors.Special.gold} />
               </View>
               <Text className={`text-xl font-semibold text-white mb-2 ${isRTL ? 'text-right' : 'text-left'}`} style={{ textAlign: isRTL ? 'right' : 'left' }}>
                 {t('favorites.empty')}

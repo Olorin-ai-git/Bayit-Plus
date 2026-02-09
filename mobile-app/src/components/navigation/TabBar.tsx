@@ -7,10 +7,11 @@ import React from 'react';
 import { Text, Pressable, View, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Colors } from '../../theme/colors';
 
 // Design tokens - purple theme
 const COLORS = {
-  primary: '#7e22ce',
+  primary: Colors.Primary.default,
   primaryBg: 'rgba(126, 34, 206, 0.2)',
   inactive: 'rgba(255, 255, 255, 0.5)',
   background: 'rgba(10, 10, 10, 0.95)',

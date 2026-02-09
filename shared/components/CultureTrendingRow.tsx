@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { NativeIcon, IconName } from '@olorin/shared-icons/native';
 import { GlassView } from './ui/GlassView';
 import { colors, spacing, fontSize, borderRadius } from '@olorin/design-tokens';
+import { logger } from '../utils/logger';
 import { cultureService } from '../services/api';
 import { useCultureStore } from '../contexts/CultureContext';
 import { isTV } from '../utils/platform';
@@ -184,7 +185,7 @@ export const CultureTrendingRow: React.FC<CultureTrendingRowProps> = ({
 
       setData(trendingData);
     } catch (err) {
-      console.warn('Failed to fetch culture trending:', err);
+      logger.warn('Failed to fetch culture trending', 'CultureTrendingRow', err);
       setData(null);
     } finally {
       setLoading(false);

@@ -21,6 +21,7 @@ import {
   GestureResponderEvent,
 } from 'react-native';
 import { colors } from '@olorin/design-tokens';
+import { Colors } from '../../theme/colors';
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { useConversationContextMobile } from '../../hooks/useConversationContextMobile';
 import { useSupportStore } from '../../stores/supportStore';
@@ -115,7 +116,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
           style={{ minWidth: 44, minHeight: 44 }}
           className="justify-center flex-row items-center gap-1"
         >
-          <NativeIcon name="x" size="sm" color="#2563eb" />
+          <NativeIcon name="x" size="sm" color={Colors.Info.i600} />
           <Text
             className="text-sm text-blue-600 font-medium"
             allowFontScaling={true}
@@ -275,7 +276,7 @@ export const VoiceSettings: React.FC<VoiceSettingsProps> = ({
                   <NativeIcon
                     name={settings.microphonePermission ? 'check' : 'x'}
                     size="xs"
-                    color={settings.microphonePermission ? '#10B981' : '#EF4444'}
+                    color={settings.microphonePermission ? Colors.Success.default : Colors.Error.default}
                   />
                   <Text
                     className="text-xs text-slate-400"

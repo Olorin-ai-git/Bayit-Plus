@@ -3,7 +3,7 @@ import { Calendar, BookOpen, Star, Flame, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
-import { GlassCard } from '@bayit/shared/ui';
+import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { colors } from '@olorin/design-tokens';
 import logger from '@/utils/logger';
 
@@ -149,10 +149,11 @@ export function JewishCalendarWidget() {
 
       {/* Daf Yomi */}
       {dafYomi && (
-        <button
-          className="w-full rounded-lg p-3 mb-3 cursor-pointer hover:opacity-80 transition-opacity"
+        <GlassButton
+          className="w-full rounded-lg p-3 mb-3 cursor-pointer hover:opacity-80 transition-all backdrop-blur-lg border border-white/10"
           style={{ backgroundColor: colors.glassLight }}
-          onClick={() => {
+          variant="ghost"
+          onPress={() => {
             if (dafYomi.sefaria_url) {
               window.open(dafYomi.sefaria_url, '_blank');
             }
@@ -167,7 +168,7 @@ export function JewishCalendarWidget() {
               {i18n.language === 'he' ? dafYomi.tractate_he : dafYomi.tractate} {dafYomi.page}
             </span>
           </div>
-        </button>
+        </GlassButton>
       )}
 
       {/* Omer Count */}

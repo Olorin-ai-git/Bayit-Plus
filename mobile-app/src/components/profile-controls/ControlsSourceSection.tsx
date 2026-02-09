@@ -8,6 +8,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../../theme/colors';
 
 interface ControlsSourceSectionProps {
   isInheriting: boolean;
@@ -43,7 +44,7 @@ export function ControlsSourceSection({
         </View>
         <View style={styles.radioContent}>
           <View style={styles.radioHeader}>
-            <Ionicons name="home" size={20} color="#a855f7" />
+            <Ionicons name="home" size={20} color={Colors.Primary.p500} />
             <Text style={styles.radioTitle}>
               {t('profileControls.sourceSection.inheritHousehold', 'Inherit from Household')}
             </Text>
@@ -69,7 +70,7 @@ export function ControlsSourceSection({
         </View>
         <View style={styles.radioContent}>
           <View style={styles.radioHeader}>
-            <Ionicons name="shield" size={20} color="#60a5fa" />
+            <Ionicons name="shield" size={20} color={Colors.Info.i400} />
             <Text style={styles.radioTitle}>
               {t('profileControls.sourceSection.customControls', 'Custom Controls')}
             </Text>
@@ -95,7 +96,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#ffffff',
+    color: Colors.white,
     marginBottom: 16,
   },
   radioOption: {
@@ -114,7 +115,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#ffffff',
+    borderColor: Colors.white,
     marginRight: 12,
     marginTop: 2,
     alignItems: 'center',
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.white,
   },
   radioContent: {
     flex: 1,
@@ -138,10 +139,10 @@ const styles = StyleSheet.create({
   radioTitle: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#ffffff',
+    color: Colors.white,
   },
   radioDescription: {
     fontSize: 14,
-    color: '#d1d5db',
+    color: Colors.Dark.d300,
   },
 });

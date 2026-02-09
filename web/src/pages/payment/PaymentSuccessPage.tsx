@@ -7,6 +7,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { GlassButton } from '@bayit/glass-components';
 import logger from '@/utils/logger';
 
 const paymentLogger = logger.scope('PaymentSuccess');
@@ -84,12 +85,13 @@ export default function PaymentSuccessPage() {
           </p>
 
           {/* Continue Button */}
-          <button
-            onClick={handleContinue}
+          <GlassButton
+            variant="primary"
+            onPress={handleContinue}
             className="bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white font-semibold py-4 px-8 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105"
           >
             {t('success.continue', { defaultValue: 'Continue to Bayit+' })}
-          </button>
+          </GlassButton>
         </div>
       </div>
     </div>

@@ -33,6 +33,7 @@ import { profilesService } from '@bayit/shared-services';
 import { spacing, colors, typography, touchTarget } from '@olorin/design-tokens';
 import { useResponsive } from '../hooks/useResponsive';
 import { useScaledFontSize } from '../hooks/useScaledFontSize';
+import { Colors } from '../theme/colors';
 
 import logger from '@/utils/logger';
 
@@ -206,18 +207,18 @@ export const ProfileScreenMobile: React.FC = () => {
             <View style={styles.verificationRow}>
               <View style={[
                 styles.verificationBadge,
-                (user as any).email_verified ? styles.verifiedBadge : styles.unverifiedBadge
+                user.email_verified ? styles.verifiedBadge : styles.unverifiedBadge
               ]}>
                 <Text style={styles.verificationBadgeText}>
-                  {(user as any).email_verified ? t('profile.emailVerified') : t('profile.emailUnverified')}
+                  {user.email_verified ? t('profile.emailVerified') : t('profile.emailUnverified')}
                 </Text>
               </View>
               <View style={[
                 styles.verificationBadge,
-                (user as any).phone_verified ? styles.verifiedBadge : styles.unverifiedBadge
+                user.phone_verified ? styles.verifiedBadge : styles.unverifiedBadge
               ]}>
                 <Text style={styles.verificationBadgeText}>
-                  {(user as any).phone_verified ? t('profile.phoneVerified') : t('profile.phoneUnverified')}
+                  {user.phone_verified ? t('profile.phoneVerified') : t('profile.phoneUnverified')}
                 </Text>
               </View>
             </View>
@@ -412,10 +413,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   verifiedBadge: {
-    backgroundColor: '#10b981', // Green
+    backgroundColor: Colors.Success.default,
   },
   unverifiedBadge: {
-    backgroundColor: '#ef4444', // Red
+    backgroundColor: Colors.Error.default,
   },
   verificationBadgeText: {
     ...typography.caption,

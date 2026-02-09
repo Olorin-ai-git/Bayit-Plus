@@ -70,30 +70,27 @@ export default function WidgetToggleButton({
   const radius = size / 2;
 
   return (
-    <button
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label={tooltip}
+      title={tooltip}
       onClick={handleClick}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') handleClick(e as any); }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      disabled={isToggling}
-      title={tooltip}
+      className="rounded-full backdrop-blur-lg flex justify-center items-center transition-all duration-200 cursor-pointer hover:scale-110 border border-white/10"
       style={{
         width: size,
         height: size,
-        borderRadius: radius,
         backgroundColor: isActive
           ? 'rgba(16, 185, 129, 0.25)'
           : isHovered
           ? 'rgba(255, 255, 255, 0.25)'
           : 'rgba(0, 0, 0, 0.6)',
-        border: 'none',
         cursor: isToggling ? 'wait' : 'pointer',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backdropFilter: 'blur(8px)',
-        transition: 'all 0.2s ease',
-        transform: isHovered ? 'scale(1.1)' : 'scale(1)',
         opacity: isToggling ? 0.6 : 1,
+        pointerEvents: isToggling ? 'none' : 'auto',
       }}
     >
       {isActive ? (
@@ -101,6 +98,6 @@ export default function WidgetToggleButton({
       ) : (
         <LayoutGrid size={iconSize} color={colors.text} />
       )}
-    </button>
+    </div>
   );
 }

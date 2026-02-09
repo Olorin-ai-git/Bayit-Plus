@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { Platform } from 'react-native';
 import { devicePairingService, InitPairingResponse } from '../services/devicePairingService';
 import { useAuthStore } from './authStore';
+import { logger } from '../utils/logger';
 
 // Get WebSocket URL based on platform
 const getWsBaseUrl = () => {
@@ -159,12 +160,12 @@ export const useDevicePairingStore = create<DevicePairingState>((set, get) => ({
         const data = JSON.parse(event.data);
         get().handleMessage(data);
       } catch (e) {
-        console.error('Failed to parse WebSocket message:', e);
+        logger.error('Failed to parse WebSocket message', 'DevicePairing', e);
       }
     };
 
     ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      logger.error('WebSocket error', 'DevicePairing', error);
       set({ error: 'Connection error', isConnecting: false });
     };
 
@@ -242,7 +243,7 @@ export const useDevicePairingStore = create<DevicePairingState>((set, get) => ({
         break;
 
       default:
-        console.log('Unknown pairing message type:', type);
+        logger.debug('Unknown pairing message type: ' + type, 'DevicePairing');
     }
   },
 

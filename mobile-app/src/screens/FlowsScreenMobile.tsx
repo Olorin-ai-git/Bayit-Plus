@@ -32,14 +32,14 @@ import { useDirection } from "@bayit/shared-hooks";
 import api from "@bayit/shared-services/api";
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Colors } from '../theme/colors';
 
 import logger from '@/utils/logger';
 
 
 const moduleLogger = logger.scope('FlowsScreenMobile');
 
-// Type assertion for LinearGradient React component
-const LinearGradientComponent = LinearGradient as any as React.FC<any>;
+const LinearGradientComponent = LinearGradient;
 
 interface FlowItem {
   content_id: string;
@@ -74,10 +74,10 @@ interface Flow {
 }
 
 const FLOW_ICONS: { [key: string]: { iconName: string; iconColor: string; colors: string[] } } = {
-  "טקס בוקר": { iconName: "sun", iconColor: "#ff9500", colors: ["#ff9500", "#ff6b00"] },
-  "ליל שבת": { iconName: "moon", iconColor: "#8b5cf6", colors: ["#5856d6", "#8b5cf6"] },
-  "שעת שינה": { iconName: "bed", iconColor: "#4a4a8a", colors: ["#1a1a2e", "#4a4a8a"] },
-  "זמן ילדים": { iconName: "baby", iconColor: "#ff6b9d", colors: ["#ff2d55", "#ff6b9d"] },
+  "טקס בוקר": { iconName: "sun", iconColor: Colors.Warning.w600, colors: [Colors.Warning.w600, Colors.Warning.w600] },
+  "ליל שבת": { iconName: "moon", iconColor: Colors.Primary.p500, colors: [Colors.Primary.p600, Colors.Primary.p500] },
+  "שעת שינה": { iconName: "bed", iconColor: Colors.Dark.d600, colors: [Colors.Background.elevated, Colors.Dark.d600] },
+  "זמן ילדים": { iconName: "baby", iconColor: Colors.Error.e400, colors: [Colors.Error.default, Colors.Error.e400] },
 };
 
 interface FlowCardProps {
@@ -121,7 +121,7 @@ const FlowCard: React.FC<FlowCardProps> = ({
           colors={iconConfig.colors}
           style={styles.flowIcon}
         >
-          <NativeIcon name={iconConfig.iconName} size="lg" color="#ffffff" />
+          <NativeIcon name={iconConfig.iconName} size="lg" color={Colors.Text.primary} />
         </LinearGradientComponent>
 
         <View
@@ -341,7 +341,7 @@ export const FlowsScreenMobile: React.FC = () => {
               },
             ]}
           >
-            <NativeIcon name="vod" size="lg" color="#a855f7" />
+            <NativeIcon name="vod" size="lg" color={Colors.Primary.p500} />
           </View>
           <View style={styles.headerTextContainer}>
             <Text style={[styles.title, { textAlign }]}>
@@ -372,7 +372,7 @@ export const FlowsScreenMobile: React.FC = () => {
                   <NativeIcon
                     name={FLOW_ICONS[activeFlow.name]?.iconName || "play"}
                     size="xl"
-                    color="#ffffff"
+                    color={Colors.Text.primary}
                   />
                 </View>
                 <View
@@ -396,7 +396,7 @@ export const FlowsScreenMobile: React.FC = () => {
                   onPress={() => handleStartFlow(activeFlow)}
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <NativeIcon name="play" size="sm" color="#ffffff" />
+                    <NativeIcon name="play" size="sm" color={Colors.Text.primary} />
                     <Text style={styles.startButtonText}>{t("flows.start", "Start")}</Text>
                   </View>
                 </TouchableOpacity>
@@ -481,7 +481,7 @@ export const FlowsScreenMobile: React.FC = () => {
                   <NativeIcon
                     name={FLOW_ICONS[selectedFlow.name]?.iconName || "play"}
                     size="xxl"
-                    color="#a855f7"
+                    color={Colors.Primary.p500}
                     style={{ marginBottom: spacing.md }}
                   />
                   <Text style={[styles.modalTitle, { textAlign }]}>
@@ -524,7 +524,7 @@ export const FlowsScreenMobile: React.FC = () => {
                     }}
                   >
                     <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-                      <NativeIcon name="play" size="md" color="#ffffff" />
+                      <NativeIcon name="play" size="md" color={Colors.Text.primary} />
                       <Text style={styles.modalStartButtonText}>{t("flows.start", "Start")}</Text>
                     </View>
                   </TouchableOpacity>

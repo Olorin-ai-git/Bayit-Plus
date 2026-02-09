@@ -10,6 +10,7 @@ import {
   TriviaPreferences,
 } from '../../types/trivia'
 import { triviaApi } from '../../services/api/triviaServices'
+import { logger } from '../../utils/logger'
 import {
   TriviaStateCreator,
   TriviaState,
@@ -47,11 +48,11 @@ export const createPreferencesSlice: TriviaStateCreator = (set, get) => ({
       // Handle 401 gracefully - user not authenticated, use defaults
       const isUnauthorized = (err as any)?.response?.status === 401 || (err as any)?.status === 401
       if (isUnauthorized) {
-        console.log('[TriviaStore] User not authenticated, using default preferences')
+        logger.debug('User not authenticated, using default preferences', 'TriviaStore')
         set({ preferences: DEFAULT_TRIVIA_PREFERENCES, isLoading: false, error: null })
       } else {
         const errorMessage = err instanceof Error ? err.message : 'Failed to load preferences'
-        console.error('[TriviaStore] Failed to load preferences:', err)
+        logger.error('Failed to load preferences', 'TriviaStore', err)
         set({ isLoading: false, error: errorMessage })
       }
     }
@@ -78,7 +79,7 @@ export const createPreferencesSlice: TriviaStateCreator = (set, get) => ({
       await triviaApi.updatePreferences(updates)
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update preferences'
-      console.error('[TriviaStore] Failed to update preferences:', err)
+      logger.error('Failed to update preferences', 'TriviaStore', err)
       set({ preferences: current, error: errorMessage })
     }
   },
@@ -104,7 +105,7 @@ export const createLoadSlice: TriviaStateCreator = (set, get) => ({
       get().cacheTrivia(contentId, trivia)
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load trivia'
-      console.error('[TriviaStore] Failed to load trivia:', err)
+      logger.error('Failed to load trivia', 'TriviaStore', err)
       set({ facts: [], isLoading: false, error: errorMessage })
     }
   },
@@ -117,7 +118,7 @@ export const createLoadSlice: TriviaStateCreator = (set, get) => ({
       get().cacheTrivia(contentId, { ...trivia, is_enriched: true })
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load enriched trivia'
-      console.error('[TriviaStore] Failed to load enriched trivia:', err)
+      logger.error('Failed to load enriched trivia', 'TriviaStore', err)
       set({ isLoading: false, error: errorMessage })
     }
   },

@@ -3,6 +3,8 @@
  * Tracks render performance and alerts on budget violations
  */
 
+import { logger } from './logger';
+
 interface PerformanceMetrics {
   componentName: string;
   renderTime: number;
@@ -28,8 +30,8 @@ class NotificationPerformanceMonitor {
       });
 
       if (renderTime > this.MAX_RENDER_TIME) {
-        console.warn(
-          `[Performance] ${componentName} render exceeded budget: ${renderTime.toFixed(2)}ms (budget: ${this.MAX_RENDER_TIME}ms)`
+        logger.warn(
+          `${componentName} render exceeded budget: ${renderTime.toFixed(2)}ms (budget: ${this.MAX_RENDER_TIME}ms)`, 'Performance'
         );
       }
     };

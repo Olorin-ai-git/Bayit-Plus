@@ -155,7 +155,7 @@ export const SearchScreen: React.FC = () => {
         setQuery(text);
       }
     } catch (err) {
-      console.error('Voice search failed:', err);
+      logger.error('Voice search failed', 'SearchScreen', err);
     }
   }, [setQuery]);
 

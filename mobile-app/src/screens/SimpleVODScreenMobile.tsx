@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { Film, Play, Search, Star, Clock, AlertCircle } from 'lucide-react-native';
 import { contentService, ContentItem } from '../services/api';
+import { Colors } from '../theme/colors';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = (SCREEN_WIDTH - 48) / 2;
@@ -30,10 +31,10 @@ function ContentCard({ item }: { item: ContentItem }) {
         {item.poster ? (
           <Image source={{ uri: item.poster }} style={styles.cardPoster} resizeMode="cover" />
         ) : (
-          <Film size={32} color="rgba(74, 158, 255, 0.5)" />
+          <Film size={32} color={Colors.Info.i400} />
         )}
         <View style={styles.playOverlay}>
-          <Play size={24} color="#fff" fill="#fff" />
+          <Play size={24} color={Colors.Text.primary} fill={Colors.Text.primary} />
         </View>
       </View>
       <View style={styles.cardInfo}>
@@ -41,7 +42,7 @@ function ContentCard({ item }: { item: ContentItem }) {
         <View style={styles.cardMeta}>
           {item.rating && (
             <View style={styles.ratingBadge}>
-              <Star size={10} color="#ffc107" fill="#ffc107" />
+              <Star size={10} color={Colors.Warning.default} fill={Colors.Warning.default} />
               <Text style={styles.ratingText}>{item.rating}</Text>
             </View>
           )}
@@ -49,7 +50,7 @@ function ContentCard({ item }: { item: ContentItem }) {
         </View>
         {item.duration && (
           <View style={styles.durationRow}>
-            <Clock size={10} color="rgba(255, 255, 255, 0.5)" />
+            <Clock size={10} color={Colors.Text.muted} />
             <Text style={styles.durationText}>{item.duration}</Text>
           </View>
         )}
@@ -106,11 +107,11 @@ export function VODScreenMobile() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Film size={24} color="#4a9eff" strokeWidth={2} />
+          <Film size={24} color={Colors.Info.default} strokeWidth={2} />
           <Text style={styles.headerTitle}>VOD</Text>
         </View>
         <Pressable style={styles.iconButton}>
-          <Search size={20} color="#fff" />
+          <Search size={20} color={Colors.Text.primary} />
         </Pressable>
       </View>
 
@@ -145,7 +146,7 @@ export function VODScreenMobile() {
       {/* Loading State */}
       {loading && (
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color="#4a9eff" />
+          <ActivityIndicator size="large" color={Colors.Info.default} />
           <Text style={styles.loadingText}>Loading content...</Text>
         </View>
       )}
@@ -153,7 +154,7 @@ export function VODScreenMobile() {
       {/* Error State */}
       {error && !loading && (
         <View style={styles.centerContent}>
-          <AlertCircle size={48} color="#e53935" />
+          <AlertCircle size={48} color={Colors.Error.e600} />
           <Text style={styles.errorText}>{error}</Text>
           <Pressable style={styles.retryButton} onPress={loadContent}>
             <Text style={styles.retryText}>Retry</Text>
@@ -167,12 +168,12 @@ export function VODScreenMobile() {
           style={styles.scrollView}
           contentContainerStyle={styles.contentGrid}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4a9eff" />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.Info.default} />
           }
         >
           {filteredContent.length === 0 ? (
             <View style={styles.emptyState}>
-              <Film size={48} color="rgba(255, 255, 255, 0.3)" />
+              <Film size={48} color={Colors.Text.disabled} />
               <Text style={styles.emptyText}>No content found</Text>
             </View>
           ) : (
@@ -188,7 +189,7 @@ export function VODScreenMobile() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0d0d1a' },
+  container: { flex: 1, backgroundColor: Colors.Background.primary },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -197,12 +198,12 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#fff' },
+  headerTitle: { fontSize: 24, fontWeight: 'bold', color: Colors.Text.primary },
   iconButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: Colors.Glass.bgLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -212,26 +213,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: Colors.Glass.bgLight,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.Glass.borderLight,
   },
-  categoryChipActive: { backgroundColor: 'rgba(74, 158, 255, 0.2)', borderColor: '#4a9eff' },
-  categoryText: { color: 'rgba(255, 255, 255, 0.7)', fontSize: 14, fontWeight: '500' },
-  categoryTextActive: { color: '#4a9eff' },
+  categoryChipActive: { backgroundColor: Colors.Glass.borderLight, borderColor: Colors.Info.default },
+  categoryText: { color: Colors.Text.secondary, fontSize: 14, fontWeight: '500' },
+  categoryTextActive: { color: Colors.Info.default },
   scrollView: { flex: 1 },
   contentGrid: { flexDirection: 'row', flexWrap: 'wrap', padding: 16, gap: 12 },
   contentCard: {
     width: CARD_WIDTH,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: Colors.Glass.bgLight,
     borderRadius: 12,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.Glass.borderLight,
   },
   cardThumbnail: {
     height: 100,
-    backgroundColor: 'rgba(74, 158, 255, 0.1)',
+    backgroundColor: Colors.Glass.borderLight,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
@@ -245,42 +246,42 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: Colors.Glass.bgMedium,
     justifyContent: 'center',
     alignItems: 'center',
   },
   cardInfo: { padding: 12 },
-  cardTitle: { fontSize: 14, fontWeight: '600', color: '#fff', marginBottom: 6 },
+  cardTitle: { fontSize: 14, fontWeight: '600', color: Colors.Text.primary, marginBottom: 6 },
   cardMeta: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
   ratingBadge: { flexDirection: 'row', alignItems: 'center', gap: 3 },
-  ratingText: { fontSize: 11, color: '#ffc107', fontWeight: '600' },
-  yearText: { fontSize: 11, color: 'rgba(255, 255, 255, 0.5)' },
+  ratingText: { fontSize: 11, color: Colors.Warning.default, fontWeight: '600' },
+  yearText: { fontSize: 11, color: Colors.Text.muted },
   durationRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  durationText: { fontSize: 11, color: 'rgba(255, 255, 255, 0.5)' },
+  durationText: { fontSize: 11, color: Colors.Text.muted },
   categoryBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(74, 158, 255, 0.15)',
+    backgroundColor: Colors.Glass.borderLight,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 8,
     marginTop: 4,
   },
-  categoryBadgeText: { fontSize: 10, color: '#4a9eff' },
+  categoryBadgeText: { fontSize: 10, color: Colors.Info.default },
   centerContent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 16,
   },
-  loadingText: { color: 'rgba(255, 255, 255, 0.6)', fontSize: 16 },
-  errorText: { color: '#e53935', fontSize: 16, textAlign: 'center', paddingHorizontal: 32 },
+  loadingText: { color: Colors.Text.muted, fontSize: 16 },
+  errorText: { color: Colors.Error.e600, fontSize: 16, textAlign: 'center', paddingHorizontal: 32 },
   retryButton: {
-    backgroundColor: 'rgba(74, 158, 255, 0.2)',
+    backgroundColor: Colors.Glass.borderLight,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
   },
-  retryText: { color: '#4a9eff', fontSize: 16, fontWeight: '600' },
+  retryText: { color: Colors.Info.default, fontSize: 16, fontWeight: '600' },
   emptyState: {
     flex: 1,
     width: '100%',
@@ -289,5 +290,5 @@ const styles = StyleSheet.create({
     paddingVertical: 64,
     gap: 16,
   },
-  emptyText: { color: 'rgba(255, 255, 255, 0.5)', fontSize: 16 },
+  emptyText: { color: Colors.Text.muted, fontSize: 16 },
 });

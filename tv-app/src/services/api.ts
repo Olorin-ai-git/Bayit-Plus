@@ -4,24 +4,33 @@ import { useAuthStore } from '../stores/authStore';
 
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {
-  if (!__DEV__) {
-    return 'https://api.bayit.tv/api/v1';
+  if (process.env.REACT_APP_API_BASE_URL) {
+    return process.env.REACT_APP_API_BASE_URL;
   }
-  // In development:
+
+  if (!__DEV__) {
+    throw new Error(
+      '[tv-app API] REACT_APP_API_BASE_URL environment variable is required in production.',
+    );
+  }
+
+  // Development defaults by platform
   if (Platform.OS === 'web') {
     return 'http://localhost:8000/api/v1';
   }
   if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:8000/api/v1';  // Android emulator localhost
+    return 'http://10.0.2.2:8000/api/v1';
   }
-  return 'http://localhost:8000/api/v1';  // iOS simulator
+  return 'http://localhost:8000/api/v1';
 };
 
 const API_BASE_URL = getApiBaseUrl();
 
+const API_TIMEOUT = Number(process.env.BAYIT_API_TIMEOUT_MS) || (__DEV__ ? 5000 : (() => { throw new Error('[tv-app API] BAYIT_API_TIMEOUT_MS is required in production'); })());
+
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 5000,
+  timeout: API_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },

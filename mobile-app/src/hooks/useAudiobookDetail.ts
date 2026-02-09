@@ -6,7 +6,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import logger from '@/utils/logger'
 import audiobookService from '@/services/audiobookService'
-import type { Audiobook } from '@/types/audiobook'
+import type { Audiobook } from '@bayit/shared-services/api/types'
 
 interface UseAudiobookDetailState {
   audiobook: Audiobook | null

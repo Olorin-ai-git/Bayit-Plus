@@ -23,10 +23,6 @@ import { isWebPlatform } from "../../utils/storage";
 // Correlation ID header name (matches backend)
 const CORRELATION_ID_HEADER = "X-Correlation-ID";
 
-// Cloud Run production API URL
-const CLOUD_RUN_API_URL =
-  "https://bayit-backend-production-534446777606.us-east1.run.app/api/v1";
-
 // Detect platform and environment
 const isWeb = isWebPlatform();
 const isDev = typeof process !== 'undefined'
@@ -39,30 +35,51 @@ const isAndroid = typeof navigator !== 'undefined' &&
   typeof global !== 'undefined' &&
   (global as any).nativeModuleProxy?.Platform?.OS === 'android';
 
+/**
+ * Resolve the env var name for the API base URL based on the platform bundler.
+ * Vite exposes VITE_*, Metro/Webpack expose REACT_APP_* or process.env.*.
+ */
+const getEnvApiUrl = (): string | undefined => {
+  if (typeof process !== 'undefined' && process.env) {
+    return (
+      process.env.REACT_APP_API_BASE_URL ||
+      process.env.BAYIT_API_URL
+    );
+  }
+  // Vite (import.meta.env) is handled at the web layer, not here
+  return undefined;
+};
+
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {
+  // Prefer explicit env var on all platforms
+  const envUrl = getEnvApiUrl();
+  if (envUrl) {
+    return envUrl;
+  }
+
   // Production builds
   if (!isDev) {
     // Web uses relative path (Firebase Hosting rewrites to Cloud Run)
     if (isWeb) {
       return "/api/v1";
     }
-    // Native apps use api.bayit.tv
-    return "https://api.bayit.tv/api/v1";
+    // Native apps must have REACT_APP_API_BASE_URL or BAYIT_API_URL set at build time
+    throw new Error(
+      '[Shared API Client] REACT_APP_API_BASE_URL or BAYIT_API_URL environment variable ' +
+      'is required for native production builds.',
+    );
   }
 
   // In development:
-  // Web and iOS simulator can use localhost
   if (isWeb) {
     return "http://localhost:8000/api/v1";
   }
 
-  // Android emulator uses special address for localhost
   if (isAndroid) {
     return "http://10.0.2.2:8000/api/v1";
   }
 
-  // iOS and tvOS use localhost in development
   return "http://localhost:8000/api/v1";
 };
 
@@ -80,10 +97,23 @@ const SECURITY_HEADERS = {
   "Strict-Transport-Security": "max-age=31536000; includeSubDomains", // Force HTTPS
 };
 
+// Timeout values from env, with dev defaults
+const getTimeout = (envKey: string, devDefault: number): number => {
+  const raw = typeof process !== 'undefined' ? process.env?.[envKey] : undefined;
+  if (raw) {
+    const parsed = Number(raw);
+    if (!isNaN(parsed) && parsed > 0) return parsed;
+  }
+  return devDefault;
+};
+
+const API_TIMEOUT_MS = getTimeout('BAYIT_API_TIMEOUT_MS', 15000);
+const CONTENT_API_TIMEOUT_MS = getTimeout('BAYIT_CONTENT_API_TIMEOUT_MS', 30000);
+
 // Main API instance with security hardening
 export const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000,
+  timeout: API_TIMEOUT_MS,
   headers: SECURITY_HEADERS,
   withCredentials: true, // Enable cookies for CSRF token handling
   validateStatus: (status) => status >= 200 && status < 500, // Don't throw on 4xx/5xx
@@ -92,7 +122,7 @@ export const api = axios.create({
 // Separate API instance for content endpoints that involve web scraping
 export const contentApi = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 30000,
+  timeout: CONTENT_API_TIMEOUT_MS,
   headers: SECURITY_HEADERS,
   withCredentials: true, // Enable cookies for CSRF token handling
   validateStatus: (status) => status >= 200 && status < 500,

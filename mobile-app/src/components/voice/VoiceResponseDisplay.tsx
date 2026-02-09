@@ -16,6 +16,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { colors } from '@olorin/design-tokens';
+import { Colors } from '../../theme/colors';
 import { VoiceCommandResponse } from '../../services/backendProxyService';
 import { NativeIcon } from '@olorin/shared-icons/native';
 
@@ -87,7 +88,7 @@ export const VoiceResponseDisplay: React.FC<VoiceResponseDisplayProps> = ({
             className="w-7 h-7 rounded-full justify-center items-center mt-0.5"
             style={{ backgroundColor: statusColor }}
           >
-            <NativeIcon name={statusIconName} size="sm" color="#ffffff" />
+            <NativeIcon name={statusIconName} size="sm" color={Colors.white} />
           </View>
           <View className="flex-1">
             <Text
@@ -125,7 +126,7 @@ export const VoiceResponseDisplay: React.FC<VoiceResponseDisplayProps> = ({
             onPress={handleDismiss}
             className="p-1"
           >
-            <NativeIcon name="x" size="md" color="#475569" />
+            <NativeIcon name="x" size="md" color={Colors.Dark.d600} />
           </TouchableOpacity>
         </View>
 

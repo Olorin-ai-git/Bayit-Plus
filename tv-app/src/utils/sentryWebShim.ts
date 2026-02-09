@@ -8,6 +8,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { logger } from './logger';
+
 type SeverityLevel = 'fatal' | 'error' | 'warning' | 'log' | 'info' | 'debug';
 
 interface User {
@@ -23,7 +25,7 @@ interface CaptureOptions {
 
 // No-op implementations
 export const init = (_options?: any): void => {
-  console.info('[Sentry] Web shim - error tracking disabled in TV web build');
+  logger.info('Web shim - error tracking disabled in TV web build', 'Sentry');
 };
 
 export const captureException = (_error: unknown, _options?: CaptureOptions): string => {

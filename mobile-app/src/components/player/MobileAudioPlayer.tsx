@@ -13,6 +13,7 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { View, Text, ActivityIndicator, Pressable, Image } from 'react-native';
 import Video, { VideoRef } from 'react-native-video';
 import { Play, Pause } from 'lucide-react-native';
+import { Colors } from '../../theme/colors';
 import logger from '@/utils/logger';
 
 const moduleLogger = logger.scope('MobileAudioPlayer');
@@ -111,12 +112,12 @@ export default function MobileAudioPlayer({
         {/* Controls */}
         <View className="mt-2 items-center">
           {loading ? (
-            <ActivityIndicator size="large" color="#fff" />
+            <ActivityIndicator size="large" color={Colors.white} />
           ) : error ? (
-            <Text className="text-xs text-[#ff4444] font-medium text-center">{error}</Text>
+            <Text className="text-xs font-medium text-center" style={{ color: Colors.Special.live }}>{error}</Text>
           ) : (
             <Pressable className="w-16 h-16 rounded-full bg-white/20 justify-center items-center border-2 border-white/30" onPress={togglePlayPause}>
-              {isPlaying ? <Pause size={32} color="#fff" /> : <Play size={32} color="#fff" />}
+              {isPlaying ? <Pause size={32} color={Colors.white} /> : <Play size={32} color={Colors.white} />}
             </Pressable>
           )}
         </View>

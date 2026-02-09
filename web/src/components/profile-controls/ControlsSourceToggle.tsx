@@ -29,14 +29,24 @@ export function ControlsSourceToggle({
 
       <div className="space-y-4">
         {/* Household Inheritance Option */}
-        <label className="flex items-center gap-4 p-4 rounded-xl bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
-          <input
-            type="radio"
-            checked={isInheriting}
-            onChange={onToggle}
-            disabled={isLoading}
-            className="w-5 h-5"
-          />
+        <div
+          role="radio"
+          tabIndex={0}
+          aria-checked={isInheriting}
+          aria-label={t('profileControls.sourceSection.inheritHousehold', 'Inherit from Household')}
+          onClick={() => !isLoading && !isInheriting && onToggle()}
+          onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !isLoading && !isInheriting) onToggle(); }}
+          className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/10 transition-colors border ${
+            isInheriting
+              ? 'bg-purple-500/15 border-purple-500/50'
+              : 'bg-white/5 border-white/10'
+          }`}
+        >
+          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+            isInheriting ? 'border-purple-500' : 'border-white/30'
+          }`}>
+            {isInheriting && <div className="w-2.5 h-2.5 rounded-full bg-purple-500" />}
+          </div>
           <div className="flex items-center gap-3 flex-1">
             <Home size={24} className="text-purple-300" />
             <div>
@@ -48,17 +58,27 @@ export function ControlsSourceToggle({
               </p>
             </div>
           </div>
-        </label>
+        </div>
 
         {/* Custom Controls Option */}
-        <label className="flex items-center gap-4 p-4 rounded-xl bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
-          <input
-            type="radio"
-            checked={!isInheriting}
-            onChange={onToggle}
-            disabled={isLoading}
-            className="w-5 h-5"
-          />
+        <div
+          role="radio"
+          tabIndex={0}
+          aria-checked={!isInheriting}
+          aria-label={t('profileControls.sourceSection.customControls', 'Custom Controls')}
+          onClick={() => !isLoading && isInheriting && onToggle()}
+          onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !isLoading && isInheriting) onToggle(); }}
+          className={`flex items-center gap-4 p-4 rounded-xl cursor-pointer hover:bg-white/10 transition-colors border ${
+            !isInheriting
+              ? 'bg-purple-500/15 border-purple-500/50'
+              : 'bg-white/5 border-white/10'
+          }`}
+        >
+          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+            !isInheriting ? 'border-purple-500' : 'border-white/30'
+          }`}>
+            {!isInheriting && <div className="w-2.5 h-2.5 rounded-full bg-purple-500" />}
+          </div>
           <div className="flex items-center gap-3 flex-1">
             <Shield size={24} className="text-blue-300" />
             <div>
@@ -70,7 +90,7 @@ export function ControlsSourceToggle({
               </p>
             </div>
           </div>
-        </label>
+        </div>
       </div>
     </div>
   );

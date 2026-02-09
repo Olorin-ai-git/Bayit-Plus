@@ -12,6 +12,7 @@ import { isTV } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
 import { searchService } from '../../services/api';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { logger } from '../../utils/logger';
 
 export interface TrendingItem {
   query: string;
@@ -118,7 +119,7 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
         setTrending([]);
       }
     } catch (error) {
-      console.error('Failed to load trending searches:', error);
+      logger.error('Failed to load trending searches', 'TrendingSearches', error);
       // Show empty instead of error to not break UI
       setTrending([]);
     } finally {

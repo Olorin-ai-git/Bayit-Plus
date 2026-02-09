@@ -1,25 +1,18 @@
 import axios from 'axios';
-import { Platform } from 'react-native';
+import { API_BASE_URL } from './api/client';
 
-// Get correct API URL based on platform
-const getApiBaseUrl = () => {
-  if (!__DEV__) {
-    return 'https://api.bayit.tv/api/v1';
+const PAIRING_TIMEOUT_MS = (() => {
+  const raw = typeof process !== 'undefined' ? process.env?.BAYIT_PAIRING_TIMEOUT_MS : undefined;
+  if (raw) {
+    const parsed = Number(raw);
+    if (!isNaN(parsed) && parsed > 0) return parsed;
   }
-  if (Platform.OS === 'web') {
-    return 'http://localhost:8000/api/v1';
-  }
-  if (Platform.OS === 'android') {
-    return 'http://10.0.2.2:8000/api/v1';
-  }
-  return 'http://localhost:8000/api/v1';
-};
-
-const API_BASE_URL = getApiBaseUrl();
+  return 10000;
+})();
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: PAIRING_TIMEOUT_MS,
   headers: {
     'Content-Type': 'application/json',
   },

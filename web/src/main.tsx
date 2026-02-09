@@ -12,6 +12,7 @@ import '@bayit/shared-utils/microphoneDiagnostics'
 import { initSentry, SentryErrorBoundary } from './utils/sentry'
 import logger from './utils/logger'
 import { Icon } from '@olorin/shared-icons/web'
+import { GlassButton } from '@bayit/shared/ui'
 
 const appLogger = logger.scope('App');
 
@@ -35,12 +36,13 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <p className="text-gray-400 mb-6">
               {error?.message || 'An unexpected error occurred'}
             </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-medium transition-colors"
+            <GlassButton
+              onPress={() => window.location.reload()}
+              variant="primary"
+              className="px-6 py-3 rounded-full font-medium"
             >
               Reload Page
-            </button>
+            </GlassButton>
           </div>
         </div>
       )}

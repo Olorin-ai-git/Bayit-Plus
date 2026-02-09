@@ -3,7 +3,7 @@ import { Flame, Moon, MapPin, ChevronDown, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
-import { GlassCard } from '@bayit/shared/ui';
+import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { colors } from '@olorin/design-tokens';
 import logger from '@/utils/logger';
 
@@ -121,9 +121,10 @@ export function ShabbatTimesCard({ defaultCity = 'New York', defaultState = 'NY'
         </div>
 
         {/* City Picker */}
-        <button
-          onClick={() => setShowCityPicker(!showCityPicker)}
-          className={`flex items-center gap-1 px-3 py-1.5 rounded-full cursor-pointer hover:opacity-80 transition-opacity `}
+        <GlassButton
+          onPress={() => setShowCityPicker(!showCityPicker)}
+          variant="ghost"
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full cursor-pointer hover:opacity-80 transition-all backdrop-blur-lg border border-white/10"
           style={{ backgroundColor: colors.glassLight }}
         >
           <MapPin size={14} color={colors.textMuted} />
@@ -131,7 +132,7 @@ export function ShabbatTimesCard({ defaultCity = 'New York', defaultState = 'NY'
             {selectedCity ? `${selectedCity.name}, ${selectedCity.state}` : 'Select City'}
           </span>
           <ChevronDown size={14} color={colors.textMuted} />
-        </button>
+        </GlassButton>
       </div>
 
       {/* City Dropdown */}
@@ -141,13 +142,14 @@ export function ShabbatTimesCard({ defaultCity = 'New York', defaultState = 'NY'
           style={{ backgroundColor: colors.glassStrong }}
         >
           {cities.map((city) => (
-            <button
+            <GlassButton
               key={city.geoname_id}
-              onClick={() => {
+              onPress={() => {
                 setSelectedCity(city);
                 setShowCityPicker(false);
               }}
-              className="w-full p-2 rounded text-left cursor-pointer hover:opacity-80 transition-opacity"
+              variant="ghost"
+              className="w-full p-2 rounded text-left cursor-pointer hover:bg-white/10 transition-all"
               style={{
                 backgroundColor: selectedCity?.geoname_id === city.geoname_id ? `${colors.primary}4D` : 'transparent',
               }}
@@ -155,7 +157,7 @@ export function ShabbatTimesCard({ defaultCity = 'New York', defaultState = 'NY'
               <span style={{ color: colors.text }}>
                 {city.name}, {city.state}
               </span>
-            </button>
+            </GlassButton>
           ))}
         </div>
       )}

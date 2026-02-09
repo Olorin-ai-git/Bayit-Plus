@@ -18,15 +18,25 @@ export const apiZmanService = {
   getTimezones: () => api.get('/zman/timezones'),
 };
 
+// Trending endpoints use a longer timeout since they aggregate external sources
+const TRENDING_TIMEOUT_MS = (() => {
+  const raw = typeof process !== 'undefined' ? process.env?.BAYIT_TRENDING_TIMEOUT_MS : undefined;
+  if (raw) {
+    const parsed = Number(raw);
+    if (!isNaN(parsed) && parsed > 0) return parsed;
+  }
+  return 20000;
+})();
+
 // Trending Service (API)
 export const apiTrendingService = {
-  getTopics: () => api.get('/trending/topics', { timeout: 20000 }),
+  getTopics: () => api.get('/trending/topics', { timeout: TRENDING_TIMEOUT_MS }),
   getHeadlines: (source?: string, limit: number = 20) =>
-    api.get('/trending/headlines', { params: { source, limit }, timeout: 20000 }),
+    api.get('/trending/headlines', { params: { source, limit }, timeout: TRENDING_TIMEOUT_MS }),
   getRecommendations: (limit: number = 10) =>
-    api.get('/trending/recommendations', { params: { limit }, timeout: 20000 }),
-  getSummary: () => api.get('/trending/summary', { timeout: 20000 }),
-  getByCategory: (category: string) => api.get(`/trending/category/${category}`, { timeout: 20000 }),
+    api.get('/trending/recommendations', { params: { limit }, timeout: TRENDING_TIMEOUT_MS }),
+  getSummary: () => api.get('/trending/summary', { timeout: TRENDING_TIMEOUT_MS }),
+  getByCategory: (category: string) => api.get(`/trending/category/${category}`, { timeout: TRENDING_TIMEOUT_MS }),
 };
 
 // Morning Ritual Service (API)

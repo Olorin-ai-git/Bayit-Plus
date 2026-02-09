@@ -10,6 +10,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cultureService } from '../services/api';
+import { logger } from '../utils/logger';
 
 // Types
 export interface Culture {
@@ -164,7 +165,7 @@ export const useCultureStore = create<CultureStore>()(
           set({ cultureTime: time });
         } catch (error: any) {
           // Time fetch is non-critical, just log
-          console.warn('Failed to fetch culture time:', error);
+          logger.warn('Failed to fetch culture time', 'CultureContext', error);
         }
       },
 

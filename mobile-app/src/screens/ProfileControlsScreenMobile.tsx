@@ -19,6 +19,7 @@ import { CustomControlsSelection } from '../components/profile-controls/CustomCo
 import { EffectiveControlsGrid } from '../components/profile-controls/EffectiveControlsGrid';
 import { ScreenHeader } from '../components/profile-controls/ScreenHeader';
 import httpClient from '../services/httpClient';
+import { Colors } from '../theme/colors';
 
 // Initialize API client with compatible HTTP client
 setProfileControlsApiClient(httpClient);
@@ -175,7 +176,7 @@ export default function ProfileControlsScreenMobile() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#1a1a2e' },
+  safeArea: { flex: 1, backgroundColor: Colors.Background.elevated },
   container: { flex: 1 },
   content: { flex: 1 },
   contentContainer: { padding: 16 },
@@ -187,6 +188,6 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
   },
-  errorText: { color: '#fecaca', marginBottom: 8 },
-  dismissButton: { color: '#fca5a5', textDecorationLine: 'underline', fontSize: 14 },
+  errorText: { color: Colors.Error.e400, marginBottom: 8 },
+  dismissButton: { color: Colors.Error.e400, textDecorationLine: 'underline', fontSize: 14 },
 });

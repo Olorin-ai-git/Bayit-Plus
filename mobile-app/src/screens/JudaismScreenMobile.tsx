@@ -33,6 +33,7 @@ import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Colors } from '../theme/colors';
 
 import logger from '@/utils/logger';
 
@@ -92,7 +93,7 @@ const JudaismCard: React.FC<JudaismCardProps> = ({ item, onPress, getLocalizedTe
       activeOpacity={0.7}
       className="flex-1 m-1 min-h-[48px]"
     >
-      <View className="bg-[#2d2540] rounded-xl overflow-hidden">
+      <View className="rounded-xl overflow-hidden" style={{ backgroundColor: Colors.Background.elevated }}>
         {item.thumbnail ? (
           <Image
             source={{ uri: item.thumbnail }}
@@ -101,11 +102,11 @@ const JudaismCard: React.FC<JudaismCardProps> = ({ item, onPress, getLocalizedTe
           />
         ) : (
           <View className="w-full aspect-video bg-purple-500/10 justify-center items-center">
-            <NativeIcon name={TYPE_ICONS[item.type] || 'judaism'} size="xxxl" color="#FFFFFF" />
+            <NativeIcon name={TYPE_ICONS[item.type] || 'judaism'} size="xxxl" color={Colors.white} />
           </View>
         )}
         <View className={`absolute top-2 ${isRTL ? 'left-2' : 'right-2'} bg-black/70 rounded-xl px-2 py-1`}>
-          <NativeIcon name={TYPE_ICONS[item.type]} size="xs" color="#FFFFFF" />
+          <NativeIcon name={TYPE_ICONS[item.type]} size="xs" color={Colors.white} />
         </View>
         {item.duration && (
           <View className={`absolute top-2 ${isRTL ? 'right-2' : 'left-2'} bg-purple-600/90 rounded-lg px-1.5 py-0.5`}>
@@ -244,7 +245,7 @@ export const JudaismScreenMobile: React.FC = () => {
       {/* Header */}
       <View className="flex-row items-center px-4 pt-6 pb-4" style={{ flexDirection: isRTL ? 'row' : 'row-reverse', marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }}>
         <View className="w-12 h-12 rounded-full bg-purple-500/20 justify-center items-center">
-          <NativeIcon name="judaism" size="lg" color="#a855f7" />
+          <NativeIcon name="judaism" size="lg" color={Colors.Primary.p500} />
         </View>
         <View className="flex-1">
           <Text className="text-3xl font-bold text-purple-500" style={{ textAlign }}>{t('judaism.title', 'יהדות')}</Text>
@@ -294,7 +295,7 @@ export const JudaismScreenMobile: React.FC = () => {
   const renderEmptyState = () => (
     <View className="flex-1 justify-center items-center py-[60px] px-6">
       <View className="p-6 items-center bg-purple-500/10 rounded-lg">
-        <NativeIcon name="judaism" size="xxxl" color="#a855f7" />
+        <NativeIcon name="judaism" size="xxxl" color={Colors.Primary.p500} />
         <Text className="text-lg font-semibold text-purple-500 mb-2" style={{ textAlign }}>
           {t('judaism.empty', 'אין תוכן זמין')}
         </Text>
@@ -307,7 +308,7 @@ export const JudaismScreenMobile: React.FC = () => {
 
   if (isLoading && content.length === 0) {
     return (
-      <SafeAreaView className="flex-1 bg-[#1a1525] justify-center items-center">
+      <SafeAreaView className="flex-1 bg-black justify-center items-center">
         <ActivityIndicator size="large" color={colors.primary} />
         <Text className="text-white text-base mt-4">{t('common.loading')}</Text>
       </SafeAreaView>
@@ -315,7 +316,7 @@ export const JudaismScreenMobile: React.FC = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#1a1525]">
+    <SafeAreaView className="flex-1 bg-black">
       <FlatList
         data={content}
         keyExtractor={(item) => item.id}

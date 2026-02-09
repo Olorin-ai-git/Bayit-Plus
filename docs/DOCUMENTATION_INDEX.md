@@ -76,6 +76,7 @@
 **Location:** `/docs/reviews/`
 
 **Existing:**
+- [Platform Parity Audit 2026-02-08](reviews/PLATFORM_PARITY_AUDIT_2026-02-08.md) - Comprehensive parity comparison across Web, Mobile, tvOS with feature matrix, violations, and recommendations - 2026-02-08
 - Multiple review documents covering:
   - Live Dubbing system reviews
   - Watch Party feature reviews

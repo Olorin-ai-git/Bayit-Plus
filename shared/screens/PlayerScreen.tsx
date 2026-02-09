@@ -180,7 +180,7 @@ export const PlayerScreen: React.FC = () => {
         setError(t('player.noStream', 'Stream not available'));
       }
     } catch (err) {
-      console.error('Failed to load stream:', err);
+      logger.error('Failed to load stream', 'PlayerScreen', err);
       const errorMessage = err instanceof Error ? err.message : t('player.loadError', 'Failed to load stream');
       setError(errorMessage);
     } finally {
@@ -197,7 +197,7 @@ export const PlayerScreen: React.FC = () => {
         : await chaptersService.getChapters(id);
       setChapters(response.chapters || []);
     } catch (err) {
-      console.error('Failed to load chapters:', err);
+      logger.error('Failed to load chapters', 'PlayerScreen', err);
       setChapters([]);
     } finally {
       setChaptersLoading(false);
@@ -341,7 +341,7 @@ export const PlayerScreen: React.FC = () => {
       });
       showControlsTemporarily();
     } catch (error) {
-      console.error('Failed to share:', error);
+      logger.error('Failed to share', 'PlayerScreen', error);
     }
   };
 

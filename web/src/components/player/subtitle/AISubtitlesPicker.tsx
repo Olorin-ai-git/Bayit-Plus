@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { createPortal } from 'react-dom'
 import { Icon } from '@olorin/shared-icons/web'
 import { Sparkles } from 'lucide-react'
+import { GlassButton } from '@bayit/glass-components'
 import { HebrewMode } from '@/types/subtitle'
 import { storageHelpers, STORAGE_KEYS } from '@/utils/storage'
 import { subtitlesService } from '@/services/api'
@@ -544,13 +545,13 @@ export default function AISubtitlesPicker({
           >
             {t('subtitles.hebrewMode.title', 'Hebrew Display Mode')}
           </h2>
-          <button
-            onClick={onClose}
-            className="min-h-[44px] min-w-[44px] flex items-center justify-center text-gray-400 hover:text-white transition-colors"
+          <GlassButton
+            onPress={onClose}
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/15 text-gray-400 hover:text-white transition-all border border-white/10"
             aria-label="Close modal"
           >
             <Icon name="x" size="lg" color="currentColor" />
-          </button>
+          </GlassButton>
         </div>
 
         {/* First-time hint */}
@@ -561,13 +562,13 @@ export default function AISubtitlesPicker({
               <p className="text-sm text-indigo-200">
                 {t('subtitles.hebrewMode.firstTimeHint', 'Choose how you want Hebrew subtitles displayed. Nikud adds vowel marks for easier reading, while Shoresh shows root words for language learning.')}
               </p>
-              <button
-                onClick={() => setShowFirstTimeHint(false)}
-                className="text-indigo-300 hover:text-indigo-100 transition-colors flex-shrink-0"
+              <GlassButton
+                onPress={() => setShowFirstTimeHint(false)}
+                className="rounded-md p-1 bg-white/5 hover:bg-white/15 text-indigo-300 hover:text-indigo-100 transition-all border border-white/10 flex-shrink-0"
                 aria-label="Dismiss hint"
               >
                 <Icon name="x" size="md" color="currentColor" />
-              </button>
+              </GlassButton>
             </div>
           </div>
         )}
@@ -578,13 +579,13 @@ export default function AISubtitlesPicker({
             <div className="flex items-start gap-2">
               <Icon name="error" size="md" color="#ef4444" className="flex-shrink-0" />
               <p className="text-sm text-red-200">{generationError}</p>
-              <button
-                onClick={() => setGenerationError(null)}
-                className="text-red-300 hover:text-red-100 transition-colors flex-shrink-0"
+              <GlassButton
+                onPress={() => setGenerationError(null)}
+                className="rounded-md p-1 bg-white/5 hover:bg-white/15 text-red-300 hover:text-red-100 transition-all border border-white/10 flex-shrink-0"
                 aria-label="Dismiss error"
               >
                 <Icon name="x" size="md" color="currentColor" />
-              </button>
+              </GlassButton>
             </div>
           </div>
         )}
@@ -736,11 +737,11 @@ export default function AISubtitlesPicker({
                                 {jobProgress > 0 ? `${jobProgress}%` : t('common.generating', 'Generating...')}
                               </span>
                               {/* Cancel button */}
-                              <button
-                                type="button"
-                                onClick={(e) => { e.stopPropagation(); handleCancelJob(); }}
+                              <GlassButton
+                                variant="ghost"
+                                onPress={(e) => { e.stopPropagation(); handleCancelJob(); }}
                                 disabled={isCancelling}
-                                className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-red-500 hover:bg-red-600 disabled:opacity-50"
+                                className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-red-500/80 hover:bg-red-500 backdrop-blur-lg border border-red-400/30 disabled:opacity-50"
                                 aria-label={t('common.cancel', 'Cancel')}
                               >
                                 {isCancelling ? (
@@ -748,35 +749,30 @@ export default function AISubtitlesPicker({
                                 ) : (
                                   t('common.cancel', 'Cancel')
                                 )}
-                              </button>
+                              </GlassButton>
                               {/* Restart button (shown when job seems stuck - progress > 50% and job has been running) */}
                               {jobProgress > 50 && isGeneratableMode(option.mode) && (
-                                <button
-                                  type="button"
-                                  onClick={(e) => { e.stopPropagation(); handleRestartJob(option.mode); }}
+                                <GlassButton
+                                  variant="ghost"
+                                  onPress={(e) => { e.stopPropagation(); handleRestartJob(option.mode); }}
                                   disabled={isCancelling}
-                                  className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-amber-500 hover:bg-amber-600 disabled:opacity-50"
+                                  className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-amber-500/80 hover:bg-amber-500 backdrop-blur-lg border border-amber-400/30 disabled:opacity-50"
                                   aria-label={t('common.restart', 'Restart')}
                                 >
                                   {t('common.restart', 'Restart')}
-                                </button>
+                                </GlassButton>
                               )}
                             </>
                           ) : isGeneratableMode(option.mode) ? (
-                            <button
-                              type="button"
-                              onClick={(e) => handleGenerateMode(option.mode, e)}
+                            <GlassButton
+                              variant="primary"
+                              onPress={(e) => handleGenerateMode(option.mode, e)}
                               disabled={generatingMode !== null}
-                              className="px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white cursor-pointer"
-                              style={{
-                                backgroundColor: '#a855f7',
-                                cursor: generatingMode !== null ? 'not-allowed' : 'pointer',
-                                opacity: generatingMode !== null ? 0.5 : 1,
-                              }}
+                              className="px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-purple-500/80 hover:bg-purple-500 backdrop-blur-lg border border-purple-400/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                               aria-label={`Generate ${option.mode} subtitles for this content`}
                             >
                               {t('subtitles.hebrewMode.generate', 'Generate')}
-                            </button>
+                            </GlassButton>
                           ) : null}
                         </div>
                       ) : (

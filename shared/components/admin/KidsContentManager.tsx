@@ -79,7 +79,7 @@ export const KidsContentManager: React.FC = () => {
       });
       setPendingItems(response.data.items);
     } catch (err: unknown) {
-      console.error('Failed to fetch pending moderation:', err);
+      logger.error('Failed to fetch pending moderation', 'KidsContentManager', err);
     }
   }, [token]);
 

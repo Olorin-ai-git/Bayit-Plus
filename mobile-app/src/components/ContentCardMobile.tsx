@@ -19,6 +19,7 @@ import { NativeIcon } from '@olorin/shared-icons/native';
 import { responsive } from '../utils/responsive';
 import { optimizeTMDBImageUrl } from '../utils/imageUtils';
 import { typography, spacing, borderRadius, colors } from '@olorin/design-tokens';
+import { Colors } from '../theme/colors';
 
 export interface ContentCardMobileProps {
   /** Content item to display */
@@ -112,7 +113,7 @@ export const ContentCardMobile: React.FC<ContentCardMobileProps> = ({
               <>
                 <Text className="text-xs text-gray-500 mx-1">•</Text>
                 <View className="flex-row items-center">
-                  <NativeIcon name="star" size="xs" color="#9ca3af" />
+                  <NativeIcon name="star" size="xs" color={Colors.Dark.d400} />
                   <Text className="text-xs text-gray-400 ml-1">{content.rating.toFixed(1)}</Text>
                 </View>
               </>
@@ -129,7 +130,7 @@ export const ContentCardMobile: React.FC<ContentCardMobileProps> = ({
         {/* Play overlay */}
         <View className="absolute inset-0 justify-center items-center bg-transparent">
           <View className="w-14 h-14 rounded-full bg-purple-600/90 justify-center items-center">
-            <NativeIcon name="play" size="lg" color="#ffffff" />
+            <NativeIcon name="play" size="lg" color={Colors.white} />
           </View>
         </View>
       </GlassView>

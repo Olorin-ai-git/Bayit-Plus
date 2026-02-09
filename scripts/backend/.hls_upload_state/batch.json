@@ -10,9 +10,7 @@
     "Mary Poppins Returns (2018).mkv",
     "Spider-Man Into the Spider-Verse (2018).mkv",
     "The Diary of Anne Frank (1959).avi",
-    "Ant-Man and the Wasp (2018) Hebrew.avi"
-  ],
-  "failed": [
+    "Ant-Man and the Wasp (2018) Hebrew.avi",
     "Avengers Endgame (2019).mp4",
     "Back to the Future (1985).avi",
     "Brave (2012).mkv",
@@ -21,6 +19,10 @@
     "Superman III (1983).avi",
     "The Dark Knight Rises (2012).avi",
     "The Last Summer (2019).avi",
-    "The Legend of Hercules (2014).avi"
-  ]
+    "The Legend of Hercules (2014).avi",
+    "A_Christmas_Carol.mp4",
+    "Coco.mkv",
+    "Hotel_Transylvania_2.mp4"
+  ],
+  "failed": []
 }

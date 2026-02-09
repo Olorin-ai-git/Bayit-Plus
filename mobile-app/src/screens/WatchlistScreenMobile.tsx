@@ -34,6 +34,7 @@ import { useResponsive } from '../hooks/useResponsive';
 import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, typography } from '@olorin/design-tokens';
+import { Colors } from '../theme/colors';
 import type { RootStackParamList } from '../navigation/types';
 
 import logger from '@/utils/logger';
@@ -159,7 +160,7 @@ export const PlaylistScreenMobile: React.FC = () => {
               />
             ) : (
               <View className="w-full aspect-video bg-white/5 items-center justify-center">
-                <NativeIcon name={typeIconName} size="xxl" color="#a855f7" />
+                <NativeIcon name={typeIconName} size="xxl" color={Colors.Primary.p500} />
               </View>
             )}
 
@@ -172,7 +173,7 @@ export const PlaylistScreenMobile: React.FC = () => {
 
             {/* Type badge */}
             <View className="absolute top-2 rounded-xl px-2 py-1 bg-black/70" style={isRTL ? { left: 8 } : { right: 8 }}>
-              <NativeIcon name={typeIconName} size="sm" color="#ffffff" />
+              <NativeIcon name={typeIconName} size="sm" color={Colors.white} />
             </View>
 
             {/* Remove button */}
@@ -234,7 +235,7 @@ export const PlaylistScreenMobile: React.FC = () => {
           className="w-12 h-12 rounded-full bg-purple-500/20 justify-center items-center"
           style={{ marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }}
         >
-          <NativeIcon name="clipboard" size="lg" color="#a855f7" />
+          <NativeIcon name="clipboard" size="lg" color={Colors.Primary.p500} />
         </View>
         <View className="flex-1">
           <Text className="text-white font-bold" style={{ textAlign: isRTL ? 'right' : 'left', ...typography.h2 }}>
@@ -285,7 +286,7 @@ export const PlaylistScreenMobile: React.FC = () => {
           <View className="flex-1 justify-center items-center py-20 px-6">
             <GlassView className="p-8 items-center w-full">
               <View className="mb-4">
-                <NativeIcon name="clipboard" size="xxl" color="#a855f7" />
+                <NativeIcon name="clipboard" size="xxl" color={Colors.Primary.p500} />
               </View>
               <Text className="text-white font-semibold text-xl mb-2" style={{ textAlign: isRTL ? 'right' : 'left', ...typography.h3 }}>
                 {t('playlist.empty')}

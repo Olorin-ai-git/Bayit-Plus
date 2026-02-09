@@ -4,6 +4,7 @@
  */
 
 import { Platform } from 'react-native';
+import { logger } from './logger';
 
 export interface PerformanceMetric {
   name: string;
@@ -147,12 +148,13 @@ class PerformanceMonitorClass {
    */
   logMetrics(): void {
     const benchmarks = this.getBenchmarks();
-    console.log('=== Performance Metrics ===');
-    console.log(`App Startup: ${benchmarks.appStartup}ms`);
-    console.log(`Navigation Latency: ${benchmarks.navigationLatency.toFixed(1)}ms`);
-    console.log(`Screen Render Time: ${benchmarks.screenRenderTime.toFixed(1)}ms`);
-    console.log(`Memory Usage: ${benchmarks.memoryUsage}MB`);
-    console.log(`Frame Rate: ${benchmarks.frameRate} FPS`);
+    const log = logger.scope('PerformanceMonitor');
+    log.info('=== Performance Metrics ===');
+    log.info(`App Startup: ${benchmarks.appStartup}ms`);
+    log.info(`Navigation Latency: ${benchmarks.navigationLatency.toFixed(1)}ms`);
+    log.info(`Screen Render Time: ${benchmarks.screenRenderTime.toFixed(1)}ms`);
+    log.info(`Memory Usage: ${benchmarks.memoryUsage}MB`);
+    log.info(`Frame Rate: ${benchmarks.frameRate} FPS`);
   }
 }
 

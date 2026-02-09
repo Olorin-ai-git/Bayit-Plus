@@ -58,7 +58,7 @@ export const SupportDocViewer: React.FC = () => {
       setTitle(data.title || currentDocPath);
       setContent(data.content || '');
     } catch (err) {
-      console.error('[SupportDocViewer] Error loading document:', err);
+      logger.error('Error loading document', 'SupportDocViewer', err);
       setError(t('support.docs.loadError', 'Failed to load document'));
     } finally {
       setLoading(false);

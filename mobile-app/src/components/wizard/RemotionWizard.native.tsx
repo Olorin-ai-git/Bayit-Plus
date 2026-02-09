@@ -9,6 +9,7 @@ import { View, StyleSheet, Platform } from 'react-native';
 import Video, { VideoRef } from 'react-native-video';
 import { useRemotionWizard } from '../../../../shared/hooks/useRemotionWizard';
 import { AnimationSequence } from '../../../../shared/remotion/utils/sequencing';
+import { logger } from '../../utils/logger';
 
 /**
  * Map sequence IDs to pre-rendered MP4 file paths
@@ -81,7 +82,7 @@ export const RemotionWizard: React.FC<RemotionWizardProps> = ({
 
   // Handle video errors
   const handleError = useCallback((error: any) => {
-    console.error('Remotion video playback error:', error);
+    logger.error('Remotion video playback error', 'RemotionWizard', error);
   }, []);
 
   // Update playback speed when it changes
@@ -102,7 +103,7 @@ export const RemotionWizard: React.FC<RemotionWizardProps> = ({
   const videoSource = SEQUENCE_VIDEOS[currentSequence];
 
   if (!videoSource) {
-    console.warn(`No video found for sequence: ${currentSequence}`);
+    logger.warn(`No video found for sequence: ${currentSequence}`, 'RemotionWizard');
     return null;
   }
 

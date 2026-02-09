@@ -3,7 +3,7 @@ import { Newspaper, ExternalLink, RefreshCw, Loader2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
-import { GlassCard } from '@bayit/shared/ui';
+import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { colors } from '@olorin/design-tokens';
 import logger from '@/utils/logger';
 
@@ -129,9 +129,10 @@ export function JewishNewsFeed({ category, limit = 20, showSourceFilter = true }
             {t('judaism.news.title', 'Jewish News')}
           </h3>
         </div>
-        <button
-          onClick={handleRefresh}
-          className="p-2 rounded-full bg-white/10 cursor-pointer hover:bg-white/20 transition-colors disabled:opacity-50"
+        <GlassButton
+          onPress={handleRefresh}
+          variant="ghost"
+          className="p-2 rounded-full bg-white/10 backdrop-blur-lg cursor-pointer hover:bg-white/20 transition-all border border-white/10 disabled:opacity-50"
           disabled={isRefreshing}
         >
           <RefreshCw
@@ -139,30 +140,32 @@ export function JewishNewsFeed({ category, limit = 20, showSourceFilter = true }
             color={colors.textMuted}
             className={isRefreshing ? 'animate-spin' : ''}
           />
-        </button>
+        </GlassButton>
       </div>
 
       {/* Source Filter */}
       {showSourceFilter && sources.length > 0 && (
         <div className="flex gap-2 overflow-x-auto mb-4 pb-2">
-          <button
-            onClick={() => setSelectedSource(null)}
-            className="px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer hover:opacity-80 transition-opacity"
+          <GlassButton
+            onPress={() => setSelectedSource(null)}
+            variant={!selectedSource ? 'primary' : 'ghost'}
+            className="px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer hover:opacity-80 transition-all backdrop-blur-lg border border-white/10"
             style={{ backgroundColor: !selectedSource ? colors.primary : colors.glassLight }}
           >
             <span style={{ color: colors.text, fontSize: 14 }}>{t('common.all', 'All')}</span>
-          </button>
+          </GlassButton>
           {sources.map((source) => (
-            <button
+            <GlassButton
               key={source.id}
-              onClick={() => setSelectedSource(source.name)}
-              className="px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer hover:opacity-80 transition-opacity"
+              onPress={() => setSelectedSource(source.name)}
+              variant={selectedSource === source.name ? 'primary' : 'ghost'}
+              className="px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer hover:opacity-80 transition-all backdrop-blur-lg border border-white/10"
               style={{ backgroundColor: selectedSource === source.name ? colors.primary : colors.glassLight }}
             >
               <span style={{ color: colors.text, fontSize: 14 }}>
                 {i18n.language === 'he' && source.name_he ? source.name_he : source.name}
               </span>
-            </button>
+            </GlassButton>
           ))}
         </div>
       )}

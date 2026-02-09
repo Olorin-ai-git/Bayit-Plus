@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { GlassButton } from '@bayit/shared/ui';
 import { useCostDashboard } from "@/hooks/admin/useCostDashboard";
 import PLSummary from "@/components/admin/cost-dashboard/PLSummary";
 import MetricsGrid from "@/components/admin/cost-dashboard/MetricsGrid";
@@ -54,9 +55,10 @@ export default function CostDashboardPage() {
               { id: "spenders", label: t('admin.costDashboard.tabs.topSpenders') },
             ] as const
           ).map((tab) => (
-            <button
+            <GlassButton
               key={tab.id}
-              onClick={() => dashboard.setActiveTab(tab.id)}
+              onPress={() => dashboard.setActiveTab(tab.id)}
+              variant={dashboard.activeTab === tab.id ? "primary" : "ghost"}
               className={`px-4 py-2 font-medium transition-colors ${
                 dashboard.activeTab === tab.id
                   ? "text-purple-400 border-b-2 border-purple-400"
@@ -64,7 +66,7 @@ export default function CostDashboardPage() {
               }`}
             >
               {tab.label}
-            </button>
+            </GlassButton>
           ))}
         </div>
 

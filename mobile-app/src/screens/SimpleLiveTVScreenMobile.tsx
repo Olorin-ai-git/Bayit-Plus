@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { Tv, Play, Search, Filter, AlertCircle } from 'lucide-react-native';
 import { liveService, Channel } from '../services/api';
+import { Colors } from '../theme/colors';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const CARD_WIDTH = (SCREEN_WIDTH - 48) / 2;
@@ -64,7 +65,7 @@ function ChannelCard({ channel }: { channel: Channel }) {
         </View>
       )}
       <Pressable style={styles.playButton}>
-        <Play size={16} color="#fff" fill="#fff" />
+        <Play size={16} color={Colors.Text.primary} fill={Colors.Text.primary} />
         <Text style={styles.playButtonText}>Watch</Text>
       </Pressable>
     </GlassCard>
@@ -110,15 +111,15 @@ export function LiveTVScreenMobile() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Tv size={24} color="#4a9eff" strokeWidth={2} />
+          <Tv size={24} color={Colors.Info.default} strokeWidth={2} />
           <Text style={styles.headerTitle}>Live TV</Text>
         </View>
         <View style={styles.headerRight}>
           <Pressable style={styles.iconButton}>
-            <Search size={20} color="#fff" />
+            <Search size={20} color={Colors.Text.primary} />
           </Pressable>
           <Pressable style={styles.iconButton}>
-            <Filter size={20} color="#fff" />
+            <Filter size={20} color={Colors.Text.primary} />
           </Pressable>
         </View>
       </View>
@@ -154,7 +155,7 @@ export function LiveTVScreenMobile() {
       {/* Loading State */}
       {loading && (
         <View style={styles.centerContent}>
-          <ActivityIndicator size="large" color="#4a9eff" />
+          <ActivityIndicator size="large" color={Colors.Info.default} />
           <Text style={styles.loadingText}>Loading channels...</Text>
         </View>
       )}
@@ -162,7 +163,7 @@ export function LiveTVScreenMobile() {
       {/* Error State */}
       {error && !loading && (
         <View style={styles.centerContent}>
-          <AlertCircle size={48} color="#e53935" />
+          <AlertCircle size={48} color={Colors.Error.e600} />
           <Text style={styles.errorText}>{error}</Text>
           <Pressable style={styles.retryButton} onPress={loadChannels}>
             <Text style={styles.retryText}>Retry</Text>
@@ -176,12 +177,12 @@ export function LiveTVScreenMobile() {
           style={styles.scrollView}
           contentContainerStyle={styles.channelGrid}
           refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#4a9eff" />
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.Info.default} />
           }
         >
           {filteredChannels.length === 0 ? (
             <View style={styles.emptyState}>
-              <Tv size={48} color="rgba(255, 255, 255, 0.3)" />
+              <Tv size={48} color={Colors.Text.disabled} />
               <Text style={styles.emptyText}>No channels found</Text>
             </View>
           ) : (
@@ -199,7 +200,7 @@ export function LiveTVScreenMobile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: Colors.Background.primary,
   },
   header: {
     flexDirection: 'row',
@@ -216,7 +217,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#fff',
+    color: Colors.Text.primary,
   },
   headerRight: {
     flexDirection: 'row',
@@ -226,7 +227,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: Colors.Glass.bgLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -242,21 +243,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: Colors.Glass.bgLight,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.Glass.borderLight,
   },
   categoryChipActive: {
-    backgroundColor: 'rgba(74, 158, 255, 0.2)',
-    borderColor: '#4a9eff',
+    backgroundColor: Colors.Glass.borderLight,
+    borderColor: Colors.Info.default,
   },
   categoryText: {
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: Colors.Text.secondary,
     fontSize: 14,
     fontWeight: '500',
   },
   categoryTextActive: {
-    color: '#4a9eff',
+    color: Colors.Info.default,
   },
   // Channel Grid
   scrollView: {
@@ -270,9 +271,9 @@ const styles = StyleSheet.create({
   },
   // Glass Card
   glassCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: Colors.Glass.bgLight,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.Glass.borderLight,
     borderRadius: 12,
     padding: 16,
   },
@@ -290,7 +291,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(74, 158, 255, 0.15)',
+    backgroundColor: Colors.Glass.borderLight,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
@@ -303,13 +304,13 @@ const styles = StyleSheet.create({
   channelNumberText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#4a9eff',
+    color: Colors.Info.default,
   },
   liveBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    backgroundColor: '#e53935',
+    backgroundColor: Colors.Error.e600,
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
@@ -318,27 +319,27 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.Text.primary,
   },
   liveText: {
-    color: '#fff',
+    color: Colors.Text.primary,
     fontSize: 8,
     fontWeight: 'bold',
   },
   channelName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#fff',
+    color: Colors.Text.primary,
     marginBottom: 4,
   },
   currentShow: {
     fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: Colors.Text.muted,
     marginBottom: 8,
   },
   categoryBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: 'rgba(74, 158, 255, 0.15)',
+    backgroundColor: Colors.Glass.borderLight,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 8,
@@ -346,7 +347,7 @@ const styles = StyleSheet.create({
   },
   categoryBadgeText: {
     fontSize: 10,
-    color: '#4a9eff',
+    color: Colors.Info.default,
   },
   centerContent: {
     flex: 1,
@@ -355,23 +356,23 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   loadingText: {
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: Colors.Text.muted,
     fontSize: 16,
   },
   errorText: {
-    color: '#e53935',
+    color: Colors.Error.e600,
     fontSize: 16,
     textAlign: 'center',
     paddingHorizontal: 32,
   },
   retryButton: {
-    backgroundColor: 'rgba(74, 158, 255, 0.2)',
+    backgroundColor: Colors.Glass.borderLight,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
   },
   retryText: {
-    color: '#4a9eff',
+    color: Colors.Info.default,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -384,7 +385,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   emptyText: {
-    color: 'rgba(255, 255, 255, 0.5)',
+    color: Colors.Text.muted,
     fontSize: 16,
   },
   playButton: {
@@ -392,12 +393,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    backgroundColor: '#4a9eff',
+    backgroundColor: Colors.Info.default,
     paddingVertical: 8,
     borderRadius: 8,
   },
   playButtonText: {
-    color: '#fff',
+    color: Colors.Text.primary,
     fontWeight: '600',
     fontSize: 14,
   },

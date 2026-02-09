@@ -3,6 +3,7 @@ import { View, Text, Image, Animated, Easing, Platform, StyleSheet } from 'react
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '../hooks/useDirection';
 import { colors } from '@olorin/design-tokens';
+import { logger } from '../utils/logger';
 
 // Platform-specific logo import
 let logo: any;
@@ -14,7 +15,7 @@ try {
     logo = require('../assets/images/logos/logo.png');
   }
 } catch (e) {
-  console.warn('Logo image could not be loaded:', e);
+  logger.warn('Logo image could not be loaded', 'AnimatedLogo', e);
   logo = null;
 }
 

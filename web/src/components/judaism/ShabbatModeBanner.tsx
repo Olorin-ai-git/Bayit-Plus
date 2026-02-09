@@ -3,7 +3,7 @@ import { Flame, Moon, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
-import { GlassCard } from '@bayit/shared/ui';
+import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { colors } from '@olorin/design-tokens';
 import logger from '@/utils/logger';
 import { Icon } from '@olorin/shared-icons/web';
@@ -147,12 +147,13 @@ export function ShabbatModeBanner({
           </div>
 
           {/* Dismiss button */}
-          <button
-            onClick={handleDismiss}
-            className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"
+          <GlassButton
+            onPress={handleDismiss}
+            variant="ghost"
+            className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-lg flex items-center justify-center hover:bg-white/20 transition-all border border-white/10 cursor-pointer"
           >
             <X size={16} color={colors.textMuted} />
-          </button>
+          </GlassButton>
         </div>
 
         {/* Parasha display */}

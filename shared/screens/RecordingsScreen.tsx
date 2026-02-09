@@ -181,7 +181,7 @@ export default function RecordingsScreen() {
       const data = await recordingService.getRecordings();
       setRecordings(data.recordings || []);
     } catch (error) {
-      console.error('Failed to load recordings:', error);
+      logger.error('Failed to load recordings', 'RecordingsScreen', error);
       setRecordings([]);
     } finally {
       setLoading(false);
@@ -213,7 +213,7 @@ export default function RecordingsScreen() {
       await recordingService.deleteRecording(id);
       setRecordings((prev) => prev.filter((r) => r.id !== id));
     } catch (error) {
-      console.error('Failed to delete recording:', error);
+      logger.error('Failed to delete recording', 'RecordingsScreen', error);
     }
   };
 

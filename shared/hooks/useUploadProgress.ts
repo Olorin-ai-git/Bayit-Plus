@@ -6,6 +6,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { API_BASE_URL } from '../config/appConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logger } from '../utils/logger';
 
 export interface UploadJob {
   job_id: string;
@@ -83,7 +84,7 @@ export const useUploadProgress = () => {
       ws.current = new WebSocket(url);
 
       ws.current.onopen = () => {
-        console.log('Upload WebSocket connected');
+        logger.debug('Upload WebSocket connected', 'UploadProgress');
         reconnectAttempts.current = 0;
         setState(prev => ({ ...prev, connected: true, error: null }));
       };
@@ -94,7 +95,7 @@ export const useUploadProgress = () => {
 
           switch (message.type) {
             case 'connected':
-              console.log('Upload service connected:', message.message);
+              logger.debug('Upload service connected: ' + message.message, 'UploadProgress');
               break;
 
             case 'queue_update':
@@ -112,20 +113,20 @@ export const useUploadProgress = () => {
               break;
 
             case 'error':
-              console.error('Upload WebSocket error:', message.message);
+              logger.error('Upload WebSocket error: ' + message.message, 'UploadProgress');
               setState(prev => ({ ...prev, error: message.message }));
               break;
 
             default:
-              console.warn('Unknown message type:', message.type);
+              logger.warn('Unknown message type: ' + message.type, 'UploadProgress');
           }
         } catch (err) {
-          console.error('Failed to parse WebSocket message:', err);
+          logger.error('Failed to parse WebSocket message', 'UploadProgress', err);
         }
       };
 
       ws.current.onerror = (error) => {
-        console.error('Upload WebSocket error:', error);
+        logger.error('Upload WebSocket error', 'UploadProgress', error);
         setState(prev => ({
           ...prev,
           connected: false,
@@ -134,7 +135,7 @@ export const useUploadProgress = () => {
       };
 
       ws.current.onclose = () => {
-        console.log('Upload WebSocket disconnected');
+        logger.debug('Upload WebSocket disconnected', 'UploadProgress');
         setState(prev => ({ ...prev, connected: false }));
 
         // Attempt to reconnect with exponential backoff
@@ -142,7 +143,7 @@ export const useUploadProgress = () => {
           const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000);
           reconnectAttempts.current++;
           
-          console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttempts.current})`);
+          logger.debug(`Reconnecting in ${delay}ms (attempt ${reconnectAttempts.current})`, 'UploadProgress');
           
           reconnectTimeoutRef.current = setTimeout(() => {
             connect();
@@ -155,7 +156,7 @@ export const useUploadProgress = () => {
         }
       };
     } catch (err) {
-      console.error('Failed to connect to upload WebSocket:', err);
+      logger.error('Failed to connect to upload WebSocket', 'UploadProgress', err);
       setState(prev => ({
         ...prev,
         connected: false,

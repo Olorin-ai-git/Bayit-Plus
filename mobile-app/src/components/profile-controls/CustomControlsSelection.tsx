@@ -7,6 +7,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Colors } from '../../theme/colors';
 
 interface FamilyControl {
   id: string;
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#ffffff',
+    color: Colors.white,
     marginBottom: 16,
   },
   controlOption: {
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#ffffff',
+    borderColor: Colors.white,
     marginRight: 12,
     marginTop: 2,
     alignItems: 'center',
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#ffffff',
+    backgroundColor: Colors.white,
   },
   controlContent: {
     flex: 1,
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
   controlTitle: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#ffffff',
+    color: Colors.white,
     marginBottom: 8,
   },
   controlDetails: {
@@ -144,10 +145,10 @@ const styles = StyleSheet.create({
   },
   controlDetailText: {
     fontSize: 14,
-    color: '#d1d5db',
+    color: Colors.Dark.d300,
   },
   noControlsText: {
-    color: '#d1d5db',
+    color: Colors.Dark.d300,
     textAlign: 'center',
     fontSize: 14,
   },

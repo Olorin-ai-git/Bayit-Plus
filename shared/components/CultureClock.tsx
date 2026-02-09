@@ -8,6 +8,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { logger } from '../utils/logger';
 
 // Waving flag images for cultures
 const FLAG_IMAGES: Record<string, any> = {
@@ -107,7 +108,7 @@ export const CultureClock: React.FC<CultureClockProps> = ({
         setTime(calculateLocalTime(effectiveCultureId));
       }
     } catch (err) {
-      console.warn('Failed to fetch culture time:', err);
+      logger.warn('Failed to fetch culture time', 'CultureClock', err);
       // Fallback to local calculation
       setTime(calculateLocalTime(effectiveCultureId));
     } finally {

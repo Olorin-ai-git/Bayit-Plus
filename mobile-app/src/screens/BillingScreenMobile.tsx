@@ -30,6 +30,7 @@ import { subscriptionService } from '@bayit/shared-services';
 import { useNotifications } from '@olorin/glass-ui/hooks';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Colors } from '../theme/colors';
 
 import logger from '@/utils/logger';
 
@@ -134,7 +135,7 @@ export const BillingScreenMobile: React.FC = () => {
       <GlassView className="rounded-lg mb-2 p-4">
         <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
           <View className="w-12 h-12 rounded-full bg-white/10 justify-center items-center">
-            <NativeIcon name="plans" size="lg" color="#a855f7" />
+            <NativeIcon name="plans" size="lg" color={Colors.Primary.p500} />
           </View>
           <View className="flex-1 mx-4">
             <Text className="text-base font-semibold text-white" style={{ textAlign }}>
@@ -221,7 +222,7 @@ export const BillingScreenMobile: React.FC = () => {
 
         {paymentMethods.length === 0 ? (
           <GlassView className="p-8 items-center rounded-lg">
-            <NativeIcon name="plans" size="xxl" color="#a855f7" style={{ marginBottom: 16 }} />
+            <NativeIcon name="plans" size="xxl" color={Colors.Primary.p500} style={{ marginBottom: 16 }} />
             <Text className="text-base text-white/60 mb-4" style={{ textAlign }}>
               {t('billing.noPaymentMethods')}
             </Text>
@@ -248,7 +249,7 @@ export const BillingScreenMobile: React.FC = () => {
 
   const renderEmptyHistory = () => (
     <GlassView className="p-8 items-center rounded-lg">
-      <NativeIcon name="document" size="xxl" color="#a855f7" style={{ marginBottom: 16 }} />
+      <NativeIcon name="document" size="xxl" color={Colors.Primary.p500} style={{ marginBottom: 16 }} />
       <Text className="text-base text-white/60" style={{ textAlign }}>
         {t('billing.noHistory')}
       </Text>

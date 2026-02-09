@@ -13,11 +13,11 @@ import {
   StyleSheet,
   SafeAreaView,
   TextInput,
-  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, fontSize } from '@olorin/design-tokens';
 import { GlassView, GlassButton } from '@bayit/glass';
+import { GlassModal } from '@olorin/glass-ui/native';
 import { useHouseholdStore, HouseholdRole } from '../../../shared/stores/householdStore';
 import { setApiClient } from '../../../shared/services/householdApi';
 import api from '../services/api';
@@ -43,6 +43,9 @@ export default function HouseholdScreenMobile() {
   const [inviteRole, setInviteRole] = useState<HouseholdRole>(HouseholdRole.CHILD);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showInviteForm, setShowInviteForm] = useState(false);
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [pendingRemoveUserId, setPendingRemoveUserId] = useState<string | null>(null);
 
   useEffect(() => {
     loadHousehold();
@@ -72,46 +75,34 @@ export default function HouseholdScreenMobile() {
     }
   };
 
-  const handleRemoveMember = async (userId: string) => {
-    Alert.alert(
-      t('household.removeMember'),
-      t('household.confirmRemoveMember'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('household.remove'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await removeMember(userId);
-            } catch (error) {
-              // Error handled by store
-            }
-          },
-        },
-      ]
-    );
+  const handleRemoveMember = (userId: string) => {
+    setPendingRemoveUserId(userId);
+    setShowRemoveConfirm(true);
   };
 
-  const handleDeleteHousehold = async () => {
-    Alert.alert(
-      t('household.delete'),
-      t('household.confirmDelete'),
-      [
-        { text: t('common.cancel'), style: 'cancel' },
-        {
-          text: t('household.delete'),
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteHousehold();
-            } catch (error) {
-              // Error handled by store
-            }
-          },
-        },
-      ]
-    );
+  const confirmRemoveMember = async () => {
+    if (pendingRemoveUserId) {
+      try {
+        await removeMember(pendingRemoveUserId);
+      } catch (_error) {
+        // Error handled by store
+      }
+    }
+    setShowRemoveConfirm(false);
+    setPendingRemoveUserId(null);
+  };
+
+  const handleDeleteHousehold = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDeleteHousehold = async () => {
+    try {
+      await deleteHousehold();
+    } catch (_error) {
+      // Error handled by store
+    }
+    setShowDeleteConfirm(false);
   };
 
   const getRoleDisplay = (role: HouseholdRole) => {
@@ -301,6 +292,66 @@ export default function HouseholdScreenMobile() {
           </>
         )}
       </ScrollView>
+
+      {/* Remove Member Confirmation Modal */}
+      <GlassModal
+        visible={showRemoveConfirm}
+        onClose={() => {
+          setShowRemoveConfirm(false);
+          setPendingRemoveUserId(null);
+        }}
+        size="sm"
+        dismissable
+      >
+        <Text style={styles.modalTitle}>{t('household.removeMember')}</Text>
+        <Text style={styles.modalMessage}>{t('household.confirmRemoveMember')}</Text>
+        <View style={styles.modalButtonRow}>
+          <GlassButton
+            variant="secondary"
+            onPress={() => {
+              setShowRemoveConfirm(false);
+              setPendingRemoveUserId(null);
+            }}
+            style={styles.modalButton}
+          >
+            {t('common.cancel')}
+          </GlassButton>
+          <GlassButton
+            variant="destructive"
+            onPress={confirmRemoveMember}
+            style={styles.modalButton}
+          >
+            {t('household.remove')}
+          </GlassButton>
+        </View>
+      </GlassModal>
+
+      {/* Delete Household Confirmation Modal */}
+      <GlassModal
+        visible={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        size="sm"
+        dismissable
+      >
+        <Text style={styles.modalTitle}>{t('household.delete')}</Text>
+        <Text style={styles.modalMessage}>{t('household.confirmDelete')}</Text>
+        <View style={styles.modalButtonRow}>
+          <GlassButton
+            variant="secondary"
+            onPress={() => setShowDeleteConfirm(false)}
+            style={styles.modalButton}
+          >
+            {t('common.cancel')}
+          </GlassButton>
+          <GlassButton
+            variant="destructive"
+            onPress={confirmDeleteHousehold}
+            style={styles.modalButton}
+          >
+            {t('household.delete')}
+          </GlassButton>
+        </View>
+      </GlassModal>
     </SafeAreaView>
   );
 }
@@ -456,5 +507,24 @@ const styles = StyleSheet.create({
   inviteFormContainer: {
     marginTop: spacing.lg,
     padding: spacing.lg,
+  },
+  modalTitle: {
+    fontSize: fontSize.xl,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  modalMessage: {
+    fontSize: fontSize.md,
+    color: colors.textMuted,
+    lineHeight: fontSize.md * 1.5,
+    marginBottom: spacing.lg,
+  },
+  modalButtonRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  modalButton: {
+    flex: 1,
   },
 });

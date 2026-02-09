@@ -34,6 +34,7 @@ import { useDirection } from '@bayit/shared-hooks';
 import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
+import { Colors } from '../theme/colors';
 
 import logger from '@/utils/logger';
 
@@ -111,7 +112,7 @@ const YoungstersCard: React.FC<YoungstersCardProps> = ({ item, onPress, getLocal
             {isEmoji ? (
               <Text style={styles.placeholderIcon}>{categoryIconName}</Text>
             ) : (
-              <NativeIcon name={categoryIconName} size="xxl" color="#a855f7" />
+              <NativeIcon name={categoryIconName} size="xxl" color={Colors.Primary.p500} />
             )}
           </View>
         )}
@@ -119,7 +120,7 @@ const YoungstersCard: React.FC<YoungstersCardProps> = ({ item, onPress, getLocal
           {isEmoji ? (
             <Text style={styles.categoryBadgeText}>{categoryIconName}</Text>
           ) : (
-            <NativeIcon name={categoryIconName} size="xs" color="#ffffff" />
+            <NativeIcon name={categoryIconName} size="xs" color={Colors.Text.primary} />
           )}
         </View>
         {item.age_rating !== undefined && (
@@ -133,7 +134,7 @@ const YoungstersCard: React.FC<YoungstersCardProps> = ({ item, onPress, getLocal
           </Text>
           {item.duration && (
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-              <NativeIcon name="clock" size="xs" color="#a855f7" />
+              <NativeIcon name="clock" size="xs" color={Colors.Primary.p500} />
               <Text style={[styles.cardDuration, { textAlign, marginLeft: 4 }]}>
                 {item.duration}
               </Text>
@@ -177,7 +178,7 @@ const CategoryPill: React.FC<CategoryPillProps> = ({
           {categoryIconName}
         </Text>
       ) : (
-        <NativeIcon name={categoryIconName} size="sm" color={isActive ? '#a855f7' : colors.textSecondary} />
+        <NativeIcon name={categoryIconName} size="sm" color={isActive ? Colors.Primary.p500 : colors.textSecondary} />
       )}
       <Text style={[styles.categoryLabel, isActive && styles.categoryLabelActive]}>
         {getLocalizedText(category, 'name')}
@@ -273,7 +274,7 @@ export const YoungstersScreenMobile: React.FC = () => {
       {/* Header */}
       <View style={[styles.header, { flexDirection: isRTL ? 'row' : 'row-reverse' }]}>
         <View style={[styles.headerIcon, { marginLeft: isRTL ? spacing.md : 0, marginRight: isRTL ? 0 : spacing.md }]}>
-          <NativeIcon name="users" size="lg" color="#a855f7" />
+          <NativeIcon name="users" size="lg" color={Colors.Primary.p500} />
         </View>
         <View style={styles.headerTextContainer}>
           <Text style={[styles.title, { textAlign }]}>{t('youngsters.title', 'צעירים')}</Text>
@@ -311,7 +312,7 @@ export const YoungstersScreenMobile: React.FC = () => {
     <View style={styles.emptyState}>
       <View style={styles.emptyCard}>
         <View style={{ marginBottom: spacing.md }}>
-          <NativeIcon name="target" size="xxl" color="#a855f7" />
+          <NativeIcon name="target" size="xxl" color={Colors.Primary.p500} />
         </View>
         <Text style={[styles.emptyTitle, { textAlign }]}>
           {t('youngsters.empty', 'אין תוכן זמין')}
@@ -326,7 +327,7 @@ export const YoungstersScreenMobile: React.FC = () => {
   if (isLoading && content.length === 0) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#a855f7" />
+        <ActivityIndicator size="large" color={Colors.Primary.p500} />
         <Text style={styles.loadingText}>{t('common.loading')}</Text>
       </SafeAreaView>
     );
@@ -353,8 +354,8 @@ export const YoungstersScreenMobile: React.FC = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#a855f7"
-            colors={['#a855f7']}
+            tintColor={Colors.Primary.p500}
+            colors={[Colors.Primary.p500]}
           />
         }
         showsVerticalScrollIndicator={false}
@@ -366,16 +367,16 @@ export const YoungstersScreenMobile: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1a1525',
+    backgroundColor: Colors.Background.elevated,
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#1a1525',
+    backgroundColor: Colors.Background.elevated,
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingText: {
-    color: '#a855f7',
+    color: Colors.Primary.p500,
     fontSize: 16,
     marginTop: spacing.md,
   },
@@ -390,7 +391,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(168, 85, 247, 0.2)',
+    backgroundColor: Colors.Glass.borderLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -403,11 +404,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#a855f7',
+    color: Colors.Primary.p500,
   },
   subtitle: {
     fontSize: 14,
-    color: 'rgba(168, 85, 247, 0.7)',
+    color: Colors.Glass.purpleStrong,
     marginTop: 2,
   },
   categoriesContainer: {
@@ -420,15 +421,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.sm,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: Colors.Glass.bgLight,
     borderRadius: borderRadius.lg,
     gap: spacing.xs,
     minHeight: 48,
   },
   categoryPillActive: {
-    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    backgroundColor: Colors.Glass.purpleLight,
     borderWidth: 1,
-    borderColor: '#a855f7',
+    borderColor: Colors.Primary.p500,
   },
   categoryEmoji: {
     fontSize: 16,
@@ -439,7 +440,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   categoryLabelActive: {
-    color: '#a855f7',
+    color: Colors.Primary.p500,
   },
   grid: {
     paddingHorizontal: spacing.sm,
@@ -451,7 +452,7 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   card: {
-    backgroundColor: '#2d2540',
+    backgroundColor: Colors.Glass.bgMedium,
     borderRadius: borderRadius.md,
     overflow: 'hidden',
   },
@@ -462,7 +463,7 @@ const styles = StyleSheet.create({
   cardImagePlaceholder: {
     width: '100%',
     aspectRatio: 16 / 9,
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+    backgroundColor: Colors.Glass.borderLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -472,7 +473,7 @@ const styles = StyleSheet.create({
   categoryBadge: {
     position: 'absolute',
     top: 8,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    backgroundColor: Colors.Glass.bg,
     borderRadius: 12,
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -483,14 +484,14 @@ const styles = StyleSheet.create({
   ageBadge: {
     position: 'absolute',
     top: 8,
-    backgroundColor: 'rgba(168, 85, 247, 0.9)',
+    backgroundColor: Colors.Primary.p500,
     borderRadius: 8,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
   ageText: {
     fontSize: 10,
-    color: '#ffffff',
+    color: Colors.Text.primary,
     fontWeight: 'bold',
   },
   cardContent: {
@@ -499,12 +500,12 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#ffffff',
+    color: Colors.Text.primary,
     lineHeight: 18,
   },
   cardDuration: {
     fontSize: 11,
-    color: '#a855f7',
+    color: Colors.Primary.p500,
   },
   emptyState: {
     flex: 1,
@@ -516,18 +517,18 @@ const styles = StyleSheet.create({
   emptyCard: {
     padding: spacing.xl,
     alignItems: 'center',
-    backgroundColor: 'rgba(168, 85, 247, 0.1)',
+    backgroundColor: Colors.Glass.borderLight,
     borderRadius: borderRadius.lg,
   },
   emptyTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#a855f7',
+    color: Colors.Primary.p500,
     marginBottom: spacing.sm,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: 'rgba(168, 85, 247, 0.7)',
+    color: Colors.Glass.purpleStrong,
   },
 });
 

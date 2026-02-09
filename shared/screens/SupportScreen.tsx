@@ -30,7 +30,7 @@ export default function SupportScreen() {
   useWakeWordSupport({
     enabled: supportConfig.voiceAssistant.wakeWordEnabled,
     onWakeWordDetected: () => {
-      console.log('[SupportScreen] Wake word detected');
+      logger.debug('Wake word detected', 'SupportScreen');
       // Activate voice assistant when wake word is detected
       activateVoiceAssistant();
     },

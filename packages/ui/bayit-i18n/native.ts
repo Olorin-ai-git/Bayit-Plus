@@ -12,6 +12,16 @@ import { initReactI18next } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { bayitResources, supportedLanguages, type BayitLanguage } from './index';
 
+/** Package-scoped logger for i18n warnings */
+const isDev = typeof __DEV__ !== 'undefined' ? __DEV__ : process.env.NODE_ENV !== 'production';
+const i18nLogger = {
+  warn: (message: string, data?: unknown) => {
+    if (isDev && typeof console !== 'undefined') {
+      console.warn(`[bayit-i18n] ${message}`, data ?? ''); // eslint-disable-line no-console
+    }
+  },
+};
+
 const LANGUAGE_KEY = '@bayit_language';
 
 /**
@@ -21,7 +31,7 @@ export async function saveLanguageNative(language: BayitLanguage): Promise<void>
   try {
     await AsyncStorage.setItem(LANGUAGE_KEY, language);
   } catch (error) {
-    console.warn('Failed to save language preference:', error);
+    i18nLogger.warn('Failed to save language preference', error);
   }
 }
 
@@ -36,7 +46,7 @@ export async function loadLanguageNative(): Promise<BayitLanguage | null> {
     }
     return null;
   } catch (error) {
-    console.warn('Failed to load language preference:', error);
+    i18nLogger.warn('Failed to load language preference', error);
     return null;
   }
 }

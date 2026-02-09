@@ -32,6 +32,7 @@ import { useAuthStore } from '@bayit/shared-stores';
 import { subscriptionService } from '@bayit/shared-services';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Colors } from '../theme/colors';
 
 import logger from '@/utils/logger';
 
@@ -158,7 +159,7 @@ export const SubscriptionScreenMobile: React.FC = () => {
     if (!user?.subscription) {
       return (
         <GlassView style={styles.noPlanCard}>
-          <NativeIcon name="live" size="xxl" color="#a855f7" />
+          <NativeIcon name="live" size="xxl" color={Colors.Primary.p500} />
           <Text style={[styles.noPlanText, { textAlign }]}>
             {t('subscription.noActivePlan')}
           </Text>
@@ -226,7 +227,7 @@ export const SubscriptionScreenMobile: React.FC = () => {
         <View style={styles.featuresList}>
           {plan.features.map((feature, index) => (
             <View key={index} style={[styles.featureRow, isRTL && styles.featureRowRTL]}>
-              <NativeIcon name="check" size="sm" color="#22c55e" style={styles.featureCheck} />
+              <NativeIcon name="check" size="sm" color={Colors.Success.s500} style={styles.featureCheck} />
               <Text style={[styles.featureText, { textAlign }]}>
                 {t(feature)}
               </Text>
@@ -421,7 +422,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.md,
   },
   activeBadgeText: {
-    color: '#22c55e',
+    color: Colors.Success.s500,
     fontSize: 14,
     fontWeight: '600',
   },
@@ -460,7 +461,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(107, 33, 168, 0.15)',
   },
   planCardCurrent: {
-    borderColor: '#22c55e',
+    borderColor: Colors.Success.s500,
   },
   recommendedBadge: {
     position: 'absolute',

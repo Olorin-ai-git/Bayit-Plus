@@ -8,6 +8,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { profilesService } from '../services/api';
+import { logger } from '../utils/logger';
 import type {
   HomeSectionId,
   HomeSectionConfig,
@@ -87,7 +88,7 @@ export const useHomePageConfigStore = create<HomePageConfigStore>()(
           // Handle 401 gracefully - user not authenticated, use defaults
           const isUnauthorized = (error as any)?.response?.status === 401 || (error as any)?.status === 401;
           if (isUnauthorized) {
-            console.log('[HomePageConfigStore] User not authenticated, using default preferences');
+            logger.debug('User not authenticated, using default preferences', 'HomePageConfigStore');
             set({
               preferences: DEFAULT_HOME_PAGE_PREFERENCES,
               loading: false,
@@ -95,7 +96,7 @@ export const useHomePageConfigStore = create<HomePageConfigStore>()(
             });
           } else {
             const errorMessage = error instanceof Error ? error.message : 'Failed to load preferences';
-            console.error('[HomePageConfigStore] Failed to load preferences:', error);
+            logger.error('Failed to load preferences', 'HomePageConfigStore', error);
             set({ loading: false, error: errorMessage });
           }
         }
@@ -115,7 +116,7 @@ export const useHomePageConfigStore = create<HomePageConfigStore>()(
         } catch (error: unknown) {
           // Rollback on error
           const errorMessage = error instanceof Error ? error.message : 'Failed to save preferences';
-          console.error('[HomePageConfigStore] Failed to update section order:', error);
+          logger.error('Failed to update section order', 'HomePageConfigStore', error);
           set({
             preferences: current,
             saving: false,
@@ -138,7 +139,7 @@ export const useHomePageConfigStore = create<HomePageConfigStore>()(
         } catch (error: unknown) {
           // Rollback on error
           const errorMessage = error instanceof Error ? error.message : 'Failed to save preferences';
-          console.error('[HomePageConfigStore] Failed to toggle section:', error);
+          logger.error('Failed to toggle section', 'HomePageConfigStore', error);
           set({
             preferences: current,
             saving: false,
@@ -179,7 +180,7 @@ export const useHomePageConfigStore = create<HomePageConfigStore>()(
         } catch (error: unknown) {
           // Rollback on error
           const errorMessage = error instanceof Error ? error.message : 'Failed to reset preferences';
-          console.error('[HomePageConfigStore] Failed to reset to defaults:', error);
+          logger.error('Failed to reset to defaults', 'HomePageConfigStore', error);
           set({
             preferences: current,
             saving: false,

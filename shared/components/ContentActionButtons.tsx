@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { View, Pressable, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing } from '@olorin/design-tokens';
+import { logger } from '../utils/logger';
 
 interface ContentActionButtonsProps {
   contentId: string;
@@ -96,7 +97,7 @@ export function ContentActionButtons({
       setIsFavorite(result.is_favorite);
       onFavoriteChange?.(result.is_favorite);
     } catch (error) {
-      console.error('Failed to toggle favorite:', error);
+      logger.error('Failed to toggle favorite', 'ContentActionButtons', error);
     } finally {
       setFavoriteLoading(false);
     }

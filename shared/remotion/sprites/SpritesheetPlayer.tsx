@@ -7,6 +7,7 @@
 import React from 'react';
 import { useCurrentFrame, staticFile } from 'remotion';
 import { SPRITESHEET_CONFIG, SpritesheetType, getSpritesheetFrame } from './SpritesheetConfig';
+import { logger } from '../../utils/logger';
 
 interface SpritesheetPlayerProps {
   /** Which spritesheet animation to render */
@@ -31,10 +32,7 @@ export const SpritesheetPlayer: React.FC<SpritesheetPlayerProps> = ({
 
   // Guard against invalid spritesheet
   if (!config) {
-    console.error(
-      `SpritesheetPlayer: Invalid spritesheet "${spritesheet}". Available:`,
-      Object.keys(SPRITESHEET_CONFIG)
-    );
+    logger.error(`SpritesheetPlayer: Invalid spritesheet "${spritesheet}". Available: ${Object.keys(SPRITESHEET_CONFIG).join(', ')}`, 'SpritesheetPlayer');
     return null;
   }
 

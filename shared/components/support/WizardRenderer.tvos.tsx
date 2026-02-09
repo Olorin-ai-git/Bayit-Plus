@@ -61,7 +61,7 @@ export const WizardRenderer: React.FC<WizardRendererProps> = ({
   // Log rendering decision (dev only)
   useEffect(() => {
     if (process.env.NODE_ENV === 'development' || __DEV__) {
-      console.log('[WizardRenderer tvOS] Rendering mode:', {
+      logger.debug('Rendering mode', 'WizardRendererTvOS', {
         useRemotion,
         renderingMode,
         remotionEnabled,

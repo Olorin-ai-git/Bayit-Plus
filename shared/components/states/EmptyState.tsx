@@ -12,6 +12,7 @@
 
 import { ReactNode } from 'react';
 import { GlassEmptyState } from '@olorin/glass-ui';
+import { logger } from '../../utils/logger';
 
 interface EmptyStateProps {
   icon: ReactNode;
@@ -34,9 +35,7 @@ export function EmptyState({
   testID = 'empty-state',
 }: EmptyStateProps) {
   if (process.env.NODE_ENV === 'development') {
-    console.warn(
-      '[DEPRECATED] EmptyState is deprecated. Use GlassEmptyState from @olorin/glass-ui instead.'
-    );
+    logger.warn('EmptyState is deprecated. Use GlassEmptyState from @olorin/glass-ui instead.', 'EmptyState');
   }
 
   return (

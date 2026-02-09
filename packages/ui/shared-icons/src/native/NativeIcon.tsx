@@ -10,6 +10,16 @@ import { ICON_REGISTRY, ICON_SIZES, IconSize, GlassLevel } from '../registry/ico
 import { getIconColor, getIconGlassLevel } from '../registry/iconColorTheme';
 import { GLASS_EFFECTS } from '../registry/iconStyling';
 
+/** Package-scoped logger for icon warnings (dev-only) */
+const isDev = typeof __DEV__ !== 'undefined' ? __DEV__ : process.env.NODE_ENV !== 'production';
+const iconLogger = {
+  warn: (message: string) => {
+    if (isDev && typeof console !== 'undefined') {
+      console.warn(`[NativeIcon] ${message}`); // eslint-disable-line no-console
+    }
+  },
+};
+
 export type IconVariant = 'monochrome' | 'colored' | 'gradient';
 
 export interface NativeIconProps {
@@ -49,18 +59,14 @@ export const NativeIcon: React.FC<NativeIconProps> = ({
   const iconDef = ICON_REGISTRY[name];
 
   if (!iconDef) {
-    if (__DEV__) {
-      console.warn(`Icon "${name}" not found in registry`);
-    }
+    iconLogger.warn(`Icon "${name}" not found in registry`);
     return null;
   }
 
   const IconComponent = (LucideIcons as any)[iconDef.lucideName];
 
   if (!IconComponent) {
-    if (__DEV__) {
-      console.warn(`Lucide icon "${iconDef.lucideName}" not found`);
-    }
+    iconLogger.warn(`Lucide icon "${iconDef.lucideName}" not found`);
     return null;
   }
 

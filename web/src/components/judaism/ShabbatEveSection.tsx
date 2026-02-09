@@ -4,7 +4,7 @@ import { Flame, Moon, BookOpen, Music, Utensils, Clock, Sparkles } from 'lucide-
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@/hooks/useDirection';
 import { judaismService } from '@/services/api';
-import { GlassCard } from '@bayit/shared/ui';
+import { GlassCard, GlassButton } from '@bayit/shared/ui';
 import { colors } from '@olorin/design-tokens';
 import logger from '@/utils/logger';
 
@@ -261,10 +261,11 @@ export function ShabbatEveSection({
             </p>
             <div className={`flex gap-3 `}>
               {quickActions.map((action) => (
-                <button
+                <GlassButton
                   key={action.id}
-                  onClick={() => navigate(action.route)}
-                  className="flex-1 cursor-pointer hover:opacity-80 transition-opacity"
+                  onPress={() => navigate(action.route)}
+                  variant="ghost"
+                  className="flex-1 cursor-pointer hover:opacity-80 transition-all backdrop-blur-lg"
                 >
                   <div
                     className="rounded-xl p-3 flex flex-col items-center"
@@ -282,7 +283,7 @@ export function ShabbatEveSection({
                       {action.label}
                     </span>
                   </div>
-                </button>
+                </GlassButton>
               ))}
             </div>
           </div>

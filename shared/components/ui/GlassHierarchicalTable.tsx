@@ -18,6 +18,7 @@
 
 import React, { useState, useCallback, ReactNode, useRef, useEffect } from 'react';
 import { View, Text, Pressable, ActivityIndicator, StyleSheet, Image, Animated } from 'react-native';
+import { logger } from '../../utils/logger';
 import { ChevronRight, ChevronDown, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { GlassView } from './GlassView';
@@ -209,7 +210,7 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
   const handleSort = useCallback((columnKey: string) => {
     if (!onSort) return;
 
-    console.log('[GlassHierarchicalTable] handleSort called:', {
+    logger.debug('handleSort called', 'GlassHierarchicalTable', {
       columnKey,
       currentSortBy: sortBy,
       currentSortDirection: sortDirection,
@@ -219,7 +220,7 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
     // Otherwise, start with ascending
     const newDirection = sortBy === columnKey && sortDirection === 'asc' ? 'desc' : 'asc';
 
-    console.log('[GlassHierarchicalTable] Calling onSort with:', {
+    logger.debug('Calling onSort', 'GlassHierarchicalTable', {
       columnKey,
       newDirection,
     });
@@ -228,7 +229,7 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
   }, [sortBy, sortDirection, onSort]);
 
   const getSortIcon = (columnKey: string) => {
-    console.log('[GlassHierarchicalTable] getSortIcon:', {
+    logger.debug('getSortIcon', 'GlassHierarchicalTable', {
       columnKey,
       sortBy,
       sortDirection,
@@ -253,7 +254,7 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
     resizeStartX.current = e.pageX || e.clientX;
     resizeStartWidth.current = currentWidth;
 
-    console.log('[GlassHierarchicalTable] Resize start:', { columnKey, currentWidth, startX: resizeStartX.current });
+    logger.debug('Resize start', 'GlassHierarchicalTable', { columnKey, currentWidth, startX: resizeStartX.current });
   }, []);
 
   const handleResizeMove = useCallback((e: any) => {
@@ -279,7 +280,7 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
 
   const handleResizeEnd = useCallback(() => {
     if (resizingColumn) {
-      console.log('[GlassHierarchicalTable] Resize end:', {
+      logger.debug('Resize end', 'GlassHierarchicalTable', {
         columnKey: resizingColumn,
         finalWidth: columnWidths[resizingColumn]
       });
@@ -304,7 +305,7 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
 
   // Debug: Log when sort props change
   useEffect(() => {
-    console.log('[GlassHierarchicalTable] Sort props updated:', {
+    logger.debug('Sort props updated', 'GlassHierarchicalTable', {
       sortBy,
       sortDirection,
     });

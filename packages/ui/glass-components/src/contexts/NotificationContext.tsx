@@ -7,6 +7,7 @@ import React, { createContext, useContext, type ReactNode } from 'react';
 import { GlassToastContainer } from '../native/components/GlassToastContainer';
 import { useNotificationStore } from '../stores/notificationStore';
 import { sanitizeMessage, validateAction } from '../utils/sanitization';
+import { logger } from '../utils/logger';
 import type {
   NotificationOptions,
   NotificationPosition,
@@ -44,7 +45,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({
 
     // Validate action if provided
     if (options.action && !validateAction(options.action)) {
-      console.warn('[NotificationProvider] Invalid action provided, ignoring');
+      logger.warn('Invalid action provided, ignoring', 'NotificationProvider');
       options.action = undefined;
     }
 

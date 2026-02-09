@@ -150,7 +150,7 @@ export const SupportTicketList: React.FC = () => {
       const data = await response.json();
       setTickets(data.tickets || []);
     } catch (err) {
-      console.error('[SupportTicketList] Error loading tickets:', err);
+      logger.error('Error loading tickets', 'SupportTicketList', err);
       setError(t('support.tickets.loadError', 'Failed to load tickets'));
     } finally {
       setLoading(false);

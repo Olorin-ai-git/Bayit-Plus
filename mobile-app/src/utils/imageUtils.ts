@@ -4,6 +4,7 @@
  */
 
 import { Dimensions, PixelRatio } from 'react-native';
+import { Colors } from '../theme/colors';
 
 // TMDB image size options
 // Poster sizes: w92, w154, w185, w342, w500, w780, original
@@ -125,13 +126,13 @@ export function buildTMDBImageUrl(
 export function getPlaceholderColor(type: ImageType): string {
   switch (type) {
     case 'poster':
-      return '#1a1a2e'; // Dark purple tint
+      return Colors.Background.elevated;
     case 'backdrop':
-      return '#0d0d1a'; // Very dark
+      return Colors.Background.primary;
     case 'profile':
-      return '#2a2a3e'; // Slightly lighter
+      return Colors.Background.elevated;
     default:
-      return '#1a1a2e';
+      return Colors.Background.elevated;
   }
 }
 

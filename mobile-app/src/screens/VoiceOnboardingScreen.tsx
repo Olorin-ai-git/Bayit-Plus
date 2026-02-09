@@ -16,7 +16,7 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
-  Alert,
+  StyleSheet,
   Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -25,9 +25,12 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '@olorin/glass-ui/hooks';
+import { GlassModal } from '@olorin/glass-ui/native';
+import { GlassButton } from '@bayit/glass';
 import { speechService, wakeWordService, ttsService } from '../services';
 import { VoiceWaveform } from '../components/voice';
-import { colors, spacing } from '@olorin/design-tokens';
+import { colors, spacing, fontSize } from '@olorin/design-tokens';
+import { Colors } from '../theme/colors';
 
 import logger from '@/utils/logger';
 
@@ -46,6 +49,7 @@ export default function VoiceOnboardingScreen() {
   const [isTestingWakeWord, setIsTestingWakeWord] = useState(false);
   const [wakeWordDetected, setWakeWordDetected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showSkipConfirm, setShowSkipConfirm] = useState(false);
 
   // Handle permission request
   const handleRequestPermissions = useCallback(async () => {
@@ -134,30 +138,16 @@ export default function VoiceOnboardingScreen() {
     if (Platform.OS === 'ios') {
       ReactNativeHapticFeedback.trigger('impactMedium');
     }
+    setShowSkipConfirm(true);
+  }, []);
 
-    Alert.alert(
-      t('voiceOnboarding.skipSetup.title'),
-      t('voiceOnboarding.skipSetup.message'),
-      [
-        {
-          text: t('common.cancel'),
-          onPress: () => {},
-          style: 'cancel',
-        },
-        {
-          text: t('voiceOnboarding.skipSetup.confirm'),
-          onPress: () => {
-            if (isTestingWakeWord) {
-              wakeWordService.stopListening();
-            }
-            // Navigate to Main tab bypassing the voice setup
-            navigation.navigate('Main' as never);
-          },
-          style: 'destructive',
-        },
-      ]
-    );
-  }, [navigation, isTestingWakeWord, t]);
+  const confirmSkipSetup = useCallback(() => {
+    setShowSkipConfirm(false);
+    if (isTestingWakeWord) {
+      wakeWordService.stopListening();
+    }
+    navigation.navigate('Main' as never);
+  }, [navigation, isTestingWakeWord]);
 
   // Render current step
   const renderStep = () => {
@@ -311,9 +301,58 @@ export default function VoiceOnboardingScreen() {
           />
         ))}
       </View>
+
+      {/* Skip Setup Confirmation Modal */}
+      <GlassModal
+        visible={showSkipConfirm}
+        onClose={() => setShowSkipConfirm(false)}
+        size="sm"
+        dismissable
+      >
+        <Text style={skipModalStyles.title}>{t('voiceOnboarding.skipSetup.title')}</Text>
+        <Text style={skipModalStyles.message}>{t('voiceOnboarding.skipSetup.message')}</Text>
+        <View style={skipModalStyles.buttonRow}>
+          <GlassButton
+            variant="secondary"
+            onPress={() => setShowSkipConfirm(false)}
+            style={skipModalStyles.button}
+          >
+            {t('common.cancel')}
+          </GlassButton>
+          <GlassButton
+            variant="destructive"
+            onPress={confirmSkipSetup}
+            style={skipModalStyles.button}
+          >
+            {t('voiceOnboarding.skipSetup.confirm')}
+          </GlassButton>
+        </View>
+      </GlassModal>
     </SafeAreaView>
   );
 }
+
+const skipModalStyles = StyleSheet.create({
+  title: {
+    fontSize: fontSize.xl,
+    fontWeight: '700',
+    color: colors.text,
+    marginBottom: spacing.sm,
+  },
+  message: {
+    fontSize: fontSize.md,
+    color: colors.textMuted,
+    lineHeight: fontSize.md * 1.5,
+    marginBottom: spacing.lg,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+  },
+  button: {
+    flex: 1,
+  },
+});
 
 // Feature list item component
 function FeatureItem({ icon, text }: { icon: React.ReactNode; text: string }) {

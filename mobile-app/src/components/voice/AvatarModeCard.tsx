@@ -11,6 +11,7 @@ import { AvatarMode } from '@bayit/shared/types/voiceAvatar';
 import { getAvatarModeConfig } from '@bayit/shared/constants/voiceAvatarModes';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Colors } from '../../theme/colors';
 
 interface AvatarModeCardProps {
   mode: AvatarMode;
@@ -80,7 +81,7 @@ export const AvatarModeCard: React.FC<AvatarModeCardProps> = ({ mode, isSelected
         style={[styles.modeIconContainer, { backgroundColor: getModeColor(mode) }]}
         accessible accessibilityLabel={`${modeName} icon`}
       >
-        <NativeIcon name={getModeIconName(mode)} size="xxl" color="#ffffff" />
+        <NativeIcon name={getModeIconName(mode)} size="xxl" color={Colors.white} />
       </View>
       <Text style={styles.modeName} allowFontScaling maxFontSizeMultiplier={1.3}>{modeName}</Text>
       <Text style={styles.modeDimensions} allowFontScaling maxFontSizeMultiplier={1.3}>

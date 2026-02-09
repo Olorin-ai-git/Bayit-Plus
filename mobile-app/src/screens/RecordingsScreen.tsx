@@ -20,6 +20,7 @@ import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
 import { recordingApi, Recording, RecordingQuota } from '@bayit/shared-services/recordingApi'
 import { useNotifications } from '@olorin/glass-ui/hooks'
 import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding'
+import { Colors } from '../theme/colors'
 import logger from '@/utils/logger'
 
 type FilterType = 'all' | 'manual' | 'scheduled' | 'series'
@@ -150,7 +151,7 @@ export const RecordingsScreen: React.FC = () => {
           <View style={styles.badges}>
             {item.dubbed_audio_url && (
               <View style={styles.dubbedBadge}>
-                <Volume2 size={10} color="#22c55e" />
+                <Volume2 size={10} color={Colors.Success.s500} />
                 <Text style={styles.dubbedBadgeText}>
                   {item.dubbed_audio_language?.toUpperCase()}
                 </Text>
@@ -163,7 +164,7 @@ export const RecordingsScreen: React.FC = () => {
             )}
             {item.series_rule_id && (
               <View style={styles.seriesBadgeMobile}>
-                <Repeat size={10} color="#a855f7" />
+                <Repeat size={10} color={Colors.Primary.p500} />
               </View>
             )}
           </View>
@@ -248,7 +249,7 @@ export const RecordingsScreen: React.FC = () => {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0d0d1a' },
+  container: { flex: 1, backgroundColor: Colors.Background.primary },
   header: { paddingHorizontal: spacing.lg, paddingVertical: spacing.md },
   headerTitle: { fontSize: 24, fontWeight: 'bold', color: colors.text },
   quotaBar: { marginHorizontal: spacing.lg, marginBottom: spacing.md, padding: spacing.md, borderRadius: borderRadius.md },
@@ -269,14 +270,14 @@ const styles = StyleSheet.create({
   thumbnail: { width: '100%', height: '100%' },
   thumbnailPlaceholder: { width: '100%', height: '100%', backgroundColor: colors.backgroundLighter, justifyContent: 'center', alignItems: 'center' },
   durationBadge: { position: 'absolute', bottom: 4, right: 4, backgroundColor: 'rgba(0,0,0,0.7)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  durationText: { color: '#fff', fontSize: 10, fontWeight: '600' },
+  durationText: { color: Colors.white, fontSize: 10, fontWeight: '600' },
   cardContent: { flex: 1, padding: spacing.sm, justifyContent: 'center' },
   cardTitle: { fontSize: fontSize.sm, fontWeight: '600', color: colors.text, marginBottom: 4 },
   metaRow: { alignItems: 'center', gap: 4, marginBottom: 4 },
   metaText: { fontSize: 11, color: colors.textMuted },
   badges: { flexDirection: 'row', gap: 4 },
   dubbedBadge: { flexDirection: 'row', alignItems: 'center', gap: 2, backgroundColor: 'rgba(34,197,94,0.15)', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-  dubbedBadgeText: { fontSize: 9, color: '#22c55e', fontWeight: '600' },
+  dubbedBadgeText: { fontSize: 9, color: Colors.Success.s500, fontWeight: '600' },
   subtitleBadgeMobile: { backgroundColor: `${colors.primary}20`, padding: 4, borderRadius: 4 },
   seriesBadgeMobile: { backgroundColor: 'rgba(168,85,247,0.15)', padding: 4, borderRadius: 4 },
   emptyState: { alignItems: 'center', justifyContent: 'center', paddingVertical: 80, gap: spacing.md },

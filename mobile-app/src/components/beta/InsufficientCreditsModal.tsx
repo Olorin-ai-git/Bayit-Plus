@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing } from '@olorin/design-tokens';
+import { Colors } from '../../theme/colors';
 
 export interface InsufficientCreditsModalProps {
   visible: boolean;
@@ -156,10 +157,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  warningIcon: { fontSize: 20, fontWeight: 'bold', color: '#FCA5A5' },
+  warningIcon: { fontSize: 20, fontWeight: 'bold', color: Colors.Error.e400 },
   headerText: { flex: 1 },
   title: { fontSize: 18, fontWeight: 'bold', color: colors.white },
-  subtitle: { fontSize: 13, color: '#FCA5A5', marginTop: 2 },
+  subtitle: { fontSize: 13, color: Colors.Error.e400, marginTop: 2 },
   closeIcon: { fontSize: 18, color: 'rgba(255,255,255,0.5)', padding: 4 },
   detailsCard: {
     margin: spacing[4],
@@ -173,8 +174,8 @@ const styles = StyleSheet.create({
   creditRow: { flexDirection: 'row', justifyContent: 'space-between', marginVertical: 4 },
   creditLabel: { fontSize: 14, color: 'rgba(255,255,255,0.6)' },
   creditValueWhite: { fontSize: 16, fontWeight: '600', color: colors.white },
-  creditValueRed: { fontSize: 16, fontWeight: '600', color: '#FCA5A5' },
-  creditValueOrange: { fontSize: 16, fontWeight: 'bold', color: '#FDBA74' },
+  creditValueRed: { fontSize: 16, fontWeight: '600', color: Colors.Error.e400 },
+  creditValueOrange: { fontSize: 16, fontWeight: 'bold', color: Colors.Warning.w400 },
   divider: { height: 1, backgroundColor: 'rgba(255,255,255,0.08)', marginVertical: spacing[2] },
   infoBox: {
     marginHorizontal: spacing[4],
@@ -185,11 +186,11 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: spacing[4],
   },
-  infoTitle: { fontSize: 14, fontWeight: '600', color: '#93C5FD', marginBottom: 4 },
-  infoText: { fontSize: 13, color: '#93C5FD', lineHeight: 20 },
+  infoTitle: { fontSize: 14, fontWeight: '600', color: Colors.Info.i400, marginBottom: 4 },
+  infoText: { fontSize: 13, color: Colors.Info.i400, lineHeight: 20 },
   actions: { paddingHorizontal: spacing[4], gap: spacing[3] },
   upgradeButton: {
-    backgroundColor: '#7C3AED',
+    backgroundColor: Colors.Primary.default,
     paddingVertical: spacing[3],
     borderRadius: 14,
     alignItems: 'center',

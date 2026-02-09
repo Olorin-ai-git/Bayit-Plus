@@ -4,27 +4,22 @@
  */
 
 import axios from 'axios';
-import { Platform } from 'react-native';
 import { useAuthStore } from '../stores/authStore';
+import { API_BASE_URL } from './api/client';
 
-// API Base URL configuration
-const getBaseUrl = () => {
-  if (__DEV__) {
-    if (Platform.OS === 'web') {
-      return 'http://localhost:8000/api/v1';
-    } else if (Platform.OS === 'android') {
-      return 'http://10.0.2.2:8000/api/v1';
-    } else {
-      return 'http://localhost:8000/api/v1';
-    }
+const UPLOAD_TIMEOUT_MS = (() => {
+  const raw = typeof process !== 'undefined' ? process.env?.BAYIT_UPLOAD_TIMEOUT_MS : undefined;
+  if (raw) {
+    const parsed = Number(raw);
+    if (!isNaN(parsed) && parsed > 0) return parsed;
   }
-  return 'https://api.bayit.tv/api/v1';
-};
+  return 30000;
+})();
 
 // Create upload API instance
 const uploadApi = axios.create({
-  baseURL: getBaseUrl(),
-  timeout: 30000, // Longer timeout for uploads
+  baseURL: API_BASE_URL,
+  timeout: UPLOAD_TIMEOUT_MS,
   headers: {
     'Content-Type': 'application/json',
   },

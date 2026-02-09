@@ -11,6 +11,7 @@ import { Platform, NativeModules, NativeEventEmitter } from 'react-native';
 import { VADDetector, AudioLevel, calculateAudioLevel, createVADDetector } from '../utils/vadDetector';
 import { AudioBufferManager, createAudioBuffer } from '../utils/audioBufferManager';
 import { VADSensitivity } from '../services/api';
+import { logger } from '../utils/logger';
 
 // Type for transcription service
 type TranscribeFunction = (audioBlob: Blob) => Promise<{ text: string }>;
@@ -169,7 +170,7 @@ export function useConstantListening(options: UseConstantListeningOptions): UseC
       }
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Transcription failed');
-      console.error('[ConstantListening] Transcription error:', error);
+      logger.error('Transcription error', 'ConstantListening', error);
       onError(error);
     } finally {
       setIsSendingToServer(false);
@@ -249,7 +250,7 @@ export function useConstantListening(options: UseConstantListeningOptions): UseC
       return true;
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Failed to start audio capture');
-      console.error('[ConstantListening] Failed to start web audio:', error);
+      logger.error('Failed to start web audio', 'ConstantListening', error);
       throw error;
     }
   }, [processAudioLevel]);

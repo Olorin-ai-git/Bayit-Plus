@@ -8,7 +8,7 @@ import { View, Text, StyleSheet, Pressable, Image } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { NativeIcon } from '@olorin/shared-icons/native'
-import type { Audiobook } from '@/types/audiobook'
+import type { Audiobook } from '@bayit/shared-services/api/types'
 
 interface AudiobookCardMobileProps {
   audiobook: Audiobook

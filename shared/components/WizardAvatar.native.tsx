@@ -13,6 +13,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { View, Text, Pressable, Platform } from 'react-native';
 import Video, { VideoRef } from 'react-native-video';
+import { logger } from '../utils/logger';
 import { GlassCard } from '@bayit/shared/ui';
 import { ASSET_PATHS } from '../config/assetPaths';
 
@@ -151,7 +152,7 @@ export const WizardAvatar: React.FC<WizardAvatarProps> = ({
   };
 
   const handleError = (error: any) => {
-    console.error('Video error:', error);
+    logger.error('Video error', 'WizardAvatar', error);
     setError('Failed to load wizard animation');
     setIsPlaying(false);
   };

@@ -13,6 +13,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { GlassCard } from '@bayit/shared/ui';
 import { ASSET_PATHS } from '../config/assetPaths';
+import { logger } from '../utils/logger';
 
 export interface WizardAvatarProps {
   /**
@@ -129,7 +130,7 @@ export const WizardAvatar: React.FC<WizardAvatarProps> = ({
             onPlay?.();
           })
           .catch((err) => {
-            console.error('Auto-play failed:', err);
+            logger.error('Auto-play failed', 'WizardAvatar', err);
             setError('Playback failed - please click to play');
           });
       }
@@ -160,7 +161,7 @@ export const WizardAvatar: React.FC<WizardAvatarProps> = ({
   };
 
   const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement>) => {
-    console.error('Video error:', e);
+    logger.error('Video error', 'WizardAvatar', e);
     setError('Failed to load wizard animation');
   };
 

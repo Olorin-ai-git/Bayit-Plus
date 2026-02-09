@@ -35,6 +35,7 @@ import { NativeIcon } from '@olorin/shared-icons/native';
 import { securityService } from '@bayit/shared-services';
 import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
+import { Colors } from '../theme/colors';
 
 import logger from '@/utils/logger';
 
@@ -226,7 +227,7 @@ export const SecurityScreenMobile: React.FC = () => {
         <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
           {iconName && (
             <View className="mr-4">
-              <NativeIcon name={iconName} size="lg" color="#a855f7" />
+              <NativeIcon name={iconName} size="lg" color={Colors.Primary.p500} />
             </View>
           )}
           <View className="flex-1">
@@ -251,7 +252,7 @@ export const SecurityScreenMobile: React.FC = () => {
       <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
         {iconName && (
           <View className="mr-4">
-            <NativeIcon name={iconName} size="lg" color="#a855f7" />
+            <NativeIcon name={iconName} size="lg" color={Colors.Primary.p500} />
           </View>
         )}
         <View className="flex-1">
@@ -352,7 +353,7 @@ export const SecurityScreenMobile: React.FC = () => {
           {devices.length === 0 ? (
             <GlassView className="rounded-lg p-6 items-center">
               <View className="mb-4">
-                <NativeIcon name="smartphone" size="xxl" color="#a855f7" />
+                <NativeIcon name="smartphone" size="xxl" color={Colors.Primary.p500} />
               </View>
               <Text className="text-base text-white/60" style={{ textAlign }}>
                 {t('security.noDevices')}
@@ -363,7 +364,7 @@ export const SecurityScreenMobile: React.FC = () => {
               <GlassView key={device.id} className="rounded-lg mb-2 p-4">
                 <View className={`flex-row items-center ${isRTL ? 'flex-row-reverse' : ''}`}>
                   <View className="mr-4">
-                    <NativeIcon name={getDeviceIconName(device.type)} size="xl" color="#a855f7" />
+                    <NativeIcon name={getDeviceIconName(device.type)} size="xl" color={Colors.Primary.p500} />
                   </View>
                   <View className="flex-1">
                     <View className={`flex-row items-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
@@ -405,7 +406,7 @@ export const SecurityScreenMobile: React.FC = () => {
           {loginHistory.length === 0 ? (
             <GlassView className="rounded-lg p-6 items-center">
               <View className="mb-4">
-                <NativeIcon name="list" size="xxl" color="#a855f7" />
+                <NativeIcon name="list" size="xxl" color={Colors.Primary.p500} />
               </View>
               <Text className="text-base text-white/60" style={{ textAlign }}>
                 {t('security.noLoginHistory')}
@@ -419,7 +420,7 @@ export const SecurityScreenMobile: React.FC = () => {
                     <NativeIcon
                       name={entry.success ? 'check' : 'x'}
                       size="sm"
-                      color={entry.success ? '#22c55e' : '#ef4444'}
+                      color={entry.success ? Colors.Success.s500 : Colors.Error.default}
                     />
                   </View>
                   <View className="flex-1">

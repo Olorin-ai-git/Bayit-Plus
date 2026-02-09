@@ -32,6 +32,7 @@ import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
 import { spacing, colors, typography } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Colors } from '../theme/colors';
 
 import logger from '@/utils/logger';
 
@@ -178,7 +179,7 @@ export const RadioScreenMobile: React.FC = () => {
                 />
               ) : (
                 <View className="w-[120px] h-[120px] rounded-full bg-white/10 items-center justify-center">
-                  <NativeIcon name="radio" size="2xl" color="#FFFFFF" />
+                  <NativeIcon name="radio" size="2xl" color={Colors.white} />
                 </View>
               )}
 

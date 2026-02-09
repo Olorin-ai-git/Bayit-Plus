@@ -19,6 +19,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { Home, Tv, Film, Radio, Mic, Play, ChevronRight, ChevronLeft, Clock, Star } from 'lucide-react-native';
 import { liveService, contentService, Channel, ContentItem } from '../services/api';
+import { Colors } from '../theme/colors';
 
 // Extended content type for featured items
 interface FeaturedItem extends ContentItem {
@@ -96,7 +97,7 @@ function HeroCarousel({ items }: { items: FeaturedItem[] }) {
     return (
       <View style={styles.heroContainer}>
         <View style={styles.heroPlaceholder}>
-          <Film size={48} color="rgba(126, 34, 206, 0.5)" />
+          <Film size={48} color={Colors.Glass.purpleStrong} />
           <Text style={styles.heroPlaceholderText}>Loading featured content...</Text>
         </View>
       </View>
@@ -132,7 +133,7 @@ function HeroCarousel({ items }: { items: FeaturedItem[] }) {
                   </View>
                   {item.rating && (
                     <View style={styles.heroRating}>
-                      <Star size={12} color="#ffc107" fill="#ffc107" />
+                      <Star size={12} color={Colors.Warning.default} fill={Colors.Warning.default} />
                       <Text style={styles.heroRatingText}>{item.rating}</Text>
                     </View>
                   )}
@@ -143,7 +144,7 @@ function HeroCarousel({ items }: { items: FeaturedItem[] }) {
                   {item.duration && (
                     <>
                       <View style={styles.heroDot} />
-                      <Clock size={12} color="rgba(255,255,255,0.7)" />
+                      <Clock size={12} color={Colors.Text.secondary} />
                       <Text style={styles.heroMeta}>{formatDuration(item.duration)}</Text>
                     </>
                   )}
@@ -163,7 +164,7 @@ function HeroCarousel({ items }: { items: FeaturedItem[] }) {
                   style={styles.watchNowButton}
                   onPress={() => navigation.navigate('VOD')}
                 >
-                  <Play size={16} color="#fff" fill="#fff" />
+                  <Play size={16} color={Colors.Text.primary} fill={Colors.Text.primary} />
                   <Text style={styles.watchNowText}>Watch Now</Text>
                 </Pressable>
               </View>
@@ -176,10 +177,10 @@ function HeroCarousel({ items }: { items: FeaturedItem[] }) {
       {items.length > 1 && (
         <>
           <Pressable style={[styles.navArrow, styles.navArrowLeft]} onPress={goPrev}>
-            <ChevronLeft size={24} color="#fff" />
+            <ChevronLeft size={24} color={Colors.Text.primary} />
           </Pressable>
           <Pressable style={[styles.navArrow, styles.navArrowRight]} onPress={goNext}>
-            <ChevronRight size={24} color="#fff" />
+            <ChevronRight size={24} color={Colors.Text.primary} />
           </Pressable>
         </>
       )}
@@ -223,7 +224,7 @@ function QuickAccessRow({ title, items }: { title: string; items: QuickAccessIte
           return (
             <GlassCard key={item.id} style={styles.contentCard} onPress={() => handlePress(item)}>
               <View style={styles.cardIconContainer}>
-                <IconComponent size={32} color="#9333ea" strokeWidth={1.5} />
+                <IconComponent size={32} color={Colors.Primary.p600} strokeWidth={1.5} />
               </View>
               <Text style={styles.cardTitle}>{item.title}</Text>
               {item.subtitle && <Text style={styles.cardSubtitle}>{item.subtitle}</Text>}
@@ -244,7 +245,7 @@ function FeaturedContentRow({ title, items }: { title: string; items: ContentIte
         <Text style={styles.sectionTitle}>{title}</Text>
         <Pressable onPress={() => navigation.navigate('VOD')} style={styles.seeAllButton}>
           <Text style={styles.seeAllText}>See All</Text>
-          <ChevronRight size={16} color="#9333ea" />
+          <ChevronRight size={16} color={Colors.Primary.p600} />
         </Pressable>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalList}>
@@ -254,7 +255,7 @@ function FeaturedContentRow({ title, items }: { title: string; items: ContentIte
               <Image source={{ uri: item.poster }} style={styles.featuredPoster} resizeMode="cover" />
             ) : (
               <View style={styles.featuredPosterPlaceholder}>
-                <Film size={32} color="rgba(126, 34, 206, 0.5)" />
+                <Film size={32} color={Colors.Glass.purpleStrong} />
               </View>
             )}
             <View style={styles.featuredInfo}>
@@ -282,7 +283,7 @@ function LiveChannelRow({ channels, loading }: { channels: Channel[]; loading: b
           <Text style={styles.sectionTitle}>Live TV</Text>
         </View>
         <View style={styles.loadingRow}>
-          <ActivityIndicator size="small" color="#9333ea" />
+          <ActivityIndicator size="small" color={Colors.Primary.p600} />
         </View>
       </View>
     );
@@ -298,7 +299,7 @@ function LiveChannelRow({ channels, loading }: { channels: Channel[]; loading: b
         <Text style={styles.sectionTitle}>Live TV</Text>
         <Pressable onPress={() => navigation.navigate('LiveTV')} style={styles.seeAllButton}>
           <Text style={styles.seeAllText}>All Channels</Text>
-          <ChevronRight size={16} color="#9333ea" />
+          <ChevronRight size={16} color={Colors.Primary.p600} />
         </Pressable>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.horizontalList}>
@@ -400,12 +401,12 @@ export function HomeScreenMobile() {
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#9333ea" />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.Primary.p600} />}
     >
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
-          <Home size={24} color="#9333ea" strokeWidth={2} />
+          <Home size={24} color={Colors.Primary.p600} strokeWidth={2} />
           <Text style={styles.logoText}>Bayit+</Text>
         </View>
       </View>
@@ -429,19 +430,19 @@ export function HomeScreenMobile() {
         <Text style={styles.sectionTitle}>Browse Categories</Text>
         <View style={styles.categoryGrid}>
           <GlassCard style={styles.categoryCard}>
-            <Film size={24} color="#9333ea" />
+            <Film size={24} color={Colors.Primary.p600} />
             <Text style={styles.categoryText}>Movies</Text>
           </GlassCard>
           <GlassCard style={styles.categoryCard}>
-            <Tv size={24} color="#9333ea" />
+            <Tv size={24} color={Colors.Primary.p600} />
             <Text style={styles.categoryText}>Series</Text>
           </GlassCard>
           <GlassCard style={styles.categoryCard}>
-            <Radio size={24} color="#9333ea" />
+            <Radio size={24} color={Colors.Primary.p600} />
             <Text style={styles.categoryText}>Radio</Text>
           </GlassCard>
           <GlassCard style={styles.categoryCard}>
-            <Mic size={24} color="#9333ea" />
+            <Mic size={24} color={Colors.Primary.p600} />
             <Text style={styles.categoryText}>Podcasts</Text>
           </GlassCard>
         </View>
@@ -452,21 +453,21 @@ export function HomeScreenMobile() {
   );
 }
 
-// Design tokens - purple glassmorphic theme
+// Design tokens mapped from centralized theme
 const COLORS = {
-  primary: '#7e22ce',        // Purple primary
-  primaryLight: '#9333ea',   // Lighter purple
-  primaryDark: '#581c87',    // Darker purple
-  background: '#0a0a0a',     // Near black
-  surface: 'rgba(10, 10, 10, 0.7)',
-  surfaceLight: 'rgba(10, 10, 10, 0.5)',
-  border: 'rgba(126, 34, 206, 0.25)',
-  borderLight: 'rgba(126, 34, 206, 0.15)',
-  text: '#ffffff',
-  textSecondary: 'rgba(255, 255, 255, 0.7)',
-  textMuted: 'rgba(255, 255, 255, 0.5)',
-  live: '#ff4444',
-  gold: '#ffd700',
+  primary: Colors.Primary.default,
+  primaryLight: Colors.Primary.p600,
+  primaryDark: Colors.Primary.p900,
+  background: Colors.Dark.d950,
+  surface: Colors.Glass.bg,
+  surfaceLight: Colors.Glass.bgLight,
+  border: Colors.Glass.border,
+  borderLight: Colors.Glass.borderLight,
+  text: Colors.Text.primary,
+  textSecondary: Colors.Text.secondary,
+  textMuted: Colors.Text.muted,
+  live: Colors.Special.live,
+  gold: Colors.Special.gold,
 };
 
 const styles = StyleSheet.create({
@@ -487,14 +488,14 @@ const styles = StyleSheet.create({
   heroSlide: { width: SCREEN_WIDTH, height: CAROUSEL_HEIGHT },
   heroGradientOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
+    backgroundColor: Colors.Glass.bgMedium,
     justifyContent: 'flex-end',
     padding: 20,
   },
   heroContent: { gap: 8 },
   heroBadgeRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   heroBadge: {
-    backgroundColor: 'rgba(126, 34, 206, 0.3)',
+    backgroundColor: Colors.Glass.purpleLight,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 4,
@@ -506,10 +507,10 @@ const styles = StyleSheet.create({
   heroMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   heroMeta: { color: COLORS.textSecondary, fontSize: 13 },
   heroDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: COLORS.textMuted },
-  heroDescription: { color: 'rgba(255, 255, 255, 0.8)', fontSize: 14, lineHeight: 20 },
+  heroDescription: { color: Colors.Text.secondary, fontSize: 14, lineHeight: 20 },
   heroPlaceholder: {
     flex: 1,
-    backgroundColor: 'rgba(126, 34, 206, 0.1)',
+    backgroundColor: Colors.Glass.borderLight,
     justifyContent: 'center',
     alignItems: 'center',
     gap: 16,
@@ -537,9 +538,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: Colors.Glass.bgMedium,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.3)',
+    borderColor: Colors.Text.disabled,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -560,7 +561,7 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: Colors.Text.disabled,
   },
   paginationDotActive: { backgroundColor: COLORS.primaryLight, width: 24 },
 
@@ -602,7 +603,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(126, 34, 206, 0.15)',
+    backgroundColor: Colors.Glass.borderLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 12,
@@ -616,7 +617,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(126, 34, 206, 0.15)',
+    backgroundColor: Colors.Glass.borderLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 8,
@@ -632,7 +633,7 @@ const styles = StyleSheet.create({
   featuredPosterPlaceholder: {
     width: 140,
     height: 100,
-    backgroundColor: 'rgba(126, 34, 206, 0.1)',
+    backgroundColor: Colors.Glass.borderLight,
     justifyContent: 'center',
     alignItems: 'center',
   },

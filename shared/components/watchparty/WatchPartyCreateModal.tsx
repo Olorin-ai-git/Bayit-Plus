@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { GlassView } from '../ui/GlassView';
 import { GlassButton } from '../ui/GlassButton';
 import { GlassToggle } from '../ui/GlassToggle';
+import { logger } from '../../utils/logger';
 
 interface WatchPartyCreateModalProps {
   visible: boolean;
@@ -35,7 +36,7 @@ export const WatchPartyCreateModal: React.FC<WatchPartyCreateModalProps> = ({
       await onCreate({ chatEnabled, syncPlayback });
       onClose();
     } catch (err) {
-      console.error('Failed to create party:', err);
+      logger.error('Failed to create party', 'WatchPartyCreateModal', err);
     } finally {
       setLoading(false);
     }

@@ -8,6 +8,7 @@
 import * as Sentry from '@sentry/react-native';
 import { initLoggerSentry } from '@bayit/shared/utils/logger';
 import { initErrorBoundarySentry } from '@bayit/shared/components/ErrorBoundary';
+import { logger } from './logger';
 
 // Environment variable access (from react-native-dotenv or similar)
 const SENTRY_DSN = process.env.SENTRY_DSN || '';
@@ -56,7 +57,7 @@ const scrubObject = (obj: Record<string, unknown>): void => {
  */
 export const initSentry = (): boolean => {
   if (!SENTRY_DSN) {
-    console.info('[Sentry] DSN not configured - error tracking disabled');
+    logger.info('DSN not configured - error tracking disabled', 'Sentry');
     return false;
   }
 
@@ -117,10 +118,10 @@ export const initSentry = (): boolean => {
       },
     });
 
-    console.info(`[Sentry] Initialized - environment: ${SENTRY_ENVIRONMENT}`);
+    logger.info(`Initialized - environment: ${SENTRY_ENVIRONMENT}`, 'Sentry');
     return true;
   } catch (error) {
-    console.error('[Sentry] Failed to initialize:', error);
+    logger.error('Failed to initialize', 'Sentry', error);
     return false;
   }
 };

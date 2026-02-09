@@ -12,6 +12,7 @@ import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { isTV, isWeb } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
+import { logger } from '../../utils/logger';
 
 export type PlaybackSpeed = 0.5 | 0.75 | 1 | 1.25 | 1.5 | 2;
 
@@ -105,7 +106,7 @@ export const PlaybackSpeedControl: React.FC<PlaybackSpeedControlProps> = ({
     try {
       await AsyncStorage.setItem(STORAGE_KEY, speed.toString());
     } catch (error) {
-      console.error('Failed to save playback speed preference:', error);
+      logger.error('Failed to save playback speed preference', 'PlaybackSpeedControl', error);
     }
 
     onSpeedChange(speed);
@@ -195,7 +196,7 @@ export const usePlaybackSpeedPreference = (): PlaybackSpeed => {
           }
         }
       } catch (error) {
-        console.error('Failed to load playback speed preference:', error);
+        logger.error('Failed to load playback speed preference', 'PlaybackSpeedControl', error);
       }
     };
 

@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { ChevronDown } from 'lucide-react'
 import { GlassSelect, GlassButton } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
-import type { AudiobookFilters } from '@/types/audiobook'
+import type { AudiobookFilters } from '@bayit/shared-services/api/types'
 
 const AUDIO_QUALITIES = ['8-bit', '16-bit', '24-bit', '32-bit', 'high-fidelity', 'standard', 'premium', 'lossless']
 const SUBSCRIPTION_TIERS = ['free', 'basic', 'premium', 'family']
@@ -45,7 +45,7 @@ export default function AudiobookFiltersMobile({ filters, onChange, isRTL }: Aud
           <GlassSelect
             label={t('audiobooks.quality', 'Audio Quality')}
             options={AUDIO_QUALITIES.map(q => ({ label: q, value: q }))}
-            value={(filters as any).audio_quality || ''}
+            value={filters.audio_quality || ''}
             onChange={(quality) => updateFilter('audio_quality', quality)}
             containerStyle={styles.filterItem}
           />
@@ -61,7 +61,7 @@ export default function AudiobookFiltersMobile({ filters, onChange, isRTL }: Aud
           <GlassSelect
             label={t('audiobooks.sortBy', 'Sort By')}
             options={SORT_OPTIONS.map(s => ({ label: s, value: s }))}
-            value={(filters as any).sort_by || 'title'}
+            value={filters.sort_by || 'title'}
             onChange={(sortBy) => updateFilter('sort_by', sortBy)}
             containerStyle={styles.filterItem}
           />

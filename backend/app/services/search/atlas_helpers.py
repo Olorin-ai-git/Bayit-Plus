@@ -5,8 +5,17 @@ from typing import Any, Dict, List
 
 from app.core.logging_config import get_logger
 from app.services.search.models import ScoredResult, SearchFilters
+from app.services.search.raw_serializer import raw_doc_to_dict
 
 logger = get_logger(__name__)
+
+# Map pipeline source names to content_type values used by raw_serializer
+_SOURCE_TO_CONTENT_TYPE = {
+    "vod": "vod",
+    "livechannel": "live",
+    "podcast": "podcast",
+    "radiostation": "radio",
+}
 
 
 def build_content_filters(filters: SearchFilters) -> List[Dict[str, Any]]:
@@ -49,13 +58,20 @@ def extract_query_from_pipeline(pipeline: List[Dict[str, Any]]) -> str:
 
 def docs_to_scored(docs: List[Dict[str, Any]], source: str,
                    score_key: str = "search_score") -> List[ScoredResult]:
-    """Convert raw MongoDB docs to ScoredResult list."""
+    """Convert raw MongoDB docs to ScoredResult list.
+
+    Serializes each raw document through raw_doc_to_dict to ensure
+    consistent API shape (``id`` instead of ``_id``, normalized fields).
+    """
+    content_type = _SOURCE_TO_CONTENT_TYPE.get(source, source)
     results: List[ScoredResult] = []
     for rank, doc in enumerate(docs, start=1):
-        doc["_id"] = str(doc["_id"])
+        doc_id = str(doc.get("_id", ""))
+        score = doc.get(score_key, 0.0)
+        serialized = raw_doc_to_dict(doc, content_type)
         results.append(ScoredResult(
-            content_id=doc["_id"], content_dict=doc,
-            atlas_score=doc.get(score_key, 0.0), atlas_rank=rank, source=source,
+            content_id=doc_id, content_dict=serialized,
+            atlas_score=score, atlas_rank=rank, source=source,
         ))
     return results
 

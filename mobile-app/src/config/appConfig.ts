@@ -1,9 +1,10 @@
 /**
  * Mobile App Configuration
- * Extends shared config pattern with mobile-specific settings
+ * Extends shared config pattern with mobile-specific settings.
+ * All environment-dependent values loaded from process.env.
  */
 
-import { Platform } from "react-native";
+import { getApiBaseUrl } from "./apiConfig";
 
 // Get app mode from environment or default to production
 const APP_MODE: "development" | "production" =
@@ -11,22 +12,11 @@ const APP_MODE: "development" | "production" =
 
 export const isProduction = APP_MODE === "production";
 
-// Get correct API URL based on platform
-const getApiBaseUrl = () => {
-  if (!__DEV__) {
-    return "https://api.bayit.tv/api/v1";
-  }
-  // In development:
-  if (Platform.OS === "web") {
-    return "http://localhost:8000/api/v1";
-  }
-  if (Platform.OS === "android") {
-    return "http://10.0.2.2:8000/api/v1"; // Android emulator localhost
-  }
-  return "http://localhost:8000/api/v1"; // iOS simulator
-};
-
 export const API_BASE_URL = getApiBaseUrl();
+
+// Timeout values from env or dev defaults
+const API_TIMEOUT_PROD = Number(process.env.BAYIT_API_TIMEOUT_MS) || (__DEV__ ? 5000 : (() => { throw new Error("[AppConfig] BAYIT_API_TIMEOUT_MS is required in production"); })());
+const API_TIMEOUT_DEV = Number(process.env.BAYIT_API_TIMEOUT_DEV_MS) || 30000;
 
 export const config = {
   mode: APP_MODE,
@@ -35,7 +25,7 @@ export const config = {
   api: {
     enabled: true,
     failFast: isProduction,
-    timeout: isProduction ? 5000 : 30000,
+    timeout: isProduction ? API_TIMEOUT_PROD : API_TIMEOUT_DEV,
   },
 
   features: {

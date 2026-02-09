@@ -37,7 +37,11 @@ export type PageType =
   | 'games'
   | 'discover'
   | 'plans'
-  | 'admin';
+  | 'admin'
+  | 'privacy'
+  | 'help'
+  | 'terms'
+  | 'contact';
 
 interface PageHeaderProps {
   title: string;
@@ -81,6 +85,10 @@ const PAGE_TYPE_TO_ICON: Record<PageType, string> = {
   discover: 'discover',
   plans: 'plans',
   admin: 'admin',
+  privacy: 'settings',
+  help: 'support',
+  terms: 'settings',
+  contact: 'support',
 };
 
 /**
@@ -111,6 +119,10 @@ const PAGE_TYPE_GLASS_LEVEL: Record<PageType, GlassLevel> = {
   discover: 'medium',
   plans: 'medium',
   admin: 'medium',
+  privacy: 'light',
+  help: 'light',
+  terms: 'light',
+  contact: 'light',
 };
 
 /**

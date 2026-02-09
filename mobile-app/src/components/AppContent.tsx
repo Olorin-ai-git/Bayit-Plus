@@ -9,6 +9,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import MainTabNavigator from '../navigation/MainTabNavigator';
 import { initializeI18n } from '../services/i18n';
 import { SplashScreen } from './SplashScreen';
+import { Colors } from '../theme/colors';
 import logger from '@/utils/logger';
 
 const moduleLogger = logger.scope('AppContent');
@@ -32,7 +33,7 @@ export const AppContent: React.FC = () => {
   if (!i18nReady) {
     return (
       <View style={[styles.container, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color="#7e22ce" />
+        <ActivityIndicator size="large" color={Colors.Primary.default} />
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );
@@ -46,7 +47,7 @@ export const AppContent: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#0d0d1a" />
+      <StatusBar barStyle="light-content" backgroundColor={Colors.Background.primary} />
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
@@ -62,7 +63,7 @@ export const AppContent: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: Colors.Background.primary,
   },
   loadingContainer: {
     justifyContent: 'center',

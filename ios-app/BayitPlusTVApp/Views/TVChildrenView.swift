@@ -1,0 +1,160 @@
+import BayitDesignSystem
+import SwiftUI
+
+/// tvOS Children content screen with age-group filtering and category shelves.
+/// Reuses ChildrenViewModel from shared ViewModels.
+struct TVChildrenView: View {
+    @Environment(TVRepositoryProvider.self) private var repos
+    @State private var viewModel: ChildrenViewModel?
+    @State private var selectedAgeGroupId: String?
+
+    var body: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            if let vm = viewModel {
+                if vm.isLoading && vm.categories.isEmpty {
+                    loadingState
+                } else if let error = vm.error, vm.categories.isEmpty {
+                    tvErrorState(error) {
+                        Task { await viewModel?.load() }
+                    }
+                } else {
+                    contentSections(vm)
+                }
+            }
+        }
+        .background(DesignTokens.Background.primary)
+        .task {
+            if viewModel == nil {
+                viewModel = ChildrenViewModel(repository: repos.category)
+            }
+            await viewModel?.load()
+        }
+    }
+
+    @ViewBuilder
+    private func contentSections(_ vm: ChildrenViewModel) -> some View {
+        LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
+            if let featured = vm.featured, let hero = featured.hero {
+                featuredHero(hero)
+            }
+
+            if !vm.ageGroups.isEmpty {
+                ageGroupFilters(vm)
+            }
+
+            if !vm.categories.isEmpty {
+                categoryShelf(vm)
+            }
+
+            if !vm.items.isEmpty {
+                contentShelf(vm)
+            }
+        }
+    }
+
+    private func featuredHero(_ item: SectionContentItem) -> some View {
+        ZStack(alignment: .bottomLeading) {
+            if let urlStr = item.thumbnail, let url = URL(string: urlStr) {
+                AsyncImage(url: url) { phase in
+                    if case .success(let img) = phase {
+                        img.resizable().aspectRatio(contentMode: .fill)
+                    } else {
+                        DesignTokens.Glass.purpleLight
+                    }
+                }
+            } else {
+                DesignTokens.Glass.purpleLight
+            }
+
+            VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
+                Text(item.title ?? "")
+                    .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
+                    .foregroundStyle(DesignTokens.Text.primary)
+
+                if let category = item.category {
+                    Text(category)
+                        .font(.system(size: TVDesignTokens.FontSize.md))
+                        .foregroundStyle(DesignTokens.Text.secondary)
+                }
+            }
+            .padding(TVDesignTokens.Spacing.xxl)
+            .background(
+                LinearGradient(
+                    colors: [Color.clear, DesignTokens.Glass.bgStrong],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+        }
+        .frame(height: TVDesignTokens.MinSize.heroHeight)
+    }
+
+    private func ageGroupFilters(_ vm: ChildrenViewModel) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: TVDesignTokens.Spacing.md) {
+                ForEach(vm.ageGroups) { group in
+                    filterChip(group.name ?? "", isSelected: selectedAgeGroupId == group.id) {
+                        let newId = selectedAgeGroupId == group.id ? nil : group.id
+                        selectedAgeGroupId = newId
+                        Task {
+                            await vm.loadContent(category: vm.selectedCategory, ageGroup: newId)
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        }
+        .frame(height: TVDesignTokens.MinSize.focusableHeight + 20)
+    }
+
+    private func categoryShelf(_ vm: ChildrenViewModel) -> some View {
+        GlassContentShelf(title: "Categories", items: vm.categories) { cat in
+            GlassFocusPoster(
+                thumbnailURL: cat.thumbnail,
+                title: cat.name ?? "Category",
+                aspectRatio: 16 / 9
+            )
+        }
+    }
+
+    private func contentShelf(_ vm: ChildrenViewModel) -> some View {
+        GlassContentShelf(title: "Content", items: vm.items) { item in
+            GlassFocusPoster(
+                thumbnailURL: item.thumbnail,
+                title: item.title ?? "Content",
+                subtitle: item.duration,
+                aspectRatio: 16 / 9
+            )
+        }
+    }
+
+    private func filterChip(
+        _ title: String,
+        isSelected: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
+                .foregroundStyle(isSelected ? DesignTokens.Text.primary : DesignTokens.Text.secondary)
+                .padding(.horizontal, TVDesignTokens.Spacing.lg)
+                .padding(.vertical, TVDesignTokens.Spacing.md)
+                .background(isSelected ? DesignTokens.Glass.bgStrong : DesignTokens.Glass.bg)
+                .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
+        }
+        .buttonStyle(.card)
+        .tvFocusStyle()
+    }
+
+    private var loadingState: some View {
+        VStack(spacing: TVDesignTokens.Spacing.xl) {
+            ProgressView()
+                .tint(DesignTokens.Primary.default)
+                .scaleEffect(1.5)
+            Text("Loading Kids Content...")
+                .font(.system(size: TVDesignTokens.FontSize.lg))
+                .foregroundStyle(DesignTokens.Text.muted)
+        }
+        .frame(maxWidth: .infinity, minHeight: 400)
+    }
+}

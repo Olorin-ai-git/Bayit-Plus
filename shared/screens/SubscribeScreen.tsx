@@ -302,10 +302,10 @@ export function SubscribeScreen() {
         window.location.href = response.checkoutUrl;
       } else {
         // On native platforms, log for debugging
-        console.log('[SubscribeScreen] Checkout created:', response.checkoutUrl);
+        logger.debug('Checkout created: ' + response.checkoutUrl, 'SubscribeScreen');
       }
     } catch (error) {
-      console.error('[SubscribeScreen] Failed to create checkout:', error);
+      logger.error('Failed to create checkout', 'SubscribeScreen', error);
     } finally {
       setLoading(false);
     }

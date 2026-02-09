@@ -115,6 +115,8 @@ const FamilyControlsPage = lazy(() => import('./pages/FamilyControlsPage'))
 const HelpPage = lazy(() => import('./pages/HelpPage'))
 const SupportPage = lazy(() => import('./pages/SupportPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
+const TermsPage = lazy(() => import('./pages/TermsPage'))
+const ContactPage = lazy(() => import('./pages/ContactPage'))
 const UserWidgetsPage = lazy(() => import('./pages/UserWidgetsPage'))
 const EPGPage = lazy(() => import('./pages/EPGPage'))
 const ChessPage = lazy(() => import('./pages/ChessPage'))
@@ -306,6 +308,10 @@ const AppContent = () => {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/family-controls" element={<FamilyControlsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/help" element={<HelpPage />} />
+        <Route path="/support" element={<SupportPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

@@ -103,7 +103,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
       onSuccess?.();
       onClose();
     } catch (err) {
-      console.error('[SupportTicketForm] Error creating ticket:', err);
+      logger.error('Error creating ticket', 'SupportTicketForm', err);
       setError(t('support.ticket.error.submit', 'Failed to create ticket. Please try again.'));
     } finally {
       setLoading(false);

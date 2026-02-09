@@ -8,6 +8,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../../theme/colors';
 
 interface ScreenHeaderProps {
   title: string;
@@ -26,7 +27,7 @@ export function ScreenHeader({ title, onBack }: ScreenHeaderProps) {
         accessibilityLabel={t('common.back', 'Back')}
         accessibilityHint={t('accessibility.navigateBack', 'Navigate back to profiles list')}
       >
-        <Ionicons name="arrow-back" size={24} color="#ffffff" />
+        <Ionicons name="arrow-back" size={24} color={Colors.white} />
       </TouchableOpacity>
       <Text style={styles.headerTitle}>{title}</Text>
     </View>
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
     fontWeight: '600',
-    color: '#ffffff',
+    color: Colors.white,
     flex: 1,
   },
 });

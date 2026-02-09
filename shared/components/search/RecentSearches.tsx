@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
+import { logger } from '../../utils/logger';
 
 export interface RecentSearchesProps {
   onSearchSelect: (query: string) => void;
@@ -40,7 +41,7 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
         setRecentSearches(searches.slice(0, maxItems));
       }
     } catch (error) {
-      console.error('Failed to load recent searches:', error);
+      logger.error('Failed to load recent searches', 'RecentSearches', error);
     }
   };
 
@@ -50,7 +51,7 @@ export const RecentSearches: React.FC<RecentSearchesProps> = ({
       setRecentSearches([]);
       onClear?.();
     } catch (error) {
-      console.error('Failed to clear recent searches:', error);
+      logger.error('Failed to clear recent searches', 'RecentSearches', error);
     }
   };
 
@@ -110,7 +111,7 @@ export const useRecentSearches = () => {
         setRecentSearches(JSON.parse(saved));
       }
     } catch (error) {
-      console.error('Failed to load recent searches:', error);
+      logger.error('Failed to load recent searches', 'RecentSearches', error);
     }
   };
 
@@ -127,7 +128,7 @@ export const useRecentSearches = () => {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
       setRecentSearches(updated);
     } catch (error) {
-      console.error('Failed to add recent search:', error);
+      logger.error('Failed to add recent search', 'RecentSearches', error);
     }
   };
 
@@ -136,7 +137,7 @@ export const useRecentSearches = () => {
       await AsyncStorage.removeItem(STORAGE_KEY);
       setRecentSearches([]);
     } catch (error) {
-      console.error('Failed to clear recent searches:', error);
+      logger.error('Failed to clear recent searches', 'RecentSearches', error);
     }
   };
 

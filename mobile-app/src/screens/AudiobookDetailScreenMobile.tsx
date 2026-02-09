@@ -12,9 +12,10 @@ import { GlassView, GlassButton } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { NativeIcon } from '@olorin/shared-icons/native'
 import logger from '@/utils/logger'
-import type { Audiobook } from '@/types/audiobook'
+import type { Audiobook } from '@bayit/shared-services/api/types'
 import audiobookService from '@/services/audiobookService'
 import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding'
+import { Colors } from '../theme/colors'
 
 export default function AudiobookDetailScreenMobile({ route, navigation }: any) {
   const { id } = route.params
@@ -60,7 +61,7 @@ export default function AudiobookDetailScreenMobile({ route, navigation }: any) 
     const stars = []
     const count = Math.round(rating)
     for (let i = 0; i < count; i++) {
-      stars.push(<NativeIcon key={i} name="star" size="sm" color="#ffd93d" />)
+      stars.push(<NativeIcon key={i} name="star" size="sm" color={Colors.Special.gold} />)
     }
     return <View style={{ flexDirection: 'row', gap: 2 }}>{stars}</View>
   }
@@ -81,7 +82,7 @@ export default function AudiobookDetailScreenMobile({ route, navigation }: any) 
             <Image source={{ uri: audiobook.thumbnail }} style={styles.thumbnail} resizeMode="cover" />
           ) : (
             <View style={[styles.thumbnail, styles.placeholder]}>
-              <NativeIcon name="audiobooks" size="xxl" color="#a855f7" />
+              <NativeIcon name="audiobooks" size="xxl" color={Colors.Primary.p500} />
             </View>
           )}
         </View>
@@ -93,9 +94,9 @@ export default function AudiobookDetailScreenMobile({ route, navigation }: any) 
 
         <View style={styles.metadataGrid}>
           {audiobook.duration && <View style={styles.metaItem}><Text style={styles.metaLabel}>{t('audiobooks.duration', 'Duration')}</Text><Text style={styles.metaValue}>{audiobook.duration}</Text></View>}
-          {(audiobook as any).audio_quality && <View style={styles.metaItem}><Text style={styles.metaLabel}>{t('audiobooks.quality', 'Quality')}</Text><Text style={styles.metaValue}>{(audiobook as any).audio_quality}</Text></View>}
-          {(audiobook as any).isbn && <View style={styles.metaItem}><Text style={styles.metaLabel}>{t('audiobooks.isbn', 'ISBN')}</Text><Text style={styles.metaValue}>{(audiobook as any).isbn}</Text></View>}
-          {(audiobook as any).publisher && <View style={styles.metaItem}><Text style={styles.metaLabel}>{t('audiobooks.publisher', 'Publisher')}</Text><Text style={styles.metaValue}>{(audiobook as any).publisher}</Text></View>}
+          {audiobook.audio_quality && <View style={styles.metaItem}><Text style={styles.metaLabel}>{t('audiobooks.quality', 'Quality')}</Text><Text style={styles.metaValue}>{audiobook.audio_quality}</Text></View>}
+          {audiobook.isbn && <View style={styles.metaItem}><Text style={styles.metaLabel}>{t('audiobooks.isbn', 'ISBN')}</Text><Text style={styles.metaValue}>{audiobook.isbn}</Text></View>}
+          {audiobook.publisher_name && <View style={styles.metaItem}><Text style={styles.metaLabel}>{t('audiobooks.publisher', 'Publisher')}</Text><Text style={styles.metaValue}>{audiobook.publisher_name}</Text></View>}
         </View>
 
         {audiobook.avg_rating > 0 && (
@@ -140,5 +141,5 @@ const styles = StyleSheet.create({
   ratingText: { fontSize: 16, fontWeight: '600', color: colors.text },
   actions: { flexDirection: 'row', gap: spacing.md },
   actionButton: { flex: 1 },
-  errorText: { fontSize: 16, color: '#ef4444', marginBottom: spacing.lg, textAlign: 'center' },
+  errorText: { fontSize: 16, color: Colors.Error.default, marginBottom: spacing.lg, textAlign: 'center' },
 })

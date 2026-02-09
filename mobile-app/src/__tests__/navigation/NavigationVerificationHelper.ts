@@ -164,11 +164,11 @@ export interface ModalVerification {
 }
 
 export function verifyModalPresentation(screenName: NavigableScreen): ModalVerification {
-  const modalScreens: Record<NavigableScreen, { animation: 'slide_from_bottom' | 'fullScreenModal'; dismissible: boolean }> = {
+  const modalScreens: Partial<Record<NavigableScreen, { animation: 'slide_from_bottom' | 'fullScreenModal'; dismissible: boolean }>> = {
     Player: { animation: 'fullScreenModal', dismissible: true },
     Search: { animation: 'slide_from_bottom', dismissible: true },
     Login: { animation: 'fullScreenModal', dismissible: false },
-  } as any;
+  };
 
   const isModal = screenName in modalScreens;
   const config = modalScreens[screenName as keyof typeof modalScreens];

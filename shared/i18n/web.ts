@@ -11,6 +11,7 @@
  */
 
 import type { LanguageCode } from './types';
+import { logger } from '../utils/logger';
 
 const LANGUAGE_KEY = '@olorin_language';
 
@@ -55,7 +56,7 @@ export async function saveLanguageWeb(langCode: LanguageCode): Promise<void> {
       storage.setItem(LANGUAGE_KEY, langCode);
     }
   } catch (error) {
-    console.warn('Failed to save language preference:', error);
+    logger.warn('Failed to save language preference', 'I18nWeb', error);
   }
 }
 
@@ -74,7 +75,7 @@ export async function loadSavedLanguageWeb(): Promise<LanguageCode> {
       }
     }
   } catch (error) {
-    console.warn('Failed to load saved language:', error);
+    logger.warn('Failed to load saved language', 'I18nWeb', error);
   }
   return 'he';
 }
@@ -97,7 +98,7 @@ export async function initWebI18n(): Promise<void> {
       await i18n.changeLanguage(savedLang);
     }
   } catch (error) {
-    console.warn('Failed to initialize web i18n:', error);
+    logger.warn('Failed to initialize web i18n', 'I18nWeb', error);
   }
 }
 
@@ -121,7 +122,7 @@ export function setupWebDirectionListener(): void {
     document.documentElement.lang = currentLang;
     document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
   } catch (error) {
-    console.warn('Failed to setup direction listener:', error);
+    logger.warn('Failed to setup direction listener', 'I18nWeb', error);
   }
 }
 

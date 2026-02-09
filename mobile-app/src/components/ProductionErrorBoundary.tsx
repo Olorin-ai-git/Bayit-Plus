@@ -6,6 +6,8 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, Image } from 'react-native';
+import { logger } from '../utils/logger';
+import { Colors } from '../theme/colors';
 
 interface Props {
   children: ReactNode;
@@ -37,7 +39,7 @@ export class ProductionErrorBoundary extends Component<Props, State> {
       error.message?.includes('TurboModule');
 
     if (isDeviceInfoError) {
-      console.warn('[ErrorBoundary] Caught DeviceInfo initialization error, attempting recovery');
+      logger.warn('Caught DeviceInfo initialization error, attempting recovery', 'ErrorBoundary');
       return { hasError: true, error, isRecovering: true };
     }
 
@@ -47,15 +49,11 @@ export class ProductionErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log to Sentry/crash reporting
-    console.error('[ErrorBoundary] Error caught:', {
-      error: error.message,
-      stack: error.stack,
-      componentStack: errorInfo.componentStack,
-    });
+    logger.error('Error caught', 'ErrorBoundary', error);
 
     // Attempt automatic recovery after brief delay
     this.recoveryTimer = setTimeout(() => {
-      console.log('[ErrorBoundary] Attempting automatic recovery');
+      logger.debug('Attempting automatic recovery', 'ErrorBoundary');
       this.setState({
         hasError: false,
         error: null,
@@ -83,7 +81,7 @@ export class ProductionErrorBoundary extends Component<Props, State> {
 
             <ActivityIndicator
               size="large"
-              color="#007AFF"
+              color={Colors.Info.default}
               style={styles.loader}
             />
 
@@ -102,7 +100,7 @@ export class ProductionErrorBoundary extends Component<Props, State> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0d0d1a',
+    backgroundColor: Colors.Background.primary,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -122,14 +120,14 @@ const styles = StyleSheet.create({
   logoText: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#007AFF',
+    color: Colors.Info.default,
   },
   loader: {
     marginBottom: 16,
   },
   loadingText: {
     fontSize: 16,
-    color: '#999999',
+    color: Colors.Dark.d500,
     textAlign: 'center',
   },
 });

@@ -55,8 +55,9 @@ struct PlaylistView: View {
                 icon: Image(systemName: "play.fill")
             ) {
                 if let first = vm.items.first {
-                    coordinator.pushToCurrentTab(
-                        .movieDetail(movieId: first.contentId)
+                    let type = ContentType(rawValue: first.contentType ?? "") ?? .movie
+                    coordinator.navigate(
+                        to: .player(contentId: first.contentId, contentType: type)
                     )
                 }
             }
@@ -120,8 +121,9 @@ struct PlaylistView: View {
         vm: PlaylistViewModel
     ) -> some View {
         Button {
-            coordinator.pushToCurrentTab(
-                .movieDetail(movieId: item.contentId)
+            let type = ContentType(rawValue: item.contentType ?? "") ?? .movie
+            coordinator.navigate(
+                to: .player(contentId: item.contentId, contentType: type)
             )
         } label: {
             HStack(spacing: DesignTokens.Spacing.md) {

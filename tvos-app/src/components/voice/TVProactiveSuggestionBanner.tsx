@@ -126,7 +126,7 @@ export const TVProactiveSuggestionBanner: React.FC<TVProactiveSuggestionBannerPr
           onFocus={() => setFocusedId('dismiss')}
           onBlur={() => setFocusedId(null)}
         >
-          <Text style={styles.dismissText}>✕</Text>
+          <NativeIcon name="close" size="lg" color="#FFFFFF" context="tv" />
         </Pressable>
       </View>
     </Animated.View>

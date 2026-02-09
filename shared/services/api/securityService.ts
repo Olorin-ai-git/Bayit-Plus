@@ -10,6 +10,7 @@
 
 import { api } from './client';
 import type { ApiResponse } from './types';
+import { logger } from '../../utils/logger';
 
 export interface ConnectedDevice {
   id: string;
@@ -53,7 +54,7 @@ export const securityService = {
       );
       return response.data.data || [];
     } catch (error) {
-      console.error('Failed to fetch connected devices:', error);
+      logger.error('Failed to fetch connected devices', 'SecurityService', error);
       return [];
     }
   },
@@ -68,7 +69,7 @@ export const securityService = {
       );
       return response.data.data || [];
     } catch (error) {
-      console.error('Failed to fetch login history:', error);
+      logger.error('Failed to fetch login history', 'SecurityService', error);
       return [];
     }
   },
@@ -88,7 +89,7 @@ export const securityService = {
         loginNotifications: true,
       };
     } catch (error) {
-      console.error('Failed to fetch security settings:', error);
+      logger.error('Failed to fetch security settings', 'SecurityService', error);
       return {
         twoFactorEnabled: false,
         biometricEnabled: false,

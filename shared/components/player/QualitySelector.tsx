@@ -12,6 +12,7 @@ import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { isTV, isWeb } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
+import { logger } from '../../utils/logger';
 
 export type QualityLevel = 'auto' | '1080p' | '720p' | '480p' | '360p';
 
@@ -117,7 +118,7 @@ export const QualitySelector: React.FC<QualitySelectorProps> = ({
     try {
       await AsyncStorage.setItem(STORAGE_KEY, quality);
     } catch (error) {
-      console.error('Failed to save quality preference:', error);
+      logger.error('Failed to save quality preference', 'QualitySelector', error);
     }
 
     onQualityChange(quality);
@@ -193,7 +194,7 @@ export const useQualityPreference = () => {
           setQuality(saved as QualityLevel);
         }
       } catch (error) {
-        console.error('Failed to load quality preference:', error);
+        logger.error('Failed to load quality preference', 'QualitySelector', error);
       }
     };
 

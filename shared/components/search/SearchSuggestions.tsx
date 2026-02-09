@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { isTV } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
 import { searchService } from '../../services/api';
+import { logger } from '../../utils/logger';
 
 export interface SearchSuggestionsProps {
   query: string;
@@ -151,7 +152,7 @@ export const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
         setSuggestions([]);
       }
     } catch (error) {
-      console.error('Failed to load suggestions:', error);
+      logger.error('Failed to load suggestions', 'SearchSuggestions', error);
       setSuggestions([]);
     } finally {
       setIsLoading(false);
@@ -215,7 +216,7 @@ export const useSearchSuggestions = (query: string, debounceMs: number = 300) =>
           setSuggestions([]);
         }
       } catch (error) {
-        console.error('Failed to load suggestions:', error);
+        logger.error('Failed to load suggestions', 'SearchSuggestions', error);
         setSuggestions([]);
       } finally {
         setIsLoading(false);

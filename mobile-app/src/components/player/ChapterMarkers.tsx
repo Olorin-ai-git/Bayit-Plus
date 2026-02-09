@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { colors } from '@olorin/design-tokens';
+import { Colors } from '../../theme/colors';
 
 export interface Chapter {
   id?: string;
@@ -38,20 +39,20 @@ const getCategoryColor = (category: string): string => {
   const categoryColorMap: Record<string, string> = {
     intro: colors.primary,
     news: colors.error,
-    security: '#f59e0b',
+    security: Colors.Warning.default,
     politics: colors.primary,
-    economy: '#22c55e',
-    sports: '#eab308',
+    economy: Colors.Success.s500,
+    sports: Colors.Special.gold,
     weather: colors.primary,
     culture: colors.secondary,
     conclusion: colors.textSecondary,
-    flashback: '#4f46e5',
-    journey: '#22c55e',
+    flashback: Colors.Primary.p600,
+    journey: Colors.Success.s500,
     climax: colors.error,
-    setup: '#f59e0b',
+    setup: Colors.Warning.default,
     action: colors.error,
-    conflict: '#f59e0b',
-    cliffhanger: '#8b5cf6',
+    conflict: Colors.Warning.default,
+    cliffhanger: Colors.Primary.p500,
     main: colors.primary,
   };
 

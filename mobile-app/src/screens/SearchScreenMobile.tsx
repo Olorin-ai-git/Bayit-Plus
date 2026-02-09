@@ -17,8 +17,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
-  Modal,
+  Pressable,
   ScrollView,
   Platform,
   RefreshControl,
@@ -30,10 +29,13 @@ import ReactNativeHapticFeedback from 'react-native-haptic-feedback';
 import { chatService } from '@bayit/shared-services';
 import { useAuthStore } from '@bayit/shared-stores';
 import { getLocalizedName } from '@bayit/shared-utils';
+import { GlassModal } from '@olorin/glass-ui/native';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { useResponsive } from '../hooks/useResponsive';
 import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { getGridColumns } from '../utils/responsive';
 import { colors } from '@olorin/design-tokens';
+import { Colors } from '../theme/colors';
 import type { RootStackParamList } from '../navigation/types';
 
 // Shared search components
@@ -211,15 +213,14 @@ export const SearchScreenMobile: React.FC = () => {
       <View className="px-6 pb-4 bg-black/40 border-b border-white/10">
         <View className="flex-row items-center gap-4 mb-4">
           {/* Back Button */}
-          <TouchableOpacity
+          <Pressable
             onPress={() => navigation.goBack()}
             className="w-10 h-10 items-center justify-center bg-white/10 rounded-full"
-            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={t('common.back')}
           >
-            <Text style={{ color: colors.text }} className="text-xl">
-              {isRTL ? '\u2192' : '\u2190'}
-            </Text>
-          </TouchableOpacity>
+            <NativeIcon name={isRTL ? 'arrowRight' : 'arrowLeft'} size="sm" color={colors.text} />
+          </Pressable>
 
           {/* Search Bar */}
           <View className="flex-1">
@@ -236,18 +237,19 @@ export const SearchScreenMobile: React.FC = () => {
           </View>
 
           {/* LLM Search Button (compact for mobile) */}
-          <TouchableOpacity
+          <Pressable
             onPress={() => setShowLLMSearch(true)}
             className="w-12 h-12 items-center justify-center bg-purple-500/30 rounded-full border border-purple-500/50"
-            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={t('search.aiSearch', { defaultValue: 'AI Search' })}
           >
-            <Text className="text-2xl">&#129302;</Text>
+            <NativeIcon name="ai" size="md" color={colors.primary} />
             {!isPremium && (
               <View className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full items-center justify-center">
                 <Text className="text-[10px] font-bold" style={{ color: colors.text }}>P</Text>
               </View>
             )}
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Content Type Filter Pills */}
@@ -259,7 +261,7 @@ export const SearchScreenMobile: React.FC = () => {
           {CONTENT_TYPE_FILTERS.map((filter) => {
             const isActive = activeContentType === filter.id;
             return (
-              <TouchableOpacity
+              <Pressable
                 key={filter.id}
                 onPress={() => handleContentTypeChange(filter.id)}
                 className={`px-6 py-2 rounded-full border ${
@@ -267,7 +269,8 @@ export const SearchScreenMobile: React.FC = () => {
                     ? 'bg-purple-500 border-purple-500/80'
                     : 'bg-white/5 border-white/10'
                 }`}
-                activeOpacity={0.7}
+                accessibilityRole="button"
+                accessibilityState={{ selected: isActive }}
               >
                 <Text
                   className={`text-sm font-medium ${
@@ -277,18 +280,19 @@ export const SearchScreenMobile: React.FC = () => {
                 >
                   {t(filter.label, { defaultValue: filter.id.toUpperCase() })}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
 
           {/* Advanced Filters Button */}
-          <TouchableOpacity
+          <Pressable
             onPress={() => setShowFilters(true)}
             className="px-6 py-2 rounded-full border border-white/20 bg-white/5"
-            activeOpacity={0.7}
+            accessibilityRole="button"
+            accessibilityLabel={t('search.moreFilters', { defaultValue: 'More Filters' })}
           >
             <View className="flex-row items-center gap-1">
-              <Text className="text-base">&#9881;&#65039;</Text>
+              <NativeIcon name="settings" size="xs" color={colors.textSecondary} />
               <Text className="text-sm font-medium" style={{ color: colors.textSecondary }}>
                 {t('search.moreFilters', { defaultValue: 'More' })}
               </Text>
@@ -296,7 +300,7 @@ export const SearchScreenMobile: React.FC = () => {
                 <View className="w-2 h-2 bg-blue-500 rounded-full ml-1" />
               )}
             </View>
-          </TouchableOpacity>
+          </Pressable>
         </ScrollView>
 
         {/* Active Filters Summary (compact for mobile) */}
@@ -325,16 +329,17 @@ export const SearchScreenMobile: React.FC = () => {
             )}
             {filters.ratingMin && (
               <View className="px-4 py-1 bg-yellow-500/30 rounded-full">
-                <Text className="text-xs text-yellow-300">{filters.ratingMin}+ &#11088;</Text>
+                <Text className="text-xs text-yellow-300">{filters.ratingMin}+</Text>
               </View>
             )}
-            <TouchableOpacity
+            <Pressable
               onPress={() => setFilters({ contentTypes: filters.contentTypes })}
               className="px-4 py-1 bg-red-500/30 rounded-full"
-              activeOpacity={0.7}
+              accessibilityRole="button"
+              accessibilityLabel={t('search.clearFilters', { defaultValue: 'Clear filters' })}
             >
-              <Text className="text-xs text-red-300">&#10005;</Text>
-            </TouchableOpacity>
+              <NativeIcon name="close" size="xs" color={Colors.Error.e400} />
+            </Pressable>
           </ScrollView>
         )}
       </View>
@@ -352,23 +357,23 @@ export const SearchScreenMobile: React.FC = () => {
           {recentSearches.length > 0 && (
             <View className="mb-8">
               <View className="flex-row items-center gap-2 mb-4">
-                <Text className="text-xl">&#128336;</Text>
+                <NativeIcon name="clock" size="sm" color={colors.textSecondary} />
                 <Text className="font-semibold text-base" style={{ color: colors.text }}>
                   {t('search.recentSearches', { defaultValue: 'Recent Searches' })}
                 </Text>
               </View>
               <View className="flex-row flex-wrap gap-2">
                 {recentSearches.map((recentQuery: string, idx: number) => (
-                  <TouchableOpacity
+                  <Pressable
                     key={idx}
                     onPress={() => handleRecentSearchClick(recentQuery)}
                     className="px-6 py-2 rounded-full bg-white/5 border border-white/10"
-                    activeOpacity={0.7}
+                    accessibilityRole="button"
                   >
                     <Text className="text-sm" style={{ color: colors.textSecondary }}>
                       {recentQuery}
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 ))}
               </View>
             </View>
@@ -378,33 +383,35 @@ export const SearchScreenMobile: React.FC = () => {
           {suggestions.length > 0 && (
             <View className="mb-8">
               <View className="flex-row items-center gap-2 mb-4">
-                <Text className="text-xl">&#128161;</Text>
+                <NativeIcon name="sparkles" size="sm" color={colors.primary} />
                 <Text className="font-semibold text-base" style={{ color: colors.text }}>
                   {t('search.suggestions', { defaultValue: 'Suggestions' })}
                 </Text>
               </View>
               {suggestions.map((suggestion: string, idx: number) => (
-                <TouchableOpacity
+                <Pressable
                   key={idx}
                   onPress={() => handleSuggestionClick(suggestion)}
                   className="mb-2 px-6 py-4 rounded-xl bg-white/5 border border-white/10"
-                  activeOpacity={0.7}
+                  accessibilityRole="button"
                 >
                   <View className="flex-row items-center gap-4">
-                    <Text className="text-lg">&#128269;</Text>
+                    <NativeIcon name="search" size="sm" color={colors.textSecondary} />
                     <Text className="flex-1 text-base" style={{ color: colors.text }}>
                       {suggestion}
                     </Text>
-                    <Text className="text-lg" style={{ color: colors.textTertiary }}>&#8598;</Text>
+                    <NativeIcon name="arrowUp" size="xs" color={colors.textSecondary} />
                   </View>
-                </TouchableOpacity>
+                </Pressable>
               ))}
             </View>
           )}
 
           {/* Initial Prompt */}
           <View className="items-center justify-center py-16">
-            <Text className="text-7xl mb-6">&#128269;</Text>
+            <View className="mb-6">
+              <NativeIcon name="search" size="xxl" color={colors.textSecondary} />
+            </View>
             <Text className="text-xl font-bold text-center mb-2" style={{ color: colors.text }}>
               {t('search.promptTitle', { defaultValue: 'Search for Content' })}
             </Text>
@@ -430,27 +437,18 @@ export const SearchScreenMobile: React.FC = () => {
       )}
 
       {/* Advanced Filters Bottom Sheet Modal */}
-      <Modal
+      <GlassModal
         visible={showFilters}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowFilters(false)}
+        onClose={() => setShowFilters(false)}
+        size="lg"
+        dismissable
       >
-        <View className="flex-1 bg-black/80">
-          <TouchableOpacity
-            activeOpacity={1}
-            onPress={() => setShowFilters(false)}
-            className="flex-1"
-          />
-          <View className="h-[80%] rounded-t-3xl overflow-hidden">
-            <SearchFilters
-              filters={filters}
-              onFiltersChange={setFilters}
-              onClose={() => setShowFilters(false)}
-            />
-          </View>
-        </View>
-      </Modal>
+        <SearchFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          onClose={() => setShowFilters(false)}
+        />
+      </GlassModal>
 
       {/* LLM Search Modal */}
       <LLMSearchModal

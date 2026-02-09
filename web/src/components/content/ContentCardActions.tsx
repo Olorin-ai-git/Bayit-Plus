@@ -87,28 +87,25 @@ export default function ContentCardActions({
       onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
       onMouseDown={(e) => { e.preventDefault(); e.stopPropagation(); }}
     >
-      <button
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label="Toggle favorite"
         onClick={onToggleFavorite}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onToggleFavorite(e as any); }}
         onMouseEnter={() => setFavoriteHovered(true)}
         onMouseLeave={() => setFavoriteHovered(false)}
-        disabled={favoriteLoading}
+        className="rounded-full backdrop-blur-lg flex justify-center items-center transition-all duration-200 cursor-pointer hover:scale-110 border border-white/10"
         style={{
           width: btnSize,
           height: btnSize,
-          borderRadius: btnRadius,
           backgroundColor: isFavorite
             ? 'rgba(255, 255, 255, 0.15)'
             : favoriteHovered
             ? 'rgba(255, 255, 255, 0.25)'
             : 'rgba(0, 0, 0, 0.6)',
-          border: 'none',
-          cursor: 'pointer',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backdropFilter: 'blur(8px)',
-          transition: 'all 0.2s ease',
-          transform: favoriteHovered ? 'scale(1.1)' : 'scale(1)',
+          opacity: favoriteLoading ? 0.5 : 1,
+          pointerEvents: favoriteLoading ? 'none' : 'auto',
         }}
       >
         <Star
@@ -116,29 +113,26 @@ export default function ContentCardActions({
           color={isFavorite ? colors.warning : colors.text}
           fill={isFavorite ? colors.warning : 'transparent'}
         />
-      </button>
-      <button
+      </div>
+      <div
+        role="button"
+        tabIndex={0}
+        aria-label="Toggle playlist"
         onClick={onTogglePlaylist}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onTogglePlaylist(e as any); }}
         onMouseEnter={() => setPlaylistHovered(true)}
         onMouseLeave={() => setPlaylistHovered(false)}
-        disabled={playlistLoading}
+        className="rounded-full backdrop-blur-lg flex justify-center items-center transition-all duration-200 cursor-pointer hover:scale-110 border border-white/10"
         style={{
           width: btnSize,
           height: btnSize,
-          borderRadius: btnRadius,
           backgroundColor: inPlaylist
             ? 'rgba(255, 255, 255, 0.15)'
             : playlistHovered
             ? 'rgba(255, 255, 255, 0.25)'
             : 'rgba(0, 0, 0, 0.6)',
-          border: 'none',
-          cursor: 'pointer',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          backdropFilter: 'blur(8px)',
-          transition: 'all 0.2s ease',
-          transform: playlistHovered ? 'scale(1.1)' : 'scale(1)',
+          opacity: playlistLoading ? 0.5 : 1,
+          pointerEvents: playlistLoading ? 'none' : 'auto',
         }}
       >
         <Bookmark
@@ -146,7 +140,7 @@ export default function ContentCardActions({
           color={inPlaylist ? colors.primary : colors.text}
           fill={inPlaylist ? colors.primary : 'transparent'}
         />
-      </button>
+      </div>
       <WidgetToggleButton
         contentType={widgetContentType}
         contentId={contentId}

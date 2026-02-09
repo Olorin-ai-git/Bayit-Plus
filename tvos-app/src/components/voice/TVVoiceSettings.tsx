@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { NativeIcon } from '@olorin/shared-icons/native';
 import { TVAvatarPreferences } from './TVAvatarPreferences';
 import { styles } from './styles/TVVoiceSettings.styles';
 
@@ -113,9 +114,12 @@ export const TVVoiceSettings: React.FC<TVVoiceSettingsProps> = ({
             },
           ]}
         >
-          <Text style={[styles.toggleIcon, { fontSize: 36 }]}>
-            {wakeWordEnabled ? '✓' : '○'}
-          </Text>
+          <NativeIcon
+            name={wakeWordEnabled ? 'check' : 'circle'}
+            size="lg"
+            color={wakeWordEnabled ? '#4ade80' : '#a3a3a3'}
+            context="tv"
+          />
           <Text style={styles.toggleLabel}>
             {wakeWordEnabled
               ? t('voice.enabled', 'Enabled')

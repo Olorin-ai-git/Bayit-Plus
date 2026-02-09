@@ -18,6 +18,7 @@ import { GlassView, GlassButton } from '@bayit/shared';
 import { useDirection } from '@bayit/shared-hooks';
 import { colors, spacing } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Colors } from '../../theme/colors';
 
 interface CreditBalanceWidgetProps {
   userId: string;
@@ -54,16 +55,16 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   statusGreen: {
-    backgroundColor: '#10B981',
+    backgroundColor: Colors.Success.default,
   },
   statusAmber: {
-    backgroundColor: '#F59E0B',
+    backgroundColor: Colors.Warning.default,
   },
   statusRed: {
-    backgroundColor: '#EF4444',
+    backgroundColor: Colors.Error.default,
   },
   statusGray: {
-    backgroundColor: '#6B7280',
+    backgroundColor: Colors.Dark.d500,
   },
   creditDisplay: {
     marginBottom: spacing[2],
@@ -79,13 +80,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   creditTotal: {
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: Colors.Text.secondary,
     fontSize: 14,
   },
   progressBarContainer: {
     width: '100%',
     height: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: Colors.Text.disabled,
     borderRadius: 4,
     overflow: 'hidden',
     marginBottom: spacing[4],
@@ -104,10 +105,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing[4],
   },
   warningCritical: {
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
   },
   warningLow: {
-    backgroundColor: 'rgba(245, 158, 11, 0.2)',
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
   },
   warningText: {
     fontSize: 14,
@@ -115,10 +116,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   warningTextCritical: {
-    color: '#FCA5A5',
+    color: Colors.Error.e400,
   },
   warningTextLow: {
-    color: '#FCD34D',
+    color: Colors.Warning.w400,
   },
   upgradeButton: {
     marginTop: spacing[2],
@@ -131,14 +132,14 @@ const styles = StyleSheet.create({
     paddingVertical: spacing[6],
   },
   loadingText: {
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: Colors.Text.secondary,
     marginTop: spacing[2],
   },
   errorContainer: {
     paddingVertical: spacing[6],
   },
   errorText: {
-    color: '#F87171',
+    color: Colors.Error.e400,
     fontSize: 14,
   },
 });
@@ -197,10 +198,10 @@ export const CreditBalanceWidget: React.FC<CreditBalanceWidgetProps> = ({
 
   // Determine progress bar color
   const progressBarColor = useMemo(() => {
-    if (!balance) return '#6B7280';
-    if (balance.is_critical) return '#EF4444';
-    if (balance.is_low) return '#F59E0B';
-    return '#10B981';
+    if (!balance) return Colors.Dark.d500;
+    if (balance.is_critical) return Colors.Error.default;
+    if (balance.is_low) return Colors.Warning.default;
+    return Colors.Success.default;
   }, [balance]);
 
   if (loading) {
@@ -284,7 +285,7 @@ export const CreditBalanceWidget: React.FC<CreditBalanceWidgetProps> = ({
           accessibilityRole="alert"
           accessibilityLiveRegion="assertive"
         >
-          <NativeIcon name="warning" size="sm" color="#FCA5A5" />
+          <NativeIcon name="warning" size="sm" color={Colors.Error.e400} />
           <Text style={[styles.warningText, styles.warningTextCritical]}>
             {t('beta.credits.warningCritical')}
           </Text>
@@ -298,7 +299,7 @@ export const CreditBalanceWidget: React.FC<CreditBalanceWidgetProps> = ({
           accessibilityRole="alert"
           accessibilityLiveRegion="polite"
         >
-          <NativeIcon name="warning" size="sm" color="#FCD34D" />
+          <NativeIcon name="warning" size="sm" color={Colors.Warning.w400} />
           <Text style={[styles.warningText, styles.warningTextLow]}>
             {t('beta.credits.warningLow')}
           </Text>

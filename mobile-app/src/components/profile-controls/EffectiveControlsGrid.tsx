@@ -7,6 +7,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { Colors } from '../../theme/colors';
 
 interface EffectiveControls {
   kids_enabled: boolean;
@@ -33,7 +34,7 @@ export function EffectiveControlsGrid({
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#ffffff" />
+        <ActivityIndicator size="large" color={Colors.white} />
       </View>
     );
   }
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#ffffff',
+    color: Colors.white,
     marginBottom: 16,
   },
   controlsGrid: {
@@ -138,21 +139,21 @@ const styles = StyleSheet.create({
   },
   controlCardLabel: {
     fontSize: 14,
-    color: '#d1d5db',
+    color: Colors.Dark.d300,
     marginBottom: 4,
   },
   controlCardValue: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#ffffff',
+    color: Colors.white,
   },
   controlCardDetail: {
     fontSize: 14,
-    color: '#9ca3af',
+    color: Colors.Dark.d400,
     marginTop: 4,
   },
   noControlsText: {
-    color: '#d1d5db',
+    color: Colors.Dark.d300,
     textAlign: 'center',
     fontSize: 14,
   },

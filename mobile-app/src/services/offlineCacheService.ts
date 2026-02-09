@@ -170,9 +170,9 @@ export const offlineCacheService = {
       }
 
       // Update index
-      const metadata = (await AsyncStorage.getItem(CACHE_METADATA_KEY)) as any;
-      if (metadata) {
-        const parsed: CacheMetadata = JSON.parse(metadata);
+      const metadataStr = await AsyncStorage.getItem(CACHE_METADATA_KEY);
+      if (metadataStr) {
+        const parsed: CacheMetadata = JSON.parse(metadataStr);
         Object.keys(parsed.entries).forEach((k) => {
           if (parsed.entries[k].category === category) {
             delete parsed.entries[k];
@@ -214,13 +214,13 @@ export const offlineCacheService = {
     byCategory: Record<string, { count: number; size: number }>;
   }> {
     try {
-      const metadata = (await AsyncStorage.getItem(CACHE_METADATA_KEY)) as any;
+      const metadataStr = await AsyncStorage.getItem(CACHE_METADATA_KEY);
 
-      if (!metadata) {
+      if (!metadataStr) {
         return { totalSize: 0, entriesCount: 0, byCategory: {} };
       }
 
-      const parsed: CacheMetadata = JSON.parse(metadata);
+      const parsed: CacheMetadata = JSON.parse(metadataStr);
       const byCategory: Record<string, { count: number; size: number }> = {};
 
       let totalSize = 0;
@@ -253,13 +253,13 @@ export const offlineCacheService = {
    */
   async cleanupExpired(): Promise<number> {
     try {
-      const metadata = (await AsyncStorage.getItem(CACHE_METADATA_KEY)) as any;
+      const metadataStr = await AsyncStorage.getItem(CACHE_METADATA_KEY);
 
-      if (!metadata) {
+      if (!metadataStr) {
         return 0;
       }
 
-      const parsed: CacheMetadata = JSON.parse(metadata);
+      const parsed: CacheMetadata = JSON.parse(metadataStr);
       const now = Date.now();
       let removed = 0;
 
@@ -327,13 +327,13 @@ export const offlineCacheService = {
     category: string
   ): Promise<void> {
     try {
-      const metadata = (await AsyncStorage.getItem(CACHE_METADATA_KEY)) as any;
+      const metadataStr = await AsyncStorage.getItem(CACHE_METADATA_KEY);
 
-      if (!metadata) {
+      if (!metadataStr) {
         return;
       }
 
-      const parsed: CacheMetadata = JSON.parse(metadata);
+      const parsed: CacheMetadata = JSON.parse(metadataStr);
       delete parsed.entries[`${category}:${key}`];
 
       await AsyncStorage.setItem(CACHE_METADATA_KEY, JSON.stringify(parsed));

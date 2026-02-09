@@ -26,6 +26,7 @@ import { languages as sharedLanguages } from '@bayit/i18n';
 import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding';
 import { spacing, colors, typography, touchTarget } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Colors } from '../theme/colors';
 
 type Language = {
   code: string;
@@ -105,14 +106,14 @@ export const LanguageSettingsScreen: React.FC = () => {
       onPress={() => onPress(language.code)}
       className="active:opacity-70"
     >
-      <GlassView className={`flex-row items-center justify-between py-3.5 px-4 rounded-xl mb-2 min-h-[48px] ${isSelected ? 'border-2 border-[#7e22ce]' : ''}`}>
+      <GlassView className={`flex-row items-center justify-between py-3.5 px-4 rounded-xl mb-2 min-h-[48px]`} style={isSelected ? { borderWidth: 2, borderColor: Colors.Primary.default } : undefined}>
         <View className="flex-1">
           <Text className="text-lg text-white font-semibold mb-0.5">{language.nativeName}</Text>
           <Text className="text-[13px] text-white/70">{language.name}</Text>
         </View>
         {isSelected && (
-          <View className="w-7 h-7 rounded-full bg-[#7e22ce] justify-center items-center">
-            <NativeIcon name="check" size="sm" color="#ffffff" />
+          <View className="w-7 h-7 rounded-full justify-center items-center" style={{ backgroundColor: Colors.Primary.default }}>
+            <NativeIcon name="check" size="sm" color={Colors.white} />
           </View>
         )}
       </GlassView>
@@ -120,7 +121,7 @@ export const LanguageSettingsScreen: React.FC = () => {
   );
 
   return (
-    <ScrollView className="flex-1 bg-[#0f0a1a]" contentContainerStyle={safeAreaPadding} contentContainerClassName="px-4 pb-24">
+    <ScrollView className="flex-1" style={{ backgroundColor: Colors.Background.primary }} contentContainerStyle={safeAreaPadding} contentContainerClassName="px-4 pb-24">
       {/* Header */}
       <View className="mb-6">
         <Text className="text-3xl font-bold text-white mb-1">{t('settings.language')}</Text>

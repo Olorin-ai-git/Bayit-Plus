@@ -229,7 +229,7 @@ export const FavoritesScreen: React.FC = () => {
       const data = await favoritesService.getFavorites();
       setFavorites(data.items || []);
     } catch (err) {
-      console.error('Failed to load favorites:', err);
+      logger.error('Failed to load favorites', 'FavoritesScreen', err);
       setFavorites([]);
     } finally {
       setIsLoading(false);

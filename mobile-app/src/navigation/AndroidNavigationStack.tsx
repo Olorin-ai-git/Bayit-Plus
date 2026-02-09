@@ -23,6 +23,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createDrawerNavigator, DrawerNavigationProp } from '@react-navigation/drawer'
 import { Platform, View, StyleSheet } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Colors } from '../theme/colors'
 
 // Import screens
 import HomeScreen from '@/screens/HomeScreen'
@@ -84,15 +85,15 @@ const Drawer = createDrawerNavigator()
 const screenOptions: NativeStackNavigationOptions = {
   headerShown: true,
   headerStyle: {
-    backgroundColor: '#000',
+    backgroundColor: Colors.black,
   },
-  headerTintColor: '#fff',
+  headerTintColor: Colors.white,
   headerTitleStyle: {
     fontWeight: 'bold',
     fontSize: 18,
   },
   cardStyle: {
-    backgroundColor: '#000',
+    backgroundColor: Colors.black,
   },
 }
 
@@ -106,11 +107,11 @@ function HomeTabsNavigator() {
     <BottomTab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: '#FF6B35',
-        tabBarInactiveTintColor: '#999',
+        tabBarActiveTintColor: Colors.Warning.default,
+        tabBarInactiveTintColor: Colors.Dark.d400,
         tabBarStyle: {
-          backgroundColor: '#0a0a0a',
-          borderTopColor: '#333',
+          backgroundColor: Colors.black,
+          borderTopColor: Colors.Dark.d700,
           borderTopWidth: 1,
           paddingBottom: insets.bottom + 8,
           height: 60 + insets.bottom,
@@ -170,18 +171,18 @@ function DrawerNavigator() {
       screenOptions={{
         headerShown: true,
         drawerStyle: {
-          backgroundColor: '#1a1a1a',
+          backgroundColor: Colors.Dark.d900,
           width: 280,
         },
         drawerLabelStyle: {
-          color: '#fff',
+          color: Colors.white,
         },
-        drawerActiveTintColor: '#FF6B35',
-        drawerInactiveTintColor: '#999',
+        drawerActiveTintColor: Colors.Warning.default,
+        drawerInactiveTintColor: Colors.Dark.d400,
         headerStyle: {
-          backgroundColor: '#000',
+          backgroundColor: Colors.black,
         },
-        headerTintColor: '#fff',
+        headerTintColor: Colors.white,
       }}
     >
       <Drawer.Screen
@@ -390,7 +391,7 @@ const linking = {
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: Colors.black,
     justifyContent: 'center',
     alignItems: 'center',
   },

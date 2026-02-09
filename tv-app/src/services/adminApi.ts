@@ -24,22 +24,30 @@ import {
 
 // API Base URL configuration
 const getBaseUrl = () => {
-  if (__DEV__) {
-    if (Platform.OS === 'web') {
-      return 'http://localhost:8000/api/v1';
-    } else if (Platform.OS === 'android') {
-      return 'http://10.0.2.2:8000/api/v1';
-    } else {
-      return 'http://localhost:8000/api/v1';
-    }
+  if (process.env.REACT_APP_API_BASE_URL) {
+    return process.env.REACT_APP_API_BASE_URL;
   }
-  return 'https://api.bayit.tv/api/v1';
+
+  if (!__DEV__) {
+    throw new Error(
+      '[tv-app AdminApi] REACT_APP_API_BASE_URL environment variable is required in production.',
+    );
+  }
+
+  if (Platform.OS === 'web') {
+    return 'http://localhost:8000/api/v1';
+  } else if (Platform.OS === 'android') {
+    return 'http://10.0.2.2:8000/api/v1';
+  }
+  return 'http://localhost:8000/api/v1';
 };
+
+const ADMIN_API_TIMEOUT = Number(process.env.BAYIT_ADMIN_API_TIMEOUT_MS) || (__DEV__ ? 15000 : (() => { throw new Error('[tv-app AdminApi] BAYIT_ADMIN_API_TIMEOUT_MS is required in production'); })());
 
 // Create admin API instance
 const adminApi = axios.create({
   baseURL: getBaseUrl(),
-  timeout: 15000,
+  timeout: ADMIN_API_TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
   },

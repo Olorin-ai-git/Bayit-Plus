@@ -175,7 +175,7 @@ export const SupportFAQ: React.FC = () => {
       const data = await response.json();
       setFaqItems(data.items || []);
     } catch (err) {
-      console.error('[SupportFAQ] Error loading FAQ:', err);
+      logger.error('Error loading FAQ', 'SupportFAQ', err);
       setError(t('support.faq.loadError', 'Failed to load FAQ'));
 
       // Set default FAQ items as fallback
@@ -225,7 +225,7 @@ export const SupportFAQ: React.FC = () => {
         body: JSON.stringify({ faq_id: faqId, helpful }),
       });
     } catch (err) {
-      console.error('[SupportFAQ] Error submitting feedback:', err);
+      logger.error('Error submitting feedback', 'SupportFAQ', err);
     }
   };
 

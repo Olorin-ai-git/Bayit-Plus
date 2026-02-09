@@ -10,12 +10,13 @@ import { useDirection } from '@bayit/shared-hooks'
 import { GlassView, GlassButton } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import logger from '@/utils/logger'
-import type { Audiobook, AudiobookFilters } from '@/types/audiobook'
+import type { Audiobook, AudiobookFilters } from '@bayit/shared-services/api/types'
 import audiobookService from '@/services/audiobookService'
 import { useResponsive } from '../hooks/useResponsive'
 import { useSafeAreaPadding } from '../hooks/useSafeAreaPadding'
 import AudiobookCardMobile from '../components/AudiobookCardMobile'
 import AudiobookFiltersMobile from '../components/AudiobookFiltersMobile'
+import { Colors } from '../theme/colors'
 
 export default function AudiobooksScreenMobile({ navigation }: any) {
   const { t } = useTranslation()
@@ -112,6 +113,6 @@ const styles = StyleSheet.create({
   listContent: { paddingVertical: spacing.md, gap: spacing.sm },
   emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.xl },
   emptyTitle: { fontSize: 18, fontWeight: '600', color: colors.text, marginBottom: spacing.md, textAlign: 'center' },
-  errorText: { fontSize: 14, color: '#ef4444', marginBottom: spacing.lg, textAlign: 'center' },
+  errorText: { fontSize: 14, color: Colors.Error.default, marginBottom: spacing.lg, textAlign: 'center' },
   loadingContainer: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.1)' },
 })

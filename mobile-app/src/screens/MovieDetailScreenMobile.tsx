@@ -32,14 +32,14 @@ import { getLocalizedName, getLocalizedDescription } from "@bayit/shared-utils";
 import { useDirection } from "@bayit/shared-hooks";
 import { spacing, colors, borderRadius } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Colors } from '../theme/colors';
 
 import logger from '@/utils/logger';
 
 
 const moduleLogger = logger.scope('MovieDetailScreenMobile');
 
-// Type assertion for LinearGradient React component
-const LinearGradientComponent = LinearGradient as any as React.FC<any>;
+const LinearGradientComponent = LinearGradient;
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
 const HERO_HEIGHT = SCREEN_HEIGHT * 0.45;
@@ -252,14 +252,14 @@ export const MovieDetailScreenMobile: React.FC = () => {
           {/* Header Actions */}
           <SafeAreaView className="absolute top-0 left-0 right-0 flex-row justify-between items-center px-3 pt-2">
             <TouchableOpacity onPress={handleBack} className="w-11 h-11 rounded-full bg-black/50 justify-center items-center">
-              <NativeIcon name="chevronLeft" size="lg" color="#ffffff" />
+              <NativeIcon name="chevronLeft" size="lg" color={Colors.Text.primary} />
             </TouchableOpacity>
             <View className="flex-row gap-2">
               <TouchableOpacity
                 onPress={handleShare}
                 className="w-11 h-11 rounded-full bg-black/50 justify-center items-center"
               >
-                <NativeIcon name="share" size="lg" color="#ffffff" />
+                <NativeIcon name="share" size="lg" color={Colors.Text.primary} />
               </TouchableOpacity>
             </View>
           </SafeAreaView>
@@ -304,7 +304,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
                 className="flex-row items-center"
                 style={{ flexDirection: isRTL ? "row-reverse" : "row" }}
               >
-                <View className="flex-row items-center bg-[#f5c518] px-2 py-1 rounded gap-1">
+                <View className="flex-row items-center bg-yellow-500 px-2 py-1 rounded gap-1">
                   <Text className="text-xs font-bold text-black">IMDb</Text>
                   <Text className="text-sm font-bold text-black">
                     {movie.imdb_rating.toFixed(1)}
@@ -333,9 +333,9 @@ export const MovieDetailScreenMobile: React.FC = () => {
             >
               <View className="mb-1">
                 {isInPlaylist ? (
-                  <NativeIcon name="check" size="lg" color="#a855f7" />
+                  <NativeIcon name="check" size="lg" color={Colors.Primary.p500} />
                 ) : (
-                  <NativeIcon name="plus" size="lg" color="#ffffff" />
+                  <NativeIcon name="plus" size="lg" color={Colors.Text.primary} />
                 )}
               </View>
               <Text className="text-xs text-white/60">
@@ -347,7 +347,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
               className="items-center min-w-[60px]"
             >
               <View className="mb-1">
-                <NativeIcon name="heart" size="lg" color={isInFavorites ? "#ef4444" : "#ffffff"} />
+                <NativeIcon name="heart" size="lg" color={isInFavorites ? Colors.Error.default : Colors.Text.primary} />
               </View>
               <Text className="text-xs text-white/60">
                 {t("content.favorite", "Favorite")}
@@ -358,7 +358,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
               className="items-center min-w-[60px]"
             >
               <View className="mb-1">
-                <NativeIcon name="share" size="lg" color="#ffffff" />
+                <NativeIcon name="share" size="lg" color={Colors.Text.primary} />
               </View>
               <Text className="text-xs text-white/60">
                 {t("content.share", "Share")}
@@ -467,7 +467,7 @@ export const MovieDetailScreenMobile: React.FC = () => {
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
           >
-            <NativeIcon name="play" size="md" color="#ffffff" />
+            <NativeIcon name="play" size="md" color={Colors.Text.primary} />
             <Text className="text-base font-semibold text-white">
               {t("content.watchNow", "Watch Now")}
             </Text>

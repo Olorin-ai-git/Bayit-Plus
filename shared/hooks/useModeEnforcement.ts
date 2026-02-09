@@ -11,6 +11,7 @@
 
 import { useEffect } from 'react';
 import { useVoiceSettingsStore, VoiceMode } from '../stores/voiceSettingsStore';
+import { logger } from '../utils/logger';
 
 interface ModeEnforcementState {
   isRemoteControlEnabled: boolean;
@@ -96,7 +97,7 @@ export function usePreventInteractionInVoiceOnly(): (callback?: () => void) => v
     if (isUIInteractionEnabled && callback) {
       callback();
     } else if (!isUIInteractionEnabled) {
-      console.debug('[Voice Mode] Interaction blocked: UI interactions disabled in current mode');
+      logger.debug('Interaction blocked: UI interactions disabled in current mode', 'VoiceMode');
     }
   };
 }

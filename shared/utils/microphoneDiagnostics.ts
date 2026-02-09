@@ -228,39 +228,27 @@ export async function printMicrophoneDiagnostics(): Promise<void> {
 
   // User-facing console output (diagnostic mode only)
   if (isDiagnosticMode) {
-    console.log('======================================');
-    console.log('   MICROPHONE DIAGNOSTICS REPORT');
-    console.log('======================================');
-
-    console.log('\n📋 Environment:');
-    console.log(`  • Secure context (HTTPS): ${diagnostics.isSecureContext ? '✅ Yes' : '❌ No'}`);
-    console.log(`  • Navigator API: ${diagnostics.hasNavigator ? '✅ Available' : '❌ Missing'}`);
-    console.log(`  • MediaDevices API: ${diagnostics.hasMediaDevices ? '✅ Available' : '❌ Missing'}`);
-    console.log(`  • getUserMedia: ${diagnostics.hasGetUserMedia ? '✅ Available' : '❌ Missing'}`);
-
-    console.log('\n🔐 Permission Status:', diagnostics.permissionStatus);
-
-    console.log('\n🎤 Audio Devices Found:', diagnostics.audioDevices.length);
+    micLogger.info('====================================== MICROPHONE DIAGNOSTICS REPORT ======================================');
+    micLogger.info(`Environment: Secure context (HTTPS): ${diagnostics.isSecureContext ? 'Yes' : 'No'}`);
+    micLogger.info(`Environment: Navigator API: ${diagnostics.hasNavigator ? 'Available' : 'Missing'}`);
+    micLogger.info(`Environment: MediaDevices API: ${diagnostics.hasMediaDevices ? 'Available' : 'Missing'}`);
+    micLogger.info(`Environment: getUserMedia: ${diagnostics.hasGetUserMedia ? 'Available' : 'Missing'}`);
+    micLogger.info(`Permission Status: ${diagnostics.permissionStatus}`);
+    micLogger.info(`Audio Devices Found: ${diagnostics.audioDevices.length}`);
     diagnostics.audioDevices.forEach((device, i) => {
-      console.log(`  ${i + 1}. ${device.label}`);
+      micLogger.info(`  ${i + 1}. ${device.label}`);
     });
-
-    console.log('\n✅ Can Access Microphone:', diagnostics.canAccessMicrophone ? 'Yes' : 'No');
-
+    micLogger.info(`Can Access Microphone: ${diagnostics.canAccessMicrophone ? 'Yes' : 'No'}`);
     if (diagnostics.error) {
-      console.log('\n❌ Error:', diagnostics.error);
+      micLogger.error(`Error: ${diagnostics.error}`);
     }
-
     if (diagnostics.recommendations.length > 0) {
-      console.log('\n💡 Recommendations:');
+      micLogger.info('Recommendations:');
       diagnostics.recommendations.forEach((rec) => {
-        console.log(`  ${rec}`);
+        micLogger.info(`  ${rec}`);
       });
     }
-
-    console.log('\n======================================');
-    console.log('   END OF DIAGNOSTICS REPORT');
-    console.log('======================================');
+    micLogger.info('====================================== END OF DIAGNOSTICS REPORT ======================================');
   }
 }
 
@@ -278,7 +266,7 @@ if (typeof window !== 'undefined') {
 
   // User-facing output (diagnostic mode only)
   if (isDiagnosticMode) {
-    console.log('[MicDiag] Microphone diagnostics loaded. Run window.runMicDiagnostics() to diagnose issues.');
+    micLogger.info('Microphone diagnostics loaded. Run window.runMicDiagnostics() to diagnose issues.');
   }
 }
 

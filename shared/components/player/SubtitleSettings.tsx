@@ -14,6 +14,7 @@ import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens';
 import { isTV, isWeb } from '../../utils/platform';
 import { useDirection } from '../../hooks/useDirection';
+import { logger } from '../../utils/logger';
 import {
   HebrewMode,
   isHebrewModePremium,
@@ -310,7 +311,7 @@ export const SubtitleSettings: React.FC<SubtitleSettingsProps> = ({
     try {
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
     } catch (error) {
-      console.error('Failed to save subtitle preferences:', error);
+      logger.error('Failed to save subtitle preferences', 'SubtitleSettings', error);
     }
 
     onPreferencesChange(preferences);
@@ -539,7 +540,7 @@ export const useSubtitlePreferences = (): SubtitlePreferences => {
           setPreferences(JSON.parse(saved));
         }
       } catch (error) {
-        console.error('Failed to load subtitle preferences:', error);
+        logger.error('Failed to load subtitle preferences', 'SubtitleSettings', error);
       }
     };
 

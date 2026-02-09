@@ -36,6 +36,7 @@ import { useResponsive } from '../hooks/useResponsive';
 import { getGridColumns } from '../utils/responsive';
 import { colors } from '@olorin/design-tokens';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import { Colors } from '../theme/colors';
 
 import logger from '@/utils/logger';
 
@@ -177,7 +178,7 @@ const SwipeableDownloadCard: React.FC<SwipeableDownloadCardProps> = ({
         className="absolute top-0 bottom-0 w-[40%] bg-red-500 justify-center items-center flex-col"
         style={isRTL ? { left: 0 } : { right: 0 }}
       >
-        <NativeIcon name="trash" size="lg" color="#ffffff" />
+        <NativeIcon name="trash" size="lg" color={Colors.white} />
         <Text className="text-white text-xs font-semibold mt-1">Delete</Text>
       </View>
 
@@ -197,7 +198,7 @@ const SwipeableDownloadCard: React.FC<SwipeableDownloadCardProps> = ({
               />
             ) : (
               <View className="w-full aspect-video bg-white/10 justify-center items-center">
-                <NativeIcon name={TYPE_ICON_NAMES[item.type] || 'download'} size="xl" color="#a855f7" />
+                <NativeIcon name={TYPE_ICON_NAMES[item.type] || 'download'} size="xl" color={Colors.Primary.p500} />
               </View>
             )}
 
@@ -215,7 +216,7 @@ const SwipeableDownloadCard: React.FC<SwipeableDownloadCardProps> = ({
               className="absolute top-2 bg-black/70 rounded-xl px-2 py-1"
               style={isRTL ? { left: 8 } : { right: 8 }}
             >
-              <NativeIcon name={TYPE_ICON_NAMES[item.type] || 'download'} size="xs" color="#ffffff" />
+              <NativeIcon name={TYPE_ICON_NAMES[item.type] || 'download'} size="xs" color={Colors.white} />
             </View>
 
             <View
@@ -367,7 +368,7 @@ export const DownloadsScreenMobile: React.FC = () => {
           className="w-12 h-12 rounded-full bg-purple-500/20 justify-center items-center"
           style={{ marginLeft: isRTL ? 16 : 0, marginRight: isRTL ? 0 : 16 }}
         >
-          <NativeIcon name="download" size="lg" color="#a855f7" />
+          <NativeIcon name="download" size="lg" color={Colors.Primary.p500} />
         </View>
         <View className="flex-1">
           <Text className="text-[28px] font-bold" style={{ color: colors.text, textAlign }}>
@@ -405,7 +406,7 @@ export const DownloadsScreenMobile: React.FC = () => {
   const renderEmptyState = () => (
     <View className="flex-1 justify-center items-center py-16 px-6">
       <View className="p-8 items-center bg-white/5 rounded-xl">
-        <NativeIcon name="download" size="xxl" color="#a855f7" style={{ marginBottom: 16 }} />
+        <NativeIcon name="download" size="xxl" color={Colors.Primary.p500} style={{ marginBottom: 16 }} />
         <Text className="text-lg font-semibold mb-2" style={{ color: colors.text, textAlign }}>
           {t('downloads.empty', 'No downloads yet')}
         </Text>

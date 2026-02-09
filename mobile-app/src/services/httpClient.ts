@@ -1,111 +1,46 @@
 /**
  * HTTP Client for Mobile App
- * Compatible with profile controls API and other authenticated services
+ *
+ * Re-exports the shared API client for backward compatibility.
+ * The shared client provides auth token injection, correlation IDs,
+ * CSRF protection, and security headers.
+ *
+ * New code should import from '@bayit/shared-services/api' directly.
  */
 
-import { getApiBaseUrl } from '../config/apiConfig';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const API_BASE_URL = getApiBaseUrl();
-const AUTH_TOKEN_KEY = '@bayit_auth_token';
+import { api } from '@bayit/shared-services/api';
 
 /**
- * HTTP Client with authentication support
- * Compatible with shared services that expect get/post methods
+ * HTTP Client compatible with shared services that expect get/post methods.
+ * Wraps the shared axios instance to match the { data: T } response shape
+ * expected by callers of the old httpClient.
  */
 class HttpClient {
-  private baseURL: string;
-
-  constructor(baseURL: string = API_BASE_URL) {
-    this.baseURL = baseURL;
-  }
-
-  /**
-   * Get authentication token from storage
-   */
-  private async getAuthToken(): Promise<string | null> {
-    try {
-      return await AsyncStorage.getItem(AUTH_TOKEN_KEY);
-    } catch (error) {
-      console.error('Failed to get auth token:', error);
-      return null;
-    }
-  }
-
-  /**
-   * Make authenticated request
-   */
-  private async request<T>(
-    endpoint: string,
-    options?: RequestInit
-  ): Promise<{ data: T }> {
-    const url = `${this.baseURL}${endpoint}`;
-    const token = await this.getAuthToken();
-
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-      ...options?.headers,
-    };
-
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.detail || `HTTP ${response.status}: ${response.statusText}`
-      );
-    }
-
-    const data = await response.json();
+  async get<T = unknown>(endpoint: string): Promise<{ data: T }> {
+    const data = await api.get<unknown, T>(endpoint);
     return { data };
   }
 
-  /**
-   * GET request
-   */
-  async get<T = any>(endpoint: string): Promise<{ data: T }> {
-    return this.request<T>(endpoint, {
-      method: 'GET',
-    });
+  async post<T = unknown>(endpoint: string, body?: unknown): Promise<{ data: T }> {
+    const data = await api.post<unknown, T>(endpoint, body);
+    return { data };
   }
 
-  /**
-   * POST request
-   */
-  async post<T = any>(endpoint: string, data?: any): Promise<{ data: T }> {
-    return this.request<T>(endpoint, {
-      method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
-    });
+  async put<T = unknown>(endpoint: string, body?: unknown): Promise<{ data: T }> {
+    const data = await api.put<unknown, T>(endpoint, body);
+    return { data };
   }
 
-  /**
-   * PUT request
-   */
-  async put<T = any>(endpoint: string, data?: any): Promise<{ data: T }> {
-    return this.request<T>(endpoint, {
-      method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
-    });
+  async patch<T = unknown>(endpoint: string, body?: unknown): Promise<{ data: T }> {
+    const data = await api.patch<unknown, T>(endpoint, body);
+    return { data };
   }
 
-  /**
-   * DELETE request
-   */
-  async delete<T = any>(endpoint: string): Promise<{ data: T }> {
-    return this.request<T>(endpoint, {
-      method: 'DELETE',
-    });
+  async delete<T = unknown>(endpoint: string): Promise<{ data: T }> {
+    const data = await api.delete<unknown, T>(endpoint);
+    return { data };
   }
 }
 
-// Export singleton instance
 export const httpClient = new HttpClient();
 export default httpClient;

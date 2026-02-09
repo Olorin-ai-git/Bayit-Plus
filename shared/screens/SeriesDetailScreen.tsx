@@ -110,11 +110,11 @@ export default function SeriesDetailScreen() {
           setRecommendations(recs);
         }
       } catch (error) {
-        console.error('Failed to load recommendations:', error);
+        logger.error('Failed to load recommendations', 'SeriesDetailScreen', error);
         // Non-blocking error - continue without recommendations
       }
     } catch (error) {
-      console.error('Failed to load series:', error);
+      logger.error('Failed to load series', 'SeriesDetailScreen', error);
     } finally {
       setLoading(false);
     }
@@ -129,7 +129,7 @@ export default function SeriesDetailScreen() {
         setSelectedEpisode(data.episodes[0]);
       }
     } catch (error) {
-      console.error('Failed to load episodes:', error);
+      logger.error('Failed to load episodes', 'SeriesDetailScreen', error);
     } finally {
       setEpisodesLoading(false);
     }
@@ -162,7 +162,7 @@ export default function SeriesDetailScreen() {
 
   const handleCastPress = (castMember: any) => {
     // Navigate to cast member details (future enhancement)
-    console.log('Cast member pressed:', castMember.name);
+    logger.debug('Cast member pressed: ' + castMember.name, 'SeriesDetailScreen');
   };
 
   const handleRecommendationPress = (item: any) => {

@@ -104,7 +104,7 @@ export const SupportCategories: React.FC = () => {
 
       setDocCategories(categories);
     } catch (err) {
-      console.error('[SupportCategories] Error loading categories:', err);
+      logger.error('Error loading categories', 'SupportCategories', err);
       setError(t('support.categories.loadError', 'Failed to load categories'));
 
       // Set default categories for fallback

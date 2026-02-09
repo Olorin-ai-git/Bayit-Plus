@@ -111,7 +111,7 @@ export default function MorningRitualScreen() {
         }
       }, 6000);
     } catch (err) {
-      console.error('Failed to fetch ritual data:', err);
+      logger.error('Failed to fetch ritual data', 'MorningRitualScreen', err);
       handleExit();
     } finally {
       setLoading(false);
@@ -122,7 +122,7 @@ export default function MorningRitualScreen() {
     try {
       await ritualService.skipToday();
     } catch (err) {
-      console.error('Failed to skip ritual:', err);
+      logger.error('Failed to skip ritual', 'MorningRitualScreen', err);
     }
     handleExit();
   };

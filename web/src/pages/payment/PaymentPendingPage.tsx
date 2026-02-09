@@ -13,6 +13,7 @@
  */
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { GlassButton } from '@bayit/glass-components';
 import { useAuthStore } from '@/stores/authStore';
 import logger from '@/utils/logger';
 
@@ -127,8 +128,9 @@ export default function PaymentPendingPage({ checkoutUrl, planId }: Props) {
           )}
 
           {/* Continue to Payment Button */}
-          <button
-            onClick={handleGenerateCheckout}
+          <GlassButton
+            variant="primary"
+            onPress={handleGenerateCheckout}
             disabled={generating}
             className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none mb-4"
           >
@@ -159,15 +161,16 @@ export default function PaymentPendingPage({ checkoutUrl, planId }: Props) {
             ) : (
               t('continueToPayment')
             )}
-          </button>
+          </GlassButton>
 
           {/* Logout Button */}
-          <button
-            onClick={handleLogout}
+          <GlassButton
+            variant="secondary"
+            onPress={handleLogout}
             className="w-full bg-white/10 hover:bg-white/20 text-white font-medium py-3 px-6 rounded-xl border border-white/30 transition-all duration-200"
           >
             {t('common.logout')}
-          </button>
+          </GlassButton>
 
           {/* Help Text */}
           <p className="text-xs text-gray-500 text-center mt-6">

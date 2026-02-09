@@ -78,7 +78,7 @@ const scrubObject = (obj: Record<string, unknown>): void => {
  */
 export const initSentry = (): boolean => {
   if (!SENTRY_DSN) {
-    console.info("[Sentry] DSN not configured - error tracking disabled");
+    logger.info('DSN not configured - error tracking disabled', 'Sentry');
     return false;
   }
 
@@ -155,7 +155,7 @@ export const initSentry = (): boolean => {
     moduleLogger.info(`[Sentry] Initialized - environment: ${SENTRY_ENVIRONMENT}`);
     return true;
   } catch (error) {
-    console.error("[Sentry] Failed to initialize:", error);
+    logger.error('Failed to initialize', 'Sentry', error);
     return false;
   }
 };

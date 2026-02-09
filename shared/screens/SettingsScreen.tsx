@@ -157,7 +157,7 @@ export default function SettingsScreen() {
           setDataSaver(savedDataSaver === 'true');
         }
       } catch (error) {
-        console.error('Failed to load video preferences:', error);
+        logger.error('Failed to load video preferences', 'SettingsScreen', error);
       }
     };
 
@@ -207,7 +207,7 @@ export default function SettingsScreen() {
           setContentRating(savedRating);
         }
       } catch (error) {
-        console.error('Failed to load parental controls:', error);
+        logger.error('Failed to load parental controls', 'SettingsScreen', error);
       }
     };
 
@@ -332,7 +332,7 @@ export default function SettingsScreen() {
           setAutoDownloadNextEpisode(savedAutoDownload === 'true');
         }
       } catch (error) {
-        console.error('Failed to load download preferences:', error);
+        logger.error('Failed to load download preferences', 'SettingsScreen', error);
       }
     };
 
@@ -390,7 +390,7 @@ export default function SettingsScreen() {
           setReducedMotion(savedReducedMotion === 'true');
         }
       } catch (error) {
-        console.error('Failed to load accessibility preferences:', error);
+        logger.error('Failed to load accessibility preferences', 'SettingsScreen', error);
       }
     };
 

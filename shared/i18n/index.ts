@@ -24,6 +24,7 @@ import ja from './locales/ja.json';
 
 import type { LanguageCode, LanguageInfo } from './types';
 import { getInitialLanguageWeb } from './web';
+import { logger } from '../utils/logger';
 
 // Language metadata matching Olorin ecosystem standards
 export const languages: LanguageInfo[] = [
@@ -105,7 +106,7 @@ export const loadSavedLanguage = async (): Promise<void> => {
       }
     }
   } catch (error) {
-    console.warn('Error loading saved language:', error);
+    logger.warn('Error loading saved language', 'I18n', error);
   }
 };
 
@@ -135,7 +136,7 @@ export const saveLanguage = async (lang: LanguageCode): Promise<void> => {
 
     await i18n.changeLanguage(lang);
   } catch (error) {
-    console.warn('Error saving language:', error);
+    logger.warn('Error saving language', 'I18n', error);
   }
 };
 

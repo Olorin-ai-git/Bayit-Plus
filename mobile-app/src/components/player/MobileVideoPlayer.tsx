@@ -14,6 +14,7 @@ import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { View, Text, ActivityIndicator, Pressable } from 'react-native';
 import Video, { VideoRef } from 'react-native-video';
 import { Play, Pause } from 'lucide-react-native';
+import { Colors } from '../../theme/colors';
 import logger from '@/utils/logger';
 import { useCastSession } from './hooks/useCastSession';
 import CastButton from './controls/CastButton';
@@ -162,7 +163,7 @@ export default function MobileVideoPlayer({
       {/* Loading Indicator */}
       {loading && (
         <View className="absolute inset-0 justify-center items-center bg-black/70">
-          <ActivityIndicator size="large" color="#fff" />
+          <ActivityIndicator size="large" color={Colors.white} />
           <Text className="mt-3 text-sm text-white font-medium">Loading...</Text>
         </View>
       )}
@@ -170,7 +171,7 @@ export default function MobileVideoPlayer({
       {/* Error State */}
       {error && (
         <View className="absolute inset-0 justify-center items-center bg-black/70">
-          <Text className="text-sm text-[#ff4444] font-medium text-center px-5">{error}</Text>
+          <Text className="text-sm font-medium text-center px-5" style={{ color: Colors.Special.live }}>{error}</Text>
         </View>
       )}
 
@@ -179,7 +180,7 @@ export default function MobileVideoPlayer({
         {showControls && !loading && !error && (
           <View className="absolute inset-0 justify-center items-center bg-black/30">
             <Pressable className="w-16 h-16 rounded-full bg-white/20 justify-center items-center" onPress={togglePlayPause}>
-              {isPlaying ? <Pause size={32} color="#fff" /> : <Play size={32} color="#fff" />}
+              {isPlaying ? <Pause size={32} color={Colors.white} /> : <Play size={32} color={Colors.white} />}
             </Pressable>
 
             {/* Live Indicator */}
