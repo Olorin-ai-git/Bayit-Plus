@@ -12,6 +12,7 @@ struct GlassAIFeaturesPanel: View {
     let isExpanded: Bool
     let onToggleExpand: () -> Void
     let currentLanguageCode: String
+    let splitLanguages: [String]
     let isLiveContent: Bool
     let isSplitLanguagesReady: Bool
     let onLanguageBadgeTap: () -> Void
@@ -97,18 +98,37 @@ struct GlassAIFeaturesPanel: View {
             UIImpactFeedbackGenerator(style: .light).impactOccurred()
             onLanguageBadgeTap()
         } label: {
-            Text(SubtitleLanguages.flag(for: currentLanguageCode))
-                .font(.system(size: 11, weight: .bold))
-                .foregroundStyle(DesignTokens.Text.primary)
-                .frame(width: 28, height: 28)
+            if isSplitEnabled, splitLanguages.count == 2 {
+                HStack(spacing: 1) {
+                    Text(SubtitleLanguages.emojiFlag(for: splitLanguages[0]))
+                        .font(.system(size: 13))
+                    Text(SubtitleLanguages.emojiFlag(for: splitLanguages[1]))
+                        .font(.system(size: 13))
+                }
+                .padding(.horizontal, 4)
+                .frame(height: 28)
                 .background(DesignTokens.Primary.p800.opacity(0.3))
-                .clipShape(Circle())
+                .clipShape(Capsule())
+            } else {
+                Text(SubtitleLanguages.emojiFlag(for: currentLanguageCode))
+                    .font(.system(size: 16))
+                    .frame(width: 28, height: 28)
+                    .background(DesignTokens.Primary.p800.opacity(0.3))
+                    .clipShape(Circle())
+            }
         }
         .padding(.leading, DesignTokens.Spacing.sm)
-        .accessibilityLabel(
-            localization.t("player.currentLanguage") + ": "
+        .accessibilityLabel(splitLanguageBadgeAccessibilityLabel)
+    }
+
+    private var splitLanguageBadgeAccessibilityLabel: String {
+        if isSplitEnabled, splitLanguages.count == 2 {
+            let name0 = SubtitleLanguages.info(for: splitLanguages[0])?.name ?? splitLanguages[0]
+            let name1 = SubtitleLanguages.info(for: splitLanguages[1])?.name ?? splitLanguages[1]
+            return localization.t("player.currentLanguage") + ": \(name0) + \(name1)"
+        }
+        return localization.t("player.currentLanguage") + ": "
             + (SubtitleLanguages.info(for: currentLanguageCode)?.name ?? currentLanguageCode)
-        )
     }
 
     private var panelDivider: some View {

@@ -5,9 +5,9 @@ import SwiftUI
 
 /// Full language picker sheet for selecting the unified AI target language.
 ///
-/// Always shows all available languages from `SubtitleLanguages.all` with flags and names.
-/// Includes a "Split Screen" button that toggles dual-selection mode for choosing a
-/// secondary language used in split subtitles.
+/// Shows a single list of languages with flags and names.
+/// A "Split Screen" toggle reveals checkboxes for multi-select (exactly 2 languages)
+/// with a sticky "Confirm" button at the bottom.
 struct GlassAILanguagePickerView: View {
 
     let selectedLanguage: String
@@ -18,21 +18,25 @@ struct GlassAILanguagePickerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(LocalizationManager.self) private var localization
     @State private var isSplitSelectionMode = false
+    @State private var splitSelections: Set<String> = []
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: DesignTokens.Spacing.sm) {
-                    splitScreenToggle
-                    if isSplitSelectionMode {
-                        sectionHeader(localization.t("player.primaryLanguage"))
+            VStack(spacing: 0) {
+                ScrollView {
+                    VStack(spacing: DesignTokens.Spacing.sm) {
+                        splitScreenToggle
+                        if isSplitSelectionMode {
+                            splitHint
+                        }
+                        languageList
                     }
-                    primaryLanguageList
-                    if isSplitSelectionMode {
-                        secondaryLanguageSection
-                    }
+                    .padding(DesignTokens.Spacing.lg)
                 }
-                .padding(DesignTokens.Spacing.lg)
+
+                if isSplitSelectionMode {
+                    confirmButton
+                }
             }
             .background(DesignTokens.Background.primary)
             .navigationTitle(localization.t("player.selectOutputLanguage"))
@@ -42,6 +46,7 @@ struct GlassAILanguagePickerView: View {
             }
         }
         .environment(\.layoutDirection, localization.layoutDirection)
+        .onAppear { initializeSplitSelections() }
     }
 
     // MARK: - Split Screen Toggle
@@ -50,6 +55,9 @@ struct GlassAILanguagePickerView: View {
         Button {
             withAnimation(.spring(duration: 0.25)) {
                 isSplitSelectionMode.toggle()
+                if isSplitSelectionMode {
+                    initializeSplitSelections()
+                }
             }
         } label: {
             HStack(spacing: DesignTokens.Spacing.sm) {
@@ -85,93 +93,133 @@ struct GlassAILanguagePickerView: View {
         }
     }
 
-    // MARK: - Primary Language List
+    private var splitHint: some View {
+        Text(localization.t("player.dualLanguageHint"))
+            .font(.system(size: DesignTokens.FontSize.sm))
+            .foregroundStyle(DesignTokens.Text.muted)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, DesignTokens.Spacing.xs)
+            .padding(.bottom, DesignTokens.Spacing.xs)
+    }
 
-    private var primaryLanguageList: some View {
+    // MARK: - Language List
+
+    private var languageList: some View {
         ForEach(SubtitleLanguages.all, id: \.code) { info in
-            languageRow(
+            if isSplitSelectionMode {
+                splitLanguageRow(info: info)
+            } else {
+                singleLanguageRow(info: info)
+            }
+        }
+    }
+
+    // MARK: - Single Select Row
+
+    private func singleLanguageRow(info: SubtitleLanguageInfo) -> some View {
+        Button {
+            onSelectLanguage(info.code)
+            dismiss()
+        } label: {
+            languageRowContent(
                 info: info,
                 isSelected: info.code == selectedLanguage,
-                onSelect: { code in
-                    onSelectLanguage(code)
-                    if !isSplitSelectionMode { dismiss() }
-                }
+                showCheckbox: false
             )
-        }
-    }
-
-    // MARK: - Secondary Language Section
-
-    private var secondaryLanguageSection: some View {
-        VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Divider()
-                .background(DesignTokens.Text.muted.opacity(0.3))
-                .padding(.vertical, DesignTokens.Spacing.sm)
-            sectionHeader(localization.t("player.secondaryLanguage"))
-            Text(localization.t("player.dualLanguageHint"))
-                .font(.system(size: DesignTokens.FontSize.sm))
-                .foregroundStyle(DesignTokens.Text.muted)
-                .padding(.horizontal, DesignTokens.Spacing.xs)
-            ForEach(secondaryLanguageRows, id: \.code) { info in
-                languageRow(
-                    info: info,
-                    isSelected: info.code == secondaryLanguage,
-                    onSelect: { code in onSelectSecondaryLanguage?(code) }
-                )
-            }
-        }
-    }
-
-    // MARK: - Language Row
-
-    private func languageRow(
-        info: SubtitleLanguageInfo,
-        isSelected: Bool,
-        onSelect: @escaping (String) -> Void
-    ) -> some View {
-        Button { onSelect(info.code) } label: {
-            HStack(spacing: DesignTokens.Spacing.md) {
-                badgeView(info.badge)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(info.nativeName)
-                        .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
-                        .foregroundStyle(DesignTokens.Text.primary)
-                    Text(info.name)
-                        .font(.system(size: DesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Text.muted)
-                }
-                Spacer()
-                if isSelected {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(DesignTokens.Primary.p400)
-                }
-            }
-            .padding(DesignTokens.Spacing.md)
-            .background(rowBackground(isSelected: isSelected))
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("\(info.name)")
-        .accessibilityValue(isSelected ? "Selected" : "")
+        .accessibilityLabel(info.name)
+        .accessibilityValue(info.code == selectedLanguage ? "Selected" : "")
     }
 
-    // MARK: - Subviews
+    // MARK: - Split Checkbox Row
 
-    private func badgeView(_ badge: String) -> some View {
-        Text(badge)
-            .font(.system(size: DesignTokens.FontSize.sm, weight: .bold))
-            .foregroundStyle(.white)
-            .frame(width: 32, height: 24)
-            .background(DesignTokens.Primary.p700)
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+    private func splitLanguageRow(info: SubtitleLanguageInfo) -> some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.15)) {
+                toggleSplitSelection(info.code)
+            }
+        } label: {
+            languageRowContent(
+                info: info,
+                isSelected: splitSelections.contains(info.code),
+                showCheckbox: true
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(info.name)
+        .accessibilityValue(splitSelections.contains(info.code) ? "Checked" : "Unchecked")
     }
 
-    private func sectionHeader(_ title: String) -> some View {
-        Text(title)
-            .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
-            .foregroundStyle(DesignTokens.Text.primary)
-            .padding(.horizontal, DesignTokens.Spacing.xs)
+    // MARK: - Shared Row Content
+
+    private func languageRowContent(
+        info: SubtitleLanguageInfo,
+        isSelected: Bool,
+        showCheckbox: Bool
+    ) -> some View {
+        HStack(spacing: DesignTokens.Spacing.md) {
+            if showCheckbox {
+                Image(systemName: isSelected ? "checkmark.square.fill" : "square")
+                    .font(.system(size: 20))
+                    .foregroundStyle(
+                        isSelected ? DesignTokens.Primary.p400 : DesignTokens.Text.muted
+                    )
+            }
+            Text(info.emojiFlag)
+                .font(.system(size: 20))
+                .frame(width: 32, height: 28)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(info.nativeName)
+                    .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
+                    .foregroundStyle(DesignTokens.Text.primary)
+                Text(info.name)
+                    .font(.system(size: DesignTokens.FontSize.sm))
+                    .foregroundStyle(DesignTokens.Text.muted)
+            }
+            Spacer()
+            if !showCheckbox, isSelected {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundStyle(DesignTokens.Primary.p400)
+            }
+        }
+        .padding(DesignTokens.Spacing.md)
+        .background(rowBackground(isSelected: isSelected))
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+    }
+
+    // MARK: - Confirm Button
+
+    private var confirmButton: some View {
+        VStack(spacing: 0) {
+            Divider().background(DesignTokens.Glass.border)
+            Button {
+                confirmSplitSelection()
+            } label: {
+                Text(localization.t("common.confirm"))
+                    .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, DesignTokens.Spacing.md)
+                    .background(confirmButtonBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+            }
+            .disabled(splitSelections.count != 2)
+            .padding(DesignTokens.Spacing.lg)
+        }
+        .background(DesignTokens.Background.primary)
+    }
+
+    private var confirmButtonBackground: some View {
+        Group {
+            if splitSelections.count == 2 {
+                DesignTokens.Primary.p500
+            } else {
+                DesignTokens.Primary.p800.opacity(0.5)
+            }
+        }
     }
 
     private var dismissButton: some View {
@@ -185,8 +233,44 @@ struct GlassAILanguagePickerView: View {
 
     // MARK: - Helpers
 
-    private var secondaryLanguageRows: [SubtitleLanguageInfo] {
-        SubtitleLanguages.all.filter { $0.code != selectedLanguage }
+    private func initializeSplitSelections() {
+        var initial: Set<String> = [selectedLanguage]
+        if let sec = secondaryLanguage {
+            initial.insert(sec)
+        }
+        splitSelections = initial
+    }
+
+    private func toggleSplitSelection(_ code: String) {
+        if splitSelections.contains(code) {
+            splitSelections.remove(code)
+        } else if splitSelections.count < 2 {
+            splitSelections.insert(code)
+        } else {
+            // Already 2 selected: replace the one that isn't the first-selected
+            let sorted = Array(splitSelections).sorted()
+            if let toRemove = sorted.last {
+                splitSelections.remove(toRemove)
+            }
+            splitSelections.insert(code)
+        }
+    }
+
+    private func confirmSplitSelection() {
+        let langs = Array(splitSelections)
+        guard langs.count == 2 else { return }
+        // The primary language drives the WebSocket target.
+        // If one language matches the live source ("he"), make the OTHER the primary
+        // so the WebSocket translates to a different language, not source→source.
+        let sourceLang = "he"
+        if langs[0] == sourceLang, langs[1] != sourceLang {
+            onSelectLanguage(langs[1])
+            onSelectSecondaryLanguage?(langs[0])
+        } else {
+            onSelectLanguage(langs[0])
+            onSelectSecondaryLanguage?(langs[1])
+        }
+        dismiss()
     }
 
     private func rowBackground(isSelected: Bool) -> some View {

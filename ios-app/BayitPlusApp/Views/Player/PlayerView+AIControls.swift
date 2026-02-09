@@ -21,6 +21,7 @@ extension PlayerView {
                 }
             },
             currentLanguageCode: selectedAILanguage,
+            splitLanguages: splitLanguages,
             isLiveContent: mediaContentType.isLive,
             isSplitLanguagesReady: selectedSecondaryLanguage != nil,
             onLanguageBadgeTap: { showAILanguagePicker = true },
@@ -107,13 +108,28 @@ extension PlayerView {
 
         if mediaContentType.isLive {
             guard let secondary = selectedSecondaryLanguage else { return }
+            let sourceLang = liveSubtitlesVM?.sourceLang ?? "he"
+
+            // For live split, the WebSocket target must differ from the source.
+            // Determine the non-source language to use as translation target.
+            let targetLang: String
+            if selectedAILanguage != sourceLang {
+                targetLang = selectedAILanguage
+            } else {
+                targetLang = secondary
+            }
+
             // Auto-enable live translate if not active
             if selectedSubtitleLanguage == nil {
                 if liveDubbingVM?.isEnabled == true {
                     liveDubbingVM?.toggleDubbing(channelId: contentId)
                 }
-                handleSubtitleSelection(selectedAILanguage)
+                handleSubtitleSelection(targetLang)
+            } else if liveSubtitlesVM?.selectedLanguage != targetLang {
+                liveSubtitlesVM?.selectLanguage(targetLang, channelId: contentId)
             }
+
+            selectedAILanguage = targetLang
             splitLanguages = [selectedAILanguage, secondary]
             splitModeEnabled = true
             Task { await loadSplitSubtitleCues() }

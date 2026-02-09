@@ -24,7 +24,7 @@ final class LiveSubtitlesViewModel {
     private var cueObserveTask: Task<Void, Never>?
     private let logger = BayitLogger(category: "LiveSubtitles")
     private let cueDuration: Duration = .seconds(5)
-    private let defaultSourceLang = "he"
+    let sourceLang = "he"
 
     init(webSocketService: LiveSubtitlesWebSocketService, authManager: AuthManager? = nil) {
         self.webSocketService = webSocketService
@@ -55,7 +55,7 @@ final class LiveSubtitlesViewModel {
             webSocketService.connect(
                 channelId: channelId,
                 targetLanguage: selectedLanguage,
-                sourceLang: defaultSourceLang
+                sourceLang: sourceLang
             )
             isEnabled = true
             observeConnection()
@@ -71,7 +71,7 @@ final class LiveSubtitlesViewModel {
             webSocketService.connect(
                 channelId: channelId,
                 targetLanguage: language,
-                sourceLang: defaultSourceLang
+                sourceLang: sourceLang
             )
             observeConnection()
         }
@@ -121,6 +121,7 @@ final class LiveSubtitlesViewModel {
         cueObserveTask?.cancel()
         cueObserveTask = Task { @MainActor in
             var lastCueTimestamp: Double?
+            var lastCueIsPartial: Bool?
 
             while isEnabled && !Task.isCancelled {
                 if webSocketService.isQuotaExceeded {
@@ -131,8 +132,10 @@ final class LiveSubtitlesViewModel {
                     break
                 }
                 if let cue = webSocketService.currentCue,
-                   cue.timestamp != lastCueTimestamp {
+                   cue.timestamp != lastCueTimestamp
+                    || cue.isPartial != lastCueIsPartial {
                     lastCueTimestamp = cue.timestamp
+                    lastCueIsPartial = cue.isPartial
                     handleCue(cue)
                 }
                 try? await Task.sleep(for: .milliseconds(200))
@@ -142,8 +145,15 @@ final class LiveSubtitlesViewModel {
 
     @MainActor
     private func handleCue(_ cue: LiveSubtitleCueData) {
-        activeCueText = cue.text ?? ""
-        originalCueText = cue.originalText
+        if cue.isPartial == true {
+            // Partial (pre-translation) cues only carry source-language text.
+            // Update the original pane immediately; the translated pane waits
+            // for the final subtitle so it never shows the wrong language.
+            originalCueText = cue.originalText
+        } else {
+            activeCueText = cue.text ?? ""
+            originalCueText = cue.originalText
+        }
         showOverlay = true
 
         cueDismissTask?.cancel()

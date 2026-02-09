@@ -7,6 +7,8 @@ struct LiveSubtitleOverlayView: View {
     let translatedText: String
     let originalText: String?
     let isVisible: Bool
+    /// Distance from the bottom edge to clear player controls and AI panel.
+    var bottomInset: CGFloat = DesignTokens.Spacing.xxxl
 
     var body: some View {
         VStack {
@@ -32,7 +34,7 @@ struct LiveSubtitleOverlayView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .padding(.horizontal, DesignTokens.Spacing.lg)
-                .padding(.bottom, DesignTokens.Spacing.xxxl)
+                .padding(.bottom, bottomInset)
                 .transition(.opacity.combined(with: .move(edge: .bottom)))
                 .accessibilityElement(children: .combine)
                 .accessibilityLabel(accessibilityDescription)

@@ -16,6 +16,7 @@ interface UseSplitSubtitlesOptions {
   hebrewMode: HebrewMode
   englishMode: EnglishMode
   subtitlesEnabled: boolean
+  isLive?: boolean
   setSplitMode: (mode: boolean) => void
   setSplitLanguages: (langs: SplitLanguages | null) => void
   setSubtitlesEnabled: (enabled: boolean) => void
@@ -28,6 +29,7 @@ export function useSplitSubtitles({
   hebrewMode,
   englishMode,
   subtitlesEnabled,
+  isLive = false,
   setSplitMode,
   setSplitLanguages,
   setSubtitlesEnabled,
@@ -42,7 +44,7 @@ export function useSplitSubtitles({
 
   // Fetch cues for both languages when split mode is active
   useEffect(() => {
-    if (!contentId || !splitMode || !splitLanguages || !subtitlesEnabled) {
+    if (!contentId || !splitMode || !splitLanguages || !subtitlesEnabled || isLive) {
       setSplitCues({ primary: [], secondary: [] })
       return
     }

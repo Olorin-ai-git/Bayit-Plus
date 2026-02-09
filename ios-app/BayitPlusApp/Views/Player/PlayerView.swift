@@ -135,18 +135,30 @@ struct PlayerView: View {
                 .allowsHitTesting(false)
             }
 
-            // Live subtitle overlay (above dubbing overlay, below controls)
+            // Live subtitle overlay: split (side-by-side) or single
             if let vm = liveSubtitlesVM, vm.isEnabled, vm.showOverlay {
-                LiveSubtitleOverlayView(
-                    translatedText: vm.activeCueText,
-                    originalText: vm.originalCueText,
-                    isVisible: vm.showOverlay
-                )
-                .allowsHitTesting(false)
+                if splitModeEnabled, splitLanguages.count == 2 {
+                    LiveSplitSubtitleOverlayView(
+                        originalText: vm.originalCueText,
+                        translatedText: vm.activeCueText,
+                        originalLanguage: vm.sourceLang,
+                        translatedLanguage: vm.selectedLanguage,
+                        isVisible: vm.showOverlay,
+                        bottomInset: liveOverlayBottomInset
+                    )
+                } else {
+                    LiveSubtitleOverlayView(
+                        translatedText: vm.activeCueText,
+                        originalText: vm.originalCueText,
+                        isVisible: vm.showOverlay,
+                        bottomInset: liveOverlayBottomInset
+                    )
+                    .allowsHitTesting(false)
+                }
             }
 
-            // Split subtitle overlay (side-by-side dual subtitles)
-            if splitModeEnabled && splitLanguages.count == 2 {
+            // VOD split subtitle overlay (side-by-side dual subtitles)
+            if !mediaContentType.isLive, splitModeEnabled, splitLanguages.count == 2 {
                 SplitSubtitleOverlayView(
                     currentTime: viewModel.player.currentTime,
                     primaryCues: primarySubtitleCues,
@@ -488,7 +500,17 @@ struct PlayerView: View {
         .ignoresSafeArea()
     }
 
-    // MARK: - Dubbing
+    // MARK: - Live Overlay Inset
+
+    /// Bottom inset for live subtitle/dubbing overlays.
+    /// Clears the AI panel height + spacing + player controls + bottom padding.
+    var liveOverlayBottomInset: CGFloat {
+        let aiPanelHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 56 : 48
+        let aiPanelBottomPadding = DesignTokens.Spacing.sm
+        let playerControlsHeight: CGFloat = UIDevice.current.userInterfaceIdiom == .pad ? 80 : 64
+        let controlsBottomPadding = DesignTokens.Spacing.xxl
+        return aiPanelHeight + aiPanelBottomPadding + playerControlsHeight + controlsBottomPadding
+    }
 
     // MARK: - Recording Button
 
@@ -599,8 +621,7 @@ struct PlayerView: View {
                 authTokenProvider: repositories.authTokenProvider
             )
             liveSubtitlesVM = LiveSubtitlesViewModel(
-                webSocketService: subtitleWS,
-                authManager: authManager
+                webSocketService: subtitleWS
             )
 
             // Live trivia WebSocket is connected on-demand via AI panel toggle

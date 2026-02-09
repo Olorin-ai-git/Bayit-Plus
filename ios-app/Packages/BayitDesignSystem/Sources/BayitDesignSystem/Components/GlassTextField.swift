@@ -21,10 +21,10 @@ public struct GlassTextField: View {
     }
 
     public var body: some View {
-        HStack(spacing: DesignTokens.Spacing.sm) {
+        HStack(spacing: spacing) {
             if let icon {
                 icon
-                    .font(.system(size: DesignTokens.FontSize.md))
+                    .font(.system(size: iconSize))
                     .foregroundStyle(DesignTokens.Text.muted)
             }
 
@@ -36,18 +36,18 @@ public struct GlassTextField: View {
                     .focused($isFocused)
             }
         }
-        .font(.system(size: DesignTokens.FontSize.base))
+        .font(.system(size: fontSize))
         .foregroundStyle(DesignTokens.Text.primary)
-        .padding(.vertical, DesignTokens.Spacing.md)
-        .padding(.horizontal, DesignTokens.Spacing.base)
+        .padding(.vertical, verticalPadding)
+        .padding(.horizontal, horizontalPadding)
         .background(
             isFocused
                 ? DesignTokens.Glass.bgMedium
                 : DesignTokens.Glass.bgLight
         )
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+        .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
         .overlay(
-            RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+            RoundedRectangle(cornerRadius: cornerRadius)
                 .stroke(
                     isFocused
                         ? DesignTokens.Glass.borderFocus
@@ -56,5 +56,55 @@ public struct GlassTextField: View {
                 )
         )
         .animation(.easeInOut(duration: 0.2), value: isFocused)
+    }
+
+    // MARK: - Platform-Adaptive Sizing
+
+    private var fontSize: CGFloat {
+        #if os(tvOS)
+        return TVDesignTokens.FontSize.base
+        #else
+        return DesignTokens.FontSize.base
+        #endif
+    }
+
+    private var iconSize: CGFloat {
+        #if os(tvOS)
+        return TVDesignTokens.FontSize.lg
+        #else
+        return DesignTokens.FontSize.md
+        #endif
+    }
+
+    private var spacing: CGFloat {
+        #if os(tvOS)
+        return TVDesignTokens.Spacing.md
+        #else
+        return DesignTokens.Spacing.sm
+        #endif
+    }
+
+    private var verticalPadding: CGFloat {
+        #if os(tvOS)
+        return TVDesignTokens.Spacing.lg
+        #else
+        return DesignTokens.Spacing.md
+        #endif
+    }
+
+    private var horizontalPadding: CGFloat {
+        #if os(tvOS)
+        return TVDesignTokens.Spacing.xl
+        #else
+        return DesignTokens.Spacing.base
+        #endif
+    }
+
+    private var cornerRadius: CGFloat {
+        #if os(tvOS)
+        return TVDesignTokens.Radius.md
+        #else
+        return DesignTokens.Radius.md
+        #endif
     }
 }

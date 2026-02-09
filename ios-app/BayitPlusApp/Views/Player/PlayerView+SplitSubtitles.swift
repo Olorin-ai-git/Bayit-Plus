@@ -102,6 +102,8 @@ extension PlayerView {
 
     func loadSplitSubtitleCues() async {
         guard splitLanguages.count == 2 else { return }
+        // Live channels use WebSocket-based subtitles, not REST cue fetching
+        guard !mediaContentType.isLive else { return }
 
         async let primary = loadCuesForLanguage(splitLanguages[0])
         async let secondary = loadCuesForLanguage(splitLanguages[1])

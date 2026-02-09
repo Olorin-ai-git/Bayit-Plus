@@ -15,27 +15,51 @@ public struct GlassButton: View {
         case large
 
         var verticalPadding: CGFloat {
+            #if os(tvOS)
+            switch self {
+            case .small: return TVDesignTokens.Spacing.md
+            case .medium: return TVDesignTokens.Spacing.lg
+            case .large: return TVDesignTokens.Spacing.xl
+            }
+            #else
             switch self {
             case .small: return DesignTokens.Spacing.sm
             case .medium: return DesignTokens.Spacing.md
             case .large: return DesignTokens.Spacing.base
             }
+            #endif
         }
 
         var horizontalPadding: CGFloat {
+            #if os(tvOS)
+            switch self {
+            case .small: return TVDesignTokens.Spacing.lg
+            case .medium: return TVDesignTokens.Spacing.xl
+            case .large: return TVDesignTokens.Spacing.xxl
+            }
+            #else
             switch self {
             case .small: return DesignTokens.Spacing.md
             case .medium: return DesignTokens.Spacing.lg
             case .large: return DesignTokens.Spacing.xl
             }
+            #endif
         }
 
         var fontSize: CGFloat {
+            #if os(tvOS)
+            switch self {
+            case .small: return TVDesignTokens.FontSize.sm
+            case .medium: return TVDesignTokens.FontSize.base
+            case .large: return TVDesignTokens.FontSize.lg
+            }
+            #else
             switch self {
             case .small: return DesignTokens.FontSize.sm
             case .medium: return DesignTokens.FontSize.base
             case .large: return DesignTokens.FontSize.md
             }
+            #endif
         }
     }
 

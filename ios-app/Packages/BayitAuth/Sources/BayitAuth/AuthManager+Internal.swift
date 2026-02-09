@@ -1,5 +1,6 @@
 import Foundation
 import FirebaseAuth
+import BayitCore
 
 // MARK: - Internal Helpers
 
@@ -30,19 +31,30 @@ extension AuthManager {
             backendToken = firebaseIDToken
         }
 
-        let bayitUser = BayitUser(
-            id: firebaseUser.uid,
-            email: firebaseUser.email ?? "",
-            displayName: firebaseUser.displayName,
-            photoURL: firebaseUser.photoURL,
-            role: parseRole(from: tokenResult.claims),
-            isActive: true,
-            subscription: nil,
-            isBetaUser: parseBetaStatus(from: tokenResult.claims),
-            isVerified: firebaseUser.isEmailVerified,
-            createdAt: nil,
-            lastLogin: nil
-        )
+        // Fetch full user profile from backend for authoritative role/subscription data.
+        // Firebase claims may not include custom role, so backend is the source of truth.
+        let bayitUser: BayitUser
+        do {
+            bayitUser = try await fetchUserProfile(token: backendToken)
+        } catch {
+            logger.warning(
+                "Backend profile fetch failed, using Firebase claims",
+                metadata: ["error": error.localizedDescription]
+            )
+            bayitUser = BayitUser(
+                id: firebaseUser.uid,
+                email: firebaseUser.email ?? "",
+                displayName: firebaseUser.displayName,
+                photoURL: firebaseUser.photoURL,
+                role: parseRole(from: tokenResult.claims),
+                isActive: true,
+                subscription: nil,
+                isBetaUser: parseBetaStatus(from: tokenResult.claims),
+                isVerified: firebaseUser.isEmailVerified,
+                createdAt: nil,
+                lastLogin: nil
+            )
+        }
 
         // Cache user data in Keychain for offline restoration
         if let userData = try? JSONEncoder().encode(bayitUser) {
@@ -165,6 +177,71 @@ extension AuthManager {
                 try? self.keychainService.delete(for: self.sessionTimestampKeychainKey)
             }
         }
+    }
+
+    /// Fetches user profile from the backend using a backend JWT.
+    ///
+    /// Used for authentication flows that bypass Firebase (e.g., passkey sign-in).
+    func fetchUserProfile(token: String) async throws -> BayitUser {
+        let config = AppConfiguration()
+        let url = config.apiBaseURL.appendingPathComponent("user/me")
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.timeoutInterval = config.apiTimeout
+
+        logger.debug("Fetching user profile from backend", metadata: [:])
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.notAuthenticated
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            throw AuthError.notAuthenticated
+        }
+
+        let userResponse = try JSONDecoder().decode(BackendUserResponse.self, from: data)
+
+        return BayitUser(
+            id: userResponse.id,
+            email: userResponse.email,
+            displayName: userResponse.name,
+            photoURL: userResponse.profileImageUrl != nil ? URL(string: userResponse.profileImageUrl!) : nil,
+            role: UserRole(rawValue: userResponse.role) ?? .user,
+            isActive: userResponse.isActive,
+            subscription: nil,
+            isBetaUser: userResponse.isBetaUser ?? false,
+            isVerified: userResponse.isVerified ?? false,
+            createdAt: nil,
+            lastLogin: nil
+        )
+    }
+}
+
+/// Backend user profile response model.
+private struct BackendUserResponse: Decodable {
+    let id: String
+    let email: String
+    let name: String
+    let role: String
+    let isActive: Bool
+    let isBetaUser: Bool?
+    let isVerified: Bool?
+    let profileImageUrl: String?
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case email
+        case name
+        case role
+        case isActive = "is_active"
+        case isBetaUser = "is_beta_user"
+        case isVerified = "is_verified"
+        case profileImageUrl = "profile_image_url"
     }
 }
 

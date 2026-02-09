@@ -42,7 +42,7 @@ class PairingSession:
 
     def __post_init__(self):
         if self.expires_at is None:
-            self.expires_at = self.created_at + timedelta(minutes=5)
+            self.expires_at = self.created_at + timedelta(minutes=20)
 
     def is_expired(self) -> bool:
         return datetime.utcnow() > self.expires_at
@@ -106,7 +106,7 @@ class PairingManager:
             session_id = self._generate_session_id()
             session_token = self._generate_session_token()
             created_at = datetime.utcnow()
-            expires_at = created_at + timedelta(minutes=5)
+            expires_at = created_at + timedelta(minutes=20)
 
             qr_data = {
                 "session_id": session_id,

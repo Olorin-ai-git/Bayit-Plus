@@ -73,6 +73,7 @@ export function useSubtitles({ contentId, isLive = false, initialSubtitleLang, i
     hebrewMode,
     englishMode,
     subtitlesEnabled,
+    isLive,
     setSplitMode,
     setSplitLanguages,
     setSubtitlesEnabled,

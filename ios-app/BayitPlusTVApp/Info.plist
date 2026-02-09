@@ -26,6 +26,12 @@
 				<string>bayitplus</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>

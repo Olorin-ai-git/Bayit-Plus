@@ -76,7 +76,7 @@ async def init_pairing():
     Returns:
         - session_id: Unique identifier for this pairing session
         - qr_code_data: Base64-encoded PNG image of the QR code
-        - expires_at: When this session expires (5 minutes)
+        - expires_at: When this session expires (20 minutes)
         - ws_url: WebSocket URL for real-time status updates
     """
     # Get base URL from settings or default

@@ -28,22 +28,23 @@ struct TVSplashView: View {
 
             Color.black.opacity(0.3).ignoresSafeArea()
 
-            VStack(spacing: TVDesignTokens.Spacing.xl) {
+            VStack(spacing: TVDesignTokens.Spacing.md) {
                 Spacer()
 
                 logoSection
                     .opacity(showLogo ? 1 : 0)
                     .scaleEffect(showLogo ? 1 : 0.8)
 
+                Spacer()
+
                 if showSlogan {
                     sloganSection
                         .transition(.opacity.combined(with: .move(edge: .bottom)))
                 }
 
-                Spacer()
-
                 poweredByFooter
                     .opacity(showLogo ? 1 : 0)
+                    .padding(.top, TVDesignTokens.Spacing.lg)
             }
             .padding(TVDesignTokens.Spacing.xxl)
         }

@@ -23,6 +23,18 @@ enum BackendTokenExchangeClient {
         }
     }
 
+    struct PasskeyAuthOptionsResponse: Decodable {
+        let challenge: String
+        let challengeId: String
+        let rpId: String
+
+        private enum CodingKeys: String, CodingKey {
+            case challenge
+            case challengeId = "challenge_id"
+            case rpId = "rp_id"
+        }
+    }
+
     // MARK: - Google Token Exchange
 
     /// Exchanges a Google ID token for a backend-issued JWT.
@@ -120,6 +132,128 @@ enum BackendTokenExchangeClient {
             logger: logger,
             provider: "refresh"
         )
+    }
+
+    /// Gets WebAuthn authentication options for passkey sign-in.
+    ///
+    /// Calls `POST /api/v1/webauthn/authenticate/options` on the backend.
+    @available(iOS 16.0, tvOS 16.0, *)
+    static func getPasskeyAuthOptions(
+        logger: APILogger
+    ) async throws -> PasskeyAuthOptionsResponse {
+        let config = AppConfiguration()
+        let url = config.apiBaseURL.appendingPathComponent("webauthn/authenticate/options")
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+        request.timeoutInterval = config.apiTimeout
+
+        let body: [String: Any] = ["is_qr_flow": false]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        logger.debug(
+            "Getting passkey authentication options",
+            metadata: ["url": url.absoluteString]
+        )
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.passkeySignInFailed(underlying: "Invalid response type")
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            let responseBody = String(data: data, encoding: .utf8) ?? "empty"
+            logger.warning(
+                "Passkey auth options failed",
+                metadata: [
+                    "status_code": String(httpResponse.statusCode),
+                    "response": String(responseBody.prefix(200)),
+                ]
+            )
+            throw AuthError.passkeySignInFailed(
+                underlying: "Backend returned HTTP \(httpResponse.statusCode)"
+            )
+        }
+
+        let decoded = try JSONDecoder().decode(PasskeyAuthOptionsResponse.self, from: data)
+
+        logger.debug("Passkey auth options retrieved", metadata: [:])
+
+        return decoded
+    }
+
+    /// Verifies passkey authentication and gets backend tokens.
+    ///
+    /// Calls `POST /api/v1/webauthn/authenticate/verify` on the backend.
+    @available(iOS 16.0, tvOS 16.0, *)
+    static func verifyPasskeyAuth(
+        credentialId: String,
+        authenticatorData: String,
+        signature: String,
+        clientDataJSON: String,
+        challengeId: String,
+        logger: APILogger
+    ) async throws -> TokenExchangeResponse {
+        let config = AppConfiguration()
+        let url = config.apiBaseURL.appendingPathComponent("webauthn/authenticate/verify")
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("ios", forHTTPHeaderField: "X-Client-Platform")
+        request.timeoutInterval = config.apiTimeout
+
+        let credential: [String: Any] = [
+            "id": credentialId,
+            "rawId": credentialId,
+            "type": "public-key",
+            "response": [
+                "authenticatorData": authenticatorData,
+                "signature": signature,
+                "clientDataJSON": clientDataJSON,
+            ],
+        ]
+
+        let body: [String: Any] = [
+            "credential": credential,
+            "challenge_id": challengeId,
+        ]
+
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        logger.debug(
+            "Verifying passkey authentication",
+            metadata: ["url": url.absoluteString]
+        )
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw AuthError.passkeySignInFailed(underlying: "Invalid response type")
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            let responseBody = String(data: data, encoding: .utf8) ?? "empty"
+            logger.warning(
+                "Passkey verification failed",
+                metadata: [
+                    "status_code": String(httpResponse.statusCode),
+                    "response": String(responseBody.prefix(200)),
+                ]
+            )
+            throw AuthError.passkeySignInFailed(
+                underlying: "Backend returned HTTP \(httpResponse.statusCode)"
+            )
+        }
+
+        let decoded = try JSONDecoder().decode(TokenExchangeResponse.self, from: data)
+
+        logger.debug("Passkey authentication verified", metadata: [:])
+
+        return decoded
     }
 
     // MARK: - Private

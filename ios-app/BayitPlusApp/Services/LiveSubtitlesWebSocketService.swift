@@ -31,7 +31,12 @@ final class LiveSubtitlesWebSocketService {
 
     @MainActor
     func connect(channelId: String, targetLanguage: String, sourceLang: String) {
-        let wsURL = configuration.webSocketBaseURL
+        // Derive API path prefix from apiBaseURL (e.g., /api/v1) to match backend route registration
+        var wsURL = configuration.webSocketBaseURL
+        for component in configuration.apiBaseURL.pathComponents where component != "/" {
+            wsURL = wsURL.appendingPathComponent(component)
+        }
+        wsURL = wsURL
             .appendingPathComponent("ws")
             .appendingPathComponent("live")
             .appendingPathComponent(channelId)
