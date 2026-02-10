@@ -10,11 +10,18 @@ struct Audiobook: Decodable, Sendable, Identifiable {
     let narrator: String?
     let description: String?
     let thumbnail: String?
+    let backdrop: String?
     let duration: String?
     let chapters: [AudiobookChapter]?
-    let genre: String?
+    let genreIds: [String]?
     let audioQuality: String?
-    let requiresSubscription: Bool?
+    let requiresSubscription: String?
+    let contentFormat: String?
+    let viewCount: Int?
+    let avgRating: Double?
+    let isFeatured: Bool?
+    let createdAt: String?
+    let updatedAt: String?
 }
 
 /// A chapter within an audiobook.
@@ -32,5 +39,6 @@ struct AudiobookListResponse: Decodable, Sendable {
     let items: [Audiobook]?
     let total: Int?
     let page: Int?
-    let hasNext: Bool?
+    let pageSize: Int?
+    let totalPages: Int?
 }

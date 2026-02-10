@@ -105,8 +105,8 @@ struct AudiobookDetailView: View {
                     metadataRow(label: "Duration", value: duration)
                 }
 
-                if let genre = audiobook.genre {
-                    metadataRow(label: "Genre", value: genre)
+                if let genreIds = audiobook.genreIds, !genreIds.isEmpty {
+                    metadataRow(label: "Genre", value: genreIds.joined(separator: ", "))
                 }
 
                 if let description = audiobook.description {

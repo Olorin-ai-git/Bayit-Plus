@@ -38,7 +38,7 @@ struct TVPodcastsView: View {
             }
 
             if !vm.shows.isEmpty {
-                podcastsShelf(vm)
+                podcastsGrid(vm)
             }
         }
     }
@@ -79,17 +79,33 @@ struct TVPodcastsView: View {
         .tvFocusStyle()
     }
 
-    private func podcastsShelf(_ vm: PodcastsViewModel) -> some View {
-        GlassContentShelf(
-            title: vm.selectedCategory != nil ? "Podcasts" : "All Podcasts",
-            items: vm.shows
-        ) { show in
-            GlassFocusPoster(
-                thumbnailURL: show.cover,
-                title: show.title ?? "Podcast",
-                subtitle: show.author,
-                aspectRatio: 1.0
-            )
+    private func podcastsGrid(_ vm: PodcastsViewModel) -> some View {
+        let columns = [
+            GridItem(.adaptive(
+                minimum: TVDesignTokens.MinSize.posterWidth,
+                maximum: TVDesignTokens.MinSize.posterWidth + 60
+            ), spacing: TVDesignTokens.Spacing.focusGap),
+        ]
+
+        return VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+            Text(vm.selectedCategory != nil ? "Podcasts" : "All Podcasts")
+                .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .padding(.leading, TVDesignTokens.Spacing.xl)
+
+            LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
+                ForEach(vm.shows) { show in
+                    GlassFocusPoster(
+                        thumbnailURL: show.cover,
+                        title: show.title ?? "Podcast",
+                        subtitle: show.author,
+                        aspectRatio: 1.0
+                    )
+                    .tvFocusStyle()
+                }
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            .padding(.vertical, TVDesignTokens.Spacing.md)
         }
     }
 

@@ -36,7 +36,8 @@ final class AudiobooksViewModel {
                 author: selectedAuthor
             )
             items = response.items ?? []
-            hasMore = response.hasNext ?? false
+            let pages = response.totalPages ?? 1
+            hasMore = currentPage < pages
         } catch {
             self.error = error.localizedDescription
         }
@@ -60,7 +61,8 @@ final class AudiobooksViewModel {
             )
             items.append(contentsOf: response.items ?? [])
             currentPage = nextPage
-            hasMore = response.hasNext ?? false
+            let pages = response.totalPages ?? 1
+            hasMore = currentPage < pages
         } catch {
             self.error = error.localizedDescription
         }
