@@ -19,7 +19,7 @@ export default function TermsPage() {
 
       <GlassView style={styles.headerSection}>
         <View style={styles.iconContainer}>
-          <FileText size={48} color={colors.primary} />
+          <FileText size={48} color={colors.primary.DEFAULT} />
         </View>
         <Text style={[styles.lastUpdated, { textAlign }]}>
           {t('terms.lastUpdated', 'Last Updated: January 27, 2026')}
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
   },
   contactText: {
     fontSize: fontSize.base,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     marginBottom: spacing.xs,
     fontWeight: '600',
   },

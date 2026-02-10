@@ -50,7 +50,7 @@ export default function ScopeToggle({ scope, onScopeChange }: ScopeToggleProps) 
             { value: "user1", label: "User 1" },
             { value: "user2", label: "User 2" },
           ]}
-          onChange={(value) => onScopeChange("per_user", value as string)}
+          onChange={(value: string) => onScopeChange("per_user", value as string)}
         />
       )}
     </div>

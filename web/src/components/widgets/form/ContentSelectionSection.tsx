@@ -160,7 +160,7 @@ export const ContentSelectionSection: React.FC<ContentSelectionSectionProps> = (
             )}
             placeholder={t('widgets.form.iframeUrl')}
             value={iframeUrl}
-            onChangeText={(v) => onUpdateField('iframe_url', v)}
+            onChangeText={(v: string) => onUpdateField('iframe_url', v)}
           />
           <GlassInput
             className={platformClass(
@@ -168,7 +168,7 @@ export const ContentSelectionSection: React.FC<ContentSelectionSectionProps> = (
             )}
             placeholder={t('widgets.form.iframeTitle')}
             value={iframeTitle}
-            onChangeText={(v) => onUpdateField('iframe_title', v)}
+            onChangeText={(v: string) => onUpdateField('iframe_title', v)}
           />
         </View>
       )}

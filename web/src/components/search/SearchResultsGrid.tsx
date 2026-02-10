@@ -87,7 +87,7 @@ export const SearchResultsGrid = memo(function SearchResultsGrid({
         <View style={styles.badges}>
           {item.requires_subscription !== 'free' && (
             <View style={styles.badge}>
-              <Icon name="star" size="xs" color={colors.warning} />
+              <Icon name="star" size="xs" color={colors.warning.DEFAULT} />
             </View>
           )}
           {item.is_kids_content && (
@@ -108,7 +108,7 @@ export const SearchResultsGrid = memo(function SearchResultsGrid({
         {item.year && <Text style={styles.metadataText}>{item.year}</Text>}
         {item.rating && (
           <View style={styles.ratingContainer}>
-            <NativeIcon name="star" size="xs" color={colors.warning} />
+            <NativeIcon name="star" size="xs" color={colors.warning.DEFAULT} />
             <Text style={styles.metadataText}>{item.rating}</Text>
           </View>
         )}

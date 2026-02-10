@@ -8,6 +8,7 @@ import {
   View,
   Text,
   Animated,
+  StyleSheet,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -176,5 +177,9 @@ export const VoiceStatusIndicator: React.FC<VoiceStatusIndicatorProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  dots: { color: colors.textMuted, fontSize: 16, marginLeft: 2 },
+});
 
 export default VoiceStatusIndicator;

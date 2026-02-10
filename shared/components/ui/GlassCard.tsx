@@ -29,8 +29,9 @@ interface GlassCardProps {
   showPlayIcon?: boolean;
   progress?: number;
   hasTVPreferredFocus?: boolean;
-  /** When true, bypasses default width/height for custom sizing (e.g., modals) */
   autoSize?: boolean;
+  className?: string;
+  testID?: string;
 }
 
 export const GlassCard: React.FC<GlassCardProps> = ({

@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   },
   glassContainerSelected: {
     borderLeftWidth: 3,
-    borderLeftColor: colors.primary,
+    borderLeftColor: colors.primary.DEFAULT,
   },
   textContainer: {
     flex: 1,

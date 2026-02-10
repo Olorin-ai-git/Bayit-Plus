@@ -44,11 +44,11 @@ export function ImagePreview({
         style={styles.clearButton}
       >
         <GlassView style={styles.clearButtonInner} intensity="high">
-          <X size={16} color={colors.error} />
+          <X size={16} color={colors.error.DEFAULT} />
         </GlassView>
       </Pressable>
       <View style={styles.successRow}>
-        <CheckCircle size={16} color={colors.success} />
+        <CheckCircle size={16} color={colors.success.DEFAULT} />
         <Text style={styles.successText}>
           {t('admin.content.editor.imageUpload.success')}
         </Text>

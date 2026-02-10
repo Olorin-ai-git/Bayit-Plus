@@ -228,7 +228,7 @@ export default function EmailTemplatesPage() {
         <GlassCard style={[styles.successBanner, { marginBottom: spacing.lg }]}>
           <Text style={styles.successText}>{successMessage}</Text>
           <TouchableOpacity onPress={() => setSuccessMessage(null)}>
-            <X size={18} color={colors.success} />
+            <X size={18} color={colors.success.DEFAULT} />
           </TouchableOpacity>
         </GlassCard>
       )}
@@ -251,7 +251,7 @@ export default function EmailTemplatesPage() {
         {filteredTemplates.map((template) => (
           <GlassCard key={template.name} style={styles.templateCard}>
             <View style={styles.cardHeader}>
-              <Mail size={20} color={colors.primary} />
+              <Mail size={20} color={colors.primary.DEFAULT} />
               <Text style={styles.templateName}>{template.display_name}</Text>
             </View>
             <Text style={styles.templateDescription}>{template.description}</Text>
@@ -304,7 +304,7 @@ export default function EmailTemplatesPage() {
                   <Text style={styles.variableLabel}>{variable}:</Text>
                   <GlassInput
                     value={previewVariables[variable] || ''}
-                    onChangeText={(value) =>
+                    onChangeText={(value: string) =>
                       setPreviewVariables((prev) => ({ ...prev, [variable]: value }))
                     }
                     placeholder={`Enter ${variable}`}
@@ -416,7 +416,7 @@ export default function EmailTemplatesPage() {
           <Text style={styles.modalTitle}>{t('admin.emailTemplates.sendInvitation', 'Send Platform Invitation')}</Text>
           <GlassInput
             value={invitationData.email}
-            onChangeText={(value) => setInvitationData((prev) => ({ ...prev, email: value }))}
+            onChangeText={(value: string) => setInvitationData((prev) => ({ ...prev, email: value }))}
             placeholder={t('admin.emailTemplates.recipientEmail', 'Recipient email address')}
             keyboardType="email-address"
             autoCapitalize="none"
@@ -424,13 +424,13 @@ export default function EmailTemplatesPage() {
           />
           <GlassInput
             value={invitationData.inviter_name}
-            onChangeText={(value) => setInvitationData((prev) => ({ ...prev, inviter_name: value }))}
+            onChangeText={(value: string) => setInvitationData((prev) => ({ ...prev, inviter_name: value }))}
             placeholder={t('admin.emailTemplates.inviterName', 'Your name (optional)')}
             style={styles.formInput}
           />
           <GlassTextarea
             value={invitationData.personal_message}
-            onChangeText={(value) => setInvitationData((prev) => ({ ...prev, personal_message: value }))}
+            onChangeText={(value: string) => setInvitationData((prev) => ({ ...prev, personal_message: value }))}
             placeholder={t('admin.emailTemplates.personalMessage', 'Personal message (optional)')}
             numberOfLines={4}
             style={styles.formTextArea}
@@ -482,7 +482,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(34, 197, 94, 0.1)',
   },
   successText: {
-    color: colors.success,
+    color: colors.success.DEFAULT,
     fontSize: fontSize.md,
     fontWeight: '600',
   },

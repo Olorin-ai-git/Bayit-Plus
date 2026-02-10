@@ -120,12 +120,12 @@ export const AuditInfoHeader = ({
             title={t('admin.librarian.audit.cancel', 'Cancel')}
             variant="secondary"
             size="md"
-            icon={<XCircle size={16} color={colors.error} />}
+            icon={<XCircle size={16} color={colors.error.DEFAULT} />}
             onPress={onCancel}
             loading={cancellingAudit}
             disabled={pausingAudit || resumingAudit || cancellingAudit}
             style={styles.actionButton}
-            textStyle={{ color: colors.error }}
+            textStyle={{ color: colors.error.DEFAULT }}
           />
         </View>
       )}

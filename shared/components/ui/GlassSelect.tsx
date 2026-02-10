@@ -140,8 +140,8 @@ export const GlassSelect: React.FC<GlassSelectProps> = ({
           <GlassView style={styles.modalContent} intensity="high">
             <FlatList
               data={options}
-              keyExtractor={(item) => item.value}
-              renderItem={({ item, index }) => (
+              keyExtractor={(item: any) => item.value}
+              renderItem={({ item, index }: { item: any; index: number }) => (
                 <TouchableOpacity
                   onPress={() => handleSelect(item)}
                   disabled={item.disabled}

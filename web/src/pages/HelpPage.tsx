@@ -38,19 +38,19 @@ export default function HelpPage() {
       {/* Contact Options */}
       <View style={[styles.contactContainer, isRTL && styles.contactContainerRTL]}>
         <GlassView style={styles.contactCard}>
-          <Mail size={32} color={colors.primary} />
+          <Mail size={32} color={colors.primary.DEFAULT} />
           <Text style={[styles.contactTitle, { textAlign }]}>{t('help.email', 'Email Support')}</Text>
           <Text style={[styles.contactInfo, { textAlign }]}>support@bayitplus.com</Text>
         </GlassView>
 
         <GlassView style={styles.contactCard}>
-          <Phone size={32} color={colors.primary} />
+          <Phone size={32} color={colors.primary.DEFAULT} />
           <Text style={[styles.contactTitle, { textAlign }]}>{t('help.phone', 'Phone Support')}</Text>
           <Text style={[styles.contactInfo, { textAlign }]}>+972-3-XXX-XXXX</Text>
         </GlassView>
 
         <GlassView style={styles.contactCard}>
-          <MessageCircle size={32} color={colors.primary} />
+          <MessageCircle size={32} color={colors.primary.DEFAULT} />
           <Text style={[styles.contactTitle, { textAlign }]}>{t('help.chat', 'Live Chat')}</Text>
           <Text style={[styles.contactInfo, { textAlign }]}>{t('help.chatAvailable', 'Available 24/7')}</Text>
         </GlassView>
@@ -65,7 +65,7 @@ export default function HelpPage() {
               style={[styles.faqQuestion, { flexDirection }]}
               onPress={() => toggleFaq(index)}
             >
-              <HelpCircle size={20} color={colors.primary} />
+              <HelpCircle size={20} color={colors.primary.DEFAULT} />
               <Text style={[styles.faqQuestionText, { textAlign }]}>
                 {t(item.questionKey, `Question ${index + 1}`)}
               </Text>

@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   placeholderBackground: {
     width: '100%',
     height: '100%',
-    backgroundColor: colors.surfaceAlt,
+    backgroundColor: colors.glassLight,
     justifyContent: 'center',
     alignItems: 'center',
   },

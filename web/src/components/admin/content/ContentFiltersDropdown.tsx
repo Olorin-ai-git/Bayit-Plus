@@ -159,7 +159,7 @@ export default function ContentFiltersDropdown({
           <View style={styles.section}>
             <GlassCheckbox
               checked={showOnlyWithSubtitles}
-              onCheckedChange={(checked) => {
+              onCheckedChange={(checked: boolean) => {
                 logger.debug('Subtitles filter changed', { checked })
                 onSubtitlesChange(checked)
               }}
@@ -171,7 +171,7 @@ export default function ContentFiltersDropdown({
           <View style={styles.section}>
             <GlassCheckbox
               checked={showOnlyBetaContent}
-              onCheckedChange={(checked) => {
+              onCheckedChange={(checked: boolean) => {
                 logger.debug('Beta content filter changed', { checked })
                 onBetaContentChange(checked)
               }}

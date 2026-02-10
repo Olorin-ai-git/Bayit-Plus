@@ -79,7 +79,7 @@ export default function ChapterTimeline({
   }
 
   const getChapterColor = (category: string): string => {
-    return categoryColors[category] || colors.primary
+    return categoryColors[category] || colors.primary.DEFAULT
   }
 
   return (
@@ -95,7 +95,7 @@ export default function ChapterTimeline({
           <Pressable
             key={`${chapter.start_time}-${index}`}
             onPress={() => handleChapterClick(chapter)}
-            onHoverIn={(e) => handleMouseEnter(chapter, e)}
+            onHoverIn={(e: any) => handleMouseEnter(chapter, e)}
             onHoverOut={handleMouseLeave}
             style={[
               styles.chapterSegment,

@@ -58,7 +58,7 @@ export default function VODPageContentSection({
   const { isRTL, flexDirection } = useDirection();
 
   const icon = type === 'movies' ? Film : Tv;
-  const iconColor = type === 'movies' ? colors.primary : colors.secondary;
+  const iconColor = type === 'movies' ? colors.primary.DEFAULT : colors.secondary;
   const title = type === 'movies' ? t('vod.movies') : t('vod.series');
   const emptyMessage = type === 'movies' ? t('vod.noMovies') : t('vod.noSeries');
 

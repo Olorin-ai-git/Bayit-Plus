@@ -99,7 +99,7 @@ export default function AirPlayButton({
           isDisabled
             ? colors.textDisabled
             : session.isConnected
-            ? colors.primary
+            ? colors.primary.DEFAULT
             : colors.text
         }
       />

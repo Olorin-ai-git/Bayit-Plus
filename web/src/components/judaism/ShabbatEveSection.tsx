@@ -182,8 +182,8 @@ export function ShabbatEveSection({
                 style={{ borderWidth: 1, borderColor: `${colors.warning}4D` }}
               >
                 <div className={`flex items-center gap-2 mb-1 `}>
-                  <Clock size={16} color={colors.warning} />
-                  <span className="text-sm font-medium" style={{ color: colors.warning }}>
+                  <Clock size={16} color={colors.warning.DEFAULT} />
+                  <span className="text-sm font-medium" style={{ color: colors.warning.DEFAULT }}>
                     {t('judaism.erevShabbat.timeUntil', 'Time until Shabbat')}
                   </span>
                 </div>
@@ -221,8 +221,8 @@ export function ShabbatEveSection({
               className="flex-1 rounded-xl p-4 flex flex-col items-center"
               style={{ backgroundColor: `${colors.warning}26`, borderWidth: 1, borderColor: `${colors.warning}4D` }}
             >
-              <Flame size={32} color={colors.warning} />
-              <span className="text-sm mt-2 font-medium" style={{ color: colors.warning }}>
+              <Flame size={32} color={colors.warning.DEFAULT} />
+              <span className="text-sm mt-2 font-medium" style={{ color: colors.warning.DEFAULT }}>
                 {t('judaism.shabbat.candleLighting', 'Candle Lighting')}
               </span>
               <span className="text-2xl font-bold mt-1" style={{ color: colors.text }}>

@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Animated,
+  StyleSheet,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassLoadingSpinner } from '@bayit/shared/ui';
@@ -19,6 +20,7 @@ import { useDirection } from '../../hooks/useDirection';
 import { isTV } from '../../utils/platform';
 import { supportConfig } from '../../config/supportConfig';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import logger from '../../utils/logger';
 
 interface FAQItem {
   id: string;
@@ -332,5 +334,52 @@ export const SupportFAQ: React.FC = () => {
 };
 
 
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  categoriesScroll: { marginBottom: spacing.md },
+  categoriesContent: { paddingHorizontal: spacing.md, gap: spacing.sm },
+  categoryButton: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.glassLight,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+  },
+  categoryButtonActive: { backgroundColor: colors.primary.DEFAULT, borderColor: colors.primary.DEFAULT },
+  categoryButtonFocused: { borderColor: colors.glassBorderFocus },
+  categoryIconContainer: { alignItems: 'center' as const, marginBottom: spacing.xs },
+  categoryText: { color: colors.textSecondary, fontSize: 14 },
+  categoryTextActive: { color: colors.white, fontWeight: '600' as const },
+  faqSection: { paddingHorizontal: spacing.md },
+  sectionTitle: { color: colors.white, fontSize: 20, fontWeight: 'bold' as const, marginBottom: spacing.md },
+  errorContainer: { padding: spacing.md, backgroundColor: colors.error.DEFAULT + '20', borderRadius: borderRadius.md, marginBottom: spacing.md },
+  errorText: { color: colors.error.DEFAULT },
+  emptyContainer: { padding: spacing.xl, alignItems: 'center' as const },
+  emptyText: { color: colors.textMuted },
+  accordionItem: {
+    marginBottom: spacing.sm,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.glassLight,
+    borderWidth: 1,
+    borderColor: colors.glassBorder,
+    overflow: 'hidden' as const,
+  },
+  accordionItemFocused: { borderColor: colors.glassBorderFocus },
+  accordionItemExpanded: { borderColor: colors.primary.DEFAULT },
+  accordionHeader: { flexDirection: 'row' as const, justifyContent: 'space-between' as const, alignItems: 'center' as const, padding: spacing.md },
+  accordionQuestion: { flex: 1, color: colors.white, fontSize: 16, fontWeight: '600' as const },
+  accordionIcon: { color: colors.textSecondary, fontSize: 20, marginLeft: spacing.sm },
+  accordionContent: { paddingHorizontal: spacing.md, paddingBottom: spacing.md },
+  accordionAnswer: { color: colors.textSecondary, fontSize: 14, lineHeight: 22 },
+  feedbackContainer: { marginTop: spacing.md, paddingTop: spacing.md, borderTopWidth: 1, borderTopColor: colors.glassBorder },
+  feedbackLabel: { color: colors.textMuted, fontSize: 12, marginBottom: spacing.xs },
+  feedbackButtons: { flexDirection: 'row' as const, gap: spacing.sm },
+  feedbackButton: { paddingHorizontal: spacing.md, paddingVertical: spacing.xs, borderRadius: borderRadius.md, backgroundColor: colors.glassLight, borderWidth: 1, borderColor: colors.glassBorder },
+  feedbackButtonText: { color: colors.textSecondary, fontSize: 14 },
+  feedbackThanks: { marginTop: spacing.sm },
+  feedbackThanksText: { color: colors.success.DEFAULT, fontSize: 12 },
+});
 
 export default SupportFAQ;

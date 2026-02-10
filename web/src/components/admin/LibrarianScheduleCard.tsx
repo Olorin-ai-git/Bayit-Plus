@@ -91,7 +91,7 @@ const LibrarianScheduleCard: React.FC<LibrarianScheduleCardProps> = ({
     <>
       <GlassCard style={styles.card}>
         <View style={styles.header}>
-          <View style={[styles.iconContainer, { backgroundColor: mode === 'AI Agent' ? colors.secondary : colors.primary }]}>
+          <View style={[styles.iconContainer, { backgroundColor: mode === 'AI Agent' ? colors.secondary.DEFAULT :colors.primary.DEFAULT}]}>
             <Icon size={24} color={colors.background} />
           </View>
           <GlassBadge
@@ -104,7 +104,7 @@ const LibrarianScheduleCard: React.FC<LibrarianScheduleCardProps> = ({
           <Text style={[styles.title, { textAlign }]}>{title}</Text>
           {onUpdate && (
             <Pressable onPress={handleEdit} style={styles.editButton}>
-              <Edit2 size={16} color={colors.primary} />
+              <Edit2 size={16} color={colors.primary.DEFAULT} />
             </Pressable>
           )}
         </View>
@@ -138,7 +138,7 @@ const LibrarianScheduleCard: React.FC<LibrarianScheduleCardProps> = ({
 
         <Pressable style={styles.linkButton} onPress={handleOpenCloudConsole}>
           <Text style={styles.linkText}>{t('admin.librarian.schedules.viewInConsole')}</Text>
-          <ExternalLink size={16} color={colors.primary} />
+          <ExternalLink size={16} color={colors.primary.DEFAULT} />
         </Pressable>
       </GlassCard>
 

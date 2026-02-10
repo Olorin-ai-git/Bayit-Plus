@@ -196,31 +196,31 @@ export default function RadioPage() {
       >
         <GlassCategoryPill
           label={t('radio.categories.all')}
-          icon={<NativeIcon name="radio" size="sm" color={selectedCategory === 'all' ? colors.primary : colors.textMuted} />}
+          icon={<NativeIcon name="radio" size="sm" color={selectedCategory === 'all' ? colors.primary.DEFAULT : colors.textMuted} />}
           isActive={selectedCategory === 'all'}
           onPress={() => setSelectedCategory('all')}
         />
         <GlassCategoryPill
           label={t('radio.categories.music')}
-          icon={<NativeIcon name="podcasts" size="sm" color={selectedCategory === 'music' ? colors.primary : colors.textMuted} />}
+          icon={<NativeIcon name="podcasts" size="sm" color={selectedCategory === 'music' ? colors.primary.DEFAULT : colors.textMuted} />}
           isActive={selectedCategory === 'music'}
           onPress={() => setSelectedCategory('music')}
         />
         <GlassCategoryPill
           label={t('radio.categories.news')}
-          icon={<NativeIcon name="info" size="sm" color={selectedCategory === 'news' ? colors.primary : colors.textMuted} />}
+          icon={<NativeIcon name="info" size="sm" color={selectedCategory === 'news' ? colors.primary.DEFAULT : colors.textMuted} />}
           isActive={selectedCategory === 'news'}
           onPress={() => setSelectedCategory('news')}
         />
         <GlassCategoryPill
           label={t('radio.categories.talk')}
-          icon={<NativeIcon name="podcasts" size="sm" color={selectedCategory === 'talk' ? colors.primary : colors.textMuted} />}
+          icon={<NativeIcon name="podcasts" size="sm" color={selectedCategory === 'talk' ? colors.primary.DEFAULT : colors.textMuted} />}
           isActive={selectedCategory === 'talk'}
           onPress={() => setSelectedCategory('talk')}
         />
         <GlassCategoryPill
           label={t('radio.categories.jewish')}
-          icon={<NativeIcon name="judaism" size="sm" color={selectedCategory === 'jewish' ? colors.primary : colors.textMuted} />}
+          icon={<NativeIcon name="judaism" size="sm" color={selectedCategory === 'jewish' ? colors.primary.DEFAULT : colors.textMuted} />}
           isActive={selectedCategory === 'jewish'}
           onPress={() => setSelectedCategory('jewish')}
         />
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
   },
   stationCardHovered: {
     transform: [{ translateY: -4 }],
-    shadowColor: colors.primary,
+    shadowColor: colors.primary.DEFAULT,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 32,
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.secondary.DEFAULT,
-    shadowColor: colors.secondary,
+    shadowColor: colors.secondary.DEFAULT,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 1,
     shadowRadius: 20,

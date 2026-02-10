@@ -14,6 +14,7 @@ import { trendingService } from '../services/api';
 import { isTV } from '../utils/platform';
 import { useDirection } from '../hooks/useDirection';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import logger from '../utils/logger';
 
 // Platform-specific detection
 const isMobile = Platform.OS === 'ios' || Platform.OS === 'android';

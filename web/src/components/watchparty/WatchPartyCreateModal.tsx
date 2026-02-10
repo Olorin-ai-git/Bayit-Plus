@@ -69,7 +69,7 @@ export default function WatchPartyCreateModal({
         {/* Content Info Card */}
         {contentTitle && (
           <View style={styles.contentCard}>
-            <Zap size={isTV ? 24 : 20} color={colors.primary} />
+            <Zap size={isTV ? 24 : 20} color={colors.primary.DEFAULT} />
             <View style={styles.contentInfo}>
               <Text style={styles.contentLabel}>{t('watchParty.watching', 'Watching')}</Text>
               <Text style={styles.contentTitle} numberOfLines={1}>

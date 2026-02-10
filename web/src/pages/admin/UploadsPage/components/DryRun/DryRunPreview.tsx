@@ -36,22 +36,22 @@ export const DryRunPreview: React.FC<DryRunPreviewProps> = ({
       <View style={styles.container}>
         {/* Summary Cards */}
         <View style={styles.summaryRow}>
-          <GlassCard style={[styles.summaryCard, { borderColor: colors.success }]}>
-            <CheckCircle size={24} color={colors.success} />
-            <Text style={[styles.summaryNumber, { color: colors.success }]}>{willUpload}</Text>
+          <GlassCard style={[styles.summaryCard, { borderColor: colors.success.DEFAULT }]}>
+            <CheckCircle size={24} color={colors.success.DEFAULT} />
+            <Text style={[styles.summaryNumber, { color: colors.success.DEFAULT }]}>{willUpload}</Text>
             <Text style={styles.summaryLabel}>{t('admin.uploads.dryRun.willUpload')}</Text>
           </GlassCard>
 
-          <GlassCard style={[styles.summaryCard, { borderColor: colors.warning }]}>
-            <AlertCircle size={24} color={colors.warning} />
-            <Text style={[styles.summaryNumber, { color: colors.warning }]}>{duplicates}</Text>
+          <GlassCard style={[styles.summaryCard, { borderColor: colors.warning.DEFAULT }]}>
+            <AlertCircle size={24} color={colors.warning.DEFAULT} />
+            <Text style={[styles.summaryNumber, { color: colors.warning.DEFAULT }]}>{duplicates}</Text>
             <Text style={styles.summaryLabel}>{t('admin.uploads.dryRun.duplicates')}</Text>
           </GlassCard>
 
           {errors > 0 && (
-            <GlassCard style={[styles.summaryCard, { borderColor: colors.error }]}>
-              <XCircle size={24} color={colors.error} />
-              <Text style={[styles.summaryNumber, { color: colors.error }]}>{errors}</Text>
+            <GlassCard style={[styles.summaryCard, { borderColor: colors.error.DEFAULT }]}>
+              <XCircle size={24} color={colors.error.DEFAULT} />
+              <Text style={[styles.summaryNumber, { color: colors.error.DEFAULT }]}>{errors}</Text>
               <Text style={styles.summaryLabel}>{t('admin.uploads.dryRun.errors')}</Text>
             </GlassCard>
           )}
@@ -65,7 +65,7 @@ export const DryRunPreview: React.FC<DryRunPreviewProps> = ({
               style={[
                 styles.resultItem,
                 {
-                  borderLeftColor: result.would_upload ? colors.success : colors.warning,
+                  borderLeftColor: result.would_upload ? colors.success.DEFAULT :colors.warning.DEFAULT,
                 },
               ]}
             >
@@ -74,7 +74,7 @@ export const DryRunPreview: React.FC<DryRunPreviewProps> = ({
               <Text
                 style={[
                   styles.reason,
-                  { color: result.would_upload ? colors.success : colors.warning },
+                  { color: result.would_upload ? colors.success.DEFAULT :colors.warning.DEFAULT},
                 ]}
               >
                 {t(`admin.uploads.dryRun.${result.reason}`)}
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   },
   resultItem: {
     padding: spacing.md,
-    backgroundColor: colors.glass.bg,
+    backgroundColor: colors.glass,
     borderRadius: borderRadius.md,
     borderLeftWidth: 3,
     marginBottom: spacing.sm,

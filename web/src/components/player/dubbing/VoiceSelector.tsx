@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   voiceItemSelected: {
     backgroundColor: 'rgba(139, 92, 246, 0.3)',
     borderColor: 'rgba(139, 92, 246, 0.6)',
-    shadowColor: colors.primary,
+    shadowColor: colors.primary.DEFAULT,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: 8,

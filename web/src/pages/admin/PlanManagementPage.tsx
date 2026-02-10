@@ -182,7 +182,7 @@ export default function PlanManagementPage() {
             <View style={styles.featuresContainer}>
               {plan.features.map((feature, index) => (
                 <View key={index} style={[styles.featureRow, { flexDirection }]}>
-                  <Check size={14} color={colors.success} />
+                  <Check size={14} color={colors.success.DEFAULT} />
                   <Text style={[styles.featureText, { textAlign }]}>{feature}</Text>
                 </View>
               ))}
@@ -215,16 +215,16 @@ export default function PlanManagementPage() {
         <View style={styles.modalContent}>
           <View style={[styles.formRow, { flexDirection }]}>
             <View style={styles.formGroup}>
-              <GlassInput label={t('admin.plans.form.nameEn')} value={formData.name} onChangeText={(name) => setFormData((p) => ({ ...p, name }))} containerStyle={styles.inputContainer} />
+              <GlassInput label={t('admin.plans.form.nameEn')} value={formData.name} onChangeText={(name: string) => setFormData((p) => ({ ...p, name }))} containerStyle={styles.inputContainer} />
             </View>
             <View style={styles.formGroup}>
-              <GlassInput label={t('admin.plans.form.nameHe')} value={formData.name_he} onChangeText={(name_he) => setFormData((p) => ({ ...p, name_he }))} containerStyle={styles.inputContainer} />
+              <GlassInput label={t('admin.plans.form.nameHe')} value={formData.name_he} onChangeText={(name_he: string) => setFormData((p) => ({ ...p, name_he }))} containerStyle={styles.inputContainer} />
             </View>
           </View>
 
           <View style={[styles.formRow, { flexDirection }]}>
             <View style={styles.formGroup}>
-              <GlassInput label={t('admin.plans.form.price')} value={formData.price} onChangeText={(price) => setFormData((p) => ({ ...p, price }))} keyboardType="decimal-pad" containerStyle={styles.inputContainer} />
+              <GlassInput label={t('admin.plans.form.price')} value={formData.price} onChangeText={(price: string) => setFormData((p) => ({ ...p, price }))} keyboardType="decimal-pad" containerStyle={styles.inputContainer} />
             </View>
             <View style={styles.formGroup}>
               <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.interval')}</Text>
@@ -240,18 +240,18 @@ export default function PlanManagementPage() {
           </View>
 
           <View style={styles.formGroup}>
-            <GlassInput label={t('admin.plans.form.trialDays')} value={formData.trial_days} onChangeText={(trial_days) => setFormData((p) => ({ ...p, trial_days }))} keyboardType="number-pad" containerStyle={styles.inputContainer} />
+            <GlassInput label={t('admin.plans.form.trialDays')} value={formData.trial_days} onChangeText={(trial_days: string) => setFormData((p) => ({ ...p, trial_days }))} keyboardType="number-pad" containerStyle={styles.inputContainer} />
           </View>
 
           <View style={styles.formGroup}>
-            <GlassInput label={t('admin.plans.form.features')} value={formData.features} onChangeText={(features) => setFormData((p) => ({ ...p, features }))} multiline numberOfLines={4} containerStyle={styles.inputContainer} />
+            <GlassInput label={t('admin.plans.form.features')} value={formData.features} onChangeText={(features: string) => setFormData((p) => ({ ...p, features }))} multiline numberOfLines={4} containerStyle={styles.inputContainer} />
           </View>
 
           <View style={styles.toggleRow}>
             <Text style={[styles.formLabel, { textAlign }]}>{t('admin.plans.form.active')}</Text>
             <GlassToggle
               value={formData.is_active}
-              onValueChange={(is_active) => setFormData((p) => ({ ...p, is_active }))}
+              onValueChange={(is_active: boolean) => setFormData((p) => ({ ...p, is_active }))}
             />
           </View>
 

@@ -27,7 +27,7 @@ export default function StreamingSection({ formData, onChange, disabled }: Strea
         <GlassInput
           placeholder="https://example.com/stream.m3u8"
           value={formData.stream_url || ''}
-          onChangeText={(value) => onChange('stream_url', value)}
+          onChangeText={(value: string) => onChange('stream_url', value)}
           editable={!disabled}
         />
       </View>
@@ -52,7 +52,7 @@ export default function StreamingSection({ formData, onChange, disabled }: Strea
 
       <GlassCheckbox
         checked={formData.is_drm_protected || false}
-        onChange={(checked) => onChange('is_drm_protected', checked)}
+        onChange={(checked: boolean) => onChange('is_drm_protected', checked)}
         label={t('admin.content.editor.fields.drmProtectedLabel', 'This content requires DRM protection')}
         disabled={disabled}
       />

@@ -117,8 +117,8 @@ export default function WatchPartyPanel({
                 onPress={() => setActiveTab(tab)}
                 style={{ flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 8 }}
               >
-                <Icon size={isTV ? 18 : 16} color={isActive ? colors.primary : colors.textMuted} />
-                <Text style={{ color: isActive ? colors.primary : colors.textMuted, fontWeight: isActive ? '600' : '400' }}>
+                <Icon size={isTV ? 18 : 16} color={isActive ? colors.primary.DEFAULT : colors.textMuted} />
+                <Text style={{ color: isActive ? colors.primary.DEFAULT : colors.textMuted, fontWeight: isActive ? '600' : '400' }}>
                   {tab === 'participants'
                     ? `${t('watchParty.participants')} (${participants.length})`
                     : t('watchParty.chat')}

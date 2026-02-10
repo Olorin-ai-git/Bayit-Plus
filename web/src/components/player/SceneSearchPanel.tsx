@@ -207,7 +207,7 @@ export default function SceneSearchPanel({
           ref={scrollRef}
           data={results}
           renderItem={renderResultCard}
-          keyExtractor={(item, index) => `${item.content_id}-${item.timestamp_seconds}-${index}`}
+          keyExtractor={(item: any, index: number) => `${item.content_id}-${item.timestamp_seconds}-${index}`}
           getItemLayout={getItemLayout}
           windowSize={PLATFORM_CONFIG.list.windowSize}
           maxToRenderPerBatch={PLATFORM_CONFIG.list.maxToRenderPerBatch}

@@ -67,10 +67,10 @@ export function ImageDropZone({
             isUploading && styles.dropZoneUploading,
           ]}
           intensity={isDragging ? 'high' : 'medium'}
-          borderColor={isDragging ? colors.primary : undefined}
+          borderColor={isDragging ? colors.primary.DEFAULT : undefined}
         >
           <View style={styles.content}>
-            <Upload size={32} color={colors.primary} />
+            <Upload size={32} color={colors.primary.DEFAULT} />
             <Text style={[styles.primaryText, { textAlign }]}>
               {t('admin.content.editor.imageUpload.dropHere')}
             </Text>

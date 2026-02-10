@@ -95,7 +95,7 @@ export default function ChessChat({
               {isMuted ? (
                 <MicOff size={16} color={colors.text} />
               ) : (
-                <Mic size={16} color={colors.success} />
+                <Mic size={16} color={colors.success.DEFAULT} />
               )}
             </Pressable>
 
@@ -164,7 +164,7 @@ export default function ChessChat({
           style={[!inputText.trim() && styles.disabled]}
           disabled={!inputText.trim()}
         >
-          <Send size={20} color={inputText.trim() ? colors.primary : colors.textSecondary} />
+          <Send size={20} color={inputText.trim() ? colors.primary.DEFAULT : colors.textSecondary} />
         </Pressable>
       </View>
 

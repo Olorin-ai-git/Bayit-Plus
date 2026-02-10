@@ -17,7 +17,7 @@ export function CategoryPickerStateMessages({
 
   return (
     <View style={styles.container}>
-      <AlertCircle size={14} color={colors.error} />
+      <AlertCircle size={14} color={colors.error.DEFAULT} />
       <Text style={styles.errorText}>{error}</Text>
     </View>
   );

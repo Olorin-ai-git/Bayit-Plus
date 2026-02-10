@@ -37,17 +37,17 @@ export const GlassPlaylist: React.FC<GlassPlaylistProps> = ({
   const { t } = useTranslation();
   const { isRTL } = useDirection();
 
-  const isVisible = usePlaylistStore((s) => s.isVisible);
-  const items = usePlaylistStore((s) => s.items);
-  const isLoading = usePlaylistStore((s) => s.isLoading);
-  const setVisible = usePlaylistStore((s) => s.setVisible);
-  const error = usePlaylistStore((s) => s.error);
-  const clearError = usePlaylistStore((s) => s.clearError);
-  const removeItem = usePlaylistStore((s) => s.removeItem);
-  const clearPlaylist = usePlaylistStore((s) => s.clearPlaylist);
-  const fetchPlaylist = usePlaylistStore((s) => s.fetchPlaylist);
-  const reorderItem = usePlaylistStore((s) => s.reorderItem);
-  const setItems = usePlaylistStore((s) => s.setItems);
+  const isVisible = usePlaylistStore((s: any) => s.isVisible);
+  const items = usePlaylistStore((s: any) => s.items);
+  const isLoading = usePlaylistStore((s: any) => s.isLoading);
+  const setVisible = usePlaylistStore((s: any) => s.setVisible);
+  const error = usePlaylistStore((s: any) => s.error);
+  const clearError = usePlaylistStore((s: any) => s.clearError);
+  const removeItem = usePlaylistStore((s: any) => s.removeItem);
+  const clearPlaylist = usePlaylistStore((s: any) => s.clearPlaylist);
+  const fetchPlaylist = usePlaylistStore((s: any) => s.fetchPlaylist);
+  const reorderItem = usePlaylistStore((s: any) => s.reorderItem);
+  const setItems = usePlaylistStore((s: any) => s.setItems);
 
   const slideAnim = useRef(new Animated.Value(0)).current;
 

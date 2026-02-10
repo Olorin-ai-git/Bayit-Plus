@@ -49,7 +49,7 @@ export default function QuotaManagementPanel() {
           />
           <GlassButton
             title=""
-            icon={<Search size={16} color={colors.primary} />}
+            icon={<Search size={16} color={colors.primary.DEFAULT} />}
             variant="primary"
             onPress={handleSearch}
             loading={loading}

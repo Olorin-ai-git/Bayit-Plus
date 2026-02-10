@@ -56,7 +56,7 @@ export function PlaylistPanel({
             </View>
             {index === playlistIndex && (
               <View style={styles.playIcon}>
-                <Play size={14} color={colors.primary} fill={colors.primary} />
+                <Play size={14} color={colors.primary.DEFAULT} fill={colors.primary} />
               </View>
             )}
           </Pressable>

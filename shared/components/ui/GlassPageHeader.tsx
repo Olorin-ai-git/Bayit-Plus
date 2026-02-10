@@ -50,11 +50,14 @@ interface PageHeaderProps {
   icon?: ReactNode | string;
   badge?: string | number;
   iconColor?: string;
+  iconBackgroundColor?: string;
   glassLevel?: GlassLevel;
   action?: ReactNode;
   style?: ViewStyle;
   titleStyle?: TextStyle;
   isRTL?: boolean;
+  className?: string;
+  testID?: string;
 }
 
 /**

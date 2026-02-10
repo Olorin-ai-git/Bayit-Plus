@@ -28,7 +28,7 @@ export function useRecordingSession({ channelId, onRecordingStateChange }: UseRe
     dubbingEnabled: false,
     dubbingTargetLanguage: 'en',
   })
-  const durationInterval = useRef<NodeJS.Timeout | null>(null)
+  const durationInterval = useRef<ReturnType<typeof setTimeout> | null>(null)
   // Use ref for callback to avoid infinite loop when callback changes on every render
   const onRecordingStateChangeRef = useRef(onRecordingStateChange)
   onRecordingStateChangeRef.current = onRecordingStateChange

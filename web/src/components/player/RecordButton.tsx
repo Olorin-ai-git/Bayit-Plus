@@ -31,7 +31,7 @@ export const RecordButton: React.FC<RecordButtonProps> = ({
   const { isRTL } = useRTL()
   const [isHovered, setIsHovered] = useState(false)
   const [showOptions, setShowOptions] = useState(false)
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null)
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const {
     isRecording, duration, recordingOptions,

@@ -68,7 +68,7 @@ export default function ActionButtons({
         >
           <List
             size={18}
-            color={showChaptersPanel ? colors.primary : colors.text}
+            color={showChaptersPanel ? colors.primary.DEFAULT : colors.text}
           />
         </Pressable>
       )}
@@ -89,7 +89,7 @@ export default function ActionButtons({
         >
           <SettingsIcon
             size={18}
-            color={showSettings ? colors.primary : colors.text}
+            color={showSettings ? colors.primary.DEFAULT : colors.text}
           />
         </Pressable>
       )}

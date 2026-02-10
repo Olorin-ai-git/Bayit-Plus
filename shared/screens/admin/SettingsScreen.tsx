@@ -122,7 +122,7 @@ export const SettingsScreen: React.FC = () => {
           }
         },
       },
-    );
+    });
   };
 
   if (loading) {

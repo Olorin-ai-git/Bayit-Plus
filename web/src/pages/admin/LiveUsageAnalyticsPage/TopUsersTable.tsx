@@ -16,7 +16,7 @@ export default function TopUsersTable({ topUsers, isRTL }: TopUsersTableProps) {
   return (
     <GlassCard style={styles.card}>
       <View style={[styles.cardHeader, isRTL && styles.cardHeaderRTL]}>
-        <TrendingUp size={20} color={colors.primary} />
+        <TrendingUp size={20} color={colors.primary.DEFAULT} />
         <Text style={[styles.cardTitle, isRTL && styles.textRTL]}>
           {t('admin.liveQuotas.topUsers', 'Top Users (Last 30 Days)')}
         </Text>

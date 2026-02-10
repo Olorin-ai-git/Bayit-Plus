@@ -34,7 +34,7 @@ export const EPGRecordLanguageGrid: React.FC<EPGRecordLanguageGridProps> = ({
           <Text style={[styles.languageText, selected === lang.code && styles.languageTextSelected]}>
             {lang.label}
           </Text>
-          {selected === lang.code && <Check size={16} color={colors.primary} />}
+          {selected === lang.code && <Check size={16} color={colors.primary.DEFAULT} />}
         </Pressable>
       ))}
     </View>

@@ -180,13 +180,13 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     borderWidth: 3,
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     borderTopColor: 'transparent',
     marginBottom: spacing.md,
   },
   loadingText: {
     fontSize: 14,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
     textAlign: 'center',
   },
   errorText: {

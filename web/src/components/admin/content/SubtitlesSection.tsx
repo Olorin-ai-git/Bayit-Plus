@@ -5,7 +5,8 @@ import { useState, useEffect } from 'react'
 import { GlassView, GlassButton } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
 import { FlagWithSparkle, getLanguageName } from '@/components/common/FlagWithSparkle'
-import { subtitlesService } from '@/services/api'
+import { subtitlesService as _subtitlesService } from '@/services/api'
+const subtitlesService = _subtitlesService as any
 import logger from '@/utils/logger'
 
 interface SubtitleTrack {

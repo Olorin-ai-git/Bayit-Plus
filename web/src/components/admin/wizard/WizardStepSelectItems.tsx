@@ -72,7 +72,7 @@ export function WizardStepSelectItems({
           <View key={item.id} style={styles.itemContainer}>
             <GlassCheckbox
               checked={importAll || selectedItems.includes(item.id)}
-              onCheckedChange={(checked) => onSelectItem(item.id, checked)}
+              onCheckedChange={(checked: boolean) => onSelectItem(item.id, checked)}
               disabled={importAll}
             />
             <View style={styles.itemContent}>

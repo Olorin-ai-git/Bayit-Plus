@@ -115,7 +115,7 @@ export const MonitoredFolders: React.FC = () => {
       >
         <GlassCard style={styles.confirmDialog}>
           <View style={styles.confirmIcon}>
-            <AlertTriangle size={48} color={colors.error} />
+            <AlertTriangle size={48} color={colors.error.DEFAULT} />
           </View>
           <Text style={styles.confirmMessage}>
             {folderToDelete ? `${folderToDelete.name} - ${folderToDelete.path}` : ''}
@@ -177,6 +177,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   deleteButton: {
-    backgroundColor: colors.error,
+    backgroundColor: colors.error.DEFAULT,
   },
 });

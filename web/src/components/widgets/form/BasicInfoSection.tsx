@@ -53,7 +53,7 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
         )}
         placeholder={t('widgets.form.titlePlaceholder')}
         value={title}
-        onChangeText={(v) => onUpdateField('title', v)}
+        onChangeText={(v: string) => onUpdateField('title', v)}
       />
 
       <GlassInput
@@ -62,7 +62,7 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
         )}
         placeholder={t('widgets.form.descriptionPlaceholder')}
         value={description}
-        onChangeText={(v) => onUpdateField('description', v)}
+        onChangeText={(v: string) => onUpdateField('description', v)}
         multiline
         numberOfLines={2}
       />
@@ -73,7 +73,7 @@ export const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
         )}
         placeholder={t('widgets.form.iconPlaceholder')}
         value={icon}
-        onChangeText={(v) => onUpdateField('icon', v)}
+        onChangeText={(v: string) => onUpdateField('icon', v)}
         maxLength={2}
       />
     </View>

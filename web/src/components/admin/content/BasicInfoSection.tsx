@@ -27,7 +27,7 @@ export default function BasicInfoSection({ formData, onChange, disabled }: Basic
         <GlassInput
           placeholder={t('admin.content.editor.fields.titlePlaceholder', 'Content title')}
           value={formData.title || ''}
-          onChangeText={(value) => onChange('title', value)}
+          onChangeText={(value: string) => onChange('title', value)}
           editable={!disabled}
         />
       </View>
@@ -38,7 +38,7 @@ export default function BasicInfoSection({ formData, onChange, disabled }: Basic
           placeholder={t('admin.content.editor.fields.yearPlaceholder', '2024')}
           keyboardType="numeric"
           value={formData.year ? String(formData.year) : ''}
-          onChangeText={(value) => onChange('year', value ? parseInt(value) : undefined)}
+          onChangeText={(value: string) => onChange('year', value ? parseInt(value) : undefined)}
           editable={!disabled}
         />
       </View>
@@ -48,7 +48,7 @@ export default function BasicInfoSection({ formData, onChange, disabled }: Basic
         <GlassTextarea
           placeholder={t('admin.content.editor.fields.descriptionPlaceholder', 'Content description')}
           value={formData.description || ''}
-          onChangeText={(value) => onChange('description', value)}
+          onChangeText={(value: string) => onChange('description', value)}
           editable={!disabled}
         />
       </View>

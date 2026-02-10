@@ -58,7 +58,7 @@ export default function CreateGameModal({ visible, onClose, onCreate }: CreateGa
             style={[gameMode === 'pvp' ? styles.optionActive : styles.optionInactive]}
             onPress={() => setGameMode('pvp')}
           >
-            <Users size={20} color={gameMode === 'pvp' ? colors.primary : colors.textSecondary} />
+            <Users size={20} color={gameMode === 'pvp' ? colors.primary.DEFAULT : colors.textSecondary} />
             <Text className="text-sm" style={[gameMode === 'pvp' ? styles.textActive : styles.textInactive]}>
               {t('chess.playVsFriend')}
             </Text>
@@ -69,7 +69,7 @@ export default function CreateGameModal({ visible, onClose, onCreate }: CreateGa
             style={[gameMode === 'bot' ? styles.optionActive : styles.optionInactive]}
             onPress={() => setGameMode('bot')}
           >
-            <Bot size={20} color={gameMode === 'bot' ? colors.primary : colors.textSecondary} />
+            <Bot size={20} color={gameMode === 'bot' ? colors.primary.DEFAULT : colors.textSecondary} />
             <Text className="text-sm" style={[gameMode === 'bot' ? styles.textActive : styles.textInactive]}>
               {t('chess.playVsBot')}
             </Text>

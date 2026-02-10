@@ -398,11 +398,11 @@ export default function SubtitleControls({
                 downloadResult.type === 'partial' && styles.downloadResultPartial,
               ]}>
                 {downloadResult.type === 'success' ? (
-                  <Check size={16} color={colors.success} />
+                  <Check size={16} color={colors.success.DEFAULT} />
                 ) : downloadResult.type === 'error' ? (
-                  <AlertCircle size={16} color={colors.error} />
+                  <AlertCircle size={16} color={colors.error.DEFAULT} />
                 ) : (
-                  <AlertCircle size={16} color={colors.warning} />
+                  <AlertCircle size={16} color={colors.warning.DEFAULT} />
                 )}
                 <View style={styles.downloadResultContent}>
                   <Text style={styles.downloadResultText}>{downloadResult.message}</Text>
@@ -442,7 +442,7 @@ export default function SubtitleControls({
               {isDownloading ? (
                 <GlassLoadingSpinner size="small" />
               ) : (
-                <Download size={20} color={colors.primary} style={{ marginRight: spacing.md }} />
+                <Download size={20} color={colors.primary.DEFAULT} style={{ marginRight: spacing.md }} />
               )}
               <View style={styles.menuItemContent}>
                 <Text style={[styles.menuItemText, styles.downloadMenuText]}>

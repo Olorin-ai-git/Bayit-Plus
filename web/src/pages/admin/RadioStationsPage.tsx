@@ -237,55 +237,55 @@ export default function RadioStationsPage() {
             containerStyle={styles.input}
             placeholder={t('admin.radioStations.form.namePlaceholder', 'Station name')}
             value={editData.name || ''}
-            onChangeText={(value) => setEditData({ ...editData, name: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, name: value })}
           />
           <GlassInput
             label={t('admin.content.editor.fields.stationLogo', 'Station Logo')}
             containerStyle={styles.input}
             placeholder={t('admin.content.editor.fields.logoPlaceholder', 'Logo URL')}
             value={editData.logo || ''}
-            onChangeText={(value) => setEditData({ ...editData, logo: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, logo: value })}
           />
           <GlassInput
             label={t('admin.radioStations.form.genre', 'Genre')}
             containerStyle={styles.input}
             placeholder={t('admin.radioStations.form.genrePlaceholder', 'Genre (e.g., Electronic, News)')}
             value={editData.genre || ''}
-            onChangeText={(value) => setEditData({ ...editData, genre: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, genre: value })}
           />
           <GlassInput
             label={t('admin.radioStations.form.streamUrl', 'Stream URL')}
             containerStyle={styles.input}
             placeholder={t('admin.radioStations.form.streamUrlPlaceholder', 'Stream URL (HLS/Audio)')}
             value={editData.stream_url || ''}
-            onChangeText={(value) => setEditData({ ...editData, stream_url: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, stream_url: value })}
           />
           <GlassInput
             label={t('admin.radioStations.form.currentShow', 'Current Show (optional)')}
             containerStyle={styles.input}
             placeholder={t('admin.radioStations.form.currentShowPlaceholder', 'Current Show (optional)')}
             value={editData.current_show || ''}
-            onChangeText={(value) => setEditData({ ...editData, current_show: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, current_show: value })}
           />
           <GlassInput
             label={t('admin.radioStations.form.currentSong', 'Current Song (optional)')}
             containerStyle={styles.input}
             placeholder={t('admin.radioStations.form.currentSongPlaceholder', 'Current Song (optional)')}
             value={editData.current_song || ''}
-            onChangeText={(value) => setEditData({ ...editData, current_song: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, current_song: value })}
           />
           <GlassInput
             label={t('admin.radioStations.form.order', 'Order')}
             containerStyle={styles.input}
             placeholder={t('admin.radioStations.form.orderPlaceholder', 'Order')}
             value={String(editData.order || '')}
-            onChangeText={(value) => setEditData({ ...editData, order: parseInt(value) || 0 })}
+            onChangeText={(value: string) => setEditData({ ...editData, order: parseInt(value) || 0 })}
             keyboardType="number-pad"
           />
           <View style={styles.checkboxRow}>
             <GlassCheckbox
               checked={editData.is_active || false}
-              onCheckedChange={(checked) => setEditData({ ...editData, is_active: checked })}
+              onCheckedChange={(checked: boolean) => setEditData({ ...editData, is_active: checked })}
               label={t('admin.common.active', 'Active')}
             />
           </View>

@@ -49,7 +49,7 @@ describe('VoiceManagementPage', () => {
     );
 
     const libraryTab = screen.getByText('admin.voiceManagement.tabs.library');
-    fireEvent.press(libraryTab);
+    fireEvent.click(libraryTab);
 
     // Would check for library content rendering here
   });
@@ -90,7 +90,7 @@ describe('VoiceConfigurationPanel', () => {
 
     await waitFor(() => {
       const input = screen.getByDisplayValue('voice123');
-      fireEvent.changeText(input, 'newvoice123');
+      fireEvent.change(input, 'newvoice123');
     });
 
     await waitFor(() => {
@@ -111,7 +111,7 @@ describe('VoiceConfigurationPanel', () => {
       const testButton = testButtons.find((btn) => btn.getAttribute('aria-label') === 'test');
 
       if (testButton) {
-        fireEvent.press(testButton);
+        fireEvent.click(testButton);
       }
     });
 
@@ -129,11 +129,11 @@ describe('VoiceConfigurationPanel', () => {
 
     await waitFor(() => {
       const input = screen.getByDisplayValue('voice123');
-      fireEvent.changeText(input, 'newvoice123');
+      fireEvent.change(input, 'newvoice123');
     });
 
     const saveButton = screen.getByText('common.save');
-    fireEvent.press(saveButton);
+    fireEvent.click(saveButton);
 
     await waitFor(() => {
       expect(voiceManagementService.updateVoiceConfig).toHaveBeenCalled();

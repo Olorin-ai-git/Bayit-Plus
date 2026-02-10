@@ -361,7 +361,7 @@ export default function LiveSubtitleControls({
         icon={
           <Languages
             size={18}
-            color={enabled ? colors.primary : colors.textSecondary}
+            color={enabled ? colors.primary.DEFAULT : colors.textSecondary}
           />
         }
         label={t('subtitles.liveTranslate')}

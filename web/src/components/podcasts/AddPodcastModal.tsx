@@ -93,9 +93,9 @@ export default function AddPodcastModal({ visible, onClose, onSuccess }: AddPodc
   }, [preview, handleClose, onSuccess, t]);
 
   const providerOptions: Array<{ key: Provider; label: string; icon: React.ReactNode }> = [
-    { key: 'rss', label: t('podcasts.addPodcast.providerRSS'), icon: <Rss size={14} color={provider === 'rss' ? colors.primary : colors.textMuted} /> },
-    { key: 'apple_podcasts', label: t('podcasts.addPodcast.providerApple'), icon: <Music size={14} color={provider === 'apple_podcasts' ? colors.primary : colors.textMuted} /> },
-    { key: 'spotify', label: t('podcasts.addPodcast.providerSpotify'), icon: <Disc3 size={14} color={provider === 'spotify' ? colors.primary : colors.textMuted} /> },
+    { key: 'rss', label: t('podcasts.addPodcast.providerRSS'), icon: <Rss size={14} color={provider === 'rss' ? colors.primary.DEFAULT : colors.textMuted} /> },
+    { key: 'apple_podcasts', label: t('podcasts.addPodcast.providerApple'), icon: <Music size={14} color={provider === 'apple_podcasts' ? colors.primary.DEFAULT : colors.textMuted} /> },
+    { key: 'spotify', label: t('podcasts.addPodcast.providerSpotify'), icon: <Disc3 size={14} color={provider === 'spotify' ? colors.primary.DEFAULT : colors.textMuted} /> },
   ];
 
   return (
@@ -205,7 +205,7 @@ function PreviewSection({
 function SuccessView({ message }: { message: string }) {
   return (
     <View style={styles.successContainer}>
-      <CheckCircle size={48} color={colors.success} />
+      <CheckCircle size={48} color={colors.success.DEFAULT} />
       <Text style={styles.successText}>{message}</Text>
     </View>
   );
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
   errorText: {
-    color: colors.error,
+    color: colors.error.DEFAULT,
     fontSize: 14,
     textAlign: 'center',
   },
@@ -277,6 +277,6 @@ const styles = StyleSheet.create({
   successText: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
 });

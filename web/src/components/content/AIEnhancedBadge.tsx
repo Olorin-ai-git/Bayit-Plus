@@ -50,7 +50,7 @@ export default function AIEnhancedBadge({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Sparkles size={iconSize} color={colors.warning} />
+      <Sparkles size={iconSize} color={colors.warning.DEFAULT} />
       {size === 'medium' && (
         <Text style={[styles.label, { fontSize }]}>{t('badges.aiEnhanced')}</Text>
       )}
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   label: {
-    color: colors.warning,
+    color: colors.warning.DEFAULT,
     fontWeight: '600',
   },
   tooltip: {

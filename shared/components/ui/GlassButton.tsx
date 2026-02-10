@@ -22,7 +22,8 @@ type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'destructive
 type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface GlassButtonProps {
-  title: string;
+  title?: string;
+  children?: React.ReactNode;
   onPress?: () => void;
   variant?: ButtonVariant;
   size?: ButtonSize;
@@ -33,11 +34,15 @@ interface GlassButtonProps {
   fullWidth?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  className?: string;
   hasTVPreferredFocus?: boolean;
-  /** Accessibility label (defaults to title if not provided) */
   accessibilityLabel?: string;
-  /** Accessibility hint (e.g., "Saves your changes") */
   accessibilityHint?: string;
+  accessibilityState?: Record<string, any>;
+  accessibilityRole?: string;
+  onFocus?: () => void;
+  onBlur?: () => void;
+  testID?: string;
 }
 
 export const GlassButton: React.FC<GlassButtonProps> = ({

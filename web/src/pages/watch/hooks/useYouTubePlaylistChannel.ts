@@ -75,7 +75,7 @@ export function useYouTubePlaylistChannel(
   const [supportsPipWidget, setSupportsPipWidget] = useState(false);
   const [attribution, setAttribution] = useState<string | null>(null);
 
-  const syncIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const syncIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const fetchCurrentProgram = useCallback(async () => {
     if (!isYouTubePlaylist || !channelId) return;

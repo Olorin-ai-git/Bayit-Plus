@@ -21,11 +21,11 @@ interface AvatarModeCardProps {
 
 function getModeColor(mode: AvatarMode): string {
   switch (mode) {
-    case 'full': return colors.purple[600];
-    case 'compact': return colors.blue[600];
-    case 'minimal': return colors.green[600];
-    case 'icon_only': return colors.gray[600];
-    default: return colors.gray[500];
+    case 'full': return colors.primary[600];
+    case 'compact': return colors.info[600];
+    case 'minimal': return colors.success[600];
+    case 'icon_only': return colors.dark[600];
+    default: return colors.dark[500];
   }
 }
 
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   modeCardSelected: {
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
     backgroundColor: `${colors.primary}15`,
   },
   modeCardRTL: {},
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     alignItems: 'center',
     justifyContent: 'center',
   },

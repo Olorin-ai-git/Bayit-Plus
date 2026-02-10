@@ -41,7 +41,7 @@ export const UploadStageIndicator: React.FC<UploadStageIndicatorProps> = ({
       case 'failed':
         return colors.error;
       default:
-        return colors.glass.borderLight;
+        return colors.glassBorderLight;
     }
   };
 
@@ -90,7 +90,7 @@ export const UploadStageIndicator: React.FC<UploadStageIndicatorProps> = ({
                   styles.connector,
                   {
                     backgroundColor:
-                      status === 'completed' ? colors.success : colors.glass.borderLight,
+                      status === 'completed' ? colors.success.DEFAULT : colors.glassBorderLight,
                   },
                 ]}
               />

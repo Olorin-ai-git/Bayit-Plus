@@ -15,7 +15,7 @@ interface UsePlaybackHeartbeatOptions {
 
 export const usePlaybackHeartbeat = (options: UsePlaybackHeartbeatOptions) => {
   const { sessionId, isPlaying, interval = 30000, onError } = options;
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     // Only send heartbeat if we have a session and playback is active

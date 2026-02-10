@@ -45,10 +45,10 @@ export const FolderCard: React.FC<FolderCardProps> = ({
             <Play size={18} color={colors.primary.DEFAULT} />
           </Pressable>
           <Pressable onPress={() => onEdit(folder)} disabled={actionInProgress}>
-            <Edit2 size={18} color={colors.info} />
+            <Edit2 size={18} color={colors.info.DEFAULT} />
           </Pressable>
           <Pressable onPress={() => onDelete(folder)} disabled={actionInProgress}>
-            <Trash2 size={18} color={colors.error} />
+            <Trash2 size={18} color={colors.error.DEFAULT} />
           </Pressable>
         </View>
       </View>

@@ -22,7 +22,7 @@ export default function AdminEmptyState({
     <View style={styles.container}>
       <View style={styles.glassContainer}>
         <View style={styles.iconContainer}>
-          {icon || <Inbox size={48} color={colors.text.secondary} />}
+          {icon || <Inbox size={48} color={colors.textSecondary} />}
         </View>
 
         <Text style={[styles.title, { textAlign: isRTL ? 'right' : 'left' }]}>
@@ -53,10 +53,10 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
   },
   glassContainer: {
-    backgroundColor: colors.glass.bg,
+    backgroundColor: colors.glass,
     borderRadius: borderRadius.lg,
     borderWidth: 1,
-    borderColor: colors.glass.border,
+    borderColor: colors.glassBorder,
     padding: spacing.xl,
     alignItems: 'center',
     maxWidth: 400,
@@ -69,12 +69,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: fontSize.xl,
     fontWeight: '600',
-    color: colors.text.primary,
+    color: colors.textPrimary,
     marginBottom: spacing.sm,
   },
   message: {
     fontSize: fontSize.md,
-    color: colors.text.secondary,
+    color: colors.textSecondary,
     marginBottom: spacing.lg,
   },
   actionContainer: {

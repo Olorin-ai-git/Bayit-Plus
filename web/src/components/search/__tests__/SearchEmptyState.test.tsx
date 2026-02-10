@@ -61,7 +61,7 @@ describe('SearchEmptyState', () => {
       render(<SearchEmptyState query="thriller" onClear={mockOnClear} />);
 
       const clearButton = screen.getByText('empty.clearSearch');
-      fireEvent.press(clearButton);
+      fireEvent.click(clearButton);
 
       expect(mockOnClear).toHaveBeenCalled();
     });
@@ -116,7 +116,7 @@ describe('SearchEmptyState', () => {
       );
 
       const retryButton = screen.getByText('errors.retrySearch');
-      fireEvent.press(retryButton);
+      fireEvent.click(retryButton);
 
       expect(mockOnRetry).toHaveBeenCalled();
     });

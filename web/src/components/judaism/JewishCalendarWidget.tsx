@@ -80,7 +80,7 @@ export function JewishCalendarWidget() {
     return (
       <GlassCard className="p-4">
         <div className="py-8 flex justify-center">
-          <Loader2 size={32} color={colors.primary} className="animate-spin" />
+          <Loader2 size={32} color={colors.primary.DEFAULT} className="animate-spin" />
         </div>
       </GlassCard>
     );
@@ -95,7 +95,7 @@ export function JewishCalendarWidget() {
       <div dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
-        <Calendar size={24} color={colors.primary} />
+        <Calendar size={24} color={colors.primary.DEFAULT} />
         <h3
           className="text-xl font-bold"
           style={{ textAlign: isRTL ? 'right' : 'left', color: colors.text }}
@@ -138,7 +138,7 @@ export function JewishCalendarWidget() {
       {getParasha() && (
         <div className="rounded-lg p-3 mb-3" style={{ backgroundColor: colors.glassLight }}>
           <div className={`flex items-center gap-2 `}>
-            <BookOpen size={18} color={colors.primary} />
+            <BookOpen size={18} color={colors.primary.DEFAULT} />
             <span className="text-sm" style={{ color: colors.textMuted }}>
               {t('judaism.calendar.parasha', 'Parasha')}:
             </span>
@@ -160,7 +160,7 @@ export function JewishCalendarWidget() {
           }}
         >
           <div className={`flex items-center gap-2 `}>
-            <Flame size={18} color={colors.warning} />
+            <Flame size={18} color={colors.warning.DEFAULT} />
             <span className="text-sm" style={{ color: colors.textMuted }}>
               {t('judaism.calendar.dafYomi', 'Daf Yomi')}:
             </span>
@@ -175,7 +175,7 @@ export function JewishCalendarWidget() {
       {calendarData.omer_count && (
         <div className="rounded-lg p-3 mb-3" style={{ backgroundColor: `${colors.warning}33` }}>
           <div className="flex items-center justify-center gap-2">
-            <span className="text-sm" style={{ color: colors.warning }}>
+            <span className="text-sm" style={{ color: colors.warning.DEFAULT }}>
               {t('judaism.calendar.omerDay', 'Day')} {calendarData.omer_count}{' '}
               {t('judaism.calendar.ofOmer', 'of the Omer')}
             </span>

@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: colors.glass.border,
+    borderColor: colors.glassBorder,
     marginRight: spacing.sm,
     alignItems: 'center',
     justifyContent: 'center',

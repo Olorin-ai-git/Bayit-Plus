@@ -67,7 +67,7 @@ describe('RecordingCard', () => {
       )
 
       const deleteButton = getByTestId('delete-button') || getByTestId('trash-icon')
-      fireEvent.press(deleteButton)
+      fireEvent.click(deleteButton)
 
       await waitFor(() => {
         expect(mockShow).toHaveBeenCalledWith(
@@ -105,7 +105,7 @@ describe('RecordingCard', () => {
       )
 
       const deleteButton = getByTestId('delete-button') || getByTestId('trash-icon')
-      fireEvent.press(deleteButton)
+      fireEvent.click(deleteButton)
 
       await waitFor(() => expect(mockShow).toHaveBeenCalled())
 
@@ -133,7 +133,7 @@ describe('RecordingCard', () => {
       )
 
       const deleteButton = getByTestId('delete-button') || getByTestId('trash-icon')
-      fireEvent.press(deleteButton)
+      fireEvent.click(deleteButton)
 
       await waitFor(() => {
         expect(mockShow).toHaveBeenCalledWith(
@@ -156,7 +156,7 @@ describe('RecordingCard', () => {
       )
 
       const deleteButton = getByTestId('delete-button') || getByTestId('trash-icon')
-      fireEvent.press(deleteButton)
+      fireEvent.click(deleteButton)
 
       await waitFor(() => {
         expect(mockShow).toHaveBeenCalledWith(

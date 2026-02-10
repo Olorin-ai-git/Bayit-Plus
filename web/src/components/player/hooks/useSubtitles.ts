@@ -5,7 +5,8 @@
 
 import { useCallback, useEffect, useRef } from 'react'
 import { SubtitleSettings, HebrewMode, EnglishMode, SplitLanguages } from '@/types/subtitle'
-import { subtitlePreferencesService } from '@/services/api'
+import { subtitlePreferencesService as _subtitlePrefsService } from '@/services/api'
+const subtitlePreferencesService = _subtitlePrefsService as any
 import logger from '@/utils/logger'
 import { useNotificationStore } from '@olorin/glass-ui/stores'
 import { useSubtitlePreferences } from './useSubtitlePreferences'

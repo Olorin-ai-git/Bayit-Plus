@@ -131,7 +131,7 @@ export default function CampaignEditPage() {
           <GlassInput
             label={t('admin.campaigns.form.name')}
             value={formData.name}
-            onChangeText={(name) => setFormData((p) => ({ ...p, name }))}
+            onChangeText={(name: string) => setFormData((p) => ({ ...p, name }))}
             placeholder={t('admin.campaigns.form.namePlaceholder')}
             containerStyle={styles.input}
           />
@@ -143,7 +143,7 @@ export default function CampaignEditPage() {
             <GlassInput
               containerStyle={[styles.input, styles.codeInput]}
               value={formData.code}
-              onChangeText={(code) => setFormData((p) => ({ ...p, code: code.toUpperCase() }))}
+              onChangeText={(code: string) => setFormData((p) => ({ ...p, code: code.toUpperCase() }))}
               placeholder="SUMMER2024"
               autoCapitalize="characters"
             />
@@ -179,7 +179,7 @@ export default function CampaignEditPage() {
               label={t('admin.campaigns.form.discountValue')}
               containerStyle={styles.input}
               value={String(formData.discount_value)}
-              onChangeText={(v) => setFormData((p) => ({ ...p, discount_value: Number(v) || 0 }))}
+              onChangeText={(v: string) => setFormData((p) => ({ ...p, discount_value: Number(v) || 0 }))}
               keyboardType="numeric"
             />
           </View>
@@ -191,7 +191,7 @@ export default function CampaignEditPage() {
               label={t('admin.campaigns.form.maxUses')}
               containerStyle={styles.input}
               value={formData.max_uses ? String(formData.max_uses) : ''}
-              onChangeText={(v) => setFormData((p) => ({ ...p, max_uses: v ? Number(v) : null }))}
+              onChangeText={(v: string) => setFormData((p) => ({ ...p, max_uses: v ? Number(v) : null }))}
               placeholder={t('admin.campaigns.form.unlimited')}
               keyboardType="numeric"
             />
@@ -202,7 +202,7 @@ export default function CampaignEditPage() {
               label={t('admin.campaigns.form.validUntil')}
               containerStyle={styles.input}
               value={formData.valid_until}
-              onChangeText={(v) => setFormData((p) => ({ ...p, valid_until: v }))}
+              onChangeText={(v: string) => setFormData((p) => ({ ...p, valid_until: v }))}
               placeholder="YYYY-MM-DD"
             />
           </View>
@@ -210,7 +210,7 @@ export default function CampaignEditPage() {
 
         <GlassToggle
           value={formData.is_active}
-          onValueChange={(is_active) => setFormData((p) => ({ ...p, is_active }))}
+          onValueChange={(is_active: boolean) => setFormData((p) => ({ ...p, is_active }))}
           label={t('admin.campaigns.form.active')}
           isRTL={isRTL}
         />

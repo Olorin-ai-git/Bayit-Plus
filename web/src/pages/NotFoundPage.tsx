@@ -59,15 +59,15 @@ export default function NotFoundPage() {
           <View style={[styles.quickLinksRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <Pressable style={styles.quickLink} onPress={() => navigate('/live')}>
               <Text style={styles.quickLinkText}>{t('notFound.liveChannel')}</Text>
-              <ArrowRight size={14} color={colors.primary} />
+              <ArrowRight size={14} color={colors.primary.DEFAULT} />
             </Pressable>
             <Pressable style={styles.quickLink} onPress={() => navigate('/vod')}>
               <Text style={styles.quickLinkText}>{t('notFound.vodLabel')}</Text>
-              <ArrowRight size={14} color={colors.primary} />
+              <ArrowRight size={14} color={colors.primary.DEFAULT} />
             </Pressable>
             <Pressable style={styles.quickLink} onPress={() => navigate('/podcasts')}>
               <Text style={styles.quickLinkText}>{t('notFound.podcastsLabel')}</Text>
-              <ArrowRight size={14} color={colors.primary} />
+              <ArrowRight size={14} color={colors.primary.DEFAULT} />
             </Pressable>
           </View>
         </View>

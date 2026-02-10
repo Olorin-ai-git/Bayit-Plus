@@ -143,7 +143,7 @@ export class VoiceBatchRecorder extends EventEmitter {
 
   private async speakResponse(text: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      ttsService.speak(text, 'high', { onComplete: () => resolve(), onError: (error) => reject(error) });
+      ttsService.speak(text, 'high', { onComplete: () => resolve(), onError: (error: Error) => reject(error) });
     });
   }
 

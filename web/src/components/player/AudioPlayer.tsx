@@ -204,7 +204,7 @@ export default function AudioPlayer({
   useEffect(() => {
     if (!onProgress || isLive) return
 
-    let intervalId: NodeJS.Timeout | null = null
+    let intervalId: ReturnType<typeof setTimeout> | null = null
 
     if (isPlaying) {
       intervalId = setInterval(() => {
@@ -854,7 +854,7 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 8,
     backgroundColor: colors.error.DEFAULT,
-    shadowColor: colors.error as any,
+    shadowColor: colors.error.DEFAULT as any,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.8,
     shadowRadius: 8,

@@ -76,7 +76,7 @@ export const styles = StyleSheet.create({
   },
   tabActive: {
     borderBottomWidth: 2,
-    borderBottomColor: colors.primary,
+    borderBottomColor: colors.primary.DEFAULT,
     backgroundColor: 'rgba(109, 40, 217, 0.3)',
   },
   tabText: {

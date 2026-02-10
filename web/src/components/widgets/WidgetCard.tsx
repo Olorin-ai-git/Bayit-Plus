@@ -177,7 +177,7 @@ export default function WidgetCard({
             />
             <GlassButton
               title=""
-              onPress={(e) => {
+              onPress={(e: any) => {
                 e?.stopPropagation?.();
                 onToggleVisibility(widget.id);
               }}
@@ -189,7 +189,7 @@ export default function WidgetCard({
             />
             <GlassButton
               title=""
-              onPress={(e) => {
+              onPress={(e: any) => {
                 e?.stopPropagation?.();
                 onDelete(widget.id);
               }}

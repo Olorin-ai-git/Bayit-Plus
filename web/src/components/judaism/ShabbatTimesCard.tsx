@@ -111,7 +111,7 @@ export function ShabbatTimesCard({ defaultCity = 'New York', defaultState = 'NY'
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Flame size={24} color={colors.warning} />
+          <Flame size={24} color={colors.warning.DEFAULT} />
           <h3
             className="text-xl font-bold"
             style={{ textAlign: isRTL ? 'right' : 'left', color: colors.text }}
@@ -164,7 +164,7 @@ export function ShabbatTimesCard({ defaultCity = 'New York', defaultState = 'NY'
 
       {isLoading ? (
         <div className="py-8 flex justify-center">
-          <Loader2 size={32} color={colors.warning} className="animate-spin" />
+          <Loader2 size={32} color={colors.warning.DEFAULT} className="animate-spin" />
         </div>
       ) : shabbatTimes ? (
         <>
@@ -187,8 +187,8 @@ export function ShabbatTimesCard({ defaultCity = 'New York', defaultState = 'NY'
               className="flex-1 rounded-xl p-4 flex flex-col items-center"
               style={{ backgroundColor: `${colors.warning}33` }}
             >
-              <Flame size={32} color={colors.warning} />
-              <span className="text-sm mt-2" style={{ color: colors.warning }}>
+              <Flame size={32} color={colors.warning.DEFAULT} />
+              <span className="text-sm mt-2" style={{ color: colors.warning.DEFAULT }}>
                 {t('judaism.shabbat.candleLighting', 'Candle Lighting')}
               </span>
               <span className="text-2xl font-bold mt-1" style={{ color: colors.text }}>

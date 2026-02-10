@@ -226,7 +226,7 @@ export default function AdminSidebar({
             {Icon && (
               <Icon
                 size={18}
-                color={isActive ? colors.primary : colors.textSecondary}
+                color={isActive ? colors.primary.DEFAULT : colors.textSecondary}
                 style={styles.navIcon}
               />
             )}
@@ -312,7 +312,7 @@ export default function AdminSidebar({
                   {lang.label}
                 </Text>
                 {lang.code === i18n.language && (
-                  <Check size={16} color={colors.primary} />
+                  <Check size={16} color={colors.primary.DEFAULT} />
                 )}
               </Pressable>
             ))}
@@ -353,7 +353,7 @@ export default function AdminSidebar({
             hoveredItem === 'logout' && styles.footerButtonLogoutHovered,
           ]}
         >
-          <LogOut size={18} color={colors.error} />
+          <LogOut size={18} color={colors.error.DEFAULT} />
           <Text style={[styles.footerTextLogout, isRTL && styles.textRTL]}>
             {t('account.logout', 'Logout')}
           </Text>

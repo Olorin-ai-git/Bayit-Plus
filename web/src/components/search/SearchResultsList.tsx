@@ -71,7 +71,7 @@ export const SearchResultsList = memo(function SearchResultsList({
           {item.year && <Text style={styles.metadataText}>{item.year}</Text>}
           {item.rating && (
             <View style={styles.ratingContainer}>
-              <NativeIcon name="star" size="xs" color={colors.warning} />
+              <NativeIcon name="star" size="xs" color={colors.warning.DEFAULT} />
               <Text style={styles.metadataText}>{item.rating}</Text>
             </View>
           )}

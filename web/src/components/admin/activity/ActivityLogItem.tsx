@@ -103,8 +103,8 @@ const ActivityLogItem: React.FC<ActivityLogItemProps> = ({
           </View>
           <Text style={styles.dateText}>{formattedDate}</Text>
           {action.rolled_back && (
-            <View style={[styles.badge, { backgroundColor: `${colors.error}20`, borderColor: colors.error }]}>
-              <Text style={[styles.badgeText, { color: colors.error }]}>
+            <View style={[styles.badge, { backgroundColor: `${colors.error}20`, borderColor: colors.error.DEFAULT }]}>
+              <Text style={[styles.badgeText, { color: colors.error.DEFAULT }]}>
                 {t('admin.librarian.activityLog.rolledBack')}
               </Text>
             </View>
@@ -148,7 +148,7 @@ const ActivityLogItem: React.FC<ActivityLogItemProps> = ({
             onRollback();
           }}
         >
-          <RotateCcw size={16} color={colors.warning} />
+          <RotateCcw size={16} color={colors.warning.DEFAULT} />
         </Pressable>
       )}
     </Pressable>

@@ -21,6 +21,7 @@ import { useSupportStore, SupportTicket } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
 import { SupportTicketForm } from './SupportTicketForm';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import logger from '../../utils/logger';
 
 const statusConfig: Record<string, { color: string; iconName: string }> = {
   open: { color: colors.warning.DEFAULT, iconName: 'edit' },

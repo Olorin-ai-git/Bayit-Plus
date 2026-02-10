@@ -40,7 +40,7 @@ export function TimeRangeSection({
           <GlassSelect
             label={t('settings.ritual.startTime')}
             value={startTime}
-            onChange={(value) => onStartChange(parseInt(value))}
+            onChange={(value: string) => onStartChange(parseInt(value))}
             options={startOptions}
             disabled={!enabled}
           />
@@ -50,7 +50,7 @@ export function TimeRangeSection({
           <GlassSelect
             label={t('settings.ritual.endTime')}
             value={endTime}
-            onChange={(value) => onEndChange(parseInt(value))}
+            onChange={(value: string) => onEndChange(parseInt(value))}
             options={endOptions}
             disabled={!enabled}
           />

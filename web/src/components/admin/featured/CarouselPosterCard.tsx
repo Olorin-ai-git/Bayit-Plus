@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   posterPlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: colors.glass.bgMedium,
+    backgroundColor: colors.glassMedium,
     justifyContent: 'center',
     alignItems: 'center',
   },

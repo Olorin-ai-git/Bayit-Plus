@@ -203,7 +203,7 @@ export default function ChessPage() {
         {/* Header */}
         <View style={headerStyle}>
           <View style={styles.headerIcon}>
-            <Gamepad2 size={32} color={colors.primary} />
+            <Gamepad2 size={32} color={colors.primary.DEFAULT} />
           </View>
           <Text style={titleStyle}>
             {t('chess.title')}
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   subtitle: {
-    color: colors.gray[400],
+    color: colors.dark[400],
     fontSize: fontSize.base,
     marginBottom: spacing['2xl'],
   },
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   createButton: {
-    backgroundColor: colors.purple[600],
+    backgroundColor: colors.primary[600],
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
     borderRadius: borderRadius.xl,
@@ -482,7 +482,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   errorText: {
-    color: colors.red[500],
+    color: colors.error[500],
     fontSize: fontSize.sm,
     textAlign: 'center',
     marginTop: spacing.sm,
@@ -507,17 +507,17 @@ const styles = StyleSheet.create({
     marginVertical: spacing.md,
   },
   gameCodeLabel: {
-    color: colors.gray[400],
+    color: colors.dark[400],
     fontSize: fontSize.sm,
   },
   gameCode: {
-    color: colors.purple[600],
+    color: colors.primary[600],
     fontSize: fontSize['2xl'],
     fontWeight: 'bold',
     letterSpacing: 2,
   },
   reconnectingText: {
-    color: colors.yellow[500],
+    color: colors.warning[500],
     fontSize: fontSize.xs,
     fontStyle: 'italic',
   },
@@ -550,7 +550,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   gameErrorText: {
-    color: colors.red[500],
+    color: colors.error[500],
     fontSize: fontSize.sm,
     textAlign: 'center',
     marginTop: spacing.sm,

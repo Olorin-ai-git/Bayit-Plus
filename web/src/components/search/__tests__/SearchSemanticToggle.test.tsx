@@ -65,7 +65,7 @@ describe('SearchSemanticToggle', () => {
     );
 
     const switchButton = screen.getByRole('switch');
-    fireEvent.press(switchButton);
+    fireEvent.click(switchButton);
 
     expect(mockOnToggle).toHaveBeenCalledWith(true);
   });
@@ -79,7 +79,7 @@ describe('SearchSemanticToggle', () => {
     );
 
     const switchButton = screen.getByRole('switch');
-    fireEvent.press(switchButton);
+    fireEvent.click(switchButton);
 
     expect(mockOnToggle).toHaveBeenCalledWith(false);
   });
@@ -144,7 +144,7 @@ describe('SearchSemanticToggle', () => {
     );
 
     const infoButton = screen.getByLabelText('semantic.infoTitle');
-    fireEvent.press(infoButton);
+    fireEvent.click(infoButton);
 
     expect(screen.getByText('semantic.infoTitle')).toBeInTheDocument();
     expect(screen.getByText('semantic.info')).toBeInTheDocument();
@@ -160,10 +160,10 @@ describe('SearchSemanticToggle', () => {
     );
 
     const infoButton = screen.getByLabelText('semantic.infoTitle');
-    fireEvent.press(infoButton);
+    fireEvent.click(infoButton);
     expect(screen.getByText('semantic.info')).toBeInTheDocument();
 
-    fireEvent.press(infoButton);
+    fireEvent.click(infoButton);
     expect(screen.queryByText('semantic.info')).not.toBeInTheDocument();
   });
 

@@ -120,6 +120,10 @@ export interface User {
   updated_at?: string;
   last_login?: string;
   metadata?: Record<string, any>;
+  pending_plan_id?: string;
+  payment_pending?: boolean;
+  token?: string;
+  [key: string]: any;
 }
 
 // Admin dashboard stats

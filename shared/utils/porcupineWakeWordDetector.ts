@@ -265,7 +265,7 @@ export class PorcupineWakeWordDetector {
       this.porcupine = await PorcupineWorker.create(
         this.accessKey,
         [keyword],
-        (detection) => {
+        (detection: any) => {
           // VOICE-SPECIFIC: Async logging in detection callback (<100ms requirement)
           queueMicrotask(() => {
             wakeWordLogger.debug('Detection callback fired', {

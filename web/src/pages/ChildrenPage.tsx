@@ -410,7 +410,7 @@ export default function ChildrenPage() {
                 <GlassCategoryPill
                   key={category.id}
                   label={getLocalizedName(category, i18n.language)}
-                  icon={<NativeIcon name={iconName} size="sm" color={isActive ? colors.primary : colors.textMuted} />}
+                  icon={<NativeIcon name={iconName} size="sm" color={isActive ? colors.primary.DEFAULT : colors.textMuted} />}
                   isActive={isActive}
                   onPress={() => handleCategorySelect(category.id)}
                 />
@@ -418,7 +418,7 @@ export default function ChildrenPage() {
             })}
             <GlassCategoryPill
               label={t('taxonomy.subcategories.title')}
-              icon={<NativeIcon name="discover" size="sm" color={showSubcategories ? colors.primary : colors.textMuted} />}
+              icon={<NativeIcon name="discover" size="sm" color={showSubcategories ? colors.primary.DEFAULT : colors.textMuted} />}
               isActive={showSubcategories}
               onPress={() => setShowSubcategories(!showSubcategories)}
             />
@@ -435,7 +435,7 @@ export default function ChildrenPage() {
                 <GlassCategoryPill
                   key={subcategory.slug}
                   label={getLocalizedName(subcategory, i18n.language)}
-                  icon={<NativeIcon name={iconName} size="sm" color={isActive ? colors.primary : colors.textMuted} />}
+                  icon={<NativeIcon name={iconName} size="sm" color={isActive ? colors.primary.DEFAULT : colors.textMuted} />}
                   isActive={isActive}
                   onPress={() => handleSubcategorySelect(subcategory.slug)}
                 />

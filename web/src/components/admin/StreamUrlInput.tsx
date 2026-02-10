@@ -141,16 +141,16 @@ export function StreamUrlInput({
                     streamType === type && styles.typeButtonActive,
                   ]}
                   intensity={streamType === type ? 'high' : 'low'}
-                  borderColor={streamType === type ? colors.primary : undefined}
+                  borderColor={streamType === type ? colors.primary.DEFAULT : undefined}
                 >
                   <NativeIcon
                     name={getStreamTypeIcon(type)}
                     size="sm"
-                    color={streamType === type ? colors.primary : colors.textMuted}
+                    color={streamType === type ? colors.primary.DEFAULT : colors.textMuted}
                   />
                   <Text style={[
                     styles.typeText,
-                    { color: streamType === type ? colors.primary : colors.textMuted },
+                    { color: streamType === type ? colors.primary.DEFAULT : colors.textMuted },
                   ]}>
                     {type.toUpperCase()}
                   </Text>
@@ -163,14 +163,14 @@ export function StreamUrlInput({
 
       {error && (
         <GlassView style={styles.errorContainer} intensity="low">
-          <AlertCircle size={16} color={colors.error} />
+          <AlertCircle size={16} color={colors.error.DEFAULT} />
           <Text style={styles.errorText}>{error}</Text>
         </GlassView>
       )}
 
       {isValid && url && (
         <GlassView style={styles.successContainer} intensity="low">
-          <CheckCircle size={16} color={colors.success} />
+          <CheckCircle size={16} color={colors.success.DEFAULT} />
           <Text style={styles.successText}>
             {t('admin.content.streamUrlInput.validUrl', { type: streamType.toUpperCase() })}
           </Text>

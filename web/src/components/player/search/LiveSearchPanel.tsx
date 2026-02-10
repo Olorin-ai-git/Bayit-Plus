@@ -41,7 +41,7 @@ export function LiveSearchPanel({
   const [searched, setSearched] = useState(false)
   const [inputFocused, setInputFocused] = useState(false)
 
-  const debounceRef = useRef<NodeJS.Timeout | null>(null)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const isHebrew = i18n.language === 'he' || isRTL
 
   // Cleanup debounce timer on unmount
@@ -197,7 +197,7 @@ export function LiveSearchPanel({
       {!loading && (
         <FlatList
           data={results}
-          keyExtractor={(item, index) => `${item.timestamp}-${index}`}
+          keyExtractor={(item: any, index: number) => `${item.timestamp}-${index}`}
           renderItem={renderResult}
           ListEmptyComponent={renderEmpty}
           style={styles.listContainer}

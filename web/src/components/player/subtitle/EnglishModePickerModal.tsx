@@ -12,7 +12,8 @@ import { Sparkles } from 'lucide-react'
 import { GlassButton } from '@bayit/shared/ui'
 import { EnglishMode } from '@/types/subtitle'
 import { storageHelpers } from '@/utils/storage'
-import { subtitlesService } from '@/services/api'
+import { subtitlesService as _subtitlesService } from '@/services/api'
+const subtitlesService = _subtitlesService as any
 import { useAuthStore } from '@/stores/authStore'
 import logger from '@/utils/logger'
 
@@ -103,7 +104,7 @@ export default function EnglishModePickerModal({
   const { t } = useTranslation()
   const modalRef = useRef<HTMLDivElement>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
-  const pollingRef = useRef<NodeJS.Timeout | null>(null)
+  const pollingRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [showFirstTimeHint, setShowFirstTimeHint] = useState(false)
   const [generatingMode, setGeneratingMode] = useState<EnglishMode | null>(null)
   const [generationError, setGenerationError] = useState<string | null>(null)
@@ -599,7 +600,7 @@ export default function EnglishModePickerModal({
                               {/* Cancel button */}
                               <GlassButton
                                 variant="ghost"
-                                onPress={(e) => { e.stopPropagation(); handleCancelJob(); }}
+                                onPress={(e: any) => { e.stopPropagation(); handleCancelJob(); }}
                                 disabled={isCancelling}
                                 className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-red-500/80 hover:bg-red-500 backdrop-blur-lg border border-red-400/30 disabled:opacity-50"
                                 aria-label={t('common.cancel', 'Cancel')}
@@ -614,7 +615,7 @@ export default function EnglishModePickerModal({
                               {jobProgress > 50 && (
                                 <GlassButton
                                   variant="ghost"
-                                  onPress={(e) => { e.stopPropagation(); handleRestartJob(option.mode); }}
+                                  onPress={(e: any) => { e.stopPropagation(); handleRestartJob(option.mode); }}
                                   disabled={isCancelling}
                                   className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-amber-500/80 hover:bg-amber-500 backdrop-blur-lg border border-amber-400/30 disabled:opacity-50"
                                   aria-label={t('common.restart', 'Restart')}
@@ -626,7 +627,7 @@ export default function EnglishModePickerModal({
                           ) : (
                             <GlassButton
                               variant="primary"
-                              onPress={(e) => handleGenerate(e, option.mode)}
+                              onPress={(e: any) => handleGenerate(e, option.mode)}
                               disabled={generatingMode !== null}
                               className="px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-purple-500/80 hover:bg-purple-500 backdrop-blur-lg border border-purple-400/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                               aria-label={`Generate ${option.mode}`}

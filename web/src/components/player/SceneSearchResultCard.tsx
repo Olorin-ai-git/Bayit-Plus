@@ -63,7 +63,7 @@ export default function SceneSearchResultCard({
           <View style={[styles.content, isRTL && styles.contentRTL]}>
             {/* Timestamp badge */}
             <View style={[styles.timestampContainer, isTV && styles.timestampContainerTV]}>
-              <Clock size={isTV ? 16 : 12} color={colors.primary} />
+              <Clock size={isTV ? 16 : 12} color={colors.primary.DEFAULT} />
               <Text style={[styles.timestamp, isTV && styles.timestampTV]}>
                 {result.timestamp_formatted}
               </Text>

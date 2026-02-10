@@ -21,6 +21,7 @@ import { useSupportStore } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
 import { supportConfig } from '../../config/supportConfig';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import logger from '../../utils/logger';
 
 interface SupportTicketFormProps {
   onClose: () => void;

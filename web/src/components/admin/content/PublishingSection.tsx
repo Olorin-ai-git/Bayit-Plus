@@ -21,21 +21,21 @@ export default function PublishingSection({ formData, onChange, disabled }: Publ
 
       <GlassCheckbox
         checked={formData.is_published || false}
-        onChange={(checked) => onChange('is_published', checked)}
+        onChange={(checked: boolean) => onChange('is_published', checked)}
         label={t('admin.content.editor.fields.isPublishedLabel', 'Publish this content immediately')}
         disabled={disabled}
       />
 
       <GlassCheckbox
         checked={formData.is_featured || false}
-        onChange={(checked) => onChange('is_featured', checked)}
+        onChange={(checked: boolean) => onChange('is_featured', checked)}
         label={t('admin.content.editor.fields.isFeaturedLabel', 'Feature this content on homepage')}
         disabled={disabled}
       />
 
       <GlassCheckbox
         checked={formData.is_kids_content || false}
-        onChange={(checked) => onChange('is_kids_content', checked)}
+        onChange={(checked: boolean) => onChange('is_kids_content', checked)}
         label={t('admin.content.editor.fields.isKidsContentLabel', 'This is kids-friendly content')}
         disabled={disabled}
       />

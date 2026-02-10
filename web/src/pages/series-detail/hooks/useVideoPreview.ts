@@ -31,7 +31,7 @@ export function useVideoPreview({
   const [showPoster, setShowPoster] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
-  const previewTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const previewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hasAutoStartedRef = useRef<string | null>(null); // Track which episode/series auto-started
 
   const getPreviewUrl = useCallback((): string | null => {

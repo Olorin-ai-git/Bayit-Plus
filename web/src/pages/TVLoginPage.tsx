@@ -129,9 +129,9 @@ export default function TVLoginPage() {
   const renderLogin = () => (
     <View style={styles.loginContainer}>
       <View style={styles.iconRow}>
-        <Smartphone size={32} color={colors.primary} />
+        <Smartphone size={32} color={colors.primary.DEFAULT} />
         <View style={styles.iconConnector} />
-        <Tv size={32} color={colors.primary} />
+        <Tv size={32} color={colors.primary.DEFAULT} />
       </View>
 
       <Text style={styles.titleText}>{t('tvLogin.loginTitle')}</Text>
@@ -225,7 +225,7 @@ export default function TVLoginPage() {
   const renderError = () => (
     <View style={styles.centeredContainer}>
       <View style={styles.iconWrapper}>
-        <XCircle size={64} color={colors.error} />
+        <XCircle size={64} color={colors.error.DEFAULT} />
       </View>
       <Text style={styles.titleText}>{t('tvLogin.error')}</Text>
       <Text style={styles.descriptionText}>{error}</Text>

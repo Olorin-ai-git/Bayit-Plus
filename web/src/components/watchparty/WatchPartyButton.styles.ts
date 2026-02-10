@@ -99,7 +99,7 @@ export const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     borderWidth: 1.5,
     borderColor: 'rgba(168, 85, 247, 0.4)',
-    shadowColor: colors.primary,
+    shadowColor: colors.primary.DEFAULT,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 12,

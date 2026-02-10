@@ -169,11 +169,11 @@ export function ImageUploader({
               style={styles.clearButton}
             >
               <GlassView style={styles.clearButtonInner} intensity="high">
-                <X size={16} color={colors.error} />
+                <X size={16} color={colors.error.DEFAULT} />
               </GlassView>
             </Pressable>
             <View style={styles.successMessage}>
-              <CheckCircle size={16} color={colors.success} />
+              <CheckCircle size={16} color={colors.success.DEFAULT} />
               <Text style={styles.successText}>{t('admin.content.editor.imageUpload.success')}</Text>
             </View>
             <View style={styles.changeButtonContainer}>
@@ -222,10 +222,10 @@ export function ImageUploader({
                 isUploading && styles.dropZoneDisabled,
               ]}
               intensity={isDragging ? 'high' : 'medium'}
-              borderColor={isDragging ? colors.primary : undefined}
+              borderColor={isDragging ? colors.primary.DEFAULT : undefined}
             >
               <View style={styles.dropZoneContent}>
-                <Upload size={32} color={colors.primary} />
+                <Upload size={32} color={colors.primary.DEFAULT} />
                 <Text style={[styles.dropZoneTitle, { textAlign }]}>
                   {t('admin.content.editor.imageUpload.dropHere')}
                 </Text>
@@ -297,7 +297,7 @@ export function ImageUploader({
 
       {error && (
         <GlassView style={styles.errorContainer} intensity="low">
-          <AlertCircle size={16} color={colors.error} />
+          <AlertCircle size={16} color={colors.error.DEFAULT} />
           <Text style={styles.errorText}>{error}</Text>
         </GlassView>
       )}

@@ -52,7 +52,7 @@ export const FileTableRow: React.FC<FileTableRowProps> = ({
       {/* Progress */}
       <View style={[styles.cell, styles.progressCell]}>
         {hasFailed ? (
-          <Text style={[styles.cellText, { color: colors.error }]}>
+          <Text style={[styles.cellText, { color: colors.error.DEFAULT }]}>
             {typeof error === 'string' ? error : JSON.stringify(error)}
           </Text>
         ) : (
@@ -99,7 +99,7 @@ export const FileTableRow: React.FC<FileTableRowProps> = ({
             accessibilityLabel={`Remove ${file.name}`}
             accessibilityRole="button"
           >
-            <X size={18} color={colors.error} />
+            <X size={18} color={colors.error.DEFAULT} />
           </Pressable>
         )}
       </View>
@@ -116,10 +116,10 @@ export const FileTableRow: React.FC<FileTableRowProps> = ({
 
 const styles = StyleSheet.create({
   row: {
-    backgroundColor: colors.glass.bg,
+    backgroundColor: colors.glass,
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: colors.glass.border,
+    borderColor: colors.glassBorder,
     padding: spacing.md,
   },
   cell: {
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: borderRadius.full,
     transition: 'width 0.3s ease',
   },
@@ -186,6 +186,6 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     paddingTop: spacing.md,
     borderTopWidth: 1,
-    borderTopColor: colors.glass.border,
+    borderTopColor: colors.glassBorder,
   },
 });

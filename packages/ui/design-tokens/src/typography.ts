@@ -193,6 +193,13 @@ export const typography = {
     fontWeight: fontWeight.medium,
     letterSpacing: letterSpacing.wide,
   },
+  /** Subtitle text */
+  subtitle: {
+    fontSize: fontSize.md,
+    lineHeight: fontSize.md * 1.4,
+    fontWeight: fontWeight.medium,
+    letterSpacing: letterSpacing.normal,
+  },
 };
 
 export default {

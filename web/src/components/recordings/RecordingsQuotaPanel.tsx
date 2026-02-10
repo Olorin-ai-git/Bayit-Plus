@@ -25,7 +25,7 @@ export const RecordingsQuotaPanel: React.FC<RecordingsQuotaPanelProps> = ({
   return (
     <GlassView style={styles.container}>
       <View style={[styles.header, { flexDirection }]}>
-        <HardDrive size={20} color={colors.primary} />
+        <HardDrive size={20} color={colors.primary.DEFAULT} />
         <Text style={styles.title}>{t('recordings.storageUsed')}</Text>
       </View>
 
@@ -33,7 +33,7 @@ export const RecordingsQuotaPanel: React.FC<RecordingsQuotaPanelProps> = ({
         <Text style={styles.usage}>
           {quota.used_storage_formatted} / {quota.total_storage_formatted}
         </Text>
-        <Text style={[styles.percentage, { color: isHighUsage ? colors.error : colors.text }]}>
+        <Text style={[styles.percentage, { color: isHighUsage ? colors.error.DEFAULT : colors.text }]}>
           {quota.storage_usage_percentage.toFixed(1)}%
         </Text>
       </View>
@@ -43,7 +43,7 @@ export const RecordingsQuotaPanel: React.FC<RecordingsQuotaPanelProps> = ({
           styles.progressBar,
           {
             width: `${Math.min(quota.storage_usage_percentage, 100)}%`,
-            backgroundColor: isHighUsage ? colors.error : colors.primary,
+            backgroundColor: isHighUsage ? colors.error.DEFAULT :colors.primary.DEFAULT,
           },
         ]} />
       </View>

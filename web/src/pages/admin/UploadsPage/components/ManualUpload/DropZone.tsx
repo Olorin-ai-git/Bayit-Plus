@@ -120,9 +120,9 @@ export const DropZone: React.FC<DropZoneProps> = ({
       aria-label={clickText}
       aria-describedby={isDragActive ? 'drop-zone-hint' : undefined}
       style={{
-        border: `2px dashed ${isDragActive ? colors.primary.DEFAULT : colors.glass.border}`,
+        border: `2px dashed ${isDragActive ? colors.primary.DEFAULT : colors.glassBorder}`,
         borderRadius: borderRadius.lg,
-        backgroundColor: isDragActive ? `${colors.primary.DEFAULT}1A` : colors.glass.bg,
+        backgroundColor: isDragActive ? `${colors.primary.DEFAULT}1A` : colors.glass,
         padding: spacing.xl,
         display: 'flex',
         flexDirection: 'column',
@@ -146,7 +146,7 @@ export const DropZone: React.FC<DropZoneProps> = ({
       )}
       <Icon
         size={48}
-        color={isDragActive ? colors.primary.DEFAULT : colors.glass.borderLight}
+        color={isDragActive ? colors.primary.DEFAULT : colors.glassBorderLight}
         aria-hidden="true"
       />
       <Text style={styles.title}>{isDragActive ? dropText : clickText}</Text>

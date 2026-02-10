@@ -84,7 +84,7 @@ const ScheduleCardHeader: React.FC<ScheduleCardHeaderProps> = ({
             onPress={onEdit}
             style={styles.editButton}
           >
-            <Edit2 size={16} color={colors.primary} />
+            <Edit2 size={16} color={colors.primary.DEFAULT} />
           </Pressable>
         )}
       </View>

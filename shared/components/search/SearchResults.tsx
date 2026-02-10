@@ -145,7 +145,7 @@ export function SearchResults({
     <FlatList
       data={results}
       renderItem={renderItem}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item: any) => item.id}
       numColumns={numColumns}
       key={`grid-${numColumns}`}
       columnWrapperStyle={numColumns > 1 ? { gap: 12 } : undefined}

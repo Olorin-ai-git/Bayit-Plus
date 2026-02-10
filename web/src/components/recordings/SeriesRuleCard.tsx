@@ -90,7 +90,7 @@ export const SeriesRuleCard: React.FC<SeriesRuleCardProps> = ({
 
       <View style={[styles.actions, { flexDirection }]}>
         <Pressable onPress={() => onToggleActive(rule.id, !rule.is_active)} style={[styles.actionButton, styles.toggleButton]}>
-          {rule.is_active ? <Pause size={14} color={colors.textSecondary} /> : <Play size={14} color={colors.primary} />}
+          {rule.is_active ? <Pause size={14} color={colors.textSecondary} /> : <Play size={14} color={colors.primary.DEFAULT} />}
           <Text style={styles.actionButtonText}>
             {rule.is_active ? t('recordings.pauseRule') : t('recordings.resumeRule')}
           </Text>
@@ -99,7 +99,7 @@ export const SeriesRuleCard: React.FC<SeriesRuleCardProps> = ({
           <Edit3 size={14} color={colors.text} />
         </Pressable>
         <Pressable onPress={handleDelete} style={[styles.actionButton, styles.deleteButton]}>
-          <Trash2 size={14} color={colors.error} />
+          <Trash2 size={14} color={colors.error.DEFAULT} />
         </Pressable>
       </View>
     </GlassView>

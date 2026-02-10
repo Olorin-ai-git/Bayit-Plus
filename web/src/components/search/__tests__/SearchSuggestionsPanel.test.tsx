@@ -66,7 +66,7 @@ describe('SearchSuggestionsPanel', () => {
       );
 
       const trendingItem = screen.getByText('Thriller Movies');
-      fireEvent.press(trendingItem);
+      fireEvent.click(trendingItem);
 
       expect(mockOnSearchSelect).toHaveBeenCalledWith('Thriller Movies');
     });
@@ -127,7 +127,7 @@ describe('SearchSuggestionsPanel', () => {
       );
 
       const categoryChip = screen.getByText('Movies');
-      fireEvent.press(categoryChip);
+      fireEvent.click(categoryChip);
 
       expect(mockOnSearchSelect).toHaveBeenCalledWith('Movies');
     });
@@ -205,7 +205,7 @@ describe('SearchSuggestionsPanel', () => {
       );
 
       const clearButton = screen.getByText('suggestions.clearRecent');
-      fireEvent.press(clearButton);
+      fireEvent.click(clearButton);
 
       expect(mockOnClearRecent).toHaveBeenCalled();
     });
@@ -219,7 +219,7 @@ describe('SearchSuggestionsPanel', () => {
       );
 
       const recentItem = screen.getByText('animation');
-      fireEvent.press(recentItem);
+      fireEvent.click(recentItem);
 
       expect(mockOnSearchSelect).toHaveBeenCalledWith('animation');
     });

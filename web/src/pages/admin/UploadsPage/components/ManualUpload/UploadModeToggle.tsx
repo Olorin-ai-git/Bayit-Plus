@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   },
   toggleContainer: {
     flexDirection: 'row',
-    backgroundColor: colors.glass.bg,
+    backgroundColor: colors.glass,
     borderRadius: borderRadius.md,
     padding: spacing.xs,
     gap: spacing.xs,

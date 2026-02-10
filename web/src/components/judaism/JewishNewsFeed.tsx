@@ -107,13 +107,13 @@ export function JewishNewsFeed({ category, limit = 20, showSourceFilter = true }
 
   const getCategoryColor = (cat: string) => {
     const colorMap: Record<string, string> = {
-      news: colors.primary,
-      culture: colors.secondary,
-      opinion: colors.secondary,
-      torah: colors.success,
-      community: colors.warning,
+      news:colors.primary.DEFAULT,
+      culture:colors.secondary.DEFAULT,
+      opinion:colors.secondary.DEFAULT,
+      torah:colors.success.DEFAULT,
+      community:colors.warning.DEFAULT,
     };
-    return colorMap[cat] || colors.primary;
+    return colorMap[cat] || colors.primary.DEFAULT;
   };
 
   return (
@@ -121,7 +121,7 @@ export function JewishNewsFeed({ category, limit = 20, showSourceFilter = true }
       <div dir={isRTL ? 'rtl' : 'ltr'}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Newspaper size={24} color={colors.primary} />
+          <Newspaper size={24} color={colors.primary.DEFAULT} />
           <h3
             className="text-xl font-bold"
             style={{ color: colors.text, textAlign: isRTL ? 'right' : 'left' }}
@@ -150,7 +150,7 @@ export function JewishNewsFeed({ category, limit = 20, showSourceFilter = true }
             onPress={() => setSelectedSource(null)}
             variant={!selectedSource ? 'primary' : 'ghost'}
             className="px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer hover:opacity-80 transition-all backdrop-blur-lg border border-white/10"
-            style={{ backgroundColor: !selectedSource ? colors.primary : colors.glassLight }}
+            style={{ backgroundColor: !selectedSource ? colors.primary.DEFAULT : colors.glassLight }}
           >
             <span style={{ color: colors.text, fontSize: 14 }}>{t('common.all', 'All')}</span>
           </GlassButton>
@@ -160,7 +160,7 @@ export function JewishNewsFeed({ category, limit = 20, showSourceFilter = true }
               onPress={() => setSelectedSource(source.name)}
               variant={selectedSource === source.name ? 'primary' : 'ghost'}
               className="px-3 py-1.5 rounded-full whitespace-nowrap cursor-pointer hover:opacity-80 transition-all backdrop-blur-lg border border-white/10"
-              style={{ backgroundColor: selectedSource === source.name ? colors.primary : colors.glassLight }}
+              style={{ backgroundColor: selectedSource === source.name ? colors.primary.DEFAULT : colors.glassLight }}
             >
               <span style={{ color: colors.text, fontSize: 14 }}>
                 {i18n.language === 'he' && source.name_he ? source.name_he : source.name}
@@ -173,7 +173,7 @@ export function JewishNewsFeed({ category, limit = 20, showSourceFilter = true }
       {/* News List */}
       {isLoading ? (
         <div className="py-8 flex justify-center">
-          <Loader2 size={32} color={colors.primary} className="animate-spin" />
+          <Loader2 size={32} color={colors.primary.DEFAULT} className="animate-spin" />
         </div>
       ) : news.length > 0 ? (
         <div className="max-h-96 overflow-y-auto">

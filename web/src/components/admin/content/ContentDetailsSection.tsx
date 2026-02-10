@@ -29,7 +29,7 @@ export default function ContentDetailsSection({
         <GlassInput
           placeholder={t('admin.content.editor.fields.durationPlaceholder', '1:30:00')}
           value={formData.duration || ''}
-          onChangeText={(value) => onChange('duration', value)}
+          onChangeText={(value: string) => onChange('duration', value)}
           editable={!disabled}
         />
       </View>
@@ -39,7 +39,7 @@ export default function ContentDetailsSection({
         <GlassInput
           placeholder={t('admin.content.editor.fields.ratingPlaceholder', 'PG-13')}
           value={formData.rating || ''}
-          onChangeText={(value) => onChange('rating', value)}
+          onChangeText={(value: string) => onChange('rating', value)}
           editable={!disabled}
         />
       </View>
@@ -49,7 +49,7 @@ export default function ContentDetailsSection({
         <GlassInput
           placeholder={t('admin.content.editor.fields.genrePlaceholder', 'Drama')}
           value={formData.genre || ''}
-          onChangeText={(value) => onChange('genre', value)}
+          onChangeText={(value: string) => onChange('genre', value)}
           editable={!disabled}
         />
       </View>
@@ -59,14 +59,14 @@ export default function ContentDetailsSection({
         <GlassInput
           placeholder={t('admin.content.editor.fields.directorPlaceholder', 'Director name')}
           value={formData.director || ''}
-          onChangeText={(value) => onChange('director', value)}
+          onChangeText={(value: string) => onChange('director', value)}
           editable={!disabled}
         />
       </View>
 
       <GlassCheckbox
         checked={formData.is_series || false}
-        onChange={(checked) => onChange('is_series', checked)}
+        onChange={(checked: boolean) => onChange('is_series', checked)}
         label={t('admin.content.editor.fields.isSeriesLabel', 'This is a series/multi-part content')}
         disabled={disabled}
       />
@@ -79,7 +79,7 @@ export default function ContentDetailsSection({
               placeholder="1"
               keyboardType="numeric"
               value={formData.season ? String(formData.season) : ''}
-              onChangeText={(value) => onChange('season', value ? parseInt(value) : undefined)}
+              onChangeText={(value: string) => onChange('season', value ? parseInt(value) : undefined)}
               editable={!disabled}
             />
           </View>
@@ -90,7 +90,7 @@ export default function ContentDetailsSection({
               placeholder="1"
               keyboardType="numeric"
               value={formData.episode ? String(formData.episode) : ''}
-              onChangeText={(value) => onChange('episode', value ? parseInt(value) : undefined)}
+              onChangeText={(value: string) => onChange('episode', value ? parseInt(value) : undefined)}
               editable={!disabled}
             />
           </View>

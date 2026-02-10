@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Pressable, Animated, PanResponder, Easing, ScrollView, ViewStyle, TextStyle } from 'react-native';
+import { View, Text, Pressable, Animated, PanResponder, Easing, ScrollView, ViewStyle, TextStyle, type GestureResponderEvent, type PanResponderGestureState } from 'react-native';
 import { ChevronDown, GripVertical } from 'lucide-react';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
@@ -99,7 +99,7 @@ export const GlassDraggableExpander: React.FC<GlassDraggableExpanderProps> = ({
     PanResponder.create({
       onStartShouldSetPanResponder: () => draggable && isExpanded,
       onMoveShouldSetPanResponder: () => draggable && isExpanded,
-      onPanResponderMove: (_, gestureState) => {
+      onPanResponderMove: (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
         if (!draggable || !isExpanded) return;
 
         const newHeight = Math.max(

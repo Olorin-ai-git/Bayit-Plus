@@ -230,7 +230,7 @@ export function GlassTable<T extends Record<string, any>>({
 
                 {column.resizable && index < columns.length - 1 && (
                   <Pressable
-                    onMouseDown={(e) => handleResizeStart(e, column.key, numericWidth || 150)}
+                    onMouseDown={(e: any) => handleResizeStart(e, column.key, numericWidth || 150)}
                     style={[
                       styles.resizeHandle,
                       resizingColumn === column.key && styles.resizeHandleActive

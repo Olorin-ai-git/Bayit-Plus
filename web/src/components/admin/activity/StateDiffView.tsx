@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: borderRadius.sm,
     borderLeftWidth: 2,
-    borderLeftColor: colors.primary,
+    borderLeftColor: colors.primary.DEFAULT,
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
   title: {

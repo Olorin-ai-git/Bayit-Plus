@@ -149,7 +149,7 @@ export default function DubbingControls({
             icon={
               <Radio
                 size={18}
-                color={isEnabled ? colors.primary : colors.textSecondary}
+                color={isEnabled ? colors.primary.DEFAULT : colors.textSecondary}
               />
             }
             label={t('dubbing.title', 'Live Dubbing')}

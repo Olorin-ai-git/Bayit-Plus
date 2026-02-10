@@ -126,8 +126,8 @@ export function SearchBar({
         `}>
           <FlatList
             data={suggestions}
-            keyExtractor={(item, index) => `suggestion-${index}`}
-            renderItem={({ item, index }) => (
+            keyExtractor={(item: any, index: number) => `suggestion-${index}`}
+            renderItem={({ item, index }: { item: any; index: number }) => (
               <TouchableOpacity
                 onPress={() => handleSuggestionPress(item)}
                 className={`

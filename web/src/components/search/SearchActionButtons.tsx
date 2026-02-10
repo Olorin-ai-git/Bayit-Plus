@@ -73,7 +73,7 @@ export function SearchActionButtons({
           accessibilityLabel={t('search.controls.llmSearch')}
           accessibilityHint={t('search.controls.hints.llmSearch')}
         >
-          <NativeIcon name="star" size="sm" color={colors.warning} />
+          <NativeIcon name="star" size="sm" color={colors.warning.DEFAULT} />
         </GlassButton>
       )}
 

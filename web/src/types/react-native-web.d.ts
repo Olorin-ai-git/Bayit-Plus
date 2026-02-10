@@ -561,6 +561,7 @@ declare module 'react-native' {
     cubic: (t: number) => number;
     poly: (n: number) => (t: number) => number;
     sin: (t: number) => number;
+    sine: (t: number) => number;
     circle: (t: number) => number;
     exp: (t: number) => number;
     elastic: (bounciness?: number) => (t: number) => number;

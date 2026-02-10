@@ -53,7 +53,7 @@ export const useSceneDetection = (
   const [currentScene, setCurrentScene] = useState<SceneMarker | null>(null);
   const [sceneEndDetected, setSceneEndDetected] = useState(false);
   const lastSceneEndTimeRef = useRef<number>(0);
-  const checkIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const checkIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const detectSceneEnd = useCallback(
     (currentTime: number): SceneMarker | null => {

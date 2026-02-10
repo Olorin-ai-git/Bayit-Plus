@@ -144,7 +144,7 @@ const LanguageGrid: React.FC<LanguageGridProps> = ({ selectedCode, onSelect, lab
             <Text style={[styles.languageText, isSelected && styles.languageTextSelected]}>
               {lang.label}
             </Text>
-            {isSelected && <Check size={14} color={colors.primary} />}
+            {isSelected && <Check size={14} color={colors.primary.DEFAULT} />}
           </Pressable>
         )
       })}

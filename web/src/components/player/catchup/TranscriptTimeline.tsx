@@ -125,7 +125,7 @@ export function TranscriptTimeline({
       ) : (
         <FlatList
           data={transcripts}
-          keyExtractor={(item, index) => `${item.timestamp}-${index}`}
+          keyExtractor={(item: any, index: number) => `${item.timestamp}-${index}`}
           renderItem={renderSegment}
           ListEmptyComponent={renderEmpty}
           style={styles.listContainer}

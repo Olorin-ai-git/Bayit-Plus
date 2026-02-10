@@ -18,7 +18,7 @@ export function useControlsAutoHide({
   // Use refs for callbacks to avoid effect re-running on every render
   const onShowRef = useRef(onShowControls)
   const onHideRef = useRef(onHideControls)
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   // Track if mouse is over a control panel that should keep controls visible
   const isOverPanelRef = useRef(false)
 

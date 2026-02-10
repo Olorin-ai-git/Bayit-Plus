@@ -48,7 +48,7 @@ export const SearchCardMetadata = memo(function SearchCardMetadata({
       )}
       {rating && (
         <View style={[styles.metadataChip, styles.ratingChip]}>
-          <Icon name="star" size="xs" color={colors.warning} />
+          <Icon name="star" size="xs" color={colors.warning.DEFAULT} />
           <Text style={styles.metadataText}>{rating}</Text>
         </View>
       )}

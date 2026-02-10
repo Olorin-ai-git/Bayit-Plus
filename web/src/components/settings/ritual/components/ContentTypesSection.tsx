@@ -47,12 +47,12 @@ export function ContentTypesSection({
               <NativeIcon
                 name={content.icon}
                 size="sm"
-                color={isSelected ? colors.primary : colors.textMuted}
+                color={isSelected ? colors.primary.DEFAULT : colors.textMuted}
               />
               <Text style={[styles.contentLabel, isRTL && styles.textRight]}>
                 {content.label}
               </Text>
-              {isSelected && <Check size={18} color={colors.primary} />}
+              {isSelected && <Check size={18} color={colors.primary.DEFAULT} />}
             </Pressable>
           );
         })}

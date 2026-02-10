@@ -123,7 +123,7 @@ export function subscribeToFeatureFlags(
   callback: (flags: FeatureFlags) => void,
   intervalMs: number = 60000 // 1 minute
 ): () => void {
-  let intervalId: NodeJS.Timeout | null = null;
+  let intervalId: ReturnType<typeof setTimeout> | null = null;
 
   const poll = async () => {
     clearCache(); // Force refresh

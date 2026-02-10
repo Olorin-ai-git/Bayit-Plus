@@ -290,7 +290,7 @@ export default function AdminDashboardPage() {
               recentActivity.map((activity) => (
                 <View key={activity.id} style={[styles.activityItem, { flexDirection }]}>
                   <View style={styles.activityIconContainer}>
-                    <NativeIcon name={getActivityIconName(activity.action)} size="md" color={colors.primary} />
+                    <NativeIcon name={getActivityIconName(activity.action)} size="md" color={colors.primary.DEFAULT} />
                   </View>
                   <View style={styles.activityDetails}>
                     <Text style={[styles.activityAction, { textAlign }]}>
@@ -439,7 +439,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.backgroundElevated,
+    backgroundColor: colors.glassMedium,
     justifyContent: 'center',
     alignItems: 'center',
   },

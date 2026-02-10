@@ -8,7 +8,7 @@ export function useNetworkQuality() {
   const [networkType, setNetworkType] = useState<'wifi' | 'cellular' | 'none'>('wifi')
 
   useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener(async (state) => {
+    const unsubscribe = NetInfo.addEventListener(async (state: any) => {
       const type = state.type === 'wifi' || state.type === 'ethernet' ? 'wifi' :
                    state.type === 'cellular' ? 'cellular' : 'none'
       setNetworkType(type)

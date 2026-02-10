@@ -59,7 +59,7 @@ export default function LiveFeatureUsageIndicator({
           isNearLimit && styles.badgeError,
         ]}
       >
-        <Clock size={12} color={isNearLimit ? colors.error : colors.textSecondary} />
+        <Clock size={12} color={isNearLimit ? colors.error.DEFAULT : colors.textSecondary} />
         <Text
           style={[styles.usageText, isNearLimit && styles.usageTextError]}
         >
@@ -69,7 +69,7 @@ export default function LiveFeatureUsageIndicator({
           <Text style={styles.rolloverText}>(+{accumulated.toFixed(0)} saved)</Text>
         )}
         {isWarning && (
-          <AlertCircle size={12} color={isNearLimit ? colors.error : '#f59e0b'} />
+          <AlertCircle size={12} color={isNearLimit ? colors.error.DEFAULT : '#f59e0b'} />
         )}
       </View>
     </View>

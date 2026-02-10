@@ -69,7 +69,7 @@ export default function PiPButton({
     >
       <PictureInPicture2
         size={iconSize}
-        color={pip.isPiP ? colors.primary : colors.text}
+        color={pip.isPiP ? colors.primary.DEFAULT : colors.text}
       />
     </Pressable>
   )

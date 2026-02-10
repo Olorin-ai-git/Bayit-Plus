@@ -63,7 +63,7 @@ describe('SearchInput', () => {
     );
 
     const input = screen.getByPlaceholderText('controls.placeholder');
-    fireEvent.changeText(input, 'comedy');
+    fireEvent.change(input, 'comedy');
 
     expect(mockOnChangeText).toHaveBeenCalledWith('comedy');
   });
@@ -101,7 +101,7 @@ describe('SearchInput', () => {
     );
 
     const clearButton = screen.getByLabelText('empty.clearSearch');
-    fireEvent.press(clearButton);
+    fireEvent.click(clearButton);
 
     expect(mockOnChangeText).toHaveBeenCalledWith('');
   });

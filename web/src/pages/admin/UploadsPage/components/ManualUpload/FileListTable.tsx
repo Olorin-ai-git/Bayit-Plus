@@ -91,10 +91,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
-    backgroundColor: colors.glass.bg,
+    backgroundColor: colors.glass,
     borderRadius: borderRadius.md,
     borderWidth: 1,
-    borderColor: colors.glass.border,
+    borderColor: colors.glassBorder,
   },
   headerCell: {
     fontSize: fontSize.sm,

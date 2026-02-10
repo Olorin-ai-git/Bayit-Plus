@@ -65,11 +65,11 @@ describe('RecordButton', () => {
       const { getByText } = render(<RecordButton {...defaultProps} />)
 
       // Start recording
-      fireEvent.press(getByText('recordings.record'))
+      fireEvent.click(getByText('recordings.record'))
       await waitFor(() => expect(recordingApi.startRecording).toHaveBeenCalled())
 
       // Stop recording
-      fireEvent.press(getByText('0:00'))
+      fireEvent.click(getByText('0:00'))
       await waitFor(() => {
         expect(mockShowSuccess).toHaveBeenCalledWith(
           expect.stringContaining('recordings.savedSuccess'),
@@ -97,10 +97,10 @@ describe('RecordButton', () => {
       const { getByText } = render(<RecordButton {...defaultProps} />)
 
       // Start and stop recording
-      fireEvent.press(getByText('recordings.record'))
+      fireEvent.click(getByText('recordings.record'))
       await waitFor(() => expect(recordingApi.startRecording).toHaveBeenCalled())
 
-      fireEvent.press(getByText('0:00'))
+      fireEvent.click(getByText('0:00'))
 
       await waitFor(() => {
         expect(logger.debug).toHaveBeenCalledWith(
@@ -120,7 +120,7 @@ describe('RecordButton', () => {
 
       const { getByText } = render(<RecordButton {...defaultProps} />)
 
-      fireEvent.press(getByText('recordings.record'))
+      fireEvent.click(getByText('recordings.record'))
 
       await waitFor(() => {
         expect(logger.error).toHaveBeenCalledWith(
@@ -148,11 +148,11 @@ describe('RecordButton', () => {
       const { getByText } = render(<RecordButton {...defaultProps} />)
 
       // Start recording
-      fireEvent.press(getByText('recordings.record'))
+      fireEvent.click(getByText('recordings.record'))
       await waitFor(() => expect(recordingApi.startRecording).toHaveBeenCalled())
 
       // Try to stop (fails)
-      fireEvent.press(getByText('0:00'))
+      fireEvent.click(getByText('0:00'))
 
       await waitFor(() => {
         expect(logger.error).toHaveBeenCalledWith(
@@ -179,7 +179,7 @@ describe('RecordButton', () => {
 
       const { getByText } = render(<RecordButton {...defaultProps} />)
 
-      fireEvent.press(getByText('recordings.record'))
+      fireEvent.click(getByText('recordings.record'))
 
       await waitFor(() => {
         expect(callOrder).toEqual(['logger', 'notification'])
@@ -193,7 +193,7 @@ describe('RecordButton', () => {
         <RecordButton {...defaultProps} isPremium={false} />
       )
 
-      fireEvent.press(getByText('recordings.record'))
+      fireEvent.click(getByText('recordings.record'))
 
       expect(mockOnShowUpgrade).toHaveBeenCalled()
       expect(recordingApi.startRecording).not.toHaveBeenCalled()

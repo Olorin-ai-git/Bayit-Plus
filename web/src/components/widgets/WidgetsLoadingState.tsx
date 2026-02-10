@@ -32,7 +32,7 @@ export default function WidgetsLoadingState({ numSkeletons = 8 }: WidgetsLoading
         style={{ flexDirection, justifyContent }}
       >
         <View className="w-14 h-14 rounded-full bg-purple-700/30 justify-center items-center">
-          <Grid3x3 size={28} color={colors.primary} />
+          <Grid3x3 size={28} color={colors.primary.DEFAULT} />
         </View>
         <View>
           <Text className="text-[32px] font-bold text-white" style={{ textAlign }}>

@@ -36,7 +36,7 @@ export default function AdminFilterBar({
             value={searchValue}
             onChangeText={onSearchChange}
             placeholder={searchPlaceholder}
-            leftIcon={<Search size={18} color={colors.text.secondary} />}
+            leftIcon={<Search size={18} color={colors.textSecondary} />}
             style={styles.searchInput}
           />
         </View>

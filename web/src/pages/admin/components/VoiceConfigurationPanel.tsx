@@ -129,13 +129,13 @@ export default function VoiceConfigurationPanel() {
           <View style={styles.inputRow}>
             <GlassInput
               value={config.default_voice_id}
-              onChangeText={(value) => handleConfigChange('default_voice_id', value)}
+              onChangeText={(value: string) => handleConfigChange('default_voice_id', value)}
               placeholder="EXAVITQu4vr4xnSDxMaL"
               style={styles.input}
             />
             <GlassButton
               title=""
-              icon={<Play size={16} color={colors.primary} />}
+              icon={<Play size={16} color={colors.primary.DEFAULT} />}
               variant="secondary"
               onPress={() => handleTestVoice(config.default_voice_id)}
               disabled={testing}
@@ -149,13 +149,13 @@ export default function VoiceConfigurationPanel() {
           <View style={styles.inputRow}>
             <GlassInput
               value={config.assistant_voice_id}
-              onChangeText={(value) => handleConfigChange('assistant_voice_id', value)}
+              onChangeText={(value: string) => handleConfigChange('assistant_voice_id', value)}
               placeholder="ashjVK50jp28G73AUTnb"
               style={styles.input}
             />
             <GlassButton
               title=""
-              icon={<Play size={16} color={colors.primary} />}
+              icon={<Play size={16} color={colors.primary.DEFAULT} />}
               variant="secondary"
               onPress={() => handleTestVoice(config.assistant_voice_id)}
               disabled={testing}
@@ -169,13 +169,13 @@ export default function VoiceConfigurationPanel() {
           <View style={styles.inputRow}>
             <GlassInput
               value={config.support_voice_id}
-              onChangeText={(value) => handleConfigChange('support_voice_id', value)}
+              onChangeText={(value: string) => handleConfigChange('support_voice_id', value)}
               placeholder="ashjVK50jp28G73AUTnb"
               style={styles.input}
             />
             <GlassButton
               title=""
-              icon={<Play size={16} color={colors.primary} />}
+              icon={<Play size={16} color={colors.primary.DEFAULT} />}
               variant="secondary"
               onPress={() => handleTestVoice(config.support_voice_id)}
               disabled={testing}
@@ -192,7 +192,7 @@ export default function VoiceConfigurationPanel() {
           <Text style={styles.label}>{t('admin.voiceManagement.configuration.sttProvider')}</Text>
           <GlassSelect
             value={config.stt_provider}
-            onValueChange={(value) => handleConfigChange('stt_provider', value)}
+            onValueChange={(value: string) => handleConfigChange('stt_provider', value)}
             options={[
               { label: 'ElevenLabs', value: 'elevenlabs' },
               { label: 'OpenAI Whisper', value: 'whisper' },
@@ -205,7 +205,7 @@ export default function VoiceConfigurationPanel() {
           <Text style={styles.label}>{t('admin.voiceManagement.configuration.translationProvider')}</Text>
           <GlassSelect
             value={config.translation_provider}
-            onValueChange={(value) => handleConfigChange('translation_provider', value)}
+            onValueChange={(value: string) => handleConfigChange('translation_provider', value)}
             options={[
               { label: 'Google Translate', value: 'google' },
               { label: 'OpenAI GPT-4', value: 'openai' },

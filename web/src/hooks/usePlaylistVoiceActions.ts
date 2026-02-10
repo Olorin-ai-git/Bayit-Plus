@@ -18,9 +18,9 @@ interface PlaylistVoicePayload {
 const log = logger.scope('PlaylistVoiceActions');
 
 export function usePlaylistVoiceActions() {
-  const setItems = usePlaylistStore((s) => s.setItems);
-  const setVisible = usePlaylistStore((s) => s.setVisible);
-  const clearPlaylist = usePlaylistStore((s) => s.clearPlaylist);
+  const setItems = usePlaylistStore((s: any) => s.setItems);
+  const setVisible = usePlaylistStore((s: any) => s.setVisible);
+  const clearPlaylist = usePlaylistStore((s: any) => s.clearPlaylist);
 
   const handlePlaylistAction = useCallback(
     (payload: PlaylistVoicePayload) => {

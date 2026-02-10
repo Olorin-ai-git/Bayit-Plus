@@ -152,25 +152,25 @@ export default function RecordingsManagementPage() {
         {stats && (
           <View style={[styles.statsContainer, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             <GlassView style={styles.statCard}>
-              <Video size={24} color={colors.primary} />
+              <Video size={24} color={colors.primary.DEFAULT} />
               <Text style={styles.statValue}>{stats.total_recordings}</Text>
               <Text style={styles.statLabel}>{t('admin.recordings.totalRecordings')}</Text>
             </GlassView>
 
             <GlassView style={styles.statCard}>
-              <HardDrive size={24} color={colors.success} />
+              <HardDrive size={24} color={colors.success.DEFAULT} />
               <Text style={styles.statValue}>{formatBytes(stats.total_storage_bytes)}</Text>
               <Text style={styles.statLabel}>{t('admin.recordings.totalStorage')}</Text>
             </GlassView>
 
             <GlassView style={styles.statCard}>
-              <Users size={24} color={colors.warning} />
+              <Users size={24} color={colors.warning.DEFAULT} />
               <Text style={styles.statValue}>{stats.total_users}</Text>
               <Text style={styles.statLabel}>{t('admin.recordings.totalUsers')}</Text>
             </GlassView>
 
             <GlassView style={styles.statCard}>
-              <Play size={24} color={colors.error} />
+              <Play size={24} color={colors.error.DEFAULT} />
               <Text style={styles.statValue}>{stats.active_sessions}</Text>
               <Text style={styles.statLabel}>{stats.active_sessions > 0 ? t('admin.recordings.live', 'LIVE') : t('admin.recordings.offline', 'OFFLINE')}</Text>
             </GlassView>
@@ -214,14 +214,14 @@ export default function RecordingsManagementPage() {
             style={styles.actionButton}
             onPress={() => window.open(item.video_url, '_blank')}
           >
-            <Play size={18} color={colors.primary} />
+            <Play size={18} color={colors.primary.DEFAULT} />
           </Pressable>
 
           <Pressable
             style={[styles.actionButton, styles.deleteButton]}
             onPress={() => handleDelete(item)}
           >
-            <Trash2 size={18} color={colors.error} />
+            <Trash2 size={18} color={colors.error.DEFAULT} />
           </Pressable>
         </View>
       </View>
@@ -247,7 +247,7 @@ export default function RecordingsManagementPage() {
         <>
           <FlatList
             data={recordings}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item: any) => item.id}
             renderItem={renderRecordingItem}
             contentContainerStyle={styles.listContent}
           />
@@ -389,7 +389,7 @@ const styles = StyleSheet.create({
   pageButton: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.sm,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     borderRadius: borderRadius.md,
   },
   pageButtonDisabled: {

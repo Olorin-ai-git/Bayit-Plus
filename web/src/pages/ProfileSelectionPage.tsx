@@ -101,7 +101,7 @@ function AddProfileCard({ onClick }: { onClick: () => void }) {
       style={styles.profileButton}
     >
       <View style={[styles.addAvatar, isHovered && styles.addAvatarHovered]}>
-        <Plus size={40} color={isHovered ? colors.primary : colors.textMuted} />
+        <Plus size={40} color={isHovered ? colors.primary.DEFAULT : colors.textMuted} />
       </View>
       <Text style={[styles.addProfileText, isHovered && styles.addProfileTextHovered]}>
         {t('profiles.addProfile')}

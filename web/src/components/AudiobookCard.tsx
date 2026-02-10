@@ -174,7 +174,7 @@ export function AudiobookCard({ audiobook, onAudiblePlay }: AudiobookCardProps) 
           )}
           {audiobook.avg_rating > 0 && (
             <View style={styles.metaItem}>
-              <Icon name="star" size="xs" color={colors.warning} />
+              <Icon name="star" size="xs" color={colors.warning.DEFAULT} />
               <Text style={styles.metaText}>{audiobook.avg_rating.toFixed(1)}</Text>
             </View>
           )}

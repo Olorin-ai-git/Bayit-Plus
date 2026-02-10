@@ -97,7 +97,7 @@ export default function UserLiveQuotaPage() {
 
         {error && (
           <View style={styles.errorBanner}>
-            <AlertCircle size={20} color={colors.error} />
+            <AlertCircle size={20} color={colors.error.DEFAULT} />
             <Text style={styles.errorText}>{error}</Text>
           </View>
         )}

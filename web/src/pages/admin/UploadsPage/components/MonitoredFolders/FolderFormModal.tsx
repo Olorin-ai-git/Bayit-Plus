@@ -73,7 +73,7 @@ export const FolderFormModal: React.FC<FolderFormModalProps> = ({
           <Text style={styles.label}>{t('admin.uploads.monitoredFolders.folderName')}</Text>
           <GlassInput
             value={formData.name}
-            onChangeText={(name) => setFormData({ ...formData, name })}
+            onChangeText={(name: string) => setFormData({ ...formData, name })}
             placeholder={t('admin.uploads.manualUpload.folderNamePlaceholder', 'e.g., Movies Import')}
           />
         </View>
@@ -82,7 +82,7 @@ export const FolderFormModal: React.FC<FolderFormModalProps> = ({
           <Text style={styles.label}>{t('admin.uploads.monitoredFolders.folderPath')}</Text>
           <GlassInput
             value={formData.path}
-            onChangeText={(path) => setFormData({ ...formData, path })}
+            onChangeText={(path: string) => setFormData({ ...formData, path })}
             placeholder={t('admin.uploads.manualUpload.folderPathPlaceholder', '/path/to/folder')}
           />
         </View>
@@ -96,7 +96,7 @@ export const FolderFormModal: React.FC<FolderFormModalProps> = ({
           <Text style={styles.label}>{t('admin.uploads.monitoredFolders.enabled')}</Text>
           <GlassToggle
             value={formData.enabled}
-            onValueChange={(enabled) => setFormData({ ...formData, enabled })}
+            onValueChange={(enabled: boolean) => setFormData({ ...formData, enabled })}
           />
         </View>
 
@@ -104,7 +104,7 @@ export const FolderFormModal: React.FC<FolderFormModalProps> = ({
           <Text style={styles.label}>{t('admin.uploads.monitoredFolders.autoUpload')}</Text>
           <GlassToggle
             value={formData.auto_upload}
-            onValueChange={(auto_upload) => setFormData({ ...formData, auto_upload })}
+            onValueChange={(auto_upload: boolean) => setFormData({ ...formData, auto_upload })}
           />
         </View>
 

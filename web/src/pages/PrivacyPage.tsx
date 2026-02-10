@@ -20,7 +20,7 @@ export default function PrivacyPage() {
       {/* Header Section */}
       <GlassView style={styles.headerSection}>
         <View style={styles.iconContainer}>
-          <Shield size={48} color={colors.primary} />
+          <Shield size={48} color={colors.primary.DEFAULT} />
         </View>
         <Text style={[styles.lastUpdated, { textAlign }]}>
           {t('privacy.lastUpdated', 'Last Updated: January 27, 2026')}
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
   },
   contactText: {
     fontSize: fontSize.base,
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
     marginBottom: spacing.xs,
     fontWeight: '600',
   },

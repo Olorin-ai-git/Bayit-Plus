@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   buttonActive: {
-    backgroundColor: colors.pillActive,
+    backgroundColor: colors.glassPurpleLight,
   },
   buttonFocused: {
     borderWidth: 2,

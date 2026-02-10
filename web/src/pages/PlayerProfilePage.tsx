@@ -141,7 +141,7 @@ export default function PlayerProfilePage() {
     const isWinner = game.winner_id === userId;
     return {
       text: isWinner ? t('stats.won', 'Won') : t('stats.lost', 'Lost'),
-      color: isWinner ? colors.success : colors.error,
+      color: isWinner ? colors.success.DEFAULT :colors.error.DEFAULT,
     };
   };
 
@@ -191,7 +191,7 @@ export default function PlayerProfilePage() {
 
             {stats && (
               <View style={[styles.ratingBadge, isRTL && styles.ratingBadgeRTL]}>
-                <Award size={16} color={colors.warning} />
+                <Award size={16} color={colors.warning.DEFAULT} />
                 <Text style={styles.ratingText}>
                   {t('stats.rating', 'Rating')}: {stats.chess_rating}
                 </Text>
@@ -282,17 +282,17 @@ export default function PlayerProfilePage() {
                 </View>
                 <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
                   <View style={[styles.statLabelWithIcon, isRTL && styles.statLabelWithIconRTL]}>
-                    <Trophy size={16} color={colors.success} />
+                    <Trophy size={16} color={colors.success.DEFAULT} />
                     <Text style={styles.statLabel}>{t('stats.wins', 'Wins')}</Text>
                   </View>
-                  <Text style={[styles.statValue, { color: colors.success }]}>{stats.chess_wins}</Text>
+                  <Text style={[styles.statValue, { color: colors.success.DEFAULT }]}>{stats.chess_wins}</Text>
                 </View>
                 <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
                   <View style={[styles.statLabelWithIcon, isRTL && styles.statLabelWithIconRTL]}>
-                    <TrendingDown size={16} color={colors.error} />
+                    <TrendingDown size={16} color={colors.error.DEFAULT} />
                     <Text style={styles.statLabel}>{t('stats.losses', 'Losses')}</Text>
                   </View>
-                  <Text style={[styles.statValue, { color: colors.error }]}>{stats.chess_losses}</Text>
+                  <Text style={[styles.statValue, { color: colors.error.DEFAULT }]}>{stats.chess_losses}</Text>
                 </View>
                 <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
                   <Text style={styles.statLabel}>{t('stats.draws', 'Draws')}</Text>
@@ -308,10 +308,10 @@ export default function PlayerProfilePage() {
               <View style={styles.statRows}>
                 <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
                   <View style={[styles.statLabelWithIcon, isRTL && styles.statLabelWithIconRTL]}>
-                    <Award size={16} color={colors.warning} />
+                    <Award size={16} color={colors.warning.DEFAULT} />
                     <Text style={styles.statLabel}>{t('stats.currentRating', 'Current Rating')}</Text>
                   </View>
-                  <Text style={[styles.statValue, { color: colors.warning }]}>{stats.chess_rating}</Text>
+                  <Text style={[styles.statValue, { color: colors.warning.DEFAULT }]}>{stats.chess_rating}</Text>
                 </View>
                 <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
                   <View style={[styles.statLabelWithIcon, isRTL && styles.statLabelWithIconRTL]}>
@@ -322,17 +322,17 @@ export default function PlayerProfilePage() {
                 </View>
                 <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
                   <View style={[styles.statLabelWithIcon, isRTL && styles.statLabelWithIconRTL]}>
-                    <Zap size={16} color={colors.error} />
+                    <Zap size={16} color={colors.error.DEFAULT} />
                     <Text style={styles.statLabel}>{t('stats.currentStreak', 'Current Streak')}</Text>
                   </View>
-                  <Text style={[styles.statValue, { color: colors.error }]}>{stats.current_win_streak}</Text>
+                  <Text style={[styles.statValue, { color: colors.error.DEFAULT }]}>{stats.current_win_streak}</Text>
                 </View>
                 <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
                   <View style={[styles.statLabelWithIcon, isRTL && styles.statLabelWithIconRTL]}>
-                    <TrendingUp size={16} color={colors.success} />
+                    <TrendingUp size={16} color={colors.success.DEFAULT} />
                     <Text style={styles.statLabel}>{t('stats.bestStreak', 'Best Streak')}</Text>
                   </View>
-                  <Text style={[styles.statValue, { color: colors.success }]}>{stats.best_win_streak}</Text>
+                  <Text style={[styles.statValue, { color: colors.success.DEFAULT }]}>{stats.best_win_streak}</Text>
                 </View>
               </View>
             </GlassCard>
@@ -400,7 +400,7 @@ export default function PlayerProfilePage() {
               </Text>
               <View style={styles.h2hStats}>
                 <View style={styles.h2hStat}>
-                  <Text style={[styles.h2hValue, { color: colors.success }]}>
+                  <Text style={[styles.h2hValue, { color: colors.success.DEFAULT }]}>
                     {headToHead.user1_wins}
                   </Text>
                   <Text style={styles.h2hLabel}>{t('stats.yourWins', 'Your Wins')}</Text>
@@ -412,7 +412,7 @@ export default function PlayerProfilePage() {
                   <Text style={styles.h2hLabel}>{t('stats.draws', 'Draws')}</Text>
                 </View>
                 <View style={styles.h2hStat}>
-                  <Text style={[styles.h2hValue, { color: colors.error }]}>
+                  <Text style={[styles.h2hValue, { color: colors.error.DEFAULT }]}>
                     {headToHead.user2_wins}
                   </Text>
                   <Text style={styles.h2hLabel}>{t('stats.theirWins', 'Their Wins')}</Text>

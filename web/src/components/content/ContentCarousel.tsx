@@ -77,7 +77,7 @@ export default function ContentCarousel({
           <Link to={seeAllLink} style={{ textDecoration: 'none' }}>
             <View style={[styles.seeAllContainer, { flexDirection }]}>
               <Text style={styles.seeAllText}>{t('common.seeAll', 'See All')}</Text>
-              <SeeAllChevron size={16} color={colors.primary} />
+              <SeeAllChevron size={16} color={colors.primary.DEFAULT} />
             </View>
           </Link>
         )}

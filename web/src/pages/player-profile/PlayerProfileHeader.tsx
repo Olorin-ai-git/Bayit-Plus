@@ -82,7 +82,7 @@ export default function PlayerProfileHeader({
 
           {stats && (
             <View style={[styles.statsContainer, isRTL && styles.statsContainerRTL]}>
-              <Award size={16} color={colors.warning} />
+              <Award size={16} color={colors.warning.DEFAULT} />
               <Text style={styles.ratingText}>
                 {t('stats.rating', 'Rating')}: {stats.chess_rating}
               </Text>

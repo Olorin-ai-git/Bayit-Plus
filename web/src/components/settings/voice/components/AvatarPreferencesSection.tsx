@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: spacing.xs,
     borderLeftWidth: 4,
-    borderLeftColor: colors.primary,
+    borderLeftColor: colors.primary.DEFAULT,
   },
   currentModeLabel: {
     ...typography.caption,

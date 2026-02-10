@@ -46,7 +46,7 @@ export function useQualityManagement({
         const response = await contentService.getStreamUrl(contentId)
         if (response.data) {
           const qualities = response.data.available_qualities || []
-          const qualitiesWithLabels = qualities.map((q) => ({
+          const qualitiesWithLabels = qualities.map((q: any) => ({
             ...q,
             label: q.quality === '4k' ? '4K Ultra HD' :
                    q.quality === '1080p' ? '1080p Full HD' :

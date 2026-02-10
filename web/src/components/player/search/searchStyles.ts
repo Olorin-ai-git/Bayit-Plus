@@ -140,8 +140,8 @@ export const searchStyles = StyleSheet.create({
     textAlign: 'right',
   },
   highlightedText: {
-    backgroundColor: colors.warning,
-    color: colors.warningText,
+    backgroundColor: colors.warning.DEFAULT,
+    color: colors.dark[900],
   },
   // Stats bar
   statsBar: {

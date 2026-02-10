@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   cardImage: { width: '100%', aspectRatio: 16 / 9 },
   cardImagePlaceholder: { width: '100%', aspectRatio: 16 / 9, backgroundColor: colors.backgroundLighter, justifyContent: 'center', alignItems: 'center' },
   progressContainer: { position: 'absolute', bottom: 52, left: 0, right: 0, height: 4, backgroundColor: 'rgba(0, 0, 0, 0.5)' },
-  progressBar: { height: '100%', backgroundColor: colors.secondary },
+  progressBar: { height: '100%', backgroundColor: colors.secondary.DEFAULT },
   typeBadge: { position: 'absolute', top: 8, backgroundColor: 'rgba(0, 0, 0, 0.7)', borderRadius: 12, paddingHorizontal: 8, paddingVertical: 4 },
   cardContent: { padding: spacing.sm },
   cardTitle: { fontSize: 14, fontWeight: '600', color: colors.text },

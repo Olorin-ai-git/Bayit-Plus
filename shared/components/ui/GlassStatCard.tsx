@@ -13,6 +13,8 @@ export interface GlassStatCardProps {
   onPress?: () => void;
   compact?: boolean;
   style?: any;
+  className?: string;
+  testID?: string;
 }
 
 export const GlassStatCard: React.FC<GlassStatCardProps> = ({

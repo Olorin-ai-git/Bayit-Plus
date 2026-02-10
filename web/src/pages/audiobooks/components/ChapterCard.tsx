@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.surfaceAlt,
+    backgroundColor: colors.glassLight,
   },
   playOverlay: {
     position: 'absolute',

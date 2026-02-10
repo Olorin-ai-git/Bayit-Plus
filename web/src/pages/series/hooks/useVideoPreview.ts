@@ -26,7 +26,7 @@ export function useVideoPreview({
   const [showPoster, setShowPoster] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
   const hlsRef = useRef<Hls | null>(null);
-  const previewTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const previewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const getPreviewUrl = useCallback((): string | null => {
     if (selectedEpisode?.preview_url) return selectedEpisode.preview_url;

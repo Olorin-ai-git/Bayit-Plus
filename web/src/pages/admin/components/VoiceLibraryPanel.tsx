@@ -79,8 +79,8 @@ export default function VoiceLibraryPanel() {
     <View>
       <FlatList
         data={voices}
-        keyExtractor={(item) => item.voice_id}
-        renderItem={({ item }) => (
+        keyExtractor={(item: any) => item.voice_id}
+        renderItem={({ item }: { item: any }) => (
           <GlassCard style={styles.card}>
             <View style={styles.voiceHeader}>
               <View style={styles.voiceInfo}>
@@ -93,7 +93,7 @@ export default function VoiceLibraryPanel() {
               <View style={styles.actions}>
                 <GlassButton
                   title=""
-                  icon={<Play size={16} color={colors.primary} />}
+                  icon={<Play size={16} color={colors.primary.DEFAULT} />}
                   variant="secondary"
                   onPress={() => handlePreview(item.voice_id)}
                   loading={playing === item.voice_id}

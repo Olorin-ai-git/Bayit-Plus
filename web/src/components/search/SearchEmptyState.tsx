@@ -40,7 +40,7 @@ export function SearchEmptyState({
   if (error) {
     return (
       <View style={styles.container}>
-        <NativeIcon name="alert" size="lg" color={colors.error} />
+        <NativeIcon name="alert" size="lg" color={colors.error.DEFAULT} />
         <Text style={styles.title}>{t('search.errors.somethingWrong')}</Text>
         <Text style={styles.message}>{error}</Text>
         {onRetry && (

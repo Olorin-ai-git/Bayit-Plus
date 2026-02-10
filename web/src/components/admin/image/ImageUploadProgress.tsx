@@ -104,7 +104,7 @@ export function ImageUploadProgress({
           style={styles.errorContainer}
           intensity="low"
         >
-          <AlertCircle size={16} color={colors.error} />
+          <AlertCircle size={16} color={colors.error.DEFAULT} />
           <Text style={[styles.errorText, { textAlign }]}>
             {error}
           </Text>

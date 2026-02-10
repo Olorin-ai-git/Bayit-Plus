@@ -44,7 +44,7 @@ export function useSystemHealth(): UseSystemHealthReturn {
   const [isLive, setIsLive] = useState(false);
 
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /**
    * Load initial data from REST API

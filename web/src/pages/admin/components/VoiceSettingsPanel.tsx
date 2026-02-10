@@ -68,16 +68,16 @@ export default function VoiceSettingsPanel() {
             <Text style={styles.providerName}>{provider.toUpperCase()}</Text>
             <Text style={styles.keyStatus}>
               {config.configured ? (
-                <CheckCircle size={14} color={colors.success} />
+                <CheckCircle size={14} color={colors.success.DEFAULT} />
               ) : (
-                <XCircle size={14} color={colors.error} />
+                <XCircle size={14} color={colors.error.DEFAULT} />
               )}{' '}
               {config.masked_key}
             </Text>
           </View>
           <GlassButton
             title={t('admin.voiceManagement.settings.check')}
-            icon={<RefreshCw size={14} color={colors.primary} />}
+            icon={<RefreshCw size={14} color={colors.primary.DEFAULT} />}
             variant="secondary"
             onPress={() => handleHealthCheck(provider)}
             loading={checking === provider}
@@ -90,7 +90,7 @@ export default function VoiceSettingsPanel() {
             <Text
               style={[
                 styles.healthStatus,
-                { color: health.is_healthy ? colors.success : colors.error },
+                { color: health.is_healthy ? colors.success.DEFAULT :colors.error.DEFAULT},
               ]}
             >
               {health.is_healthy ? t('admin.voiceManagement.settings.healthy') : t('admin.voiceManagement.settings.unhealthy')}

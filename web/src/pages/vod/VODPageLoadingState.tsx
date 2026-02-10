@@ -42,7 +42,7 @@ export default function VODPageLoadingState({
             {t('vod.title')}
           </Text>
           <GlassView className={platformClass('w-12 h-12 rounded-full justify-center items-center')}>
-            <Film size={24} color={colors.primary} />
+            <Film size={24} color={colors.primary.DEFAULT} />
           </GlassView>
         </View>
 

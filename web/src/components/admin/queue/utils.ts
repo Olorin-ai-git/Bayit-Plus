@@ -35,20 +35,20 @@ export const isDuplicate = (job: QueueJob): boolean => {
 
 export const getStatusColor = (status: string, job?: QueueJob): string => {
   if (job && (status === 'failed' || status === 'cancelled') && isDuplicate(job)) {
-    return colors.info || colors.primary;
+    return colors.info.DEFAULT || colors.primary.DEFAULT;
   }
 
   switch (status) {
     case 'completed':
-      return colors.success;
+      return colors.success.DEFAULT;
     case 'failed':
     case 'cancelled':
-      return colors.error;
+      return colors.error.DEFAULT;
     case 'uploading':
     case 'processing':
-      return colors.primary;
+      return colors.primary.DEFAULT;
     case 'queued':
-      return colors.warning;
+      return colors.warning.DEFAULT;
     default:
       return colors.textMuted;
   }

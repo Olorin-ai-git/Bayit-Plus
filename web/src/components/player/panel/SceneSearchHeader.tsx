@@ -28,7 +28,7 @@ export default function SceneSearchHeader({
   return (
     <View style={[styles.header, isRTL && styles.headerRTL]}>
       <View style={[styles.titleRow, isRTL && styles.titleRowRTL]}>
-        <Search size={isTV ? 24 : 18} color={colors.primary} />
+        <Search size={isTV ? 24 : 18} color={colors.primary.DEFAULT} />
         <Text style={[styles.title, isTV && styles.titleTV]}>
           {t('player.sceneSearch.title')}
         </Text>

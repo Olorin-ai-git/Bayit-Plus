@@ -118,7 +118,7 @@ export function HighlightsPanel({ channelId, onClose, isRTL = false }: Highlight
       {/* Highlights List */}
       <FlatList
         data={highlights}
-        keyExtractor={(item) => item.highlight_id}
+        keyExtractor={(item: any) => item.highlight_id}
         renderItem={renderHighlight}
         ListEmptyComponent={renderEmpty}
         style={styles.listContainer}

@@ -121,28 +121,28 @@ export function CommunityDirectory() {
     switch (type) {
       case 'synagogue':
       case 'chabad':
-        return <Building2 size={20} color={colors.primary} />;
+        return <Building2 size={20} color={colors.primary.DEFAULT} />;
       case 'restaurant':
       case 'bakery':
       case 'grocery':
-        return <Utensils size={20} color={colors.warning} />;
+        return <Utensils size={20} color={colors.warning.DEFAULT} />;
       case 'jcc':
       case 'community_center':
         return <Users size={20} color={colors.primaryLight} />;
       case 'mikvah':
-        return <MapPin size={20} color={colors.success} />;
+        return <MapPin size={20} color={colors.success.DEFAULT} />;
       default:
-        return <Building2 size={20} color={colors.primary} />;
+        return <Building2 size={20} color={colors.primary.DEFAULT} />;
     }
   };
 
   const getDenominationColor = (denom?: string) => {
     const denomColors: Record<string, string> = {
-      orthodox: colors.primary,
+      orthodox:colors.primary.DEFAULT,
       modern_orthodox: colors.primaryDark,
       conservative: colors.primaryLight,
-      reform: colors.success,
-      chabad: colors.warning,
+      reform:colors.success.DEFAULT,
+      chabad:colors.warning.DEFAULT,
     };
     return denomColors[denom || ''] || colors.textMuted;
   };
@@ -153,7 +153,7 @@ export function CommunityDirectory() {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <Search size={24} color={colors.primary} />
+          <Search size={24} color={colors.primary.DEFAULT} />
           <h3
             className="text-xl font-bold"
             style={{ textAlign: isRTL ? 'right' : 'left', color: colors.text }}
@@ -211,7 +211,7 @@ export function CommunityDirectory() {
             onPress={() => setActiveTab(tab.id)}
             variant={activeTab === tab.id ? 'primary' : 'ghost'}
             className="flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap cursor-pointer hover:opacity-80 transition-all backdrop-blur-lg border border-white/10"
-            style={{ backgroundColor: activeTab === tab.id ? colors.primary : colors.glassLight }}
+            style={{ backgroundColor: activeTab === tab.id ? colors.primary.DEFAULT : colors.glassLight }}
           >
             {tab.icon}
             <span className="text-sm" style={{ color: colors.text }}>{tab.label}</span>
@@ -222,7 +222,7 @@ export function CommunityDirectory() {
       {/* Organizations List */}
       {isLoading ? (
         <div className="py-8 flex justify-center">
-          <Loader2 size={32} color={colors.primary} className="animate-spin" />
+          <Loader2 size={32} color={colors.primary.DEFAULT} className="animate-spin" />
         </div>
       ) : organizations.length > 0 ? (
         <div className="max-h-96 overflow-y-auto">
@@ -252,7 +252,7 @@ export function CommunityDirectory() {
                         className="px-1.5 py-0.5 rounded"
                         style={{ backgroundColor: `${colors.success}4D` }}
                       >
-                        <Icon name="check" size="xs" color={colors.success} />
+                        <Icon name="check" size="xs" color={colors.success.DEFAULT} />
                       </span>
                     )}
                   </div>
@@ -275,7 +275,7 @@ export function CommunityDirectory() {
                       </span>
                       {org.cuisine_type && (
                         <span className="px-2 py-0.5 rounded ml-2" style={{ backgroundColor: `${colors.warning}33` }}>
-                          <span className="text-xs" style={{ color: colors.warning }}>{org.cuisine_type}</span>
+                          <span className="text-xs" style={{ color: colors.warning.DEFAULT }}>{org.cuisine_type}</span>
                         </span>
                       )}
                     </div>
@@ -335,7 +335,7 @@ export function CommunityDirectory() {
           <span style={{ color: colors.textMuted }}>
             {t('judaism.community.empty', 'No organizations found')}
           </span>
-          <span className="text-sm mt-1" style={{ color: colors.textDimmed }}>
+          <span className="text-sm mt-1" style={{ color: colors.textDisabled }}>
             {t('judaism.community.emptyHint', 'Try selecting a different region')}
           </span>
         </div>

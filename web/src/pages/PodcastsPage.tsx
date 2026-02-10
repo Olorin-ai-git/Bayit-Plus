@@ -38,6 +38,8 @@ interface Show {
   episodeCount?: number;
   latestEpisode?: string;
   availableLanguages?: string[];
+  category?: string;
+  [key: string]: any;
 }
 
 function ShowCard({ show, episodesLabel, isRTL }: { show: Show; episodesLabel: string; isRTL: boolean }) {
@@ -296,7 +298,7 @@ export default function PodcastsPage() {
       <View style={styles.categoriesContainer}>
         <GlassCategoryPill
           label={t('podcasts.categories.all')}
-          icon={<NativeIcon name="podcasts" size="sm" color={selectedCategory === 'all' ? colors.primary : colors.textMuted} />}
+          icon={<NativeIcon name="podcasts" size="sm" color={selectedCategory === 'all' ? colors.primary.DEFAULT : colors.textMuted} />}
           isActive={selectedCategory === 'all'}
           onPress={() => setSelectedCategory('all')}
         />
@@ -343,7 +345,7 @@ export default function PodcastsPage() {
             <GlassCategoryPill
               key={category.id}
               label={label}
-              icon={<NativeIcon name={iconName} size="sm" color={selectedCategory === category.id ? colors.primary : colors.textMuted} />}
+              icon={<NativeIcon name={iconName} size="sm" color={selectedCategory === category.id ? colors.primary.DEFAULT : colors.textMuted} />}
               isActive={selectedCategory === category.id}
               onPress={() => setSelectedCategory(category.id)}
             />

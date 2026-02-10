@@ -33,9 +33,9 @@ export const ICON_COLORS = {
 
 // Colors for different highlight types - semantic colors for detection categories
 export const HIGHLIGHT_COLORS = {
-  emotional: { bg: 'rgba(239, 68, 68, 0.2)', text: colors.error, icon: colors.error },
+  emotional: { bg: 'rgba(239, 68, 68, 0.2)', text:colors.error.DEFAULT, icon:colors.error.DEFAULT},
   entity: { bg: 'rgba(59, 130, 246, 0.2)', text: colors.primary[400], icon: colors.primary.DEFAULT },
-  keyword: { bg: 'rgba(16, 185, 129, 0.2)', text: colors.success, icon: colors.success },
+  keyword: { bg: 'rgba(16, 185, 129, 0.2)', text:colors.success.DEFAULT, icon:colors.success.DEFAULT},
   dramatic: { bg: 'rgba(168, 85, 247, 0.2)', text: colors.accent, icon: colors.accent },
 }
 
@@ -192,7 +192,7 @@ export const highlightStyles = StyleSheet.create({
   },
   // Error message
   errorText: {
-    color: colors.error,
+    color: colors.error.DEFAULT,
     marginBottom: spacing.sm,
     textAlign: 'center',
     fontSize: fontSize.sm,

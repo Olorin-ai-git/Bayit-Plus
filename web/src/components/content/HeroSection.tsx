@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   primaryButtonHovered: {
     ...Platform.select({
       ios: {
-        shadowColor: colors.primary,
+        shadowColor: colors.primary.DEFAULT,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.5,
         shadowRadius: 16,
@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.glassStrong,
     ...Platform.select({
       ios: {
-        shadowColor: colors.primary,
+        shadowColor: colors.primary.DEFAULT,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.3,
         shadowRadius: 12,
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
     ...Platform.select({
       ios: {
-        shadowColor: colors.primary,
+        shadowColor: colors.primary.DEFAULT,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: 0.3,
         shadowRadius: 8,

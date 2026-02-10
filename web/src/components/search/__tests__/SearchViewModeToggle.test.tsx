@@ -79,7 +79,7 @@ describe('SearchViewModeToggle', () => {
     );
 
     const listButton = screen.getByLabelText('viewMode.list');
-    fireEvent.press(listButton);
+    fireEvent.click(listButton);
 
     expect(mockOnChange).toHaveBeenCalledWith('list');
   });
@@ -93,7 +93,7 @@ describe('SearchViewModeToggle', () => {
     );
 
     const cardsButton = screen.getByLabelText('viewMode.cards');
-    fireEvent.press(cardsButton);
+    fireEvent.click(cardsButton);
 
     expect(mockOnChange).toHaveBeenCalledWith('cards');
   });
@@ -107,7 +107,7 @@ describe('SearchViewModeToggle', () => {
     );
 
     const gridButton = screen.getByLabelText('viewMode.grid');
-    fireEvent.press(gridButton);
+    fireEvent.click(gridButton);
 
     expect(mockOnChange).toHaveBeenCalledWith('grid');
   });

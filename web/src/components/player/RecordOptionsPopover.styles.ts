@@ -70,7 +70,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 2,
   },
   toggleActive: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
   },
   toggleThumb: {
     width: 20,
@@ -109,7 +109,7 @@ export const styles = StyleSheet.create({
   },
   languageButtonSelected: {
     backgroundColor: 'rgba(168, 85, 247, 0.15)',
-    borderColor: colors.primary,
+    borderColor: colors.primary.DEFAULT,
   },
   flag: {
     fontSize: 16,

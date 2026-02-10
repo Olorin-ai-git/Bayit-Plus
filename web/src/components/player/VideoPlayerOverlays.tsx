@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.error,
+    backgroundColor: colors.error.DEFAULT,
     color: colors.text,
     fontSize: 28,
     fontWeight: '700',

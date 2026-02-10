@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     minWidth: Math.max(48, TOUCH_TARGET_SIZE),
     minHeight: Math.max(26, TOUCH_TARGET_SIZE),
     borderRadius: 13,
-    backgroundColor: colors.disabled,
+    backgroundColor: colors.glassMedium,
     justifyContent: 'center',
     paddingHorizontal: 3,
   },
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.lg,
     backgroundColor: colors.glassBorderLight,
     borderWidth: 1,
-    borderColor: colors.pillBorder,
+    borderColor: colors.glassBorderLight,
     gap: 4,
   },
   tooltipTitle: {

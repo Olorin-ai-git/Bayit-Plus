@@ -71,7 +71,7 @@ export function CategoryPickerList({
 
       {error && !isLoading && (
         <View style={styles.errorContainer}>
-          <AlertCircle size={16} color={colors.error} />
+          <AlertCircle size={16} color={colors.error.DEFAULT} />
           <Text style={styles.errorText}>{error}</Text>
         </View>
       )}
@@ -102,7 +102,7 @@ export function CategoryPickerList({
         <Pressable onPress={onCreateClick}>
           <View style={styles.createButtonContainer}>
             <GlassView style={styles.createButton} intensity="medium">
-              <Plus size={16} color={colors.primary} />
+              <Plus size={16} color={colors.primary.DEFAULT} />
               <Text style={styles.createButtonText}>{createNewText}</Text>
             </GlassView>
           </View>

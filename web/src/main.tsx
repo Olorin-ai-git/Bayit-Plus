@@ -24,7 +24,7 @@ if (sentryEnabled) {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <SentryErrorBoundary
-      fallback={({ error }) => (
+      fallback={({ error }: { error: Error }) => (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
           <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-8 max-w-md text-center">
             <div className="flex justify-center mb-4">

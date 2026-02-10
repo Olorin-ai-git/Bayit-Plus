@@ -85,7 +85,7 @@ export default function VODPage() {
 
   // Debounced search query for API calls
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Debounce search query
   useEffect(() => {
@@ -359,7 +359,7 @@ export default function VODPage() {
               }}
               style={[styles.iconButton, isListening && styles.iconButtonActive]}
             >
-              <Mic size={20} color={isListening ? colors.primary : colors.textMuted} />
+              <Mic size={20} color={isListening ? colors.primary.DEFAULT : colors.textMuted} />
             </Pressable>
 
             {/* Filter Button */}
@@ -367,7 +367,7 @@ export default function VODPage() {
               onPress={() => setShowFilterPanel(!showFilterPanel)}
               style={[styles.iconButton, showFilterPanel && styles.iconButtonActive, showOnlyWithSubtitles && styles.iconButtonWithBadge]}
             >
-              <SlidersHorizontal size={20} color={showFilterPanel ? colors.primary : colors.textMuted} />
+              <SlidersHorizontal size={20} color={showFilterPanel ? colors.primary.DEFAULT : colors.textMuted} />
               {showOnlyWithSubtitles && <View style={styles.filterActiveBadge} />}
             </Pressable>
           </View>

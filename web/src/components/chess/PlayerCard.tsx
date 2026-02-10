@@ -51,13 +51,13 @@ export default function PlayerCard({ player, isCurrentTurn, isHost = false }: Pl
             className="w-10 h-10 rounded-full justify-center items-center"
             style={[player.color === 'white' ? styles.colorWhite : styles.colorBlack]}
           >
-            <User size={20} color={player.color === 'white' ? colors.dark : colors.text} />
+            <User size={20} color={player.color === 'white' ? colors.dark.DEFAULT : colors.text} />
           </View>
 
           <View className="flex-1">
             <View className="flex-row items-center gap-2">
               <Text className="text-white text-base font-semibold">{player.user_name}</Text>
-              {isHost && <Crown size={14} color={colors.warning} />}
+              {isHost && <Crown size={14} color={colors.warning.DEFAULT} />}
             </View>
             <Text className="text-gray-400 text-xs mt-0.5">{player.color.toUpperCase()}</Text>
           </View>

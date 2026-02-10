@@ -57,7 +57,7 @@ export function useImportWizard({ isOpen, onSuccess, onClose }: UseImportWizardP
     try {
       setIsLoading(true)
       setError(null)
-      const { importService } = await import('../../../services/adminApi')
+      const { default: importService } = await import('../../../services/adminApi') as any
       const response = await importService.getFreeSources(importState.sourceType!)
       setSources(response.sources || response)
     } catch (err) {
@@ -144,7 +144,7 @@ export function useImportWizard({ isOpen, onSuccess, onClose }: UseImportWizardP
       setIsLoading(true)
       setError(null)
 
-      const { importService } = await import('../../../services/adminApi')
+      const { default: importService } = await import('../../../services/adminApi') as any
       await importService.importFreeContent({
         source_type: importState.sourceType,
         source_name: importState.sourceName,

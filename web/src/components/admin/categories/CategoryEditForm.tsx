@@ -44,7 +44,7 @@ export default function CategoryEditForm({
         containerStyle={styles.input}
         placeholder={t('admin.categories.form.nameHebrewPlaceholder', 'Category name (Hebrew)')}
         value={editData.name || ''}
-        onChangeText={(value) => onChange({ name: value })}
+        onChangeText={(value: string) => onChange({ name: value })}
       />
 
       <GlassInput
@@ -52,7 +52,7 @@ export default function CategoryEditForm({
         containerStyle={styles.input}
         placeholder={t('admin.categories.form.nameEnglishPlaceholder', 'Category name (English)')}
         value={editData.name_en || ''}
-        onChangeText={(value) => onChange({ name_en: value })}
+        onChangeText={(value: string) => onChange({ name_en: value })}
       />
 
       <GlassInput
@@ -60,7 +60,7 @@ export default function CategoryEditForm({
         containerStyle={styles.input}
         placeholder={t('admin.categories.form.slugPlaceholder', 'Slug (e.g., movies)')}
         value={editData.slug || ''}
-        onChangeText={(value) => onChange({ slug: value })}
+        onChangeText={(value: string) => onChange({ slug: value })}
       />
 
       <View style={styles.actions}>
@@ -84,10 +84,10 @@ export default function CategoryEditForm({
 const styles = StyleSheet.create({
   container: {
     padding: spacing.lg,
-    backgroundColor: colors.glass.bg,
+    backgroundColor: colors.glass,
     borderRadius: borderRadius.lg,
     borderWidth: 1,
-    borderColor: colors.glass.border,
+    borderColor: colors.glassBorder,
     marginBottom: spacing.lg,
     gap: spacing.md,
   },

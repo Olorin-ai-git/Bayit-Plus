@@ -279,7 +279,7 @@ export default function UserDetailPage() {
             <GlassButton
               title={t('admin.liveQuotas.title', 'Live Quotas')}
               variant="secondary"
-              icon={<Clock size={16} color={colors.primary} />}
+              icon={<Clock size={16} color={colors.primary.DEFAULT} />}
               onPress={() => navigate(`/admin/users/${userId}/live-quota`)}
               style={styles.actionButton}
             />
@@ -302,7 +302,7 @@ export default function UserDetailPage() {
               <GlassButton
                 title={t('admin.users.block')}
                 variant="secondary"
-                icon={<Ban size={16} color={colors.error} />}
+                icon={<Ban size={16} color={colors.error.DEFAULT} />}
                 onPress={handleBan}
                 style={styles.actionButton}
               />
@@ -310,7 +310,7 @@ export default function UserDetailPage() {
             <GlassButton 
               title={t('common.delete', { defaultValue: 'Delete' })} 
               variant="secondary" 
-              icon={<Trash2 size={16} color={colors.error} />} 
+              icon={<Trash2 size={16} color={colors.error.DEFAULT} />} 
               onPress={handleDelete}
               style={styles.actionButton}
             />
@@ -337,13 +337,13 @@ export default function UserDetailPage() {
               <GlassView style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                 {(user as any)?.email_verified ? (
                   <>
-                    <Check size={14} color={colors.success} />
-                    <Text style={[styles.infoValue, { color: colors.success }]}>{t('common.yes', { defaultValue: 'Yes' })}</Text>
+                    <Check size={14} color={colors.success.DEFAULT} />
+                    <Text style={[styles.infoValue, { color: colors.success.DEFAULT }]}>{t('common.yes', { defaultValue: 'Yes' })}</Text>
                   </>
                 ) : (
                   <>
-                    <X size={14} color={colors.error} />
-                    <Text style={[styles.infoValue, { color: colors.error }]}>{t('common.no', { defaultValue: 'No' })}</Text>
+                    <X size={14} color={colors.error.DEFAULT} />
+                    <Text style={[styles.infoValue, { color: colors.error.DEFAULT }]}>{t('common.no', { defaultValue: 'No' })}</Text>
                   </>
                 )}
               </GlassView>
@@ -469,13 +469,13 @@ export default function UserDetailPage() {
           <GlassInput
             label={t('admin.users.name', { defaultValue: 'Name' })}
             value={editForm.name}
-            onChangeText={(text) => setEditForm({ ...editForm, name: text })}
+            onChangeText={(text: string) => setEditForm({ ...editForm, name: text })}
             placeholder={t('admin.users.name', { defaultValue: 'Name' })}
           />
           <GlassInput
             label={t('admin.users.email', { defaultValue: 'Email' })}
             value={editForm.email}
-            onChangeText={(text) => setEditForm({ ...editForm, email: text })}
+            onChangeText={(text: string) => setEditForm({ ...editForm, email: text })}
             placeholder={t('admin.users.email', { defaultValue: 'Email' })}
           />
           <GlassView style={styles.formRow}>
@@ -554,7 +554,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: borderRadius.full,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -580,7 +580,7 @@ const styles = StyleSheet.create({
   },
   banReason: {
     fontSize: 13,
-    color: colors.error,
+    color: colors.error.DEFAULT,
     backgroundColor: 'rgba(239, 68, 68, 0.1)',
     padding: spacing.sm,
     borderRadius: borderRadius.md,
@@ -673,7 +673,7 @@ const styles = StyleSheet.create({
   billingAmount: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.success,
+    color: colors.success.DEFAULT,
   },
   modalText: {
     fontSize: 14,

@@ -274,11 +274,11 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
                       </View>
                     ) : (
                       <View style={styles.thumbnailPlaceholder}>
-                        {activeTab === 'channels' && <Tv size={32} color={colors.primary} />}
-                        {activeTab === 'podcasts' && <Podcast size={32} color={colors.primary} />}
-                        {activeTab === 'radio' && <Radio size={32} color={colors.primary} />}
-                        {activeTab === 'vod' && <Film size={32} color={colors.primary} />}
-                        {activeTab === 'audiobooks' && <Headphones size={32} color={colors.primary} />}
+                        {activeTab === 'channels' && <Tv size={32} color={colors.primary.DEFAULT} />}
+                        {activeTab === 'podcasts' && <Podcast size={32} color={colors.primary.DEFAULT} />}
+                        {activeTab === 'radio' && <Radio size={32} color={colors.primary.DEFAULT} />}
+                        {activeTab === 'vod' && <Film size={32} color={colors.primary.DEFAULT} />}
+                        {activeTab === 'audiobooks' && <Headphones size={32} color={colors.primary.DEFAULT} />}
                       </View>
                     )}
                     <View style={[styles.thumbnailOverlay, hovered && styles.thumbnailOverlayHover]}>

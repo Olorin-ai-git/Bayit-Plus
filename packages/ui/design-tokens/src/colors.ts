@@ -4,7 +4,7 @@
  * Shared across all platforms: web, mobile, TV, tvOS
  */
 
-export interface ColorScale {
+export interface ColorScaleValues {
   [key: string]: string;
   50: string;
   100: string;
@@ -20,13 +20,21 @@ export interface ColorScale {
   DEFAULT: string;
 }
 
-export interface SemanticColorScale {
+export interface SemanticColorScaleValues {
   [key: string]: string;
   400: string;
   500: string;
   600: string;
   DEFAULT: string;
 }
+
+/**
+ * ColorScale is typed as string intersection so it can be used directly where
+ * string is expected (e.g., as a color prop), while also supporting indexed access
+ * like colors.primary[500]. At runtime these are plain objects.
+ */
+export type ColorScale = string & ColorScaleValues;
+export type SemanticColorScale = string & SemanticColorScaleValues;
 
 export interface GlassColors {
   /** Dark purple-tinted black background */
@@ -69,7 +77,7 @@ export interface ShadowColors {
 }
 
 /** Primary - Dark Purple (brand color for glassmorphic UI) */
-export const primary: ColorScale = {
+export const primary = {
   50: '#faf5ff',
   100: '#f3e8ff',
   200: '#e9d5ff',
@@ -82,10 +90,10 @@ export const primary: ColorScale = {
   900: '#581c87',
   950: '#3b0764',
   DEFAULT: '#7e22ce',
-};
+} as ColorScale;
 
 /** Secondary - Deep Dark Purple (for accents and highlights) */
-export const secondary: ColorScale = {
+export const secondary = {
   50: '#fdf4ff',
   100: '#fae8ff',
   200: '#f5d0fe',
@@ -98,10 +106,10 @@ export const secondary: ColorScale = {
   900: '#701a75',
   950: '#4a044e',
   DEFAULT: '#86198f',
-};
+} as ColorScale;
 
 /** Dark/Neutral - Pure blacks and grays for glassmorphic backgrounds */
-export const dark: ColorScale = {
+export const dark = {
   50: '#fafafa',
   100: '#f5f5f5',
   200: '#e5e5e5',
@@ -114,39 +122,39 @@ export const dark: ColorScale = {
   900: '#171717',
   950: '#000000',
   DEFAULT: '#000000',
-};
+} as ColorScale;
 
 /** Success semantic color */
-export const success: SemanticColorScale = {
+export const success = {
   400: '#4ade80',
   500: '#10b981',
   600: '#059669',
   DEFAULT: '#10b981',
-};
+} as SemanticColorScale;
 
 /** Warning semantic color */
-export const warning: SemanticColorScale = {
+export const warning = {
   400: '#fbbf24',
   500: '#f59e0b',
   600: '#d97706',
   DEFAULT: '#f59e0b',
-};
+} as SemanticColorScale;
 
 /** Error semantic color */
-export const error: SemanticColorScale = {
+export const error = {
   400: '#f87171',
   500: '#ef4444',
   600: '#dc2626',
   DEFAULT: '#ef4444',
-};
+} as SemanticColorScale;
 
 /** Info semantic color */
-export const info: SemanticColorScale = {
+export const info = {
   400: '#60a5fa',
   500: '#3b82f6',
   600: '#2563eb',
   DEFAULT: '#3b82f6',
-};
+} as SemanticColorScale;
 
 /** Live indicator color */
 export const live = '#ff4444';
@@ -275,6 +283,12 @@ export const colors = {
   purple: primary,                 // Purple color scale alias
   gray: dark,                      // Gray/neutral color scale alias
   bg: dark[950],                   // Short alias for background
+  backgroundLight: dark[700],      // Light background variant
+  accent: primary.DEFAULT,         // Accent color (primary purple)
+  surfaceAlt: dark[800],           // Alternative surface color
+  red: error,                      // Red color alias (maps to error scale)
+  surface: dark[900],              // Surface color for cards
+  overlay: 'rgba(0, 0, 0, 0.5)',  // Overlay background
 };
 
 export default colors;

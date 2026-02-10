@@ -83,7 +83,7 @@ export default function WatchPartyJoinModal({
         {/* Icon Container */}
         <View style={styles.iconContainer}>
           <View style={styles.iconBackground}>
-            <UserPlus size={isTV ? 40 : 32} color={colors.primary} />
+            <UserPlus size={isTV ? 40 : 32} color={colors.primary.DEFAULT} />
           </View>
         </View>
 

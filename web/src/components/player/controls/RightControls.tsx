@@ -167,7 +167,7 @@ export default function RightControls({
         >
           <List
             size={smallIconSize}
-            color={showChaptersPanel ? colors.primary : colors.text}
+            color={showChaptersPanel ? colors.primary.DEFAULT : colors.text}
           />
         </Pressable>
       )}
@@ -195,7 +195,7 @@ export default function RightControls({
         >
           <Search
             size={smallIconSize}
-            color={showSceneSearchPanel ? colors.primary : colors.text}
+            color={showSceneSearchPanel ? colors.primary.DEFAULT : colors.text}
           />
         </Pressable>
       )}
@@ -229,7 +229,7 @@ export default function RightControls({
         >
           <Settings
             size={smallIconSize}
-            color={showSettings ? colors.primary : colors.text}
+            color={showSettings ? colors.primary.DEFAULT : colors.text}
           />
         </Pressable>
       )}

@@ -38,7 +38,7 @@ interface EmailCampaignStats {
 
 const statusColors = {
   draft: { bg: 'rgba(107, 114, 128, 0.1)', text: colors.textMuted },
-  scheduled: { bg: 'rgba(251, 191, 36, 0.1)', text: colors.warning },
+  scheduled: { bg: 'rgba(251, 191, 36, 0.1)', text:colors.warning.DEFAULT},
   sending: { bg: 'rgba(59, 130, 246, 0.1)', text: colors.info.DEFAULT },
   sent: { bg: 'rgba(34, 197, 94, 0.1)', text: colors.success.DEFAULT },
   failed: { bg: 'rgba(239, 68, 68, 0.1)', text: colors.error.DEFAULT },
@@ -220,7 +220,7 @@ export default function EmailCampaignsPage() {
         <GlassInput
           placeholder={t('admin.emailCampaigns.search', 'Search campaigns...')}
           value={searchQuery}
-          onChangeText={(text) => { setSearchQuery(text); setPage(1); }}
+          onChangeText={(text: string) => { setSearchQuery(text); setPage(1); }}
           containerStyle={styles.searchInput}
         />
       </View>

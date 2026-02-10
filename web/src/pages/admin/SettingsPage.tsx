@@ -167,19 +167,19 @@ export default function SettingsPage() {
           <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.settings.generalSettings')}</Text>
 
           <View style={styles.inputContainer}>
-            <GlassInput label={t('admin.settings.supportEmail')} value={settings.support_email || ''} onChangeText={(v) => handleSettingChange('support_email', v)} keyboardType="email-address" />
+            <GlassInput label={t('admin.settings.supportEmail')} value={settings.support_email || ''} onChangeText={(v: string) => handleSettingChange('support_email', v)} keyboardType="email-address" />
           </View>
 
           <View style={styles.inputContainer}>
-            <GlassInput label={t('admin.settings.defaultPlan')} value={settings.default_plan || ''} onChangeText={(v) => handleSettingChange('default_plan', v)} />
+            <GlassInput label={t('admin.settings.defaultPlan')} value={settings.default_plan || ''} onChangeText={(v: string) => handleSettingChange('default_plan', v)} />
           </View>
 
           <View style={styles.inputContainer}>
-            <GlassInput label={t('admin.settings.termsUrl')} value={settings.terms_url || ''} onChangeText={(v) => handleSettingChange('terms_url', v)} />
+            <GlassInput label={t('admin.settings.termsUrl')} value={settings.terms_url || ''} onChangeText={(v: string) => handleSettingChange('terms_url', v)} />
           </View>
 
           <View style={styles.inputContainer}>
-            <GlassInput label={t('admin.settings.privacyUrl')} value={settings.privacy_url || ''} onChangeText={(v) => handleSettingChange('privacy_url', v)} />
+            <GlassInput label={t('admin.settings.privacyUrl')} value={settings.privacy_url || ''} onChangeText={(v: string) => handleSettingChange('privacy_url', v)} />
           </View>
         </GlassCard>
 
@@ -187,11 +187,11 @@ export default function SettingsPage() {
           <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.settings.userSettings')}</Text>
 
           <View style={styles.inputContainer}>
-            <GlassInput label={t('admin.settings.maxDevices')} value={(settings.max_devices || 1).toString()} onChangeText={(v) => handleSettingChange('max_devices', parseInt(v) || 1)} keyboardType="number-pad" />
+            <GlassInput label={t('admin.settings.maxDevices')} value={(settings.max_devices || 1).toString()} onChangeText={(v: string) => handleSettingChange('max_devices', parseInt(v) || 1)} keyboardType="number-pad" />
           </View>
 
           <View style={styles.inputContainer}>
-            <GlassInput label={t('admin.settings.trialDays')} value={(settings.trial_days || 0).toString()} onChangeText={(v) => handleSettingChange('trial_days', parseInt(v) || 0)} keyboardType="number-pad" />
+            <GlassInput label={t('admin.settings.trialDays')} value={(settings.trial_days || 0).toString()} onChangeText={(v: string) => handleSettingChange('trial_days', parseInt(v) || 0)} keyboardType="number-pad" />
           </View>
         </GlassCard>
 
@@ -200,7 +200,7 @@ export default function SettingsPage() {
 
           <GlassToggle
             value={settings.maintenance_mode}
-            onValueChange={(v) => handleSettingChange('maintenance_mode', v)}
+            onValueChange={(v: boolean) => handleSettingChange('maintenance_mode', v)}
             label={t('admin.settings.maintenanceMode')}
             description={t('admin.settings.maintenanceModeDesc')}
             isRTL={isRTL}
@@ -216,7 +216,7 @@ export default function SettingsPage() {
           </View>
 
           <GlassView style={[styles.warningBox, { flexDirection }]} intensity="light">
-            <AlertTriangle size={16} color={colors.warning} />
+            <AlertTriangle size={16} color={colors.warning.DEFAULT} />
             <Text style={[styles.warningText, { textAlign }]}>{t('admin.settings.actionsWarning')}</Text>
           </GlassView>
         </GlassCard>

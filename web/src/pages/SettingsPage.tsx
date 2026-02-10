@@ -88,7 +88,7 @@ export default function SettingsPage() {
             styles.settingLeft,
             flexDirection === 'row-reverse' && styles.rowReverse
           ]}>
-            <Globe size={20} color={colors.primary} />
+            <Globe size={20} color={colors.primary.DEFAULT} />
             <Text style={[
               styles.settingLabel,
               textAlign === 'right' && styles.textRight
@@ -122,7 +122,7 @@ export default function SettingsPage() {
             styles.settingLeft,
             flexDirection === 'row-reverse' && styles.rowReverse
           ]}>
-            <Languages size={20} color={colors.primary} />
+            <Languages size={20} color={colors.primary.DEFAULT} />
             <View style={styles.settingTextContainer}>
               <Text style={[
                 styles.settingLabel,
@@ -162,7 +162,7 @@ export default function SettingsPage() {
             styles.settingLeft,
             flexDirection === 'row-reverse' && styles.rowReverse
           ]}>
-            <Bell size={20} color={colors.primary} />
+            <Bell size={20} color={colors.primary.DEFAULT} />
             <Text style={[
               styles.settingLabel,
               textAlign === 'right' && styles.textRight
@@ -193,7 +193,7 @@ export default function SettingsPage() {
             styles.settingLeft,
             flexDirection === 'row-reverse' && styles.rowReverse
           ]}>
-            <Volume2 size={20} color={colors.primary} />
+            <Volume2 size={20} color={colors.primary.DEFAULT} />
             <Text style={[
               styles.settingLabel,
               textAlign === 'right' && styles.textRight
@@ -224,7 +224,7 @@ export default function SettingsPage() {
             styles.settingLeft,
             flexDirection === 'row-reverse' && styles.rowReverse
           ]}>
-            <Moon size={20} color={colors.primary} />
+            <Moon size={20} color={colors.primary.DEFAULT} />
             <Text style={[
               styles.settingLabel,
               textAlign === 'right' && styles.textRight
@@ -258,7 +258,7 @@ export default function SettingsPage() {
             styles.settingLeft,
             flexDirection === 'row-reverse' && styles.rowReverse
           ]}>
-            <Shield size={20} color={colors.primary} />
+            <Shield size={20} color={colors.primary.DEFAULT} />
             <Text style={[
               styles.settingLabel,
               textAlign === 'right' && styles.textRight
@@ -286,7 +286,7 @@ export default function SettingsPage() {
             styles.settingLeft,
             flexDirection === 'row-reverse' && styles.rowReverse
           ]}>
-            <Shield size={20} color={colors.primary} />
+            <Shield size={20} color={colors.primary.DEFAULT} />
             <Text style={[
               styles.settingLabel,
               textAlign === 'right' && styles.textRight
@@ -304,7 +304,7 @@ export default function SettingsPage() {
             styles.settingLeft,
             flexDirection === 'row-reverse' && styles.rowReverse
           ]}>
-            <Shield size={20} color={colors.primary} />
+            <Shield size={20} color={colors.primary.DEFAULT} />
             <Text style={[
               styles.settingLabel,
               textAlign === 'right' && styles.textRight

@@ -30,7 +30,7 @@ export function VoiceModeCard({ mode, isSelected, isRTL, onSelect, t }: VoiceMod
         <NativeIcon
           name={mode.icon}
           size="lg"
-          color={isSelected ? colors.primary : colors.textSecondary}
+          color={isSelected ? colors.primary.DEFAULT : colors.textSecondary}
         />
         <View style={styles.textContainer}>
           <Text

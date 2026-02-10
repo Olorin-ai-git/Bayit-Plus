@@ -51,7 +51,7 @@ export default function VoiceManagementPage() {
             <GlassButton
               key={tab.id}
               title={tab.label}
-              icon={<Icon size={18} color={isActive ? colors.primary : colors.textMuted} />}
+              icon={<Icon size={18} color={isActive ? colors.primary.DEFAULT : colors.textMuted} />}
               variant={isActive ? 'primary' : 'secondary'}
               onPress={() => setActiveTab(tab.id as TabType)}
               style={styles.tabButton}

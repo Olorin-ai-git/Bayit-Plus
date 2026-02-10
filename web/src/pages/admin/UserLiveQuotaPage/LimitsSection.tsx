@@ -37,7 +37,7 @@ export default function LimitsSection({
   return (
     <GlassCard style={styles.card}>
       <View style={[styles.cardHeader, isRTL && styles.cardHeaderRTL]}>
-        <Clock size={20} color={colors.primary} />
+        <Clock size={20} color={colors.primary.DEFAULT} />
         <Text style={[styles.cardTitle, isRTL && styles.textRTL]}>
           {t('admin.liveQuotas.quotaLimits', 'Quota Limits')}
         </Text>

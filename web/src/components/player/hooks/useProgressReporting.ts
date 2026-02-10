@@ -13,7 +13,7 @@ export function useProgressReporting({
   isLive,
   onProgress,
 }: UseProgressReportingOptions) {
-  const progressInterval = useRef<NodeJS.Timeout | null>(null)
+  const progressInterval = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     if (onProgress && isPlaying && !isLive) {

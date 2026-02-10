@@ -41,7 +41,7 @@ export default function ContentEditorPage() {
           title={t('admin.actions.back', 'Back to Content')}
           onPress={handleCancel}
           variant="ghost"
-          icon={<ArrowLeft size={20} color={colors.primary} />}
+          icon={<ArrowLeft size={20} color={colors.primary.DEFAULT} />}
         />
         <GlassErrorBanner
           message={error}
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
     paddingTop: spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: colors.glass.border,
+    borderTopColor: colors.glassBorder,
   },
   button: {
     flex: 1,

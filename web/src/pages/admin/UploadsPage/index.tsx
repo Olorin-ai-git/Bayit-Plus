@@ -112,7 +112,7 @@ const UploadsPage: React.FC = () => {
                   { id: 'url', label: t('admin.uploads.manualUpload.urlUpload') },
                 ]}
                 activeTab={uploadMode}
-                onChange={(tab) => setUploadMode(tab as UploadMode)}
+                onChange={(tab: string) => setUploadMode(tab as UploadMode)}
               />
 
               {/* Upload Interface */}

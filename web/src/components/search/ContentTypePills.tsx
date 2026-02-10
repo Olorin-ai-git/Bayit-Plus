@@ -104,8 +104,8 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   pillActive: {
-    backgroundColor: colors.pillActive,
-    borderColor: colors.pillActiveBorder,
+    backgroundColor: colors.glassPurpleLight,
+    borderColor: colors.primary.DEFAULT,
   },
   pillFocused: {
     borderWidth: 2,

@@ -18,7 +18,7 @@ export const resultCardStyles = StyleSheet.create({
   cardActive: {
     borderWidth: isTV ? 2 : 1,
     borderColor: colors.glassBorderStrong,
-    shadowColor: colors.primary,
+    shadowColor: colors.primary.DEFAULT,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.3,
     shadowRadius: isTV ? 12 : 8,

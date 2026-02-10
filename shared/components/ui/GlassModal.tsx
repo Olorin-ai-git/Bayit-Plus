@@ -39,6 +39,9 @@ export interface GlassModalProps {
   loading?: boolean;
   dismissable?: boolean;
   showCloseButton?: boolean;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  className?: string;
+  testID?: string;
 }
 
 const getIconForType = (type: ModalType): string => {

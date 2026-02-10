@@ -34,7 +34,7 @@ export const ContentTypeSelector: React.FC<ContentTypeSelectorProps> = ({
       <Text style={styles.label}>{t('admin.uploads.manualUpload.contentType')}</Text>
       <GlassSelect
         value={value}
-        onChange={(selected) => onChange(selected as ContentType)}
+        onChange={(selected: string) => onChange(selected as ContentType)}
         options={options}
         disabled={disabled}
       />

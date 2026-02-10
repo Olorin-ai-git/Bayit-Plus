@@ -117,7 +117,7 @@ export const usePlaylistStore = create<PlaylistState>((set) => ({
 
   isInPlaylist: (contentId) => {
     const { items } = usePlaylistStore.getState();
-    return items.some((item) => item.content_id === contentId);
+    return items.some((item: PlaylistItem) => item.content_id === contentId);
   },
 
   setVisible: (visible) => set({ isVisible: visible }),

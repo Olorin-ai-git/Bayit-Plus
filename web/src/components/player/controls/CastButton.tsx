@@ -114,7 +114,7 @@ export default function CastButton({
           isDisabled
             ? colors.textDisabled
             : castSession.isConnected
-            ? colors.primary
+            ? colors.primary.DEFAULT
             : colors.text
         }
       />

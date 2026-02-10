@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { ChevronDown, Plus, Search, AlertCircle } from 'lucide-react'
 import { GlassView, GlassInput, GlassButton, GlassModal } from '@bayit/shared/ui'
-import { colors } from '@olorin/design-tokens'
+import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 import type { Category } from '../../types/content'
 
@@ -45,7 +45,7 @@ export function CategoryPicker({
     try {
       setIsLoading(true)
       setError(null)
-      const { contentService } = await import('../../services/adminApi')
+      const { adminContentService: contentService } = await import('../../services/adminApi')
       const response = await contentService.getCategories({ page_size: 100 })
       setCategories(response.items || [])
     } catch (err) {
@@ -68,7 +68,7 @@ export function CategoryPicker({
 
     setIsCreating(true)
     try {
-      const { contentService } = await import('../../services/adminApi')
+      const { adminContentService: contentService } = await import('../../services/adminApi')
       const newCategory = await contentService.createCategory({
         name: newCategoryName,
         slug: newCategoryName.toLowerCase().replace(/\s+/g, '-'),
@@ -99,7 +99,7 @@ export function CategoryPicker({
             error && styles.selectButtonError,
           ]}
           intensity="medium"
-          borderColor={error ? colors.error : undefined}
+          borderColor={error ? colors.error.DEFAULT : undefined}
         >
           <Text style={[
             selectedCategory ? styles.selectedText : styles.placeholderText,
@@ -133,7 +133,7 @@ export function CategoryPicker({
             </View>
           ) : error ? (
             <View style={styles.errorMessage}>
-              <AlertCircle size={16} color={colors.error} />
+              <AlertCircle size={16} color={colors.error.DEFAULT} />
               <Text style={styles.errorText}>{error}</Text>
             </View>
           ) : filteredCategories.length === 0 ? (
@@ -186,7 +186,7 @@ export function CategoryPicker({
               style={styles.createButton}
             >
               <GlassView style={styles.createButtonInner} intensity="medium">
-                <Plus size={16} color={colors.primary} />
+                <Plus size={16} color={colors.primary.DEFAULT} />
                 <Text style={styles.createButtonText}>
                   {t('admin.content.categoryPicker.createNew')}
                 </Text>
@@ -198,7 +198,7 @@ export function CategoryPicker({
 
       {error && (
         <View style={styles.errorContainer}>
-          <AlertCircle size={14} color={colors.error} />
+          <AlertCircle size={14} color={colors.error.DEFAULT} />
           <Text style={styles.errorTextSmall}>{error}</Text>
         </View>
       )}
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   },
   categoryButtonSelected: {
     borderLeftWidth: 3,
-    borderLeftColor: colors.primary,
+    borderLeftColor: colors.primary.DEFAULT,
   },
   categoryName: {
     fontSize: 14,

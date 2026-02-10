@@ -157,7 +157,7 @@ export default function MarketingDashboardPage() {
             {recentCampaigns.map((campaign) => (
               <View key={campaign.id} style={[styles.campaignItem, { flexDirection }]}>
                 <View style={styles.campaignIcon}>
-                  {campaign.type === 'email' ? <Mail size={18} color={colors.primary} /> : <Bell size={18} color={colors.warning} />}
+                  {campaign.type === 'email' ? <Mail size={18} color={colors.primary.DEFAULT} /> : <Bell size={18} color={colors.warning.DEFAULT} />}
                 </View>
                 <View style={styles.campaignInfo}>
                   <Text style={[styles.campaignName, { textAlign }]}>{campaign.name}</Text>
@@ -181,7 +181,7 @@ export default function MarketingDashboardPage() {
             {segments.map((segment, index) => (
               <View key={index} style={[styles.segmentItem, { flexDirection }]}>
                 <View style={styles.segmentIcon}>
-                  <Users size={18} color={colors.secondary} />
+                  <Users size={18} color={colors.secondary.DEFAULT} />
                 </View>
                 <View style={styles.segmentInfo}>
                   <Text style={[styles.segmentName, { textAlign }]}>{segment.name}</Text>
@@ -198,13 +198,13 @@ export default function MarketingDashboardPage() {
         <View style={[styles.quickLinks, { flexDirection }]}>
           <Link to="/admin/emails" style={{ textDecoration: 'none', flex: 1 }}>
             <GlassCard style={styles.quickLinkCard}>
-              <Mail size={24} color={colors.primary} />
+              <Mail size={24} color={colors.primary.DEFAULT} />
               <Text style={styles.quickLinkText}>{t('admin.nav.emailCampaigns')}</Text>
             </GlassCard>
           </Link>
           <Link to="/admin/push" style={{ textDecoration: 'none', flex: 1 }}>
             <GlassCard style={styles.quickLinkCard}>
-              <Bell size={24} color={colors.warning} />
+              <Bell size={24} color={colors.warning.DEFAULT} />
               <Text style={styles.quickLinkText}>{t('admin.nav.pushNotifications')}</Text>
             </GlassCard>
           </Link>
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
   segmentCount: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.primary.DEFAULT,
   },
   quickLinksSection: {
     marginBottom: spacing.xl,

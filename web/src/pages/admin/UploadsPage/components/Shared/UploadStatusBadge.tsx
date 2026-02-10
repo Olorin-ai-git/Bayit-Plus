@@ -17,14 +17,14 @@ interface UploadStatusBadgeProps {
 export const UploadStatusBadge: React.FC<UploadStatusBadgeProps> = ({ status, label }) => {
   const { t } = useTranslation();
   const statusConfig = {
-    pending: { color: colors.glass.borderLight, text: label || t('uploads.status.pending') },
+    pending: { color: colors.glassBorderLight, text: label || t('uploads.status.pending') },
     in_progress: { color: colors.primary.DEFAULT, text: label || t('uploads.status.inProgress') },
     uploading: { color: colors.primary.DEFAULT, text: label || t('uploads.status.uploading') },
     processing: { color: colors.primary.DEFAULT, text: label || t('uploads.status.processing') },
-    queued: { color: colors.info, text: label || t('uploads.status.queued') },
-    completed: { color: colors.success, text: label || t('uploads.status.completed') },
-    failed: { color: colors.error, text: label || t('uploads.status.failed') },
-    cancelled: { color: colors.warning, text: label || t('uploads.status.cancelled') },
+    queued: { color: colors.info.DEFAULT, text: label || t('uploads.status.queued') },
+    completed: { color: colors.success.DEFAULT, text: label || t('uploads.status.completed') },
+    failed: { color: colors.error.DEFAULT, text: label || t('uploads.status.failed') },
+    cancelled: { color: colors.warning.DEFAULT, text: label || t('uploads.status.cancelled') },
   };
 
   const config = statusConfig[status] || statusConfig.pending;

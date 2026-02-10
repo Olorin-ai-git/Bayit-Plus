@@ -103,7 +103,7 @@ export default function PlayerProfileStats({
           </View>
           <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
             <View style={[styles.statRowWithIcon, isRTL && styles.statRowWithIconRTL]}>
-              <Trophy size={16} color={colors.success} />
+              <Trophy size={16} color={colors.success.DEFAULT} />
               <Text style={styles.statLabel}>
                 {t('stats.wins', 'Wins')}
               </Text>
@@ -114,7 +114,7 @@ export default function PlayerProfileStats({
           </View>
           <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
             <View style={[styles.statRowWithIcon, isRTL && styles.statRowWithIconRTL]}>
-              <TrendingDown size={16} color={colors.error} />
+              <TrendingDown size={16} color={colors.error.DEFAULT} />
               <Text style={styles.statLabel}>
                 {t('stats.losses', 'Losses')}
               </Text>
@@ -145,7 +145,7 @@ export default function PlayerProfileStats({
         <View style={styles.statsGroup}>
           <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
             <View style={[styles.statRowWithIcon, isRTL && styles.statRowWithIconRTL]}>
-              <Award size={16} color={colors.warning} />
+              <Award size={16} color={colors.warning.DEFAULT} />
               <Text style={styles.statLabel}>
                 {t('stats.currentRating', 'Current Rating')}
               </Text>
@@ -156,7 +156,7 @@ export default function PlayerProfileStats({
           </View>
           <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
             <View style={[styles.statRowWithIcon, isRTL && styles.statRowWithIconRTL]}>
-              <Target size={16} color={colors.primary} />
+              <Target size={16} color={colors.primary.DEFAULT} />
               <Text style={styles.statLabel}>
                 {t('stats.peakRating', 'Peak Rating')}
               </Text>
@@ -167,7 +167,7 @@ export default function PlayerProfileStats({
           </View>
           <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
             <View style={[styles.statRowWithIcon, isRTL && styles.statRowWithIconRTL]}>
-              <Zap size={16} color={colors.error} />
+              <Zap size={16} color={colors.error.DEFAULT} />
               <Text style={styles.statLabel}>
                 {t('stats.currentStreak', 'Current Streak')}
               </Text>
@@ -178,7 +178,7 @@ export default function PlayerProfileStats({
           </View>
           <View style={[styles.statRow, isRTL && styles.statRowRTL]}>
             <View style={[styles.statRowWithIcon, isRTL && styles.statRowWithIconRTL]}>
-              <TrendingUp size={16} color={colors.success} />
+              <TrendingUp size={16} color={colors.success.DEFAULT} />
               <Text style={styles.statLabel}>
                 {t('stats.bestStreak', 'Best Streak')}
               </Text>

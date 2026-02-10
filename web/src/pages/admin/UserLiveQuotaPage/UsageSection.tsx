@@ -20,7 +20,7 @@ export default function UsageSection({ quota, usage, isRTL }: UsageSectionProps)
   return (
     <GlassCard style={styles.card}>
       <View style={[styles.cardHeader, isRTL && styles.cardHeaderRTL]}>
-        <TrendingUp size={20} color={colors.primary} />
+        <TrendingUp size={20} color={colors.primary.DEFAULT} />
         <Text style={[styles.cardTitle, isRTL && styles.textRTL]}>
           {t('admin.liveQuotas.currentUsage', 'Current Usage')}
         </Text>
@@ -68,7 +68,7 @@ export default function UsageSection({ quota, usage, isRTL }: UsageSectionProps)
       </View>
 
       <View style={styles.costSection}>
-        <DollarSign size={16} color={colors.primary} />
+        <DollarSign size={16} color={colors.primary.DEFAULT} />
         <Text style={styles.costLabel}>
           {t('admin.liveQuotas.estimatedCost', 'Estimated Cost (This Month)')}:
         </Text>

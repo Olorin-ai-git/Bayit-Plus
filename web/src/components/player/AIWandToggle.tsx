@@ -48,7 +48,7 @@ export default function AIWandToggle({
       >
         <Sparkles
           size={24}
-          color={isActive ? colors.warning : colors.text}
+          color={isActive ? colors.warning.DEFAULT : colors.text}
           style={isActive ? styles.iconActive : undefined}
         />
       </Pressable>

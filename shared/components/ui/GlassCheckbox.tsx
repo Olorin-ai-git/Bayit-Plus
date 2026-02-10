@@ -16,9 +16,11 @@ interface GlassCheckboxProps {
   label?: string;
   checked?: boolean;
   onChange?: (checked: boolean) => void;
+  onCheckedChange?: (checked: boolean) => void;
   error?: string;
   disabled?: boolean;
   hasTVPreferredFocus?: boolean;
+  testID?: string;
 }
 
 export const GlassCheckbox: React.FC<GlassCheckboxProps> = ({

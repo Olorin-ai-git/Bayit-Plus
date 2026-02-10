@@ -153,7 +153,7 @@ describe('SearchResultsList', () => {
     );
 
     const firstItem = screen.getByText('Action Movie 1');
-    fireEvent.press(firstItem);
+    fireEvent.click(firstItem);
 
     expect(mockOnResultClick).toHaveBeenCalledWith(mockResults[0], 0);
   });
@@ -167,7 +167,7 @@ describe('SearchResultsList', () => {
     );
 
     const secondItem = screen.getByText('Drama Series 2');
-    fireEvent.press(secondItem);
+    fireEvent.click(secondItem);
 
     expect(mockOnResultClick).toHaveBeenCalledWith(mockResults[1], 1);
   });

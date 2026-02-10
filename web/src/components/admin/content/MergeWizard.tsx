@@ -247,7 +247,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
               ]}
             >
               {index < currentIndex ? (
-                <CheckCircle2 size={16} color={colors.success} />
+                <CheckCircle2 size={16} color={colors.success.DEFAULT} />
               ) : (
                 <Text style={styles.stepNumber}>{index + 1}</Text>
               )}
@@ -266,7 +266,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
       return (
         <View style={styles.stepContent}>
           <View style={styles.errorHeader}>
-            <AlertTriangle size={32} color={colors.error} />
+            <AlertTriangle size={32} color={colors.error.DEFAULT} />
             <Text style={styles.errorTitle}>
               {t('admin.merge.cannotMerge', 'Cannot Merge These Items')}
             </Text>
@@ -283,7 +283,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
               </Text>
               {validation.suggestions.map((suggestion, index) => (
                 <View key={index} style={styles.suggestionRow}>
-                  <Info size={16} color={colors.primary} />
+                  <Info size={16} color={colors.primary.DEFAULT} />
                   <Text style={styles.suggestionText}>{suggestion}</Text>
                 </View>
               ))}
@@ -303,7 +303,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
     return (
       <View style={styles.stepContent}>
         <View style={styles.successHeader}>
-          <CheckCircle2 size={32} color={colors.success} />
+          <CheckCircle2 size={32} color={colors.success.DEFAULT} />
           <Text style={styles.successTitle}>
             {t('admin.merge.canMerge', 'Items Can Be Merged')}
           </Text>
@@ -394,7 +394,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
               </View>
               {baseItemId === item.id && (
                 <View style={styles.checkMark}>
-                  <Check size={20} color={colors.primary} />
+                  <Check size={20} color={colors.primary.DEFAULT} />
                 </View>
               )}
             </Pressable>
@@ -614,7 +614,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
         <ScrollView style={styles.confirmSection} showsVerticalScrollIndicator={false}>
           <View style={styles.confirmCard}>
             <View style={styles.confirmHeader}>
-              <CheckCircle2 size={24} color={colors.success} />
+              <CheckCircle2 size={24} color={colors.success.DEFAULT} />
               <Text style={styles.confirmHeaderText}>
                 {t('admin.merge.baseItemKeep', 'This item will be kept')}
               </Text>
@@ -635,7 +635,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
 
           <View style={[styles.confirmCard, styles.warningCard]}>
             <View style={styles.confirmHeader}>
-              <AlertTriangle size={24} color={colors.warning} />
+              <AlertTriangle size={24} color={colors.warning.DEFAULT} />
               <Text style={styles.confirmHeaderText}>
                 {t('admin.merge.itemsMergeInto', 'These items will be merged into base')}
               </Text>
@@ -662,7 +662,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
           </View>
 
           <View style={styles.infoCard}>
-            <Info size={20} color={colors.primary} />
+            <Info size={20} color={colors.primary.DEFAULT} />
             <Text style={styles.infoText}>
               {t('admin.merge.mergeWarning',
                 'After merging, all content will be combined into the base item. The merged items will be marked as merged and hidden from the library.')}
@@ -672,7 +672,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
 
         {error && (
           <View style={styles.errorBanner}>
-            <AlertTriangle size={20} color={colors.error} />
+            <AlertTriangle size={20} color={colors.error.DEFAULT} />
             <Text style={styles.errorText}>{error}</Text>
           </View>
         )}

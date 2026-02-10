@@ -47,7 +47,7 @@ export default function ChessControls({
           onPress={onResign}
           disabled={!isGameActive}
         >
-          <Flag size={16} color={colors.error} />
+          <Flag size={16} color={colors.error.DEFAULT} />
           <Text className="text-sm font-semibold text-red-500">{t('chess.resign')}</Text>
         </Pressable>
 
@@ -66,7 +66,7 @@ export default function ChessControls({
             className="flex-1 flex-row items-center justify-center gap-2 py-3 px-4 rounded-lg bg-green-500/20"
             onPress={onNewGame}
           >
-            <RotateCcw size={16} color={colors.success} />
+            <RotateCcw size={16} color={colors.success.DEFAULT} />
             <Text className="text-sm font-semibold text-green-500">{t('chess.newGame')}</Text>
           </Pressable>
         )}

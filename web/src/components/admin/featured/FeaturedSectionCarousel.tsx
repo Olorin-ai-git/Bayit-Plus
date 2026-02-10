@@ -123,7 +123,7 @@ export default function FeaturedSectionCarousel({
             activeIndex={activeIndex}
             onIndexChange={handleIndexChange}
             showPagination={true}
-            onSwipeUpRemove={(index) => {
+            onSwipeUpRemove={(index: number) => {
               const item = items[index]
               if (item) {
                 onRemove(item.id)

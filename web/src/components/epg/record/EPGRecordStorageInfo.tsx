@@ -41,7 +41,7 @@ export const EPGRecordStorageInfo: React.FC<EPGRecordStorageInfoProps> = ({
 
       {quotaInfo && quotaInfo.storage_usage_percentage > 80 && (
         <View style={[styles.warningCard, { flexDirection }]}>
-          <AlertCircle size={20} color={colors.warning} />
+          <AlertCircle size={20} color={colors.warning.DEFAULT} />
           <View style={styles.warningContent}>
             <Text style={styles.warningTitle}>{t('epg.lowStorage')}</Text>
             <Text style={styles.warningText}>{t('epg.lowStorageMessage')}</Text>

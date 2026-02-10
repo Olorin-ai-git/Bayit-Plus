@@ -105,9 +105,9 @@ export default function ChromecastButton({
           isDisabled
             ? colors.textDisabled
             : session.isConnecting
-            ? colors.warning
+            ? colors.warning.DEFAULT
             : session.isConnected
-            ? colors.primary
+            ? colors.primary.DEFAULT
             : colors.text
         }
       />

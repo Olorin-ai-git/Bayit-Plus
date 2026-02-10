@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   subtitle: { fontSize: 16, color: colors.textSecondary, marginTop: 2 },
   filterContainer: { paddingHorizontal: spacing.xl, marginBottom: spacing.lg, gap: spacing.sm, flexWrap: 'wrap' },
   filterButton: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: colors.backgroundLight, borderWidth: 2, borderColor: 'transparent' },
-  filterButtonActive: { backgroundColor: 'rgba(138, 43, 226, 0.2)', borderColor: colors.secondary },
+  filterButtonActive: { backgroundColor: 'rgba(138, 43, 226, 0.2)', borderColor: colors.secondary.DEFAULT },
   filterText: { fontSize: 14, color: colors.textMuted },
   filterTextActive: { color: colors.secondary.DEFAULT, fontWeight: 'bold' },
   emptyState: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: 60 },

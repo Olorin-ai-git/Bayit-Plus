@@ -31,7 +31,7 @@ export function formatTime(seconds: number): string {
 
 // Get color for chapter category
 export function getChapterColor(category: string): string {
-  return categoryColors[category] || colors.primary
+  return categoryColors[category] || colors.primary.DEFAULT
 }
 
 // Zod schemas

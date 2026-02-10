@@ -113,7 +113,7 @@ export default function WatchPartyOverlay({
                 onPress={() => setActiveTab(tab)}
                 style={[styles.tab, isActive && styles.tabActive]}
               >
-                <Icon size={isTV ? 18 : 16} color={isActive ? colors.primary : colors.textMuted} />
+                <Icon size={isTV ? 18 : 16} color={isActive ? colors.primary.DEFAULT : colors.textMuted} />
                 <Text style={[styles.tabText, isActive ? styles.tabTextActive : styles.tabTextInactive]}>
                   {tab === 'participants'
                     ? `${t('watchParty.participants')} (${participants.length})`

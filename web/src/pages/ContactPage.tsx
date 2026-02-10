@@ -79,7 +79,7 @@ export default function ContactPage() {
 
       <GlassView style={styles.headerSection}>
         <View style={styles.iconContainer}>
-          <Send size={48} color={colors.primary} />
+          <Send size={48} color={colors.primary.DEFAULT} />
         </View>
         <Text style={[styles.headerDescription, { textAlign }]}>
           {t('contact.description', 'Have a question, suggestion, or need help? Send us a message and our team will get back to you.')}

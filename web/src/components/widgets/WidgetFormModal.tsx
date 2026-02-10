@@ -287,7 +287,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
               inputStyle={styles.input}
               placeholder={t('widgets.form.titlePlaceholder')}
               value={formState.title}
-              onChangeText={(v) => handleUpdateField('title', v)}
+              onChangeText={(v: string) => handleUpdateField('title', v)}
               onBlur={handleTitleBlur}
               error={error && error.includes('name') ? error : undefined}
             />
@@ -295,7 +295,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
               inputStyle={styles.input}
               placeholder={t('widgets.form.descriptionPlaceholder')}
               value={formState.description}
-              onChangeText={(v) => handleUpdateField('description', v)}
+              onChangeText={(v: string) => handleUpdateField('description', v)}
               multiline
               numberOfLines={2}
             />
@@ -345,7 +345,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                     style={[styles.selectContentButton, { flexDirection }]}
                     onPress={handleSwitchToContent}
                   >
-                    <Plus size={16} color={colors.primary} />
+                    <Plus size={16} color={colors.primary.DEFAULT} />
                     <Text style={styles.selectContentButtonText}>
                       {t('widgets.form.selectContent')}
                     </Text>
@@ -361,13 +361,13 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                   inputStyle={styles.input}
                   placeholder={t('widgets.form.iframeUrl')}
                   value={formState.iframe_url}
-                  onChangeText={(v) => handleUpdateField('iframe_url', v)}
+                  onChangeText={(v: string) => handleUpdateField('iframe_url', v)}
                 />
                 <GlassInput
                   inputStyle={styles.input}
                   placeholder={t('widgets.form.iframeTitle')}
                   value={formState.iframe_title}
-                  onChangeText={(v) => handleUpdateField('iframe_title', v)}
+                  onChangeText={(v: string) => handleUpdateField('iframe_title', v)}
                 />
               </View>
             )}
@@ -382,7 +382,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                 <GlassInput
                   inputStyle={styles.positionInput}
                   value={String(formState.position_x)}
-                  onChangeText={(v) => handleUpdateField('position_x', parseInt(v) || 0)}
+                  onChangeText={(v: string) => handleUpdateField('position_x', parseInt(v) || 0)}
                   keyboardType="number-pad"
                 />
               </View>
@@ -391,7 +391,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                 <GlassInput
                   inputStyle={styles.positionInput}
                   value={String(formState.position_y)}
-                  onChangeText={(v) => handleUpdateField('position_y', parseInt(v) || 0)}
+                  onChangeText={(v: string) => handleUpdateField('position_y', parseInt(v) || 0)}
                   keyboardType="number-pad"
                 />
               </View>
@@ -400,7 +400,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                 <GlassInput
                   inputStyle={styles.positionInput}
                   value={String(formState.position_width)}
-                  onChangeText={(v) => handleUpdateField('position_width', parseInt(v) || 640)}
+                  onChangeText={(v: string) => handleUpdateField('position_width', parseInt(v) || 640)}
                   keyboardType="number-pad"
                 />
               </View>
@@ -409,7 +409,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                 <GlassInput
                   inputStyle={styles.positionInput}
                   value={String(formState.position_height)}
-                  onChangeText={(v) => handleUpdateField('position_height', parseInt(v) || 360)}
+                  onChangeText={(v: string) => handleUpdateField('position_height', parseInt(v) || 360)}
                   keyboardType="number-pad"
                 />
               </View>
@@ -426,7 +426,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                     <Text style={[styles.toggleLabel, { textAlign }]}>{t('widgets.form.mutedByDefault')}</Text>
                     <GlassToggle
                       value={formState.is_muted ?? true}
-                      onValueChange={(v) => handleUpdateField('is_muted', v)}
+                      onValueChange={(v: boolean) => handleUpdateField('is_muted', v)}
                       size="small"
                       isRTL={isRTL}
                     />
@@ -435,7 +435,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                     <Text style={[styles.toggleLabel, { textAlign }]}>{t('widgets.form.closable')}</Text>
                     <GlassToggle
                       value={formState.is_closable ?? true}
-                      onValueChange={(v) => handleUpdateField('is_closable', v)}
+                      onValueChange={(v: boolean) => handleUpdateField('is_closable', v)}
                       size="small"
                       isRTL={isRTL}
                     />
@@ -444,7 +444,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                     <Text style={[styles.toggleLabel, { textAlign }]}>{t('widgets.form.draggable')}</Text>
                     <GlassToggle
                       value={formState.is_draggable ?? true}
-                      onValueChange={(v) => handleUpdateField('is_draggable', v)}
+                      onValueChange={(v: boolean) => handleUpdateField('is_draggable', v)}
                       size="small"
                       isRTL={isRTL}
                     />
@@ -458,7 +458,7 @@ export const WidgetFormModal: React.FC<WidgetFormModalProps> = ({
                   inputStyle={styles.input}
                   placeholder={t('widgets.form.orderPlaceholder')}
                   value={String(formState.order || 0)}
-                  onChangeText={(v) => handleUpdateField('order', parseInt(v) || 0)}
+                  onChangeText={(v: string) => handleUpdateField('order', parseInt(v) || 0)}
                   keyboardType="number-pad"
                 />
               </View>

@@ -34,7 +34,7 @@ interface RefundStats {
 }
 
 const statusColors = {
-  pending: { bg: 'rgba(251, 191, 36, 0.1)', text: colors.warning },
+  pending: { bg: 'rgba(251, 191, 36, 0.1)', text:colors.warning.DEFAULT},
   approved: { bg: 'rgba(34, 197, 94, 0.1)', text: colors.success.DEFAULT },
   rejected: { bg: 'rgba(239, 68, 68, 0.1)', text: colors.error.DEFAULT },
   completed: { bg: 'rgba(107, 114, 128, 0.1)', text: colors.textMuted },
@@ -226,7 +226,7 @@ export default function RefundsPage() {
         <GlassInput
           placeholder={t('admin.refunds.search', 'Search refunds...')}
           value={searchQuery}
-          onChangeText={(text) => { setSearchQuery(text); setPage(1); }}
+          onChangeText={(text: string) => { setSearchQuery(text); setPage(1); }}
           containerStyle={styles.searchInput}
         />
       </View>

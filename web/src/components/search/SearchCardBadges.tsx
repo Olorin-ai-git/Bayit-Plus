@@ -47,7 +47,7 @@ export const SearchCardBadges = memo(function SearchCardBadges({
       )}
       {requiresSubscription !== 'free' && (
         <View style={styles.badge}>
-          <Icon name="star" size="xs" color={colors.warning} />
+          <Icon name="star" size="xs" color={colors.warning.DEFAULT} />
           <Text style={styles.badgeText}>Premium</Text>
         </View>
       )}

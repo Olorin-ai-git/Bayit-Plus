@@ -65,7 +65,7 @@ export default function PlayerProfileHeadToHead({
     const isWinner = game.winner_id === playerId;
     return {
       text: isWinner ? t('stats.won', 'Won') : t('stats.lost', 'Lost'),
-      color: isWinner ? colors.success : colors.error,
+      color: isWinner ? colors.success.DEFAULT :colors.error.DEFAULT,
     };
   };
 

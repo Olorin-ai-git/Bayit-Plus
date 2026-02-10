@@ -236,7 +236,7 @@ export default function BillingOverviewPage() {
           </Link>
           <Link to="/admin/refunds" style={{ textDecoration: 'none', flex: 1 }}>
             <GlassCard style={styles.quickLinkCard}>
-              <AlertCircle size={24} color={colors.warning} />
+              <AlertCircle size={24} color={colors.warning.DEFAULT} />
               <Text style={styles.quickLinkText}>
                 {t('admin.nav.refunds', 'Refunds')}
               </Text>

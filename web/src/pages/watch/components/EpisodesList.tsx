@@ -57,7 +57,7 @@ export function EpisodesList({
           style={[styles.episodeRow, currentEpisodeId === episode.id && styles.episodeActive]}
         >
           <Pressable style={styles.playButton} onPress={() => onPlayEpisode(episode)}>
-            <Play size={18} color={colors.primary} fill={colors.primary} />
+            <Play size={18} color={colors.primary.DEFAULT} fill={colors.primary} />
           </Pressable>
           <Text style={styles.episodeNumber}>{i + 1}</Text>
           <Pressable style={styles.episodeContent} onPress={() => onPlayEpisode(episode)}>
@@ -66,7 +66,7 @@ export function EpisodesList({
           </Pressable>
           <EpisodeBookmarkButton episodeId={episode.id} />
           <Pressable style={styles.deleteButton} onPress={() => onDeleteEpisode(episode.id)}>
-            <Trash2 size={16} color={colors.error} />
+            <Trash2 size={16} color={colors.error.DEFAULT} />
           </Pressable>
         </View>
       ))}

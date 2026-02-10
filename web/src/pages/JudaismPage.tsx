@@ -169,7 +169,7 @@ function JudaismCard({ item }: { item: JudaismItem }) {
                 backdropFilter: 'blur(8px)',
               }
             ]}>
-              <NativeIcon name={categoryIconName} size="md" color={colors.primary} />
+              <NativeIcon name={categoryIconName} size="md" color={colors.primary.DEFAULT} />
             </View>
           </View>
 
@@ -187,7 +187,7 @@ function JudaismCard({ item }: { item: JudaismItem }) {
             </Text>
             {item.rabbi && (
               <View style={styles.rabbiContainer}>
-                <User size={14} color={colors.primary} />
+                <User size={14} color={colors.primary.DEFAULT} />
                 <Text style={styles.rabbiText}>{getLocalizedText('rabbi')}</Text>
               </View>
             )}
@@ -321,7 +321,7 @@ export default function JudaismPage() {
         {/* News Section */}
         <View>
           <View style={[styles.sectionTitleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <NativeIcon name="info" size="md" color={colors.primary} />
+            <NativeIcon name="info" size="md" color={colors.primary.DEFAULT} />
             <Text style={[styles.sectionTitle, { textAlign }]}>
               {t('judaism.categories.news', 'Jewish News')}
             </Text>
@@ -332,7 +332,7 @@ export default function JudaismPage() {
         {/* Community Section */}
         <View>
           <View style={[styles.sectionTitleRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-            <NativeIcon name="discover" size="md" color={colors.primary} />
+            <NativeIcon name="discover" size="md" color={colors.primary.DEFAULT} />
             <Text style={[styles.sectionTitle, { textAlign }]}>
               {t('judaism.categories.community', 'Community')}
             </Text>
@@ -366,7 +366,7 @@ export default function JudaismPage() {
               <GlassCategoryPill
                 key={category.id}
                 label={getCategoryName(category)}
-                icon={<NativeIcon name={CATEGORY_ICON_NAMES[category.id] || 'judaism'} size="sm" color={selectedCategory === category.id ? colors.primary : colors.textMuted} />}
+                icon={<NativeIcon name={CATEGORY_ICON_NAMES[category.id] || 'judaism'} size="sm" color={selectedCategory === category.id ? colors.primary.DEFAULT : colors.textMuted} />}
                 isActive={selectedCategory === category.id}
                 onPress={() => setSelectedCategory(category.id)}
               />
@@ -522,7 +522,7 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     fontSize: 12,
-    color: colors.textTertiary,
+    color: colors.textMuted,
     marginTop: 4,
   },
 

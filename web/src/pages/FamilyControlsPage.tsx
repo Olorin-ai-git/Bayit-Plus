@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   error: {
-    color: colors.error,
+    color: colors.error.DEFAULT,
     fontSize: fontSize.sm,
     textAlign: 'center',
     marginTop: spacing.md,

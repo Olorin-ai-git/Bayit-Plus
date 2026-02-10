@@ -98,7 +98,7 @@ describe('ContentTypePills', () => {
     );
 
     const vodPill = screen.getByText('search.controls.contentTypes.vod');
-    fireEvent.press(vodPill);
+    fireEvent.click(vodPill);
 
     expect(mockOnChange).toHaveBeenCalledWith('vod');
   });
@@ -112,7 +112,7 @@ describe('ContentTypePills', () => {
     );
 
     const livePill = screen.getByText('search.controls.contentTypes.live');
-    fireEvent.press(livePill);
+    fireEvent.click(livePill);
 
     expect(mockOnChange).toHaveBeenCalledWith('live');
   });
@@ -126,7 +126,7 @@ describe('ContentTypePills', () => {
     );
 
     const radioPill = screen.getByText('search.controls.contentTypes.radio');
-    fireEvent.press(radioPill);
+    fireEvent.click(radioPill);
 
     expect(mockOnChange).toHaveBeenCalledWith('radio');
   });
@@ -140,7 +140,7 @@ describe('ContentTypePills', () => {
     );
 
     const podcastPill = screen.getByText('search.controls.contentTypes.podcast');
-    fireEvent.press(podcastPill);
+    fireEvent.click(podcastPill);
 
     expect(mockOnChange).toHaveBeenCalledWith('podcast');
   });
@@ -154,7 +154,7 @@ describe('ContentTypePills', () => {
     );
 
     const allPill = screen.getByText('search.controls.contentTypes.all');
-    fireEvent.press(allPill);
+    fireEvent.click(allPill);
 
     expect(mockOnChange).toHaveBeenCalledWith('all');
   });

@@ -3,7 +3,7 @@
  */
 
 import adminAudiobookService from '../adminAudiobookService'
-import * as api from '../api'
+import { api } from '../api'
 import type {
   AudiobookAdmin,
   AudiobookCreateRequest,

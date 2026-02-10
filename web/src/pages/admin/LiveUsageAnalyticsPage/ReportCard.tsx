@@ -17,7 +17,7 @@ export default function ReportCard({ title, report, isRTL }: ReportCardProps) {
   return (
     <GlassCard style={styles.reportCard}>
       <View style={[styles.reportHeader, isRTL && styles.reportHeaderRTL]}>
-        <Calendar size={20} color={colors.primary} />
+        <Calendar size={20} color={colors.primary.DEFAULT} />
         <Text style={[styles.reportTitle, isRTL && styles.textRTL]}>{title}</Text>
       </View>
       <View style={styles.reportStats}>

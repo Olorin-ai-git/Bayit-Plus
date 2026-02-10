@@ -54,6 +54,7 @@ export interface SpacingAliases {
 
 export interface BorderRadiusScale {
   none: number;
+  xs: number;
   sm: number;
   DEFAULT: number;
   md: number;
@@ -122,6 +123,7 @@ export const spacingAliases: SpacingAliases = {
 /** Border radius values */
 export const borderRadius: BorderRadiusScale = {
   none: 0,
+  xs: 2,
   sm: 4,
   DEFAULT: 8,
   md: 12,

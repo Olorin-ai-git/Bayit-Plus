@@ -110,8 +110,8 @@ export default function ContentCardActions({
       >
         <Star
           size={iconSize}
-          color={isFavorite ? colors.warning : colors.text}
-          fill={isFavorite ? colors.warning : 'transparent'}
+          color={isFavorite ? colors.warning.DEFAULT : colors.text}
+          fill={isFavorite ? colors.warning.DEFAULT : 'transparent'}
         />
       </div>
       <div
@@ -137,8 +137,8 @@ export default function ContentCardActions({
       >
         <Bookmark
           size={iconSize}
-          color={inPlaylist ? colors.primary : colors.text}
-          fill={inPlaylist ? colors.primary : 'transparent'}
+          color={inPlaylist ? colors.primary.DEFAULT : colors.text}
+          fill={inPlaylist ? colors.primary.DEFAULT : 'transparent'}
         />
       </div>
       <WidgetToggleButton

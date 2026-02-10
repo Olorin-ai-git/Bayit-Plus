@@ -43,7 +43,7 @@ interface SubscriptionsStats {
 
 const statusColors = {
   active: { bg: 'rgba(34, 197, 94, 0.1)', text: colors.success.DEFAULT },
-  paused: { bg: 'rgba(251, 191, 36, 0.1)', text: colors.warning },
+  paused: { bg: 'rgba(251, 191, 36, 0.1)', text:colors.warning.DEFAULT},
   cancelled: { bg: 'rgba(239, 68, 68, 0.1)', text: colors.error.DEFAULT },
   expired: { bg: 'rgba(107, 114, 128, 0.1)', text: colors.textMuted },
 };
@@ -620,7 +620,7 @@ const styles = StyleSheet.create({
     borderColor: colors.glassBorder,
   },
   warningButton: {
-    borderColor: colors.warning,
+    borderColor: colors.warning.DEFAULT,
   },
   successButton: {
     borderColor: colors.success.DEFAULT,

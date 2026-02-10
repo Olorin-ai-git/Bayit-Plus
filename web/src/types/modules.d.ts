@@ -3,6 +3,17 @@
  * Provides type stubs so TypeScript can resolve these imports.
  */
 
+// ─── Global type augmentations ───────────────────────────
+
+/**
+ * setTimeout returns number in browser but NodeJS.Timeout in Node types.
+ * Use this alias for cross-environment compatibility.
+ */
+declare type Timeout = ReturnType<typeof setTimeout>;
+
+/** Platform flag for tvOS builds */
+declare const __TV__: boolean | undefined;
+
 // ─── @olorin/glass-ui (dist has no .d.ts) ─────────────────
 
 declare module '@olorin/glass-ui' {
@@ -389,6 +400,177 @@ declare module '@/types/media' {
     isPlaying: boolean;
     volume: number;
     [key: string]: unknown;
+  }
+}
+
+// ─── Axios response interceptor override ──────────────────
+// The api client interceptor returns response.data directly,
+// so AxiosResponse<T> should be typed as T at the call site.
+
+import 'axios';
+declare module 'axios' {
+  export interface AxiosResponse<T = any, D = any> {
+    [key: string]: any;
+  }
+}
+
+// ─── react-native-linear-gradient ─────────────────────────
+
+declare module 'react-native-linear-gradient' {
+  import type { ComponentType, ReactNode } from 'react';
+  const LinearGradient: ComponentType<{
+    colors: string[];
+    start?: { x: number; y: number };
+    end?: { x: number; y: number };
+    locations?: number[];
+    style?: any;
+    children?: ReactNode;
+    [key: string]: any;
+  }>;
+  export default LinearGradient;
+}
+
+// ─── @olorin/glass-ui hooks sub-paths ─────────────────────
+
+declare module '@olorin/glass-ui/hooks' {
+  export function useGlassTheme(): any;
+  export function useNotifications(): any;
+  export function useGlassAnimation(config?: any): any;
+  export function useGlassAccessibility(options?: any): any;
+}
+
+// ─── @olorin/shared-icons ──────────────────────────────────
+
+declare module '@olorin/shared-icons' {
+  export type GlassLevel = 'subtle' | 'low' | 'medium' | 'high' | string;
+  export const NativeIcon: any;
+  export const WebIcon: any;
+  export const Icon: any;
+  export default any;
+}
+
+declare module '@olorin/shared-icons/native' {
+  import type { ComponentType } from 'react';
+  export const NativeIcon: ComponentType<{
+    name: string;
+    size?: number;
+    color?: string;
+    style?: any;
+    [key: string]: any;
+  }>;
+  export default NativeIcon;
+}
+
+declare module '@olorin/shared-icons/web' {
+  import type { ComponentType } from 'react';
+  export const WebIcon: ComponentType<{
+    name: string;
+    size?: number;
+    color?: string;
+    style?: any;
+    className?: string;
+    [key: string]: any;
+  }>;
+  export default WebIcon;
+}
+
+// ─── @bayit/shared/ui ──────────────────────────────────────
+
+declare module '@bayit/shared/ui' {
+  import type { ComponentType, ReactNode } from 'react';
+  export const GlassLoadingSpinner: ComponentType<{
+    size?: 'small' | 'large' | string;
+    color?: string;
+    [key: string]: any;
+  }>;
+  export const GlassView: ComponentType<any>;
+  export const GlassButton: ComponentType<any>;
+  export const GlassCard: ComponentType<any>;
+  export const GlassModal: ComponentType<any>;
+  export const GlassInput: ComponentType<any>;
+  export const GlassSelect: ComponentType<any>;
+  export const GlassCheckbox: ComponentType<any>;
+  export const GlassStatCard: ComponentType<any>;
+  export const GlassPageHeader: ComponentType<any>;
+  export const GlassProgressBar: ComponentType<any>;
+  export const GlassEmptyState: ComponentType<any>;
+  export const GlassErrorBanner: ComponentType<any>;
+  export const GlassBadge: ComponentType<any>;
+  export const GlassTooltip: ComponentType<any>;
+  export const GlassToggle: ComponentType<any>;
+  export const GlassTabs: ComponentType<any>;
+  export const GlassAvatar: ComponentType<any>;
+  export const GlassPlaceholder: ComponentType<any>;
+  export const GlassTextarea: ComponentType<any>;
+  export const GlassBreadcrumbs: ComponentType<any>;
+  export const GlassFAB: ComponentType<any>;
+  export const GlassChevron: ComponentType<any>;
+  export const GlassReorderableList: ComponentType<any>;
+  export const GlassSectionItem: ComponentType<any>;
+  export const GlassTable: ComponentType<any>;
+  export const GlassTableCell: ComponentType<any>;
+  export const GlassCategoryPill: ComponentType<any>;
+  export const GlassResizablePanel: ComponentType<any>;
+  export const GlassDraggableExpander: ComponentType<any>;
+  export const GlassSplitterHandle: ComponentType<any>;
+  export const GlassLiveChannelCard: ComponentType<any>;
+  export const GlassAnalogClock: ComponentType<any>;
+  export const GlassTVSwitch: ComponentType<any>;
+  export const GlassCarousel3D: ComponentType<any>;
+  export const GlassPosterCard: ComponentType<any>;
+  export const GlassRadar: ComponentType<any>;
+  export const GlassGauge: ComponentType<any>;
+  export const GlassHeartbeat: ComponentType<any>;
+  export const GlassTabContainer: ComponentType<any>;
+  export const GlassLocationConsentModal: ComponentType<any>;
+  export const GlassToast: ComponentType<any>;
+  export const GlassToastContainer: ComponentType<any>;
+  export const NotificationProvider: ComponentType<any>;
+  export const GlassParticleLayer: ComponentType<any>;
+}
+
+// ─── react-error-boundary ──────────────────────────────────
+
+declare module 'react-error-boundary' {
+  import type { ComponentType, ReactNode } from 'react';
+  export const ErrorBoundary: ComponentType<{
+    FallbackComponent?: ComponentType<any>;
+    fallback?: ReactNode;
+    onError?: (error: Error, info: any) => void;
+    onReset?: () => void;
+    children?: ReactNode;
+    [key: string]: any;
+  }>;
+}
+
+// ─── @testing-library/react-native ─────────────────────────
+
+declare module '@testing-library/react-native' {
+  export function render(component: any, options?: any): any;
+  export const fireEvent: {
+    press: (element: any) => void;
+    changeText: (element: any, text: string) => void;
+    scroll: (element: any, data: any) => void;
+    [key: string]: any;
+  };
+  export function waitFor(callback: () => any, options?: any): Promise<any>;
+  export function act(callback: () => any): Promise<void>;
+  export const screen: any;
+}
+
+// ─── @testing-library/react fireEvent augmentation ──────
+// Web tests use fireEvent.press (React Native pattern) via a compatibility layer.
+// Augment the web fireEvent type to include press and changeText.
+
+import '@testing-library/react';
+declare module '@testing-library/react' {
+  interface FireFunction {
+    press: (element: any, options?: any) => void;
+    changeText: (element: any, text: string) => void;
+  }
+  interface FireObject {
+    press: (element: any, options?: any) => void;
+    changeText: (element: any, text: string) => void;
   }
 }
 

@@ -233,7 +233,7 @@ export default function PodcastEpisodesPage() {
             title=""
             onPress={() => handleTranslate(item.id)}
             disabled={translating === item.id || status === 'processing'}
-            icon={translating === item.id ? <RefreshCw size={16} color={colors.primary} /> : <Plus size={16} color={colors.primary} />}
+            icon={translating === item.id ? <RefreshCw size={16} color={colors.primary.DEFAULT} /> : <Plus size={16} color={colors.primary.DEFAULT} />}
             style={styles.translateBtn}
             accessibilityLabel={t('admin.podcasts.translateEpisode', { defaultValue: 'Translate episode' })}
           />
@@ -277,7 +277,7 @@ export default function PodcastEpisodesPage() {
         variant="ghost"
         onPress={() => navigate('/admin/podcasts')}
         style={[styles.breadcrumb, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}
-        icon={<ChevronLeft size={16} color={colors.primary} />}
+        icon={<ChevronLeft size={16} color={colors.primary.DEFAULT} />}
         accessibilityLabel={t('admin.common.backToPodcasts', { defaultValue: 'Back to podcasts' })}
       >
         <Text style={styles.breadcrumbText}>{t('admin.common.back')} {t('admin.titles.podcasts')}</Text>
@@ -326,7 +326,7 @@ export default function PodcastEpisodesPage() {
       <View style={styles.filterRow}>
         <GlassSelect
           value={statusFilter}
-          onChange={(value) => {
+          onChange={(value: string) => {
             setStatusFilter(value)
             setPagination((prev) => ({ ...prev, page: 1 }))
           }}
@@ -360,14 +360,14 @@ export default function PodcastEpisodesPage() {
             containerStyle={styles.input}
             placeholder={t('admin.podcasts.episodeTitlePlaceholder')}
             value={editData.title || ''}
-            onChangeText={(value) => setEditData({ ...editData, title: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, title: value })}
           />
           <GlassInput
             label={t('admin.podcasts.episodes.form.description', 'Description')}
             containerStyle={styles.input}
             placeholder={t('admin.podcasts.descriptionPlaceholder')}
             value={editData.description || ''}
-            onChangeText={(value) => setEditData({ ...editData, description: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, description: value })}
             multiline
           />
           <GlassInput
@@ -375,7 +375,7 @@ export default function PodcastEpisodesPage() {
             containerStyle={styles.input}
             placeholder={t('admin.podcasts.episodeNumberPlaceholder')}
             value={String(editData.episode_number || '')}
-            onChangeText={(value) => setEditData({ ...editData, episode_number: parseInt(value) || 0 })}
+            onChangeText={(value: string) => setEditData({ ...editData, episode_number: parseInt(value) || 0 })}
             keyboardType="number-pad"
           />
           <GlassInput
@@ -383,21 +383,21 @@ export default function PodcastEpisodesPage() {
             containerStyle={styles.input}
             placeholder={t('admin.podcasts.durationPlaceholder')}
             value={editData.duration || ''}
-            onChangeText={(value) => setEditData({ ...editData, duration: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, duration: value })}
           />
           <GlassInput
             label={t('admin.podcasts.episodes.form.audioUrl', 'Audio URL (required)')}
             containerStyle={styles.input}
             placeholder={t('admin.podcasts.audioUrlPlaceholder')}
             value={editData.audio_url || ''}
-            onChangeText={(value) => setEditData({ ...editData, audio_url: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, audio_url: value })}
           />
           <GlassInput
             label={t('admin.podcasts.episodes.form.publishedDate', 'Published Date (YYYY-MM-DD)')}
             containerStyle={styles.input}
             placeholder={t('admin.podcasts.publishedDatePlaceholder')}
             value={editData.published_at ? editData.published_at.split('T')[0] : ''}
-            onChangeText={(value) => setEditData({ ...editData, published_at: value ? `${value}T00:00:00Z` : undefined })}
+            onChangeText={(value: string) => setEditData({ ...editData, published_at: value ? `${value}T00:00:00Z` : undefined })}
           />
         </ScrollView>
       </GlassModal>
@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     marginBottom: spacing.md,
   },
-  breadcrumbText: { color: colors.primary, fontSize: 14, fontWeight: '500' },
+  breadcrumbText: { color: colors.primary.DEFAULT, fontSize: 14, fontWeight: '500' },
   headerActions: { gap: spacing.sm, alignItems: 'center' },
   filterRow: {
     flexDirection: 'row',

@@ -120,7 +120,7 @@ export default function WatchPartyHeader({
             accessibilityLabel={t('watchParty.endParty')}
             accessibilityHint={t('watchParty.endPartyHint')}
           >
-            <X size={isTV ? 18 : 16} color={colors.error} />
+            <X size={isTV ? 18 : 16} color={colors.error.DEFAULT} />
             <Text style={styles.endButtonText}>{t('watchParty.end')}</Text>
           </Pressable>
         ) : (

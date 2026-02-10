@@ -32,10 +32,12 @@ export interface Audiobook {
   view_count: number
   avg_rating: number
   is_featured: boolean
+  is_published?: boolean
   requires_subscription: SubscriptionTier
   content_format: 'audiobook'
   created_at: string
   updated_at: string
+  [key: string]: any
 }
 
 /**

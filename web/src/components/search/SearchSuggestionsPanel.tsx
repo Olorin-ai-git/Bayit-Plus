@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: colors.cardBackground,
     borderWidth: 1,
-    borderColor: colors.cardBorder,
+    borderColor: colors.glassBorder,
   },
   trendingText: {
     fontSize: 15,
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: colors.cardBackground,
     borderWidth: 1,
-    borderColor: colors.pillBorder,
+    borderColor: colors.glassBorderLight,
     gap: 8,
     minWidth: 120,
   },
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     borderRadius: 12,
-    backgroundColor: colors.backgroundElevated,
+    backgroundColor: colors.glassMedium,
     gap: 12,
   },
   recentIcon: {

@@ -38,8 +38,8 @@ interface CampaignStats {
 const statusColors = {
   draft: { bg: 'rgba(107, 114, 128, 0.1)', text: colors.textMuted },
   active: { bg: 'rgba(34, 197, 94, 0.1)', text: colors.success.DEFAULT },
-  scheduled: { bg: 'rgba(251, 191, 36, 0.1)', text: colors.warning },
-  paused: { bg: 'rgba(147, 51, 234, 0.1)', text: colors.secondary },
+  scheduled: { bg: 'rgba(251, 191, 36, 0.1)', text:colors.warning.DEFAULT},
+  paused: { bg: 'rgba(147, 51, 234, 0.1)', text:colors.secondary.DEFAULT},
   ended: { bg: 'rgba(239, 68, 68, 0.1)', text: colors.error.DEFAULT },
 };
 
@@ -259,7 +259,7 @@ export default function CampaignsListPage() {
         <GlassInput
           placeholder={t('admin.campaigns.search', 'Search campaigns...')}
           value={searchQuery}
-          onChangeText={(text) => { setSearchQuery(text); setPage(1); }}
+          onChangeText={(text: string) => { setSearchQuery(text); setPage(1); }}
           containerStyle={styles.searchInput}
         />
       </View>
@@ -412,7 +412,7 @@ export default function CampaignsListPage() {
                     style={[styles.actionButton, styles.warningButton]}
                     onPress={() => handlePauseCampaign(campaign.id)}
                   >
-                    <PauseCircle size={14} color={colors.warning} />
+                    <PauseCircle size={14} color={colors.warning.DEFAULT} />
                     <Text style={styles.actionText}>{t('admin.actions.pause')}</Text>
                   </Pressable>
                 ) : campaign.status !== 'ended' ? (
@@ -709,7 +709,7 @@ const styles = StyleSheet.create({
     borderColor: colors.glassBorder,
   },
   warningButton: {
-    borderColor: colors.warning,
+    borderColor: colors.warning.DEFAULT,
   },
   successButton: {
     borderColor: colors.success.DEFAULT,

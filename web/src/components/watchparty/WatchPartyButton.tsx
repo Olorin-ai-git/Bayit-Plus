@@ -179,7 +179,7 @@ export default function WatchPartyButton({
             accessibilityRole="button"
             accessibilityLabel={t('watchParty.create', 'Create Watch Party')}
           >
-            <Plus size={isTV ? 22 : 18} color={colors.primary} />
+            <Plus size={isTV ? 22 : 18} color={colors.primary.DEFAULT} />
             <Text style={styles.dropdownText}>{t('watchParty.create', 'Create')}</Text>
           </Pressable>
           <Pressable

@@ -18,6 +18,7 @@ import { useSupportStore, DocCategory } from '../../stores/supportStore';
 import { isTV } from '../../utils/platform';
 import { supportConfig } from '../../config/supportConfig';
 import { NativeIcon } from '@olorin/shared-icons/native';
+import logger from '../../utils/logger';
 
 interface CategoryCardProps {
   category: DocCategory;

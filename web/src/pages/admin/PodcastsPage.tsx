@@ -390,7 +390,7 @@ export default function PodcastsPage() {
               containerStyle={styles.input}
               placeholder={t('admin.podcasts.pasteImageUrl')}
               value={editData.cover || ''}
-              onChangeText={(value) => setEditData({ ...editData, cover: value })}
+              onChangeText={(value: string) => setEditData({ ...editData, cover: value })}
             />
           </View>
           <GlassInput
@@ -398,21 +398,21 @@ export default function PodcastsPage() {
             containerStyle={styles.input}
             placeholder={t('admin.podcasts.podcastTitlePlaceholder')}
             value={editData.title || ''}
-            onChangeText={(value) => setEditData({ ...editData, title: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, title: value })}
           />
           <GlassInput
             label={t('admin.podcasts.form.author', 'Author')}
             containerStyle={styles.input}
             placeholder={t('admin.podcasts.authorPlaceholder')}
             value={editData.author || ''}
-            onChangeText={(value) => setEditData({ ...editData, author: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, author: value })}
           />
           <GlassInput
             label={t('admin.podcasts.form.description', 'Description')}
             containerStyle={styles.input}
             placeholder={t('admin.podcasts.descriptionPlaceholder')}
             value={editData.description || ''}
-            onChangeText={(value) => setEditData({ ...editData, description: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, description: value })}
             multiline
           />
           <GlassInput
@@ -420,34 +420,34 @@ export default function PodcastsPage() {
             containerStyle={styles.input}
             placeholder={t('admin.podcasts.categoryPlaceholder')}
             value={editData.category || ''}
-            onChangeText={(value) => setEditData({ ...editData, category: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, category: value })}
           />
           <GlassInput
             label={t('admin.podcasts.form.rssFeed', 'RSS Feed URL')}
             containerStyle={styles.input}
             placeholder={t('admin.podcasts.rssFeedUrlPlaceholder')}
             value={editData.rss_feed || ''}
-            onChangeText={(value) => setEditData({ ...editData, rss_feed: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, rss_feed: value })}
           />
           <GlassInput
             label={t('admin.podcasts.form.website', 'Website URL (optional)')}
             containerStyle={styles.input}
             placeholder={t('admin.podcasts.websiteUrlPlaceholder')}
             value={editData.website || ''}
-            onChangeText={(value) => setEditData({ ...editData, website: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, website: value })}
           />
           <View style={styles.checkboxRow}>
             <GlassCheckbox
               label={t('admin.common.active', { defaultValue: 'Active' })}
               checked={editData.is_active || false}
-              onChange={(checked) => setEditData({ ...editData, is_active: checked })}
+              onChange={(checked: boolean) => setEditData({ ...editData, is_active: checked })}
             />
           </View>
           <View style={styles.checkboxRow}>
             <GlassCheckbox
               label={t('admin.common.featured', { defaultValue: 'Featured' })}
               checked={editData.is_featured || false}
-              onChange={(checked) => setEditData({ ...editData, is_featured: checked })}
+              onChange={(checked: boolean) => setEditData({ ...editData, is_featured: checked })}
             />
           </View>
         </ScrollView>

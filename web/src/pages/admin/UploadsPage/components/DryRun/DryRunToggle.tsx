@@ -34,10 +34,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.md,
     padding: spacing.md,
-    backgroundColor: colors.glass.bg,
+    backgroundColor: colors.glass,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.glass.border,
+    borderColor: colors.glassBorder,
   },
   textContainer: {
     flex: 1,

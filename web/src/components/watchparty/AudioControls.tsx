@@ -103,7 +103,7 @@ export default function AudioControls({
         ) : isMuted ? (
           <MicOff size={iconSize} color={colors.textMuted} />
         ) : (
-          <Mic size={iconSize} color={isSpeaking ? '#34D399' : colors.primary} />
+          <Mic size={iconSize} color={isSpeaking ? '#34D399' :colors.primary.DEFAULT} />
         )}
 
         {isSpeaking && !isMuted && (

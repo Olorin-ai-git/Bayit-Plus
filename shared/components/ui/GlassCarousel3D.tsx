@@ -19,6 +19,8 @@ import {
   Animated,
   PanResponder,
   Pressable,
+  type GestureResponderEvent,
+  type PanResponderGestureState,
 } from 'react-native'
 import { colors, spacing, borderRadius, fontSize } from '@olorin/design-tokens'
 
@@ -171,19 +173,19 @@ export function GlassCarousel3D({
 
     return PanResponder.create({
       onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_, gestureState) => {
+      onMoveShouldSetPanResponder: (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
         // Only handle horizontal swipes, let vertical pass through
         return Math.abs(gestureState.dx) > Math.abs(gestureState.dy) && Math.abs(gestureState.dx) > 10
       },
 
-      onPanResponderMove: (_, gestureState) => {
+      onPanResponderMove: (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
         // Convert drag distance to index offset
         const sensitivity = (itemWidth + gap) * 0.8
         const dragIndex = (isRTL ? gestureState.dx : -gestureState.dx) / sensitivity
         dragOffset.setValue(dragIndex)
       },
 
-      onPanResponderRelease: (_, gestureState) => {
+      onPanResponderRelease: (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
         const sensitivity = (itemWidth + gap) * 0.8
         const dragIndex = (isRTL ? gestureState.dx : -gestureState.dx) / sensitivity
 
@@ -214,7 +216,7 @@ export function GlassCarousel3D({
 
     return PanResponder.create({
       onStartShouldSetPanResponder: () => false,
-      onMoveShouldSetPanResponder: (_, gestureState) => {
+      onMoveShouldSetPanResponder: (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
         // Handle vertical swipes (swipe up)
         return gestureState.dy < -10 && Math.abs(gestureState.dy) > Math.abs(gestureState.dx)
       },
@@ -223,7 +225,7 @@ export function GlassCarousel3D({
         setIsSwipingUp(true)
       },
 
-      onPanResponderMove: (_, gestureState) => {
+      onPanResponderMove: (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
         // Only allow upward movement
         const offset = Math.min(0, gestureState.dy)
         swipeUpOffset.setValue(offset)
@@ -236,7 +238,7 @@ export function GlassCarousel3D({
         swipeUpOpacity.setValue(1 - progress * 0.5)
       },
 
-      onPanResponderRelease: (_, gestureState) => {
+      onPanResponderRelease: (_: GestureResponderEvent, gestureState: PanResponderGestureState) => {
         if (gestureState.dy < -swipeUpThreshold || gestureState.vy < -0.5) {
           // Remove item
           executeRemoval(index)

@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(139, 92, 246, 0.3)',
     minHeight: isTV ? 44 : 40,
     minWidth: isTV ? 180 : 150,
-    shadowColor: colors.primary,
+    shadowColor: colors.primary.DEFAULT,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.15,
     shadowRadius: 6,
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   buttonEnabled: {
     backgroundColor: 'rgba(139, 92, 246, 0.25)',
     borderColor: 'rgba(139, 92, 246, 0.6)',
-    shadowColor: colors.primary,
+    shadowColor: colors.primary.DEFAULT,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.4,
     shadowRadius: 12,

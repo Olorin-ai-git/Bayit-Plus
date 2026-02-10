@@ -68,7 +68,7 @@ export default function QualitySelector({
                     <Text style={styles.resolutionText}>{quality.resolution_height}p</Text>
                   )}
                 </View>
-                {isActive && <Check size={16} color={colors.primary} />}
+                {isActive && <Check size={16} color={colors.primary.DEFAULT} />}
               </Pressable>
             )
           })

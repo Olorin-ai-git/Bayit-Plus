@@ -32,7 +32,7 @@ export default function ChapterSegment({
   return (
     <Pressable
       onPress={handlePress}
-      onHoverIn={(e) => onMouseEnter(chapter, e)}
+      onHoverIn={(e: any) => onMouseEnter(chapter, e)}
       onHoverOut={onMouseLeave}
       style={[
         styles.segment,

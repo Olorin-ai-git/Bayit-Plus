@@ -22,9 +22,9 @@ export const FileIcon: React.FC<FileIconProps> = ({ filename, size = 20 }) => {
 
   // Audio files
   if (['mp3', 'wav', 'flac', 'aac', 'm4a', 'ogg'].includes(ext || '')) {
-    return <FileAudio size={size} color={colors.info} />;
+    return <FileAudio size={size} color={colors.info.DEFAULT} />;
   }
 
   // Default file icon
-  return <File size={size} color={colors.glass.borderLight} />;
+  return <File size={size} color={colors.glassBorderLight} />;
 };

@@ -218,18 +218,18 @@ export default function PushNotificationsPage() {
           {notification.status === 'draft' && (
             <>
               <Pressable style={styles.actionButton} onPress={() => handleEdit(notification)} title={t('common.edit', 'Edit')}>
-                <Edit size={14} color={colors.primary} />
+                <Edit size={14} color={colors.primary.DEFAULT} />
               </Pressable>
               <Pressable style={styles.actionButton} onPress={() => handleSend(notification)} title={t('admin.pushNotifications.send', 'Send')}>
-                <Send size={14} color={colors.success} />
+                <Send size={14} color={colors.success.DEFAULT} />
               </Pressable>
               <Pressable style={styles.actionButton} onPress={() => openScheduleModal(notification)} title={t('admin.pushNotifications.schedule', 'Schedule')}>
-                <Clock size={14} color={colors.warning} />
+                <Clock size={14} color={colors.warning.DEFAULT} />
               </Pressable>
             </>
           )}
           <Pressable style={styles.actionButton} onPress={() => handleDelete(notification)} title={t('common.delete', 'Delete')}>
-            <Trash2 size={14} color={colors.error} />
+            <Trash2 size={14} color={colors.error.DEFAULT} />
           </Pressable>
         </View>
       ),
@@ -274,10 +274,10 @@ export default function PushNotificationsPage() {
       <GlassModal visible={showCreateModal} onClose={handleCloseModal} title={editingNotification ? t('admin.pushNotifications.editNotification', 'Edit Notification') : t('admin.pushNotifications.createModal')}>
         <View style={styles.modalContent}>
           <View style={styles.formGroup}>
-            <GlassInput label={t('admin.pushNotifications.titleLabel')} containerStyle={styles.input} value={newNotification.title} onChangeText={(title) => setNewNotification((p) => ({ ...p, title }))} placeholder={t('admin.push.titlePlaceholder')} />
+            <GlassInput label={t('admin.pushNotifications.titleLabel')} containerStyle={styles.input} value={newNotification.title} onChangeText={(title: string) => setNewNotification((p) => ({ ...p, title }))} placeholder={t('admin.push.titlePlaceholder')} />
           </View>
           <View style={styles.formGroup}>
-            <GlassInput label={t('admin.pushNotifications.bodyLabel')} containerStyle={[styles.input, styles.textArea]} value={newNotification.body} onChangeText={(body) => setNewNotification((p) => ({ ...p, body }))} placeholder={t('admin.push.bodyPlaceholder')} multiline numberOfLines={3} />
+            <GlassInput label={t('admin.pushNotifications.bodyLabel')} containerStyle={[styles.input, styles.textArea]} value={newNotification.body} onChangeText={(body: string) => setNewNotification((p) => ({ ...p, body }))} placeholder={t('admin.push.bodyPlaceholder')} multiline numberOfLines={3} />
           </View>
           <View className="flex flex-row gap-4 mt-6">
             <GlassButton title={t('common.cancel', 'Cancel')} variant="cancel" onPress={handleCloseModal} />
@@ -375,8 +375,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   filterButtonActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
+    borderColor: colors.primary.DEFAULT,
   },
   filterText: {
     fontSize: 13,

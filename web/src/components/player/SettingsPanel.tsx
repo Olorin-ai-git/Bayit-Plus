@@ -193,7 +193,7 @@ export default function SettingsPanel({
                       )}
                     </View>
                     {isActive && (
-                      <Check size={16} color={colors.primary} />
+                      <Check size={16} color={colors.primary.DEFAULT} />
                     )}
                   </Pressable>
                 )

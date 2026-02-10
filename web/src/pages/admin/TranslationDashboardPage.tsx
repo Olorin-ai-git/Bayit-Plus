@@ -221,7 +221,7 @@ export default function TranslationDashboardPage() {
       {/* Failed Episodes Table */}
       <View style={styles.section}>
         <View style={[styles.sectionHeader, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
-          <Languages size={20} color={colors.primary} />
+          <Languages size={20} color={colors.primary.DEFAULT} />
           <Text style={styles.sectionTitle}>
             {t('admin.translation.failedEpisodes', 'Failed Translations')}
           </Text>

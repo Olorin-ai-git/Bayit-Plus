@@ -9,6 +9,8 @@ interface GlassViewProps {
   style?: StyleProp<ViewStyle>;
   borderColor?: string;
   noBorder?: boolean;
+  className?: string;
+  testID?: string;
 }
 
 // Map intensity aliases to base levels

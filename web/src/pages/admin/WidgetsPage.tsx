@@ -154,17 +154,17 @@ export default function WidgetsPage() {
       label: t('admin.widgets.columns.contentType'),
       render: (_: any, item: Widget) => {
         const contentTypeConfig: Record<string, { icon: React.ReactNode; label: string }> = {
-          live_channel: { icon: <Tv size={14} color={colors.primary} />, label: t('admin.widgets.contentTypes.liveChannel') },
-          live: { icon: <Tv size={14} color={colors.primary} />, label: t('admin.widgets.contentTypes.live') },
-          vod: { icon: <Film size={14} color={colors.info} />, label: t('admin.widgets.contentTypes.vod') },
-          podcast: { icon: <Podcast size={14} color={colors.success} />, label: t('admin.widgets.contentTypes.podcast') },
-          radio: { icon: <Radio size={14} color={colors.warning} />, label: t('admin.widgets.contentTypes.radio') },
+          live_channel: { icon: <Tv size={14} color={colors.primary.DEFAULT} />, label: t('admin.widgets.contentTypes.liveChannel') },
+          live: { icon: <Tv size={14} color={colors.primary.DEFAULT} />, label: t('admin.widgets.contentTypes.live') },
+          vod: { icon: <Film size={14} color={colors.info.DEFAULT} />, label: t('admin.widgets.contentTypes.vod') },
+          podcast: { icon: <Podcast size={14} color={colors.success.DEFAULT} />, label: t('admin.widgets.contentTypes.podcast') },
+          radio: { icon: <Radio size={14} color={colors.warning.DEFAULT} />, label: t('admin.widgets.contentTypes.radio') },
           audiobook: { icon: <Headphones size={14} color="#f97316" />, label: t('admin.widgets.contentTypes.audiobook') },
-          iframe: { icon: <Globe size={14} color={colors.secondary} />, label: t('admin.widgets.contentTypes.iframe') },
+          iframe: { icon: <Globe size={14} color={colors.secondary.DEFAULT} />, label: t('admin.widgets.contentTypes.iframe') },
         };
 
         const config = contentTypeConfig[item.content.content_type] || {
-          icon: <Globe size={14} color={colors.secondary} />,
+          icon: <Globe size={14} color={colors.secondary.DEFAULT} />,
           label: item.content.content_type,
         };
 

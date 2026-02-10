@@ -52,7 +52,7 @@ const PositionField: React.FC<PositionFieldProps> = ({ label, value, onChange, t
           'bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-sm text-white min-h-[36px]'
         )}
         value={String(value)}
-        onChangeText={(v) => onChange(parseInt(v) || 0)}
+        onChangeText={(v: string) => onChange(parseInt(v) || 0)}
         keyboardType="number-pad"
       />
     </View>

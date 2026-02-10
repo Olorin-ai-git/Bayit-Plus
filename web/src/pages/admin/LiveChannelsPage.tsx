@@ -284,40 +284,40 @@ export default function LiveChannelsPage() {
             containerStyle={styles.input}
             placeholder={t('admin.liveChannels.channelName')}
             value={editData.name || ''}
-            onChangeText={(value) => setEditData({ ...editData, name: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, name: value })}
           />
           <GlassInput
             label={t('admin.liveChannels.form.streamUrl', 'Stream URL')}
             containerStyle={styles.input}
             placeholder={t('admin.liveChannels.streamUrl')}
             value={editData.stream_url || ''}
-            onChangeText={(value) => setEditData({ ...editData, stream_url: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, stream_url: value })}
           />
           <GlassInput
             label={t('admin.liveChannels.form.epgSource', 'EPG Source URL (optional)')}
             containerStyle={styles.input}
             placeholder={t('admin.liveChannels.epgSourceUrl')}
             value={editData.epg_source || ''}
-            onChangeText={(value) => setEditData({ ...editData, epg_source: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, epg_source: value })}
           />
           <GlassInput
             label={t('admin.liveChannels.form.currentShow', 'Current Show')}
             containerStyle={styles.input}
             placeholder={t('admin.liveChannels.currentShow')}
             value={editData.current_show || ''}
-            onChangeText={(value) => setEditData({ ...editData, current_show: value })}
+            onChangeText={(value: string) => setEditData({ ...editData, current_show: value })}
           />
           <GlassInput
             label={t('admin.liveChannels.form.order', 'Order')}
             containerStyle={styles.input}
             placeholder={t('admin.liveChannels.order')}
             value={String(editData.order || '')}
-            onChangeText={(value) => setEditData({ ...editData, order: parseInt(value) || 0 })}
+            onChangeText={(value: string) => setEditData({ ...editData, order: parseInt(value) || 0 })}
             keyboardType="number-pad"
           />
           <GlassToggle
             value={editData.is_active || false}
-            onValueChange={(value) => setEditData({ ...editData, is_active: value })}
+            onValueChange={(value: boolean) => setEditData({ ...editData, is_active: value })}
             label={t('admin.common.active')}
             isRTL={isRTL}
           />
@@ -329,7 +329,7 @@ export default function LiveChannelsPage() {
               style={styles.subtitleHeader}
             >
               <View style={styles.subtitleHeaderLeft}>
-                <Globe size={18} color={colors.primary} />
+                <Globe size={18} color={colors.primary.DEFAULT} />
                 <Text style={styles.subtitleHeaderText}>
                   {t('admin.liveChannels.subtitleSettings', 'Live Subtitle Settings')}
                 </Text>
@@ -345,7 +345,7 @@ export default function LiveChannelsPage() {
               <View style={styles.subtitleContent}>
                 <GlassToggle
                   value={editData.supports_live_subtitles || false}
-                  onValueChange={(value) => setEditData({ ...editData, supports_live_subtitles: value })}
+                  onValueChange={(value: boolean) => setEditData({ ...editData, supports_live_subtitles: value })}
                   label={t('admin.liveChannels.form.supportsSubtitles', 'Enable Live Subtitles')}
                   isRTL={isRTL}
                 />
@@ -355,7 +355,7 @@ export default function LiveChannelsPage() {
                     <GlassSelect
                       label={t('admin.liveChannels.form.primaryLanguage', 'Primary Language (Source)')}
                       value={editData.primary_language || 'he'}
-                      onChange={(value) => setEditData({ ...editData, primary_language: value })}
+                      onChange={(value: string) => setEditData({ ...editData, primary_language: value })}
                       options={SUPPORTED_LANGUAGES}
                     />
 
@@ -587,8 +587,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   languageChipSelected: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
+    borderColor: colors.primary.DEFAULT,
   },
   languageChipText: {
     fontSize: 12,
@@ -627,7 +627,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
     borderRadius: borderRadius.md,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primary.DEFAULT,
     alignItems: 'center',
     justifyContent: 'center',
   },

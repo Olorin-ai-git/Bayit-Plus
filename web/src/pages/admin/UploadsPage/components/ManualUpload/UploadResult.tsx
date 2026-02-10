@@ -30,10 +30,10 @@ export const UploadResult: React.FC<UploadResultProps> = ({ successful, failed }
         {successful > 0 && (
           <View style={styles.stat}>
             <View style={styles.statIcon}>
-              <CheckCircle size={24} color={colors.success} />
+              <CheckCircle size={24} color={colors.success.DEFAULT} />
             </View>
             <View>
-              <Text style={[styles.statNumber, { color: colors.success }]}>{successful}</Text>
+              <Text style={[styles.statNumber, { color: colors.success.DEFAULT }]}>{successful}</Text>
               <Text style={styles.statLabel}>
                 {t('admin.uploads.manualUpload.successful')}
               </Text>
@@ -45,10 +45,10 @@ export const UploadResult: React.FC<UploadResultProps> = ({ successful, failed }
         {failed > 0 && (
           <View style={styles.stat}>
             <View style={styles.statIcon}>
-              <XCircle size={24} color={colors.error} />
+              <XCircle size={24} color={colors.error.DEFAULT} />
             </View>
             <View>
-              <Text style={[styles.statNumber, { color: colors.error }]}>{failed}</Text>
+              <Text style={[styles.statNumber, { color: colors.error.DEFAULT }]}>{failed}</Text>
               <Text style={styles.statLabel}>{t('admin.uploads.manualUpload.failed')}</Text>
             </View>
           </View>

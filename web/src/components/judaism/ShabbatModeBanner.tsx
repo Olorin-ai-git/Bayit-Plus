@@ -137,13 +137,13 @@ export function ShabbatModeBanner({
               <p className="text-xl font-bold" style={{ color: colors.text }}>
                 {t('judaism.shabbat.shabbatShalom', 'Shabbat Shalom!')}
               </p>
-              <p className="text-sm font-medium" style={{ color: colors.warning }}>
+              <p className="text-sm font-medium" style={{ color: colors.warning.DEFAULT }}>
                 {t('judaism.shabbat.shabbatMode', 'Shabbat Mode')}
               </p>
             </div>
 
             {/* Judaism Icon */}
-            <Icon name="judaism" size="lg" color={colors.warning} />
+            <Icon name="judaism" size="lg" color={colors.warning.DEFAULT} />
           </div>
 
           {/* Dismiss button */}
@@ -182,8 +182,8 @@ export function ShabbatModeBanner({
               {countdown}
             </span>
             <div className="flex items-center gap-1">
-              <Flame size={14} color={colors.warning} />
-              <span className="text-xs" style={{ color: colors.warning }}>
+              <Flame size={14} color={colors.warning.DEFAULT} />
+              <span className="text-xs" style={{ color: colors.warning.DEFAULT }}>
                 {t('judaism.shabbat.havdalah', 'Havdalah')}
               </span>
             </div>

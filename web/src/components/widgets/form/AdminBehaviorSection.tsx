@@ -132,7 +132,7 @@ export const AdminBehaviorSection: React.FC<AdminBehaviorSectionProps> = ({
           )}
           placeholder={t('widgets.form.orderPlaceholder')}
           value={String(order || 0)}
-          onChangeText={(v) => onUpdateField('order', parseInt(v) || 0)}
+          onChangeText={(v: string) => onUpdateField('order', parseInt(v) || 0)}
           keyboardType="number-pad"
         />
       </View>

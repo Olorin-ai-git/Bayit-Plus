@@ -39,7 +39,7 @@ export default function SceneSearchEmptyState({
   if (error) {
     return (
       <View style={styles.emptyState} accessibilityLiveRegion="assertive">
-        <AlertCircle size={iconSize} color={colors.error} />
+        <AlertCircle size={iconSize} color={colors.error.DEFAULT} />
         <Text style={[styles.errorText, isTV && styles.errorTextTV]}>{error}</Text>
       </View>
     )
