@@ -31,6 +31,7 @@ import {
   borderRadius,
 } from '@olorin/glass-ui/native';
 import { logger } from '../utils/logger';
+import { WatchPartyShareButton } from '../components/sharing';
 
 const log = logger.scope('ActivePartyScreen');
 
@@ -178,6 +179,15 @@ export const ActivePartyScreen: React.FC = () => {
               </GlassBadge>
             )}
           </View>
+
+          {/* Invite Friends Button */}
+          {party?.room_code && (
+            <WatchPartyShareButton
+              roomCode={party.room_code}
+              contentTitle={party.content_title}
+              variant="secondary"
+            />
+          )}
         </View>
       </View>
 
