@@ -37,14 +37,39 @@ struct TVHomeView: View {
     @ViewBuilder
     private func contentSections(_ vm: HomeViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
+            TVPageHeader(icon: "house.fill", title: "Home")
+
+            // Culture clocks - equal width side by side
+            HStack(spacing: TVDesignTokens.Spacing.lg) {
+                TVCultureClock(
+                    flagEmoji: "\u{1F1EE}\u{1F1F1}",
+                    locationLabel: "Time in Israel",
+                    timezone: TimeZone(identifier: "Asia/Jerusalem")!,
+                    isIsraeli: true
+                )
+
+                TVCultureClock(
+                    flagEmoji: "\u{1F1FA}\u{1F1F8}",
+                    locationLabel: "Time in New York, NY",
+                    timezone: TimeZone(identifier: "America/New_York")!,
+                    isIsraeli: false
+                )
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+
+            // Hero carousel
             if !vm.spotlight.isEmpty {
                 GlassHeroCarousel(items: vm.spotlight) { item in
                     heroItem(item)
                 }
             }
 
+            // Continue Watching
             if !vm.continueWatching.isEmpty {
-                GlassContentShelf(title: "Continue Watching", items: vm.continueWatching) { item in
+                GlassContentShelf(
+                    title: "Continue Watching",
+                    items: vm.continueWatching
+                ) { item in
                     GlassFocusPoster(
                         thumbnailURL: item.thumbnail,
                         title: item.title ?? "Untitled",
@@ -53,10 +78,48 @@ struct TVHomeView: View {
                 }
             }
 
+            // Live TV
             if !vm.liveChannels.isEmpty {
                 tvLiveChannelsShelf(vm.liveChannels)
             }
 
+            // Location-based sections
+            if let israelisResponse = vm.israelisInCity,
+               let content = israelisResponse.content,
+               let newsArticles = content.newsArticles, !newsArticles.isEmpty {
+                let items = newsArticles + (content.communityEvents ?? [])
+                TVLocationContentRow(
+                    title: "Israelis in Your City",
+                    items: items,
+                    coverage: israelisResponse.coverage
+                )
+            }
+
+            if let businessesResponse = vm.israeliBusinesses,
+               let content = businessesResponse.content,
+               let businesses = content.newsArticles, !businesses.isEmpty {
+                TVLocationContentRow(
+                    title: "Israeli Businesses Near You",
+                    items: businesses,
+                    coverage: businessesResponse.coverage
+                )
+            }
+
+            // Trending
+            if !vm.trendingContent.isEmpty {
+                TVTrendingRow(items: vm.trendingContent)
+            }
+
+            // City content
+            if let jerusalem = vm.jerusalemContent, !jerusalem.items.isEmpty {
+                TVCityContentRow(title: "Jerusalem", items: jerusalem.items)
+            }
+
+            if let telAviv = vm.telAvivContent, !telAviv.items.isEmpty {
+                TVCityContentRow(title: "Tel Aviv", items: telAviv.items)
+            }
+
+            // Category rows
             ForEach(vm.categories) { category in
                 GlassContentShelf(title: category.name, items: category.items) { item in
                     GlassFocusPoster(
@@ -69,42 +132,90 @@ struct TVHomeView: View {
         }
     }
 
+    // MARK: - Hero Item
+
     private func heroItem(_ item: SpotlightItem) -> some View {
-        ZStack(alignment: .bottomLeading) {
-            if let urlStr = item.thumbnail, let url = URL(string: urlStr) {
-                AsyncImage(url: url) { phase in
-                    if case .success(let img) = phase {
-                        img.resizable().aspectRatio(contentMode: .fill)
-                    } else {
-                        DesignTokens.Glass.purpleLight
+        GeometryReader { geo in
+            ZStack(alignment: .bottomLeading) {
+                // Background image - fill and clip
+                if let urlStr = item.backdrop ?? item.thumbnail,
+                   let url = URL(string: urlStr) {
+                    AsyncImage(url: url) { phase in
+                        if case .success(let img) = phase {
+                            img.resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: geo.size.width, height: geo.size.height)
+                                .clipped()
+                        } else {
+                            DesignTokens.Glass.purpleLight
+                        }
                     }
+                } else {
+                    DesignTokens.Glass.purpleLight
                 }
-            } else {
-                DesignTokens.Glass.purpleLight
-            }
 
-            VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-                Text(item.title ?? "")
-                    .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
-                    .foregroundStyle(DesignTokens.Text.primary)
-
-                if let desc = item.description {
-                    Text(desc)
-                        .font(.system(size: TVDesignTokens.FontSize.md))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-                        .lineLimit(2)
-                }
-            }
-            .padding(TVDesignTokens.Spacing.xxl)
-            .background(
+                // Full-width gradient overlay from bottom
                 LinearGradient(
-                    colors: [Color.clear, DesignTokens.Glass.bgStrong],
+                    stops: [
+                        .init(color: .clear, location: 0.0),
+                        .init(color: DesignTokens.Background.primary.opacity(0.3), location: 0.35),
+                        .init(color: DesignTokens.Background.primary.opacity(0.8), location: 0.7),
+                        .init(color: DesignTokens.Background.primary, location: 1.0)
+                    ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
-            )
+
+                // Text content at bottom-left
+                VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
+                    Text(item.title ?? "")
+                        .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+                        .foregroundStyle(.white)
+                        .shadow(color: .black.opacity(0.6), radius: 4, x: 0, y: 2)
+                        .lineLimit(2)
+
+                    HStack(spacing: TVDesignTokens.Spacing.md) {
+                        if let year = item.year {
+                            metadataText(String(year))
+                        }
+                        if let duration = item.duration {
+                            metadataText(duration)
+                        }
+                        if let rating = item.rating {
+                            ratingBadge(rating.value)
+                        }
+                    }
+
+                    if let desc = item.description {
+                        Text(desc)
+                            .font(.system(size: TVDesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Text.secondary)
+                            .lineLimit(2)
+                            .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 1)
+                    }
+                }
+                .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+                .padding(.bottom, TVDesignTokens.Spacing.xl)
+            }
         }
         .frame(height: TVDesignTokens.MinSize.heroHeight)
+    }
+
+    private func metadataText(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: TVDesignTokens.FontSize.sm))
+            .foregroundColor(DesignTokens.Text.secondary)
+            .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 1)
+    }
+
+    private func ratingBadge(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: TVDesignTokens.FontSize.xs, weight: .semibold))
+            .foregroundColor(DesignTokens.Text.primary)
+            .padding(.horizontal, TVDesignTokens.Spacing.sm)
+            .padding(.vertical, TVDesignTokens.Spacing.xxs)
+            .background(DesignTokens.Glass.bgStrong)
+            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm))
     }
 
     private func tvLiveChannelsShelf(_ channels: [LiveChannelItem]) -> some View {
