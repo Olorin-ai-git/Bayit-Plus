@@ -1,0 +1,146 @@
+import BayitDesignSystem
+import SwiftUI
+
+/// tvOS notification preferences screen with category-based toggles for
+/// push notification types adapted for 10-foot UI navigation.
+struct TVNotificationSettingsView: View {
+    @State private var newContent = true
+    @State private var liveEvents = true
+    @State private var recommendations = true
+    @State private var appUpdates = true
+    @State private var directMessages = true
+    @State private var friendActivity = true
+    @State private var watchPartyInvitations = true
+    @State private var chessActivity = true
+
+    var body: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: TVDesignTokens.Spacing.xl) {
+                headerSection
+                togglesSection
+                footerNote
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            .padding(.vertical, TVDesignTokens.Spacing.xxl)
+        }
+        .background(DesignTokens.Background.primary)
+    }
+
+    // MARK: - Header
+
+    private var headerSection: some View {
+        VStack(spacing: TVDesignTokens.Spacing.lg) {
+            Image(systemName: "bell.badge")
+                .font(.system(size: TVDesignTokens.FontSize.hero))
+                .foregroundStyle(DesignTokens.Primary.p400)
+
+            Text("Notification Preferences")
+                .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.primary)
+
+            Text("Choose which notifications to receive")
+                .font(.system(size: TVDesignTokens.FontSize.base))
+                .foregroundStyle(DesignTokens.Text.secondary)
+                .multilineTextAlignment(.center)
+        }
+    }
+
+    // MARK: - Toggles
+
+    private var togglesSection: some View {
+        VStack(spacing: TVDesignTokens.Spacing.md) {
+            notificationToggle(
+                icon: "film",
+                title: "New Content",
+                subtitle: "New movies, series, and episodes",
+                isOn: $newContent
+            )
+            notificationToggle(
+                icon: "antenna.radiowaves.left.and.right",
+                title: "Live Events",
+                subtitle: "Live broadcasts and special events",
+                isOn: $liveEvents
+            )
+            notificationToggle(
+                icon: "sparkles",
+                title: "Recommendations",
+                subtitle: "Personalized content suggestions",
+                isOn: $recommendations
+            )
+            notificationToggle(
+                icon: "arrow.triangle.2.circlepath",
+                title: "App Updates",
+                subtitle: "New features and improvements",
+                isOn: $appUpdates
+            )
+            notificationToggle(
+                icon: "message",
+                title: "Direct Messages",
+                subtitle: "Messages from friends",
+                isOn: $directMessages
+            )
+            notificationToggle(
+                icon: "person.2",
+                title: "Friend Activity",
+                subtitle: "Friend watch activity updates",
+                isOn: $friendActivity
+            )
+            notificationToggle(
+                icon: "party.popper",
+                title: "Watch Party Invitations",
+                subtitle: "Invites to watch parties",
+                isOn: $watchPartyInvitations
+            )
+            notificationToggle(
+                icon: "crown",
+                title: "Chess Activity",
+                subtitle: "Chess game and challenge updates",
+                isOn: $chessActivity
+            )
+        }
+    }
+
+    private func notificationToggle(
+        icon: String,
+        title: String,
+        subtitle: String,
+        isOn: Binding<Bool>
+    ) -> some View {
+        HStack(spacing: TVDesignTokens.Spacing.lg) {
+            Image(systemName: icon)
+                .font(.system(size: TVDesignTokens.FontSize.lg))
+                .foregroundStyle(DesignTokens.Primary.p400)
+                .frame(width: 48, height: 48)
+
+            VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xxs) {
+                Text(title)
+                    .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
+                    .foregroundStyle(DesignTokens.Text.primary)
+
+                Text(subtitle)
+                    .font(.system(size: TVDesignTokens.FontSize.sm))
+                    .foregroundStyle(DesignTokens.Text.muted)
+                    .lineLimit(2)
+            }
+
+            Spacer()
+
+            Toggle("", isOn: isOn)
+                .tint(DesignTokens.Primary.default)
+                .labelsHidden()
+        }
+        .padding(TVDesignTokens.Spacing.lg)
+        .background(DesignTokens.Glass.bgLight)
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
+    }
+
+    // MARK: - Footer
+
+    private var footerNote: some View {
+        Text("Notification settings may take a moment to apply.")
+            .font(.system(size: TVDesignTokens.FontSize.sm))
+            .foregroundStyle(DesignTokens.Text.muted)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+    }
+}

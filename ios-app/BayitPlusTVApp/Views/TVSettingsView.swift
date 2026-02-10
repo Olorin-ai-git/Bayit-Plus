@@ -3,8 +3,9 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// tvOS Settings screen with language selection, subtitle preferences,
-/// playback quality, and account info.
+/// tvOS Settings screen with account info, navigation to sub-screens
+/// for language, notifications, security, billing, subscription, passkeys,
+/// device pairing, and playback preferences.
 struct TVSettingsView: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(LocalizationManager.self) private var localization
@@ -15,8 +16,9 @@ struct TVSettingsView: View {
         NavigationStack {
             List {
                 accountSection
-                languageSection
-                playbackSection
+                preferencesSection
+                subscriptionSection
+                securitySection
                 aboutSection
                 signOutSection
             }
@@ -34,7 +36,7 @@ struct TVSettingsView: View {
         }
     }
 
-    // MARK: - Sections
+    // MARK: - Account
 
     private var accountSection: some View {
         Section {
@@ -58,61 +60,120 @@ struct TVSettingsView: View {
                 }
             }
         } header: {
-            Text("Account")
-                .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                .foregroundStyle(DesignTokens.Text.primary)
+            sectionHeader("Account")
         }
     }
 
-    private var languageSection: some View {
+    // MARK: - Preferences
+
+    private var preferencesSection: some View {
         Section {
-            ForEach(Language.allCases, id: \.self) { language in
-                Button(action: { localization.setLanguage(language) }) {
-                    HStack {
-                        Text(language.displayName)
-                            .foregroundStyle(DesignTokens.Text.primary)
-                        Spacer()
-                        if localization.currentLanguage == language {
-                            Image(systemName: "checkmark")
-                                .foregroundStyle(DesignTokens.Primary.default)
-                        }
-                    }
-                }
+            settingsNavRow(
+                icon: "globe",
+                title: "Language",
+                detail: localization.currentLanguage.displayName
+            ) {
+                TVLanguageSettingsView()
             }
-        } header: {
-            Text("Language")
-                .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                .foregroundStyle(DesignTokens.Text.primary)
-        }
-    }
 
-    private var playbackSection: some View {
-        Section {
+            settingsNavRow(
+                icon: "bell.badge",
+                title: "Notifications",
+                detail: nil
+            ) {
+                TVNotificationSettingsView()
+            }
+
             HStack {
+                Image(systemName: "captions.bubble")
+                    .foregroundStyle(DesignTokens.Primary.p400)
+                    .frame(width: 32)
                 Text("Subtitles")
-                    .foregroundStyle(DesignTokens.Text.secondary)
+                    .foregroundStyle(DesignTokens.Text.primary)
                 Spacer()
                 Text(viewModel?.subtitles == true ? "On" : "Off")
-                    .foregroundStyle(DesignTokens.Text.primary)
+                    .foregroundStyle(DesignTokens.Text.muted)
             }
 
             HStack {
+                Image(systemName: "play.circle")
+                    .foregroundStyle(DesignTokens.Primary.p400)
+                    .frame(width: 32)
                 Text("Autoplay")
-                    .foregroundStyle(DesignTokens.Text.secondary)
+                    .foregroundStyle(DesignTokens.Text.primary)
                 Spacer()
                 Text(viewModel?.autoplay == true ? "On" : "Off")
-                    .foregroundStyle(DesignTokens.Text.primary)
+                    .foregroundStyle(DesignTokens.Text.muted)
             }
         } header: {
-            Text("Playback")
-                .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                .foregroundStyle(DesignTokens.Text.primary)
+            sectionHeader("Preferences")
         }
     }
+
+    // MARK: - Subscription
+
+    private var subscriptionSection: some View {
+        Section {
+            settingsNavRow(
+                icon: "crown",
+                title: "Subscription",
+                detail: nil
+            ) {
+                TVSubscriptionView()
+            }
+
+            settingsNavRow(
+                icon: "creditcard",
+                title: "Billing",
+                detail: nil
+            ) {
+                TVBillingView()
+            }
+        } header: {
+            sectionHeader("Subscription")
+        }
+    }
+
+    // MARK: - Security
+
+    private var securitySection: some View {
+        Section {
+            settingsNavRow(
+                icon: "lock.shield",
+                title: "Security",
+                detail: nil
+            ) {
+                TVSecurityView()
+            }
+
+            settingsNavRow(
+                icon: "person.badge.key",
+                title: "Passkeys",
+                detail: nil
+            ) {
+                TVPasskeyManagementView()
+            }
+
+            settingsNavRow(
+                icon: "link",
+                title: "Device Pairing",
+                detail: nil
+            ) {
+                TVDevicePairingView()
+            }
+        } header: {
+            sectionHeader("Security")
+        }
+    }
+
+    // MARK: - About
 
     private var aboutSection: some View {
         Section {
             HStack {
+                Image(systemName: "info.circle")
+                    .foregroundStyle(DesignTokens.Primary.p400)
+                    .frame(width: 32)
                 Text("Version")
                     .foregroundStyle(DesignTokens.Text.secondary)
                 Spacer()
@@ -122,11 +183,11 @@ struct TVSettingsView: View {
                     .foregroundStyle(DesignTokens.Text.muted)
             }
         } header: {
-            Text("About")
-                .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                .foregroundStyle(DesignTokens.Text.primary)
+            sectionHeader("About")
         }
     }
+
+    // MARK: - Sign Out
 
     private var signOutSection: some View {
         Section {
@@ -137,7 +198,35 @@ struct TVSettingsView: View {
         }
     }
 
-    // MARK: - Actions
+    // MARK: - Helpers
+
+    private func sectionHeader(_ title: String) -> some View {
+        Text(title)
+            .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
+            .foregroundStyle(DesignTokens.Text.primary)
+    }
+
+    private func settingsNavRow<Destination: View>(
+        icon: String,
+        title: String,
+        detail: String?,
+        @ViewBuilder destination: () -> Destination
+    ) -> some View {
+        NavigationLink(destination: destination) {
+            HStack {
+                Image(systemName: icon)
+                    .foregroundStyle(DesignTokens.Primary.p400)
+                    .frame(width: 32)
+                Text(title)
+                    .foregroundStyle(DesignTokens.Text.primary)
+                Spacer()
+                if let detail {
+                    Text(detail)
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+            }
+        }
+    }
 
     private func signOut() {
         Task {
