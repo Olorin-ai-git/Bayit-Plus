@@ -260,7 +260,12 @@ export function useHLSPlayer({
     // Add cache-buster for live streams to prevent stale manifest issues
     const effectiveStreamUrl = isLive ? addCacheBuster(streamUrl) : streamUrl
 
-    if (Hls.isSupported() && streamUrl.includes('.m3u8')) {
+    // For VOD on Safari, prefer native HLS over HLS.js for AirPlay compatibility.
+    // HLS.js creates blob: URLs that Apple TV cannot access via AirPlay (audio-only symptom).
+    // Safari's native HLS player uses the real .m3u8 URL, which AirPlay sends to Apple TV directly.
+    // Live streams still use HLS.js for low-latency, dubbing delay, and buffer control features.
+    const preferNativeHLS = !isLive && !!video.canPlayType('application/vnd.apple.mpegurl')
+    if (!preferNativeHLS && Hls.isSupported() && streamUrl.includes('.m3u8')) {
       const hls = new Hls({
         enableWorker: true,
         lowLatencyMode: isLive && targetLatencySeconds <= 3, // Only low latency if not delayed for dubbing

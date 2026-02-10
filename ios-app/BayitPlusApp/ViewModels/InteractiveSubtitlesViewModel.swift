@@ -1,4 +1,3 @@
-#if os(iOS)
 import Foundation
 import Observation
 
@@ -135,4 +134,3 @@ final class InteractiveSubtitlesViewModel {
         translation = nil
     }
 }
-#endif

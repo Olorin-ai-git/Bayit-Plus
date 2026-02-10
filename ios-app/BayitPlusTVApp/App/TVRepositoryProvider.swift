@@ -1,3 +1,4 @@
+import BayitCore
 import BayitNetworking
 import Foundation
 import Observation
@@ -37,11 +38,14 @@ final class TVRepositoryProvider {
     let stats: any StatsRepository
     let security: any SecurityRepository
     let authTokenProvider: AuthTokenProvider
+    let configuration: any EnvironmentConfiguration
+    let offlineCache: OfflineCacheService
 
     init(
         client: APIClient,
         webSocketManager: WebSocketManager,
-        authTokenProvider: AuthTokenProvider
+        authTokenProvider: AuthTokenProvider,
+        configuration: any EnvironmentConfiguration
     ) {
         self.content = APIContentRepository(client: client)
         self.liveTV = APILiveTVRepository(client: client)
@@ -71,5 +75,7 @@ final class TVRepositoryProvider {
         self.stats = APIStatsRepository(client: client)
         self.security = APISecurityRepository(client: client)
         self.authTokenProvider = authTokenProvider
+        self.configuration = configuration
+        self.offlineCache = OfflineCacheService()
     }
 }

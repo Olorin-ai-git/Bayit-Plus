@@ -31,12 +31,6 @@ struct TVSplashView: View {
             VStack(spacing: TVDesignTokens.Spacing.md) {
                 Spacer()
 
-                logoSection
-                    .opacity(showLogo ? 1 : 0)
-                    .scaleEffect(showLogo ? 1 : 0.8)
-
-                Spacer()
-
                 if showSlogan {
                     sloganSection
                         .transition(.opacity.combined(with: .move(edge: .bottom)))

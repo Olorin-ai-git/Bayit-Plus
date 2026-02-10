@@ -98,7 +98,7 @@ struct TVCityContentRow: View {
                     .padding(.bottom, TVDesignTokens.Spacing.lg)
             }
         }
-        .frame(height: 500)
+        .frame(height: 580)
         .padding(.horizontal, TVDesignTokens.Spacing.xl)
     }
 

@@ -1,4 +1,3 @@
-#if os(iOS)
 import BayitAuth
 import BayitCore
 import Foundation
@@ -191,4 +190,3 @@ final class LiveDubbingViewModel {
         }
     }
 }
-#endif

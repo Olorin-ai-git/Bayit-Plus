@@ -1,6 +1,8 @@
 import BayitDesignSystem
 import SwiftUI
+#if os(iOS)
 import UIKit
+#endif
 
 /// Audio track name and language for selection
 struct AudioTrack: Identifiable, Hashable {
@@ -51,8 +53,10 @@ struct AudioTrackSelectorView: View {
         let isSelected = selectedTrackId == track.id
 
         return Button {
+            #if os(iOS)
             let generator = UIImpactFeedbackGenerator(style: .light)
             generator.impactOccurred()
+            #endif
             selectedTrackId = track.id
         } label: {
             GlassCard {

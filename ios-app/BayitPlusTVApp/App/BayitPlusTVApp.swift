@@ -44,7 +44,8 @@ struct BayitPlusTVApp: App {
         _repositories = State(initialValue: TVRepositoryProvider(
             client: client,
             webSocketManager: wsManager,
-            authTokenProvider: authMgr.authTokenProvider
+            authTokenProvider: authMgr.authTokenProvider,
+            configuration: appConfig
         ))
     }
 

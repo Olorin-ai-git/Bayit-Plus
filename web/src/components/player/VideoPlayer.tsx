@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useAuthStore } from '@/stores/authStore'
-import { ttsService } from '@bayit/shared/services/ttsService'
+import { useAuthStore } from '@bayit/shared-stores/authStore'
+import { ttsService } from '@bayit/shared-services/ttsService'
 import liveSubtitleService from '@/services/liveSubtitleService'
 import logger from '@/utils/logger'
 import VideoPlayerOverlays from './VideoPlayerOverlays'
@@ -11,7 +11,7 @@ import VideoPlayerWatchParty from './VideoPlayerWatchParty'
 import VideoPlayerCatchUp from './VideoPlayerCatchUp'
 import GlassChatSidebar from './chat/GlassChatSidebar'
 import { StreamLimitExceededModal } from './StreamLimitExceededModal'
-import { ComprehensionQuizOverlay } from '@bayit/shared/components/quiz/ComprehensionQuizOverlay'
+import { ComprehensionQuizOverlay } from '@bayit/shared/quiz/ComprehensionQuizOverlay'
 import {
   useVideoPlayer,
   useSubtitles,
@@ -118,7 +118,7 @@ export default function VideoPlayer({
     splitLanguages,
     splitCues,
     // Handlers
-    handleSubtitleToggle,
+    handleSubtitleToggle: handleSubtitleToggleWithEnabled,
     handleSubtitleLanguageChange,
     handleHebrewModeChange,
     handleEnglishModeChange,
@@ -176,7 +176,7 @@ export default function VideoPlayer({
     controls,
     state,
     videoRef,
-    onSubtitleToggle: handleSubtitleToggle,
+    onSubtitleToggle: handleSubtitleToggleWithEnabled,
     onSubtitleLanguageChange: handleSubtitleLanguageChange,
   })
 
@@ -210,7 +210,7 @@ export default function VideoPlayer({
   // Playback session management for concurrent stream limit enforcement
   const { sessionId } = usePlaybackSession({
     contentId,
-    contentType,
+    contentType: (contentType || 'vod') as 'vod' | 'live' | 'podcast' | 'radio',
     isPlaying: state.isPlaying,
     enabled: !isWidget && !!user, // Only track sessions for logged-in users
     onLimitExceeded: (error) => {
@@ -375,8 +375,8 @@ export default function VideoPlayer({
   // Note: cast.updateMetadata is intentionally excluded from deps to prevent infinite loops
   // The function reference may change but its behavior is stable
   useEffect(() => {
-    if (cast.isConnected) {
-      cast.updateMetadata({
+    if (cast.unified.isConnected) {
+      cast.unified.updateMetadata({
         title: title || '',
         posterUrl: poster,
         contentId: contentId || '',
@@ -385,14 +385,14 @@ export default function VideoPlayer({
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [title, poster, contentId, src, state.duration, cast.isConnected])
+  }, [title, poster, contentId, src, state.duration, cast.unified.isConnected])
 
   // Sync playback state to cast device
   // Note: cast.syncPlaybackState is intentionally excluded from deps to prevent infinite loops
   useEffect(() => {
-    if (cast.isConnected && castConfig.autoSync) {
+    if (cast.unified.isConnected && castConfig.autoSync) {
       const interval = setInterval(() => {
-        cast.syncPlaybackState({
+        cast.unified.syncPlaybackState({
           currentTime: state.currentTime,
           isPlaying: state.isPlaying,
           volume: state.volume,
@@ -401,7 +401,7 @@ export default function VideoPlayer({
       return () => clearInterval(interval)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cast.isConnected, state.currentTime, state.isPlaying, state.volume])
+  }, [cast.unified.isConnected, state.currentTime, state.isPlaying, state.volume])
 
   useEffect(() => {
     const handleTTSPlaying = () => setIsTTSPlaying(true)
@@ -461,7 +461,7 @@ export default function VideoPlayer({
     subtitleSettings,
     subtitlesLoading,
     handleSubtitleLanguageChange,
-    handleSubtitleToggle,
+    handleSubtitleToggle: handleSubtitleToggleWithEnabled,
     handleSubtitleSettingsChange,
     fetchAvailableSubtitles,
     hebrewMode,
@@ -554,7 +554,7 @@ export default function VideoPlayer({
         loading={state.loading}
         error={state.error}
         isWidget={isWidget}
-        isCasting={cast.isConnected}
+        isCasting={cast.unified.isConnected}
         userEmail={user?.email}
         isPlaying={state.isPlaying}
       />
