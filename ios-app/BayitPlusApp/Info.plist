@@ -34,15 +34,15 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>4</string>
+	<string>6</string>
 	<key>GOOGLE_CLIENT_ID</key>
 	<string>624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com</string>
 	<key>GOOGLE_SERVER_CLIENT_ID</key>
 	<string>624470113582-7p34b1tpqlfob5sh4cl9eoospmvao1at.apps.googleusercontent.com</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Bayit+ uses your location to show Israeli community content near you</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Bayit+ uses Face ID to securely sign in to your account</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Bayit+ uses your location to show Israeli community content near you</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bayit+ uses the microphone for voice commands</string>
 	<key>NSPrivacyPolicyURL</key>
@@ -51,11 +51,17 @@
 	<string>Bayit+ uses Siri for voice commands to control playback and search content</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>Bayit+ uses speech recognition for voice commands</string>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
 	</dict>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+	</array>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
@@ -66,12 +72,6 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>NSSupportsLiveActivities</key>
-	<true/>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>audio</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>

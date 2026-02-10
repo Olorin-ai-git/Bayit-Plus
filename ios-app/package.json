@@ -1,0 +1,20 @@
+{
+  "name": "ios-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "promote:ios": "./scripts/promote-ios.sh",
+    "promote:tvos": "./scripts/promote-tvos.sh",
+    "promote:both": "./scripts/promote-both.sh",
+    "promote": "npm run promote:both"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
