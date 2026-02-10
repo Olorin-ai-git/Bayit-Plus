@@ -32,6 +32,7 @@ import {
   borderRadius,
 } from '@olorin/glass-ui/native';
 import { logger } from '../utils/logger';
+import { CreatePartyModal } from '../components/watchparty/CreatePartyModal';
 
 const log = logger.scope('WatchPartyScreen');
 
@@ -62,7 +63,6 @@ export const WatchPartyScreen: React.FC = () => {
 
   // Create modal state
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
 
   useEffect(() => {
     loadParties();
@@ -113,6 +113,12 @@ export const WatchPartyScreen: React.FC = () => {
       navigation.navigate('ActiveParty' as never, { partyId: party.id } as never);
     }
   }, [navigation]);
+
+  const handlePartyCreated = useCallback((partyId: string) => {
+    log.info('Party created, navigating to active party', { partyId });
+    loadParties();
+    navigation.navigate('ActiveParty' as never, { partyId } as never);
+  }, [navigation, loadParties]);
 
   const activeParties = parties.filter((p) => p.status === 'active');
   const recentParties = parties.filter((p) => p.status === 'ended');
@@ -271,21 +277,12 @@ export const WatchPartyScreen: React.FC = () => {
         </View>
       </GlassModal>
 
-      {/* Create Modal - placeholder for content selection flow */}
-      <GlassModal
+      {/* Create Party Modal - Full implementation */}
+      <CreatePartyModal
         visible={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        title={t('watchParty.createParty')}
-      >
-        <Text style={styles.modalDescription}>{t('watchParty.selectContent')}</Text>
-        <Text style={styles.comingSoon}>{t('watchParty.contentPickerComingSoon')}</Text>
-        <GlassButton
-          variant="secondary"
-          onPress={() => setShowCreateModal(false)}
-        >
-          {t('common.close')}
-        </GlassButton>
-      </GlassModal>
+        onPartyCreated={handlePartyCreated}
+      />
     </ScrollView>
   );
 };
@@ -392,12 +389,5 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     flex: 1,
-  },
-  comingSoon: {
-    fontSize: 14,
-    color: colors.textMuted,
-    textAlign: 'center',
-    marginVertical: spacing.xl,
-    fontStyle: 'italic',
   },
 });
