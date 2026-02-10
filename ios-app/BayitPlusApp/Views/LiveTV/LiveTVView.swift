@@ -5,6 +5,7 @@ import SwiftUI
 struct LiveTVView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(FeatureFlags.self) private var featureFlags
     @State private var viewModel: LiveTVViewModel?
 
     private let columns = [
@@ -53,7 +54,10 @@ struct LiveTVView: View {
         }
         .task {
             if viewModel == nil {
-                viewModel = LiveTVViewModel(repository: repos.liveTV)
+                viewModel = LiveTVViewModel(
+                    repository: repos.liveTV,
+                    featureFlags: featureFlags
+                )
             }
             await viewModel?.loadChannels()
         }

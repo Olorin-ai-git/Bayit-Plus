@@ -9,16 +9,21 @@ final class LiveTVViewModel {
     private(set) var error: String?
 
     private let repository: any LiveTVRepository
+    private let featureFlags: FeatureFlags
 
-    init(repository: any LiveTVRepository) {
+    init(repository: any LiveTVRepository, featureFlags: FeatureFlags) {
         self.repository = repository
+        self.featureFlags = featureFlags
     }
 
-    // TEMPORARILY HIDDEN: King 5, CNN, ABC channels hidden per product request
+    // Hidden channels (King 5, CNN, ABC) are legacy features - controlled by feature flag
     private static let hiddenChannelKeywords = ["king 5", "king5", "cnn", "abc"]
 
     private func filterHiddenChannels(_ items: [LiveChannelItem]) -> [LiveChannelItem] {
-        items.filter { channel in
+        if featureFlags.isLegacyFeaturesEnabled {
+            return items
+        }
+        return items.filter { channel in
             guard let name = channel.name?.lowercased() else { return true }
             return !Self.hiddenChannelKeywords.contains(where: { name.contains($0) })
         }

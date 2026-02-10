@@ -6,6 +6,7 @@ import SwiftUI
 struct SearchView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(FeatureFlags.self) private var featureFlags
     @State private var viewModel: SearchViewModel?
 
     var body: some View {
@@ -26,7 +27,10 @@ struct SearchView: View {
         .background(DesignTokens.Background.primary)
         .task {
             if viewModel == nil {
-                let vm = SearchViewModel(searchRepository: repos.search)
+                let vm = SearchViewModel(
+                    searchRepository: repos.search,
+                    featureFlags: featureFlags
+                )
                 viewModel = vm
                 await vm.loadInitialData()
             }
@@ -46,8 +50,10 @@ struct SearchView: View {
                             vm.onQueryChanged()
                         }
                     ),
-                    // TEMPORARILY HIDDEN: "movies, series," removed from placeholder per product request
-                    placeholder: "Search podcasts, channels...",
+                    // Placeholder includes movies/series if legacy features enabled
+                    placeholder: featureFlags.isLegacyFeaturesEnabled
+                        ? "Search movies, series, podcasts, channels..."
+                        : "Search podcasts, channels...",
                     showVoiceButton: true,
                     onVoiceTap: {
                         coordinator.navigate(to: .voiceOnboarding)
@@ -71,8 +77,8 @@ struct SearchView: View {
     private func filterPills(_ vm: SearchViewModel) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: DesignTokens.Spacing.sm) {
-                // TEMPORARILY HIDDEN: .vod (Movies) chip hidden per product request
-                ForEach(SearchContentTypeFilter.allCases.filter { $0 != .vod }, id: \.self) { filter in
+                // VOD (Movies) filter chip is a legacy feature - controlled by feature flag
+                ForEach(SearchContentTypeFilter.allCases.filter { $0 != .vod || featureFlags.isLegacyFeaturesEnabled }, id: \.self) { filter in
                     GlassChip(
                         title: filter.displayLabel,
                         isSelected: vm.selectedFilter == filter

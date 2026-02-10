@@ -5,6 +5,7 @@ import SwiftUI
 struct MainTabView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(RepositoryProvider.self) private var repos
+    @Environment(FeatureFlags.self) private var featureFlags
     @State private var isVoiceModalPresented = false
     @State private var dockViewModel: WidgetDockViewModel?
 
@@ -50,18 +51,20 @@ struct MainTabView: View {
                 .allowsHitTesting(true)
             }
 
-            // TEMPORARILY HIDDEN: Floating wizard hat FAB hidden per product request
-            // VStack {
-            //     Spacer()
-            //     HStack {
-            //         Spacer()
-            //         VoiceAvatarFAB {
-            //             isVoiceModalPresented = true
-            //         }
-            //         .padding(.trailing, 20)
-            //         .padding(.bottom, 90)  // Above tab bar
-            //     }
-            // }
+            // Voice Avatar FAB (legacy feature - controlled by feature flag)
+            if featureFlags.isLegacyFeaturesEnabled {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        VoiceAvatarFAB {
+                            isVoiceModalPresented = true
+                        }
+                        .padding(.trailing, 20)
+                        .padding(.bottom, 90)  // Above tab bar
+                    }
+                }
+            }
         }
         .ignoresSafeArea(edges: .bottom)
         .task {

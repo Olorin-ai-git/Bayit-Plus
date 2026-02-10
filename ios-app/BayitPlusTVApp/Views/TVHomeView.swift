@@ -304,6 +304,7 @@ struct TVHomeView: View {
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)
                 .padding(.vertical, TVDesignTokens.Spacing.md)
             }
+            .focusSection()
         }
         .padding(.vertical, TVDesignTokens.Spacing.lg)
         .background(

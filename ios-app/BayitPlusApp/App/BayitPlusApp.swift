@@ -19,6 +19,7 @@ struct BayitPlusApp: App {
     @State private var widgetSyncService = WidgetDataSyncService()
     @State private var liveActivityManager = LiveActivityManager()
     @State private var locationProvider: AppLocationProvider
+    @State private var featureFlags = FeatureFlags()
 
     init() {
         FirebaseApp.configure()
@@ -68,6 +69,7 @@ struct BayitPlusApp: App {
                 .environment(widgetSyncService)
                 .environment(liveActivityManager)
                 .environment(locationProvider)
+                .environment(featureFlags)
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
                 .onOpenURL { url in

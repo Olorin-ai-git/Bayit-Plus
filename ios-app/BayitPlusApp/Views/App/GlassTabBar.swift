@@ -4,11 +4,12 @@ import SwiftUI
 /// Extracted from MainTabView to keep each file under 200 lines.
 struct GlassTabBar: View {
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(FeatureFlags.self) private var featureFlags
 
     var body: some View {
         HStack(spacing: 0) {
-            // TEMPORARILY HIDDEN: .vod tab hidden per product request
-            ForEach(AppTab.allCases.filter { $0 != .vod }) { tab in
+            // VOD tab is a legacy feature - controlled by feature flag
+            ForEach(AppTab.allCases.filter { $0 != .vod || featureFlags.isLegacyFeaturesEnabled }) { tab in
                 tabBarButton(for: tab)
             }
         }

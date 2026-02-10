@@ -46,5 +46,7 @@
 	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string></string>
+	<key>FEATURE_LEGACY_FEATURES</key>
+	<string>false</string>
 </dict>
 </plist>

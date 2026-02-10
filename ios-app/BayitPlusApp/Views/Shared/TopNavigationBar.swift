@@ -6,6 +6,7 @@ import SwiftUI
 struct TopNavigationBar: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(FeatureFlags.self) private var featureFlags
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.xl) {
@@ -65,31 +66,35 @@ struct TopNavigationBar: View {
                 .accessibilityLabel("Beta Credits")
             }
 
-            // TEMPORARILY HIDDEN: Kids button hidden per product request
-            // Button {
-            //     coordinator.navigate(to: .children)
-            // } label: {
-            //     Image(systemName: "figure.and.child.holdinghands")
-            //         .font(.system(size: 20))
-            //         .foregroundColor(DesignTokens.Text.primary)
-            //         .frame(width: 44, height: 44)
-            //         .background(DesignTokens.Glass.bgMedium)
-            //         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-            // }
-            // .accessibilityLabel("Kids")
+            // Kids button (legacy feature - controlled by feature flag)
+            if featureFlags.isLegacyFeaturesEnabled {
+                Button {
+                    coordinator.navigate(to: .children)
+                } label: {
+                    Image(systemName: "figure.and.child.holdinghands")
+                        .font(.system(size: 20))
+                        .foregroundColor(DesignTokens.Text.primary)
+                        .frame(width: 44, height: 44)
+                        .background(DesignTokens.Glass.bgMedium)
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                }
+                .accessibilityLabel("Kids")
+            }
 
-            // TEMPORARILY HIDDEN: Recordings button hidden per product request
-            // Button {
-            //     coordinator.navigate(to: .recordings)
-            // } label: {
-            //     Image(systemName: "record.circle")
-            //         .font(.system(size: 20))
-            //         .foregroundColor(DesignTokens.Text.primary)
-            //         .frame(width: 44, height: 44)
-            //         .background(DesignTokens.Glass.bgMedium)
-            //         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-            // }
-            // .accessibilityLabel("Recordings")
+            // Recordings button (legacy feature - controlled by feature flag)
+            if featureFlags.isLegacyFeaturesEnabled {
+                Button {
+                    coordinator.navigate(to: .recordings)
+                } label: {
+                    Image(systemName: "record.circle")
+                        .font(.system(size: 20))
+                        .foregroundColor(DesignTokens.Text.primary)
+                        .frame(width: 44, height: 44)
+                        .background(DesignTokens.Glass.bgMedium)
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                }
+                .accessibilityLabel("Recordings")
+            }
 
             // Search button
             Button {

@@ -18,15 +18,18 @@ final class SearchViewModel {
 
     private let searchRepository: any SearchRepository
     private let recentSearchesService: RecentSearchesService
+    private let featureFlags: FeatureFlags
     private let logger = BayitLogger(category: "SearchViewModel")
     private var searchTask: Task<Void, Never>?
     private let debounceInterval: Duration = .milliseconds(300)
 
     init(
         searchRepository: any SearchRepository,
+        featureFlags: FeatureFlags,
         recentSearchesService: RecentSearchesService = RecentSearchesService()
     ) {
         self.searchRepository = searchRepository
+        self.featureFlags = featureFlags
         self.recentSearchesService = recentSearchesService
     }
 
@@ -107,17 +110,26 @@ final class SearchViewModel {
         error = nil
 
         do {
+            // Include VOD in content types if legacy features are enabled
+            var contentTypes = selectedFilter.apiContentTypes
+            if featureFlags.isLegacyFeaturesEnabled && selectedFilter == .all {
+                contentTypes = ["live", "radio", "podcast", "vod"]
+            }
+
             let response = try await searchRepository.unifiedSearch(
                 query: trimmedQuery,
-                contentTypes: selectedFilter.apiContentTypes,
+                contentTypes: contentTypes,
                 page: 1,
                 limit: 30
             )
             if !Task.isCancelled {
-                // TEMPORARILY HIDDEN: movies and series filtered from results per product request
-                var filteredResults = response.results.filter { result in
-                    let contentType = result.contentType?.lowercased() ?? ""
-                    return contentType != "vod" && contentType != "movie" && contentType != "series"
+                // Filter movies and series from results if legacy features are disabled
+                var filteredResults = response.results
+                if !featureFlags.isLegacyFeaturesEnabled {
+                    filteredResults = filteredResults.filter { result in
+                        let contentType = result.contentType?.lowercased() ?? ""
+                        return contentType != "vod" && contentType != "movie" && contentType != "series"
+                    }
                 }
                 if selectedFilter == .vod {
                     filteredResults = filteredResults.filter { $0.isSeries != true }

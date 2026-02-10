@@ -71,6 +71,7 @@ struct TVTrendingRow: View {
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xxl)
         }
+        .focusSection()
     }
 
     private var sourcesFooter: some View {

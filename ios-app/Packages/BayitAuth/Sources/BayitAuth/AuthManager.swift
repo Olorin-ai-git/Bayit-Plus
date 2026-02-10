@@ -52,7 +52,7 @@ public final class AuthManager {
     let sessionTimestampKeychainKey = "bayit_session_timestamp"
 
     /// Maximum session age in days, read from Info.plist or environment.
-    /// Defaults to 7 days if not configured.
+    /// Defaults to 30 days if not configured.
     let sessionMaxAgeDays: Int
 
     /// Firebase auth state listener handle
@@ -77,7 +77,7 @@ public final class AuthManager {
         let info = Bundle.main.infoDictionary ?? [:]
         let configuredDays = info["SESSION_MAX_AGE_DAYS"] as? String
             ?? ProcessInfo.processInfo.environment["SESSION_MAX_AGE_DAYS"]
-        self.sessionMaxAgeDays = Int(configuredDays ?? "") ?? 7
+        self.sessionMaxAgeDays = Int(configuredDays ?? "") ?? 30
 
         restoreCachedSession()
         listenForAuthStateChanges()

@@ -164,11 +164,21 @@ extension AuthManager {
     }
 
     /// Listens for Firebase auth state changes to keep local state in sync.
+    ///
+    /// Only clears credentials when a previously-known Firebase user disappears
+    /// (genuine sign-out or server-side revocation). Does not clear when Firebase
+    /// has never had a user — which is the normal state for email, passkey,
+    /// biometric, and device-pairing sign-in methods.
     func listenForAuthStateChanges() {
+        var hadFirebaseUser = Auth.auth().currentUser != nil
+
         authStateHandle = Auth.auth().addStateDidChangeListener { [weak self] _, firebaseUser in
             guard let self else { return }
 
-            if firebaseUser == nil {
+            if firebaseUser != nil {
+                hadFirebaseUser = true
+            } else if hadFirebaseUser {
+                hadFirebaseUser = false
                 self.clearState()
                 try? self.keychainService.delete(for: self.tokenKeychainKey)
                 try? self.keychainService.delete(for: self.backendTokenKeychainKey)

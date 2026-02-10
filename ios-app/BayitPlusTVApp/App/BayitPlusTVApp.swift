@@ -14,6 +14,7 @@ struct BayitPlusTVApp: App {
     @State private var apiClient: APIClient
     @State private var repositories: TVRepositoryProvider
     @State private var mediaPlayer = MediaPlayer()
+    @State private var featureFlags = FeatureFlags()
 
     init() {
         FirebaseApp.configure()
@@ -57,6 +58,7 @@ struct BayitPlusTVApp: App {
                 .environment(localizationManager)
                 .environment(repositories)
                 .environment(mediaPlayer)
+                .environment(featureFlags)
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
                 .task {

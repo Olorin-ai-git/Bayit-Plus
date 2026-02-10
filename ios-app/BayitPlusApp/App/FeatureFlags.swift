@@ -1,9 +1,11 @@
 import BayitCore
 import Foundation
+import Observation
 
 /// Feature flags read from Info.plist or environment variables.
 /// All flags default to disabled and must be explicitly enabled via configuration.
-struct FeatureFlags: Sendable {
+@Observable
+final class FeatureFlags {
     let isLiveDubbingEnabled: Bool
     let isTriviaEnabled: Bool
     let isLLMSearchEnabled: Bool
@@ -21,6 +23,7 @@ struct FeatureFlags: Sendable {
     let isHouseholdEnabled: Bool
     let isDevicePairingEnabled: Bool
     let isRewardsEnabled: Bool
+    let isLegacyFeaturesEnabled: Bool
 
     init() {
         let info = Bundle.main.infoDictionary ?? [:]
@@ -43,6 +46,7 @@ struct FeatureFlags: Sendable {
         self.isHouseholdEnabled = Self.flag("FEATURE_HOUSEHOLD", info: info, env: env)
         self.isDevicePairingEnabled = Self.flag("FEATURE_DEVICE_PAIRING", info: info, env: env)
         self.isRewardsEnabled = Self.flag("FEATURE_REWARDS", info: info, env: env)
+        self.isLegacyFeaturesEnabled = Self.flag("FEATURE_LEGACY_FEATURES", info: info, env: env)
     }
 
     private static func flag(_ key: String, info: [String: Any], env: [String: String]) -> Bool {

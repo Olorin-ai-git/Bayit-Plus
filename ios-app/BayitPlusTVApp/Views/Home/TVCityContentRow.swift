@@ -92,6 +92,7 @@ struct TVCityContentRow: View {
                     .padding(.horizontal, TVDesignTokens.Spacing.xxl)
                     .padding(.vertical, TVDesignTokens.Spacing.md)
                 }
+                .focusSection()
 
                 sourcesFooter
                     .padding(.horizontal, TVDesignTokens.Spacing.xxl)

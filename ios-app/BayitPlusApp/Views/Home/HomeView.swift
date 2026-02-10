@@ -7,6 +7,7 @@ struct HomeView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(AppLocationProvider.self) private var locationProvider
+    @Environment(FeatureFlags.self) private var featureFlags
     @State private var viewModel: HomeViewModel?
 
     var body: some View {
@@ -35,7 +36,8 @@ struct HomeView: View {
                 viewModel = HomeViewModel(
                     repository: repos.content,
                     liveTVRepository: repos.liveTV,
-                    locationProvider: locationProvider
+                    locationProvider: locationProvider,
+                    featureFlags: featureFlags
                 )
             }
             await viewModel?.loadFeatured()
@@ -68,10 +70,10 @@ struct HomeView: View {
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.bottom, DesignTokens.Spacing.md)
 
-        // TEMPORARILY HIDDEN: Hero carousel hidden per product request
-        // if !vm.spotlight.isEmpty {
-        //     HeroCarousel(items: vm.spotlight, coordinator: coordinator)
-        // }
+        // Hero carousel (legacy feature - controlled by feature flag)
+        if featureFlags.isLegacyFeaturesEnabled && !vm.spotlight.isEmpty {
+            HeroCarousel(items: vm.spotlight, coordinator: coordinator)
+        }
 
         // Continue Watching (only if has items)
         if !vm.continueWatching.isEmpty {
@@ -119,11 +121,15 @@ struct HomeView: View {
             CityContentRow(title: "Tel Aviv", items: telAviv.items)
         }
 
-        // Category rows - TEMPORARILY HIDDEN: Movies, Series, Audiobooks, Kids, Music, Documentary hidden per product request
+        // Category rows (Movies, Series, Audiobooks, Kids, Music, Documentary are legacy features)
         ForEach(vm.categories.filter { category in
             let name = category.name.lowercased()
             let hidden = ["movie", "series", "audiobook", "kid", "children", "music", "documentar"]
-            return !hidden.contains(where: { name.contains($0) })
+            if featureFlags.isLegacyFeaturesEnabled {
+                return true
+            } else {
+                return !hidden.contains(where: { name.contains($0) })
+            }
         }) { category in
             CategoryRow(category: category, coordinator: coordinator)
         }

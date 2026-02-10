@@ -24,15 +24,18 @@ final class HomeViewModel {
     private let repository: any ContentRepository
     private let liveTVRepository: any LiveTVRepository
     private let locationProvider: any LocationProvider
+    private let featureFlags: FeatureFlags
 
     init(
         repository: any ContentRepository,
         liveTVRepository: any LiveTVRepository,
-        locationProvider: any LocationProvider
+        locationProvider: any LocationProvider,
+        featureFlags: FeatureFlags
     ) {
         self.repository = repository
         self.liveTVRepository = liveTVRepository
         self.locationProvider = locationProvider
+        self.featureFlags = featureFlags
     }
 
     @MainActor
@@ -94,16 +97,21 @@ final class HomeViewModel {
         await locationTask
     }
 
-    // TEMPORARILY HIDDEN: King 5, CNN, ABC channels hidden per product request
+    // Hidden channels (King 5, CNN, ABC) are legacy features - controlled by feature flag
     private static let hiddenChannelKeywords = ["king 5", "king5", "cnn", "abc"]
 
     @MainActor
     private func loadLiveChannels() async {
         do {
             let response = try await liveTVRepository.fetchChannels(cultureId: nil, category: nil)
-            let filtered = response.channels.filter { channel in
-                guard let name = channel.name?.lowercased() else { return true }
-                return !Self.hiddenChannelKeywords.contains(where: { name.contains($0) })
+            let filtered: [LiveChannelItem]
+            if featureFlags.isLegacyFeaturesEnabled {
+                filtered = response.channels
+            } else {
+                filtered = response.channels.filter { channel in
+                    guard let name = channel.name?.lowercased() else { return true }
+                    return !Self.hiddenChannelKeywords.contains(where: { name.contains($0) })
+                }
             }
             liveChannels = Array(filtered.prefix(8))  // First 8 channels
         } catch {

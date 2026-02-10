@@ -40,6 +40,7 @@ public struct GlassContentShelf<Item: Identifiable, ItemView: View>: View {
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
                 .padding(.vertical, TVDesignTokens.Spacing.md)
             }
+            .focusSection()
         }
     }
 }
