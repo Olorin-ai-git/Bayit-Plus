@@ -1,7 +1,64 @@
 /**
  * API Services Index
  * Central export point for all API services
+ * Re-exports from shared services and adds web-specific services
  */
+
+export {
+  authService,
+  verificationService,
+  contentService,
+  liveService,
+  radioService,
+  podcastService,
+  subscriptionService,
+  historyService,
+  favoritesService,
+  profilesService,
+  childrenService,
+  youngstersService,
+  searchService,
+  subtitlesService,
+  subtitlePreferencesService,
+  chaptersService,
+  zmanService,
+  trendingService,
+  ritualService,
+  judaismService,
+  flowsService,
+  chatService,
+  partyService,
+  recordingService,
+  downloadsService,
+  jerusalemService,
+  telAvivService,
+  cultureService,
+  securityService,
+  triviaApi,
+  playlistService,
+  watchlistService,
+  api,
+  contentApi,
+  API_BASE_URL,
+} from '@bayit/shared-services/api'
+
+export type {
+  SearchFilters,
+  SearchResult,
+  LLMSearchResponse,
+  VoiceLanguage,
+  TextSize,
+  VADSensitivity,
+  VoicePreferences,
+  HomeSectionConfigAPI,
+  HomePagePreferencesAPI,
+  ResolvedContentItem,
+  ResolveContentResponse,
+  Download,
+  DownloadAdd,
+} from '@bayit/shared-services/api'
+
+export { default } from '@bayit/shared-services/api'
 
 export * from './subtitles'
 export * from './payment'

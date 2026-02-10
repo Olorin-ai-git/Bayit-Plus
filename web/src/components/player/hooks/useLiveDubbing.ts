@@ -54,6 +54,14 @@ export interface UseLiveDubbingState {
   bufferHealth: 'healthy' | 'warning' | 'critical' | 'emergency' | null
   bufferAheadSeconds: number
   playbackStarted: boolean
+  // Methods and computed properties returned by the hook
+  availability: DubbingAvailability | null
+  isAvailable: boolean
+  connect: (targetLang?: string, selectedVoiceId?: string) => Promise<void>
+  disconnect: () => void
+  setTargetLanguage: (lang: string) => void
+  setOriginalVolume: (vol: number) => void
+  setDubbedVolume: (vol: number) => void
 }
 
 export function useLiveDubbing({ channelId, videoElement, autoConnect = false }: UseLiveDubbingOptions) {

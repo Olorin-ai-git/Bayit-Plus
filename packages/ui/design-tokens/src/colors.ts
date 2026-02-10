@@ -264,6 +264,17 @@ export const colors = {
   splitScreenRight: '#8b5cf6',    // Solid purple for right pane border
   splitScreenLeftBg: 'rgba(59, 130, 246, 0.15)',  // Light blue background
   splitScreenRightBg: 'rgba(139, 92, 246, 0.15)', // Light purple background
+
+  // Semantic aliases (used by shared components)
+  background: dark[950],           // Page/app background (dark theme)
+  backgroundLighter: dark[800],    // Lighter background for cards/sections
+  primaryLight: primary[300],      // Light purple variant for highlights
+  primaryDark: primary[900],       // Darker purple variant
+  cardBackground: glass.bgLight,   // Card/panel background
+  border: glass.border,            // Default border color
+  purple: primary,                 // Purple color scale alias
+  gray: dark,                      // Gray/neutral color scale alias
+  bg: dark[950],                   // Short alias for background
 };
 
 export default colors;

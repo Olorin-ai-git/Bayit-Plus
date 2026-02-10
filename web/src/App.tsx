@@ -208,6 +208,11 @@ const AppContent = () => {
       <Route path="/payment/success" element={<PaymentSuccessPage />} />
       <Route path="/payment/cancelled" element={<PaymentCancelledPage />} />
 
+      {/* Legal Routes (publicly accessible - no auth required) */}
+      <Route path="/privacy" element={<Suspense fallback={<LoadingFallback />}><PrivacyPage /></Suspense>} />
+      <Route path="/policy" element={<Navigate to="/privacy" replace />} />
+      <Route path="/terms" element={<Suspense fallback={<LoadingFallback />}><TermsPage /></Suspense>} />
+
       {/* Admin Routes (lazily loaded, protected by auth + payment guard) */}
       <Route
         path="/admin"
@@ -307,8 +312,6 @@ const AppContent = () => {
         <Route path="/widgets" element={<UserWidgetsPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/family-controls" element={<FamilyControlsPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
-        <Route path="/terms" element={<TermsPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/help" element={<HelpPage />} />
         <Route path="/support" element={<SupportPage />} />

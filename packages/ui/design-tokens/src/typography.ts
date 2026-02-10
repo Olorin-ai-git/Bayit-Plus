@@ -15,8 +15,10 @@ export interface FontSizeScale {
   xs: number;
   sm: number;
   base: number;
+  md: number;
   lg: number;
   xl: number;
+  xxl: number;
   '2xl': number;
   '3xl': number;
   '4xl': number;
@@ -68,8 +70,10 @@ export const fontSize: FontSizeScale = {
   xs: 12,
   sm: 14,
   base: 16,
+  md: 16,
   lg: 18,
   xl: 20,
+  xxl: 24,
   '2xl': 24,
   '3xl': 30,
   '4xl': 36,
@@ -82,8 +86,10 @@ export const fontSizeTV: FontSizeScale = {
   xs: 14,
   sm: 16,
   base: 18,
+  md: 18,
   lg: 20,
   xl: 24,
+  xxl: 28,
   '2xl': 28,
   '3xl': 36,
   '4xl': 44,

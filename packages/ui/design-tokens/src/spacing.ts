@@ -39,6 +39,7 @@ export interface SpacingScale {
   md: number;
   lg: number;
   xl: number;
+  xxl: number;
   '2xl': number;
 }
 
@@ -104,6 +105,7 @@ export const spacing: SpacingScale = {
   md: 16,  // spacing[4]
   lg: 24,  // spacing[6]
   xl: 32,  // spacing[8]
+  xxl: 48, // spacing[12] alias
   '2xl': 48, // spacing[12]
 };
 

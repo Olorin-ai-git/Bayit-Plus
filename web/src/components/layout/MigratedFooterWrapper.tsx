@@ -21,8 +21,8 @@ import { ErrorBoundary } from 'react-error-boundary';
 import logger from '@/utils/logger';
 
 // Lazy load components for code splitting
-const LegacyFooter = lazy(() => import('./Footer.legacy'));
-const MigratedFooter = lazy(() => import('./Footer/Footer'));
+const LegacyFooter = lazy(() => import('./Footer'));
+const MigratedFooter = lazy(() => import('./Footer'));
 
 /**
  * Error Fallback Component

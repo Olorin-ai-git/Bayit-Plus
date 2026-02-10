@@ -21,7 +21,9 @@ const TOUCH_TARGET_SIZE = Platform.select({
 
 interface ContentTypePillsProps {
   /** Currently selected content type */
-  selected: ContentType;
+  selected?: ContentType;
+  /** Alias for selected (used by some callers) */
+  value?: ContentType;
   /** Callback when content type changes */
   onChange: (type: ContentType) => void;
 }
