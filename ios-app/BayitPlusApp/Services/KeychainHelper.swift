@@ -7,6 +7,7 @@ enum KeychainHelper {
     private static let service = "tv.bayit.plus.biometric"
     private static let emailKey = "biometric.email"
     private static let passwordKey = "biometric.password"
+    private static let refreshTokenKey = "biometric.refreshToken"
 
     // MARK: - Store
 
@@ -20,6 +21,11 @@ enum KeychainHelper {
         store(value: password, forKey: passwordKey)
     }
 
+    /// Store refresh token in Keychain for biometric session restore
+    static func storeBiometricRefreshToken(_ token: String) {
+        store(value: token, forKey: refreshTokenKey)
+    }
+
     // MARK: - Retrieve
 
     /// Retrieve stored email from Keychain
@@ -30,6 +36,16 @@ enum KeychainHelper {
     /// Retrieve stored password from Keychain
     static func retrievePassword() -> String? {
         return retrieve(forKey: passwordKey)
+    }
+
+    /// Retrieve stored refresh token from Keychain for biometric session restore
+    static func retrieveBiometricRefreshToken() -> String? {
+        return retrieve(forKey: refreshTokenKey)
+    }
+
+    /// Whether any biometric credentials are stored (email or refresh token)
+    static var hasBiometricCredentials: Bool {
+        retrieveEmail() != nil || retrieveBiometricRefreshToken() != nil
     }
 
     // MARK: - Delete

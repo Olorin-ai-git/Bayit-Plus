@@ -31,6 +31,12 @@ public final class AuthManager {
     /// Computed authentication status -- true when both user and token exist.
     public var isAuthenticated: Bool { user != nil && token != nil }
 
+    /// Returns the current backend refresh token from Keychain, if available.
+    /// Used by biometric sign-in to persist a refresh token for session restore.
+    public var currentRefreshToken: String? {
+        try? keychainService.load(for: refreshTokenKeychainKey)
+    }
+
     // MARK: - Dependencies
 
     let configuration: AuthConfiguration

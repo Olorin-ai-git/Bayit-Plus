@@ -137,8 +137,9 @@ struct LoginView: View {
 
     private var socialButtons: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
-            // Face ID / Touch ID button (if available)
-            if biometricService.isBiometricAvailable() {
+            // Face ID / Touch ID button (if available and credentials stored)
+            if biometricService.isBiometricAvailable()
+                && KeychainHelper.hasBiometricCredentials {
                 AuthComponents.SocialButton(
                     title: biometricButtonTitle,
                     iconName: biometricIconName,
@@ -209,11 +210,13 @@ struct LoginView: View {
 
     private func handleGoogleSignIn() async throws {
         try await authManager.signInWithGoogle()
+        persistRefreshTokenForBiometric()
         onLoginSuccess()
     }
 
     private func handleAppleSignIn() async throws {
         try await authManager.signInWithApple()
+        persistRefreshTokenForBiometric()
         onLoginSuccess()
     }
 
@@ -221,43 +224,55 @@ struct LoginView: View {
         guard !email.isEmpty, !password.isEmpty else { return }
         try await authManager.signInWithEmail(email: email, password: password)
 
-        // Store credentials in Keychain for future biometric sign-in (if device supports it)
         if biometricService.isBiometricAvailable() {
             KeychainHelper.storeEmail(email)
             KeychainHelper.storePassword(password)
         }
 
+        persistRefreshTokenForBiometric()
         onLoginSuccess()
     }
 
     private func handleBiometricSignIn() async {
         do {
-            // First authenticate with Face ID / Touch ID
             let authenticated = try await biometricService.authenticate(
                 reason: "Sign in to Bayit+"
             )
-
             guard authenticated else { return }
 
-            // Retrieve stored credentials from iOS Keychain
-            guard let storedEmail = KeychainHelper.retrieveEmail(),
-                  let storedPassword = KeychainHelper.retrievePassword() else {
-                // No stored credentials - user needs to sign in normally first
+            // Strategy 1: Stored email/password (from prior email sign-in)
+            if let storedEmail = KeychainHelper.retrieveEmail(),
+               let storedPassword = KeychainHelper.retrievePassword() {
+                try await authManager.signInWithEmail(
+                    email: storedEmail,
+                    password: storedPassword
+                )
+                persistRefreshTokenForBiometric()
+                onLoginSuccess()
                 return
             }
 
-            // Sign in using stored credentials
-            try await authManager.signInWithEmail(
-                email: storedEmail,
-                password: storedPassword
-            )
-            onLoginSuccess()
-
-        } catch {
-            // Biometric auth failed or was cancelled - do nothing (user can try other methods)
-            if (error as NSError).code != LAError.userCancel.rawValue {
-                // Only show error if it wasn't a user cancellation
+            // Strategy 2: Stored refresh token (from prior Google/Apple sign-in)
+            if let refreshToken = KeychainHelper.retrieveBiometricRefreshToken() {
+                try await authManager.restoreWithRefreshToken(refreshToken)
+                persistRefreshTokenForBiometric()
+                onLoginSuccess()
+                return
             }
+        } catch {
+            guard (error as NSError).code != LAError.userCancel.rawValue else {
+                return
+            }
+            // authManager.error is set by the sign-in methods;
+            // the error banner in the card header displays it automatically.
         }
+    }
+
+    /// Persists the current refresh token for future biometric sign-in.
+    /// Stored separately so it survives AuthManager.signOut().
+    private func persistRefreshTokenForBiometric() {
+        guard biometricService.isBiometricAvailable(),
+              let refreshToken = authManager.currentRefreshToken else { return }
+        KeychainHelper.storeBiometricRefreshToken(refreshToken)
     }
 }

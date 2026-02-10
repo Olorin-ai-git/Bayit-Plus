@@ -233,6 +233,69 @@ extension AuthManager {
         }
     }
 
+    /// Restores a session using an externally-provided refresh token.
+    ///
+    /// Used by biometric sign-in (Face ID / Touch ID) to restore the session
+    /// without requiring email/password. The refresh token is stored separately
+    /// from AuthManager's Keychain entries and survives sign-out.
+    public func restoreWithRefreshToken(_ refreshToken: String) async throws {
+        isLoading = true
+        error = nil
+
+        do {
+            try Task.checkCancellation()
+
+            let response = try await BackendTokenExchangeClient.refreshBackendToken(
+                refreshToken: refreshToken,
+                logger: logger
+            )
+
+            try keychainService.save(
+                token: response.accessToken, for: backendTokenKeychainKey
+            )
+            if let newRefresh = response.refreshToken {
+                try keychainService.save(
+                    token: newRefresh, for: refreshTokenKeychainKey
+                )
+            }
+
+            try Task.checkCancellation()
+
+            let userProfile = try await fetchUserProfile(token: response.accessToken)
+
+            if let userData = try? JSONEncoder().encode(userProfile) {
+                try? keychainService.save(
+                    token: String(data: userData, encoding: .utf8) ?? "",
+                    for: userKeychainKey
+                )
+            }
+
+            user = userProfile
+            token = response.accessToken
+            stampSessionTimestamp()
+            isLoading = false
+
+            logger.info(
+                "Biometric session restore succeeded",
+                metadata: ["user_id": userProfile.id]
+            )
+        } catch is CancellationError {
+            isLoading = false
+            throw AuthError.cancelled
+        } catch let authError as AuthError {
+            isLoading = false
+            error = authError
+            throw authError
+        } catch {
+            let wrapped = AuthError.tokenRefreshFailed(
+                underlying: error.localizedDescription
+            )
+            isLoading = false
+            self.error = wrapped
+            throw wrapped
+        }
+    }
+
     /// Signs in with a passkey using WebAuthn/FIDO2.
     ///
     /// Available on iOS 16+ and tvOS 16+. Uses platform authenticator (Face ID, Touch ID, or iCloud Keychain).
