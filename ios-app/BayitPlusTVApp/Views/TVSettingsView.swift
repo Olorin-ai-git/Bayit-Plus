@@ -171,6 +171,14 @@ struct TVSettingsView: View {
             ) {
                 TVDevicePairingView()
             }
+
+            settingsNavRow(
+                icon: "figure.2.and.child.holdinghands",
+                title: localization.t("settings.familyControls"),
+                detail: nil
+            ) {
+                TVFamilyControlsView()
+            }
         } header: {
             sectionHeader(localization.t("settings.security"))
         }

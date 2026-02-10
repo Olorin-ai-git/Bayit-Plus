@@ -37,6 +37,7 @@ final class TVRepositoryProvider {
     let news: any NewsRepository
     let stats: any StatsRepository
     let security: any SecurityRepository
+    let familyControls: any FamilyControlsRepository
     let chat: any ChatRepository
     let chess: any ChessRepository
     let directMessages: any DirectMessageRepository
@@ -77,6 +78,7 @@ final class TVRepositoryProvider {
         self.news = APINewsRepository(client: client)
         self.stats = APIStatsRepository(client: client)
         self.security = APISecurityRepository(client: client)
+        self.familyControls = APIFamilyControlsRepository(client: client)
         self.chat = APIChatRepository(client: client)
         self.chess = APIChessRepository(client: client, webSocketManager: webSocketManager)
         self.directMessages = APIDirectMessageRepository(client: client, webSocketManager: webSocketManager)
