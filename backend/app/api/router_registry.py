@@ -56,7 +56,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 history, household, jerusalem, judaism, librarian, live,
                                 live_dubbing, live_quota, location, location_consent, media_proxy, news, nlp,
                                 notifications,
-                                onboarding, party, password_reset,
+                                onboarding, party, password_reset, payments,
                                 playback_session, podcasts, profile_controls, profile_stats,
                                 profiles, profiles_me, profiles_preferences,
                                 radio, recording_queries, recording_schedule_queries, recording_schedules, recordings,
@@ -138,6 +138,16 @@ def register_all_routers(app: FastAPI) -> None:
         tags=["mfa"],
     )
     logger.debug("Registered auth routes")
+
+    # ============================================
+    # Payment Routes
+    # ============================================
+    app.include_router(
+        payments.router,
+        prefix=f"{prefix}/payments",
+        tags=["payments"],
+    )
+    logger.debug("Registered payment routes")
 
     # ============================================
     # Content Routes
