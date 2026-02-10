@@ -253,7 +253,7 @@ struct TVZmanimView: View {
         }
     }
 
-    // MARK: - Content
+    // MARK: - Content Shelf
 
     private func contentSection(_ vm: ShabbatViewModel) -> some View {
         GlassContentShelf(

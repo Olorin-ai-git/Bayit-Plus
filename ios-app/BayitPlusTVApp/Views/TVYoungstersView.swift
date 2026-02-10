@@ -152,7 +152,7 @@ struct TVYoungstersView: View {
                 thumbnailURL: item.thumbnail,
                 title: item.title ?? localization.t("youngsters.title"),
                 subtitle: item.duration,
-                badge: "Trending",
+                badge: localization.t("youngsters.categories.trending"),
                 aspectRatio: 16 / 9,
                 onSelect: {
                     coordinator.presentPlayer(

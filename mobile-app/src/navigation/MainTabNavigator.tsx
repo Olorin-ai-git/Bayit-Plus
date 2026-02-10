@@ -16,7 +16,7 @@ import { LiveTVScreenMobile } from '../screens/SimpleLiveTVScreenMobile';
 import { VODScreenMobile } from '../screens/SimpleVODScreenMobile';
 import { RadioScreenMobile } from '../screens/SimpleRadioScreenMobile';
 import { PodcastsScreenMobile } from '../screens/SimplePodcastsScreenMobile';
-import { ProfileScreenMobile } from '../screens/SimpleProfileScreenMobile';
+import { ProfileScreen } from '../screens/ProfileScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -55,7 +55,7 @@ export const MainTabNavigator: React.FC = () => {
       />
       <Tab.Screen
         name="Profile"
-        component={ProfileScreenMobile}
+        component={ProfileScreen}
         options={{ tabBarLabel: 'Profile' }}
       />
     </Tab.Navigator>
