@@ -1,6 +1,7 @@
-"""Audible library management routes.
+"""Audible library management routes (admin-only).
 
 Handles library synchronization and retrieval of user's audiobooks.
+All endpoints restricted to admin users.
 """
 
 from datetime import datetime, timezone
@@ -9,13 +10,11 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
+from app.core.security import get_current_admin_user
 from app.models.user import User
 from app.models.user_audible_account import UserAudibleAccount
 from app.services.audible_service import audible_service, AudibleAPIError
-from app.api.dependencies.premium_features import (
-    require_premium_or_family,
-    require_audible_configured,
-)
+from app.api.dependencies.premium_features import require_audible_configured
 from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -40,7 +39,7 @@ router = APIRouter(prefix="/user/audible", tags=["audible_library"])
 
 @router.post("/library/sync")
 async def sync_audible_library(
-    current_user: User = Depends(require_premium_or_family),
+    current_user: User = Depends(get_current_admin_user),
     _: bool = Depends(require_audible_configured),
 ):
     """Sync user's Audible library into Bayit+."""
@@ -113,7 +112,7 @@ async def sync_audible_library(
 async def get_audible_library(
     skip: int = 0,
     limit: int = 20,
-    current_user: User = Depends(require_premium_or_family),
+    current_user: User = Depends(get_current_admin_user),
 ):
     """Get user's Audible library (synced books)."""
     user_id = current_user.id

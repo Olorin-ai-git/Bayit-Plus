@@ -37,19 +37,19 @@ async def require_verified_user(
 
 async def can_watch_vod(current_user: User = Depends(require_verified_user)) -> User:
     """
-    Require Basic plan or higher, or admin role.
+    Require Premium or Family plan, or admin role.
 
     Feature gate for VOD content access.
     """
     if current_user.is_admin_role():
         return current_user
 
-    if not current_user.subscription_tier:
+    if not current_user.can_access_premium_features():
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail={
-                "error": "subscription_required",
-                "message": "Please subscribe to watch VOD content",
+                "error": "premium_required",
+                "message": "Upgrade to Premium or Family to watch VOD content",
             },
         )
 

@@ -156,7 +156,7 @@ class Content(Document):
     is_published: bool = True
     is_featured: bool = False
     featured_order: Dict[str, int] = Field(default_factory=dict)  # {section_id: order}
-    requires_subscription: str = "basic"  # basic, premium, family, none
+    requires_subscription: str = "premium"  # basic, premium, family, none
     # Content access visibility mode:
     # - "public": Visible to all users (default)
     # - "private": Hidden from discovery, direct link only

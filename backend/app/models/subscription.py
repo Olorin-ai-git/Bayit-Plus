@@ -25,7 +25,6 @@ SUBSCRIPTION_PLANS = {
         price=9.99,
         price_yearly=99.90,
         features=[
-            "כל תוכן ה-VOD",
             "רדיו ופודקאסטים",
             "צפייה על מכשיר אחד",
             "איכות SD",

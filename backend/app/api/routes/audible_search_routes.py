@@ -1,6 +1,7 @@
-"""Audible catalog search routes.
+"""Audible catalog search routes (admin-only).
 
 Handles catalog search and audiobook details retrieval.
+All endpoints restricted to admin users.
 """
 
 from typing import List, Optional
@@ -8,12 +9,10 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
+from app.core.security import get_current_admin_user
 from app.models.user import User
 from app.services.audible_service import audible_service, AudibleAPIError
-from app.api.dependencies.premium_features import (
-    require_premium_or_family,
-    require_audible_configured,
-)
+from app.api.dependencies.premium_features import require_audible_configured
 from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -40,7 +39,7 @@ router = APIRouter(prefix="/user/audible", tags=["audible_search"])
 async def search_audible_catalog(
     q: str,
     limit: int = 20,
-    current_user: User = Depends(require_premium_or_family),
+    current_user: User = Depends(get_current_admin_user),
     _: bool = Depends(require_audible_configured),
 ):
     """Search Audible catalog for audiobooks."""
@@ -73,7 +72,7 @@ async def search_audible_catalog(
 @router.get("/{asin}/details", response_model=AudibleAudiobookResponse)
 async def get_audible_audiobook_details(
     asin: str,
-    current_user: User = Depends(require_premium_or_family),
+    current_user: User = Depends(get_current_admin_user),
 ):
     """Get detailed information about a specific Audible audiobook."""
     try:
@@ -105,7 +104,7 @@ async def get_audible_audiobook_details(
 async def get_audible_play_url(
     asin: str,
     platform: str = "web",
-    current_user: User = Depends(require_premium_or_family),
+    current_user: User = Depends(get_current_admin_user),
 ):
     """Get deep link URL to open audiobook in Audible app."""
     try:

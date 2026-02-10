@@ -1,16 +1,13 @@
 """
-Audiobooks Routes - User-facing audiobook discovery and admin playback endpoints.
+Audiobooks Routes - Admin-only audiobook discovery and playback endpoints.
 
-Non-admin users can view audiobook metadata, but streaming is admin-only.
+All audiobook access is restricted to admin users.
 """
-
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
 from app.core.security import (
     get_current_admin_user,
-    get_optional_user,
     verify_content_access,
 )
 from app.models.admin import AuditAction
@@ -36,9 +33,9 @@ router = APIRouter()
 async def get_audiobooks(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, le=500),
-    current_user: Optional[User] = Depends(get_optional_user),
+    current_user: User = Depends(get_current_admin_user),
 ):
-    """Get featured and trending audiobooks with pagination.
+    """Get featured and trending audiobooks with pagination (admin-only).
 
     Only returns parent audiobooks (those without series_id) to avoid
     showing individual chapters as separate cards. Filters out audiobooks
@@ -53,9 +50,6 @@ async def get_audiobooks(
             {"series_id": {"$exists": False}},
         ],
     })
-
-    if not current_user or not current_user.is_admin_user():
-        query = query.find({"visibility_mode": {"$in": ["public", "passkey_protected"]}})
 
     total = await query.count()
     skip = (page - 1) * page_size
@@ -75,9 +69,9 @@ async def get_audiobooks(
 @router.get("/{audiobook_id}", response_model=AudiobookResponse)
 async def get_audiobook(
     audiobook_id: str,
-    current_user: Optional[User] = Depends(get_optional_user),
+    current_user: User = Depends(get_current_admin_user),
 ):
-    """Get single audiobook metadata."""
+    """Get single audiobook metadata (admin-only)."""
     audiobook = await Content.get(audiobook_id)
     if not audiobook or audiobook.content_format != "audiobook":
         raise HTTPException(
@@ -92,9 +86,9 @@ async def get_audiobook(
 @router.get("/{audiobook_id}/chapters", response_model=AudiobookWithChaptersResponse)
 async def get_audiobook_with_chapters(
     audiobook_id: str,
-    current_user: Optional[User] = Depends(get_optional_user),
+    current_user: User = Depends(get_current_admin_user),
 ):
-    """Get audiobook with its chapters for the player page.
+    """Get audiobook with its chapters for the player page (admin-only).
 
     Returns parent audiobook metadata along with a list of chapters
     (parts) sorted by episode/chapter number.
@@ -114,11 +108,6 @@ async def get_audiobook_with_chapters(
         "series_id": str(audiobook.id),
         "is_published": True,
     })
-
-    if not current_user or not current_user.is_admin_user():
-        chapters_query = chapters_query.find({
-            "visibility_mode": {"$in": ["public", "passkey_protected"]}
-        })
 
     # Sort by episode (chapter number)
     chapters = await chapters_query.sort([("episode", 1)]).to_list()

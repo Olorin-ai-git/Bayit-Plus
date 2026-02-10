@@ -273,7 +273,13 @@ async def get_featured(
         return podcasts
 
     async def get_audiobooks():
-        """Get featured audiobooks from Content collection, with fallback to recently published."""
+        """Get featured audiobooks from Content collection, with fallback to recently published.
+
+        Audiobooks are admin-only; returns empty list for non-admin users.
+        """
+        if not current_user or not current_user.is_admin_user():
+            return []
+
         collection = Content.get_settings().pymongo_collection
 
         # Try featured audiobooks first - use beta_only_filter (no content type restriction)
