@@ -59,6 +59,30 @@ struct BayitPlusTVApp: App {
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
                 .task {
+                    #if DEBUG
+                    if ProcessInfo.processInfo.arguments.contains("-skipAuth") {
+                        let devUser = BayitUser(
+                            id: "dev-user",
+                            email: "dev@bayit.tv",
+                            displayName: "Dev User",
+                            photoURL: nil,
+                            role: .admin,
+                            isActive: true,
+                            subscription: nil,
+                            isBetaUser: true,
+                            isVerified: true,
+                            createdAt: nil,
+                            lastLogin: nil
+                        )
+                        try? authManager.signInFromDevicePairing(
+                            accessToken: "dev-token",
+                            refreshToken: nil,
+                            user: devUser
+                        )
+                        coordinator.showingAuth = false
+                        return
+                    }
+                    #endif
                     coordinator.showingAuth = !authManager.isAuthenticated
                 }
         }

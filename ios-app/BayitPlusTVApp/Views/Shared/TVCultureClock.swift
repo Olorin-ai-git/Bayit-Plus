@@ -16,17 +16,21 @@ struct TVCultureClock: View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
             HStack(spacing: TVDesignTokens.Spacing.sm) {
                 Text(flagEmoji)
-                    .font(.system(size: TVDesignTokens.FontSize.lg))
+                    .font(.system(size: TVDesignTokens.FontSize.xl))
 
                 Text(locationLabel)
-                    .font(.system(size: TVDesignTokens.FontSize.sm))
+                    .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundColor(DesignTokens.Text.secondary)
             }
 
             Text(timeString)
-                .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold, design: .rounded))
+                .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold, design: .rounded))
                 .foregroundColor(DesignTokens.Text.primary)
                 .monospacedDigit()
+
+            Text(dateString)
+                .font(.system(size: TVDesignTokens.FontSize.sm))
+                .foregroundColor(DesignTokens.Text.muted)
 
             if isWeekend {
                 Text(isIsraeli ? "Shabbat" : "Weekend")
@@ -39,13 +43,20 @@ struct TVCultureClock: View {
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.lg)
-        .padding(.vertical, TVDesignTokens.Spacing.md)
+        .padding(.vertical, TVDesignTokens.Spacing.lg)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(DesignTokens.Glass.bg)
+        .background(
+            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
+                .fill(Color.white.opacity(0.06))
+                .background(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
+                        .fill(.ultraThinMaterial.opacity(0.3))
+                )
+        )
         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card))
         .overlay(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
-                .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                .stroke(Color.white.opacity(0.08), lineWidth: 1)
         )
         .onAppear { startTimer() }
         .onDisappear { stopTimer() }
@@ -55,6 +66,13 @@ struct TVCultureClock: View {
         let formatter = DateFormatter()
         formatter.timeZone = timezone
         formatter.dateFormat = "h:mm a"
+        return formatter.string(from: currentTime)
+    }
+
+    private var dateString: String {
+        let formatter = DateFormatter()
+        formatter.timeZone = timezone
+        formatter.dateFormat = "EEEE, MMM d"
         return formatter.string(from: currentTime)
     }
 

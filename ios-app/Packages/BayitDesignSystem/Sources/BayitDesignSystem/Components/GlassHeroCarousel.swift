@@ -2,7 +2,7 @@
 import SwiftUI
 
 /// Full-width hero banner carousel for tvOS home screen.
-/// Auto-advances through items and supports Siri Remote swipe navigation.
+/// Uses manual offset-based paging for full-bleed rendering without TabView safe area insets.
 public struct GlassHeroCarousel<Item: Identifiable, ItemView: View>: View {
     let items: [Item]
     let autoAdvanceInterval: TimeInterval
@@ -23,22 +23,41 @@ public struct GlassHeroCarousel<Item: Identifiable, ItemView: View>: View {
 
     public var body: some View {
         VStack(spacing: TVDesignTokens.Spacing.md) {
-            TabView(selection: $currentIndex) {
-                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                    itemBuilder(item)
-                        .tag(index)
+            GeometryReader { geo in
+                let width = geo.size.width
+                HStack(spacing: 0) {
+                    ForEach(Array(items.enumerated()), id: \.element.id) { _, item in
+                        itemBuilder(item)
+                            .frame(width: width, height: geo.size.height)
+                    }
                 }
+                .offset(x: -CGFloat(currentIndex) * width)
+                .animation(.easeInOut(duration: 0.5), value: currentIndex)
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
             .frame(height: TVDesignTokens.MinSize.heroHeight)
+            .clipped()
 
             pageIndicator
         }
+        .focusable(true)
+        .onMoveCommand { direction in
+            switch direction {
+            case .left:
+                if currentIndex > 0 {
+                    currentIndex -= 1
+                    restartAutoAdvance()
+                }
+            case .right:
+                if currentIndex < items.count - 1 {
+                    currentIndex += 1
+                    restartAutoAdvance()
+                }
+            default:
+                break
+            }
+        }
         .onAppear { startAutoAdvance() }
         .onDisappear { stopAutoAdvance() }
-        .onChange(of: currentIndex) { _, _ in
-            restartAutoAdvance()
-        }
     }
 
     private var pageIndicator: some View {

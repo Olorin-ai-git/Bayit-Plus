@@ -35,18 +35,16 @@ struct TVCityContentRow: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Background image with content overlay
+        ZStack(alignment: .topLeading) {
+            // Background: image + gradient (clipped to rounded rect)
             GeometryReader { geo in
-                ZStack(alignment: .topLeading) {
-                    // Panoramic background
+                ZStack {
                     Image(backgroundImageName)
                         .resizable()
                         .scaledToFill()
                         .frame(width: geo.size.width, height: geo.size.height)
                         .clipped()
 
-                    // Gradient overlay
                     LinearGradient(
                         stops: [
                             .init(color: .black.opacity(0.55), location: 0),
@@ -57,53 +55,50 @@ struct TVCityContentRow: View {
                         startPoint: .top,
                         endPoint: .bottom
                     )
-
-                    // Content overlaid on the background
-                    VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-                        // City title
-                        Text(title)
-                            .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
-                            .foregroundColor(.white)
-                            .shadow(color: .black.opacity(0.6), radius: 4, x: 0, y: 2)
-                            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
-                            .padding(.top, TVDesignTokens.Spacing.lg)
-
-                        // Subtitle
-                        if !subtitle.isEmpty {
-                            Text(subtitle)
-                                .font(.system(size: TVDesignTokens.FontSize.md))
-                                .foregroundColor(.white.opacity(0.85))
-                                .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 1)
-                                .padding(.horizontal, TVDesignTokens.Spacing.xxl)
-                        }
-
-                        Spacer(minLength: TVDesignTokens.Spacing.md)
-
-                        // Content cards carousel
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            LazyHStack(spacing: TVDesignTokens.Spacing.focusGap) {
-                                ForEach(items) { item in
-                                    cityGlassCard(for: item)
-                                        .tvFocusStyle()
-                                }
-                            }
-                            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
-                        }
-
-                        // Sources footer
-                        sourcesFooter
-                            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
-                            .padding(.bottom, TVDesignTokens.Spacing.lg)
-                    }
                 }
             }
-            .frame(height: 500)
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
             .overlay(
                 RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
                     .stroke(Color.white.opacity(0.1), lineWidth: 2)
             )
+
+            // Content overlaid without clipping for focus effects
+            VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
+                Text(title)
+                    .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+                    .foregroundColor(.white)
+                    .shadow(color: .black.opacity(0.6), radius: 4, x: 0, y: 2)
+                    .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+                    .padding(.top, TVDesignTokens.Spacing.lg)
+
+                if !subtitle.isEmpty {
+                    Text(subtitle)
+                        .font(.system(size: TVDesignTokens.FontSize.md))
+                        .foregroundColor(.white.opacity(0.85))
+                        .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 1)
+                        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+                }
+
+                Spacer(minLength: TVDesignTokens.Spacing.md)
+
+                ScrollView(.horizontal, showsIndicators: false) {
+                    LazyHStack(spacing: TVDesignTokens.Spacing.focusGap) {
+                        ForEach(items) { item in
+                            cityGlassCard(for: item)
+                                .tvFocusStyle()
+                        }
+                    }
+                    .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+                    .padding(.vertical, TVDesignTokens.Spacing.md)
+                }
+
+                sourcesFooter
+                    .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+                    .padding(.bottom, TVDesignTokens.Spacing.lg)
+            }
         }
+        .frame(height: 500)
         .padding(.horizontal, TVDesignTokens.Spacing.xl)
     }
 
@@ -140,7 +135,7 @@ struct TVCityContentRow: View {
             }
         }
         .padding(TVDesignTokens.Spacing.lg)
-        .frame(width: 340, height: 280)
+        .frame(width: 340, height: 360)
         .background(Color.white.opacity(0.08))
         .background(.ultraThinMaterial.opacity(0.5))
         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md))

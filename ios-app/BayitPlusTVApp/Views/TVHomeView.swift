@@ -62,6 +62,7 @@ struct TVHomeView: View {
                 GlassHeroCarousel(items: vm.spotlight) { item in
                     heroItem(item)
                 }
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }
 
             // Continue Watching
@@ -125,7 +126,8 @@ struct TVHomeView: View {
                     GlassFocusPoster(
                         thumbnailURL: item.thumbnail,
                         title: item.title ?? "Untitled",
-                        badge: item.isSeries == true ? "Series" : nil
+                        badge: item.isSeries == true ? "Series" : nil,
+                        aspectRatio: posterAspectRatio(for: category.name)
                     )
                 }
             }
@@ -135,70 +137,77 @@ struct TVHomeView: View {
     // MARK: - Hero Item
 
     private func heroItem(_ item: SpotlightItem) -> some View {
-        GeometryReader { geo in
-            ZStack(alignment: .bottomLeading) {
-                // Background image - fill and clip
-                if let urlStr = item.backdrop ?? item.thumbnail,
-                   let url = URL(string: urlStr) {
-                    AsyncImage(url: url) { phase in
-                        if case .success(let img) = phase {
-                            img.resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: geo.size.width, height: geo.size.height)
-                                .clipped()
-                        } else {
-                            DesignTokens.Glass.purpleLight
+        ZStack(alignment: .bottomLeading) {
+            // Background image - fills from top, clips overflow at bottom
+            Color.clear
+                .overlay(alignment: .top) {
+                    if let urlStr = item.backdrop ?? item.thumbnail,
+                       let url = URL(string: urlStr) {
+                        AsyncImage(url: url) { phase in
+                            if case .success(let img) = phase {
+                                img.resizable()
+                                    .aspectRatio(contentMode: .fill)
+                            } else {
+                                DesignTokens.Glass.purpleLight
+                            }
                         }
+                    } else {
+                        DesignTokens.Glass.purpleLight
                     }
-                } else {
-                    DesignTokens.Glass.purpleLight
+                }
+                .clipped()
+
+            // Full-width gradient overlay from bottom
+            LinearGradient(
+                stops: [
+                    .init(color: .clear, location: 0.0),
+                    .init(color: DesignTokens.Background.primary.opacity(0.3), location: 0.35),
+                    .init(color: DesignTokens.Background.primary.opacity(0.8), location: 0.7),
+                    .init(color: DesignTokens.Background.primary, location: 1.0)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            // Text content at bottom-left
+            VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
+                Text(item.title ?? "")
+                    .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+                    .foregroundStyle(.white)
+                    .shadow(color: .black.opacity(0.6), radius: 4, x: 0, y: 2)
+                    .lineLimit(2)
+
+                HStack(spacing: TVDesignTokens.Spacing.md) {
+                    if let year = item.year {
+                        metadataText(String(year))
+                    }
+                    if let duration = item.duration {
+                        metadataText(duration)
+                    }
+                    if let rating = item.rating {
+                        ratingBadge(rating.value)
+                    }
                 }
 
-                // Full-width gradient overlay from bottom
-                LinearGradient(
-                    stops: [
-                        .init(color: .clear, location: 0.0),
-                        .init(color: DesignTokens.Background.primary.opacity(0.3), location: 0.35),
-                        .init(color: DesignTokens.Background.primary.opacity(0.8), location: 0.7),
-                        .init(color: DesignTokens.Background.primary, location: 1.0)
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-
-                // Text content at bottom-left
-                VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-                    Text(item.title ?? "")
-                        .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
-                        .foregroundStyle(.white)
-                        .shadow(color: .black.opacity(0.6), radius: 4, x: 0, y: 2)
+                if let desc = item.description {
+                    Text(desc)
+                        .font(.system(size: TVDesignTokens.FontSize.sm))
+                        .foregroundStyle(DesignTokens.Text.secondary)
                         .lineLimit(2)
-
-                    HStack(spacing: TVDesignTokens.Spacing.md) {
-                        if let year = item.year {
-                            metadataText(String(year))
-                        }
-                        if let duration = item.duration {
-                            metadataText(duration)
-                        }
-                        if let rating = item.rating {
-                            ratingBadge(rating.value)
-                        }
-                    }
-
-                    if let desc = item.description {
-                        Text(desc)
-                            .font(.system(size: TVDesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.secondary)
-                            .lineLimit(2)
-                            .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 1)
-                    }
+                        .shadow(color: .black.opacity(0.5), radius: 3, x: 0, y: 1)
                 }
-                .padding(.horizontal, TVDesignTokens.Spacing.xxl)
-                .padding(.bottom, TVDesignTokens.Spacing.xl)
             }
+            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+            .padding(.bottom, TVDesignTokens.Spacing.xl)
         }
-        .frame(height: TVDesignTokens.MinSize.heroHeight)
+    }
+
+    private func posterAspectRatio(for categoryName: String) -> CGFloat {
+        let name = categoryName.lowercased()
+        if name.contains("podcast") || name.contains("audiobook") {
+            return 1.0
+        }
+        return 2.0 / 3.0
     }
 
     private func metadataText(_ text: String) -> some View {
@@ -219,15 +228,50 @@ struct TVHomeView: View {
     }
 
     private func tvLiveChannelsShelf(_ channels: [LiveChannelItem]) -> some View {
-        GlassContentShelf(title: "Live TV", items: channels) { channel in
-            GlassFocusPoster(
-                thumbnailURL: channel.logo ?? channel.thumbnail,
-                title: channel.name ?? "Channel",
-                subtitle: channel.currentShow,
-                badge: "LIVE",
-                aspectRatio: 16 / 9
-            )
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+            HStack(spacing: TVDesignTokens.Spacing.md) {
+                Image(systemName: "tv.fill")
+                    .font(.system(size: TVDesignTokens.FontSize.xl))
+                    .foregroundColor(DesignTokens.Primary.p500)
+
+                Text("Live TV")
+                    .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+                    .foregroundColor(DesignTokens.Text.primary)
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: TVDesignTokens.Spacing.focusGap) {
+                    ForEach(channels) { channel in
+                        GlassFocusPoster(
+                            thumbnailURL: channel.logo ?? channel.thumbnail,
+                            title: channel.name ?? "Channel",
+                            subtitle: channel.currentShow,
+                            badge: "LIVE",
+                            aspectRatio: 16 / 9
+                        )
+                        .tvFocusStyle()
+                    }
+                }
+                .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+                .padding(.vertical, TVDesignTokens.Spacing.md)
+            }
         }
+        .padding(.vertical, TVDesignTokens.Spacing.lg)
+        .background(
+            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                .fill(Color.white.opacity(0.04))
+                .background(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                        .fill(.ultraThinMaterial.opacity(0.2))
+                )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
+        .overlay(
+            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+        )
+        .padding(.horizontal, TVDesignTokens.Spacing.xl)
     }
 
     private var loadingState: some View {
