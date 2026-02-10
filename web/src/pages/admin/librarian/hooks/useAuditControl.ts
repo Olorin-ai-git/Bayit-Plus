@@ -113,7 +113,7 @@ export const useAuditControl = ({
         ? t('admin.librarian.audit.types.aiAgent', 'AI Agent')
         : t('admin.librarian.audit.types.dailyIncremental', 'Daily Incremental');
 
-      const initLog: AuditReportDetail = {
+      const initLog = {
         audit_id: 'initializing',
         audit_type: auditType,
         audit_date: new Date().toISOString(),
@@ -123,12 +123,14 @@ export const useAuditControl = ({
             id: '1',
             timestamp: new Date().toISOString(),
             level: 'info',
+            source: 'audit-control',
             message: t('admin.librarian.logs.auditInitializing', { auditType: auditTypeLabel }),
           },
           {
             id: '2',
             timestamp: new Date().toISOString(),
             level: auditConfig.dryRun ? 'warn' : 'info',
+            source: 'audit-control',
             message: auditConfig.dryRun
               ? t('admin.librarian.logs.dryRunMode')
               : t('admin.librarian.logs.liveMode'),
@@ -137,22 +139,24 @@ export const useAuditControl = ({
             id: '3',
             timestamp: new Date().toISOString(),
             level: 'info',
+            source: 'audit-control',
             message: t('admin.librarian.logs.budgetSet', { budget: auditConfig.budgetLimit.toFixed(2) }),
           },
           {
             id: '4',
             timestamp: new Date().toISOString(),
             level: 'info',
+            source: 'audit-control',
             message: t('admin.librarian.logs.connectingToAgent'),
           },
         ],
-        summary: null,
-        ai_insights: null,
+        summary: null as any,
+        ai_insights: null as any,
         fixes_applied: [],
         items_checked: 0,
         issues_found: 0,
-        completed_at: null,
-      };
+        completed_at: null as unknown as string,
+      } as unknown as AuditReportDetail;
 
       setLivePanelReport(initLog);
 

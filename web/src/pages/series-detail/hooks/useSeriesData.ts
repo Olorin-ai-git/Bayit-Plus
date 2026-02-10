@@ -37,10 +37,10 @@ export function useSeriesData({ seriesId }: UseSeriesDataProps): UseSeriesDataRe
     setLoading(true);
     try {
       const data = await contentService.getSeriesDetails(seriesId);
-      setSeries(data);
+      setSeries(data as any);
 
-      if (data.seasons && data.seasons.length > 0) {
-        setSelectedSeason(data.seasons[0].season_number);
+      if ((data as any).seasons && (data as any).seasons.length > 0) {
+        setSelectedSeason((data as any).seasons[0].season_number);
       }
     } catch (error) {
       logger.error('Failed to load series details', 'useSeriesData', error);

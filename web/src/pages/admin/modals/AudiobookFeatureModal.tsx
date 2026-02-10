@@ -79,7 +79,7 @@ export default function AudiobookFeatureModal({ audiobook, visible, onClose }: A
               </View>
             )}
 
-            <GlassSelect label={t('admin.audiobooks.feature.section', 'Featured Section')} options={getFeatureSections(t)} value={section} onChange={setSection} containerStyle={styles.input} />
+            <GlassSelect label={t('admin.audiobooks.feature.section', 'Featured Section')} options={getFeatureSections(t as any)} value={section} onChange={setSection} containerStyle={styles.input} />
 
             <GlassInput label={t('admin.audiobooks.feature.order', 'Display Order')} placeholder="1-100" value={order} onChangeText={setOrder} containerStyle={styles.input} keyboardType="number-pad" />
 

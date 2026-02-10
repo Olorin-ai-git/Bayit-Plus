@@ -50,7 +50,7 @@ export const ShabbatModeProvider: React.FC<ShabbatModeProviderProps> = ({ childr
 
   const fetchShabbatStatus = useCallback(async () => {
     try {
-      const data = await zmanService.getTime() as {
+      const data = await zmanService.getTime() as unknown as {
         shabbat: {
           is_shabbat: boolean;
           is_erev_shabbat: boolean;

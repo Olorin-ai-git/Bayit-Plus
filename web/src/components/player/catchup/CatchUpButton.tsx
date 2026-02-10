@@ -58,7 +58,6 @@ const styles = StyleSheet.create({
     backgroundColor: glass.bgMedium, borderRadius: borderRadius.full,
     paddingHorizontal: spacing.md, paddingVertical: spacing.sm,
     borderWidth: 1, borderColor: glass.borderLight,
-    // @ts-expect-error backdropFilter is web-only
     backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
   },
   buttonHovered: { backgroundColor: glass.bgStrong, borderColor: glass.border },

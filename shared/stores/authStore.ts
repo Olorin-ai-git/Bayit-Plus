@@ -27,6 +27,10 @@ interface User {
   is_verified?: boolean;
   email_verified?: boolean;
   phone_verified?: boolean;
+  pending_plan_id?: string;
+  payment_pending?: boolean;
+  token?: string;
+  [key: string]: any;
 }
 
 interface RegisterData {

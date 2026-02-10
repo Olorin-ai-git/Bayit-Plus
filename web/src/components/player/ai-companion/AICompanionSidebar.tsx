@@ -69,7 +69,7 @@ export default function AICompanionSidebar({
   }, [handleKeyDown]);
 
   const translateStyle = isRTL
-    ? { transform: [{ translateX: Animated.multiply(slideAnim, -1) }] }
+    ? { transform: [{ translateX: Animated.multiply(slideAnim, new Animated.Value(-1)) }] }
     : { transform: [{ translateX: slideAnim }] };
 
   const renderTabContent = () => {
@@ -87,7 +87,7 @@ export default function AICompanionSidebar({
   return (
     <>
       {isVisible && (
-        <Animated.View style={[styles.backdrop, { opacity: Animated.multiply(backdropAnim, 0.4) }]}>
+        <Animated.View style={[styles.backdrop, { opacity: Animated.multiply(backdropAnim, new Animated.Value(0.4)) }]}>
           <Pressable style={styles.backdropPress} onPress={onClose} accessibilityRole="button" accessibilityLabel={t('common.close')} />
         </Animated.View>
       )}

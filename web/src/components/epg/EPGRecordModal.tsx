@@ -58,8 +58,8 @@ const EPGRecordModal: React.FC<EPGRecordModalProps> = ({
 
   useEffect(() => {
     if (visible) {
-      setSelectedLanguage(user?.preferences?.default_subtitle_language || 'en')
-      recordingApi.getQuotaStatus().then(setQuotaInfo).catch(
+      setSelectedLanguage(user?.preferences?.default_subtitle_language || 'en');
+      (recordingApi as any).getQuotaStatus().then(setQuotaInfo).catch(
         (err: unknown) => logger.error('Failed to fetch quota', 'EPGRecordModal', err)
       )
     }

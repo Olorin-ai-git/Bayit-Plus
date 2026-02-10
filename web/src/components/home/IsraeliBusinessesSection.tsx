@@ -104,7 +104,7 @@ export default function IsraeliBusinessesSection({
         retryCount
       });
 
-      const response: ContentResponse = await contentService.getIsraeliBusinessesInCity(
+      const response: ContentResponse = await (contentService as any).getIsraeliBusinessesInCity(
         location.city,
         location.state
       );

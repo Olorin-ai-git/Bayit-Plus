@@ -43,7 +43,7 @@ export function ChatInputBar({
       <View className="border-t border-white/10 items-center justify-center" style={[IS_TV ? styles.paddingTV : styles.paddingMobile]}>
         <View className="flex-col items-center justify-center gap-4 py-6 px-8">
           <SoundwaveVisualizer
-            audioLevel={audioLevel}
+            audioLevel={audioLevel as any}
             isListening={true}
             isProcessing={isLoading}
             isSendingToServer={isLoading}

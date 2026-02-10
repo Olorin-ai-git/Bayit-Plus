@@ -369,7 +369,7 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
       ]).start();
     }, [isExpanded]);
 
-    if (!isExpanded && animatedHeight._value === 0) {
+    if (!isExpanded && (animatedHeight as any)._value === 0) {
       return null;
     }
 
@@ -441,7 +441,7 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
 
             {/* Data Columns */}
             {columns.map((column) => {
-              const renderFn = level > 0 && column.renderChild ? column.renderChild : column.render;
+              const useChildRender = level > 0 && column.renderChild && parent;
               const columnWidth = getColumnWidth(column);
 
               return (
@@ -453,8 +453,10 @@ export function GlassHierarchicalTable<T extends Record<string, any>>({
                     level > 0 && styles.childCell,
                   ]}
                 >
-                  {renderFn ? (
-                    renderFn(row.data[column.key], row.data, level)
+                  {useChildRender ? (
+                    column.renderChild!(row.data[column.key], row.data, parent!.data, level)
+                  ) : column.render ? (
+                    column.render(row.data[column.key], row.data, level)
                   ) : (
                     <Text
                       style={[

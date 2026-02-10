@@ -308,7 +308,7 @@ class LiveSubtitleService {
       }
 
       // Log audio track details for debugging
-      audioTracks.forEach((track, i) => {
+      audioTracks.forEach((track: any, i: number) => {
         logger.debug(`Track ${i}: ${track.label || 'unnamed'}, enabled=${track.enabled}, muted=${track.muted}`, 'liveSubtitleService')
       })
 

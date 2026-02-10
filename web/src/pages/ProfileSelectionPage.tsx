@@ -144,7 +144,7 @@ function PinModal({ isOpen, onClose, onSubmit, error, isLoading }: {
         keyboardType="numeric"
         maxLength={6}
         value={pin}
-        onChangeText={(text) => setPin(text.replace(/\D/g, ''))}
+        onChangeText={(text: string) => setPin(text.replace(/\D/g, ''))}
         inputStyle={styles.pinInput}
         placeholder={t('placeholder.pin')}
         error={error}

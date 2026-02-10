@@ -234,7 +234,7 @@ describe('ContentTypePills', () => {
       />
     );
 
-    const firstPill = screen.getByText('search.controls.contentTypes.all').closest('button');
+    const firstPill = screen.getByText('search.controls.contentTypes.all').closest('button')!;
     fireEvent.focus(firstPill);
 
     // Check for focus styles (border, scale)

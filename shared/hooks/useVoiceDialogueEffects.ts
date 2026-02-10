@@ -12,7 +12,7 @@ interface UseVoiceDialogueEffectsOptions {
   voiceState: VoiceState;
   lastResponse: string | null;
   hasAppeared: boolean;
-  setCurrentDialogue: (dialogue: { text?: string; gesture?: string } | null) => void;
+  setCurrentDialogue: (dialogue: { text: string; gesture?: string; duration?: number; context?: any } | null) => void;
   setGestureState: (gesture: GestureState) => void;
   onIntroComplete: () => void;
 }

@@ -142,7 +142,7 @@ export const PasskeyManager: React.FC<PasskeyManagerProps> = ({
         )}
         <View className="items-center p-8">
           <View className="mb-4 opacity-50">
-            <NativeIcon name="lock" size="xxl" color="#9ca3af" />
+            <NativeIcon name="lock" size="2xl" color="#9ca3af" />
           </View>
           <Text className="text-base text-white/60 text-center">
             {t('passkey.unsupported')}
@@ -178,7 +178,7 @@ export const PasskeyManager: React.FC<PasskeyManagerProps> = ({
             {passkeys.length === 0 ? (
               <View className="items-center p-8">
                 <View className="mb-4">
-                  <NativeIcon name="key" size="xxl" color="#fbbf24" />
+                  <NativeIcon name="key" size="2xl" color="#fbbf24" />
                 </View>
                 <Text className="text-base text-white/60 text-center">
                   {t('passkey.noPasskeys')}
@@ -200,7 +200,7 @@ export const PasskeyManager: React.FC<PasskeyManagerProps> = ({
                   </View>
                   <GlassButton
                     variant="danger"
-                    size="small"
+                    size="sm"
                     onPress={() => setDeleteConfirmId(passkey.id)}
                   >
                     {t('common.delete')}

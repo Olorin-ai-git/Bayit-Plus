@@ -153,7 +153,7 @@ export function GlassPageHeader({
 
   // Get glass background styling
   const getGlassBackground = () => {
-    const glassLevels = {
+    const glassLevels: Record<string, { backgroundColor: string; borderColor: string }> = {
       light: {
         backgroundColor: 'rgba(10, 10, 10, 0.5)',
         borderColor: 'rgba(126, 34, 206, 0.15)',

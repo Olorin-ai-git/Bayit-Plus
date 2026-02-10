@@ -69,8 +69,8 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false }:
     isConnected: false,
     isConnecting: false,
     targetLanguage: 'en',
-    availableLanguages: [],
-    availableVoices: [],
+    availableLanguages: [] as string[],
+    availableVoices: [] as UseLiveDubbingState['availableVoices'],
     originalVolume: 0,
     dubbedVolume: 1,
     latencyMs: 0,
@@ -83,7 +83,7 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false }:
     bufferHealth: null,
     bufferAheadSeconds: 0,
     playbackStarted: false,
-  })
+  } as UseLiveDubbingState)
 
   const [availability, setAvailability] = useState<DubbingAvailability | null>(null)
   const sessionIdRef = useRef<string | null>(null)
@@ -203,7 +203,7 @@ export function useLiveDubbing({ channelId, videoElement, autoConnect = false }:
       try {
         await liveDubbingService.connect(
           channelId,
-          targetLang,
+          targetLang || state.targetLanguage,
           videoElement,
           handleDubbedAudio,
           handleLatency,

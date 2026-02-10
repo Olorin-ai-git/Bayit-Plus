@@ -26,7 +26,7 @@ export const useMonitoredFolders = () => {
     try {
       setError(null);
       const folderList = await uploadsService.getMonitoredFolders();
-      setFolders(folderList || []);
+      setFolders((folderList || []) as any);
     } catch (err) {
       logger.error('Failed to fetch monitored folders', 'useMonitoredFolders', err);
       setError(err instanceof Error ? err.message : 'Failed to load folders');

@@ -46,7 +46,7 @@ export const WizardStateRenderer: React.FC<WizardStateRendererProps> = ({
   if (isAppearing && !hasAppeared) {
     return (
       <WizardSprite
-        spritesheet="puffs_in"
+        spritesheet={"puffs_in" as any}
         size={wizardSize}
         playing={true}
         loop={false}
@@ -59,7 +59,7 @@ export const WizardStateRenderer: React.FC<WizardStateRendererProps> = ({
   if (isDisappearing) {
     return (
       <WizardSprite
-        spritesheet="puffs_out"
+        spritesheet={"puffs_out" as any}
         size={wizardSize}
         playing={true}
         loop={false}
@@ -134,7 +134,7 @@ export const WizardStateRenderer: React.FC<WizardStateRendererProps> = ({
   if (spritesheetName) {
     return (
       <WizardSprite
-        spritesheet={spritesheetName}
+        spritesheet={spritesheetName as any}
         size={wizardSize}
         playing={isAnimatingGesture}
         onComplete={onGestureComplete}

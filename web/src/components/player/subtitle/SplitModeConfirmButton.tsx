@@ -67,7 +67,6 @@ export default function SplitModeConfirmButton({
         onPress={onConfirm}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        // @ts-expect-error - onKeyDown is web-specific
         onKeyDown={handleKeyDown}
         disabled={disabled}
         accessible={true}

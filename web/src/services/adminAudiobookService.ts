@@ -53,7 +53,7 @@ export const adminAudiobookService = {
       if (filters.sort_order) queryParams.append('sort_order', filters.sort_order)
     }
 
-    return await api.get<AudiobookAdminListResponse>(`/admin/audiobooks?${queryParams.toString()}`)
+    return await api.get(`/admin/audiobooks?${queryParams.toString()}`) as AudiobookAdminListResponse
   },
 
   /**
@@ -61,7 +61,7 @@ export const adminAudiobookService = {
    * Returns HTTP 201 Created on success
    */
   createAudiobook: async (data: AudiobookCreateRequest): Promise<AudiobookAdmin> => {
-    return await api.post<AudiobookAdmin>('/admin/audiobooks', data)
+    return await api.post('/admin/audiobooks', data) as AudiobookAdmin
   },
 
   /**
@@ -69,7 +69,7 @@ export const adminAudiobookService = {
    * All fields are optional (PATCH semantics)
    */
   updateAudiobook: async (id: string, data: AudiobookUpdateRequest): Promise<AudiobookAdmin> => {
-    return await api.patch<AudiobookAdmin>(`/admin/audiobooks/${id}`, data)
+    return await api.patch(`/admin/audiobooks/${id}`, data) as AudiobookAdmin
   },
 
   /**
@@ -77,7 +77,7 @@ export const adminAudiobookService = {
    * Returns HTTP 200 OK on success
    */
   deleteAudiobook: async (id: string): Promise<{ message: string }> => {
-    return await api.delete<{ message: string }>(`/admin/audiobooks/${id}`)
+    return await api.delete(`/admin/audiobooks/${id}`) as { message: string }
   },
 
   /**
@@ -88,7 +88,7 @@ export const adminAudiobookService = {
     id: string,
     options?: { visibility_mode?: 'public' | 'private' | 'restricted' }
   ): Promise<AudiobookAdmin> => {
-    return await api.post<AudiobookAdmin>(`/admin/audiobooks/${id}/publish`, options || {})
+    return await api.post(`/admin/audiobooks/${id}/publish`, options || {}) as AudiobookAdmin
   },
 
   /**
@@ -96,7 +96,7 @@ export const adminAudiobookService = {
    * Sets is_published=false, keeps metadata intact
    */
   unpublishAudiobook: async (id: string): Promise<AudiobookAdmin> => {
-    return await api.post<AudiobookAdmin>(`/admin/audiobooks/${id}/unpublish`, {})
+    return await api.post(`/admin/audiobooks/${id}/unpublish`, {}) as AudiobookAdmin
   },
 
   /**
@@ -108,10 +108,10 @@ export const adminAudiobookService = {
     sectionId: string,
     order: number
   ): Promise<AudiobookFeatureResponse> => {
-    return await api.post<AudiobookFeatureResponse>(`/admin/audiobooks/${id}/feature`, {
+    return await api.post(`/admin/audiobooks/${id}/feature`, {
       section_id: sectionId,
       order,
-    })
+    }) as AudiobookFeatureResponse
   },
 
   /**
@@ -120,7 +120,7 @@ export const adminAudiobookService = {
    */
   unfeatureAudiobook: async (id: string, sectionId?: string): Promise<AudiobookFeatureResponse> => {
     const body = sectionId ? { section_id: sectionId } : {}
-    return await api.post<AudiobookFeatureResponse>(`/admin/audiobooks/${id}/unfeature`, body)
+    return await api.post(`/admin/audiobooks/${id}/unfeature`, body) as AudiobookFeatureResponse
   },
 
   /**
@@ -135,7 +135,7 @@ export const adminAudiobookService = {
     const formData = new FormData()
     formData.append('file', file)
 
-    return await api.post<UploadResponse>('/admin/audiobooks/upload', formData, {
+    return await api.post('/admin/audiobooks/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
@@ -148,7 +148,7 @@ export const adminAudiobookService = {
           })
         }
       },
-    })
+    }) as UploadResponse
   },
 
   /**
@@ -156,27 +156,27 @@ export const adminAudiobookService = {
    * Supports: publish, unpublish, delete, feature, unfeature
    */
   bulkOperation: async (request: AudiobookBulkOperationRequest): Promise<AudiobookBulkOperationResponse> => {
-    return await api.post<AudiobookBulkOperationResponse>('/admin/audiobooks/bulk', request)
+    return await api.post('/admin/audiobooks/bulk', request) as AudiobookBulkOperationResponse
   },
 
   /**
    * Bulk publish audiobooks
    */
   bulkPublish: async (audiobookIds: string[]): Promise<AudiobookBulkOperationResponse> => {
-    return await api.post<AudiobookBulkOperationResponse>('/admin/audiobooks/bulk', {
+    return await api.post('/admin/audiobooks/bulk', {
       audiobook_ids: audiobookIds,
       operation: 'publish',
-    })
+    }) as AudiobookBulkOperationResponse
   },
 
   /**
    * Bulk delete audiobooks
    */
   bulkDelete: async (audiobookIds: string[]): Promise<AudiobookBulkOperationResponse> => {
-    return await api.post<AudiobookBulkOperationResponse>('/admin/audiobooks/bulk', {
+    return await api.post('/admin/audiobooks/bulk', {
       audiobook_ids: audiobookIds,
       operation: 'delete',
-    })
+    }) as AudiobookBulkOperationResponse
   },
 
   /**
@@ -184,7 +184,7 @@ export const adminAudiobookService = {
    * Useful after metadata updates
    */
   reindexAudiobook: async (id: string): Promise<{ message: string }> => {
-    return await api.post<{ message: string }>(`/admin/audiobooks/${id}/reindex`, {})
+    return await api.post(`/admin/audiobooks/${id}/reindex`, {}) as { message: string }
   },
 }
 

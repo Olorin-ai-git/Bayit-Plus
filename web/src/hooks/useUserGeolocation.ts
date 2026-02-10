@@ -10,6 +10,7 @@ type LocationSource = 'geolocation' | 'cache' | 'timezone_inferred';
 interface LocationData {
   city: string;
   state: string;
+  country?: string;
   county?: string;
   latitude: number;
   longitude: number;

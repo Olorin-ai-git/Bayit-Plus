@@ -92,7 +92,7 @@ export const GlassLog: React.FC<GlassLogProps> = ({
   );
   const [isExpanded, setIsExpanded] = useState(true);
   const [groupByContent, setGroupByContent] = useState(defaultGroupByContent);
-  const scrollViewRef = useRef<ScrollView>(null);
+  const scrollViewRef = useRef<any>(null);
   const [displayedText, setDisplayedText] = useState<Record<string, string>>({});
   const [logAnimations, setLogAnimations] = useState<Record<string, {
     translateY: Animated.Value;

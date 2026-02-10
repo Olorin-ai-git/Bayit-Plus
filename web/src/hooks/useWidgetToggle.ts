@@ -6,9 +6,11 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { widgetService } from '@/services/api';
+import * as apiModule from '@/services/api';
 import { useAuthStore } from '@/stores/authStore';
 import logger from '@/utils/logger';
+
+const widgetService = (apiModule as any).widgetService;
 
 const log = logger.scope('useWidgetToggle');
 

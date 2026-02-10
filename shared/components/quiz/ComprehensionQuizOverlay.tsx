@@ -109,7 +109,7 @@ export const ComprehensionQuizOverlay: React.FC<ComprehensionQuizOverlayProps> =
           <View style={styles.content}>
             {isLoading && (
               <View style={styles.centerContent}>
-                <GlassLoadingSpinner size="large" />
+                <GlassLoadingSpinner size={48} />
                 <Text style={styles.loadingText}>
                   {t('comprehension.loading')}
                 </Text>
@@ -134,7 +134,7 @@ export const ComprehensionQuizOverlay: React.FC<ComprehensionQuizOverlayProps> =
 
             {!isLoading && !error && questionData && !feedback && (
               <QuizQuestion
-                question={questionData}
+                question={questionData as unknown as import('../../stores/quizStore').QuizQuestion}
                 onAnswer={handleAnswer}
                 ageGroup="elementary"
                 language={language}

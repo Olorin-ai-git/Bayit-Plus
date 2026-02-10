@@ -4,7 +4,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react';
-import { useSupportStore } from '../stores/supportStore';
+import { useSupportStore, VoiceState } from '../stores/supportStore';
 import { voiceSupportService } from '../services/voiceSupportService';
 import { voiceOrchestrator } from '../services/olorinVoiceOrchestrator';
 import { ttsService } from '../services/ttsService';
@@ -17,7 +17,7 @@ const voiceSupportLogger = logger.scope('VoiceSupport');
 
 interface UseVoiceSupportReturn {
   // State
-  voiceState: ReturnType<typeof useSupportStore>['voiceState'];
+  voiceState: VoiceState;
   currentTranscript: string;
   lastResponse: string;
   isVoiceModalOpen: boolean;
@@ -202,15 +202,15 @@ export function useVoiceSupport(): UseVoiceSupportReturn {
         });
 
         // Determine error type for better user messaging
-        const errorType = errorMessage.includes('Authentication') || errorMessage.includes('auth')
-          ? 'authentication'
+        const errorType: 'mic' | 'connection' | 'general' = errorMessage.includes('Authentication') || errorMessage.includes('auth')
+          ? 'general'
           : errorMessage.includes('connect') || errorMessage.includes('fetch')
           ? 'connection'
-          : 'tts';
+          : 'general';
 
         // Set error in store for UI display
         useSupportStore.getState().setVoiceError({
-          type: errorType as 'mic' | 'connection' | 'tts',
+          type: errorType,
           message: errorMessage.includes('backend')
             ? 'Voice unavailable. Please ensure you are logged in.'
             : errorMessage

@@ -55,23 +55,6 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
   // Check if content data was passed via navigation state (for scraped articles/events)
   const stateContentData = (location.state as LocationState)?.contentData;
 
-  // Debug: Log state data
-  React.useEffect(() => {
-    if (stateContentData) {
-      logger.info('Navigation state content data received', 'WatchPage', {
-        hasVideoUrl: Boolean(stateContentData.video_url),
-        hasUrl: Boolean(stateContentData.url),
-        contentId: stateContentData.id,
-        contentType: stateContentData.type
-      });
-    } else {
-      logger.debug('No navigation state content data', 'WatchPage', {
-        hasState: Boolean(location.state),
-        contentId
-      });
-    }
-  }, [stateContentData, contentId]);
-
   // Deep link timestamp from ?t= parameter (in seconds)
   const initialSeekTime = React.useMemo(() => {
     const timeParam = searchParams.get('t');
@@ -101,6 +84,23 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
     params.showId ||
     '';
   const effectiveType = (currentPlaylistItem?.content_type as typeof type) || type;
+
+  // Debug: Log state data
+  React.useEffect(() => {
+    if (stateContentData) {
+      logger.info('Navigation state content data received', 'WatchPage', {
+        hasVideoUrl: Boolean(stateContentData.video_url),
+        hasUrl: Boolean(stateContentData.url),
+        contentId: stateContentData.id,
+        contentType: stateContentData.type
+      });
+    } else {
+      logger.debug('No navigation state content data', 'WatchPage', {
+        hasState: Boolean(location.state),
+        contentId
+      });
+    }
+  }, [stateContentData, contentId]);
 
   const contentLoaderResult = useContentLoader(contentId, effectiveType, stateContentData);
   const {
@@ -261,7 +261,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
         level: 'success',
         title: t('watch.podcastRefreshed', 'Podcast Refreshed'),
         message: data.episodes_added > 0
-          ? t('watch.episodesAdded', { count: data.episodes_added }, `${data.episodes_added} new episode(s) added`)
+          ? (t as any)('watch.episodesAdded', { count: data.episodes_added }, `${data.episodes_added} new episode(s) added`)
           : t('watch.noNewEpisodes', 'No new episodes available'),
       });
 
@@ -387,7 +387,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
             onProgress={handleProgress}
             isLive={false}
             availableSubtitleLanguages={availableSubtitleLanguages}
-            chapters={chapters}
+            chapters={chapters as any}
             chaptersLoading={chaptersLoading}
             initialSeekTime={initialSeekTime}
             savedPosition={savedPosition}
@@ -396,7 +396,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
             onShowUpgrade={() => navigate('/subscribe')}
             isTranscoded={false}
             contentDuration={content.duration_hint}
-            directUrl={content.video_url}
+            directUrl={content.video_url ?? undefined}
           />
         ) : isWebContent && content.url ? (
           <View style={styles.iframeContainer}>
@@ -484,7 +484,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
           </View>
         ) : isAudio ? (
           <AudioPlayer
-            src={streamUrl}
+            src={streamUrl || ''}
             title={title}
             artist={content.artist || content.author}
             cover={content.cover || content.logo || content.thumbnail}
@@ -495,7 +495,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
           />
         ) : (
           <VideoPlayer
-            src={streamUrl}
+            src={streamUrl || ''}
             poster={content.backdrop || content.thumbnail}
             title={title}
             contentId={contentId}
@@ -503,7 +503,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
             onProgress={handleProgress}
             isLive={effectiveType === 'live'}
             availableSubtitleLanguages={availableSubtitleLanguages}
-            chapters={chapters}
+            chapters={chapters as any}
             chaptersLoading={chaptersLoading}
             initialSeekTime={initialSeekTime}
             savedPosition={savedPosition}
@@ -512,7 +512,7 @@ export function WatchPage({ type = 'vod' }: WatchPageProps) {
             onShowUpgrade={() => navigate('/subscribe')}
             isTranscoded={isTranscoded}
             contentDuration={content.duration_hint}
-            directUrl={directUrl}
+            directUrl={directUrl ?? undefined}
           />
         )}
       </View>

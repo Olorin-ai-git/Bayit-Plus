@@ -71,13 +71,13 @@ export default function VideoPlayerWatchParty({
         <WatchPartyPanel
           isOpen={showPartyPanel && !!party}
           onClose={() => setShowPartyPanel(false)}
-          party={party}
-          participants={participants}
-          messages={messages}
+          party={party as any}
+          participants={participants as any}
+          messages={messages as any}
           isHost={isHost}
           isSynced={isSynced}
           hostPaused={hostPaused}
-          currentUserId={currentUserId}
+          currentUserId={currentUserId || ''}
           onLeave={handleLeaveParty}
           onEnd={handleEndParty}
           onSendMessage={sendMessage}
@@ -86,13 +86,13 @@ export default function VideoPlayerWatchParty({
         <WatchPartyOverlay
           isOpen={showPartyPanel && !!party}
           onClose={() => setShowPartyPanel(false)}
-          party={party}
-          participants={participants}
-          messages={messages}
+          party={party as any}
+          participants={participants as any}
+          messages={messages as any}
           isHost={isHost}
           isSynced={isSynced}
           hostPaused={hostPaused}
-          currentUserId={currentUserId}
+          currentUserId={currentUserId || ''}
           onLeave={handleLeaveParty}
           onEnd={handleEndParty}
           onSendMessage={sendMessage}
@@ -103,14 +103,14 @@ export default function VideoPlayerWatchParty({
       <WatchPartyCreateModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        onCreate={(options) => handleCreateParty(options, undefined)}
+        onCreate={async (options) => { handleCreateParty(options, undefined) }}
         contentTitle={title}
       />
 
       <WatchPartyJoinModal
         isOpen={showJoinModal}
         onClose={() => setShowJoinModal(false)}
-        onJoin={(code) => handleJoinParty(code, undefined)}
+        onJoin={async (code) => { handleJoinParty(code, undefined) }}
       />
 
       {/* Party Active Indicator Border */}

@@ -86,14 +86,20 @@ const baseResult = {
   description: 'A great movie about testing',
   backdrop: 'https://cdn.bayit.tv/backdrop.jpg',
   thumbnail: 'https://cdn.bayit.tv/thumb.jpg',
+  category_id: 'cat-1',
   category_name: 'Movies',
   year: 2025,
   rating: '8.5',
   duration: '2h 15m',
   genres: ['Action', 'Drama', 'Thriller'],
-  requires_subscription: false,
+  is_series: false,
+  requires_subscription: 'free',
   is_kids_content: false,
   is_featured: false,
+  available_subtitle_languages: [] as string[],
+  has_subtitles: false,
+  view_count: 0,
+  avg_rating: 0,
 };
 
 describe('SearchResultCard', () => {
@@ -177,7 +183,7 @@ describe('SearchResultCard', () => {
 
   describe('badges', () => {
     it('shows subscription badge when required', () => {
-      const result = { ...baseResult, requires_subscription: true };
+      const result = { ...baseResult, requires_subscription: 'premium' };
       render(<SearchResultCard result={result} position={0} />);
       expect(screen.getByTestId('badge-subscription')).toBeInTheDocument();
     });

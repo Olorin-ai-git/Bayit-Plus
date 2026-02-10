@@ -6,6 +6,7 @@
 // ============ SUBTITLE CUE ============
 
 export interface SubtitleCue {
+  id?: string
   index: number
   start_time: number  // seconds
   end_time: number    // seconds

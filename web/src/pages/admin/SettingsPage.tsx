@@ -37,7 +37,7 @@ export default function SettingsPage() {
     setLoading(true);
     try {
       const settingsData = await settingsService.getSettings();
-      setSettings(settingsData);
+      setSettings(settingsData as any);
     } catch (error: any) {
       logger.error('Failed to load settings', 'SettingsPage', error);
       setErrorMessage(error?.message || error?.detail || 'Failed to load settings. Please check your permissions and try again.');

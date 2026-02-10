@@ -83,7 +83,7 @@ export default function UserDetailPage() {
       ]);
       setUser(userData);
       setActivity(activityData || []);
-      setBillingHistory(billingData || []);
+      setBillingHistory((billingData || []) as any);
     } catch (err: any) {
       setError(err?.message || 'Failed to load user data');
       logger.error('Failed to load user data', 'UserDetailPage', err);
@@ -169,7 +169,7 @@ export default function UserDetailPage() {
     if (!user) return;
     try {
       logger.info('Updating user with data:', 'UserDetailPage', editForm);
-      await usersService.updateUser(user.id, editForm);
+      await usersService.updateUser(user.id, editForm as any);
       setSuccessMessage(t('admin.users.userUpdated', { defaultValue: 'User updated successfully' }));
       setSuccessModalOpen(true);
       setEditModalOpen(false);
@@ -351,7 +351,7 @@ export default function UserDetailPage() {
             <GlassView style={[styles.infoRow, { flexDirection }]}>
               <Text style={styles.infoLabel}>{t('admin.users.columns.subscription')}:</Text>
               <Text style={styles.infoValue}>
-                {(user as any)?.subscription_tier || user.subscription?.tier || t('admin.users.columns.noSubscription')}
+                {(user as any)?.subscription_tier || (user.subscription as any)?.tier || t('admin.users.columns.noSubscription')}
                 {((user as any)?.subscription_status || user.subscription?.status) && ` (${(user as any)?.subscription_status || user.subscription?.status})`}
               </Text>
             </GlassView>
@@ -495,7 +495,7 @@ export default function UserDetailPage() {
           </GlassView>
           <GlassToggle
             value={editForm.is_active}
-            onValueChange={(value) => setEditForm({ ...editForm, is_active: value })}
+            onValueChange={(value: boolean) => setEditForm({ ...editForm, is_active: value })}
             label={t('admin.users.active', { defaultValue: 'Active' })}
             description={t('admin.users.activeDesc', { defaultValue: 'User can log in and access the platform' })}
             isRTL={isRTL}

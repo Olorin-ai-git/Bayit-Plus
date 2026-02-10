@@ -29,7 +29,7 @@ export function EnhancedPlanCard({
 
   const planKey = `plans.${planId}`;
   const name = sanitizeI18n(t(`${planKey}.name`));
-  const features = t(`${planKey}.features`, [], { returnObjects: true });
+  const features = t(`${planKey}.features`, { returnObjects: true, defaultValue: [] } as any);
 
   const monthlyPrice = parseFloat(price.slice(1));
   const yearlyPrice = (monthlyPrice * 10).toFixed(2);

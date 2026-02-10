@@ -40,7 +40,7 @@ export default function AdminAudiobooksPage() {
   const loadAudiobooks = useCallback(async () => {
     setIsLoading(true); setError(null)
     try {
-      const response = await adminAudiobookService.getAudiobooksList({ page: pagination.page, page_size: pagination.pageSize })
+      const response = await adminAudiobookService.getAudiobooksList({ page: pagination.page, page_size: pagination.pageSize } as any)
       setAudiobooks(response.items || []); setPagination(p => ({ ...p, total: response.total || 0 }))
     } catch (err) {
       const msg = err instanceof Error ? err.message : t('admin.audiobooks.loadError', 'Failed to load audiobooks')

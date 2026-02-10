@@ -86,7 +86,7 @@ export const GlassPlaylist: React.FC<GlassPlaylistProps> = ({
     });
     setVisible(false);
     // Find the full PlaylistItem to pass to the callback
-    const fullItem = items.find((i) => i.content_id === item.content_id);
+    const fullItem = items.find((i: any) => i.content_id === item.content_id);
     if (fullItem && onPlayItem) {
       onPlayItem(fullItem);
     }
@@ -186,9 +186,9 @@ export const GlassPlaylist: React.FC<GlassPlaylistProps> = ({
             >
               <GlassReorderableList
                 items={items}
-                keyExtractor={(item) => item.content_id}
+                keyExtractor={(item: PlaylistItem) => item.content_id}
                 onReorder={handleReorder}
-                renderItem={(item, _index, isDragging) => (
+                renderItem={(item: PlaylistItem, _index: number, isDragging: boolean) => (
                   <PlaylistItemRow
                     item={item}
                     onRemove={handleRemoveItem}

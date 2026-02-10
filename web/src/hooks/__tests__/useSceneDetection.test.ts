@@ -27,16 +27,16 @@ describe('useSceneDetection', () => {
   });
 
   const subtitlesWithGap: SubtitleCue[] = [
-    { id: '1', start_time: 0, end_time: 10, text: 'Line 1' },
-    { id: '2', start_time: 10.5, end_time: 20, text: 'Line 2' },
+    { id: '1', index: 0, start_time: 0, end_time: 10, text: 'Line 1' },
+    { id: '2', index: 1, start_time: 10.5, end_time: 20, text: 'Line 2' },
     // 5-second gap here (20 → 25)
-    { id: '3', start_time: 25, end_time: 35, text: 'Line 3' },
+    { id: '3', index: 2, start_time: 25, end_time: 35, text: 'Line 3' },
   ];
 
   const continuousSubtitles: SubtitleCue[] = [
-    { id: '1', start_time: 0, end_time: 2.5, text: 'Line 1' },
-    { id: '2', start_time: 2.8, end_time: 5, text: 'Line 2' },
-    { id: '3', start_time: 5.3, end_time: 8, text: 'Line 3' },
+    { id: '1', index: 0, start_time: 0, end_time: 2.5, text: 'Line 1' },
+    { id: '2', index: 1, start_time: 2.8, end_time: 5, text: 'Line 2' },
+    { id: '3', index: 2, start_time: 5.3, end_time: 8, text: 'Line 3' },
   ];
 
   test('detects scene end at 5-second subtitle gap', async () => {
@@ -126,9 +126,9 @@ describe('useSceneDetection', () => {
 
   test('respects minSceneDurationSeconds filter', async () => {
     const shortScene: SubtitleCue[] = [
-      { id: '1', start_time: 0, end_time: 10, text: 'Short' },
+      { id: '1', index: 0, start_time: 0, end_time: 10, text: 'Short' },
       // 5-second gap, but scene is only 10s (< 30s min)
-      { id: '2', start_time: 15, end_time: 20, text: 'Next' },
+      { id: '2', index: 1, start_time: 15, end_time: 20, text: 'Next' },
     ];
 
     const { result } = renderHook(() =>

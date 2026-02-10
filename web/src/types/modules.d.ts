@@ -272,6 +272,7 @@ declare module '@growthbook/growthbook-react' {
   export function useFeature<T = unknown>(key: string): FeatureResult<T>;
   export function useFeatureValue<T = unknown>(key: string, defaultValue: T): T;
   export function useFeatureIsOn(key: string): boolean;
+  export function useExperiment<T = unknown>(experiment: Record<string, unknown>): { value: T; variationId: number; inExperiment: boolean };
 
   export const IfFeatureEnabled: ComponentType<{
     feature: string;
@@ -382,6 +383,16 @@ declare module '@/types/watchparty' {
     timestamp: number;
     [key: string]: unknown;
   }
+
+  export interface WatchPartyParticipant {
+    id: string;
+    userId: string;
+    name: string;
+    avatar?: string;
+    isHost?: boolean;
+    joinedAt?: string;
+    [key: string]: unknown;
+  }
 }
 
 declare module '@/types/media' {
@@ -401,16 +412,14 @@ declare module '@/types/media' {
     volume: number;
     [key: string]: unknown;
   }
-}
 
-// ─── Axios response interceptor override ──────────────────
-// The api client interceptor returns response.data directly,
-// so AxiosResponse<T> should be typed as T at the call site.
-
-import 'axios';
-declare module 'axios' {
-  export interface AxiosResponse<T = any, D = any> {
-    [key: string]: any;
+  export interface Chapter {
+    id: string;
+    title: string;
+    startTime: number;
+    endTime?: number;
+    thumbnail?: string;
+    [key: string]: unknown;
   }
 }
 
@@ -451,11 +460,14 @@ declare module '@olorin/shared-icons' {
 
 declare module '@olorin/shared-icons/native' {
   import type { ComponentType } from 'react';
+  export type IconName = string;
+  export type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | number;
   export const NativeIcon: ComponentType<{
     name: string;
-    size?: number;
+    size?: IconSize;
     color?: string;
     style?: any;
+    context?: string;
     [key: string]: any;
   }>;
   export default NativeIcon;
@@ -463,14 +475,27 @@ declare module '@olorin/shared-icons/native' {
 
 declare module '@olorin/shared-icons/web' {
   import type { ComponentType } from 'react';
-  export const WebIcon: ComponentType<{
+  export type IconName = string;
+  export type IconSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | number;
+  export const Icon: ComponentType<{
     name: string;
-    size?: number;
+    size?: IconSize;
     color?: string;
     style?: any;
     className?: string;
+    context?: string;
     [key: string]: any;
   }>;
+  export const WebIcon: ComponentType<{
+    name: string;
+    size?: IconSize;
+    color?: string;
+    style?: any;
+    className?: string;
+    context?: string;
+    [key: string]: any;
+  }>;
+  export function renderIcon(name: string, size?: string, context?: string, className?: string, options?: Record<string, any>): any;
   export default WebIcon;
 }
 
@@ -527,6 +552,31 @@ declare module '@bayit/shared/ui' {
   export const GlassToastContainer: ComponentType<any>;
   export const NotificationProvider: ComponentType<any>;
   export const GlassParticleLayer: ComponentType<any>;
+  export const GlassAlertRoot: ComponentType<any>;
+  export const GlassHierarchicalTable: ComponentType<any>;
+  export const GlassPlaylist: ComponentType<any>;
+  export const GlassSlider: ComponentType<any>;
+  export const GridSkeleton: ComponentType<any>;
+  export const HeroCarouselSkeleton: ComponentType<any>;
+  export const RowSkeleton: ComponentType<any>;
+  export const PodcastPlaceholder: ComponentType<any>;
+  export const RadioPlaceholder: ComponentType<any>;
+  export const ThumbnailCell: ComponentType<any>;
+  export const TitleCell: ComponentType<any>;
+  export const TextCell: ComponentType<any>;
+  export const ActionsCell: ComponentType<any>;
+  export function createStarAction(onPress: () => void, filled?: boolean, tooltip?: string): any;
+  export function createViewAction(onPress: () => void, tooltip?: string): any;
+  export function createEditAction(onPress: () => void, tooltip?: string): any;
+  export function createDeleteAction(onPress: () => void, tooltip?: string): any;
+  export function useGlassAlert(): any;
+  export interface HierarchicalTableColumn { key: string; header?: string; label?: string; [key: string]: any }
+  export interface HierarchicalTableRow { id: string; [key: string]: any }
+  export type ModalType = string;
+  export interface ModalButton { text: string; onPress?: () => void; variant?: string; [key: string]: any }
+  export interface TabContent { key: string; content: ReactNode; [key: string]: any }
+  export const GlassContentPlaceholder: ComponentType<any>;
+  export interface GlassModalProps { visible?: boolean; onClose?: () => void; onRequestClose?: () => void; animationType?: string; size?: string; className?: string; testID?: string; children?: ReactNode; [key: string]: any }
 }
 
 // ─── react-error-boundary ──────────────────────────────────
@@ -558,20 +608,28 @@ declare module '@testing-library/react-native' {
   export const screen: any;
 }
 
-// ─── @testing-library/react fireEvent augmentation ──────
-// Web tests use fireEvent.press (React Native pattern) via a compatibility layer.
-// Augment the web fireEvent type to include press and changeText.
+// ─── @/types/quota ─────────────────────────────────────────
 
-import '@testing-library/react';
-declare module '@testing-library/react' {
-  interface FireFunction {
-    press: (element: any, options?: any) => void;
-    changeText: (element: any, text: string) => void;
-  }
-  interface FireObject {
-    press: (element: any, options?: any) => void;
-    changeText: (element: any, text: string) => void;
-  }
+declare module '@olorin/design-tokens' {
+  export const colors: any;
+  export const typography: any;
+  export const spacing: any;
+  export const shadows: any;
+  export const borderRadius: any;
+  export const fontSize: any;
+  export const fontWeight: any;
+  export const lineHeight: any;
+  export const letterSpacing: any;
+  export const breakpoints: any;
+  export const zIndex: any;
+  export const opacity: any;
+  export const animation: any;
+  export const transitions: any;
+  export type ContentType = 'movie' | 'series' | 'episode' | 'live' | 'radio' | 'podcast' | 'audiobook' | string;
+  export const glass: Record<string, any>;
+  export const quizAnswerColors: Record<string, any>;
+  export const shadowRN: Record<string, any>;
+  export const fontSizeTV: Record<string, any>;
 }
 
 declare module '@/types/quota' {
@@ -589,4 +647,225 @@ declare module '@/types/quota' {
     lastUsed?: string;
     [key: string]: unknown;
   }
+
+  export interface UsageStat {
+    feature: string;
+    count: number;
+    limit: number;
+    period: string;
+    [key: string]: unknown;
+  }
+}
+
+// ─── React Native community packages ───────────────────────
+
+declare module '@react-native-community/slider' {
+  import type { ComponentType } from 'react';
+  const Slider: ComponentType<{
+    value?: number;
+    minimumValue?: number;
+    maximumValue?: number;
+    step?: number;
+    onValueChange?: (value: number) => void;
+    onSlidingComplete?: (value: number) => void;
+    minimumTrackTintColor?: string;
+    maximumTrackTintColor?: string;
+    thumbTintColor?: string;
+    disabled?: boolean;
+    style?: any;
+    [key: string]: any;
+  }>;
+  export default Slider;
+}
+
+declare module '@react-native-picker/picker' {
+  import type { ComponentType, ReactNode } from 'react';
+  export const Picker: ComponentType<{
+    selectedValue?: any;
+    onValueChange?: (value: any, index: number) => void;
+    enabled?: boolean;
+    style?: any;
+    children?: ReactNode;
+    [key: string]: any;
+  }> & {
+    Item: ComponentType<{
+      label: string;
+      value: any;
+      color?: string;
+      [key: string]: any;
+    }>;
+  };
+}
+
+declare module 'luxon' {
+  export class DateTime {
+    static now(): DateTime;
+    static local(...args: number[]): DateTime;
+    static fromISO(text: string, opts?: Record<string, any>): DateTime;
+    static fromJSDate(date: Date, options?: Record<string, any>): DateTime;
+    static fromMillis(ms: number, options?: Record<string, any>): DateTime;
+    static fromSeconds(seconds: number, options?: Record<string, any>): DateTime;
+    static fromFormat(text: string, fmt: string, opts?: Record<string, any>): DateTime;
+    static fromObject(obj: Record<string, any>, opts?: Record<string, any>): DateTime;
+    toISO(): string | null;
+    toISODate(): string | null;
+    toISOTime(opts?: Record<string, any>): string | null;
+    toFormat(fmt: string, opts?: Record<string, any>): string;
+    toLocaleString(formatOpts?: Record<string, any>, opts?: Record<string, any>): string;
+    toJSDate(): Date;
+    toMillis(): number;
+    toSeconds(): number;
+    plus(duration: Record<string, number>): DateTime;
+    minus(duration: Record<string, number>): DateTime;
+    startOf(unit: string): DateTime;
+    endOf(unit: string): DateTime;
+    set(values: Record<string, number>): DateTime;
+    diff(other: DateTime, unit?: string | string[], opts?: Record<string, any>): Duration;
+    diffNow(unit?: string | string[], opts?: Record<string, any>): Duration;
+    hasSame(other: DateTime, unit: string): boolean;
+    setZone(zone: string, opts?: Record<string, any>): DateTime;
+    setLocale(locale: string): DateTime;
+    get hour(): number;
+    get minute(): number;
+    get second(): number;
+    get year(): number;
+    get month(): number;
+    get day(): number;
+    get weekday(): number;
+    get isValid(): boolean;
+    get invalidReason(): string | null;
+    get ts(): number;
+    get zone(): any;
+    get zoneName(): string;
+    get offset(): number;
+    valueOf(): number;
+    equals(other: DateTime): boolean;
+    [key: string]: any;
+  }
+  export class Duration {
+    static fromISO(text: string): Duration;
+    static fromMillis(ms: number): Duration;
+    static fromObject(obj: Record<string, number>): Duration;
+    toMillis(): number;
+    toObject(): Record<string, number>;
+    toFormat(fmt: string): string;
+    as(unit: string): number;
+    get(unit: string): number;
+    [key: string]: any;
+  }
+  export class Interval {
+    static fromDateTimes(start: DateTime, end: DateTime): Interval;
+    static fromISO(text: string): Interval;
+    static after(start: DateTime, duration: Record<string, number>): Interval;
+    get start(): DateTime;
+    get end(): DateTime;
+    length(unit?: string): number;
+    contains(dateTime: DateTime): boolean;
+    splitBy(duration: Record<string, number>): Interval[];
+    [key: string]: any;
+  }
+  export class Settings {
+    static defaultZone: string;
+    static defaultLocale: string;
+    static throwOnInvalid: boolean;
+  }
+}
+
+declare module 'expo-haptics' {
+  export enum ImpactFeedbackStyle {
+    Light = 'light',
+    Medium = 'medium',
+    Heavy = 'heavy',
+  }
+  export enum NotificationFeedbackType {
+    Success = 'success',
+    Warning = 'warning',
+    Error = 'error',
+  }
+  export function impactAsync(style?: ImpactFeedbackStyle): Promise<void>;
+  export function notificationAsync(type?: NotificationFeedbackType): Promise<void>;
+  export function selectionAsync(): Promise<void>;
+}
+
+// ─── @sentry/react ──────────────────────────────────────
+declare module '@sentry/react' {
+  export type SeverityLevel = 'fatal' | 'error' | 'warning' | 'log' | 'info' | 'debug';
+
+  export interface ScopeContext {
+    extra?: Record<string, unknown>;
+    tags?: Record<string, string>;
+    level?: SeverityLevel;
+    [key: string]: any;
+  }
+
+  export function init(options: Record<string, any>): void;
+  export function captureException(error: any, context?: Partial<ScopeContext>): string;
+  export function captureMessage(message: string, levelOrContext?: SeverityLevel | Partial<ScopeContext>): string;
+  export function setTag(key: string, value: string): void;
+  export function setUser(user: Record<string, any> | null): void;
+  export function setExtra(key: string, value: any): void;
+  export function withScope(callback: (scope: any) => void): void;
+  export function configureScope(callback: (scope: any) => void): void;
+  export function browserTracingIntegration(options?: Record<string, any>): any;
+  export function replayIntegration(options?: Record<string, any>): any;
+  export function ErrorBoundary(props: any): any;
+
+  const Sentry: {
+    init: typeof init;
+    captureException: typeof captureException;
+    captureMessage: typeof captureMessage;
+    setTag: typeof setTag;
+    setUser: typeof setUser;
+    setExtra: typeof setExtra;
+    withScope: typeof withScope;
+    configureScope: typeof configureScope;
+    browserTracingIntegration: typeof browserTracingIntegration;
+    replayIntegration: typeof replayIntegration;
+    ErrorBoundary: typeof ErrorBoundary;
+    SeverityLevel: SeverityLevel;
+    [key: string]: any;
+  };
+  export default Sentry;
+}
+
+// ─── @bayit/shared-types ─────────────────────────────────
+declare module '@bayit/shared-types/voiceModes' {
+  export const VoiceMode: {
+    VOICE_ONLY: string;
+    HYBRID: string;
+    CLASSIC: string;
+    [key: string]: string;
+  };
+  export type VoiceMode = string;
+  export const VOICE_MODES: Record<string, VoiceMode>;
+  export interface ModeConfig {
+    [key: string]: any;
+  }
+}
+
+// ─── @bayit/shared-utils/logger ──────────────────────────
+declare module '@bayit/shared-utils/logger' {
+  export interface SentryIntegration {
+    captureException: (error: any, options?: { extra?: Record<string, unknown> }) => void;
+    captureMessage: (message: string, options?: { level?: string; extra?: Record<string, unknown> }) => void;
+    setTag: (key: string, value: string) => void;
+  }
+  export function initLoggerSentry(integration: SentryIntegration): void;
+
+  interface Logger {
+    debug(message: string, ...args: any[]): void;
+    info(message: string, ...args: any[]): void;
+    warn(message: string, ...args: any[]): void;
+    error(message: string, ...args: any[]): void;
+  }
+  const logger: Logger;
+  export default logger;
+}
+
+// ─── @bayit/shared/components/ErrorBoundary ──────────────
+declare module '@bayit/shared/components/ErrorBoundary' {
+  export interface ErrorBoundarySentry {
+    captureException: (error: any, options?: { extra?: Record<string, unknown> }) => void;
+  }
+  export function initErrorBoundarySentry(integration: ErrorBoundarySentry): void;
 }

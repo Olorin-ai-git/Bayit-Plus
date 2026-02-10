@@ -191,6 +191,7 @@ export default function DubbingControls({
 
       {/* Onboarding Modal */}
       <DubbingOnboarding
+        visible={showOnboarding}
         isPremium={isPremium}
         onClose={(tryNow) => {
           setShowOnboarding(false)

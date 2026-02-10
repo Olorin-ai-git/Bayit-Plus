@@ -86,7 +86,7 @@ export function GlassSlideContainer({
     }
   }, [isOpen, slideAnim, fadeAnim, duration, direction, width])
 
-  if (!isOpen && fadeAnim._value === 0) {
+  if (!isOpen && (fadeAnim as any)._value === 0) {
     return null
   }
 

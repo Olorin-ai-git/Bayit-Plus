@@ -262,7 +262,7 @@ export default function PlayerProfilePage() {
         <GlassTabs
           tabs={tabs}
           activeTab={activeTab}
-          onChange={(id) => setActiveTab(id as TabId)}
+          onChange={(id: string) => setActiveTab(id as TabId)}
         />
       </View>
 

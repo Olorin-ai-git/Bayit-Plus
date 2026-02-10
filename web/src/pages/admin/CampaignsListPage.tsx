@@ -137,7 +137,7 @@ export default function CampaignsListPage() {
 
   const handlePauseCampaign = async (id: string) => {
     try {
-      await campaignsService.pauseCampaign(id);
+      await campaignsService.updateCampaign(id, { status: 'paused' });
       notifications.showSuccess(t('admin.campaigns.pauseSuccess', 'Campaign paused'));
       loadCampaigns();
     } catch (err: any) {

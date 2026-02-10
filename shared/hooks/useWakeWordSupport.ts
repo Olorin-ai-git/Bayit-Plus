@@ -43,7 +43,7 @@ export function useWakeWordSupport(
 
   // Check if wake word detection is supported
   const isSupported = typeof window !== 'undefined' &&
-    supportConfig.platforms[getCurrentPlatform()]?.wakeWord === true;
+    (supportConfig.platform[getCurrentPlatform()] as any)?.wakeWord === true;
 
   // Initialize wake word detector for Support system (Olorin)
   const initializeDetector = useCallback(async () => {
@@ -241,7 +241,7 @@ export function useWakeWordSupport(
 /**
  * Get current platform identifier
  */
-function getCurrentPlatform(): keyof typeof supportConfig.platforms {
+function getCurrentPlatform(): keyof typeof supportConfig.platform {
   if (typeof window === 'undefined') {
     return 'web'; // SSR default
   }
@@ -253,9 +253,9 @@ function getCurrentPlatform(): keyof typeof supportConfig.platforms {
     navigator.userAgent.includes('Apple TV')
   ) {
     if (navigator.userAgent.includes('Apple TV')) {
-      return 'tvos';
+      return 'tvOS';
     }
-    return 'androidtv';
+    return 'androidTV';
   }
 
   // Check for mobile platforms

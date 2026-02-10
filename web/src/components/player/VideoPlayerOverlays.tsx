@@ -162,19 +162,19 @@ export default function VideoPlayerOverlays({
       {!isLive && contentId && !isCasting && (
         <SubtitleOverlay
           currentTime={currentTime}
-          subtitles={currentCues}
+          subtitles={currentCues as any}
           language={currentSubtitleLang || 'he'}
           enabled={subtitlesEnabled}
           settings={subtitleSettings}
           splitMode={splitMode}
           splitLanguages={splitLanguages}
-          splitCues={splitCues}
+          splitCues={splitCues as any}
         />
       )}
 
       {/* Live Subtitle Overlay (Premium) - Hidden in widget mode and when casting */}
       {isLive && !isWidget && !isCasting && !liveSplitMode && (
-        <LiveSubtitleOverlay cues={visibleLiveSubtitles} />
+        <LiveSubtitleOverlay cues={visibleLiveSubtitles as any} />
       )}
 
       {/* Live Split Subtitle Overlay (Premium) - Hidden in widget mode and when casting */}
@@ -192,9 +192,9 @@ export default function VideoPlayerOverlays({
       {isLive && !isWidget && (
         <DubbingOverlay
           isActive={dubbingIsConnected}
-          originalText={dubbingLastTranscript}
-          translatedText={dubbingLastTranslation}
-          latencyMs={dubbingLatencyMs}
+          originalText={dubbingLastTranscript || ''}
+          translatedText={dubbingLastTranslation || ''}
+          latencyMs={dubbingLatencyMs || 0}
         />
       )}
 
@@ -215,7 +215,7 @@ export default function VideoPlayerOverlays({
       {isLive && !isWidget && usageStats && (liveSubtitleService.isServiceConnected() || liveSplitSubtitleService.isPartiallyConnected()) && (
         <LiveFeatureUsageIndicator
           featureType="subtitle"
-          usageStats={usageStats}
+          usageStats={usageStats as any}
           isVisible={true}
         />
       )}
@@ -224,7 +224,7 @@ export default function VideoPlayerOverlays({
       {isLive && !isWidget && usageStats && dubbingIsConnected && (
         <LiveFeatureUsageIndicator
           featureType="dubbing"
-          usageStats={usageStats}
+          usageStats={usageStats as any}
           isVisible={true}
         />
       )}

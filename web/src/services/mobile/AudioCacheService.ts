@@ -38,11 +38,11 @@ export class AudioCacheService {
       return cached.localPath
     }
 
-    const downloadResumable = FileSystem.createDownloadResumable(
+    const downloadResumable = (FileSystem as any).createDownloadResumable(
       remoteUrl,
       localPath,
       {},
-      (downloadProgress) => {
+      (downloadProgress: any) => {
         const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite
         this.emitProgress(episodeId, language, progress)
       }

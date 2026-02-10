@@ -250,7 +250,7 @@ export function SystemWidgetGallery({ onWidgetAdded }: SystemWidgetGalleryProps)
     try {
       const response = await adminWidgetsService.getAvailableSystemWidgets();
       // Centralized api already returns response.data, so response IS the data object
-      setWidgets(response?.items || []);
+      setWidgets((response?.items || []) as any);
     } catch (err) {
       logger.error('Failed to load available system widgets', 'SystemWidgetGallery', err);
       setError(t('common.error'));

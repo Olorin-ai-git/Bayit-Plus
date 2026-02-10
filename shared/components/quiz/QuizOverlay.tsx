@@ -190,7 +190,7 @@ export const QuizOverlay: React.FC<QuizOverlayProps> = ({
           <View style={styles.content}>
             {isLoading && (
               <View style={styles.centerContent}>
-                <GlassLoadingSpinner size="large" />
+                <GlassLoadingSpinner size={48} />
               </View>
             )}
 
@@ -225,7 +225,7 @@ export const QuizOverlay: React.FC<QuizOverlayProps> = ({
 
             {isSubmitting && (
               <View style={styles.centerContent}>
-                <GlassLoadingSpinner size="large" />
+                <GlassLoadingSpinner size={48} />
                 <Text style={styles.submittingText}>
                   {t('quiz.submitting')}
                 </Text>

@@ -51,7 +51,7 @@ export default function WidgetsPage() {
         page: pagination.page,
         page_size: pagination.pageSize,
       });
-      setItems(response.items || []);
+      setItems((response.items || []) as any);
       setPagination((prev) => ({ ...prev, total: response.total || 0 }));
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Failed to load widgets';

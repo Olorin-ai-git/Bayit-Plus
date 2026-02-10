@@ -38,22 +38,23 @@ export const REMOTION_CONFIG = {
  * Apply configuration to Remotion (call this in your entry point)
  */
 export function configureRemotion() {
+  const config = Config as any;
   // Video codec
-  Config.setCodec(REMOTION_CONFIG.codec);
-  Config.setPixelFormat(REMOTION_CONFIG.pixelFormat);
+  config.setCodec(REMOTION_CONFIG.codec);
+  config.setPixelFormat(REMOTION_CONFIG.pixelFormat);
 
   // Quality
-  Config.setQuality(REMOTION_CONFIG.quality);
+  config.setQuality(REMOTION_CONFIG.quality);
 
   // Performance
   if (REMOTION_CONFIG.concurrency !== null) {
-    Config.setConcurrency(REMOTION_CONFIG.concurrency);
+    config.setConcurrency(REMOTION_CONFIG.concurrency);
   }
 
-  Config.setEnableMultiProcessOnLinux(REMOTION_CONFIG.enableMultiProcessOnLinux);
+  config.setEnableMultiProcessOnLinux(REMOTION_CONFIG.enableMultiProcessOnLinux);
 
   // Output
-  Config.setOverwriteOutput(REMOTION_CONFIG.overwrite);
+  config.setOverwriteOutput(REMOTION_CONFIG.overwrite);
 }
 
 /**

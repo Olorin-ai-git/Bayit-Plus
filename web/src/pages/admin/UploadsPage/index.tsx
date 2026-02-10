@@ -85,7 +85,7 @@ const UploadsPage: React.FC = () => {
               <QueueDashboard
                 queueState={queueState}
                 onRefresh={refreshQueue}
-                onClearQueue={clearQueue}
+                onClearQueue={clearQueue as any}
                 clearingQueue={clearingQueue}
                 loading={loading}
               />

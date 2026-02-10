@@ -145,7 +145,7 @@ export const InteractiveSubtitles: React.FC<InteractiveSubtitlesProps> = ({
     setShowTranslation(true);
 
     try {
-      const result = await subtitlesService.translateWord(word.word) as TranslationResult;
+      const result = await subtitlesService.translateWord(word.word) as unknown as TranslationResult;
       setTranslation(result);
       onWordTranslate?.(result);
     } catch (err) {

@@ -28,7 +28,7 @@ describe('usePlaybackSession', () => {
     (deviceService.generateDeviceId as jest.Mock).mockResolvedValue('test-device-id');
     (deviceService.getDeviceName as jest.Mock).mockReturnValue('Chrome on macOS');
     (deviceService.getDeviceType as jest.Mock).mockReturnValue('desktop');
-    (deviceService.getBrowserName as jest.Mock).mockReturnValue('Chrome');
+    ((deviceService as any).getBrowserName as jest.Mock).mockReturnValue('Chrome');
     (deviceService.getOSName as jest.Mock).mockReturnValue('macOS');
     (deviceService.getPlatform as jest.Mock).mockReturnValue('Web');
   });

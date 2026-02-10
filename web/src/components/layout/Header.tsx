@@ -132,7 +132,7 @@ export default function Header() {
     onError: handleVoiceError,
     silenceThresholdMs: preferences.silence_threshold_ms || 2500,
     vadSensitivity: preferences.vad_sensitivity || 'low',
-    transcribeAudio: chatService.transcribeAudio,
+    transcribeAudio: chatService.transcribeAudio as any,
   });
 
   // Show soundwave on TV only if mic is available

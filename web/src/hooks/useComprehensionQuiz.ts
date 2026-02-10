@@ -75,7 +75,7 @@ export const useComprehensionQuiz = (
             },
           }
         );
-        setQuestion(response);
+        setQuestion(response as any);
       } catch (err: any) {
         if (err.response?.status === 403) {
           setError('Insufficient credits for comprehension question');
@@ -106,7 +106,7 @@ export const useComprehensionQuiz = (
             time_taken_ms: timeTaken,
           }
         );
-        return response as SubmitResult;
+        return response as unknown as SubmitResult;
       } catch (err: any) {
         logger.error('Failed to submit comprehension answer', 'useComprehensionQuiz', err);
         throw err;

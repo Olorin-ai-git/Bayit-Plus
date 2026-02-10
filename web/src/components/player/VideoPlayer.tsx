@@ -479,7 +479,7 @@ export default function VideoPlayer({
     handleSplitLanguagesChange,
     liveSubtitleLang,
     setLiveSubtitleLang,
-    handleLiveSubtitleCue: handleLiveSubtitleCueWithTrivia,
+    handleLiveSubtitleCue: handleLiveSubtitleCueWithTrivia as any,
     liveSplitMode,
     handleLiveSplitModeToggle,
     liveSplitLanguages,
@@ -535,12 +535,12 @@ export default function VideoPlayer({
         currentTime={state.currentTime}
         subtitlesEnabled={subtitlesEnabled}
         currentSubtitleLang={currentSubtitleLang}
-        currentCues={currentCues}
+        currentCues={currentCues as any}
         subtitleSettings={subtitleSettings}
         splitMode={splitMode}
         splitLanguages={splitLanguages}
-        splitCues={splitCues}
-        visibleLiveSubtitles={visibleLiveSubtitles}
+        splitCues={splitCues as any}
+        visibleLiveSubtitles={visibleLiveSubtitles as any}
         liveSplitMode={liveSplitMode}
         liveSplitLanguages={liveSplitLanguages}
         liveSplitPrimaryCues={liveSplit.primaryCues}
@@ -555,7 +555,7 @@ export default function VideoPlayer({
         onTriviaHoverStart={trivia.onHoverStart}
         onTriviaHoverEnd={trivia.onHoverEnd}
         isTTSPlaying={isTTSPlaying}
-        usageStats={usageStats}
+        usageStats={usageStats as any}
         loading={state.loading}
         error={state.error}
         isWidget={isWidget}
@@ -568,7 +568,7 @@ export default function VideoPlayer({
         isLive={isLive}
         videoRef={videoRef}
         showChaptersPanel={showChaptersPanel}
-        chapters={chapters}
+        chapters={chapters as any}
         chaptersLoading={chaptersLoading}
         currentTime={state.currentTime}
         duration={state.duration}
@@ -594,7 +594,7 @@ export default function VideoPlayer({
         controls={controls}
         isLive={isLive}
         title={title || ''}
-        chapters={chapters}
+        chapters={chapters as any}
         availableSubtitles={availableSubtitles}
         showChaptersPanel={showChaptersPanel}
         showSceneSearchPanel={showSceneSearchPanel}

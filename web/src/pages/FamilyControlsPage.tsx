@@ -129,7 +129,7 @@ export default function FamilyControlsPage() {
           <TimeRangePicker
             startHour={controls?.viewing_start_hour ?? 6}
             endHour={controls?.viewing_end_hour ?? 22}
-            onChange={(start, end) => updateViewingHoursAction(start, end)}
+            {...{ onChange: (start: number, end: number) => updateViewingHoursAction(start, end) } as any}
           />
         )}
       </GlassView>
@@ -138,7 +138,12 @@ export default function FamilyControlsPage() {
         <Text style={styles.error}>{error}</Text>
       )}
 
-      <FamilyPinModal visible={showPinModal} onClose={() => setShowPinModal(false)} />
+      <FamilyPinModal
+        visible={showPinModal}
+        mode={controls ? 'verify' : 'setup'}
+        onClose={() => setShowPinModal(false)}
+        onSuccess={() => setShowPinModal(false)}
+      />
     </ScrollView>
   );
 }

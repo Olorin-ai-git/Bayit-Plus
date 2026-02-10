@@ -21,14 +21,14 @@ if (sentryEnabled) {
   appLogger.info('Sentry error tracking enabled');
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <SentryErrorBoundary
       fallback={({ error }: { error: Error }) => (
         <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black flex items-center justify-center">
           <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-8 max-w-md text-center">
             <div className="flex justify-center mb-4">
-              <Icon name="warning" size="xxxl" className="text-yellow-500" />
+              <Icon name="warning" size={80} className="text-yellow-500" />
             </div>
             <h1 className="text-2xl font-bold text-white mb-2">
               Something went wrong

@@ -37,7 +37,7 @@ export function useModeEnforcement(): ModeEnforcementState {
     isWakeWordEnabled: modeConfig.wakeWordEnabled,
     isTTSEnabled: modeConfig.ttsEnabled,
     isVoiceFeedbackEnabled: modeConfig.voiceFeedbackEnabled && preferences.voice_feedback_enabled,
-    currentMode: preferences.voice_mode || VoiceMode.VOICE_ONLY,
+    currentMode: (preferences.voice_mode as VoiceMode) || VoiceMode.VOICE_ONLY,
   };
 
   // Apply enforcement rules

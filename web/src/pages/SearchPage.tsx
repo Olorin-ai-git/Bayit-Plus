@@ -108,13 +108,13 @@ export default function SearchPage() {
       // Call appropriate search API based on semantic mode
       let response;
       if (semanticMode && isPremium && searchQuery.trim()) {
-        response = await contentService.searchLLM({
+        response = await (contentService as any).searchLLM({
           query: searchQuery,
           filters,
           limit: 50,
         });
       } else {
-        response = await contentService.search({
+        response = await (contentService as any).search({
           query: searchQuery,
           ...filters,
           page: 1,
@@ -335,7 +335,7 @@ export default function SearchPage() {
 
           {loading ? (
             <View style={styles.loadingContainer}>
-              <GlassLoadingSpinner size={64} />
+              <GlassLoadingSpinner size={'large' as any} />
               <Text style={styles.loadingText}>
                 {t('search.searching', 'Searching...')}
               </Text>

@@ -29,28 +29,28 @@ function handleWizardAction(event: CustomEvent<WizardAction>) {
 
   switch (action.type) {
     case 'navigate':
-      handleNavigateAction(action.payload);
+      handleNavigateAction(action.payload as any);
       break;
     case 'search':
-      handleSearchAction(action.payload);
+      handleSearchAction(action.payload as any);
       break;
     case 'play':
-      handlePlayAction(action.payload);
+      handlePlayAction(action.payload as any);
       break;
     case 'scroll':
-      handleScrollAction(action.payload);
+      handleScrollAction(action.payload as any);
       break;
     case 'control':
-      handleControlAction(action.payload);
+      handleControlAction(action.payload as any);
       break;
     case 'kids_content':
-      handleKidsContentAction(action.payload);
+      handleKidsContentAction(action.payload as any);
       break;
     case 'subtitles':
-      handleSubtitlesAction(action.payload);
+      handleSubtitlesAction(action.payload as any);
       break;
     case 'playback':
-      handlePlaybackAction(action.payload);
+      handlePlaybackAction(action.payload as any);
       break;
     default:
       actionLogger.warn('Unknown action type', { type: action.type });

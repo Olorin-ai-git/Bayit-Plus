@@ -572,7 +572,7 @@ const MergeWizard: React.FC<MergeWizardProps> = ({
                 </Text>
                 <Text style={styles.previewValue}>
                   {mergeItems.reduce((sum, item) => sum + (item.episode_count || 0),
-                    baseItem.episode_count || 0)}
+                    baseItem?.episode_count || 0)}
                 </Text>
               </View>
             )}

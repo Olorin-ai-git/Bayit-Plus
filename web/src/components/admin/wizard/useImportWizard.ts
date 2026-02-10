@@ -71,7 +71,7 @@ export function useImportWizard({ isOpen, onSuccess, onClose }: UseImportWizardP
     try {
       setIsLoading(true)
       setError(null)
-      const { contentService } = await import('../../../services/adminApi')
+      const { adminContentService: contentService } = await import('../../../services/adminApi')
       const response = await contentService.getCategories()
       const items = Array.isArray(response) ? response : response.items || []
       setCategories(items)

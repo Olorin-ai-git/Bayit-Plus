@@ -148,7 +148,7 @@ export default function RadioPage() {
     try {
       const data = await radioService.getStations({
         category: selectedCategory !== 'all' ? selectedCategory : undefined,
-      });
+      } as any);
       setStations(data.stations || []);
       if (data.categories) {
         setCategories(data.categories);
@@ -237,12 +237,12 @@ export default function RadioPage() {
       {/* Stations Grid */}
       <FlatList
         data={filteredStations}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item: any) => item.id}
         numColumns={numColumns}
         key={numColumns}
         contentContainerStyle={{ gap: spacing.md }}
         columnWrapperStyle={numColumns > 1 ? { gap: spacing.md } : undefined}
-        renderItem={({ item }) => (
+        renderItem={({ item }: { item: any }) => (
           <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
             <StationCard station={item} />
           </View>

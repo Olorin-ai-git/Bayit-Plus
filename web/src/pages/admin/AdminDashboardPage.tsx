@@ -281,7 +281,7 @@ export default function AdminDashboardPage() {
       </View>
 
       {/* Recent Activity & Quick Actions */}
-      <View style={[styles.actionsRow, { flexDirection }]}>
+      <View style={[styles.bottomRow, { flexDirection }]}>
         {/* Recent Activity */}
         <View style={styles.activitySection}>
           <Text style={[styles.sectionTitle, { textAlign }]}>{t('admin.dashboard.recentActivity')}</Text>
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
     gap: 12,
     maxWidth: 620,
   },
-  actionsRow: {
+  bottomRow: {
     flexDirection: 'row',
     gap: spacing.md,
     flexWrap: 'wrap',

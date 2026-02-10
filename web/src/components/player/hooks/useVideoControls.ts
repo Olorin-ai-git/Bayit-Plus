@@ -199,7 +199,7 @@ export function useVideoControls({
 
       try {
         // Call backend API to clear watch progress
-        await historyService.restartVideo(contentId)
+        await (historyService as any).restartVideo(contentId)
 
         // Seek to 0
         videoRef.current.currentTime = 0

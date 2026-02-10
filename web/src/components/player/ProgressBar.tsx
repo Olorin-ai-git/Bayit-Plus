@@ -67,7 +67,7 @@ export default function ProgressBar({
         clientY: e.clientY,
         preventDefault: () => e.preventDefault(),
         stopPropagation: () => e.stopPropagation(),
-      } as React.MouseEvent<HTMLDivElement>
+      } as unknown as React.MouseEvent<HTMLDivElement>
 
       onSeek(syntheticEvent)
     }
@@ -95,7 +95,7 @@ export default function ProgressBar({
       clientY: e.clientY,
       preventDefault: () => e.preventDefault(),
       stopPropagation: () => e.stopPropagation(),
-    } as React.MouseEvent<HTMLDivElement>
+    } as unknown as React.MouseEvent<HTMLDivElement>
 
     onSeek(syntheticEvent)
   }
@@ -115,7 +115,7 @@ export default function ProgressBar({
       clientY: e.clientY,
       preventDefault: () => e.preventDefault(),
       stopPropagation: () => e.stopPropagation(),
-    } as React.MouseEvent<HTMLDivElement>
+    } as unknown as React.MouseEvent<HTMLDivElement>
 
     onSeek(syntheticEvent)
   }
@@ -180,7 +180,7 @@ export default function ProgressBar({
         clientY: e.clientY,
         preventDefault: () => e.preventDefault(),
         stopPropagation: () => e.stopPropagation(),
-      } as React.MouseEvent<HTMLDivElement>
+      } as unknown as React.MouseEvent<HTMLDivElement>
 
       onSeek(syntheticEvent)
     }
@@ -230,7 +230,7 @@ export default function ProgressBar({
       >
         {chapters.length > 0 && onChapterSeek && (
           <ChapterTimeline
-            chapters={chapters}
+            chapters={chapters as any}
             duration={duration}
             currentTime={currentTime}
             onSeek={onChapterSeek}

@@ -38,7 +38,7 @@ export function useSafeAreaInsets(): SafeAreaInsets {
     try {
       // If react-native-safe-area-context is available, use it
       // Otherwise, provide sensible defaults
-      const statusBarHeight = StatusBar.currentHeight || 0
+      const statusBarHeight = (StatusBar as any).currentHeight || 0
 
       return {
         top: Platform.OS === 'ios' ? 44 : statusBarHeight,

@@ -198,13 +198,13 @@ export default function PodcastsPage() {
 
       // Add category filter if not "all"
       if (selectedCategory !== 'all' && selectedCategory !== 'general') {
-        params.category = selectedCategory;
+        (params as any).category = selectedCategory;
       } else if (selectedCategory === 'general') {
         // For general/uncategorized, pass null or empty category
-        params.category = null;
+        (params as any).category = null;
       }
 
-      const data = await podcastService.getShows(params);
+      const data = await podcastService.getShows(params as any);
       let showsList = data.shows || [];
 
       // Filter for uncategorized podcasts if "general" is selected
@@ -356,12 +356,12 @@ export default function PodcastsPage() {
       {/* Shows Grid */}
       <FlatList
         data={filteredShows}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item: any) => item.id}
         numColumns={numColumns}
         key={numColumns}
         contentContainerStyle={styles.gridContent}
         columnWrapperStyle={numColumns > 1 ? styles.row : undefined}
-        renderItem={({ item }) => (
+        renderItem={({ item }: { item: any }) => (
           <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
             <ShowCard show={item} episodesLabel={episodesLabel} isRTL={isRTL} />
           </View>

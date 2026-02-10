@@ -54,8 +54,8 @@ export function useSubtitleCues({
         const response = await subtitlesService.getCues(
           contentId,
           currentSubtitleLang,
-          currentSubtitleLang === 'he' ? hebrewMode : 'regular',
-          currentSubtitleLang === 'en' ? englishMode : 'regular'
+          (currentSubtitleLang === 'he' ? hebrewMode : 'regular') as any,
+          (currentSubtitleLang === 'en' ? englishMode : 'regular') as any
         )
 
         if (!response || response.detail || !Array.isArray(response.cues)) {
@@ -95,8 +95,8 @@ export function useSubtitleCues({
     subtitlesService.getCues(
       contentId,
       currentSubtitleLang,
-      currentSubtitleLang === 'he' ? hebrewMode : 'regular',
-      currentSubtitleLang === 'en' ? englishMode : 'regular'
+      (currentSubtitleLang === 'he' ? hebrewMode : 'regular') as any,
+      (currentSubtitleLang === 'en' ? englishMode : 'regular') as any
     ).then((response) => {
       if (response && Array.isArray(response.cues)) {
         setCurrentCues(response.cues)

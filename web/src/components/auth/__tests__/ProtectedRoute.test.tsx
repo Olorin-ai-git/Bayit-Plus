@@ -8,7 +8,12 @@ import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from '../ProtectedRoute';
 
 // Mock authStore
-const mockAuthState = {
+const mockAuthState: {
+  isAuthenticated: boolean;
+  isHydrated: boolean;
+  isLoading: boolean;
+  user: { id: string; email?: string } | null;
+} = {
   isAuthenticated: false,
   isHydrated: true,
   isLoading: false,

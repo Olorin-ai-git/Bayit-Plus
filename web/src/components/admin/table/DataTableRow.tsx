@@ -1,3 +1,4 @@
+import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { z } from 'zod';
 import { useDirection } from '@/hooks/useDirection';
@@ -46,10 +47,10 @@ export default function DataTableRow({
           ]}
         >
           {col.render ? (
-            col.render(row[col.key], row)
+            col.render(row[col.key], row) as React.ReactNode
           ) : (
             <Text style={[styles.text, { textAlign }]}>
-              {row[col.key]}
+              {String(row[col.key] ?? '')}
             </Text>
           )}
         </View>

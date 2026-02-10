@@ -22,7 +22,7 @@ export const LanguageSelector: React.FC<LanguageSelectorProps> = ({ compact = fa
   }, [i18n.language]);
 
   const handleSelectLanguage = async (langCode: string) => {
-    await saveLanguage(langCode);
+    await saveLanguage(langCode as import('../i18n/types').LanguageCode);
     setCurrentLang(languages.find(l => l.code === langCode) || languages[0]);
     setIsOpen(false);
   };

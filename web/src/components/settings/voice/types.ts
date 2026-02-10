@@ -52,4 +52,4 @@ export interface SensitivityOption {
   labelKey: string;
 }
 
-export { VoiceMode, TextSize, VADSensitivity };
+export type { VoiceMode, TextSize, VADSensitivity };

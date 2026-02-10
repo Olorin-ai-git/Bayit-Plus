@@ -3,7 +3,7 @@
  * Handles focus management for tvOS Apple TV remote navigation
  */
 
-import { useRef, useEffect, useCallback } from 'react'
+import { useRef, useEffect, useCallback, type ElementRef } from 'react'
 import { Platform, TVFocusGuideView, findNodeHandle } from 'react-native'
 
 interface TVFocusOptions {
@@ -104,7 +104,7 @@ export function useTVFocus(options: TVFocusOptions = {}) {
  * Useful for creating grid layouts with predictable navigation
  */
 export function useTVFocusGroup(items: any[]) {
-  const focusGuideRef = useRef<TVFocusGuideView>(null)
+  const focusGuideRef = useRef<any>(null)
 
   const setPreferredDestination = useCallback((index: number) => {
     if (Platform.isTV && focusGuideRef.current && items[index]) {

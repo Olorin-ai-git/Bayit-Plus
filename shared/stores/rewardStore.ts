@@ -75,7 +75,7 @@ export const useRewardStore = create<RewardStore>()(
         set({ isLoading: true, error: null });
         try {
           const { rewardsService } = await import('../services/api');
-          const rewards = await rewardsService.getMyRewards(profileId);
+          const rewards = await rewardsService.getMyRewards(profileId || '');
 
           set({
             stats: {
@@ -98,7 +98,7 @@ export const useRewardStore = create<RewardStore>()(
       fetchBadges: async () => {
         try {
           const { rewardsService } = await import('../services/api');
-          const badges = await rewardsService.getAllBadges();
+          const badges = await rewardsService.getAllBadges() as unknown as Badge[];
           set({ allBadges: badges });
         } catch (error: any) {
           const message = error?.message || 'Failed to load badges';
@@ -110,7 +110,7 @@ export const useRewardStore = create<RewardStore>()(
         set({ isLoading: true, error: null });
         try {
           const { rewardsService } = await import('../services/api');
-          const stats = await rewardsService.getRewardStats(profileId);
+          const stats = await rewardsService.getRewardStats(profileId || '');
 
           set({
             stats: {

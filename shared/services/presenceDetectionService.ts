@@ -33,7 +33,7 @@ class PresenceDetectionService extends EventEmitter {
   };
 
   private isMonitoring = false;
-  private monitoringInterval: NodeJS.Timeout | null = null;
+  private monitoringInterval: ReturnType<typeof setInterval> | null = null;
   private lastActivityTimestamp = Date.now();
   private idleTimeout = 5 * 60 * 1000; // 5 minutes default
   private checkInterval = 30 * 1000; // Check every 30 seconds

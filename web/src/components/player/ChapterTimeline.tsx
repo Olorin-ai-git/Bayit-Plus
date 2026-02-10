@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, type ElementRef } from 'react'
 import { View, Text, StyleSheet, Pressable } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -56,7 +56,7 @@ export default function ChapterTimeline({
   const { t } = useTranslation()
   const [hoveredChapter, setHoveredChapter] = useState<Chapter | null>(null)
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, visible: false })
-  const containerRef = useRef<View>(null)
+  const containerRef = useRef<ElementRef<typeof View>>(null)
 
   if (!chapters.length || !duration) return null
 

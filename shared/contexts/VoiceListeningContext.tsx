@@ -30,7 +30,12 @@ export function VoiceListeningProvider({ children }: { children: ReactNode }) {
   });
 
   // Memoize the setListeningState function to avoid recreating it on every render
-  const setListeningState = useCallback((updates: Parameters<typeof setState>[0]) => {
+  const setListeningState = useCallback((updates: {
+    isListening?: boolean;
+    isAwake?: boolean;
+    isProcessing?: boolean;
+    audioLevel?: AudioLevel;
+  }) => {
     setState((prev) => ({ ...prev, ...updates }));
   }, []);
 

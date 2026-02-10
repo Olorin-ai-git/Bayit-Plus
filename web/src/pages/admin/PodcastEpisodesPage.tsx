@@ -31,7 +31,7 @@ function TranslationStatusBadge({ status }: { status?: TranslationStatus }) {
     failed: { bg: 'rgba(239, 68, 68, 0.2)', color: '#ef4444', labelKey: 'admin.translation.status.failed' },
   }
   const config = statusConfig[status || 'pending'] || statusConfig.pending
-  const label = t(config.labelKey, { defaultValue: status?.charAt(0).toUpperCase() + status?.slice(1) || 'Pending' })
+  const label = t(config.labelKey, { defaultValue: (status?.charAt(0)?.toUpperCase() ?? '') + (status?.slice(1) ?? '') || 'Pending' })
   return (
     <View style={[styles.badge, { backgroundColor: config.bg }]}>
       <Text style={[styles.badgeText, { color: config.color }]}>{label}</Text>
@@ -77,10 +77,10 @@ export default function PodcastEpisodesPage() {
       if (statusFilter !== 'all') {
         filters.translation_status = statusFilter as TranslationStatus
       }
-      const response: PaginatedResponse<PodcastEpisode> = await adminPodcastEpisodesService.getEpisodes(
+      const response = await adminPodcastEpisodesService.getEpisodes(
         podcastId,
         filters
-      )
+      ) as unknown as PaginatedResponse<PodcastEpisode>
       setItems(response.items || [])
       setPagination((prev) => ({ ...prev, total: response.total || 0 }))
     } catch (err) {
@@ -425,7 +425,7 @@ export default function PodcastEpisodesPage() {
       />
 
       <GlassTable
-        columns={columns}
+        columns={columns as any}
         data={items}
         loading={isLoading}
         pagination={pagination}

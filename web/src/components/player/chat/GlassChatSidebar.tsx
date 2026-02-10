@@ -75,7 +75,7 @@ export default function GlassChatSidebar({
   }, [handleKeyDown])
 
   const translateStyle = isRTL
-    ? { transform: [{ translateX: Animated.multiply(slideAnim, -1) }] }
+    ? { transform: [{ translateX: Animated.multiply(slideAnim, new Animated.Value(-1)) }] }
     : { transform: [{ translateX: slideAnim }] }
 
   const positionStyle = isRTL ? { left: 0 } : { right: 0 }
@@ -102,7 +102,7 @@ export default function GlassChatSidebar({
         <Animated.View
           style={[
             styles.backdrop,
-            { opacity: Animated.multiply(backdropAnim, 0.4) },
+            { opacity: Animated.multiply(backdropAnim, new Animated.Value(0.4)) },
           ]}
         >
           <Pressable style={styles.backdropPress} onPress={onClose} />

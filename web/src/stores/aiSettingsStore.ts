@@ -46,7 +46,7 @@ export const useAISettingsStore = create<AISettingsStore>()(
       loadPreferences: async () => {
         set({ loading: true, error: null });
         try {
-          const data = await profilesService.getAIPreferences();
+          const data = await profilesService.getVoicePreferences();
           set({
             preferences: { ...DEFAULT_AI_PREFERENCES, ...data },
             loading: false,
@@ -75,7 +75,7 @@ export const useAISettingsStore = create<AISettingsStore>()(
         set({ preferences: updated, saving: true, error: null });
 
         try {
-          await profilesService.updateAIPreferences(updated);
+          await profilesService.updateVoicePreferences(updated as any);
           set({ saving: false });
         } catch (error: any) {
           // Rollback on error

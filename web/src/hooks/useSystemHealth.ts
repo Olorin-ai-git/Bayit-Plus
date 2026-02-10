@@ -68,7 +68,7 @@ export function useSystemHealth(): UseSystemHealthReturn {
       if (allClients.length > 0) {
         const avgCpu = allClients.reduce((sum, c) => sum + (c.metrics.cpu_usage || 0), 0) / allClients.length;
         const avgMemory = allClients.reduce((sum, c) => sum + (c.metrics.memory_usage || 0), 0) / allClients.length;
-        const diskUsage = analyticsData?.avg_metrics?.disk_usage ?? 0;
+        const diskUsage = (analyticsData?.avg_metrics as any)?.disk_usage ?? 0;
 
         setMetrics({
           cpu_usage: avgCpu,

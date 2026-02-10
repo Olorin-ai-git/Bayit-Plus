@@ -80,7 +80,6 @@ export default function ChannelChatInput({
           multiline
           editable={!disabled}
           accessibilityLabel={t('channelChat.inputLabel')}
-          // @ts-expect-error -- onKeyDown and onClick supported on React Native Web
           onKeyDown={handleKeyDown}
           onClick={(e: any) => e?.stopPropagation?.()}
           onFocus={() => log.debug('Chat input focused')}

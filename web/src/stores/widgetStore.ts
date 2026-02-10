@@ -116,6 +116,7 @@ interface WidgetLocalState {
     isVisible: boolean;
     isMinimized: boolean;
     position?: WidgetPosition;
+    savedPosition?: WidgetPosition;
   };
 }
 
@@ -281,11 +282,12 @@ export const useWidgetStore = create<WidgetState>()(
           const y = window.innerHeight - MINIMIZED_HEIGHT - BOTTOM_MARGIN;
 
           // Save current position before minimizing
+          const currentPos = widgetState.position || { x: 20, y: 100, width: 350, height: 197, z_index: 100 };
           const savedPosition = {
-            x: widgetState.position.x,
-            y: widgetState.position.y,
-            width: widgetState.position.width,
-            height: widgetState.position.height,
+            x: currentPos.x,
+            y: currentPos.y,
+            width: currentPos.width,
+            height: currentPos.height,
           };
 
           set({
@@ -294,9 +296,9 @@ export const useWidgetStore = create<WidgetState>()(
               [widgetId]: {
                 ...widgetState,
                 isMinimized: true,
-                savedPosition,
+                savedPosition: { ...currentPos, ...savedPosition },
                 position: {
-                  ...widgetState.position,
+                  ...currentPos as any,
                   x,
                   y,
                   width: MINIMIZED_WIDTH,
@@ -307,11 +309,13 @@ export const useWidgetStore = create<WidgetState>()(
           });
         } else {
           // Restore from minimized state
+          const currentRestorePos = widgetState.position || { x: 20, y: 100, width: 350, height: 197, z_index: 100 };
           const restoredPosition = widgetState.savedPosition || {
-            x: widgetState.position.x,
+            x: currentRestorePos.x,
             y: 100,
             width: 630,
             height: 230,
+            z_index: currentRestorePos.z_index,
           };
 
           // Build complete updated state in one go
@@ -323,22 +327,23 @@ export const useWidgetStore = create<WidgetState>()(
             isMinimized: false,
             savedPosition: undefined,
             position: {
-              ...widgetState.position,
+              ...currentRestorePos,
               ...restoredPosition,
-            },
+            } as any,
           };
 
           // Reposition other minimized widgets to fill the gap
           const remainingMinimized = Object.entries(localState)
             .filter(([id, state]) => state.isMinimized && id !== widgetId)
-            .sort((a, b) => a[1].position.x - b[1].position.x);
+            .sort((a, b) => (a[1].position?.x ?? 0) - (b[1].position?.x ?? 0));
 
-          remainingMinimized.forEach(([id, state], index) => {
+          remainingMinimized.forEach(([id, widgetStateEntry], index) => {
             const newX = MINIMIZED_SPACING + (index * (MINIMIZED_WIDTH + MINIMIZED_SPACING));
+            const entryPos = widgetStateEntry.position || { x: 20, y: 100, width: 350, height: 197, z_index: 100 };
             updatedState[id] = {
-              ...state,
+              ...widgetStateEntry,
               position: {
-                ...state.position,
+                ...entryPos as any,
                 x: newX,
               },
             };
@@ -456,6 +461,7 @@ export const useWidgetStore = create<WidgetState>()(
             is_active: true,
             is_muted: index > 0, // First widget unmuted, rest muted
             is_visible: true,
+            is_minimized: false,
             is_closable: true,
             is_draggable: true,
             visible_to_roles: ['user'],

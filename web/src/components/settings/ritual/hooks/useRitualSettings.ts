@@ -25,7 +25,7 @@ export function useRitualSettings() {
   const loadPreferences = async () => {
     try {
       const data = await ritualService.getPreferences();
-      setPreferences(data);
+      setPreferences(data as any);
     } catch (error) {
       logger.error('Failed to load ritual preferences', 'useRitualSettings', error);
     } finally {

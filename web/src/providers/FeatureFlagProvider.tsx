@@ -17,7 +17,7 @@ const growthbook = new GrowthBook({
   clientKey: process.env.REACT_APP_GROWTHBOOK_CLIENT_KEY || '',
   enableDevMode: process.env.NODE_ENV === 'development',
   // Track feature usage for analytics
-  trackingCallback: (experiment, result) => {
+  trackingCallback: (experiment: any, result: any) => {
     logger.debug('Experiment viewed', 'FeatureFlagProvider', {
       experimentId: experiment.key,
       variationId: result.variationId,
@@ -25,8 +25,8 @@ const growthbook = new GrowthBook({
     });
 
     // Send to analytics (Sentry, GA, etc.)
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'experiment_viewed', {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'experiment_viewed', {
         experiment_id: experiment.key,
         variation_id: result.variationId,
       });

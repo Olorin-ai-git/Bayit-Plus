@@ -66,7 +66,7 @@ export const audiobookService = {
     const cached = getCacheEntry<AudiobookListResponse>(cacheKey)
     if (cached) return cached
 
-    const data = await api.get<AudiobookListResponse>(`/audiobooks?${queryParams.toString()}`)
+    const data = await api.get(`/audiobooks?${queryParams.toString()}`) as AudiobookListResponse
     setCacheEntry(cacheKey, data, CACHE_TTL_LIST)
     return data
   },
@@ -80,7 +80,7 @@ export const audiobookService = {
     const cached = getCacheEntry<Audiobook>(cacheKey)
     if (cached) return cached
 
-    const data = await api.get<Audiobook>(`/audiobooks/${id}`)
+    const data = await api.get(`/audiobooks/${id}`) as Audiobook
     setCacheEntry(cacheKey, data, CACHE_TTL_LIST)
     return data
   },
@@ -94,7 +94,7 @@ export const audiobookService = {
     const cached = getCacheEntry<AudiobookWithChapters>(cacheKey)
     if (cached) return cached
 
-    const data = await api.get<AudiobookWithChapters>(`/audiobooks/${id}/chapters`)
+    const data = await api.get(`/audiobooks/${id}/chapters`) as AudiobookWithChapters
     setCacheEntry(cacheKey, data, CACHE_TTL_LIST)
     return data
   },
@@ -104,7 +104,7 @@ export const audiobookService = {
    * Returns 403 Forbidden if user lacks admin permission
    */
   getAudiobookStream: async (id: string): Promise<AudiobookStreamResponse> => {
-    return await api.get<AudiobookStreamResponse>(`/audiobooks/${id}/stream`)
+    return await api.get(`/audiobooks/${id}/stream`) as AudiobookStreamResponse
   },
 
   /**
@@ -121,7 +121,7 @@ export const audiobookService = {
     queryParams.append('is_featured', 'true')
     queryParams.append('page_size', limit.toString())
 
-    const response = await api.get<AudiobookListResponse>(`/audiobooks?${queryParams.toString()}`)
+    const response = await api.get(`/audiobooks?${queryParams.toString()}`) as AudiobookListResponse
     setCacheEntry(cacheKey, response.items, CACHE_TTL_FEATURED)
     return response.items
   },
@@ -140,7 +140,7 @@ export const audiobookService = {
     queryParams.append('content_types', 'audiobook')
     queryParams.append('limit', limit.toString())
 
-    return await api.get<AudiobookSearchResponse>(`/search?${queryParams.toString()}`)
+    return await api.get(`/search?${queryParams.toString()}`) as AudiobookSearchResponse
   },
 
   /**
@@ -157,7 +157,7 @@ export const audiobookService = {
     queryParams.append('content_types', 'audiobook')
     queryParams.append('limit', limit.toString())
 
-    const response = await api.get<{ suggestions: AudiobookSearchSuggestion[] }>(`/search/suggestions?${queryParams.toString()}`)
+    const response = await api.get(`/search/suggestions?${queryParams.toString()}`) as { suggestions: AudiobookSearchSuggestion[] }
     return response.suggestions
   },
 
@@ -170,7 +170,7 @@ export const audiobookService = {
     const cached = getCacheEntry<AudiobookFeaturedSection[]>(cacheKey)
     if (cached) return cached
 
-    const data = await api.get<AudiobookFeaturedSection[]>('/audiobooks/featured/sections')
+    const data = await api.get('/audiobooks/featured/sections') as AudiobookFeaturedSection[]
     setCacheEntry(cacheKey, data, CACHE_TTL_FEATURED)
     return data
   },

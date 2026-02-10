@@ -8,7 +8,7 @@ import { getLanguageInfo } from '@/types/subtitle'
 import PlayerControls from './PlayerControls'
 import ProgressBar from './ProgressBar'
 import VideoPlayerCenterControls from './VideoPlayerCenterControls'
-import { Chapter } from '@/types/media'
+import type { Chapter } from '@/types/media'
 import { SubtitleTrack } from '@/types/subtitle'
 import { VideoPlayerState, VideoPlayerControls } from './hooks/useVideoPlayer'
 import {
@@ -21,7 +21,7 @@ interface VideoPlayerControlsOverlayProps {
   controls: VideoPlayerControls
   isLive: boolean
   title: string
-  chapters: Chapter[]
+  chapters: any[]
   availableSubtitles: SubtitleTrack[]
   showChaptersPanel: boolean
   showSceneSearchPanel: boolean

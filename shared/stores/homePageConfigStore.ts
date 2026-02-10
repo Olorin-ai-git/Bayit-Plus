@@ -77,7 +77,7 @@ export const useHomePageConfigStore = create<HomePageConfigStore>()(
           const data = await profilesService.getHomePagePreferences();
           // Merge with defaults to handle new sections that may have been added
           const mergedSections = mergeSectionsWithDefaults(
-            data.sections,
+            data.sections as unknown as HomeSectionConfig[],
             DEFAULT_HOME_PAGE_PREFERENCES.sections
           );
           set({

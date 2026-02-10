@@ -147,7 +147,7 @@ export function useLiveDubbing({
       try {
         await liveDubbingService.connect(
           channelId,
-          targetLang,
+          targetLang || state.targetLanguage,
           handleDubbedAudio,
           handleLatency,
           handleConnected,

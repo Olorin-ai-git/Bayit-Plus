@@ -72,7 +72,7 @@ export default function AuditLogsPage() {
         page: pagination.page,
         page_size: pagination.pageSize,
       });
-      setLogs(data.items || []);
+      setLogs((data.items || []) as any);
       setPagination((prev) => ({ ...prev, total: data.total || 0 }));
     } catch (error) {
       logger.error('Failed to load audit logs', 'AuditLogsPage', error);
@@ -185,7 +185,7 @@ export default function AuditLogsPage() {
         ))}
       </View>
 
-      <GlassTable columns={columns} data={logs} loading={loading} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.auditLogs.noRecords')} searchable={false} isRTL={isRTL} />
+      <GlassTable columns={columns as any} data={logs} loading={loading} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.auditLogs.noRecords')} searchable={false} {...{ isRTL } as any} />
 
       <GlassModal visible={showFilterModal} onClose={() => setShowFilterModal(false)} title={t('admin.auditLogs.advancedFiltering')}>
         <View style={styles.modalContent}>

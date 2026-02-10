@@ -155,8 +155,8 @@ export default function DownloadsPage() {
     setLoading(true);
     try {
       const data = await downloadsService.getDownloads();
-      setDownloads(data.items || []);
-      calculateStorage(data.items || []);
+      setDownloads((data as any).items || []);
+      calculateStorage((data as any).items || []);
     } catch (error) {
       logger.error('Failed to load downloads', 'DownloadsPage', error);
     } finally {
@@ -230,12 +230,12 @@ export default function DownloadsPage() {
       ) : downloads.length > 0 ? (
         <FlatList
           data={downloads}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item: any) => item.id}
           numColumns={numColumns}
           key={numColumns}
           contentContainerStyle={{ gap: spacing.md }}
           columnWrapperStyle={numColumns > 1 ? { gap: spacing.md } : undefined}
-          renderItem={({ item }) => (
+          renderItem={({ item }: { item: any }) => (
             <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
               <DownloadCard item={item} onDelete={handleDelete} pausedText={pausedText} />
             </View>

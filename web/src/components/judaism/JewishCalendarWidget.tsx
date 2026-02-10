@@ -54,10 +54,10 @@ export function JewishCalendarWidget() {
       ]);
 
       if (calendarResponse) {
-        setCalendarData(calendarResponse);
+        setCalendarData(calendarResponse as any);
       }
       if (dafResponse) {
-        setDafYomi(dafResponse);
+        setDafYomi(dafResponse as any);
       }
     } catch (err) {
       logger.error('Failed to load calendar data', 'JewishCalendarWidget', err);

@@ -76,8 +76,8 @@ export const initSentry = (): boolean => {
       replaysOnErrorSampleRate: 1.0,
 
       integrations: [
-        Sentry.browserTracingIntegration(),
-        Sentry.replayIntegration({
+        (Sentry as any).browserTracingIntegration(),
+        (Sentry as any).replayIntegration({
           // Mask all text by default for privacy
           maskAllText: true,
           blockAllMedia: true,
@@ -85,7 +85,7 @@ export const initSentry = (): boolean => {
       ],
 
       // Scrub sensitive data before sending
-      beforeSend(event) {
+      beforeSend(event: any) {
         if (event.request?.headers) {
           scrubObject(event.request.headers as Record<string, unknown>);
         }
@@ -111,10 +111,7 @@ export const initSentry = (): boolean => {
         Sentry.captureException(error, { extra: options?.extra });
       },
       captureMessage: (message, options) => {
-        Sentry.captureMessage(message, {
-          level: options?.level as Sentry.SeverityLevel,
-          extra: options?.extra,
-        });
+        Sentry.captureMessage(message, options?.level as any ?? 'info');
       },
       setTag: (key, value) => {
         Sentry.setTag(key, value);

@@ -15,7 +15,7 @@ export interface ChatbotContext {
 }
 
 export interface ChatbotAction {
-  type: 'create_flow' | 'edit_flow' | 'start_flow' | 'search' | 'navigate' | 'download' | 'add_to_playlist';
+  type: 'create_flow' | 'edit_flow' | 'start_flow' | 'search' | 'navigate' | 'download' | 'add_to_playlist' | 'play' | 'pause' | 'resume' | 'skip' | 'add_to_favorites' | 'volume' | 'language' | 'subtitles' | 'info' | 'help' | 'show_multiple' | 'chess_invite';
   payload: Record<string, any>;
 }
 
@@ -28,6 +28,7 @@ interface ChatbotStore {
 
   // Actions
   setOpen: (open: boolean) => void;
+  toggleOpen: () => void;
   sendMessage: (message: string) => void;
   clearPendingMessage: () => void;
   loadContext: () => Promise<void>;
@@ -48,6 +49,8 @@ export const useChatbotStore = create<ChatbotStore>((set, get) => ({
 
   setOpen: (open) => set({ isOpen: open }),
 
+  toggleOpen: () => set((state) => ({ isOpen: !state.isOpen })),
+
   sendMessage: (message) => {
     set({ pendingMessage: message, isOpen: true });
   },
@@ -64,21 +67,21 @@ export const useChatbotStore = create<ChatbotStore>((set, get) => ({
       ]);
 
       // Extract live channels
-      const channelsData = liveRes.data?.channels || liveRes.channels || liveRes.data || [];
+      const channelsData = (liveRes as any).data?.channels || (liveRes as any).channels || (liveRes as any).data || [];
       const liveChannels = channelsData.map((c: any) => ({
         id: c.id,
         name: c.name || c.title,
       }));
 
       // Extract radio stations
-      const stationsData = radioRes.data?.stations || radioRes.stations || radioRes.data || [];
+      const stationsData = (radioRes as any).data?.stations || (radioRes as any).stations || (radioRes as any).data || [];
       const radioStations = stationsData.map((s: any) => ({
         id: s.id,
         name: s.name || s.title,
       }));
 
       // Extract podcast shows
-      const showsData = podcastRes.data?.shows || podcastRes.shows || podcastRes.data || [];
+      const showsData = (podcastRes as any).data?.shows || (podcastRes as any).shows || (podcastRes as any).data || [];
       const podcastShows = showsData.map((p: any) => ({
         id: p.id,
         name: p.name || p.title,

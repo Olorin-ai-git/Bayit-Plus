@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { announceToScreenReader, getLanguageName } from '../utils/accessibility';
 
 type Direction = 'rtl' | 'ltr';
-type FlexDirection = 'row';
+type FlexDirection = 'row' | 'row-reverse';
 type TextAlign = 'left' | 'right';
-type JustifyContent = 'flex-start';
-type AlignItems = 'flex-start';
+type JustifyContent = 'flex-start' | 'flex-end';
+type AlignItems = 'flex-start' | 'flex-end';
 
 interface DirectionResult {
   isRTL: boolean;
@@ -77,10 +77,10 @@ export const useDirection = (): DirectionResult => {
   return {
     isRTL,
     direction: isRTL ? 'rtl' : 'ltr',
-    flexDirection: 'row', // document.dir handles the visual direction
+    flexDirection: 'row' as FlexDirection, // document.dir handles the visual direction
     textAlign: isRTL ? 'right' : 'left',
-    justifyContent: 'flex-start', // document.dir handles the visual direction
-    alignItems: 'flex-start', // document.dir handles the visual direction
+    justifyContent: 'flex-start' as JustifyContent, // document.dir handles the visual direction
+    alignItems: 'flex-start' as AlignItems, // document.dir handles the visual direction
   };
 };
 

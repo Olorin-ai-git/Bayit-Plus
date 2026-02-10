@@ -127,7 +127,7 @@ function getBuiltInKeyword(wakeWord: string): any {
  * Supports separate wake words for Support (Olorin) and Voice Search systems.
  */
 export class PorcupineWakeWordDetector {
-  private porcupine: PorcupineWorker | null = null;
+  private porcupine: any | null = null;
   private webVoiceProcessor: typeof WebVoiceProcessor | null = null;
   private isInitialized: boolean = false;
   private isListening: boolean = false;

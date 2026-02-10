@@ -94,8 +94,8 @@ export default function MorningRitual({ onComplete, onSkip }: MorningRitualProps
           ritualService.getAIBrief(),
         ])
 
-        setRitualData(checkResult)
-        setAIBrief(briefResult)
+        setRitualData(checkResult as any)
+        setAIBrief(briefResult as any)
 
         // Auto-hide brief after 5 seconds
         setTimeout(() => {

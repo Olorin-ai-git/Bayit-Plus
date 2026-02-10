@@ -8,6 +8,8 @@ import React from 'react';
 import { View, Text, ScrollView, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
+
+const AnyGlassButton = GlassButton as any;
 import { NativeIcon } from '@olorin/shared-icons/native';
 import type { ContentType } from './SearchControls';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
@@ -54,7 +56,7 @@ export function ContentTypePills({ selected, onChange }: ContentTypePillsProps) 
         const isFocused = focusedType === type;
 
         return (
-          <GlassButton
+          <AnyGlassButton
             key={type}
             variant={isSelected ? 'primary' : 'ghost'}
             style={[
@@ -78,7 +80,7 @@ export function ContentTypePills({ selected, onChange }: ContentTypePillsProps) 
             <Text style={[styles.label, isSelected && styles.labelActive]}>
               {t(`search.controls.contentTypes.${label}`)}
             </Text>
-          </GlassButton>
+          </AnyGlassButton>
         );
       })}
     </ScrollView>

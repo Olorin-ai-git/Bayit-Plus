@@ -265,7 +265,7 @@ export default function ChessBoard({
     if (selectedSquare) {
       // Attempting to make a move
       try {
-        const piece = chess.get(selectedSquare);
+        const piece = chess.get(selectedSquare as any);
         const move = chess.move({
           from: selectedSquare,
           to: square,
@@ -297,15 +297,15 @@ export default function ChessBoard({
   };
 
   const selectSquare = (square: string) => {
-    const piece = chess.get(square);
+    const piece = chess.get(square as any);
 
     // Only select pieces of the current turn color
     if (piece && piece.color === chess.turn()) {
       setSelectedSquare(square);
 
       // Get legal moves for this piece
-      const moves = chess.moves({ square, verbose: true });
-      setLegalMoves(moves.map(m => m.to));
+      const moves = chess.moves({ square: square as any, verbose: true });
+      setLegalMoves(moves.map(m => (m as any).to));
     } else {
       // Deselect
       setSelectedSquare(null);
@@ -329,7 +329,7 @@ export default function ChessBoard({
     const rank = isFlipped ? row + 1 : 8 - row; // 1-8
     const square = `${file}${rank}`;
 
-    const piece = chess.get(square);
+    const piece = chess.get(square as any);
 
     // Don't render piece if it's currently being animated from this square
     const isAnimatingFrom = animatingPiece?.from === square;

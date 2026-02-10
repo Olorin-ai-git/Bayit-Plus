@@ -110,7 +110,7 @@ export const useWatchPartyStore = create<WatchPartyState>((set, get) => ({
         audio_enabled: options.audioEnabled ?? true,
         chat_enabled: options.chatEnabled ?? true,
         sync_playback: options.syncPlayback ?? true,
-      }) as Party;
+      }) as unknown as Party;
 
       set({ party, isHost: true, participants: party.participants || [] });
       return party;

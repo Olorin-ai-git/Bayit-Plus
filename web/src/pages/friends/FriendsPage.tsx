@@ -91,7 +91,7 @@ export default function FriendsPage() {
         <GlassTabs
           tabs={tabs}
           activeTab={activeTab}
-          onChange={(id) => setActiveTab(id as TabId)}
+          onChange={(id: string) => setActiveTab(id as TabId)}
         />
       </View>
 
@@ -108,8 +108,8 @@ export default function FriendsPage() {
 
         {activeTab === 'requests' && (
           <RequestsTab
-            incomingRequests={incomingRequests}
-            outgoingRequests={outgoingRequests}
+            incomingRequests={incomingRequests as any}
+            outgoingRequests={outgoingRequests as any}
             onAcceptRequest={(requestId) => handleAcceptRequest(requestId, t)}
             onRejectRequest={(requestId) => handleRejectRequest(requestId, t)}
             onCancelRequest={(requestId) => handleCancelRequest(requestId, t)}

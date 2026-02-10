@@ -20,7 +20,7 @@ interface PlaylistState {
   clearError: () => void;
 }
 
-export const usePlaylistStore = create<PlaylistState>((set) => ({
+export const usePlaylistStore: import('zustand').UseBoundStore<import('zustand').StoreApi<PlaylistState>> = create<PlaylistState>((set) => ({
   items: [],
   isLoading: false,
   isVisible: false,
@@ -32,8 +32,8 @@ export const usePlaylistStore = create<PlaylistState>((set) => ({
       const data = await apiPlaylistService.getPlaylist();
       if (data && Array.isArray(data.items)) {
         set({ items: data.items, isLoading: false });
-      } else if (data?.detail) {
-        set({ error: data.detail, items: [], isLoading: false });
+      } else if ((data as any)?.detail) {
+        set({ error: (data as any).detail, items: [], isLoading: false });
       } else {
         set({ items: [], isLoading: false });
       }

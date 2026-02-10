@@ -77,9 +77,9 @@ export const GlassCarousel: React.FC<GlassCarouselProps> = ({
   const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Refs for tvOS focus navigation
-  const mainCarouselRef = useRef<TouchableOpacity>(null);
-  const leftArrowRef = useRef<TouchableOpacity>(null);
-  const rightArrowRef = useRef<TouchableOpacity>(null);
+  const mainCarouselRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
+  const leftArrowRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
+  const rightArrowRef = useRef<React.ElementRef<typeof TouchableOpacity>>(null);
 
   // Node handles for focus navigation
   const [mainCarouselNode, setMainCarouselNode] = useState<number | null>(null);

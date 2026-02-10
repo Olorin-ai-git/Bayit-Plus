@@ -126,8 +126,8 @@ describe('widgetStore', () => {
       useWidgetStore.getState().setWidgets([widget]);
 
       // Should keep existing local state, not reinitialize
-      expect(useWidgetStore.getState().localState['w1'].isMuted).toBe(false);
-      expect(useWidgetStore.getState().localState['w1'].position.x).toBe(50);
+      expect(useWidgetStore.getState().localState['w1']!.isMuted).toBe(false);
+      expect(useWidgetStore.getState().localState['w1']!.position!.x).toBe(50);
     });
 
     it('preserves cover_url from existing widgets', () => {
@@ -229,7 +229,7 @@ describe('widgetStore', () => {
 
       useWidgetStore.getState().updatePosition('w1', { x: 100, y: 200 });
 
-      const position = useWidgetStore.getState().localState['w1'].position;
+      const position = useWidgetStore.getState().localState['w1']!.position!;
       expect(position.x).toBe(100);
       expect(position.y).toBe(200);
       // Original width/height preserved
@@ -243,7 +243,7 @@ describe('widgetStore', () => {
 
       useWidgetStore.getState().updatePosition('w1', { width: 800, height: 400 });
 
-      const position = useWidgetStore.getState().localState['w1'].position;
+      const position = useWidgetStore.getState().localState['w1']!.position!;
       expect(position.width).toBe(800);
       expect(position.height).toBe(400);
     });

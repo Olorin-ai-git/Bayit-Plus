@@ -73,7 +73,7 @@ export function VoiceStatusOverlay({
             <div style={styles.contentWrapper as any}>
               <div style={styles.visualizerContainer as any}>
                 <SoundwaveVisualizer
-                  audioLevel={0.6}
+                  audioLevel={{ average: 0.6, peak: 0.6 }}
                   isListening={true}
                   isProcessing={false}
                   isSendingToServer={false}
@@ -98,7 +98,7 @@ export function VoiceStatusOverlay({
             <div style={styles.contentWrapper as any}>
               <div style={styles.visualizerContainer as any}>
                 <SoundwaveVisualizer
-                  audioLevel={0.7}
+                  audioLevel={{ average: 0.7, peak: 0.7 }}
                   isListening={false}
                   isProcessing={false}
                   isSendingToServer={false}

@@ -39,7 +39,7 @@ export function SearchFilters({ filters, onFiltersChange, onClose }: SearchFilte
     try {
       const { api } = await import('../../services/api/client');
       const data = await api.get('/search/filters/options');
-      setFilterOptions(data);
+      setFilterOptions(data as unknown as FilterOption);
     } catch (error) {
       logger.error('Failed to load filter options', 'SearchFilters', error);
     } finally {

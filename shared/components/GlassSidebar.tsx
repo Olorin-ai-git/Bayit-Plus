@@ -294,9 +294,8 @@ export const GlassSidebar: React.FC<GlassSidebarProps> = ({ isExpanded, onToggle
         {/* App Version (when expanded) */}
         {isExpanded && (
           <Animated.View
-            style={{ opacity: opacityAnim }}
+            style={{ opacity: opacityAnim, borderTopColor: colors.glassBorder }}
             className="px-4 py-2 border-t"
-            style={{ borderTopColor: colors.glassBorder }}
           >
             <Text style={{ textAlign }} className="text-xs text-gray-400">
               {t('common.appVersion', 'Bayit+ v1.0.0')}

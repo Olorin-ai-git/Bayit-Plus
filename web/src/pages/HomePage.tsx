@@ -244,7 +244,7 @@ export default function HomePage() {
     try {
       setSyncing(true);
       logger.info('Syncing home content...', 'HomePage');
-      await contentService.syncContent();
+      await (contentService as any).syncContent();
 
       // Reload all sections
       loadFeaturedContent();

@@ -156,6 +156,33 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
   }, []);
 
   /**
+   * Play feedback sound when wake word is detected
+   */
+  const playWakeWordFeedback = useCallback(() => {
+    try {
+      // Create a simple beep sound
+      const audioContext = new AudioContext();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = 880; // A5 note
+      oscillator.type = 'sine';
+      gainNode.gain.value = 0.3;
+
+      oscillator.start();
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+      oscillator.stop(audioContext.currentTime + 0.2);
+
+      setTimeout(() => audioContext.close(), 300);
+    } catch (err) {
+      logger.warn('Failed to play feedback', err);
+    }
+  }, []);
+
+  /**
    * Handle wake word detection from Porcupine
    */
   const handlePorcupineDetection = useCallback((keywordIndex: number, system: VoiceSystemType) => {
@@ -262,33 +289,6 @@ export function useWakeWordListening(options: UseWakeWordListeningOptions): UseW
     vadRef.current = createVADDetector(vadSensitivity, silenceThresholdMs);
     bufferRef.current = createAudioBuffer({ maxDurationMs: 15000 });
   }, [vadSensitivity, silenceThresholdMs]);
-
-  /**
-   * Play feedback sound when wake word is detected
-   */
-  const playWakeWordFeedback = useCallback(() => {
-    try {
-      // Create a simple beep sound
-      const audioContext = new AudioContext();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      oscillator.frequency.value = 880; // A5 note
-      oscillator.type = 'sine';
-      gainNode.gain.value = 0.3;
-
-      oscillator.start();
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-      oscillator.stop(audioContext.currentTime + 0.2);
-
-      setTimeout(() => audioContext.close(), 300);
-    } catch (err) {
-      logger.warn('Failed to play feedback', err);
-    }
-  }, []);
 
   /**
    * Send buffered audio to transcription API

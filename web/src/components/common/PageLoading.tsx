@@ -41,7 +41,7 @@ export default function PageLoading({
       )}
 
       <View style={styles.loadingContainer}>
-        <GlassLoadingSpinner size={64} />
+        <GlassLoadingSpinner size="large" />
         <Text style={styles.loadingText}>{loadingMessage}</Text>
       </View>
     </View>

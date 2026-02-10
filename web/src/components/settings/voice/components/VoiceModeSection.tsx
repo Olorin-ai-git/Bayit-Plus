@@ -62,7 +62,7 @@ export function VoiceModeSection({ selectedMode, isRTL, onModeChange }: VoiceMod
             isSelected={selectedMode === modeOption.value}
             isRTL={isRTL}
             onSelect={() => onModeChange(modeOption.value)}
-            t={t}
+            t={t as any}
           />
         ))}
       </View>

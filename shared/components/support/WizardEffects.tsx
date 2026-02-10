@@ -58,7 +58,7 @@ const GlowPulse: React.FC<{ size: number; intensity?: number }> = ({
         height: size + 40,
         borderRadius: (size + 40) / 2,
         backgroundColor: colors.primary.DEFAULT,
-        opacity: Animated.multiply(pulseAnim, intensity),
+        opacity: Animated.multiply(pulseAnim, new Animated.Value(intensity)),
         ...(Platform.OS === 'web'
           ? {
               filter: 'blur(20px)',

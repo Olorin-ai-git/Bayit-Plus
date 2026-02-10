@@ -52,7 +52,7 @@ export default function BillingOverviewPage() {
         billingService.getOverview(),
         subscriptionsService.getChurnAnalytics(),
       ]);
-      setOverview(overviewData);
+      setOverview(overviewData as any);
       setChurnData(churn);
     } catch (err: any) {
       const message = err?.message || t('admin.billing.loadError', 'Failed to load billing data');

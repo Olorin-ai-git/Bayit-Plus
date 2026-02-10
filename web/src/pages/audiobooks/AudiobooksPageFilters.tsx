@@ -51,7 +51,7 @@ export default function AudiobooksPageFilters({
   }
 
   const handleClear = () => {
-    onChange({ page: 1, page_size: 50 })
+    onChange({ page: 1, page_size: 50 } as any)
   }
 
   return (
@@ -65,7 +65,7 @@ export default function AudiobooksPageFilters({
         </Text>
         <View
           style={[
-            styles.toggleButton,
+            (styles as any).toggleButton,
             isExpanded && { transform: [{ rotate: '180deg' }] },
           ]}
         >
@@ -119,7 +119,7 @@ export default function AudiobooksPageFilters({
             <GlassSelect
               label={t('audiobooks.sortOrder', 'Order')}
               value={filters.sort_order || 'desc'}
-              onChangeText={(val) =>
+              onChangeText={(val: string) =>
                 onChange({
                   ...filters,
                   sort_order: (val as 'asc' | 'desc') || 'desc',

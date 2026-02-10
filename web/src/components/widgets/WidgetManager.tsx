@@ -47,7 +47,7 @@ export default function WidgetManager() {
     try {
       setLoading(true);
       const response = await adminWidgetsService.getMyWidgets(location.pathname);
-      setWidgets(response.items || []);
+      setWidgets((response.items || []) as any);
     } catch (err) {
       logger.error('Failed to load widgets', 'WidgetManager', { error: err, pathname: location.pathname });
       setError(i18n.t('errors.widget.loadFailed'));
@@ -86,9 +86,9 @@ export default function WidgetManager() {
 
         case 'vod':
           if (widget.content.content_id) {
-            const response = await adminContentService.getStreamUrl(widget.content.content_id);
+            const response = await (adminContentService as any).getStreamUrl(widget.content.content_id);
             streamUrl = response?.url || response?.stream_url;
-            const contentData = await adminContentService.getById(widget.content.content_id).catch(() => null);
+            const contentData = await (adminContentService as any).getById(widget.content.content_id).catch(() => null);
             coverUrl = contentData?.thumbnail || contentData?.backdrop;
           }
           break;
@@ -100,7 +100,7 @@ export default function WidgetManager() {
 
             // Fetch latest episode
             try {
-              const episodesResponse = await podcastService.getEpisodes(widget.content.podcast_id, {
+              const episodesResponse = await (podcastService as any).getEpisodes(widget.content.podcast_id, {
                 limit: 1,
                 sort: '-publishedAt' // Sort by newest first
               });
@@ -158,7 +158,7 @@ export default function WidgetManager() {
 
         case 'iframe':
           // No stream URL needed for iframe
-          return undefined;
+          return undefined as any;
 
         default:
           break;

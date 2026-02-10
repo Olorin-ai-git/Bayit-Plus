@@ -172,7 +172,7 @@ export default function TranslationDashboardPage() {
             variant="secondary"
             onPress={handleRefresh}
             disabled={isRefreshing}
-            icon={<RefreshCw size={18} color="white" style={isRefreshing ? styles.rotating : undefined} />}
+            icon={<RefreshCw size={18} color="white" style={isRefreshing ? styles.rotating as any : undefined} />}
             accessibilityLabel={t('common.refreshData', { defaultValue: 'Refresh data' })}
           >
             {isRefreshing ? t('common.refreshing') : t('common.refresh', 'Refresh')}

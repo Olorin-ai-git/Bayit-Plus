@@ -48,7 +48,7 @@ export const VisualFeedbackSystem: React.FC<VisualFeedbackSystemProps> = ({
   const [isVisible, setIsVisible] = useState(true);
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
-  const autoHideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const autoHideTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Animation on mount/state change
   useEffect(() => {
@@ -209,7 +209,7 @@ export const VisualFeedbackSystem: React.FC<VisualFeedbackSystemProps> = ({
             isActive={true}
             audioLevel={0.6}
             intensity="medium"
-            className="absolute top-0 left-0 right-0 bottom-0 rounded-2xl"
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, borderRadius: 16 }}
           />
         )}
 

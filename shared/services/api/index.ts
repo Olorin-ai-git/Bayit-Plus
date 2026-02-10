@@ -101,6 +101,13 @@ export const playlistService = apiPlaylistService;
 // Backward-compat alias: watchlist now routes through playlist
 export const watchlistService = playlistService;
 
+// Rewards service (children/family rewards system)
+export const rewardsService = {
+  getMyRewards: (profileId: string) => api.get(`/rewards/${profileId}`),
+  getAllBadges: () => api.get('/rewards/badges'),
+  getRewardStats: (profileId: string) => api.get(`/rewards/${profileId}/stats`),
+};
+
 // Re-export API services for direct access
 export {
   apiAuthService,

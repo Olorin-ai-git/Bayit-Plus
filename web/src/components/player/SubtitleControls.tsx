@@ -373,7 +373,7 @@ export default function SubtitleControls({
                 onToggle(false)
                 setShowLanguageMenu(false)
               }}
-              hebrewMode={hebrewMode}
+              hebrewMode={hebrewMode as any}
               onHebrewModeChange={onHebrewModeChange}
               englishMode={englishMode}
               onEnglishModeChange={onEnglishModeChange}

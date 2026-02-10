@@ -89,7 +89,7 @@ export function useWidgetForm(
         content_type: contentType,
         content_id: item.id,
         title: prev.title || item.title,
-        icon: prev.icon || (item.icon || ''),
+        icon: prev.icon || ((item as any).icon || ''),
       }));
       setSelectedContent(item);
     }

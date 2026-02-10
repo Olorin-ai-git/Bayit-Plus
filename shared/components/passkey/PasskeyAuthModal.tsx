@@ -51,7 +51,7 @@ export const PasskeyAuthModal: React.FC<PasskeyAuthModalProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isSupported, setIsSupported] = useState(false);
   const [qrSessionId, setQrSessionId] = useState<string | null>(null);
-  const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Check WebAuthn support on mount
   useEffect(() => {
@@ -174,7 +174,7 @@ export const PasskeyAuthModal: React.FC<PasskeyAuthModalProps> = ({
         return (
           <View className="items-center p-8">
             <View className="w-16 h-16 rounded-full bg-green-500/20 items-center justify-center mb-4">
-              <NativeIcon name="check" size="3xl" color="#22c55e" />
+              <NativeIcon name="check" size="2xl" color="#22c55e" />
             </View>
             <Text className="text-lg text-white mt-4 text-center">{t('passkey.auth.success')}</Text>
           </View>

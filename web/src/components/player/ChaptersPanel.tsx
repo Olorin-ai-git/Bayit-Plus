@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type ElementRef } from 'react'
 import { View, Text, Pressable, ScrollView, StyleSheet } from 'react-native'
 import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { useTranslation } from 'react-i18next'
@@ -10,6 +10,7 @@ interface Chapter {
   start_time: number
   end_time: number
   title?: string
+  category?: string
   summary?: string
 }
 
@@ -33,7 +34,7 @@ export default function ChaptersPanel({
   onSeek,
 }: ChaptersPanelProps) {
   const { t } = useTranslation()
-  const panelRef = useRef<ScrollView>(null)
+  const panelRef = useRef<any>(null)
 
   // Find active chapter based on current time
   const activeChapterIndex = chapters.findIndex(
@@ -118,7 +119,7 @@ export default function ChaptersPanel({
             chapters.map((chapter, index) => (
               <View key={`${chapter.start_time}-${index}`} style={styles.chapterItem}>
                 <ChapterCard
-                  chapter={chapter}
+                  chapter={chapter as { start_time: number; end_time: number; title: string; category?: string }}
                   isActive={index === activeChapterIndex}
                   onClick={() => handleChapterClick(chapter)}
                 />

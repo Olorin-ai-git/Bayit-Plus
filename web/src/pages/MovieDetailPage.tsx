@@ -149,7 +149,7 @@ export default function MovieDetailPage() {
     setLoading(true);
     try {
       const data = await contentService.getMovieDetails(movieId!);
-      setMovie(data);
+      setMovie(data as any);
     } catch (error) {
       logger.error('Failed to load movie details', 'MovieDetailPage', error);
     } finally {

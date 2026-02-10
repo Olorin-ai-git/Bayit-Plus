@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, type ElementRef } from 'react';
 import { View, Text, ScrollView, Pressable, StyleSheet, Platform } from 'react-native';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -44,7 +44,7 @@ export default function ContentCarousel({
   const { t } = useTranslation();
   const { isRTL, flexDirection, textAlign } = useDirection();
   const { isMobile, isTablet } = useResponsive();
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<ElementRef<typeof ScrollView>>(null);
 
   // Responsive card width: mobile 140px, tablet 200px, desktop 260px
   const cardWidth = isMobile ? 140 : isTablet ? 200 : isTV ? 320 : 260;
@@ -131,7 +131,7 @@ export default function ContentCarousel({
               isRTL={isRTL}
             >
               <View style={{ width: cardWidth, flexShrink: 0 }}>
-                <ContentCard content={item} />
+                <ContentCard content={item as any} />
               </View>
             </AnimatedCard>
           ))}

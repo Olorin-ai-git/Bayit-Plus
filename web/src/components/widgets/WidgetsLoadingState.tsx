@@ -15,7 +15,7 @@ const WidgetsLoadingStatePropsSchema = z.object({
   numSkeletons: z.number().optional().default(8),
 });
 
-type WidgetsLoadingStateProps = z.infer<typeof WidgetsLoadingStatePropsSchema>;
+type WidgetsLoadingStateProps = z.input<typeof WidgetsLoadingStatePropsSchema>;
 
 /**
  * WidgetsLoadingState - Skeleton loading state

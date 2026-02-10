@@ -30,7 +30,7 @@ export interface IconBackgroundProps {
  * Icon Background for native platforms
  * Wraps icons with glassmorphic background and optional interactive states
  */
-export const IconBackground = React.forwardRef<View, IconBackgroundProps>(
+export const IconBackground = React.forwardRef<React.ElementRef<typeof View>, IconBackgroundProps>(
   (
     {
       children,

@@ -59,9 +59,11 @@ export const QuizAnswerButton: React.FC<QuizAnswerButtonProps> = ({
   hasTVPreferredFocus = false,
   isRTL = false,
 }) => {
-  const { isFocused, handleFocus, handleBlur, scaleTransform } = useTVFocus({
-    styleType: 'button',
-  });
+  const tvFocusResult = useTVFocus({});
+  const isFocused = tvFocusResult.isFocused;
+  const handleFocus = tvFocusResult.tvFocusProps.onFocus as (() => void) | undefined;
+  const handleBlur = tvFocusResult.tvFocusProps.onBlur as (() => void) | undefined;
+  const scaleTransform = undefined;
 
   const isTV = Platform.isTV || Platform.OS === 'tvos';
   const config = AGE_CONFIG[ageGroup];

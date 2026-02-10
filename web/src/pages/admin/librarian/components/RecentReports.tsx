@@ -83,7 +83,7 @@ export const RecentReports = ({
       label: t('admin.librarian.reports.columns.triggeredBy', 'Triggered By'),
       width: 120,
       render: (_: any, row: AuditReport) => {
-        const triggeredBy = getTriggeredBy(row, t);
+        const triggeredBy = getTriggeredBy(row, t as any);
         return (
           <Text style={[styles.tableText, { color: colors.textMuted, fontSize: fontSize.sm }]}>
             {triggeredBy}
@@ -96,7 +96,7 @@ export const RecentReports = ({
       label: t('admin.librarian.reports.columns.parameters', 'Parameters'),
       width: 200,
       render: (_: any, row: AuditReport) => {
-        const params = getAuditParametersBadge(row, t);
+        const params = getAuditParametersBadge(row, t as any);
         return (
           <View style={[styles.badgeRow, { flexDirection: isRTL ? 'row-reverse' : 'row' }]}>
             {params.slice(0, 3).map((param, idx) => (

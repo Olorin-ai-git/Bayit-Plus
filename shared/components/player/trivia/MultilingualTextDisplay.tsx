@@ -76,7 +76,7 @@ export function MultilingualTextDisplay({
   const currentLang = currentSubtitleLang || i18n.language || 'en'
 
   // Get text and language info for subtitle language
-  const langInfo = getTriviaLanguageInfo(currentLang)
+  const langInfo = getTriviaLanguageInfo(currentLang) || { rtl: false, nativeName: currentLang, flag: '' }
   let text = getTextForLanguage(fact, currentLang)
 
   // Fallback chain: requested lang → English → fact.text

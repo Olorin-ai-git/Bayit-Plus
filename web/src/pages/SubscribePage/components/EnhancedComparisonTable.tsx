@@ -65,7 +65,7 @@ export function EnhancedComparisonTable() {
   };
 
   const getTierPrice = (tier: PlanTier): string | null => {
-    const prices = {
+    const prices: Partial<Record<PlanTier, string>> = {
       [PlanTier.BASIC]: '$9.99',
       [PlanTier.PREMIUM]: '$14.99',
       [PlanTier.FAMILY]: '$19.99',

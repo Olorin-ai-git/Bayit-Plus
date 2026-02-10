@@ -124,6 +124,7 @@ export const RemotionWizard: React.FC<RemotionWizardProps> = ({
         ...style,
       }}
     >
+      {/* @ts-ignore Remotion Player props mismatch */}
       <Player
         ref={playerRef}
         component={SequenceComponent}
@@ -174,7 +175,7 @@ export const RemotionWizard: React.FC<RemotionWizardProps> = ({
             Animation error: {error.message}
           </div>
         )}
-        onEnded={handleComplete}
+        {...{ onEnded: handleComplete } as any}
       />
     </div>
   );

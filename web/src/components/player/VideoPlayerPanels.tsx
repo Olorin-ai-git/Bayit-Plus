@@ -1,7 +1,6 @@
 import ChaptersPanel from './ChaptersPanel'
 import SceneSearchPanel from './SceneSearchPanel'
 import SettingsPanel from './SettingsPanel'
-import { Chapter } from '@/types/media'
 
 interface VideoPlayerPanelsProps {
   // Common
@@ -10,7 +9,7 @@ interface VideoPlayerPanelsProps {
 
   // Chapters
   showChaptersPanel: boolean
-  chapters: Chapter[]
+  chapters: any[]
   chaptersLoading: boolean
   currentTime: number
   duration: number
@@ -26,7 +25,7 @@ interface VideoPlayerPanelsProps {
   showSettings: boolean
   availableSubtitleLanguages: string[]
   liveSubtitleLang: string
-  availableQualities: string[]
+  availableQualities: any[]
   currentQuality: string
   currentPlaybackSpeed: number
   onSettingsClose: () => void

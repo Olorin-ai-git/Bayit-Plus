@@ -8,7 +8,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { GlassButton } from '../../../../shared/components/ui/GlassButton';
+import { GlassButton as _GlassButton } from '../../../../shared/components/ui/GlassButton';
+const GlassButton = _GlassButton as any;
 import type { ViewMode } from '../../hooks/useSearchViewMode';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';
 
@@ -41,7 +42,7 @@ export function SearchViewModeToggle({ value, onChange }: SearchViewModeTogglePr
 
   return (
     <View style={styles.container}>
-      {VIEW_MODE_OPTIONS.map(({ mode, icon, label }) => {
+      {VIEW_MODE_OPTIONS.map(({ mode, icon }) => {
         const isSelected = value === mode;
         const isFocused = focusedMode === mode;
 

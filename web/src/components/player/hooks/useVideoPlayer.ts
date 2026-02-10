@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import logger from '@/utils/logger'
-import { PlayerState, PlayerControls } from '../types'
+import { PlayerState, PlayerControls, VideoPlayerState, VideoPlayerControls } from '../types'
+export type { VideoPlayerState, VideoPlayerControls }
 import { useHLSPlayer } from './useHLSPlayer'
 import { useVideoEventListeners } from './useVideoEventListeners'
 import { useProgressReporting } from './useProgressReporting'
@@ -281,7 +282,7 @@ export function useVideoPlayer({
   // Auto-resume from saved watch position
   useWatchHistoryResume({
     videoRef,
-    savedPosition,
+    savedPosition: savedPosition ?? null,
     isLive,
   })
 

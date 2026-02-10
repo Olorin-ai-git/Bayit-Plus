@@ -70,7 +70,7 @@ export const useProfileStore = create<ProfileStore>()(
       fetchProfiles: async () => {
         set({ isLoading: true, error: null });
         try {
-          const profiles: Profile[] = await profilesService.getProfiles();
+          const profiles = await profilesService.getProfiles() as unknown as Profile[];
           const needsSelection = profiles.length > 1 && !get().activeProfile;
           set({
             profiles,
@@ -96,7 +96,7 @@ export const useProfileStore = create<ProfileStore>()(
       selectProfile: async (profileId: string, pin?: string) => {
         set({ isLoading: true, error: null });
         try {
-          const profile: Profile = await profilesService.selectProfile(profileId, pin);
+          const profile = await profilesService.selectProfile(profileId, pin) as unknown as Profile;
           set({
             activeProfile: profile,
             isLoading: false,
@@ -114,7 +114,7 @@ export const useProfileStore = create<ProfileStore>()(
       createProfile: async (data) => {
         set({ isLoading: true, error: null });
         try {
-          const newProfile: Profile = await profilesService.createProfile(data);
+          const newProfile = await profilesService.createProfile(data) as unknown as Profile;
           set(state => ({
             profiles: [...state.profiles, newProfile],
             isLoading: false,
@@ -132,7 +132,7 @@ export const useProfileStore = create<ProfileStore>()(
       updateProfile: async (profileId: string, data) => {
         set({ isLoading: true, error: null });
         try {
-          const updatedProfile: Profile = await profilesService.updateProfile(profileId, data);
+          const updatedProfile = await profilesService.updateProfile(profileId, data) as unknown as Profile;
           set(state => ({
             profiles: state.profiles.map(p =>
               p.id === profileId ? updatedProfile : p

@@ -37,6 +37,9 @@ describe('RecordingCard', () => {
     auto_delete_at: '2026-02-26T10:00:00Z',
     subtitle_url: 'https://example.com/subs.vtt',
     channel_id: 'channel-1',
+    channel_name: 'Test Channel',
+    video_url: 'https://example.com/video.mp4',
+    view_count: 0,
   }
 
   const formatBytes = (bytes: number) => `${(bytes / 1073741824).toFixed(2)} GB`

@@ -76,7 +76,7 @@ export default function RegisterPage() {
       const response = await register({ name, email, password });
 
       // Check if payment is required (payment-first flow)
-      if (response?.requires_payment) {
+      if ((response as any)?.requires_payment) {
         // Payment required - redirect handled by PaymentPendingGuard
         // Just navigate to home and guard will show payment page
         navigate('/', { replace: true });

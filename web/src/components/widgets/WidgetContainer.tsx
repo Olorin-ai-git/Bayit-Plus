@@ -509,7 +509,7 @@ export default function WidgetContainer({
                 key={refreshKey}
                 src={streamUrl}
                 title={widget.title}
-                cover={widget.cover_url || widget.icon}
+                cover={(widget.cover_url || widget.icon) || undefined}
                 isLive={false}
                 compact
               />
@@ -527,7 +527,7 @@ export default function WidgetContainer({
                 key={refreshKey}
                 src={streamUrl}
                 title={widget.title}
-                cover={widget.cover_url || widget.icon}
+                cover={(widget.cover_url || widget.icon) || undefined}
                 isLive={true}
                 compact
               />

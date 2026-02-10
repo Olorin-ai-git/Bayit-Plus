@@ -260,7 +260,7 @@ export const DualClock: React.FC<DualClockProps> = ({
   const fetchTime = useCallback(async () => {
     try {
       const data = await zmanService.getTime();
-      setTimeData(data as TimeData);
+      setTimeData(data as unknown as TimeData);
     } catch (err) {
       logger.error('Failed to fetch time', 'DualClock', err);
       setTimeData(generateFallbackTime());
@@ -406,7 +406,7 @@ export const MiniClock: React.FC = () => {
   useEffect(() => {
     const fetchTime = async () => {
       try {
-        const data = await zmanService.getTime() as TimeData;
+        const data = await zmanService.getTime() as unknown as TimeData;
         setTime(data.israel.time);
         setIsShabbat(data.shabbat.is_shabbat);
       } catch (err) {

@@ -81,7 +81,7 @@ export default function VideoWatchParty({
           isHost={isHost}
           isSynced={isSynced}
           hostPaused={hostPaused}
-          currentUserId={currentUserId}
+          currentUserId={currentUserId || ''}
           onLeave={onLeave}
           onEnd={onEnd}
           onSendMessage={onSendMessage}
@@ -99,7 +99,7 @@ export default function VideoWatchParty({
           isHost={isHost}
           isSynced={isSynced}
           hostPaused={hostPaused}
-          currentUserId={currentUserId}
+          currentUserId={currentUserId || ''}
           onLeave={onLeave}
           onEnd={onEnd}
           onSendMessage={onSendMessage}
@@ -110,14 +110,14 @@ export default function VideoWatchParty({
       <WatchPartyCreateModal
         isOpen={showCreateModal}
         onClose={onCloseCreateModal}
-        onCreate={(options) => onCreate(options, userToken ?? undefined)}
+        onCreate={async (options) => { onCreate(options, userToken ?? undefined) }}
         contentTitle={title}
       />
 
       <WatchPartyJoinModal
         isOpen={showJoinModal}
         onClose={onCloseJoinModal}
-        onJoin={(code) => onJoin(code, userToken ?? undefined)}
+        onJoin={async (code) => { onJoin(code, userToken ?? undefined) }}
       />
 
       {/* Party Active Indicator Border */}

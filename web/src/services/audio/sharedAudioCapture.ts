@@ -16,7 +16,7 @@ export interface AudioCaptureCallbacks {
 }
 
 export class SharedAudioCapture {
-  private mediaStreamSource: MediaStreamSourceNode | null = null
+  private mediaStreamSource: MediaStreamAudioSourceNode | null = null
   private processor: ScriptProcessorNode | null = null
   private chunkCount = 0
   private audioContext: AudioContext

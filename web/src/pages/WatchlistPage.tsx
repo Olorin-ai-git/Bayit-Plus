@@ -54,7 +54,7 @@ export default function PlaylistPage() {
       setIsLoading(true);
       const data = await playlistService.getPlaylist();
       logger.debug('Playlist API response', 'PlaylistPage', data);
-      setPlaylistItems(data?.items || []);
+      setPlaylistItems((data?.items || []) as any);
     } catch (err) {
       logger.error('Playlist load error', 'PlaylistPage', err);
     } finally {

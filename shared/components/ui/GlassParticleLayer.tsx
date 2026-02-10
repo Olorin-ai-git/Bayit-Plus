@@ -54,7 +54,7 @@ const CANVAS_COLORS = {
   connection: (opacity: number) => `rgba(168, 85, 247, ${opacity})`,
 };
 
-export const GlassParticleLayer = React.forwardRef<View, GlassParticleLayerProps>(
+export const GlassParticleLayer = React.forwardRef<React.ElementRef<typeof View>, GlassParticleLayerProps>(
   ({ isActive = false, audioLevel = 0, intensity = 'medium', style, noBorder = true }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const particlesRef = useRef<Particle[]>([]);

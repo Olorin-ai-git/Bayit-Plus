@@ -63,8 +63,8 @@ export default function MorningRitualPage() {
         ritualService.check(),
         ritualService.getAIBrief(),
       ]);
-      setRitualData(checkResult);
-      setAIBrief(briefResult);
+      setRitualData(checkResult as any);
+      setAIBrief(briefResult as any);
     } catch (err) {
       logger.error('Failed to fetch ritual data', 'MorningRitualPage', err);
       handleExit();

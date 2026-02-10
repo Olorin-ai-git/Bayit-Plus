@@ -78,6 +78,7 @@ export default function ContentLibraryPage() {
     hasHeblish: boolean
     hasGrammarFlip: boolean
     hasSlangSynthesis: boolean
+    hasEngrew?: boolean
   } | null>(null)
   const [subtitleAITab, setSubtitleAITab] = useState<'hebrew' | 'english'>('hebrew')
 
@@ -146,8 +147,8 @@ export default function ContentLibraryPage() {
       refresh()
       logger.info('Content deleted by ID', {
         id: deleteItemId,
-        gcsFilesDeleted: result?.gcs_files_deleted,
-        episodesDeleted: result?.episodes_deleted,
+        gcsFilesDeleted: (result as any)?.gcs_files_deleted,
+        episodesDeleted: (result as any)?.episodes_deleted,
       })
     } catch (err) {
       logger.error('Failed to delete content by ID', { error: err, id: deleteItemId })
@@ -163,7 +164,7 @@ export default function ContentLibraryPage() {
       const itemDetails = await Promise.all(
         selectedIds.map(id => adminContentService.getContentById(id))
       )
-      setSelectedItemsData(itemDetails)
+      setSelectedItemsData(itemDetails as any)
       setShowMergeModal(true)
       logger.info('Merge wizard opened', { itemCount: itemDetails.length })
     } catch (err) {
@@ -230,7 +231,7 @@ export default function ContentLibraryPage() {
   }, [])
 
   const columns = useMemo(
-    () => getContentTableColumns(t, handleToggleFeatured, handleDeleteContent, handleSubtitleAI, handleToggleBeta),
+    () => getContentTableColumns(t as any, handleToggleFeatured, handleDeleteContent, handleSubtitleAI, handleToggleBeta),
     [t]
   )
 
@@ -282,7 +283,7 @@ export default function ContentLibraryPage() {
               icon={<Filter size={16} />}
               badge={
                 [
-                  filters.content_type && filters.content_type !== '',
+                  !!filters.content_type,
                   filters.is_published !== undefined,
                   showOnlyWithSubtitles,
                   showOnlyBetaContent,
@@ -331,7 +332,7 @@ export default function ContentLibraryPage() {
             rows={hierarchicalData}
             loading={isLoading}
             pagination={pagination}
-            onPageChange={(page) => setPagination(prev => ({ ...prev, page }))}
+            onPageChange={(page: number) => setPagination(prev => ({ ...prev, page }))}
             emptyMessage={t('admin.content.emptyMessage')}
             isRTL={isRTL}
             selectable
@@ -427,7 +428,7 @@ export default function ContentLibraryPage() {
           hasHebrew={subtitleAIContent.hasHebrew}
           hasNikud={subtitleAIContent.hasNikud}
           hasShoresh={subtitleAIContent.hasShoresh}
-          hasEngrew={subtitleAIContent.hasEngrew}
+          hasEngrew={subtitleAIContent.hasEngrew ?? false}
           contentId={subtitleAIContent.id}
           onClose={() => setSubtitleAIContent(null)}
           onModeSelect={() => {

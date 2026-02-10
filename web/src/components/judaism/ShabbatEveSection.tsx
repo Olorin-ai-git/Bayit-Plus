@@ -72,7 +72,7 @@ export function ShabbatEveSection({
     try {
       setIsLoading(true);
       const statusRes = await judaismService.getShabbatStatus(defaultCity, defaultState);
-      if (statusRes) setStatus(statusRes);
+      if (statusRes) setStatus(statusRes as any);
     } catch (err) {
       logger.error('Failed to load Shabbat data', 'ShabbatEveSection', err);
     } finally {

@@ -34,7 +34,7 @@ export default function ChessChat({
 }: ChessChatProps) {
   const { t } = useTranslation();
   const [inputText, setInputText] = useState('');
-  const scrollRef = useRef<ScrollView>(null);
+  const scrollRef = useRef<any>(null);
 
   // LiveKit voice integration (optional)
   const {

@@ -839,7 +839,7 @@ class LiveDubbingService {
     try {
       // Use centralized api - auth token is automatically injected
       const data = await api.get(`/live/${channelId}/dubbing/availability`)
-      return data as DubbingAvailability
+      return data as unknown as DubbingAvailability
     } catch (error) {
       logger.error('Error checking dubbing availability', 'liveDubbingService', error)
       return { available: false, error: 'Check failed' }
@@ -854,7 +854,7 @@ class LiveDubbingService {
     try {
       // Use centralized api - auth token is automatically injected
       const data = await api.get('/live/dubbing/voices')
-      return data as Array<{ id: string; name: string; language: string; description?: string }>
+      return data as unknown as Array<{ id: string; name: string; language: string; description?: string }>
     } catch (error) {
       logger.error('Error fetching dubbing voices', 'liveDubbingService', error)
       return []

@@ -40,7 +40,7 @@ export default function ForgotPasswordPage() {
 
     setIsSubmitting(true);
     try {
-      await authService.requestPasswordReset(email.trim());
+      await (authService as any).requestPasswordReset(email.trim());
       setIsSubmitted(true);
     } catch (err: any) {
       logger.error('Password reset request failed', 'ForgotPasswordPage', err);

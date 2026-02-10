@@ -7,7 +7,7 @@ import { colors, spacing, borderRadius } from '@olorin/design-tokens'
 import { useDirection } from '@/hooks/useDirection'
 import type { Category } from '../../types/content'
 
-interface CategoryPickerProps {
+export interface CategoryPickerProps {
   value?: string
   onChange: (categoryId: string) => void
   label?: string
@@ -73,7 +73,7 @@ export function CategoryPicker({
         name: newCategoryName,
         slug: newCategoryName.toLowerCase().replace(/\s+/g, '-'),
         is_active: true,
-      })
+      }) as Category
       setCategories([...categories, newCategory])
       onChange(newCategory.id)
       setNewCategoryName('')
@@ -110,7 +110,7 @@ export function CategoryPicker({
           <ChevronDown
             size={16}
             color={colors.textMuted}
-            style={{ transform: [{ rotate: isOpen ? '180deg' : '0deg' }] }}
+            style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' } as any}
           />
         </GlassView>
       </Pressable>

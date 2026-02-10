@@ -6,9 +6,10 @@
  */
 
 import React, { useState } from 'react';
-import { View, StyleSheet, Platform } from 'react-native';
+import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { GlassButton } from '../../../../shared/components/ui/GlassButton';
+import { GlassButton as _GlassButton } from '../../../../shared/components/ui/GlassButton';
+const GlassButton = _GlassButton as any;
 import { colors, borderRadius } from '@olorin/design-tokens';
 import { Icon } from '@olorin/shared-icons/web';
 

@@ -87,7 +87,7 @@ export const TrendingRow: React.FC<TrendingRowProps> = ({ onTopicPress }) => {
   const fetchTrending = async () => {
     try {
       setLoading(true);
-      const result = await trendingService.getTopics() as TrendingData;
+      const result = await trendingService.getTopics() as unknown as TrendingData;
       setData(result);
     } catch (err) {
       logger.error('Failed to fetch trending', 'TrendingRow', err);

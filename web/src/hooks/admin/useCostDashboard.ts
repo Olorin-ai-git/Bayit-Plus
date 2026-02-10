@@ -78,10 +78,10 @@ export const useCostDashboard = () => {
     }));
 
     try {
-      const data = await costDashboardService.getOverview({
-        scope: state.scope,
-        userId: state.selectedUserId,
-      });
+      const data = await costDashboardService.getOverview(
+        state.scope,
+        state.selectedUserId,
+      );
 
       setState((prev) => ({
         ...prev,
@@ -111,13 +111,13 @@ export const useCostDashboard = () => {
       const data = await costDashboardService.getTimeline({
         scope: state.scope,
         userId: state.selectedUserId,
-        startDate: state.dateRange.start,
-        endDate: state.dateRange.end,
-      });
+        startDate: state.dateRange.start.toISOString(),
+        endDate: state.dateRange.end.toISOString(),
+      } as any);
 
       setState((prev) => ({
         ...prev,
-        data: { ...prev.data, timeline: data },
+        data: { ...prev.data, timeline: data as any },
       }));
     } catch (error) {
       setState((prev) => ({

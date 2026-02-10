@@ -68,6 +68,9 @@ export interface PlayerState {
   error?: string | null
 }
 
+export type VideoPlayerState = PlayerState;
+export type VideoPlayerControls = PlayerControls;
+
 export interface PlayerControls {
   togglePlay: () => void
   toggleMute: () => void
@@ -83,4 +86,15 @@ export interface PlayerControls {
   setPlaybackSpeed: (speed: number) => void
   skipToNextChapter: (chapters: Chapter[], currentTime: number) => void
   skipToPreviousChapter: (chapters: Chapter[], currentTime: number) => void
+}
+
+export interface SubtitleCue {
+  id?: string
+  startTime: number
+  endTime: number
+  text: string
+  originalText?: string
+  translatedText?: string
+  language?: string
+  [key: string]: any
 }

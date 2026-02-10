@@ -755,7 +755,7 @@ export default function AISubtitlesPicker({
                               {jobProgress > 50 && isGeneratableMode(option.mode) && (
                                 <GlassButton
                                   variant="ghost"
-                                  onPress={(e: any) => { e.stopPropagation(); handleRestartJob(option.mode); }}
+                                  onPress={(e: any) => { e.stopPropagation(); handleRestartJob(option.mode as any); }}
                                   disabled={isCancelling}
                                   className="px-3 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-amber-500/80 hover:bg-amber-500 backdrop-blur-lg border border-amber-400/30 disabled:opacity-50"
                                   aria-label={t('common.restart', 'Restart')}
@@ -767,7 +767,7 @@ export default function AISubtitlesPicker({
                           ) : isGeneratableMode(option.mode) ? (
                             <GlassButton
                               variant="primary"
-                              onPress={(e: any) => handleGenerateMode(option.mode, e)}
+                              onPress={(e: any) => handleGenerateMode(option.mode as any, e)}
                               disabled={generatingMode !== null}
                               className="px-4 py-2 rounded-xl text-sm font-semibold transition-all whitespace-nowrap text-white bg-purple-500/80 hover:bg-purple-500 backdrop-blur-lg border border-purple-400/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                               aria-label={`Generate ${option.mode} subtitles for this content`}

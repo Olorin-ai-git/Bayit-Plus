@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, type ElementRef } from 'react'
 import { View, Text, ScrollView, StyleSheet } from 'react-native'
 import { GlassLoadingSpinner } from '@bayit/shared/ui'
 import { colors, spacing, borderRadius } from '@olorin/design-tokens'
@@ -21,7 +21,7 @@ export function ChatMessageList({
   isRTL = false,
   onRecommendationPress,
 }: ChatMessageListProps) {
-  const messagesEndRef = useRef<ScrollView>(null)
+  const messagesEndRef = useRef<any>(null)
 
   useEffect(() => {
     messagesEndRef.current?.scrollToEnd({ animated: true })

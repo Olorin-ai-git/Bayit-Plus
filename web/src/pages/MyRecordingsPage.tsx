@@ -15,6 +15,7 @@ import { RecordingCard } from '@/components/recordings/RecordingCard'
 import {
   RecordingsFilterBar, RecordingFilter, RecordingSortField, RecordingSortOrder,
 } from '@/components/recordings/RecordingsFilterBar'
+import { LoadingState } from '@bayit/shared-components/states'
 import logger from '@/utils/logger'
 import { styles } from './MyRecordingsPage.styles'
 import { RecordingsQuotaPanel } from '@/components/recordings/RecordingsQuotaPanel'
@@ -101,8 +102,8 @@ export default function MyRecordingsPage() {
         />
       ) : (
         <FlatList
-          data={filteredRecordings} keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
+          data={filteredRecordings} keyExtractor={(item: any) => item.id}
+          renderItem={({ item }: { item: any }) => (
             <RecordingCard recording={item} onDelete={handleDelete}
               formatBytes={formatBytes} formatDuration={formatDuration} formatDate={formatDateLocalized}
             />

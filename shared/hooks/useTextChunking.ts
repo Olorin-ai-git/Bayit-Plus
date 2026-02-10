@@ -29,7 +29,7 @@ export function useTextChunking({
 }: UseTextChunkingOptions): UseTextChunkingResult {
   const [textChunks, setTextChunks] = useState<string[]>([]);
   const [currentChunkIndex, setCurrentChunkIndex] = useState(0);
-  const chunkTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const chunkTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const splitTextIntoChunks = useCallback((inputText: string): string[] => {
     if (!inputText || !isMobile) return [inputText];

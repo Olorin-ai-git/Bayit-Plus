@@ -51,8 +51,8 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
 
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
-  const [category, setCategory] = useState('general');
-  const [priority, setPriority] = useState('medium');
+  const [category, setCategory] = useState<import('../../stores/supportStore').TicketCategory>('general');
+  const [priority, setPriority] = useState<import('../../stores/supportStore').TicketPriority>('medium');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [focusedField, setFocusedField] = useState<string | null>(null);
@@ -99,7 +99,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
         priority,
         status: 'open',
         createdAt: new Date().toISOString(),
-      });
+      } as any);
 
       onSuccess?.();
       onClose();
@@ -165,7 +165,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
                   <TouchableOpacity
                     key={cat.id}
                     className={`flex-row items-center px-3 md:px-4 py-2 ${category === cat.id ? 'bg-purple-500/20 border-purple-500' : 'bg-white/5'} rounded-lg gap-1 border-2 ${category === cat.id ? 'border-purple-500' : 'border-transparent'}`}
-                    onPress={() => setCategory(cat.id)}
+                    onPress={() => setCategory(cat.id as any)}
                   >
                     <NativeIcon
                       name={cat.icon as any}
@@ -193,7 +193,7 @@ export const SupportTicketForm: React.FC<SupportTicketFormProps> = ({
                     key={pri.id}
                     className={`flex-row items-center px-3 md:px-4 py-2 ${priority === pri.id ? 'bg-white/10' : 'bg-white/5'} rounded-lg gap-2 border-2`}
                     style={{ borderColor: priority === pri.id ? pri.color : 'transparent' }}
-                    onPress={() => setPriority(pri.id)}
+                    onPress={() => setPriority(pri.id as any)}
                   >
                     <View
                       className={`${isTV ? 'w-2.5 h-2.5 rounded-[5px]' : 'w-2 h-2 rounded-[4px]'}`}

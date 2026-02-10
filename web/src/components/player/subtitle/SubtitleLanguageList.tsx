@@ -104,6 +104,7 @@ export default function SubtitleLanguageList({
       regular: { isIconName: true, value: 'settings' },
       nikud: { isIconName: false, value: 'א׳' },
       shoresh: { isIconName: true, value: 'stories' },
+      engrew: { isIconName: true, value: 'translate' },
     }
     return icons[mode]
   }

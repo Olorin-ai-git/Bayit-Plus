@@ -7,7 +7,7 @@
 
 import React, { useMemo } from 'react';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
-import { Film, Tv, Users, Smile, Binoculars, Clock } from 'lucide-react';
+import { Film, Tv, Users, Smile, Search as Binoculars, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '../../../../shared/components/ui/GlassButton';
 import { sanitizeText, sanitizeCategory } from '../../utils/sanitize';

@@ -10,5 +10,6 @@
  * the specific platform extensions.
  */
 
-export { WizardSprite, SpritesheetType } from './WizardSprite.native';
+export { WizardSprite } from './WizardSprite.native';
+export type { SpritesheetType } from './WizardSprite.native';
 export type { default } from './WizardSprite.native';

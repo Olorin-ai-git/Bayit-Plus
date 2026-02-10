@@ -86,7 +86,7 @@ export function LLMSearchModal({
         <View className="flex-1 bg-black/80 items-center justify-center p-6">
           <View className="bg-black/40 backdrop-blur-xl rounded-3xl border border-white/20 p-8 max-w-md">
             <View className="items-center mb-4">
-              <NativeIcon name="lock" size="3xl" color="#ffffff" />
+              <NativeIcon name="lock" size="2xl" color="#ffffff" />
             </View>
             <Text className="text-white text-2xl font-bold text-center mb-4">
               {t('search.premiumFeature')}

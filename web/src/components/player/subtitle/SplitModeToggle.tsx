@@ -41,7 +41,6 @@ export default function SplitModeToggle({
       onPress={handlePress}
       onFocus={() => setIsFocused(true)}
       onBlur={() => setIsFocused(false)}
-      // @ts-expect-error - onKeyDown is web-specific
       onKeyDown={handleKeyDown}
       disabled={disabled}
       accessible={true}

@@ -7,7 +7,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { GlassButton } from '../../../../shared/components/ui/GlassButton';
+import { GlassButton as _GlassButton } from '../../../../shared/components/ui/GlassButton';
+
+const GlassButton = _GlassButton as any;
 import { VoiceSearchButton } from '../../../../shared/components/VoiceSearchButton';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { colors, borderRadius, spacing } from '@olorin/design-tokens';

@@ -98,7 +98,7 @@ export function useContentForm(contentId?: string) {
         ratingType: typeof sanitizedData.rating,
       })
 
-      setFormData(sanitizedData)
+      setFormData(sanitizedData as any)
       log.debug('Form data updated')
       log.info('Content loaded for editing', { contentId })
     } catch (err) {
@@ -177,7 +177,7 @@ export function useContentForm(contentId?: string) {
 
       if (contentId) {
         log.debug('Calling updateContent API', { contentId })
-        const result = await adminContentService.updateContent(contentId, sanitizedPayload)
+        const result = await adminContentService.updateContent(contentId, sanitizedPayload as any)
         log.debug('Update successful', result)
         showNotification.showSuccess(
           t('admin.content.updateSuccess', 'Content updated successfully'),
@@ -186,7 +186,7 @@ export function useContentForm(contentId?: string) {
         log.info('Content updated', { contentId })
       } else {
         log.debug('Calling createContent API')
-        const result = await adminContentService.createContent(sanitizedPayload as Content)
+        const result = await adminContentService.createContent(sanitizedPayload as any)
         log.debug('Create successful', result)
         showNotification.showSuccess(
           t('admin.content.createSuccess', 'Content created successfully'),

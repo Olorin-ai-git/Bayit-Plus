@@ -105,7 +105,7 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
         })));
       } else if (activeTab === 'radio') {
         logger.info('Loading radio stations...', 'ContentPickerModal');
-        const response = await radioService.getStations({});
+        const response = await radioService.getStations('' as any);
         logger.info(`Loaded ${response.stations?.length || 0} radio stations`, 'ContentPickerModal');
 
         setRadioStations((response.stations || []).map((item: any) => ({
@@ -115,7 +115,7 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
         })));
       } else if (activeTab === 'audiobooks') {
         logger.info('Loading audiobooks...', 'ContentPickerModal');
-        const response = await audiobookService.getAudiobooks({ page_size: 100 });
+        const response = await audiobookService.getAudiobooks({ page_size: 100 } as any);
         logger.info(`Loaded ${response.items?.length || 0} audiobooks`, 'ContentPickerModal');
 
         // Filter to only parent audiobooks (is_series=true, no series_id)
@@ -165,7 +165,7 @@ export const ContentPickerModal: React.FC<ContentPickerModalProps> = ({
       contentItem = {
         id: item.id,
         title: item.title,
-        type: 'audiobook',
+        type: 'audiobook' as any,
         thumbnail: item.thumbnail,
       };
     } else {

@@ -138,7 +138,7 @@ export default function PlaylistPage() {
     setLoading(true);
     try {
       const data = await playlistService.getPlaylist();
-      setPlaylist(data.items || []);
+      setPlaylist((data as any).items || []);
     } catch (error) {
       logger.error('Failed to load playlist', 'PlaylistPage', error);
     } finally {
@@ -174,12 +174,12 @@ export default function PlaylistPage() {
       ) : playlist.length > 0 ? (
         <FlatList
           data={playlist}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item: any) => item.id}
           numColumns={numColumns}
           key={numColumns}
           contentContainerStyle={styles.gridContent}
           columnWrapperStyle={numColumns > 1 ? styles.gridRow : undefined}
-          renderItem={({ item }) => (
+          renderItem={({ item }: { item: any }) => (
             <View style={[styles.gridItem, { maxWidth: `${100 / numColumns}%` }]}>
               <PlaylistCard item={item} onRemove={handleRemove} />
             </View>

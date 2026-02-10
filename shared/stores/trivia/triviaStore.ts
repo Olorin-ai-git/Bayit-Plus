@@ -37,7 +37,7 @@ export const useTriviaStore = create<TriviaStore>()(
       ...createLoadSlice(set, get),
       ...createDisplaySlice(set, get),
       ...createUtilitySlice(set, get),
-    }),
+    } as TriviaStore),
     {
       name: 'bayit-trivia-store',
       storage: createJSONStorage(() => AsyncStorage),

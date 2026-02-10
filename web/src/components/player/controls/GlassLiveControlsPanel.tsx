@@ -4,7 +4,7 @@
  * Contains Live Language Magic (premium), Live Translate, and Live Dubbing buttons
  */
 
-import { useRef, useEffect, useState, useCallback, useMemo } from 'react'
+import { useRef, useEffect, useState, useCallback, useMemo, type ElementRef } from 'react'
 import { View, Text, Pressable, Animated, StyleSheet, Modal, Platform } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import { Maximize, Minimize, Sparkles, X, ChevronLeft, ChevronRight } from 'lucide-react'
@@ -139,7 +139,7 @@ export function GlassLiveControlsPanel({
 
   // Carousel state
   const [focusedIndex, setFocusedIndex] = useState(0)
-  const panelRef = useRef<View>(null)
+  const panelRef = useRef<ElementRef<typeof View>>(null)
   const [isCarouselHovered, setIsCarouselHovered] = useState(false)
   const [isAnyItemFocused, setIsAnyItemFocused] = useState(false)
 
@@ -325,7 +325,7 @@ export function GlassLiveControlsPanel({
     }).start()
   }, [isExpanded, expandAnim])
 
-  const dragHandleRef = useRef<View>(null)
+  const dragHandleRef = useRef<ElementRef<typeof View>>(null)
 
   useEffect(() => {
     // Drag handle only works on web platform

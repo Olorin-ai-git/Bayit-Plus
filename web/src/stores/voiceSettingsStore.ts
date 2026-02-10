@@ -45,7 +45,7 @@ const DEFAULT_VOICE_PREFERENCES: VoicePreferences = {
   wake_word: 'buyit',
   wake_word_sensitivity: 0.7,
   wake_word_cooldown_ms: 2000,
-  voice_mode: VoiceMode.HYBRID,
+  voice_mode: 'hybrid' as VoiceMode,
   tts_enabled: true,
   tts_volume: 1.0,
   tts_speed: 1.0,
@@ -121,7 +121,7 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
         set({ preferences: updated, saving: true, error: null });
 
         try {
-          await profilesService.updateVoicePreferences(updated);
+          await profilesService.updateVoicePreferences(updated as any);
           set({ saving: false });
         } catch (error: any) {
           // Rollback on error

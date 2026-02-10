@@ -97,7 +97,7 @@ export default function VODPageContentSection({
               variant="grid"
               style={{ width: `${100 / numColumns}%`, padding: spacing.xs } as any}
             >
-              <ContentCard content={item} />
+              <ContentCard content={item as any} />
             </AnimatedCard>
           ))}
         </View>

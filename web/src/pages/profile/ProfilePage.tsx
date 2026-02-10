@@ -72,7 +72,7 @@ export default function ProfilePage() {
         <GlassTabs
           tabs={tabs.map((tab) => ({ id: tab.id, label: tab.label }))}
           activeTab={activeTab}
-          onChange={(id) => setActiveTab(id as TabId)}
+          onChange={(id: string) => setActiveTab(id as TabId)}
         />
       </View>
 

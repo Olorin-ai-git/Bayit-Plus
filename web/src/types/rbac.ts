@@ -108,4 +108,8 @@ export interface User {
   updated_at?: string;
   last_login?: string;
   metadata?: Record<string, any>;
+  payment_pending?: boolean;
+  pending_plan_id?: string;
+  preferences?: Record<string, any>;
+  token?: string;
 }

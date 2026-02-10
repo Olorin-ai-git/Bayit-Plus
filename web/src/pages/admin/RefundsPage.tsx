@@ -126,7 +126,7 @@ export default function RefundsPage() {
         type: 'action',
         onPress: async () => {
           try {
-            await billingService.rejectRefund(id);
+            await billingService.rejectRefund(id, '');
             notifications.showSuccess(t('admin.refunds.rejectSuccess', 'Refund rejected'));
             loadRefunds();
           } catch (err: any) {

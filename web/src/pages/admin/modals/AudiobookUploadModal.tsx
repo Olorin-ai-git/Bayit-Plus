@@ -36,7 +36,7 @@ export default function AudiobookUploadModal({ audiobook, visible, onClose }: Au
     if (!selectedFile || !audiobook?.id) { setError(t('admin.audiobooks.upload.selectionRequired', 'File and audiobook selection required')); return }
     setIsUploading(true); setError(null); setStreamUrl('')
     try {
-      const result = await adminAudiobookService.uploadAudioFile(audiobook.id, selectedFile, (percent: number) => setProgress(percent))
+      const result = await adminAudiobookService.uploadAudioFile(selectedFile, (p) => setProgress(p.percent))
       setStreamUrl(result.stream_url); setSelectedFile(null); setProgress(0)
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Upload failed'

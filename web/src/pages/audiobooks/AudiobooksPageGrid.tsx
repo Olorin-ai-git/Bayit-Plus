@@ -137,12 +137,12 @@ export default function AudiobooksPageGrid({
     <>
       <FlatList
         data={audiobooks}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item: any) => item.id}
         numColumns={numColumns}
         key={numColumns}
         contentContainerStyle={styles.gridContainer}
         columnWrapperStyle={numColumns > 1 ? styles.columnWrapper : undefined}
-        renderItem={({ item }) => (
+        renderItem={({ item }: { item: any }) => (
           <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
             <AudiobookCard audiobook={item} />
           </View>

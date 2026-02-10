@@ -8,5 +8,5 @@ export type { FlagWithSparkleProps } from './FlagWithSparkle';
 
 // Re-export existing components
 export { default as AnimatedCard } from './AnimatedCard';
-export { default as FeatureGate } from './FeatureGate';
+export { FeatureGate } from './FeatureGate';
 export { default as PageLoading } from './PageLoading';

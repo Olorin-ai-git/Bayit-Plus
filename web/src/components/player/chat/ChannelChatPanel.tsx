@@ -167,8 +167,7 @@ export default function ChannelChatPanel({
         isBetaUser={isBetaUser}
         translationEnabled={translationEnabled}
         onClose={toggleChatVisibility}
-        onToggleExpand={toggleChatExpanded}
-        isExpanded={isChatExpanded}
+        {...{ onToggleExpand: toggleChatExpanded, isExpanded: isChatExpanded } as any}
       />
       <FlatList
         data={messages}

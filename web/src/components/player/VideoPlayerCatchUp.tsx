@@ -59,7 +59,7 @@ export default function VideoPlayerCatchUp({
 
       {!showAutoPrompt && !showSummary && (
         <CatchUpButton
-          creditCost={creditCost}
+          {...{ creditCost } as any}
           disabled={!hasCredits}
           isLoading={isLoading}
           onPress={() => fetchSummary()}

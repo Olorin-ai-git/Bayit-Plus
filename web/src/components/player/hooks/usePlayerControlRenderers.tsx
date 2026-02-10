@@ -194,7 +194,7 @@ export function usePlayerControlRenderers({
         currentLanguage={currentSubtitleLang}
         enabled={subtitlesEnabled}
         settings={subtitleSettings}
-        onLanguageChange={handleSubtitleLanguageChange}
+        onLanguageChange={handleSubtitleLanguageChange as any}
         onToggle={handleSubtitleToggle}
         onSettingsChange={handleSubtitleSettingsChange}
         onSubtitlesRefresh={fetchAvailableSubtitles}
@@ -223,7 +223,7 @@ export function usePlayerControlRenderers({
         isLive={isLive}
         isPremium={isPremium}
         videoElement={videoRef.current}
-        onSubtitleCue={handleLiveSubtitleCue}
+        onSubtitleCue={handleLiveSubtitleCue as any}
         onShowUpgrade={onShowUpgrade}
         targetLang={liveSubtitleLang}
         onLanguageChange={setLiveSubtitleLang}
@@ -271,7 +271,7 @@ export function usePlayerControlRenderers({
         quotaExceeded={dubbingQuotaExceeded}
         targetLanguage={dubbing.targetLanguage}
         availableLanguages={dubbing.availableLanguages}
-        availableVoices={dubbing.availableVoices}
+        availableVoices={dubbing.availableVoices as any}
         latencyMs={dubbing.latencyMs}
         error={dubbing.error}
         onDisableSubtitles={() => liveSubtitleService.disconnect()}
@@ -314,7 +314,7 @@ export function usePlayerControlRenderers({
         channelId={contentId}
         isLive={isLive}
         isPremium={isPremium}
-        onShowUpgrade={onShowUpgrade}
+        onShowUpgrade={onShowUpgrade as any}
         onRecordingStateChange={(recording, duration) => {
           setIsRecording(recording)
           setRecordingDuration(duration)

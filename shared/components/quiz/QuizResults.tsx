@@ -151,7 +151,7 @@ export const QuizResults: React.FC<QuizResultsProps> = ({
                   {isRTL ? badge.name_he : badge.name}
                 </Text>
                 <GlassBadge
-                  variant={badge.rarity as 'common' | 'rare' | 'epic' | 'legendary'}
+                  variant={({ common: 'default', rare: 'primary', epic: 'purple', legendary: 'warning' } as Record<string, 'default' | 'primary' | 'success' | 'danger' | 'warning' | 'purple'>)[badge.rarity] || 'default'}
                   size="sm"
                 >
                   +{badge.points_bonus}

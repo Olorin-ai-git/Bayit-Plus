@@ -34,7 +34,7 @@ export function useEpisodePlayer(): UseEpisodePlayerResult {
     onConfirm: () => void
   ) => {
     try {
-      await adminPodcastsService.deleteEpisode(showId, episodeId);
+      await (adminPodcastsService as any).deleteEpisode(showId, episodeId);
       onConfirm();
       logger.info('Episode deleted successfully');
     } catch (error) {

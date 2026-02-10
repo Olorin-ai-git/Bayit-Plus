@@ -53,7 +53,7 @@ export interface WebSocketCallbacks {
 
 export class VoiceWebSocketHandler {
   private ws: WebSocket | null = null;
-  private pingInterval: NodeJS.Timeout | null = null;
+  private pingInterval: ReturnType<typeof setInterval> | null = null;
   private currentResponse = '';
 
   connect(url: string, callbacks: WebSocketCallbacks): void {

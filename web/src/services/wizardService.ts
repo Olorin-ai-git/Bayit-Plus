@@ -50,7 +50,7 @@ export async function sendVoiceCommand(
 
     logger.debug('[WizardService] Sending voice command', 'wizardService', payload);
 
-    const response = await api.post('/voice/unified', payload);
+    const response = await api.post('/voice/unified', payload) as WizardVoiceResponse;
 
     logger.debug('[WizardService] Received wizard response', 'wizardService', {
       intent: response.intent,

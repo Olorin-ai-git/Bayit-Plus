@@ -96,6 +96,7 @@ interface AgeGroup {
 }
 
 function KidsContentCard({ item }: { item: KidsContentItem }) {
+  const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
   const categoryIconName = CATEGORY_ICON_NAMES[item.category || 'all'] || 'discover';
 
@@ -293,7 +294,7 @@ export default function ChildrenPage() {
 
   const loadSubcategories = async () => {
     try {
-      const response = await childrenService.getSubcategories();
+      const response = await childrenService.getCategories() as any;
       if (response?.subcategories && Array.isArray(response.subcategories)) {
         setSubcategories(response.subcategories);
       }
@@ -304,7 +305,7 @@ export default function ChildrenPage() {
 
   const loadAgeGroups = async () => {
     try {
-      const response = await childrenService.getAgeGroups();
+      const response = await (childrenService as any).getAgeGroups();
       if (response?.age_groups && Array.isArray(response.age_groups)) {
         setAgeGroups(response.age_groups);
       }
@@ -320,9 +321,9 @@ export default function ChildrenPage() {
 
       let response;
       if (selectedSubcategory) {
-        response = await childrenService.getContentBySubcategory(selectedSubcategory, maxAge);
+        response = await (childrenService as any).getContentBySubcategory(selectedSubcategory, maxAge);
       } else if (selectedAgeGroup) {
-        response = await childrenService.getContentByAgeGroup(selectedAgeGroup);
+        response = await (childrenService as any).getContentByAgeGroup(selectedAgeGroup);
       } else {
         const category = selectedCategory !== 'all' ? selectedCategory : undefined;
         response = await childrenService.getContent(category, maxAge);
@@ -491,12 +492,12 @@ export default function ChildrenPage() {
         ) : content.length > 0 ? (
           <FlatList
             data={content}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item: any) => item.id}
             numColumns={numColumns}
             key={numColumns}
             contentContainerStyle={{ gap: spacing.md }}
             columnWrapperStyle={numColumns > 1 ? { gap: spacing.md } : undefined}
-            renderItem={({ item }) => (
+            renderItem={({ item }: { item: any }) => (
               <View style={{ flex: 1, maxWidth: `${100 / numColumns}%` }}>
                 <KidsContentCard item={item} />
               </View>

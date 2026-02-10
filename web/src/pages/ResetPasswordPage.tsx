@@ -96,7 +96,7 @@ export default function ResetPasswordPage() {
 
     setIsSubmitting(true);
     try {
-      await authService.confirmPasswordReset(token!, newPassword);
+      await (authService as any).confirmPasswordReset(token!, newPassword);
       setIsSuccess(true);
     } catch (err: any) {
       logger.error('Password reset confirm failed', 'ResetPasswordPage', err);

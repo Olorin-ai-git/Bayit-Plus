@@ -30,7 +30,7 @@ export const useVoiceSettingsStore = create<VoiceSettingsStore>()(
       error: null,
 
       get modeConfig() {
-        const currentMode = get().preferences.voice_mode || VoiceMode.VOICE_ONLY;
+        const currentMode = (get().preferences.voice_mode || VoiceMode.VOICE_ONLY) as VoiceMode;
         return MODE_CONFIGS[currentMode];
       },
 

@@ -69,7 +69,7 @@ describe('adminAudiobookService', () => {
         is_featured: true,
         visibility_mode: 'private',
         min_rating: 4.0,
-      })
+      } as any)
 
       expect(api.get).toHaveBeenCalled()
       const callUrl = (api.get as jest.Mock).mock.calls[0][0]

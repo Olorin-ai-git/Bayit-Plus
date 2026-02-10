@@ -20,22 +20,38 @@ const mockResults: SearchResult[] = [
     title: 'Action Movie 1',
     description: 'Exciting action movie with thrills',
     thumbnail: 'https://example.com/thumb1.jpg',
+    category_id: 'cat-1',
     category_name: 'Movies',
-    year: '2023',
-    rating: '4.5',
+    year: 2023,
+    rating: 4.5,
     duration: '120 min',
+    is_series: false,
+    is_kids_content: false,
     requires_subscription: 'free',
+    available_subtitle_languages: [],
+    has_subtitles: false,
+    view_count: 0,
+    avg_rating: 0,
+    is_featured: false,
   },
   {
     id: '2',
     title: 'Drama Series 2',
     description: 'Emotional drama series',
-    thumbnail: null,
+    thumbnail: undefined,
+    category_id: 'cat-2',
     category_name: 'Series',
-    year: '2024',
-    rating: '4.8',
+    year: 2024,
+    rating: 4.8,
     duration: '45 min',
+    is_series: true,
+    is_kids_content: false,
     requires_subscription: 'premium',
+    available_subtitle_languages: [],
+    has_subtitles: false,
+    view_count: 0,
+    avg_rating: 0,
+    is_featured: false,
   },
 ];
 
@@ -128,9 +144,17 @@ describe('SearchResultsList', () => {
         id: '1',
         title: 'Free Movie',
         description: 'Free content',
-        thumbnail: null,
+        thumbnail: undefined,
+        category_id: 'cat-1',
         category_name: 'Movies',
+        is_series: false,
+        is_kids_content: false,
         requires_subscription: 'free',
+        available_subtitle_languages: [],
+        has_subtitles: false,
+        view_count: 0,
+        avg_rating: 0,
+        is_featured: false,
       },
     ];
 
@@ -218,7 +242,7 @@ describe('SearchResultsList', () => {
     );
 
     const flatList = screen.getByTestId('flatlist');
-    fireEvent(flatList, 'onEndReached');
+    fireEvent(flatList, new Event('onEndReached'));
 
     expect(mockOnLoadMore).toHaveBeenCalled();
   });
@@ -264,9 +288,17 @@ describe('SearchResultsList', () => {
         id: '1',
         title: 'This is a very long title that should be truncated to fit in a single line without wrapping',
         description: 'Description',
-        thumbnail: null,
+        thumbnail: undefined,
+        category_id: 'cat-1',
         category_name: 'Movies',
+        is_series: false,
+        is_kids_content: false,
         requires_subscription: 'free',
+        available_subtitle_languages: [],
+        has_subtitles: false,
+        view_count: 0,
+        avg_rating: 0,
+        is_featured: false,
       },
     ];
 

@@ -21,7 +21,7 @@ export const GlassTooltip: React.FC<GlassTooltipProps> = ({
   disabled = false,
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const containerRef = useRef<View>(null);
+  const containerRef = useRef<React.ElementRef<typeof View>>(null);
 
   // Only show tooltip on web with mouse hover
   if (Platform.OS !== 'web' || disabled || !content) {

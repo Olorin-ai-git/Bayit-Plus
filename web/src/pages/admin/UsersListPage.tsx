@@ -80,8 +80,8 @@ export default function UsersListPage() {
         ...filters,
         page: pagination.page,
         page_size: pagination.pageSize,
-      });
-      setUsers(data.items || []);
+      } as any);
+      setUsers((data.items || []) as any);
       setPagination((prev) => ({ ...prev, total: data.total || 0 }));
     } catch (error) {
       logger.error('Failed to load users', 'UsersListPage', error);
@@ -172,9 +172,9 @@ export default function UsersListPage() {
 
   const renderStatusBadge = (user: User) => {
     let status = 'inactive';
-    if (user.is_banned) {
+    if ((user as any).is_banned) {
       status = 'banned';
-    } else if (user.is_active) {
+    } else if ((user as any).is_active) {
       status = 'active';
     }
 

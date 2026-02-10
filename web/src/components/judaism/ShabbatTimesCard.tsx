@@ -75,7 +75,7 @@ export function ShabbatTimesCard({ defaultCity = 'New York', defaultState = 'NY'
         selectedCity.geoname_id
       );
       if (response) {
-        setShabbatTimes(response);
+        setShabbatTimes(response as any);
       }
     } catch (err) {
       logger.error('Failed to load Shabbat times', 'ShabbatTimesCard', err);

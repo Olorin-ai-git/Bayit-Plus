@@ -5,7 +5,19 @@
 
 // Content and media types
 export * from './content'
-export * from './podcast'
+// Podcast types (excluding PodcastEpisode/AudioQuality which conflict with ./content and ./audiobook)
+export {
+  PodcastEpisodeTranslationSchema,
+  PodcastEpisodeSchema,
+  type PodcastEpisodeTranslation,
+  type AudioQuality as PodcastAudioQuality,
+  type AudioQualityVariant,
+  type GetEpisodeResponse,
+  type TranslationStatusResponse,
+  type TranslationQueueResponse,
+  PodcastTranslationError,
+  type EpisodesResponse,
+} from './podcast'
 export * from './subtitle'
 export * from './widget'
 
@@ -14,6 +26,3 @@ export * from './audiobook'
 
 // RBAC and security types
 export * from './rbac'
-
-// Global types
-export type { GlobalWindow } from './global.d'

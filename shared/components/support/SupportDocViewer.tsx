@@ -185,7 +185,7 @@ export const SupportDocViewer: React.FC = () => {
   if (error) {
     return (
       <View className="flex-1 items-center justify-center gap-3 md:gap-4">
-        <NativeIcon name="alertTriangle" size={isTV ? '3xl' : '2xl'} color="#ef4444" />
+        <NativeIcon name="alertTriangle" size={isTV ? 64 : '2xl'} color="#ef4444" />
         <Text className={`${isTV ? 'text-base' : 'text-sm'} text-red-500`} style={{ textAlign }}>{error}</Text>
         <TouchableOpacity className="bg-purple-500 px-4 md:px-6 py-2 md:py-3 rounded-lg mt-3 md:mt-4" onPress={handleBack}>
           <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-black`}>

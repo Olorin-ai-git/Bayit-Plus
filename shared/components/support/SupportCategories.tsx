@@ -161,7 +161,7 @@ export const SupportCategories: React.FC = () => {
   if (error) {
     return (
       <View className="p-8 md:p-16 items-center justify-center gap-3 md:gap-4">
-        <NativeIcon name="alertTriangle" size={isTV ? '3xl' : '2xl'} color="#ef4444" />
+        <NativeIcon name="alertTriangle" size={isTV ? 64 : '2xl'} color="#ef4444" />
         <Text className={`${isTV ? 'text-base' : 'text-sm'} text-red-500`} style={{ textAlign }}>{error}</Text>
         <TouchableOpacity className="bg-purple-500 px-4 md:px-6 py-2 md:py-3 rounded-lg" onPress={loadCategories}>
           <Text className={`${isTV ? 'text-sm' : 'text-xs'} font-semibold text-black`}>

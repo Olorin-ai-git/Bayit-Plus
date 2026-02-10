@@ -3,7 +3,7 @@
  * Chat interface for Watch Party with message bubbles
  */
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type ElementRef } from 'react'
 import { View, Text, ScrollView } from 'react-native'
 import { useTranslation } from 'react-i18next'
 import WatchPartyChatInput from './WatchPartyChatInput'
@@ -80,7 +80,7 @@ export default function WatchPartyChat({
   isPanelOpen = false,
 }: WatchPartyChatProps) {
   const { t } = useTranslation()
-  const scrollViewRef = useRef<ScrollView>(null)
+  const scrollViewRef = useRef<any>(null)
 
   useEffect(() => {
     scrollViewRef.current?.scrollToEnd({ animated: true })

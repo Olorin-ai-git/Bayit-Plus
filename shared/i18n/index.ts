@@ -52,7 +52,7 @@ const resources = {
   ta: { translation: ta },
   bn: { translation: bn },
   ja: { translation: ja },
-} as const;
+};
 
 // Initialize i18next with sensible defaults
 // Note: Language is set to 'he' by default, platform-specific init will update it
@@ -69,8 +69,8 @@ i18n
     react: {
       useSuspense: false,
     },
-    // Use v3 format for environments without Intl.PluralRules (like tvOS)
-    compatibilityJSON: 'v3',
+    // Use v4 format (i18next 25.x+ dropped v3 support)
+    compatibilityJSON: 'v4',
   });
 
 /**

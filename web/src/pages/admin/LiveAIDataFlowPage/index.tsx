@@ -24,11 +24,11 @@ export default function LiveAIDataFlowPage() {
     { id: 'trivia', label: t('liveAiDataFlow.tabs.trivia') },
   ], [t])
 
-  const content: TabContent[] = useMemo(() => [
+  const content = useMemo(() => [
     { tabId: 'translation', render: () => <TranslationFlowTab /> },
     { tabId: 'dubbing', render: () => <DubbingFlowTab /> },
     { tabId: 'trivia', render: () => <TriviaFlowTab /> },
-  ], [])
+  ] as unknown as TabContent[], [])
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>

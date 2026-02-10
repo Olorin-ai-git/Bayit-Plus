@@ -49,7 +49,7 @@ export function useContentLoader(
     setLoading(true);
     try {
       let data: ContentData;
-      let stream: { url?: string; stream_url?: string; stream_type?: string } | undefined;
+      let stream: { url?: string; stream_url?: string; stream_type?: string; [key: string]: any } | undefined;
 
       // If initial content data was provided (scraped articles/events), use it
       if (initialContentData) {
@@ -69,7 +69,7 @@ export function useContentLoader(
       try {
         switch (contentType) {
           case 'live':
-            data = await liveService.getChannel(contentId);
+            data = await liveService.getChannel(contentId) as unknown as ContentData;
             if ((data as any).available_translation_languages) {
               logger.debug('Channel available_translation_languages', 'useContentLoader', (data as any).available_translation_languages);
               setAvailableSubtitleLanguages((data as any).available_translation_languages);
@@ -78,13 +78,13 @@ export function useContentLoader(
             }
             break;
           case 'radio':
-            data = await radioService.getStation(contentId);
+            data = await radioService.getStation(contentId) as unknown as ContentData;
             break;
           case 'podcast':
-            data = await podcastService.getShow(contentId);
+            data = await podcastService.getShow(contentId) as unknown as ContentData;
             break;
           default:
-            data = await contentService.getById(contentId);
+            data = await contentService.getById(contentId) as unknown as ContentData;
         }
 
         setContent(data);
@@ -135,8 +135,8 @@ export function useContentLoader(
         if (stream?.stream_type) {
           setStreamType(stream.stream_type);
         }
-        const isTranscodedValue = stream?.is_transcoded || false;
-        const directUrlValue = stream?.direct_url || null;
+        const isTranscodedValue = (stream as any)?.is_transcoded || false;
+        const directUrlValue = (stream as any)?.direct_url || null;
         logger.debug('Setting stream URL', 'useContentLoader', {
           streamUrlValue,
           isTranscoded: isTranscodedValue,

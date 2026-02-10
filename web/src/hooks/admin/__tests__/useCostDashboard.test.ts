@@ -10,31 +10,31 @@ describe('useCostDashboard', () => {
     expect(result.current.activeTab).toBe('overview');
   });
 
-  it('updates scope when onScopeChange is called', () => {
+  it('updates scope when setScope is called', () => {
     const { result } = renderHook(() => useCostDashboard());
 
     act(() => {
-      result.current.onScopeChange('per_user');
+      result.current.setScope('per_user');
     });
 
     expect(result.current.scope).toBe('per_user');
   });
 
-  it('updates selected user when onUserSelect is called', () => {
+  it('updates selected user when setScope is called with userId', () => {
     const { result } = renderHook(() => useCostDashboard());
 
     act(() => {
-      result.current.onUserSelect('user-123');
+      result.current.setScope('per_user', 'user-123');
     });
 
     expect(result.current.selectedUserId).toBe('user-123');
   });
 
-  it('updates active tab when onTabChange is called', () => {
+  it('updates active tab when setActiveTab is called', () => {
     const { result } = renderHook(() => useCostDashboard());
 
     act(() => {
-      result.current.onTabChange('timeline');
+      result.current.setActiveTab('timeline');
     });
 
     expect(result.current.activeTab).toBe('timeline');
@@ -72,11 +72,11 @@ describe('useCostDashboard', () => {
     expect(result.current.data).toHaveProperty('breakdown');
   });
 
-  it('updates scope with user ID when onScopeChange includes userId', () => {
+  it('updates scope with user ID when setScope includes userId', () => {
     const { result } = renderHook(() => useCostDashboard());
 
     act(() => {
-      result.current.onScopeChange('per_user', 'user-456');
+      result.current.setScope('per_user', 'user-456');
     });
 
     expect(result.current.scope).toBe('per_user');

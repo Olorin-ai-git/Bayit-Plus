@@ -2,6 +2,14 @@
  * API Types - TypeScript interfaces for API requests and responses
  */
 
+// Generic API response wrapper
+export interface ApiResponse<T = any> {
+  data: T;
+  status: number;
+  message?: string;
+  [key: string]: any;
+}
+
 // Search Filters
 export interface SearchFilters {
   type?: 'all' | 'movies' | 'series' | 'channels' | 'radio' | 'podcasts';

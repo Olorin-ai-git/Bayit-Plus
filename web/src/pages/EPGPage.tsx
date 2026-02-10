@@ -307,6 +307,7 @@ const EPGPage: React.FC = () => {
         {/* Recording Modal */}
         {recordModal.isOpen && recordModal.program && (
           <EPGRecordModal
+            visible={recordModal.isOpen}
             program={recordModal.program}
             channelName={recordModal.channelName}
             onClose={handleRecordModalClose}

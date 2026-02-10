@@ -135,8 +135,8 @@ export function useChromecastWeb({
           sessionRef.current = session
           setIsConnected(true)
           setIsConnecting(false)
-          setDeviceName(session.getCastDevice?.()?.friendlyName || 'Chromecast')
-          log.info('Session started', { sessionId: session.getSessionId() })
+          setDeviceName((session as any).getCastDevice?.()?.friendlyName || 'Chromecast')
+          log.info('Session started', { sessionId: (session as any).getSessionId?.() })
 
           // Load current media if metadata available
           if (metadataRef.current) {

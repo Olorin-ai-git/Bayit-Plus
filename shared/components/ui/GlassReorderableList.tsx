@@ -52,7 +52,7 @@ export function GlassReorderableList<T>({
     itemHeights: [],
   });
 
-  const containerRef = useRef<View>(null);
+  const containerRef = useRef<React.ElementRef<typeof View>>(null);
   const itemRefs = useRef<Map<string, { height: number; top: number }>>(new Map());
 
   // Handle item layout to track heights

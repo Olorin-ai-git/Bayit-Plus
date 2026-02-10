@@ -59,7 +59,7 @@ export default function AddPodcastModal({ visible, onClose, onSuccess }: AddPodc
     setState('resolving');
 
     try {
-      const data = await podcastService.resolveUrl(url.trim(), provider);
+      const data = await (podcastService as any).resolveUrl(url.trim(), provider);
       setPreview(data);
       setState('preview');
     } catch (err: unknown) {
@@ -76,7 +76,7 @@ export default function AddPodcastModal({ visible, onClose, onSuccess }: AddPodc
     setState('adding');
 
     try {
-      await podcastService.addFromUrl(preview.rss_url);
+      await (podcastService as any).addFromUrl(preview.rss_url);
       setState('success');
       // Brief delay before closing for the success state to be visible
       setTimeout(() => {

@@ -32,7 +32,7 @@ export default function VoiceConfigurationPanel() {
     setLoading(true);
     try {
       const response = await voiceManagementService.getVoiceConfig();
-      setConfig(response.config);
+      setConfig((response as any).config);
     } catch (error: any) {
       logger.error('Failed to load voice config', 'VoiceConfigurationPanel', error);
       setErrorMessage(error?.message || 'Failed to load voice configuration');

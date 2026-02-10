@@ -29,7 +29,7 @@ interface SearchResult {
 /**
  * Get localized text from search result
  */
-function getLocalizedText(result: SearchResult, language: string): string {
+function getLocalizedText(result: SearchResult, language: string): { title: string; description: string } {
   // Get localized title
   let title = result.title;
   if (language === 'en' && result.title_en) {

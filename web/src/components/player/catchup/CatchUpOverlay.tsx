@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: glass.bgStrong, borderRadius: borderRadius.lg, padding: spacing.md,
     borderWidth: 1, borderColor: glass.border,
-    // @ts-expect-error backdropFilter is web-only
     backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
   },
   header: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm },

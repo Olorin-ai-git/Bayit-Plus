@@ -54,6 +54,7 @@ describe('audiobookService', () => {
         page_size: 25,
         author: 'John',
         sort_by: 'title',
+        sort_order: 'asc',
       }
 
       const mockResponse: AudiobookListResponse = {

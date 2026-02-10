@@ -81,7 +81,7 @@ export function useYouTubePlaylistChannel(
     if (!isYouTubePlaylist || !channelId) return;
 
     try {
-      const response = await liveService.getStreamUrl(channelId) as YouTubePlaylistStreamResponse;
+      const response = await liveService.getStreamUrl(channelId) as unknown as YouTubePlaylistStreamResponse;
 
       if (response.stream_type === 'youtube-playlist' && response.current_program) {
         setStreamUrl(response.stream_url);

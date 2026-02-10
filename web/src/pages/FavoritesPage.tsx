@@ -166,12 +166,12 @@ export default function FavoritesPage() {
       ) : favorites.length > 0 ? (
         <FlatList
           data={favorites}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item: any) => item.id}
           numColumns={numColumns}
           key={numColumns}
           contentContainerStyle={styles.gridContent}
           columnWrapperStyle={numColumns > 1 ? styles.gridRow : undefined}
-          renderItem={({ item }) => (
+          renderItem={({ item }: { item: any }) => (
             <View style={[styles.gridItem, { maxWidth: `${100 / numColumns}%` }]}>
               <FavoriteCard item={item} onRemove={handleRemove} />
             </View>

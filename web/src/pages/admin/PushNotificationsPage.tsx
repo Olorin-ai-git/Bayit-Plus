@@ -65,7 +65,7 @@ export default function PushNotificationsPage() {
         page: pagination.page,
         page_size: pagination.pageSize,
       });
-      setNotifications(data.items || []);
+      setNotifications((data.items || []) as any);
       setPagination((prev) => ({ ...prev, total: data.total || 0 }));
     } catch (error) {
       logger.error('Failed to load push notifications', 'PushNotificationsPage', error);
@@ -269,7 +269,7 @@ export default function PushNotificationsPage() {
         ))}
       </View>
 
-      <GlassTable columns={columns} data={notifications} loading={loading} searchPlaceholder={t('admin.pushNotifications.searchPlaceholder')} onSearch={handleSearch} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.pushNotifications.emptyMessage')} isRTL={isRTL} />
+      <GlassTable columns={columns as any} data={notifications} loading={loading} searchPlaceholder={t('admin.pushNotifications.searchPlaceholder')} onSearch={handleSearch} pagination={pagination} onPageChange={handlePageChange} emptyMessage={t('admin.pushNotifications.emptyMessage')} {...{ isRTL } as any} />
 
       <GlassModal visible={showCreateModal} onClose={handleCloseModal} title={editingNotification ? t('admin.pushNotifications.editNotification', 'Edit Notification') : t('admin.pushNotifications.createModal')}>
         <View style={styles.modalContent}>

@@ -36,7 +36,7 @@ class GazeDetectionService extends EventEmitter {
   };
 
   private isTracking = false;
-  private trackingInterval: NodeJS.Timeout | null = null;
+  private trackingInterval: ReturnType<typeof setInterval> | null = null;
   private hardwareAvailable = false;
   private eyeTrackingSupported = false;
   private trackedElements = new Map<string, { type: string; title: string }>();

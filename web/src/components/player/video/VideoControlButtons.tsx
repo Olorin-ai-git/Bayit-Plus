@@ -84,10 +84,10 @@ export default function VideoControlButtons({
         <SubtitleControls
           contentId={contentId}
           availableLanguages={availableSubtitles}
-          currentLanguage={currentSubtitleLang}
+          currentLanguage={currentSubtitleLang as any}
           enabled={subtitlesEnabled}
           settings={subtitleSettings}
-          onLanguageChange={onSubtitleLanguageChange}
+          onLanguageChange={onSubtitleLanguageChange as any}
           onToggle={onSubtitleToggle}
           onSettingsChange={onSubtitleSettingsChange}
           onSubtitlesRefresh={onSubtitlesRefresh}
@@ -104,8 +104,8 @@ export default function VideoControlButtons({
           isPremium={isPremium}
           videoElement={videoElement}
           onSubtitleCue={onLiveSubtitleCue}
-          onShowUpgrade={onShowUpgrade}
-          targetLang={liveSubtitleLang}
+          onShowUpgrade={onShowUpgrade as any}
+          targetLang={liveSubtitleLang || ''}
           onLanguageChange={onLiveSubtitleLangChange}
         />
       ) : null,
@@ -116,7 +116,7 @@ export default function VideoControlButtons({
           channelId={contentId}
           isLive={isLive}
           isPremium={isPremium}
-          onShowUpgrade={onShowUpgrade}
+          onShowUpgrade={onShowUpgrade as any}
           onRecordingStateChange={onRecordingStateChange}
         />
       ) : null,

@@ -217,7 +217,7 @@ export default function ContentCard({ content, showProgress = false, showActions
       if (content.type === 'radio') return { pathname: `/radio/${content.id}` };
       if (content.type === 'podcast') return { pathname: `/podcasts/${content.id}` };
 
-      if (content.type === 'series' || isSeriesContent(content)) return { pathname: `/vod/series/${content.id}` };
+      if (content.type === 'series' || isSeriesContent(content as any)) return { pathname: `/vod/series/${content.id}` };
 
       // Default to movie/VOD page
       return { pathname: `/vod/movie/${content.id}` };
@@ -371,14 +371,14 @@ export default function ContentCard({ content, showProgress = false, showActions
             )}
 
             {/* Duration Badge - for movies */}
-            {content.duration && !isSeriesContent(content) && (
+            {content.duration && !isSeriesContent(content as any) && (
               <View style={[styles.durationBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
                 <Text style={styles.durationText}>{content.duration}</Text>
               </View>
             )}
 
             {/* Episode Count Badge - for series */}
-            {(isSeriesContent(content) || content.type === 'series') && content.total_episodes !== undefined && content.total_episodes > 0 && (
+            {(isSeriesContent(content as any) || content.type === 'series') && content.total_episodes !== undefined && content.total_episodes > 0 && (
               <View style={[styles.episodesBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
                 <Text style={styles.episodesText}>
                   {content.total_episodes} {t('content.episodes')}
@@ -806,7 +806,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: spacing.lg,
     borderRadius: borderRadius.xl,
-    zIndex: 1000,
     zIndex: 10,
   },
   spinner: {

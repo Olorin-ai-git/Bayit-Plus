@@ -101,7 +101,7 @@ export function getContentTableColumns(
   onDelete: (id: string) => void,
   onHebrewAI?: (id: string, title: string) => void,
   onToggleBeta?: (id: string) => void
-): HierarchicalTableColumn<ContentItem | Episode>[] {
+): HierarchicalTableColumn[] {
   return [
     {
       key: 'thumbnail',
@@ -110,7 +110,7 @@ export function getContentTableColumns(
       minWidth: 60,
       maxWidth: 120,
       resizable: false, // Don't allow resizing thumbnail column
-      render: (value, row) => {
+      render: (value: any, row: any) => {
         const content = row as ContentItem
         const thumbnailType = content.content_type === 'series' ? 'series'
                             : content.content_type === 'podcast' ? 'podcast'
@@ -125,7 +125,7 @@ export function getContentTableColumns(
           />
         )
       },
-      renderChild: (value) => <ThumbnailCell uri={value} type="episode" size="small" />,
+      renderChild: (value: any) => <ThumbnailCell uri={value} type="episode" size="small" />,
     },
     {
       key: 'title',
@@ -133,7 +133,7 @@ export function getContentTableColumns(
       width: 280,
       minWidth: 200,
       maxWidth: 400,
-      render: (value, row) => {
+      render: (value: any, row: any) => {
         const content = row as ContentItem
 
         // Determine content type label
@@ -166,7 +166,7 @@ export function getContentTableColumns(
           />
         )
       },
-      renderChild: (value, episode) => {
+      renderChild: (value: any, episode: any) => {
         const ep = episode as Episode
         return (
           <TitleCell
@@ -182,7 +182,7 @@ export function getContentTableColumns(
       width: 100,
       minWidth: 80,
       maxWidth: 150,
-      render: (value) => <TextCell text={value || '-'} align="left" />,
+      render: (value: any) => <TextCell text={value || '-'} align="left" />,
     },
     {
       key: 'year',
@@ -191,7 +191,7 @@ export function getContentTableColumns(
       minWidth: 60,
       maxWidth: 100,
       align: 'center',
-      render: (value) => <TextCell text={value || '-'} align="center" />,
+      render: (value: any) => <TextCell text={value || '-'} align="center" />,
     },
     {
       key: 'available_subtitles',
@@ -199,7 +199,7 @@ export function getContentTableColumns(
       width: 200,
       minWidth: 150,
       maxWidth: 300,
-      render: (value, row) => {
+      render: (value: any, row: any) => {
         const content = row as ContentItem
         const subtitles = value as string[] | undefined
         const aiSubtitles = content.ai_subtitles || []
@@ -233,7 +233,7 @@ export function getContentTableColumns(
       maxWidth: 280,
       align: 'right',
       resizable: false, // Don't allow resizing actions column
-      render: (_, row) => {
+      render: (_: any, row: any) => {
         const content = row as ContentItem
         const hasHebrew = content.available_subtitles?.includes('he') || false
         const isBeta = content.is_beta_content || false
@@ -301,7 +301,7 @@ export function getContentTableColumns(
           />
         )
       },
-      renderChild: (_, episode) => {
+      renderChild: (_: any, episode: any) => {
         const ep = episode as Episode
         return (
           <ActionsCell

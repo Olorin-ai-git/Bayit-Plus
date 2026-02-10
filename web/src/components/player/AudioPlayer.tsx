@@ -247,7 +247,7 @@ export default function AudioPlayer({
 
         notifications.show({
           level: 'info',
-          title: t('player.resumedFrom', { time: timeStr }, `Resumed from ${timeStr}`),
+          title: t('player.resumedFrom', { time: timeStr, defaultValue: `Resumed from ${timeStr}` }),
           dismissable: true,
         })
       } catch (err) {

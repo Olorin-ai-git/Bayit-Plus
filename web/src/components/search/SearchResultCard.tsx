@@ -77,7 +77,7 @@ export const SearchResultCard = memo(function SearchResultCard({
         <SearchCardMetadata
           categoryName={result.category_name}
           year={result.year}
-          rating={result.rating}
+          rating={typeof result.rating === 'number' ? result.rating : undefined}
           duration={result.duration}
         />
 

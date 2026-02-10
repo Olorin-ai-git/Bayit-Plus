@@ -24,7 +24,7 @@ export default function CarouselPosterCard({
   onRemove,
   isRTL = false,
 }: CarouselPosterCardProps) {
-  const isSeries = isSeriesContent(item) || item.stream_type === 'series'
+  const isSeries = isSeriesContent(item as any) || item.stream_type === 'series'
 
   return (
     <GlassView style={styles.card}>

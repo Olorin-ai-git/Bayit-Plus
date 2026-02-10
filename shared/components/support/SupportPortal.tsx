@@ -69,7 +69,7 @@ export const SupportPortal: React.FC = () => {
           <View className="gap-4">
             <GlassView className="p-4 rounded-2xl">
               <View className="items-center mb-3">
-                <NativeIcon name="film" size={isTV ? '3xl' : '2xl'} color="#a855f7" />
+                <NativeIcon name="film" size={isTV ? 64 : '2xl'} color="#a855f7" />
               </View>
               <Text className={`text-white text-xl font-bold mb-2 ${isTV ? 'text-2xl' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.videos.widgetsIntro')}
@@ -109,7 +109,7 @@ export const SupportPortal: React.FC = () => {
           <View className="gap-4">
             <GlassView className="p-4 rounded-2xl items-center">
               <View className="mb-3">
-                <NativeIcon name="messageCircle" size={isTV ? '3xl' : '2xl'} color="#a855f7" />
+                <NativeIcon name="messageCircle" size={isTV ? 64 : '2xl'} color="#a855f7" />
               </View>
               <Text className={`text-white text-lg font-semibold mb-2 ${isTV ? 'text-xl' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.contact.voiceTitle', 'Voice Support')}
@@ -121,7 +121,7 @@ export const SupportPortal: React.FC = () => {
 
             <GlassView className="p-4 rounded-2xl items-center">
               <View className="mb-3">
-                <NativeIcon name="tag" size={isTV ? '3xl' : '2xl'} color="#a855f7" />
+                <NativeIcon name="tag" size={isTV ? 64 : '2xl'} color="#a855f7" />
               </View>
               <Text className={`text-white text-lg font-semibold mb-2 ${isTV ? 'text-xl' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.contact.ticketTitle', 'Create Support Ticket')}
@@ -141,7 +141,7 @@ export const SupportPortal: React.FC = () => {
 
             <GlassView className="p-4 rounded-2xl items-center">
               <View className="mb-3">
-                <NativeIcon name="mail" size={isTV ? '3xl' : '2xl'} color="#a855f7" />
+                <NativeIcon name="mail" size={isTV ? 64 : '2xl'} color="#a855f7" />
               </View>
               <Text className={`text-white text-lg font-semibold mb-2 ${isTV ? 'text-xl' : ''} ${textAlign === 'right' ? 'text-right' : 'text-center'}`}>
                 {t('support.contact.emailTitle', 'Email Support')}

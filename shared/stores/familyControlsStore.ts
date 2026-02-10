@@ -23,7 +23,7 @@ export const useFamilyControlsStore = create<FamilyControlsStore>()(
         set({ loading: true, error: null });
         try {
           const endpoint = profileId ? `/profiles/${profileId}/controls` : '/family/controls';
-          const data = await api.get(endpoint);
+          const data = await api.get(endpoint) as FamilyControls | null;
           if (data) {
             set({ controls: data, hasFamilyPin: true, loading: false });
           } else {
@@ -43,7 +43,7 @@ export const useFamilyControlsStore = create<FamilyControlsStore>()(
         try {
           const currentControls = get().controls || defaultControls;
           const updatedControls = { ...currentControls, ...updates };
-          const data = await api.patch('/family/controls', updatedControls);
+          const data = await api.patch('/family/controls', updatedControls) as FamilyControls;
           set({ controls: data, loading: false });
         } catch (error: any) {
           set({ error: error.message || 'Failed to update family controls', loading: false });

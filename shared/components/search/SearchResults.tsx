@@ -114,7 +114,7 @@ export function SearchResults({
     return (
       <View className="flex-1 items-center justify-center py-20">
         <View className="mb-4">
-          <NativeIcon name="search" size="3xl" color="#9ca3af" />
+          <NativeIcon name="search" size="2xl" color="#9ca3af" />
         </View>
         <Text className="text-white text-lg">{emptyMessage || t('search.noResults')}</Text>
         <Text className="text-white/60 text-sm mt-2">{t('search.tryDifferentKeywords')}</Text>

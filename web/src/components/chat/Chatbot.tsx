@@ -207,7 +207,7 @@ export default function Chatbot() {
     onError: (error) => logger.error('Wake word error:', 'Chatbot', error),
     silenceThresholdMs: preferences?.silence_threshold_ms ?? 2000,
     vadSensitivity: preferences?.vad_sensitivity ?? 'low',
-    transcribeAudio: transcribeAudioBlob,
+    transcribeAudio: transcribeAudioBlob as any,
   })
 
   // Share listening states with Layout via context
@@ -358,7 +358,7 @@ export default function Chatbot() {
               isTranscribing={isTranscribing}
               isRTL={isRTL}
               isTVMode={IS_TV_BUILD}
-              audioLevel={audioLevel}
+              audioLevel={audioLevel as any}
               inputRef={inputRef}
               onInputChange={setInput}
               onSubmit={handleSubmit}

@@ -91,7 +91,7 @@ export function useSceneSearch({
       metricsRef.current.startTime = performance.now()
 
       try {
-        const response = await sceneSearchService.search(
+        const response = await (sceneSearchService as any).search(
           queryToSearch,
           contentId,
           seriesId,

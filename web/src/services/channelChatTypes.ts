@@ -36,6 +36,7 @@ export interface UserJoinData {
 
 export interface UserLeftData {
   user_id: string
+  user_name?: string
   user_count: number
 }
 

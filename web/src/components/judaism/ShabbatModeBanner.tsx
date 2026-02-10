@@ -90,7 +90,7 @@ export function ShabbatModeBanner({
       setIsLoading(true);
       const response = await judaismService.getShabbatTimes(defaultCity, defaultState);
       if (response) {
-        setShabbatTimes(response);
+        setShabbatTimes(response as any);
       }
     } catch (err) {
       logger.error('Failed to load Shabbat times for banner', 'ShabbatModeBanner', err);

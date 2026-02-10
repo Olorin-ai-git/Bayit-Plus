@@ -23,8 +23,8 @@ interface BatchRecorderConfig {
 export class VoiceBatchRecorder extends EventEmitter {
   private mediaRecorder: MediaRecorder | null = null;
   private audioChunks: Blob[] = [];
-  private recordingTimeout: NodeJS.Timeout | null = null;
-  private silenceTimer: NodeJS.Timeout | null = null;
+  private recordingTimeout: ReturnType<typeof setTimeout> | null = null;
+  private silenceTimer: ReturnType<typeof setTimeout> | null = null;
   private audioStream: MediaStream | null = null;
   private isRecording = false;
   private conversationId: string | null = null;
@@ -143,7 +143,7 @@ export class VoiceBatchRecorder extends EventEmitter {
 
   private async speakResponse(text: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      ttsService.speak(text, 'high', { onComplete: () => resolve(), onError: (error: Error) => reject(error) });
+      ttsService.speak(text, 'high', undefined, { onComplete: () => resolve(), onError: (error: Error) => reject(error) });
     });
   }
 

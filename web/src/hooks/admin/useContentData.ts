@@ -92,7 +92,7 @@ export function useContentData() {
             page_size: pagination.pageSize,
             search_query: filters.search,
             is_published: filters.is_published,
-          })
+          } as any)
         } else {
           const fetchFn = filters.content_type === 'podcasts'
             ? adminPodcastsService.getPodcasts
@@ -144,10 +144,10 @@ export function useContentData() {
         // Add content_type to each item for proper labeling
         const itemsWithType = response.items.map(item => ({
           ...item,
-          content_type: isSeriesContent(item) ? 'series' : 'movie'
+          content_type: isSeriesContent(item as any) ? 'series' : 'movie'
         }))
 
-        setItems(itemsWithType)
+        setItems(itemsWithType as any)
         setPagination(prev => ({ ...prev, total: response.total }))
 
         log.debug('State updated', { itemsLength: response.items.length })
@@ -362,7 +362,7 @@ export function useContentData() {
   }, [])
 
   // Transform data to hierarchical table format
-  const hierarchicalData = useMemo<HierarchicalTableRow<ContentItem | Episode>[]>(() => {
+  const hierarchicalData = useMemo<HierarchicalTableRow[]>(() => {
     log.debug('hierarchicalData memo running', { itemsLength: items.length })
 
     const filtered = showOnlyWithSubtitles
@@ -375,7 +375,7 @@ export function useContentData() {
     })
 
     const result = filtered.map(item => {
-      let children: HierarchicalTableRow<Episode>[] | undefined = undefined
+      let children: HierarchicalTableRow[] | undefined = undefined
 
       if (isSeriesContent(item)) {
         if (expandedSeries.has(item.id)) {

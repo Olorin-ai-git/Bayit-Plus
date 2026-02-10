@@ -47,7 +47,7 @@ export const liveQuotaApi = {
     try {
       quotaLogger.debug('Fetching usage stats')
       const stats = await api.get<UsageStats>('/live/quota/my-usage')
-      return stats as UsageStats
+      return stats as unknown as UsageStats
     } catch (error) {
       quotaLogger.error('Failed to fetch usage stats', { error })
       throw error
@@ -64,7 +64,7 @@ export const liveQuotaApi = {
       const result = await api.get<AvailabilityCheck>(
         `/live/quota/check/${featureType}`
       )
-      return result as AvailabilityCheck
+      return result as unknown as AvailabilityCheck
     } catch (error) {
       quotaLogger.error('Failed to check availability', { featureType, error })
       // Return safe default on error

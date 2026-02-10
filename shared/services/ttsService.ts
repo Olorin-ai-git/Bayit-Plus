@@ -48,7 +48,7 @@ class TTSService extends EventEmitter {
   private audioCache: Map<string, CachedAudio> = new Map();
   private CACHE_EXPIRY_MS = 1000 * 60 * 60; // 1 hour
   private MAX_CACHE_SIZE = 100;
-  private API_ENDPOINT: string;
+  private API_ENDPOINT!: string;
 
   private getApiEndpoint(): string {
     // For development with separate backend (localhost:8000)
@@ -540,8 +540,8 @@ class TTSService extends EventEmitter {
   private cacheAudio(key: string, text: string, blob: Blob): void {
     // Implement simple LRU: remove oldest if cache is full
     if (this.audioCache.size >= this.MAX_CACHE_SIZE) {
-      const firstKey = this.audioCache.keys().next().value;
-      this.audioCache.delete(firstKey);
+      const firstKey = this.audioCache.keys().next().value as string | undefined;
+      if (firstKey !== undefined) this.audioCache.delete(firstKey);
     }
 
     this.audioCache.set(key, {

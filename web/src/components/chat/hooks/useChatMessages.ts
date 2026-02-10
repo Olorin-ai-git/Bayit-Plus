@@ -44,7 +44,7 @@ export function useChatMessages(options: UseChatMessagesOptions = {}) {
     try {
       const response = await chatService.sendMessage(
         userMessage,
-        conversationId,
+        conversationId ?? undefined,
         context,
         language || i18n.language
       )

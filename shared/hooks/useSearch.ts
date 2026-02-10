@@ -41,6 +41,8 @@ function sanitizeSearchQuery(query: string): string {
   return sanitized;
 }
 
+export type ContentType = 'movie' | 'series' | 'episode' | 'live' | 'radio' | 'podcast' | 'audiobook' | string;
+
 export interface SearchFilters {
   contentTypes: string[];
   genres?: string[];
@@ -130,8 +132,8 @@ export function useSearch(options: UseSearchOptions = {}) {
   const [searchStartTime, setSearchStartTime] = useState<number | null>(null);
 
   // Refs
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const suggestionsTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const suggestionsTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   /**

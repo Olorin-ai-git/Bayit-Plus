@@ -5,7 +5,7 @@
  * Supports web, iOS, tvOS, and Android platforms.
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useRef, useEffect, type ElementRef } from 'react'
 import {
   View,
   Pressable,
@@ -45,7 +45,7 @@ export function GlassSlider({
 }: GlassSliderProps) {
   const [trackWidth, setTrackWidth] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
-  const trackRef = useRef<View>(null)
+  const trackRef = useRef<ElementRef<typeof View>>(null)
   const { isFocused, handleFocus, handleBlur, focusStyle } = useTVFocus({ styleType: 'card' })
 
   // Calculate percentage from value

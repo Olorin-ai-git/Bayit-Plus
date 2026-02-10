@@ -62,3 +62,15 @@ export { default } from '@bayit/shared-services/api'
 
 export * from './subtitles'
 export * from './payment'
+
+// Re-export web-specific services
+export { audiobookService } from '../audiobookService'
+
+// Scene search service (uses searchService under the hood)
+import { api } from '@bayit/shared-services/api'
+export const sceneSearchService = {
+  searchScenes: (contentId: string, query: string, options?: Record<string, any>) =>
+    api.post(`/search/scenes/${contentId}`, { query, ...options }),
+  getSceneContext: (contentId: string, timestamp: number) =>
+    api.get(`/search/scenes/${contentId}/context?timestamp=${timestamp}`),
+}

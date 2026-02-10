@@ -136,12 +136,12 @@ export default function WatchPartyPanel({
             <WatchPartyParticipants
               participants={participants}
               hostId={party.host_id}
-              currentUserId={currentUserId}
+              currentUserId={currentUserId || ''}
             />
           ) : (
             <WatchPartyChat
               messages={messages}
-              currentUserId={currentUserId}
+              currentUserId={currentUserId || ''}
               onSendMessage={onSendMessage}
               chatEnabled={party.chat_enabled}
             />

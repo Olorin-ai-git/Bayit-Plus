@@ -134,7 +134,7 @@ export const TelAvivRow: React.FC<TelAvivRowProps> = ({
       setData(result.data || result);
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-      logger.error('Failed to fetch Tel Aviv content', { error: errorMsg });
+      logger.error('Failed to fetch Tel Aviv content: ' + errorMsg);
       setError(errorMsg);
     } finally {
       setLoading(false);
@@ -154,7 +154,7 @@ export const TelAvivRow: React.FC<TelAvivRowProps> = ({
       onItemPress(item);
     } else {
       Linking.openURL(item.url).catch((err) =>
-        logger.error('Failed to open URL', { error: err.message, url: item.url })
+        logger.error('Failed to open URL: ' + err.message + ' url=' + item.url)
       );
     }
   };

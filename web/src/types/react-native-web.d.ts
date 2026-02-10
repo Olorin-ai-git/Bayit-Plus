@@ -322,6 +322,15 @@ declare module 'react-native' {
   export const Switch: ComponentType<Record<string, any>>;
   export const SafeAreaView: ComponentType<ViewProps>;
   export const KeyboardAvoidingView: ComponentType<ViewProps & { behavior?: string; keyboardVerticalOffset?: number }>;
+  export const RefreshControl: ComponentType<{
+    refreshing: boolean;
+    onRefresh?: () => void;
+    colors?: string[];
+    tintColor?: string;
+    title?: string;
+    titleColor?: string;
+    [key: string]: any;
+  }>;
 
   export class FlatList<T = any> extends React.Component<FlatListProps<T>> {
     scrollToEnd(params?: { animated?: boolean }): void;
@@ -340,7 +349,7 @@ declare module 'react-native' {
   // ─── Platform ───────────────────────────────────────────
 
   export interface PlatformStatic {
-    OS: 'ios' | 'android' | 'web' | 'windows' | 'macos';
+    OS: 'ios' | 'android' | 'web' | 'windows' | 'macos' | 'tvos';
     Version: number | string;
     isTV: boolean;
     isTesting: boolean;

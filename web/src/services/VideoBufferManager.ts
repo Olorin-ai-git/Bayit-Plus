@@ -22,6 +22,7 @@ export interface LatencyMeasurement {
 
 export interface VideoBufferConfig {
   channelId: string
+  sourceLang?: string
   targetLang: string
   enableDubbing: boolean
   enableSubtitles: boolean
@@ -210,6 +211,7 @@ export class VideoBufferManager {
  */
 export interface SyncedStreamRequest {
   channelId: string
+  sourceLang?: string
   targetLang: string
   enableDubbing: boolean
   enableSubtitles: boolean
@@ -241,7 +243,7 @@ export async function createSyncedStream(
         enable_dubbing: request.enableDubbing,
         enable_subtitles: request.enableSubtitles,
       }
-    ) as SyncedStreamResponse
+    ) as unknown as SyncedStreamResponse
 
     logger.info('Synced stream created successfully', 'createSyncedStream', {
       channel_id: data.channel_id,

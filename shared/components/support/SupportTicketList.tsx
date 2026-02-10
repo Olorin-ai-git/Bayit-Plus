@@ -267,7 +267,7 @@ export const SupportTicketList: React.FC = () => {
         {filteredTickets.length === 0 ? (
           <View style={styles.emptyContainer}>
             <View style={styles.emptyIconContainer}>
-              <NativeIcon name="tag" size="3xl" color="#a855f7" />
+              <NativeIcon name="tag" size="2xl" color="#a855f7" />
             </View>
             <Text style={[styles.emptyText, { textAlign }]}>
               {filter === 'all'

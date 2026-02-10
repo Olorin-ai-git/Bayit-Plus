@@ -44,9 +44,9 @@ export default function AudiobookFormModal({ audiobook, visible, onClose, onSave
     try {
       const payload = { ...formData, audio_quality: formData.quality, publication_year: formData.year }
       if (audiobook?.id) {
-        await adminAudiobookService.updateAudiobook(audiobook.id, payload)
+        await adminAudiobookService.updateAudiobook(audiobook.id, payload as any)
       } else {
-        await adminAudiobookService.createAudiobook(payload)
+        await adminAudiobookService.createAudiobook(payload as any)
       }
       onSave()
     } catch (err) {

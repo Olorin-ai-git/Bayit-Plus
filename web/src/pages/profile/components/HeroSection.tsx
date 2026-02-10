@@ -61,7 +61,7 @@ export function HeroSection({ isRTL, stats, statsLoading, onAvatarUploadSuccess 
 
     setAvatarUploading(true);
     try {
-      const response = await profilesService.uploadAvatar(file);
+      const response = await (profilesService as any).uploadAvatar(file);
       if (response?.url) {
         useAuthStore.setState((state) => ({
           user: state.user ? { ...state.user, avatar: response.url } : null,

@@ -58,14 +58,14 @@ export function useSplitSubtitles({
           subtitlesService.getCues(
             contentId,
             primaryLang,
-            primaryLang === 'he' ? hebrewMode : 'regular',
-            primaryLang === 'en' ? englishMode : 'regular'
+            (primaryLang === 'he' ? hebrewMode : 'regular') as any,
+            (primaryLang === 'en' ? englishMode : 'regular') as any
           ),
           subtitlesService.getCues(
             contentId,
             secondaryLang,
-            secondaryLang === 'he' ? hebrewMode : 'regular',
-            secondaryLang === 'en' ? englishMode : 'regular'
+            (secondaryLang === 'he' ? hebrewMode : 'regular') as any,
+            (secondaryLang === 'en' ? englishMode : 'regular') as any
           ),
         ])
 

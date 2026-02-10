@@ -60,7 +60,6 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     borderWidth: 1,
     borderColor: glass.borderLight,
-    // @ts-expect-error backdropFilter is web-only
     backdropFilter: 'blur(20px)',
     WebkitBackdropFilter: 'blur(20px)',
   },

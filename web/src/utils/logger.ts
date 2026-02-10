@@ -75,36 +75,40 @@ interface ScopedLogger {
 }
 
 export const logger = {
-  debug: (message: string, context?: string, data?: unknown): void => {
+  debug: (message: string, contextOrData?: string | Record<string, any> | unknown, data?: unknown): void => {
     if (isDev) {
-      const entry = createLogEntry('debug', message, context, data);
-      const serializedData = data ? serializeError(data) : '';
+      const [ctx, d] = typeof contextOrData === 'string' ? [contextOrData, data] : [undefined, contextOrData ?? data];
+      const entry = createLogEntry('debug', message, ctx, d);
+      const serializedData = d ? serializeError(d) : '';
       console.debug(formatLog(entry), serializedData);
     }
   },
 
-  info: (message: string, context?: string, data?: unknown): void => {
-    const entry = createLogEntry('info', message, context, data);
+  info: (message: string, contextOrData?: string | Record<string, any> | unknown, data?: unknown): void => {
+    const [ctx, d] = typeof contextOrData === 'string' ? [contextOrData, data] : [undefined, contextOrData ?? data];
+    const entry = createLogEntry('info', message, ctx, d);
     if (isDev) {
-      const serializedData = data ? serializeError(data) : '';
+      const serializedData = d ? serializeError(d) : '';
       console.info(formatLog(entry), serializedData);
     }
     sendToMonitoring(entry);
   },
 
-  warn: (message: string, context?: string, data?: unknown): void => {
-    const entry = createLogEntry('warn', message, context, data);
+  warn: (message: string, contextOrData?: string | Record<string, any> | unknown, data?: unknown): void => {
+    const [ctx, d] = typeof contextOrData === 'string' ? [contextOrData, data] : [undefined, contextOrData ?? data];
+    const entry = createLogEntry('warn', message, ctx, d);
     if (isDev) {
-      const serializedData = data ? serializeError(data) : '';
+      const serializedData = d ? serializeError(d) : '';
       console.warn(formatLog(entry), serializedData);
     }
     sendToMonitoring(entry);
   },
 
-  error: (message: string, context?: string, error?: unknown): void => {
-    const entry = createLogEntry('error', message, context, error);
+  error: (message: string, contextOrData?: string | Record<string, any> | unknown, error?: unknown): void => {
+    const [ctx, e] = typeof contextOrData === 'string' ? [contextOrData, error] : [undefined, contextOrData ?? error];
+    const entry = createLogEntry('error', message, ctx, e);
     if (isDev) {
-      const serializedError = error ? serializeError(error) : '';
+      const serializedError = e ? serializeError(e) : '';
       console.error(formatLog(entry), serializedError);
     }
     sendToMonitoring(entry);

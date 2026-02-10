@@ -93,7 +93,7 @@ export function useTizenRemoteKeys(options: UseTizenRemoteKeysOptions) {
     // Register each key
     keysToRegister.forEach(key => {
       try {
-        tizen.tvinputdevice.registerKey(key);
+        tizen.tvinputdevice?.registerKey(key);
         logger.debug('Registered key', 'useTizenRemoteKeys', { key });
       } catch (err) {
         logger.warn('Failed to register key', 'useTizenRemoteKeys', { key, error: err });

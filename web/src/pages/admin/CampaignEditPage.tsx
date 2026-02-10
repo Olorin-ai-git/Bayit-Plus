@@ -48,14 +48,15 @@ export default function CampaignEditPage() {
     try {
       const campaign = await campaignsService.getCampaign(id);
       if (campaign) {
+        const c = campaign as any;
         setFormData({
-          name: campaign.name,
-          code: campaign.code || campaign.promo_code || '',
-          discount_type: campaign.discount_type || 'percentage',
-          discount_value: campaign.discount_value || campaign.discount_percent || 0,
-          max_uses: campaign.max_uses || campaign.usage_limit || null,
-          valid_until: campaign.valid_until || campaign.end_date?.split('T')[0] || '',
-          is_active: campaign.status === 'active',
+          name: c.name,
+          code: c.code || c.promo_code || '',
+          discount_type: c.discount_type || 'percentage',
+          discount_value: c.discount_value || c.discount_percent || 0,
+          max_uses: c.max_uses || c.usage_limit || null,
+          valid_until: c.valid_until || c.end_date?.split('T')[0] || '',
+          is_active: c.status === 'active',
         });
       }
     } catch (error) {
@@ -92,9 +93,9 @@ export default function CampaignEditPage() {
       };
 
       if (isNew) {
-        await campaignsService.createCampaign(payload);
+        await campaignsService.createCampaign(payload as any);
       } else {
-        await campaignsService.updateCampaign(campaignId!, payload);
+        await campaignsService.updateCampaign(campaignId!, payload as any);
       }
       navigate('/admin/campaigns');
     } catch (error) {

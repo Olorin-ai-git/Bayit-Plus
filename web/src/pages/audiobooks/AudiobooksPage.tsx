@@ -62,7 +62,7 @@ export default function AudiobooksPage() {
   const [filters, setFilters] = useState<AudiobookFilters>({
     page: 1,
     page_size: 50,
-  })
+  } as AudiobookFilters)
 
   // Filter audiobooks by search query
   const filteredAudiobooks = useMemo(() => {
@@ -95,7 +95,7 @@ export default function AudiobooksPage() {
       setLoading(true)
       setError(null)
 
-      const response = await audiobookService.getAudiobooks(filters)
+      const response = await audiobookService.getAudiobooks(filters as any)
       setAudiobooks(response.items)
     } catch (err) {
       logger.error('Failed to load audiobooks', 'AudiobooksPage', err)
@@ -122,7 +122,7 @@ export default function AudiobooksPage() {
     return (
       <PageLoading
         title={t('audiobooks.title', 'Audiobooks')}
-        pageType="audiobooks"
+        pageType={"audiobooks" as any}
         message={t('audiobooks.loading', 'Loading audiobooks...')}
         isRTL={isRTL}
       />
@@ -137,7 +137,7 @@ export default function AudiobooksPage() {
         <View style={styles.header}>
           <GlassPageHeader
             title={t('audiobooks.title', 'Audiobooks')}
-            pageType="audiobooks"
+            pageType={"audiobooks" as any}
             badge={audiobooks.length}
             isRTL={isRTL}
           />

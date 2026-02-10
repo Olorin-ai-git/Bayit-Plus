@@ -120,7 +120,7 @@ export default function EmailCampaignsPage() {
   const handleSendTest = async (id: string) => {
     try {
       notifications.showInfo(t('admin.emailCampaigns.sendingTest', 'Sending test email...'));
-      await marketingService.sendTestEmail(id);
+      await marketingService.sendTestEmail(id, '');
       notifications.showSuccess(t('admin.emailCampaigns.testSent', 'Test email sent'));
     } catch (err: any) {
       logger.error('Failed to send test email', 'EmailCampaignsPage', err);

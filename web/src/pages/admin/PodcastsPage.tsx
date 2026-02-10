@@ -43,10 +43,10 @@ export default function PodcastsPage() {
     setIsLoading(true)
     setError(null)
     try {
-      const response: PaginatedResponse<Podcast> = await adminPodcastsService.getPodcasts({
+      const response = await adminPodcastsService.getPodcasts({
         page: pagination.page,
         page_size: pagination.pageSize,
-      })
+      }) as unknown as PaginatedResponse<Podcast>
       setItems(response.items || [])
       setPagination((prev) => ({ ...prev, total: response.total || 0 }))
     } catch (err) {
@@ -109,7 +109,7 @@ export default function PodcastsPage() {
       const podcast = items.find((item) => item.id === id)
       if (!podcast) return
 
-      await adminPodcastsService.updatePodcast(id, { is_featured: !podcast.is_featured })
+      await adminPodcastsService.updatePodcast(id, { is_featured: !podcast.is_featured } as any)
       setItems((prevItems) =>
         prevItems.map((item) =>
           item.id === id ? { ...item, is_featured: !item.is_featured } : item
