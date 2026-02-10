@@ -2,7 +2,8 @@ import BayitDesignSystem
 import BayitMedia
 import SwiftUI
 
-/// tvOS Search screen with system keyboard and results grid.
+/// tvOS Search screen with system keyboard, filter pills, trending/recent
+/// suggestions, and subtitle flag overlays on results.
 /// Reuses SearchViewModel from shared ViewModels.
 struct TVSearchView: View {
     @Environment(TVRepositoryProvider.self) private var repos
@@ -22,8 +23,26 @@ struct TVSearchView: View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
                 if let vm = viewModel {
+                    TVSearchFilterPillsView(
+                        selectedFilter: Binding(
+                            get: { vm.selectedFilter },
+                            set: { _ in }
+                        ),
+                        onFilterChanged: { vm.onFilterChanged($0) }
+                    )
+
                     if vm.isSearching {
                         searchingState
+                    } else if showSuggestions(vm) {
+                        TVSearchSuggestionsView(
+                            trendingSearches: vm.trendingSearches,
+                            recentSearches: vm.recentSearches,
+                            onSelect: { suggestion in
+                                searchText = suggestion
+                                vm.selectSuggestion(suggestion)
+                            },
+                            onClearRecent: { vm.clearRecentSearches() }
+                        )
                     } else if vm.hasSearched && vm.results.isEmpty {
                         emptyState
                     } else if !vm.results.isEmpty {
@@ -44,7 +63,11 @@ struct TVSearchView: View {
             }
             .task {
                 if viewModel == nil {
-                    viewModel = SearchViewModel(searchRepository: repos.search)
+                    viewModel = SearchViewModel(
+                        searchRepository: repos.search,
+                        recentSearchesService: RecentSearchesService()
+                    )
+                    await viewModel?.loadInitialData()
                 }
             }
             .sheet(isPresented: $showAISearch) {
@@ -52,6 +75,27 @@ struct TVSearchView: View {
             }
         }
     }
+
+    // MARK: - Helpers
+
+    private func showSuggestions(_ vm: SearchViewModel) -> Bool {
+        searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && !vm.hasSearched
+            && (!vm.trendingSearches.isEmpty || !vm.recentSearches.isEmpty)
+    }
+
+    private func aiLanguages(for result: UnifiedSearchResult) -> Set<String> {
+        var langs = Set<String>()
+        if result.availableSubtitleLanguages?.contains("he") == true {
+            langs.insert("he")
+        }
+        if result.availableSubtitleLanguages?.contains("en") == true {
+            langs.insert("en")
+        }
+        return langs
+    }
+
+    // MARK: - Results
 
     private func resultsGrid(_ results: [UnifiedSearchResult]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
@@ -62,25 +106,40 @@ struct TVSearchView: View {
 
             LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
                 ForEach(results) { result in
-                    GlassFocusPoster(
-                        thumbnailURL: result.thumbnail,
-                        title: result.title ?? "Untitled",
-                        subtitle: resultSubtitle(result),
-                        badge: result.contentType,
-                        aspectRatio: 2 / 3,
-                        onSelect: {
-                            coordinator.presentPlayer(
-                                contentId: result.id,
-                                contentType: TVContentTypeMapper.map(result.contentType)
+                    ZStack(alignment: .topTrailing) {
+                        GlassFocusPoster(
+                            thumbnailURL: result.thumbnail,
+                            title: result.title ?? "Untitled",
+                            subtitle: resultSubtitle(result),
+                            badge: result.contentType,
+                            aspectRatio: 2 / 3,
+                            onSelect: {
+                                coordinator.presentPlayer(
+                                    contentId: result.id,
+                                    contentType: TVContentTypeMapper.map(result.contentType)
+                                )
+                            }
+                        )
+
+                        if let languages = result.availableSubtitleLanguages,
+                           !languages.isEmpty
+                        {
+                            SubtitleFlagsPill(
+                                languages: languages,
+                                aiLanguages: aiLanguages(for: result),
+                                size: .large
                             )
+                            .padding(TVDesignTokens.Spacing.sm)
                         }
-                    )
+                    }
                 }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
         }
         .padding(.top, TVDesignTokens.Spacing.lg)
     }
+
+    // MARK: - States
 
     private var searchingState: some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {

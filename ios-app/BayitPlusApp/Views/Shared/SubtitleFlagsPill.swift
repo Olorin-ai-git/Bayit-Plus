@@ -11,11 +11,13 @@ struct SubtitleFlagsPill: View {
     enum PillSize {
         case small
         case medium
+        case large
 
         var fontSize: CGFloat {
             switch self {
             case .small: return 14
             case .medium: return 16
+            case .large: return 22
             }
         }
 
@@ -23,6 +25,7 @@ struct SubtitleFlagsPill: View {
             switch self {
             case .small: return 4
             case .medium: return 6
+            case .large: return 8
             }
         }
 
@@ -30,6 +33,7 @@ struct SubtitleFlagsPill: View {
             switch self {
             case .small: return 4
             case .medium: return 6
+            case .large: return 8
             }
         }
     }

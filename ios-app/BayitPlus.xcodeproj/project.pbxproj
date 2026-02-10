@@ -268,6 +268,10 @@
 		679387F547730BE6384D8E60 /* TrendingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D07116D2D29DBADE51CA898 /* TrendingViewModel.swift */; };
 		67AF939D23A45A97A8163610 /* TVChessBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F5FC041FFE0072B20B8A061 /* TVChessBoardView.swift */; };
 		67C7DC8876D83050A98E3816 /* TVLLMSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6377FB4A49BE8C07778B4BEE /* TVLLMSearchView.swift */; };
+		68A1B2C3D4E5F6A7B8C9D0E1 /* TVSearchSuggestionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F2B3C4D5E6789012345678 /* TVSearchSuggestionsView.swift */; };
+		68B3C4D5E6F7A8B9C0D1E2F3 /* TVSearchFilterPillsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2D3E4F5A6B7890123456789 /* TVSearchFilterPillsView.swift */; };
+		68C5D6E7F8A9B0C1D2E3F4A5 /* RecentSearchesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F5EAB0F1B64D01A006BF25 /* RecentSearchesService.swift */; };
+		68D7E8F9A0B1C2D3E4F5A6B7 /* SubtitleFlagsPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9D4E3FE6779CDE7F7677FD /* SubtitleFlagsPill.swift */; };
 		67FDCC705646FC231EAA9A04 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CCA3050F975CEE50658957 /* ProfileView.swift */; };
 		686685F1D747F145D18C68B3 /* TVEPGView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB98508EAEF5140F0FB9DED /* TVEPGView.swift */; };
 		69D8FB006516B740E04F775F /* CultureContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70839C0DAD03F6DA76DF2211 /* CultureContentViewModel.swift */; };
@@ -905,6 +909,8 @@
 		622781DFF091B8FC5605E1A1 /* LiveTVView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTVView.swift; sourceTree = "<group>"; };
 		62BE0C99295AED16D05C693D /* WidgetsPageHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsPageHeaderView.swift; sourceTree = "<group>"; };
 		6377FB4A49BE8C07778B4BEE /* TVLLMSearchView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TVLLMSearchView.swift; sourceTree = "<group>"; };
+		A1F2B3C4D5E6789012345678 /* TVSearchSuggestionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSearchSuggestionsView.swift; sourceTree = "<group>"; };
+		C2D3E4F5A6B7890123456789 /* TVSearchFilterPillsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSearchFilterPillsView.swift; sourceTree = "<group>"; };
 		63F461C07F155E6302DF622F /* PiPWidgetManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiPWidgetManagerView.swift; sourceTree = "<group>"; };
 		640BCF006E3F707BC702CB92 /* LiveSubtitlesWebSocketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveSubtitlesWebSocketService.swift; sourceTree = "<group>"; };
 		6448D0F17DE580A5DB5D4D16 /* TVRoute.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TVRoute.swift; sourceTree = "<group>"; };
@@ -1346,6 +1352,8 @@
 				6377FB4A49BE8C07778B4BEE /* TVLLMSearchView.swift */,
 				4B738CF71FE5ED15D6502751 /* TVLLMSearchResultsView.swift */,
 				E3E76442C4C18E8E4D0DB3B0 /* TVLLMSearchInterpretationView.swift */,
+				A1F2B3C4D5E6789012345678 /* TVSearchSuggestionsView.swift */,
+				C2D3E4F5A6B7890123456789 /* TVSearchFilterPillsView.swift */,
 			);
 			name = Search;
 			path = Search;
@@ -2834,6 +2842,10 @@
 				330139AD45EA3A3F6C55E609 /* TVRepositoryProvider.swift in Sources */,
 				3FAF07AF7098D32900822360 /* TVRewardsView.swift in Sources */,
 				514DE7104D731229FC5B475B /* TVSearchView.swift in Sources */,
+				68A1B2C3D4E5F6A7B8C9D0E1 /* TVSearchSuggestionsView.swift in Sources */,
+				68B3C4D5E6F7A8B9C0D1E2F3 /* TVSearchFilterPillsView.swift in Sources */,
+				68C5D6E7F8A9B0C1D2E3F4A5 /* RecentSearchesService.swift in Sources */,
+				68D7E8F9A0B1C2D3E4F5A6B7 /* SubtitleFlagsPill.swift in Sources */,
 				D57981BE9BE8F1103D6DD2AC /* TVSettingsView.swift in Sources */,
 				F742555FD811B8B11681A50F /* TVSignInView.swift in Sources */,
 				8E47980231055EA74AB75883 /* TVSplashView.swift in Sources */,
