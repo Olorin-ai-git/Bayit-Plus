@@ -184,7 +184,7 @@ extension AuthManager {
     /// Used for authentication flows that bypass Firebase (e.g., passkey sign-in).
     func fetchUserProfile(token: String) async throws -> BayitUser {
         let config = AppConfiguration()
-        let url = config.apiBaseURL.appendingPathComponent("user/me")
+        let url = config.apiBaseURL.appendingPathComponent("auth/me")
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -210,7 +210,7 @@ extension AuthManager {
             id: userResponse.id,
             email: userResponse.email,
             displayName: userResponse.name,
-            photoURL: userResponse.profileImageUrl != nil ? URL(string: userResponse.profileImageUrl!) : nil,
+            photoURL: userResponse.avatar != nil ? URL(string: userResponse.avatar!) : nil,
             role: UserRole(rawValue: userResponse.role) ?? .user,
             isActive: userResponse.isActive,
             subscription: nil,
@@ -231,7 +231,7 @@ private struct BackendUserResponse: Decodable {
     let isActive: Bool
     let isBetaUser: Bool?
     let isVerified: Bool?
-    let profileImageUrl: String?
+    let avatar: String?
 
     private enum CodingKeys: String, CodingKey {
         case id
@@ -241,7 +241,7 @@ private struct BackendUserResponse: Decodable {
         case isActive = "is_active"
         case isBetaUser = "is_beta_user"
         case isVerified = "is_verified"
-        case profileImageUrl = "profile_image_url"
+        case avatar
     }
 }
 
