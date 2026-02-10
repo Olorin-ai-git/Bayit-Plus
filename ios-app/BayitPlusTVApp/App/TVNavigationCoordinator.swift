@@ -24,6 +24,8 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
     case friends
     case messages
     case chess
+    case aiChat
+    case avatar
     case rewards
     case betaCredits
     case search
@@ -52,6 +54,8 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .friends: return "Friends"
         case .messages: return "Messages"
         case .chess: return "Chess"
+        case .aiChat: return "AI Chat"
+        case .avatar: return "Avatar"
         case .rewards: return "Rewards"
         case .betaCredits: return "Beta"
         case .search: return "Search"
@@ -80,6 +84,8 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .friends: return "person.2"
         case .messages: return "bubble.left.and.bubble.right"
         case .chess: return "checkerboard.rectangle"
+        case .aiChat: return "bubble.left.and.bubble.right.fill"
+        case .avatar: return "person.crop.circle.badge.moon"
         case .rewards: return "trophy"
         case .betaCredits: return "sparkles"
         case .search: return "magnifyingglass"

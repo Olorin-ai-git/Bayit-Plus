@@ -65,6 +65,8 @@ enum TVDeepLinkRouter {
         case "settings": return .settings
         case "messages": return .messages
         case "chess": return .chess
+        case "chatbot", "ai-chat": return .aiChat
+        case "avatar": return .avatar
         default: return nil
         }
     }
