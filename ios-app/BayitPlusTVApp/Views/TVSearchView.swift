@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitMedia
 import SwiftUI
 
 /// tvOS Search screen with system keyboard and results grid.
 /// Reuses SearchViewModel from shared ViewModels.
 struct TVSearchView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: SearchViewModel?
     @State private var searchText = ""
 
@@ -61,7 +63,13 @@ struct TVSearchView: View {
                         title: result.title ?? "Untitled",
                         subtitle: resultSubtitle(result),
                         badge: result.contentType,
-                        aspectRatio: 2 / 3
+                        aspectRatio: 2 / 3,
+                        onSelect: {
+                            coordinator.presentPlayer(
+                                contentId: result.id,
+                                contentType: TVContentTypeMapper.map(result.contentType)
+                            )
+                        }
                     )
                 }
             }

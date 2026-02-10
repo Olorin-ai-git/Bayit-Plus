@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitMedia
 import SwiftUI
 
 /// tvOS Live TV screen with a grid of channel cards.
 /// Reuses LiveTVViewModel from shared ViewModels.
 struct TVLiveTVView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: LiveTVViewModel?
 
     private let columns = [
@@ -47,7 +49,13 @@ struct TVLiveTVView: View {
 
             LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
                 ForEach(channels) { channel in
-                    TVChannelCard(channel: channel)
+                    TVChannelCard(channel: channel) {
+                        coordinator.presentPlayer(
+                            contentId: channel.id,
+                            contentType: .liveTV,
+                            channelId: channel.id
+                        )
+                    }
                 }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -72,10 +80,11 @@ struct TVLiveTVView: View {
 
 private struct TVChannelCard: View {
     let channel: LiveChannelItem
+    let onSelect: () -> Void
     @Environment(\.isFocused) private var isFocused
 
     var body: some View {
-        Button(action: {}) {
+        Button(action: onSelect) {
             VStack(alignment: .leading, spacing: 0) {
                 channelLogo
                     .aspectRatio(16 / 9, contentMode: .fit)

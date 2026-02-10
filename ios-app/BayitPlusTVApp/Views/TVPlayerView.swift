@@ -39,28 +39,36 @@ struct TVPlayerView: View {
     @State private var selectedAudioTrackId: String?
     @State private var playbackSpeed: Float = 1.0
     @State private var audioTracks: [AudioTrack] = []
+    @State private var isResolvingStream = true
+    @State private var streamError: String?
 
     var body: some View {
         ZStack {
-            TVVideoPlayerRepresentable(player: mediaPlayer.avPlayer)
-                .ignoresSafeArea()
+            if isResolvingStream {
+                streamLoadingView
+            } else if let error = streamError {
+                streamErrorView(error)
+            } else {
+                TVVideoPlayerRepresentable(player: mediaPlayer.avPlayer)
+                    .ignoresSafeArea()
 
-            subtitleOverlay
-            translationOverlay
+                subtitleOverlay
+                translationOverlay
 
-            if showControlButtons {
-                TVPlayerControlBar(
-                    contentType: contentType,
-                    onSubtitles: { showSubtitleSettings = true },
-                    onDubbing: { showDubbingControls = true },
-                    onChapters: { showChapterList = true },
-                    onAudioTracks: { showAudioTracks = true },
-                    onSpeed: { showSpeedControl = true }
-                )
+                if showControlButtons {
+                    TVPlayerControlBar(
+                        contentType: contentType,
+                        onSubtitles: { showSubtitleSettings = true },
+                        onDubbing: { showDubbingControls = true },
+                        onChapters: { showChapterList = true },
+                        onAudioTracks: { showAudioTracks = true },
+                        onSpeed: { showSpeedControl = true }
+                    )
+                }
             }
         }
-        .onAppear { startPlayback() }
         .onDisappear { cleanup() }
+        .task { await resolveAndPlay() }
         .task { initializeViewModels() }
         .onChange(of: mediaPlayer.currentTime) { _, newTime in
             subtitlesVM?.updateActiveCue(currentTime: newTime)
@@ -153,12 +161,91 @@ struct TVPlayerView: View {
         }
     }
 
+    // MARK: - Stream Loading Views
+
+    private var streamLoadingView: some View {
+        VStack(spacing: TVDesignTokens.Spacing.xl) {
+            ProgressView()
+                .tint(DesignTokens.Primary.default)
+                .scaleEffect(2.0)
+            Text("Loading stream...")
+                .font(.system(size: TVDesignTokens.FontSize.lg))
+                .foregroundStyle(DesignTokens.Text.muted)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(DesignTokens.Background.primary)
+        .ignoresSafeArea()
+    }
+
+    private func streamErrorView(_ message: String) -> some View {
+        VStack(spacing: TVDesignTokens.Spacing.xl) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: TVDesignTokens.FontSize.hero))
+                .foregroundStyle(DesignTokens.Warning.default)
+
+            Text(message)
+                .font(.system(size: TVDesignTokens.FontSize.lg))
+                .foregroundStyle(DesignTokens.Text.secondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 600)
+
+            GlassButton("Retry", variant: .secondary, size: .large) {
+                Task { await resolveAndPlay() }
+            }
+            .frame(maxWidth: 300)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(DesignTokens.Background.primary)
+        .ignoresSafeArea()
+    }
+
     // MARK: - Lifecycle
 
-    private func startPlayback() {
-        guard let url = URL(string: contentId) else { return }
-        mediaPlayer.load(url: url, contentType: contentType)
-        mediaPlayer.play()
+    /// Resolve the stream URL from the API and begin playback.
+    private func resolveAndPlay() async {
+        isResolvingStream = true
+        streamError = nil
+
+        do {
+            let streamURL = try await fetchStreamURL()
+            guard let url = URL(string: streamURL) else {
+                streamError = "Invalid stream URL received"
+                isResolvingStream = false
+                return
+            }
+            mediaPlayer.load(url: url, contentType: contentType)
+            mediaPlayer.play()
+            isResolvingStream = false
+        } catch {
+            streamError = "Unable to load stream. Please try again."
+            isResolvingStream = false
+        }
+    }
+
+    /// Fetch the appropriate stream URL based on content type.
+    private func fetchStreamURL() async throws -> String {
+        switch contentType {
+        case .liveTV:
+            let stream = try await repos.media.fetchLiveStream(channelId: channelId ?? contentId)
+            guard let url = stream.url ?? stream.directUrl else {
+                throw StreamResolutionError.noURL
+            }
+            return url
+
+        case .radio:
+            let stream = try await repos.media.fetchRadioStream(stationId: contentId)
+            guard let url = stream.url else {
+                throw StreamResolutionError.noURL
+            }
+            return url
+
+        case .vod, .podcast, .audiobook:
+            let stream = try await repos.media.fetchStream(contentId: contentId, quality: nil)
+            guard let url = stream.url ?? stream.directUrl else {
+                throw StreamResolutionError.noURL
+            }
+            return url
+        }
     }
 
     private func initializeViewModels() {
@@ -187,4 +274,10 @@ struct TVPlayerView: View {
         mediaPlayer.pause()
         liveDubbingVM?.cleanup()
     }
+}
+
+// MARK: - Stream Resolution Error
+
+private enum StreamResolutionError: Error {
+    case noURL
 }

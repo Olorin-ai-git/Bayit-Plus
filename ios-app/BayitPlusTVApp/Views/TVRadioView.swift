@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitMedia
 import SwiftUI
 
 /// tvOS Radio stations grid.
 /// Reuses RadioViewModel from shared ViewModels.
 struct TVRadioView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: RadioViewModel?
 
     private let columns = [
@@ -48,7 +50,12 @@ struct TVRadioView: View {
 
             LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
                 ForEach(stations) { station in
-                    TVRadioStationItemCard(station: station)
+                    TVRadioStationItemCard(station: station) {
+                        coordinator.presentPlayer(
+                            contentId: station.id,
+                            contentType: .radio
+                        )
+                    }
                 }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -73,10 +80,11 @@ struct TVRadioView: View {
 
 private struct TVRadioStationItemCard: View {
     let station: RadioStationItem
+    let onSelect: () -> Void
     @Environment(\.isFocused) private var isFocused
 
     var body: some View {
-        Button(action: {}) {
+        Button(action: onSelect) {
             VStack(spacing: TVDesignTokens.Spacing.md) {
                 stationLogo
                     .frame(width: 120, height: 120)

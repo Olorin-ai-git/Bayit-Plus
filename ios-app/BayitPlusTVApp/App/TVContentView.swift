@@ -1,5 +1,6 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitMedia
 import BayitNetworking
 import SwiftUI
 
@@ -40,5 +41,34 @@ struct TVContentView: View {
         }
         .animation(.easeInOut, value: coordinator.showingSplash)
         .animation(.easeInOut, value: coordinator.showingAuth)
+        .fullScreenCover(item: fullscreenBinding) { route in
+            fullscreenView(for: route)
+        }
+        .onOpenURL { url in
+            coordinator.handleDeepLink(url)
+        }
+    }
+
+    // MARK: - Fullscreen Player
+
+    private var fullscreenBinding: Binding<TVRoute?> {
+        Binding(
+            get: { coordinator.fullscreenRoute },
+            set: { coordinator.fullscreenRoute = $0 }
+        )
+    }
+
+    @ViewBuilder
+    private func fullscreenView(for route: TVRoute) -> some View {
+        switch route {
+        case .player(let contentId, let contentType, let channelId):
+            TVPlayerView(
+                contentId: contentId,
+                contentType: contentType,
+                channelId: channelId
+            )
+        case .podcastDetail, .seriesDetail, .movieDetail:
+            EmptyView()
+        }
     }
 }

@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitMedia
 import SwiftUI
 
 /// tvOS Home screen with hero carousel, continue watching, and content shelves.
 /// Reuses HomeViewModel from the shared ViewModels.
 struct TVHomeView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: HomeViewModel?
 
     var body: some View {
@@ -31,6 +33,7 @@ struct TVHomeView: View {
                 )
             }
             await viewModel?.loadFeatured()
+            cacheTopShelfData()
         }
     }
 
@@ -61,6 +64,13 @@ struct TVHomeView: View {
             if !vm.spotlight.isEmpty {
                 GlassHeroCarousel(items: vm.spotlight) { item in
                     heroItem(item)
+                        .onLongPressGesture(minimumDuration: 0) {
+                            let contentType = TVContentTypeMapper.map(item.type)
+                            coordinator.presentPlayer(
+                                contentId: item.id,
+                                contentType: contentType
+                            )
+                        }
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }
@@ -74,7 +84,13 @@ struct TVHomeView: View {
                     GlassFocusPoster(
                         thumbnailURL: item.thumbnail,
                         title: item.title ?? "Untitled",
-                        subtitle: item.type
+                        subtitle: item.type,
+                        onSelect: {
+                            coordinator.presentPlayer(
+                                contentId: item.id,
+                                contentType: TVContentTypeMapper.map(item.type)
+                            )
+                        }
                     )
                 }
             }
@@ -127,7 +143,13 @@ struct TVHomeView: View {
                         thumbnailURL: item.thumbnail,
                         title: item.title ?? "Untitled",
                         badge: item.isSeries == true ? "Series" : nil,
-                        aspectRatio: posterAspectRatio(for: category.name)
+                        aspectRatio: posterAspectRatio(for: category.name),
+                        onSelect: {
+                            coordinator.presentPlayer(
+                                contentId: item.id,
+                                contentType: TVContentTypeMapper.map(item.type)
+                            )
+                        }
                     )
                 }
             }
@@ -210,6 +232,21 @@ struct TVHomeView: View {
         return 2.0 / 3.0
     }
 
+    /// Cache continue watching and trending data for the Top Shelf extension.
+    private func cacheTopShelfData() {
+        guard let vm = viewModel else { return }
+
+        let continueItems = vm.continueWatching.prefix(10).map { item in
+            TopShelfCachedItem(id: item.id, title: item.title ?? "Untitled", imageURL: item.thumbnail)
+        }
+        TopShelfDataProvider.cacheContinueWatching(Array(continueItems))
+
+        let trendingItems = vm.trendingContent.prefix(10).map { item in
+            TopShelfCachedItem(id: item.id, title: item.title, imageURL: nil)
+        }
+        TopShelfDataProvider.cacheTrending(trendingItems)
+    }
+
     private func metadataText(_ text: String) -> some View {
         Text(text)
             .font(.system(size: TVDesignTokens.FontSize.sm))
@@ -248,7 +285,14 @@ struct TVHomeView: View {
                             title: channel.name ?? "Channel",
                             subtitle: channel.currentShow,
                             badge: "LIVE",
-                            aspectRatio: 16 / 9
+                            aspectRatio: 16 / 9,
+                            onSelect: {
+                                coordinator.presentPlayer(
+                                    contentId: channel.id,
+                                    contentType: .liveTV,
+                                    channelId: channel.id
+                                )
+                            }
                         )
                         .tvFocusStyle()
                     }

@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitMedia
 import SwiftUI
 
 /// tvOS Podcasts screen with horizontal shelves organized by category.
 /// Reuses PodcastsViewModel from shared ViewModels.
 struct TVPodcastsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: PodcastsViewModel?
 
     var body: some View {
@@ -99,7 +101,13 @@ struct TVPodcastsView: View {
                         thumbnailURL: show.cover,
                         title: show.title ?? "Podcast",
                         subtitle: show.author,
-                        aspectRatio: 1.0
+                        aspectRatio: 1.0,
+                        onSelect: {
+                            coordinator.presentPlayer(
+                                contentId: show.id,
+                                contentType: .podcast
+                            )
+                        }
                     )
                     .tvFocusStyle()
                 }

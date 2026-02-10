@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitMedia
 import SwiftUI
 
 /// tvOS Audiobooks screen with horizontal shelf displaying audiobook covers.
 /// Reuses AudiobooksViewModel from shared ViewModels.
 struct TVAudiobooksView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: AudiobooksViewModel?
 
     var body: some View {
@@ -39,7 +41,13 @@ struct TVAudiobooksView: View {
                 title: audiobook.title ?? "Audiobook",
                 subtitle: audiobook.author,
                 badge: audiobook.duration,
-                aspectRatio: 2 / 3
+                aspectRatio: 2 / 3,
+                onSelect: {
+                    coordinator.presentPlayer(
+                        contentId: audiobook.id,
+                        contentType: .audiobook
+                    )
+                }
             )
         }
     }

@@ -1,3 +1,5 @@
+import BayitCore
+import BayitMedia
 import Foundation
 import Observation
 import SwiftUI
@@ -89,6 +91,11 @@ final class TVNavigationCoordinator {
     var showingSplash: Bool = true
     var paths: [TVTab: NavigationPath] = [:]
 
+    /// Route for the fullscreen player modal. Set to non-nil to present.
+    var fullscreenRoute: TVRoute?
+
+    private let logger = BayitLogger(category: "TVNavigation")
+
     init() {
         for tab in TVTab.allCases {
             paths[tab] = NavigationPath()
@@ -97,5 +104,39 @@ final class TVNavigationCoordinator {
 
     func popToRoot() {
         paths[selectedTab] = NavigationPath()
+    }
+
+    /// Present the fullscreen player for the given content.
+    func presentPlayer(
+        contentId: String,
+        contentType: MediaContentType,
+        channelId: String? = nil
+    ) {
+        logger.info("Presenting player: \(contentId), type: \(contentType.rawValue)")
+        fullscreenRoute = .player(
+            contentId: contentId,
+            contentType: contentType,
+            channelId: channelId
+        )
+    }
+
+    /// Dismiss the current fullscreen modal.
+    func dismissFullscreen() {
+        fullscreenRoute = nil
+    }
+
+    /// Handle a `bayitplus://` deep link URL.
+    func handleDeepLink(_ url: URL) {
+        logger.info("Handling deep link: \(url.absoluteString)")
+
+        // Check for tab-level navigation first
+        if let tab = TVDeepLinkRouter.targetTab(from: url) {
+            selectedTab = tab
+        }
+
+        // Check for content-level navigation (player, detail)
+        if let route = TVDeepLinkRouter.route(from: url) {
+            fullscreenRoute = route
+        }
     }
 }

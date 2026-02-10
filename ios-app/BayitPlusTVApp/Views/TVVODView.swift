@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitMedia
 import SwiftUI
 
 /// tvOS VOD screen with content poster grid.
 /// Reuses VODViewModel from shared ViewModels.
 struct TVVODView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: VODViewModel?
 
     private let columns = [
@@ -54,7 +56,13 @@ struct TVVODView: View {
                         title: item.title ?? "Untitled",
                         subtitle: vodSubtitle(for: item),
                         badge: item.isSeries == true ? "Series" : nil,
-                        aspectRatio: 2 / 3
+                        aspectRatio: 2 / 3,
+                        onSelect: {
+                            coordinator.presentPlayer(
+                                contentId: item.id,
+                                contentType: .vod
+                            )
+                        }
                     )
                     .onAppear {
                         if item.id == vm.items.last?.id {
