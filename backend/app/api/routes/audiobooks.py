@@ -20,6 +20,7 @@ from app.api.routes.admin_content_utils import log_audit
 from app.api.routes.audiobook_schemas import (
     AudiobookChapterResponse,
     AudiobookListResponse,
+    AudiobookResponse,
     AudiobookStreamResponse,
     AudiobookWithChaptersResponse,
 )
@@ -46,7 +47,7 @@ async def get_audiobooks(
     query = Content.find({
         "content_format": "audiobook",
         "is_published": True,
-        "title": {"$exists": True, "$ne": "", "$ne": None},  # Filter out empty titles
+        "title": {"$exists": True, "$nin": ["", None]},
         "$or": [
             {"series_id": None},
             {"series_id": {"$exists": False}},
@@ -71,7 +72,7 @@ async def get_audiobooks(
     )
 
 
-@router.get("/{audiobook_id}")
+@router.get("/{audiobook_id}", response_model=AudiobookResponse)
 async def get_audiobook(
     audiobook_id: str,
     current_user: Optional[User] = Depends(get_optional_user),
