@@ -50,18 +50,18 @@ struct MainTabView: View {
                 .allowsHitTesting(true)
             }
 
-            // Floating wizard hat FAB (bottom-right corner)
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    VoiceAvatarFAB {
-                        isVoiceModalPresented = true
-                    }
-                    .padding(.trailing, 20)
-                    .padding(.bottom, 90)  // Above tab bar
-                }
-            }
+            // TEMPORARILY HIDDEN: Floating wizard hat FAB hidden per product request
+            // VStack {
+            //     Spacer()
+            //     HStack {
+            //         Spacer()
+            //         VoiceAvatarFAB {
+            //             isVoiceModalPresented = true
+            //         }
+            //         .padding(.trailing, 20)
+            //         .padding(.bottom, 90)  // Above tab bar
+            //     }
+            // }
         }
         .task {
             if dockViewModel == nil {

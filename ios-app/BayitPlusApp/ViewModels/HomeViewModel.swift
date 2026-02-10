@@ -94,11 +94,18 @@ final class HomeViewModel {
         await locationTask
     }
 
+    // TEMPORARILY HIDDEN: King 5, CNN, ABC channels hidden per product request
+    private static let hiddenChannelKeywords = ["king 5", "king5", "cnn", "abc"]
+
     @MainActor
     private func loadLiveChannels() async {
         do {
             let response = try await liveTVRepository.fetchChannels(cultureId: nil, category: nil)
-            liveChannels = Array(response.channels.prefix(8))  // First 8 channels
+            let filtered = response.channels.filter { channel in
+                guard let name = channel.name?.lowercased() else { return true }
+                return !Self.hiddenChannelKeywords.contains(where: { name.contains($0) })
+            }
+            liveChannels = Array(filtered.prefix(8))  // First 8 channels
         } catch {
             // Non-blocking: silently fail and hide section
             liveChannels = []

@@ -68,10 +68,10 @@ struct HomeView: View {
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.bottom, DesignTokens.Spacing.md)
 
-        // Hero carousel (auto-rotating, 6-second intervals)
-        if !vm.spotlight.isEmpty {
-            HeroCarousel(items: vm.spotlight, coordinator: coordinator)
-        }
+        // TEMPORARILY HIDDEN: Hero carousel hidden per product request
+        // if !vm.spotlight.isEmpty {
+        //     HeroCarousel(items: vm.spotlight, coordinator: coordinator)
+        // }
 
         // Continue Watching (only if has items)
         if !vm.continueWatching.isEmpty {
@@ -119,8 +119,12 @@ struct HomeView: View {
             CityContentRow(title: "Tel Aviv", items: telAviv.items)
         }
 
-        // Category rows (movies, series, podcasts, audiobooks)
-        ForEach(vm.categories) { category in
+        // Category rows - TEMPORARILY HIDDEN: Movies, Series, Audiobooks, Kids, Music, Documentary hidden per product request
+        ForEach(vm.categories.filter { category in
+            let name = category.name.lowercased()
+            let hidden = ["movie", "series", "audiobook", "kid", "children", "music", "documentar"]
+            return !hidden.contains(where: { name.contains($0) })
+        }) { category in
             CategoryRow(category: category, coordinator: coordinator)
         }
     }

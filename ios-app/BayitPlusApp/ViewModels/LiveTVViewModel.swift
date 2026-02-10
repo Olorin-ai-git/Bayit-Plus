@@ -14,6 +14,16 @@ final class LiveTVViewModel {
         self.repository = repository
     }
 
+    // TEMPORARILY HIDDEN: King 5, CNN, ABC channels hidden per product request
+    private static let hiddenChannelKeywords = ["king 5", "king5", "cnn", "abc"]
+
+    private func filterHiddenChannels(_ items: [LiveChannelItem]) -> [LiveChannelItem] {
+        items.filter { channel in
+            guard let name = channel.name?.lowercased() else { return true }
+            return !Self.hiddenChannelKeywords.contains(where: { name.contains($0) })
+        }
+    }
+
     @MainActor
     func loadChannels() async {
         guard !isLoading else { return }
@@ -22,7 +32,7 @@ final class LiveTVViewModel {
 
         do {
             let response = try await repository.fetchChannels(cultureId: nil, category: nil)
-            channels = response.channels
+            channels = filterHiddenChannels(response.channels)
         } catch {
             self.error = error.localizedDescription
         }
@@ -37,7 +47,7 @@ final class LiveTVViewModel {
 
         do {
             let response = try await repository.fetchChannels(cultureId: nil, category: nil)
-            channels = response.channels
+            channels = filterHiddenChannels(response.channels)
         } catch {
             self.error = error.localizedDescription
         }

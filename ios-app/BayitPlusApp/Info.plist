@@ -44,7 +44,7 @@
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bayit+ uses the microphone for voice commands</string>
 	<key>NSPrivacyPolicyURL</key>
-	<string>https://bayit.tv/policy</string>
+	<string>https://bayit.tv/privacy</string>
 	<key>NSSiriUsageDescription</key>
 	<string>Bayit+ uses Siri for voice commands to control playback and search content</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
@@ -54,8 +54,13 @@
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
 	</dict>
-	<key>UILaunchStoryboardName</key>
-	<string></string>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>AccentColor</string>
+		<key>UIImageName</key>
+		<string>AppIcon</string>
+	</dict>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>

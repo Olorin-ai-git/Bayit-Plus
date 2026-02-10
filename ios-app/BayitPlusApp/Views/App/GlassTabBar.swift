@@ -7,7 +7,8 @@ struct GlassTabBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(AppTab.allCases) { tab in
+            // TEMPORARILY HIDDEN: .vod tab hidden per product request
+            ForEach(AppTab.allCases.filter { $0 != .vod }) { tab in
                 tabBarButton(for: tab)
             }
         }

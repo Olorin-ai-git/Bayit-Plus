@@ -126,7 +126,11 @@ final class SearchViewModel {
                 limit: 30
             )
             if !Task.isCancelled {
-                var filteredResults = response.results
+                // TEMPORARILY HIDDEN: movies and series filtered from results per product request
+                var filteredResults = response.results.filter { result in
+                    let contentType = result.contentType?.lowercased() ?? ""
+                    return contentType != "vod" && contentType != "movie" && contentType != "series"
+                }
                 if selectedFilter == .vod {
                     filteredResults = filteredResults.filter { $0.isSeries != true }
                 }

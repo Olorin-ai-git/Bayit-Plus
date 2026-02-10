@@ -46,7 +46,8 @@ struct SearchView: View {
                             vm.onQueryChanged()
                         }
                     ),
-                    placeholder: "Search movies, series, podcasts...",
+                    // TEMPORARILY HIDDEN: "movies, series," removed from placeholder per product request
+                    placeholder: "Search podcasts, channels...",
                     showVoiceButton: true,
                     onVoiceTap: {
                         coordinator.navigate(to: .voiceOnboarding)
@@ -70,7 +71,8 @@ struct SearchView: View {
     private func filterPills(_ vm: SearchViewModel) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: DesignTokens.Spacing.sm) {
-                ForEach(SearchContentTypeFilter.allCases, id: \.self) { filter in
+                // TEMPORARILY HIDDEN: .vod (Movies) chip hidden per product request
+                ForEach(SearchContentTypeFilter.allCases.filter { $0 != .vod }, id: \.self) { filter in
                     GlassChip(
                         title: filter.displayLabel,
                         isSelected: vm.selectedFilter == filter

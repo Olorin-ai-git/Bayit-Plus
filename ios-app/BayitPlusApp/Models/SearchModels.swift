@@ -55,7 +55,8 @@ enum SearchContentTypeFilter: CaseIterable, Sendable {
     /// Content type strings sent to the API `content_types` query param
     var apiContentTypes: [String] {
         switch self {
-        case .all: return ["vod", "live", "radio", "podcast"]
+        // TEMPORARILY HIDDEN: "vod" removed from all-filter per product request
+        case .all: return ["live", "radio", "podcast"]
         case .vod: return ["vod"]
         case .live: return ["live"]
         case .podcasts: return ["podcast"]

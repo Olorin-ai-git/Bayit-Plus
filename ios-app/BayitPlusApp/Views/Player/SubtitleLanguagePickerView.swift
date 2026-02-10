@@ -21,6 +21,7 @@ struct SubtitleLanguagePickerView: View {
     var hasShoresh: Bool = false
     var hasHeblish: Bool = false
     var hasEngrew: Bool = false
+    var isAdmin: Bool = false
     var onHebrewModeSelect: ((SubtitleHebrewMode) -> Void)?
     var onEnglishModeSelect: ((SubtitleEnglishMode) -> Void)?
 
@@ -224,7 +225,7 @@ struct SubtitleLanguagePickerView: View {
                     hasNikud: hasNikud,
                     hasShoresh: hasShoresh,
                     hasHeblish: hasHeblish,
-                    isAdmin: true, // TODO: Get from auth
+                    isAdmin: isAdmin,
                     repository: repository,
                     onModeSelect: { selectedMode in
                         onHebrewModeSelect?(selectedMode)

@@ -1,3 +1,4 @@
+import BayitAuth
 import Foundation
 import Observation
 
@@ -17,24 +18,25 @@ final class InteractiveSubtitlesViewModel {
     private(set) var hasShoresh = false
     private(set) var hasHeblish = false
 
-    /// Check if user is admin (from auth store or user session)
-    /// TODO: Wire to actual auth store when available
     var isAdmin: Bool {
-        return false
+        authManager?.user?.role.isAdmin ?? false
     }
 
     private let repository: any SubtitleRepository
     private let offlineCache: OfflineCacheService
     private let shoreshParser: any ShoreshParsing
+    private let authManager: AuthManager?
 
     init(
         repository: any SubtitleRepository,
         offlineCache: OfflineCacheService,
-        shoreshParser: any ShoreshParsing = DefaultShoreshParser()
+        shoreshParser: any ShoreshParsing = DefaultShoreshParser(),
+        authManager: AuthManager? = nil
     ) {
         self.repository = repository
         self.offlineCache = offlineCache
         self.shoreshParser = shoreshParser
+        self.authManager = authManager
     }
 
     @MainActor
