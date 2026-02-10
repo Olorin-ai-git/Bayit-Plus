@@ -5590,7 +5590,12 @@
     "regenerate": "Rigenera",
     "scanCode": "Scansiona questo codice sull'altro dispositivo",
     "unknownDevice": "Dispositivo sconosciuto",
-    "verify": "Verifica"
+    "verify": "Verifica",
+    "title": "Associazione dispositivo",
+    "tvDescription": "Collega il tuo iPhone o iPad a questa Apple TV.",
+    "tvPairFromMobile": "Associa dal cellulare",
+    "tvExplanation": "L'associazione del dispositivo è gestita dal tuo dispositivo mobile. Apri Bayit+ sul tuo iPhone o iPad per associare questa Apple TV.",
+    "tvPairPrompt": "Associa dal tuo iPhone o iPad"
   },
   "passkey": {
     "manager": {
@@ -5638,7 +5643,10 @@
     "register": "Registra",
     "registered": "Passkey registrate",
     "title": "Passkey",
-    "unknownDevice": "Dispositivo sconosciuto"
+    "unknownDevice": "Dispositivo sconosciuto",
+    "tvLimitation": "Limitazione Apple TV",
+    "tvLimitationDescription": "La registrazione delle chiavi di accesso richiede l'autenticazione biometrica (Face ID o Touch ID), non disponibile su Apple TV. Gestisci le tue chiavi di accesso dal tuo iPhone o iPad.",
+    "tvNotAvailable": "Non disponibile su Apple TV"
   },
   "payment": {
     "pending": {
@@ -6995,7 +7003,9 @@
     "support": "Supporto",
     "version": "Versione",
     "watchPartyInvitations": "Inviti Watch Party",
-    "watchPartyInvitationsDescription": "Notifiche per inviti a guardare insieme"
+    "watchPartyInvitationsDescription": "Notifiche per inviti a guardare insieme",
+    "signOut": "Esci",
+    "profile": "Profilo"
   },
   "shabbat": {
     "activate": "Attiva",
@@ -7109,7 +7119,8 @@
     "current": "Attuale",
     "monthly": "Mensile",
     "subscribe": "Abbonati",
-    "yearly": "Annuale"
+    "yearly": "Annuale",
+    "tvSubscribeMessage": "Abbonati su bayit.tv o dal tuo dispositivo mobile"
   },
   "subtitles": {
     "nikud": "Nikud",

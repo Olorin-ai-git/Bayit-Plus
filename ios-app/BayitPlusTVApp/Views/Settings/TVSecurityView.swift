@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS security settings screen with password management and device list.
 /// Reuses SecurityViewModel from shared ViewModels.
 struct TVSecurityView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var viewModel: SecurityViewModel?
 
@@ -40,7 +42,7 @@ struct TVSecurityView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Security...")
+            Text(localization.t("common.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -61,7 +63,7 @@ struct TVSecurityView: View {
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: 600)
 
-            GlassButton("Retry", variant: .secondary, size: .large) {
+            GlassButton(localization.t("common.retry"), variant: .secondary, size: .large) {
                 Task { await vm.load() }
             }
             .frame(maxWidth: 300)
@@ -74,19 +76,19 @@ struct TVSecurityView: View {
 
     private func passwordSection(_ vm: SecurityViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-            sectionHeader("Change Password")
+            sectionHeader(localization.t("security.changePassword"))
 
             VStack(spacing: TVDesignTokens.Spacing.md) {
                 secureField(
-                    placeholder: "Current Password",
+                    placeholder: localization.t("security.currentPassword"),
                     text: Bindable(vm).currentPassword
                 )
                 secureField(
-                    placeholder: "New Password",
+                    placeholder: localization.t("security.newPassword"),
                     text: Bindable(vm).newPassword
                 )
                 secureField(
-                    placeholder: "Confirm Password",
+                    placeholder: localization.t("security.confirmPassword"),
                     text: Bindable(vm).confirmPassword
                 )
 
@@ -103,7 +105,7 @@ struct TVSecurityView: View {
                 }
 
                 GlassButton(
-                    "Update Password",
+                    localization.t("security.updatePassword"),
                     variant: .primary,
                     isDisabled: !vm.passwordsValid,
                     isLoading: vm.isProcessing
@@ -136,10 +138,10 @@ struct TVSecurityView: View {
 
     private func devicesSection(_ vm: SecurityViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-            sectionHeader("Active Devices")
+            sectionHeader(localization.t("security.devices"))
 
             if vm.devices.isEmpty {
-                Text("No active devices found.")
+                Text(localization.t("security.noDevices"))
                     .font(.system(size: TVDesignTokens.FontSize.md))
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .frame(maxWidth: .infinity)
@@ -163,12 +165,12 @@ struct TVSecurityView: View {
 
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xxs) {
                 HStack(spacing: TVDesignTokens.Spacing.xs) {
-                    Text(device.deviceName ?? "Unknown Device")
+                    Text(device.deviceName ?? localization.t("security.unknownDevice"))
                         .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                         .foregroundStyle(DesignTokens.Text.primary)
 
                     if device.isCurrent == true {
-                        GlassBadge(text: "Current", variant: .success)
+                        GlassBadge(text: localization.t("security.current"), variant: .success)
                     }
                 }
 

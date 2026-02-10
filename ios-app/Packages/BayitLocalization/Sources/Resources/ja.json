@@ -5728,7 +5728,12 @@
     "regenerate": "再生成",
     "scanCode": "他のデバイスでこのコードをスキャン",
     "unknownDevice": "不明なデバイス",
-    "verify": "確認"
+    "verify": "確認",
+    "title": "デバイスペアリング",
+    "tvDescription": "iPhoneまたはiPadをこのApple TVにリンクします。",
+    "tvPairFromMobile": "モバイルからペアリング",
+    "tvExplanation": "デバイスペアリングはモバイルデバイスから管理されます。iPhoneまたはiPadでBayit+を開いてこのApple TVをペアリングしてください。",
+    "tvPairPrompt": "iPhoneまたはiPadからペアリング"
   },
   "passkey": {
     "title": "パスキー",
@@ -5778,7 +5783,10 @@
     "register": "登録",
     "registered": "登録済みパスキー",
     "title": "パスキー",
-    "unknownDevice": "不明なデバイス"
+    "unknownDevice": "不明なデバイス",
+    "tvLimitation": "Apple TVの制限",
+    "tvLimitationDescription": "パスキーの登録には生体認証（Face IDまたはTouch ID）が必要ですが、Apple TVでは利用できません。iPhoneまたはiPadからパスキーを管理してください。",
+    "tvNotAvailable": "Apple TVでは利用できません"
   },
   "payment": {
     "pending": {
@@ -7364,7 +7372,9 @@
     "subscription": "サブスクリプション",
     "support": "サポート",
     "watchPartyInvitations": "ウォッチパーティーの招待",
-    "watchPartyInvitationsDescription": "友達からの共同視聴招待通知"
+    "watchPartyInvitationsDescription": "友達からの共同視聴招待通知",
+    "signOut": "サインアウト",
+    "profile": "プロフィール"
   },
   "shabbat": {
     "activate": "有効にする",
@@ -7511,7 +7521,8 @@
     "current": "現在",
     "monthly": "月額",
     "subscribe": "登録",
-    "yearly": "年額"
+    "yearly": "年額",
+    "tvSubscribeMessage": "bayit.tvまたはモバイルデバイスから購読"
   },
   "subtitles": {
     "nikud": "ニクド",

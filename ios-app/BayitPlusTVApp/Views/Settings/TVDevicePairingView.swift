@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS device pairing view. Informational only -- device pairing
 /// requires QR code scanning and text input best suited to iPhone or iPad.
 struct TVDevicePairingView: View {
+    @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -32,11 +34,11 @@ struct TVDevicePairingView: View {
                     .foregroundStyle(DesignTokens.Primary.p300)
             }
 
-            Text("Device Pairing")
+            Text(localization.t("pairing.title"))
                 .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Link your iPhone or iPad to this Apple TV.")
+            Text(localization.t("pairing.tvDescription"))
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -52,16 +54,13 @@ struct TVDevicePairingView: View {
                 .foregroundStyle(DesignTokens.Primary.p400)
 
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
-                Text("Pair from Mobile")
+                Text(localization.t("pairing.tvPairFromMobile"))
                     .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
-                Text(
-                    "Device pairing is managed from your mobile device. "
-                        + "Open Bayit+ on your iPhone or iPad to pair this Apple TV."
-                )
-                .font(.system(size: TVDesignTokens.FontSize.sm))
-                .foregroundStyle(DesignTokens.Text.muted)
+                Text(localization.t("pairing.tvExplanation"))
+                    .font(.system(size: TVDesignTokens.FontSize.sm))
+                    .foregroundStyle(DesignTokens.Text.muted)
             }
 
             Spacer()
@@ -79,7 +78,7 @@ struct TVDevicePairingView: View {
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.disabled)
 
-            Text("Pair from your iPhone or iPad")
+            Text(localization.t("pairing.tvPairPrompt"))
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.secondary)
 

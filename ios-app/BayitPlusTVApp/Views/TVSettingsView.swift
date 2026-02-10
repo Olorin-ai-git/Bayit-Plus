@@ -42,7 +42,7 @@ struct TVSettingsView: View {
         Section {
             if let user = authManager.user {
                 HStack {
-                    Text("Account")
+                    Text(localization.t("settings.account"))
                         .foregroundStyle(DesignTokens.Text.secondary)
                     Spacer()
                     Text(user.email ?? user.displayName ?? "")
@@ -52,7 +52,7 @@ struct TVSettingsView: View {
 
             if let profile = authManager.activeProfile {
                 HStack {
-                    Text("Profile")
+                    Text(localization.t("settings.profile"))
                         .foregroundStyle(DesignTokens.Text.secondary)
                     Spacer()
                     Text(profile.name)
@@ -60,7 +60,7 @@ struct TVSettingsView: View {
                 }
             }
         } header: {
-            sectionHeader("Account")
+            sectionHeader(localization.t("settings.account"))
         }
     }
 
@@ -70,7 +70,7 @@ struct TVSettingsView: View {
         Section {
             settingsNavRow(
                 icon: "globe",
-                title: "Language",
+                title: localization.t("settings.language"),
                 detail: localization.currentLanguage.displayName
             ) {
                 TVLanguageSettingsView()
@@ -78,35 +78,45 @@ struct TVSettingsView: View {
 
             settingsNavRow(
                 icon: "bell.badge",
-                title: "Notifications",
+                title: localization.t("settings.notificationSettings"),
                 detail: nil
             ) {
                 TVNotificationSettingsView()
             }
 
-            HStack {
-                Image(systemName: "captions.bubble")
-                    .foregroundStyle(DesignTokens.Primary.p400)
-                    .frame(width: 32)
-                Text("Subtitles")
-                    .foregroundStyle(DesignTokens.Text.primary)
-                Spacer()
-                Text(viewModel?.subtitles == true ? "On" : "Off")
-                    .foregroundStyle(DesignTokens.Text.muted)
-            }
+            if let vm = viewModel {
+                Toggle(isOn: Bindable(vm).subtitles) {
+                    HStack {
+                        Image(systemName: "captions.bubble")
+                            .foregroundStyle(DesignTokens.Primary.p400)
+                            .frame(width: 32)
+                        Text(localization.t("settings.subtitles"))
+                            .foregroundStyle(DesignTokens.Text.primary)
+                    }
+                }
+                .tint(DesignTokens.Primary.default)
+                .onChange(of: vm.subtitles) { _, newValue in
+                    Task { await vm.updateSubtitles(newValue) }
+                }
+                .accessibilityLabel(localization.t("settings.subtitles"))
 
-            HStack {
-                Image(systemName: "play.circle")
-                    .foregroundStyle(DesignTokens.Primary.p400)
-                    .frame(width: 32)
-                Text("Autoplay")
-                    .foregroundStyle(DesignTokens.Text.primary)
-                Spacer()
-                Text(viewModel?.autoplay == true ? "On" : "Off")
-                    .foregroundStyle(DesignTokens.Text.muted)
+                Toggle(isOn: Bindable(vm).autoplay) {
+                    HStack {
+                        Image(systemName: "play.circle")
+                            .foregroundStyle(DesignTokens.Primary.p400)
+                            .frame(width: 32)
+                        Text(localization.t("settings.autoplay"))
+                            .foregroundStyle(DesignTokens.Text.primary)
+                    }
+                }
+                .tint(DesignTokens.Primary.default)
+                .onChange(of: vm.autoplay) { _, newValue in
+                    Task { await vm.updateAutoplay(newValue) }
+                }
+                .accessibilityLabel(localization.t("settings.autoplay"))
             }
         } header: {
-            sectionHeader("Preferences")
+            sectionHeader(localization.t("settings.preferences"))
         }
     }
 
@@ -116,7 +126,7 @@ struct TVSettingsView: View {
         Section {
             settingsNavRow(
                 icon: "crown",
-                title: "Subscription",
+                title: localization.t("settings.subscription"),
                 detail: nil
             ) {
                 TVSubscriptionView()
@@ -124,13 +134,13 @@ struct TVSettingsView: View {
 
             settingsNavRow(
                 icon: "creditcard",
-                title: "Billing",
+                title: localization.t("settings.billing"),
                 detail: nil
             ) {
                 TVBillingView()
             }
         } header: {
-            sectionHeader("Subscription")
+            sectionHeader(localization.t("settings.subscription"))
         }
     }
 
@@ -140,7 +150,7 @@ struct TVSettingsView: View {
         Section {
             settingsNavRow(
                 icon: "lock.shield",
-                title: "Security",
+                title: localization.t("settings.security"),
                 detail: nil
             ) {
                 TVSecurityView()
@@ -148,7 +158,7 @@ struct TVSettingsView: View {
 
             settingsNavRow(
                 icon: "person.badge.key",
-                title: "Passkeys",
+                title: localization.t("settings.passkeys"),
                 detail: nil
             ) {
                 TVPasskeyManagementView()
@@ -156,13 +166,13 @@ struct TVSettingsView: View {
 
             settingsNavRow(
                 icon: "link",
-                title: "Device Pairing",
+                title: localization.t("settings.devicePairing"),
                 detail: nil
             ) {
                 TVDevicePairingView()
             }
         } header: {
-            sectionHeader("Security")
+            sectionHeader(localization.t("settings.security"))
         }
     }
 
@@ -174,7 +184,7 @@ struct TVSettingsView: View {
                 Image(systemName: "info.circle")
                     .foregroundStyle(DesignTokens.Primary.p400)
                     .frame(width: 32)
-                Text("Version")
+                Text(localization.t("settings.version"))
                     .foregroundStyle(DesignTokens.Text.secondary)
                 Spacer()
                 Text(Bundle.main.object(
@@ -183,7 +193,7 @@ struct TVSettingsView: View {
                     .foregroundStyle(DesignTokens.Text.muted)
             }
         } header: {
-            sectionHeader("About")
+            sectionHeader(localization.t("settings.about"))
         }
     }
 
@@ -192,7 +202,7 @@ struct TVSettingsView: View {
     private var signOutSection: some View {
         Section {
             Button(action: signOut) {
-                Text("Sign Out")
+                Text(localization.t("settings.signOut"))
                     .foregroundStyle(DesignTokens.Colors.Semantic.error)
             }
         }

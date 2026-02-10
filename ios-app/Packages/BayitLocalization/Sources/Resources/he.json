@@ -5642,7 +5642,12 @@
     "regenerate": "חדש",
     "scanCode": "סרוק את הקוד במכשיר השני שלך",
     "unknownDevice": "מכשיר לא ידוע",
-    "verify": "אמת"
+    "verify": "אמת",
+    "title": "התאמת מכשיר",
+    "tvDescription": "חבר את האייפון או האייפד שלך לאפל טיוי זה.",
+    "tvPairFromMobile": "התאם מהנייד",
+    "tvExplanation": "התאמת מכשיר מנוהלת מהמכשיר הנייד שלך. פתח את Bayit+ באייפון או באייפד כדי להתאים את אפל טיוי זה.",
+    "tvPairPrompt": "התאם מהאייפון או האייפד שלך"
   },
   "passkey": {
     "manager": {
@@ -5692,7 +5697,10 @@
     "register": "רשום",
     "registered": "מפתחות גישה רשומים",
     "title": "מפתחות גישה",
-    "unknownDevice": "מכשיר לא ידוע"
+    "unknownDevice": "מכשיר לא ידוע",
+    "tvLimitation": "מגבלת אפל טיוי",
+    "tvLimitationDescription": "רישום מפתח גישה דורש אימות ביומטרי (Face ID או Touch ID), שאינו זמין באפל טיוי. נהל את מפתחות הגישה שלך מהאייפון או האייפד.",
+    "tvNotAvailable": "לא זמין באפל טיוי"
   },
   "payment": {
     "pending": {
@@ -7055,7 +7063,9 @@
     "support": "תמיכה",
     "version": "גרסה",
     "watchPartyInvitations": "הזמנות לצפייה משותפת",
-    "watchPartyInvitationsDescription": "התראות כשחברים מזמינים אותך לצפות יחד"
+    "watchPartyInvitationsDescription": "התראות כשחברים מזמינים אותך לצפות יחד",
+    "signOut": "התנתק",
+    "profile": "פרופיל"
   },
   "shabbat": {
     "activate": "הפעל",
@@ -7169,7 +7179,8 @@
     "current": "נוכחי",
     "monthly": "חודשי",
     "subscribe": "הירשם",
-    "yearly": "שנתי"
+    "yearly": "שנתי",
+    "tvSubscribeMessage": "הירשם ב-bayit.tv או מהמכשיר הנייד שלך"
   },
   "subtitles": {
     "nikud": "ניקוד",

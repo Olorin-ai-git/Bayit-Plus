@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS passkey management view. Informational only — passkey registration
 /// requires biometric authentication not available on Apple TV.
 struct TVPasskeyManagementView: View {
+    @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -32,11 +34,11 @@ struct TVPasskeyManagementView: View {
                     .foregroundStyle(DesignTokens.Primary.p300)
             }
 
-            Text("Passkeys")
+            Text(localization.t("passkeys.title"))
                 .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Secure passwordless login using biometrics.")
+            Text(localization.t("passkeys.description"))
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -52,11 +54,11 @@ struct TVPasskeyManagementView: View {
                 .foregroundStyle(DesignTokens.Primary.p400)
 
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
-                Text("Apple TV Limitation")
+                Text(localization.t("passkeys.tvLimitation"))
                     .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
-                Text("Passkey registration requires biometric authentication (Face ID or Touch ID), which is not available on Apple TV. Manage your passkeys from your iPhone or iPad.")
+                Text(localization.t("passkeys.tvLimitationDescription"))
                     .font(.system(size: TVDesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
             }
@@ -76,7 +78,7 @@ struct TVPasskeyManagementView: View {
                 .fill(DesignTokens.Text.disabled)
                 .frame(width: 16, height: 16)
 
-            Text("Not available on Apple TV")
+            Text(localization.t("passkeys.tvNotAvailable"))
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.secondary)
 

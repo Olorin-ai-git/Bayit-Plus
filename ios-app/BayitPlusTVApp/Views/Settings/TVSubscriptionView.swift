@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS subscription management screen with plan selection cards
@@ -6,6 +7,7 @@ import SwiftUI
 /// Subscription actions redirect users to bayit.tv or their mobile device
 /// since tvOS cannot open external checkout URLs.
 struct TVSubscriptionView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var viewModel: SubscriptionViewModel?
 
@@ -49,7 +51,7 @@ struct TVSubscriptionView: View {
                 .font(.system(size: TVDesignTokens.FontSize.xxxl))
                 .foregroundStyle(DesignTokens.Primary.p400)
 
-            Text("Choose Your Plan")
+            Text(localization.t("subscription.choosePlan"))
                 .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
         }
@@ -66,7 +68,7 @@ struct TVSubscriptionView: View {
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
 
-            GlassButton("Retry", variant: .primary) {
+            GlassButton(localization.t("common.retry"), variant: .primary) {
                 Task { await vm.load() }
             }
         }
@@ -85,7 +87,9 @@ struct TVSubscriptionView: View {
                 Button {
                     vm.selectedBillingPeriod = period
                 } label: {
-                    Text(period == .monthly ? "Monthly" : "Yearly")
+                    Text(period == .monthly
+                        ? localization.t("subscription.monthly")
+                        : localization.t("subscription.yearly"))
                         .font(.system(
                             size: TVDesignTokens.FontSize.sm,
                             weight: .semibold
@@ -144,7 +148,7 @@ struct TVSubscriptionView: View {
                 Spacer()
 
                 if isCurrent {
-                    Text("Current")
+                    Text(localization.t("subscription.current"))
                         .font(.system(
                             size: TVDesignTokens.FontSize.sm,
                             weight: .semibold
@@ -177,7 +181,7 @@ struct TVSubscriptionView: View {
             }
 
             if !isCurrent {
-                Text("Subscribe at bayit.tv or from your mobile device")
+                Text(localization.t("subscription.tvSubscribeMessage"))
                     .font(.system(size: TVDesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
                     .frame(maxWidth: .infinity)
@@ -207,7 +211,7 @@ struct TVSubscriptionView: View {
         _ vm: SubscriptionViewModel
     ) -> some View {
         GlassButton(
-            "Cancel Subscription",
+            localization.t("subscription.cancel"),
             variant: .ghost,
             isLoading: vm.isProcessing
         ) {

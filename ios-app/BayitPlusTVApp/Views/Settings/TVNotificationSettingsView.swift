@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS notification preferences screen with category-based toggles for
 /// push notification types adapted for 10-foot UI navigation.
 struct TVNotificationSettingsView: View {
+    @Environment(LocalizationManager.self) private var localization
     @State private var newContent = true
     @State private var liveEvents = true
     @State private var recommendations = true
@@ -34,11 +36,11 @@ struct TVNotificationSettingsView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Primary.p400)
 
-            Text("Notification Preferences")
+            Text(localization.t("settings.notificationPreferences"))
                 .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Choose which notifications to receive")
+            Text(localization.t("settings.notificationDescription"))
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -51,50 +53,50 @@ struct TVNotificationSettingsView: View {
         VStack(spacing: TVDesignTokens.Spacing.md) {
             notificationToggle(
                 icon: "film",
-                title: "New Content",
-                subtitle: "New movies, series, and episodes",
+                title: localization.t("settings.newContent"),
+                subtitle: localization.t("settings.newContentDescription"),
                 isOn: $newContent
             )
             notificationToggle(
                 icon: "antenna.radiowaves.left.and.right",
-                title: "Live Events",
-                subtitle: "Live broadcasts and special events",
+                title: localization.t("settings.liveEvents"),
+                subtitle: localization.t("settings.liveEventsDescription"),
                 isOn: $liveEvents
             )
             notificationToggle(
                 icon: "sparkles",
-                title: "Recommendations",
-                subtitle: "Personalized content suggestions",
+                title: localization.t("settings.recommendations"),
+                subtitle: localization.t("settings.recommendationsDescription"),
                 isOn: $recommendations
             )
             notificationToggle(
                 icon: "arrow.triangle.2.circlepath",
-                title: "App Updates",
-                subtitle: "New features and improvements",
+                title: localization.t("settings.appUpdates"),
+                subtitle: localization.t("settings.appUpdatesDescription"),
                 isOn: $appUpdates
             )
             notificationToggle(
                 icon: "message",
-                title: "Direct Messages",
-                subtitle: "Messages from friends",
+                title: localization.t("settings.directMessages"),
+                subtitle: localization.t("settings.directMessagesDescription"),
                 isOn: $directMessages
             )
             notificationToggle(
                 icon: "person.2",
-                title: "Friend Activity",
-                subtitle: "Friend watch activity updates",
+                title: localization.t("settings.friendActivity"),
+                subtitle: localization.t("settings.friendActivityDescription"),
                 isOn: $friendActivity
             )
             notificationToggle(
                 icon: "party.popper",
-                title: "Watch Party Invitations",
-                subtitle: "Invites to watch parties",
+                title: localization.t("settings.watchPartyInvitations"),
+                subtitle: localization.t("settings.watchPartyInvitationsDescription"),
                 isOn: $watchPartyInvitations
             )
             notificationToggle(
                 icon: "crown",
-                title: "Chess Activity",
-                subtitle: "Chess game and challenge updates",
+                title: localization.t("settings.chessActivity"),
+                subtitle: localization.t("settings.chessActivityDescription"),
                 isOn: $chessActivity
             )
         }
@@ -137,7 +139,7 @@ struct TVNotificationSettingsView: View {
     // MARK: - Footer
 
     private var footerNote: some View {
-        Text("Notification settings may take a moment to apply.")
+        Text(localization.t("settings.notificationFooter"))
             .font(.system(size: TVDesignTokens.FontSize.sm))
             .foregroundStyle(DesignTokens.Text.muted)
             .multilineTextAlignment(.center)

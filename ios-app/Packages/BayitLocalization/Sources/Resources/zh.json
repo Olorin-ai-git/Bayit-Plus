@@ -5349,7 +5349,12 @@
     "regenerate": "重新生成",
     "scanCode": "在另一台设备上扫描此代码",
     "unknownDevice": "未知设备",
-    "verify": "验证"
+    "verify": "验证",
+    "title": "设备配对",
+    "tvDescription": "将您的 iPhone 或 iPad 连接到此 Apple TV。",
+    "tvPairFromMobile": "从手机配对",
+    "tvExplanation": "设备配对从您的移动设备管理。在 iPhone 或 iPad 上打开 Bayit+ 来配对此 Apple TV。",
+    "tvPairPrompt": "从您的 iPhone 或 iPad 配对"
   },
   "passkey": {
     "manager": {
@@ -5397,7 +5402,10 @@
     "register": "注册",
     "registered": "已注册的通行密钥",
     "title": "通行密钥",
-    "unknownDevice": "未知设备"
+    "unknownDevice": "未知设备",
+    "tvLimitation": "Apple TV 限制",
+    "tvLimitationDescription": "通行密钥注册需要生物识别认证（Face ID 或 Touch ID），Apple TV 不支持此功能。请从您的 iPhone 或 iPad 管理通行密钥。",
+    "tvNotAvailable": "Apple TV 不可用"
   },
   "payment": {
     "pending": {
@@ -6754,7 +6762,9 @@
     "support": "支持",
     "version": "版本",
     "watchPartyInvitations": "观影派对邀请",
-    "watchPartyInvitationsDescription": "好友邀请你一起观看时的通知"
+    "watchPartyInvitationsDescription": "好友邀请你一起观看时的通知",
+    "signOut": "退出登录",
+    "profile": "个人资料"
   },
   "shabbat": {
     "activate": "激活",
@@ -6868,7 +6878,8 @@
     "current": "当前",
     "monthly": "月度",
     "subscribe": "订阅",
-    "yearly": "年度"
+    "yearly": "年度",
+    "tvSubscribeMessage": "在 bayit.tv 或从您的移动设备订阅"
   },
   "subtitles": {
     "nikud": "希伯来语标点",

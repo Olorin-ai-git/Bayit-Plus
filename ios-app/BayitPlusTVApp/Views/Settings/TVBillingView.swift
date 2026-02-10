@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS billing screen showing current subscription plan and transaction
 /// history, adapted for 10-foot UI with focus-based navigation.
 struct TVBillingView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var transactions: [Transaction] = []
     @State private var subscription: SubscriptionDetail?
@@ -60,7 +62,7 @@ struct TVBillingView: View {
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
 
-            GlassButton("Retry", variant: .primary, size: .medium) {
+            GlassButton(localization.t("common.retry"), variant: .primary, size: .medium) {
                 Task { await load() }
             }
         }
@@ -77,32 +79,32 @@ struct TVBillingView: View {
                     .font(.system(size: TVDesignTokens.FontSize.lg))
                     .foregroundStyle(DesignTokens.Primary.p400)
 
-                Text("Current Plan")
+                Text(localization.t("billing.currentPlan"))
                     .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
             }
 
             if let sub = subscription {
                 planDetailRow(
-                    label: "Plan",
+                    label: localization.t("billing.plan"),
                     value: sub.plan?.capitalized ?? "-"
                 )
                 planDetailRow(
-                    label: "Status",
+                    label: localization.t("billing.status"),
                     value: sub.status?.capitalized ?? "-"
                 )
                 planDetailRow(
-                    label: "Period",
+                    label: localization.t("billing.period"),
                     value: sub.billingPeriod?.capitalized ?? "-"
                 )
                 if let endDate = sub.currentPeriodEnd {
                     planDetailRow(
-                        label: "Renews On",
+                        label: localization.t("billing.renewsOn"),
                         value: endDate
                     )
                 }
             } else {
-                Text("No active subscription")
+                Text(localization.t("billing.noSubscription"))
                     .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundStyle(DesignTokens.Text.secondary)
             }
@@ -129,14 +131,14 @@ struct TVBillingView: View {
 
     private var transactionsSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("Transactions")
+            Text(localization.t("billing.transactions"))
                 .font(.system(size: TVDesignTokens.FontSize.sm, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.muted)
                 .textCase(.uppercase)
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
 
             if transactions.isEmpty {
-                Text("No transactions found")
+                Text(localization.t("billing.noTransactions"))
                     .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .frame(maxWidth: .infinity)
@@ -155,7 +157,7 @@ struct TVBillingView: View {
     private func transactionRow(_ tx: Transaction) -> some View {
         HStack {
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xxs) {
-                Text(tx.description ?? "Payment")
+                Text(tx.description ?? localization.t("billing.payment"))
                     .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundStyle(DesignTokens.Text.primary)
                     .lineLimit(1)

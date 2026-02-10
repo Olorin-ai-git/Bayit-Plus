@@ -5337,7 +5337,12 @@
     "regenerate": "पुनः उत्पन्न",
     "scanCode": "अपने अन्य डिवाइस पर यह कोड स्कैन करें",
     "unknownDevice": "अज्ञात डिवाइस",
-    "verify": "सत्यापित"
+    "verify": "सत्यापित",
+    "title": "डिवाइस पेयरिंग",
+    "tvDescription": "अपने iPhone या iPad को इस Apple TV से लिंक करें।",
+    "tvPairFromMobile": "मोबाइल से पेयर करें",
+    "tvExplanation": "डिवाइस पेयरिंग आपके मोबाइल डिवाइस से प्रबंधित होती है। इस Apple TV को पेयर करने के लिए अपने iPhone या iPad पर Bayit+ खोलें।",
+    "tvPairPrompt": "अपने iPhone या iPad से पेयर करें"
   },
   "passkey": {
     "manager": {
@@ -5385,7 +5390,10 @@
     "register": "पंजीकृत करें",
     "registered": "पंजीकृत पासकी",
     "title": "पासकी",
-    "unknownDevice": "अज्ञात डिवाइस"
+    "unknownDevice": "अज्ञात डिवाइस",
+    "tvLimitation": "Apple TV सीमा",
+    "tvLimitationDescription": "पासकी पंजीकरण के लिए बायोमेट्रिक प्रमाणीकरण (Face ID या Touch ID) आवश्यक है, जो Apple TV पर उपलब्ध नहीं है। अपने iPhone या iPad से अपनी पासकी प्रबंधित करें।",
+    "tvNotAvailable": "Apple TV पर उपलब्ध नहीं"
   },
   "payment": {
     "pending": {
@@ -6745,7 +6753,9 @@
     "support": "सहायता",
     "version": "संस्करण",
     "watchPartyInvitations": "वॉच पार्टी आमंत्रण",
-    "watchPartyInvitationsDescription": "जब मित्र साथ देखने के लिए आमंत्रित करें"
+    "watchPartyInvitationsDescription": "जब मित्र साथ देखने के लिए आमंत्रित करें",
+    "signOut": "साइन आउट",
+    "profile": "प्रोफ़ाइल"
   },
   "shabbat": {
     "activate": "सक्रिय करें",
@@ -6859,7 +6869,8 @@
     "current": "वर्तमान",
     "monthly": "मासिक",
     "subscribe": "सदस्यता लें",
-    "yearly": "वार्षिक"
+    "yearly": "वार्षिक",
+    "tvSubscribeMessage": "bayit.tv पर या अपने मोबाइल डिवाइस से सदस्यता लें"
   },
   "subtitles": {
     "off": "बंद",
