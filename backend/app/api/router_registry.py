@@ -90,6 +90,8 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import vod_audio_tracks
     # Beta 500 routes
     from app.api.routes.beta import signup, credits, sessions, status
+    # Feature validation routes
+    from app.api.routes.features import validation as features_validation
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -293,6 +295,12 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     # Feature Routes
     # ============================================
+    # Feature validation for iOS/tvOS (server-side security)
+    app.include_router(
+        features_validation.router,
+        prefix=prefix,
+        tags=["feature-validation"]
+    )
     # IMPORTANT: Register widget_toggle BEFORE widgets to avoid routing conflicts
     # widget_toggle has specific routes at /widgets/toggle and /widgets/check-batch
     app.include_router(
