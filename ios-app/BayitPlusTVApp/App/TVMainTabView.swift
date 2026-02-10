@@ -78,6 +78,10 @@ struct TVMainTabView: View {
                 .tabItem { Label(TVTab.messages.title, systemImage: TVTab.messages.iconName) }
                 .tag(TVTab.messages)
 
+            TVChessView()
+                .tabItem { Label(TVTab.chess.title, systemImage: TVTab.chess.iconName) }
+                .tag(TVTab.chess)
+
             TVRewardsView()
                 .tabItem { Label(TVTab.rewards.title, systemImage: TVTab.rewards.iconName) }
                 .tag(TVTab.rewards)

@@ -1,0 +1,207 @@
+import BayitDesignSystem
+import SwiftUI
+
+/// Main tvOS chess screen with lobby for creating/joining games
+/// and full game board with focus-based d-pad navigation.
+struct TVChessView: View {
+    @Environment(TVRepositoryProvider.self) private var repos
+    @State private var viewModel: ChessViewModel?
+    @State private var showBotDifficulty = false
+
+    var body: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            if let vm = viewModel {
+                if vm.isLoading {
+                    loadingState
+                } else if let error = vm.error, vm.game == nil {
+                    tvErrorState(error) { Task { vm.error = nil } }
+                } else if vm.game != nil {
+                    gameContent(vm)
+                } else {
+                    lobbyContent(vm)
+                }
+            }
+        }
+        .background(DesignTokens.Background.primary)
+        .task { setupViewModel() }
+        .onDisappear { Task { await viewModel?.disconnect() } }
+    }
+
+    // MARK: - Setup
+
+    private func setupViewModel() {
+        guard viewModel == nil else { return }
+        viewModel = ChessViewModel(
+            repository: repos.chess,
+            authTokenProvider: repos.authTokenProvider
+        )
+    }
+
+    // MARK: - Lobby
+
+    private func lobbyContent(_ vm: ChessViewModel) -> some View {
+        VStack(spacing: TVDesignTokens.Spacing.xxl) {
+            lobbyHeader
+            lobbyActions(vm)
+        }
+        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        .padding(.vertical, TVDesignTokens.Spacing.lg)
+    }
+
+    private var lobbyHeader: some View {
+        VStack(spacing: TVDesignTokens.Spacing.md) {
+            Image(systemName: "checkerboard.rectangle")
+                .font(.system(size: TVDesignTokens.FontSize.hero))
+                .foregroundStyle(DesignTokens.Text.muted)
+            Text("Chess")
+                .font(.system(size: TVDesignTokens.FontSize.display, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.primary)
+            Text("Play against friends or AI")
+                .font(.system(size: TVDesignTokens.FontSize.lg))
+                .foregroundStyle(DesignTokens.Text.secondary)
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func lobbyActions(_ vm: ChessViewModel) -> some View {
+        VStack(spacing: TVDesignTokens.Spacing.lg) {
+            HStack(spacing: TVDesignTokens.Spacing.lg) {
+                GlassButton("New Game vs Player", variant: .primary, size: .medium) {
+                    Task { await vm.createGame(mode: "pvp", botDifficulty: nil) }
+                }
+                .tvFocusStyle()
+                .accessibilityLabel("Start a new player versus player game")
+
+                GlassButton("New Game vs Bot", variant: .secondary, size: .medium) {
+                    showBotDifficulty.toggle()
+                }
+                .tvFocusStyle()
+                .accessibilityLabel("Start a new game against the computer")
+            }
+
+            if showBotDifficulty {
+                botDifficultyButtons(vm)
+            }
+        }
+    }
+
+    private func botDifficultyButtons(_ vm: ChessViewModel) -> some View {
+        HStack(spacing: TVDesignTokens.Spacing.lg) {
+            GlassButton("Easy", variant: .ghost, size: .medium) {
+                Task { await vm.createGame(mode: "bot", botDifficulty: "easy") }
+            }
+            .tvFocusStyle()
+            .accessibilityLabel("Easy difficulty")
+
+            GlassButton("Medium", variant: .ghost, size: .medium) {
+                Task { await vm.createGame(mode: "bot", botDifficulty: "medium") }
+            }
+            .tvFocusStyle()
+            .accessibilityLabel("Medium difficulty")
+
+            GlassButton("Hard", variant: .ghost, size: .medium) {
+                Task { await vm.createGame(mode: "bot", botDifficulty: "hard") }
+            }
+            .tvFocusStyle()
+            .accessibilityLabel("Hard difficulty")
+        }
+    }
+
+    // MARK: - Active Game
+
+    private func gameContent(_ vm: ChessViewModel) -> some View {
+        VStack(spacing: TVDesignTokens.Spacing.lg) {
+            playerInfoBar(player: vm.game?.blackPlayer, label: "Opponent")
+            boardSection(vm)
+            playerInfoBar(player: vm.game?.whitePlayer, label: "You")
+            turnIndicator(vm)
+            controlsSection(vm)
+
+            if !vm.moveHistory.isEmpty {
+                TVChessMoveHistoryView(moves: vm.moveHistory)
+                    .padding(.horizontal, TVDesignTokens.Spacing.md)
+            }
+
+            if let code = vm.game?.gameCode {
+                gameCodeDisplay(code)
+            }
+        }
+        .padding(.vertical, TVDesignTokens.Spacing.lg)
+    }
+
+    private func boardSection(_ vm: ChessViewModel) -> some View {
+        TVChessBoardView(
+            board: vm.board,
+            selectedSquare: vm.selectedSquare,
+            currentTurn: vm.currentTurn,
+            onSquareTap: { row, col in handleSquareTap(vm: vm, row: row, col: col) }
+        )
+        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+    }
+
+    private func controlsSection(_ vm: ChessViewModel) -> some View {
+        TVChessControlsView(
+            gameStatus: vm.gameStatus,
+            drawOffered: vm.drawOffered,
+            onResign: { Task { await vm.resign() } },
+            onOfferDraw: { Task { await vm.offerDraw() } },
+            onAcceptDraw: { Task { await vm.respondToDraw(accept: true) } },
+            onDeclineDraw: { Task { await vm.respondToDraw(accept: false) } }
+        )
+    }
+
+    // MARK: - Subviews
+
+    private func playerInfoBar(player: ChessPlayer?, label: String) -> some View {
+        HStack(spacing: TVDesignTokens.Spacing.md) {
+            Text(player?.userName ?? label)
+                .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .lineLimit(1)
+            Spacer()
+            if let player {
+                TVOnlineStatusBadge(isOnline: player.isConnected)
+            }
+        }
+        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        .accessibilityElement(children: .combine)
+    }
+
+    private func turnIndicator(_ vm: ChessViewModel) -> some View {
+        Text(vm.gameStatus == .active
+            ? (vm.currentTurn == .white ? "White's Turn" : "Black's Turn")
+            : "Game Over")
+            .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
+            .foregroundStyle(DesignTokens.Text.secondary)
+            .accessibilityLabel("Game status")
+    }
+
+    private func gameCodeDisplay(_ code: String) -> some View {
+        Text("Code: \(code)")
+            .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium, design: .monospaced))
+            .foregroundStyle(DesignTokens.Text.muted)
+            .padding(.top, TVDesignTokens.Spacing.sm)
+    }
+
+    // MARK: - Actions
+
+    private func handleSquareTap(vm: ChessViewModel, row: Int, col: Int) {
+        if let selected = vm.selectedSquare {
+            Task { await vm.sendMove(from: (selected.row, selected.col), to: (row, col)) }
+        } else if vm.board[row][col] != nil {
+            vm.selectedSquare = (row, col)
+        }
+    }
+
+    private var loadingState: some View {
+        VStack(spacing: TVDesignTokens.Spacing.xl) {
+            ProgressView()
+                .tint(DesignTokens.Primary.default)
+                .scaleEffect(1.5)
+            Text("Loading...")
+                .font(.system(size: TVDesignTokens.FontSize.lg))
+                .foregroundStyle(DesignTokens.Text.muted)
+        }
+        .frame(maxWidth: .infinity, minHeight: 400)
+    }
+}

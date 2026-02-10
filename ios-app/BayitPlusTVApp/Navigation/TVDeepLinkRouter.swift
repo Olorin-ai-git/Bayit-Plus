@@ -64,6 +64,7 @@ enum TVDeepLinkRouter {
         case "profile": return .profile
         case "settings": return .settings
         case "messages": return .messages
+        case "chess": return .chess
         default: return nil
         }
     }
