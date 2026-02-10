@@ -9,6 +9,7 @@ struct TVSearchView: View {
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: SearchViewModel?
     @State private var searchText = ""
+    @State private var showAISearch = false
 
     private let columns = [
         GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
@@ -45,6 +46,9 @@ struct TVSearchView: View {
                 if viewModel == nil {
                     viewModel = SearchViewModel(searchRepository: repos.search)
                 }
+            }
+            .sheet(isPresented: $showAISearch) {
+                TVLLMSearchView()
             }
         }
     }
@@ -116,6 +120,16 @@ struct TVSearchView: View {
             Text("Search for content")
                 .font(.system(size: TVDesignTokens.FontSize.xl))
                 .foregroundStyle(DesignTokens.Text.muted)
+
+            GlassButton(
+                "AI Search",
+                variant: .secondary,
+                size: .medium,
+                icon: Image(systemName: "sparkles")
+            ) {
+                showAISearch = true
+            }
+            .tvFocusStyle()
         }
         .frame(maxWidth: .infinity, minHeight: 400)
     }

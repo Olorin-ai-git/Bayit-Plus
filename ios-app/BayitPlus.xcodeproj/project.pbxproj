@@ -259,6 +259,7 @@
 		672D08A98178D4F77D7FC347 /* LocationModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7202CF3861E8E571BC74730C /* LocationModels.swift */; };
 		679387F547730BE6384D8E60 /* TrendingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D07116D2D29DBADE51CA898 /* TrendingViewModel.swift */; };
 		67AF939D23A45A97A8163610 /* TVChessBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F5FC041FFE0072B20B8A061 /* TVChessBoardView.swift */; };
+		67C7DC8876D83050A98E3816 /* TVLLMSearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6377FB4A49BE8C07778B4BEE /* TVLLMSearchView.swift */; };
 		67FDCC705646FC231EAA9A04 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4CCA3050F975CEE50658957 /* ProfileView.swift */; };
 		686685F1D747F145D18C68B3 /* TVEPGView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CB98508EAEF5140F0FB9DED /* TVEPGView.swift */; };
 		69D8FB006516B740E04F775F /* CultureContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70839C0DAD03F6DA76DF2211 /* CultureContentViewModel.swift */; };
@@ -272,6 +273,7 @@
 		6D504E8F74A1E17141CA04E2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 902A8416DEB83934EFC25555 /* ContentView.swift */; };
 		6D7F1BE1363156329FBA1A8D /* MediaModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31E0B45AEECD01AC172F54CC /* MediaModels.swift */; };
 		6F8192330410CC2520D3CB71 /* FavoritesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB94F63A3C5D5A0CB3232C7B /* FavoritesView.swift */; };
+		6F9CABCE96CDAA8F5A67C6B7 /* TVLLMSearchResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B738CF71FE5ED15D6502751 /* TVLLMSearchResultsView.swift */; };
 		707DFF23C377D3D9EB6705AF /* NowPlayingSmallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A306362FD8EA929E9E32F23D /* NowPlayingSmallView.swift */; };
 		70C3761D30B3EFBD4C8F6A2B /* SeriesModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E7E757FBB9545A7E83B478D1 /* SeriesModels.swift */; };
 		717CEA03910AE58C14B9823F /* NowPlayingTimelineProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90E987D520C5203C0052C665 /* NowPlayingTimelineProvider.swift */; };
@@ -508,6 +510,7 @@
 		C563635CF538AE022CA9D578 /* EPGViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E615385E6EA52AA59AD5DB1F /* EPGViewModel.swift */; };
 		C59B78BE672A2D959E46DE32 /* AuthComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04B9F1CD8C64CF2B05A989C0 /* AuthComponents.swift */; };
 		C6288B47F317291FCABF0C3F /* VODViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EABCC762405BBE2D5C66937 /* VODViewModel.swift */; };
+		C62FBCBAA9AE12346AEA0AF6 /* TVLLMSearchInterpretationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3E76442C4C18E8E4D0DB3B0 /* TVLLMSearchInterpretationView.swift */; };
 		C65B67B83AAF61DFC53FD6A9 /* RecentSearchesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8F5EAB0F1B64D01A006BF25 /* RecentSearchesService.swift */; };
 		C665F5251E275E5E4C54C181 /* ProactiveSuggestionBannerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8D5E570A8B35FAC2428E402 /* ProactiveSuggestionBannerView.swift */; };
 		C696693117A08EA8BF1668D5 /* UserSearchResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD63D93FB67D0D8D7BB299DF /* UserSearchResult.swift */; };
@@ -839,6 +842,7 @@
 		4A8707D636BF518739F3312B /* NowPlayingLockScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingLockScreenView.swift; sourceTree = "<group>"; };
 		4A9785C08528041EEA89B926 /* LiveDubbingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveDubbingViewModel.swift; sourceTree = "<group>"; };
 		4B735C4203D3313E63DAC339 /* MessageInputBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageInputBar.swift; sourceTree = "<group>"; };
+		4B738CF71FE5ED15D6502751 /* TVLLMSearchResultsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TVLLMSearchResultsView.swift; sourceTree = "<group>"; };
 		4B91FEE20003CD3B1841B91A /* TVChatbotView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TVChatbotView.swift; sourceTree = "<group>"; };
 		4DD9BD72EA76CB87C70BFC2F /* TVContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVContentView.swift; sourceTree = "<group>"; };
 		4E205AE616B03D4924F5616D /* WidgetDataSyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetDataSyncService.swift; sourceTree = "<group>"; };
@@ -884,6 +888,7 @@
 		6201B747046CE4B24167138F /* ConversationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationView.swift; sourceTree = "<group>"; };
 		622781DFF091B8FC5605E1A1 /* LiveTVView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTVView.swift; sourceTree = "<group>"; };
 		62BE0C99295AED16D05C693D /* WidgetsPageHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsPageHeaderView.swift; sourceTree = "<group>"; };
+		6377FB4A49BE8C07778B4BEE /* TVLLMSearchView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TVLLMSearchView.swift; sourceTree = "<group>"; };
 		63F461C07F155E6302DF622F /* PiPWidgetManagerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiPWidgetManagerView.swift; sourceTree = "<group>"; };
 		640BCF006E3F707BC702CB92 /* LiveSubtitlesWebSocketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveSubtitlesWebSocketService.swift; sourceTree = "<group>"; };
 		6448D0F17DE580A5DB5D4D16 /* TVRoute.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TVRoute.swift; sourceTree = "<group>"; };
@@ -1132,6 +1137,7 @@
 		E17C07695AED8E91E7559B9F /* RecordingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingsView.swift; sourceTree = "<group>"; };
 		E2D94C483BF3C7FC06A4ED75 /* TimeRangePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeRangePickerView.swift; sourceTree = "<group>"; };
 		E3DEF3047D99A02DF48D84BF /* HapticFeedbackService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticFeedbackService.swift; sourceTree = "<group>"; };
+		E3E76442C4C18E8E4D0DB3B0 /* TVLLMSearchInterpretationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TVLLMSearchInterpretationView.swift; sourceTree = "<group>"; };
 		E400B3920D7AED83835AD3D1 /* NowPlayingWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NowPlayingWidgetView.swift; sourceTree = "<group>"; };
 		E435E7D81985761842B46FC2 /* JerusalemRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JerusalemRowView.swift; sourceTree = "<group>"; };
 		E4E04CC7780F6084F04584F6 /* TVConversationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TVConversationView.swift; sourceTree = "<group>"; };
@@ -1310,6 +1316,17 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
+		0ECE81FD9B55EB6F4DD7DB68 /* Search */ = {
+			isa = PBXGroup;
+			children = (
+				6377FB4A49BE8C07778B4BEE /* TVLLMSearchView.swift */,
+				4B738CF71FE5ED15D6502751 /* TVLLMSearchResultsView.swift */,
+				E3E76442C4C18E8E4D0DB3B0 /* TVLLMSearchInterpretationView.swift */,
+			);
+			name = Search;
+			path = Search;
+			sourceTree = "<group>";
+		};
 		0EF03D580D3552E3B033B35D /* WidgetExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -1406,6 +1423,7 @@
 				9313CDC553B5B42F60F9F512 /* Voice */,
 				ADEC69686DEB5D8387337D3A /* Chat */,
 				2FAF838E868EA8035F009747 /* Avatar */,
+				0ECE81FD9B55EB6F4DD7DB68 /* Search */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2847,6 +2865,9 @@
 				A94CA7115ADC7766E6BE2E2E /* TVVoiceAvatarFAB.swift in Sources */,
 				31CF7FC9AA66E7503E614809 /* ProactiveSuggestionEngine.swift in Sources */,
 				44472148A9CE9D5CB2C9DAC5 /* AvatarStateMachine.swift in Sources */,
+				67C7DC8876D83050A98E3816 /* TVLLMSearchView.swift in Sources */,
+				6F9CABCE96CDAA8F5A67C6B7 /* TVLLMSearchResultsView.swift in Sources */,
+				C62FBCBAA9AE12346AEA0AF6 /* TVLLMSearchInterpretationView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
