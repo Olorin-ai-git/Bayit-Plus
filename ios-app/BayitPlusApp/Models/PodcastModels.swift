@@ -75,3 +75,10 @@ struct PodcastCategoriesResponse: Decodable, Sendable {
     let categories: [PodcastCategory]
     let total: Int
 }
+
+/// Response from POST /api/v1/podcasts/{show_id}/sync
+struct PodcastSyncResponse: Decodable, Sendable {
+    let status: String
+    let message: String?
+    let episodesAdded: Int?
+}

@@ -63,6 +63,7 @@ struct MainTabView: View {
             //     }
             // }
         }
+        .ignoresSafeArea(edges: .bottom)
         .task {
             if dockViewModel == nil {
                 dockViewModel = WidgetDockViewModel(repository: repos.widget)

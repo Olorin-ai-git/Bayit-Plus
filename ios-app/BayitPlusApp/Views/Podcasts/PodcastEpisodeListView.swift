@@ -8,15 +8,13 @@ struct PodcastEpisodeListView: View {
 
     let episodes: [PodcastEpisodeItem]
     let isLoadingMore: Bool
+    let isRefreshing: Bool
     let onLoadMore: () async -> Void
+    let onRefresh: () async -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Text("Episodes")
-                .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
-                .foregroundColor(DesignTokens.Text.primary)
-                .padding(.horizontal, DesignTokens.Spacing.lg)
-                .accessibilityAddTraits(.isHeader)
+            episodesHeader
 
             if episodes.isEmpty {
                 Text("No episodes available")
@@ -42,6 +40,35 @@ struct PodcastEpisodeListView: View {
                 }
             }
         }
+    }
+
+    private var episodesHeader: some View {
+        HStack {
+            Text("Episodes")
+                .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
+                .foregroundColor(DesignTokens.Text.primary)
+                .accessibilityAddTraits(.isHeader)
+
+            Spacer()
+
+            Button {
+                let generator = UIImpactFeedbackGenerator(style: .light)
+                generator.impactOccurred()
+                Task { await onRefresh() }
+            } label: {
+                Image(systemName: "arrow.clockwise")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(DesignTokens.Text.secondary)
+                    .rotationEffect(.degrees(isRefreshing ? 360 : 0))
+                    .animation(
+                        isRefreshing ? .linear(duration: 1).repeatForever(autoreverses: false) : .default,
+                        value: isRefreshing
+                    )
+            }
+            .disabled(isRefreshing)
+            .accessibilityLabel("Refresh latest episodes")
+        }
+        .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
     private func episodeRow(_ episode: PodcastEpisodeItem) -> some View {

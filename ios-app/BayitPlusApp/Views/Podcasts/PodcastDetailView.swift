@@ -48,7 +48,9 @@ struct PodcastDetailView: View {
             PodcastEpisodeListView(
                 episodes: vm.episodes,
                 isLoadingMore: vm.isLoadingMore,
-                onLoadMore: { await vm.loadMore() }
+                isRefreshing: vm.isLoading,
+                onLoadMore: { await vm.loadMore() },
+                onRefresh: { await vm.refreshLatestEpisodes() }
             )
         }
         .padding(.vertical, DesignTokens.Spacing.lg)

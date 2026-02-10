@@ -47,6 +47,12 @@ protocol PodcastRepository: Sendable {
     /// - Returns: Categories response with list of available categories.
     /// - Throws: `NetworkError` if the request fails.
     func fetchCategories() async throws -> PodcastCategoriesResponse
+
+    /// Sync latest episodes from the podcast's RSS feed.
+    ///
+    /// - Parameter showId: Podcast show ID.
+    /// - Throws: `NetworkError` if the request fails.
+    func syncEpisodes(showId: String) async throws
 }
 
 /// Production implementation of `PodcastRepository` using `APIClient`.
@@ -112,6 +118,14 @@ final class APIPodcastRepository: PodcastRepository, @unchecked Sendable {
         return try await client.get(
             "/api/v1/podcasts/categories",
             as: PodcastCategoriesResponse.self
+        )
+    }
+
+    func syncEpisodes(showId: String) async throws {
+        _ = try await client.post(
+            "/api/v1/podcasts/\(showId)/sync",
+            body: EmptyBody(),
+            as: PodcastSyncResponse.self
         )
     }
 }

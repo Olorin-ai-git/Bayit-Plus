@@ -134,6 +134,13 @@ private struct PodcastShowCard: View {
                             .foregroundColor(DesignTokens.Text.muted)
                             .lineLimit(1)
                     }
+
+                    if let lastUpdated = show.latestEpisode {
+                        Text(lastUpdated)
+                            .font(.system(size: DesignTokens.FontSize.xs))
+                            .foregroundColor(DesignTokens.Primary.p400)
+                            .lineLimit(1)
+                    }
                 }
                 .padding(.horizontal, DesignTokens.Spacing.sm)
                 .padding(.bottom, DesignTokens.Spacing.sm)

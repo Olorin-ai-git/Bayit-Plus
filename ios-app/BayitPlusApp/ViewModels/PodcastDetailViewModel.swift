@@ -75,8 +75,44 @@ final class PodcastDetailViewModel {
 
     @MainActor
     func refresh() async {
-        currentPage = 1
-        episodes = []
-        await load()
+        await refreshLatestEpisodes()
+    }
+
+    @MainActor
+    func refreshLatestEpisodes() async {
+        guard !isLoading else { return }
+        isLoading = true
+        error = nil
+
+        do {
+            try await repository.syncEpisodes(showId: showId)
+            logger.info("RSS sync completed", context: ["showId": showId])
+        } catch {
+            logger.warning("RSS sync failed, fetching cached episodes", context: [
+                "showId": showId,
+                "error": error.localizedDescription
+            ])
+        }
+
+        do {
+            detail = try await repository.fetchPodcastDetail(id: showId)
+            let response = try await repository.fetchEpisodes(
+                showId: showId,
+                page: 1,
+                limit: pageSize
+            )
+            episodes = response.episodes
+            currentPage = response.page
+            totalPages = response.pages
+            logger.info("Latest episodes refreshed", context: [
+                "showId": showId,
+                "episodeCount": String(response.total)
+            ])
+        } catch {
+            self.error = error.localizedDescription
+            logger.error("Failed to refresh latest episodes", error: error)
+        }
+
+        isLoading = false
     }
 }

@@ -28,7 +28,7 @@ struct GlassTabBar: View {
                 .stroke(Color.purple.opacity(0.25), lineWidth: 1)
         )
         .padding(.horizontal, 16)
-        .padding(.bottom, 8)
+        .padding(.bottom, 4)
         .shadow(color: Color.purple.opacity(0.2), radius: 8, y: 4)
     }
 
