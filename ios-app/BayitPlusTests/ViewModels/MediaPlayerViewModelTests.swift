@@ -8,6 +8,8 @@ final class MediaPlayerViewModelTests: XCTestCase {
     private var mockMediaRepository: MockMediaRepository!
     private var mockContentRepository: MockContentRepository!
     private var mockLiveTVRepository: MockLiveTVRepository!
+    private var mockRadioRepository: MockRadioRepository!
+    private var mockPodcastRepository: MockPodcastRepository!
     private var mockPlayer: MockMediaPlayer!
 
     override func setUp() {
@@ -15,6 +17,8 @@ final class MediaPlayerViewModelTests: XCTestCase {
         mockMediaRepository = MockMediaRepository()
         mockContentRepository = MockContentRepository()
         mockLiveTVRepository = MockLiveTVRepository()
+        mockRadioRepository = MockRadioRepository()
+        mockPodcastRepository = MockPodcastRepository()
         mockPlayer = MockMediaPlayer()
 
         viewModel = MediaPlayerViewModel(
@@ -23,7 +27,9 @@ final class MediaPlayerViewModelTests: XCTestCase {
             player: mockPlayer,
             repository: mockMediaRepository,
             contentRepository: mockContentRepository,
-            liveTVRepository: mockLiveTVRepository
+            liveTVRepository: mockLiveTVRepository,
+            radioRepository: mockRadioRepository,
+            podcastRepository: mockPodcastRepository
         )
     }
 
@@ -32,6 +38,8 @@ final class MediaPlayerViewModelTests: XCTestCase {
         mockMediaRepository = nil
         mockContentRepository = nil
         mockLiveTVRepository = nil
+        mockRadioRepository = nil
+        mockPodcastRepository = nil
         mockPlayer = nil
         super.tearDown()
     }
@@ -139,7 +147,9 @@ final class MediaPlayerViewModelTests: XCTestCase {
             player: mockPlayer,
             repository: mockMediaRepository,
             contentRepository: mockContentRepository,
-            liveTVRepository: mockLiveTVRepository
+            liveTVRepository: mockLiveTVRepository,
+            radioRepository: mockRadioRepository,
+            podcastRepository: mockPodcastRepository
         )
 
         await liveTVViewModel.load()
@@ -167,7 +177,9 @@ final class MediaPlayerViewModelTests: XCTestCase {
             player: mockPlayer,
             repository: mockMediaRepository,
             contentRepository: mockContentRepository,
-            liveTVRepository: mockLiveTVRepository
+            liveTVRepository: mockLiveTVRepository,
+            radioRepository: mockRadioRepository,
+            podcastRepository: mockPodcastRepository
         )
 
         await liveTVViewModel.load()
@@ -193,7 +205,9 @@ final class MediaPlayerViewModelTests: XCTestCase {
             player: mockPlayer,
             repository: mockMediaRepository,
             contentRepository: mockContentRepository,
-            liveTVRepository: mockLiveTVRepository
+            liveTVRepository: mockLiveTVRepository,
+            radioRepository: mockRadioRepository,
+            podcastRepository: mockPodcastRepository
         )
 
         await liveTVViewModel.load()
@@ -279,7 +293,9 @@ final class MediaPlayerViewModelTests: XCTestCase {
             player: mockPlayer,
             repository: mockMediaRepository,
             contentRepository: mockContentRepository,
-            liveTVRepository: mockLiveTVRepository
+            liveTVRepository: mockLiveTVRepository,
+            radioRepository: mockRadioRepository,
+            podcastRepository: mockPodcastRepository
         )
 
         XCTAssertEqual(seriesViewModel.contentType, .series)
@@ -292,7 +308,9 @@ final class MediaPlayerViewModelTests: XCTestCase {
             player: mockPlayer,
             repository: mockMediaRepository,
             contentRepository: mockContentRepository,
-            liveTVRepository: mockLiveTVRepository
+            liveTVRepository: mockLiveTVRepository,
+            radioRepository: mockRadioRepository,
+            podcastRepository: mockPodcastRepository
         )
 
         XCTAssertEqual(liveViewModel.contentType, .liveTV)
@@ -377,6 +395,18 @@ private final class MockLiveTVRepository: LiveTVRepository {
 
     func fetchChannels(cultureId: String?, category: String?) async throws -> LiveChannelsResponse { fatalError() }
     func fetchEPG(channelId: String, date: String?) async throws -> EPGResponse { fatalError() }
+}
+
+private final class MockRadioRepository: RadioRepository {
+    func fetchStations(cultureId: String?, category: String?) async throws -> RadioStationsResponse { fatalError() }
+    func fetchStationDetail(id: String) async throws -> RadioStationDetail { fatalError() }
+}
+
+private final class MockPodcastRepository: PodcastRepository {
+    func fetchPodcasts(category: String?, page: Int, limit: Int) async throws -> PodcastsResponse { fatalError() }
+    func fetchPodcastDetail(id: String) async throws -> PodcastDetail { fatalError() }
+    func fetchEpisodes(showId: String, page: Int, limit: Int) async throws -> PodcastEpisodesResponse { fatalError() }
+    func fetchCategories() async throws -> PodcastCategoriesResponse { fatalError() }
 }
 
 private final class MockMediaPlayer: MediaPlayer {

@@ -61,7 +61,8 @@ struct ContentView: View {
                 repository: repositories.media,
                 contentRepository: repositories.content,
                 liveTVRepository: repositories.liveTV,
-                radioRepository: repositories.radio
+                radioRepository: repositories.radio,
+                podcastRepository: repositories.podcasts
             )
         case .search:
             SearchView()

@@ -239,7 +239,16 @@ struct TVPlayerView: View {
             }
             return url
 
-        case .vod, .podcast, .audiobook:
+        case .podcast:
+            let podcastDetail = try await repos.podcasts.fetchPodcastDetail(id: contentId)
+            let audioURLStr = podcastDetail.episodes?.first?.audioUrl
+                ?? podcastDetail.latestEpisode?.audioUrl
+            guard let url = audioURLStr, !url.isEmpty else {
+                throw StreamResolutionError.noURL
+            }
+            return url
+
+        case .vod, .audiobook:
             let stream = try await repos.media.fetchStream(contentId: contentId, quality: nil)
             guard let url = stream.url ?? stream.directUrl else {
                 throw StreamResolutionError.noURL

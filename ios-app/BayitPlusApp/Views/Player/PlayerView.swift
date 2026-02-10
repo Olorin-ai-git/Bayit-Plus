@@ -68,7 +68,8 @@ struct PlayerView: View {
 
     init(contentId: String, contentType: ContentType, player: MediaPlayer,
          repository: any MediaRepository, contentRepository: any ContentRepository,
-         liveTVRepository: any LiveTVRepository, radioRepository: any RadioRepository) {
+         liveTVRepository: any LiveTVRepository, radioRepository: any RadioRepository,
+         podcastRepository: any PodcastRepository) {
         self.contentId = contentId
         self.contentType = contentType
         _viewModel = State(initialValue: MediaPlayerViewModel(
@@ -78,7 +79,8 @@ struct PlayerView: View {
             repository: repository,
             contentRepository: contentRepository,
             liveTVRepository: liveTVRepository,
-            radioRepository: radioRepository
+            radioRepository: radioRepository,
+            podcastRepository: podcastRepository
         ))
     }
 

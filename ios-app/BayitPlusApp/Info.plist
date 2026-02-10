@@ -41,6 +41,8 @@
 	<string>624470113582-7p34b1tpqlfob5sh4cl9eoospmvao1at.apps.googleusercontent.com</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Bayit+ uses your location to show Israeli community content near you</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Bayit+ uses Face ID to securely sign in to your account</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bayit+ uses the microphone for voice commands</string>
 	<key>NSPrivacyPolicyURL</key>

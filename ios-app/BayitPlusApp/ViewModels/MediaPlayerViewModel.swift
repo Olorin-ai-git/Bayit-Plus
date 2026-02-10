@@ -31,6 +31,7 @@ final class MediaPlayerViewModel {
     private let contentRepository: any ContentRepository
     private let liveTVRepository: any LiveTVRepository
     private let radioRepository: any RadioRepository
+    private let podcastRepository: any PodcastRepository
     private var progressTrackingTask: Task<Void, Never>?
     private let progressIntervalSeconds: TimeInterval = 15
 
@@ -43,7 +44,8 @@ final class MediaPlayerViewModel {
         repository: any MediaRepository,
         contentRepository: any ContentRepository,
         liveTVRepository: any LiveTVRepository,
-        radioRepository: any RadioRepository
+        radioRepository: any RadioRepository,
+        podcastRepository: any PodcastRepository
     ) {
         self.contentId = contentId
         self.contentType = contentType
@@ -52,6 +54,7 @@ final class MediaPlayerViewModel {
         self.contentRepository = contentRepository
         self.liveTVRepository = liveTVRepository
         self.radioRepository = radioRepository
+        self.podcastRepository = podcastRepository
     }
 
     deinit {
@@ -102,6 +105,24 @@ final class MediaPlayerViewModel {
                 let streamURLStr = stream.url ?? ""
                 guard let url = URL(string: streamURLStr), !streamURLStr.isEmpty else {
                     errorMessage = "Invalid stream URL"
+                    isLoading = false
+                    return
+                }
+                player.load(url: url, contentType: mediaType)
+
+            case .podcast:
+                let podcastDetail = try await podcastRepository.fetchPodcastDetail(id: contentId)
+                title = podcastDetail.episodes?.first?.title ?? podcastDetail.title
+                subtitle = podcastDetail.title
+                if let coverStr = podcastDetail.cover, let url = URL(string: coverStr) {
+                    artworkURL = url
+                }
+
+                let audioURLStr = podcastDetail.episodes?.first?.audioUrl
+                    ?? podcastDetail.latestEpisode?.audioUrl
+                    ?? ""
+                guard let url = URL(string: audioURLStr), !audioURLStr.isEmpty else {
+                    errorMessage = "No audio URL available for this episode"
                     isLoading = false
                     return
                 }
