@@ -63,6 +63,7 @@ enum TVDeepLinkRouter {
         case "favorites": return .favorites
         case "profile": return .profile
         case "settings": return .settings
+        case "messages": return .messages
         default: return nil
         }
     }

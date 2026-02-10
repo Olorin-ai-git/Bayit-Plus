@@ -74,6 +74,10 @@ struct TVMainTabView: View {
                 .tabItem { Label(TVTab.friends.title, systemImage: TVTab.friends.iconName) }
                 .tag(TVTab.friends)
 
+            TVDirectMessagesView()
+                .tabItem { Label(TVTab.messages.title, systemImage: TVTab.messages.iconName) }
+                .tag(TVTab.messages)
+
             TVRewardsView()
                 .tabItem { Label(TVTab.rewards.title, systemImage: TVTab.rewards.iconName) }
                 .tag(TVTab.rewards)
