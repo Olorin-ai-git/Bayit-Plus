@@ -27,6 +27,7 @@ export type RootStackParamList = {
   LanguageSettings: undefined;
   NotificationSettings: undefined;
   VoiceOnboarding: undefined;
+  Friends: undefined;
   Support: undefined;
   Admin: undefined;
   // Content detail screens

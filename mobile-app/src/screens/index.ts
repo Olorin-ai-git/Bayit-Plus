@@ -64,6 +64,9 @@ export * from './EPGScreenMobile';
 export * from './WatchPartyScreen';
 export * from './ActivePartyScreen';
 
+// Social/Friends
+export { default as FriendsScreen } from './FriendsScreen';
+
 // Payment screens
 export * from './PaymentSuccessScreen';
 export * from './PaymentCancelledScreen';
