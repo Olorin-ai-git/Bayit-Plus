@@ -12,7 +12,7 @@ import {
   Platform,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore, type User } from '../../../stores/authStore';
+import { useAuthStore, type User } from '@bayit/shared-stores/authStore';
 import api from '@bayit/shared-services/api';
 import { log } from '@bayit/shared-services/logger';
 

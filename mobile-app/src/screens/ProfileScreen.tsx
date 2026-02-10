@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '../stores/authStore';
+import { useAuthStore } from '@bayit/shared-stores';
 import { useProfileStore } from '../stores/profileStore';
 import { ActivityHistoryTab } from './Profile/components/ActivityHistoryTab';
 import { FavoritesTab } from './Profile/components/FavoritesTab';

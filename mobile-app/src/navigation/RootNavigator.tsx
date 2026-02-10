@@ -103,6 +103,9 @@ const VoiceOnboardingScreen = React.lazy(() =>
 const FriendsScreen = React.lazy(() =>
   import('../screens/FriendsScreen').then((mod) => ({ default: mod.default }))
 );
+const ActivityFeedScreen = React.lazy(() =>
+  import('../screens/ActivityFeedScreen').then((mod) => ({ default: mod.ActivityFeedScreen }))
+);
 
 // Loading component shown while lazy-loaded screens are loading
 const LazyScreenFallback: React.FC = () => (
@@ -252,6 +255,11 @@ export const RootNavigator: React.FC = () => {
         name="Friends"
         component={LazyScreen(FriendsScreen)}
         options={{ title: 'Friends' }}
+      />
+      <Stack.Screen
+        name="ActivityFeed"
+        component={LazyScreen(ActivityFeedScreen)}
+        options={{ title: 'Activity' }}
       />
 
       {/* Support - Using shared SupportScreen */}

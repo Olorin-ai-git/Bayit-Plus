@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ProfileEditModal } from './ProfileEditModal';
-import type { User } from '../../../stores/authStore';
+import type { User } from '@bayit/shared-stores/authStore';
 
 interface ProfileHeaderProps {
   user: User;
