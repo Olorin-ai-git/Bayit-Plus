@@ -15,9 +15,9 @@ enum TVDeepLinkRouter {
         switch first {
         case "play":
             guard let contentId = pathComponents.dropFirst().first else { return nil }
-            let typeString = url.queryValue(for: "type")
+            let typeString = queryValue(from: url, key: "type")
             let contentType = TVContentTypeMapper.map(typeString)
-            let channelId = url.queryValue(for: "channelId")
+            let channelId = queryValue(from: url, key: "channelId")
             return .player(
                 contentId: contentId,
                 contentType: contentType,
@@ -26,7 +26,7 @@ enum TVDeepLinkRouter {
 
         case "content":
             guard let contentId = pathComponents.dropFirst().first else { return nil }
-            let typeString = url.queryValue(for: "type")
+            let typeString = queryValue(from: url, key: "type")
             let contentType = TVContentTypeMapper.map(typeString)
             return .player(contentId: contentId, contentType: contentType, channelId: nil)
 
@@ -56,7 +56,6 @@ enum TVDeepLinkRouter {
         switch first {
         case "home": return .home
         case "live": return .liveTV
-        case "radio": return .radio
         case "podcasts": return .podcasts
         case "audiobooks": return .audiobooks
         case "search": return .search
@@ -66,5 +65,14 @@ enum TVDeepLinkRouter {
         case "settings": return .settings
         default: return nil
         }
+    }
+
+    // MARK: - Private Helpers
+
+    private static func queryValue(from url: URL, key: String) -> String? {
+        URLComponents(url: url, resolvingAgainstBaseURL: false)?
+            .queryItems?
+            .first(where: { $0.name == key })?
+            .value
     }
 }
