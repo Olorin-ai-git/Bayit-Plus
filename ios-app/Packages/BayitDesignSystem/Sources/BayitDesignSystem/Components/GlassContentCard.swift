@@ -126,7 +126,7 @@ public struct GlassContentCard: View {
     /// Estimated metadata overlay height for flag positioning above it
     private var metadataHeight: CGFloat {
         (title != nil || subtitle != nil)
-            ? (metadataPadding * 2 + DesignTokens.FontSize.md + DesignTokens.Spacing.xs)
+            ? (metadataPadding * 2 + titleFontSize + DesignTokens.Spacing.xs)
             : 0
     }
 
@@ -195,11 +195,20 @@ public struct GlassContentCard: View {
         width <= 160 ? DesignTokens.Spacing.sm : DesignTokens.Spacing.md
     }
 
+    /// Font sizes scale down for narrow cards to prevent label clipping
+    private var titleFontSize: CGFloat {
+        width <= 160 ? DesignTokens.FontSize.sm : DesignTokens.FontSize.md
+    }
+
+    private var subtitleFontSize: CGFloat {
+        width <= 160 ? DesignTokens.FontSize.xs : DesignTokens.FontSize.sm
+    }
+
     private var metadataOverlay: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
             if let title = title {
                 Text(title)
-                    .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                    .font(.system(size: titleFontSize, weight: .semibold))
                     .foregroundColor(DesignTokens.Text.primary)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
@@ -209,7 +218,7 @@ public struct GlassContentCard: View {
 
             if let subtitle = subtitle {
                 Text(subtitle)
-                    .font(.system(size: DesignTokens.FontSize.sm))
+                    .font(.system(size: subtitleFontSize))
                     .foregroundColor(DesignTokens.Text.secondary)
                     .lineLimit(1)
                     .truncationMode(.tail)

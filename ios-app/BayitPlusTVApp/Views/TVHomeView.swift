@@ -33,6 +33,7 @@ struct TVHomeView: View {
                 )
             }
             await viewModel?.loadFeatured()
+            ShabbatModeService.shared.startPolling(repository: repos.shabbat)
             cacheTopShelfData()
         }
     }
@@ -41,6 +42,9 @@ struct TVHomeView: View {
     private func contentSections(_ vm: HomeViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
             TVPageHeader(icon: "house.fill", title: "Home")
+
+            TVShabbatBannerView()
+                .withAutoLoad()
 
             // Culture clocks - equal width side by side
             HStack(spacing: TVDesignTokens.Spacing.lg) {

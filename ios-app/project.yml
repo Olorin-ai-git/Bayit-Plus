@@ -70,6 +70,7 @@ targets:
         type: group
       - path: BayitPlusApp/ViewModels
         type: group
+      - path: BayitPlusApp/Services/ShabbatModeService.swift
     dependencies:
       - package: BayitPlus
         product: BayitCore

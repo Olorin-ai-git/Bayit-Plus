@@ -17,7 +17,7 @@ export function SecurityTab({ isRTL }: SecurityTabProps) {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    navigate('/login');
   };
 
   return (

@@ -1,14 +1,13 @@
-#if os(iOS)
 import Foundation
 import Observation
+#if os(iOS)
 import UIKit
+#endif
 
 /// ViewModel for Shabbat-related screens (ZmanimView, ShabbatBannerView).
 ///
 /// Coordinates between the `ShabbatRepository` for API calls and the
 /// `ShabbatModeService` singleton for global Shabbat state.
-///
-/// Available on iOS only. Depends on ShabbatModeService and UIImpactFeedbackGenerator.
 @Observable
 final class ShabbatViewModel {
     private(set) var zmanimData: ZmanTimeResponse?
@@ -109,7 +108,8 @@ final class ShabbatViewModel {
     @MainActor
     func toggleShabbatMode() {
         shabbatService.toggleShabbatMode()
+        #if os(iOS)
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        #endif
     }
 }
-#endif

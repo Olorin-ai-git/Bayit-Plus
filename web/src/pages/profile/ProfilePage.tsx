@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: spacing.lg,
-    paddingBottom: spacing.xl * 2,
+    paddingBottom: 140,
     maxWidth: 1200,
     marginHorizontal: 'auto',
     width: '100%',

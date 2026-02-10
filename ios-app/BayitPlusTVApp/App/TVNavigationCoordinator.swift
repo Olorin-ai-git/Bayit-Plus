@@ -12,6 +12,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
     case podcasts
     case audiobooks
     case children
+    case youngsters
     case judaism
     case flows
     case culture
@@ -42,6 +43,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .podcasts: return "Podcasts"
         case .audiobooks: return "Audiobooks"
         case .children: return "Kids"
+        case .youngsters: return "Youngsters"
         case .judaism: return "Judaism"
         case .flows: return "Flows"
         case .culture: return "Culture"
@@ -72,6 +74,7 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .podcasts: return "headphones"
         case .audiobooks: return "book.closed"
         case .children: return "figure.and.child.holdinghands"
+        case .youngsters: return "figure.wave"
         case .judaism: return "star.of.david"
         case .flows: return "line.3.horizontal.decrease.circle"
         case .culture: return "building.columns"

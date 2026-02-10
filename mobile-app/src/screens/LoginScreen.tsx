@@ -23,6 +23,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import { useAuthStore } from '@bayit/shared-stores/authStore';
+import { authService } from '@bayit/shared-services/api';
 import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import {
   GlassButton,
@@ -101,17 +102,44 @@ export const LoginScreen: React.FC = () => {
     clearError();
     try {
       const credentials = await secureStorageService.getOAuthCredentials();
-      if (!credentials) {
+      if (!credentials?.accessToken) {
         log.info('No stored credentials for biometric login');
         return;
       }
 
-      const token = await secureStorageService.getValidAccessToken();
-      if (token) {
-        log.info('Biometric sign-in successful');
+      // Set tokens in store so API client includes them in requests
+      useAuthStore.setState({
+        token: credentials.accessToken,
+        refreshToken: credentials.refreshToken || null,
+      });
+
+      // Try refreshing token first (gets fresh tokens + user data)
+      if (credentials.refreshToken) {
+        const refreshed = await useAuthStore.getState().refreshAccessToken();
+        if (refreshed) {
+          log.info('Biometric sign-in successful via token refresh');
+          navigation.reset({ index: 0, routes: [{ name: 'Main' as never }] });
+          return;
+        }
+      }
+
+      // Refresh unavailable or failed - validate access token via /auth/me
+      const userData: any = await authService.me();
+      if (userData?.id) {
+        useAuthStore.setState({
+          user: userData,
+          isAuthenticated: true,
+          isLoading: false,
+        });
+        useAuthStore.getState().scheduleTokenRefresh();
+        log.info('Biometric sign-in successful via access token');
+        navigation.reset({ index: 0, routes: [{ name: 'Main' as never }] });
+      } else {
+        throw new Error('Session expired');
       }
     } catch (err) {
       log.error('Biometric sign-in failed', err);
+      useAuthStore.getState().logout();
     }
   }, [clearError]);
 

@@ -34,6 +34,10 @@ struct TVMainTabView: View {
                 .tabItem { Label(TVTab.children.title, systemImage: TVTab.children.iconName) }
                 .tag(TVTab.children)
 
+            TVYoungstersView()
+                .tabItem { Label(TVTab.youngsters.title, systemImage: TVTab.youngsters.iconName) }
+                .tag(TVTab.youngsters)
+
             TVJudaismView()
                 .tabItem { Label(TVTab.judaism.title, systemImage: TVTab.judaism.iconName) }
                 .tag(TVTab.judaism)

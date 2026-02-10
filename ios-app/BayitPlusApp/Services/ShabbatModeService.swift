@@ -1,7 +1,11 @@
+#if os(iOS)
 import BayitWidgetShared
+#endif
 import Foundation
 import Observation
+#if os(iOS)
 import WidgetKit
+#endif
 
 /// Singleton service that polls zmanim data and tracks Shabbat state.
 ///
@@ -139,6 +143,7 @@ final class ShabbatModeService {
             let response = try await repository.fetchZmanTime(timezone: timezone)
             shabbatData = response
 
+            #if os(iOS)
             // Sync Shabbat data to widget extension
             let widgetData = SharedShabbatData(
                 isShabbat: response.isShabbat ?? false,
@@ -157,6 +162,7 @@ final class ShabbatModeService {
                     ofKind: WidgetConfigurationKeys.WidgetKind.shabbatMode
                 )
             }
+            #endif
 
             if autoModeEnabled {
                 isShabbatActive = response.isShabbat ?? false

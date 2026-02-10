@@ -115,6 +115,22 @@ struct TVSettingsView: View {
                 }
                 .accessibilityLabel(localization.t("settings.autoplay"))
             }
+
+            settingsNavRow(
+                icon: "flame",
+                title: localization.t("judaism.shabbat.title"),
+                detail: nil
+            ) {
+                TVZmanimView()
+            }
+
+            settingsNavRow(
+                icon: "sunrise",
+                title: localization.t("ritual.title"),
+                detail: nil
+            ) {
+                TVMorningRitualView()
+            }
         } header: {
             sectionHeader(localization.t("settings.preferences"))
         }

@@ -12,14 +12,14 @@ struct LocationContentRow: View {
             titleWithLocation
                 .padding(.horizontal, DesignTokens.Spacing.lg)
 
-            GlassCarousel(items: items, itemWidth: 140) { item in
+            GlassCarousel(items: items, itemWidth: 160) { item in
                 GlassContentCard(
                     thumbnailURL: item.imageUrl,
                     title: item.title,
                     subtitle: locationSubtitle(for: item),
                     badge: nil,
                     aspectRatio: 1.0,  // Square
-                    width: 140
+                    width: 160
                 ) {
                     // Open URL in web view or external browser
                     if let urlString = item.url, let url = URL(string: urlString) {

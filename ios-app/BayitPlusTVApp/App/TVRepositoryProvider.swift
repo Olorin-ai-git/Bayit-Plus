@@ -36,6 +36,7 @@ final class TVRepositoryProvider {
     let household: any HouseholdRepository
     let news: any NewsRepository
     let stats: any StatsRepository
+    let shabbat: any ShabbatRepository
     let security: any SecurityRepository
     let familyControls: any FamilyControlsRepository
     let chat: any ChatRepository
@@ -77,6 +78,7 @@ final class TVRepositoryProvider {
         self.household = APIHouseholdRepository(client: client)
         self.news = APINewsRepository(client: client)
         self.stats = APIStatsRepository(client: client)
+        self.shabbat = APIShabbatRepository(client: client)
         self.security = APISecurityRepository(client: client)
         self.familyControls = APIFamilyControlsRepository(client: client)
         self.chat = APIChatRepository(client: client)
