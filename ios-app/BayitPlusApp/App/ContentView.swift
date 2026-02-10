@@ -1,22 +1,32 @@
 import BayitAuth
+import BayitDesignSystem
 import BayitMedia
 import SwiftUI
 
-/// Root content view - shows auth flow or main tab view
+/// Root content view - shows splash, then auth flow or main tab view
 struct ContentView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(AuthManager.self) private var authManager
     @Environment(RepositoryProvider.self) private var repositories
     @Environment(MediaPlayer.self) private var mediaPlayer
 
+    @State private var showingSplash = true
+
     var body: some View {
         @Bindable var coord = coordinator
 
         ZStack {
-            Color.black
+            DesignTokens.Background.primary
                 .ignoresSafeArea()
 
-            if coordinator.showingAuth {
+            if showingSplash {
+                SplashView {
+                    withAnimation(.easeInOut(duration: 0.5)) {
+                        showingSplash = false
+                    }
+                }
+                .transition(.opacity)
+            } else if coordinator.showingAuth {
                 AuthFlowView()
                     .transition(.opacity)
             } else {
@@ -40,6 +50,10 @@ struct ContentView: View {
                 .transition(.move(edge: .top))
             }
         }
+        .onChange(of: authManager.isAuthenticated) { _, isAuth in
+            coordinator.showingAuth = !isAuth
+        }
+        .animation(.easeInOut(duration: 0.3), value: showingSplash)
         .animation(.easeInOut(duration: 0.3), value: coordinator.showingAuth)
         .animation(.spring(duration: 0.4, bounce: 0.1), value: coordinator.fullscreenRoute != nil)
         .animation(.spring(duration: 0.4), value: ShabbatModeService.shared.isShabbatActive)

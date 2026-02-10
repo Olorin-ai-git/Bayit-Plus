@@ -146,13 +146,8 @@ private struct PodcastShowCard: View {
     private var coverImage: some View {
         Group {
             if let urlStr = show.cover, let url = URL(string: urlStr) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let img):
-                        img.resizable().aspectRatio(contentMode: .fill)
-                    default:
-                        coverPlaceholder
-                    }
+                CachedAsyncImage(url: url) {
+                    coverPlaceholder
                 }
             } else {
                 coverPlaceholder

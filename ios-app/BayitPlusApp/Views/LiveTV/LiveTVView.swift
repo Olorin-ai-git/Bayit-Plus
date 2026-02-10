@@ -122,17 +122,12 @@ private struct ChannelCard: View {
         Group {
             if let urlStr = channel.logo ?? channel.thumbnail,
                let url = URL(string: urlStr) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let img):
-                        img.resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .padding(DesignTokens.Spacing.md)
-                    default:
-                        channelPlaceholder
-                    }
+                CachedAsyncImage(url: url) {
+                    channelPlaceholder
                 }
+                .aspectRatio(contentMode: .fit)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .padding(DesignTokens.Spacing.md)
             } else {
                 channelPlaceholder
             }
@@ -151,19 +146,23 @@ private struct ChannelCard: View {
     }
 
     private var channelInfo: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .center, spacing: 2) {
             Text(channel.name ?? "Channel")
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
                 .foregroundColor(DesignTokens.Text.primary)
-                .lineLimit(1)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+                .multilineTextAlignment(.center)
 
             if let show = channel.currentShow {
                 Text(show)
                     .font(.system(size: DesignTokens.FontSize.xs))
                     .foregroundColor(DesignTokens.Text.muted)
                     .lineLimit(1)
+                    .minimumScaleFactor(0.85)
             }
         }
+        .frame(maxWidth: .infinity)
         .padding(.horizontal, DesignTokens.Spacing.sm)
         .padding(.vertical, DesignTokens.Spacing.sm)
     }

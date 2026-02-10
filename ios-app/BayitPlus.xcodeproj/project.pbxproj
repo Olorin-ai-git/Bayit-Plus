@@ -196,6 +196,8 @@
 		4804B006F7E1C5ECE6A4B253 /* logo.png in Resources */ = {isa = PBXBuildFile; fileRef = ED1924B5696E3C6A48803DAF /* logo.png */; };
 		4804B007F7E1C5ECE6A4B254 /* Bayit_Intro_English.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = D1E2F3A4B5C6071829304B5D /* Bayit_Intro_English.mp4 */; };
 		4804B008F7E1C5ECE6A4B255 /* Bayit_Intro_Hebrew.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = D1E2F3A4B5C6071829304B5E /* Bayit_Intro_Hebrew.mp4 */; };
+		4804B009F7E1C5ECE6A4B256 /* Bayit_Intro_English.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D1E2F3A4B5C6071829304B5F /* Bayit_Intro_English.mp3 */; };
+		4804B00AF7E1C5ECE6A4B257 /* Bayit_Intro_Hebrew.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = D1E2F3A4B5C6071829304B60 /* Bayit_Intro_Hebrew.mp3 */; };
 		489674BFE5A202F0C51869D9 /* WidgetsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F66CCE45DB036A5C50993F4 /* WidgetsViewModel.swift */; };
 		48F9A2F6667C84B52196B770 /* ShabbatModeSmallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14A24A7412E79FB73B23D43E /* ShabbatModeSmallView.swift */; };
 		49959EB689DF675D90E0295B /* LLMSearchInterpretationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A439A07061E2975D7A7FF0B1 /* LLMSearchInterpretationView.swift */; };
@@ -1125,6 +1127,8 @@
 		D16DADC5A3530D35E9DAD878 /* DirectMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectMessagesView.swift; sourceTree = "<group>"; };
 		D1E2F3A4B5C6071829304B5D /* Bayit_Intro_English.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bayit_Intro_English.mp4; sourceTree = "<group>"; };
 		D1E2F3A4B5C6071829304B5E /* Bayit_Intro_Hebrew.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bayit_Intro_Hebrew.mp4; sourceTree = "<group>"; };
+		D1E2F3A4B5C6071829304B5F /* Bayit_Intro_English.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Bayit_Intro_English.mp3; sourceTree = "<group>"; };
+		D1E2F3A4B5C6071829304B60 /* Bayit_Intro_Hebrew.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Bayit_Intro_Hebrew.mp3; sourceTree = "<group>"; };
 		D1EEE224B8B7B9D78E323425 /* UITestingSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITestingSupport.swift; sourceTree = "<group>"; };
 		D27016A49CF480791654E8D4 /* SpotlightSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotlightSection.swift; sourceTree = "<group>"; };
 		D35C2FEC6AFF18E187595F5D /* JudaismView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JudaismView.swift; sourceTree = "<group>"; };
@@ -1983,6 +1987,8 @@
 			children = (
 				D1E2F3A4B5C6071829304B5D /* Bayit_Intro_English.mp4 */,
 				D1E2F3A4B5C6071829304B5E /* Bayit_Intro_Hebrew.mp4 */,
+				D1E2F3A4B5C6071829304B5F /* Bayit_Intro_English.mp3 */,
+				D1E2F3A4B5C6071829304B60 /* Bayit_Intro_Hebrew.mp3 */,
 				ED1924B5696E3C6A48803DAF /* logo.png */,
 				646FCC96E603357612B10C61 /* wizard-hat.png */,
 			);
@@ -2638,6 +2644,8 @@
 			files = (
 				4804B007F7E1C5ECE6A4B254 /* Bayit_Intro_English.mp4 in Resources */,
 				4804B008F7E1C5ECE6A4B255 /* Bayit_Intro_Hebrew.mp4 in Resources */,
+				4804B009F7E1C5ECE6A4B256 /* Bayit_Intro_English.mp3 in Resources */,
+				4804B00AF7E1C5ECE6A4B257 /* Bayit_Intro_Hebrew.mp3 in Resources */,
 				E906E2461EBDC0F9BECE31E1 /* BACKEND_VERIFICATION_COMPLETE.md in Resources */,
 				45F9C6922F3AE04500A64304 /* PrivacyInfo.xcprivacy in Resources */,
 				1BF0881BA50C71FB82F14B30 /* GoogleService-Info.plist in Resources */,
@@ -3339,7 +3347,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -3362,7 +3370,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -3473,7 +3481,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
@@ -3554,7 +3562,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;

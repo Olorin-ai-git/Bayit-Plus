@@ -31,7 +31,8 @@ struct ProfileView: View {
                         menuSection
                     }
                 }
-                .padding(.vertical, DesignTokens.Spacing.lg)
+                .padding(.top, DesignTokens.Spacing.lg)
+                .padding(.bottom, 100)
             } else {
                 ScreenLoadingView()
             }

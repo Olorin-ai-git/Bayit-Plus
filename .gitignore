@@ -62,6 +62,8 @@ backend/uploads/
 *.webm
 *.m4a
 *.mp3
+!ios-app/BayitPlusApp/Resources/*.mp3
+!ios-app/BayitPlusTVApp/Resources/*.mp3
 
 # Google Cloud Service Account Credentials (NEVER commit)
 backend/gcs-service-account-key.json

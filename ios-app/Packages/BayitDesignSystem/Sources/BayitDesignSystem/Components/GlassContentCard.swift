@@ -126,26 +126,15 @@ public struct GlassContentCard: View {
     /// Estimated metadata overlay height for flag positioning above it
     private var metadataHeight: CGFloat {
         (title != nil || subtitle != nil)
-            ? (DesignTokens.Spacing.md * 2 + DesignTokens.FontSize.md + DesignTokens.Spacing.xs)
+            ? (metadataPadding * 2 + DesignTokens.FontSize.md + DesignTokens.Spacing.xs)
             : 0
     }
 
     private var thumbnailImage: some View {
         Group {
             if let urlString = thumbnailURL, let url = URL(string: urlString) {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .empty:
-                        placeholderGradient
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    case .failure:
-                        placeholderGradient
-                    @unknown default:
-                        placeholderGradient
-                    }
+                CachedAsyncImage(url: url) {
+                    placeholderGradient
                 }
             } else {
                 placeholderGradient
@@ -201,6 +190,11 @@ public struct GlassContentCard: View {
         }
     }
 
+    /// Padding adjusts for narrow cards (<=160pt) to maximize text space
+    private var metadataPadding: CGFloat {
+        width <= 160 ? DesignTokens.Spacing.sm : DesignTokens.Spacing.md
+    }
+
     private var metadataOverlay: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
             if let title = title {
@@ -208,6 +202,7 @@ public struct GlassContentCard: View {
                     .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                     .foregroundColor(DesignTokens.Text.primary)
                     .lineLimit(2)
+                    .minimumScaleFactor(0.85)
                     .truncationMode(.tail)
                     .multilineTextAlignment(.leading)
             }
@@ -221,7 +216,7 @@ public struct GlassContentCard: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(DesignTokens.Spacing.md)
+        .padding(metadataPadding)
         .background {
             ZStack {
                 DesignTokens.Glass.bgStrong
