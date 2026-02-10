@@ -1,5 +1,4 @@
 import Foundation
-import FirebaseAuth
 import BayitNetworking
 
 /// Thread-safe implementation of `AuthTokenProvider` from BayitNetworking.
@@ -30,21 +29,38 @@ public actor AuthTokenProviderImpl: AuthTokenProvider {
 
     /// Returns the current backend Bearer token, refreshing if needed.
     ///
-    /// Returns `nil` if the user is not authenticated (no cached token).
+    /// Returns `nil` if the user is not authenticated (no cached token or refresh token).
     /// Throws on transient failures (Keychain errors, network errors).
+    ///
+    /// Note: This implementation checks for backend JWT tokens directly in Keychain,
+    /// supporting both Firebase-based authentication and device pairing flows.
     public func currentToken() async throws -> String? {
-        guard Auth.auth().currentUser != nil else {
-            return nil
-        }
-
         // Try reading the cached backend JWT from Keychain
         if let cached = try? keychainService.load(for: tokenKeychainKey) {
             if !isTokenExpiringSoon(cached) {
+                logger.debug(
+                    "Using cached backend JWT",
+                    metadata: ["expiring_soon": "false"]
+                )
                 return cached
             }
+
+            logger.debug(
+                "Cached backend JWT expiring soon, will refresh",
+                metadata: ["expiring_soon": "true"]
+            )
         }
 
-        // Token missing or expiring soon -- refresh via backend
+        // Token missing or expiring soon -- try to refresh via backend
+        // If no refresh token exists, return nil (user not authenticated)
+        guard (try? keychainService.load(for: refreshTokenKeychainKey)) != nil else {
+            logger.debug(
+                "No backend JWT or refresh token found in Keychain",
+                metadata: ["authenticated": "false"]
+            )
+            return nil
+        }
+
         return try await refreshAndCacheToken()
     }
 
