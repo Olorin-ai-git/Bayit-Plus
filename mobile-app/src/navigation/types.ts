@@ -38,6 +38,11 @@ export type RootStackParamList = {
   Billing: undefined;
   Subscription: undefined;
   Security: undefined;
+  // Payment screens
+  PaymentSuccess: undefined;
+  PaymentCancelled: undefined;
+  PaymentPending: { checkoutUrl?: string | null; planId?: string | null };
+  Subscribe: undefined;
 };
 
 export type MainTabParamList = {

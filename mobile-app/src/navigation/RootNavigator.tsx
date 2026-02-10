@@ -32,6 +32,12 @@ import { RecordingsScreen } from '../screens/RecordingsScreen';
 // Eager load: Profile selection (needed in auth flow)
 import { ProfileSelectionScreenMobile } from '../screens';
 
+// Eager load: Payment screens (needed for payment flow)
+import { PaymentSuccessScreen } from '../screens/PaymentSuccessScreen';
+import { PaymentCancelledScreen } from '../screens/PaymentCancelledScreen';
+import { PaymentPendingScreen } from '../screens/PaymentPendingScreen';
+import { SubscribeScreen } from '../screens/SubscribeScreen';
+
 // Lazy load: Mobile-optimized screens (loaded on-demand as user navigates)
 const PlayerScreenMobile = React.lazy(() =>
   import('../screens').then((mod) => ({ default: mod.PlayerScreenMobile }))
@@ -133,6 +139,12 @@ export const RootNavigator: React.FC = () => {
       <Stack.Screen name="Login" component={LoginScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="ProfileSelection" component={ProfileSelectionScreenMobile} />
+
+      {/* Payment Screens - Eager loaded (needed for payment flow) */}
+      <Stack.Screen name="PaymentSuccess" component={PaymentSuccessScreen} />
+      <Stack.Screen name="PaymentCancelled" component={PaymentCancelledScreen} />
+      <Stack.Screen name="PaymentPending" component={PaymentPendingScreen} />
+      <Stack.Screen name="Subscribe" component={SubscribeScreen} />
 
       {/* Main Tab Navigator - Eager loaded (core navigation) */}
       <Stack.Screen name="Main" component={MainTabNavigator} />
