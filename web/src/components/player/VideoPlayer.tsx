@@ -128,6 +128,11 @@ export default function VideoPlayer({
     fetchAvailableSubtitles,
   } = useSubtitles({ contentId, isLive, initialSubtitleLang, initialSplitMode, initialSplitLanguages })
 
+  // No-arg wrapper for usePlayerControlRenderers which expects () => void
+  const handleSubtitleToggle = useCallback(() => {
+    handleSubtitleToggleWithEnabled(!subtitlesEnabled)
+  }, [handleSubtitleToggleWithEnabled, subtitlesEnabled])
+
   const {
     liveSubtitleLang,
     visibleLiveSubtitles,
@@ -461,7 +466,7 @@ export default function VideoPlayer({
     subtitleSettings,
     subtitlesLoading,
     handleSubtitleLanguageChange,
-    handleSubtitleToggle: handleSubtitleToggleWithEnabled,
+    handleSubtitleToggle,
     handleSubtitleSettingsChange,
     fetchAvailableSubtitles,
     hebrewMode,
@@ -575,12 +580,12 @@ export default function VideoPlayer({
         showSettings={showSettings}
         availableSubtitleLanguages={availableSubtitleLanguages}
         liveSubtitleLang={liveSubtitleLang}
-        availableQualities={state.availableQualities}
-        currentQuality={state.currentQuality}
+        availableQualities={(state.availableQualities || []).map(q => q.quality)}
+        currentQuality={state.currentQuality || ''}
         currentPlaybackSpeed={state.playbackSpeed}
         onSettingsClose={() => setShowSettings(false)}
         onLiveSubtitleLangChange={setLiveSubtitleLang}
-        onQualityChange={controls.changeQuality}
+        onQualityChange={(quality) => { controls.changeQuality?.(quality) }}
         onPlaybackSpeedChange={controls.setPlaybackSpeed}
       />
 
@@ -588,7 +593,7 @@ export default function VideoPlayer({
         state={state}
         controls={controls}
         isLive={isLive}
-        title={title}
+        title={title || ''}
         chapters={chapters}
         availableSubtitles={availableSubtitles}
         showChaptersPanel={showChaptersPanel}
@@ -642,7 +647,7 @@ export default function VideoPlayer({
         handleLeaveParty={handleLeaveParty}
         handleEndParty={handleEndParty}
         sendMessage={sendMessage}
-        title={title}
+        title={title || ''}
       />
 
       {/* Channel Chat for Live TV and VOD */}

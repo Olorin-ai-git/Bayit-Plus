@@ -289,15 +289,13 @@ export function useHLSPlayer({
         liveSyncDuration: isLive ? targetLatencySeconds : undefined,
         liveMaxLatencyDuration: isLive ? targetLatencySeconds + 5 : undefined,
         liveDurationInfinity: isLive,
-        // DISABLE HLS.js subtitle handling - embedded subtitles handled by native video element
-        // When using native playback (AirPlay), subtitles come from master.m3u8 EXT-X-MEDIA tags
-        subtitleDisplay: false,
       })
       hlsRef.current = hls
       activeHlsInstances.add(hls) // Track for cleanup
 
-      // Disable subtitle track - HLS.js blob URLs don't preserve embedded subtitle references
+      // Disable HLS.js subtitle handling - embedded subtitles handled by native video element
       // For AirPlay, we switch to native .m3u8 playback which reads subtitles from master manifest
+      hls.subtitleDisplay = false
       hls.subtitleTrack = -1
 
       hls.loadSource(effectiveStreamUrl)
@@ -574,12 +572,11 @@ export function useHLSPlayer({
         liveSyncDuration: delaySeconds,
         liveMaxLatencyDuration: delaySeconds + 5,
         liveDurationInfinity: true,
-        // DISABLE HLS.js subtitle handling
-        subtitleDisplay: false,
       })
 
       hlsRef.current = hls
-      hls.subtitleTrack = -1  // Disable subtitle tracks
+      hls.subtitleDisplay = false
+      hls.subtitleTrack = -1
       activeHlsInstances.add(hls)
 
       hls.loadSource(event.detail.url)
@@ -634,12 +631,11 @@ export function useHLSPlayer({
         liveSyncDuration: 3,
         liveMaxLatencyDuration: 8,
         liveDurationInfinity: true,
-        // DISABLE HLS.js subtitle handling
-        subtitleDisplay: false,
       })
 
       hlsRef.current = hls
-      hls.subtitleTrack = -1  // Disable subtitle tracks
+      hls.subtitleDisplay = false
+      hls.subtitleTrack = -1
       activeHlsInstances.add(hls)
 
       hls.loadSource(event.detail.url)
