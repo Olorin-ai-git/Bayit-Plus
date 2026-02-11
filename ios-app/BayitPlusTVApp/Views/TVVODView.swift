@@ -61,10 +61,11 @@ struct TVVODView: View {
                         badge: item.isSeries == true ? "Series" : nil,
                         aspectRatio: 2 / 3,
                         onSelect: {
-                            coordinator.presentPlayer(
-                                contentId: item.id,
-                                contentType: .vod
-                            )
+                            if item.isSeries == true {
+                                coordinator.fullscreenRoute = .seriesDetail(seriesId: item.id)
+                            } else {
+                                coordinator.fullscreenRoute = .movieDetail(movieId: item.id)
+                            }
                         }
                     )
                     .onAppear {

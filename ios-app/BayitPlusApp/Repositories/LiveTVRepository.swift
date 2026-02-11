@@ -44,6 +44,29 @@ protocol LiveTVRepository: Sendable {
     /// - Returns: Live stream response with HLS URL and metadata.
     /// - Throws: `NetworkError` if the request fails.
     func fetchStreamURL(channelId: String) async throws -> LiveStreamResponse
+
+    /// Fetch catch-up transcript and AI summary for a live channel.
+    ///
+    /// - Parameter channelId: Channel ID.
+    /// - Returns: Catch-up response with transcript segments and AI summary.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchCatchUp(channelId: String) async throws -> CatchUpResponse
+
+    /// Search for scenes within a live TV channel.
+    ///
+    /// - Parameters:
+    ///   - channelId: Channel ID.
+    ///   - query: Search query for topics or scenes.
+    /// - Returns: Scene search response with timestamped results.
+    /// - Throws: `NetworkError` if the request fails.
+    func searchScenes(channelId: String, query: String) async throws -> SceneSearchResponse
+
+    /// Fetch channel chat history for a specific channel.
+    ///
+    /// - Parameter channelId: Channel ID.
+    /// - Returns: Channel chat history response with messages.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchChannelChatHistory(channelId: String) async throws -> ChannelChatHistoryResponse
 }
 
 /// Production implementation of `LiveTVRepository` using `APIClient`.
@@ -109,6 +132,31 @@ final class APILiveTVRepository: LiveTVRepository, @unchecked Sendable {
         return try await client.get(
             "/api/v1/live/\(channelId)/stream",
             as: LiveStreamResponse.self
+        )
+    }
+
+    func fetchCatchUp(channelId: String) async throws -> CatchUpResponse {
+        return try await client.get(
+            "/api/v1/live/\(channelId)/catchup",
+            as: CatchUpResponse.self
+        )
+    }
+
+    func searchScenes(channelId: String, query: String) async throws -> SceneSearchResponse {
+        struct SceneSearchRequest: Encodable, Sendable {
+            let query: String
+        }
+        return try await client.post(
+            "/api/v1/live/\(channelId)/scene-search",
+            body: SceneSearchRequest(query: query),
+            as: SceneSearchResponse.self
+        )
+    }
+
+    func fetchChannelChatHistory(channelId: String) async throws -> ChannelChatHistoryResponse {
+        return try await client.get(
+            "/api/v1/live/\(channelId)/chat/history",
+            as: ChannelChatHistoryResponse.self
         )
     }
 }

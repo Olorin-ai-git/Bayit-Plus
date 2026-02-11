@@ -32,6 +32,9 @@ struct TVPlayerView: View {
     @State private var showAudioTracks = false
     @State private var showSpeedControl = false
     @State private var showControlButtons = false
+    @State private var showCatchUp = false
+    @State private var showSceneSearch = false
+    @State private var showChannelChat = false
 
     // MARK: - Playback State
 
@@ -62,7 +65,10 @@ struct TVPlayerView: View {
                         onDubbing: { showDubbingControls = true },
                         onChapters: { showChapterList = true },
                         onAudioTracks: { showAudioTracks = true },
-                        onSpeed: { showSpeedControl = true }
+                        onSpeed: { showSpeedControl = true },
+                        onCatchUp: contentType == .liveTV ? { showCatchUp = true } : nil,
+                        onSceneSearch: contentType == .liveTV ? { showSceneSearch = true } : nil,
+                        onChat: contentType == .liveTV ? { showChannelChat = true } : nil
                     )
                 }
             }
@@ -103,6 +109,42 @@ struct TVPlayerView: View {
                 }
             )
         }
+        .fullScreenCover(isPresented: $showCatchUp) {
+            TVCatchUpView(
+                repository: repos.liveTV,
+                channelId: channelId ?? contentId,
+                onSeek: { time in
+                    showCatchUp = false
+                    Task { await mediaPlayer.seek(to: time) }
+                },
+                onDismiss: { showCatchUp = false }
+            )
+        }
+        .fullScreenCover(isPresented: $showSceneSearch) {
+            TVSceneSearchView(
+                repository: repos.liveTV,
+                channelId: channelId ?? contentId,
+                onSeek: { time in
+                    showSceneSearch = false
+                    Task { await mediaPlayer.seek(to: time) }
+                },
+                onDismiss: { showSceneSearch = false }
+            )
+        }
+        .fullScreenCover(isPresented: $showChannelChat) {
+            TVChannelChatView(
+                repository: repos.liveTV,
+                webSocketManager: WebSocketManager(configuration: repos.configuration),
+                channelId: channelId ?? contentId,
+                authToken: authToken,
+                onDismiss: { showChannelChat = false }
+            )
+        }
+    }
+
+    /// Retrieve auth token for WebSocket connections.
+    private var authToken: String {
+        authManager.user?.token ?? ""
     }
 
     // MARK: - Full-Screen Covers

@@ -1,7 +1,8 @@
+#if os(tvOS)
 import BayitDesignSystem
 import SwiftUI
 
-/// tvOS AI chatbot conversation view. Text-input only.
+/// tvOS AI chatbot conversation view with text and voice input.
 struct TVChatbotView: View {
 
     @Environment(TVRepositoryProvider.self) private var repos
@@ -51,7 +52,7 @@ struct TVChatbotView: View {
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Ask about content, get personalized recommendations, or just chat.")
+            Text("Ask about content, get personalized recommendations, or use the microphone on your Siri Remote.")
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -71,12 +72,28 @@ struct TVChatbotView: View {
                 TVChatTypingIndicator()
             }
 
+            if vm.isTranscribing {
+                transcribingIndicator
+            }
+
             if let error = vm.error {
                 errorBanner(error)
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xl)
         .padding(.vertical, TVDesignTokens.Spacing.lg)
+    }
+
+    private var transcribingIndicator: some View {
+        HStack(spacing: TVDesignTokens.Spacing.md) {
+            ProgressView()
+                .tint(DesignTokens.Primary.p300)
+            Text("Transcribing audio...")
+                .font(.system(size: TVDesignTokens.FontSize.sm))
+                .foregroundStyle(DesignTokens.Text.muted)
+        }
+        .padding(TVDesignTokens.Spacing.md)
+        .accessibilityLabel("Transcribing audio")
     }
 
     private func errorBanner(_ message: String) -> some View {
@@ -132,6 +149,8 @@ struct TVChatbotView: View {
 
     private func inputBar(_ vm: TVChatbotViewModel) -> some View {
         HStack(spacing: TVDesignTokens.Spacing.lg) {
+            microphoneButton(vm)
+
             TextField("Type a message...", text: Bindable(vm).inputText)
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.primary)
@@ -155,4 +174,42 @@ struct TVChatbotView: View {
         .padding(.horizontal, TVDesignTokens.Spacing.xl)
         .padding(.vertical, TVDesignTokens.Spacing.lg)
     }
+
+    // MARK: - Microphone Button
+
+    private func microphoneButton(_ vm: TVChatbotViewModel) -> some View {
+        Button {
+            Task { await vm.toggleVoiceInput() }
+        } label: {
+            ZStack {
+                Circle()
+                    .fill(vm.isRecording ? Color.red.opacity(0.2) : DesignTokens.Glass.bgLight)
+                    .frame(width: 60, height: 60)
+
+                if vm.isRecording {
+                    Circle()
+                        .stroke(Color.red, lineWidth: 3)
+                        .frame(width: 60, height: 60)
+                        .scaleEffect(vm.isRecording ? 1.15 : 1.0)
+                        .opacity(vm.isRecording ? 0.6 : 1.0)
+                        .animation(
+                            .easeInOut(duration: 0.8).repeatForever(autoreverses: true),
+                            value: vm.isRecording
+                        )
+                }
+
+                Image(systemName: vm.isRecording ? "mic.fill" : "mic")
+                    .font(.system(size: 24))
+                    .foregroundStyle(
+                        vm.isRecording ? Color.red : DesignTokens.Text.primary
+                    )
+            }
+        }
+        .buttonStyle(.plain)
+        .tvFocusStyle()
+        .disabled(vm.isTranscribing)
+        .accessibilityLabel(vm.isRecording ? "Stop recording" : "Start voice input")
+        .accessibilityHint("Press to use Siri Remote microphone")
+    }
 }
+#endif

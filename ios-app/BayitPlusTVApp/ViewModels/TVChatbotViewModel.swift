@@ -1,8 +1,10 @@
+#if os(tvOS)
 import BayitCore
+import BayitVoice
 import Foundation
 import Observation
 
-/// tvOS chatbot ViewModel. Text-input only — no speech/mic APIs on Apple TV.
+/// tvOS chatbot ViewModel with text and voice input via Siri Remote microphone.
 @MainActor
 @Observable
 final class TVChatbotViewModel {
@@ -13,15 +15,19 @@ final class TVChatbotViewModel {
     private(set) var error: String?
     private(set) var conversationId: String?
     private(set) var suggestions: [String] = []
+    private(set) var isRecording = false
+    private(set) var isTranscribing = false
     var inputText = ""
 
     // MARK: - Private
     private let repository: any ChatRepository
+    private let audioService: TVAudioRecordingService
     private let logger = BayitLogger(category: "TVChatbotViewModel")
 
     // MARK: - Init
     init(repository: any ChatRepository) {
         self.repository = repository
+        self.audioService = TVAudioRecordingService()
     }
 
     // MARK: - Messaging
@@ -76,6 +82,77 @@ final class TVChatbotViewModel {
         await sendMessage()
     }
 
+    // MARK: - Voice Input
+
+    @MainActor
+    func toggleVoiceInput() async {
+        if isRecording {
+            await stopVoiceInput()
+        } else {
+            startVoiceInput()
+        }
+    }
+
+    @MainActor
+    func startVoiceInput() {
+        guard !isRecording else { return }
+        error = nil
+
+        do {
+            try audioService.startRecording()
+            isRecording = true
+            logger.info("Voice input started via Siri Remote")
+        } catch {
+            self.error = "Microphone access unavailable"
+            logger.error("Failed to start Siri Remote recording", error: error)
+        }
+    }
+
+    @MainActor
+    func stopVoiceInput() async {
+        guard isRecording else { return }
+
+        let audioData = audioService.stopRecording()
+        isRecording = false
+        logger.info(
+            "Voice input stopped",
+            context: ["audioBytes": "\(audioData.count)"]
+        )
+
+        guard !audioData.isEmpty else {
+            error = "No audio captured"
+            return
+        }
+
+        isTranscribing = true
+        do {
+            let response = try await repository.transcribeAudio(
+                data: audioData, language: nil
+            )
+            if let transcription = response.text, !transcription.isEmpty {
+                inputText = transcription
+                logger.info("Transcription received", context: [
+                    "text": transcription,
+                    "confidence": "\(response.confidence ?? 0)"
+                ])
+                await sendMessage()
+            } else {
+                error = "Could not transcribe audio"
+            }
+        } catch {
+            self.error = "Transcription failed"
+            logger.error("Audio transcription failed", error: error)
+        }
+        isTranscribing = false
+    }
+
+    @MainActor
+    func cancelVoiceInput() {
+        audioService.cancelRecording()
+        isRecording = false
+        logger.info("Voice input cancelled")
+    }
+
     // MARK: - Conversation Management
     @MainActor
     func startNewConversation() {
@@ -84,6 +161,7 @@ final class TVChatbotViewModel {
         suggestions = []
         error = nil
         inputText = ""
+        if isRecording { cancelVoiceInput() }
         logger.info("New conversation started")
     }
 
@@ -106,3 +184,4 @@ final class TVChatbotViewModel {
         isLoading = false
     }
 }
+#endif

@@ -67,8 +67,14 @@ struct TVContentView: View {
                 contentType: contentType,
                 channelId: channelId
             )
-        case .podcastDetail, .seriesDetail, .movieDetail:
-            EmptyView()
+        case .movieDetail(let movieId):
+            TVMovieDetailView(movieId: movieId)
+        case .seriesDetail(let seriesId):
+            TVSeriesDetailView(seriesId: seriesId)
+        case .podcastDetail(let showId):
+            TVPodcastDetailView(showId: showId)
+        case .audiobookDetail(let audiobookId):
+            TVAudiobookDetailView(audiobookId: audiobookId)
         }
     }
 }

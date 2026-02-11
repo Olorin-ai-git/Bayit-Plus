@@ -36,6 +36,14 @@ struct TranscribeResponse: Decodable, Sendable {
     let confidence: Double?
 }
 
+// MARK: - Audio Transcription Payload
+
+/// Request body for POST /api/v1/chat/transcribe with base64-encoded audio.
+struct AudioTranscribePayload: Encodable, Sendable {
+    let audio: String
+    let language: String?
+}
+
 // MARK: - Content Resolution
 
 /// A single item to resolve against the content catalog.

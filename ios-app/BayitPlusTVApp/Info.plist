@@ -36,7 +36,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>16</string>
+	<string>17</string>
 	<key>FEATURE_LEGACY_FEATURES</key>
 	<string>true</string>
 	<key>GOOGLE_CLIENT_ID</key>
@@ -50,6 +50,10 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Bayit+ uses the Siri Remote microphone for voice commands</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Bayit+ uses speech recognition for voice commands</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -59,9 +63,5 @@
 	<string></string>
 	<key>WEBSOCKET_BASE_URL</key>
 	<string>wss://api.bayit.tv</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Bayit+ uses the Siri Remote microphone for voice commands</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Bayit+ uses speech recognition for voice commands</string>
 </dict>
 </plist>

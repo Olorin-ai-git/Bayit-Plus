@@ -43,14 +43,13 @@ final class APIChatRepository: ChatRepository, @unchecked Sendable {
     }
 
     func transcribeAudio(data: Data, language: String?) async throws -> TranscribeResponse {
-        var queryItems: [URLQueryItem] = []
-        if let language {
-            queryItems.append(URLQueryItem(name: "language", value: language))
-        }
+        let payload = AudioTranscribePayload(
+            audio: data.base64EncodedString(),
+            language: language
+        )
         return try await client.post(
             "/api/v1/chat/transcribe",
-            body: EmptyBody(),
-            queryItems: queryItems,
+            body: payload,
             as: TranscribeResponse.self
         )
     }

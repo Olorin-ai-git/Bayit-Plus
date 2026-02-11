@@ -3,7 +3,8 @@ import BayitMedia
 import SwiftUI
 
 /// Horizontal row of icon buttons at the bottom of the tvOS player screen.
-/// Provides quick access to subtitles, dubbing, chapters, audio tracks, and speed.
+/// Provides quick access to subtitles, dubbing, chapters, audio tracks, speed,
+/// and live-specific features (catch-up, scene search, channel chat).
 /// Each button is focusable with card styling for natural Siri Remote navigation.
 struct TVPlayerControlBar: View {
     let contentType: MediaContentType
@@ -12,6 +13,9 @@ struct TVPlayerControlBar: View {
     let onChapters: () -> Void
     let onAudioTracks: () -> Void
     let onSpeed: () -> Void
+    var onCatchUp: (() -> Void)?
+    var onSceneSearch: (() -> Void)?
+    var onChat: (() -> Void)?
 
     var body: some View {
         VStack {
@@ -26,6 +30,18 @@ struct TVPlayerControlBar: View {
                 controlButton(icon: "list.bullet", label: "Chapters", action: onChapters)
                 controlButton(icon: "speaker.wave.2", label: "Audio", action: onAudioTracks)
                 controlButton(icon: "gauge.medium", label: "Speed", action: onSpeed)
+
+                if let onCatchUp {
+                    controlButton(icon: "clock.arrow.circlepath", label: "Catch Up", action: onCatchUp)
+                }
+
+                if let onSceneSearch {
+                    controlButton(icon: "magnifyingglass", label: "Scenes", action: onSceneSearch)
+                }
+
+                if let onChat {
+                    controlButton(icon: "bubble.left.and.bubble.right", label: "Chat", action: onChat)
+                }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
             .padding(.vertical, TVDesignTokens.Spacing.lg)

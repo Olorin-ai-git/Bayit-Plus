@@ -46,6 +46,15 @@ struct PlayerView: View {
     // Dubbing controls state
     @State var showDubbingControls = false
 
+    // Live feature overlays
+    @State var showCatchUp = false
+    @State var showSceneSearch = false
+    @State var showChannelChat = false
+    @State var showAICompanion = false
+    @State var showStreamLimitExceeded = false
+    @State var streamLimitMaxStreams = 3
+    @State var streamLimitDevices: [ActiveDevice] = []
+
     // AI panel state
     @State var showAIPanel = false
     @State var selectedAILanguage: String = "en"
@@ -61,7 +70,6 @@ struct PlayerView: View {
 
     // PiP state
     @State private var isPiPActive = false
-    @State private var pipController = PiPController()
 
     let contentId: String
     let contentType: ContentType
@@ -89,9 +97,25 @@ struct PlayerView: View {
             Color.black.ignoresSafeArea()
 
             // Video layer
-            VideoPlayerView(player: viewModel.player.avPlayer)
-                .ignoresSafeArea()
-                .onTapGesture { toggleControls() }
+            VideoPlayerView(
+                player: viewModel.player.avPlayer,
+                allowsPiP: PiPController.isSupported,
+                isPiPActive: $isPiPActive,
+                onRestoreUserInterface: { [weak coordinator] completion in
+                    guard let coordinator else {
+                        completion(true)
+                        return
+                    }
+                    if coordinator.fullscreenRoute == nil {
+                        coordinator.presentFullscreen(
+                            .player(contentId: contentId, contentType: contentType)
+                        )
+                    }
+                    completion(true)
+                }
+            )
+            .ignoresSafeArea()
+            .onTapGesture { toggleControls() }
 
             // Loading overlay
             if viewModel.isLoading {
@@ -174,6 +198,13 @@ struct PlayerView: View {
                 .allowsHitTesting(showControls)
             }
 
+            // Live feature overlays (catch-up, scene search, chat, companion)
+            catchUpOverlay
+            sceneSearchOverlay
+            channelChatOverlay
+            aiCompanionOverlay
+            streamLimitOverlay
+
             // Controls overlay
             if showControls && !viewModel.isLoading && viewModel.errorMessage == nil {
                 controlsOverlay
@@ -215,13 +246,8 @@ struct PlayerView: View {
         .task {
             await viewModel.load()
             initializeViewModels()
-            setupPiP()
         }
         .onDisappear {
-            pipController.stop()
-            pipController.onDidStart = nil
-            pipController.onDidStop = nil
-            pipController.onRestoreUserInterface = nil
             Task {
                 await viewModel.cleanup()
                 await dubbingMixer.cleanup()
@@ -239,11 +265,10 @@ struct PlayerView: View {
             triviaVM?.updateActiveFact(currentTime: newTime)
         }
         .onChange(of: scenePhase) { _, newPhase in
-            if newPhase == .background,
-               PiPController.isSupported,
-               viewModel.player.avPlayer.currentItem != nil,
-               !isPiPActive {
-                pipController.start()
+            // PiP auto-starts on background via AVPlayerViewController's
+            // canStartPictureInPictureAutomaticallyFromInline = true
+            if newPhase == .active, isPiPActive {
+                isPiPActive = false
             }
         }
         .sheet(isPresented: $showSplitLanguagePicker) {
@@ -487,6 +512,8 @@ struct PlayerView: View {
                 .accessibilityLabel("Subtitles")
             }
 
+            liveFeatureButtons
+
             recordingButton
 
             AirPlayView()
@@ -494,7 +521,7 @@ struct PlayerView: View {
 
             if PiPController.isSupported {
                 Button {
-                    pipController.toggle()
+                    isPiPActive.toggle()
                 } label: {
                     Image(systemName: isPiPActive ? "pip.exit" : "pip.enter")
                         .font(.system(size: 18))
@@ -664,34 +691,6 @@ struct PlayerView: View {
             )
 
             // Live trivia WebSocket is connected on-demand via AI panel toggle
-        }
-    }
-
-    // MARK: - PiP
-
-    private func setupPiP() {
-        guard PiPController.isSupported else { return }
-
-        let layer = AVPlayerLayer(player: viewModel.player.avPlayer)
-        pipController.setup(with: layer)
-
-        pipController.onDidStart = {
-            isPiPActive = true
-        }
-        pipController.onDidStop = {
-            isPiPActive = false
-        }
-        pipController.onRestoreUserInterface = { [weak coordinator] completion in
-            guard let coordinator else {
-                completion(true)
-                return
-            }
-            if coordinator.fullscreenRoute == nil {
-                coordinator.presentFullscreen(
-                    .player(contentId: contentId, contentType: contentType)
-                )
-            }
-            completion(true)
         }
     }
 

@@ -53,6 +53,12 @@ protocol PodcastRepository: Sendable {
     /// - Parameter showId: Podcast show ID.
     /// - Throws: `NetworkError` if the request fails.
     func syncEpisodes(showId: String) async throws
+
+    /// Add a custom podcast via RSS URL.
+    ///
+    /// - Parameter rssUrl: The RSS feed URL for the podcast.
+    /// - Throws: `NetworkError` if the request fails.
+    func addCustomPodcast(rssUrl: String) async throws
 }
 
 /// Production implementation of `PodcastRepository` using `APIClient`.
@@ -126,6 +132,17 @@ final class APIPodcastRepository: PodcastRepository, @unchecked Sendable {
             "/api/v1/podcasts/\(showId)/sync",
             body: EmptyBody(),
             as: PodcastSyncResponse.self
+        )
+    }
+
+    func addCustomPodcast(rssUrl: String) async throws {
+        struct AddPodcastRequest: Encodable, Sendable {
+            let rssUrl: String
+        }
+        _ = try await client.post(
+            "/api/v1/podcasts/custom",
+            body: AddPodcastRequest(rssUrl: rssUrl),
+            as: MessageResponse.self
         )
     }
 }
