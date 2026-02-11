@@ -72,10 +72,14 @@ struct ContentCategory: Decodable, Sendable, Identifiable {
 struct ContentItem: Decodable, Sendable, Identifiable, Hashable {
     let id: String
     let title: String?
+    let description: String?
     let thumbnail: String?
+    let backdrop: String?
     let duration: String?
     let year: Int?
     let category: String?
+    let categorySlug: String?
+    let categoryNameKey: String?
     let categoryNameEn: String?
     let categoryNameEs: String?
     let type: String?

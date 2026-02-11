@@ -2,115 +2,74 @@ import BayitAuth
 import BayitDesignSystem
 import SwiftUI
 
-/// Top navigation bar with logout, language selector, profile, beta credits, and search
+/// Top navigation bar with scrollable action buttons
 struct TopNavigationBar: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(FeatureFlags.self) private var featureFlags
 
     var body: some View {
-        HStack(spacing: DesignTokens.Spacing.xl) {
-            Spacer()
-
-            // Playlist button
-            Button {
-                coordinator.navigate(to: .playlist)
-            } label: {
-                Image(systemName: "music.note.list")
-                    .font(.system(size: 20))
-                    .foregroundColor(DesignTokens.Text.primary)
-                    .frame(width: 44, height: 44)
-                    .background(DesignTokens.Glass.bgMedium)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-            }
-            .accessibilityLabel("Playlist")
-
-            // Language selector button (flag)
-            Button {
-                coordinator.navigate(to: .languageSettings)
-            } label: {
-                Image(systemName: "globe")
-                    .font(.system(size: 20))
-                    .foregroundColor(DesignTokens.Text.primary)
-                    .frame(width: 44, height: 44)
-                    .background(DesignTokens.Glass.bgMedium)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-            }
-            .accessibilityLabel("Language settings")
-
-            // Profile button
-            Button {
-                coordinator.navigate(to: .profile)
-            } label: {
-                Image(systemName: "person.circle")
-                    .font(.system(size: 20))
-                    .foregroundColor(DesignTokens.Text.primary)
-                    .frame(width: 44, height: 44)
-                    .background(DesignTokens.Glass.bgMedium)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-            }
-            .accessibilityLabel("Profile")
-
-            // Beta credits button - only visible to beta users
-            if authManager.user?.isBetaUser == true {
-                Button {
-                    coordinator.navigate(to: .betaCredits)
-                } label: {
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 20))
-                        .foregroundColor(DesignTokens.Primary.p400)
-                        .frame(width: 44, height: 44)
-                        .background(DesignTokens.Glass.bgMedium)
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: DesignTokens.Spacing.md) {
+                navButton(icon: "music.note.list", label: "Playlist") {
+                    coordinator.navigate(to: .playlist)
                 }
-                .accessibilityLabel("Beta Credits")
-            }
 
-            // Kids button (legacy feature - controlled by feature flag)
-            if featureFlags.isLegacyFeaturesEnabled {
-                Button {
-                    coordinator.navigate(to: .children)
-                } label: {
-                    Image(systemName: "figure.and.child.holdinghands")
-                        .font(.system(size: 20))
-                        .foregroundColor(DesignTokens.Text.primary)
-                        .frame(width: 44, height: 44)
-                        .background(DesignTokens.Glass.bgMedium)
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                navButton(icon: "globe", label: "Language settings") {
+                    coordinator.navigate(to: .languageSettings)
                 }
-                .accessibilityLabel("Kids")
-            }
 
-            // Recordings button (legacy feature - controlled by feature flag)
-            if featureFlags.isLegacyFeaturesEnabled {
-                Button {
-                    coordinator.navigate(to: .recordings)
-                } label: {
-                    Image(systemName: "record.circle")
-                        .font(.system(size: 20))
-                        .foregroundColor(DesignTokens.Text.primary)
-                        .frame(width: 44, height: 44)
-                        .background(DesignTokens.Glass.bgMedium)
-                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                navButton(icon: "person.circle", label: "Profile") {
+                    coordinator.navigate(to: .profile)
                 }
-                .accessibilityLabel("Recordings")
-            }
 
-            // Search button
-            Button {
-                coordinator.presentFullscreen(.search)
-            } label: {
-                Image(systemName: "magnifyingglass")
-                    .font(.system(size: 20))
-                    .foregroundColor(DesignTokens.Text.primary)
-                    .frame(width: 44, height: 44)
-                    .background(DesignTokens.Glass.bgMedium)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                if authManager.user?.isBetaUser == true {
+                    navButton(
+                        icon: "sparkles",
+                        label: "Beta Credits",
+                        tint: DesignTokens.Primary.p400
+                    ) {
+                        coordinator.navigate(to: .betaCredits)
+                    }
+                }
+
+                if featureFlags.isLegacyFeaturesEnabled {
+                    navButton(
+                        icon: "figure.and.child.holdinghands",
+                        label: "Kids"
+                    ) {
+                        coordinator.navigate(to: .children)
+                    }
+
+                    navButton(icon: "record.circle", label: "Recordings") {
+                        coordinator.navigate(to: .recordings)
+                    }
+                }
+
+                navButton(icon: "magnifyingglass", label: "Search") {
+                    coordinator.presentFullscreen(.search)
+                }
             }
-            .accessibilityLabel("Search")
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.vertical, DesignTokens.Spacing.sm)
         .background(DesignTokens.Background.primary)
+    }
+
+    private func navButton(
+        icon: String,
+        label: String,
+        tint: Color = DesignTokens.Text.primary,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .font(.system(size: 20))
+                .foregroundColor(tint)
+                .frame(width: 44, height: 44)
+                .background(DesignTokens.Glass.bgMedium)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+        }
+        .accessibilityLabel(label)
     }
 }

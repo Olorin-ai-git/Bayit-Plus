@@ -13,7 +13,7 @@ struct HomeView: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             if let vm = viewModel {
-                LazyVStack(spacing: DesignTokens.Spacing.xl) {
+                VStack(spacing: DesignTokens.Spacing.xl) {
                     if vm.isLoading && vm.categories.isEmpty {
                         loadingState
                     } else if let error = vm.error, vm.categories.isEmpty {
@@ -22,11 +22,14 @@ struct HomeView: View {
                         contentSections(vm)
                     }
                 }
+                .padding(.top, DesignTokens.Spacing.md)
             } else {
                 ScreenLoadingView()
             }
         }
+        .scrollContentBackground(.hidden)
         .background(DesignTokens.Background.primary)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .refreshable {
             await viewModel?.refresh()
         }
@@ -67,7 +70,8 @@ struct HomeView: View {
                 isIsraeli: false
             )
         }
-        .padding(.horizontal, DesignTokens.Spacing.lg)
+        .padding(.leading, DesignTokens.Spacing.lg + 4)
+        .padding(.trailing, DesignTokens.Spacing.lg)
         .padding(.bottom, DesignTokens.Spacing.md)
 
         // Hero carousel (legacy feature - controlled by feature flag)

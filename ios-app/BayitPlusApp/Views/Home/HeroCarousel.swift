@@ -66,7 +66,8 @@ struct HeroCarousel: View {
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
                     }
                 }
-                .padding(.horizontal, DesignTokens.Spacing.lg)
+                .padding(.leading, DesignTokens.Spacing.lg + 4)
+                .padding(.trailing, DesignTokens.Spacing.lg)
                 .padding(.bottom, DesignTokens.Spacing.lg)
             }
         }

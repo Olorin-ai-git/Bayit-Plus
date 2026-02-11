@@ -18,7 +18,8 @@ struct PageHeader: View {
 
             Spacer()
         }
-        .padding(.horizontal, DesignTokens.Spacing.lg)
+        .padding(.leading, DesignTokens.Spacing.lg + 4)
+        .padding(.trailing, DesignTokens.Spacing.lg)
         .padding(.vertical, DesignTokens.Spacing.md)
     }
 }

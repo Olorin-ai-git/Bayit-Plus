@@ -25,7 +25,7 @@ struct VODView: View {
                         Task { await vm.refresh() }
                     }
                 } else {
-                    contentGrid(vm)
+                    vodGrid(vm.items, isLoadingMore: vm.isLoadingMore)
                 }
             } else {
                 ScreenLoadingView()
@@ -43,40 +43,23 @@ struct VODView: View {
         }
     }
 
-    private func contentGrid(_ vm: VODViewModel) -> some View {
+    private func vodGrid(
+        _ items: [ContentItem],
+        isLoadingMore: Bool
+    ) -> some View {
         LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
-            ForEach(vm.items) { item in
-                ZStack(alignment: .topTrailing) {
-                    GlassContentCard(
-                        thumbnailURL: item.thumbnail,
-                        title: item.title,
-                        subtitle: vodSubtitle(for: item),
-                        badge: item.isSeries == true ? "Series" : nil,
-                        subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
-                        aspectRatio: 2 / 3,
-                        width: .infinity,
-                        placeholderIcon: item.isSeries == true ? .series : .movie
-                    ) {
-                        navigateToItem(item)
-                    }
-
-                    if let languages = item.availableSubtitleLanguages, !languages.isEmpty {
-                        SubtitleFlagsPill(
-                            languages: languages,
-                            aiLanguages: aiLanguages(for: item),
-                            size: .small
-                        )
-                        .padding(DesignTokens.Spacing.xs)
-                    }
+            ForEach(items) { item in
+                VODCard(item: item) {
+                    navigateToItem(item)
                 }
                 .onAppear {
-                    if item.id == vm.items.last?.id {
-                        Task { await vm.loadMore() }
+                    if item.id == items.last?.id {
+                        Task { await viewModel?.loadMore() }
                     }
                 }
             }
 
-            if vm.isLoadingMore {
+            if isLoadingMore {
                 ProgressView()
                     .tint(DesignTokens.Primary.default)
                     .frame(maxWidth: .infinity)
@@ -99,29 +82,128 @@ struct VODView: View {
         .padding(.top, DesignTokens.Spacing.md)
     }
 
-    private func vodSubtitle(for item: ContentItem) -> String? {
-        var parts: [String] = []
-        if let year = item.year { parts.append(String(year)) }
-        if let duration = item.duration { parts.append(duration) }
-        return parts.isEmpty ? nil : parts.joined(separator: " | ")
-    }
-
-    private func aiLanguages(for item: ContentItem) -> Set<String> {
-        var aiLangs = Set<String>()
-        if item.availableSubtitleLanguages?.contains("he") == true {
-            aiLangs.insert("he")
-        }
-        if item.availableSubtitleLanguages?.contains("en") == true {
-            aiLangs.insert("en")
-        }
-        return aiLangs
-    }
-
     private func navigateToItem(_ item: ContentItem) {
         if item.isSeries == true {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
         } else {
             coordinator.navigate(to: .movieDetail(movieId: item.id))
         }
+    }
+}
+
+/// Individual VOD content card with poster, title, and metadata
+private struct VODCard: View {
+    let item: ContentItem
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 0) {
+                posterImage
+                    .aspectRatio(2 / 3, contentMode: .fit)
+                    .clipShape(
+                        RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
+                    )
+                    .overlay(alignment: .bottomTrailing) {
+                        subtitlePill
+                    }
+                    .overlay(alignment: .bottomLeading) {
+                        seriesBadge
+                    }
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(item.title ?? "Untitled")
+                        .font(.system(
+                            size: DesignTokens.FontSize.sm,
+                            weight: .semibold
+                        ))
+                        .foregroundColor(DesignTokens.Text.primary)
+                        .lineLimit(2)
+
+                    if let subtitle = subtitle {
+                        Text(subtitle)
+                            .font(.system(size: DesignTokens.FontSize.xs))
+                            .foregroundColor(DesignTokens.Text.muted)
+                            .lineLimit(1)
+                    }
+                }
+                .padding(.top, DesignTokens.Spacing.xs)
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var posterImage: some View {
+        if let urlStr = item.thumbnail, let url = URL(string: urlStr) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let img):
+                    img.resizable().aspectRatio(contentMode: .fill)
+                default:
+                    posterPlaceholder
+                }
+            }
+        } else {
+            posterPlaceholder
+        }
+    }
+
+    private var posterPlaceholder: some View {
+        ZStack {
+            DesignTokens.Glass.bgMedium
+            Image(systemName: item.isSeries == true ? "tv" : "film")
+                .font(.system(size: 28))
+                .foregroundColor(DesignTokens.Text.muted)
+        }
+    }
+
+    @ViewBuilder
+    private var subtitlePill: some View {
+        if let langs = item.availableSubtitleLanguages, !langs.isEmpty {
+            SubtitleFlagsPill(
+                languages: langs,
+                aiLanguages: aiLanguages,
+                size: .small
+            )
+            .padding(DesignTokens.Spacing.xs)
+        }
+    }
+
+    @ViewBuilder
+    private var seriesBadge: some View {
+        if item.isSeries == true {
+            Text("Series")
+                .font(.system(
+                    size: DesignTokens.FontSize.xs,
+                    weight: .semibold
+                ))
+                .foregroundColor(DesignTokens.Text.primary)
+                .padding(.horizontal, DesignTokens.Spacing.sm)
+                .padding(.vertical, 3)
+                .background(DesignTokens.Glass.bgStrong)
+                .clipShape(
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
+                )
+                .padding(DesignTokens.Spacing.xs)
+        }
+    }
+
+    private var subtitle: String? {
+        var parts: [String] = []
+        if let year = item.year { parts.append(String(year)) }
+        if let duration = item.duration { parts.append(duration) }
+        return parts.isEmpty ? nil : parts.joined(separator: " | ")
+    }
+
+    private var aiLanguages: Set<String> {
+        var langs = Set<String>()
+        if item.availableSubtitleLanguages?.contains("he") == true {
+            langs.insert("he")
+        }
+        if item.availableSubtitleLanguages?.contains("en") == true {
+            langs.insert("en")
+        }
+        return langs
     }
 }
