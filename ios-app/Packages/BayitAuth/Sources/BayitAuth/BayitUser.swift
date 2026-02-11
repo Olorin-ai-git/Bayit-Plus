@@ -57,6 +57,23 @@ public struct BayitUser: Codable, Sendable, Identifiable {
         self.lastLogin = lastLogin
     }
 
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        email = try container.decode(String.self, forKey: .email)
+        displayName = try container.decodeIfPresent(String.self, forKey: .displayName)
+        photoURL = try container.decodeIfPresent(URL.self, forKey: .photoURL)
+        role = (try? container.decode(UserRole.self, forKey: .role)) ?? .user
+        isActive = try container.decodeIfPresent(Bool.self, forKey: .isActive) ?? true
+        subscription = try? container.decodeIfPresent(
+            UserSubscription.self, forKey: .subscription
+        )
+        isBetaUser = try container.decodeIfPresent(Bool.self, forKey: .isBetaUser) ?? false
+        isVerified = try container.decodeIfPresent(Bool.self, forKey: .isVerified) ?? false
+        createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
+        lastLogin = try container.decodeIfPresent(String.self, forKey: .lastLogin)
+    }
+
     /// Subscription tier derived from the subscription, defaulting to registered free.
     public var subscriptionTier: SubscriptionTier {
         subscription?.plan ?? .registeredFree

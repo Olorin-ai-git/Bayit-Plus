@@ -95,6 +95,7 @@ class UserResponse(BaseModel):
     last_login: Optional[datetime] = None
     # Beta 500 program
     is_beta_user: bool = False
+    is_verified: bool = False
     # Payment status fields
     payment_pending: bool = False
     pending_plan_id: Optional[str] = None
@@ -342,6 +343,7 @@ class User(Document):
             payment_pending=self.payment_pending,
             pending_plan_id=self.pending_plan_id,
             is_beta_user=self.is_beta_user,
+            is_verified=self.is_verified,
         )
 
     def to_admin_response(self) -> UserAdminResponse:

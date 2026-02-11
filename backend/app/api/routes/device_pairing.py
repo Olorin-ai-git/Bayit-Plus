@@ -193,7 +193,7 @@ async def complete_auth(request: CompleteAuthRequest):
         request.session_id,
         str(user.id),
         access_token,
-        user_response.model_dump(),
+        user_response.model_dump(mode="json"),
     )
 
     return TokenResponse(

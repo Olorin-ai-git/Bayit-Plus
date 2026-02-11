@@ -59,12 +59,14 @@ final class TVQRAuthViewModel {
         let accessToken: String?
         let refreshToken: String?
         let user: BayitUser?
+        let message: String?
 
         private enum CodingKeys: String, CodingKey {
             case type
             case accessToken = "access_token"
             case refreshToken = "refresh_token"
             case user
+            case message
         }
     }
 
@@ -215,25 +217,27 @@ final class TVQRAuthViewModel {
         guard !isTerminalStatus else { return }
 
         webSocketTask?.receive { [weak self] result in
-            guard let self, !self.isTerminalStatus else { return }
+            Task { @MainActor [weak self] in
+                guard let self, !self.isTerminalStatus else { return }
 
-            switch result {
-            case .success(let message):
-                self.handleWebSocketMessage(message)
-                if !self.isTerminalStatus {
-                    self.listenForMessages()
-                }
+                switch result {
+                case .success(let message):
+                    self.handleWebSocketMessage(message)
+                    if !self.isTerminalStatus {
+                        self.listenForMessages()
+                    }
 
-            case .failure(let wsError):
-                self.logger.warning(
-                    "WebSocket error in device pairing",
-                    metadata: ["error": wsError.localizedDescription]
-                )
-                if !self.isTerminalStatus {
-                    self.status = .failed
-                    self.error = AuthError.devicePairingFailed(
-                        underlying: wsError.localizedDescription
-                    ).userFacingMessage
+                case .failure(let wsError):
+                    self.logger.warning(
+                        "WebSocket error in device pairing",
+                        metadata: ["error": wsError.localizedDescription]
+                    )
+                    if !self.isTerminalStatus {
+                        self.status = .failed
+                        self.error = AuthError.devicePairingFailed(
+                            underlying: wsError.localizedDescription
+                        ).userFacingMessage
+                    }
                 }
             }
         }
@@ -266,10 +270,31 @@ final class TVQRAuthViewModel {
         }
 
         switch decoded.type {
+        case "connected":
+            logger.debug(
+                "Device pairing WebSocket connected",
+                metadata: [
+                    "session_id_prefix": String(
+                        (sessionId ?? "unknown").prefix(8)
+                    ),
+                ]
+            )
+
         case "companion_connected":
             status = .companionConnected
             logger.info(
                 "Companion device connected for pairing",
+                metadata: [
+                    "session_id_prefix": String(
+                        (sessionId ?? "unknown").prefix(8)
+                    ),
+                ]
+            )
+
+        case "authenticating":
+            status = .authenticating
+            logger.info(
+                "Companion device authenticating",
                 metadata: [
                     "session_id_prefix": String(
                         (sessionId ?? "unknown").prefix(8)
@@ -298,6 +323,22 @@ final class TVQRAuthViewModel {
             error = AuthError.devicePairingFailed(
                 underlying: "Companion device authentication failed"
             ).userFacingMessage
+            cleanup()
+
+        case "error":
+            status = .failed
+            error = AuthError.devicePairingFailed(
+                underlying: decoded.message ?? "Session not found"
+            ).userFacingMessage
+            logger.warning(
+                "Device pairing error from server",
+                metadata: [
+                    "message": decoded.message ?? "unknown",
+                    "session_id_prefix": String(
+                        (sessionId ?? "unknown").prefix(8)
+                    ),
+                ]
+            )
             cleanup()
 
         default:
