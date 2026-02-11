@@ -3,6 +3,7 @@ import Foundation
 import Observation
 
 /// tvOS avatar ViewModel. Text-input only — no speech/TTS/mic APIs on Apple TV.
+@MainActor
 @Observable
 final class TVAvatarViewModel {
 

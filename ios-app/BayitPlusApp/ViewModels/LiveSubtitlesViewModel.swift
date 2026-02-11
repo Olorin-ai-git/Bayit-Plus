@@ -6,6 +6,7 @@ import Observation
 
 /// ViewModel for live subtitle translation - manages WebSocket lifecycle,
 /// cue display timing, and premium subscription gating.
+@MainActor
 @Observable
 final class LiveSubtitlesViewModel {
     private(set) var isEnabled = false

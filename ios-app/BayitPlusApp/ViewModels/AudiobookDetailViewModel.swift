@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Audiobook detail screen - manages detail, playback state, and speed control
+@MainActor
 @Observable
 final class AudiobookDetailViewModel {
     private(set) var audiobook: Audiobook?

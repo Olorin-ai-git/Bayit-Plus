@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for culture content - manages Jerusalem and Tel Aviv content with auto-refresh
+@MainActor
 @Observable
 final class CultureContentViewModel {
     private(set) var jerusalemItems: [CultureItem] = []
@@ -13,7 +14,7 @@ final class CultureContentViewModel {
     var selectedCategory: String?
 
     private let repository: any CultureRepository
-    private var autoRefreshTask: Task<Void, Never>?
+    nonisolated(unsafe) private var autoRefreshTask: Task<Void, Never>?
     private let autoRefreshIntervalSeconds: TimeInterval = 900
 
     init(repository: any CultureRepository) {

@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Judaism content screen - manages religious content and calendar.
+@MainActor
 @Observable
 final class JudaismViewModel {
     private(set) var categories: [SectionCategory] = []

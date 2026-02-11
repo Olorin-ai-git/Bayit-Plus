@@ -6,6 +6,7 @@ import Observation
 /// ViewModel for the voice onboarding flow.
 /// Guides users through permission requests and language selection.
 /// Available on iOS only -- tvOS does not support microphone input.
+@MainActor
 @Observable
 final class VoiceOnboardingViewModel {
 

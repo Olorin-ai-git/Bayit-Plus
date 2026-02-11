@@ -6,6 +6,7 @@ import Observation
 /// Loads the user's active widgets and manages dock visibility state.
 /// Tracks which widgets are minimized (shown in dock) vs restored (shown as floating PiP).
 /// Used by MainTabView to render PiPWidgetManagerView across all tabs.
+@MainActor
 @Observable
 final class WidgetDockViewModel {
     private(set) var widgets: [WidgetItem] = []

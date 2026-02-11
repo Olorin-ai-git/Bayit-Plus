@@ -3,6 +3,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Podcast detail screen - manages show detail and episode list
+@MainActor
 @Observable
 final class PodcastDetailViewModel {
     private(set) var detail: PodcastDetail?

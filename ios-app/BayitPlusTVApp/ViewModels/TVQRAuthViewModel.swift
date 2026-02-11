@@ -19,6 +19,7 @@ enum PairingStatus: Equatable {
 ///
 /// Uses raw `URLSession` and `URLSessionWebSocketTask` to communicate with
 /// the backend device pairing API (no auth token available during sign-in).
+@MainActor
 @Observable
 final class TVQRAuthViewModel {
 
@@ -34,9 +35,9 @@ final class TVQRAuthViewModel {
     private let authManager: AuthManager
     private let logger: APILogger
     private let config: AppConfiguration
-    private var webSocketTask: URLSessionWebSocketTask?
-    private var refreshTask: Task<Void, Never>?
-    private var initTask: Task<Void, Never>?
+    nonisolated(unsafe) private var webSocketTask: URLSessionWebSocketTask?
+    nonisolated(unsafe) private var refreshTask: Task<Void, Never>?
+    nonisolated(unsafe) private var initTask: Task<Void, Never>?
     private var lastInitTime: Date?
 
     // MARK: - Response Models
@@ -376,7 +377,7 @@ final class TVQRAuthViewModel {
 
     // MARK: - Cleanup
 
-    private func cleanup() {
+    nonisolated private func cleanup() {
         initTask?.cancel()
         initTask = nil
         refreshTask?.cancel()

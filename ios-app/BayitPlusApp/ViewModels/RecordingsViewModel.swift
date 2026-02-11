@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Recordings screen - manages DVR recordings.
+@MainActor
 @Observable
 final class RecordingsViewModel {
     private(set) var items: [RecordingItem] = []

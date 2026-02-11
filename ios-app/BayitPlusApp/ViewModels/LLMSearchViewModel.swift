@@ -4,6 +4,7 @@ import Observation
 
 /// ViewModel for LLM-powered natural language search - manages query input,
 /// AI interpretation display, suggestions, and search result presentation.
+@MainActor
 @Observable
 final class LLMSearchViewModel {
     var query = ""

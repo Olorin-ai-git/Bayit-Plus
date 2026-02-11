@@ -5,6 +5,7 @@ import Observation
 
 /// Lightweight view model managing media playback and cover art for a single floating widget.
 /// Handles stream URL resolution per content type and playback lifecycle.
+@MainActor
 @Observable
 final class WidgetPlayerViewModel {
 

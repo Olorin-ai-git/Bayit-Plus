@@ -3,6 +3,7 @@ import Observation
 
 /// ViewModel for the Subscription screen - manages plan selection and
 /// current subscription state.
+@MainActor
 @Observable
 final class SubscriptionViewModel {
     private(set) var plans: [SubscriptionPlan] = []

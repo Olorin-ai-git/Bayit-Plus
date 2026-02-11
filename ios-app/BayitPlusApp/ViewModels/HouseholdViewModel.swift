@@ -3,6 +3,7 @@ import Observation
 
 /// ViewModel for household management - fetch household info,
 /// add/remove members.
+@MainActor
 @Observable
 final class HouseholdViewModel {
     private(set) var household: Household?

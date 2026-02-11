@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the EPG (Electronic Program Guide) screen.
+@MainActor
 @Observable
 final class EPGViewModel {
     private(set) var channels: [EPGChannelSchedule] = []

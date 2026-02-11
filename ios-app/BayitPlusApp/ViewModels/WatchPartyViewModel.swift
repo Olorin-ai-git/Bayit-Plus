@@ -4,6 +4,7 @@ import Foundation
 import Observation
 
 /// ViewModel for Watch Parties -- handles REST operations and WebSocket real-time messaging.
+@MainActor
 @Observable
 final class WatchPartyViewModel {
     var activeParty: WatchParty?

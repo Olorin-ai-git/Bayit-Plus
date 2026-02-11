@@ -3,6 +3,7 @@ import Observation
 
 /// ViewModel for the Rewards / Gamification screen - fetches reward
 /// balance, badges, and level progress.
+@MainActor
 @Observable
 final class RewardsViewModel {
     private(set) var balance: RewardBalance?

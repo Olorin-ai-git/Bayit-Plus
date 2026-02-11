@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for chapter navigation - manages chapters and tracks the active chapter based on playback time
+@MainActor
 @Observable
 final class ChapterNavigationViewModel {
     private(set) var chapters: [Chapter] = []

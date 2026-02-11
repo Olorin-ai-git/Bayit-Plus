@@ -3,6 +3,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Settings screen - manages user preferences and app settings.
+@MainActor
 @Observable
 final class SettingsViewModel {
     private(set) var isLoading = false

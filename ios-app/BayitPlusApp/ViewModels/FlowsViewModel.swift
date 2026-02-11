@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Flows screen - manages content sequences and flows.
+@MainActor
 @Observable
 final class FlowsViewModel {
     private(set) var flows: [FlowItem] = []

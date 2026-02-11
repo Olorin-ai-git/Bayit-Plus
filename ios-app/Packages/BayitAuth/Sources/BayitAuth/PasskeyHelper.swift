@@ -41,15 +41,17 @@ final class PasskeyHelper: NSObject {
             )
             controller.delegate = self
 
-            #if os(iOS)
-            // iOS requires a presentation context provider
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               !windowScene.windows.isEmpty {
-                controller.presentationContextProvider = self
+            // Perform requests on main thread (required for UI presentation)
+            DispatchQueue.main.async {
+                #if os(iOS)
+                // iOS requires a presentation context provider
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   !windowScene.windows.isEmpty {
+                    controller.presentationContextProvider = self
+                }
+                #endif
+                controller.performRequests()
             }
-            #endif
-
-            controller.performRequests()
         }
     }
 }

@@ -9,6 +9,7 @@ import UIKit
 /// Manages parental PIN verification, age sliders, content rating
 /// selection, and allowed-hours configuration. The PIN gate prevents
 /// unauthorized access to family control settings.
+@MainActor
 @Observable
 final class FamilyControlsViewModel {
     private(set) var preferences: FamilyControlsPreferences?

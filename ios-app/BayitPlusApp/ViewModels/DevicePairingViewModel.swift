@@ -3,6 +3,7 @@ import Observation
 
 /// ViewModel for device pairing - generates pairing codes, verifies
 /// codes from other devices, and manages paired device list.
+@MainActor
 @Observable
 final class DevicePairingViewModel {
     private(set) var pairingCode: PairingCode?

@@ -4,6 +4,7 @@ import Observation
 
 /// ViewModel for the Search screen with unified search, filter pills,
 /// trending searches, and recent search history.
+@MainActor
 @Observable
 final class SearchViewModel {
     var query = ""

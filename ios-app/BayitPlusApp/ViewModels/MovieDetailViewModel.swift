@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Movie Detail screen - manages content detail, related items
+@MainActor
 @Observable
 final class MovieDetailViewModel {
     private(set) var detail: ContentDetail?

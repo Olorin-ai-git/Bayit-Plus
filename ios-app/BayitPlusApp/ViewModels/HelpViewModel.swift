@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Help Center screen - manages FAQ fetching and display
+@MainActor
 @Observable
 final class HelpViewModel {
     private(set) var faqs: [FAQItem] = []

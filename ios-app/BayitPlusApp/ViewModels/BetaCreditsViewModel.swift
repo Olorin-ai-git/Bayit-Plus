@@ -3,6 +3,7 @@ import Observation
 
 /// ViewModel for the Beta 500 Credits feature - manages credit balance,
 /// auto-refresh, and deduction operations.
+@MainActor
 @Observable
 final class BetaCreditsViewModel {
     private(set) var balance: CreditBalance?
@@ -11,7 +12,7 @@ final class BetaCreditsViewModel {
     private(set) var isDeducting = false
 
     private let repository: any BetaCreditsRepository
-    private var refreshTimer: Timer?
+    nonisolated(unsafe) private var refreshTimer: Timer?
 
     private static let refreshIntervalSeconds: TimeInterval = 30
 
@@ -73,7 +74,7 @@ final class BetaCreditsViewModel {
         }
     }
 
-    func stopAutoRefresh() {
+    nonisolated func stopAutoRefresh() {
         refreshTimer?.invalidate()
         refreshTimer = nil
     }

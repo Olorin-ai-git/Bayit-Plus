@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Profile screen - manages user profile data and statistics.
+@MainActor
 @Observable
 final class ProfileViewModel {
     private(set) var profile: ProfileResponse?

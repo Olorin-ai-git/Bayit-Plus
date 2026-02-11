@@ -6,6 +6,7 @@ import Observation
 // via the repository protocols which use these types in their method signatures.
 
 /// ViewModel for the Home screen - manages featured content, categories, and spotlight
+@MainActor
 @Observable
 final class HomeViewModel {
     private(set) var hero: HeroContent?

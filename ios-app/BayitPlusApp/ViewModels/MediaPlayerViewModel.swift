@@ -6,6 +6,7 @@ import Observation
 ///
 /// Bridges the app's repository layer with BayitMedia's MediaPlayer,
 /// handling stream URL resolution, progress tracking, and content-specific behavior.
+@MainActor
 @Observable
 final class MediaPlayerViewModel {
 
@@ -32,7 +33,7 @@ final class MediaPlayerViewModel {
     private let liveTVRepository: any LiveTVRepository
     private let radioRepository: any RadioRepository
     private let podcastRepository: any PodcastRepository
-    private var progressTrackingTask: Task<Void, Never>?
+    nonisolated(unsafe) private var progressTrackingTask: Task<Void, Never>?
     private let progressIntervalSeconds: TimeInterval = 15
 
     // MARK: - Init

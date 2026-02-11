@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Youngsters content screen - manages teen-oriented content.
+@MainActor
 @Observable
 final class YoungstersViewModel {
     private(set) var categories: [SectionCategory] = []

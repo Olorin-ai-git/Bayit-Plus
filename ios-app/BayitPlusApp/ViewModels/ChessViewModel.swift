@@ -22,6 +22,7 @@ struct ChessMove: Identifiable, Sendable {
 /// ViewModel for the chess game screen.
 /// Manages board state parsing from FEN and game actions.
 /// WebSocket handling is in `ChessViewModel+WebSocket.swift`.
+@MainActor
 @Observable
 final class ChessViewModel {
     var game: ChessGame?

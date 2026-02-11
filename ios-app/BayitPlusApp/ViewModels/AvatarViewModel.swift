@@ -9,6 +9,7 @@ import UIKit
 /// ViewModel managing the AI avatar experience including state, dialogue,
 /// voice recognition, TTS output, and user preferences.
 /// Available on iOS only. Depends on Speech.framework for voice input.
+@MainActor
 @Observable
 final class AvatarViewModel {
 

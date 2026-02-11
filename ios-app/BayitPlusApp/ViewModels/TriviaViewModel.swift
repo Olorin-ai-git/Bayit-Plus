@@ -4,6 +4,7 @@ import Observation
 
 /// ViewModel for the Trivia/Quiz system - manages quiz loading, answer selection,
 /// scoring, and result submission with tracked answer history.
+@MainActor
 @Observable
 final class TriviaViewModel {
     private(set) var quiz: QuizResponse?

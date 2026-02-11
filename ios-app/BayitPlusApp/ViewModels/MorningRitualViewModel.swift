@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Morning Ritual screen - manages daily ritual content and preferences.
+@MainActor
 @Observable
 final class MorningRitualViewModel {
     private(set) var ritualCheck: RitualCheckResponse?

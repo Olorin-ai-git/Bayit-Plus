@@ -10,6 +10,7 @@ import UIKit
 /// the biometric preference on the backend.
 ///
 /// Available on iOS only. tvOS does not support biometric authentication.
+@MainActor
 @Observable
 final class BiometricViewModel {
     private(set) var biometricType: BiometricAuthService.BiometricType = .none

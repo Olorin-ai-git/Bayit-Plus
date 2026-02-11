@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Podcasts screen - manages shows, categories, and pagination
+@MainActor
 @Observable
 final class PodcastsViewModel {
     private(set) var shows: [PodcastShow] = []

@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Favorites screen - manages favorited content list.
+@MainActor
 @Observable
 final class FavoritesViewModel {
     private(set) var items: [FavoriteItem] = []

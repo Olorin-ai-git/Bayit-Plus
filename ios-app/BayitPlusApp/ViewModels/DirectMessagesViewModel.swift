@@ -6,6 +6,7 @@ import Observation
 /// ViewModel for the direct messages feature.
 /// Manages conversation list, active conversation messages, and offline queuing.
 /// WebSocket handling is in `DirectMessagesViewModel+WebSocket.swift`.
+@MainActor
 @Observable
 final class DirectMessagesViewModel {
     private(set) var conversations: [ConversationSummary] = []

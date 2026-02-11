@@ -3,6 +3,7 @@ import Observation
 
 /// ViewModel for the Security screen - manages devices, password, and
 /// account security state.
+@MainActor
 @Observable
 final class SecurityViewModel {
     private(set) var devices: [DeviceInfo] = []

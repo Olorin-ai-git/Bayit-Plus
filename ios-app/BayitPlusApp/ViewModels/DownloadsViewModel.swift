@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Downloads screen - manages offline downloaded content.
+@MainActor
 @Observable
 final class DownloadsViewModel {
     private(set) var items: [DownloadItem] = []

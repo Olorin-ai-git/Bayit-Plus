@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the VOD screen - manages movies/series grid with pagination
+@MainActor
 @Observable
 final class VODViewModel {
     private(set) var items: [ContentItem] = []

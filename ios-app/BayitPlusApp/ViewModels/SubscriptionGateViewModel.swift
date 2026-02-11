@@ -3,6 +3,7 @@ import Observation
 
 /// ViewModel for the Subscription Gate - fetches plans and manages
 /// gating state for content requiring a subscription tier.
+@MainActor
 @Observable
 final class SubscriptionGateViewModel {
     private(set) var plans: [SubscriptionPlan] = []

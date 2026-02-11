@@ -3,6 +3,7 @@ import Foundation
 import Observation
 
 /// tvOS chatbot ViewModel. Text-input only — no speech/mic APIs on Apple TV.
+@MainActor
 @Observable
 final class TVChatbotViewModel {
 

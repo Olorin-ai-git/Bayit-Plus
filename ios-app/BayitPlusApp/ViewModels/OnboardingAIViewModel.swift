@@ -3,6 +3,7 @@ import Observation
 
 /// ViewModel for AI-powered onboarding flow - manages multi-step
 /// preferences collection including language, content taste, voice setup, and profile.
+@MainActor
 @Observable
 final class OnboardingAIViewModel {
 

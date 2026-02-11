@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Radio screen - manages station grid with live status
+@MainActor
 @Observable
 final class RadioViewModel {
     private(set) var stations: [RadioStationItem] = []

@@ -8,6 +8,7 @@ import UIKit
 ///
 /// Coordinates between the `ShabbatRepository` for API calls and the
 /// `ShabbatModeService` singleton for global Shabbat state.
+@MainActor
 @Observable
 final class ShabbatViewModel {
     private(set) var zmanimData: ZmanTimeResponse?

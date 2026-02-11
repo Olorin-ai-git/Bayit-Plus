@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Series Detail screen - manages series detail with season/episode picker
+@MainActor
 @Observable
 final class SeriesDetailViewModel {
     private(set) var detail: SeriesDetail?

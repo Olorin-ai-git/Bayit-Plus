@@ -4,6 +4,7 @@ import Observation
 
 /// ViewModel for Trending - fetches trending topics, headlines,
 /// and AI-powered content recommendations.
+@MainActor
 @Observable
 final class TrendingViewModel {
     private(set) var topics: [TrendingTopic] = []

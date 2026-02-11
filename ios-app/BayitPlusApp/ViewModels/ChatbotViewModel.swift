@@ -11,6 +11,7 @@ import UIKit
 ///
 /// Manages message history, API communication, voice input via Speech framework,
 /// and contextual suggestions. Uses ChatRepository for all backend communication.
+@MainActor
 @Observable
 final class ChatbotViewModel {
 

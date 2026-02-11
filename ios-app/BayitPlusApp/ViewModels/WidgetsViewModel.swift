@@ -3,6 +3,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Widgets screen - manages system widget gallery and user widgets
+@MainActor
 @Observable
 final class WidgetsViewModel {
     private(set) var myWidgets: [WidgetItem] = []

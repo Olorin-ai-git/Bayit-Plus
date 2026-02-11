@@ -4,6 +4,7 @@ import Observation
 
 /// ViewModel for interactive subtitles - manages cues, active cue tracking, modes, and word translation.
 /// Available on iOS only. Depends on OfflineCacheService and ShoreshParsing.
+@MainActor
 @Observable
 final class InteractiveSubtitlesViewModel {
     private(set) var cues: [SubtitleCue] = []

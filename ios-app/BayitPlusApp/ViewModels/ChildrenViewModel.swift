@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Children content screen - manages age-restricted kids content.
+@MainActor
 @Observable
 final class ChildrenViewModel {
     private(set) var categories: [SectionCategory] = []

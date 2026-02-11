@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Support screen - manages FAQ, tickets, and ticket creation.
+@MainActor
 @Observable
 final class SupportViewModel {
     private(set) var faqItems: [FAQItem] = []

@@ -3,6 +3,7 @@ import Foundation
 import Observation
 
 /// ViewModel for trivia leaderboard - manages leaderboard entries and pagination.
+@MainActor
 @Observable
 final class LeaderboardViewModel {
     private(set) var entries: [LeaderboardEntry] = []

@@ -5,6 +5,7 @@ import Observation
 
 /// ViewModel for trivia facts - manages fact loading, active fact tracking, and auto-dismiss.
 /// Available on iOS only. Depends on OfflineCacheService.
+@MainActor
 @Observable
 final class TriviaFactsViewModel {
     private(set) var facts: [TriviaFact] = []

@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Audiobooks listing screen - manages paginated list with genre/author filters
+@MainActor
 @Observable
 final class AudiobooksViewModel {
     private(set) var items: [Audiobook] = []

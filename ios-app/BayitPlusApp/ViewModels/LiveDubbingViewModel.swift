@@ -5,6 +5,7 @@ import Observation
 
 /// ViewModel for Live Dubbing - manages availability, voice selection, WebSocket connection,
 /// and premium subscription requirements.
+@MainActor
 @Observable
 final class LiveDubbingViewModel {
     private(set) var availability: DubbingAvailability?

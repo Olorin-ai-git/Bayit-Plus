@@ -3,6 +3,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Friends screen -- manages friend list, requests, and user search.
+@MainActor
 @Observable
 final class FriendsViewModel {
     private(set) var friends: [Friend] = []

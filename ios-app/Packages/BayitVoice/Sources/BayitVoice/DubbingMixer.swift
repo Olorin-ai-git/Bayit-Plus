@@ -202,16 +202,10 @@ public actor DubbingMixer {
 
         var error: NSError?
         let source = buffer
-        var consumedFlag = false
-        let lock = NSLock()
+        let consumedFlag = AtomicFlag()
 
         let inputBlock: AVAudioConverterInputBlock = { _, outStatus in
-            lock.lock()
-            let wasConsumed = consumedFlag
-            consumedFlag = true
-            lock.unlock()
-
-            if wasConsumed {
+            if consumedFlag.getAndSet() {
                 outStatus.pointee = .noDataNow
                 return nil
             }
@@ -285,5 +279,21 @@ public enum DubbingError: Error, LocalizedError, Sendable {
         case .invalidBase64: return "Invalid base64 audio data"
         case .decodeFailed: return "Failed to decode audio"
         }
+    }
+}
+
+// MARK: - Concurrency Helpers
+
+/// Thread-safe atomic flag for Swift 6 concurrency
+private final class AtomicFlag: @unchecked Sendable {
+    private var value = false
+    private let lock = NSLock()
+
+    func getAndSet() -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        let oldValue = value
+        value = true
+        return oldValue
     }
 }

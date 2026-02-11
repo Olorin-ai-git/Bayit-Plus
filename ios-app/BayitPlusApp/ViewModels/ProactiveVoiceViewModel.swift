@@ -10,6 +10,7 @@ import UIKit
 ///
 /// Coordinates between the ProactiveSuggestionEngine and the UI banner,
 /// handling text-to-speech announcements, auto-dismiss timing, and user actions.
+@MainActor
 @Observable
 final class ProactiveVoiceViewModel {
 

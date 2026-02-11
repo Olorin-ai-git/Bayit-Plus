@@ -2,6 +2,7 @@ import Foundation
 import Observation
 
 /// ViewModel for the Live TV screen - manages channel grid and live status
+@MainActor
 @Observable
 final class LiveTVViewModel {
     private(set) var channels: [LiveChannelItem] = []

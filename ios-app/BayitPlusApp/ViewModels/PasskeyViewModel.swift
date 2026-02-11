@@ -9,6 +9,7 @@ import UIKit
 /// `PasskeyRepository` for backend CRUD operations on credentials.
 ///
 /// Available on iOS only. Depends on PasskeyAuthService.
+@MainActor
 @Observable
 final class PasskeyViewModel {
     private(set) var credentials: [PasskeyCredential] = []

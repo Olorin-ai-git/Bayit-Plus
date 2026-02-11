@@ -3,6 +3,7 @@ import Observation
 
 /// ViewModel for the Playlist screen - manages user playlist items.
 /// The backend returns all playlist items in a single response (no pagination).
+@MainActor
 @Observable
 final class PlaylistViewModel {
     private(set) var items: [PlaylistItem] = []
