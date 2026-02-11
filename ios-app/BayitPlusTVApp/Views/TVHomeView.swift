@@ -293,21 +293,7 @@ struct TVHomeView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack(spacing: TVDesignTokens.Spacing.focusGap) {
                     ForEach(channels) { channel in
-                        GlassFocusPoster(
-                            thumbnailURL: channel.logo ?? channel.thumbnail,
-                            title: channel.name ?? "Channel",
-                            subtitle: channel.currentShow,
-                            badge: "LIVE",
-                            aspectRatio: 1.0,
-                            onSelect: {
-                                coordinator.presentPlayer(
-                                    contentId: channel.id,
-                                    contentType: .liveTV,
-                                    channelId: channel.id
-                                )
-                            }
-                        )
-                        .frame(width: 300)
+                        tvChannelCard(channel)
                         .tvFocusStyle()
                     }
                 }
