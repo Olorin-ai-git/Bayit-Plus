@@ -99,7 +99,7 @@ struct BayitPlusTVApp: App {
         }
 
         UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().tintColor = brandPurple
+        UITabBar.appearance().tintColor = lightPurple
         UITabBar.appearance().unselectedItemTintColor = UIColor.white.withAlphaComponent(0.6)
     }
 

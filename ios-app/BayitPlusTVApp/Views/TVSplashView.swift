@@ -28,20 +28,27 @@ struct TVSplashView: View {
 
             Color.black.opacity(0.3).ignoresSafeArea()
 
-            VStack(spacing: TVDesignTokens.Spacing.md) {
+            // Slogan positioned below the video animation (~78% down)
+            VStack {
                 Spacer()
+                    .frame(maxHeight: .infinity)
 
                 if showSlogan {
                     sloganSection
                         .transition(.opacity.combined(with: .move(edge: .bottom)))
                 }
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+            .padding(.bottom, 80)
 
+            // Powered by pinned to very bottom
+            VStack {
+                Spacer()
                 poweredByFooter
                     .opacity(showLogo ? 1 : 0)
-                    .padding(.top, TVDesignTokens.Spacing.sm)
             }
-            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
-            .padding(.bottom, TVDesignTokens.Spacing.xl)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.bottom, TVDesignTokens.Spacing.md)
         }
         .opacity(fadeOut ? 0 : 1)
         .task {
@@ -84,6 +91,10 @@ struct TVSplashView: View {
                 )
             )
             .multilineTextAlignment(.center)
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            .padding(.vertical, TVDesignTokens.Spacing.md)
+            .background(Color.black.opacity(0.6))
+            .clipShape(Capsule())
     }
 
     // MARK: - Footer
