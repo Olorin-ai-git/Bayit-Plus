@@ -276,7 +276,11 @@ struct TVMainTabView: View {
 
             ProfileDropdownItem(icon: "rectangle.portrait.and.arrow.right", title: "Sign Out", isDestructive: true) {
                 showProfileSheet = false
-                Task { await authManager.signOut() }
+                Task {
+                    await authManager.signOut()
+                    coordinator.showingAuth = true
+                    coordinator.selectedTab = .home
+                }
             }
         }
         .focusSection()
