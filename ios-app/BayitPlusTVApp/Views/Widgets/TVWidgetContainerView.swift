@@ -272,9 +272,10 @@ struct TVWidgetContainerView: View {
     private var playbackControls: some View {
         let isPlaying = playerVM?.isPlaying == true
         let isLoading = playerVM?.isLoading == true
+        let hasContent = playerVM?.player.state != .idle
 
-        if isPlaying || isLoading {
-            // Active playback: show now-playing bar with pause/stop
+        if hasContent {
+            // Active playback: pause/resume, mute, restart, stop
             HStack(spacing: TVDesignTokens.Spacing.sm) {
                 Button {
                     Task { await playerVM?.togglePlayback(widget: widget) }
@@ -285,17 +286,17 @@ struct TVWidgetContainerView: View {
                                 .tint(.white)
                                 .scaleEffect(0.8)
                         } else {
-                            Image(systemName: "pause.fill")
+                            Image(systemName: isPlaying ? "pause.fill" : "play.fill")
                                 .font(.system(size: 18))
                         }
 
-                        Text(isLoading ? "Loading..." : "Now Playing")
+                        Text(isLoading ? "Loading..." : isPlaying ? "Playing" : "Paused")
                             .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
                     }
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: TVDesignTokens.MinSize.focusableHeight + 8)
-                    .background(badgeColor.opacity(0.5))
+                    .background(badgeColor.opacity(isPlaying ? 0.5 : 0.25))
                     .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
                     .overlay(
                         RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
@@ -304,7 +305,50 @@ struct TVWidgetContainerView: View {
                 }
                 .buttonStyle(.card)
                 .tvFocusStyle()
-                .accessibilityLabel(isLoading ? "Loading" : "Pause \(widget.title)")
+                .accessibilityLabel(isLoading ? "Loading" : isPlaying ? "Pause" : "Resume")
+
+                Button {
+                    playerVM?.toggleMute()
+                } label: {
+                    Image(systemName: playerVM?.isMuted == true ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                        .font(.system(size: 18))
+                        .foregroundStyle(.white)
+                        .frame(
+                            width: TVDesignTokens.MinSize.focusableHeight + 8,
+                            height: TVDesignTokens.MinSize.focusableHeight + 8
+                        )
+                        .background(Color.white.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
+                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        )
+                }
+                .buttonStyle(.card)
+                .tvFocusStyle()
+                .accessibilityLabel(playerVM?.isMuted == true ? "Unmute" : "Mute")
+
+                Button {
+                    playerVM?.cleanup()
+                    Task { await playerVM?.togglePlayback(widget: widget) }
+                } label: {
+                    Image(systemName: "arrow.counterclockwise")
+                        .font(.system(size: 18))
+                        .foregroundStyle(.white)
+                        .frame(
+                            width: TVDesignTokens.MinSize.focusableHeight + 8,
+                            height: TVDesignTokens.MinSize.focusableHeight + 8
+                        )
+                        .background(Color.white.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
+                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        )
+                }
+                .buttonStyle(.card)
+                .tvFocusStyle()
+                .accessibilityLabel("Restart \(widget.title)")
 
                 Button {
                     playerVM?.cleanup()
