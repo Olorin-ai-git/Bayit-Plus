@@ -16,6 +16,8 @@ enum TVRoute: Hashable, Identifiable {
     case movieDetail(movieId: String)
     /// Navigate to audiobook detail screen.
     case audiobookDetail(audiobookId: String)
+    /// Show voice assistant overlay.
+    case voiceAssistant
 
     // MARK: - Hashable
 
@@ -38,6 +40,8 @@ enum TVRoute: Hashable, Identifiable {
         case .audiobookDetail(let audiobookId):
             hasher.combine("audiobookDetail")
             hasher.combine(audiobookId)
+        case .voiceAssistant:
+            hasher.combine("voiceAssistant")
         }
     }
 
@@ -53,6 +57,8 @@ enum TVRoute: Hashable, Identifiable {
             return lId == rId
         case let (.audiobookDetail(lId), .audiobookDetail(rId)):
             return lId == rId
+        case (.voiceAssistant, .voiceAssistant):
+            return true
         default:
             return false
         }

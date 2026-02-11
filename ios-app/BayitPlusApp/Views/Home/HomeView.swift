@@ -9,6 +9,7 @@ struct HomeView: View {
     @Environment(AppLocationProvider.self) private var locationProvider
     @Environment(FeatureFlags.self) private var featureFlags
     @State private var viewModel: HomeViewModel?
+    @State private var cardActions: CardActionsViewModel?
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -34,6 +35,12 @@ struct HomeView: View {
             await viewModel?.refresh()
         }
         .task {
+            if cardActions == nil {
+                cardActions = CardActionsViewModel(
+                    userRepository: repos.user,
+                    widgetRepository: repos.widget
+                )
+            }
             if viewModel == nil {
                 locationProvider.requestLocationIfNeeded()
                 viewModel = HomeViewModel(
@@ -145,7 +152,11 @@ struct HomeView: View {
                 return !hidden.contains(where: { name.contains($0) })
             }
         }) { category in
-            CategoryRow(category: category, coordinator: coordinator)
+            CategoryRow(
+                category: category,
+                coordinator: coordinator,
+                cardActions: cardActions
+            )
         }
     }
 

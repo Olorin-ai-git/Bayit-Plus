@@ -1,14 +1,20 @@
+#if os(tvOS)
 import BayitAuth
 import BayitDesignSystem
 import BayitMedia
 import BayitNetworking
+import GameController
 import SwiftUI
 
 /// Root content view for the tvOS app.
 /// Shows splash on first launch, then auth flow or main tab view.
+/// Long-press Play/Pause on Siri Remote triggers the Bayit+ voice assistant.
 struct TVContentView: View {
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(TVRepositoryProvider.self) private var repos
     @Environment(AuthManager.self) private var authManager
+
+    @State private var showVoiceAssistant = false
 
     var body: some View {
         ZStack {
@@ -44,12 +50,20 @@ struct TVContentView: View {
         .fullScreenCover(item: fullscreenBinding) { route in
             fullscreenView(for: route)
         }
+        .fullScreenCover(isPresented: $showVoiceAssistant) {
+            TVVoiceAssistantSheet(
+                chatRepository: repos.chat,
+                onDismiss: { showVoiceAssistant = false }
+            )
+        }
         .onOpenURL { url in
             coordinator.handleDeepLink(url)
         }
+        .onAppear { registerRemoteVoiceTrigger() }
+        .onDisappear { unregisterRemoteVoiceTrigger() }
     }
 
-    // MARK: - Fullscreen Player
+    // MARK: - Fullscreen Routing
 
     private var fullscreenBinding: Binding<TVRoute?> {
         Binding(
@@ -75,6 +89,64 @@ struct TVContentView: View {
             TVPodcastDetailView(showId: showId)
         case .audiobookDetail(let audiobookId):
             TVAudiobookDetailView(audiobookId: audiobookId)
+        case .voiceAssistant:
+            TVVoiceAssistantSheet(
+                chatRepository: repos.chat,
+                onDismiss: { coordinator.dismissFullscreen() }
+            )
         }
     }
+
+    // MARK: - Play/Pause Long-Press Voice Trigger
+
+    /// Register for Siri Remote Play/Pause long-press via Game Controller framework.
+    /// A long-press (>0.5s) on the Play/Pause button opens the voice assistant.
+    /// Normal short press is not intercepted (passes through to system).
+    private func registerRemoteVoiceTrigger() {
+        NotificationCenter.default.addObserver(
+            forName: .GCControllerDidConnect,
+            object: nil,
+            queue: .main
+        ) { notification in
+            guard let controller = notification.object as? GCController,
+                  let micro = controller.microGamepad else { return }
+            setupLongPress(on: micro)
+        }
+
+        // Handle already-connected controllers
+        for controller in GCController.controllers() {
+            if let micro = controller.microGamepad {
+                setupLongPress(on: micro)
+            }
+        }
+    }
+
+    private func setupLongPress(on gamepad: GCMicroGamepad) {
+        // The buttonMenu is the Play/Pause button on Siri Remote
+        // We use pressedChangedHandler to detect long-press duration
+        var pressStart: Date?
+
+        gamepad.buttonX.pressedChangedHandler = { _, _, pressed in
+            if pressed {
+                pressStart = Date()
+            } else if let start = pressStart {
+                let duration = Date().timeIntervalSince(start)
+                pressStart = nil
+                if duration >= 0.8 {
+                    Task { @MainActor in
+                        showVoiceAssistant = true
+                    }
+                }
+            }
+        }
+    }
+
+    private func unregisterRemoteVoiceTrigger() {
+        NotificationCenter.default.removeObserver(
+            self,
+            name: .GCControllerDidConnect,
+            object: nil
+        )
+    }
 }
+#endif

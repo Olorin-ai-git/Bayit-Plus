@@ -13,6 +13,12 @@ public struct GlassFocusPoster: View {
     let aspectRatio: CGFloat
     let onSelect: () -> Void
 
+    // Action button state
+    let isInPlaylist: Bool
+    let isWidget: Bool
+    let onPlaylistToggle: (() -> Void)?
+    let onWidgetToggle: (() -> Void)?
+
     @Environment(\.isFocused) private var isFocused
 
     public init(
@@ -22,6 +28,10 @@ public struct GlassFocusPoster: View {
         badge: String? = nil,
         width: CGFloat = TVDesignTokens.MinSize.posterWidth,
         aspectRatio: CGFloat = 2 / 3,
+        isInPlaylist: Bool = false,
+        isWidget: Bool = false,
+        onPlaylistToggle: (() -> Void)? = nil,
+        onWidgetToggle: (() -> Void)? = nil,
         onSelect: @escaping () -> Void = {}
     ) {
         self.thumbnailURL = thumbnailURL
@@ -30,6 +40,10 @@ public struct GlassFocusPoster: View {
         self.badge = badge
         self.width = width
         self.aspectRatio = aspectRatio
+        self.isInPlaylist = isInPlaylist
+        self.isWidget = isWidget
+        self.onPlaylistToggle = onPlaylistToggle
+        self.onWidgetToggle = onWidgetToggle
         self.onSelect = onSelect
     }
 
@@ -46,6 +60,11 @@ public struct GlassFocusPoster: View {
                 if let badge {
                     badgeOverlay(badge)
                 }
+
+                // Action buttons shown when focused
+                if isFocused, hasActions {
+                    posterActionButtons
+                }
             }
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.poster))
             .overlay(
@@ -59,6 +78,68 @@ public struct GlassFocusPoster: View {
             )
         }
         .buttonStyle(TVPosterButtonStyle())
+        .contextMenu {
+            if let onPlaylistToggle {
+                Button {
+                    onPlaylistToggle()
+                } label: {
+                    Label(
+                        isInPlaylist ? "Remove from Playlist" : "Add to Playlist",
+                        systemImage: isInPlaylist ? "bookmark.fill" : "bookmark"
+                    )
+                }
+            }
+            if let onWidgetToggle {
+                Button {
+                    onWidgetToggle()
+                } label: {
+                    Label(
+                        isWidget ? "Remove Widget" : "Add as Widget",
+                        systemImage: isWidget ? "checkmark.square.fill" : "square.grid.2x2"
+                    )
+                }
+            }
+        }
+    }
+
+    private var hasActions: Bool {
+        onPlaylistToggle != nil || onWidgetToggle != nil
+    }
+
+    private var posterActionButtons: some View {
+        VStack {
+            HStack(spacing: TVDesignTokens.Spacing.sm) {
+                if let onPlaylistToggle {
+                    Button(action: onPlaylistToggle) {
+                        Image(systemName: isInPlaylist ? "bookmark.fill" : "bookmark")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(isInPlaylist ? DesignTokens.Primary.p400 : .white)
+                            .frame(width: 36, height: 36)
+                            .background(Color.black.opacity(0.7))
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                if let onWidgetToggle {
+                    Button(action: onWidgetToggle) {
+                        Image(systemName: isWidget ? "checkmark.square.fill" : "square.grid.2x2")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundStyle(isWidget ? DesignTokens.Colors.Semantic.success : .white)
+                            .frame(width: 36, height: 36)
+                            .background(Color.black.opacity(0.7))
+                            .clipShape(Circle())
+                    }
+                    .buttonStyle(.plain)
+                }
+
+                Spacer()
+            }
+            .padding(TVDesignTokens.Spacing.sm)
+            Spacer()
+        }
+        .transition(.opacity)
+        .animation(.easeInOut(duration: 0.2), value: isFocused)
     }
 
     // MARK: - Subviews

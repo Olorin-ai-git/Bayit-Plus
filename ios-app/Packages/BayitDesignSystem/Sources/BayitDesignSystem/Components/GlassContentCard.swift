@@ -11,8 +11,9 @@ public enum ContentPlaceholderIcon: String, Sendable {
     case general = "photo"
 }
 
-/// Content card for movies, series, podcasts with thumbnail and metadata
-/// Features glass overlay, optional badge, subtitle language flags, and tap interaction
+/// Content card for movies, series, podcasts with thumbnail and metadata.
+/// Features glass overlay, optional badge, subtitle language flags, tap interaction,
+/// and optional playlist/widget action buttons.
 public struct GlassContentCard: View {
     let thumbnailURL: String?
     let title: String?
@@ -23,6 +24,13 @@ public struct GlassContentCard: View {
     let width: CGFloat
     let placeholderIcon: ContentPlaceholderIcon
     let onTap: () -> Void
+
+    // Action button state
+    let isInPlaylist: Bool
+    let isWidget: Bool
+    let isActionsLoading: Bool
+    let onPlaylistToggle: (() -> Void)?
+    let onWidgetToggle: (() -> Void)?
 
     /// Maximum number of flags displayed before showing "+N" overflow
     private let maxVisibleFlags = 5
@@ -39,6 +47,11 @@ public struct GlassContentCard: View {
         aspectRatio: CGFloat = 16/9,
         width: CGFloat = 280,
         placeholderIcon: ContentPlaceholderIcon = .general,
+        isInPlaylist: Bool = false,
+        isWidget: Bool = false,
+        isActionsLoading: Bool = false,
+        onPlaylistToggle: (() -> Void)? = nil,
+        onWidgetToggle: (() -> Void)? = nil,
         onTap: @escaping () -> Void = {}
     ) {
         self.thumbnailURL = thumbnailURL
@@ -49,6 +62,11 @@ public struct GlassContentCard: View {
         self.aspectRatio = aspectRatio
         self.width = width
         self.placeholderIcon = placeholderIcon
+        self.isInPlaylist = isInPlaylist
+        self.isWidget = isWidget
+        self.isActionsLoading = isActionsLoading
+        self.onPlaylistToggle = onPlaylistToggle
+        self.onWidgetToggle = onWidgetToggle
         self.onTap = onTap
     }
 
@@ -85,11 +103,71 @@ public struct GlassContentCard: View {
                 subtitleFlagsOverlay(flags)
             }
 
+            // Action buttons (top-left)
+            if onPlaylistToggle != nil || onWidgetToggle != nil {
+                VStack {
+                    actionButtons
+                    Spacer()
+                }
+            }
+
             VStack {
                 Spacer()
                 metadataOverlay
             }
         }
+    }
+
+    // MARK: - Action Buttons
+
+    @ViewBuilder
+    private var actionButtons: some View {
+        HStack(spacing: DesignTokens.Spacing.xs) {
+            if let onPlaylistToggle {
+                cardActionButton(
+                    icon: isInPlaylist ? "bookmark.fill" : "bookmark",
+                    isActive: isInPlaylist,
+                    activeColor: DesignTokens.Primary.p400,
+                    action: onPlaylistToggle,
+                    label: isInPlaylist ? "Remove from playlist" : "Add to playlist"
+                )
+            }
+
+            if let onWidgetToggle {
+                cardActionButton(
+                    icon: isWidget ? "checkmark.square.fill" : "square.grid.2x2",
+                    isActive: isWidget,
+                    activeColor: DesignTokens.Colors.Semantic.success,
+                    action: onWidgetToggle,
+                    label: isWidget ? "Remove widget" : "Add as widget"
+                )
+            }
+        }
+        .padding(DesignTokens.Spacing.sm)
+        .opacity(isActionsLoading ? 0.5 : 1.0)
+    }
+
+    private func cardActionButton(
+        icon: String, isActive: Bool, activeColor: Color,
+        action: @escaping () -> Void, label: String
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: icon)
+                .font(.system(size: width <= 160 ? 12 : 14, weight: .medium))
+                .foregroundStyle(isActive ? activeColor : .white)
+                .frame(width: width <= 160 ? 26 : 32, height: width <= 160 ? 26 : 32)
+                .background(Color.black.opacity(0.6))
+                .clipShape(Circle())
+                .overlay(
+                    Circle().stroke(
+                        isActive ? activeColor.opacity(0.5) : Color.white.opacity(0.15),
+                        lineWidth: 1
+                    )
+                )
+        }
+        .buttonStyle(.plain)
+        .disabled(isActionsLoading)
+        .accessibilityLabel(label)
     }
 
     private func subtitleFlagsOverlay(_ flags: [String]) -> some View {

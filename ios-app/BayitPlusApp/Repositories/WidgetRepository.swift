@@ -46,6 +46,12 @@ protocol WidgetRepository: Sendable {
 
     /// Delete a personal widget.
     func deleteWidget(widgetId: String) async throws
+
+    /// Toggle a content item as a personal widget (add if missing, remove if exists).
+    func toggleWidget(_ request: WidgetToggleRequest) async throws -> WidgetToggleResponse
+
+    /// Check batch of content items for widget status.
+    func checkWidgetBatch(_ items: [WidgetCheckItem]) async throws -> WidgetCheckBatchResponse
 }
 
 /// Production implementation of `WidgetRepository` using `APIClient`.
@@ -112,6 +118,23 @@ final class APIWidgetRepository: WidgetRepository, @unchecked Sendable {
         _ = try await client.delete(
             "/admin/widgets/\(widgetId)",
             as: WidgetDeleteResponse.self
+        )
+    }
+
+    func toggleWidget(_ request: WidgetToggleRequest) async throws -> WidgetToggleResponse {
+        return try await client.post(
+            "/api/v1/widgets/toggle",
+            body: request,
+            as: WidgetToggleResponse.self
+        )
+    }
+
+    func checkWidgetBatch(_ items: [WidgetCheckItem]) async throws -> WidgetCheckBatchResponse {
+        struct BatchRequest: Encodable, Sendable { let items: [WidgetCheckItem] }
+        return try await client.post(
+            "/api/v1/widgets/check-batch",
+            body: BatchRequest(items: items),
+            as: WidgetCheckBatchResponse.self
         )
     }
 }

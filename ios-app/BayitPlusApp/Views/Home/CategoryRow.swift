@@ -5,6 +5,7 @@ import SwiftUI
 struct CategoryRow: View {
     let category: ContentCategory
     let coordinator: NavigationCoordinator
+    var cardActions: CardActionsViewModel?
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
@@ -41,7 +42,28 @@ struct CategoryRow: View {
                         subtitleFlags: item.availableSubtitleLanguages?.map { SubtitleLanguages.flag(for: $0) },
                         aspectRatio: itemAspectRatio(for: item),
                         width: itemWidth,
-                        placeholderIcon: placeholderIcon(for: item)
+                        placeholderIcon: placeholderIcon(for: item),
+                        isInPlaylist: cardActions?.isInPlaylist(item.id) ?? false,
+                        isWidget: cardActions?.isWidget(item.id) ?? false,
+                        isActionsLoading: cardActions?.isLoading(item.id) ?? false,
+                        onPlaylistToggle: cardActions != nil ? {
+                            Task {
+                                await cardActions?.togglePlaylist(
+                                    contentId: item.id,
+                                    contentType: item.type ?? "vod"
+                                )
+                            }
+                        } : nil,
+                        onWidgetToggle: cardActions != nil ? {
+                            Task {
+                                await cardActions?.toggleWidget(
+                                    contentId: item.id,
+                                    contentType: item.type ?? "vod",
+                                    title: item.title,
+                                    thumbnail: item.thumbnail
+                                )
+                            }
+                        } : nil
                     ) {
                         navigateToItem(item)
                     }
