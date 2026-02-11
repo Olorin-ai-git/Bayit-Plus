@@ -14,8 +14,8 @@ struct ContinueWatchingTimelineProvider: TimelineProvider {
         ContinueWatchingEntry.placeholder
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (ContinueWatchingEntry) -> Void) {
-        Task {
+    func getSnapshot(in context: Context, completion: @escaping @Sendable (ContinueWatchingEntry) -> Void) {
+        Task { @Sendable in
             let items = await WidgetDataStore.shared.readContinueWatching()
             let isAuthenticated = SharedKeychainHelper().readAuthToken() != nil
             completion(ContinueWatchingEntry(
@@ -26,8 +26,8 @@ struct ContinueWatchingTimelineProvider: TimelineProvider {
         }
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<ContinueWatchingEntry>) -> Void) {
-        Task {
+    func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<ContinueWatchingEntry>) -> Void) {
+        Task { @Sendable in
             let items = await WidgetDataStore.shared.readContinueWatching()
             let isAuthenticated = SharedKeychainHelper().readAuthToken() != nil
             let entry = ContinueWatchingEntry(

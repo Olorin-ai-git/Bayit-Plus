@@ -37,11 +37,13 @@ public final class NowPlayingService: Sendable {
         }
 
         if let artworkURL = metadata.artworkURL {
-            loadArtwork(from: artworkURL) { artwork in
+            loadArtwork(from: artworkURL) { [weak self] artwork in
+                guard self != nil else { return }
+                var updatedInfo = info
                 if let artwork {
-                    info[MPMediaItemPropertyArtwork] = artwork
+                    updatedInfo[MPMediaItemPropertyArtwork] = artwork
                 }
-                MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+                MPNowPlayingInfoCenter.default().nowPlayingInfo = updatedInfo
             }
         } else {
             MPNowPlayingInfoCenter.default().nowPlayingInfo = info

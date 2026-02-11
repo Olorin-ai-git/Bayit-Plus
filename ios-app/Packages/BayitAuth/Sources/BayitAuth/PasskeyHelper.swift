@@ -44,7 +44,7 @@ final class PasskeyHelper: NSObject {
             #if os(iOS)
             // iOS requires a presentation context provider
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let window = windowScene.windows.first {
+               !windowScene.windows.isEmpty {
                 controller.presentationContextProvider = self
             }
             #endif

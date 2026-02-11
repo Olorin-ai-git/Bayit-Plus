@@ -4,9 +4,9 @@ import BayitWidgetShared
 /// Resume watching a specific content item from the Continue Watching widget.
 /// Opens the app and navigates to the player.
 struct ResumeContentIntent: AppIntent {
-    static var title: LocalizedStringResource = "Resume Content"
-    static var description = IntentDescription("Resume watching content on Bayit+")
-    static var openAppWhenRun = true
+    static let title: LocalizedStringResource = "Resume Content"
+    static let description = IntentDescription("Resume watching content on Bayit+")
+    static let openAppWhenRun = true
 
     @Parameter(title: "Content ID")
     var contentID: String

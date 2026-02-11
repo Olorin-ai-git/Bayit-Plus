@@ -4,9 +4,9 @@ import BayitWidgetShared
 /// Switch to a different channel from the widget.
 /// Opens the app and navigates to the specified channel.
 struct SwitchChannelIntent: AppIntent {
-    static var title: LocalizedStringResource = "Switch Channel"
-    static var description = IntentDescription("Switch to a channel on Bayit+")
-    static var openAppWhenRun = true
+    static let title: LocalizedStringResource = "Switch Channel"
+    static let description = IntentDescription("Switch to a channel on Bayit+")
+    static let openAppWhenRun = true
 
     @Parameter(title: "Channel ID")
     var channelID: String

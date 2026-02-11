@@ -40,18 +40,6 @@ public struct GlassHeroCarousel<Item: Identifiable, ItemView: View>: View {
             pageIndicator
         }
         .focusable(true)
-        .highPriorityGesture(
-            DragGesture(minimumDistance: 30)
-                .onEnded { value in
-                    if value.translation.width < -30, currentIndex < items.count - 1 {
-                        currentIndex += 1
-                        restartAutoAdvance()
-                    } else if value.translation.width > 30, currentIndex > 0 {
-                        currentIndex -= 1
-                        restartAutoAdvance()
-                    }
-                }
-        )
         .focusSection()
         .onAppear { startAutoAdvance() }
         .onDisappear { stopAutoAdvance() }

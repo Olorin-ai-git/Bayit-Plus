@@ -26,26 +26,34 @@ public final class RemoteCommandService: @unchecked Sendable {
         let commandCenter = MPRemoteCommandCenter.shared()
 
         let playTarget = commandCenter.playCommand.addTarget { [weak self] _ in
-            self?.delegate?.remoteCommandPlay()
+            Task { @MainActor [weak self] in
+                self?.delegate?.remoteCommandPlay()
+            }
             return .success
         }
         registeredTargets.append(playTarget)
 
         let pauseTarget = commandCenter.pauseCommand.addTarget { [weak self] _ in
-            self?.delegate?.remoteCommandPause()
+            Task { @MainActor [weak self] in
+                self?.delegate?.remoteCommandPause()
+            }
             return .success
         }
         registeredTargets.append(pauseTarget)
 
         let toggleTarget = commandCenter.togglePlayPauseCommand.addTarget { [weak self] _ in
-            self?.delegate?.remoteCommandTogglePlayPause()
+            Task { @MainActor [weak self] in
+                self?.delegate?.remoteCommandTogglePlayPause()
+            }
             return .success
         }
         registeredTargets.append(toggleTarget)
 
         let skipForwardTarget = commandCenter.skipForwardCommand.addTarget { [weak self] event in
             guard let event = event as? MPSkipIntervalCommandEvent else { return .commandFailed }
-            self?.delegate?.remoteCommandSkipForward(interval: event.interval)
+            Task { @MainActor [weak self] in
+                self?.delegate?.remoteCommandSkipForward(interval: event.interval)
+            }
             return .success
         }
         commandCenter.skipForwardCommand.preferredIntervals = [10]
@@ -53,7 +61,9 @@ public final class RemoteCommandService: @unchecked Sendable {
 
         let skipBackTarget = commandCenter.skipBackwardCommand.addTarget { [weak self] event in
             guard let event = event as? MPSkipIntervalCommandEvent else { return .commandFailed }
-            self?.delegate?.remoteCommandSkipBackward(interval: event.interval)
+            Task { @MainActor [weak self] in
+                self?.delegate?.remoteCommandSkipBackward(interval: event.interval)
+            }
             return .success
         }
         commandCenter.skipBackwardCommand.preferredIntervals = [10]
@@ -63,7 +73,9 @@ public final class RemoteCommandService: @unchecked Sendable {
             guard let event = event as? MPChangePlaybackPositionCommandEvent else {
                 return .commandFailed
             }
-            self?.delegate?.remoteCommandSeek(to: event.positionTime)
+            Task { @MainActor [weak self] in
+                self?.delegate?.remoteCommandSeek(to: event.positionTime)
+            }
             return .success
         }
         registeredTargets.append(seekTarget)

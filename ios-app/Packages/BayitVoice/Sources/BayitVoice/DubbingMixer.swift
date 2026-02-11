@@ -201,15 +201,20 @@ public actor DubbingMixer {
         }
 
         var error: NSError?
-        var consumed = false
         let source = buffer
+        var consumedFlag = false
+        let lock = NSLock()
 
         let inputBlock: AVAudioConverterInputBlock = { _, outStatus in
-            if consumed {
+            lock.lock()
+            let wasConsumed = consumedFlag
+            consumedFlag = true
+            lock.unlock()
+
+            if wasConsumed {
                 outStatus.pointee = .noDataNow
                 return nil
             }
-            consumed = true
             outStatus.pointee = .haveData
             return source
         }

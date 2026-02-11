@@ -75,7 +75,7 @@ private final class AppleSignInDelegate: NSObject, ASAuthorizationControllerDele
     private let continuation: CheckedContinuation<AppleSignInResult, Error>
     private let nonce: String
 
-    init(
+    nonisolated init(
         continuation: CheckedContinuation<AppleSignInResult, Error>,
         nonce: String
     ) {

@@ -171,7 +171,7 @@ public enum TTSVoiceQuality: String, Sendable, Equatable {
 // MARK: - AnyCodable Helper
 
 /// Type-erased Codable for dynamic JSON payloads
-public struct AnyCodable: Sendable, Codable, Equatable {
+public struct AnyCodable: @unchecked Sendable, Codable, Equatable {
     public let value: Any
 
     public init(_ value: Any) {

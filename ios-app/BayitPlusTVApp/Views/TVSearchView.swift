@@ -65,6 +65,7 @@ struct TVSearchView: View {
                 if viewModel == nil {
                     viewModel = SearchViewModel(
                         searchRepository: repos.search,
+                        featureFlags: FeatureFlags(),
                         recentSearchesService: RecentSearchesService()
                     )
                     await viewModel?.loadInitialData()

@@ -202,7 +202,7 @@ struct TVMorningRitualView: View {
             if let contentId = item.contentId {
                 coordinator.presentPlayer(
                     contentId: contentId,
-                    contentType: .movie
+                    contentType: .vod
                 )
             }
         } label: {

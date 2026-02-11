@@ -262,7 +262,7 @@ struct TVZmanimView: View {
         ) { item in
             GlassFocusPoster(
                 thumbnailURL: item.thumbnail,
-                title: item.title,
+                title: item.title ?? "",
                 subtitle: item.category,
                 aspectRatio: 16 / 9,
                 onSelect: {

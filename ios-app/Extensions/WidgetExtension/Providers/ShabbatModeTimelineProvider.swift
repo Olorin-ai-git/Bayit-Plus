@@ -13,16 +13,16 @@ struct ShabbatModeTimelineProvider: TimelineProvider {
         ShabbatModeEntry.placeholder
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (ShabbatModeEntry) -> Void) {
-        Task {
+    func getSnapshot(in context: Context, completion: @escaping @Sendable (ShabbatModeEntry) -> Void) {
+        Task { @Sendable in
             let data = await WidgetDataStore.shared.readShabbatData()
             let entry = ShabbatModeEntry(date: .now, shabbatData: data)
             completion(entry)
         }
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<ShabbatModeEntry>) -> Void) {
-        Task {
+    func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<ShabbatModeEntry>) -> Void) {
+        Task { @Sendable in
             let data = await WidgetDataStore.shared.readShabbatData()
             var entries: [ShabbatModeEntry] = []
 

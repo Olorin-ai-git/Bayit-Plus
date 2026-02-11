@@ -44,7 +44,7 @@ public actor VoiceWebSocketClient {
         onMessage: @escaping @Sendable (VoiceWSIncoming) -> Void
     ) async {
         // Close any existing connection first
-        await disconnect()
+        disconnect()
 
         self.onMessage = onMessage
 
@@ -110,7 +110,7 @@ public actor VoiceWebSocketClient {
                     await self.handleMessage(message)
                 } catch {
                     if !Task.isCancelled {
-                        await self.logger.error("WebSocket receive error", error: error)
+                        self.logger.error("WebSocket receive error", error: error)
                         await self.onMessage?(.error(error.localizedDescription))
                     }
                     break

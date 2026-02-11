@@ -33,7 +33,7 @@ struct TVLiveTVView: View {
             .background(DesignTokens.Background.primary)
             .task {
                 if viewModel == nil {
-                    viewModel = LiveTVViewModel(repository: repos.liveTV)
+                    viewModel = LiveTVViewModel(repository: repos.liveTV, featureFlags: FeatureFlags())
                 }
                 await viewModel?.loadChannels()
             }

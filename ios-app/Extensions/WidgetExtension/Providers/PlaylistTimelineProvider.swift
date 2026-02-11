@@ -14,8 +14,8 @@ struct PlaylistTimelineProvider: TimelineProvider {
         PlaylistEntry.placeholder
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (PlaylistEntry) -> Void) {
-        Task {
+    func getSnapshot(in context: Context, completion: @escaping @Sendable (PlaylistEntry) -> Void) {
+        Task { @Sendable in
             let playlists = await WidgetDataStore.shared.readPlaylists()
             let isAuthenticated = SharedKeychainHelper().readAuthToken() != nil
             completion(PlaylistEntry(
@@ -26,8 +26,8 @@ struct PlaylistTimelineProvider: TimelineProvider {
         }
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<PlaylistEntry>) -> Void) {
-        Task {
+    func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<PlaylistEntry>) -> Void) {
+        Task { @Sendable in
             let playlists = await WidgetDataStore.shared.readPlaylists()
             let isAuthenticated = SharedKeychainHelper().readAuthToken() != nil
             let entry = PlaylistEntry(

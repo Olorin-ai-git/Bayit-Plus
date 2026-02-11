@@ -22,9 +22,14 @@ public final class SpeechRecognitionService: Sendable {
 
     /// Request both microphone and speech recognition permissions.
     public func requestPermissions() async -> VoicePermissions {
-        let mic = await withCheckedContinuation { cont in
-            AVAudioSession.sharedInstance().requestRecordPermission { granted in
-                cont.resume(returning: granted)
+        let mic: Bool
+        if #available(iOS 17.0, tvOS 17.0, *) {
+            mic = await AVAudioApplication.requestRecordPermission()
+        } else {
+            mic = await withCheckedContinuation { cont in
+                AVAudioSession.sharedInstance().requestRecordPermission { granted in
+                    cont.resume(returning: granted)
+                }
             }
         }
 
@@ -43,7 +48,12 @@ public final class SpeechRecognitionService: Sendable {
 
     /// Check current permission status without prompting.
     public func checkPermissions() -> VoicePermissions {
-        let mic = AVAudioSession.sharedInstance().recordPermission == .granted
+        let mic: Bool
+        if #available(iOS 17.0, tvOS 17.0, *) {
+            mic = AVAudioApplication.shared.recordPermission == .granted
+        } else {
+            mic = AVAudioSession.sharedInstance().recordPermission == .granted
+        }
         let speech = SFSpeechRecognizer.authorizationStatus() == .authorized
         return VoicePermissions(microphone: mic, speechRecognition: speech)
     }
@@ -136,7 +146,7 @@ public final class SpeechRecognitionService: Sendable {
             throw SpeechError.audioEngineFailed(error)
         }
 
-        let stop: @Sendable () -> Void = {
+        let stop: @Sendable () -> Void = { [continuation] in
             Self.stopEngine(audioEngine, request: request)
             continuation?.finish()
         }

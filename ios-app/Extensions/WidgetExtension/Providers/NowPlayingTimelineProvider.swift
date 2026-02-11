@@ -14,15 +14,15 @@ struct NowPlayingTimelineProvider: TimelineProvider {
         NowPlayingEntry.placeholder
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (NowPlayingEntry) -> Void) {
-        Task {
+    func getSnapshot(in context: Context, completion: @escaping @Sendable (NowPlayingEntry) -> Void) {
+        Task { @Sendable in
             let data = await WidgetDataStore.shared.readNowPlaying()
             completion(NowPlayingEntry(date: .now, nowPlaying: data))
         }
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<NowPlayingEntry>) -> Void) {
-        Task {
+    func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<NowPlayingEntry>) -> Void) {
+        Task { @Sendable in
             let data = await WidgetDataStore.shared.readNowPlaying()
             let entry = NowPlayingEntry(date: .now, nowPlaying: data)
             let refreshDate = Date().addingTimeInterval(Self.refreshIntervalMinutes * 60)

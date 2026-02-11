@@ -4,9 +4,9 @@ import BayitWidgetShared
 /// Play a playlist from the Playlist widget.
 /// Opens the app and starts playback of the specified playlist.
 struct PlayPlaylistIntent: AppIntent {
-    static var title: LocalizedStringResource = "Play Playlist"
-    static var description = IntentDescription("Play a playlist on Bayit+")
-    static var openAppWhenRun = true
+    static let title: LocalizedStringResource = "Play Playlist"
+    static let description = IntentDescription("Play a playlist on Bayit+")
+    static let openAppWhenRun = true
 
     @Parameter(title: "Playlist ID")
     var playlistID: String

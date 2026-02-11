@@ -5,7 +5,7 @@ import BayitCore
 ///
 /// Provides typed get/set operations for widget data exchange.
 /// Fails fast if the App Group suite cannot be created.
-public final class SharedDefaults: Sendable {
+public final class SharedDefaults: @unchecked Sendable {
 
     private let defaults: UserDefaults
     private let logger = BayitLogger(category: "SharedDefaults")

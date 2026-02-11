@@ -29,7 +29,8 @@ struct TVHomeView: View {
                 viewModel = HomeViewModel(
                     repository: repos.content,
                     liveTVRepository: repos.liveTV,
-                    locationProvider: TVLocationProvider()
+                    locationProvider: TVLocationProvider(),
+                    featureFlags: FeatureFlags()
                 )
             }
             await viewModel?.loadFeatured()
