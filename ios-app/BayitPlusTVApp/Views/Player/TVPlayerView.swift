@@ -111,7 +111,16 @@ struct TVPlayerView: View {
         }
         .onPlayPauseCommand { mediaPlayer.togglePlayPause() }
         .onMoveCommand { direction in
-            if direction == .up { showControlButtons = true }
+            switch direction {
+            case .up: showControlButtons = true
+            case .down: showControlButtons = false
+            default: break
+            }
+        }
+        .onExitCommand {
+            if showControlButtons {
+                showControlButtons = false
+            }
         }
         .fullScreenCover(isPresented: $showSubtitleLanguagePicker) {
             TVSubtitleLanguagePickerView(
@@ -207,7 +216,8 @@ struct TVPlayerView: View {
                     playbackSpeed = speed
                     mediaPlayer.setRate(speed)
                     showSpeedControl = false
-                }
+                },
+                onDismiss: { showSpeedControl = false }
             )
         }
     }
@@ -496,7 +506,10 @@ struct TVPlayerView: View {
                 return
             }
             mediaPlayer.load(url: url, contentType: contentType)
-            mediaPlayer.play()
+            // Call avPlayer.play() directly because MediaPlayer.play() guards
+            // on state.canPlay which excludes .loading. AVPlayer handles
+            // pre-ready playback natively and will auto-play once buffered.
+            mediaPlayer.avPlayer.play()
             isResolvingStream = false
 
             await loadAvailableLanguages()

@@ -336,12 +336,6 @@ async def _create_channel_widgets() -> int:
             }
         )
 
-        if existing:
-            logger.info(
-                f"Default Channel {channel_num} widget already exists: {existing.id}"
-            )
-            continue
-
         # Try to find the channel in live channels
         # Matches: "Channel 11", "ערוץ 11", "כאן 11", "רשת 13", etc.
         channel = await LiveChannel.find_one(
@@ -356,13 +350,18 @@ async def _create_channel_widgets() -> int:
             }
         )
 
-        # If widget already exists but has no channel_id, try to fix it
-        if existing and not existing.content.live_channel_id and channel:
-            existing.content.live_channel_id = str(channel.id)
-            await existing.save()
-            logger.info(
-                f"Fixed Channel {channel_num} widget with channel ID: {channel.id}"
-            )
+        if existing:
+            # Repair existing widget if it has no channel_id linked
+            if not existing.content.live_channel_id and channel:
+                existing.content.live_channel_id = str(channel.id)
+                await existing.save()
+                logger.info(
+                    f"Fixed Channel {channel_num} widget with channel ID: {channel.id}"
+                )
+            else:
+                logger.info(
+                    f"Default Channel {channel_num} widget already exists: {existing.id}"
+                )
             continue
 
         widget = Widget(

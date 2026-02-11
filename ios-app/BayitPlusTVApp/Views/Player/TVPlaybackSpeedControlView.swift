@@ -6,6 +6,7 @@ import SwiftUI
 struct TVPlaybackSpeedControlView: View {
     let currentSpeed: Float
     let onSpeedSelected: (Float) -> Void
+    var onDismiss: (() -> Void)?
 
     private let speeds: [Float] = [0.5, 0.75, 1.0, 1.25, 1.5, 2.0]
 
@@ -29,6 +30,7 @@ struct TVPlaybackSpeedControlView: View {
                 }
             }
         }
+        .onExitCommand { onDismiss?() }
     }
 
     private func speedLabel(_ speed: Float) -> String {

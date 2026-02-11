@@ -78,6 +78,7 @@ struct TVSubtitleLanguagePickerView: View {
         .padding(.horizontal, TVDesignTokens.Spacing.lg)
         .padding(.top, TVDesignTokens.Spacing.lg)
         .background(DesignTokens.Background.primary)
+        .onExitCommand { onDismiss() }
         #if os(iOS)
         .fullScreenCover(isPresented: $showAIPickerForHebrew) {
             if let repo = repository {

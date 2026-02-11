@@ -58,6 +58,7 @@ struct TVAIFeaturesPanel: View {
         }
         .padding(.bottom, TVDesignTokens.Spacing.xl)
         .transition(.move(edge: .bottom).combined(with: .opacity))
+        .focusSection()
     }
 
     private var languageBadge: some View {

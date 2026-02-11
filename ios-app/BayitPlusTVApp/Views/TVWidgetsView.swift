@@ -1,4 +1,5 @@
 #if os(tvOS)
+import BayitCore
 import BayitDesignSystem
 import SwiftUI
 
@@ -7,6 +8,8 @@ struct TVWidgetsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: WidgetsViewModel?
+    @State private var showCreateWidget = false
+    @State private var pickerViewModel: ContentPickerViewModel?
 
     private let columns = [
         GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
@@ -34,7 +37,26 @@ struct TVWidgetsView: View {
             if viewModel == nil {
                 viewModel = WidgetsViewModel(repository: repos.widget)
             }
-            await viewModel?.loadAll()
+            if pickerViewModel == nil {
+                pickerViewModel = ContentPickerViewModel(
+                    liveTV: repos.liveTV,
+                    podcasts: repos.podcasts,
+                    radio: repos.radio,
+                    audiobook: repos.audiobook
+                )
+            }
+            async let widgetsLoad: () = viewModel?.loadAll() ?? ()
+            async let pickerLoad: () = pickerViewModel?.loadAll() ?? ()
+            _ = await (widgetsLoad, pickerLoad)
+        }
+        .fullScreenCover(isPresented: $showCreateWidget) {
+            if let vm = viewModel, let pickerVM = pickerViewModel {
+                TVCreateWidgetView(
+                    widgetsViewModel: vm,
+                    pickerViewModel: pickerVM,
+                    onDismiss: { showCreateWidget = false }
+                )
+            }
         }
     }
 
@@ -54,13 +76,33 @@ struct TVWidgetsView: View {
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }
 
-            if !vm.personalWidgets.isEmpty {
+            personalWidgetsSection(vm)
+        }
+        .padding(.top, TVDesignTokens.Spacing.lg)
+    }
+
+    // MARK: - Personal Widgets Section
+
+    private func personalWidgetsSection(_ vm: WidgetsViewModel) -> some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
+            HStack {
                 Text("My Widgets")
                     .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
-                    .padding(.horizontal, TVDesignTokens.Spacing.xl)
-                    .padding(.top, TVDesignTokens.Spacing.lg)
 
+                Spacer()
+
+                GlassButton("Create", variant: .primary, size: .medium,
+                             icon: Image(systemName: "plus")) {
+                    showCreateWidget = true
+                }
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            .padding(.top, TVDesignTokens.Spacing.lg)
+
+            if vm.personalWidgets.isEmpty && !vm.isLoadingMyWidgets {
+                personalWidgetsEmptyState
+            } else {
                 LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
                     ForEach(vm.personalWidgets) { widget in
                         widgetCard(widget)
@@ -69,8 +111,29 @@ struct TVWidgetsView: View {
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
             }
         }
-        .padding(.top, TVDesignTokens.Spacing.lg)
     }
+
+    private var personalWidgetsEmptyState: some View {
+        Button { showCreateWidget = true } label: {
+            VStack(spacing: TVDesignTokens.Spacing.lg) {
+                Image(systemName: "plus.square.dashed")
+                    .font(.system(size: 48))
+                    .foregroundStyle(DesignTokens.Primary.p400)
+
+                Text("Create your first personal widget")
+                    .font(.system(size: TVDesignTokens.FontSize.lg))
+                    .foregroundStyle(DesignTokens.Text.muted)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, TVDesignTokens.Spacing.xxl)
+            .background(DesignTokens.Glass.bg)
+            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card))
+        }
+        .buttonStyle(.card)
+        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+    }
+
+    // MARK: - Widget Card
 
     private func widgetCard(_ widget: WidgetItem) -> some View {
         Button {

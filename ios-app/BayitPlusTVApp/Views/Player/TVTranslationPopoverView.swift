@@ -27,6 +27,7 @@ struct TVTranslationPopoverView: View {
             .padding(.horizontal, TVDesignTokens.Spacing.xxl)
         }
         .transition(.opacity)
+        .onExitCommand { onDismiss() }
     }
 
     // MARK: - Header
@@ -106,7 +107,6 @@ struct TVTranslationPopoverView: View {
         ) {
             onDismiss()
         }
-        .focusable()
         .accessibilityLabel("Dismiss translation")
         .padding(.top, TVDesignTokens.Spacing.sm)
     }

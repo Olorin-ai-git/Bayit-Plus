@@ -83,5 +83,6 @@ struct TVAILanguagePickerView: View {
         .padding(.horizontal, TVDesignTokens.Spacing.lg)
         .padding(.top, TVDesignTokens.Spacing.lg)
         .background(DesignTokens.Background.primary)
+        .onExitCommand { onDismiss() }
     }
 }

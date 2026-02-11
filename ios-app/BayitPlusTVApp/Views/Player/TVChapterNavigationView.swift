@@ -5,6 +5,7 @@ import SwiftUI
 /// Instantiates ChapterNavigationViewModel, loads chapters, and delegates to TVChapterListView.
 /// Uses TVRepositoryProvider and inline error display (avoids iOS-only ErrorStateView).
 struct TVChapterNavigationView: View {
+    @Environment(\.dismiss) private var dismiss
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var viewModel: ChapterNavigationViewModel?
 
@@ -32,6 +33,7 @@ struct TVChapterNavigationView: View {
             }
         }
         .background(DesignTokens.Background.primary)
+        .onExitCommand { dismiss() }
         .task {
             if viewModel == nil {
                 viewModel = ChapterNavigationViewModel(repository: repos.chapter)

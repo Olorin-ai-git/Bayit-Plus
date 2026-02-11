@@ -1,23 +1,28 @@
 #if os(tvOS)
+import AVFoundation
 import BayitDesignSystem
 import BayitMedia
 import SwiftUI
 
 /// Widget card for the tvOS sidebar with poster art resolved from APIs,
-/// content details, and playback controls. Glassmorphic design for 10-foot UI.
+/// content details, and inline playback controls. Glassmorphic design for 10-foot UI.
+/// Custom widgets (e.g. Ynet Mivzakim) render their own content instead of poster+play.
 struct TVWidgetContainerView: View {
 
     let widget: WidgetItem
     let onMinimize: () -> Void
-    let onPlay: () -> Void
 
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var playerVM: WidgetPlayerViewModel?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            posterSection
-            infoSection
+            if isYnetWidget {
+                ynetWidgetContent
+            } else {
+                posterSection
+                infoSection
+            }
         }
         .background {
             ZStack {
@@ -30,12 +35,10 @@ struct TVWidgetContainerView: View {
         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
         .overlay(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
-                .stroke(
-                    DesignTokens.Glass.border,
-                    lineWidth: 2
-                )
+                .stroke(DesignTokens.Glass.border, lineWidth: 2)
         )
         .task {
+            guard !isYnetWidget else { return }
             if playerVM == nil {
                 playerVM = WidgetPlayerViewModel(
                     mediaRepo: repos.media,
@@ -49,15 +52,54 @@ struct TVWidgetContainerView: View {
         }
     }
 
+    // MARK: - Ynet Widget Detection
+
+    private var isYnetWidget: Bool {
+        let componentName = widget.content?.componentName ?? ""
+        return componentName == "ynet_mivzakim"
+            || widget.title.contains("Ynet")
+            || widget.title.contains("\u{05DE}\u{05D1}\u{05D6}\u{05E7}\u{05D9}")
+    }
+
+    // MARK: - Ynet Custom Content
+
+    private var ynetWidgetContent: some View {
+        VStack(spacing: 0) {
+            // Minimize bar
+            HStack {
+                Image(systemName: "newspaper")
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundStyle(Color.red)
+
+                Text(widget.title)
+                    .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
+                    .foregroundStyle(DesignTokens.Text.primary)
+                    .lineLimit(1)
+
+                Spacer()
+
+                minimizeButton
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.md)
+            .padding(.vertical, TVDesignTokens.Spacing.sm)
+
+            TVYnetMivzakimContentView()
+                .frame(maxHeight: 320)
+        }
+    }
+
     // MARK: - Poster Section
 
     private var posterSection: some View {
         ZStack {
-            posterImage
+            if hasVideoActive {
+                InlineAVPlayerLayerView(player: playerVM!.player.avPlayer)
+                    .accessibilityLabel("Video: \(widget.title)")
+            } else {
+                posterImage
+            }
 
-            // Overlays
             VStack {
-                // Status badge top-left
                 HStack {
                     statusBadge
                     Spacer()
@@ -66,24 +108,9 @@ struct TVWidgetContainerView: View {
 
                 Spacer()
 
-                // Bottom bar: minimize button
                 HStack {
                     Spacer()
-                    Button { onMinimize() } label: {
-                        Image(systemName: "arrow.down.right.and.arrow.up.left")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(DesignTokens.Text.primary)
-                            .frame(width: 48, height: 48)
-                            .background(.thinMaterial)
-                            .environment(\.colorScheme, .dark)
-                            .clipShape(Circle())
-                            .overlay(
-                                Circle().stroke(Color.white.opacity(0.2), lineWidth: 1)
-                            )
-                    }
-                    .buttonStyle(.card)
-                    .tvFocusStyle()
-                    .accessibilityLabel("Minimize \(widget.title)")
+                    minimizeButton
                 }
                 .padding(TVDesignTokens.Spacing.md)
             }
@@ -179,11 +206,30 @@ struct TVWidgetContainerView: View {
         .clipShape(Capsule())
     }
 
+    // MARK: - Minimize Button (shared)
+
+    private var minimizeButton: some View {
+        Button { onMinimize() } label: {
+            Image(systemName: "arrow.down.right.and.arrow.up.left")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .frame(width: 48, height: 48)
+                .background(.thinMaterial)
+                .environment(\.colorScheme, .dark)
+                .clipShape(Circle())
+                .overlay(
+                    Circle().stroke(Color.white.opacity(0.2), lineWidth: 1)
+                )
+        }
+        .buttonStyle(.card)
+        .tvFocusStyle()
+        .accessibilityLabel("Minimize \(widget.title)")
+    }
+
     // MARK: - Info Section
 
     private var infoSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-            // Title row with type icon
             HStack(spacing: TVDesignTokens.Spacing.sm) {
                 Image(systemName: iconName)
                     .font(.system(size: 22, weight: .medium))
@@ -208,7 +254,6 @@ struct TVWidgetContainerView: View {
                 Spacer()
             }
 
-            // Description
             if let desc = widget.description, !desc.isEmpty {
                 Text(desc)
                     .font(.system(size: TVDesignTokens.FontSize.xs))
@@ -216,8 +261,77 @@ struct TVWidgetContainerView: View {
                     .lineLimit(2)
             }
 
-            // Play button
-            Button { onPlay() } label: {
+            playbackControls
+        }
+        .padding(TVDesignTokens.Spacing.lg)
+    }
+
+    // MARK: - Inline Playback Controls
+
+    @ViewBuilder
+    private var playbackControls: some View {
+        let isPlaying = playerVM?.isPlaying == true
+        let isLoading = playerVM?.isLoading == true
+
+        if isPlaying || isLoading {
+            // Active playback: show now-playing bar with pause/stop
+            HStack(spacing: TVDesignTokens.Spacing.sm) {
+                Button {
+                    Task { await playerVM?.togglePlayback(widget: widget) }
+                } label: {
+                    HStack(spacing: TVDesignTokens.Spacing.sm) {
+                        if isLoading {
+                            ProgressView()
+                                .tint(.white)
+                                .scaleEffect(0.8)
+                        } else {
+                            Image(systemName: "pause.fill")
+                                .font(.system(size: 18))
+                        }
+
+                        Text(isLoading ? "Loading..." : "Now Playing")
+                            .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
+                    }
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: TVDesignTokens.MinSize.focusableHeight + 8)
+                    .background(badgeColor.opacity(0.5))
+                    .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
+                            .stroke(badgeColor.opacity(0.4), lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.card)
+                .tvFocusStyle()
+                .accessibilityLabel(isLoading ? "Loading" : "Pause \(widget.title)")
+
+                Button {
+                    playerVM?.cleanup()
+                } label: {
+                    Image(systemName: "stop.fill")
+                        .font(.system(size: 18))
+                        .foregroundStyle(.white)
+                        .frame(
+                            width: TVDesignTokens.MinSize.focusableHeight + 8,
+                            height: TVDesignTokens.MinSize.focusableHeight + 8
+                        )
+                        .background(Color.white.opacity(0.1))
+                        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
+                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        )
+                }
+                .buttonStyle(.card)
+                .tvFocusStyle()
+                .accessibilityLabel("Stop \(widget.title)")
+            }
+        } else {
+            // Idle: show play button that starts in-place streaming
+            Button {
+                Task { await playerVM?.togglePlayback(widget: widget) }
+            } label: {
                 HStack(spacing: TVDesignTokens.Spacing.sm) {
                     Image(systemName: "play.fill")
                         .font(.system(size: 20))
@@ -247,13 +361,20 @@ struct TVWidgetContainerView: View {
             .buttonStyle(.card)
             .tvFocusStyle()
             .accessibilityLabel("Play \(widget.title)")
+
+            if let errorMsg = playerVM?.errorMessage {
+                Text(errorMsg)
+                    .font(.system(size: TVDesignTokens.FontSize.xs))
+                    .foregroundStyle(DesignTokens.Warning.default)
+                    .lineLimit(1)
+            }
         }
-        .padding(TVDesignTokens.Spacing.lg)
     }
 
     // MARK: - Helpers
 
     private var posterHeight: CGFloat {
+        if hasVideoActive { return 240 }
         switch widget.content?.contentType {
         case .liveChannel, .live, .vod:
             return 160
@@ -262,6 +383,16 @@ struct TVWidgetContainerView: View {
         default:
             return 140
         }
+    }
+
+    private var isVideoContent: Bool {
+        let ct = widget.content?.contentType
+        return ct == .liveChannel || ct == .live || ct == .vod
+    }
+
+    private var hasVideoActive: Bool {
+        guard isVideoContent, let vm = playerVM else { return false }
+        return vm.player.state != .idle
     }
 
     private var iconName: String {
@@ -277,6 +408,33 @@ struct TVWidgetContainerView: View {
         case .iframe: return DesignTokens.Text.secondary
         default: return DesignTokens.Text.muted
         }
+    }
+}
+
+// MARK: - Inline AVPlayer Layer
+
+/// Lightweight UIViewRepresentable rendering AVPlayerLayer directly.
+/// Used for inline widget video playback without native transport controls.
+private struct InlineAVPlayerLayerView: UIViewRepresentable {
+    let player: AVPlayer
+
+    func makeUIView(context: Context) -> PlayerLayerUIView {
+        let view = PlayerLayerUIView()
+        view.playerLayer.player = player
+        view.playerLayer.videoGravity = .resizeAspectFill
+        view.backgroundColor = .black
+        return view
+    }
+
+    func updateUIView(_ uiView: PlayerLayerUIView, context: Context) {
+        if uiView.playerLayer.player !== player {
+            uiView.playerLayer.player = player
+        }
+    }
+
+    final class PlayerLayerUIView: UIView {
+        override class var layerClass: AnyClass { AVPlayerLayer.self }
+        var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
     }
 }
 #endif

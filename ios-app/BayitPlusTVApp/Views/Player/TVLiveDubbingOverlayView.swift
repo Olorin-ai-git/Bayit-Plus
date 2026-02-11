@@ -5,6 +5,7 @@ import SwiftUI
 /// sync delay and quality badges. Laid out vertically for Siri Remote navigation
 /// with generous focus gaps between all interactive elements.
 struct TVLiveDubbingOverlayView: View {
+    @Environment(\.dismiss) private var dismiss
     @Bindable var viewModel: LiveDubbingViewModel
     let channelId: String
 
@@ -19,6 +20,7 @@ struct TVLiveDubbingOverlayView: View {
                 controlsColumn
             }
         }
+        .onExitCommand { dismiss() }
         .task {
             await viewModel.checkAvailability(channelId: channelId)
         }

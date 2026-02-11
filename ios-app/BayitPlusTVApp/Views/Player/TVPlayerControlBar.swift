@@ -50,6 +50,7 @@ struct TVPlayerControlBar: View {
         }
         .padding(.bottom, TVDesignTokens.Spacing.xl)
         .transition(.move(edge: .bottom).combined(with: .opacity))
+        .focusSection()
     }
 
     // MARK: - Control Button

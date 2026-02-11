@@ -28,6 +28,7 @@ struct TVAudioTrackSelectorView: View {
             }
         }
         .background(DesignTokens.Background.primary)
+        .onExitCommand { onDismiss() }
     }
 
     // MARK: - Track Row

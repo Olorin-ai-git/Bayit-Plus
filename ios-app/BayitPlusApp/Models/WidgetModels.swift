@@ -158,6 +158,7 @@ struct WidgetContentPayload: Encodable, Sendable {
     let podcastId: String?
     let contentId: String?
     let stationId: String?
+    let audiobookId: String?
     let iframeUrl: String?
     let iframeTitle: String?
 }

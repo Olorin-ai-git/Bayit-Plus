@@ -4,24 +4,35 @@ import BayitDesignSystem
 import SwiftUI
 
 /// Form for creating a personal widget with content type selection.
+/// Non-iframe types use a content picker with browsable thumbnails;
+/// iframe type retains the URL text field.
 struct CreateWidgetView: View {
 
     let viewModel: WidgetsViewModel
     let onDismiss: () -> Void
 
+    @Environment(RepositoryProvider.self) private var repos
+
     @State private var title = ""
     @State private var description = ""
     @State private var selectedContentType: WidgetContentType = .liveChannel
-    @State private var contentId = ""
+    @State private var selectedContent: ContentPickerItem?
+    @State private var showContentPicker = false
     @State private var iframeUrl = ""
     @State private var iframeTitle = ""
     @State private var isSaving = false
     @State private var error: String?
+    @State private var pickerViewModel: ContentPickerViewModel?
 
     private let logger = BayitLogger(category: "CreateWidget")
 
     private let contentTypes: [WidgetContentType] = [
         .liveChannel, .vod, .podcast, .radio, .audiobook, .iframe
+    ]
+
+    /// Content types that support the content picker (not iframe/vod/custom).
+    private let pickerContentTypes: Set<WidgetContentType> = [
+        .liveChannel, .podcast, .radio, .audiobook
     ]
 
     var body: some View {
@@ -47,6 +58,30 @@ struct CreateWidgetView: View {
                         Task { await save() }
                     }
                     .disabled(!isFormValid || isSaving)
+                }
+            }
+            .task {
+                if pickerViewModel == nil {
+                    let vm = ContentPickerViewModel(
+                        liveTV: repos.liveTV,
+                        podcasts: repos.podcasts,
+                        radio: repos.radio,
+                        audiobook: repos.audiobook
+                    )
+                    pickerViewModel = vm
+                    await vm.loadAll()
+                }
+            }
+            .sheet(isPresented: $showContentPicker) {
+                if let pickerVM = pickerViewModel {
+                    ContentPickerView(viewModel: pickerVM, onSelect: { item in
+                        selectedContent = item
+                        showContentPicker = false
+                    }, onDismiss: {
+                        showContentPicker = false
+                    })
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
                 }
             }
         }
@@ -92,8 +127,9 @@ struct CreateWidgetView: View {
                             isSelected: selectedContentType == type
                         ) {
                             selectedContentType = type
-                            contentId = ""
+                            selectedContent = nil
                             iframeUrl = ""
+                            syncPickerTab(for: type)
                         }
                     }
                 }
@@ -101,53 +137,133 @@ struct CreateWidgetView: View {
         }
     }
 
-    // MARK: - Content ID / URL
+    // MARK: - Content ID / URL / Picker
 
+    @ViewBuilder
     private var contentIdSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
             if selectedContentType == .iframe {
-                Text("iFrame URL")
-                    .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-
-                TextField("https://example.com/embed", text: $iframeUrl)
-                    .font(.system(size: DesignTokens.FontSize.base))
-                    .foregroundStyle(DesignTokens.Text.primary)
-                    .keyboardType(.URL)
-                    .autocapitalization(.none)
-                    .padding(DesignTokens.Spacing.md)
-                    .background(DesignTokens.Glass.bgLight)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
-
-                TextField("iFrame Title (optional)", text: $iframeTitle)
-                    .font(.system(size: DesignTokens.FontSize.sm))
-                    .foregroundStyle(DesignTokens.Text.primary)
-                    .padding(DesignTokens.Spacing.md)
-                    .background(DesignTokens.Glass.bgLight)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+                iframeFields
+            } else if pickerContentTypes.contains(selectedContentType) {
+                pickerSection
             } else {
-                Text("Content ID")
-                    .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-
-                TextField(contentIdPlaceholder, text: $contentId)
-                    .font(.system(size: DesignTokens.FontSize.base))
-                    .foregroundStyle(DesignTokens.Text.primary)
-                    .padding(DesignTokens.Spacing.md)
-                    .background(DesignTokens.Glass.bgLight)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+                vodContentIdField
             }
         }
     }
 
-    private var contentIdPlaceholder: String {
-        switch selectedContentType {
-        case .liveChannel, .live: return "Channel ID"
-        case .podcast: return "Podcast ID"
-        case .vod: return "Content ID"
-        case .radio: return "Station ID"
-        case .audiobook: return "Audiobook ID"
-        case .iframe, .custom: return "Content ID"
+    private var iframeFields: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+            Text("iFrame URL")
+                .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                .foregroundStyle(DesignTokens.Text.secondary)
+
+            TextField("https://example.com/embed", text: $iframeUrl)
+                .font(.system(size: DesignTokens.FontSize.base))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .keyboardType(.URL)
+                .autocapitalization(.none)
+                .padding(DesignTokens.Spacing.md)
+                .background(DesignTokens.Glass.bgLight)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+
+            TextField("iFrame Title (optional)", text: $iframeTitle)
+                .font(.system(size: DesignTokens.FontSize.sm))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .padding(DesignTokens.Spacing.md)
+                .background(DesignTokens.Glass.bgLight)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+        }
+    }
+
+    @ViewBuilder
+    private var pickerSection: some View {
+        Text("Content")
+            .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+            .foregroundStyle(DesignTokens.Text.secondary)
+
+        if let selected = selectedContent {
+            selectedContentCard(selected)
+        } else {
+            GlassButton("Browse Content", variant: .secondary, size: .medium,
+                         icon: Image(systemName: "square.grid.2x2")) {
+                syncPickerTab(for: selectedContentType)
+                showContentPicker = true
+            }
+        }
+    }
+
+    @State private var vodContentId = ""
+
+    private var vodContentIdField: some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+            Text("Content ID")
+                .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                .foregroundStyle(DesignTokens.Text.secondary)
+
+            TextField("Content ID", text: $vodContentId)
+                .font(.system(size: DesignTokens.FontSize.base))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .padding(DesignTokens.Spacing.md)
+                .background(DesignTokens.Glass.bgLight)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+        }
+    }
+
+    private func selectedContentCard(_ item: ContentPickerItem) -> some View {
+        HStack(spacing: DesignTokens.Spacing.md) {
+            if let url = item.thumbnailURL {
+                AsyncImage(url: url) { phase in
+                    if case .success(let img) = phase {
+                        img.resizable().aspectRatio(contentMode: .fill)
+                    } else {
+                        contentPlaceholder(item.tab.iconName)
+                    }
+                }
+                .frame(width: 56, height: 56)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+            } else {
+                contentPlaceholder(item.tab.iconName)
+                    .frame(width: 56, height: 56)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+            }
+
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
+                Text(item.title)
+                    .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
+                    .foregroundStyle(DesignTokens.Text.primary)
+                    .lineLimit(1)
+
+                if let subtitle = item.subtitle {
+                    Text(subtitle)
+                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer()
+
+            Button {
+                syncPickerTab(for: selectedContentType)
+                showContentPicker = true
+            } label: {
+                Text("Change")
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                    .foregroundStyle(DesignTokens.Primary.default)
+            }
+        }
+        .padding(DesignTokens.Spacing.md)
+        .background(DesignTokens.Glass.bgLight)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+    }
+
+    private func contentPlaceholder(_ iconName: String) -> some View {
+        ZStack {
+            DesignTokens.Glass.bg
+            Image(systemName: iconName)
+                .font(.system(size: 20))
+                .foregroundStyle(DesignTokens.Text.muted)
         }
     }
 
@@ -160,8 +276,10 @@ struct CreateWidgetView: View {
         if selectedContentType == .iframe {
             let trimmedUrl = iframeUrl.trimmingCharacters(in: .whitespacesAndNewlines)
             return trimmedUrl.hasPrefix("http://") || trimmedUrl.hasPrefix("https://")
+        } else if pickerContentTypes.contains(selectedContentType) {
+            return selectedContent != nil
         } else {
-            return !contentId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            return !vodContentId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         }
     }
 
@@ -172,20 +290,49 @@ struct CreateWidgetView: View {
         isSaving = true
         error = nil
 
-        let trimmedId = contentId.trimmingCharacters(in: .whitespacesAndNewlines)
-        let content = WidgetContentPayload(
-            contentType: selectedContentType.rawValue,
-            liveChannelId: selectedContentType == .liveChannel ? trimmedId : nil,
-            podcastId: selectedContentType == .podcast ? trimmedId : nil,
-            contentId: selectedContentType == .vod ? trimmedId : nil,
-            stationId: selectedContentType == .radio ? trimmedId : nil,
-            iframeUrl: selectedContentType == .iframe ? iframeUrl.trimmingCharacters(in: .whitespacesAndNewlines) : nil,
-            iframeTitle: selectedContentType == .iframe ? iframeTitle.trimmingCharacters(in: .whitespacesAndNewlines) : nil
-        )
+        let content: WidgetContentPayload
+
+        if selectedContentType == .iframe {
+            content = WidgetContentPayload(
+                contentType: selectedContentType.rawValue,
+                liveChannelId: nil,
+                podcastId: nil,
+                contentId: nil,
+                stationId: nil,
+                audiobookId: nil,
+                iframeUrl: iframeUrl.trimmingCharacters(in: .whitespacesAndNewlines),
+                iframeTitle: iframeTitle.trimmingCharacters(in: .whitespacesAndNewlines)
+            )
+        } else if let selected = selectedContent {
+            content = WidgetContentPayload(
+                contentType: selected.tab.widgetContentType.rawValue,
+                liveChannelId: selected.tab == .channels ? selected.id : nil,
+                podcastId: selected.tab == .podcasts ? selected.id : nil,
+                contentId: nil,
+                stationId: selected.tab == .radio ? selected.id : nil,
+                audiobookId: selected.tab == .audiobooks ? selected.id : nil,
+                iframeUrl: nil,
+                iframeTitle: nil
+            )
+        } else {
+            let trimmedId = vodContentId.trimmingCharacters(in: .whitespacesAndNewlines)
+            content = WidgetContentPayload(
+                contentType: selectedContentType.rawValue,
+                liveChannelId: nil,
+                podcastId: nil,
+                contentId: trimmedId,
+                stationId: nil,
+                audiobookId: nil,
+                iframeUrl: nil,
+                iframeTitle: nil
+            )
+        }
 
         let request = CreateWidgetRequest(
             title: title.trimmingCharacters(in: .whitespacesAndNewlines),
-            description: description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : description.trimmingCharacters(in: .whitespacesAndNewlines),
+            description: description.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                ? nil
+                : description.trimmingCharacters(in: .whitespacesAndNewlines),
             icon: nil,
             content: content
         )
@@ -197,6 +344,18 @@ struct CreateWidgetView: View {
             error = "Failed to create widget"
         }
         isSaving = false
+    }
+
+    // MARK: - Helpers
+
+    private func syncPickerTab(for contentType: WidgetContentType) {
+        switch contentType {
+        case .liveChannel, .live: pickerViewModel?.selectedTab = .channels
+        case .podcast: pickerViewModel?.selectedTab = .podcasts
+        case .radio: pickerViewModel?.selectedTab = .radio
+        case .audiobook: pickerViewModel?.selectedTab = .audiobooks
+        default: break
+        }
     }
 
     private func errorBanner(_ message: String) -> some View {

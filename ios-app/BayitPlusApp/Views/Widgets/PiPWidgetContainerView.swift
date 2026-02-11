@@ -1,3 +1,4 @@
+import AVFoundation
 import BayitDesignSystem
 import BayitLocalization
 import BayitMedia
@@ -178,7 +179,11 @@ struct PiPWidgetContainerView: View {
 
     private var liveContentView: some View {
         ZStack {
-            coverImage(fallbackIcon: "tv")
+            if isVideoActive {
+                InlineAVPlayerLayerView(player: playerVM!.player.avPlayer)
+            } else {
+                coverImage(fallbackIcon: "tv")
+            }
 
             VStack {
                 // Live indicator
@@ -276,7 +281,11 @@ struct PiPWidgetContainerView: View {
     private var vodContentView: some View {
         VStack(spacing: 0) {
             ZStack {
-                coverImage(fallbackIcon: "film")
+                if isVideoActive {
+                    InlineAVPlayerLayerView(player: playerVM!.player.avPlayer)
+                } else {
+                    coverImage(fallbackIcon: "film")
+                }
                 playButtonOverlay
             }
             .frame(height: 160)
@@ -558,6 +567,15 @@ struct PiPWidgetContainerView: View {
         }
     }
 
+    // MARK: - Video State
+
+    private var isVideoActive: Bool {
+        guard let vm = playerVM else { return false }
+        let ct = widget.content?.contentType
+        let isVideo = ct == .liveChannel || ct == .live || ct == .vod
+        return isVideo && vm.player.state != .idle
+    }
+
     // MARK: - Drag Gesture
 
     private var dragGesture: some Gesture {
@@ -571,5 +589,32 @@ struct PiPWidgetContainerView: View {
             .onEnded { _ in
                 lastPosition = position
             }
+    }
+}
+
+// MARK: - Inline AVPlayer Layer
+
+/// Lightweight UIViewRepresentable rendering AVPlayerLayer directly.
+/// Used for inline widget video playback without native transport controls.
+private struct InlineAVPlayerLayerView: UIViewRepresentable {
+    let player: AVPlayer
+
+    func makeUIView(context: Context) -> PlayerLayerUIView {
+        let view = PlayerLayerUIView()
+        view.playerLayer.player = player
+        view.playerLayer.videoGravity = .resizeAspectFill
+        view.backgroundColor = .black
+        return view
+    }
+
+    func updateUIView(_ uiView: PlayerLayerUIView, context: Context) {
+        if uiView.playerLayer.player !== player {
+            uiView.playerLayer.player = player
+        }
+    }
+
+    final class PlayerLayerUIView: UIView {
+        override class var layerClass: AnyClass { AVPlayerLayer.self }
+        var playerLayer: AVPlayerLayer { layer as! AVPlayerLayer }
     }
 }

@@ -5,6 +5,7 @@ import SwiftUI
 /// Adapted for Siri Remote navigation with +/- buttons replacing sliders.
 /// Dismiss via Menu button on the Siri Remote (no X button).
 struct TVSubtitleSettingsView: View {
+    @Environment(\.dismiss) private var dismiss
     @AppStorage("subtitleFontSize") private var fontSize: Double = 18
     @AppStorage("subtitleBackgroundOpacity") private var backgroundOpacity: Double = 0.6
     @AppStorage("subtitlePosition") private var position: String = "bottom"
@@ -29,6 +30,7 @@ struct TVSubtitleSettingsView: View {
         .padding(.horizontal, TVDesignTokens.Spacing.lg)
         .padding(.top, TVDesignTokens.Spacing.lg)
         .background(DesignTokens.Background.primary)
+        .onExitCommand { dismiss() }
     }
 
     // MARK: - Font Size

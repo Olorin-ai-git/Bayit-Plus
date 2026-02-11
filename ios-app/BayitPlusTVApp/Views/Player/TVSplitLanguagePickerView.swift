@@ -39,6 +39,7 @@ struct TVSplitLanguagePickerView: View {
         }
         .padding(TVDesignTokens.Spacing.xxl)
         .background(DesignTokens.Background.primary)
+        .onExitCommand { onDismiss() }
         .onAppear {
             if selectedLanguages.count >= 2 {
                 primary = selectedLanguages[0]
