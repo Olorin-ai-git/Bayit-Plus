@@ -12,6 +12,8 @@ struct TVPlayerView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(AuthManager.self) private var authManager
 
+    @Environment(\.dismiss) private var dismiss
+
     let contentId: String
     let contentType: MediaContentType
     let channelId: String?
@@ -120,6 +122,9 @@ struct TVPlayerView: View {
         .onExitCommand {
             if showControlButtons {
                 showControlButtons = false
+            } else {
+                mediaPlayer.stop()
+                dismiss()
             }
         }
         .fullScreenCover(isPresented: $showSubtitleLanguagePicker) {
