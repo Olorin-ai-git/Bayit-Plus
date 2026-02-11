@@ -277,6 +277,112 @@ struct TVHomeView: View {
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm))
     }
 
+    // MARK: - Channel Card
+
+    private func tvChannelCard(_ channel: LiveChannelItem) -> some View {
+        let imageURL = channel.logo ?? channel.thumbnail
+        return Button {
+            coordinator.presentPlayer(
+                contentId: channel.id,
+                contentType: .liveTV,
+                channelId: channel.id
+            )
+        } label: {
+            ZStack(alignment: .bottom) {
+                // Image or branded fallback
+                Color.clear
+                    .aspectRatio(1.0, contentMode: .fit)
+                    .overlay {
+                        if let urlStr = imageURL, let url = URL(string: urlStr) {
+                            AsyncImage(url: url) { phase in
+                                if case .success(let img) = phase {
+                                    img.resizable().aspectRatio(contentMode: .fit)
+                                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                } else {
+                                    channelPlaceholder(channel)
+                                }
+                            }
+                        } else {
+                            channelPlaceholder(channel)
+                        }
+                    }
+                    .background(DesignTokens.Glass.bgStrong)
+                    .clipped()
+
+                // Metadata bar
+                VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xxs) {
+                    Text(channel.name ?? "Channel")
+                        .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
+                        .foregroundStyle(DesignTokens.Text.primary)
+                        .lineLimit(1)
+
+                    if let show = channel.currentShow {
+                        Text(show)
+                            .font(.system(size: TVDesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Text.secondary)
+                            .lineLimit(1)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(TVDesignTokens.Spacing.md)
+                .background {
+                    LinearGradient(
+                        colors: [Color.clear, Color.black.opacity(0.85)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                }
+
+                // LIVE badge
+                VStack {
+                    HStack {
+                        Spacer()
+                        Text("LIVE")
+                            .font(.system(size: TVDesignTokens.FontSize.xs, weight: .bold))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, TVDesignTokens.Spacing.sm)
+                            .padding(.vertical, TVDesignTokens.Spacing.xxs)
+                            .background(DesignTokens.live.opacity(0.9))
+                            .clipShape(Capsule())
+                            .padding(TVDesignTokens.Spacing.sm)
+                    }
+                    Spacer()
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.poster))
+            .overlay(
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.poster)
+                    .stroke(DesignTokens.Glass.border, lineWidth: 1)
+            )
+        }
+        .buttonStyle(TVChannelCardButtonStyle())
+        .frame(width: 300)
+    }
+
+    private func channelPlaceholder(_ channel: LiveChannelItem) -> some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    DesignTokens.Primary.p400.opacity(0.3),
+                    DesignTokens.Glass.purpleStrong,
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            VStack(spacing: TVDesignTokens.Spacing.md) {
+                Image(systemName: "tv")
+                    .font(.system(size: 56, weight: .light))
+                    .foregroundStyle(DesignTokens.Text.secondary.opacity(0.6))
+
+                Text(channel.name ?? "")
+                    .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
+                    .foregroundStyle(DesignTokens.Text.primary.opacity(0.7))
+                    .lineLimit(1)
+            }
+        }
+    }
+
     private func tvLiveChannelsShelf(_ channels: [LiveChannelItem]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             HStack(spacing: TVDesignTokens.Spacing.md) {
@@ -329,6 +435,37 @@ struct TVHomeView: View {
                 .foregroundStyle(DesignTokens.Text.muted)
         }
         .frame(maxWidth: .infinity, minHeight: 400)
+    }
+}
+
+// MARK: - Channel Card Button Style
+
+private struct TVChannelCardButtonStyle: ButtonStyle {
+    @Environment(\.isFocused) private var isFocused
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(
+                isFocused
+                    ? TVDesignTokens.Focus.scaleAmount
+                    : (configuration.isPressed ? 0.97 : 1.0)
+            )
+            .shadow(
+                color: isFocused
+                    ? DesignTokens.Glass.purpleGlow.opacity(0.5)
+                    : Color.clear,
+                radius: TVDesignTokens.Focus.shadowRadius,
+                x: 0,
+                y: isFocused ? 8 : 0
+            )
+            .animation(
+                .spring(
+                    duration: TVDesignTokens.Focus.animationDuration,
+                    bounce: 0.2
+                ),
+                value: isFocused
+            )
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
     }
 }
 
