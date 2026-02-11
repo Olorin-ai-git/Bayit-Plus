@@ -10,8 +10,8 @@ public actor WebSocketManager {
 
     // MARK: - Dependencies
 
-    let configuration: NetworkConfiguration
-    let logger: APILogger
+    public let configuration: NetworkConfiguration
+    public let logger: APILogger
     private let session: URLSession
 
     // MARK: - State

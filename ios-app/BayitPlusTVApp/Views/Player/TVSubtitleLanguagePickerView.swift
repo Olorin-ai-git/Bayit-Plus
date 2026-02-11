@@ -58,7 +58,8 @@ struct TVSubtitleLanguagePickerView: View {
                         splitButton
                     }
 
-                    // OpenSubtitles download
+                    #if os(iOS)
+                    // OpenSubtitles download (iOS only)
                     if let repo = repository, !contentId.isEmpty {
                         Divider()
                             .background(DesignTokens.Text.muted.opacity(0.3))
@@ -70,12 +71,14 @@ struct TVSubtitleLanguagePickerView: View {
                             onSuccess: { onSubtitlesRefresh?() }
                         )
                     }
+                    #endif
                 }
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.lg)
         .padding(.top, TVDesignTokens.Spacing.lg)
         .background(DesignTokens.Background.primary)
+        #if os(iOS)
         .fullScreenCover(isPresented: $showAIPickerForHebrew) {
             if let repo = repository {
                 AISubtitlesPickerView(
@@ -96,6 +99,7 @@ struct TVSubtitleLanguagePickerView: View {
                 )
             }
         }
+        #endif
     }
 
     // MARK: - Off Button

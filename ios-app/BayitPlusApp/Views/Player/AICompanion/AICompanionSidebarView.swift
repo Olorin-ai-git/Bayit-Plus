@@ -22,7 +22,7 @@ struct AICompanionSidebarView: View {
             tabContent
         }
         .frame(maxWidth: 360)
-        .background(DesignTokens.Background.secondary)
+        .background(DesignTokens.Background.elevated)
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.xl))
         .shadow(color: .black.opacity(0.3), radius: 20)
         .task { await viewModel.loadContent(contentId: contentId) }

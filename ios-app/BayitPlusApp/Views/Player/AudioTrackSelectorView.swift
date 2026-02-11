@@ -4,13 +4,6 @@ import SwiftUI
 import UIKit
 #endif
 
-/// Audio track name and language for selection
-struct AudioTrack: Identifiable, Hashable {
-    let id: String
-    let label: String
-    let language: String?
-}
-
 /// Sheet-presented list of available audio tracks with radio-button selection
 struct AudioTrackSelectorView: View {
     let tracks: [AudioTrack]

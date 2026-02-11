@@ -35,7 +35,7 @@ struct StreamLimitExceededView: View {
             }
         }
         .padding(DesignTokens.Spacing.xl)
-        .background(DesignTokens.Background.secondary)
+        .background(DesignTokens.Background.elevated)
         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.xl))
         .shadow(color: .black.opacity(0.3), radius: 20)
         .padding(.horizontal, DesignTokens.Spacing.xl)

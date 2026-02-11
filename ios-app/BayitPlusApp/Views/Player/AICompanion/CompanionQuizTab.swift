@@ -35,7 +35,7 @@ struct CompanionQuizTab: View {
 
     private func questionCard(_ question: QuizQuestion) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Text(question.question)
+            Text(question.question ?? question.text ?? "")
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.primary)
 

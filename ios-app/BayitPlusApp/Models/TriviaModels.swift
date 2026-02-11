@@ -42,9 +42,11 @@ struct TriviaPreferencesUpdate: Encodable, Sendable {
 /// A quiz question with multiple-choice options.
 struct QuizQuestion: Decodable, Sendable, Identifiable {
     let id: String
+    let question: String?
     let text: String?
     let options: [String]
     let correctIndex: Int?
+    let explanation: String?
     let category: String?
     let difficulty: String?
 }

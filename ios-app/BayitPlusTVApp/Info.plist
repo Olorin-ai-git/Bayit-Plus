@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>API_BASE_URL</key>
-	<string>https://api.bayit.tv/api/v1</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -36,24 +34,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>17</string>
-	<key>FEATURE_LEGACY_FEATURES</key>
-	<string>true</string>
+	<string>1</string>
 	<key>GOOGLE_CLIENT_ID</key>
 	<string>624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com</string>
 	<key>GOOGLE_SERVER_CLIENT_ID</key>
 	<string>624470113582-7p34b1tpqlfob5sh4cl9eoospmvao1at.apps.googleusercontent.com</string>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
-	</dict>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Bayit+ uses the Siri Remote microphone for voice commands</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>Bayit+ uses speech recognition for voice commands</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -61,7 +46,5 @@
 	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string></string>
-	<key>WEBSOCKET_BASE_URL</key>
-	<string>wss://api.bayit.tv</string>
 </dict>
 </plist>

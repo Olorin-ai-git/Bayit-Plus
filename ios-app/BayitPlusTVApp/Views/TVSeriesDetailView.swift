@@ -130,9 +130,9 @@ struct TVSeriesDetailView: View {
                 HStack(spacing: TVDesignTokens.Spacing.focusGap) {
                     ForEach(vm.seasons) { season in
                         GlassChip(
-                            text: "Season \(season.seasonNumber)",
+                            title: "Season \(season.seasonNumber)",
                             isSelected: vm.selectedSeason == season.seasonNumber,
-                            action: {
+                            onTap: {
                                 Task {
                                     await vm.loadEpisodes(season: season.seasonNumber)
                                 }

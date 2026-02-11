@@ -1,3 +1,5 @@
+import BayitCore
+import BayitNetworking
 import Foundation
 
 /// Feature Validation Service - Server-Side Security
@@ -105,13 +107,15 @@ final class FeatureValidationService {
         logger.info("Validating feature", context: ["feature": feature.rawValue])
 
         let endpoint = "/features/validate/\(feature.rawValue)"
-        let result: ValidationResult = try await apiClient.post(endpoint, body: EmptyBody())
+        let result: ValidationResult = try await apiClient.post(
+            endpoint, body: EmptyBody(), as: ValidationResult.self
+        )
 
         logger.info(
             "Feature validation result",
             context: [
                 "feature": feature.rawValue,
-                "enabled": result.enabled,
+                "enabled": String(result.enabled),
                 "reason": result.reason ?? "none"
             ]
         )
@@ -135,19 +139,20 @@ final class FeatureValidationService {
     /// - Returns: BatchValidationResponse with results for each feature
     /// - Throws: APIError if request fails
     func validateBatch(_ features: [FeatureName]) async throws -> BatchValidationResponse {
-        logger.info("Batch validating features", context: ["count": features.count])
+        logger.info("Batch validating features", context: ["count": String(features.count)])
 
         let request = BatchValidationRequest(features: features)
         let response: BatchValidationResponse = try await apiClient.post(
             "/features/validate/batch",
-            body: request
+            body: request,
+            as: BatchValidationResponse.self
         )
 
         logger.info(
             "Batch validation complete",
             context: [
-                "total": response.results.count,
-                "enabled": response.results.filter { $0.enabled }.count
+                "total": String(response.results.count),
+                "enabled": String(response.results.filter { $0.enabled }.count)
             ]
         )
 
@@ -180,14 +185,15 @@ final class FeatureValidationService {
         let request = DeductCreditRequest(feature: feature)
         let response: DeductCreditResponse = try await apiClient.post(
             "/features/deduct-credit",
-            body: request
+            body: request,
+            as: DeductCreditResponse.self
         )
 
         logger.info(
             "Credit deducted",
             context: [
                 "feature": feature,
-                "remaining": response.remainingCredits
+                "remaining": String(response.remainingCredits)
             ]
         )
 

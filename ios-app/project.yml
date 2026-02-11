@@ -71,6 +71,20 @@ targets:
       - path: BayitPlusApp/ViewModels
         type: group
       - path: BayitPlusApp/Services/ShabbatModeService.swift
+      - path: BayitPlusApp/Services/RecentSearchesService.swift
+      - path: BayitPlusApp/Services/OfflineCacheService.swift
+      - path: BayitPlusApp/Services/FeatureValidationService.swift
+      - path: BayitPlusApp/Services/ShoreshParser.swift
+      - path: BayitPlusApp/Services/LiveTriviaWebSocketService.swift
+      - path: BayitPlusApp/Services/LiveDubbingWebSocketService.swift
+      - path: BayitPlusApp/Services/LiveSubtitlesWebSocketService.swift
+      - path: BayitPlusApp/Services/PlaybackSessionService.swift
+      - path: BayitPlusApp/Services/NetworkMonitor.swift
+      - path: BayitPlusApp/Services/KeychainHelper.swift
+      - path: BayitPlusApp/Services/AvatarStateMachine.swift
+      - path: BayitPlusApp/Services/ProactiveSuggestionEngine.swift
+      - path: BayitPlusApp/Views/Player/DubbingPremiumGateView.swift
+      - path: BayitPlusApp/Views/Shared/SubtitleFlagsPill.swift
     dependencies:
       - package: BayitPlus
         product: BayitCore

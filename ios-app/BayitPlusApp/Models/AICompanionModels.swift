@@ -25,14 +25,6 @@ struct CompanionQuizResponse: Decodable, Sendable {
     let questions: [QuizQuestion]?
 }
 
-struct QuizQuestion: Decodable, Sendable, Identifiable {
-    let id: String
-    let question: String
-    let options: [String]
-    let correctIndex: Int?
-    let explanation: String?
-}
-
 /// Response from companion vocabulary endpoint.
 struct CompanionVocabularyResponse: Decodable, Sendable {
     let words: [VocabularyWord]?

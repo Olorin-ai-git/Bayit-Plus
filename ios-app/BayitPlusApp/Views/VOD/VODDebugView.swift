@@ -49,10 +49,9 @@ struct VODDebugView: View {
             // Create network configuration
             let networkConfig = AppNetworkConfiguration(appConfig: appConfig)
 
-            // Create mock providers for testing
-            let authProvider = MockAuthTokenProvider()
-            let locationProvider = MockLocationProvider()
-            let logger = MockAPILogger()
+            let authProvider = DebugAuthTokenProvider()
+            let locationProvider = DebugLocationProvider()
+            let logger = DebugAPILogger()
 
             // Create API client
             let client = APIClient(
@@ -99,48 +98,26 @@ struct VODDebugView: View {
     }
 }
 
-// Mock implementations for testing
-struct MockAuthTokenProvider: AuthTokenProvider {
+// Debug-only mock providers for VOD testing
+private struct DebugAuthTokenProvider: AuthTokenProvider {
     func currentToken() async throws -> String? { nil }
 }
 
-struct MockLocationProvider: LocationProvider {
+private struct DebugLocationProvider: LocationProvider {
     func currentLocation() async -> UserLocation? { nil }
 }
 
-struct MockAPILogger: APILogger {
-    func debug(_ message: String, metadata: [String: String]) {
-        print("🔍 DEBUG: \(message) | \(metadata)")
+private struct DebugAPILogger: APILogger {
+    func log(
+        level: APILogLevel,
+        message: String,
+        metadata: [String: String],
+        file: String,
+        function: String,
+        line: UInt
+    ) {
+        // Debug logging only - not production
     }
-    func info(_ message: String, metadata: [String: String]) {
-        print("ℹ️ INFO: \(message) | \(metadata)")
-    }
-    func warning(_ message: String, metadata: [String: String]) {
-        print("⚠️ WARNING: \(message) | \(metadata)")
-    }
-    func error(_ message: String, metadata: [String: String]) {
-        print("❌ ERROR: \(message) | \(metadata)")
-    }
-}
-
-struct AppNetworkConfiguration: NetworkConfiguration {
-    private let appConfig: EnvironmentConfiguration
-
-    init(appConfig: EnvironmentConfiguration) {
-        self.appConfig = appConfig
-    }
-
-    var baseURL: URL { appConfig.apiBaseURL }
-    var timeout: TimeInterval { appConfig.apiTimeout }
-    var maxRetries: Int { appConfig.apiMaxRetries }
-    var retryBaseDelay: TimeInterval { appConfig.apiRetryBaseDelay }
-    var retryableStatusCodes: Set<Int> { appConfig.apiRetryableStatusCodes }
-    var defaultHeaders: [String: String] { [:] }
-    var webSocketMaxConcurrentConnections: Int { appConfig.webSocketMaxConcurrentConnections }
-    var webSocketPingInterval: TimeInterval { appConfig.webSocketPingInterval }
-    var webSocketMaxReconnectAttempts: Int { appConfig.webSocketMaxReconnectAttempts }
-    var webSocketReconnectBaseDelay: TimeInterval { appConfig.webSocketReconnectBaseDelay }
-    var webSocketInactiveGracePeriod: TimeInterval { appConfig.webSocketInactiveGracePeriod }
 }
 
 #Preview {

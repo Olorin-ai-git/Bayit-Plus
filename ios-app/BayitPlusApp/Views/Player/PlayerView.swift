@@ -19,7 +19,7 @@ struct PlayerView: View {
     @Environment(LocalizationManager.self) private var localization
     @Environment(\.scenePhase) private var scenePhase
 
-    @State private var viewModel: MediaPlayerViewModel
+    @State var viewModel: MediaPlayerViewModel
     @State private var showControls = true
     @State private var controlsTimer: Task<Void, Never>?
     @State private var nowPlayingService = NowPlayingService()

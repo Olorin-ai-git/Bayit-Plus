@@ -1,5 +1,7 @@
 #if os(iOS)
+import BayitCore
 import BayitDesignSystem
+import BayitNetworking
 import SwiftUI
 
 /// Extension on PlayerView providing catch-up, scene search, channel chat,
@@ -70,16 +72,21 @@ extension PlayerView {
         if showChannelChat, mediaContentType.isLive {
             HStack {
                 Spacer()
-                ChannelChatView(
-                    repository: repositories.liveTV,
-                    webSocketManager: WebSocketManager(configuration: repositories.configuration),
-                    channelId: contentId,
-                    onDismiss: {
+                VStack(spacing: DesignTokens.Spacing.md) {
+                    Text("Channel Chat")
+                        .font(.system(size: DesignTokens.FontSize.lg, weight: .semibold))
+                        .foregroundStyle(DesignTokens.Text.primary)
+                    Text("Chat requires an active connection")
+                        .font(.system(size: DesignTokens.FontSize.sm))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                    GlassButton("Close", variant: .secondary, size: .small) {
                         withAnimation(.spring(duration: 0.3)) {
                             showChannelChat = false
                         }
                     }
-                )
+                }
+                .padding(DesignTokens.Spacing.lg)
+                .glassCard()
                 .frame(maxWidth: 320)
             }
             .transition(.move(edge: .trailing).combined(with: .opacity))

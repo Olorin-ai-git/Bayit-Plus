@@ -69,8 +69,8 @@ struct TVAudiobookDetailView: View {
                 .frame(width: 480, height: 480)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.poster))
                 .shadow(
-                    color: DesignTokens.Shadow.color,
-                    radius: TVDesignTokens.Shadow.radius
+                    color: .black.opacity(0.3),
+                    radius: 16
                 )
             }
 
@@ -83,7 +83,7 @@ struct TVAudiobookDetailView: View {
                     HStack(spacing: TVDesignTokens.Spacing.sm) {
                         Text("By")
                             .font(.system(size: TVDesignTokens.FontSize.lg))
-                            .foregroundStyle(DesignTokens.Text.tertiary)
+                            .foregroundStyle(DesignTokens.Text.muted)
                         Text(author)
                             .font(.system(size: TVDesignTokens.FontSize.lg, weight: .medium))
                             .foregroundStyle(DesignTokens.Text.secondary)
@@ -94,7 +94,7 @@ struct TVAudiobookDetailView: View {
                     HStack(spacing: TVDesignTokens.Spacing.sm) {
                         Text("Narrated by")
                             .font(.system(size: TVDesignTokens.FontSize.md))
-                            .foregroundStyle(DesignTokens.Text.tertiary)
+                            .foregroundStyle(DesignTokens.Text.muted)
                         Text(narrator)
                             .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
                             .foregroundStyle(DesignTokens.Text.secondary)
@@ -108,7 +108,7 @@ struct TVAudiobookDetailView: View {
                         Text(duration)
                             .font(.system(size: TVDesignTokens.FontSize.md))
                     }
-                    .foregroundStyle(DesignTokens.Text.tertiary)
+                    .foregroundStyle(DesignTokens.Text.muted)
                 }
 
                 if let description = audiobook.description {
@@ -157,9 +157,9 @@ struct TVAudiobookDetailView: View {
 
             ForEach(AudiobookDetailViewModel.availableSpeeds, id: \.self) { speed in
                 GlassChip(
-                    text: "\(String(format: "%.2gx", speed))",
+                    title: "\(String(format: "%.2gx", speed))",
                     isSelected: vm.playbackSpeed == speed,
-                    action: {
+                    onTap: {
                         vm.setSpeed(speed)
                     }
                 )
@@ -189,7 +189,7 @@ struct TVAudiobookDetailView: View {
             HStack(spacing: TVDesignTokens.Spacing.lg) {
                 Text("\(index + 1)")
                     .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
-                    .foregroundStyle(DesignTokens.Text.tertiary)
+                    .foregroundStyle(DesignTokens.Text.muted)
                     .frame(width: 80)
 
                 VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
@@ -201,7 +201,7 @@ struct TVAudiobookDetailView: View {
                        let endTime = chapter.endTime {
                         Text(formatTimeRange(start: startTime, end: endTime))
                             .font(.system(size: TVDesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.tertiary)
+                            .foregroundStyle(DesignTokens.Text.muted)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

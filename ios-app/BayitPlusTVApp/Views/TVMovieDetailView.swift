@@ -155,7 +155,7 @@ struct TVMovieDetailView: View {
             if let genre = detail.genre {
                 HStack(spacing: TVDesignTokens.Spacing.md) {
                     ForEach(genre.components(separatedBy: ", "), id: \.self) { tag in
-                        GlassChip(text: tag, isSelected: false, action: {})
+                        GlassChip(title: tag, isSelected: false, onTap: {})
                     }
                 }
             }
@@ -171,7 +171,7 @@ struct TVMovieDetailView: View {
             if let director = detail.director {
                 Text("Director: \(director)")
                     .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
-                    .foregroundStyle(DesignTokens.Text.tertiary)
+                    .foregroundStyle(DesignTokens.Text.muted)
             }
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)

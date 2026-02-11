@@ -37,7 +37,7 @@ final class JudaismViewModel {
             let calResponse = try await calendarResult
             let newsResponse = try await newsResult
 
-            categories = catResponse.categories
+            categories = catResponse.categories ?? []
             calendarEvents = calResponse.events
             news = newsResponse.items
         } catch {

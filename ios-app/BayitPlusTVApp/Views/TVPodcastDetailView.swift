@@ -65,8 +65,8 @@ struct TVPodcastDetailView: View {
                 .frame(width: 480, height: 480)
                 .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.poster))
                 .shadow(
-                    color: DesignTokens.Shadow.color,
-                    radius: TVDesignTokens.Shadow.radius
+                    color: .black.opacity(0.3),
+                    radius: 16
                 )
             }
 
@@ -82,7 +82,7 @@ struct TVPodcastDetailView: View {
                 }
 
                 if let category = detail.category {
-                    GlassChip(text: category, isSelected: false, action: {})
+                    GlassChip(title: category, isSelected: false, onTap: {})
                 }
 
                 if let description = detail.description {
@@ -97,7 +97,7 @@ struct TVPodcastDetailView: View {
                 if let episodeCount = detail.episodeCount {
                     Text("\(episodeCount) Episodes")
                         .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
-                        .foregroundStyle(DesignTokens.Text.tertiary)
+                        .foregroundStyle(DesignTokens.Text.muted)
                 }
             }
             .frame(maxWidth: 900, alignment: .leading)
@@ -171,12 +171,12 @@ struct TVPodcastDetailView: View {
                         if let duration = episode.duration {
                             Text(duration)
                                 .font(.system(size: TVDesignTokens.FontSize.sm))
-                                .foregroundStyle(DesignTokens.Text.tertiary)
+                                .foregroundStyle(DesignTokens.Text.muted)
                         }
                         if let publishedAt = episode.publishedAt {
                             Text(formatDate(publishedAt))
                                 .font(.system(size: TVDesignTokens.FontSize.sm))
-                                .foregroundStyle(DesignTokens.Text.tertiary)
+                                .foregroundStyle(DesignTokens.Text.muted)
                         }
                     }
                 }

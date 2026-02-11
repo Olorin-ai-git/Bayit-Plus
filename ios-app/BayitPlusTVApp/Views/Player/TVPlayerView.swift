@@ -155,17 +155,16 @@ struct TVPlayerView: View {
             )
         }
         .fullScreenCover(isPresented: $showSplitLanguagePicker) {
-            SplitSubtitleLanguagePickerView(
+            TVSplitLanguagePickerView(
                 availableLanguages: availableSubtitleLanguages,
-                sourceLanguage: "he",
                 selectedLanguages: $splitLanguages,
-                splitModeEnabled: $splitModeEnabled,
                 onConfirm: { languages in
                     splitLanguages = languages
                     splitModeEnabled = true
                     showSplitLanguagePicker = false
                     Task { await loadSplitSubtitleCues() }
-                }
+                },
+                onDismiss: { showSplitLanguagePicker = false }
             )
         }
         .fullScreenCover(isPresented: $showAILanguagePicker) {
@@ -293,7 +292,7 @@ struct TVPlayerView: View {
         if isLive, let vm = liveSubtitlesVM, vm.isEnabled, vm.showOverlay {
             TVLiveSubtitleOverlayView(
                 translatedText: vm.activeCueText,
-                originalText: vm.originalCueText,
+                originalText: vm.originalCueText ?? "",
                 isVisible: vm.showOverlay
             )
         }
@@ -304,15 +303,12 @@ struct TVPlayerView: View {
     @ViewBuilder
     private var splitSubtitleOverlay: some View {
         if splitModeEnabled, splitLanguages.count == 2 {
-            SplitSubtitleOverlayView(
+            TVSplitSubtitleOverlayView(
                 currentTime: mediaPlayer.currentTime,
                 primaryCues: primarySubtitleCues,
                 secondaryCues: secondarySubtitleCues,
                 primaryLanguage: splitLanguages[0],
-                secondaryLanguage: splitLanguages[1],
-                enabled: splitModeEnabled,
-                settings: SubtitleSettings(),
-                safeAreaBottom: 0
+                secondaryLanguage: splitLanguages[1]
             )
         }
     }
@@ -466,19 +462,21 @@ struct TVPlayerView: View {
         guard splitLanguages.count == 2 else { return }
 
         let repo = repos.subtitle
-        async let primaryResult = repo.fetchSubtitleCues(
-            contentId: contentId, language: splitLanguages[0]
+        async let primaryResult = repo.fetchCues(
+            contentId: contentId, language: splitLanguages[0],
+            hebrewMode: nil, englishMode: nil
         )
-        async let secondaryResult = repo.fetchSubtitleCues(
-            contentId: contentId, language: splitLanguages[1]
+        async let secondaryResult = repo.fetchCues(
+            contentId: contentId, language: splitLanguages[1],
+            hebrewMode: nil, englishMode: nil
         )
 
         do {
             let (primary, secondary) = try await (
                 primaryResult, secondaryResult
             )
-            primarySubtitleCues = primary
-            secondarySubtitleCues = secondary
+            primarySubtitleCues = primary.cues ?? []
+            secondarySubtitleCues = secondary.cues ?? []
         } catch {
             splitModeEnabled = false
         }
