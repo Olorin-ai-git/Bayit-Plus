@@ -1045,6 +1045,9 @@ class Settings(BaseSettings):
     PODCAST_DEFAULT_ORIGINAL_LANGUAGE: str = Field(
         default="he", description="Default language for podcasts without detection"
     )
+    PODCAST_MAX_EPISODES_TO_KEEP: int = Field(
+        default=20, description="Maximum episodes to keep per podcast during cleanup"
+    )
     ALLOWED_AUDIO_DOMAINS: list[str] = Field(
         default_factory=lambda: [
             # Common podcast hosting platforms

@@ -90,10 +90,40 @@ struct TVPodcastsView: View {
         ]
 
         return VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text(vm.selectedCategory != nil ? "Podcasts" : "All Podcasts")
-                .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
-                .foregroundStyle(DesignTokens.Text.primary)
-                .padding(.leading, TVDesignTokens.Spacing.xl)
+            HStack {
+                Text(vm.selectedCategory != nil ? "Podcasts" : "All Podcasts")
+                    .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
+                    .foregroundStyle(DesignTokens.Text.primary)
+
+                Spacer()
+
+                Button {
+                    Task { await vm.refresh() }
+                } label: {
+                    HStack(spacing: TVDesignTokens.Spacing.sm) {
+                        Image(systemName: "arrow.clockwise")
+                            .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
+                            .rotationEffect(.degrees(vm.isSyncing ? 360 : 0))
+                            .animation(
+                                vm.isSyncing
+                                    ? .linear(duration: 1).repeatForever(autoreverses: false)
+                                    : .default,
+                                value: vm.isSyncing
+                            )
+                        Text("Refresh")
+                            .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
+                    }
+                    .foregroundStyle(DesignTokens.Text.secondary)
+                    .padding(.horizontal, TVDesignTokens.Spacing.lg)
+                    .padding(.vertical, TVDesignTokens.Spacing.md)
+                    .background(DesignTokens.Glass.bg)
+                    .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
+                }
+                .buttonStyle(.card)
+                .tvFocusStyle()
+                .disabled(vm.isSyncing)
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
 
             LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
                 ForEach(vm.shows) { show in
@@ -101,6 +131,7 @@ struct TVPodcastsView: View {
                         thumbnailURL: show.cover,
                         title: show.title ?? "Podcast",
                         subtitle: show.author,
+                        metadata: show.latestEpisode,
                         aspectRatio: 1.0,
                         onSelect: {
                             coordinator.presentPlayer(

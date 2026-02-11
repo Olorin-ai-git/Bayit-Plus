@@ -12,7 +12,13 @@ from app.models.content import Podcast, PodcastEpisode
 from app.models.user import User
 from app.services.apple_podcasts_converter import convert_apple_podcasts_to_rss
 from app.services.podcast_scraper import fetch_rss_feed
-from app.services.podcast_sync import fetch_rss_episodes, sync_all_podcasts, sync_podcast_episodes
+from app.core.config import settings
+from app.services.podcast_sync import (
+    cleanup_old_episodes,
+    fetch_rss_episodes,
+    sync_all_podcasts,
+    sync_podcast_episodes,
+)
 from app.services.spotify_podcast_converter import resolve_spotify_to_rss
 
 router = APIRouter()
@@ -327,25 +333,42 @@ async def sync_single_podcast(podcast_id: str):
 @router.post("/refresh")
 async def refresh_all_content():
     """
-    Refresh all content: podcasts, live channels, and trending data.
-    Triggers manual podcast RSS sync.
+    Refresh all content: sync latest podcast episodes from RSS feeds
+    and remove oldest episodes beyond the configured retention limit.
     """
-    logger.info("📻 Full content refresh requested - triggering podcast sync")
+    logger.info("Full content refresh requested - syncing podcasts and cleaning up")
 
     try:
-        result = await sync_all_podcasts(max_episodes=20)
-        logger.info(f"✅ Podcast sync completed: {result}")
+        sync_result = await sync_all_podcasts(max_episodes=20)
+
+        max_to_keep = settings.PODCAST_MAX_EPISODES_TO_KEEP
+        podcasts = await Podcast.find(
+            {"is_active": True, "rss_feed": {"$exists": True, "$ne": None}}
+        ).to_list(length=None)
+
+        total_deleted = 0
+        for podcast in podcasts:
+            deleted = await cleanup_old_episodes(podcast, max_to_keep=max_to_keep)
+            total_deleted += deleted
+
+        logger.info(
+            "Podcast refresh complete: synced=%d, deleted=%d",
+            sync_result.get("total_episodes_added", 0),
+            total_deleted,
+        )
+
         return {
             "status": "success",
             "message": "Content refresh completed successfully",
             "podcasts": {
-                "total": result.get("total_podcasts", 0),
-                "synced": result.get("synced_count", 0),
-                "episodes_added": result.get("total_episodes_added", 0),
+                "total": sync_result.get("total_podcasts", 0),
+                "synced": sync_result.get("synced_count", 0),
+                "episodes_added": sync_result.get("total_episodes_added", 0),
+                "episodes_deleted": total_deleted,
             },
         }
     except Exception as e:
-        logger.error(f"❌ Content refresh failed: {e}", exc_info=True)
+        logger.error(f"Content refresh failed: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Content refresh failed: {str(e)}")
 
 

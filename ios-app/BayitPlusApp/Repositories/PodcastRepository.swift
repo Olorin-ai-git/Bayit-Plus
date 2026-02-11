@@ -59,6 +59,11 @@ protocol PodcastRepository: Sendable {
     /// - Parameter rssUrl: The RSS feed URL for the podcast.
     /// - Throws: `NetworkError` if the request fails.
     func addCustomPodcast(rssUrl: String) async throws
+
+    /// Refresh all podcasts: sync latest episodes from RSS feeds and remove old episodes.
+    ///
+    /// - Throws: `NetworkError` if the request fails.
+    func refreshAllPodcasts() async throws
 }
 
 /// Production implementation of `PodcastRepository` using `APIClient`.
@@ -143,6 +148,14 @@ final class APIPodcastRepository: PodcastRepository, @unchecked Sendable {
             "/api/v1/podcasts/custom",
             body: AddPodcastRequest(rssUrl: rssUrl),
             as: MessageResponse.self
+        )
+    }
+
+    func refreshAllPodcasts() async throws {
+        _ = try await client.post(
+            "/api/v1/podcasts/refresh",
+            body: EmptyBody(),
+            as: PodcastRefreshResponse.self
         )
     }
 }

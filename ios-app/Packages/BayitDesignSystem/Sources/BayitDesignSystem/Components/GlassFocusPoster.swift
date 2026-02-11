@@ -8,6 +8,7 @@ public struct GlassFocusPoster: View {
     let thumbnailURL: String?
     let title: String
     let subtitle: String?
+    let metadata: String?
     let badge: String?
     let width: CGFloat
     let aspectRatio: CGFloat
@@ -25,6 +26,7 @@ public struct GlassFocusPoster: View {
         thumbnailURL: String?,
         title: String,
         subtitle: String? = nil,
+        metadata: String? = nil,
         badge: String? = nil,
         width: CGFloat = TVDesignTokens.MinSize.posterWidth,
         aspectRatio: CGFloat = 2 / 3,
@@ -37,6 +39,7 @@ public struct GlassFocusPoster: View {
         self.thumbnailURL = thumbnailURL
         self.title = title
         self.subtitle = subtitle
+        self.metadata = metadata
         self.badge = badge
         self.width = width
         self.aspectRatio = aspectRatio
@@ -183,6 +186,13 @@ public struct GlassFocusPoster: View {
                 Text(subtitle)
                     .font(.system(size: TVDesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.secondary)
+                    .lineLimit(1)
+            }
+
+            if let metadata {
+                Text(metadata)
+                    .font(.system(size: TVDesignTokens.FontSize.xs))
+                    .foregroundStyle(DesignTokens.Text.muted)
                     .lineLimit(1)
             }
         }

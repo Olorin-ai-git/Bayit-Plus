@@ -82,3 +82,9 @@ struct PodcastSyncResponse: Decodable, Sendable {
     let message: String?
     let episodesAdded: Int?
 }
+
+/// Response from POST /api/v1/podcasts/refresh
+struct PodcastRefreshResponse: Decodable, Sendable {
+    let status: String
+    let message: String?
+}

@@ -1,3 +1,4 @@
+import BayitCore
 import Foundation
 import Observation
 
@@ -9,6 +10,7 @@ final class PodcastsViewModel {
     private(set) var categories: [PodcastCategory] = []
     private(set) var isLoading = false
     private(set) var isLoadingMore = false
+    private(set) var isSyncing = false
     private(set) var error: String?
     private(set) var currentPage = 1
     private(set) var hasMore = true
@@ -16,6 +18,7 @@ final class PodcastsViewModel {
     var selectedCategory: String?
 
     private let repository: any PodcastRepository
+    private let logger = BayitLogger(category: "Podcasts")
     private let pageSize = 20
 
     init(repository: any PodcastRepository) {
@@ -95,6 +98,14 @@ final class PodcastsViewModel {
 
     @MainActor
     func refresh() async {
+        isSyncing = true
+        do {
+            try await repository.refreshAllPodcasts()
+            logger.info("Podcast sync completed")
+        } catch {
+            logger.warning("Podcast sync failed (non-fatal): \(error.localizedDescription)")
+        }
+        isSyncing = false
         await loadInitial()
     }
 }

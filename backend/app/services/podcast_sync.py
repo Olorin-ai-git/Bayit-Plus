@@ -265,6 +265,55 @@ async def sync_podcast_episodes(podcast: Podcast, max_episodes: int = 20) -> int
     return new_episodes_added
 
 
+async def cleanup_old_episodes(podcast: Podcast, max_to_keep: int = 20) -> int:
+    """
+    Remove oldest episodes from a podcast, keeping only the N most recent.
+
+    Args:
+        podcast: The podcast document
+        max_to_keep: Maximum episodes to retain per podcast
+
+    Returns:
+        Number of episodes deleted
+    """
+    all_episodes = (
+        await PodcastEpisode.find({"podcast_id": str(podcast.id)})
+        .sort([("published_at", -1)])
+        .to_list(length=None)
+    )
+
+    total = len(all_episodes)
+    if total <= max_to_keep:
+        return 0
+
+    episodes_to_delete = all_episodes[max_to_keep:]
+    deleted = 0
+
+    for episode in episodes_to_delete:
+        try:
+            await episode.delete()
+            deleted += 1
+        except Exception as e:
+            logger.warning(f"Failed to delete episode {episode.title}: {str(e)}")
+
+    if deleted > 0:
+        podcast.episode_count = min(total, max_to_keep)
+        if all_episodes:
+            podcast.latest_episode_date = all_episodes[0].published_at
+        podcast.updated_at = datetime.utcnow()
+        try:
+            await podcast.save()
+        except Exception as e:
+            logger.warning(f"Failed to update podcast metadata: {str(e)}")
+
+    logger.info(
+        f"Cleanup {podcast.title}: deleted {deleted} old episodes, "
+        f"keeping {max_to_keep} most recent"
+    )
+
+    return deleted
+
+
 async def sync_all_podcasts(max_episodes: int = 20, max_concurrent: int = 10) -> dict:
     """
     Sync episodes for all active podcasts with RSS feeds using parallel processing.
