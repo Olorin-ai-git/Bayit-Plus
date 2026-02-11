@@ -34,7 +34,7 @@ struct TVPlayerView: View {
     @State private var showChapterList = false
     @State private var showAudioTracks = false
     @State private var showSpeedControl = false
-    @State private var showControlButtons = false
+    @State private var showControlButtons = true
     @State private var showSplitLanguagePicker = false
     @State private var showAILanguagePicker = false
 
@@ -78,28 +78,50 @@ struct TVPlayerView: View {
                 translationOverlay
 
                 if showControlButtons {
-                    if isLive {
-                        TVAIFeaturesPanel(
-                            isSubtitlesEnabled: liveSubtitlesVM?.isEnabled ?? false,
-                            isDubbingEnabled: liveDubbingVM?.isEnabled ?? false,
-                            isTriviaEnabled: triviaVM?.isEnabled ?? false,
-                            isSplitEnabled: splitModeEnabled,
-                            currentLanguage: selectedAILanguage,
-                            onSubtitlesTap: { toggleLiveTranslation() },
-                            onDubbingTap: { toggleLiveDubbing() },
-                            onTriviaTap: { toggleLiveTrivia() },
-                            onSplitTap: { showSplitLanguagePicker = true },
-                            onLanguageTap: { showAILanguagePicker = true }
+                    // Gradient scrim for readability
+                    VStack {
+                        Spacer()
+                        LinearGradient(
+                            colors: [.clear, .black.opacity(0.7)],
+                            startPoint: .top,
+                            endPoint: .bottom
                         )
-                    } else {
-                        TVPlayerControlBar(
-                            contentType: contentType,
-                            onSubtitles: { showSubtitleLanguagePicker = true },
-                            onDubbing: { showDubbingControls = true },
-                            onChapters: { showChapterList = true },
-                            onAudioTracks: { showAudioTracks = true },
-                            onSpeed: { showSpeedControl = true }
-                        )
+                        .frame(height: 200)
+                    }
+                    .ignoresSafeArea()
+                    .allowsHitTesting(false)
+
+                    // Progress bar + controls
+                    VStack(spacing: TVDesignTokens.Spacing.md) {
+                        Spacer()
+
+                        if !isLive {
+                            playerProgressBar
+                        }
+
+                        if isLive {
+                            TVAIFeaturesPanel(
+                                isSubtitlesEnabled: liveSubtitlesVM?.isEnabled ?? false,
+                                isDubbingEnabled: liveDubbingVM?.isEnabled ?? false,
+                                isTriviaEnabled: triviaVM?.isEnabled ?? false,
+                                isSplitEnabled: splitModeEnabled,
+                                currentLanguage: selectedAILanguage,
+                                onSubtitlesTap: { toggleLiveTranslation() },
+                                onDubbingTap: { toggleLiveDubbing() },
+                                onTriviaTap: { toggleLiveTrivia() },
+                                onSplitTap: { showSplitLanguagePicker = true },
+                                onLanguageTap: { showAILanguagePicker = true }
+                            )
+                        } else {
+                            TVPlayerControlBar(
+                                contentType: contentType,
+                                onSubtitles: { showSubtitleLanguagePicker = true },
+                                onDubbing: { showDubbingControls = true },
+                                onChapters: { showChapterList = true },
+                                onAudioTracks: { showAudioTracks = true },
+                                onSpeed: { showSpeedControl = true }
+                            )
+                        }
                     }
                 }
             }
@@ -116,7 +138,9 @@ struct TVPlayerView: View {
             switch direction {
             case .up: showControlButtons = true
             case .down: showControlButtons = false
-            default: break
+            case .left: Task { await mediaPlayer.skipBackward(seconds: 10) }
+            case .right: Task { await mediaPlayer.skipForward(seconds: 10) }
+            @unknown default: break
             }
         }
         .onExitCommand {
@@ -269,6 +293,75 @@ struct TVPlayerView: View {
         .frame(maxWidth: 500, alignment: .leading)
         .background(Color.black.opacity(0.75))
         .cornerRadius(TVDesignTokens.Radius.lg)
+    }
+
+    // MARK: - Progress Bar
+
+    private var playerProgressBar: some View {
+        VStack(spacing: TVDesignTokens.Spacing.xs) {
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    // Track
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.white.opacity(0.2))
+                        .frame(height: 6)
+
+                    // Buffered
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(Color.white.opacity(0.3))
+                        .frame(
+                            width: geo.size.width * bufferedFraction,
+                            height: 6
+                        )
+
+                    // Progress
+                    RoundedRectangle(cornerRadius: 3)
+                        .fill(DesignTokens.Primary.p400)
+                        .frame(
+                            width: geo.size.width * progressFraction,
+                            height: 6
+                        )
+                }
+            }
+            .frame(height: 6)
+
+            HStack {
+                Text(formatTime(mediaPlayer.currentTime))
+                    .font(.system(size: TVDesignTokens.FontSize.sm).monospacedDigit())
+                    .foregroundStyle(DesignTokens.Text.secondary)
+
+                Spacer()
+
+                if mediaPlayer.duration > 0 {
+                    Text("-\(formatTime(mediaPlayer.duration - mediaPlayer.currentTime))")
+                        .font(.system(size: TVDesignTokens.FontSize.sm).monospacedDigit())
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+            }
+        }
+        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+    }
+
+    private var progressFraction: CGFloat {
+        guard mediaPlayer.duration > 0 else { return 0 }
+        return min(CGFloat(mediaPlayer.currentTime / mediaPlayer.duration), 1.0)
+    }
+
+    private var bufferedFraction: CGFloat {
+        guard mediaPlayer.duration > 0 else { return 0 }
+        return min(CGFloat(mediaPlayer.bufferedTime / mediaPlayer.duration), 1.0)
+    }
+
+    private func formatTime(_ seconds: TimeInterval) -> String {
+        guard seconds.isFinite, seconds >= 0 else { return "00:00" }
+        let total = Int(seconds)
+        let h = total / 3600
+        let m = (total % 3600) / 60
+        let s = total % 60
+        if h > 0 {
+            return String(format: "%d:%02d:%02d", h, m, s)
+        }
+        return String(format: "%02d:%02d", m, s)
     }
 
     // MARK: - Subtitle Overlay (VOD)
