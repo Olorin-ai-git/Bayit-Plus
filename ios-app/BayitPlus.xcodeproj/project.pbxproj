@@ -651,6 +651,7 @@
 		D8BB7FC99B6E7DDF3E910969 /* BayitAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 7C1DCBDFC53FA5738F84A8E6 /* BayitAuth */; };
 		D8EF6AAA35DCB09D6B92BD00 /* TVDirectMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B661BB709DFBE9A647D91FD5 /* TVDirectMessagesView.swift */; };
 		D913205BA7070BF94F8C1D94 /* CatchUpSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2AFB842971AD830ABB75EED /* CatchUpSummaryView.swift */; };
+		D959652C8BC244C7A01C5DA1 /* HTMLSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B469287B62CA65BF355EC0 /* HTMLSanitizer.swift */; };
 		D9681F2022A0198DED6A31B9 /* CatchUpViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29A6BE0E57EC39C027E17376 /* CatchUpViewModel.swift */; };
 		D984D67466246370F1296FE0 /* BiometricViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 610B2C9E3A479B3274243898 /* BiometricViewModel.swift */; };
 		D98758E2757F63E8563B2592 /* CultureRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08A77A34B4809190EAF25305 /* CultureRepository.swift */; };
@@ -2886,6 +2887,7 @@
 				84F64C7BE85E3210DBA703C0 /* XCLocalSwiftPackageReference "." */,
 			);
 			preferredProjectObjectVersion = 77;
+			productRefGroup = 74595CB000E97107005642D9 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -3234,6 +3236,7 @@
 				489674BFE5A202F0C51869D9 /* WidgetsViewModel.swift in Sources */,
 				B55EDFCAC6697DE942726545 /* YnetMivzakimViewModel.swift in Sources */,
 				2C17C43592225B637A01065C /* YoungstersViewModel.swift in Sources */,
+				D959652C8BC244C7A01C5DA1 /* HTMLSanitizer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
