@@ -27,8 +27,6 @@ struct TVWidgetDockView: View {
 
     private var dockBar: some View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
-            dockHandle
-
             if !isCollapsed {
                 ForEach(widgets) { widget in
                     DockPillButton(
@@ -62,16 +60,6 @@ struct TVWidgetDockView: View {
         .shadow(color: .black.opacity(0.4), radius: 20, y: 4)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Widget Dock")
-    }
-
-    // MARK: - Dock Handle
-
-    private var dockHandle: some View {
-        Image(systemName: "square.grid.2x2.fill")
-            .font(.system(size: 20, weight: .medium))
-            .foregroundStyle(DesignTokens.Primary.p300)
-            .frame(width: 48)
-            .accessibilityLabel("\(widgets.count) minimized widgets")
     }
 
     // MARK: - Collapse Toggle

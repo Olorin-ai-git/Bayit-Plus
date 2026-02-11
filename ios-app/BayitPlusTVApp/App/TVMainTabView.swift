@@ -119,7 +119,7 @@ struct TVMainTabView: View {
                             onRestore: { widgetId in vm.toggleMinimize(widgetId: widgetId) },
                             onCloseDock: { vm.hideDock() }
                         )
-                        .padding(.bottom, TVDesignTokens.Spacing.xl)
+                        .padding(.bottom, TVDesignTokens.Spacing.sm)
                     }
                 }
 
