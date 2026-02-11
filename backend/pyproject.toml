@@ -68,7 +68,8 @@ dependencies = [
     "exa-py (>=2.2.0,<3.0.0)",
     "better-profanity (>=0.7.0,<0.8.0)",
     "olorin-email",
-    "pyotp (>=2.9.0,<3.0.0)"
+    "pyotp (>=2.9.0,<3.0.0)",
+    "qrcode (>=8.2,<9.0)"
 ]
 
 
