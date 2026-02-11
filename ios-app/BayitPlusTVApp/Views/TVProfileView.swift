@@ -7,6 +7,7 @@ import SwiftUI
 struct TVProfileView: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: ProfileViewModel?
 
     var body: some View {
@@ -44,6 +45,7 @@ struct TVProfileView: View {
             }
 
             preferencesSection(profile)
+            signOutSection
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xl)
     }
@@ -150,6 +152,38 @@ struct TVProfileView: View {
         .padding(TVDesignTokens.Spacing.lg)
         .background(DesignTokens.Glass.bg)
         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
+    }
+
+    private var signOutSection: some View {
+        VStack(spacing: TVDesignTokens.Spacing.lg) {
+            Button {
+                Task {
+                    await authManager.signOut()
+                    coordinator.showingAuth = true
+                    coordinator.selectedTab = .home
+                }
+            } label: {
+                HStack(spacing: TVDesignTokens.Spacing.md) {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
+                        .font(.system(size: 24))
+                        .foregroundStyle(.red)
+                    Text("Sign Out")
+                        .font(.system(size: TVDesignTokens.FontSize.lg, weight: .medium))
+                        .foregroundStyle(.red)
+                    Spacer()
+                }
+                .padding(TVDesignTokens.Spacing.lg)
+                .background(Color.red.opacity(0.08))
+                .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
+                .overlay(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
+                        .stroke(Color.red.opacity(0.2), lineWidth: 1)
+                )
+            }
+            .buttonStyle(.card)
+            .tvFocusStyle()
+        }
+        .padding(.top, TVDesignTokens.Spacing.xl)
     }
 
     private var loadingState: some View {
