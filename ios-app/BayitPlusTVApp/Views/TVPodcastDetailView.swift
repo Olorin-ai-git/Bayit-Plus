@@ -86,7 +86,7 @@ struct TVPodcastDetailView: View {
                 }
 
                 if let description = detail.description {
-                    Text(description)
+                    Text(description.htmlStripped)
                         .font(.system(size: TVDesignTokens.FontSize.lg))
                         .foregroundStyle(DesignTokens.Text.secondary)
                         .lineLimit(6)
@@ -161,7 +161,7 @@ struct TVPodcastDetailView: View {
                         .lineLimit(2)
 
                     if let description = episode.description {
-                        Text(description)
+                        Text(description.htmlStripped)
                             .font(.system(size: TVDesignTokens.FontSize.md))
                             .foregroundStyle(DesignTokens.Text.secondary)
                             .lineLimit(3)

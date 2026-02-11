@@ -175,7 +175,7 @@ final class WidgetPlayerViewModel {
                 throw WidgetStreamError.missingId("live_channel_id")
             }
             let stream = try await mediaRepo.fetchLiveStream(channelId: channelId)
-            return (stream.url ?? stream.directUrl ?? "", .liveTV)
+            return (stream.resolvedURL ?? "", .liveTV)
 
         case .radio:
             guard let stationId = content.stationId ?? content.contentId else {
@@ -189,7 +189,7 @@ final class WidgetPlayerViewModel {
                 throw WidgetStreamError.missingId("content_id")
             }
             let stream = try await mediaRepo.fetchStream(contentId: id, quality: nil)
-            return (stream.url ?? stream.directUrl ?? "", .vod)
+            return (stream.resolvedURL ?? "", .vod)
 
         case .podcast:
             // Match web: fetch podcast show, get latest episode, use episode audio URL
@@ -211,7 +211,7 @@ final class WidgetPlayerViewModel {
                 throw WidgetStreamError.missingId("audiobook_id")
             }
             let stream = try await mediaRepo.fetchStream(contentId: id, quality: nil)
-            return (stream.url ?? stream.directUrl ?? "", .audiobook)
+            return (stream.resolvedURL ?? "", .audiobook)
 
         case .iframe, .custom:
             throw WidgetStreamError.nonPlayable

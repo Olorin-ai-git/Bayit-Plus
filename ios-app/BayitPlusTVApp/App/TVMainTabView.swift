@@ -43,17 +43,13 @@ struct TVMainTabView: View {
                     .tabItem { Label(TVTab.youngsters.title, systemImage: TVTab.youngsters.iconName) }
                     .tag(TVTab.youngsters)
 
-                TVJudaismView()
-                    .tabItem { Label(TVTab.judaism.title, systemImage: TVTab.judaism.iconName) }
-                    .tag(TVTab.judaism)
-
-                TVFlowsView()
-                    .tabItem { Label(TVTab.flows.title, systemImage: TVTab.flows.iconName) }
-                    .tag(TVTab.flows)
-
                 TVCultureView()
                     .tabItem { Label(TVTab.culture.title, systemImage: TVTab.culture.iconName) }
                     .tag(TVTab.culture)
+
+                TVWidgetsView()
+                    .tabItem { Label("Widgets", systemImage: "square.grid.2x2") }
+                    .tag(TVTab.settings)
 
                 TVHouseholdView()
                     .tabItem { Label(TVTab.household.title, systemImage: TVTab.household.iconName) }
@@ -158,15 +154,15 @@ struct TVMainTabView: View {
 
         switch contentType {
         case .liveChannel, .live:
-            if let channelId = content.liveChannelId {
+            if let channelId = content.liveChannelId ?? content.contentId {
                 coordinator.presentPlayer(contentId: channelId, contentType: .liveTV, channelId: channelId)
             }
         case .radio:
-            if let stationId = content.stationId {
+            if let stationId = content.stationId ?? content.contentId {
                 coordinator.presentPlayer(contentId: stationId, contentType: .radio)
             }
         case .podcast:
-            if let podcastId = content.podcastId {
+            if let podcastId = content.podcastId ?? content.contentId {
                 coordinator.fullscreenRoute = .podcastDetail(showId: podcastId)
             }
         case .vod:

@@ -123,44 +123,65 @@ struct TVYoungstersView: View {
         }
     }
 
+    private let contentColumns = [
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
+    ]
+
     private func contentShelf(_ vm: YoungstersViewModel) -> some View {
-        GlassContentShelf(
-            title: localization.t("youngsters.items"),
-            items: vm.items
-        ) { item in
-            GlassFocusPoster(
-                thumbnailURL: item.thumbnail,
-                title: item.title ?? localization.t("youngsters.title"),
-                subtitle: item.duration,
-                aspectRatio: 16 / 9,
-                onSelect: {
-                    coordinator.presentPlayer(
-                        contentId: item.id,
-                        contentType: TVContentTypeMapper.map(item.type)
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+            Text(localization.t("youngsters.categories.all"))
+                .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+
+            LazyVGrid(columns: contentColumns, spacing: TVDesignTokens.Spacing.focusGap) {
+                ForEach(vm.items) { item in
+                    GlassFocusPoster(
+                        thumbnailURL: item.thumbnail,
+                        title: item.title ?? localization.t("youngsters.title"),
+                        subtitle: item.duration,
+                        aspectRatio: 16 / 9,
+                        onSelect: {
+                            coordinator.presentPlayer(
+                                contentId: item.id,
+                                contentType: TVContentTypeMapper.map(item.type)
+                            )
+                        }
                     )
                 }
-            )
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
         }
     }
 
     private func trendingShelf(_ vm: YoungstersViewModel) -> some View {
-        GlassContentShelf(
-            title: localization.t("youngsters.categories.trending"),
-            items: vm.trending
-        ) { item in
-            GlassFocusPoster(
-                thumbnailURL: item.thumbnail,
-                title: item.title ?? localization.t("youngsters.title"),
-                subtitle: item.duration,
-                badge: localization.t("youngsters.categories.trending"),
-                aspectRatio: 16 / 9,
-                onSelect: {
-                    coordinator.presentPlayer(
-                        contentId: item.id,
-                        contentType: TVContentTypeMapper.map(item.type)
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+            Text(localization.t("youngsters.categories.trending"))
+                .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+
+            LazyVGrid(columns: contentColumns, spacing: TVDesignTokens.Spacing.focusGap) {
+                ForEach(vm.trending) { item in
+                    GlassFocusPoster(
+                        thumbnailURL: item.thumbnail,
+                        title: item.title ?? localization.t("youngsters.title"),
+                        subtitle: item.duration,
+                        badge: localization.t("youngsters.categories.trending"),
+                        aspectRatio: 16 / 9,
+                        onSelect: {
+                            coordinator.presentPlayer(
+                                contentId: item.id,
+                                contentType: TVContentTypeMapper.map(item.type)
+                            )
+                        }
                     )
                 }
-            )
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
         }
     }
 

@@ -206,6 +206,7 @@
 		4133FF44BC1178684F085378 /* TVAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F48529CF76413CC39200A8E4 /* TVAuthView.swift */; };
 		415A54C6B20DE744704F0A3D /* FamilyControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4082384E2CF43F4AA8DDA1C0 /* FamilyControlsView.swift */; };
 		41ADE8455C1C215BE941507F /* RewardModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F706A758CE6D58AA2F3C4882 /* RewardModels.swift */; };
+		42F94CA69B6468899599B1B0 /* TVWidgetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3532FBAE8A90D657EA11742B /* TVWidgetsView.swift */; };
 		431B29574074BE1796843F68 /* RecordingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EDB9B3710EDC413E11255F9 /* RecordingsViewModel.swift */; };
 		43E8231C5599E8B87574C410 /* WatchPartyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBEE64A7CA57C480C7E9829A /* WatchPartyViewModel.swift */; };
 		442F41F27A4EAED136B1DD4F /* CreditBalanceWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DED23DA31566A210F56928A7 /* CreditBalanceWidgetView.swift */; };
@@ -714,6 +715,7 @@
 		ED9B707734FC53435AE64626 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFF2AD516292B8315D7ECE88 /* LoginView.swift */; };
 		EDAE7241C706B0AF5A126DE8 /* WidgetRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16F4CD1D82C1DD99FC126F02 /* WidgetRepository.swift */; };
 		EE3667D533DDCAC303958D21 /* AudioTrack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08FA9C0C5E19F1A2583C88F9 /* AudioTrack.swift */; };
+		EE56F8B1CE6AE06039114E17 /* HTMLSanitizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B469287B62CA65BF355EC0 /* HTMLSanitizer.swift */; };
 		F005AE53DDA9AA9328DD37E8 /* PiPWidgetContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 949EF00A25F174AD31C0E318 /* PiPWidgetContainerView.swift */; };
 		F0C947D28A98EE2A5633C3CF /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2788B7FC834E1779222C655 /* SearchViewModel.swift */; };
 		F0DAB5CACF0D395D8B73A162 /* CultureContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70839C0DAD03F6DA76DF2211 /* CultureContentViewModel.swift */; };
@@ -895,6 +897,7 @@
 		317924C50B5BDA26566ABBBE /* CultureCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CultureCardView.swift; sourceTree = "<group>"; };
 		3188F7D5736CCE31900DE8B6 /* WidgetModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetModels.swift; sourceTree = "<group>"; };
 		318BAA365A416E228403C8FC /* JoinPartySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoinPartySheet.swift; sourceTree = "<group>"; };
+		31B469287B62CA65BF355EC0 /* HTMLSanitizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTMLSanitizer.swift; sourceTree = "<group>"; };
 		31E0B45AEECD01AC172F54CC /* MediaModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaModels.swift; sourceTree = "<group>"; };
 		328B8BE9C8D3E600FCE7FEBD /* TrendingNewsTimelineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingNewsTimelineProvider.swift; sourceTree = "<group>"; };
 		32A0D448BC61438D878C974C /* TVAvatarViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVAvatarViewModel.swift; sourceTree = "<group>"; };
@@ -903,6 +906,7 @@
 		33DDCB36F3528B6BB055905F /* PresenceDetectionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresenceDetectionService.swift; sourceTree = "<group>"; };
 		33FFB4D2C781073C666487C8 /* LLMSearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSearchViewModel.swift; sourceTree = "<group>"; };
 		349678CD4F9ADE71CD341917 /* SubtitleLanguageInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleLanguageInfo.swift; sourceTree = "<group>"; };
+		3532FBAE8A90D657EA11742B /* TVWidgetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVWidgetsView.swift; sourceTree = "<group>"; };
 		357B9236ED1F00136B627F79 /* CategoryRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryRow.swift; sourceTree = "<group>"; };
 		35A0C9107B68BEC156C5B603 /* TVChatbotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVChatbotView.swift; sourceTree = "<group>"; };
 		362047F034E41BED7597219B /* LiveTVRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTVRepository.swift; sourceTree = "<group>"; };
@@ -1555,6 +1559,7 @@
 				80E7CC20238D32DB6CB2C61B /* TVTriviaView.swift */,
 				9F470DFCC581F94E00B2D6BD /* TVVODView.swift */,
 				A1DF6CDCDC51AC0926C0E1DC /* TVWatchPartyView.swift */,
+				3532FBAE8A90D657EA11742B /* TVWidgetsView.swift */,
 				44D1398DC98DCFE8C5C9B07E /* TVYoungstersView.swift */,
 			);
 			path = Views;
@@ -1791,6 +1796,14 @@
 			path = Player;
 			sourceTree = "<group>";
 		};
+		6681E4E4A653DD0292D82AD4 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				31B469287B62CA65BF355EC0 /* HTMLSanitizer.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		6747AD3949F4168CA401393B /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
@@ -1924,6 +1937,7 @@
 				B6AAA1A87D311CFF1D3E8FFC /* AppIntents */,
 				F3659BD044372D3CEDE056FF /* Debug */,
 				57EF7C48E06C1FD46C43943B /* Docs */,
+				6681E4E4A653DD0292D82AD4 /* Helpers */,
 				B14F159E05862242DD3F6899 /* Models */,
 				B79A154F1B0871FAC20E4B0E /* Navigation */,
 				A131CFCBF2A5F0BA7709E8D4 /* Repositories */,
@@ -2845,11 +2859,15 @@
 				LastUpgradeCheck = 1600;
 				TargetAttributes = {
 					394EC60E34830ABD48F10F53 = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = 963B7732N5;
+						ProvisioningStyle = Automatic;
+					};
+					7E91810E27573645E0CCEF49 = {
+						DevelopmentTeam = 963B7732N5;
 						ProvisioningStyle = Automatic;
 					};
 					A8FA7EC12E215FE55BD1394E = {
-						DevelopmentTeam = "";
+						DevelopmentTeam = 963B7732N5;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -3187,6 +3205,7 @@
 				21D150BDB130C6C41B1D591B /* TVWidgetContainerView.swift in Sources */,
 				BE6F246B7803A07BBE5E52C1 /* TVWidgetDockView.swift in Sources */,
 				26F6033D48178F0861166CEA /* TVWidgetSidebarView.swift in Sources */,
+				42F94CA69B6468899599B1B0 /* TVWidgetsView.swift in Sources */,
 				36D690A35EEA5BED075E4DA6 /* TVYoungstersView.swift in Sources */,
 				A3F2ADDDB0C8CE179B39C132 /* TVZmanimView.swift in Sources */,
 				64AF9C6F0CCE9B88F2C8B254 /* TopShelfDataProvider.swift in Sources */,
@@ -3407,6 +3426,7 @@
 				05C325C9CF94B1D79C8B1350 /* GlassAIFeaturesPanel.swift in Sources */,
 				398A05C66F6C5297A9828346 /* GlassAILanguagePickerView.swift in Sources */,
 				A2A9B5F54FCE143CDFB34F85 /* GlassTabBar.swift in Sources */,
+				EE56F8B1CE6AE06039114E17 /* HTMLSanitizer.swift in Sources */,
 				C6BF6BA44D23F27ED427B4E9 /* HapticFeedbackService.swift in Sources */,
 				53B088A04039BBD2B3FA19F5 /* HelpView.swift in Sources */,
 				7DDB9E1BD759BE863A2F0046 /* HelpViewModel.swift in Sources */,
@@ -3666,7 +3686,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3675,7 +3695,7 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus.tvos;
-				PRODUCT_NAME = "Bayit+ TV";
+				PRODUCT_NAME = BayitPlusTV;
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 17.0;
@@ -3689,7 +3709,7 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3698,7 +3718,7 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus.tvos;
-				PRODUCT_NAME = "Bayit+ TV";
+				PRODUCT_NAME = BayitPlusTV;
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 17.0;
@@ -3774,6 +3794,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Extensions/WidgetExtension/BayitWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Extensions/WidgetExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -3783,7 +3805,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus.widgets;
-				PRODUCT_NAME = "Bayit+ Widgets";
+				PRODUCT_NAME = BayitWidgets;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3798,7 +3820,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3807,7 +3829,7 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus;
-				PRODUCT_NAME = "Bayit+";
+				PRODUCT_NAME = BayitPlus;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3879,7 +3901,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -3888,7 +3910,7 @@
 				);
 				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus;
-				PRODUCT_NAME = "Bayit+";
+				PRODUCT_NAME = BayitPlus;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3898,6 +3920,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Extensions/WidgetExtension/BayitWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = Extensions/WidgetExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -3907,7 +3931,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tv.bayit.plus.widgets;
-				PRODUCT_NAME = "Bayit+ Widgets";
+				PRODUCT_NAME = BayitWidgets;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.9;
 				TARGETED_DEVICE_FAMILY = "1,2";

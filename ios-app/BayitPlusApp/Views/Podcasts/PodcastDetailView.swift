@@ -115,7 +115,7 @@ struct PodcastDetailView: View {
                 }
 
                 if let description = detail.description {
-                    Text(description)
+                    Text(description.htmlStripped)
                         .font(.system(size: DesignTokens.FontSize.sm))
                         .foregroundColor(DesignTokens.Text.secondary)
                         .padding(.top, DesignTokens.Spacing.xs)

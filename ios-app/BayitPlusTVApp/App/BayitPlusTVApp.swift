@@ -4,6 +4,7 @@ import BayitLocalization
 import BayitMedia
 import BayitNetworking
 import FirebaseCore
+import Foundation
 import SwiftUI
 
 @main
@@ -62,32 +63,82 @@ struct BayitPlusTVApp: App {
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
                 .task {
-                    #if DEBUG
-                    if ProcessInfo.processInfo.arguments.contains("-skipAuth") {
-                        let devUser = BayitUser(
-                            id: "dev-user",
-                            email: "dev@bayit.tv",
-                            displayName: "Dev User",
-                            photoURL: nil,
-                            role: .admin,
-                            isActive: true,
-                            subscription: nil,
-                            isBetaUser: true,
-                            isVerified: true,
-                            createdAt: nil,
-                            lastLogin: nil
-                        )
-                        try? authManager.signInFromDevicePairing(
-                            accessToken: "dev-token",
-                            refreshToken: nil,
-                            user: devUser
-                        )
-                        coordinator.showingAuth = false
+                    if ProcessInfo.processInfo.arguments.contains("-autoLogin") {
+                        await loginWithCredentials()
                         return
                     }
-                    #endif
                     coordinator.showingAuth = !authManager.isAuthenticated
                 }
+        }
+    }
+
+    /// Authenticate via backend /auth/login using credentials from launch environment.
+    /// Pass -autoLogin flag and set LOGIN_EMAIL / LOGIN_PASSWORD environment variables.
+    private func loginWithCredentials() async {
+        let email = ProcessInfo.processInfo.environment["LOGIN_EMAIL"] ?? ""
+        let password = ProcessInfo.processInfo.environment["LOGIN_PASSWORD"] ?? ""
+        guard !email.isEmpty, !password.isEmpty else {
+            coordinator.showingAuth = true
+            return
+        }
+
+        let appConfig = AppConfiguration()
+        let loginURL = appConfig.apiBaseURL.appendingPathComponent("auth/login")
+
+        var request = URLRequest(url: loginURL)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        struct LoginBody: Encodable { let email: String; let password: String }
+        request.httpBody = try? JSONEncoder().encode(LoginBody(email: email, password: password))
+
+        do {
+            let (data, _) = try await URLSession.shared.data(for: request)
+
+            struct LoginResponse: Decodable {
+                let access_token: String
+                let refresh_token: String?
+                let user: UserPayload?
+            }
+            struct UserPayload: Decodable {
+                let id: String?
+                let email: String?
+                let display_name: String?
+                let role: String?
+                let is_beta_user: Bool?
+            }
+
+            let response = try JSONDecoder().decode(LoginResponse.self, from: data)
+
+            let role: UserRole = {
+                switch response.user?.role {
+                case "super_admin", "admin": return .admin
+                default: return .user
+                }
+            }()
+
+            let user = BayitUser(
+                id: response.user?.id ?? "",
+                email: response.user?.email ?? email,
+                displayName: response.user?.display_name ?? "",
+                photoURL: nil,
+                role: role,
+                isActive: true,
+                subscription: nil,
+                isBetaUser: response.user?.is_beta_user ?? false,
+                isVerified: true,
+                createdAt: nil,
+                lastLogin: nil
+            )
+
+            try authManager.signInFromDevicePairing(
+                accessToken: response.access_token,
+                refreshToken: response.refresh_token,
+                user: user
+            )
+            coordinator.showingAuth = false
+        } catch {
+            coordinator.showingAuth = true
         }
     }
 }

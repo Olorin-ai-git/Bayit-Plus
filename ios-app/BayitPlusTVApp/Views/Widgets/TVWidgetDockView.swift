@@ -3,14 +3,17 @@ import BayitDesignSystem
 import SwiftUI
 
 /// Horizontal widget dock at the bottom of the tvOS screen.
-/// Shows minimized widgets as focusable circular icons.
-/// Matches the web desktop MinimizedWidgetDock layout.
+/// Shows minimized widgets as icon-only focusable circles.
+/// When focused, a floating label appears above the item.
+/// Supports collapse/expand toggle for a compact mode.
 struct TVWidgetDockView: View {
 
     let widgets: [WidgetItem]
     let isDockVisible: Bool
     let onRestore: (String) -> Void
     let onCloseDock: () -> Void
+
+    @State private var isCollapsed = false
 
     var body: some View {
         if isDockVisible && !widgets.isEmpty {
@@ -19,68 +22,101 @@ struct TVWidgetDockView: View {
                 dockBar
             }
             .transition(.move(edge: .bottom).combined(with: .opacity))
-            .animation(.spring(duration: 0.3, bounce: 0.15), value: isDockVisible)
+            .animation(.spring(duration: 0.35, bounce: 0.12), value: isDockVisible)
         }
     }
 
+    // MARK: - Dock Bar
+
     private var dockBar: some View {
-        HStack(spacing: TVDesignTokens.Spacing.focusGap) {
-            ForEach(widgets) { widget in
-                widgetIcon(widget)
+        HStack(spacing: TVDesignTokens.Spacing.md) {
+            dockHandle
+
+            if !isCollapsed {
+                ForEach(widgets) { widget in
+                    DockPillButton(
+                        widget: widget,
+                        onRestore: onRestore
+                    )
+                }
+
+                Divider()
+                    .frame(height: 44)
+                    .background(DesignTokens.Glass.borderLight)
             }
 
+            collapseToggle
             closeButton
         }
+        .focusSection()
+        .animation(.spring(duration: 0.3, bounce: 0.1), value: isCollapsed)
         .padding(.horizontal, TVDesignTokens.Spacing.xl)
-        .padding(.vertical, TVDesignTokens.Spacing.lg)
-        .background(DesignTokens.Glass.bgStrong)
-        .clipShape(Capsule())
+        .padding(.vertical, TVDesignTokens.Spacing.md)
+        .background {
+            ZStack {
+                Color.black.opacity(0.3)
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                    .fill(.thinMaterial)
+                    .environment(\.colorScheme, .dark)
+            }
+        }
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
         .overlay(
-            Capsule().stroke(DesignTokens.Glass.border, lineWidth: 1)
+            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                .stroke(DesignTokens.Glass.border, lineWidth: 2)
         )
-        .shadow(color: .black.opacity(0.4), radius: 16, y: -4)
+        .shadow(color: .black.opacity(0.5), radius: 24, y: -6)
         .padding(.bottom, TVDesignTokens.Spacing.lg)
-        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Widget Dock")
     }
 
-    private func widgetIcon(_ widget: WidgetItem) -> some View {
+    // MARK: - Dock Handle
+
+    private var dockHandle: some View {
+        VStack(spacing: 4) {
+            Image(systemName: "square.grid.2x2.fill")
+                .font(.system(size: 20, weight: .medium))
+                .foregroundStyle(DesignTokens.Primary.p300)
+
+            Text("\(widgets.count)")
+                .font(.system(size: TVDesignTokens.FontSize.xs, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.muted)
+        }
+        .frame(width: 56)
+        .accessibilityLabel("\(widgets.count) minimized widgets")
+    }
+
+    // MARK: - Collapse Toggle
+
+    private var collapseToggle: some View {
         Button {
-            onRestore(widget.id)
+            isCollapsed.toggle()
         } label: {
-            VStack(spacing: TVDesignTokens.Spacing.xs) {
-                ZStack {
-                    Circle()
-                        .fill(Color.white.opacity(0.1))
-                        .frame(width: 64, height: 64)
-                        .overlay(
-                            Circle().stroke(DesignTokens.Glass.borderLight, lineWidth: 1)
-                        )
+            ZStack {
+                Circle()
+                    .fill(Color.white.opacity(0.08))
+                    .frame(width: 48, height: 48)
+                    .overlay(
+                        Circle().stroke(DesignTokens.Glass.borderLight, lineWidth: 1)
+                    )
 
-                    Image(systemName: iconName(for: widget))
-                        .font(.system(size: 28))
-                        .foregroundStyle(DesignTokens.Text.primary)
-                }
-
-                Text(widget.title)
-                    .font(.system(size: TVDesignTokens.FontSize.xs))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-                    .lineLimit(1)
-                    .frame(maxWidth: 80)
+                Image(systemName: isCollapsed
+                    ? "arrow.left.and.right"
+                    : "arrow.right.and.left"
+                )
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundStyle(DesignTokens.Text.secondary)
+                .rotationEffect(.degrees(isCollapsed ? 0 : 180))
             }
-            .frame(
-                minWidth: TVDesignTokens.MinSize.focusableWidth,
-                minHeight: TVDesignTokens.MinSize.focusableHeight
-            )
         }
         .buttonStyle(.card)
-        .accessibilityLabel("Restore \(widget.title)")
+        .tvFocusStyle()
+        .accessibilityLabel(isCollapsed ? "Expand dock" : "Collapse dock")
     }
 
-    private func iconName(for widget: WidgetItem) -> String {
-        widget.content?.contentType?.iconName ?? "square.grid.2x2"
-    }
+    // MARK: - Close Button
 
     private var closeButton: some View {
         Button {
@@ -89,15 +125,108 @@ struct TVWidgetDockView: View {
             ZStack {
                 Circle()
                     .fill(Color.white.opacity(0.08))
-                    .frame(width: 40, height: 40)
+                    .frame(width: 48, height: 48)
+                    .overlay(
+                        Circle().stroke(DesignTokens.Glass.borderLight, lineWidth: 1)
+                    )
 
                 Image(systemName: "xmark")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(DesignTokens.Text.muted)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(DesignTokens.Text.secondary)
             }
         }
         .buttonStyle(.card)
+        .tvFocusStyle()
         .accessibilityLabel("Close dock")
+    }
+}
+
+// MARK: - Dock Pill Button
+
+/// Focusable icon button for a single minimized widget.
+/// Shows a floating title label above the icon when focused.
+private struct DockPillButton: View {
+
+    let widget: WidgetItem
+    let onRestore: (String) -> Void
+
+    var body: some View {
+        Button {
+            onRestore(widget.id)
+        } label: {
+            DockPillLabel(widget: widget)
+        }
+        .buttonStyle(.card)
+        .tvFocusStyle()
+        .accessibilityLabel("Restore \(widget.title)")
+    }
+}
+
+// MARK: - Dock Pill Label (focus-aware)
+
+/// Icon circle that displays a floating title tooltip when focused.
+private struct DockPillLabel: View {
+    @Environment(\.isFocused) private var isFocused
+
+    let widget: WidgetItem
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(badgeColor.opacity(0.2))
+                .frame(width: 56, height: 56)
+                .overlay(
+                    Circle()
+                        .stroke(badgeColor.opacity(0.4), lineWidth: 1.5)
+                )
+
+            Image(systemName: iconName)
+                .font(.system(size: 24, weight: .medium))
+                .foregroundStyle(badgeColor)
+        }
+        .overlay(alignment: .top) {
+            if isFocused {
+                focusLabel
+                    .offset(y: -40)
+                    .transition(.opacity.combined(with: .scale(scale: 0.8)))
+            }
+        }
+        .animation(
+            .spring(duration: 0.25, bounce: 0.15),
+            value: isFocused
+        )
+    }
+
+    private var focusLabel: some View {
+        Text(widget.title)
+            .font(.system(size: TVDesignTokens.FontSize.xs, weight: .semibold))
+            .foregroundStyle(DesignTokens.Text.primary)
+            .lineLimit(1)
+            .padding(.horizontal, TVDesignTokens.Spacing.sm)
+            .padding(.vertical, TVDesignTokens.Spacing.xxs)
+            .background {
+                Capsule()
+                    .fill(.thinMaterial)
+                    .environment(\.colorScheme, .dark)
+            }
+            .overlay(
+                Capsule().stroke(DesignTokens.Glass.borderLight, lineWidth: 1)
+            )
+    }
+
+    private var iconName: String {
+        widget.content?.contentType?.iconName ?? "square.grid.2x2"
+    }
+
+    private var badgeColor: Color {
+        switch widget.content?.contentType {
+        case .liveChannel, .live: return DesignTokens.Primary.p400
+        case .radio: return DesignTokens.Warning.default
+        case .podcast: return DesignTokens.Success.default
+        case .vod, .audiobook: return DesignTokens.Primary.p300
+        case .iframe: return DesignTokens.Text.secondary
+        default: return DesignTokens.Text.muted
+        }
     }
 }
 #endif

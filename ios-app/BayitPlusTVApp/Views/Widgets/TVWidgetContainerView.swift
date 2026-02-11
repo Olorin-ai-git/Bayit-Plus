@@ -1,235 +1,266 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitMedia
 import SwiftUI
 
-/// Compact widget card for the tvOS sidebar. Shows content info, playback
-/// controls, and minimize/close actions. Sized for a sidebar column.
+/// Widget card for the tvOS sidebar with poster art resolved from APIs,
+/// content details, and playback controls. Glassmorphic design for 10-foot UI.
 struct TVWidgetContainerView: View {
 
     let widget: WidgetItem
     let onMinimize: () -> Void
     let onPlay: () -> Void
 
+    @Environment(TVRepositoryProvider.self) private var repos
+    @State private var playerVM: WidgetPlayerViewModel?
+
     var body: some View {
-        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            headerRow
-            contentPreview
-            transportRow
+        VStack(alignment: .leading, spacing: 0) {
+            posterSection
+            infoSection
         }
-        .padding(TVDesignTokens.Spacing.lg)
-        .background(DesignTokens.Glass.bgMedium)
+        .background {
+            ZStack {
+                Color.black.opacity(0.25)
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
+                    .fill(.thinMaterial)
+                    .environment(\.colorScheme, .dark)
+            }
+        }
         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
         .overlay(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
-                .stroke(DesignTokens.Glass.border, lineWidth: 1)
+                .stroke(
+                    DesignTokens.Glass.border,
+                    lineWidth: 2
+                )
         )
-    }
-
-    // MARK: - Header
-
-    private var headerRow: some View {
-        HStack(spacing: TVDesignTokens.Spacing.md) {
-            Image(systemName: iconName)
-                .font(.system(size: 20))
-                .foregroundStyle(badgeColor)
-                .frame(width: 36, height: 36)
-                .background(badgeColor.opacity(0.15))
-                .clipShape(Circle())
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(widget.title)
-                    .font(.system(size: TVDesignTokens.FontSize.sm, weight: .semibold))
-                    .foregroundStyle(DesignTokens.Text.primary)
-                    .lineLimit(1)
-
-                if let contentType = widget.content?.contentType {
-                    Text(contentType.displayLabel)
-                        .font(.system(size: TVDesignTokens.FontSize.xs))
-                        .foregroundStyle(DesignTokens.Text.muted)
-                }
+        .task {
+            if playerVM == nil {
+                playerVM = WidgetPlayerViewModel(
+                    mediaRepo: repos.media,
+                    contentRepo: repos.content,
+                    liveTVRepo: repos.liveTV,
+                    radioRepo: repos.radio,
+                    podcastRepo: repos.podcasts
+                )
             }
-
-            Spacer()
-
-            Button { onMinimize() } label: {
-                Image(systemName: "arrow.down.right.and.arrow.up.left")
-                    .font(.system(size: 14))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-                    .frame(width: 32, height: 32)
-                    .background(Color.white.opacity(0.08))
-                    .clipShape(Circle())
-            }
-            .buttonStyle(.card)
-            .accessibilityLabel("Minimize \(widget.title)")
+            await playerVM?.resolveCover(for: widget)
         }
     }
 
-    // MARK: - Content Preview
+    // MARK: - Poster Section
+
+    private var posterSection: some View {
+        ZStack {
+            posterImage
+
+            // Overlays
+            VStack {
+                // Status badge top-left
+                HStack {
+                    statusBadge
+                    Spacer()
+                }
+                .padding(TVDesignTokens.Spacing.md)
+
+                Spacer()
+
+                // Bottom bar: minimize button
+                HStack {
+                    Spacer()
+                    Button { onMinimize() } label: {
+                        Image(systemName: "arrow.down.right.and.arrow.up.left")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(DesignTokens.Text.primary)
+                            .frame(width: 48, height: 48)
+                            .background(.thinMaterial)
+                            .environment(\.colorScheme, .dark)
+                            .clipShape(Circle())
+                            .overlay(
+                                Circle().stroke(Color.white.opacity(0.2), lineWidth: 1)
+                            )
+                    }
+                    .buttonStyle(.card)
+                    .tvFocusStyle()
+                    .accessibilityLabel("Minimize \(widget.title)")
+                }
+                .padding(TVDesignTokens.Spacing.md)
+            }
+        }
+        .frame(height: posterHeight)
+        .frame(maxWidth: .infinity)
+        .clipped()
+    }
 
     @ViewBuilder
-    private var contentPreview: some View {
+    private var posterImage: some View {
+        if let url = playerVM?.resolvedCoverURL {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: .infinity, maxHeight: posterHeight)
+                default:
+                    posterFallback
+                }
+            }
+        } else if let urlStr = widget.coverUrl, let url = URL(string: urlStr) {
+            AsyncImage(url: url) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: .infinity, maxHeight: posterHeight)
+                default:
+                    posterFallback
+                }
+            }
+        } else {
+            posterFallback
+        }
+    }
+
+    private var posterFallback: some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    badgeColor.opacity(0.25),
+                    badgeColor.opacity(0.08),
+                    Color.black.opacity(0.3),
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            VStack(spacing: TVDesignTokens.Spacing.sm) {
+                Image(systemName: iconName)
+                    .font(.system(size: 52, weight: .light))
+                    .foregroundStyle(badgeColor.opacity(0.7))
+
+                Text(widget.content?.contentType?.displayLabel ?? "")
+                    .font(.system(size: TVDesignTokens.FontSize.xs, weight: .medium))
+                    .foregroundStyle(DesignTokens.Text.muted)
+            }
+        }
+        .frame(maxWidth: .infinity, minHeight: posterHeight)
+    }
+
+    @ViewBuilder
+    private var statusBadge: some View {
         let contentType = widget.content?.contentType
         switch contentType {
         case .liveChannel, .live:
-            livePreview
+            liveBadge(text: "LIVE")
         case .radio:
-            radioPreview
-        case .podcast:
-            podcastPreview
-        case .vod:
-            vodPreview
-        case .audiobook:
-            audiobookPreview
-        case .iframe:
-            iframePreview
+            liveBadge(text: "ON AIR")
         default:
-            genericPreview
+            EmptyView()
         }
     }
 
-    private var livePreview: some View {
-        HStack(spacing: TVDesignTokens.Spacing.sm) {
-            coverThumbnail
-            VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
-                HStack(spacing: 4) {
-                    Circle().fill(Color.red).frame(width: 8, height: 8)
-                    Text("LIVE")
-                        .font(.system(size: TVDesignTokens.FontSize.xs, weight: .bold))
-                        .foregroundStyle(Color.red)
+    private func liveBadge(text: String) -> some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(Color.red)
+                .frame(width: 8, height: 8)
+            Text(text)
+                .font(.system(size: 14, weight: .black))
+                .foregroundStyle(.white)
+        }
+        .padding(.horizontal, TVDesignTokens.Spacing.sm)
+        .padding(.vertical, 6)
+        .background(Color.red.opacity(0.65))
+        .background(.thinMaterial)
+        .environment(\.colorScheme, .dark)
+        .clipShape(Capsule())
+    }
+
+    // MARK: - Info Section
+
+    private var infoSection: some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
+            // Title row with type icon
+            HStack(spacing: TVDesignTokens.Spacing.sm) {
+                Image(systemName: iconName)
+                    .font(.system(size: 22, weight: .medium))
+                    .foregroundStyle(badgeColor)
+                    .frame(width: 40, height: 40)
+                    .background(badgeColor.opacity(0.15))
+                    .clipShape(Circle())
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(widget.title)
+                        .font(.system(size: TVDesignTokens.FontSize.base, weight: .bold))
+                        .foregroundStyle(DesignTokens.Text.primary)
+                        .lineLimit(2)
+
+                    if let contentType = widget.content?.contentType {
+                        Text(contentType.displayLabel)
+                            .font(.system(size: TVDesignTokens.FontSize.xs))
+                            .foregroundStyle(DesignTokens.Text.muted)
+                    }
                 }
-                Text(widget.description ?? "Live stream")
+
+                Spacer()
+            }
+
+            // Description
+            if let desc = widget.description, !desc.isEmpty {
+                Text(desc)
                     .font(.system(size: TVDesignTokens.FontSize.xs))
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .lineLimit(2)
             }
-            Spacer()
-        }
-    }
 
-    private var radioPreview: some View {
-        HStack(spacing: TVDesignTokens.Spacing.sm) {
-            coverThumbnail
-            VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
-                HStack(spacing: 4) {
-                    Circle().fill(Color.red).frame(width: 6, height: 6)
-                    Text("ON AIR")
-                        .font(.system(size: 10, weight: .bold))
-                        .foregroundStyle(Color.red)
+            // Play button
+            Button { onPlay() } label: {
+                HStack(spacing: TVDesignTokens.Spacing.sm) {
+                    Image(systemName: "play.fill")
+                        .font(.system(size: 20))
+
+                    Text("Play")
+                        .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
                 }
-                Text(widget.description ?? "Radio station")
-                    .font(.system(size: TVDesignTokens.FontSize.xs))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-                    .lineLimit(2)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .frame(height: TVDesignTokens.MinSize.focusableHeight + 8)
+                .background(
+                    LinearGradient(
+                        colors: [
+                            badgeColor.opacity(0.6),
+                            badgeColor.opacity(0.35),
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
+                .overlay(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
+                        .stroke(badgeColor.opacity(0.4), lineWidth: 1)
+                )
             }
-            Spacer()
+            .buttonStyle(.card)
+            .tvFocusStyle()
+            .accessibilityLabel("Play \(widget.title)")
         }
-    }
-
-    private var podcastPreview: some View {
-        HStack(spacing: TVDesignTokens.Spacing.sm) {
-            coverThumbnail
-            VStack(alignment: .leading) {
-                Text(widget.description ?? "Podcast episode")
-                    .font(.system(size: TVDesignTokens.FontSize.xs))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-                    .lineLimit(2)
-            }
-            Spacer()
-        }
-    }
-
-    private var vodPreview: some View {
-        HStack(spacing: TVDesignTokens.Spacing.sm) {
-            coverThumbnail
-            VStack(alignment: .leading) {
-                Text(widget.description ?? "Video content")
-                    .font(.system(size: TVDesignTokens.FontSize.xs))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-                    .lineLimit(2)
-            }
-            Spacer()
-        }
-    }
-
-    private var audiobookPreview: some View {
-        HStack(spacing: TVDesignTokens.Spacing.sm) {
-            coverThumbnail
-            VStack(alignment: .leading) {
-                Text(widget.description ?? "Audiobook")
-                    .font(.system(size: TVDesignTokens.FontSize.xs))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-                    .lineLimit(2)
-            }
-            Spacer()
-        }
-    }
-
-    private var iframePreview: some View {
-        HStack(spacing: TVDesignTokens.Spacing.sm) {
-            Image(systemName: "globe")
-                .font(.system(size: 24))
-                .foregroundStyle(DesignTokens.Text.muted)
-                .frame(width: 48, height: 48)
-                .background(Color.white.opacity(0.05))
-                .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm))
-
-            Text(widget.content?.iframeTitle ?? "Web content")
-                .font(.system(size: TVDesignTokens.FontSize.xs))
-                .foregroundStyle(DesignTokens.Text.secondary)
-                .lineLimit(2)
-            Spacer()
-        }
-    }
-
-    private var genericPreview: some View {
-        Text(widget.description ?? "")
-            .font(.system(size: TVDesignTokens.FontSize.xs))
-            .foregroundStyle(DesignTokens.Text.secondary)
-            .lineLimit(2)
-    }
-
-    // MARK: - Transport
-
-    private var transportRow: some View {
-        Button { onPlay() } label: {
-            HStack(spacing: TVDesignTokens.Spacing.md) {
-                Image(systemName: "play.fill")
-                    .font(.system(size: 16))
-                Text("Play")
-                    .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
-            }
-            .foregroundStyle(DesignTokens.Text.primary)
-            .frame(maxWidth: .infinity)
-            .frame(height: TVDesignTokens.MinSize.focusableHeight)
-        }
-        .buttonStyle(.card)
-        .accessibilityLabel("Play \(widget.title)")
+        .padding(TVDesignTokens.Spacing.lg)
     }
 
     // MARK: - Helpers
 
-    private var coverThumbnail: some View {
-        Group {
-            if let urlStr = widget.coverUrl, let url = URL(string: urlStr) {
-                AsyncImage(url: url) { image in
-                    image.resizable().aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    fallbackThumbnail
-                }
-            } else {
-                fallbackThumbnail
-            }
-        }
-        .frame(width: 48, height: 48)
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm))
-    }
-
-    private var fallbackThumbnail: some View {
-        ZStack {
-            Color.white.opacity(0.05)
-            Image(systemName: iconName)
-                .font(.system(size: 20))
-                .foregroundStyle(badgeColor)
+    private var posterHeight: CGFloat {
+        switch widget.content?.contentType {
+        case .liveChannel, .live, .vod:
+            return 160
+        case .radio, .podcast, .audiobook:
+            return 140
+        default:
+            return 140
         }
     }
 

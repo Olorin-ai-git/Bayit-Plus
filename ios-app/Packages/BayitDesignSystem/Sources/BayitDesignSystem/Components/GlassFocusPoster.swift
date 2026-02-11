@@ -53,9 +53,11 @@ public struct GlassFocusPoster: View {
     public var body: some View {
         Button(action: onSelect) {
             ZStack(alignment: .bottom) {
-                thumbnailImage
-                    .frame(width: width)
-                    .aspectRatio(aspectRatio, contentMode: .fill)
+                Color.clear
+                    .aspectRatio(aspectRatio, contentMode: .fit)
+                    .overlay {
+                        thumbnailImage
+                    }
                     .clipped()
 
                 metadataOverlay
@@ -165,14 +167,20 @@ public struct GlassFocusPoster: View {
     }
 
     private var placeholderGradient: some View {
-        LinearGradient(
-            colors: [
-                DesignTokens.Glass.purpleLight,
-                DesignTokens.Glass.purpleStrong,
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
+        ZStack {
+            LinearGradient(
+                colors: [
+                    DesignTokens.Glass.purpleLight,
+                    DesignTokens.Glass.purpleStrong,
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            Image(systemName: "film")
+                .font(.system(size: 40))
+                .foregroundStyle(DesignTokens.Text.muted.opacity(0.5))
+        }
     }
 
     private var metadataOverlay: some View {

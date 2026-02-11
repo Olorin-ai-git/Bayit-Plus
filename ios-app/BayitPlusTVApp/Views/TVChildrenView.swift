@@ -5,6 +5,7 @@ import SwiftUI
 /// Reuses ChildrenViewModel from shared ViewModels.
 struct TVChildrenView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: ChildrenViewModel?
     @State private var selectedAgeGroupId: String?
 
@@ -28,8 +29,16 @@ struct TVChildrenView: View {
                 viewModel = ChildrenViewModel(repository: repos.category)
             }
             await viewModel?.load()
+            await viewModel?.loadContent()
         }
     }
+
+    private let gridColumns = [
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
+        GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
+    ]
 
     @ViewBuilder
     private func contentSections(_ vm: ChildrenViewModel) -> some View {
@@ -38,16 +47,16 @@ struct TVChildrenView: View {
                 featuredHero(hero)
             }
 
+            if !vm.categories.isEmpty {
+                categoryGrid(vm)
+            }
+
             if !vm.ageGroups.isEmpty {
                 ageGroupFilters(vm)
             }
 
-            if !vm.categories.isEmpty {
-                categoryShelf(vm)
-            }
-
             if !vm.items.isEmpty {
-                contentShelf(vm)
+                contentGrid(vm)
             }
         }
     }
@@ -107,24 +116,64 @@ struct TVChildrenView: View {
         .frame(height: TVDesignTokens.MinSize.focusableHeight + 20)
     }
 
-    private func categoryShelf(_ vm: ChildrenViewModel) -> some View {
-        GlassContentShelf(title: "Categories", items: vm.categories) { cat in
-            GlassFocusPoster(
-                thumbnailURL: cat.thumbnail,
-                title: cat.name ?? "Category",
-                aspectRatio: 16 / 9
-            )
+    @State private var selectedCategoryId: String?
+
+    private func categoryGrid(_ vm: ChildrenViewModel) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: TVDesignTokens.Spacing.md) {
+                filterChip("All", isSelected: selectedCategoryId == nil) {
+                    selectedCategoryId = nil
+                    Task { await vm.loadContent(category: nil, ageGroup: selectedAgeGroupId) }
+                }
+
+                ForEach(vm.categories) { cat in
+                    filterChip(cat.name ?? "Category", isSelected: selectedCategoryId == cat.id) {
+                        selectedCategoryId = cat.id
+                        Task { await vm.loadContent(category: cat.id, ageGroup: selectedAgeGroupId) }
+                    }
+                }
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
         }
+        .frame(height: TVDesignTokens.MinSize.focusableHeight + 20)
+        .focusSection()
     }
 
-    private func contentShelf(_ vm: ChildrenViewModel) -> some View {
-        GlassContentShelf(title: "Content", items: vm.items) { item in
-            GlassFocusPoster(
-                thumbnailURL: item.thumbnail,
-                title: item.title ?? "Content",
-                subtitle: item.duration,
-                aspectRatio: 16 / 9
-            )
+    private func contentGrid(_ vm: ChildrenViewModel) -> some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+            Text("Content")
+                .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+
+            LazyVGrid(columns: gridColumns, spacing: TVDesignTokens.Spacing.focusGap) {
+                ForEach(vm.items) { item in
+                    GlassFocusPoster(
+                        thumbnailURL: item.thumbnail,
+                        title: item.title ?? "Content",
+                        subtitle: item.duration,
+                        aspectRatio: 16 / 9,
+                        onSelect: {
+                            coordinator.presentPlayer(
+                                contentId: item.id,
+                                contentType: .vod
+                            )
+                        }
+                    )
+                    .overlay(alignment: .bottomLeading) {
+                        if let languages = item.availableSubtitleLanguages,
+                           !languages.isEmpty {
+                            SubtitleFlagsPill(
+                                languages: languages,
+                                aiLanguages: [],
+                                size: .medium
+                            )
+                            .padding(TVDesignTokens.Spacing.sm)
+                        }
+                    }
+                }
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
         }
     }
 

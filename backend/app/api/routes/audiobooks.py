@@ -1,13 +1,17 @@
 """
-Audiobooks Routes - Admin-only audiobook discovery and playback endpoints.
+Audiobooks Routes - Consumer-facing audiobook discovery and playback endpoints.
 
-All audiobook access is restricted to admin users.
+Browsing endpoints use optional auth (public access).
+Streaming endpoints require authenticated user.
 """
+
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
 from app.core.security import (
-    get_current_admin_user,
+    get_current_active_user,
+    get_optional_user,
     verify_content_access,
 )
 from app.models.admin import AuditAction
@@ -33,9 +37,9 @@ router = APIRouter()
 async def get_audiobooks(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=50, le=500),
-    current_user: User = Depends(get_current_admin_user),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
-    """Get featured and trending audiobooks with pagination (admin-only).
+    """Get featured and trending audiobooks with pagination.
 
     Only returns parent audiobooks (those without series_id) to avoid
     showing individual chapters as separate cards. Filters out audiobooks
@@ -69,9 +73,9 @@ async def get_audiobooks(
 @router.get("/{audiobook_id}", response_model=AudiobookResponse)
 async def get_audiobook(
     audiobook_id: str,
-    current_user: User = Depends(get_current_admin_user),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
-    """Get single audiobook metadata (admin-only)."""
+    """Get single audiobook metadata."""
     audiobook = await Content.get(audiobook_id)
     if not audiobook or audiobook.content_format != "audiobook":
         raise HTTPException(
@@ -79,16 +83,15 @@ async def get_audiobook(
             detail="Audiobook not found",
         )
 
-    await verify_content_access(audiobook, current_user, action="view")
     return audiobook_to_response(audiobook)
 
 
 @router.get("/{audiobook_id}/chapters", response_model=AudiobookWithChaptersResponse)
 async def get_audiobook_with_chapters(
     audiobook_id: str,
-    current_user: User = Depends(get_current_admin_user),
+    current_user: Optional[User] = Depends(get_optional_user),
 ):
-    """Get audiobook with its chapters for the player page (admin-only).
+    """Get audiobook with its chapters for the player page.
 
     Returns parent audiobook metadata along with a list of chapters
     (parts) sorted by episode/chapter number.
@@ -99,8 +102,6 @@ async def get_audiobook_with_chapters(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Audiobook not found",
         )
-
-    await verify_content_access(audiobook, current_user, action="view")
 
     # Fetch chapters (items with series_id pointing to this audiobook)
     chapters_query = Content.find({
@@ -155,10 +156,10 @@ async def get_audiobook_with_chapters(
 @router.post("/{audiobook_id}/stream", response_model=AudiobookStreamResponse)
 async def get_audiobook_stream(
     audiobook_id: str,
-    current_user: User = Depends(get_current_admin_user),
+    current_user: User = Depends(get_current_active_user),
     request: Request = None,
 ):
-    """Get audiobook stream URL (admin-only endpoint)."""
+    """Get audiobook stream URL (requires authentication)."""
     audiobook = await Content.get(audiobook_id)
     if not audiobook or audiobook.content_format != "audiobook":
         raise HTTPException(

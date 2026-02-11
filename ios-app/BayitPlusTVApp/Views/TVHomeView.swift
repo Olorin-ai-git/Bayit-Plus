@@ -67,17 +67,24 @@ struct TVHomeView: View {
 
             // Hero carousel
             if !vm.spotlight.isEmpty {
-                GlassHeroCarousel(items: vm.spotlight) { item in
-                    heroItem(item)
-                        .onLongPressGesture(minimumDuration: 0) {
+                TabView {
+                    ForEach(vm.spotlight) { item in
+                        Button {
                             let contentType = TVContentTypeMapper.map(item.type)
                             coordinator.presentPlayer(
                                 contentId: item.id,
                                 contentType: contentType
                             )
+                        } label: {
+                            heroItem(item)
                         }
+                        .buttonStyle(.card)
+                    }
                 }
+                .tabViewStyle(.page)
+                .frame(height: TVDesignTokens.MinSize.heroHeight)
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                .focusSection()
             }
 
             // Continue Watching
@@ -98,6 +105,7 @@ struct TVHomeView: View {
                         }
                     )
                 }
+                .focusSection()
             }
 
             // Live TV

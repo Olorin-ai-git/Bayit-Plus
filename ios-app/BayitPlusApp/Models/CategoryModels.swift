@@ -25,6 +25,8 @@ struct SectionContentItem: Decodable, Sendable, Identifiable {
     let category: String?
     let ageGroup: String?
     let rating: String?
+    let availableSubtitleLanguages: [String]?
+    let isSeries: Bool?
 }
 
 /// Featured content for a section
@@ -38,6 +40,11 @@ struct SectionFeatured: Decodable, Sendable {
 /// Response from GET /api/v1/children/categories
 struct ChildrenCategoriesResponse: Decodable, Sendable {
     let categories: [SectionCategory]?
+
+    /// Backend returns `data` key, map to `categories`
+    enum CodingKeys: String, CodingKey {
+        case categories = "data"
+    }
 }
 
 /// Response from GET /api/v1/children/content
@@ -57,6 +64,11 @@ struct ChildrenFeaturedResponse: Decodable, Sendable {
 /// Response from GET /api/v1/children/age-groups
 struct AgeGroupsResponse: Decodable, Sendable {
     let groups: [AgeGroup]?
+
+    /// Backend returns `age_groups` key, map to `groups`
+    enum CodingKeys: String, CodingKey {
+        case groups = "age_groups"
+    }
 }
 
 /// An age group filter for children content

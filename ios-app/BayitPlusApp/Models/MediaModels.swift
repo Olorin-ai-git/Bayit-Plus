@@ -6,7 +6,9 @@ import Foundation
 struct StreamInfo: Decodable, Sendable {
     let url: String?
     let directUrl: String?
+    let streamUrl: String?
     let type: String?
+    let streamType: String?
     let quality: String?
     let availableQualities: [QualityVariant]?
     let isDrmProtected: Bool?
@@ -14,6 +16,11 @@ struct StreamInfo: Decodable, Sendable {
     let isTranscoded: Bool?
     let platform: String?
     let durationHint: Double?
+
+    /// Resolved URL - checks all possible fields
+    var resolvedURL: String? {
+        url ?? streamUrl ?? directUrl
+    }
 }
 
 /// Quality variant for stream selection

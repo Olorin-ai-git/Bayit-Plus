@@ -339,6 +339,7 @@ class YoungstersContentService:
             or [],
             "relevance_score": max(score, 5.0),  # Base score for DB content
             "source_type": "database",
+            "available_subtitle_languages": content.available_subtitle_languages or [],
         }
 
     async def fetch_all_content(

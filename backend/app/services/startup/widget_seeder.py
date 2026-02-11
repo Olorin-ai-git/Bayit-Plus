@@ -343,15 +343,27 @@ async def _create_channel_widgets() -> int:
             continue
 
         # Try to find the channel in live channels
+        # Matches: "Channel 11", "ערוץ 11", "כאן 11", "רשת 13", etc.
         channel = await LiveChannel.find_one(
             {
                 "$or": [
                     {"name": {"$regex": f"channel.*{channel_num}", "$options": "i"}},
                     {"name": {"$regex": f"ערוץ.*{channel_num}", "$options": "i"}},
-                    {"name": {"$regex": f"{channel_num}.*channel", "$options": "i"}},
+                    {"name": {"$regex": f"כאן.*{channel_num}", "$options": "i"}},
+                    {"name": {"$regex": f"רשת.*{channel_num}", "$options": "i"}},
+                    {"name": {"$regex": f"\\b{channel_num}\\b"}},
                 ]
             }
         )
+
+        # If widget already exists but has no channel_id, try to fix it
+        if existing and not existing.content.live_channel_id and channel:
+            existing.content.live_channel_id = str(channel.id)
+            await existing.save()
+            logger.info(
+                f"Fixed Channel {channel_num} widget with channel ID: {channel.id}"
+            )
+            continue
 
         widget = Widget(
             type=WidgetType.SYSTEM,

@@ -3,16 +3,16 @@ import BayitDesignSystem
 import BayitMedia
 import SwiftUI
 
-/// Glass sidebar for restored (non-minimized) widgets on tvOS.
-/// Docks to the right edge of the screen. Multiple widgets stack vertically
-/// inside a scrollable glass panel. Each widget shows content info and play controls.
+/// Glassmorphic sidebar for restored (non-minimized) widgets on tvOS.
+/// Docks to the right edge of the screen with a wide panel showing
+/// widget posters, content details, and playback controls.
 struct TVWidgetSidebarView: View {
 
     let widgets: [WidgetItem]
     let onMinimize: (String) -> Void
     let onPlay: (WidgetItem) -> Void
 
-    private let sidebarWidth: CGFloat = 380
+    private let sidebarWidth: CGFloat = 420
 
     var body: some View {
         if !widgets.isEmpty {
@@ -25,12 +25,18 @@ struct TVWidgetSidebarView: View {
         }
     }
 
+    // MARK: - Sidebar Content
+
     private var sidebarContent: some View {
         VStack(spacing: 0) {
             sidebarHeader
 
+            Divider()
+                .background(DesignTokens.Glass.borderLight)
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: TVDesignTokens.Spacing.md) {
+                VStack(spacing: TVDesignTokens.Spacing.lg) {
                     ForEach(widgets) { widget in
                         TVWidgetContainerView(
                             widget: widget,
@@ -39,17 +45,18 @@ struct TVWidgetSidebarView: View {
                         )
                     }
                 }
-                .padding(.horizontal, TVDesignTokens.Spacing.lg)
-                .padding(.vertical, TVDesignTokens.Spacing.md)
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                .padding(.vertical, TVDesignTokens.Spacing.lg)
             }
+            .focusSection()
         }
         .frame(width: sidebarWidth)
         .frame(maxHeight: .infinity)
         .background {
             ZStack {
-                Color.black.opacity(0.85)
+                Color.black.opacity(0.35)
                 Rectangle()
-                    .fill(.ultraThinMaterial)
+                    .fill(.thinMaterial)
                     .environment(\.colorScheme, .dark)
             }
         }
@@ -68,32 +75,39 @@ struct TVWidgetSidebarView: View {
                 bottomTrailingRadius: 0,
                 topTrailingRadius: 0
             )
-            .stroke(DesignTokens.Glass.border, lineWidth: 1)
+            .stroke(
+                DesignTokens.Glass.border,
+                lineWidth: 2
+            )
         )
-        .shadow(color: .black.opacity(0.5), radius: 20, x: -8, y: 0)
+        .shadow(color: .black.opacity(0.5), radius: 32, x: -12, y: 0)
     }
 
+    // MARK: - Header
+
     private var sidebarHeader: some View {
-        HStack {
+        HStack(spacing: TVDesignTokens.Spacing.sm) {
             Image(systemName: "square.grid.2x2.fill")
-                .font(.system(size: 20))
+                .font(.system(size: 26, weight: .medium))
                 .foregroundStyle(DesignTokens.Primary.p300)
 
-            Text("Widgets")
+            Text("Active Widgets")
                 .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
             Spacer()
 
             Text("\(widgets.count)")
-                .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
-                .foregroundStyle(DesignTokens.Text.muted)
-                .padding(.horizontal, TVDesignTokens.Spacing.sm)
-                .padding(.vertical, TVDesignTokens.Spacing.xs)
-                .background(DesignTokens.Glass.bgLight)
-                .clipShape(Capsule())
+                .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
+                .foregroundStyle(DesignTokens.Primary.p300)
+                .frame(width: 40, height: 40)
+                .background(DesignTokens.Primary.p400.opacity(0.15))
+                .clipShape(Circle())
+                .overlay(
+                    Circle().stroke(DesignTokens.Primary.p400.opacity(0.3), lineWidth: 1)
+                )
         }
-        .padding(.horizontal, TVDesignTokens.Spacing.lg)
+        .padding(.horizontal, TVDesignTokens.Spacing.xl)
         .padding(.vertical, TVDesignTokens.Spacing.lg)
     }
 }

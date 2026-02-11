@@ -512,7 +512,7 @@ struct TVPlayerView: View {
             let stream = try await repos.media.fetchLiveStream(
                 channelId: channelId ?? contentId
             )
-            guard let url = stream.url ?? stream.directUrl else {
+            guard let url = stream.resolvedURL else {
                 throw StreamResolutionError.noURL
             }
             return url
@@ -541,7 +541,7 @@ struct TVPlayerView: View {
             let stream = try await repos.media.fetchStream(
                 contentId: contentId, quality: nil
             )
-            guard let url = stream.url ?? stream.directUrl else {
+            guard let url = stream.resolvedURL else {
                 throw StreamResolutionError.noURL
             }
             return url
@@ -549,6 +549,12 @@ struct TVPlayerView: View {
     }
 
     private func loadAvailableLanguages() async {
+        // Live TV channels don't have subtitle data in the Content collection
+        guard contentType != .liveTV else {
+            availableSubtitleLanguages = []
+            return
+        }
+
         do {
             let detail = try await repos.content.fetchContentDetail(
                 id: contentId
