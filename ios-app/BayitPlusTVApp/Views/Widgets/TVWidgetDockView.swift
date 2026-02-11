@@ -17,12 +17,9 @@ struct TVWidgetDockView: View {
 
     var body: some View {
         if isDockVisible && !widgets.isEmpty {
-            VStack {
-                Spacer()
-                dockBar
-            }
-            .transition(.move(edge: .bottom).combined(with: .opacity))
-            .animation(.spring(duration: 0.35, bounce: 0.12), value: isDockVisible)
+            dockBar
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+                .animation(.spring(duration: 0.35, bounce: 0.12), value: isDockVisible)
         }
     }
 
@@ -53,21 +50,16 @@ struct TVWidgetDockView: View {
         .padding(.horizontal, TVDesignTokens.Spacing.xl)
         .padding(.vertical, TVDesignTokens.Spacing.md)
         .background {
-            ZStack {
-                Color.black.opacity(0.3)
-                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
-                    .fill(.thinMaterial)
-                    .environment(\.colorScheme, .dark)
-            }
+            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                .fill(.ultraThinMaterial)
+                .environment(\.colorScheme, .dark)
         }
         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
         .overlay(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
-                .stroke(DesignTokens.Glass.border, lineWidth: 2)
+                .stroke(DesignTokens.Glass.borderLight, lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.5), radius: 24, y: -6)
-        .padding(.bottom, TVDesignTokens.Spacing.lg)
-        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+        .shadow(color: .black.opacity(0.4), radius: 20, y: 4)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Widget Dock")
     }
@@ -103,12 +95,11 @@ struct TVWidgetDockView: View {
                     )
 
                 Image(systemName: isCollapsed
-                    ? "arrow.left.and.right"
-                    : "arrow.right.and.left"
+                    ? "arrow.left.and.line.vertical.and.arrow.right"
+                    : "arrow.right.and.line.vertical.and.arrow.left"
                 )
                 .font(.system(size: 16, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.secondary)
-                .rotationEffect(.degrees(isCollapsed ? 0 : 180))
             }
         }
         .buttonStyle(.card)

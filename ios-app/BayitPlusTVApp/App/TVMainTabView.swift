@@ -13,7 +13,7 @@ struct TVMainTabView: View {
     var body: some View {
         @Bindable var coord = coordinator
 
-        ZStack {
+        HStack(spacing: 0) {
             TabView(selection: $coord.selectedTab) {
                 TVHomeView()
                     .tabItem { Label(TVTab.home.title, systemImage: TVTab.home.iconName) }
@@ -43,17 +43,9 @@ struct TVMainTabView: View {
                     .tabItem { Label(TVTab.youngsters.title, systemImage: TVTab.youngsters.iconName) }
                     .tag(TVTab.youngsters)
 
-                TVCultureView()
-                    .tabItem { Label(TVTab.culture.title, systemImage: TVTab.culture.iconName) }
-                    .tag(TVTab.culture)
-
                 TVWidgetsView()
                     .tabItem { Label("Widgets", systemImage: "square.grid.2x2") }
                     .tag(TVTab.settings)
-
-                TVHouseholdView()
-                    .tabItem { Label(TVTab.household.title, systemImage: TVTab.household.iconName) }
-                    .tag(TVTab.household)
 
                 TVRecordingsView()
                     .tabItem { Label(TVTab.recordings.title, systemImage: TVTab.recordings.iconName) }
@@ -115,31 +107,33 @@ struct TVMainTabView: View {
                     .tabItem { Label(TVTab.settings.title, systemImage: TVTab.settings.iconName) }
                     .tag(TVTab.settings)
             }
-
             .onAppear {
-                // Ensure Home tab is selected on initial launch
                 coord.selectedTab = .home
             }
+            .overlay(alignment: .bottom) {
+                // Widget dock (floating overlay near bottom)
+                if let vm = dockViewModel {
+                    TVWidgetDockView(
+                        widgets: vm.minimizedWidgets,
+                        isDockVisible: vm.isDockVisible,
+                        onRestore: { widgetId in vm.toggleMinimize(widgetId: widgetId) },
+                        onCloseDock: { vm.hideDock() }
+                    )
+                    .padding(.bottom, TVDesignTokens.Spacing.xl)
+                }
+            }
+            .focusSection()
 
-            // Widget sidebar (right edge - restored widgets)
+            // Widget sidebar (right edge - HStack sibling for proper focus navigation)
             if let vm = dockViewModel, !vm.restoredWidgets.isEmpty {
                 TVWidgetSidebarView(
                     widgets: vm.restoredWidgets,
-                    onMinimize: { widgetId in vm.minimizeWidget(widgetId: widgetId) },
-                    onPlay: { widget in playWidget(widget) }
+                    onMinimize: { widgetId in vm.minimizeWidget(widgetId: widgetId) }
                 )
-            }
-
-            // Widget dock (bottom bar - minimized widgets)
-            if let vm = dockViewModel {
-                TVWidgetDockView(
-                    widgets: vm.minimizedWidgets,
-                    isDockVisible: vm.isDockVisible,
-                    onRestore: { widgetId in vm.toggleMinimize(widgetId: widgetId) },
-                    onCloseDock: { vm.hideDock() }
-                )
+                .focusSection()
             }
         }
+        .ignoresSafeArea(.all, edges: .trailing)
         .task {
             if dockViewModel == nil {
                 dockViewModel = WidgetDockViewModel(repository: repos.widget)
@@ -148,34 +142,5 @@ struct TVMainTabView: View {
         }
     }
 
-    /// Play a widget's content by navigating to the appropriate player.
-    private func playWidget(_ widget: WidgetItem) {
-        guard let content = widget.content, let contentType = content.contentType else { return }
-
-        switch contentType {
-        case .liveChannel, .live:
-            if let channelId = content.liveChannelId ?? content.contentId {
-                coordinator.presentPlayer(contentId: channelId, contentType: .liveTV, channelId: channelId)
-            }
-        case .radio:
-            if let stationId = content.stationId ?? content.contentId {
-                coordinator.presentPlayer(contentId: stationId, contentType: .radio)
-            }
-        case .podcast:
-            if let podcastId = content.podcastId ?? content.contentId {
-                coordinator.fullscreenRoute = .podcastDetail(showId: podcastId)
-            }
-        case .vod:
-            if let contentId = content.contentId {
-                coordinator.presentPlayer(contentId: contentId, contentType: .vod)
-            }
-        case .audiobook:
-            if let audiobookId = content.audiobookId ?? content.contentId {
-                coordinator.fullscreenRoute = .audiobookDetail(audiobookId: audiobookId)
-            }
-        case .iframe, .custom:
-            break
-        }
-    }
 }
 #endif

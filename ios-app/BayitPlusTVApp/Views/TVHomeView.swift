@@ -298,6 +298,7 @@ struct TVHomeView: View {
                             title: channel.name ?? "Channel",
                             subtitle: channel.currentShow,
                             badge: "LIVE",
+                            width: 360,
                             aspectRatio: 16 / 9,
                             onSelect: {
                                 coordinator.presentPlayer(
