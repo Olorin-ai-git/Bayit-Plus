@@ -29,26 +29,46 @@ final class YoungstersViewModel {
         isLoading = true
         error = nil
 
-        do {
-            async let categoriesResult = repository.fetchYoungsterCategories()
-            async let featuredResult = repository.fetchYoungstersFeatured()
-            async let trendingResult = repository.fetchYoungstersTrending()
-            async let newsResult = repository.fetchYoungstersNews()
+        async let catTask = loadCategories()
+        async let featTask = loadFeatured()
+        async let trendTask = loadTrending()
+        async let newsTask = loadNews()
 
-            let catResponse = try await categoriesResult
-            let featResponse = try await featuredResult
-            let trendResponse = try await trendingResult
-            let newsResponse = try await newsResult
+        _ = await (catTask, featTask, trendTask, newsTask)
 
-            categories = catResponse.categories
-            featured = featResponse.featured
-            trending = trendResponse.items
-            news = newsResponse.items
-        } catch {
-            self.error = error.localizedDescription
+        if categories.isEmpty && featured == nil && trending.isEmpty && news.isEmpty {
+            error = error ?? "Unable to load youngsters content"
         }
 
         isLoading = false
+    }
+
+    private func loadCategories() async {
+        do {
+            let response = try await repository.fetchYoungsterCategories()
+            categories = response.categories ?? []
+        } catch { }
+    }
+
+    private func loadFeatured() async {
+        do {
+            let response = try await repository.fetchYoungstersFeatured()
+            featured = response.featured
+        } catch { }
+    }
+
+    private func loadTrending() async {
+        do {
+            let response = try await repository.fetchYoungstersTrending()
+            trending = response.items
+        } catch { }
+    }
+
+    private func loadNews() async {
+        do {
+            let response = try await repository.fetchYoungstersNews()
+            news = response.items
+        } catch { }
     }
 
     @MainActor

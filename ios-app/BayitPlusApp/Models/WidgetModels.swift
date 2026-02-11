@@ -148,3 +148,31 @@ struct WidgetActionResponse: Decodable, Sendable {
 struct WidgetDeleteResponse: Decodable, Sendable {
     let message: String
 }
+
+// MARK: - Widget Creation
+
+/// Encodable content for creating a personal widget.
+struct WidgetContentPayload: Encodable, Sendable {
+    let contentType: String
+    let liveChannelId: String?
+    let podcastId: String?
+    let contentId: String?
+    let stationId: String?
+    let iframeUrl: String?
+    let iframeTitle: String?
+}
+
+/// Request body for POST /admin/widgets (personal widget creation).
+struct CreateWidgetRequest: Encodable, Sendable {
+    let title: String
+    let description: String?
+    let icon: String?
+    let content: WidgetContentPayload
+}
+
+/// Response from POST /admin/widgets
+struct CreateWidgetResponse: Decodable, Sendable {
+    let id: String?
+    let title: String?
+    let message: String?
+}

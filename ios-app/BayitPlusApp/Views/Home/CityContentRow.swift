@@ -5,6 +5,7 @@ import SwiftUI
 struct CityContentRow: View {
     let title: String
     let items: [CityContentItem]
+    var onShowAll: (() -> Void)?
 
     /// Background image name from asset catalog keyed by city title
     private var backgroundImageName: String {
@@ -59,13 +60,31 @@ struct CityContentRow: View {
 
                     // Content overlaid on the background
                     VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-                        // City title
-                        Text(title)
-                            .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
-                            .foregroundColor(.white)
-                            .shadow(color: .black.opacity(0.6), radius: 3, x: 0, y: 1)
-                            .padding(.horizontal, DesignTokens.Spacing.lg)
-                            .padding(.top, DesignTokens.Spacing.lg)
+                        // City title with Show All
+                        HStack {
+                            Text(title)
+                                .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
+                                .foregroundColor(.white)
+                                .shadow(color: .black.opacity(0.6), radius: 3, x: 0, y: 1)
+
+                            Spacer()
+
+                            if let onShowAll {
+                                Button(action: onShowAll) {
+                                    HStack(spacing: DesignTokens.Spacing.xs) {
+                                        Text("Show All")
+                                            .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: DesignTokens.FontSize.xs))
+                                    }
+                                    .foregroundStyle(.white.opacity(0.85))
+                                    .shadow(color: .black.opacity(0.5), radius: 2, x: 0, y: 1)
+                                }
+                                .accessibilityLabel("Show all \(title) content")
+                            }
+                        }
+                        .padding(.horizontal, DesignTokens.Spacing.lg)
+                        .padding(.top, DesignTokens.Spacing.lg)
 
                         // Subtitle
                         if !subtitle.isEmpty {

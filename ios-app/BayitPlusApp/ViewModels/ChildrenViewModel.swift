@@ -29,23 +29,46 @@ final class ChildrenViewModel {
         isLoading = true
         error = nil
 
-        do {
-            async let categoriesResult = repository.fetchChildrenCategories()
-            async let featuredResult = repository.fetchChildrenFeatured()
-            async let ageGroupsResult = repository.fetchAgeGroups()
+        // Load each endpoint independently so one failure doesn't block the rest
+        async let categoriesResult = loadCategories()
+        async let featuredResult = loadFeatured()
+        async let ageGroupsResult = loadAgeGroups()
 
-            let catResponse = try await categoriesResult
-            let featResponse = try await featuredResult
-            let ageResponse = try await ageGroupsResult
+        _ = await (categoriesResult, featuredResult, ageGroupsResult)
 
-            categories = catResponse.categories
-            featured = featResponse.featured
-            ageGroups = ageResponse.groups
-        } catch {
-            self.error = error.localizedDescription
+        // Only show error if all sections are empty
+        if categories.isEmpty && featured == nil && ageGroups.isEmpty {
+            error = error ?? "Unable to load children content"
         }
 
         isLoading = false
+    }
+
+    private func loadCategories() async {
+        do {
+            let response = try await repository.fetchChildrenCategories()
+            categories = response.categories ?? []
+        } catch {
+            // Individual failure is non-fatal
+        }
+    }
+
+    private func loadFeatured() async {
+        do {
+            let response = try await repository.fetchChildrenFeatured()
+            featured = response.featured
+        } catch {
+            // Individual failure is non-fatal
+        }
+    }
+
+    private func loadAgeGroups() async {
+        do {
+            let response = try await repository.fetchAgeGroups()
+            ageGroups = response.groups ?? []
+        } catch {
+            // Individual failure is non-fatal
+        }
     }
 
     @MainActor

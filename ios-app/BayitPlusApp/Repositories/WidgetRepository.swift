@@ -40,6 +40,12 @@ protocol WidgetRepository: Sendable {
     /// - Returns: Confirmation message.
     /// - Throws: `NetworkError` if the request fails.
     func toggleMinimize(widgetId: String, isMinimized: Bool) async throws -> MessageResponse
+
+    /// Create a personal widget.
+    func createWidget(_ request: CreateWidgetRequest) async throws -> CreateWidgetResponse
+
+    /// Delete a personal widget.
+    func deleteWidget(widgetId: String) async throws
 }
 
 /// Production implementation of `WidgetRepository` using `APIClient`.
@@ -91,6 +97,21 @@ final class APIWidgetRepository: WidgetRepository, @unchecked Sendable {
             body: EmptyBody(),
             queryItems: [URLQueryItem(name: "is_minimized", value: String(isMinimized))],
             as: MessageResponse.self
+        )
+    }
+
+    func createWidget(_ request: CreateWidgetRequest) async throws -> CreateWidgetResponse {
+        return try await client.post(
+            "/admin/widgets",
+            body: request,
+            as: CreateWidgetResponse.self
+        )
+    }
+
+    func deleteWidget(widgetId: String) async throws {
+        _ = try await client.delete(
+            "/admin/widgets/\(widgetId)",
+            as: WidgetDeleteResponse.self
         )
     }
 }

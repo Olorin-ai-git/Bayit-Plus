@@ -30,14 +30,14 @@ struct SectionContentItem: Decodable, Sendable, Identifiable {
 /// Featured content for a section
 struct SectionFeatured: Decodable, Sendable {
     let hero: SectionContentItem?
-    let items: [SectionContentItem]
+    let items: [SectionContentItem]?
 }
 
 // MARK: - Children
 
 /// Response from GET /api/v1/children/categories
 struct ChildrenCategoriesResponse: Decodable, Sendable {
-    let categories: [SectionCategory]
+    let categories: [SectionCategory]?
 }
 
 /// Response from GET /api/v1/children/content
@@ -56,7 +56,7 @@ struct ChildrenFeaturedResponse: Decodable, Sendable {
 
 /// Response from GET /api/v1/children/age-groups
 struct AgeGroupsResponse: Decodable, Sendable {
-    let groups: [AgeGroup]
+    let groups: [AgeGroup]?
 }
 
 /// An age group filter for children content
@@ -72,7 +72,7 @@ struct AgeGroup: Decodable, Sendable, Identifiable {
 
 /// Response from GET /api/v1/youngsters/categories
 struct YoungstersCategoriesResponse: Decodable, Sendable {
-    let categories: [SectionCategory]
+    let categories: [SectionCategory]?
 }
 
 /// Response from GET /api/v1/youngsters/content
@@ -103,7 +103,7 @@ struct YoungstersNewsResponse: Decodable, Sendable {
 
 /// Response from GET /api/v1/judaism/categories
 struct JudaismCategoriesResponse: Decodable, Sendable {
-    let categories: [SectionCategory]
+    let categories: [SectionCategory]?
 }
 
 /// Response from GET /api/v1/judaism/content

@@ -40,7 +40,8 @@ struct HomeView: View {
                     repository: repos.content,
                     liveTVRepository: repos.liveTV,
                     locationProvider: locationProvider,
-                    featureFlags: featureFlags
+                    featureFlags: featureFlags,
+                    categoryRepository: repos.category
                 )
             }
             await viewModel?.loadFeatured()
@@ -116,13 +117,22 @@ struct HomeView: View {
             TrendingRow(items: vm.trendingContent, coordinator: coordinator)
         }
 
+        // Youngsters section
+        if !vm.youngstersTrending.isEmpty {
+            youngstersSection(vm)
+        }
+
         // City-specific content
         if let jerusalem = vm.jerusalemContent, !jerusalem.items.isEmpty {
-            CityContentRow(title: "Jerusalem", items: jerusalem.items)
+            CityContentRow(title: "Jerusalem", items: jerusalem.items) {
+                coordinator.navigate(to: .jerusalemContent)
+            }
         }
 
         if let telAviv = vm.telAvivContent, !telAviv.items.isEmpty {
-            CityContentRow(title: "Tel Aviv", items: telAviv.items)
+            CityContentRow(title: "Tel Aviv", items: telAviv.items) {
+                coordinator.navigate(to: .telAvivContent)
+            }
         }
 
         // Category rows (Movies, Series, Audiobooks, Kids, Music, Documentary are legacy features)
@@ -136,6 +146,47 @@ struct HomeView: View {
             }
         }) { category in
             CategoryRow(category: category, coordinator: coordinator)
+        }
+    }
+
+    // MARK: - Youngsters Section
+
+    private func youngstersSection(_ vm: HomeViewModel) -> some View {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
+            HStack {
+                Text("Youngsters")
+                    .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
+                    .foregroundColor(DesignTokens.Text.primary)
+
+                Spacer()
+
+                Button {
+                    coordinator.navigate(to: .youngsters)
+                } label: {
+                    HStack(spacing: DesignTokens.Spacing.xs) {
+                        Text("Show All")
+                            .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                            .foregroundStyle(DesignTokens.Primary.p400)
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: DesignTokens.FontSize.xs))
+                            .foregroundStyle(DesignTokens.Primary.p400)
+                    }
+                }
+                .accessibilityLabel("Show all Youngsters content")
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+
+            GlassCarousel(items: vm.youngstersTrending, itemWidth: 160) { item in
+                GlassContentCard(
+                    thumbnailURL: item.thumbnail,
+                    title: item.title,
+                    subtitle: item.duration,
+                    aspectRatio: 2.0 / 3.0,
+                    width: 160
+                ) {
+                    coordinator.navigate(to: .movieDetail(movieId: item.id))
+                }
+            }
         }
     }
 

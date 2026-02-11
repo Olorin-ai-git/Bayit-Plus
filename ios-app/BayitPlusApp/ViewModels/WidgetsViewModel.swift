@@ -78,6 +78,37 @@ final class WidgetsViewModel {
         actionLoadingIds.remove(widgetId)
     }
 
+    /// Create a new personal widget
+    @MainActor
+    func createPersonalWidget(_ request: CreateWidgetRequest) async -> Bool {
+        do {
+            _ = try await repository.createWidget(request)
+            await loadMyWidgets()
+            logger.info("Created personal widget", context: ["title": request.title])
+            return true
+        } catch {
+            logger.error("Failed to create widget", error: error)
+            return false
+        }
+    }
+
+    /// Delete a personal widget
+    @MainActor
+    func deletePersonalWidget(widgetId: String) async {
+        do {
+            try await repository.deleteWidget(widgetId: widgetId)
+            myWidgets.removeAll { $0.id == widgetId }
+            logger.info("Deleted personal widget", context: ["widgetId": widgetId])
+        } catch {
+            logger.error("Failed to delete widget", error: error)
+        }
+    }
+
+    /// Personal widgets filtered from myWidgets
+    var personalWidgets: [WidgetItem] {
+        myWidgets.filter { $0.type == .personal }
+    }
+
     // MARK: - Private
 
     @MainActor

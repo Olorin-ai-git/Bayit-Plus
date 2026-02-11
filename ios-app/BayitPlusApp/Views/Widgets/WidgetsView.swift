@@ -7,6 +7,7 @@ struct WidgetsView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: WidgetsViewModel?
+    @State private var showCreateWidget = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -37,6 +38,15 @@ struct WidgetsView: View {
             }
             await viewModel?.loadAll()
         }
+        .sheet(isPresented: $showCreateWidget) {
+            if let vm = viewModel {
+                CreateWidgetView(viewModel: vm) {
+                    showCreateWidget = false
+                }
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+            }
+        }
     }
 
     // MARK: - Personal Widgets Section
@@ -44,39 +54,101 @@ struct WidgetsView: View {
     @ViewBuilder
     private func personalWidgetsSection(_ vm: WidgetsViewModel) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text(localization.t("widgets.personalWidgets"))
-                .font(.system(size: DesignTokens.FontSize.lg, weight: .semibold))
-                .foregroundColor(DesignTokens.Text.primary)
-                .padding(.horizontal, DesignTokens.Spacing.lg)
+            HStack {
+                Text(localization.t("widgets.personalWidgets"))
+                    .font(.system(size: DesignTokens.FontSize.lg, weight: .semibold))
+                    .foregroundColor(DesignTokens.Text.primary)
 
-            if vm.myWidgets.isEmpty && !vm.isLoadingMyWidgets {
+                Spacer()
+
+                GlassButton("Create", variant: .primary, size: .small,
+                             icon: Image(systemName: "plus")) {
+                    showCreateWidget = true
+                }
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+
+            if vm.personalWidgets.isEmpty && !vm.isLoadingMyWidgets {
                 personalWidgetsEmptyState
-            } else if vm.isLoadingMyWidgets && vm.myWidgets.isEmpty {
+            } else if vm.isLoadingMyWidgets && vm.personalWidgets.isEmpty {
                 personalWidgetsLoading
-            } else if let error = vm.myWidgetsError, vm.myWidgets.isEmpty {
+            } else if let error = vm.myWidgetsError, vm.personalWidgets.isEmpty {
                 ErrorStateView(message: error) {
                     Task { await vm.refresh() }
                 }
+            } else {
+                personalWidgetsList(vm)
             }
         }
     }
 
-    private var personalWidgetsEmptyState: some View {
+    private func personalWidgetsList(_ vm: WidgetsViewModel) -> some View {
         VStack(spacing: DesignTokens.Spacing.md) {
-            Image(systemName: "plus.square.dashed")
-                .font(.system(size: 32))
-                .foregroundColor(DesignTokens.Text.disabled)
-
-            Text(localization.t("widgets.emptyPersonal"))
-                .font(.system(size: DesignTokens.FontSize.base))
-                .foregroundColor(DesignTokens.Text.muted)
-                .multilineTextAlignment(.center)
+            ForEach(vm.personalWidgets) { widget in
+                personalWidgetCard(widget, vm: vm)
+            }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, DesignTokens.Spacing.xl)
         .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    private func personalWidgetCard(_ widget: WidgetItem, vm: WidgetsViewModel) -> some View {
+        HStack(spacing: DesignTokens.Spacing.md) {
+            Image(systemName: widget.content?.contentType?.iconName ?? "square.grid.2x2")
+                .font(.system(size: 24))
+                .foregroundStyle(DesignTokens.Primary.p300)
+                .frame(width: 44, height: 44)
+                .background(DesignTokens.Glass.purpleLight)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
+                Text(widget.title)
+                    .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
+                    .foregroundStyle(DesignTokens.Text.primary)
+                    .lineLimit(1)
+
+                if let contentType = widget.content?.contentType {
+                    Text(contentType.displayLabel)
+                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+            }
+
+            Spacer()
+
+            Button {
+                Task { await vm.deletePersonalWidget(widgetId: widget.id) }
+            } label: {
+                Image(systemName: "trash")
+                    .font(.system(size: 16))
+                    .foregroundStyle(DesignTokens.ErrorColor.default)
+                    .frame(width: 36, height: 36)
+            }
+            .accessibilityLabel("Delete \(widget.title)")
+        }
+        .padding(DesignTokens.Spacing.md)
         .glassCard()
+    }
+
+    private var personalWidgetsEmptyState: some View {
+        Button { showCreateWidget = true } label: {
+            VStack(spacing: DesignTokens.Spacing.md) {
+                Image(systemName: "plus.square.dashed")
+                    .font(.system(size: 32))
+                    .foregroundColor(DesignTokens.Primary.p400)
+
+                Text("Create your first personal widget")
+                    .font(.system(size: DesignTokens.FontSize.base))
+                    .foregroundColor(DesignTokens.Text.muted)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, DesignTokens.Spacing.xl)
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+            .glassCard()
+        }
+        .buttonStyle(.plain)
         .padding(.horizontal, DesignTokens.Spacing.lg)
+        .accessibilityLabel("Create personal widget")
     }
 
     private var personalWidgetsLoading: some View {

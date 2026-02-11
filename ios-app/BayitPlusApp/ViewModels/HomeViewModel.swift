@@ -19,6 +19,7 @@ final class HomeViewModel {
     private(set) var telAvivContent: CityContentResponse?
     private(set) var jerusalemContent: CityContentResponse?
     private(set) var trendingContent: [CultureTrendingItem] = []
+    private(set) var youngstersTrending: [SectionContentItem] = []
     private(set) var isLoading = false
     private(set) var error: String?
 
@@ -26,17 +27,20 @@ final class HomeViewModel {
     private let liveTVRepository: any LiveTVRepository
     private let locationProvider: any LocationProvider
     private let featureFlags: FeatureFlags
+    private let categoryRepository: (any CategoryRepository)?
 
     init(
         repository: any ContentRepository,
         liveTVRepository: any LiveTVRepository,
         locationProvider: any LocationProvider,
-        featureFlags: FeatureFlags
+        featureFlags: FeatureFlags,
+        categoryRepository: (any CategoryRepository)? = nil
     ) {
         self.repository = repository
         self.liveTVRepository = liveTVRepository
         self.locationProvider = locationProvider
         self.featureFlags = featureFlags
+        self.categoryRepository = categoryRepository
     }
 
     @MainActor
@@ -89,6 +93,7 @@ final class HomeViewModel {
         async let jerusalemTask = loadJerusalemContent()
         async let trendingTask = loadTrending()
         async let locationTask = loadLocationContent()
+        async let youngstersTask = loadYoungstersTrending()
 
         await liveTask
         await continueTask
@@ -96,6 +101,7 @@ final class HomeViewModel {
         await jerusalemTask
         await trendingTask
         await locationTask
+        await youngstersTask
     }
 
     // Hidden channels (King 5, CNN, ABC) are legacy features - controlled by feature flag
@@ -191,6 +197,17 @@ final class HomeViewModel {
             israeliBusinesses = try await repository.fetchIsraeliBusinesses(city: city, state: state)
         } catch {
             israeliBusinesses = nil
+        }
+    }
+
+    @MainActor
+    private func loadYoungstersTrending() async {
+        guard let catRepo = categoryRepository else { return }
+        do {
+            let response = try await catRepo.fetchYoungstersTrending()
+            youngstersTrending = response.items
+        } catch {
+            youngstersTrending = []
         }
     }
 }

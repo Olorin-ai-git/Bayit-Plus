@@ -8,10 +8,28 @@ struct CategoryRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text(category.name)
-                .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
-                .foregroundColor(DesignTokens.Text.primary)
-                .padding(.horizontal, DesignTokens.Spacing.lg)
+            HStack {
+                Text(category.name)
+                    .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
+                    .foregroundColor(DesignTokens.Text.primary)
+
+                Spacer()
+
+                Button {
+                    navigateToCategory()
+                } label: {
+                    HStack(spacing: DesignTokens.Spacing.xs) {
+                        Text("Show All")
+                            .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                            .foregroundStyle(DesignTokens.Primary.p400)
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: DesignTokens.FontSize.xs))
+                            .foregroundStyle(DesignTokens.Primary.p400)
+                    }
+                }
+                .accessibilityLabel("Show all \(category.name)")
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
 
             GlassCarousel(items: category.items, itemWidth: itemWidth) { item in
                 ZStack(alignment: .topTrailing) {
@@ -121,6 +139,29 @@ struct CategoryRow: View {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
         } else {
             coordinator.navigate(to: .movieDetail(movieId: item.id))
+        }
+    }
+
+    private func navigateToCategory() {
+        let name = category.name.lowercased()
+        if name.contains("podcast") {
+            coordinator.selectedTab = .podcasts
+        } else if name.contains("radio") {
+            coordinator.selectedTab = .radio
+        } else if name.contains("live") {
+            coordinator.selectedTab = .liveTV
+        } else if name.contains("kid") || name.contains("children") {
+            coordinator.navigate(to: .children)
+        } else if name.contains("youngster") || name.contains("teen") {
+            coordinator.navigate(to: .youngsters)
+        } else if name.contains("judai") || name.contains("torah") {
+            coordinator.navigate(to: .judaism)
+        } else if name.contains("audiobook") {
+            coordinator.navigate(to: .audiobooks)
+        } else if name.contains("trend") || name.contains("hot") {
+            coordinator.navigate(to: .trending)
+        } else {
+            coordinator.selectedTab = .vod
         }
     }
 }
