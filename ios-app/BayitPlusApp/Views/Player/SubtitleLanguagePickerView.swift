@@ -13,6 +13,8 @@ struct SubtitleLanguagePickerView: View {
     let onSelect: (String?) -> Void
     let onRefresh: () -> Void
     var onDismiss: (() -> Void)?
+    var onSplitTap: (() -> Void)?
+    var isSplitEnabled: Bool = false
 
     // Mode selection parameters
     var currentHebrewMode: SubtitleHebrewMode = .standard
@@ -39,6 +41,48 @@ struct SubtitleLanguagePickerView: View {
 
                     ForEach(languageRows, id: \.code) { info in
                         languageRow(info)
+                    }
+
+                    // Split display option (dual subtitles side-by-side)
+                    if let onSplitTap, availableLanguages.count >= 2 {
+                        Divider()
+                            .background(DesignTokens.Text.muted.opacity(0.3))
+                            .padding(.vertical, DesignTokens.Spacing.sm)
+
+                        Button {
+                            onSplitTap()
+                        } label: {
+                            HStack(spacing: DesignTokens.Spacing.md) {
+                                Image(systemName: "text.line.first.and.arrowtriangle.forward")
+                                    .font(.system(size: 22))
+                                    .foregroundStyle(DesignTokens.Primary.p400)
+
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Split Display")
+                                        .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
+                                        .foregroundStyle(DesignTokens.Text.primary)
+
+                                    Text("Show two languages side by side")
+                                        .font(.system(size: DesignTokens.FontSize.sm))
+                                        .foregroundStyle(DesignTokens.Text.muted)
+                                }
+
+                                Spacer()
+
+                                if isSplitEnabled {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(DesignTokens.Primary.p400)
+                                }
+
+                                Image(systemName: "chevron.right")
+                                    .font(.system(size: 14))
+                                    .foregroundStyle(DesignTokens.Text.muted)
+                            }
+                            .padding(DesignTokens.Spacing.md)
+                            .background(rowBackground(isSelected: isSplitEnabled))
+                            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+                        }
+                        .buttonStyle(.plain)
                     }
 
                     Divider()

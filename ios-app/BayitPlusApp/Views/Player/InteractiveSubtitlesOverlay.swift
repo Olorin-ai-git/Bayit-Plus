@@ -22,7 +22,7 @@ struct InteractiveSubtitlesOverlay: View {
             if let cue = viewModel.activeCue {
                 cueView(cue)
                     .padding(.horizontal, DesignTokens.Spacing.lg)
-                    .padding(.bottom, isTriviaActive ? DesignTokens.Spacing.xxxl : DesignTokens.Spacing.xxxxl)
+                    .padding(.bottom, isTriviaActive ? 160 : 140)
             }
         }
         .overlay {

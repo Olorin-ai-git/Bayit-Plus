@@ -352,12 +352,19 @@ struct PlayerView: View {
                             showSubtitlePicker = false
                         }
                     },
+                    onSplitTap: {
+                        withAnimation(.spring(duration: 0.3)) {
+                            showSubtitlePicker = false
+                        }
+                        showSplitLanguagePicker = true
+                    },
+                    isSplitEnabled: splitModeEnabled,
                     currentHebrewMode: subtitlesVM?.hebrewMode ?? .standard,
                     currentEnglishMode: subtitlesVM?.englishMode ?? .standard,
                     hasNikud: subtitlesVM?.hasNikud ?? false,
                     hasShoresh: subtitlesVM?.hasShoresh ?? false,
                     hasHeblish: subtitlesVM?.hasHeblish ?? false,
-                    hasEngrew: false,  // English AI modes not yet implemented
+                    hasEngrew: false,
                     onHebrewModeSelect: { mode in
                         Task {
                             await subtitlesVM?.setHebrewMode(mode, contentId: contentId, language: selectedSubtitleLanguage)
@@ -459,6 +466,25 @@ struct PlayerView: View {
             }
 
             Spacer()
+
+            // Subtitle picker button (VOD only - live uses AI panel)
+            if !mediaContentType.isLive && !availableSubtitleLanguages.isEmpty {
+                Button {
+                    withAnimation(.spring(duration: 0.3)) {
+                        showSubtitlePicker.toggle()
+                    }
+                } label: {
+                    Image(systemName: selectedSubtitleLanguage != nil
+                        ? "captions.bubble.fill" : "captions.bubble")
+                        .font(.system(size: 18))
+                        .foregroundStyle(
+                            selectedSubtitleLanguage != nil
+                                ? DesignTokens.Primary.p400 : .white
+                        )
+                        .frame(width: 44, height: 44)
+                }
+                .accessibilityLabel("Subtitles")
+            }
 
             recordingButton
 
