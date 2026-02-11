@@ -11,8 +11,7 @@ import Observation
 ///
 /// Coordinates STT, TTS, WebSocket streaming, and intent routing.
 ///
-/// Available on iOS only. tvOS does not support microphone input
-/// required for the speech recognition pipeline.
+/// Available on iOS and tvOS (Siri Remote microphone).
 @Observable
 @MainActor
 public final class VoiceOrchestrator {

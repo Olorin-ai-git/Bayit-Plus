@@ -10,8 +10,7 @@ import Speech
 /// Removes RCT bridge, uses AsyncStream for results, supports
 /// multi-language (he-IL, en-US, es-ES).
 ///
-/// Available on iOS only. tvOS does not support Speech.framework
-/// or microphone input.
+/// Available on iOS and tvOS (Siri Remote microphone).
 public final class SpeechRecognitionService: Sendable {
 
     private let logger = BayitLogger(category: "SpeechRecognition")
