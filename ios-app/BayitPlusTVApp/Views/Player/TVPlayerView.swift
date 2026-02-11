@@ -52,6 +52,7 @@ struct TVPlayerView: View {
 
     @State private var splitModeEnabled = false
     @State private var splitLanguages: [String] = []
+    @State private var splitLayout: SplitSubtitleLayout = .stacked
     @State private var primarySubtitleCues: [SubtitleCue] = []
     @State private var secondarySubtitleCues: [SubtitleCue] = []
 
@@ -82,17 +83,17 @@ struct TVPlayerView: View {
                     VStack {
                         Spacer()
                         LinearGradient(
-                            colors: [.clear, .black.opacity(0.7)],
+                            colors: [.clear, .black.opacity(0.85)],
                             startPoint: .top,
                             endPoint: .bottom
                         )
-                        .frame(height: 200)
+                        .frame(height: 320)
                     }
                     .ignoresSafeArea()
                     .allowsHitTesting(false)
 
-                    // Progress bar + controls
-                    VStack(spacing: TVDesignTokens.Spacing.md) {
+                    // Progress bar + controls anchored to bottom
+                    VStack(spacing: TVDesignTokens.Spacing.lg) {
                         Spacer()
 
                         if !isLive {
@@ -119,10 +120,14 @@ struct TVPlayerView: View {
                                 onDubbing: { showDubbingControls = true },
                                 onChapters: { showChapterList = true },
                                 onAudioTracks: { showAudioTracks = true },
-                                onSpeed: { showSpeedControl = true }
+                                onSpeed: { showSpeedControl = true },
+                                selectedSubtitleLanguage: selectedSubtitleLanguage,
+                                isSplitEnabled: splitModeEnabled,
+                                splitLanguages: splitLanguages
                             )
                         }
                     }
+                    .padding(.bottom, TVDesignTokens.Spacing.xxl)
                 }
             }
         }
@@ -196,6 +201,7 @@ struct TVPlayerView: View {
             TVSplitLanguagePickerView(
                 availableLanguages: availableSubtitleLanguages,
                 selectedLanguages: $splitLanguages,
+                layout: $splitLayout,
                 onConfirm: { languages in
                     splitLanguages = languages
                     splitModeEnabled = true
@@ -416,7 +422,8 @@ struct TVPlayerView: View {
                 primaryCues: primarySubtitleCues,
                 secondaryCues: secondarySubtitleCues,
                 primaryLanguage: splitLanguages[0],
-                secondaryLanguage: splitLanguages[1]
+                secondaryLanguage: splitLanguages[1],
+                layout: splitLayout
             )
         }
     }
