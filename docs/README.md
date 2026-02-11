@@ -1,6 +1,6 @@
 # Bayit+ Documentation
 
-**Last Updated:** 2026-02-09
+**Last Updated:** 2026-02-11
 **Total Documents:** 230 files (organized)
 **Documentation Portal:** https://docs.bayitplus.com
 
@@ -227,6 +227,8 @@ Database operations and maintenance procedures:
 
 Comprehensive code reviews and assessments:
 
+- [Feature Parity Audit 2026-02-11](reviews/FEATURE_PARITY_AUDIT_2026-02-11.md) - Cross-platform feature parity audit: Web vs iOS vs tvOS with 180+ features compared, gap analysis, and recommendations - 2026-02-11
+- [Platform Parity Audit 2026-02-08](reviews/PLATFORM_PARITY_AUDIT_2026-02-08.md) - Previous platform parity audit (superseded by 2026-02-11 audit)
 - Security Audits
 - Performance Reviews
 - Data Architecture Assessments
@@ -436,6 +438,15 @@ Bayit+ runs on 4 platforms with unified documentation:
 ---
 
 ## Recent Updates
+
+**2026-02-11: Cross-Platform Feature Parity Audit v2.0**
+- Comprehensive feature parity audit comparing Web, iOS, and tvOS
+- 180+ features compared across 26 categories
+- Side-by-side parity table with gap notes for every sub-feature
+- Platform statistics: Web (967 files, 164K LOC), iOS (347 files, 43K LOC), tvOS (114 files, 15.8K LOC)
+- Parity scores: iOS vs Web 92%, tvOS vs Web 82%, tvOS vs iOS 87%
+- Gap analysis with prioritized recommendations
+- Supersedes PLATFORM_PARITY_AUDIT_2026-02-08
 
 **2026-02-04: Marketing Materials & App Store Guide**
 - Added comprehensive App Store Connect tvOS Metadata Guide
