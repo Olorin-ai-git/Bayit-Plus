@@ -317,13 +317,20 @@ Consider the age group ({age_description}) when making decisions. Be protective 
         # Parse JSON response
         response_text = response.content[0].text.strip()
 
-        # Clean up response
+        # Clean up response - strip markdown fences and extra text
         if response_text.startswith("```json"):
             response_text = response_text[7:]
         if response_text.startswith("```"):
             response_text = response_text[3:]
         if response_text.endswith("```"):
             response_text = response_text[:-3]
+        response_text = response_text.strip()
+
+        # Extract first JSON object if AI added extra text
+        brace_start = response_text.find("{")
+        brace_end = response_text.rfind("}")
+        if brace_start >= 0 and brace_end > brace_start:
+            response_text = response_text[brace_start : brace_end + 1]
 
         data = json.loads(response_text)
         appropriate_indices = data.get("appropriate", [])

@@ -120,6 +120,11 @@ struct TVMainTabView: View {
                     .tag(TVTab.settings)
             }
 
+            .onAppear {
+                // Ensure Home tab is selected on initial launch
+                coord.selectedTab = .home
+            }
+
             // Widget sidebar (right edge - restored widgets)
             if let vm = dockViewModel, !vm.restoredWidgets.isEmpty {
                 TVWidgetSidebarView(

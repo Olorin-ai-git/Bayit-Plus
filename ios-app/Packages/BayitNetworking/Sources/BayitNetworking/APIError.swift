@@ -73,8 +73,11 @@ extension APIError: LocalizedError {
 extension APIError {
 
     /// Creates the appropriate `APIError` from an HTTP status code and response body.
-    static func fromHTTPStatus(_ statusCode: Int, body: Data?) -> APIError {
-        let message = body.flatMap { String(data: $0, encoding: .utf8) } ?? "No response body"
+    ///
+    /// Parses JSON response bodies to extract the `detail` field for user-friendly
+    /// error messages instead of showing raw JSON to the user.
+    public static func fromHTTPStatus(_ statusCode: Int, body: Data?) -> APIError {
+        let message = extractMessage(from: body)
 
         switch statusCode {
         case 401:
@@ -90,5 +93,24 @@ extension APIError {
         default:
             return .unknown(statusCode: statusCode, message: message)
         }
+    }
+
+    /// Extract a user-friendly message from the response body.
+    /// Parses JSON to find `detail` field; falls back to raw string.
+    private static func extractMessage(from body: Data?) -> String {
+        guard let body, !body.isEmpty else { return "No response body" }
+
+        // Try to parse JSON and extract "detail" field
+        if let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any],
+           let detail = json["detail"] as? String {
+            return detail
+        }
+
+        // Fall back to raw string but truncate if too long
+        let raw = String(data: body, encoding: .utf8) ?? "No response body"
+        if raw.count > 120 {
+            return String(raw.prefix(120))
+        }
+        return raw
     }
 }

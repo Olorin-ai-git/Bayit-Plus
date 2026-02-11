@@ -68,6 +68,17 @@ struct TVVODView: View {
                             }
                         }
                     )
+                    .overlay(alignment: .bottomLeading) {
+                        if let languages = item.availableSubtitleLanguages,
+                           !languages.isEmpty {
+                            SubtitleFlagsPill(
+                                languages: languages,
+                                aiLanguages: [],
+                                size: .medium
+                            )
+                            .padding(TVDesignTokens.Spacing.sm)
+                        }
+                    }
                     .onAppear {
                         if item.id == items.last?.id {
                             Task { await viewModel?.loadMore() }

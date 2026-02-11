@@ -403,21 +403,28 @@ struct PiPWidgetContainerView: View {
     // MARK: - Cover Image Helpers
 
     private func coverImage(fallbackIcon: String) -> some View {
-        Group {
-            if let url = playerVM?.resolvedCoverURL {
-                AsyncImage(url: url) { phase in
-                    switch phase {
-                    case .success(let image):
-                        image
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                    default:
-                        coverFallback(icon: fallbackIcon, size: 32)
+        GeometryReader { geo in
+            Group {
+                if let url = playerVM?.resolvedCoverURL {
+                    AsyncImage(url: url) { phase in
+                        switch phase {
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height)
+                                .frame(width: geo.size.width, height: geo.size.height)
+                                .background(DesignTokens.Background.elevated)
+                        default:
+                            coverFallback(icon: fallbackIcon, size: 32)
+                        }
                     }
+                } else {
+                    coverFallback(icon: fallbackIcon, size: 32)
                 }
-            } else {
-                coverFallback(icon: fallbackIcon, size: 32)
             }
+            .frame(width: geo.size.width, height: geo.size.height)
+            .clipped()
         }
     }
 
@@ -465,29 +472,45 @@ struct PiPWidgetContainerView: View {
     // MARK: - Shared Sub-views
 
     private var playButtonOverlay: some View {
-        Button {
-            HapticFeedbackService.impact(style: .medium)
-            Task { await playerVM?.togglePlayback(widget: widget) }
-        } label: {
-            ZStack {
-                Circle()
-                    .fill(Color.black.opacity(0.5))
-                    .frame(width: 48, height: 48)
-                    .overlay(
-                        Circle().stroke(Color.white.opacity(0.3), lineWidth: 1)
-                    )
+        VStack(spacing: DesignTokens.Spacing.xs) {
+            Button {
+                HapticFeedbackService.impact(style: .medium)
+                Task { await playerVM?.togglePlayback(widget: widget) }
+            } label: {
+                ZStack {
+                    Circle()
+                        .fill(Color.black.opacity(0.5))
+                        .frame(width: 48, height: 48)
+                        .overlay(
+                            Circle().stroke(Color.white.opacity(0.3), lineWidth: 1)
+                        )
 
-                if playerVM?.isLoading == true {
-                    ProgressView()
-                        .tint(.white)
-                        .scaleEffect(0.8)
-                } else {
-                    Image(
-                        systemName: playerVM?.isPlaying == true ? "pause.fill" : "play.fill"
-                    )
-                    .font(.system(size: 20))
-                    .foregroundStyle(.white)
+                    if playerVM?.isLoading == true {
+                        ProgressView()
+                            .tint(.white)
+                            .scaleEffect(0.8)
+                    } else if playerVM?.errorMessage != nil {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 20))
+                            .foregroundStyle(DesignTokens.Warning.default)
+                    } else {
+                        Image(
+                            systemName: playerVM?.isPlaying == true ? "pause.fill" : "play.fill"
+                        )
+                        .font(.system(size: 20))
+                        .foregroundStyle(.white)
+                    }
                 }
+            }
+
+            if let error = playerVM?.errorMessage {
+                Text(error)
+                    .font(.system(size: DesignTokens.FontSize.xs, weight: .medium))
+                    .foregroundStyle(DesignTokens.Warning.default)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, DesignTokens.Spacing.sm)
+                    .shadow(color: .black, radius: 2)
             }
         }
     }
