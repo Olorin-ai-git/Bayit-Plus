@@ -18,6 +18,7 @@ final class InteractiveSubtitlesViewModel {
     private(set) var hasNikud = false
     private(set) var hasShoresh = false
     private(set) var hasHeblish = false
+    private(set) var hasEngrew = false
 
     var isAdmin: Bool {
         authManager?.user?.role.isAdmin ?? false
@@ -57,6 +58,7 @@ final class InteractiveSubtitlesViewModel {
             hasNikud = cues.contains { $0.textNikud != nil }
             hasShoresh = cues.contains { $0.textShoresh != nil }
             hasHeblish = cues.contains { $0.textHeblish != nil }
+            hasEngrew = cues.contains { $0.textEngrew != nil }
 
             await offlineCache.save(response, forKey: cacheKey)
         } catch {
@@ -67,6 +69,7 @@ final class InteractiveSubtitlesViewModel {
                 hasNikud = cues.contains { $0.textNikud != nil }
                 hasShoresh = cues.contains { $0.textShoresh != nil }
                 hasHeblish = cues.contains { $0.textHeblish != nil }
+                hasEngrew = cues.contains { $0.textEngrew != nil }
             }
         }
     }

@@ -72,26 +72,26 @@ struct TVPlayerControlBar: View {
                             ? DesignTokens.Primary.p400
                             : DesignTokens.Text.primary)
 
-                    // Flag badges
+                    // Flag badges (contained within icon area)
                     if isSplitEnabled, splitLanguages.count == 2 {
                         HStack(spacing: 2) {
                             Text(flag(for: splitLanguages[0]))
-                                .font(.system(size: 14))
+                                .font(.system(size: 12))
                             Text(flag(for: splitLanguages[1]))
-                                .font(.system(size: 14))
+                                .font(.system(size: 12))
                         }
-                        .padding(.horizontal, 4)
-                        .padding(.vertical, 2)
+                        .padding(.horizontal, 3)
+                        .padding(.vertical, 1)
                         .background(Color.black.opacity(0.7))
                         .clipShape(Capsule())
-                        .offset(x: 24, y: -14)
+                        .offset(x: 18, y: -12)
                     } else if let lang = selectedSubtitleLanguage {
                         Text(flag(for: lang))
-                            .font(.system(size: 16))
-                            .padding(4)
+                            .font(.system(size: 14))
+                            .padding(3)
                             .background(Color.black.opacity(0.7))
                             .clipShape(Circle())
-                            .offset(x: 22, y: -14)
+                            .offset(x: 16, y: -12)
                     }
                 }
 
@@ -102,8 +102,9 @@ struct TVPlayerControlBar: View {
                         : DesignTokens.Text.primary)
             }
             .frame(width: 120, height: 80)
+            .clipped()
         }
-        .buttonStyle(.card)
+        .buttonStyle(PlayerControlButtonStyle())
         .accessibilityLabel(subtitleAccessibilityLabel)
     }
 
@@ -138,7 +139,60 @@ struct TVPlayerControlBar: View {
             .foregroundStyle(DesignTokens.Text.primary)
             .frame(width: 120, height: 80)
         }
-        .buttonStyle(.card)
+        .buttonStyle(PlayerControlButtonStyle())
         .accessibilityLabel(label)
+    }
+}
+
+// MARK: - Player Control Button Style
+
+/// Custom button style for player dock items.
+/// Transparent background with dark purple border on focus,
+/// replacing the default `.card` style that adds an opaque background.
+private struct PlayerControlButtonStyle: ButtonStyle {
+    @Environment(\.isFocused) private var isFocused
+
+    func makeBody(configuration: Configuration) -> some View {
+        PlayerControlButtonContent(
+            configuration: configuration,
+            isPressed: configuration.isPressed
+        )
+    }
+}
+
+private struct PlayerControlButtonContent: View {
+    let configuration: ButtonStyleConfiguration
+    let isPressed: Bool
+    @Environment(\.isFocused) private var isFocused
+
+    var body: some View {
+        configuration.label
+            .padding(TVDesignTokens.Spacing.sm)
+            .background(
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
+                    .fill(Color.clear)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
+                    .stroke(
+                        isFocused ? DesignTokens.Glass.borderFocus : Color.clear,
+                        lineWidth: TVDesignTokens.Focus.ringWidth
+                    )
+            )
+            .scaleEffect(isFocused ? TVDesignTokens.Focus.scaleAmount : 1.0)
+            .scaleEffect(isPressed ? 0.95 : 1.0)
+            .shadow(
+                color: isFocused
+                    ? DesignTokens.Glass.purpleGlow.opacity(0.6)
+                    : Color.clear,
+                radius: TVDesignTokens.Focus.shadowRadius,
+                x: 0,
+                y: isFocused ? 8 : 0
+            )
+            .animation(
+                .spring(duration: TVDesignTokens.Focus.animationDuration, bounce: 0.2),
+                value: isFocused
+            )
+            .animation(.easeInOut(duration: 0.1), value: isPressed)
     }
 }

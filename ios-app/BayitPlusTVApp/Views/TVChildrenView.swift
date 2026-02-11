@@ -152,7 +152,6 @@ struct TVChildrenView: View {
                         thumbnailURL: item.thumbnail,
                         title: item.title ?? "Content",
                         subtitle: item.duration,
-                        aspectRatio: 16 / 9,
                         onSelect: {
                             coordinator.presentPlayer(
                                 contentId: item.id,

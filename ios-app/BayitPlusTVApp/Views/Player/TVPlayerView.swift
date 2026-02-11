@@ -174,7 +174,7 @@ struct TVPlayerView: View {
                 hasNikud: subtitlesVM?.hasNikud ?? false,
                 hasShoresh: subtitlesVM?.hasShoresh ?? false,
                 hasHeblish: subtitlesVM?.hasHeblish ?? false,
-                hasEngrew: false,
+                hasEngrew: subtitlesVM?.hasEngrew ?? false,
                 isAdmin: authManager.user?.role.isAdmin ?? false,
                 onHebrewModeSelect: { mode in
                     Task {

@@ -1,18 +1,66 @@
 import BayitDesignSystem
 import SwiftUI
 
-/// Displays current time for a specific culture/timezone with weekend indicator
-/// Optimized for tvOS 10-foot UI with larger fonts and better readability
+/// Displays current time for a specific culture/timezone with weekend indicator.
+/// Optimized for tvOS 10-foot UI with larger fonts and better readability.
+/// Set `compact: true` for a single-line inline variant (used in the top clock bar).
 struct TVCultureClock: View {
     let flagEmoji: String
     let locationLabel: String
     let timezone: TimeZone
     let isIsraeli: Bool
+    let compact: Bool
 
     @State private var currentTime = Date()
     @State private var timer: Timer?
 
+    init(
+        flagEmoji: String,
+        locationLabel: String,
+        timezone: TimeZone,
+        isIsraeli: Bool,
+        compact: Bool = false
+    ) {
+        self.flagEmoji = flagEmoji
+        self.locationLabel = locationLabel
+        self.timezone = timezone
+        self.isIsraeli = isIsraeli
+        self.compact = compact
+    }
+
     var body: some View {
+        Group {
+            if compact {
+                compactBody
+            } else {
+                fullBody
+            }
+        }
+        .onAppear { startTimer() }
+        .onDisappear { stopTimer() }
+    }
+
+    // MARK: - Compact (single-line, no background)
+
+    private var compactBody: some View {
+        HStack(spacing: TVDesignTokens.Spacing.xs) {
+            Text(flagEmoji)
+                .font(.system(size: TVDesignTokens.FontSize.sm))
+
+            Text(locationLabel)
+                .font(.system(size: TVDesignTokens.FontSize.xs))
+                .foregroundColor(DesignTokens.Text.secondary)
+
+            Text(timeString)
+                .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold, design: .rounded))
+                .foregroundColor(DesignTokens.Text.primary)
+                .monospacedDigit()
+        }
+    }
+
+    // MARK: - Full (card with background)
+
+    private var fullBody: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
             HStack(spacing: TVDesignTokens.Spacing.sm) {
                 Text(flagEmoji)
@@ -58,8 +106,6 @@ struct TVCultureClock: View {
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.card)
                 .stroke(Color.white.opacity(0.08), lineWidth: 1)
         )
-        .onAppear { startTimer() }
-        .onDisappear { stopTimer() }
     }
 
     private var timeString: String {

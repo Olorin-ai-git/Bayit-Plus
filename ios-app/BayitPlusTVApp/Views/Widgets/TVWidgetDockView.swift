@@ -43,7 +43,6 @@ struct TVWidgetDockView: View {
             collapseToggle
             closeButton
         }
-        .focusSection()
         .animation(.spring(duration: 0.3, bounce: 0.1), value: isCollapsed)
         .padding(.horizontal, TVDesignTokens.Spacing.xl)
         .padding(.vertical, TVDesignTokens.Spacing.md)

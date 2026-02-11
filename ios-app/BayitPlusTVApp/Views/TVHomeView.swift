@@ -9,6 +9,11 @@ struct TVHomeView: View {
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: HomeViewModel?
 
+    /// Max items visible in one row without scrolling.
+    /// 1920pt screen - 56pt padding each side = 1808pt usable.
+    /// 300pt poster + 40pt focus gap = 340pt per slot -> ~5 items.
+    static let maxItemsPerRow = 5
+
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             if let vm = viewModel {
@@ -42,56 +47,32 @@ struct TVHomeView: View {
     @ViewBuilder
     private func contentSections(_ vm: HomeViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
-            TVPageHeader(icon: "house.fill", title: "Home")
+            // Hero carousel with auto-rotation
+            if !vm.spotlight.isEmpty {
+                GlassHeroCarousel(items: vm.spotlight) { item in
+                    Button {
+                        let contentType = TVContentTypeMapper.map(item.type)
+                        coordinator.presentPlayer(
+                            contentId: item.id,
+                            contentType: contentType
+                        )
+                    } label: {
+                        heroItem(item)
+                    }
+                    .buttonStyle(.card)
+                }
+            }
 
             TVShabbatBannerView()
                 .withAutoLoad()
-
-            // Culture clocks - equal width side by side
-            HStack(spacing: TVDesignTokens.Spacing.lg) {
-                TVCultureClock(
-                    flagEmoji: "\u{1F1EE}\u{1F1F1}",
-                    locationLabel: "Time in Israel",
-                    timezone: TimeZone(identifier: "Asia/Jerusalem")!,
-                    isIsraeli: true
-                )
-
-                TVCultureClock(
-                    flagEmoji: "\u{1F1FA}\u{1F1F8}",
-                    locationLabel: "Time in New York, NY",
-                    timezone: TimeZone(identifier: "America/New_York")!,
-                    isIsraeli: false
-                )
-            }
-            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
-
-            // Hero carousel
-            if !vm.spotlight.isEmpty {
-                TabView {
-                    ForEach(vm.spotlight) { item in
-                        Button {
-                            let contentType = TVContentTypeMapper.map(item.type)
-                            coordinator.presentPlayer(
-                                contentId: item.id,
-                                contentType: contentType
-                            )
-                        } label: {
-                            heroItem(item)
-                        }
-                        .buttonStyle(.card)
-                    }
-                }
-                .tabViewStyle(.page)
-                .frame(height: TVDesignTokens.MinSize.heroHeight)
-                .padding(.horizontal, TVDesignTokens.Spacing.xl)
-                .focusSection()
-            }
 
             // Continue Watching
             if !vm.continueWatching.isEmpty {
                 GlassContentShelf(
                     title: "Continue Watching",
-                    items: vm.continueWatching
+                    items: vm.continueWatching,
+                    maxItems: TVHomeView.maxItemsPerRow,
+                    seeAllAction: { coordinator.selectedTab = .favorites }
                 ) { item in
                     GlassFocusPoster(
                         thumbnailURL: item.thumbnail,
@@ -106,6 +87,32 @@ struct TVHomeView: View {
                     )
                 }
                 .focusSection()
+            }
+
+            // Category rows (movies, series, etc.)
+            ForEach(vm.categories) { category in
+                GlassContentShelf(
+                    title: category.name,
+                    items: category.items,
+                    maxItems: TVHomeView.maxItemsPerRow,
+                    seeAllAction: { coordinator.selectedTab = seeAllTab(for: category.name) }
+                ) { item in
+                    GlassFocusPoster(
+                        thumbnailURL: item.thumbnail,
+                        title: item.title ?? "Untitled",
+                        badge: item.isSeries == true ? "Series" : nil,
+                        aspectRatio: posterAspectRatio(for: category.name),
+                        onSelect: {
+                            coordinator.presentPlayer(
+                                contentId: item.id,
+                                contentType: TVContentTypeMapper.map(item.type)
+                            )
+                        }
+                    )
+                    .overlay(alignment: .bottomLeading) {
+                        subtitleFlagsOverlay(for: item)
+                    }
+                }
             }
 
             // Live TV
@@ -147,24 +154,6 @@ struct TVHomeView: View {
 
             if let telAviv = vm.telAvivContent, !telAviv.items.isEmpty {
                 TVCityContentRow(title: "Tel Aviv", items: telAviv.items)
-            }
-
-            // Category rows
-            ForEach(vm.categories) { category in
-                GlassContentShelf(title: category.name, items: category.items) { item in
-                    GlassFocusPoster(
-                        thumbnailURL: item.thumbnail,
-                        title: item.title ?? "Untitled",
-                        badge: item.isSeries == true ? "Series" : nil,
-                        aspectRatio: posterAspectRatio(for: category.name),
-                        onSelect: {
-                            coordinator.presentPlayer(
-                                contentId: item.id,
-                                contentType: TVContentTypeMapper.map(item.type)
-                            )
-                        }
-                    )
-                }
             }
         }
     }
@@ -243,6 +232,27 @@ struct TVHomeView: View {
             return 1.0
         }
         return 2.0 / 3.0
+    }
+
+    /// Routes "Show All" to the correct tab based on category name.
+    private func seeAllTab(for categoryName: String) -> TVTab {
+        let name = categoryName.lowercased()
+        if name.contains("podcast") { return .podcasts }
+        if name.contains("audiobook") { return .audiobooks }
+        return .vod
+    }
+
+    @ViewBuilder
+    private func subtitleFlagsOverlay(for item: ContentItem) -> some View {
+        if let languages = item.availableSubtitleLanguages, !languages.isEmpty {
+            SubtitleFlagsPill(
+                languages: languages,
+                aiLanguages: [],
+                size: .medium
+            )
+            .padding(.leading, TVDesignTokens.Spacing.sm)
+            .padding(.bottom, 90)
+        }
     }
 
     /// Cache continue watching and trending data for the Top Shelf extension.
@@ -384,28 +394,57 @@ struct TVHomeView: View {
     }
 
     private func tvLiveChannelsShelf(_ channels: [LiveChannelItem]) -> some View {
-        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            HStack(spacing: TVDesignTokens.Spacing.md) {
-                Image(systemName: "tv.fill")
-                    .font(.system(size: TVDesignTokens.FontSize.xl))
-                    .foregroundColor(DesignTokens.Primary.p500)
+        let displayChannels = Array(channels.prefix(Self.maxItemsPerRow))
 
-                Text("Live TV")
-                    .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
-                    .foregroundColor(DesignTokens.Text.primary)
+        return VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
+            // Header with "Show All"
+            HStack {
+                HStack(spacing: TVDesignTokens.Spacing.md) {
+                    Image(systemName: "tv.fill")
+                        .font(.system(size: TVDesignTokens.FontSize.xl))
+                        .foregroundColor(DesignTokens.Primary.p500)
+
+                    Text("Live TV")
+                        .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+                        .foregroundColor(DesignTokens.Text.primary)
+                }
+
+                Spacer()
+
+                Button { coordinator.selectedTab = .liveTV } label: {
+                    HStack(spacing: TVDesignTokens.Spacing.xs) {
+                        Text("Show All")
+                            .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: TVDesignTokens.FontSize.xs, weight: .semibold))
+                    }
+                    .foregroundStyle(DesignTokens.Text.secondary)
+                    .padding(.horizontal, TVDesignTokens.Spacing.md)
+                    .padding(.vertical, TVDesignTokens.Spacing.xs)
+                    .background(
+                        Capsule().fill(Color.white.opacity(0.06))
+                    )
+                    .overlay(
+                        Capsule().stroke(Color.white.opacity(0.1), lineWidth: 1)
+                    )
+                }
+                .buttonStyle(.card)
+                .tvFocusStyle(
+                    scale: 1.04,
+                    shadowRadius: TVDesignTokens.Focus.shadowRadius / 2
+                )
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xxl)
 
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: TVDesignTokens.Spacing.focusGap) {
-                    ForEach(channels) { channel in
-                        tvChannelCard(channel)
+            // Fixed row of channel cards
+            HStack(spacing: TVDesignTokens.Spacing.focusGap) {
+                ForEach(displayChannels) { channel in
+                    tvChannelCard(channel)
                         .tvFocusStyle()
-                    }
                 }
-                .padding(.horizontal, TVDesignTokens.Spacing.xxl)
-                .padding(.vertical, TVDesignTokens.Spacing.md)
             }
+            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+            .padding(.vertical, TVDesignTokens.Spacing.md)
             .focusSection()
         }
         .padding(.vertical, TVDesignTokens.Spacing.lg)

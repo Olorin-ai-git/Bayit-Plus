@@ -221,8 +221,7 @@ struct TVWidgetContainerView: View {
                     Circle().stroke(Color.white.opacity(0.2), lineWidth: 1)
                 )
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .buttonStyle(WidgetCompactButtonStyle())
         .accessibilityLabel("Minimize \(widget.title)")
     }
 
@@ -339,8 +338,7 @@ struct TVWidgetContainerView: View {
                         .stroke(badgeColor.opacity(0.4), lineWidth: 1)
                 )
             }
-            .buttonStyle(.card)
-            .tvFocusStyle()
+            .buttonStyle(WidgetCompactButtonStyle())
             .accessibilityLabel("Play \(widget.title)")
 
             if let errorMsg = playerVM?.errorMessage {
@@ -380,18 +378,16 @@ struct TVWidgetContainerView: View {
                 Circle().stroke(Color.white.opacity(0.15), lineWidth: 1)
             )
         }
-        .buttonStyle(.card)
-        .tvFocusStyle()
+        .buttonStyle(WidgetCompactButtonStyle())
         .accessibilityLabel(label)
     }
 
     // MARK: - Helpers
 
     private var posterHeight: CGFloat {
-        if hasVideoActive { return 240 }
         switch widget.content?.contentType {
         case .liveChannel, .live, .vod:
-            return 160
+            return 200
         case .radio, .podcast, .audiobook:
             return 140
         default:
@@ -422,6 +418,52 @@ struct TVWidgetContainerView: View {
         case .iframe: return DesignTokens.Text.secondary
         default: return DesignTokens.Text.muted
         }
+    }
+}
+
+// MARK: - Widget Compact Button Style
+
+/// Lightweight focus style for widget sidebar buttons.
+/// Uses minimal scale (1.03) and a subtle purple ring instead of the
+/// default `.card` + `.tvFocusStyle()` combination which double-scales.
+private struct WidgetCompactButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        WidgetCompactButtonBody(
+            configuration: configuration,
+            isPressed: configuration.isPressed
+        )
+    }
+}
+
+private struct WidgetCompactButtonBody: View {
+    let configuration: ButtonStyleConfiguration
+    let isPressed: Bool
+    @Environment(\.isFocused) private var isFocused
+
+    var body: some View {
+        configuration.label
+            .overlay(
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
+                    .stroke(
+                        isFocused ? DesignTokens.Glass.borderFocus : Color.clear,
+                        lineWidth: 2
+                    )
+            )
+            .scaleEffect(isFocused ? 1.03 : 1.0)
+            .scaleEffect(isPressed ? 0.96 : 1.0)
+            .shadow(
+                color: isFocused
+                    ? DesignTokens.Glass.purpleGlow.opacity(0.4)
+                    : Color.clear,
+                radius: 8,
+                x: 0,
+                y: isFocused ? 4 : 0
+            )
+            .animation(
+                .spring(duration: TVDesignTokens.Focus.animationDuration, bounce: 0.2),
+                value: isFocused
+            )
+            .animation(.easeInOut(duration: 0.1), value: isPressed)
     }
 }
 
