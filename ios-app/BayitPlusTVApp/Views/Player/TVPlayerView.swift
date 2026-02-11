@@ -1,0 +1,617 @@
+import AVKit
+import BayitAuth
+import BayitCore
+import BayitDesignSystem
+import BayitMedia
+import SwiftUI
+
+/// tvOS full-screen video player with complete subtitle, AI, dubbing, trivia,
+/// split display, chapter, audio track, and speed controls.
+struct TVPlayerView: View {
+    @Environment(MediaPlayer.self) private var mediaPlayer
+    @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(AuthManager.self) private var authManager
+
+    let contentId: String
+    let contentType: MediaContentType
+    let channelId: String?
+
+    // MARK: - ViewModels
+
+    @State private var subtitlesVM: InteractiveSubtitlesViewModel?
+    @State private var liveDubbingVM: LiveDubbingViewModel?
+    @State private var liveSubtitlesVM: LiveSubtitlesViewModel?
+    @State private var triviaVM: TriviaFactsViewModel?
+    @State private var webSocketService: LiveDubbingWebSocketService?
+
+    // MARK: - Panel Visibility
+
+    @State private var showSubtitleLanguagePicker = false
+    @State private var showSubtitleSettings = false
+    @State private var showDubbingControls = false
+    @State private var showChapterList = false
+    @State private var showAudioTracks = false
+    @State private var showSpeedControl = false
+    @State private var showControlButtons = false
+    @State private var showSplitLanguagePicker = false
+    @State private var showAILanguagePicker = false
+
+    // MARK: - Playback State
+
+    @State private var selectedSubtitleLanguage: String?
+    @State private var selectedAILanguage: String = "en"
+    @State private var selectedAudioTrackId: String?
+    @State private var playbackSpeed: Float = 1.0
+    @State private var audioTracks: [AudioTrack] = []
+    @State private var isResolvingStream = true
+    @State private var streamError: String?
+
+    // MARK: - Split Subtitle State
+
+    @State private var splitModeEnabled = false
+    @State private var splitLanguages: [String] = []
+    @State private var primarySubtitleCues: [SubtitleCue] = []
+    @State private var secondarySubtitleCues: [SubtitleCue] = []
+
+    // MARK: - Available Languages
+
+    @State private var availableSubtitleLanguages: [String] = []
+
+    private var isLive: Bool { contentType == .liveTV }
+
+    var body: some View {
+        ZStack {
+            if isResolvingStream {
+                streamLoadingView
+            } else if let error = streamError {
+                streamErrorView(error)
+            } else {
+                TVVideoPlayerRepresentable(player: mediaPlayer.avPlayer)
+                    .ignoresSafeArea()
+
+                triviaOverlay
+                subtitleOverlay
+                splitSubtitleOverlay
+                liveSubtitleOverlay
+                translationOverlay
+
+                if showControlButtons {
+                    if isLive {
+                        TVAIFeaturesPanel(
+                            isSubtitlesEnabled: liveSubtitlesVM?.isEnabled ?? false,
+                            isDubbingEnabled: liveDubbingVM?.isEnabled ?? false,
+                            isTriviaEnabled: triviaVM?.isEnabled ?? false,
+                            isSplitEnabled: splitModeEnabled,
+                            currentLanguage: selectedAILanguage,
+                            onSubtitlesTap: { toggleLiveTranslation() },
+                            onDubbingTap: { toggleLiveDubbing() },
+                            onTriviaTap: { toggleLiveTrivia() },
+                            onSplitTap: { showSplitLanguagePicker = true },
+                            onLanguageTap: { showAILanguagePicker = true }
+                        )
+                    } else {
+                        TVPlayerControlBar(
+                            contentType: contentType,
+                            onSubtitles: { showSubtitleLanguagePicker = true },
+                            onDubbing: { showDubbingControls = true },
+                            onChapters: { showChapterList = true },
+                            onAudioTracks: { showAudioTracks = true },
+                            onSpeed: { showSpeedControl = true }
+                        )
+                    }
+                }
+            }
+        }
+        .onDisappear { cleanup() }
+        .task { await resolveAndPlay() }
+        .task { initializeViewModels() }
+        .onChange(of: mediaPlayer.currentTime) { _, newTime in
+            subtitlesVM?.updateActiveCue(currentTime: newTime)
+            triviaVM?.updateActiveFact(currentTime: newTime)
+        }
+        .onPlayPauseCommand { mediaPlayer.togglePlayPause() }
+        .onMoveCommand { direction in
+            if direction == .up { showControlButtons = true }
+        }
+        .fullScreenCover(isPresented: $showSubtitleLanguagePicker) {
+            TVSubtitleLanguagePickerView(
+                availableLanguages: availableSubtitleLanguages,
+                selectedLanguage: selectedSubtitleLanguage,
+                isSplitEnabled: splitModeEnabled,
+                onSelect: { handleSubtitleSelection($0) },
+                onSplitTap: {
+                    showSubtitleLanguagePicker = false
+                    showSplitLanguagePicker = true
+                },
+                onDismiss: { showSubtitleLanguagePicker = false },
+                contentId: contentId,
+                repository: repos.subtitle,
+                currentHebrewMode: subtitlesVM?.hebrewMode ?? .standard,
+                currentEnglishMode: subtitlesVM?.englishMode ?? .standard,
+                hasNikud: subtitlesVM?.hasNikud ?? false,
+                hasShoresh: subtitlesVM?.hasShoresh ?? false,
+                hasHeblish: subtitlesVM?.hasHeblish ?? false,
+                hasEngrew: false,
+                isAdmin: authManager.user?.role.isAdmin ?? false,
+                onHebrewModeSelect: { mode in
+                    Task {
+                        await subtitlesVM?.setHebrewMode(
+                            mode, contentId: contentId,
+                            language: selectedSubtitleLanguage
+                        )
+                    }
+                },
+                onEnglishModeSelect: { mode in
+                    Task {
+                        await subtitlesVM?.setEnglishMode(
+                            mode, contentId: contentId,
+                            language: selectedSubtitleLanguage
+                        )
+                    }
+                },
+                onSubtitlesRefresh: {
+                    Task { await loadAvailableLanguages() }
+                }
+            )
+        }
+        .fullScreenCover(isPresented: $showSplitLanguagePicker) {
+            SplitSubtitleLanguagePickerView(
+                availableLanguages: availableSubtitleLanguages,
+                sourceLanguage: "he",
+                selectedLanguages: $splitLanguages,
+                splitModeEnabled: $splitModeEnabled,
+                onConfirm: { languages in
+                    splitLanguages = languages
+                    splitModeEnabled = true
+                    showSplitLanguagePicker = false
+                    Task { await loadSplitSubtitleCues() }
+                }
+            )
+        }
+        .fullScreenCover(isPresented: $showAILanguagePicker) {
+            TVAILanguagePickerView(
+                selectedLanguage: selectedAILanguage,
+                onSelect: { handleAILanguageChange($0) },
+                onDismiss: { showAILanguagePicker = false }
+            )
+        }
+        .fullScreenCover(isPresented: $showSubtitleSettings) {
+            TVSubtitleSettingsView()
+        }
+        .fullScreenCover(isPresented: $showDubbingControls) {
+            if let vm = liveDubbingVM {
+                TVLiveDubbingOverlayView(
+                    viewModel: vm,
+                    channelId: channelId ?? contentId
+                )
+            }
+        }
+        .fullScreenCover(isPresented: $showChapterList) {
+            TVChapterNavigationView(contentId: contentId) { chapter in
+                showChapterList = false
+                if let startTime = chapter.startTime {
+                    Task { await mediaPlayer.seek(to: startTime) }
+                }
+            }
+        }
+        .fullScreenCover(isPresented: $showAudioTracks) {
+            TVAudioTrackSelectorView(
+                tracks: audioTracks,
+                selectedTrackId: $selectedAudioTrackId,
+                onDismiss: { showAudioTracks = false }
+            )
+        }
+        .fullScreenCover(isPresented: $showSpeedControl) {
+            TVPlaybackSpeedControlView(
+                currentSpeed: playbackSpeed,
+                onSpeedSelected: { speed in
+                    playbackSpeed = speed
+                    mediaPlayer.setRate(speed)
+                    showSpeedControl = false
+                }
+            )
+        }
+    }
+
+    // MARK: - Trivia Overlay
+
+    @ViewBuilder
+    private var triviaOverlay: some View {
+        if let vm = triviaVM, let fact = vm.activeFact {
+            VStack {
+                Spacer()
+                HStack {
+                    triviaCard(fact)
+                        .padding(.leading, TVDesignTokens.Spacing.xl)
+                    Spacer()
+                }
+                .padding(.bottom, TVDesignTokens.Spacing.xxxl)
+            }
+            .transition(.opacity.combined(with: .move(edge: .bottom)))
+            .animation(.easeInOut(duration: 0.3), value: fact.id)
+        }
+    }
+
+    private func triviaCard(_ fact: TriviaFact) -> some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
+            HStack(spacing: TVDesignTokens.Spacing.xs) {
+                Image(systemName: "lightbulb.fill")
+                    .font(.system(size: 18))
+                    .foregroundStyle(DesignTokens.Primary.p400)
+                Text(fact.category?.uppercased() ?? "TRIVIA")
+                    .font(.system(
+                        size: TVDesignTokens.FontSize.xs, weight: .bold
+                    ))
+                    .foregroundStyle(DesignTokens.Primary.p400)
+            }
+
+            Text(fact.text ?? "")
+                .font(.system(size: TVDesignTokens.FontSize.md))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .lineLimit(3)
+                .environment(\.layoutDirection, .rightToLeft)
+        }
+        .padding(TVDesignTokens.Spacing.lg)
+        .frame(maxWidth: 500, alignment: .leading)
+        .background(Color.black.opacity(0.75))
+        .cornerRadius(TVDesignTokens.Radius.lg)
+    }
+
+    // MARK: - Subtitle Overlay (VOD)
+
+    @ViewBuilder
+    private var subtitleOverlay: some View {
+        if !splitModeEnabled, !isLive,
+           let vm = subtitlesVM, vm.activeCue != nil {
+            VStack {
+                Spacer()
+                if vm.hebrewMode == .shoresh, !vm.shoreshWords.isEmpty {
+                    TVShoreshHighlightView(words: vm.shoreshWords)
+                } else {
+                    subtitleText(vm.activeText)
+                }
+            }
+            .padding(.bottom, TVDesignTokens.Spacing.xxl)
+        }
+    }
+
+    private func subtitleText(_ text: String) -> some View {
+        Text(text)
+            .font(.system(size: TVDesignTokens.FontSize.lg))
+            .foregroundColor(.white)
+            .padding(.horizontal, TVDesignTokens.Spacing.md)
+            .padding(.vertical, TVDesignTokens.Spacing.xs)
+            .background(Color.black.opacity(0.6))
+            .cornerRadius(TVDesignTokens.Radius.sm)
+            .environment(\.layoutDirection, .rightToLeft)
+    }
+
+    // MARK: - Live Subtitle Overlay
+
+    @ViewBuilder
+    private var liveSubtitleOverlay: some View {
+        if isLive, let vm = liveSubtitlesVM, vm.isEnabled, vm.showOverlay {
+            TVLiveSubtitleOverlayView(
+                translatedText: vm.activeCueText,
+                originalText: vm.originalCueText,
+                isVisible: vm.showOverlay
+            )
+        }
+    }
+
+    // MARK: - Split Subtitle Overlay
+
+    @ViewBuilder
+    private var splitSubtitleOverlay: some View {
+        if splitModeEnabled, splitLanguages.count == 2 {
+            SplitSubtitleOverlayView(
+                currentTime: mediaPlayer.currentTime,
+                primaryCues: primarySubtitleCues,
+                secondaryCues: secondarySubtitleCues,
+                primaryLanguage: splitLanguages[0],
+                secondaryLanguage: splitLanguages[1],
+                enabled: splitModeEnabled,
+                settings: SubtitleSettings(),
+                safeAreaBottom: 0
+            )
+        }
+    }
+
+    // MARK: - Translation Overlay
+
+    @ViewBuilder
+    private var translationOverlay: some View {
+        if let vm = subtitlesVM, vm.showTranslation,
+           let translation = vm.translation {
+            TVTranslationPopoverView(
+                translation: translation,
+                onDismiss: { vm.dismissTranslation() }
+            )
+        }
+    }
+
+    // MARK: - Stream Loading Views
+
+    private var streamLoadingView: some View {
+        VStack(spacing: TVDesignTokens.Spacing.xl) {
+            ProgressView()
+                .tint(DesignTokens.Primary.default)
+                .scaleEffect(2.0)
+            Text("Loading stream...")
+                .font(.system(size: TVDesignTokens.FontSize.lg))
+                .foregroundStyle(DesignTokens.Text.muted)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(DesignTokens.Background.primary)
+        .ignoresSafeArea()
+    }
+
+    private func streamErrorView(_ message: String) -> some View {
+        VStack(spacing: TVDesignTokens.Spacing.xl) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: TVDesignTokens.FontSize.hero))
+                .foregroundStyle(DesignTokens.Warning.default)
+
+            Text(message)
+                .font(.system(size: TVDesignTokens.FontSize.lg))
+                .foregroundStyle(DesignTokens.Text.secondary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: 600)
+
+            GlassButton("Retry", variant: .secondary, size: .large) {
+                Task { await resolveAndPlay() }
+            }
+            .frame(maxWidth: 300)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(DesignTokens.Background.primary)
+        .ignoresSafeArea()
+    }
+
+    // MARK: - Subtitle Selection (VOD)
+
+    private func handleSubtitleSelection(_ language: String?) {
+        selectedSubtitleLanguage = language
+
+        if splitModeEnabled {
+            splitModeEnabled = false
+            splitLanguages = []
+            primarySubtitleCues = []
+            secondarySubtitleCues = []
+        }
+
+        if let language {
+            if subtitlesVM == nil {
+                subtitlesVM = InteractiveSubtitlesViewModel(
+                    repository: repos.subtitle,
+                    offlineCache: repos.offlineCache
+                )
+            }
+            Task {
+                await subtitlesVM?.loadCues(
+                    contentId: contentId, language: language
+                )
+            }
+        } else {
+            subtitlesVM = nil
+        }
+    }
+
+    // MARK: - Live Feature Toggles
+
+    private func toggleLiveTranslation() {
+        if liveSubtitlesVM?.isEnabled == true {
+            liveSubtitlesVM?.toggleSubtitles(channelId: contentId)
+        } else {
+            // Disable dubbing (mutual exclusivity)
+            if liveDubbingVM?.isEnabled == true {
+                liveDubbingVM?.toggleDubbing(channelId: contentId)
+            }
+            liveSubtitlesVM?.selectLanguage(
+                selectedAILanguage, channelId: contentId
+            )
+            liveSubtitlesVM?.toggleSubtitles(channelId: contentId)
+        }
+    }
+
+    private func toggleLiveDubbing() {
+        guard let vm = liveDubbingVM else { return }
+
+        if !vm.isEnabled {
+            // Disable subtitles (mutual exclusivity)
+            if liveSubtitlesVM?.isEnabled == true {
+                liveSubtitlesVM?.toggleSubtitles(channelId: contentId)
+            }
+            vm.selectLanguage(selectedAILanguage, channelId: contentId)
+        }
+        vm.toggleDubbing(channelId: contentId)
+    }
+
+    private func toggleLiveTrivia() {
+        guard let vm = triviaVM else { return }
+
+        if vm.isEnabled {
+            vm.disconnectLiveTrivia()
+        } else {
+            let triviaWS = LiveTriviaWebSocketService(
+                configuration: repos.configuration,
+                authTokenProvider: repos.authTokenProvider
+            )
+            vm.toggleTrivia(
+                channelId: contentId,
+                language: selectedAILanguage,
+                webSocketService: triviaWS
+            )
+        }
+    }
+
+    private func handleAILanguageChange(_ newLanguage: String) {
+        selectedAILanguage = newLanguage
+
+        if liveSubtitlesVM?.isEnabled == true {
+            liveSubtitlesVM?.selectLanguage(
+                newLanguage, channelId: contentId
+            )
+        }
+        if liveDubbingVM?.isEnabled == true {
+            liveDubbingVM?.selectLanguage(
+                newLanguage, channelId: contentId
+            )
+        }
+    }
+
+    // MARK: - Split Subtitles
+
+    private func loadSplitSubtitleCues() async {
+        guard splitLanguages.count == 2 else { return }
+
+        let repo = repos.subtitle
+        async let primaryResult = repo.fetchSubtitleCues(
+            contentId: contentId, language: splitLanguages[0]
+        )
+        async let secondaryResult = repo.fetchSubtitleCues(
+            contentId: contentId, language: splitLanguages[1]
+        )
+
+        do {
+            let (primary, secondary) = try await (
+                primaryResult, secondaryResult
+            )
+            primarySubtitleCues = primary
+            secondarySubtitleCues = secondary
+        } catch {
+            splitModeEnabled = false
+        }
+    }
+
+    // MARK: - Lifecycle
+
+    private func resolveAndPlay() async {
+        isResolvingStream = true
+        streamError = nil
+
+        do {
+            let streamURL = try await fetchStreamURL()
+            guard let url = URL(string: streamURL) else {
+                streamError = "Invalid stream URL received"
+                isResolvingStream = false
+                return
+            }
+            mediaPlayer.load(url: url, contentType: contentType)
+            mediaPlayer.play()
+            isResolvingStream = false
+
+            await loadAvailableLanguages()
+        } catch {
+            streamError = "Unable to load stream. Please try again."
+            isResolvingStream = false
+        }
+    }
+
+    private func fetchStreamURL() async throws -> String {
+        switch contentType {
+        case .liveTV:
+            let stream = try await repos.media.fetchLiveStream(
+                channelId: channelId ?? contentId
+            )
+            guard let url = stream.url ?? stream.directUrl else {
+                throw StreamResolutionError.noURL
+            }
+            return url
+
+        case .radio:
+            let stream = try await repos.media.fetchRadioStream(
+                stationId: contentId
+            )
+            guard let url = stream.url else {
+                throw StreamResolutionError.noURL
+            }
+            return url
+
+        case .podcast:
+            let detail = try await repos.podcasts.fetchPodcastDetail(
+                id: contentId
+            )
+            let audioURLStr = detail.episodes?.first?.audioUrl
+                ?? detail.latestEpisode?.audioUrl
+            guard let url = audioURLStr, !url.isEmpty else {
+                throw StreamResolutionError.noURL
+            }
+            return url
+
+        case .vod, .audiobook:
+            let stream = try await repos.media.fetchStream(
+                contentId: contentId, quality: nil
+            )
+            guard let url = stream.url ?? stream.directUrl else {
+                throw StreamResolutionError.noURL
+            }
+            return url
+        }
+    }
+
+    private func loadAvailableLanguages() async {
+        do {
+            let detail = try await repos.content.fetchContentDetail(
+                id: contentId
+            )
+            availableSubtitleLanguages =
+                detail.availableSubtitleLanguages ?? []
+        } catch {
+            availableSubtitleLanguages = []
+        }
+    }
+
+    private func initializeViewModels() {
+        // Trivia for all content types
+        triviaVM = TriviaFactsViewModel(
+            repository: repos.trivia,
+            offlineCache: repos.offlineCache
+        )
+
+        if !isLive {
+            // VOD: load trivia facts from REST API
+            Task {
+                await triviaVM?.loadFacts(
+                    contentId: contentId, language: selectedAILanguage
+                )
+            }
+        }
+
+        // Live dubbing
+        let dubbingWS = LiveDubbingWebSocketService(
+            configuration: repos.configuration,
+            authTokenProvider: repos.authTokenProvider
+        )
+        webSocketService = dubbingWS
+        liveDubbingVM = LiveDubbingViewModel(
+            repository: repos.liveDubbing,
+            webSocketService: dubbingWS,
+            authManager: authManager
+        )
+
+        // Live subtitles
+        if isLive {
+            let subtitleWS = LiveSubtitlesWebSocketService(
+                configuration: repos.configuration,
+                authTokenProvider: repos.authTokenProvider
+            )
+            liveSubtitlesVM = LiveSubtitlesViewModel(
+                webSocketService: subtitleWS
+            )
+        }
+    }
+
+    private func cleanup() {
+        mediaPlayer.pause()
+        liveDubbingVM?.cleanup()
+        liveSubtitlesVM?.cleanup()
+        triviaVM?.disconnectLiveTrivia()
+    }
+}
+
+// MARK: - Stream Resolution Error
+
+private enum StreamResolutionError: Error {
+    case noURL
+}

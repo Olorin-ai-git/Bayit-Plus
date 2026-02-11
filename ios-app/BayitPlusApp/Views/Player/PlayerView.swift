@@ -234,8 +234,9 @@ struct PlayerView: View {
             triviaVM?.disconnectLiveTrivia()
             liveSubtitlesVM?.cleanup()
         }
-        .onChange(of: viewModel.player.currentTime) { _, _ in
+        .onChange(of: viewModel.player.currentTime) { _, newTime in
             updateNowPlaying()
+            triviaVM?.updateActiveFact(currentTime: newTime)
         }
         .onChange(of: scenePhase) { _, newPhase in
             if newPhase == .background,
@@ -630,6 +631,16 @@ struct PlayerView: View {
             repository: repositories.trivia,
             offlineCache: repositories.offlineCache
         )
+
+        // Load trivia facts for VOD content immediately
+        if !mediaContentType.isLive {
+            Task {
+                await triviaVM?.loadFacts(
+                    contentId: contentId,
+                    language: selectedAILanguage
+                )
+            }
+        }
 
         // Initialize live dubbing, subtitles, and trivia for live content
         if mediaContentType.isLive {

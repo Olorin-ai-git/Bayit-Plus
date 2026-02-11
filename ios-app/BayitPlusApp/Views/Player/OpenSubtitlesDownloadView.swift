@@ -1,7 +1,9 @@
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
+#if os(iOS)
 import UIKit
+#endif
 
 /// OpenSubtitles fetch UI - downloads additional subtitle tracks from OpenSubtitles.org.
 /// Mirrors web's SubtitleDownloadSection.tsx component.
@@ -41,8 +43,9 @@ struct OpenSubtitlesDownloadView: View {
             size: .medium,
             icon: Image(systemName: "arrow.down.circle")
         ) {
-            let generator = UIImpactFeedbackGenerator(style: .medium)
-            generator.impactOccurred()
+            #if os(iOS)
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            #endif
             Task { await downloadSubtitles() }
         }
         .accessibilityLabel("Download more subtitles from OpenSubtitles")

@@ -1,4 +1,3 @@
-#if os(iOS)
 import BayitAuth
 import BayitCore
 import Foundation
@@ -173,4 +172,3 @@ final class LiveSubtitlesViewModel {
         }
     }
 }
-#endif

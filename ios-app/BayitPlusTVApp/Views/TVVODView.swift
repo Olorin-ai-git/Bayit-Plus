@@ -28,7 +28,7 @@ struct TVVODView: View {
                             Task { await vm.refresh() }
                         }
                     } else {
-                        contentGrid(vm)
+                        contentGrid(vm.items, isLoadingMore: vm.isLoadingMore)
                     }
                 }
             }
@@ -42,7 +42,10 @@ struct TVVODView: View {
         }
     }
 
-    private func contentGrid(_ vm: VODViewModel) -> some View {
+    private func contentGrid(
+        _ items: [ContentItem],
+        isLoadingMore: Bool
+    ) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
             Text("Movies & Series")
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
@@ -50,7 +53,7 @@ struct TVVODView: View {
                 .padding(.leading, TVDesignTokens.Spacing.xl)
 
             LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
-                ForEach(vm.items) { item in
+                ForEach(items) { item in
                     GlassFocusPoster(
                         thumbnailURL: item.thumbnail,
                         title: item.title ?? "Untitled",
@@ -65,15 +68,15 @@ struct TVVODView: View {
                         }
                     )
                     .onAppear {
-                        if item.id == vm.items.last?.id {
-                            Task { await vm.loadMore() }
+                        if item.id == items.last?.id {
+                            Task { await viewModel?.loadMore() }
                         }
                     }
                 }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
 
-            if vm.isLoadingMore {
+            if isLoadingMore {
                 ProgressView()
                     .tint(DesignTokens.Primary.default)
                     .scaleEffect(1.2)

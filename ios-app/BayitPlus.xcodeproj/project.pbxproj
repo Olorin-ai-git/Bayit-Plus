@@ -614,6 +614,7 @@
 		DF58626B9E9379AD73156C7C /* ChapterModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F7FB95B423AA13EEB39F130 /* ChapterModels.swift */; };
 		DF8771ABC8C2B82B8E93266A /* WidgetDataSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E205AE616B03D4924F5616D /* WidgetDataSyncService.swift */; };
 		DFF0CCCEF8824CB924BE9B9B /* LiveTriviaWebSocketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39FE14C2E9D3A1C3D3B94EC2 /* LiveTriviaWebSocketService.swift */; };
+		D6731AAE058E95E75EDF2138 /* LiveTriviaWebSocketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39FE14C2E9D3A1C3D3B94EC2 /* LiveTriviaWebSocketService.swift */; };
 		E088CDE3B9EBFC4AAB660A25 /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261C73040D89463D0C196CBC /* MessageBubble.swift */; };
 		E0F7B68FABDAF449871C00E4 /* TVChapterNavigationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5ECAC161979A28748B560D4 /* TVChapterNavigationView.swift */; };
 		E18293160898FB58B42E10DF /* WatchParty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4762ECCA6DD1748C390F8955 /* WatchParty.swift */; };
@@ -669,6 +670,7 @@
 		F37AFBFA9B4DF929B3DA8011 /* HouseholdRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F90E56C1BECB496EE9256DF /* HouseholdRepository.swift */; };
 		F381B6776E36F2BA4778B0F7 /* LiveTVRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02B1F7FAEA40070A95322309 /* LiveTVRow.swift */; };
 		F3D5A6FA9BE5DF83B2626A02 /* LiveSubtitlesWebSocketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 640BCF006E3F707BC702CB92 /* LiveSubtitlesWebSocketService.swift */; };
+		25967E862FAC80A87F84BC04 /* LiveSubtitlesWebSocketService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 640BCF006E3F707BC702CB92 /* LiveSubtitlesWebSocketService.swift */; };
 		F3E448D835D4FD8C37751B7B /* TVMessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 317EA240C4F2D19D48570541 /* TVMessageBubble.swift */; };
 		F3E795927958CCB8C133D708 /* LeaderboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0AA6705F30D8F0CCED404A7 /* LeaderboardViewModel.swift */; };
 		F427ECD3051AE12CA59756A6 /* PlaybackSpeedControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EE7F3A85C34E3275F0087DF /* PlaybackSpeedControlView.swift */; };
@@ -2718,6 +2720,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25967E862FAC80A87F84BC04 /* LiveSubtitlesWebSocketService.swift in Sources */,
+				D6731AAE058E95E75EDF2138 /* LiveTriviaWebSocketService.swift in Sources */,
 				C4296DBEB4BBD35DFE8CF540 /* AudiobookDetailViewModel.swift in Sources */,
 				5449B67BA3C9706A761DD492 /* AudiobookModels.swift in Sources */,
 				D9A7371B189A1C4976182293 /* AudiobookRepository.swift in Sources */,
@@ -3404,7 +3408,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 16;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -3427,7 +3431,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 16;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BayitPlusTVApp/Info.plist;
@@ -3538,7 +3542,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 16;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
@@ -3619,7 +3623,7 @@
 				CODE_SIGN_ENTITLEMENTS = BayitPlusApp/BayitPlusApp.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 16;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = 963B7732N5;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BayitPlusApp/Info.plist;
