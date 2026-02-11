@@ -298,8 +298,7 @@ struct TVHomeView: View {
                             title: channel.name ?? "Channel",
                             subtitle: channel.currentShow,
                             badge: "LIVE",
-                            width: 360,
-                            aspectRatio: 16 / 9,
+                            aspectRatio: 1.0,
                             onSelect: {
                                 coordinator.presentPlayer(
                                     contentId: channel.id,
@@ -308,6 +307,7 @@ struct TVHomeView: View {
                                 )
                             }
                         )
+                        .frame(width: 300)
                         .tvFocusStyle()
                     }
                 }

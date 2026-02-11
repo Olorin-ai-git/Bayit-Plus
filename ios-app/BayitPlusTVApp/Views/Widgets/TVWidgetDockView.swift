@@ -54,7 +54,7 @@ struct TVWidgetDockView: View {
                 .fill(.ultraThinMaterial)
                 .environment(\.colorScheme, .dark)
         }
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
+        .contentShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
         .overlay(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
                 .stroke(DesignTokens.Glass.borderLight, lineWidth: 1)

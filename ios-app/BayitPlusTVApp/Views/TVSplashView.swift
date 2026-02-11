@@ -38,9 +38,10 @@ struct TVSplashView: View {
 
                 poweredByFooter
                     .opacity(showLogo ? 1 : 0)
-                    .padding(.top, TVDesignTokens.Spacing.lg)
+                    .padding(.top, TVDesignTokens.Spacing.sm)
             }
-            .padding(TVDesignTokens.Spacing.xxl)
+            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+            .padding(.bottom, TVDesignTokens.Spacing.xl)
         }
         .opacity(fadeOut ? 0 : 1)
         .task {
@@ -88,9 +89,13 @@ struct TVSplashView: View {
     // MARK: - Footer
 
     private var poweredByFooter: some View {
-        Text("Powered by Olorin.ai")
+        (Text("Powered by ")
+            .foregroundColor(DesignTokens.Text.muted)
+        + Text("Olorin.ai")
+            .foregroundColor(DesignTokens.Colors.Primary.dark)
+        + Text(" LLC")
+            .foregroundColor(DesignTokens.Text.muted))
             .font(.system(size: TVDesignTokens.FontSize.sm))
-            .foregroundStyle(DesignTokens.Text.muted)
     }
 
     // MARK: - Logic

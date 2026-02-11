@@ -275,101 +275,38 @@ struct TVWidgetContainerView: View {
         let hasContent = playerVM?.player.state != .idle
 
         if hasContent {
-            // Active playback: pause/resume, mute, restart, stop
-            HStack(spacing: TVDesignTokens.Spacing.sm) {
-                Button {
+            // Active playback: uniform icon buttons
+            HStack(spacing: TVDesignTokens.Spacing.focusGap) {
+                controlButton(
+                    icon: isLoading ? nil : (isPlaying ? "pause.fill" : "play.fill"),
+                    isLoading: isLoading,
+                    tint: badgeColor,
+                    label: isLoading ? "Loading" : isPlaying ? "Pause" : "Resume"
+                ) {
                     Task { await playerVM?.togglePlayback(widget: widget) }
-                } label: {
-                    HStack(spacing: TVDesignTokens.Spacing.sm) {
-                        if isLoading {
-                            ProgressView()
-                                .tint(.white)
-                                .scaleEffect(0.8)
-                        } else {
-                            Image(systemName: isPlaying ? "pause.fill" : "play.fill")
-                                .font(.system(size: 18))
-                        }
-
-                        Text(isLoading ? "Loading..." : isPlaying ? "Playing" : "Paused")
-                            .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
-                    }
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: TVDesignTokens.MinSize.focusableHeight + 8)
-                    .background(badgeColor.opacity(isPlaying ? 0.5 : 0.25))
-                    .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
-                            .stroke(badgeColor.opacity(0.4), lineWidth: 1)
-                    )
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
-                .accessibilityLabel(isLoading ? "Loading" : isPlaying ? "Pause" : "Resume")
 
-                Button {
+                controlButton(
+                    icon: playerVM?.isMuted == true ? "speaker.slash.fill" : "speaker.wave.2.fill",
+                    label: playerVM?.isMuted == true ? "Unmute" : "Mute"
+                ) {
                     playerVM?.toggleMute()
-                } label: {
-                    Image(systemName: playerVM?.isMuted == true ? "speaker.slash.fill" : "speaker.wave.2.fill")
-                        .font(.system(size: 18))
-                        .foregroundStyle(.white)
-                        .frame(
-                            width: TVDesignTokens.MinSize.focusableHeight + 8,
-                            height: TVDesignTokens.MinSize.focusableHeight + 8
-                        )
-                        .background(Color.white.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
-                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                        )
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
-                .accessibilityLabel(playerVM?.isMuted == true ? "Unmute" : "Mute")
 
-                Button {
+                controlButton(
+                    icon: "arrow.counterclockwise",
+                    label: "Restart"
+                ) {
                     playerVM?.cleanup()
                     Task { await playerVM?.togglePlayback(widget: widget) }
-                } label: {
-                    Image(systemName: "arrow.counterclockwise")
-                        .font(.system(size: 18))
-                        .foregroundStyle(.white)
-                        .frame(
-                            width: TVDesignTokens.MinSize.focusableHeight + 8,
-                            height: TVDesignTokens.MinSize.focusableHeight + 8
-                        )
-                        .background(Color.white.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
-                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                        )
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
-                .accessibilityLabel("Restart \(widget.title)")
 
-                Button {
+                controlButton(
+                    icon: "stop.fill",
+                    label: "Stop"
+                ) {
                     playerVM?.cleanup()
-                } label: {
-                    Image(systemName: "stop.fill")
-                        .font(.system(size: 18))
-                        .foregroundStyle(.white)
-                        .frame(
-                            width: TVDesignTokens.MinSize.focusableHeight + 8,
-                            height: TVDesignTokens.MinSize.focusableHeight + 8
-                        )
-                        .background(Color.white.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default)
-                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                        )
                 }
-                .buttonStyle(.card)
-                .tvFocusStyle()
-                .accessibilityLabel("Stop \(widget.title)")
             }
         } else {
             // Idle: show play button that starts in-place streaming
@@ -413,6 +350,39 @@ struct TVWidgetContainerView: View {
                     .lineLimit(1)
             }
         }
+    }
+
+    // MARK: - Control Button
+
+    private func controlButton(
+        icon: String? = nil,
+        isLoading: Bool = false,
+        tint: Color? = nil,
+        label: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            ZStack {
+                if isLoading {
+                    ProgressView()
+                        .tint(.white)
+                        .scaleEffect(0.8)
+                } else if let icon {
+                    Image(systemName: icon)
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundStyle(.white)
+                }
+            }
+            .frame(width: 52, height: 52)
+            .background(tint?.opacity(0.4) ?? Color.white.opacity(0.1))
+            .clipShape(Circle())
+            .overlay(
+                Circle().stroke(Color.white.opacity(0.15), lineWidth: 1)
+            )
+        }
+        .buttonStyle(.card)
+        .tvFocusStyle()
+        .accessibilityLabel(label)
     }
 
     // MARK: - Helpers
