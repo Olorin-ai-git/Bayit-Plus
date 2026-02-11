@@ -67,17 +67,11 @@ struct TVWidgetDockView: View {
     // MARK: - Dock Handle
 
     private var dockHandle: some View {
-        VStack(spacing: 4) {
-            Image(systemName: "square.grid.2x2.fill")
-                .font(.system(size: 20, weight: .medium))
-                .foregroundStyle(DesignTokens.Primary.p300)
-
-            Text("\(widgets.count)")
-                .font(.system(size: TVDesignTokens.FontSize.xs, weight: .bold))
-                .foregroundStyle(DesignTokens.Text.muted)
-        }
-        .frame(width: 56)
-        .accessibilityLabel("\(widgets.count) minimized widgets")
+        Image(systemName: "square.grid.2x2.fill")
+            .font(.system(size: 20, weight: .medium))
+            .foregroundStyle(DesignTokens.Primary.p300)
+            .frame(width: 48)
+            .accessibilityLabel("\(widgets.count) minimized widgets")
     }
 
     // MARK: - Collapse Toggle
