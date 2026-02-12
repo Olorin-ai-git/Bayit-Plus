@@ -5,6 +5,7 @@ Pronunciation scoring, TTS generation, and ElevenLabs V2V voice skinning
 utilities used by V2VTransformService.
 """
 
+import json
 import time
 from typing import Optional
 
@@ -61,10 +62,10 @@ async def apply_v2v(
             files={"audio": ("tts.wav", perfect_audio, "audio/wav")},
             data={
                 "model_id": settings.ELEVENLABS_V2V_MODEL,
-                "voice_settings": (
-                    f'{{"similarity_boost":{settings.ELEVENLABS_V2V_SIMILARITY_BOOST},'
-                    f'"stability":0.5}}'
-                ),
+                "voice_settings": json.dumps({
+                    "similarity_boost": settings.ELEVENLABS_V2V_SIMILARITY_BOOST,
+                    "stability": settings.ELEVENLABS_V2V_STABILITY,
+                }),
             },
         )
         response.raise_for_status()

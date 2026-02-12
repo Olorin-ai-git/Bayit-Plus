@@ -2599,6 +2599,11 @@ class Settings(BaseSettings):
         env="ELEVENLABS_V2V_SIMILARITY_BOOST",
         description="Voice similarity boost for V2V transforms",
     )
+    ELEVENLABS_V2V_STABILITY: float = Field(
+        default=0.5, ge=0.0, le=1.0,
+        env="ELEVENLABS_V2V_STABILITY",
+        description="Voice stability parameter for V2V transforms",
+    )
     CREDIT_RATE_V2V_TRANSFORM: float = Field(
         default=8.0, ge=0.0,
         env="CREDIT_RATE_V2V_TRANSFORM",
@@ -2766,6 +2771,11 @@ class Settings(BaseSettings):
         default=3600, ge=300, le=86400,
         env="MESH_SIGNED_URL_EXPIRY_SECONDS",
         description="Signed URL expiry for mesh .glb file downloads",
+    )
+    SYNCLABS_SIGNED_URL_EXPIRY_SECONDS: int = Field(
+        default=3600, ge=300, le=86400,
+        env="SYNCLABS_SIGNED_URL_EXPIRY_SECONDS",
+        description="Signed URL expiry for audio files sent to SyncLabs API",
     )
     HIGHLIGHT_SHARE_URL_EXPIRY_SECONDS: int = Field(
         default=3600, ge=300, le=86400,

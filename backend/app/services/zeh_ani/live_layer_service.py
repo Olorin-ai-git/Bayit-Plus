@@ -95,12 +95,14 @@ class LiveLayerService:
 
         from app.services.zeh_ani import deduct_zeh_ani_credits
 
-        await deduct_zeh_ani_credits(
+        success, _remaining = await deduct_zeh_ani_credits(
             user_id=avatar.user_id,
             feature="live_layer",
             usage_amount=1.0,
             metadata={"trigger_id": trigger.trigger_id},
         )
+        if not success:
+            raise ValueError("Insufficient credits for live layer trigger")
 
         logger.info(
             "Trigger response scored",

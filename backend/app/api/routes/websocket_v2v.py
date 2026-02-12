@@ -53,9 +53,7 @@ async def v2v_transform_ws(websocket: WebSocket, avatar_id: str):
 
     avatar = await ChildAvatar.get(avatar_id)
     if not avatar or avatar.user_id != str(user.id):
-        await websocket.send_json({
-            "type": "error", "message": "Avatar not found",
-        })
+        await websocket.send_json({"type": "error", "message": "Avatar not found"})
         await websocket.close(code=4004, reason="Avatar not found")
         return
 
@@ -65,13 +63,9 @@ async def v2v_transform_ws(websocket: WebSocket, avatar_id: str):
         consent_type=BiometricConsentType.VOICE_V2V,
     )
     if not has_consent:
-        logger.warning(
-            "V2V WebSocket rejected: missing biometric consent",
-            extra={"avatar_id": avatar_id, "user_id": str(user.id)},
-        )
+        logger.warning("V2V WS rejected: no consent", extra={"avatar_id": avatar_id})
         await websocket.send_json({
-            "type": "error",
-            "message": "Biometric consent required for V2V",
+            "type": "error", "message": "Biometric consent required for V2V",
             "recoverable": False,
         })
         await websocket.close(code=4003, reason="Consent required")
@@ -119,7 +113,11 @@ async def _handle_messages(websocket, user, avatar, session):
     """Handle incoming V2V WebSocket messages."""
     while True:
         data = await websocket.receive_text()
-        message = json.loads(data)
+        try:
+            message = json.loads(data)
+        except json.JSONDecodeError:
+            await websocket.send_json({"type": "error", "message": "Invalid JSON"})
+            continue
         msg_type = message.get("type", "")
 
         if msg_type == "audio_chunk":

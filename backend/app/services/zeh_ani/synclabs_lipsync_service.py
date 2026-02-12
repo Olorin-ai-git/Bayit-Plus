@@ -35,7 +35,8 @@ class SyncLabsLipsyncService:
         from app.services.olorin.storage_service import storage_service
 
         audio_signed_url = await storage_service.generate_signed_url(
-            audio_gcs_path, expiry_seconds=3600,
+            audio_gcs_path,
+            expiry_seconds=settings.SYNCLABS_SIGNED_URL_EXPIRY_SECONDS,
         )
 
         payload = {

@@ -31,6 +31,31 @@ class V2VTransformService:
         """Full V2V pipeline: transcribe -> TTS -> V2V -> score."""
         start_ms = int(time.time() * 1000)
 
+        if session:
+            from app.services.zeh_ani import deduct_zeh_ani_credits
+
+            success, _remaining = await deduct_zeh_ani_credits(
+                user_id=avatar.user_id,
+                feature="v2v_transform",
+                usage_amount=1.0,
+                metadata={
+                    "session_id": str(session.id),
+                    "avatar_id": str(avatar.id),
+                },
+            )
+            if not success:
+                logger.warning(
+                    "Insufficient credits for V2V transform",
+                    extra={
+                        "user_id": avatar.user_id,
+                        "session_id": str(session.id),
+                    },
+                )
+                return {"error": "insufficient_credits"}
+
+            session.credits_charged += settings.CREDIT_RATE_V2V_TRANSFORM
+            await session.save()
+
         from app.services.zeh_ani.enhanced_asr_service import enhanced_asr_service
 
         transcription = await enhanced_asr_service.transcribe_child_speech(
@@ -99,32 +124,7 @@ class V2VTransformService:
 
         if session:
             session.add_transform(record)
-            session.credits_charged += settings.CREDIT_RATE_V2V_TRANSFORM
             await session.save()
-
-            from app.services.zeh_ani import deduct_zeh_ani_credits
-
-            success, _remaining = await deduct_zeh_ani_credits(
-                user_id=avatar.user_id,
-                feature="v2v_transform",
-                usage_amount=1.0,
-                metadata={
-                    "session_id": str(session.id),
-                    "avatar_id": str(avatar.id),
-                },
-            )
-            if not success:
-                logger.warning(
-                    "Insufficient credits for V2V transform",
-                    extra={
-                        "user_id": avatar.user_id,
-                        "session_id": str(session.id),
-                    },
-                )
-                return {
-                    "error": "insufficient_credits",
-                    "input_transcript": input_transcript,
-                }
 
         from app.services.gamification.level_service import level_service
 

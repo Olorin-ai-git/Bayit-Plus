@@ -29,8 +29,8 @@ def _mesh_response(mesh: AvatarMesh) -> dict:
         avatar_id=mesh.avatar_id,
         user_id=mesh.user_id,
         status=mesh.status.value,
-        glb_gcs_path=mesh.glb_gcs_path,
-        thumbnail_gcs_path=mesh.thumbnail_gcs_path,
+        has_glb=bool(mesh.glb_gcs_path),
+        has_thumbnail=bool(mesh.thumbnail_gcs_path),
         blend_shapes=[
             {"name": bs.name, "default_weight": bs.default_weight}
             for bs in mesh.blend_shapes

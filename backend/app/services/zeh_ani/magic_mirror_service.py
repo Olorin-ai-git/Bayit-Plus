@@ -75,7 +75,7 @@ class MagicMirrorService:
 
         from app.services.zeh_ani import deduct_zeh_ani_credits
 
-        await deduct_zeh_ani_credits(
+        success, _remaining = await deduct_zeh_ani_credits(
             user_id=user_id,
             feature="magic_mirror",
             usage_amount=1.0,
@@ -84,6 +84,9 @@ class MagicMirrorService:
                 "greeting_id": str(greeting.id),
             },
         )
+        if not success:
+            await greeting.delete()
+            raise ValueError("Insufficient credits for magic mirror greeting")
 
         logger.info(
             "Magic Mirror greeting generated",

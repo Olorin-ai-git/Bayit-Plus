@@ -31,8 +31,8 @@ class MeshResponse(BaseModel):
     avatar_id: str
     user_id: str
     status: str
-    glb_gcs_path: Optional[str] = None
-    thumbnail_gcs_path: Optional[str] = None
+    has_glb: bool = False
+    has_thumbnail: bool = False
     blend_shapes: List[MeshBlendShapeResponse] = Field(default_factory=list)
     bone_count: int = 0
     vertex_count: int = 0

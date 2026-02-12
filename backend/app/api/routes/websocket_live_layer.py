@@ -135,7 +135,11 @@ async def _handle_messages(websocket, user, content_id):
     """Handle incoming live layer WebSocket messages."""
     while True:
         data = await websocket.receive_text()
-        message = json.loads(data)
+        try:
+            message = json.loads(data)
+        except json.JSONDecodeError:
+            await websocket.send_json({"type": "error", "message": "Invalid JSON"})
+            continue
         msg_type = message.get("type", "")
 
         if msg_type == "timestamp_update":
