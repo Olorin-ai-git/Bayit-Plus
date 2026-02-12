@@ -5,6 +5,7 @@ Provides comprehensive admin functionality across multiple sub-modules.
 
 from fastapi import APIRouter
 
+from .ai_usage import router as ai_usage_router
 from .analytics import router as analytics_router
 from .audit import router as audit_router
 # Import auth utilities for external use
@@ -34,6 +35,7 @@ from .voice_settings import router as voice_settings_router
 router = APIRouter()
 
 # Include all sub-routers
+router.include_router(ai_usage_router, tags=["admin-ai-usage"])
 router.include_router(dashboard_router, tags=["admin-dashboard"])
 router.include_router(cost_dashboard_router, tags=["admin-costs"])
 router.include_router(users_router, tags=["admin-users"])

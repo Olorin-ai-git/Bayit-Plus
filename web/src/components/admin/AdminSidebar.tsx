@@ -69,6 +69,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: CreditCard,
     children: [
       { key: 'cost-dashboard', labelKey: 'admin.nav.costDashboard', icon: BarChart3, route: '/admin/costs' },
+      { key: 'ai-usage', labelKey: 'admin.nav.aiUsage', icon: Activity, route: '/admin/ai-usage' },
       { key: 'billing-overview', labelKey: 'admin.nav.billingOverview', route: '/admin/billing' },
       { key: 'transactions', labelKey: 'admin.nav.transactions', route: '/admin/transactions' },
       { key: 'refunds', labelKey: 'admin.nav.refunds', route: '/admin/refunds' },

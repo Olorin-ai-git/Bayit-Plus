@@ -56,20 +56,9 @@ class BetaCreditService:
         self.metering_service = metering_service
         self.db = db
 
-    async def get_credit_rate(self, feature: str) -> float:
-        """
-        Get credit rate from settings (not hardcoded).
-
-        Args:
-            feature: Feature name (live_dubbing, ai_search, ai_recommendations)
-
-        Returns:
-            Credit rate (credits per unit)
-
-        Raises:
-            ValueError: If feature is unknown (fail fast, no silent fallback)
-        """
-        rate_mapping = {
+    def _build_rate_mapping(self) -> dict:
+        """Build feature-to-rate mapping from settings (single source of truth)."""
+        return {
             "live_dubbing": self.settings.CREDIT_RATE_LIVE_DUBBING,
             "ai_search": self.settings.CREDIT_RATE_AI_SEARCH,
             "ai_recommendations": self.settings.CREDIT_RATE_AI_RECOMMENDATIONS,
@@ -90,15 +79,38 @@ class BetaCreditService:
             "bilingual_session": self.settings.CREDIT_RATE_BILINGUAL_SESSION,
             "bilingual_translate": self.settings.CREDIT_RATE_BILINGUAL_TRANSLATE,
             "zine_generation": self.settings.CREDIT_RATE_ZINE_GENERATION,
+            "interactive_mission": self.settings.CREDIT_RATE_INTERACTIVE_MISSION,
+            "video_selfie_avatar": self.settings.CREDIT_RATE_VIDEO_SELFIE_AVATAR,
+            "voice_clone_child": self.settings.CREDIT_RATE_VOICE_CLONE_CHILD,
+            "family_snap": self.settings.CREDIT_RATE_FAMILY_SNAP,
         }
-        
+
+    async def get_credit_rate(self, feature: str) -> float:
+        """
+        Get credit rate from settings (not hardcoded).
+
+        Args:
+            feature: Feature name (live_dubbing, ai_search, ai_recommendations)
+
+        Returns:
+            Credit rate (credits per unit)
+
+        Raises:
+            ValueError: If feature is unknown (fail fast, no silent fallback)
+        """
+        rate_mapping = self._build_rate_mapping()
+
         if feature not in rate_mapping:
             raise ValueError(
                 f"Unknown feature: {feature}. "
                 f"Valid features: {list(rate_mapping.keys())}"
             )
-        
+
         return rate_mapping[feature]
+
+    def get_all_rates(self) -> dict:
+        """Get all feature rates as a dict. Single source of truth."""
+        return self._build_rate_mapping()
 
     async def authorize(
         self,

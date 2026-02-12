@@ -158,6 +158,7 @@ const UserLiveQuotaPage = lazy(() => import('./pages/admin/UserLiveQuotaPage'))
 const LiveUsageAnalyticsPage = lazy(() => import('./pages/admin/LiveUsageAnalyticsPage'))
 const TranslationDashboardPage = lazy(() => import('./pages/admin/TranslationDashboardPage'))
 const CostDashboardPage = lazy(() => import('./pages/admin/CostDashboardPage'))
+const AIUsageAnalyticsPage = lazy(() => import('./pages/admin/AIUsageAnalyticsPage'))
 const VoiceManagementPage = lazy(() => import('./pages/admin/VoiceManagementPage'))
 const TriviaAnalyticsPage = lazy(() => import('./pages/admin/TriviaAnalyticsPage'))
 const SystemDiagnosticsPage = lazy(() => import('./pages/admin/SystemDiagnosticsPage'))
@@ -236,6 +237,7 @@ const AppContent = () => {
         <Route path="campaigns/:campaignId" element={<CampaignEditPage />} />
         <Route path="subscriptions" element={<SubscriptionsListPage />} />
         <Route path="costs" element={<CostDashboardPage />} />
+        <Route path="ai-usage" element={<AIUsageAnalyticsPage />} />
         <Route path="billing" element={<BillingOverviewPage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="refunds" element={<RefundsPage />} />
