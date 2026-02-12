@@ -2,7 +2,7 @@
 
 **For Parents and Guardians**
 
-**Last Updated**: 2026-02-02
+**Last Updated**: 2026-02-12
 **Platform**: All platforms (Web, iOS, Android, Apple TV)
 **Languages**: Available in 10 languages
 
@@ -21,6 +21,28 @@ Family Controls is Bayit+'s unified parental control system that helps you creat
 
 ---
 
+### Integration with Zeh Ani
+
+Your Family Controls PIN is the same PIN used for Zeh Ani biometric consent. When your child uses Zeh Ani (It's Me) features, the system requires your Family Controls PIN to:
+
+- Grant biometric consent for 3D avatar generation
+- Enable voice-to-voice recording
+- Activate advanced AI features (scene triggers, live overlay)
+- Revoke consent or delete AI data via the "kill switch"
+
+This ensures a unified parental gate across all AI-powered features. See the [Zeh Ani User Guide](ZEH_ANI_USER_GUIDE.md) for details.
+
+### Integration with Household
+
+Family Controls work with Bayit+'s Household system:
+
+- Controls apply across all household members on shared accounts
+- Each household member sees the same content restrictions
+- PIN changes propagate to all devices automatically
+- Household admins can view access logs for all members
+
+---
+
 ## Quick Start
 
 ### 1. Set Up Family Controls
@@ -34,13 +56,13 @@ Family Controls is Bayit+'s unified parental control system that helps you creat
 5. Choose age limits for kids and youngsters content
 6. Tap **Create Controls**
 
-✅ **Done!** Your family controls are now active across all devices.
+**Done!** Your family controls are now active across all devices.
 
 ---
 
 ## Features
 
-### 🔒 Family PIN Protection
+### Family PIN Protection
 
 **What it does**: Requires a PIN to access certain content and change settings.
 
@@ -57,7 +79,7 @@ Family Controls is Bayit+'s unified parental control system that helps you creat
 
 ---
 
-### 👶 Kids Content (Ages 0-12)
+### Kids Content (Ages 0-12)
 
 **What it does**: Filters content appropriate for younger children.
 
@@ -75,7 +97,7 @@ Family Controls is Bayit+'s unified parental control system that helps you creat
 
 ---
 
-### 🎓 Youngsters Content (Ages 12-17)
+### Youngsters Content (Ages 12-17)
 
 **What it does**: Filters content for teenagers and young adults.
 
@@ -93,7 +115,7 @@ Family Controls is Bayit+'s unified parental control system that helps you creat
 
 ---
 
-### ⭐ Content Rating Limits
+### Content Rating Limits
 
 **What it does**: Blocks content above a certain rating level.
 
@@ -115,7 +137,7 @@ Family Controls is Bayit+'s unified parental control system that helps you creat
 
 ---
 
-### ⏰ Viewing Hours
+### Viewing Hours
 
 **What it does**: Limits when content can be watched.
 
@@ -135,6 +157,32 @@ Family Controls is Bayit+'s unified parental control system that helps you creat
 **Example**: Start 8:00, End 20:00 means content is only accessible from 8 AM to 8 PM.
 
 **Note**: Times are in 24-hour format (0-23).
+
+---
+
+### Content Section Controls
+
+**What it does**: Enables or disables entire content sections independently.
+
+**Controllable Sections**:
+- **Kids Content** (Ages 0-12) -- Toggle on/off
+- **Youngsters Content** (Ages 12-17) -- Toggle on/off
+
+When a section is disabled, it is completely hidden from the navigation. Users cannot browse or search for content in disabled sections without entering the family PIN.
+
+---
+
+### Profile-Level Controls
+
+**What it does**: Adds security settings per child profile.
+
+**How to set up**:
+1. Go to Settings > Family Controls > Profile Controls
+2. Select a child profile
+3. Configure profile-specific restrictions
+4. Tap Save
+
+**Note**: Profile-level controls add granularity on top of the global family controls. The more restrictive setting always wins.
 
 ---
 
@@ -353,6 +401,18 @@ This effectively removes most restrictions while keeping the PIN protection.
 
 ---
 
+### Q: Does my Family Controls PIN work with Zeh Ani?
+
+**A:** Yes. The Zeh Ani biometric consent system uses the same Family Controls PIN. You only need to remember one PIN for all parental controls across the platform, including AI feature consent.
+
+---
+
+### Q: Can I see what my child accessed?
+
+**A:** Family Controls record section access for parental review. You can view the access log in Settings > Family Controls > Activity Log. This shows which sections were accessed and when, but does not track specific content titles.
+
+---
+
 ## Tips for Parents
 
 ### 1. Choose a Strong PIN
@@ -479,32 +539,32 @@ Print this section for easy reference:
 │  BAYIT+ FAMILY CONTROLS QUICK REFERENCE             │
 ├──────────────────────────────────────────────────────┤
 │                                                      │
-│  📍 SETUP                                            │
+│  SETUP                                               │
 │  Settings → Family Controls → Set Up                │
 │  Create 4-6 digit PIN                                │
 │                                                      │
-│  🔒 CHANGE PIN                                       │
+│  CHANGE PIN                                          │
 │  Settings → Family Controls → Change PIN             │
 │  Enter old PIN → Enter new PIN                       │
 │                                                      │
-│  👶 KIDS CONTENT (0-12)                              │
+│  KIDS CONTENT (0-12)                                 │
 │  Default: Age 12, Rating G, Enabled                  │
 │                                                      │
-│  🎓 YOUNGSTERS CONTENT (12-17)                       │
+│  YOUNGSTERS CONTENT (12-17)                          │
 │  Default: Age 17, Rating PG-13, Enabled              │
 │                                                      │
-│  ⭐ CONTENT RATINGS                                  │
+│  CONTENT RATINGS                                     │
 │  G < PG < PG-13 (most restrictive)                   │
 │                                                      │
-│  ⏰ VIEWING HOURS                                     │
+│  VIEWING HOURS                                       │
 │  Set start/end hour (24-hour format)                 │
 │  Example: 8 (8 AM) to 20 (8 PM)                      │
 │                                                      │
-│  🚨 LOCKED ACCOUNT                                   │
+│  LOCKED ACCOUNT                                      │
 │  5 wrong PINs = 15 minute lockout                    │
 │  Automatic unlock after 15 minutes                   │
 │                                                      │
-│  📞 SUPPORT                                          │
+│  SUPPORT                                             │
 │  support@bayitplus.com                               │
 │  community.bayitplus.com                             │
 │                                                      │
@@ -514,7 +574,7 @@ Print this section for easy reference:
 ---
 
 **Document Version**: 1.0
-**Last Updated**: 2026-02-02
+**Last Updated**: 2026-02-12
 **Languages**: English (UI available in 10 languages)
 **Platform**: Web, iOS, Android, Apple TV
 

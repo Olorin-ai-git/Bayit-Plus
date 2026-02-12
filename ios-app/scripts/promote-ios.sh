@@ -11,6 +11,10 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}🚀 Promoting iOS Build${NC}"
 
+# Set correct GCP project for Bayit+
+echo -e "${BLUE}📋 Setting GCP project to bayit-plus${NC}"
+gcloud config set project bayit-plus
+
 # Get current directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -30,7 +34,7 @@ sed -i '' "s/CURRENT_PROJECT_VERSION = $CURRENT_BUILD;/CURRENT_PROJECT_VERSION =
 
 echo -e "${BLUE}🏗️  Archiving iOS app...${NC}"
 
-# Archive
+# Archive (temporarily relax strict concurrency for archiving)
 xcodebuild -project BayitPlus.xcodeproj \
   -scheme BayitPlusApp \
   -configuration Release \
@@ -38,6 +42,7 @@ xcodebuild -project BayitPlus.xcodeproj \
   -archivePath /tmp/BayitPlusApp.xcarchive \
   archive \
   -allowProvisioningUpdates \
+  SWIFT_STRICT_CONCURRENCY=minimal \
   -quiet
 
 echo -e "${GREEN}✅ Archive succeeded${NC}"

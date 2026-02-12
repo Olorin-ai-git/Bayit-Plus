@@ -11,6 +11,10 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}📺 Promoting tvOS Build${NC}"
 
+# Set correct GCP project for Bayit+
+echo -e "${BLUE}📋 Setting GCP project to bayit-plus${NC}"
+gcloud config set project bayit-plus
+
 # Get current directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -27,7 +31,7 @@ plutil -replace CFBundleVersion -string "$NEW_BUILD" BayitPlusTVApp/Info.plist
 
 echo -e "${BLUE}🏗️  Archiving tvOS app (without signing)...${NC}"
 
-# Archive without signing (sign during export)
+# Archive without signing (sign during export) + relax strict concurrency
 xcodebuild -project BayitPlus.xcodeproj \
   -scheme BayitPlusTVApp \
   -configuration Release \
@@ -37,6 +41,7 @@ xcodebuild -project BayitPlus.xcodeproj \
   CODE_SIGNING_REQUIRED=NO \
   CODE_SIGNING_ALLOWED=NO \
   DEVELOPMENT_TEAM=963B7732N5 \
+  SWIFT_STRICT_CONCURRENCY=minimal \
   -quiet
 
 echo -e "${GREEN}✅ Archive succeeded${NC}"

@@ -2,7 +2,7 @@
 
 **Library:** `@olorin/shared-i18n`
 **Supported Languages:** 10 (Hebrew, English, Spanish, Chinese, French, Italian, Hindi, Tamil, Bengali, Japanese)
-**Last Updated:** 2026-01-30
+**Last Updated:** 2026-02-12
 
 ## Overview
 
@@ -12,16 +12,16 @@ Bayit+ supports 10 languages with full internationalization across all platforms
 
 | Language | Code | Direction | Status |
 |----------|------|-----------|--------|
-| **Hebrew** | `he` | RTL | Primary ✅ |
-| **English** | `en` | LTR | Primary ✅ |
-| **Spanish** | `es` | LTR | Complete ✅ |
-| **Chinese (Simplified)** | `zh` | LTR | Complete ✅ |
-| **French** | `fr` | LTR | Complete ✅ |
-| **Italian** | `it` | LTR | Complete ✅ |
-| **Hindi** | `hi` | LTR | Complete ✅ |
-| **Tamil** | `ta` | LTR | Complete ✅ |
-| **Bengali** | `bn` | LTR | Complete ✅ |
-| **Japanese** | `ja` | LTR | Complete ✅ |
+| **Hebrew** | `he` | RTL | Primary |
+| **English** | `en` | LTR | Primary |
+| **Spanish** | `es` | LTR | Complete |
+| **Chinese (Simplified)** | `zh` | LTR | Complete |
+| **French** | `fr` | LTR | Complete |
+| **Italian** | `it` | LTR | Complete |
+| **Hindi** | `hi` | LTR | Complete |
+| **Tamil** | `ta` | LTR | Complete |
+| **Bengali** | `bn` | LTR | Complete |
+| **Japanese** | `ja` | LTR | Complete |
 
 ---
 
@@ -111,6 +111,43 @@ import { initNativeI18n } from '@olorin/shared-i18n/native';
 
 await initNativeI18n();
 ```
+
+### iOS/tvOS Native (SwiftUI)
+
+The iOS and tvOS apps use a dedicated `BayitLocalization` Swift Package for native localization:
+
+```
+ios-app/Packages/BayitLocalization/
+├── Sources/
+│   ├── Resources/
+│   │   ├── en.json
+│   │   ├── he.json
+│   │   ├── es.json
+│   │   ├── fr.json
+│   │   ├── hi.json
+│   │   ├── bn.json
+│   │   ├── ja.json
+│   │   ├── zh.json
+│   │   ├── ta.json
+│   │   └── it.json
+│   └── BayitLocalization.swift
+└── Package.swift
+```
+
+**Usage in SwiftUI:**
+```swift
+import BayitLocalization
+
+struct MyView: View {
+    var body: some View {
+        Text(L10n.common.welcome)
+        Text(L10n.zehAni.magicMirror.title)
+    }
+}
+```
+
+**Adding New Keys:**
+When adding new features, update ALL 10 locale JSON files in `ios-app/Packages/BayitLocalization/Sources/Resources/`. The JSON structure mirrors the web/mobile translation files with the same namespace organization.
 
 ---
 
@@ -228,10 +265,10 @@ function LanguageSelector() {
   const { i18n } = useTranslation();
 
   const languages = [
-    { code: 'he', name: 'עברית', flag: '🇮🇱' },
-    { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'es', name: 'Español', flag: '🇪🇸' },
-    { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'he', name: 'עברית' },
+    { code: 'en', name: 'English' },
+    { code: 'es', name: 'Español' },
+    { code: 'fr', name: 'Français' },
   ];
 
   return (
@@ -242,7 +279,7 @@ function LanguageSelector() {
           variant={i18n.language === lang.code ? 'primary' : 'secondary'}
           onPress={() => i18n.changeLanguage(lang.code)}
         >
-          {lang.flag} {lang.name}
+          {lang.name}
         </GlassButton>
       ))}
     </div>
@@ -285,6 +322,45 @@ function LanguageSelector() {
   }
 }
 ```
+
+### Complete Namespace Registry
+
+As of 2026-02-12, the following namespaces are active across all platforms:
+
+| Namespace | Description | Platforms |
+|-----------|-------------|-----------|
+| `common` | Shared UI strings (buttons, labels, errors) | All |
+| `account` | Login, registration, profile | All |
+| `navigation` | Menu items, tab labels | All |
+| `content` | VOD library, series, movies | All |
+| `player` | Playback controls, overlays | All |
+| `live` | Live TV, EPG, recordings | All |
+| `radio` | Radio stations and streaming | All |
+| `audiobooks` | Audiobook library and playback | All |
+| `podcasts` | Podcast directory and playback | All |
+| `search` | Search, LLM search, suggestions | All |
+| `social` | Friends, DMs, watch party | Web, iOS, Mobile |
+| `missions` | Daily missions, gamification, leaderboard | All |
+| `chess` | Chess gameplay | All |
+| `trivia` | Live trivia during streaming | All |
+| `phonetic-mirror` | Pronunciation practice | Web, iOS, Mobile |
+| `talkback` | Voice-response learning | Web, iOS, Mobile |
+| `comprehension` | Comprehension quizzes | All |
+| `star-story` | AI-generated stories | Web, iOS, tvOS |
+| `grandparent-bridge` | News clips, family sharing | Web, iOS, tvOS, Mobile |
+| `chameleon-avatar` | Avatar style transfer | Web, iOS, tvOS |
+| `zeh-ani` | Zeh Ani full feature suite | All |
+| `family-controls` | Parental controls, PIN, ratings | All |
+| `household` | Household management | Web, iOS, Mobile |
+| `settings` | App settings, preferences | All |
+| `subscription` | Plans, billing, payments | Web, iOS, Mobile |
+| `cultures` | Cultural content (Jerusalem, Tel Aviv) | All |
+| `calendar` | Jewish calendar, holidays | All |
+| `beta` | Beta 500 credits program | All |
+| `onboarding` | User onboarding flows | Web, iOS, Mobile |
+| `help` | Help and support | All |
+| `errors` | Error messages | All |
+| `admin` | Admin dashboard | Web |
 
 ### Nested Keys
 
@@ -417,7 +493,7 @@ export const RTL_LANGUAGES = ['he', 'ar'];
 // Add to language selector
 const languages = [
   // ...existing
-  { code: 'ar', name: 'العربية', flag: '🇸🇦', direction: 'rtl' }
+  { code: 'ar', name: 'العربية', direction: 'rtl' }
 ];
 ```
 
@@ -484,7 +560,7 @@ i18n.on('missingKey', (lngs, namespace, key) => {
 
 ## Best Practices
 
-### DO ✅
+### DO
 
 - **Externalize all user-facing text** - No hardcoded strings
 - **Use descriptive keys** - `common.button.save` not `btn1`
@@ -495,7 +571,7 @@ i18n.on('missingKey', (lngs, namespace, key) => {
 - **Format dates/numbers** - Use locale-aware formatting
 - **Keep translations synced** - All languages complete
 
-### DON'T ❌
+### DON'T
 
 - **Don't hardcode text** - Always use `t()` function
 - **Don't concatenate translations** - Use variables instead
@@ -625,7 +701,7 @@ it('should switch language to Hebrew', async () => {
 
 ---
 
-**Document Status:** ✅ Complete
-**Last Updated:** 2026-01-30
+**Document Status:** Complete
+**Last Updated:** 2026-02-12
 **Maintained by:** Localization Team
 **Next Review:** 2026-04-30

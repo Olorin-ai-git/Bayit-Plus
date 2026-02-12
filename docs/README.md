@@ -17,10 +17,18 @@
 
 **For Users:**
 - [Zeh Ani User Guide](guides/ZEH_ANI_USER_GUIDE.md) - AI-powered Hebrew identity feature for parents and children
+- [Family Controls Guide](guides/FAMILY_CONTROLS_USER_GUIDE.md) - Parental controls for safe content
 - [Beta 500 User Manual](guides/BETA_500_USER_MANUAL.md) - AI features closed beta program
-- [Troubleshooting Guide](guides/TROUBLESHOOTING.md) - Common issues and solutions
-- [Troubleshooting Bayit+](guides/TROUBLESHOOTING_BAYIT.md) - Port conflicts, frontend-backend connectivity, MongoDB (2026-02-12)
 - [i18n Complete Guide](guides/I18N_COMPLETE_GUIDE.md) - 10-language system
+- [Troubleshooting Guide](guides/TROUBLESHOOTING.md) - Common issues and solutions
+- [Troubleshooting Bayit+](guides/TROUBLESHOOTING_BAYIT.md) - Port conflicts, frontend-backend connectivity, MongoDB
+
+**Printable PDFs:**
+- [Zeh Ani Guide (PDF)](guides/Bayit_Plus_Zeh_Ani_Guide.pdf) - 8 pages
+- [Family Controls (PDF)](guides/Bayit_Plus_Family_Controls_Guide.pdf) - 14 pages
+- [Beta 500 Manual (PDF)](guides/Bayit_Plus_Beta_500_Manual.pdf) - 21 pages
+- [i18n Guide (PDF)](guides/Bayit_Plus_i18n_Guide.pdf) - 14 pages
+- [Parent & Family Guides (PDF)](guides/Bayit_Plus_Parent_Family_Guides.pdf) - Combined Zeh Ani + Family Controls, 22 pages
 
 ---
 

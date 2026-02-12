@@ -28,7 +28,7 @@ NC='\033[0m' # No Color
 # Configuration
 ENVIRONMENT="${1:-production}"
 REGION="${2:-us-east1}"
-PROJECT_ID="${3:-$(gcloud config get-value project 2>/dev/null)}"
+PROJECT_ID="${3:-bayit-plus}"
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 BACKEND_DIR="$PROJECT_ROOT/backend"
 
@@ -81,6 +81,11 @@ fi
 
 echo -e "${GREEN}All CLI tools available${NC}"
 echo -e "${GREEN}Backend directory found${NC}"
+echo ""
+
+# ===== SET GCP PROJECT =====
+echo -e "${BLUE}📋 Setting GCP project to ${PROJECT_ID}${NC}"
+gcloud config set project "${PROJECT_ID}"
 echo ""
 
 # ===== BUILD AND DEPLOY VIA CLOUD BUILD =====

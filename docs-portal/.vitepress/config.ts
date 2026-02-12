@@ -100,6 +100,10 @@ export default defineConfig({
           { text: 'WCAG AA Color Tokens', link: '/design/COLOR_TOKENS_WCAG' },
         ]
       },
+      {
+        text: 'Downloads',
+        link: '/downloads/USER_GUIDE_DOWNLOADS'
+      },
     ],
 
     sidebar: {
@@ -137,6 +141,17 @@ export default defineConfig({
             { text: 'Family Controls', link: '/guides/FAMILY_CONTROLS_USER_GUIDE' },
             { text: 'Beta 500 User Manual', link: '/guides/BETA_500_USER_MANUAL' },
             { text: 'i18n Complete Guide', link: '/guides/I18N_COMPLETE_GUIDE' },
+          ]
+        },
+        {
+          text: 'Printable Guides (PDF)',
+          items: [
+            { text: 'All Downloads', link: '/downloads/USER_GUIDE_DOWNLOADS' },
+            { text: 'Zeh Ani Guide', link: '/downloads/Bayit_Plus_Zeh_Ani_Guide.pdf' },
+            { text: 'Family Controls', link: '/downloads/Bayit_Plus_Family_Controls_Guide.pdf' },
+            { text: 'Beta 500 Manual', link: '/downloads/Bayit_Plus_Beta_500_Manual.pdf' },
+            { text: 'i18n Guide', link: '/downloads/Bayit_Plus_i18n_Guide.pdf' },
+            { text: 'Parent & Family (Combined)', link: '/downloads/Bayit_Plus_Parent_Family_Guides.pdf' },
           ]
         },
         {
@@ -254,6 +269,29 @@ export default defineConfig({
           text: 'Design System',
           items: [
             { text: 'WCAG AA Color Tokens', link: '/design/COLOR_TOKENS_WCAG' },
+          ]
+        },
+      ],
+      '/downloads/': [
+        {
+          text: 'Printable User Guides',
+          items: [
+            { text: 'All Downloads', link: '/downloads/USER_GUIDE_DOWNLOADS' },
+          ]
+        },
+        {
+          text: 'Individual Guides',
+          items: [
+            { text: 'Zeh Ani Guide (8 pages)', link: '/downloads/Bayit_Plus_Zeh_Ani_Guide.pdf' },
+            { text: 'Family Controls (14 pages)', link: '/downloads/Bayit_Plus_Family_Controls_Guide.pdf' },
+            { text: 'Beta 500 Manual (21 pages)', link: '/downloads/Bayit_Plus_Beta_500_Manual.pdf' },
+            { text: 'i18n Guide (14 pages)', link: '/downloads/Bayit_Plus_i18n_Guide.pdf' },
+          ]
+        },
+        {
+          text: 'Combined Guides',
+          items: [
+            { text: 'Parent & Family (22 pages)', link: '/downloads/Bayit_Plus_Parent_Family_Guides.pdf' },
           ]
         },
       ],

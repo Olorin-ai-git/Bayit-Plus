@@ -4,7 +4,7 @@
 **Credits Per User:** 5,000 AI credits
 **Program Duration:** 90 days
 **Status:** Active
-**Last Updated:** 2026-02-01
+**Last Updated:** 2026-02-12
 
 ---
 
@@ -55,6 +55,17 @@ Your feedback directly shapes these AI features:
 2. **AI Recommendations** - Personalized content suggestions
 3. **Live Dubbing** - Real-time audio translation
 4. **Auto Catch-Up** - AI-generated summaries of missed content
+5. **Phonetic Mirror** - Hebrew pronunciation practice with scoring
+6. **Talk Back** - Voice-response Hebrew learning
+7. **Star in Story** - AI-generated personalized story episodes
+8. **Interactive Missions** - Voice-first branching adventure games
+9. **Chameleon Avatar** - Style-transfer avatar into show art styles
+10. **Grandparent Bridge** - AI news clip generation for family sharing
+11. **Interactive Subtitles** - Nikud, Shoresh, Heblish, Grammar Flip, Slang Synthesis, Engrew overlays
+12. **Bilingual Dubbing** - Side-by-side Hebrew/English audio
+13. **Comprehension Quizzes** - AI-generated understanding checks
+14. **Cultural Context** - Real-time cultural reference detection
+15. **Zeh Ani (It's Me)** - 3D avatar mesh, Voice-to-Voice, Magic Mirror, Hebrew Key scene triggers, Highlight Reels, Live Avatar Overlay
 
 ### Your Responsibilities as a Beta Tester
 
@@ -123,9 +134,34 @@ Credits are your AI currency. Each AI action consumes credits based on its compu
 | Feature | Cost | Unit |
 |---------|------|------|
 | **AI Search** | 10 credits | Per search query |
-| **AI Recommendations** | 5 credits | Per recommendation request |
-| **Live Dubbing** | 1 credit | Per second of dubbing |
-| **Auto Catch-Up** | 15 credits | Per summary generated |
+| **AI Recommendations** | 5 credits | Per request |
+| **Live Dubbing** | 1 credit | Per second |
+| **Auto Catch-Up** | 15 credits | Per summary |
+| **Phonetic Mirror** | 3 credits | Per attempt |
+| **Talk Back** | 5 credits | Per response |
+| **Star Story Episode** | 75 credits | Per episode |
+| **Star Story Avatar** | 10 credits | Per avatar |
+| **Interactive Mission** | 100 credits | Per mission |
+| **Video Selfie Avatar** | 15 credits | Per avatar |
+| **Voice Clone (Child)** | 10 credits | Per clone |
+| **Family Snap** | 5 credits | Per snap |
+| **Chameleon Style Transfer** | 20 credits | Per transfer |
+| **Grandparent Bridge News Clip** | 50 credits | Per clip |
+| **Bilingual Dubbing Session** | 10 credits | Per session start |
+| **Bilingual Translation** | 3 credits | Per segment |
+| **Comprehension Question** | 1 credit | Per question |
+| **Cultural Detection** | 5 credits | Per detection |
+| **Interactive Subtitle** | 15 credits | Per generation |
+| **Phrase Breakdown** | 5 credits | Per request |
+| **Chat Translation** | 3 credits | Per message |
+| **Chapter Generation** | 10 credits | Per generation |
+| **Zine Generation** | 15 credits | Per zine |
+| **Zeh Ani: 3D Mesh** | 50 credits | Per mesh |
+| **Zeh Ani: V2V Transform** | 8 credits | Per transform |
+| **Zeh Ani: Magic Mirror** | 5 credits | Per greeting |
+| **Zeh Ani: Live Layer** | 2 credits | Per interaction |
+| **Zeh Ani: Highlight Reel** | 20 credits | Per reel |
+| **Zeh Ani: Lip-Sync** | 3 credits | Per sync |
 
 ### Usage Examples
 
@@ -397,6 +433,104 @@ Generates AI summaries of live TV content you missed, so you can quickly underst
 
 ---
 
+### 5. Phonetic Mirror
+
+**What It Does:**
+Practice Hebrew pronunciation by recording yourself saying phrases. The AI scores your pronunciation against native speech and provides detailed feedback on accuracy.
+
+**Cost:** 3 credits per attempt
+
+**How to Use:**
+1. Navigate to Phonetic Mirror (in Learning section)
+2. Select a Hebrew phrase
+3. Tap record and say the phrase
+4. View your pronunciation score with phoneme-level feedback
+
+**Scoring Levels:**
+- Excellent (90%+), Good (70-89%), Fair (50-69%), Needs Practice (below 50%)
+
+---
+
+### 6. Talk Back
+
+**What It Does:**
+Interactive voice-response learning where the AI evaluates your spoken Hebrew responses during content.
+
+**Cost:** 5 credits per response
+
+---
+
+### 7. Star in Story
+
+**What It Does:**
+AI generates personalized story episodes starring your child's avatar with narrated audio and scene illustrations.
+
+**Cost:** 75 credits per episode, 10 credits per avatar generation
+
+---
+
+### 8. Interactive Missions
+
+**What It Does:**
+Voice-first branching adventure games where your choices (spoken in Hebrew) determine the story path.
+
+**Cost:** 100 credits per mission
+
+---
+
+### 9. Chameleon Avatar
+
+**What It Does:**
+Style-transfers your avatar to match any show's art style using AI.
+
+**Cost:** 20 credits per style transfer
+
+---
+
+### 10. Grandparent Bridge
+
+**What It Does:**
+Generates shareable AI-curated news clips for family, with voice notes from grandparents.
+
+**Cost:** 50 credits per news clip
+
+---
+
+### 11. Interactive Subtitles
+
+**What It Does:**
+Six Hebrew learning subtitle modes: Nikud (vowel marks), Shoresh (root words), Heblish (transliteration), Grammar Flip, Slang Synthesis, and Engrew (English-Hebrew hybrid).
+
+**Cost:** 15 credits per generation
+
+---
+
+### 12. Bilingual Dubbing
+
+**What It Does:**
+Side-by-side Hebrew/English audio during content playback. Alternates between languages for immersive bilingual learning.
+
+**Cost:** 10 credits per session start, 3 credits per segment translation
+
+---
+
+### 13. Zeh Ani (It's Me)
+
+**What It Does:**
+The full identity-based Hebrew learning suite: 3D avatar mesh of your child, voice-to-voice pronunciation transformation, Magic Mirror daily greetings, Hebrew Key scene triggers, shareable highlight reels, and live avatar overlay during playback.
+
+**Costs:**
+- 3D Mesh Generation: 50 credits
+- V2V Voice Transform: 8 credits per transform
+- Magic Mirror Greeting: 5 credits per greeting
+- Live Avatar Layer: 2 credits per interaction
+- Highlight Reel: 20 credits per reel
+- Lip-Sync: 3 credits per sync
+
+**Requires:** Parental biometric consent (COPPA-compliant)
+
+---
+
 ## Features Not Available
 
 The following features are **NOT** included in Beta 500:
@@ -406,11 +540,9 @@ The following features are **NOT** included in Beta 500:
 | Feature | Status | Notes |
 |---------|--------|-------|
 | **VOD Dubbing** | Coming Q2 2026 | Movies/series full dubbing |
-| **AI Subtitles** | In development | Auto-generated captions |
-| **Voice Commands** | Planned | "Show me comedies" via voice |
 | **AI Chat Assistant** | Planned | Conversational help |
 | **Personalized Trailers** | Planned | AI-edited preview clips |
-| **Content Summarization** | Limited | Only live TV, not VOD |
+| **Voice Commands** | Planned | Voice navigation |
 
 ### Standard Features (Always Available)
 
@@ -426,6 +558,12 @@ These features do NOT require credits:
 - Multi-language UI (10 languages)
 - Standard subtitles
 - Audio tracks selection
+- Gamification (missions, leaderboards, rewards)
+- Chess (play against AI or friends)
+- Morning Ritual
+- Glossary and vocabulary tracking
+- Family Snaps (basic viewing)
+- Community directory
 
 ---
 
@@ -748,7 +886,7 @@ A: Real-time AI translation is computationally intensive, requiring continuous p
 ---
 
 **Document Status:** Complete
-**Last Updated:** 2026-02-01
-**Version:** 2.0
+**Last Updated:** 2026-02-12
+**Version:** 3.0
 **Maintained by:** Beta Program Team
 **Next Review:** 2026-02-15

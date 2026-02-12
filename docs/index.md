@@ -13,8 +13,8 @@ hero:
       text: Get Started
       link: /guides/STARTUP_GUIDE
     - theme: alt
-      text: View on GitHub
-      link: https://github.com/bayit-plus
+      text: Download Guides (PDF)
+      link: /downloads/USER_GUIDE_DOWNLOADS
 
 features:
   - icon: 📱
@@ -47,20 +47,27 @@ features:
 - [tvOS Development](/guides/TVOS_DEVELOPMENT_GUIDE) - Apple TV development
 
 **For Users:**
+- [Zeh Ani User Guide](/guides/ZEH_ANI_USER_GUIDE) - AI-powered Hebrew identity feature
+- [Family Controls Guide](/guides/FAMILY_CONTROLS_USER_GUIDE) - Parental controls across all platforms
 - [Beta 500 User Manual](/guides/BETA_500_USER_MANUAL) - AI features closed beta program
-- [Troubleshooting Guide](/guides/TROUBLESHOOTING) - Common issues and solutions
 - [i18n Complete Guide](/guides/I18N_COMPLETE_GUIDE) - 10-language system
+- [Troubleshooting Guide](/guides/TROUBLESHOOTING) - Common issues and solutions
+
+**Printable PDF Guides:**
+- [Zeh Ani Guide (8 pages)](/downloads/Bayit_Plus_Zeh_Ani_Guide.pdf) | [Family Controls (14 pages)](/downloads/Bayit_Plus_Family_Controls_Guide.pdf) | [Beta 500 Manual (21 pages)](/downloads/Bayit_Plus_Beta_500_Manual.pdf) | [i18n Guide (14 pages)](/downloads/Bayit_Plus_i18n_Guide.pdf)
+- [Parent & Family Combined (22 pages)](/downloads/Bayit_Plus_Parent_Family_Guides.pdf) | [All Downloads](/downloads/USER_GUIDE_DOWNLOADS)
 
 ---
 
 ## Featured Documentation
 
-### 🎯 New & Updated
-- [Subtitle System Enhancements](/features/SUBTITLE_SYSTEM_ENHANCEMENTS) - 21 accessibility, UX, and performance fixes ⭐ **NEW**
-- [WCAG AA Color Tokens](/design/COLOR_TOKENS_WCAG) - Contrast-safe color palette ⭐ **NEW**
-- [GCloud Secrets API Configuration](/deployment/GCLOUD_SECRETS_API_CONFIGURATION) - API retry and subtitle config ⭐ **NEW**
+### New & Updated
+- [Zeh Ani User Guide](/guides/ZEH_ANI_USER_GUIDE) - AI-powered Hebrew identity with 3D avatar, voice transform, and scene triggers
+- [Family Controls Guide](/guides/FAMILY_CONTROLS_USER_GUIDE) - Unified parental controls with Zeh Ani integration
+- [Beta 500 User Manual](/guides/BETA_500_USER_MANUAL) - 15 AI features, 31 credit cost tiers
+- [Subtitle System Enhancements](/features/SUBTITLE_SYSTEM_ENHANCEMENTS) - 21 accessibility, UX, and performance fixes
 
-### 📖 Popular Guides
+### Popular Guides
 - [AI Features Overview](/features/AI_FEATURES_OVERVIEW) - Complete AI catalog
 - [Database Schema Reference](/technical/DATABASE_SCHEMA_REFERENCE) - MongoDB Atlas, 64+ collections
 - [Secrets Management](/deployment/SECRETS_MANAGEMENT) - Google Cloud secrets workflow
