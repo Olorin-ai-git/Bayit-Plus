@@ -24,6 +24,8 @@ class ConsentService:
         child_first_name: str,
         pin: str,
         ip_address: str = "",
+        video_selfie_consent: bool = False,
+        voice_clone_consent: bool = False,
     ) -> ChildAvatar:
         """
         Verify family PIN and record parental consent.
@@ -60,6 +62,8 @@ class ConsentService:
             granted_by_user_id=user_id,
             family_pin_verified=True,
             ip_address=ip_address if ip_address else None,
+            video_selfie_consent=video_selfie_consent,
+            voice_clone_consent=voice_clone_consent,
         )
 
         if avatar:

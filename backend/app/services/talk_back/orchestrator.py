@@ -117,6 +117,15 @@ class TalkBackOrchestrator:
             hebrew_ratio=attempt.hebrew_ratio,
         )
 
+        from app.services.gamification.level_service import level_service
+
+        await level_service.award_xp(
+            user_id=user_id,
+            profile_id=profile_id,
+            source="talk_back",
+            amount=settings.GAMIFICATION_XP_PER_TALK_BACK,
+        )
+
         for word in point.vocabulary_targets:
             await assessment_service.update_vocabulary(
                 user_id=user_id,

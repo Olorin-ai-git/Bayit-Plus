@@ -111,6 +111,12 @@ def register_all_routers(app: FastAPI) -> None:
     # Phonetic Mirror routes (Perfected Voice)
     from app.api.routes.phonetic_mirror import mirror_core as pm_core
     from app.api.routes import websocket_phonetic_mirror
+    # Gamification routes (Level Progression)
+    from app.api.routes.gamification import level_routes as gamification_routes
+    # Grandparent Bridge routes (news clips, sharing, voice notes)
+    from app.api.routes.grandparent_bridge import bridge_core as gp_bridge
+    # Chameleon Engine routes (visual style transfer)
+    from app.api.routes.chameleon import style_routes as chameleon_routes
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -589,6 +595,24 @@ def register_all_routers(app: FastAPI) -> None:
         tags=["websocket", "phonetic-mirror"],
     )
     logger.debug("Registered Phonetic Mirror routes (REST + WebSocket)")
+
+    # ============================================
+    # Gamification Routes (Level Progression)
+    # ============================================
+    app.include_router(gamification_routes.router, prefix=prefix, tags=["gamification"])
+    logger.debug("Registered Gamification routes (profile, levels, perks, leaderboard)")
+
+    # ============================================
+    # Grandparent Bridge Routes (News Clips + Sharing)
+    # ============================================
+    app.include_router(gp_bridge.router, prefix=prefix, tags=["grandparent-bridge"])
+    logger.debug("Registered Grandparent Bridge routes (clips, sharing, voice notes)")
+
+    # ============================================
+    # Chameleon Engine Routes (Visual Style Transfer)
+    # ============================================
+    app.include_router(chameleon_routes.router, prefix=prefix, tags=["chameleon"])
+    logger.debug("Registered Chameleon Engine routes (prepare, status, cached)")
 
     logger.info(f"All API routers registered with prefix {prefix}")
 

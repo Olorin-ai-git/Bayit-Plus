@@ -139,6 +139,10 @@ from app.models.family_snap import FamilySnap
 from app.models.phonetic_mirror_attempt import PhoneticMirrorAttempt
 # Gamification models (Level Progression)
 from app.models.gamification_profile import GamificationProfile
+# Grandparent Bridge models (news clips + voice notes)
+from app.models.grandparent_bridge import GrandparentVoiceNote, NewsClip
+# Chameleon Engine models (avatar style cache)
+from app.models.avatar_style_cache import AvatarStyleCache
 
 
 class Database:
@@ -427,6 +431,11 @@ async def connect_to_mongo():
         PhoneticMirrorAttempt,
         # Gamification models (Level Progression)
         GamificationProfile,
+        # Grandparent Bridge models (news clips + voice notes)
+        NewsClip,
+        GrandparentVoiceNote,
+        # Chameleon Engine models (avatar style cache)
+        AvatarStyleCache,
     ]
 
     # Conditionally add Olorin models based on database separation setting

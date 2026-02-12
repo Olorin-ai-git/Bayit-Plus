@@ -27,6 +27,8 @@ class ConsentRequest(BaseModel):
     profile_id: str
     child_first_name: str = Field(..., max_length=50)
     pin: str = Field(..., min_length=4, max_length=20)
+    video_selfie_consent: bool = False
+    voice_clone_consent: bool = False
 
 
 class AvatarUploadRequest(BaseModel):
@@ -56,6 +58,8 @@ async def grant_consent(
             child_first_name=body.child_first_name,
             pin=body.pin,
             ip_address=ip_address,
+            video_selfie_consent=body.video_selfie_consent,
+            voice_clone_consent=body.voice_clone_consent,
         )
         return {
             "avatar_id": str(avatar.id),

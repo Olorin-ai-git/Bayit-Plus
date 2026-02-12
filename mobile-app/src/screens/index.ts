@@ -77,3 +77,12 @@ export * from './SubscribeScreen';
 export * from './InteractiveMissionScreen';
 export * from './AvatarWardrobeScreen';
 export * from './VideoSelfieScreen';
+
+// Phonetic Mirror
+export * from './PhoneticMirrorScreen';
+
+// Gamification
+export * from './MissionsDashboardScreen';
+
+// Grandparent Bridge
+export * from './NewsClipScreen';

@@ -49,6 +49,12 @@ export type RootStackParamList = {
   InteractiveMission: { missionId: string; profileId: string };
   AvatarWardrobe: { avatarId: string; profileId: string };
   VideoSelfie: { avatarId: string };
+  // Phonetic Mirror
+  PhoneticMirror: { profileId: string; avatarId: string };
+  // Gamification
+  MissionsDashboard: { profileId: string };
+  // Grandparent Bridge
+  NewsClip: { profileId: string; avatarId: string };
 };
 
 export type MainTabParamList = {

@@ -84,6 +84,15 @@ export default defineConfig({
         ]
       },
       {
+        text: 'Marketing',
+        items: [
+          { text: 'Zeh Ani One-Pager', link: '/marketing/ZEH_ANI_ONE_PAGER' },
+          { text: 'Beta 500 Storytelling', link: '/marketing/BETA_500_STORYTELLING' },
+          { text: 'tvOS Marketing Assets', link: '/marketing/BAYIT_PLUS_TVOS_MARKETING_ASSETS' },
+          { text: 'Visual Assets Specs', link: '/marketing/VISUAL_ASSETS_SPECIFICATIONS' },
+        ]
+      },
+      {
         text: 'Design',
         items: [
           { text: 'WCAG AA Color Tokens', link: '/design/COLOR_TOKENS_WCAG' },
@@ -216,6 +225,22 @@ export default defineConfig({
             { text: 'Subtitle System Enhancements', link: '/features/SUBTITLE_SYSTEM_ENHANCEMENTS' },
             { text: 'Live Translation Expansion', link: '/features/LIVE_TRANSLATION_EXPANSION' },
             { text: 'Subscription Gate', link: '/features/SUBSCRIPTION_GATE_IMPLEMENTATION' },
+          ]
+        },
+      ],
+      '/marketing/': [
+        {
+          text: 'Product Marketing',
+          items: [
+            { text: 'Zeh Ani One-Pager', link: '/marketing/ZEH_ANI_ONE_PAGER' },
+            { text: 'Beta 500 Storytelling', link: '/marketing/BETA_500_STORYTELLING' },
+          ]
+        },
+        {
+          text: 'Marketing Assets',
+          items: [
+            { text: 'tvOS Marketing Assets', link: '/marketing/BAYIT_PLUS_TVOS_MARKETING_ASSETS' },
+            { text: 'Visual Assets Specs', link: '/marketing/VISUAL_ASSETS_SPECIFICATIONS' },
           ]
         },
       ],

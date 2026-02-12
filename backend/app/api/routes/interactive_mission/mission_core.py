@@ -122,7 +122,19 @@ async def complete_mission(mission_id: str, user: User = Depends(get_current_use
     mission.shekels_earned = total_reward
     mission.status = MissionStatus.COMPLETED
     await mission.save()
+
+    from app.services.gamification.level_service import level_service
+
+    xp_result = await level_service.award_xp(
+        user_id=str(user.id),
+        profile_id=mission.profile_id,
+        source="mission",
+        amount=settings.GAMIFICATION_XP_PER_MISSION,
+    )
     return {
         "mission_id": str(mission.id), "status": "completed",
         "shekels_earned": total_reward, "total_score": mission.total_score,
+        "xp_awarded": xp_result.xp_awarded,
+        "leveled_up": xp_result.leveled_up,
+        "new_level": xp_result.new_level,
     }

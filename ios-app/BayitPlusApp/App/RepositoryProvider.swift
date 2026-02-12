@@ -50,6 +50,7 @@ final class RepositoryProvider {
     let avatarRepository: any AvatarOutfitRepository
     let familySnapRepository: any FamilySnapRepository
     let phoneticMirrorRepository: any PhoneticMirrorRepository
+    let grandparentBridgeRepository: any GrandparentBridgeRepository
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
@@ -97,6 +98,7 @@ final class RepositoryProvider {
         self.avatarRepository = APIAvatarOutfitRepository(client: client)
         self.familySnapRepository = APIFamilySnapRepository(client: client)
         self.phoneticMirrorRepository = APIPhoneticMirrorRepository(client: client)
+        self.grandparentBridgeRepository = APIGrandparentBridgeRepository(client: client)
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         self.offlineCache = OfflineCacheService()

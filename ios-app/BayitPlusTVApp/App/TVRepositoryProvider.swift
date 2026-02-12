@@ -45,6 +45,7 @@ final class TVRepositoryProvider {
     let widget: any WidgetRepository
     let missions: any MissionsRepository
     let starStory: any StarStoryRepository
+    let grandparentBridgeRepository: any GrandparentBridgeRepository
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
@@ -90,6 +91,7 @@ final class TVRepositoryProvider {
         self.widget = APIWidgetRepository(client: client)
         self.missions = APIMissionsRepository(client: client)
         self.starStory = APIStarStoryRepository(client: client)
+        self.grandparentBridgeRepository = APIGrandparentBridgeRepository(client: client)
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         self.offlineCache = OfflineCacheService()
