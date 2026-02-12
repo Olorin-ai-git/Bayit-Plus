@@ -7821,5 +7821,197 @@
     "subtitlesButton": "CC",
     "closeButton": "×"
   },
-  "tvos": {}
+  "tvos": {},
+  "missions": {
+    "title": "每日任务",
+    "subtitle": "完成任务赚取谢克尔",
+    "dailyMissions": "今日任务",
+    "missionCompleted": "任务完成",
+    "claimReward": "领取奖励",
+    "claimed": "已领取",
+    "progress": "{{current}} / {{target}}",
+    "streakBonus": "连续奖励",
+    "allCompleted": "今日所有任务已完成",
+    "refreshTime": "新任务将在 {{hours}}小时 {{minutes}}分钟后刷新",
+    "tabs": {
+      "missions": "任务",
+      "leaderboard": "排行榜",
+      "rewards": "奖励"
+    },
+    "difficulty": {
+      "easy": "简单",
+      "medium": "中等",
+      "hard": "困难"
+    },
+    "types": {
+      "watchContent": "观看内容",
+      "completeQuiz": "完成测验",
+      "useSubtitles": "使用字幕",
+      "maintainStreak": "保持连续",
+      "learnPhrase": "学习短语"
+    }
+  },
+  "shekels": {
+    "title": "谢克尔",
+    "balance": "余额",
+    "totalEarned": "总获得",
+    "totalSpent": "总支出",
+    "transactions": "交易记录",
+    "earned": "获得",
+    "spent": "支出",
+    "earnRates": "获取速率",
+    "noTransactions": "暂无交易记录"
+  },
+  "leaderboard": {
+    "title": "排行榜",
+    "global": "全球",
+    "friends": "好友",
+    "family": "家庭",
+    "rank": "排名",
+    "points": "积分",
+    "yourRank": "你的排名",
+    "period": {
+      "daily": "每日",
+      "weekly": "每周",
+      "monthly": "每月",
+      "allTime": "全部时间"
+    },
+    "empty": "暂无记录"
+  },
+  "talkBack": {
+    "title": "回话练习",
+    "subtitle": "与角色一起练习希伯来语",
+    "question": "问题",
+    "respond": "回答",
+    "listening": "正在聆听...",
+    "evaluating": "正在评估...",
+    "skip": "跳过",
+    "tryAgain": "再试一次",
+    "continue": "继续",
+    "submit": "提交",
+    "pointsEarned": "获得 {{points}} 积分",
+    "feedback": {
+      "excellent": "优秀",
+      "good": "做得好",
+      "fair": "还不错",
+      "tryHebrew": "尝试用希伯来语回答"
+    },
+    "stats": {
+      "title": "回话练习统计",
+      "totalAttempts": "总尝试次数",
+      "hebrewRate": "希伯来语回答率",
+      "wordsLearned": "已学单词",
+      "averageAccuracy": "平均准确率",
+      "shekelsEarned": "获得的谢克尔"
+    },
+    "dashboard": {
+      "title": "回话练习仪表盘",
+      "engagement": "参与度",
+      "progress": "进度"
+    }
+  },
+  "bilingual": {
+    "title": "双语桥梁",
+    "subtitle": "渐进式希伯来语配音",
+    "enabled": "双语桥梁已开启",
+    "disabled": "双语桥梁已关闭",
+    "languageRatio": "语言比例",
+    "hebrewPercent": "希伯来语 {{percent}}%",
+    "englishPercent": "英语 {{percent}}%",
+    "wordsLearned": "已学 {{count}} 个单词",
+    "level": {
+      "beginner": "入门",
+      "elementary": "初级",
+      "intermediate": "中级",
+      "advanced": "高级"
+    },
+    "sessionActive": "会话进行中",
+    "vocabulary": {
+      "title": "词汇追踪器",
+      "known": "已知单词",
+      "learning": "学习中",
+      "mastered": "已掌握"
+    }
+  },
+  "starStory": {
+    "title": "故事之星",
+    "subtitle": "个性化希伯来语学习故事",
+    "avatars": "头像",
+    "episodes": "剧集",
+    "createFirst": "创建第一个头像",
+    "addAvatar": "添加头像",
+    "uploadPhoto": "上传照片",
+    "newEpisode": "新剧集",
+    "consent": {
+      "title": "家庭安全同意",
+      "description": "故事之星创建个性化内容。家长或监护人必须提供同意。",
+      "childName": "孩子的名字",
+      "familyPin": "家庭 PIN",
+      "agree": "我以家长/监护人身份同意",
+      "continue": "继续",
+      "cancel": "取消"
+    },
+    "avatar": {
+      "preview": "预览头像",
+      "approve": "批准头像",
+      "regenerate": "重新生成",
+      "regenerating": "正在重新生成...",
+      "styleCartoon": "卡通 2D",
+      "stylePixar": "皮克斯 3D",
+      "chooseStyle": "选择头像风格"
+    },
+    "generation": {
+      "title": "正在创建你的剧集",
+      "ready": "剧集就绪",
+      "failed": "生成失败",
+      "estimate": "这可能需要几分钟",
+      "stages": {
+        "script": "正在编写脚本",
+        "video": "正在生成视频",
+        "audio": "正在创建音频",
+        "assembly": "正在组装剧集",
+        "safety": "安全审查"
+      }
+    },
+    "player": {
+      "episode": "第 {{number}} 集",
+      "back": "返回"
+    }
+  },
+  "glossary": {
+    "title": "词汇表",
+    "search": "搜索短语...",
+    "categories": "分类",
+    "allCategories": "全部",
+    "loadMore": "加载更多",
+    "noResults": "未找到结果",
+    "entry": {
+      "origin": "起源",
+      "example": "示例",
+      "funFact": "趣味知识",
+      "transliteration": "音译"
+    }
+  },
+  "culturalContext": {
+    "title": "文化背景",
+    "reference": "文化参考",
+    "explanation": "解释",
+    "related": "相关参考",
+    "loading": "正在加载参考...",
+    "noReferences": "未检测到文化参考",
+    "categories": {
+      "slang": "俚语",
+      "tradition": "传统",
+      "history": "历史",
+      "food": "美食",
+      "music": "音乐",
+      "holiday": "节日"
+    },
+    "phraseBreakdown": {
+      "title": "短语解析",
+      "origin": "起源",
+      "usage": "常见用法",
+      "funFact": "趣味知识"
+    }
+  }
 }

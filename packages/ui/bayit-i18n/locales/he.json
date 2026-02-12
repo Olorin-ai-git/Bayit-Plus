@@ -3279,13 +3279,13 @@
       "errorLoading": "טעינת תוכן ירושלים נכשלה",
       "sources": "מקורות",
       "categories": {
-        "history": "🏛️ אתרים היסטוריים",
-        "religion": "🕍 מורשת דתית",
-        "culture": "🎭 אירועי תרבות",
-        "events": "📅 אירועים מקומיים",
-        "food": "🍴 קולינריה מקומית",
-        "markets": "🛍️ שווקים מסורתיים",
-        "arts": "🎨 אומנות וגלריות"
+        "history": "אתרים היסטוריים",
+        "religion": "מורשת דתית",
+        "culture": "אירועי תרבות",
+        "events": "אירועים מקומיים",
+        "food": "קולינריה מקומית",
+        "markets": "שווקים מסורתיים",
+        "arts": "אומנות וגלריות"
       }
     },
     "telAviv": {
@@ -3296,13 +3296,13 @@
       "errorLoading": "טעינת תוכן תל אביב נכשלה",
       "sources": "מקורות",
       "categories": {
-        "beaches": "🏖️ חופים וטיילת",
-        "nightlife": "🌃 חיי לילה ובידור",
-        "culture": "🎭 אירועי תרבות",
-        "music": "🎵 מוזיקה וקונצרטים",
-        "food": "🍴 אוכל ומסעדות",
-        "tech": "💻 טכנולוגיה וחדשנות",
-        "events": "📅 אירועים מקומיים"
+        "beaches": "חופים וטיילת",
+        "nightlife": "חיי לילה ובידור",
+        "culture": "אירועי תרבות",
+        "music": "מוזיקה וקונצרטים",
+        "food": "אוכל ומסעדות",
+        "tech": "טכנולוגיה וחדשנות",
+        "events": "אירועים מקומיים"
       }
     },
     "privacy": {
@@ -8328,6 +8328,198 @@
       "seeAll": "ראה הכל",
       "retry": "נסה שוב",
       "back": "חזור"
+    }
+  },
+  "missions": {
+    "title": "משימות יומיות",
+    "subtitle": "השלם משימות כדי להרוויח שקלים",
+    "dailyMissions": "משימות להיום",
+    "missionCompleted": "משימה הושלמה",
+    "claimReward": "קבל פרס",
+    "claimed": "נדרש",
+    "progress": "{{current}} / {{target}}",
+    "streakBonus": "בונוס רצף",
+    "allCompleted": "כל המשימות הושלמו להיום",
+    "refreshTime": "משימות חדשות בעוד {{hours}} שעות {{minutes}} דקות",
+    "tabs": {
+      "missions": "משימות",
+      "leaderboard": "טבלת מובילים",
+      "rewards": "פרסים"
+    },
+    "difficulty": {
+      "easy": "קל",
+      "medium": "בינוני",
+      "hard": "קשה"
+    },
+    "types": {
+      "watchContent": "צפה בתוכן",
+      "completeQuiz": "השלם חידון",
+      "useSubtitles": "השתמש בכתוביות",
+      "maintainStreak": "שמור על רצף",
+      "learnPhrase": "למד ביטוי"
+    }
+  },
+  "shekels": {
+    "title": "שקלים",
+    "balance": "יתרה",
+    "totalEarned": "סה\"כ נצבר",
+    "totalSpent": "סה\"כ הוצא",
+    "transactions": "עסקאות",
+    "earned": "נצבר",
+    "spent": "הוצא",
+    "earnRates": "שיעורי צבירה",
+    "noTransactions": "אין עסקאות עדיין"
+  },
+  "leaderboard": {
+    "title": "טבלת מובילים",
+    "global": "עולמי",
+    "friends": "חברים",
+    "family": "משפחה",
+    "rank": "דירוג",
+    "points": "נקודות",
+    "yourRank": "הדירוג שלך",
+    "period": {
+      "daily": "יומי",
+      "weekly": "שבועי",
+      "monthly": "חודשי",
+      "allTime": "כל הזמנים"
+    },
+    "empty": "אין רשומות עדיין"
+  },
+  "talkBack": {
+    "title": "דבר חזרה",
+    "subtitle": "תרגל עברית עם דמויות",
+    "question": "שאלה",
+    "respond": "ענה",
+    "listening": "מקשיב...",
+    "evaluating": "מעריך...",
+    "skip": "דלג",
+    "tryAgain": "נסה שוב",
+    "continue": "המשך",
+    "submit": "שלח",
+    "pointsEarned": "{{points}} נקודות נצברו",
+    "feedback": {
+      "excellent": "מצוין",
+      "good": "כל הכבוד",
+      "fair": "לא רע",
+      "tryHebrew": "נסה לענות בעברית"
+    },
+    "stats": {
+      "title": "סטטיסטיקות דבר חזרה",
+      "totalAttempts": "סה\"כ ניסיונות",
+      "hebrewRate": "שיעור תגובות בעברית",
+      "wordsLearned": "מילים שנלמדו",
+      "averageAccuracy": "דיוק ממוצע",
+      "shekelsEarned": "שקלים שנצברו"
+    },
+    "dashboard": {
+      "title": "לוח בקרה דבר חזרה",
+      "engagement": "מעורבות",
+      "progress": "התקדמות"
+    }
+  },
+  "bilingual": {
+    "title": "גשר דו-לשוני",
+    "subtitle": "דיבוב עברי מתקדם",
+    "enabled": "גשר דו-לשוני פעיל",
+    "disabled": "גשר דו-לשוני כבוי",
+    "languageRatio": "יחס שפות",
+    "hebrewPercent": "עברית {{percent}}%",
+    "englishPercent": "אנגלית {{percent}}%",
+    "wordsLearned": "{{count}} מילים נלמדו",
+    "level": {
+      "beginner": "מתחיל",
+      "elementary": "בסיסי",
+      "intermediate": "בינוני",
+      "advanced": "מתקדם"
+    },
+    "sessionActive": "הפעלה פעילה",
+    "vocabulary": {
+      "title": "מעקב אוצר מילים",
+      "known": "מילים מוכרות",
+      "learning": "בלמידה",
+      "mastered": "נשלטו"
+    }
+  },
+  "starStory": {
+    "title": "כוכב בסיפור",
+    "subtitle": "סיפורי לימוד עברית מותאמים אישית",
+    "avatars": "אווטרים",
+    "episodes": "פרקים",
+    "createFirst": "צור אווטר ראשון",
+    "addAvatar": "הוסף אווטר",
+    "uploadPhoto": "העלה תמונה",
+    "newEpisode": "פרק חדש",
+    "consent": {
+      "title": "הסכמת בטיחות משפחתית",
+      "description": "כוכב בסיפור יוצר תוכן מותאם אישית. הורה או אפוטרופוס חייב לתת הסכמה.",
+      "childName": "שם פרטי של הילד",
+      "familyPin": "קוד PIN משפחתי",
+      "agree": "אני מסכים כהורה/אפוטרופוס",
+      "continue": "המשך",
+      "cancel": "ביטול"
+    },
+    "avatar": {
+      "preview": "תצוגה מקדימה של אווטר",
+      "approve": "אשר אווטר",
+      "regenerate": "צור מחדש",
+      "regenerating": "יוצר מחדש...",
+      "styleCartoon": "קריקטורה דו-ממדית",
+      "stylePixar": "פיקסר תלת-ממדי",
+      "chooseStyle": "בחר סגנון אווטר"
+    },
+    "generation": {
+      "title": "יוצר את הפרק שלך",
+      "ready": "הפרק מוכן",
+      "failed": "היצירה נכשלה",
+      "estimate": "זה עשוי לקחת כמה דקות",
+      "stages": {
+        "script": "כותב תסריט",
+        "video": "יוצר וידאו",
+        "audio": "יוצר שמע",
+        "assembly": "מרכיב פרק",
+        "safety": "בדיקת בטיחות"
+      }
+    },
+    "player": {
+      "episode": "פרק {{number}}",
+      "back": "חזור"
+    }
+  },
+  "glossary": {
+    "title": "מילון מונחים",
+    "search": "חפש ביטויים...",
+    "categories": "קטגוריות",
+    "allCategories": "הכל",
+    "loadMore": "טען עוד",
+    "noResults": "לא נמצאו תוצאות",
+    "entry": {
+      "origin": "מקור",
+      "example": "דוגמה",
+      "funFact": "עובדה מעניינת",
+      "transliteration": "תעתיק"
+    }
+  },
+  "culturalContext": {
+    "title": "הקשר תרבותי",
+    "reference": "התייחסות תרבותית",
+    "explanation": "הסבר",
+    "related": "התייחסויות קשורות",
+    "loading": "טוען התייחסות...",
+    "noReferences": "לא זוהו התייחסויות תרבותיות",
+    "categories": {
+      "slang": "סלנג",
+      "tradition": "מסורת",
+      "history": "היסטוריה",
+      "food": "אוכל",
+      "music": "מוזיקה",
+      "holiday": "חג"
+    },
+    "phraseBreakdown": {
+      "title": "פירוק ביטוי",
+      "origin": "מקור",
+      "usage": "שימוש נפוץ",
+      "funFact": "עובדה מעניינת"
     }
   }
 }

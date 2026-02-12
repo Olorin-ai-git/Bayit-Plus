@@ -8221,5 +8221,197 @@
       "retry": "Retry",
       "back": "Back"
     }
+  },
+  "missions": {
+    "title": "Daily Missions",
+    "subtitle": "Complete missions to earn Shekels",
+    "dailyMissions": "Today's Missions",
+    "missionCompleted": "Mission Completed",
+    "claimReward": "Claim Reward",
+    "claimed": "Claimed",
+    "progress": "{{current}} / {{target}}",
+    "streakBonus": "Streak Bonus",
+    "allCompleted": "All missions completed for today",
+    "refreshTime": "New missions in {{hours}}h {{minutes}}m",
+    "tabs": {
+      "missions": "Missions",
+      "leaderboard": "Leaderboard",
+      "rewards": "Rewards"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "types": {
+      "watchContent": "Watch Content",
+      "completeQuiz": "Complete Quiz",
+      "useSubtitles": "Use Subtitles",
+      "maintainStreak": "Maintain Streak",
+      "learnPhrase": "Learn a Phrase"
+    }
+  },
+  "shekels": {
+    "title": "Shekels",
+    "balance": "Balance",
+    "totalEarned": "Total Earned",
+    "totalSpent": "Total Spent",
+    "transactions": "Transactions",
+    "earned": "Earned",
+    "spent": "Spent",
+    "earnRates": "Earn Rates",
+    "noTransactions": "No transactions yet"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "global": "Global",
+    "friends": "Friends",
+    "family": "Family",
+    "rank": "Rank",
+    "points": "Points",
+    "yourRank": "Your Rank",
+    "period": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "allTime": "All Time"
+    },
+    "empty": "No entries yet"
+  },
+  "talkBack": {
+    "title": "Talk Back",
+    "subtitle": "Practice Hebrew with characters",
+    "question": "Question",
+    "respond": "Respond",
+    "listening": "Listening...",
+    "evaluating": "Evaluating...",
+    "skip": "Skip",
+    "tryAgain": "Try Again",
+    "continue": "Continue",
+    "submit": "Submit",
+    "pointsEarned": "{{points}} points earned",
+    "feedback": {
+      "excellent": "Excellent",
+      "good": "Good job",
+      "fair": "Not bad",
+      "tryHebrew": "Try answering in Hebrew"
+    },
+    "stats": {
+      "title": "Talk Back Stats",
+      "totalAttempts": "Total Attempts",
+      "hebrewRate": "Hebrew Response Rate",
+      "wordsLearned": "Words Learned",
+      "averageAccuracy": "Average Accuracy",
+      "shekelsEarned": "Shekels Earned"
+    },
+    "dashboard": {
+      "title": "Talk Back Dashboard",
+      "engagement": "Engagement",
+      "progress": "Progress"
+    }
+  },
+  "bilingual": {
+    "title": "Bilingual Bridge",
+    "subtitle": "Progressive Hebrew dubbing",
+    "enabled": "Bilingual Bridge On",
+    "disabled": "Bilingual Bridge Off",
+    "languageRatio": "Language Ratio",
+    "hebrewPercent": "Hebrew {{percent}}%",
+    "englishPercent": "English {{percent}}%",
+    "wordsLearned": "{{count}} words learned",
+    "level": {
+      "beginner": "Beginner",
+      "elementary": "Elementary",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "sessionActive": "Session Active",
+    "vocabulary": {
+      "title": "Vocabulary Tracker",
+      "known": "Known Words",
+      "learning": "Learning",
+      "mastered": "Mastered"
+    }
+  },
+  "starStory": {
+    "title": "Star in Story",
+    "subtitle": "Personalized Hebrew learning stories",
+    "avatars": "Avatars",
+    "episodes": "Episodes",
+    "createFirst": "Create First Avatar",
+    "addAvatar": "Add Avatar",
+    "uploadPhoto": "Upload Photo",
+    "newEpisode": "New Episode",
+    "consent": {
+      "title": "Family Safety Consent",
+      "description": "Star in Story creates personalized content. A parent or guardian must provide consent.",
+      "childName": "Child First Name",
+      "familyPin": "Family PIN",
+      "agree": "I consent as parent/guardian",
+      "continue": "Continue",
+      "cancel": "Cancel"
+    },
+    "avatar": {
+      "preview": "Preview Avatar",
+      "approve": "Approve Avatar",
+      "regenerate": "Regenerate",
+      "regenerating": "Regenerating...",
+      "styleCartoon": "Cartoon 2D",
+      "stylePixar": "Pixar 3D",
+      "chooseStyle": "Choose Avatar Style"
+    },
+    "generation": {
+      "title": "Creating Your Episode",
+      "ready": "Episode Ready",
+      "failed": "Generation Failed",
+      "estimate": "This may take a few minutes",
+      "stages": {
+        "script": "Writing Script",
+        "video": "Generating Video",
+        "audio": "Creating Audio",
+        "assembly": "Assembling Episode",
+        "safety": "Safety Review"
+      }
+    },
+    "player": {
+      "episode": "Episode {{number}}",
+      "back": "Back"
+    }
+  },
+  "glossary": {
+    "title": "Glossary",
+    "search": "Search phrases...",
+    "categories": "Categories",
+    "allCategories": "All",
+    "loadMore": "Load More",
+    "noResults": "No results found",
+    "entry": {
+      "origin": "Origin",
+      "example": "Example",
+      "funFact": "Fun Fact",
+      "transliteration": "Transliteration"
+    }
+  },
+  "culturalContext": {
+    "title": "Cultural Context",
+    "reference": "Cultural Reference",
+    "explanation": "Explanation",
+    "related": "Related References",
+    "loading": "Loading reference...",
+    "noReferences": "No cultural references detected",
+    "categories": {
+      "slang": "Slang",
+      "tradition": "Tradition",
+      "history": "History",
+      "food": "Food",
+      "music": "Music",
+      "holiday": "Holiday"
+    },
+    "phraseBreakdown": {
+      "title": "Phrase Breakdown",
+      "origin": "Origin",
+      "usage": "Common Usage",
+      "funFact": "Fun Fact"
+    }
   }
 }

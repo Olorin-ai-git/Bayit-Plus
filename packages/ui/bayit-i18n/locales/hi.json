@@ -7811,5 +7811,197 @@
     "subtitlesButton": "CC",
     "closeButton": "×"
   },
-  "tvos": {}
+  "tvos": {},
+  "missions": {
+    "title": "दैनिक मिशन",
+    "subtitle": "शेकेल कमाने के लिए मिशन पूरे करें",
+    "dailyMissions": "आज के मिशन",
+    "missionCompleted": "मिशन पूरा हुआ",
+    "claimReward": "इनाम प्राप्त करें",
+    "claimed": "प्राप्त किया",
+    "progress": "{{current}} / {{target}}",
+    "streakBonus": "लगातार बोनस",
+    "allCompleted": "आज के सभी मिशन पूरे हो गए",
+    "refreshTime": "नए मिशन {{hours}} घंटे {{minutes}} मिनट में",
+    "tabs": {
+      "missions": "मिशन",
+      "leaderboard": "लीडरबोर्ड",
+      "rewards": "पुरस्कार"
+    },
+    "difficulty": {
+      "easy": "आसान",
+      "medium": "मध्यम",
+      "hard": "कठिन"
+    },
+    "types": {
+      "watchContent": "सामग्री देखें",
+      "completeQuiz": "क्विज़ पूरा करें",
+      "useSubtitles": "उपशीर्षक का उपयोग करें",
+      "maintainStreak": "लगातार बनाए रखें",
+      "learnPhrase": "एक वाक्यांश सीखें"
+    }
+  },
+  "shekels": {
+    "title": "शेकेल",
+    "balance": "शेष राशि",
+    "totalEarned": "कुल अर्जित",
+    "totalSpent": "कुल खर्च",
+    "transactions": "लेनदेन",
+    "earned": "अर्जित",
+    "spent": "खर्च",
+    "earnRates": "कमाई दरें",
+    "noTransactions": "अभी तक कोई लेनदेन नहीं"
+  },
+  "leaderboard": {
+    "title": "लीडरबोर्ड",
+    "global": "वैश्विक",
+    "friends": "मित्र",
+    "family": "परिवार",
+    "rank": "रैंक",
+    "points": "अंक",
+    "yourRank": "आपकी रैंक",
+    "period": {
+      "daily": "दैनिक",
+      "weekly": "साप्ताहिक",
+      "monthly": "मासिक",
+      "allTime": "सर्वकालिक"
+    },
+    "empty": "अभी तक कोई प्रविष्टि नहीं"
+  },
+  "talkBack": {
+    "title": "जवाब दें",
+    "subtitle": "पात्रों के साथ हिब्रू का अभ्यास करें",
+    "question": "प्रश्न",
+    "respond": "जवाब दें",
+    "listening": "सुन रहा है...",
+    "evaluating": "मूल्यांकन हो रहा है...",
+    "skip": "छोड़ें",
+    "tryAgain": "पुनः प्रयास करें",
+    "continue": "जारी रखें",
+    "submit": "जमा करें",
+    "pointsEarned": "{{points}} अंक अर्जित",
+    "feedback": {
+      "excellent": "उत्कृष्ट",
+      "good": "अच्छा काम",
+      "fair": "बुरा नहीं",
+      "tryHebrew": "हिब्रू में जवाब देने का प्रयास करें"
+    },
+    "stats": {
+      "title": "जवाब दें आंकड़े",
+      "totalAttempts": "कुल प्रयास",
+      "hebrewRate": "हिब्रू प्रतिक्रिया दर",
+      "wordsLearned": "सीखे गए शब्द",
+      "averageAccuracy": "औसत सटीकता",
+      "shekelsEarned": "अर्जित शेकेल"
+    },
+    "dashboard": {
+      "title": "जवाब दें डैशबोर्ड",
+      "engagement": "सहभागिता",
+      "progress": "प्रगति"
+    }
+  },
+  "bilingual": {
+    "title": "द्विभाषी सेतु",
+    "subtitle": "प्रगतिशील हिब्रू डबिंग",
+    "enabled": "द्विभाषी सेतु चालू",
+    "disabled": "द्विभाषी सेतु बंद",
+    "languageRatio": "भाषा अनुपात",
+    "hebrewPercent": "हिब्रू {{percent}}%",
+    "englishPercent": "अंग्रेज़ी {{percent}}%",
+    "wordsLearned": "{{count}} शब्द सीखे",
+    "level": {
+      "beginner": "शुरुआती",
+      "elementary": "प्राथमिक",
+      "intermediate": "मध्यवर्ती",
+      "advanced": "उन्नत"
+    },
+    "sessionActive": "सत्र सक्रिय",
+    "vocabulary": {
+      "title": "शब्दावली ट्रैकर",
+      "known": "ज्ञात शब्द",
+      "learning": "सीख रहे हैं",
+      "mastered": "महारत हासिल"
+    }
+  },
+  "starStory": {
+    "title": "कहानी में सितारा",
+    "subtitle": "व्यक्तिगत हिब्रू सीखने की कहानियाँ",
+    "avatars": "अवतार",
+    "episodes": "एपिसोड",
+    "createFirst": "पहला अवतार बनाएं",
+    "addAvatar": "अवतार जोड़ें",
+    "uploadPhoto": "फोटो अपलोड करें",
+    "newEpisode": "नया एपिसोड",
+    "consent": {
+      "title": "पारिवारिक सुरक्षा सहमति",
+      "description": "कहानी में सितारा व्यक्तिगत सामग्री बनाता है। माता-पिता या अभिभावक को सहमति देनी होगी।",
+      "childName": "बच्चे का पहला नाम",
+      "familyPin": "पारिवारिक PIN",
+      "agree": "मैं माता-पिता/अभिभावक के रूप में सहमत हूँ",
+      "continue": "जारी रखें",
+      "cancel": "रद्द करें"
+    },
+    "avatar": {
+      "preview": "अवतार पूर्वावलोकन",
+      "approve": "अवतार स्वीकृत करें",
+      "regenerate": "पुनः उत्पन्न करें",
+      "regenerating": "पुनः उत्पन्न हो रहा है...",
+      "styleCartoon": "कार्टून 2D",
+      "stylePixar": "पिक्सर 3D",
+      "chooseStyle": "अवतार शैली चुनें"
+    },
+    "generation": {
+      "title": "आपका एपिसोड बन रहा है",
+      "ready": "एपिसोड तैयार",
+      "failed": "उत्पादन विफल",
+      "estimate": "इसमें कुछ मिनट लग सकते हैं",
+      "stages": {
+        "script": "स्क्रिप्ट लिखी जा रही है",
+        "video": "वीडियो बन रहा है",
+        "audio": "ऑडियो बन रहा है",
+        "assembly": "एपिसोड जोड़ा जा रहा है",
+        "safety": "सुरक्षा समीक्षा"
+      }
+    },
+    "player": {
+      "episode": "एपिसोड {{number}}",
+      "back": "वापस"
+    }
+  },
+  "glossary": {
+    "title": "शब्दावली",
+    "search": "वाक्यांश खोजें...",
+    "categories": "श्रेणियाँ",
+    "allCategories": "सभी",
+    "loadMore": "और लोड करें",
+    "noResults": "कोई परिणाम नहीं मिला",
+    "entry": {
+      "origin": "मूल",
+      "example": "उदाहरण",
+      "funFact": "रोचक तथ्य",
+      "transliteration": "लिप्यंतरण"
+    }
+  },
+  "culturalContext": {
+    "title": "सांस्कृतिक संदर्भ",
+    "reference": "सांस्कृतिक संदर्भ",
+    "explanation": "व्याख्या",
+    "related": "संबंधित संदर्भ",
+    "loading": "संदर्भ लोड हो रहा है...",
+    "noReferences": "कोई सांस्कृतिक संदर्भ नहीं मिला",
+    "categories": {
+      "slang": "बोलचाल",
+      "tradition": "परंपरा",
+      "history": "इतिहास",
+      "food": "भोजन",
+      "music": "संगीत",
+      "holiday": "त्योहार"
+    },
+    "phraseBreakdown": {
+      "title": "वाक्यांश विश्लेषण",
+      "origin": "मूल",
+      "usage": "सामान्य उपयोग",
+      "funFact": "रोचक तथ्य"
+    }
+  }
 }

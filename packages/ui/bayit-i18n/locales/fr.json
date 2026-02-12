@@ -8745,5 +8745,197 @@
     "subtitlesButton": "CC",
     "closeButton": "×"
   },
-  "tvos": {}
+  "tvos": {},
+  "missions": {
+    "title": "Missions Quotidiennes",
+    "subtitle": "Completez des missions pour gagner des Shekels",
+    "dailyMissions": "Missions du Jour",
+    "missionCompleted": "Mission Terminee",
+    "claimReward": "Reclamer la Recompense",
+    "claimed": "Reclame",
+    "progress": "{{current}} / {{target}}",
+    "streakBonus": "Bonus de Serie",
+    "allCompleted": "Toutes les missions sont terminees pour aujourd'hui",
+    "refreshTime": "Nouvelles missions dans {{hours}}h {{minutes}}m",
+    "tabs": {
+      "missions": "Missions",
+      "leaderboard": "Classement",
+      "rewards": "Recompenses"
+    },
+    "difficulty": {
+      "easy": "Facile",
+      "medium": "Moyen",
+      "hard": "Difficile"
+    },
+    "types": {
+      "watchContent": "Regarder du Contenu",
+      "completeQuiz": "Completer un Quiz",
+      "useSubtitles": "Utiliser les Sous-titres",
+      "maintainStreak": "Maintenir la Serie",
+      "learnPhrase": "Apprendre une Expression"
+    }
+  },
+  "shekels": {
+    "title": "Shekels",
+    "balance": "Solde",
+    "totalEarned": "Total Gagne",
+    "totalSpent": "Total Depense",
+    "transactions": "Transactions",
+    "earned": "Gagne",
+    "spent": "Depense",
+    "earnRates": "Taux de Gain",
+    "noTransactions": "Aucune transaction pour le moment"
+  },
+  "leaderboard": {
+    "title": "Classement",
+    "global": "Mondial",
+    "friends": "Amis",
+    "family": "Famille",
+    "rank": "Rang",
+    "points": "Points",
+    "yourRank": "Votre Rang",
+    "period": {
+      "daily": "Quotidien",
+      "weekly": "Hebdomadaire",
+      "monthly": "Mensuel",
+      "allTime": "Tout le Temps"
+    },
+    "empty": "Aucune entree pour le moment"
+  },
+  "talkBack": {
+    "title": "Repondre",
+    "subtitle": "Pratiquez l'hebreu avec des personnages",
+    "question": "Question",
+    "respond": "Repondre",
+    "listening": "Ecoute en cours...",
+    "evaluating": "Evaluation en cours...",
+    "skip": "Passer",
+    "tryAgain": "Reessayer",
+    "continue": "Continuer",
+    "submit": "Envoyer",
+    "pointsEarned": "{{points}} points gagnes",
+    "feedback": {
+      "excellent": "Excellent",
+      "good": "Bon travail",
+      "fair": "Pas mal",
+      "tryHebrew": "Essayez de repondre en hebreu"
+    },
+    "stats": {
+      "title": "Statistiques Repondre",
+      "totalAttempts": "Total des Tentatives",
+      "hebrewRate": "Taux de Reponse en Hebreu",
+      "wordsLearned": "Mots Appris",
+      "averageAccuracy": "Precision Moyenne",
+      "shekelsEarned": "Shekels Gagnes"
+    },
+    "dashboard": {
+      "title": "Tableau de Bord Repondre",
+      "engagement": "Engagement",
+      "progress": "Progres"
+    }
+  },
+  "bilingual": {
+    "title": "Pont Bilingue",
+    "subtitle": "Doublage progressif en hebreu",
+    "enabled": "Pont Bilingue Active",
+    "disabled": "Pont Bilingue Desactive",
+    "languageRatio": "Ratio de Langues",
+    "hebrewPercent": "Hebreu {{percent}}%",
+    "englishPercent": "Anglais {{percent}}%",
+    "wordsLearned": "{{count}} mots appris",
+    "level": {
+      "beginner": "Debutant",
+      "elementary": "Elementaire",
+      "intermediate": "Intermediaire",
+      "advanced": "Avance"
+    },
+    "sessionActive": "Session Active",
+    "vocabulary": {
+      "title": "Suivi du Vocabulaire",
+      "known": "Mots Connus",
+      "learning": "En Apprentissage",
+      "mastered": "Maitrises"
+    }
+  },
+  "starStory": {
+    "title": "Vedette de l'Histoire",
+    "subtitle": "Histoires personnalisees pour apprendre l'hebreu",
+    "avatars": "Avatars",
+    "episodes": "Episodes",
+    "createFirst": "Creer le Premier Avatar",
+    "addAvatar": "Ajouter un Avatar",
+    "uploadPhoto": "Telecharger une Photo",
+    "newEpisode": "Nouvel Episode",
+    "consent": {
+      "title": "Consentement de Securite Familiale",
+      "description": "Vedette de l'Histoire cree du contenu personnalise. Un parent ou tuteur doit donner son consentement.",
+      "childName": "Prenom de l'Enfant",
+      "familyPin": "PIN Familial",
+      "agree": "Je consens en tant que parent/tuteur",
+      "continue": "Continuer",
+      "cancel": "Annuler"
+    },
+    "avatar": {
+      "preview": "Apercu de l'Avatar",
+      "approve": "Approuver l'Avatar",
+      "regenerate": "Regenerer",
+      "regenerating": "Regeneration en cours...",
+      "styleCartoon": "Dessin Anime 2D",
+      "stylePixar": "Pixar 3D",
+      "chooseStyle": "Choisir le Style d'Avatar"
+    },
+    "generation": {
+      "title": "Creation de Votre Episode",
+      "ready": "Episode Pret",
+      "failed": "Echec de la Generation",
+      "estimate": "Cela peut prendre quelques minutes",
+      "stages": {
+        "script": "Ecriture du Script",
+        "video": "Generation de la Video",
+        "audio": "Creation de l'Audio",
+        "assembly": "Assemblage de l'Episode",
+        "safety": "Revue de Securite"
+      }
+    },
+    "player": {
+      "episode": "Episode {{number}}",
+      "back": "Retour"
+    }
+  },
+  "glossary": {
+    "title": "Glossaire",
+    "search": "Rechercher des expressions...",
+    "categories": "Categories",
+    "allCategories": "Toutes",
+    "loadMore": "Charger Plus",
+    "noResults": "Aucun resultat trouve",
+    "entry": {
+      "origin": "Origine",
+      "example": "Exemple",
+      "funFact": "Anecdote",
+      "transliteration": "Translitteration"
+    }
+  },
+  "culturalContext": {
+    "title": "Contexte Culturel",
+    "reference": "Reference Culturelle",
+    "explanation": "Explication",
+    "related": "References Associees",
+    "loading": "Chargement de la reference...",
+    "noReferences": "Aucune reference culturelle detectee",
+    "categories": {
+      "slang": "Argot",
+      "tradition": "Tradition",
+      "history": "Histoire",
+      "food": "Cuisine",
+      "music": "Musique",
+      "holiday": "Fete"
+    },
+    "phraseBreakdown": {
+      "title": "Decomposition de l'Expression",
+      "origin": "Origine",
+      "usage": "Usage Courant",
+      "funFact": "Anecdote"
+    }
+  }
 }

@@ -8064,5 +8064,197 @@
     "subtitlesButton": "CC",
     "closeButton": "×"
   },
-  "tvos": {}
+  "tvos": {},
+  "missions": {
+    "title": "Missioni Giornaliere",
+    "subtitle": "Completa le missioni per guadagnare Shekel",
+    "dailyMissions": "Missioni di Oggi",
+    "missionCompleted": "Missione Completata",
+    "claimReward": "Riscuoti Ricompensa",
+    "claimed": "Riscosso",
+    "progress": "{{current}} / {{target}}",
+    "streakBonus": "Bonus Serie",
+    "allCompleted": "Tutte le missioni completate per oggi",
+    "refreshTime": "Nuove missioni tra {{hours}}h {{minutes}}m",
+    "tabs": {
+      "missions": "Missioni",
+      "leaderboard": "Classifica",
+      "rewards": "Ricompense"
+    },
+    "difficulty": {
+      "easy": "Facile",
+      "medium": "Medio",
+      "hard": "Difficile"
+    },
+    "types": {
+      "watchContent": "Guarda Contenuto",
+      "completeQuiz": "Completa Quiz",
+      "useSubtitles": "Usa Sottotitoli",
+      "maintainStreak": "Mantieni Serie",
+      "learnPhrase": "Impara una Frase"
+    }
+  },
+  "shekels": {
+    "title": "Shekel",
+    "balance": "Saldo",
+    "totalEarned": "Totale Guadagnato",
+    "totalSpent": "Totale Speso",
+    "transactions": "Transazioni",
+    "earned": "Guadagnato",
+    "spent": "Speso",
+    "earnRates": "Tassi di Guadagno",
+    "noTransactions": "Nessuna transazione ancora"
+  },
+  "leaderboard": {
+    "title": "Classifica",
+    "global": "Globale",
+    "friends": "Amici",
+    "family": "Famiglia",
+    "rank": "Posizione",
+    "points": "Punti",
+    "yourRank": "La Tua Posizione",
+    "period": {
+      "daily": "Giornaliero",
+      "weekly": "Settimanale",
+      "monthly": "Mensile",
+      "allTime": "Di Sempre"
+    },
+    "empty": "Nessuna voce ancora"
+  },
+  "talkBack": {
+    "title": "Rispondi",
+    "subtitle": "Pratica l'ebraico con i personaggi",
+    "question": "Domanda",
+    "respond": "Rispondi",
+    "listening": "In ascolto...",
+    "evaluating": "Valutazione in corso...",
+    "skip": "Salta",
+    "tryAgain": "Riprova",
+    "continue": "Continua",
+    "submit": "Invia",
+    "pointsEarned": "{{points}} punti guadagnati",
+    "feedback": {
+      "excellent": "Eccellente",
+      "good": "Buon lavoro",
+      "fair": "Non male",
+      "tryHebrew": "Prova a rispondere in ebraico"
+    },
+    "stats": {
+      "title": "Statistiche Rispondi",
+      "totalAttempts": "Tentativi Totali",
+      "hebrewRate": "Tasso di Risposta in Ebraico",
+      "wordsLearned": "Parole Imparate",
+      "averageAccuracy": "Precisione Media",
+      "shekelsEarned": "Shekel Guadagnati"
+    },
+    "dashboard": {
+      "title": "Pannello Rispondi",
+      "engagement": "Coinvolgimento",
+      "progress": "Progresso"
+    }
+  },
+  "bilingual": {
+    "title": "Ponte Bilingue",
+    "subtitle": "Doppiaggio progressivo in ebraico",
+    "enabled": "Ponte Bilingue Attivo",
+    "disabled": "Ponte Bilingue Disattivo",
+    "languageRatio": "Rapporto Lingue",
+    "hebrewPercent": "Ebraico {{percent}}%",
+    "englishPercent": "Inglese {{percent}}%",
+    "wordsLearned": "{{count}} parole imparate",
+    "level": {
+      "beginner": "Principiante",
+      "elementary": "Elementare",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzato"
+    },
+    "sessionActive": "Sessione Attiva",
+    "vocabulary": {
+      "title": "Monitoraggio Vocabolario",
+      "known": "Parole Conosciute",
+      "learning": "In Apprendimento",
+      "mastered": "Padroneggiato"
+    }
+  },
+  "starStory": {
+    "title": "Protagonista nella Storia",
+    "subtitle": "Storie personalizzate per imparare l'ebraico",
+    "avatars": "Avatar",
+    "episodes": "Episodi",
+    "createFirst": "Crea il Primo Avatar",
+    "addAvatar": "Aggiungi Avatar",
+    "uploadPhoto": "Carica Foto",
+    "newEpisode": "Nuovo Episodio",
+    "consent": {
+      "title": "Consenso di Sicurezza Familiare",
+      "description": "Protagonista nella Storia crea contenuti personalizzati. Un genitore o tutore deve fornire il consenso.",
+      "childName": "Nome del Bambino",
+      "familyPin": "PIN Familiare",
+      "agree": "Acconsento come genitore/tutore",
+      "continue": "Continua",
+      "cancel": "Annulla"
+    },
+    "avatar": {
+      "preview": "Anteprima Avatar",
+      "approve": "Approva Avatar",
+      "regenerate": "Rigenera",
+      "regenerating": "Rigenerazione in corso...",
+      "styleCartoon": "Cartone 2D",
+      "stylePixar": "Pixar 3D",
+      "chooseStyle": "Scegli lo Stile dell'Avatar"
+    },
+    "generation": {
+      "title": "Creazione del Tuo Episodio",
+      "ready": "Episodio Pronto",
+      "failed": "Generazione Fallita",
+      "estimate": "Potrebbe richiedere qualche minuto",
+      "stages": {
+        "script": "Scrittura dello Script",
+        "video": "Generazione del Video",
+        "audio": "Creazione dell'Audio",
+        "assembly": "Assemblaggio dell'Episodio",
+        "safety": "Revisione di Sicurezza"
+      }
+    },
+    "player": {
+      "episode": "Episodio {{number}}",
+      "back": "Indietro"
+    }
+  },
+  "glossary": {
+    "title": "Glossario",
+    "search": "Cerca espressioni...",
+    "categories": "Categorie",
+    "allCategories": "Tutte",
+    "loadMore": "Carica Altro",
+    "noResults": "Nessun risultato trovato",
+    "entry": {
+      "origin": "Origine",
+      "example": "Esempio",
+      "funFact": "Curiosita",
+      "transliteration": "Traslitterazione"
+    }
+  },
+  "culturalContext": {
+    "title": "Contesto Culturale",
+    "reference": "Riferimento Culturale",
+    "explanation": "Spiegazione",
+    "related": "Riferimenti Correlati",
+    "loading": "Caricamento riferimento...",
+    "noReferences": "Nessun riferimento culturale rilevato",
+    "categories": {
+      "slang": "Gergo",
+      "tradition": "Tradizione",
+      "history": "Storia",
+      "food": "Cibo",
+      "music": "Musica",
+      "holiday": "Festivita"
+    },
+    "phraseBreakdown": {
+      "title": "Scomposizione dell'Espressione",
+      "origin": "Origine",
+      "usage": "Uso Comune",
+      "funFact": "Curiosita"
+    }
+  }
 }

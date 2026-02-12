@@ -7787,5 +7787,197 @@
     "subtitlesButton": "CC",
     "closeButton": "×"
   },
-  "tvos": {}
+  "tvos": {},
+  "missions": {
+    "title": "দৈনিক মিশন",
+    "subtitle": "শেকেল অর্জন করতে মিশন সম্পূর্ণ করুন",
+    "dailyMissions": "আজকের মিশন",
+    "missionCompleted": "মিশন সম্পন্ন",
+    "claimReward": "পুরস্কার দাবি করুন",
+    "claimed": "দাবি করা হয়েছে",
+    "progress": "{{current}} / {{target}}",
+    "streakBonus": "ধারাবাহিক বোনাস",
+    "allCompleted": "আজকের সব মিশন সম্পন্ন",
+    "refreshTime": "নতুন মিশন {{hours}} ঘণ্টা {{minutes}} মিনিটে",
+    "tabs": {
+      "missions": "মিশন",
+      "leaderboard": "লিডারবোর্ড",
+      "rewards": "পুরস্কার"
+    },
+    "difficulty": {
+      "easy": "সহজ",
+      "medium": "মাঝারি",
+      "hard": "কঠিন"
+    },
+    "types": {
+      "watchContent": "সামগ্রী দেখুন",
+      "completeQuiz": "কুইজ সম্পূর্ণ করুন",
+      "useSubtitles": "সাবটাইটেল ব্যবহার করুন",
+      "maintainStreak": "ধারাবাহিকতা বজায় রাখুন",
+      "learnPhrase": "একটি বাক্যাংশ শিখুন"
+    }
+  },
+  "shekels": {
+    "title": "শেকেল",
+    "balance": "ব্যালেন্স",
+    "totalEarned": "মোট অর্জিত",
+    "totalSpent": "মোট খরচ",
+    "transactions": "লেনদেন",
+    "earned": "অর্জিত",
+    "spent": "খরচ",
+    "earnRates": "অর্জনের হার",
+    "noTransactions": "এখনও কোনো লেনদেন নেই"
+  },
+  "leaderboard": {
+    "title": "লিডারবোর্ড",
+    "global": "বৈশ্বিক",
+    "friends": "বন্ধু",
+    "family": "পরিবার",
+    "rank": "র্যাঙ্ক",
+    "points": "পয়েন্ট",
+    "yourRank": "আপনার র্যাঙ্ক",
+    "period": {
+      "daily": "দৈনিক",
+      "weekly": "সাপ্তাহিক",
+      "monthly": "মাসিক",
+      "allTime": "সর্বকালীন"
+    },
+    "empty": "এখনও কোনো এন্ট্রি নেই"
+  },
+  "talkBack": {
+    "title": "জবাব দিন",
+    "subtitle": "চরিত্রদের সাথে হিব্রু অনুশীলন করুন",
+    "question": "প্রশ্ন",
+    "respond": "জবাব দিন",
+    "listening": "শুনছে...",
+    "evaluating": "মূল্যায়ন করছে...",
+    "skip": "এড়িয়ে যান",
+    "tryAgain": "আবার চেষ্টা করুন",
+    "continue": "চালিয়ে যান",
+    "submit": "জমা দিন",
+    "pointsEarned": "{{points}} পয়েন্ট অর্জিত",
+    "feedback": {
+      "excellent": "চমৎকার",
+      "good": "ভালো কাজ",
+      "fair": "খারাপ না",
+      "tryHebrew": "হিব্রুতে উত্তর দেওয়ার চেষ্টা করুন"
+    },
+    "stats": {
+      "title": "জবাব দিন পরিসংখ্যান",
+      "totalAttempts": "মোট প্রচেষ্টা",
+      "hebrewRate": "হিব্রু প্রতিক্রিয়া হার",
+      "wordsLearned": "শেখা শব্দ",
+      "averageAccuracy": "গড় নির্ভুলতা",
+      "shekelsEarned": "অর্জিত শেকেল"
+    },
+    "dashboard": {
+      "title": "জবাব দিন ড্যাশবোর্ড",
+      "engagement": "সম্পৃক্ততা",
+      "progress": "অগ্রগতি"
+    }
+  },
+  "bilingual": {
+    "title": "দ্বিভাষিক সেতু",
+    "subtitle": "প্রগতিশীল হিব্রু ডাবিং",
+    "enabled": "দ্বিভাষিক সেতু চালু",
+    "disabled": "দ্বিভাষিক সেতু বন্ধ",
+    "languageRatio": "ভাষার অনুপাত",
+    "hebrewPercent": "হিব্রু {{percent}}%",
+    "englishPercent": "ইংরেজি {{percent}}%",
+    "wordsLearned": "{{count}} শব্দ শেখা হয়েছে",
+    "level": {
+      "beginner": "শুরু",
+      "elementary": "প্রাথমিক",
+      "intermediate": "মধ্যবর্তী",
+      "advanced": "উন্নত"
+    },
+    "sessionActive": "সেশন সক্রিয়",
+    "vocabulary": {
+      "title": "শব্দভাণ্ডার ট্র্যাকার",
+      "known": "পরিচিত শব্দ",
+      "learning": "শেখা হচ্ছে",
+      "mastered": "আয়ত্ত করা হয়েছে"
+    }
+  },
+  "starStory": {
+    "title": "গল্পে তারকা",
+    "subtitle": "ব্যক্তিগতকৃত হিব্রু শেখার গল্প",
+    "avatars": "অবতার",
+    "episodes": "এপিসোড",
+    "createFirst": "প্রথম অবতার তৈরি করুন",
+    "addAvatar": "অবতার যোগ করুন",
+    "uploadPhoto": "ছবি আপলোড করুন",
+    "newEpisode": "নতুন এপিসোড",
+    "consent": {
+      "title": "পারিবারিক নিরাপত্তা সম্মতি",
+      "description": "গল্পে তারকা ব্যক্তিগতকৃত সামগ্রী তৈরি করে। একজন অভিভাবককে সম্মতি দিতে হবে।",
+      "childName": "শিশুর প্রথম নাম",
+      "familyPin": "পারিবারিক PIN",
+      "agree": "আমি অভিভাবক হিসেবে সম্মতি দিচ্ছি",
+      "continue": "চালিয়ে যান",
+      "cancel": "বাতিল"
+    },
+    "avatar": {
+      "preview": "অবতার প্রিভিউ",
+      "approve": "অবতার অনুমোদন",
+      "regenerate": "পুনরায় তৈরি করুন",
+      "regenerating": "পুনরায় তৈরি হচ্ছে...",
+      "styleCartoon": "কার্টুন 2D",
+      "stylePixar": "পিক্সার 3D",
+      "chooseStyle": "অবতার শৈলী নির্বাচন করুন"
+    },
+    "generation": {
+      "title": "আপনার এপিসোড তৈরি হচ্ছে",
+      "ready": "এপিসোড প্রস্তুত",
+      "failed": "তৈরি ব্যর্থ",
+      "estimate": "এতে কয়েক মিনিট সময় লাগতে পারে",
+      "stages": {
+        "script": "স্ক্রিপ্ট লেখা হচ্ছে",
+        "video": "ভিডিও তৈরি হচ্ছে",
+        "audio": "অডিও তৈরি হচ্ছে",
+        "assembly": "এপিসোড একত্রিত হচ্ছে",
+        "safety": "নিরাপত্তা পর্যালোচনা"
+      }
+    },
+    "player": {
+      "episode": "এপিসোড {{number}}",
+      "back": "পিছনে"
+    }
+  },
+  "glossary": {
+    "title": "শব্দকোষ",
+    "search": "বাক্যাংশ খুঁজুন...",
+    "categories": "বিভাগ",
+    "allCategories": "সব",
+    "loadMore": "আরো লোড করুন",
+    "noResults": "কোনো ফলাফল পাওয়া যায়নি",
+    "entry": {
+      "origin": "উৎপত্তি",
+      "example": "উদাহরণ",
+      "funFact": "মজার তথ্য",
+      "transliteration": "প্রতিবর্ণীকরণ"
+    }
+  },
+  "culturalContext": {
+    "title": "সাংস্কৃতিক প্রসঙ্গ",
+    "reference": "সাংস্কৃতিক রেফারেন্স",
+    "explanation": "ব্যাখ্যা",
+    "related": "সম্পর্কিত রেফারেন্স",
+    "loading": "রেফারেন্স লোড হচ্ছে...",
+    "noReferences": "কোনো সাংস্কৃতিক রেফারেন্স সনাক্ত হয়নি",
+    "categories": {
+      "slang": "কথ্য ভাষা",
+      "tradition": "ঐতিহ্য",
+      "history": "ইতিহাস",
+      "food": "খাবার",
+      "music": "সঙ্গীত",
+      "holiday": "উৎসব"
+    },
+    "phraseBreakdown": {
+      "title": "বাক্যাংশ বিশ্লেষণ",
+      "origin": "উৎপত্তি",
+      "usage": "সাধারণ ব্যবহার",
+      "funFact": "মজার তথ্য"
+    }
+  }
 }

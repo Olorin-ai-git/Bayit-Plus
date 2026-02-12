@@ -8215,5 +8215,197 @@
       "retry": "Reintentar",
       "back": "Volver"
     }
+  },
+  "missions": {
+    "title": "Misiones Diarias",
+    "subtitle": "Completa misiones para ganar Shekels",
+    "dailyMissions": "Misiones de Hoy",
+    "missionCompleted": "Mision Completada",
+    "claimReward": "Reclamar Recompensa",
+    "claimed": "Reclamado",
+    "progress": "{{current}} / {{target}}",
+    "streakBonus": "Bonificacion por Racha",
+    "allCompleted": "Todas las misiones completadas por hoy",
+    "refreshTime": "Nuevas misiones en {{hours}}h {{minutes}}m",
+    "tabs": {
+      "missions": "Misiones",
+      "leaderboard": "Clasificacion",
+      "rewards": "Recompensas"
+    },
+    "difficulty": {
+      "easy": "Facil",
+      "medium": "Medio",
+      "hard": "Dificil"
+    },
+    "types": {
+      "watchContent": "Ver Contenido",
+      "completeQuiz": "Completar Cuestionario",
+      "useSubtitles": "Usar Subtitulos",
+      "maintainStreak": "Mantener Racha",
+      "learnPhrase": "Aprender una Frase"
+    }
+  },
+  "shekels": {
+    "title": "Shekels",
+    "balance": "Saldo",
+    "totalEarned": "Total Ganado",
+    "totalSpent": "Total Gastado",
+    "transactions": "Transacciones",
+    "earned": "Ganado",
+    "spent": "Gastado",
+    "earnRates": "Tasas de Ganancia",
+    "noTransactions": "Sin transacciones aun"
+  },
+  "leaderboard": {
+    "title": "Clasificacion",
+    "global": "Global",
+    "friends": "Amigos",
+    "family": "Familia",
+    "rank": "Rango",
+    "points": "Puntos",
+    "yourRank": "Tu Rango",
+    "period": {
+      "daily": "Diario",
+      "weekly": "Semanal",
+      "monthly": "Mensual",
+      "allTime": "Historico"
+    },
+    "empty": "Sin entradas aun"
+  },
+  "talkBack": {
+    "title": "Habla de Vuelta",
+    "subtitle": "Practica hebreo con personajes",
+    "question": "Pregunta",
+    "respond": "Responder",
+    "listening": "Escuchando...",
+    "evaluating": "Evaluando...",
+    "skip": "Saltar",
+    "tryAgain": "Intentar de Nuevo",
+    "continue": "Continuar",
+    "submit": "Enviar",
+    "pointsEarned": "{{points}} puntos ganados",
+    "feedback": {
+      "excellent": "Excelente",
+      "good": "Buen trabajo",
+      "fair": "No esta mal",
+      "tryHebrew": "Intenta responder en hebreo"
+    },
+    "stats": {
+      "title": "Estadisticas de Habla de Vuelta",
+      "totalAttempts": "Total de Intentos",
+      "hebrewRate": "Tasa de Respuesta en Hebreo",
+      "wordsLearned": "Palabras Aprendidas",
+      "averageAccuracy": "Precision Promedio",
+      "shekelsEarned": "Shekels Ganados"
+    },
+    "dashboard": {
+      "title": "Panel de Habla de Vuelta",
+      "engagement": "Participacion",
+      "progress": "Progreso"
+    }
+  },
+  "bilingual": {
+    "title": "Puente Bilingue",
+    "subtitle": "Doblaje progresivo al hebreo",
+    "enabled": "Puente Bilingue Activado",
+    "disabled": "Puente Bilingue Desactivado",
+    "languageRatio": "Proporcion de Idiomas",
+    "hebrewPercent": "Hebreo {{percent}}%",
+    "englishPercent": "Ingles {{percent}}%",
+    "wordsLearned": "{{count}} palabras aprendidas",
+    "level": {
+      "beginner": "Principiante",
+      "elementary": "Elemental",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado"
+    },
+    "sessionActive": "Sesion Activa",
+    "vocabulary": {
+      "title": "Seguimiento de Vocabulario",
+      "known": "Palabras Conocidas",
+      "learning": "Aprendiendo",
+      "mastered": "Dominadas"
+    }
+  },
+  "starStory": {
+    "title": "Estrella en la Historia",
+    "subtitle": "Historias personalizadas para aprender hebreo",
+    "avatars": "Avatares",
+    "episodes": "Episodios",
+    "createFirst": "Crear Primer Avatar",
+    "addAvatar": "Agregar Avatar",
+    "uploadPhoto": "Subir Foto",
+    "newEpisode": "Nuevo Episodio",
+    "consent": {
+      "title": "Consentimiento de Seguridad Familiar",
+      "description": "Estrella en la Historia crea contenido personalizado. Un padre o tutor debe dar su consentimiento.",
+      "childName": "Nombre del Nino",
+      "familyPin": "PIN Familiar",
+      "agree": "Doy mi consentimiento como padre/tutor",
+      "continue": "Continuar",
+      "cancel": "Cancelar"
+    },
+    "avatar": {
+      "preview": "Vista Previa del Avatar",
+      "approve": "Aprobar Avatar",
+      "regenerate": "Regenerar",
+      "regenerating": "Regenerando...",
+      "styleCartoon": "Dibujo Animado 2D",
+      "stylePixar": "Pixar 3D",
+      "chooseStyle": "Elegir Estilo de Avatar"
+    },
+    "generation": {
+      "title": "Creando Tu Episodio",
+      "ready": "Episodio Listo",
+      "failed": "Generacion Fallida",
+      "estimate": "Esto puede tardar unos minutos",
+      "stages": {
+        "script": "Escribiendo Guion",
+        "video": "Generando Video",
+        "audio": "Creando Audio",
+        "assembly": "Ensamblando Episodio",
+        "safety": "Revision de Seguridad"
+      }
+    },
+    "player": {
+      "episode": "Episodio {{number}}",
+      "back": "Volver"
+    }
+  },
+  "glossary": {
+    "title": "Glosario",
+    "search": "Buscar frases...",
+    "categories": "Categorias",
+    "allCategories": "Todas",
+    "loadMore": "Cargar Mas",
+    "noResults": "No se encontraron resultados",
+    "entry": {
+      "origin": "Origen",
+      "example": "Ejemplo",
+      "funFact": "Dato Curioso",
+      "transliteration": "Transliteracion"
+    }
+  },
+  "culturalContext": {
+    "title": "Contexto Cultural",
+    "reference": "Referencia Cultural",
+    "explanation": "Explicacion",
+    "related": "Referencias Relacionadas",
+    "loading": "Cargando referencia...",
+    "noReferences": "No se detectaron referencias culturales",
+    "categories": {
+      "slang": "Jerga",
+      "tradition": "Tradicion",
+      "history": "Historia",
+      "food": "Comida",
+      "music": "Musica",
+      "holiday": "Festividad"
+    },
+    "phraseBreakdown": {
+      "title": "Desglose de Frase",
+      "origin": "Origen",
+      "usage": "Uso Comun",
+      "funFact": "Dato Curioso"
+    }
   }
 }

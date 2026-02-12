@@ -8574,5 +8574,197 @@
     "subtitlesButton": "CC",
     "closeButton": "×"
   },
-  "tvos": {}
+  "tvos": {},
+  "missions": {
+    "title": "デイリーミッション",
+    "subtitle": "ミッションを完了してシェケルを獲得",
+    "dailyMissions": "今日のミッション",
+    "missionCompleted": "ミッション完了",
+    "claimReward": "報酬を受け取る",
+    "claimed": "受取済み",
+    "progress": "{{current}} / {{target}}",
+    "streakBonus": "連続ボーナス",
+    "allCompleted": "今日のミッションは全て完了",
+    "refreshTime": "新しいミッションまで {{hours}}時間 {{minutes}}分",
+    "tabs": {
+      "missions": "ミッション",
+      "leaderboard": "リーダーボード",
+      "rewards": "報酬"
+    },
+    "difficulty": {
+      "easy": "簡単",
+      "medium": "普通",
+      "hard": "難しい"
+    },
+    "types": {
+      "watchContent": "コンテンツを視聴",
+      "completeQuiz": "クイズを完了",
+      "useSubtitles": "字幕を使用",
+      "maintainStreak": "連続記録を維持",
+      "learnPhrase": "フレーズを学ぶ"
+    }
+  },
+  "shekels": {
+    "title": "シェケル",
+    "balance": "残高",
+    "totalEarned": "合計獲得",
+    "totalSpent": "合計使用",
+    "transactions": "取引",
+    "earned": "獲得",
+    "spent": "使用",
+    "earnRates": "獲得レート",
+    "noTransactions": "まだ取引がありません"
+  },
+  "leaderboard": {
+    "title": "リーダーボード",
+    "global": "グローバル",
+    "friends": "フレンド",
+    "family": "ファミリー",
+    "rank": "ランク",
+    "points": "ポイント",
+    "yourRank": "あなたのランク",
+    "period": {
+      "daily": "デイリー",
+      "weekly": "ウィークリー",
+      "monthly": "マンスリー",
+      "allTime": "全期間"
+    },
+    "empty": "まだエントリーがありません"
+  },
+  "talkBack": {
+    "title": "トークバック",
+    "subtitle": "キャラクターとヘブライ語を練習",
+    "question": "質問",
+    "respond": "応答する",
+    "listening": "聞いています...",
+    "evaluating": "評価中...",
+    "skip": "スキップ",
+    "tryAgain": "もう一度試す",
+    "continue": "続ける",
+    "submit": "送信",
+    "pointsEarned": "{{points}} ポイント獲得",
+    "feedback": {
+      "excellent": "素晴らしい",
+      "good": "よくできました",
+      "fair": "悪くない",
+      "tryHebrew": "ヘブライ語で答えてみましょう"
+    },
+    "stats": {
+      "title": "トークバック統計",
+      "totalAttempts": "総試行回数",
+      "hebrewRate": "ヘブライ語応答率",
+      "wordsLearned": "学んだ単語",
+      "averageAccuracy": "平均精度",
+      "shekelsEarned": "獲得シェケル"
+    },
+    "dashboard": {
+      "title": "トークバックダッシュボード",
+      "engagement": "エンゲージメント",
+      "progress": "進捗"
+    }
+  },
+  "bilingual": {
+    "title": "バイリンガルブリッジ",
+    "subtitle": "段階的ヘブライ語吹替",
+    "enabled": "バイリンガルブリッジ オン",
+    "disabled": "バイリンガルブリッジ オフ",
+    "languageRatio": "言語比率",
+    "hebrewPercent": "ヘブライ語 {{percent}}%",
+    "englishPercent": "英語 {{percent}}%",
+    "wordsLearned": "{{count}} 単語を学習",
+    "level": {
+      "beginner": "初心者",
+      "elementary": "初級",
+      "intermediate": "中級",
+      "advanced": "上級"
+    },
+    "sessionActive": "セッション進行中",
+    "vocabulary": {
+      "title": "語彙トラッカー",
+      "known": "既知の単語",
+      "learning": "学習中",
+      "mastered": "習得済み"
+    }
+  },
+  "starStory": {
+    "title": "物語のスター",
+    "subtitle": "パーソナライズされたヘブライ語学習ストーリー",
+    "avatars": "アバター",
+    "episodes": "エピソード",
+    "createFirst": "最初のアバターを作成",
+    "addAvatar": "アバターを追加",
+    "uploadPhoto": "写真をアップロード",
+    "newEpisode": "新しいエピソード",
+    "consent": {
+      "title": "ファミリーセーフティ同意",
+      "description": "物語のスターはパーソナライズされたコンテンツを作成します。保護者の同意が必要です。",
+      "childName": "お子様の名前",
+      "familyPin": "ファミリーPIN",
+      "agree": "保護者として同意します",
+      "continue": "続ける",
+      "cancel": "キャンセル"
+    },
+    "avatar": {
+      "preview": "アバタープレビュー",
+      "approve": "アバターを承認",
+      "regenerate": "再生成",
+      "regenerating": "再生成中...",
+      "styleCartoon": "カートゥーン 2D",
+      "stylePixar": "ピクサー 3D",
+      "chooseStyle": "アバタースタイルを選択"
+    },
+    "generation": {
+      "title": "エピソードを作成中",
+      "ready": "エピソード完成",
+      "failed": "生成失敗",
+      "estimate": "数分かかる場合があります",
+      "stages": {
+        "script": "スクリプト作成中",
+        "video": "ビデオ生成中",
+        "audio": "オーディオ作成中",
+        "assembly": "エピソード組み立て中",
+        "safety": "安全性レビュー"
+      }
+    },
+    "player": {
+      "episode": "エピソード {{number}}",
+      "back": "戻る"
+    }
+  },
+  "glossary": {
+    "title": "用語集",
+    "search": "フレーズを検索...",
+    "categories": "カテゴリー",
+    "allCategories": "すべて",
+    "loadMore": "もっと読み込む",
+    "noResults": "結果が見つかりません",
+    "entry": {
+      "origin": "語源",
+      "example": "例",
+      "funFact": "豆知識",
+      "transliteration": "音訳"
+    }
+  },
+  "culturalContext": {
+    "title": "文化的背景",
+    "reference": "文化的参照",
+    "explanation": "説明",
+    "related": "関連する参照",
+    "loading": "参照を読み込み中...",
+    "noReferences": "文化的参照は検出されませんでした",
+    "categories": {
+      "slang": "スラング",
+      "tradition": "伝統",
+      "history": "歴史",
+      "food": "食べ物",
+      "music": "音楽",
+      "holiday": "祝日"
+    },
+    "phraseBreakdown": {
+      "title": "フレーズ分析",
+      "origin": "語源",
+      "usage": "一般的な用法",
+      "funFact": "豆知識"
+    }
+  }
 }
