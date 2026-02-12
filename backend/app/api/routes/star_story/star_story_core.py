@@ -6,7 +6,7 @@ Avatar CRUD, episode generation, progress polling, and consent management.
 
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from pydantic import BaseModel, Field
 
 from app.api.dependencies.ai_access import get_credit_service, require_ai_access
@@ -26,7 +26,7 @@ router = APIRouter(prefix="/star-story", tags=["star-story"])
 class ConsentRequest(BaseModel):
     profile_id: str
     child_first_name: str = Field(..., max_length=50)
-    pin_hash: str
+    pin: str = Field(..., min_length=4, max_length=20)
 
 
 class AvatarUploadRequest(BaseModel):
@@ -43,16 +43,19 @@ class GenerateEpisodeRequest(BaseModel):
 
 @router.post("/consent")
 async def grant_consent(
-    request: ConsentRequest,
+    body: ConsentRequest,
+    request: Request,
     user: User = Depends(get_current_user),
 ):
     """Grant COPPA parental consent for a child profile."""
     try:
+        ip_address = request.client.host if request.client else ""
         avatar = await consent_service.verify_and_record_consent(
             user_id=str(user.id),
-            profile_id=request.profile_id,
-            child_first_name=request.child_first_name,
-            pin_hash=request.pin_hash,
+            profile_id=body.profile_id,
+            child_first_name=body.child_first_name,
+            pin=body.pin,
+            ip_address=ip_address,
         )
         return {
             "avatar_id": str(avatar.id),
@@ -133,7 +136,9 @@ async def get_progress(
 ):
     """Poll episode generation progress."""
     try:
-        return await star_story_orchestrator.get_episode_progress(episode_id)
+        return await star_story_orchestrator.get_episode_progress(
+            episode_id, user_id=str(user.id),
+        )
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=str(e)

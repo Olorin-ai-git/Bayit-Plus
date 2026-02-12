@@ -103,6 +103,14 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes import bilingual_dubbing
     # Star in Story routes (generative personalized episodes)
     from app.api.routes.star_story import star_story_core, star_story_admin
+    # Interactive Mission routes (Atzmi Ba'Sipur)
+    from app.api.routes.interactive_mission import mission_core as im_core
+    from app.api.routes.interactive_mission import mission_play as im_play
+    from app.api.routes import avatar_outfits, family_snaps
+    from app.api.routes import websocket_interactive_mission
+    # Phonetic Mirror routes (Perfected Voice)
+    from app.api.routes.phonetic_mirror import mirror_core as pm_core
+    from app.api.routes import websocket_phonetic_mirror
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -482,6 +490,11 @@ def register_all_routers(app: FastAPI) -> None:
         prefix=prefix,
         tags=["websocket", "bilingual-dubbing"],
     )
+    app.include_router(
+        websocket_interactive_mission.router,
+        prefix=prefix,
+        tags=["websocket", "interactive-missions"],
+    )
     logger.debug("Registered websocket routes")
 
     # ============================================
@@ -556,6 +569,26 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(star_story_core.router, prefix=prefix, tags=["star-story"])
     app.include_router(star_story_admin.router, prefix=prefix, tags=["star-story-admin"])
     logger.debug("Registered Star in Story routes (consent, avatars, episodes, admin)")
+
+    # ============================================
+    # Interactive Mission Routes (Atzmi Ba'Sipur)
+    # ============================================
+    app.include_router(im_core.router, prefix=prefix, tags=["interactive-missions"])
+    app.include_router(im_play.router, prefix=prefix, tags=["interactive-missions"])
+    app.include_router(avatar_outfits.router, prefix=prefix, tags=["avatar-outfits"])
+    app.include_router(family_snaps.router, prefix=prefix, tags=["family-snaps"])
+    logger.debug("Registered Interactive Mission routes (core, play, outfits, snaps)")
+
+    # ============================================
+    # Phonetic Mirror Routes (Perfected Voice)
+    # ============================================
+    app.include_router(pm_core.router, prefix=prefix, tags=["phonetic-mirror"])
+    app.include_router(
+        websocket_phonetic_mirror.router,
+        prefix=prefix,
+        tags=["websocket", "phonetic-mirror"],
+    )
+    logger.debug("Registered Phonetic Mirror routes (REST + WebSocket)")
 
     logger.info(f"All API routers registered with prefix {prefix}")
 

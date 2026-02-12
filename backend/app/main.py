@@ -77,6 +77,20 @@ def _validate_configuration() -> None:
         if settings.GCS_BUCKET_NAME:
             warnings.append("GCS_BUCKET_NAME configured but STORAGE_TYPE is 'local'")
 
+    # Check interactive mission API keys (non-blocking warnings)
+    if hasattr(settings, "DID_API_KEY") and not settings.DID_API_KEY:
+        warnings.append(
+            "DID_API_KEY not configured - lip-sync generation will not work"
+        )
+    if hasattr(settings, "STABILITY_API_KEY") and not settings.STABILITY_API_KEY:
+        warnings.append(
+            "STABILITY_API_KEY not configured - scene in-painting will not work"
+        )
+    if hasattr(settings, "FERNET_ENCRYPTION_KEY") and not settings.FERNET_ENCRYPTION_KEY:
+        warnings.append(
+            "FERNET_ENCRYPTION_KEY not configured - avatar encryption will not work"
+        )
+
     # Log all warnings
     if warnings:
         logger.warning("\n" + "=" * 60)

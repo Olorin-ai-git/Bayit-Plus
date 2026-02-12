@@ -2151,6 +2151,305 @@ class Settings(BaseSettings):
     )
 
     # ============================================
+    # Phase 6 - Atzmi Ba'Sipur (Interactive Missions)
+    # ============================================
+    CREDIT_RATE_INTERACTIVE_MISSION: int = Field(
+        default=100,
+        env="CREDIT_RATE_INTERACTIVE_MISSION",
+        description="Beta credits per interactive mission generation",
+    )
+    CREDIT_RATE_VIDEO_SELFIE_AVATAR: int = Field(
+        default=15,
+        env="CREDIT_RATE_VIDEO_SELFIE_AVATAR",
+        description="Beta credits per video selfie avatar generation",
+    )
+    CREDIT_RATE_VOICE_CLONE_CHILD: int = Field(
+        default=10,
+        env="CREDIT_RATE_VOICE_CLONE_CHILD",
+        description="Beta credits per child voice clone",
+    )
+    CREDIT_RATE_FAMILY_SNAP: int = Field(
+        default=5,
+        env="CREDIT_RATE_FAMILY_SNAP",
+        description="Beta credits per family snap generation",
+    )
+    STABILITY_API_KEY: str = Field(
+        default="",
+        env="STABILITY_API_KEY",
+        description="Stability AI API key for scene in-painting",
+    )
+    STABILITY_API_BASE_URL: str = Field(
+        default="https://api.stability.ai/v2beta",
+        env="STABILITY_API_BASE_URL",
+        description="Stability AI API base URL",
+    )
+    STABILITY_API_TIMEOUT: float = Field(
+        default=90.0, ge=10.0,
+        env="STABILITY_API_TIMEOUT",
+        description="HTTP timeout in seconds for Stability AI API requests",
+    )
+    DID_API_KEY: str = Field(
+        default="",
+        env="DID_API_KEY",
+        description="D-ID API key for lip-sync talking head",
+    )
+    DID_API_BASE_URL: str = Field(
+        default="https://api.d-id.com",
+        env="DID_API_BASE_URL",
+        description="D-ID API base URL",
+    )
+    MISSION_MAX_BRANCHES: int = Field(
+        default=4, ge=2, le=6,
+        env="MISSION_MAX_BRANCHES",
+        description="Maximum branching paths per interactive mission",
+    )
+    MISSION_MAX_SCENES: int = Field(
+        default=10, ge=4, le=20,
+        env="MISSION_MAX_SCENES",
+        description="Maximum scenes per interactive mission",
+    )
+    MISSION_SCENE_TIMEOUT_SECONDS: int = Field(
+        default=30, ge=10, le=120,
+        env="MISSION_SCENE_TIMEOUT_SECONDS",
+        description="Seconds before decision timeout per scene",
+    )
+    MISSION_MAX_PER_DAY: int = Field(
+        default=5, ge=1,
+        env="MISSION_MAX_PER_DAY",
+        description="Maximum mission generations per user per day",
+    )
+    MISSION_COMPOSITION_MODE: str = Field(
+        default="both",
+        env="MISSION_COMPOSITION_MODE",
+        description="Composition mode: overlay, inpainting, or both (A/B)",
+    )
+    MISSION_PRERENDER_SCENES: int = Field(
+        default=2, ge=1, le=5,
+        env="MISSION_PRERENDER_SCENES",
+        description="Scenes to pre-render for instant playback start",
+    )
+    MISSION_SAFETY_THRESHOLD: float = Field(
+        default=0.9, ge=0.0, le=1.0,
+        env="MISSION_SAFETY_THRESHOLD",
+        description="Minimum safety score for mission content",
+    )
+    MISSION_AVATAR_CONSISTENCY_THRESHOLD: float = Field(
+        default=0.85, ge=0.5, le=1.0,
+        env="MISSION_AVATAR_CONSISTENCY_THRESHOLD",
+        description="CLIP cosine similarity threshold for avatar consistency",
+    )
+    MISSION_COMPLETION_BASE_REWARD: int = Field(
+        default=50, ge=0,
+        env="MISSION_COMPLETION_BASE_REWARD",
+        description="Base shekel reward for completing an interactive mission",
+    )
+    MISSION_COMPLETION_SCORE_MULTIPLIER: int = Field(
+        default=10, ge=0,
+        env="MISSION_COMPLETION_SCORE_MULTIPLIER",
+        description="Score-to-shekel multiplier for mission completion bonus",
+    )
+    MISSION_SCENE_SHEKEL_MULTIPLIER: int = Field(
+        default=5, ge=0,
+        env="MISSION_SCENE_SHEKEL_MULTIPLIER",
+        description="Score-to-shekel multiplier for individual scene rewards",
+    )
+    SNAP_SHARE_BASE_URL: str = Field(
+        default="",
+        env="SNAP_SHARE_BASE_URL",
+        description="Base URL for family snap sharing links",
+    )
+    SNAP_WATERMARK_TEXT: str = Field(
+        default="Made with Bayit+",
+        env="SNAP_WATERMARK_TEXT",
+        description="Watermark text for shared family snaps",
+    )
+    SNAP_THUMBNAIL_WIDTH: int = Field(
+        default=300, ge=50, le=1000,
+        env="SNAP_THUMBNAIL_WIDTH",
+        description="Thumbnail width in pixels for family snaps",
+    )
+    SNAP_THUMBNAIL_HEIGHT: int = Field(
+        default=300, ge=50, le=1000,
+        env="SNAP_THUMBNAIL_HEIGHT",
+        description="Thumbnail height in pixels for family snaps",
+    )
+    VIDEO_SELFIE_RECORDING_DURATION_MS: int = Field(
+        default=10000, ge=3000, le=30000,
+        env="VIDEO_SELFIE_RECORDING_DURATION_MS",
+        description="Frontend video selfie recording duration in milliseconds",
+    )
+    DID_API_TIMEOUT: float = Field(
+        default=120.0, ge=10.0,
+        env="DID_API_TIMEOUT",
+        description="HTTP timeout in seconds for D-ID API requests",
+    )
+    DID_MAX_POLLS: int = Field(
+        default=60, ge=5,
+        env="DID_MAX_POLLS",
+        description="Maximum polling attempts for D-ID talk result",
+    )
+    DID_POLL_INTERVAL: float = Field(
+        default=2.0, ge=0.5,
+        env="DID_POLL_INTERVAL",
+        description="Seconds between D-ID polling attempts",
+    )
+    VIDEO_SELFIE_MAX_SIZE_BYTES: int = Field(
+        default=52428800, ge=1048576,
+        env="VIDEO_SELFIE_MAX_SIZE_BYTES",
+        description="Maximum video selfie file size in bytes (default 50MB)",
+    )
+    VIDEO_SELFIE_MAX_DURATION_SECONDS: float = Field(
+        default=15.0, ge=5.0, le=60.0,
+        env="VIDEO_SELFIE_MAX_DURATION_SECONDS",
+        description="Maximum allowed video selfie duration in seconds",
+    )
+    FERNET_ENCRYPTION_KEY: str = Field(
+        default="",
+        env="FERNET_ENCRYPTION_KEY",
+        description="Base64-encoded 32-byte Fernet key for video selfie encryption",
+    )
+
+    # ============================================
+    # Phase 7 - Phonetic Mirror (Perfected Voice)
+    # ============================================
+    PERFECTED_VOICE_MAX_AUDIO_SECONDS: int = Field(
+        default=15, ge=3, le=30,
+        env="PERFECTED_VOICE_MAX_AUDIO_SECONDS",
+        description="Maximum audio recording duration for phonetic mirror",
+    )
+    PERFECTED_VOICE_MIN_CONFIDENCE: float = Field(
+        default=0.3, ge=0.0, le=1.0,
+        env="PERFECTED_VOICE_MIN_CONFIDENCE",
+        description="Minimum Whisper confidence to accept transcription",
+    )
+    PERFECTED_VOICE_PRONUNCIATION_THRESHOLD: float = Field(
+        default=0.7, ge=0.0, le=1.0,
+        env="PERFECTED_VOICE_PRONUNCIATION_THRESHOLD",
+        description="Score threshold for acceptable pronunciation",
+    )
+    CREDIT_RATE_PHONETIC_MIRROR: float = Field(
+        default=3.0,
+        env="CREDIT_RATE_PHONETIC_MIRROR",
+        description="Beta credits per phonetic mirror attempt",
+    )
+    PERFECTED_VOICE_MAX_PER_DAY: int = Field(
+        default=20, ge=1,
+        env="PERFECTED_VOICE_MAX_PER_DAY",
+        description="Maximum phonetic mirror attempts per user per day",
+    )
+
+    # ============================================
+    # Phase 8 - Voice-First Interactive Missions
+    # ============================================
+    MISSION_VOICE_MODE_ENABLED: bool = Field(
+        default=True,
+        env="MISSION_VOICE_MODE_ENABLED",
+        description="Enable voice phrase decision type in missions",
+    )
+    MISSION_VOICE_TIMEOUT_SECONDS: int = Field(
+        default=15, ge=5, le=60,
+        env="MISSION_VOICE_TIMEOUT_SECONDS",
+        description="Seconds to wait for voice decision input",
+    )
+    MISSION_VOICE_MAX_ATTEMPTS: int = Field(
+        default=3, ge=1, le=10,
+        env="MISSION_VOICE_MAX_ATTEMPTS",
+        description="Maximum voice decision attempts per scene",
+    )
+    MISSION_VOICE_HINT_AFTER_ATTEMPT: int = Field(
+        default=2, ge=1, le=5,
+        env="MISSION_VOICE_HINT_AFTER_ATTEMPT",
+        description="Show pronunciation hint after N failed attempts",
+    )
+
+    # ============================================
+    # Phase 9 - Gamification Levels
+    # ============================================
+    GAMIFICATION_XP_PER_MISSION: int = Field(
+        default=100, ge=0,
+        env="GAMIFICATION_XP_PER_MISSION",
+        description="XP awarded per completed interactive mission",
+    )
+    GAMIFICATION_XP_PER_MIRROR: int = Field(
+        default=25, ge=0,
+        env="GAMIFICATION_XP_PER_MIRROR",
+        description="XP awarded per phonetic mirror session",
+    )
+    GAMIFICATION_XP_PER_TALK_BACK: int = Field(
+        default=15, ge=0,
+        env="GAMIFICATION_XP_PER_TALK_BACK",
+        description="XP awarded per Talk Back attempt",
+    )
+    GAMIFICATION_LEVEL_BASE_XP: int = Field(
+        default=500, ge=100,
+        env="GAMIFICATION_LEVEL_BASE_XP",
+        description="Base XP required for first level up",
+    )
+    GAMIFICATION_LEVEL_XP_MULTIPLIER: float = Field(
+        default=1.5, ge=1.0, le=3.0,
+        env="GAMIFICATION_LEVEL_XP_MULTIPLIER",
+        description="Exponential multiplier for XP per level",
+    )
+
+    # ============================================
+    # Phase 10 - Grandparent Bridge
+    # ============================================
+    GRANDPARENT_BRIDGE_NEWS_CLIP_DURATION: int = Field(
+        default=30, ge=15, le=60,
+        env="GRANDPARENT_BRIDGE_NEWS_CLIP_DURATION",
+        description="Target duration in seconds for news clips",
+    )
+    CREDIT_RATE_NEWS_CLIP: int = Field(
+        default=50, ge=0,
+        env="CREDIT_RATE_NEWS_CLIP",
+        description="Beta credits per news clip generation",
+    )
+    GRANDPARENT_VOICE_NOTE_MAX_SECONDS: int = Field(
+        default=60, ge=15, le=180,
+        env="GRANDPARENT_VOICE_NOTE_MAX_SECONDS",
+        description="Maximum grandparent voice note duration in seconds",
+    )
+    GRANDPARENT_BRIDGE_SHARE_BASE_URL: str = Field(
+        default="",
+        env="GRANDPARENT_BRIDGE_SHARE_BASE_URL",
+        description="Base URL for grandparent bridge sharing links",
+    )
+    GRANDPARENT_BRIDGE_VOICE_NOTE_RETENTION_DAYS: int = Field(
+        default=90, ge=30,
+        env="GRANDPARENT_BRIDGE_VOICE_NOTE_RETENTION_DAYS",
+        description="Days to retain grandparent voice notes before cleanup",
+    )
+
+    # ============================================
+    # Phase 11 - Chameleon Engine (Visual Style Sync)
+    # ============================================
+    CHAMELEON_STYLE_CACHE_TTL_HOURS: int = Field(
+        default=168, ge=1,
+        env="CHAMELEON_STYLE_CACHE_TTL_HOURS",
+        description="Hours to cache style-transferred avatar variants",
+    )
+    CHAMELEON_MAX_STYLE_VARIATIONS: int = Field(
+        default=3, ge=1, le=10,
+        env="CHAMELEON_MAX_STYLE_VARIATIONS",
+        description="Maximum cached style variations per avatar",
+    )
+    CHAMELEON_STYLE_SIMILARITY_THRESHOLD: float = Field(
+        default=0.75, ge=0.5, le=1.0,
+        env="CHAMELEON_STYLE_SIMILARITY_THRESHOLD",
+        description="CLIP similarity threshold for style transfer quality",
+    )
+    CREDIT_RATE_STYLE_TRANSFER: int = Field(
+        default=20, ge=0,
+        env="CREDIT_RATE_STYLE_TRANSFER",
+        description="Beta credits per style transfer generation",
+    )
+    CHAMELEON_FRAME_SAMPLE_COUNT: int = Field(
+        default=5, ge=1, le=20,
+        env="CHAMELEON_FRAME_SAMPLE_COUNT",
+        description="Number of frames to sample for style analysis",
+    )
+
+    # ============================================
     # URL MIGRATION CONFIGURATION (for script consolidation)
     # ============================================
     # Configuration for URL transformation scripts (bucket upgrades, S3→GCS migration)

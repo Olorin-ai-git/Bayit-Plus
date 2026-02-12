@@ -8013,5 +8013,96 @@
       "usage": "常见用法",
       "funFact": "趣味知识"
     }
+  },
+  "interactiveMission": {
+    "title": "互动任务",
+    "loading": "正在加载任务...",
+    "preparing": "正在准备任务...",
+    "listening": "正在聆听...",
+    "speak": "说话",
+    "speakHebrew": "说希伯来语",
+    "complete": "任务完成",
+    "continue": "继续",
+    "attemptOf": "尝试 {{current}}/{{max}} - 再试一次",
+    "totalScore": "分数: {{score}}",
+    "shekelsEarned": "获得 {{amount}} 谢克尔",
+    "backToMissions": "返回任务列表",
+    "generating": "正在生成任务...",
+    "available": "可用任务",
+    "noMissions": "没有可用的任务",
+    "startMission": "开始任务",
+    "sceneProgress": "场景 {{current}} / {{total}}",
+    "tryAgain": "再试一次",
+    "hint": "提示",
+    "timeout": "时间到",
+    "feedbackExcellent": "发音出色",
+    "feedbackGood": "做得好",
+    "feedbackRetry": "再试一次吧",
+    "errors": {
+      "fetchFailed": "获取任务失败",
+      "generateFailed": "生成任务失败",
+      "loadFailed": "加载任务失败",
+      "submitFailed": "提交尝试失败",
+      "completeFailed": "完成任务失败"
+    }
+  },
+  "avatarWardrobe": {
+    "title": "衣橱",
+    "purchase": "购买",
+    "purchasing": "购买中...",
+    "equip": "穿戴",
+    "unequip": "卸下",
+    "owned": "已拥有",
+    "insufficientShekels": "谢克尔不足",
+    "rarity": {
+      "common": "普通",
+      "uncommon": "不常见",
+      "rare": "稀有",
+      "epic": "史诗",
+      "legendary": "传说"
+    },
+    "category": {
+      "israeliHeritage": "以色列遗产",
+      "holiday": "节日",
+      "sports": "运动",
+      "fantasy": "奇幻",
+      "showCharacter": "节目角色"
+    },
+    "empty": "暂无可用服装",
+    "balance": "余额: {{amount}}",
+    "errors": {
+      "loadFailed": "加载衣橱失败",
+      "purchaseFailed": "购买失败",
+      "equipFailed": "穿戴失败"
+    }
+  },
+  "familySnaps": {
+    "title": "家庭照片",
+    "newSnap": "新照片",
+    "empty": "暂无照片",
+    "download": "下载",
+    "share": "分享",
+    "shareWhatsApp": "分享到WhatsApp",
+    "shareEmail": "通过邮件分享",
+    "shareText": "看看我的Bayit+家庭照片!",
+    "enterPin": "输入家长PIN码以分享",
+    "generating": "正在创建您的照片...",
+    "shareSuccess": "分享链接已创建",
+    "template": {
+      "sideBySide": "并排",
+      "actionPose": "动作姿势",
+      "groupPhoto": "合照"
+    }
+  },
+  "videoSelfie": {
+    "title": "视频自拍",
+    "instructions": "录制一段10秒的视频。看着摄像头，慢慢转头，然后说沙龙。",
+    "startCamera": "启动摄像头",
+    "record": "开始录制",
+    "recording": "录制中...",
+    "uploading": "正在上传视频...",
+    "complete": "视频上传成功",
+    "cameraError": "无法访问摄像头",
+    "uploadError": "上传失败，请重试。"
   }
 }

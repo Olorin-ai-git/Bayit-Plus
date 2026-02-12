@@ -8521,5 +8521,96 @@
       "usage": "שימוש נפוץ",
       "funFact": "עובדה מעניינת"
     }
+  },
+  "interactiveMission": {
+    "title": "משימה אינטראקטיבית",
+    "loading": "טוען משימה...",
+    "preparing": "מכין משימה...",
+    "listening": "מאזין...",
+    "speak": "דבר",
+    "speakHebrew": "דבר עברית",
+    "complete": "המשימה הושלמה",
+    "continue": "המשך",
+    "attemptOf": "ניסיון {{current}} מתוך {{max}} - נסה שוב",
+    "totalScore": "ניקוד: {{score}}",
+    "shekelsEarned": "{{amount}} שקלים הרווחת",
+    "backToMissions": "חזרה למשימות",
+    "generating": "יוצר משימה...",
+    "available": "משימות זמינות",
+    "noMissions": "אין משימות זמינות",
+    "startMission": "התחל משימה",
+    "sceneProgress": "סצנה {{current}} מתוך {{total}}",
+    "tryAgain": "נסה שוב",
+    "hint": "רמז",
+    "timeout": "הזמן נגמר",
+    "feedbackExcellent": "הגייה מצוינת",
+    "feedbackGood": "עבודה טובה",
+    "feedbackRetry": "נסה עוד פעם",
+    "errors": {
+      "fetchFailed": "טעינת המשימות נכשלה",
+      "generateFailed": "יצירת המשימה נכשלה",
+      "loadFailed": "טעינת המשימה נכשלה",
+      "submitFailed": "שליחת הניסיון נכשלה",
+      "completeFailed": "השלמת המשימה נכשלה"
+    }
+  },
+  "avatarWardrobe": {
+    "title": "ארון בגדים",
+    "purchase": "רכישה",
+    "purchasing": "רוכש...",
+    "equip": "לבש",
+    "unequip": "הסר",
+    "owned": "בבעלותך",
+    "insufficientShekels": "אין מספיק שקלים",
+    "rarity": {
+      "common": "רגיל",
+      "uncommon": "לא שגרתי",
+      "rare": "נדיר",
+      "epic": "אפי",
+      "legendary": "אגדי"
+    },
+    "category": {
+      "israeliHeritage": "מורשת ישראלית",
+      "holiday": "חג",
+      "sports": "ספורט",
+      "fantasy": "פנטזיה",
+      "showCharacter": "דמות מתוכנית"
+    },
+    "empty": "אין תלבושות זמינות עדיין",
+    "balance": "יתרה: {{amount}}",
+    "errors": {
+      "loadFailed": "טעינת ארון הבגדים נכשלה",
+      "purchaseFailed": "הרכישה נכשלה",
+      "equipFailed": "הלבישה נכשלה"
+    }
+  },
+  "familySnaps": {
+    "title": "תמונות משפחתיות",
+    "newSnap": "תמונה חדשה",
+    "empty": "אין תמונות עדיין",
+    "download": "הורדה",
+    "share": "שיתוף",
+    "shareWhatsApp": "שיתוף בוואטסאפ",
+    "shareEmail": "שיתוף באימייל",
+    "shareText": "צפו בתמונה שלי מבית פלוס!",
+    "enterPin": "הזינו קוד הורה לשיתוף",
+    "generating": "יוצר את התמונה שלך...",
+    "shareSuccess": "קישור שיתוף נוצר",
+    "template": {
+      "sideBySide": "זה לצד זה",
+      "actionPose": "תנוחת פעולה",
+      "groupPhoto": "תמונה קבוצתית"
+    }
+  },
+  "videoSelfie": {
+    "title": "סלפי וידאו",
+    "instructions": "הקלט סרטון של 10 שניות. הסתכל למצלמה, סובב את הראש לאט, ואמור שלום.",
+    "startCamera": "הפעל מצלמה",
+    "record": "התחל הקלטה",
+    "recording": "מקליט...",
+    "uploading": "מעלה וידאו...",
+    "complete": "הוידאו הועלה בהצלחה",
+    "cameraError": "לא ניתן לגשת למצלמה",
+    "uploadError": "ההעלאה נכשלה. נסה שוב."
   }
 }

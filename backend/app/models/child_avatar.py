@@ -12,12 +12,22 @@ from typing import List, Optional
 from beanie import Document, Indexed
 from pydantic import BaseModel, Field
 
+# Extended pose names for interactive missions (12 total)
+POSE_NAMES = [
+    "front_neutral", "front_happy", "front_surprised",
+    "front_speaking", "side_left", "side_right",
+    "action_running", "action_jumping", "action_pointing",
+    "emotion_excited", "emotion_confused", "emotion_celebrating",
+]
+
 
 class AvatarStyle(str, Enum):
     """Available avatar art styles."""
 
     CARTOON_2D = "cartoon_2d"
     PIXAR_3D = "pixar_3d"
+    DISNEY_3D = "disney_3d"
+    ANIME_3D = "anime_3d"
 
 
 class AvatarStatus(str, Enum):
@@ -37,8 +47,10 @@ class ConsentRecord(BaseModel):
     granted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     granted_by_user_id: str
     family_pin_verified: bool = False
-    consent_text_version: str = Field(default="1.0")
+    consent_text_version: str = Field(default="2.0")
     ip_address: Optional[str] = None
+    video_selfie_consent: bool = False
+    voice_clone_consent: bool = False
 
 
 class AvatarPose(BaseModel):
@@ -76,6 +88,23 @@ class ChildAvatar(Document):
     primary_avatar_gcs_path: Optional[str] = None
     status: AvatarStatus = AvatarStatus.PENDING_CONSENT
 
+    # Video selfie (encrypted, auto-deleted after avatar + voice)
+    video_selfie_gcs_path: Optional[str] = None
+    video_selfie_uploaded_at: Optional[datetime] = None
+
+    # Voice cloning
+    elevenlabs_voice_id: Optional[str] = None
+    voice_clone_status: str = Field(
+        default="not_started",
+        description="not_started, training, ready, failed",
+    )
+
+    # Outfit wardrobe
+    outfit_inventory: List["ProfileOutfitInventory"] = Field(
+        default_factory=list
+    )
+    active_outfit_id: Optional[str] = None
+
     # Face detection metadata (no biometric data stored)
     face_detected: bool = False
     estimated_age_range: Optional[str] = None
@@ -104,3 +133,13 @@ class ChildAvatar(Document):
     @property
     def has_consent(self) -> bool:
         return self.consent is not None and self.consent.family_pin_verified
+
+    @property
+    def has_voice_clone(self) -> bool:
+        return self.voice_clone_status == "ready" and self.elevenlabs_voice_id is not None
+
+
+# Deferred import to avoid circular dependency
+from app.models.avatar_outfit import ProfileOutfitInventory  # noqa: E402
+
+ChildAvatar.model_rebuild()

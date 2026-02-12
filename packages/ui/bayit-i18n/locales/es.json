@@ -8407,5 +8407,96 @@
       "usage": "Uso Comun",
       "funFact": "Dato Curioso"
     }
+  },
+  "interactiveMission": {
+    "title": "Mision Interactiva",
+    "loading": "Cargando mision...",
+    "preparing": "Preparando mision...",
+    "listening": "Escuchando...",
+    "speak": "Hablar",
+    "speakHebrew": "Habla hebreo",
+    "complete": "Mision Completada",
+    "continue": "Continuar",
+    "attemptOf": "Intento {{current}} de {{max}} - Intentar de nuevo",
+    "totalScore": "Puntuacion: {{score}}",
+    "shekelsEarned": "{{amount}} Shekels Ganados",
+    "backToMissions": "Volver a Misiones",
+    "generating": "Generando mision...",
+    "available": "Misiones Disponibles",
+    "noMissions": "No hay misiones disponibles",
+    "startMission": "Iniciar Mision",
+    "sceneProgress": "Escena {{current}} de {{total}}",
+    "tryAgain": "Intentar de Nuevo",
+    "hint": "Pista",
+    "timeout": "Se acabo el tiempo",
+    "feedbackExcellent": "Pronunciacion excelente",
+    "feedbackGood": "Buen trabajo",
+    "feedbackRetry": "Intenta una vez mas",
+    "errors": {
+      "fetchFailed": "Error al obtener las misiones",
+      "generateFailed": "Error al generar la mision",
+      "loadFailed": "Error al cargar la mision",
+      "submitFailed": "Error al enviar el intento",
+      "completeFailed": "Error al completar la mision"
+    }
+  },
+  "avatarWardrobe": {
+    "title": "Vestuario",
+    "purchase": "Comprar",
+    "purchasing": "Comprando...",
+    "equip": "Equipar",
+    "unequip": "Desequipar",
+    "owned": "Adquirido",
+    "insufficientShekels": "Shekels insuficientes",
+    "rarity": {
+      "common": "Comun",
+      "uncommon": "Poco comun",
+      "rare": "Raro",
+      "epic": "Epico",
+      "legendary": "Legendario"
+    },
+    "category": {
+      "israeliHeritage": "Herencia Israeli",
+      "holiday": "Festividad",
+      "sports": "Deportes",
+      "fantasy": "Fantasia",
+      "showCharacter": "Personaje de Serie"
+    },
+    "empty": "No hay trajes disponibles aun",
+    "balance": "Saldo: {{amount}}",
+    "errors": {
+      "loadFailed": "Error al cargar el vestuario",
+      "purchaseFailed": "Error en la compra",
+      "equipFailed": "Error al equipar"
+    }
+  },
+  "familySnaps": {
+    "title": "Fotos Familiares",
+    "newSnap": "Nueva Foto",
+    "empty": "No hay fotos aun",
+    "download": "Descargar",
+    "share": "Compartir",
+    "shareWhatsApp": "Compartir en WhatsApp",
+    "shareEmail": "Compartir por correo",
+    "shareText": "Mira mi foto de Bayit+!",
+    "enterPin": "Ingrese el PIN parental para compartir",
+    "generating": "Creando tu foto...",
+    "shareSuccess": "Enlace para compartir creado",
+    "template": {
+      "sideBySide": "Lado a Lado",
+      "actionPose": "Pose de Accion",
+      "groupPhoto": "Foto Grupal"
+    }
+  },
+  "videoSelfie": {
+    "title": "Video Selfie",
+    "instructions": "Graba un video de 10 segundos. Mira a la camara, gira la cabeza lentamente y di Shalom.",
+    "startCamera": "Iniciar Camara",
+    "record": "Comenzar Grabacion",
+    "recording": "Grabando...",
+    "uploading": "Subiendo video...",
+    "complete": "Video subido exitosamente",
+    "cameraError": "No se pudo acceder a la camara",
+    "uploadError": "Error al subir. Intenta de nuevo."
   }
 }

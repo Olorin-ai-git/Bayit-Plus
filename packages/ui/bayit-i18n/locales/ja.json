@@ -8766,5 +8766,96 @@
       "usage": "一般的な用法",
       "funFact": "豆知識"
     }
+  },
+  "interactiveMission": {
+    "title": "インタラクティブミッション",
+    "loading": "ミッションを読み込み中...",
+    "preparing": "ミッション準備中...",
+    "listening": "聞いています...",
+    "speak": "話す",
+    "speakHebrew": "ヘブライ語を話す",
+    "complete": "ミッション完了",
+    "continue": "続ける",
+    "attemptOf": "{{max}}回中{{current}}回目 - もう一度",
+    "totalScore": "スコア: {{score}}",
+    "shekelsEarned": "{{amount}} シェケル獲得",
+    "backToMissions": "ミッション一覧に戻る",
+    "generating": "ミッションを生成中...",
+    "available": "利用可能なミッション",
+    "noMissions": "利用可能なミッションはありません",
+    "startMission": "ミッション開始",
+    "sceneProgress": "シーン {{current}} / {{total}}",
+    "tryAgain": "もう一度",
+    "hint": "ヒント",
+    "timeout": "時間切れ",
+    "feedbackExcellent": "素晴らしい発音",
+    "feedbackGood": "よくできました",
+    "feedbackRetry": "もう一回試してみよう",
+    "errors": {
+      "fetchFailed": "ミッションの取得に失敗しました",
+      "generateFailed": "ミッションの生成に失敗しました",
+      "loadFailed": "ミッションの読み込みに失敗しました",
+      "submitFailed": "回答の送信に失敗しました",
+      "completeFailed": "ミッションの完了に失敗しました"
+    }
+  },
+  "avatarWardrobe": {
+    "title": "ワードローブ",
+    "purchase": "購入",
+    "purchasing": "購入中...",
+    "equip": "装備",
+    "unequip": "外す",
+    "owned": "所持済み",
+    "insufficientShekels": "シェケルが不足しています",
+    "rarity": {
+      "common": "コモン",
+      "uncommon": "アンコモン",
+      "rare": "レア",
+      "epic": "エピック",
+      "legendary": "レジェンダリー"
+    },
+    "category": {
+      "israeliHeritage": "イスラエルの遺産",
+      "holiday": "祝日",
+      "sports": "スポーツ",
+      "fantasy": "ファンタジー",
+      "showCharacter": "番組キャラクター"
+    },
+    "empty": "まだ衣装がありません",
+    "balance": "残高: {{amount}}",
+    "errors": {
+      "loadFailed": "ワードローブの読み込みに失敗しました",
+      "purchaseFailed": "購入に失敗しました",
+      "equipFailed": "装備に失敗しました"
+    }
+  },
+  "familySnaps": {
+    "title": "ファミリースナップ",
+    "newSnap": "新しいスナップ",
+    "empty": "まだスナップがありません",
+    "download": "ダウンロード",
+    "share": "共有",
+    "shareWhatsApp": "WhatsAppで共有",
+    "shareEmail": "メールで共有",
+    "shareText": "Bayit+のファミリースナップを見てね!",
+    "enterPin": "共有するには保護者PINを入力",
+    "generating": "スナップを作成中...",
+    "shareSuccess": "共有リンクを作成しました",
+    "template": {
+      "sideBySide": "サイドバイサイド",
+      "actionPose": "アクションポーズ",
+      "groupPhoto": "集合写真"
+    }
+  },
+  "videoSelfie": {
+    "title": "ビデオセルフィー",
+    "instructions": "10秒間のビデオを録画してください。カメラを見て、ゆっくり頭を回し、シャロームと言ってください。",
+    "startCamera": "カメラを起動",
+    "record": "録画開始",
+    "recording": "録画中...",
+    "uploading": "ビデオをアップロード中...",
+    "complete": "ビデオが正常にアップロードされました",
+    "cameraError": "カメラにアクセスできませんでした",
+    "uploadError": "アップロードに失敗しました。もう一度お試しください。"
   }
 }

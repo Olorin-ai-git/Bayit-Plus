@@ -149,6 +149,84 @@ class ContentSafetyService:
                     )
         return issues
 
+    async def evaluate_mission(self, mission) -> SafetyScore:
+        """
+        Run safety evaluation on interactive mission content.
+
+        Evaluates all scene narrations across the mission for child safety.
+        """
+        all_narration = "\n".join(
+            f"Scene {s.scene_number}: {s.narration_text}"
+            for s in mission.scenes
+        )
+
+        client = get_anthropic_client()
+        response = await client.messages.create(
+            model=settings.STAR_STORY_AI_MODEL,
+            max_tokens=1024,
+            system=(
+                "You are a child content safety reviewer. "
+                "Evaluate the script for a children's show (ages 4-10). "
+                "Return JSON with: "
+                '"safety_score" (0.0-1.0), '
+                '"issues" (list of strings describing problems). '
+                "Score 1.0 = perfectly safe, 0.0 = completely unsafe."
+            ),
+            messages=[{
+                "role": "user",
+                "content": f"Evaluate this children's script:\n\n{all_narration}",
+            }],
+        )
+
+        text = response.content[0].text
+        try:
+            result = json.loads(text)
+            script_score = float(result.get("safety_score", 0.0))
+            issues = result.get("issues", [])
+        except (json.JSONDecodeError, ValueError):
+            logger.warning(
+                "Failed to parse mission safety response",
+                extra={"mission_id": str(mission.id), "response": text[:200]},
+            )
+            script_score = 0.5
+            issues = ["Could not parse safety evaluation"]
+
+        profanity_issues = self._check_mission_profanity(mission)
+        all_issues = issues + profanity_issues
+        overall = script_score if not profanity_issues else min(script_score, 0.5)
+
+        safety = SafetyScore(
+            script_safety=script_score,
+            visual_safety=1.0,
+            overall_safety=overall,
+            flagged_issues=all_issues,
+        )
+
+        logger.info(
+            "Mission safety evaluation complete",
+            extra={
+                "mission_id": str(mission.id),
+                "overall_safety": overall,
+                "issues_count": len(all_issues),
+            },
+        )
+        return safety
+
+    def _check_mission_profanity(self, mission) -> List[str]:
+        """Check mission scene text for blocked content patterns."""
+        issues = []
+        for scene in mission.scenes:
+            text_lower = (
+                f"{scene.narration_text} {scene.narration_text_he}"
+            ).lower()
+            for pattern in BLOCKED_PATTERNS:
+                if pattern in text_lower:
+                    issues.append(
+                        f"Scene {scene.scene_number}: "
+                        f"blocked pattern '{pattern}' detected"
+                    )
+        return issues
+
     def passes_threshold(self, safety: SafetyScore) -> bool:
         """Check if safety score meets the configured threshold."""
         return safety.overall_safety >= settings.STAR_STORY_SAFETY_THRESHOLD

@@ -8413,5 +8413,96 @@
       "usage": "Common Usage",
       "funFact": "Fun Fact"
     }
+  },
+  "interactiveMission": {
+    "title": "Interactive Mission",
+    "loading": "Loading mission...",
+    "preparing": "Preparing Mission...",
+    "listening": "Listening...",
+    "speak": "Speak",
+    "speakHebrew": "Speak Hebrew",
+    "complete": "Mission Complete",
+    "continue": "Continue",
+    "attemptOf": "Attempt {{current}} of {{max}} - Try again",
+    "totalScore": "Score: {{score}}",
+    "shekelsEarned": "{{amount}} Shekels Earned",
+    "backToMissions": "Back to Missions",
+    "generating": "Generating mission...",
+    "available": "Available Missions",
+    "noMissions": "No missions available",
+    "startMission": "Start Mission",
+    "sceneProgress": "Scene {{current}} of {{total}}",
+    "tryAgain": "Try Again",
+    "hint": "Hint",
+    "timeout": "Time's up",
+    "feedbackExcellent": "Excellent pronunciation",
+    "feedbackGood": "Good job",
+    "feedbackRetry": "Try once more",
+    "errors": {
+      "fetchFailed": "Failed to fetch missions",
+      "generateFailed": "Failed to generate mission",
+      "loadFailed": "Failed to load mission",
+      "submitFailed": "Failed to submit attempt",
+      "completeFailed": "Failed to complete mission"
+    }
+  },
+  "avatarWardrobe": {
+    "title": "Wardrobe",
+    "purchase": "Purchase",
+    "purchasing": "Purchasing...",
+    "equip": "Equip",
+    "unequip": "Unequip",
+    "owned": "Owned",
+    "insufficientShekels": "Not enough Shekels",
+    "rarity": {
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    },
+    "category": {
+      "israeliHeritage": "Israeli Heritage",
+      "holiday": "Holiday",
+      "sports": "Sports",
+      "fantasy": "Fantasy",
+      "showCharacter": "Show Character"
+    },
+    "empty": "No outfits available yet",
+    "balance": "Balance: {{amount}}",
+    "errors": {
+      "loadFailed": "Failed to load wardrobe",
+      "purchaseFailed": "Purchase failed",
+      "equipFailed": "Equip failed"
+    }
+  },
+  "familySnaps": {
+    "title": "Family Snaps",
+    "newSnap": "New Snap",
+    "empty": "No snaps yet",
+    "download": "Download",
+    "share": "Share",
+    "shareWhatsApp": "Share on WhatsApp",
+    "shareEmail": "Share via Email",
+    "shareText": "Check out my Bayit+ Family Snap!",
+    "enterPin": "Enter parental PIN to share",
+    "generating": "Creating your snap...",
+    "shareSuccess": "Share link created",
+    "template": {
+      "sideBySide": "Side by Side",
+      "actionPose": "Action Pose",
+      "groupPhoto": "Group Photo"
+    }
+  },
+  "videoSelfie": {
+    "title": "Video Selfie",
+    "instructions": "Record a 10-second video. Look at the camera, turn your head slowly, and say Shalom.",
+    "startCamera": "Start Camera",
+    "record": "Start Recording",
+    "recording": "Recording...",
+    "uploading": "Uploading video...",
+    "complete": "Video uploaded successfully",
+    "cameraError": "Could not access camera",
+    "uploadError": "Upload failed. Please try again."
   }
 }

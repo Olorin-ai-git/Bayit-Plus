@@ -8256,5 +8256,96 @@
       "usage": "Uso Comune",
       "funFact": "Curiosita"
     }
+  },
+  "interactiveMission": {
+    "title": "Missione Interattiva",
+    "loading": "Caricamento missione...",
+    "preparing": "Preparazione missione...",
+    "listening": "In ascolto...",
+    "speak": "Parla",
+    "speakHebrew": "Parla ebraico",
+    "complete": "Missione Completata",
+    "continue": "Continua",
+    "attemptOf": "Tentativo {{current}} di {{max}} - Riprova",
+    "totalScore": "Punteggio: {{score}}",
+    "shekelsEarned": "{{amount}} Shekel Guadagnati",
+    "backToMissions": "Torna alle Missioni",
+    "generating": "Generazione missione...",
+    "available": "Missioni Disponibili",
+    "noMissions": "Nessuna missione disponibile",
+    "startMission": "Inizia Missione",
+    "sceneProgress": "Scena {{current}} di {{total}}",
+    "tryAgain": "Riprova",
+    "hint": "Suggerimento",
+    "timeout": "Tempo scaduto",
+    "feedbackExcellent": "Pronuncia eccellente",
+    "feedbackGood": "Buon lavoro",
+    "feedbackRetry": "Prova ancora una volta",
+    "errors": {
+      "fetchFailed": "Impossibile caricare le missioni",
+      "generateFailed": "Impossibile generare la missione",
+      "loadFailed": "Impossibile caricare la missione",
+      "submitFailed": "Impossibile inviare il tentativo",
+      "completeFailed": "Impossibile completare la missione"
+    }
+  },
+  "avatarWardrobe": {
+    "title": "Guardaroba",
+    "purchase": "Acquista",
+    "purchasing": "Acquisto in corso...",
+    "equip": "Indossa",
+    "unequip": "Rimuovi",
+    "owned": "Posseduto",
+    "insufficientShekels": "Shekel insufficienti",
+    "rarity": {
+      "common": "Comune",
+      "uncommon": "Non comune",
+      "rare": "Raro",
+      "epic": "Epico",
+      "legendary": "Leggendario"
+    },
+    "category": {
+      "israeliHeritage": "Patrimonio Israeliano",
+      "holiday": "Festivita",
+      "sports": "Sport",
+      "fantasy": "Fantasia",
+      "showCharacter": "Personaggio dello Show"
+    },
+    "empty": "Nessun costume disponibile ancora",
+    "balance": "Saldo: {{amount}}",
+    "errors": {
+      "loadFailed": "Impossibile caricare il guardaroba",
+      "purchaseFailed": "Acquisto fallito",
+      "equipFailed": "Equipaggiamento fallito"
+    }
+  },
+  "familySnaps": {
+    "title": "Foto di Famiglia",
+    "newSnap": "Nuova Foto",
+    "empty": "Nessuna foto ancora",
+    "download": "Scarica",
+    "share": "Condividi",
+    "shareWhatsApp": "Condividi su WhatsApp",
+    "shareEmail": "Condividi via email",
+    "shareText": "Guarda la mia foto Bayit+!",
+    "enterPin": "Inserisci il PIN genitore per condividere",
+    "generating": "Creazione della tua foto...",
+    "shareSuccess": "Link di condivisione creato",
+    "template": {
+      "sideBySide": "Fianco a Fianco",
+      "actionPose": "Posa d'Azione",
+      "groupPhoto": "Foto di Gruppo"
+    }
+  },
+  "videoSelfie": {
+    "title": "Video Selfie",
+    "instructions": "Registra un video di 10 secondi. Guarda la fotocamera, gira la testa lentamente e di' Shalom.",
+    "startCamera": "Avvia Fotocamera",
+    "record": "Inizia Registrazione",
+    "recording": "Registrazione in corso...",
+    "uploading": "Caricamento video...",
+    "complete": "Video caricato con successo",
+    "cameraError": "Impossibile accedere alla fotocamera",
+    "uploadError": "Caricamento fallito. Riprova."
   }
 }

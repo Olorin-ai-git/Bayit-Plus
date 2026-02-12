@@ -46,6 +46,10 @@ final class RepositoryProvider {
     let search: any SearchRepository
     let missions: any MissionsRepository
     let starStory: any StarStoryRepository
+    let interactiveMissionRepository: any InteractiveMissionRepository
+    let avatarRepository: any AvatarOutfitRepository
+    let familySnapRepository: any FamilySnapRepository
+    let phoneticMirrorRepository: any PhoneticMirrorRepository
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
@@ -89,6 +93,10 @@ final class RepositoryProvider {
         self.search = APISearchRepository(client: client)
         self.missions = APIMissionsRepository(client: client)
         self.starStory = APIStarStoryRepository(client: client)
+        self.interactiveMissionRepository = APIInteractiveMissionRepository(client: client)
+        self.avatarRepository = APIAvatarOutfitRepository(client: client)
+        self.familySnapRepository = APIFamilySnapRepository(client: client)
+        self.phoneticMirrorRepository = APIPhoneticMirrorRepository(client: client)
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         self.offlineCache = OfflineCacheService()

@@ -5,13 +5,13 @@ Records verifiable parental consent for Star in Story feature.
 Validates family PIN through FamilyControls before granting consent.
 """
 
-import logging
 from datetime import datetime, timezone
 
+from app.core.logging_config import get_logger
 from app.models.child_avatar import AvatarStatus, ChildAvatar, ConsentRecord
 from app.models.family_controls import FamilyControls
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class ConsentService:
@@ -22,7 +22,7 @@ class ConsentService:
         user_id: str,
         profile_id: str,
         child_first_name: str,
-        pin_hash: str,
+        pin: str,
         ip_address: str = "",
     ) -> ChildAvatar:
         """
@@ -36,7 +36,14 @@ class ConsentService:
         if not family_controls:
             raise ValueError("Family controls not configured for this account")
 
-        if family_controls.pin_hash != pin_hash:
+        from app.services.family_controls_service import (
+            family_controls_service,
+        )
+
+        pin_valid = await family_controls_service.verify_pin(
+            user_id=user_id, pin=pin,
+        )
+        if not pin_valid:
             logger.warning(
                 "Consent PIN verification failed",
                 extra={"user_id": user_id, "profile_id": profile_id},

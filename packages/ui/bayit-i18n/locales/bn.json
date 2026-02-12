@@ -7979,5 +7979,96 @@
       "usage": "সাধারণ ব্যবহার",
       "funFact": "মজার তথ্য"
     }
+  },
+  "interactiveMission": {
+    "title": "ইন্টারেক্টিভ মিশন",
+    "loading": "মিশন লোড হচ্ছে...",
+    "preparing": "মিশন প্রস্তুত হচ্ছে...",
+    "listening": "শুনছে...",
+    "speak": "বলুন",
+    "speakHebrew": "হিব্রু বলুন",
+    "complete": "মিশন সম্পন্ন",
+    "continue": "চালিয়ে যান",
+    "attemptOf": "প্রচেষ্টা {{current}} এর মধ্যে {{max}} - আবার চেষ্টা করুন",
+    "totalScore": "স্কোর: {{score}}",
+    "shekelsEarned": "{{amount}} শেকেল অর্জিত",
+    "backToMissions": "মিশনে ফিরে যান",
+    "generating": "মিশন তৈরি হচ্ছে...",
+    "available": "উপলব্ধ মিশন",
+    "noMissions": "কোনো মিশন উপলব্ধ নেই",
+    "startMission": "মিশন শুরু করুন",
+    "sceneProgress": "দৃশ্য {{current}} / {{total}}",
+    "tryAgain": "আবার চেষ্টা করুন",
+    "hint": "ইঙ্গিত",
+    "timeout": "সময় শেষ",
+    "feedbackExcellent": "চমৎকার উচ্চারণ",
+    "feedbackGood": "ভালো কাজ",
+    "feedbackRetry": "আরেকবার চেষ্টা করুন",
+    "errors": {
+      "fetchFailed": "মিশন লোড করতে ব্যর্থ",
+      "generateFailed": "মিশন তৈরি করতে ব্যর্থ",
+      "loadFailed": "মিশন লোড করতে ব্যর্থ",
+      "submitFailed": "প্রচেষ্টা জমা দিতে ব্যর্থ",
+      "completeFailed": "মিশন সম্পন্ন করতে ব্যর্থ"
+    }
+  },
+  "avatarWardrobe": {
+    "title": "পোশাকঘর",
+    "purchase": "কিনুন",
+    "purchasing": "কেনা হচ্ছে...",
+    "equip": "পরুন",
+    "unequip": "খুলুন",
+    "owned": "মালিকানাধীন",
+    "insufficientShekels": "পর্যাপ্ত শেকেল নেই",
+    "rarity": {
+      "common": "সাধারণ",
+      "uncommon": "অসাধারণ",
+      "rare": "বিরল",
+      "epic": "মহাকাব্যিক",
+      "legendary": "কিংবদন্তি"
+    },
+    "category": {
+      "israeliHeritage": "ইসরায়েলি ঐতিহ্য",
+      "holiday": "উৎসব",
+      "sports": "খেলাধুলা",
+      "fantasy": "কল্পনা",
+      "showCharacter": "শো চরিত্র"
+    },
+    "empty": "এখনো কোনো পোশাক উপলব্ধ নেই",
+    "balance": "ব্যালেন্স: {{amount}}",
+    "errors": {
+      "loadFailed": "পোশাকঘর লোড করতে ব্যর্থ",
+      "purchaseFailed": "কেনাকাটা ব্যর্থ",
+      "equipFailed": "পরিধান করতে ব্যর্থ"
+    }
+  },
+  "familySnaps": {
+    "title": "পারিবারিক ছবি",
+    "newSnap": "নতুন ছবি",
+    "empty": "এখনো কোনো ছবি নেই",
+    "download": "ডাউনলোড",
+    "share": "শেয়ার",
+    "shareWhatsApp": "WhatsApp-এ শেয়ার করুন",
+    "shareEmail": "ইমেইলে শেয়ার করুন",
+    "shareText": "আমার Bayit+ ফ্যামিলি স্ন্যাপ দেখুন!",
+    "enterPin": "শেয়ার করতে অভিভাবক পিন দিন",
+    "generating": "আপনার ছবি তৈরি হচ্ছে...",
+    "shareSuccess": "শেয়ার লিংক তৈরি হয়েছে",
+    "template": {
+      "sideBySide": "পাশাপাশি",
+      "actionPose": "অ্যাকশন পোজ",
+      "groupPhoto": "গ্রুপ ফটো"
+    }
+  },
+  "videoSelfie": {
+    "title": "ভিডিও সেলফি",
+    "instructions": "১০ সেকেন্ডের একটি ভিডিও রেকর্ড করুন। ক্যামেরার দিকে তাকান, ধীরে ধীরে মাথা ঘোরান এবং শালোম বলুন।",
+    "startCamera": "ক্যামেরা চালু করুন",
+    "record": "রেকর্ডিং শুরু করুন",
+    "recording": "রেকর্ড হচ্ছে...",
+    "uploading": "ভিডিও আপলোড হচ্ছে...",
+    "complete": "ভিডিও সফলভাবে আপলোড হয়েছে",
+    "cameraError": "ক্যামেরা অ্যাক্সেস করা যায়নি",
+    "uploadError": "আপলোড ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।"
   }
 }

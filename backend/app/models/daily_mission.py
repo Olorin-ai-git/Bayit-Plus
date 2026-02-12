@@ -24,6 +24,9 @@ class MissionType(str, Enum):
     USE_SUBTITLES = "use_subtitles"
     TALK_BACK = "talk_back"
     LEARN_PHRASES = "learn_phrases"
+    COMPLETE_INTERACTIVE_MISSION = "complete_interactive_mission"
+    UNLOCK_OUTFIT = "unlock_outfit"
+    COLLECT_FAMILY_SNAPS = "collect_family_snaps"
 
 
 class MissionDifficulty(str, Enum):

@@ -13,21 +13,11 @@ from app.models.child_avatar import ChildAvatar
 from app.models.child_proficiency import ChildProficiency
 from app.models.story_episode import EpisodeStatus, StoryEpisode
 from app.services.proficiency.assessment_service import assessment_service
-from app.services.star_story.audio_generation_service import (
-    audio_generation_service,
-)
-from app.services.star_story.content_safety_service import (
-    content_safety_service,
-)
-from app.services.star_story.episode_assembly_service import (
-    episode_assembly_service,
-)
-from app.services.star_story.script_generation_service import (
-    script_generation_service,
-)
-from app.services.star_story.video_generation_service import (
-    video_generation_service,
-)
+from app.services.star_story.audio_generation_service import audio_generation_service
+from app.services.star_story.content_safety_service import content_safety_service
+from app.services.star_story.episode_assembly_service import episode_assembly_service
+from app.services.star_story.script_generation_service import script_generation_service
+from app.services.star_story.video_generation_service import video_generation_service
 
 logger = logging.getLogger(__name__)
 
@@ -183,11 +173,13 @@ class StarStoryOrchestrator:
             )
 
     async def get_episode_progress(
-        self, episode_id: str
+        self, episode_id: str, user_id: str = "",
     ) -> dict:
         """Get current generation progress for an episode."""
         episode = await StoryEpisode.get(episode_id)
         if not episode:
+            raise ValueError(f"Episode not found: {episode_id}")
+        if user_id and episode.user_id != user_id:
             raise ValueError(f"Episode not found: {episode_id}")
 
         return {

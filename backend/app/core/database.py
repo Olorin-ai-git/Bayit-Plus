@@ -131,6 +131,14 @@ from app.models.bilingual_dubbing_session import BilingualDubbingSession
 from app.models.child_avatar import ChildAvatar
 from app.models.story_episode import StoryEpisode
 from app.models.story_generation_job import StoryGenerationJob
+# Interactive Mission models (Atzmi Ba'Sipur)
+from app.models.interactive_mission import InteractiveMission
+from app.models.avatar_outfit import AvatarOutfit
+from app.models.family_snap import FamilySnap
+# Phonetic Mirror models (Perfected Voice)
+from app.models.phonetic_mirror_attempt import PhoneticMirrorAttempt
+# Gamification models (Level Progression)
+from app.models.gamification_profile import GamificationProfile
 
 
 class Database:
@@ -411,6 +419,14 @@ async def connect_to_mongo():
         ChildAvatar,
         StoryEpisode,
         StoryGenerationJob,
+        # Interactive Mission models (Atzmi Ba'Sipur)
+        InteractiveMission,
+        AvatarOutfit,
+        FamilySnap,
+        # Phonetic Mirror models (Perfected Voice)
+        PhoneticMirrorAttempt,
+        # Gamification models (Level Progression)
+        GamificationProfile,
     ]
 
     # Conditionally add Olorin models based on database separation setting

@@ -21,6 +21,17 @@ protocol MissionsRepository: Sendable {
     func fetchZines() async throws -> ZineListResponse
 
     func markZineViewed(zineId: String) async throws
+
+    func fetchInteractiveMission(missionId: String) async throws -> InteractiveMission
+
+    func submitMissionAttempt(
+        missionId: String, profileId: String,
+        sceneNumber: Int, attempt: Int, userInput: String
+    ) async throws -> AttemptResult
+
+    func completeMissionSession(
+        missionId: String, profileId: String
+    ) async throws -> MissionCompletion
 }
 
 final class APIMissionsRepository: MissionsRepository, @unchecked Sendable {
@@ -97,6 +108,40 @@ final class APIMissionsRepository: MissionsRepository, @unchecked Sendable {
         let _: EmptyResponse = try await client.patch(
             "/api/v1/zine/\(zineId)/viewed",
             as: EmptyResponse.self
+        )
+    }
+
+    func fetchInteractiveMission(missionId: String) async throws -> InteractiveMission {
+        return try await client.get(
+            "/api/v1/interactive-missions/\(missionId)",
+            as: InteractiveMission.self
+        )
+    }
+
+    func submitMissionAttempt(
+        missionId: String, profileId: String,
+        sceneNumber: Int, attempt: Int, userInput: String
+    ) async throws -> AttemptResult {
+        let request = SubmitAttemptRequest(
+            profileId: profileId,
+            responseTranscript: userInput,
+            languageDetected: "he"
+        )
+        return try await client.post(
+            "/api/v1/interactive-missions/\(missionId)/scenes/\(sceneNumber)/attempt",
+            body: request,
+            as: AttemptResult.self
+        )
+    }
+
+    func completeMissionSession(
+        missionId: String, profileId: String
+    ) async throws -> MissionCompletion {
+        let request = CompleteMissionRequest(profileId: profileId)
+        return try await client.post(
+            "/api/v1/interactive-missions/\(missionId)/complete",
+            body: request,
+            as: MissionCompletion.self
         )
     }
 }

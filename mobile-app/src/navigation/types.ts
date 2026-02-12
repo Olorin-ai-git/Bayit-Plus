@@ -45,6 +45,10 @@ export type RootStackParamList = {
   PaymentCancelled: undefined;
   PaymentPending: { checkoutUrl?: string | null; planId?: string | null };
   Subscribe: undefined;
+  // Interactive Missions
+  InteractiveMission: { missionId: string; profileId: string };
+  AvatarWardrobe: { avatarId: string; profileId: string };
+  VideoSelfie: { avatarId: string };
 };
 
 export type MainTabParamList = {

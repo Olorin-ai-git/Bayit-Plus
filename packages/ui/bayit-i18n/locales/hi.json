@@ -8003,5 +8003,96 @@
       "usage": "सामान्य उपयोग",
       "funFact": "रोचक तथ्य"
     }
+  },
+  "interactiveMission": {
+    "title": "इंटरैक्टिव मिशन",
+    "loading": "मिशन लोड हो रहा है...",
+    "preparing": "मिशन तैयार हो रहा है...",
+    "listening": "सुन रहा है...",
+    "speak": "बोलें",
+    "speakHebrew": "हिब्रू बोलें",
+    "complete": "मिशन पूरा हुआ",
+    "continue": "जारी रखें",
+    "attemptOf": "प्रयास {{current}} में से {{max}} - फिर से प्रयास करें",
+    "totalScore": "स्कोर: {{score}}",
+    "shekelsEarned": "{{amount}} शेकेल अर्जित",
+    "backToMissions": "मिशनों पर वापस",
+    "generating": "मिशन बनाया जा रहा है...",
+    "available": "उपलब्ध मिशन",
+    "noMissions": "कोई मिशन उपलब्ध नहीं",
+    "startMission": "मिशन शुरू करें",
+    "sceneProgress": "दृश्य {{current}} / {{total}}",
+    "tryAgain": "पुनः प्रयास करें",
+    "hint": "संकेत",
+    "timeout": "समय समाप्त",
+    "feedbackExcellent": "उत्कृष्ट उच्चारण",
+    "feedbackGood": "अच्छा काम",
+    "feedbackRetry": "एक बार और प्रयास करें",
+    "errors": {
+      "fetchFailed": "मिशन लोड करने में विफल",
+      "generateFailed": "मिशन बनाने में विफल",
+      "loadFailed": "मिशन लोड करने में विफल",
+      "submitFailed": "प्रयास सबमिट करने में विफल",
+      "completeFailed": "मिशन पूरा करने में विफल"
+    }
+  },
+  "avatarWardrobe": {
+    "title": "अलमारी",
+    "purchase": "खरीदें",
+    "purchasing": "खरीदा जा रहा है...",
+    "equip": "पहनें",
+    "unequip": "उतारें",
+    "owned": "स्वामित्व में",
+    "insufficientShekels": "पर्याप्त शेकेल नहीं",
+    "rarity": {
+      "common": "सामान्य",
+      "uncommon": "असामान्य",
+      "rare": "दुर्लभ",
+      "epic": "महाकाव्य",
+      "legendary": "पौराणिक"
+    },
+    "category": {
+      "israeliHeritage": "इज़राइली विरासत",
+      "holiday": "त्योहार",
+      "sports": "खेल",
+      "fantasy": "काल्पनिक",
+      "showCharacter": "शो का किरदार"
+    },
+    "empty": "अभी कोई पोशाक उपलब्ध नहीं",
+    "balance": "शेष: {{amount}}",
+    "errors": {
+      "loadFailed": "अलमारी लोड करने में विफल",
+      "purchaseFailed": "खरीदारी विफल",
+      "equipFailed": "पहनने में विफल"
+    }
+  },
+  "familySnaps": {
+    "title": "पारिवारिक तस्वीरें",
+    "newSnap": "नई तस्वीर",
+    "empty": "अभी कोई तस्वीर नहीं",
+    "download": "डाउनलोड",
+    "share": "साझा करें",
+    "shareWhatsApp": "WhatsApp पर साझा करें",
+    "shareEmail": "ईमेल से साझा करें",
+    "shareText": "मेरी Bayit+ फैमिली स्नैप देखें!",
+    "enterPin": "साझा करने के लिए अभिभावक पिन दर्ज करें",
+    "generating": "आपकी तस्वीर बनाई जा रही है...",
+    "shareSuccess": "शेयर लिंक बनाया गया",
+    "template": {
+      "sideBySide": "साथ-साथ",
+      "actionPose": "एक्शन पोज़",
+      "groupPhoto": "समूह फोटो"
+    }
+  },
+  "videoSelfie": {
+    "title": "वीडियो सेल्फी",
+    "instructions": "10 सेकंड का वीडियो रिकॉर्ड करें। कैमरे की ओर देखें, धीरे-धीरे सिर घुमाएं, और शालोम कहें।",
+    "startCamera": "कैमरा शुरू करें",
+    "record": "रिकॉर्डिंग शुरू करें",
+    "recording": "रिकॉर्ड हो रहा है...",
+    "uploading": "वीडियो अपलोड हो रहा है...",
+    "complete": "वीडियो सफलतापूर्वक अपलोड हुआ",
+    "cameraError": "कैमरा एक्सेस नहीं हो सका",
+    "uploadError": "अपलोड विफल। कृपया पुनः प्रयास करें।"
   }
 }

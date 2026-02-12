@@ -8937,5 +8937,96 @@
       "usage": "Usage Courant",
       "funFact": "Anecdote"
     }
+  },
+  "interactiveMission": {
+    "title": "Mission Interactive",
+    "loading": "Chargement de la mission...",
+    "preparing": "Preparation de la mission...",
+    "listening": "Ecoute en cours...",
+    "speak": "Parler",
+    "speakHebrew": "Parlez hebreu",
+    "complete": "Mission Terminee",
+    "continue": "Continuer",
+    "attemptOf": "Essai {{current}} sur {{max}} - Reessayer",
+    "totalScore": "Score : {{score}}",
+    "shekelsEarned": "{{amount}} Shekels Gagnes",
+    "backToMissions": "Retour aux Missions",
+    "generating": "Generation de la mission...",
+    "available": "Missions Disponibles",
+    "noMissions": "Aucune mission disponible",
+    "startMission": "Commencer la Mission",
+    "sceneProgress": "Scene {{current}} sur {{total}}",
+    "tryAgain": "Reessayer",
+    "hint": "Indice",
+    "timeout": "Temps ecoule",
+    "feedbackExcellent": "Excellente prononciation",
+    "feedbackGood": "Bon travail",
+    "feedbackRetry": "Essayez encore une fois",
+    "errors": {
+      "fetchFailed": "Echec du chargement des missions",
+      "generateFailed": "Echec de la generation de la mission",
+      "loadFailed": "Echec du chargement de la mission",
+      "submitFailed": "Echec de l'envoi de la tentative",
+      "completeFailed": "Echec de la completion de la mission"
+    }
+  },
+  "avatarWardrobe": {
+    "title": "Garde-robe",
+    "purchase": "Acheter",
+    "purchasing": "Achat en cours...",
+    "equip": "Equiper",
+    "unequip": "Desequiper",
+    "owned": "Possede",
+    "insufficientShekels": "Shekels insuffisants",
+    "rarity": {
+      "common": "Commun",
+      "uncommon": "Peu commun",
+      "rare": "Rare",
+      "epic": "Epique",
+      "legendary": "Legendaire"
+    },
+    "category": {
+      "israeliHeritage": "Patrimoine Israelien",
+      "holiday": "Fete",
+      "sports": "Sports",
+      "fantasy": "Fantaisie",
+      "showCharacter": "Personnage de Serie"
+    },
+    "empty": "Aucune tenue disponible pour le moment",
+    "balance": "Solde : {{amount}}",
+    "errors": {
+      "loadFailed": "Echec du chargement de la garde-robe",
+      "purchaseFailed": "Echec de l'achat",
+      "equipFailed": "Echec de l'equipement"
+    }
+  },
+  "familySnaps": {
+    "title": "Photos de Famille",
+    "newSnap": "Nouvelle Photo",
+    "empty": "Aucune photo pour le moment",
+    "download": "Telecharger",
+    "share": "Partager",
+    "shareWhatsApp": "Partager sur WhatsApp",
+    "shareEmail": "Partager par email",
+    "shareText": "Regardez ma photo Bayit+!",
+    "enterPin": "Entrez le code parental pour partager",
+    "generating": "Creation de votre photo...",
+    "shareSuccess": "Lien de partage cree",
+    "template": {
+      "sideBySide": "Cote a Cote",
+      "actionPose": "Pose d'Action",
+      "groupPhoto": "Photo de Groupe"
+    }
+  },
+  "videoSelfie": {
+    "title": "Video Selfie",
+    "instructions": "Enregistrez une video de 10 secondes. Regardez la camera, tournez la tete lentement et dites Shalom.",
+    "startCamera": "Demarrer la Camera",
+    "record": "Commencer l'Enregistrement",
+    "recording": "Enregistrement en cours...",
+    "uploading": "Telechargement de la video...",
+    "complete": "Video telechargee avec succes",
+    "cameraError": "Impossible d'acceder a la camera",
+    "uploadError": "Echec du telechargement. Veuillez reessayer."
   }
 }
