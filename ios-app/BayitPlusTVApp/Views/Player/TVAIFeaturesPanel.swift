@@ -2,20 +2,51 @@ import BayitDesignSystem
 import SwiftUI
 
 /// tvOS AI features control bar for live content.
-/// Provides buttons for live translation, dubbing, trivia, split subtitles, and language selection.
+/// Provides buttons for live translation, dubbing, trivia, catch-up,
+/// split subtitles, and language selection.
 /// Uses focusable card buttons for Siri Remote navigation.
 struct TVAIFeaturesPanel: View {
     let isSubtitlesEnabled: Bool
     let isDubbingEnabled: Bool
     let isTriviaEnabled: Bool
     let isSplitEnabled: Bool
+    let isCatchUpAvailable: Bool
     let currentLanguage: String
 
     let onSubtitlesTap: () -> Void
     let onDubbingTap: () -> Void
     let onTriviaTap: () -> Void
+    let onCatchUpTap: (() -> Void)?
     let onSplitTap: () -> Void
     let onLanguageTap: () -> Void
+
+    init(
+        isSubtitlesEnabled: Bool,
+        isDubbingEnabled: Bool,
+        isTriviaEnabled: Bool,
+        isSplitEnabled: Bool,
+        isCatchUpAvailable: Bool = false,
+        currentLanguage: String,
+        onSubtitlesTap: @escaping () -> Void,
+        onDubbingTap: @escaping () -> Void,
+        onTriviaTap: @escaping () -> Void,
+        onCatchUpTap: (() -> Void)? = nil,
+        onSplitTap: @escaping () -> Void,
+        onLanguageTap: @escaping () -> Void
+    ) {
+        self.isSubtitlesEnabled = isSubtitlesEnabled
+        self.isDubbingEnabled = isDubbingEnabled
+        self.isTriviaEnabled = isTriviaEnabled
+        self.isSplitEnabled = isSplitEnabled
+        self.isCatchUpAvailable = isCatchUpAvailable
+        self.currentLanguage = currentLanguage
+        self.onSubtitlesTap = onSubtitlesTap
+        self.onDubbingTap = onDubbingTap
+        self.onTriviaTap = onTriviaTap
+        self.onCatchUpTap = onCatchUpTap
+        self.onSplitTap = onSplitTap
+        self.onLanguageTap = onLanguageTap
+    }
 
     var body: some View {
         VStack {
@@ -44,6 +75,15 @@ struct TVAIFeaturesPanel: View {
                     action: onTriviaTap
                 )
 
+                if let onCatchUpTap, isCatchUpAvailable {
+                    featureButton(
+                        icon: "clock.arrow.circlepath",
+                        label: "Catch Up",
+                        isActive: false,
+                        action: onCatchUpTap
+                    )
+                }
+
                 featureButton(
                     icon: "square.split.2x1",
                     label: "Split",
@@ -64,11 +104,15 @@ struct TVAIFeaturesPanel: View {
     private var languageBadge: some View {
         Button(action: onLanguageTap) {
             Text(currentLanguage.uppercased())
-                .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
+                .font(.system(
+                    size: TVDesignTokens.FontSize.sm, weight: .bold
+                ))
                 .foregroundStyle(.white)
                 .frame(width: 48, height: 36)
                 .background(DesignTokens.Primary.p700)
-                .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm))
+                .clipShape(RoundedRectangle(
+                    cornerRadius: TVDesignTokens.Radius.sm
+                ))
         }
         .buttonStyle(.card)
         .accessibilityLabel("Change AI language: \(currentLanguage)")
@@ -88,7 +132,9 @@ struct TVAIFeaturesPanel: View {
                     .font(.system(size: TVDesignTokens.FontSize.xs))
             }
             .foregroundStyle(
-                isActive ? DesignTokens.Primary.p400 : DesignTokens.Text.primary
+                isActive
+                    ? DesignTokens.Primary.p400
+                    : DesignTokens.Text.primary
             )
             .frame(
                 minWidth: TVDesignTokens.MinSize.focusableWidth,

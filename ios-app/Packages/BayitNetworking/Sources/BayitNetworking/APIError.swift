@@ -9,6 +9,9 @@ public enum APIError: Error, Sendable, Equatable {
     /// 401 Unauthorized -- token missing, expired, or invalid.
     case unauthorized(message: String)
 
+    /// 402 Payment Required -- insufficient credits or payment needed.
+    case paymentRequired(message: String)
+
     /// 403 Forbidden -- authenticated but insufficient permissions.
     case forbidden(message: String)
 
@@ -42,6 +45,8 @@ extension APIError: LocalizedError {
         switch self {
         case .unauthorized(let message):
             return "Unauthorized: \(message)"
+        case .paymentRequired(let message):
+            return "Payment Required: \(message)"
         case .forbidden(let message):
             return "Forbidden: \(message)"
         case .notFound(let message):
@@ -82,6 +87,8 @@ extension APIError {
         switch statusCode {
         case 401:
             return .unauthorized(message: message)
+        case 402:
+            return .paymentRequired(message: message)
         case 403:
             return .forbidden(message: message)
         case 404:

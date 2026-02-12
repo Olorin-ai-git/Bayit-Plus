@@ -39,6 +39,11 @@ public protocol EnvironmentConfiguration: Sendable {
     var webSocketMaxReconnectAttempts: Int { get }
     var webSocketReconnectBaseDelay: TimeInterval { get }
     var webSocketInactiveGracePeriod: TimeInterval { get }
+
+    // MARK: - Catch-Up Configuration
+    var catchUpCreditCost: Int { get }
+    var catchUpAutoPromptSeconds: Int { get }
+    var catchUpDefaultWindowMinutes: Int { get }
 }
 
 /// Resolves configuration from Info.plist and environment
@@ -55,6 +60,9 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
     public let webSocketMaxReconnectAttempts: Int
     public let webSocketReconnectBaseDelay: TimeInterval
     public let webSocketInactiveGracePeriod: TimeInterval
+    public let catchUpCreditCost: Int
+    public let catchUpAutoPromptSeconds: Int
+    public let catchUpDefaultWindowMinutes: Int
 
     public init() {
         let env = AppEnvironment.current
@@ -100,6 +108,15 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
         let wsGracePeriodValue = info["WS_INACTIVE_GRACE_PERIOD"] as? String
             ?? ProcessInfo.processInfo.environment["WS_INACTIVE_GRACE_PERIOD"]
 
+        let catchUpCreditCostValue = info["CATCHUP_CREDIT_COST"] as? String
+            ?? ProcessInfo.processInfo.environment["CATCHUP_CREDIT_COST"]
+
+        let catchUpAutoPromptValue = info["CATCHUP_AUTO_PROMPT_SECONDS"] as? String
+            ?? ProcessInfo.processInfo.environment["CATCHUP_AUTO_PROMPT_SECONDS"]
+
+        let catchUpWindowValue = info["CATCHUP_DEFAULT_WINDOW_MINUTES"] as? String
+            ?? ProcessInfo.processInfo.environment["CATCHUP_DEFAULT_WINDOW_MINUTES"]
+
         self.environment = env
         self.apiBaseURL = apiURL
         self.apiTimeout = TimeInterval(timeoutValue ?? "") ?? 30.0
@@ -112,6 +129,9 @@ public struct AppConfiguration: EnvironmentConfiguration, Sendable {
         self.webSocketMaxReconnectAttempts = Int(wsMaxReconnectValue ?? "") ?? 5
         self.webSocketReconnectBaseDelay = TimeInterval(wsReconnectDelayValue ?? "") ?? 1.0
         self.webSocketInactiveGracePeriod = TimeInterval(wsGracePeriodValue ?? "") ?? 10.0
+        self.catchUpCreditCost = Int(catchUpCreditCostValue ?? "") ?? 1
+        self.catchUpAutoPromptSeconds = Int(catchUpAutoPromptValue ?? "") ?? 15
+        self.catchUpDefaultWindowMinutes = Int(catchUpWindowValue ?? "") ?? 15
     }
 
     private static func defaultAPIBaseURL(for env: AppEnvironment) -> String {

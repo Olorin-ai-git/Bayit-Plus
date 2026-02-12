@@ -8,21 +8,82 @@ import SwiftUI
 /// AI companion sidebar, and stream limit exceeded overlays.
 extension PlayerView {
 
-    // MARK: - Catch-Up Overlay
+    // MARK: - Catch-Up Auto-Prompt Overlay
+
+    @ViewBuilder
+    var catchUpAutoPromptOverlay: some View {
+        if let vm = catchUpVM, vm.showAutoPrompt, mediaContentType.isLive {
+            ZStack {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        vm.dismissAutoPrompt(channelId: contentId)
+                    }
+
+                CatchUpAutoPromptView(
+                    programName: viewModel.title,
+                    creditCost: repositories.configuration.catchUpCreditCost,
+                    creditBalance: vm.creditBalance,
+                    autoDismissSeconds: repositories.configuration.catchUpAutoPromptSeconds,
+                    onAccept: {
+                        Task {
+                            await vm.fetchSummary(
+                                channelId: contentId,
+                                windowMinutes: repositories.configuration.catchUpDefaultWindowMinutes,
+                                targetLanguage: selectedAILanguage
+                            )
+                        }
+                    },
+                    onDecline: {
+                        vm.dismissAutoPrompt(channelId: contentId)
+                    }
+                )
+            }
+            .transition(.opacity)
+        }
+    }
+
+    // MARK: - Catch-Up Summary Overlay
+
+    @ViewBuilder
+    var catchUpSummaryOverlay: some View {
+        if let vm = catchUpVM, vm.showSummary, let response = vm.summary {
+            ZStack {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture { vm.closeSummary() }
+
+                CatchUpSummaryView(
+                    response: response,
+                    onClose: { vm.closeSummary() }
+                )
+                .padding(.horizontal, DesignTokens.Spacing.lg)
+            }
+            .transition(.opacity)
+        }
+    }
+
+    // MARK: - Catch-Up Overlay (transcript timeline)
 
     @ViewBuilder
     var catchUpOverlay: some View {
         if showCatchUp, mediaContentType.isLive {
-            CatchUpView(
-                repository: repositories.liveTV,
-                channelId: contentId,
-                onSeek: { time in
-                    showCatchUp = false
-                    Task { await viewModel.player.seek(to: time) }
-                },
-                onDismiss: { showCatchUp = false }
-            )
-            .transition(.move(edge: .trailing).combined(with: .opacity))
+            if let vm = catchUpVM {
+                CatchUpView(
+                    viewModel: vm,
+                    channelId: contentId,
+                    creditBalance: vm.creditBalance,
+                    onSeek: { time in
+                        showCatchUp = false
+                        Task { await viewModel.player.seek(to: time) }
+                    },
+                    onDismiss: { showCatchUp = false },
+                    onUpgrade: { showCatchUp = false }
+                )
+                .transition(
+                    .move(edge: .trailing).combined(with: .opacity)
+                )
+            }
         }
     }
 
@@ -74,7 +135,9 @@ extension PlayerView {
                 Spacer()
                 VStack(spacing: DesignTokens.Spacing.md) {
                     Text("Channel Chat")
-                        .font(.system(size: DesignTokens.FontSize.lg, weight: .semibold))
+                        .font(.system(
+                            size: DesignTokens.FontSize.lg, weight: .semibold
+                        ))
                         .foregroundStyle(DesignTokens.Text.primary)
                     Text("Chat requires an active connection")
                         .font(.system(size: DesignTokens.FontSize.sm))
@@ -120,19 +183,25 @@ extension PlayerView {
     @ViewBuilder
     var liveFeatureButtons: some View {
         if mediaContentType.isLive {
-            Button {
-                withAnimation(.spring(duration: 0.3)) {
-                    showCatchUp.toggle()
-                    showSceneSearch = false
-                    showChannelChat = false
+            // Catch-up button: gated behind availability (beta user + server check)
+            if catchUpVM?.isAvailable == true {
+                Button {
+                    withAnimation(.spring(duration: 0.3)) {
+                        showCatchUp.toggle()
+                        showSceneSearch = false
+                        showChannelChat = false
+                    }
+                } label: {
+                    Image(systemName: "clock.arrow.circlepath")
+                        .font(.system(size: 18))
+                        .foregroundStyle(
+                            showCatchUp
+                                ? DesignTokens.Primary.p400 : .white
+                        )
+                        .frame(width: 44, height: 44)
                 }
-            } label: {
-                Image(systemName: "clock.arrow.circlepath")
-                    .font(.system(size: 18))
-                    .foregroundStyle(showCatchUp ? DesignTokens.Primary.p400 : .white)
-                    .frame(width: 44, height: 44)
+                .accessibilityLabel("Catch up")
             }
-            .accessibilityLabel("Catch up")
 
             Button {
                 withAnimation(.spring(duration: 0.3)) {
@@ -143,7 +212,10 @@ extension PlayerView {
             } label: {
                 Image(systemName: "magnifyingglass")
                     .font(.system(size: 18))
-                    .foregroundStyle(showSceneSearch ? DesignTokens.Primary.p400 : .white)
+                    .foregroundStyle(
+                        showSceneSearch
+                            ? DesignTokens.Primary.p400 : .white
+                    )
                     .frame(width: 44, height: 44)
             }
             .accessibilityLabel("Scene search")
@@ -157,7 +229,10 @@ extension PlayerView {
             } label: {
                 Image(systemName: "bubble.left.and.bubble.right")
                     .font(.system(size: 18))
-                    .foregroundStyle(showChannelChat ? DesignTokens.Primary.p400 : .white)
+                    .foregroundStyle(
+                        showChannelChat
+                            ? DesignTokens.Primary.p400 : .white
+                    )
                     .frame(width: 44, height: 44)
             }
             .accessibilityLabel("Channel chat")
@@ -167,8 +242,6 @@ extension PlayerView {
     // MARK: - Disconnect Device
 
     func disconnectDevice(_ deviceId: String) async {
-        // Endpoint to disconnect a specific streaming device
-        // After disconnect, retry playback
         showStreamLimitExceeded = false
     }
 }

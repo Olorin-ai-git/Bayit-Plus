@@ -46,6 +46,9 @@ struct PlayerView: View {
     // Dubbing controls state
     @State var showDubbingControls = false
 
+    // Catch-up ViewModel (shared across overlays)
+    @State var catchUpVM: CatchUpViewModel?
+
     // Live feature overlays
     @State var showCatchUp = false
     @State var showSceneSearch = false
@@ -204,6 +207,8 @@ struct PlayerView: View {
             channelChatOverlay
             aiCompanionOverlay
             streamLimitOverlay
+            catchUpAutoPromptOverlay
+            catchUpSummaryOverlay
 
             // Controls overlay
             if showControls && !viewModel.isLoading && viewModel.errorMessage == nil {
@@ -259,6 +264,8 @@ struct PlayerView: View {
             recordingTimer?.cancel()
             triviaVM?.disconnectLiveTrivia()
             liveSubtitlesVM?.cleanup()
+            catchUpVM?.reset()
+            catchUpVM = nil
         }
         .onChange(of: viewModel.player.currentTime) { _, newTime in
             updateNowPlaying()
@@ -665,6 +672,19 @@ struct PlayerView: View {
                 await triviaVM?.loadFacts(
                     contentId: contentId,
                     language: selectedAILanguage
+                )
+            }
+        }
+
+        // Initialize catch-up for live content when user is beta
+        if mediaContentType.isLive,
+           authManager.user?.isBetaUser == true {
+            let vm = CatchUpViewModel(repository: repositories.liveTV)
+            catchUpVM = vm
+            Task {
+                await vm.checkAvailability(
+                    channelId: contentId,
+                    isBetaUser: true
                 )
             }
         }

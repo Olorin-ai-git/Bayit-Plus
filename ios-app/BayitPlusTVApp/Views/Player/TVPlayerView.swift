@@ -25,6 +25,7 @@ struct TVPlayerView: View {
     @State private var liveSubtitlesVM: LiveSubtitlesViewModel?
     @State private var triviaVM: TriviaFactsViewModel?
     @State private var webSocketService: LiveDubbingWebSocketService?
+    @State private var catchUpVM: CatchUpViewModel?
 
     // MARK: - Panel Visibility
 
@@ -37,6 +38,7 @@ struct TVPlayerView: View {
     @State private var showControlButtons = true
     @State private var showSplitLanguagePicker = false
     @State private var showAILanguagePicker = false
+    @State private var showCatchUp = false
 
     // MARK: - Playback State
 
@@ -77,6 +79,7 @@ struct TVPlayerView: View {
                 splitSubtitleOverlay
                 liveSubtitleOverlay
                 translationOverlay
+                catchUpAutoPromptOverlay
 
                 if showControlButtons {
                     // Gradient scrim for readability
@@ -106,10 +109,12 @@ struct TVPlayerView: View {
                                 isDubbingEnabled: liveDubbingVM?.isEnabled ?? false,
                                 isTriviaEnabled: triviaVM?.isEnabled ?? false,
                                 isSplitEnabled: splitModeEnabled,
+                                isCatchUpAvailable: catchUpVM?.isAvailable ?? false,
                                 currentLanguage: selectedAILanguage,
                                 onSubtitlesTap: { toggleLiveTranslation() },
                                 onDubbingTap: { toggleLiveDubbing() },
                                 onTriviaTap: { toggleLiveTrivia() },
+                                onCatchUpTap: { showCatchUp = true },
                                 onSplitTap: { showSplitLanguagePicker = true },
                                 onLanguageTap: { showAILanguagePicker = true }
                             )
@@ -254,6 +259,19 @@ struct TVPlayerView: View {
                 },
                 onDismiss: { showSpeedControl = false }
             )
+        }
+        .fullScreenCover(isPresented: $showCatchUp) {
+            if let vm = catchUpVM {
+                TVCatchUpView(
+                    viewModel: vm,
+                    channelId: channelId ?? contentId,
+                    onSeek: { time in
+                        showCatchUp = false
+                        Task { await mediaPlayer.seek(to: time) }
+                    },
+                    onDismiss: { showCatchUp = false }
+                )
+            }
         }
     }
 
@@ -461,6 +479,32 @@ struct TVPlayerView: View {
             TVTranslationPopoverView(
                 translation: translation,
                 onDismiss: { vm.dismissTranslation() }
+            )
+        }
+    }
+
+    // MARK: - Catch-Up Auto-Prompt Overlay
+
+    @ViewBuilder
+    private var catchUpAutoPromptOverlay: some View {
+        if let vm = catchUpVM, vm.showAutoPrompt, isLive {
+            TVCatchUpAutoPromptView(
+                programName: nil,
+                creditCost: repos.configuration.catchUpCreditCost,
+                creditBalance: vm.creditBalance,
+                autoDismissSeconds: repos.configuration.catchUpAutoPromptSeconds,
+                onAccept: {
+                    Task {
+                        await vm.fetchSummary(
+                            channelId: channelId ?? contentId,
+                            windowMinutes: repos.configuration.catchUpDefaultWindowMinutes,
+                            targetLanguage: selectedAILanguage
+                        )
+                    }
+                },
+                onDecline: {
+                    vm.dismissAutoPrompt(channelId: channelId ?? contentId)
+                }
             )
         }
     }
@@ -709,6 +753,18 @@ struct TVPlayerView: View {
     }
 
     private func initializeViewModels() {
+        // Catch-up for live content when user is beta
+        if isLive, authManager.user?.isBetaUser == true {
+            let vm = CatchUpViewModel(repository: repos.liveTV)
+            catchUpVM = vm
+            Task {
+                await vm.checkAvailability(
+                    channelId: channelId ?? contentId,
+                    isBetaUser: true
+                )
+            }
+        }
+
         // Trivia for all content types
         triviaVM = TriviaFactsViewModel(
             repository: repos.trivia,
@@ -753,6 +809,8 @@ struct TVPlayerView: View {
         liveDubbingVM?.cleanup()
         liveSubtitlesVM?.cleanup()
         triviaVM?.disconnectLiveTrivia()
+        catchUpVM?.reset()
+        catchUpVM = nil
     }
 }
 
