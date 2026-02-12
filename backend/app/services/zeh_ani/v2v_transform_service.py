@@ -13,12 +13,16 @@ import time
 from datetime import datetime, timezone
 from typing import Optional
 
-import httpx
-
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.models.child_avatar import ChildAvatar
 from app.models.v2v_session import V2VSession, V2VSessionStatus, V2VTransformRecord
+from app.services.zeh_ani.v2v_scoring import (
+    apply_v2v,
+    generate_perfect_tts,
+    score_pronunciation,
+    upload_v2v_audio,
+)
 
 logger = get_logger(__name__)
 
@@ -44,28 +48,19 @@ class V2VTransformService:
         )
         input_transcript = transcription.get("text", "")
 
-        from app.services.phonetic_mirror.pronunciation_scorer import (
-            pronunciation_scorer,
+        score_before = await score_pronunciation(
+            input_transcript, target_phrase_he,
         )
 
-        score_before_result = pronunciation_scorer.score_pronunciation(
-            transcript=input_transcript,
-            target_phrase=target_phrase_he,
-            detected_language="he",
-        )
-        score_before = score_before_result.overall_score
-
-        perfect_audio = await self._generate_perfect_tts(target_phrase_he)
+        perfect_audio = await generate_perfect_tts(target_phrase_he)
 
         v2v_audio: Optional[bytes] = None
         if avatar.has_voice_clone and avatar.elevenlabs_voice_id:
-            v2v_audio = await self._apply_v2v(
+            v2v_audio = await apply_v2v(
                 perfect_audio, avatar.elevenlabs_voice_id,
             )
 
         output_audio = v2v_audio if v2v_audio else perfect_audio
-
-        from app.services.olorin.storage_service import storage_service
 
         from app.models.biometric_consent import BiometricConsent, BiometricConsentType
 
@@ -77,22 +72,13 @@ class V2VTransformService:
         )
         upload_raw = not (consent and consent.on_device_only)
 
-        timestamp = int(time.time())
-        input_path = f"zeh-ani/v2v/{avatar.id}/{timestamp}_input.wav"
-        tts_path = f"zeh-ani/v2v/{avatar.id}/{timestamp}_tts.wav"
-        v2v_path = f"zeh-ani/v2v/{avatar.id}/{timestamp}_v2v.wav"
-
-        if upload_raw:
-            await storage_service.upload_bytes(
-                audio_data, input_path, content_type="audio/wav",
-            )
-        await storage_service.upload_bytes(
-            perfect_audio, tts_path, content_type="audio/wav",
+        input_path, tts_path, v2v_path = await upload_v2v_audio(
+            avatar_id=str(avatar.id),
+            audio_data=audio_data,
+            perfect_audio=perfect_audio,
+            v2v_audio=v2v_audio,
+            upload_raw=upload_raw,
         )
-        if v2v_audio:
-            await storage_service.upload_bytes(
-                v2v_audio, v2v_path, content_type="audio/wav",
-            )
 
         if v2v_audio:
             v2v_transcription = await enhanced_asr_service.transcribe_child_speech(
@@ -100,12 +86,9 @@ class V2VTransformService:
                 language_hints=settings.WHISPER_LANGUAGE_HINTS.split(","),
             )
             v2v_transcript = v2v_transcription.get("text", "")
-            score_after_result = pronunciation_scorer.score_pronunciation(
-                transcript=v2v_transcript,
-                target_phrase=target_phrase_he,
-                detected_language="he",
+            score_after = await score_pronunciation(
+                v2v_transcript, target_phrase_he,
             )
-            score_after = score_after_result.overall_score
         else:
             score_after = score_before
 
@@ -176,44 +159,6 @@ class V2VTransformService:
             "score_after": round(score_after, 3),
             "score_delta": round(score_after - score_before, 3),
         }
-
-    async def _generate_perfect_tts(self, text_he: str) -> bytes:
-        """Generate perfect Hebrew pronunciation via ElevenLabs TTS."""
-        from app.services.phonetic_mirror.mirror_helpers import (
-            generate_corrected_audio,
-        )
-
-        from app.services.olorin.storage_service import storage_service
-
-        gcs_path = await generate_corrected_audio(
-            avatar_id="system_tts", target_phrase=text_he,
-        )
-        if gcs_path:
-            return await storage_service.download_bytes(gcs_path)
-        raise ValueError("Failed to generate TTS for target phrase")
-
-    async def _apply_v2v(
-        self, perfect_audio: bytes, voice_id: str,
-    ) -> bytes:
-        """Apply ElevenLabs V2V to skin TTS with child's voice."""
-        timeout = settings.ELEVENLABS_V2V_TIMEOUT
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            response = await client.post(
-                f"{settings.ELEVENLABS_API_URL}/v1/speech-to-speech/{voice_id}",
-                headers={
-                    "xi-api-key": settings.ELEVENLABS_API_KEY,
-                },
-                files={"audio": ("tts.wav", perfect_audio, "audio/wav")},
-                data={
-                    "model_id": settings.ELEVENLABS_V2V_MODEL,
-                    "voice_settings": (
-                        f'{{"similarity_boost":{settings.ELEVENLABS_V2V_SIMILARITY_BOOST},'
-                        f'"stability":0.5}}'
-                    ),
-                },
-            )
-            response.raise_for_status()
-            return response.content
 
     async def get_or_create_session(
         self, user_id: str, profile_id: str, avatar_id: str,
