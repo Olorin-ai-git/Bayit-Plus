@@ -1,7 +1,7 @@
 # Bayit+ Documentation
 
 **Last Updated:** 2026-02-12
-**Total Documents:** 230 files (organized)
+**Total Documents:** 233 files (organized)
 **Documentation Portal:** https://docs.bayitplus.com
 
 ---
@@ -91,6 +91,7 @@ System design and architecture documents:
 
 Feature specifications and implementation guides:
 
+- [Voice & Avatar AI Features](features/VOICE_AVATAR_FEATURES.md) - Complete user guide for voice commands, emotional intelligence, proactive suggestions, animated avatars, multi-language support, and voice shortcuts ⭐ **NEW (2026-02-12)**
 - [Content Categorization System](features/CONTENT_CATEGORIZATION_SYSTEM.md) - Complete guide to multi-axis content organization, kids/youngsters filtering, IMDB integration, and family controls ⭐ **NEW**
 - [AI Features Overview](features/AI_FEATURES_OVERVIEW.md) - Complete AI catalog ⭐ **NEW**
 - [Subtitle System Enhancements](features/SUBTITLE_SYSTEM_ENHANCEMENTS.md) - 21 accessibility, UX, and performance fixes ⭐ **NEW**
@@ -166,6 +167,8 @@ Testing strategies and best practices:
 
 Deployment guides and infrastructure:
 
+- [Voice & Avatar AI Deployment](deployment/VOICE_AVATAR_DEPLOYMENT.md) - Complete deployment guide for Voice & Avatar AI features v1.1.0 with 5-phase rollout strategy, monitoring, and performance baselines ⭐ **NEW (2026-02-12)**
+- [GCloud Secrets - Voice & Avatar](deployment/GCLOUD_SECRETS_VOICE_AVATAR.md) - Google Cloud Secret Manager configuration for Voice & Avatar features with feature flags, Zeh Ani API credentials, and environment-specific values ⭐ **NEW (2026-02-12)**
 - [Deployment Guide](deployment/DEPLOYMENT_GUIDE.md) - Production deployment
 - [CI/CD Pipeline](deployment/CI_CD_PIPELINE.md) - GitHub Actions workflows
 - [Secrets Management](deployment/SECRETS_MANAGEMENT.md) - Google Cloud secrets
@@ -346,11 +349,11 @@ npm run dev  # Opens http://localhost:5173
 
 ## 📊 Documentation Statistics
 
-- **Total Files:** 229 markdown files
+- **Total Files:** 233 markdown files
 - **Categories:** 28 organized subfolders
 - **Languages:** Documentation in English (UI supports 10 languages)
 - **Platforms:** Web, iOS, Android, tvOS
-- **Last Major Update:** 2026-02-04 (Marketing Materials Added)
+- **Last Major Update:** 2026-02-12 (Voice & Avatar AI Features v1.1.0)
 
 ---
 
@@ -451,6 +454,16 @@ Bayit+ runs on 4 platforms with unified documentation:
 ---
 
 ## Recent Updates
+
+**2026-02-12: Voice & Avatar AI Features v1.1.0**
+- Added comprehensive Voice & Avatar AI features user guide
+- Complete deployment documentation with 5-phase rollout strategy
+- GCloud Secret Manager configuration for all Voice & Avatar features
+- Feature flag documentation (proactive suggestions, multi-language, shortcuts, animations)
+- Zeh Ani API integration configuration
+- Monitoring, alerting, and performance baseline documentation
+- Platform-specific integration guides (Web, Mobile, tvOS)
+- Rollback procedures and troubleshooting guides
 
 **2026-02-11: Cross-Platform Feature Parity Audit v2.0**
 - Comprehensive feature parity audit comparing Web, iOS, and tvOS
