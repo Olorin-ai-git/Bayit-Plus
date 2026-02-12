@@ -21,7 +21,7 @@ struct TVMissionsDashboardView: View {
                 VStack(spacing: TVDesignTokens.Spacing.lg) {
                     Text(errorMsg)
                         .font(.system(size: TVDesignTokens.FontSize.base))
-                        .foregroundStyle(TVDesignTokens.Text.primary)
+                        .foregroundStyle(DesignTokens.Colors.Text.primary)
 
                     Button(localization.t("common.retry")) {
                         Task { await load() }
@@ -39,7 +39,7 @@ struct TVMissionsDashboardView: View {
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)
             }
         }
-        .background(TVDesignTokens.Background.primary)
+        .background(DesignTokens.Colors.Background.primary)
         .task {
             await load()
         }
@@ -49,7 +49,7 @@ struct TVMissionsDashboardView: View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             Text(localization.t("gamification.activity"))
                 .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                .foregroundStyle(TVDesignTokens.Text.primary)
+                .foregroundStyle(DesignTokens.Colors.Text.primary)
 
             VStack(spacing: TVDesignTokens.Spacing.sm) {
                 statRow(
@@ -70,7 +70,7 @@ struct TVMissionsDashboardView: View {
                 )
             }
             .padding(TVDesignTokens.Spacing.lg)
-            .background(TVDesignTokens.Glass.bgLight)
+            .background(DesignTokens.Colors.Glass.backgroundLight)
             .cornerRadius(TVDesignTokens.Radius.md)
         }
     }
@@ -79,13 +79,13 @@ struct TVMissionsDashboardView: View {
         HStack {
             Text(label)
                 .font(.system(size: TVDesignTokens.FontSize.base))
-                .foregroundStyle(TVDesignTokens.Text.secondary)
+                .foregroundStyle(DesignTokens.Colors.Text.secondary)
 
             Spacer()
 
             Text(value)
                 .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                .foregroundStyle(TVDesignTokens.Text.primary)
+                .foregroundStyle(DesignTokens.Colors.Text.primary)
         }
         .padding(.vertical, TVDesignTokens.Spacing.xs)
     }

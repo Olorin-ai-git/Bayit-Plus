@@ -20,7 +20,7 @@ struct TVMagicMirrorView: View {
 
     var body: some View {
         ZStack {
-            TVDesignTokens.Background.primary.ignoresSafeArea()
+            DesignTokens.Colors.Background.primary.ignoresSafeArea()
 
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: TVDesignTokens.Spacing.xl) {
@@ -50,7 +50,7 @@ struct TVMagicMirrorView: View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             Text(localization.t("zehAni.magicMirror.title"))
                 .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
-                .foregroundStyle(TVDesignTokens.Text.primary)
+                .foregroundStyle(DesignTokens.Colors.Text.primary)
 
             avatarSceneView
 
@@ -79,9 +79,9 @@ struct TVMagicMirrorView: View {
         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
         .overlay(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
-                .stroke(TVDesignTokens.Glass.border, lineWidth: 2)
+                .stroke(DesignTokens.Colors.Glass.border, lineWidth: 2)
         )
-        .shadow(color: TVDesignTokens.Glass.purpleGlow, radius: 12, x: 0, y: 4)
+        .shadow(color: DesignTokens.Colors.Glass.purpleGlow, radius: 12, x: 0, y: 4)
     }
 
     private func createAvatarScene() -> SCNScene {

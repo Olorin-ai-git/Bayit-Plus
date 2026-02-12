@@ -11,7 +11,7 @@ struct TVMissionLevelCardView: View {
         VStack(spacing: TVDesignTokens.Spacing.lg) {
             Text("\(profile.currentLevel)")
                 .font(.system(size: 96, weight: .bold))
-                .foregroundStyle(TVDesignTokens.Text.primary)
+                .foregroundStyle(DesignTokens.Colors.Text.primary)
 
             Text(localization.isRTL ? profile.levelTitleHe : profile.levelTitle)
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .semibold))
@@ -20,7 +20,7 @@ struct TVMissionLevelCardView: View {
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
-                        .fill(TVDesignTokens.Glass.bgMedium)
+                        .fill(DesignTokens.Colors.Glass.bgMedium)
                         .frame(height: 20)
 
                     RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
@@ -45,10 +45,10 @@ struct TVMissionLevelCardView: View {
 
             Text(xpProgressText)
                 .font(.system(size: TVDesignTokens.FontSize.base))
-                .foregroundStyle(TVDesignTokens.Text.muted)
+                .foregroundStyle(DesignTokens.Colors.Text.muted)
         }
         .padding(TVDesignTokens.Spacing.xl)
-        .background(TVDesignTokens.Glass.bgLight)
+        .background(DesignTokens.Colors.Glass.backgroundLight)
         .cornerRadius(TVDesignTokens.Radius.lg)
     }
 

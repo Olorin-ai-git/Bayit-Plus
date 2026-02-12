@@ -19,7 +19,7 @@ interface SuggestionHistory {
 }
 
 export class ProactiveSuggestionsService {
-  private config: Required<ProactiveSuggestionsConfig>;
+  private config: ProactiveSuggestionsConfig;
   private activeSuggestions: ProactiveSuggestion[] = [];
   private suggestionHistory: Map<string, SuggestionHistory> = new Map();
   private dailyTriggerCounts: Map<string, Map<string, number>> = new Map(); // date -> ruleId -> count
@@ -31,8 +31,8 @@ export class ProactiveSuggestionsService {
       maxSuggestionsPerSession: config.maxSuggestionsPerSession || 5,
       minTimeBetweenSuggestions: config.minTimeBetweenSuggestions || 10 * 60 * 1000, // 10 minutes
       respectDoNotDisturb: config.respectDoNotDisturb ?? true,
-      quietHoursStart: config.quietHoursStart,
-      quietHoursEnd: config.quietHoursEnd
+      quietHoursStart: config.quietHoursStart ?? undefined,
+      quietHoursEnd: config.quietHoursEnd ?? undefined
     };
   }
 

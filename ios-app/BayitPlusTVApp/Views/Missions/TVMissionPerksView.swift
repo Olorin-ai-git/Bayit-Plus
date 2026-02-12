@@ -11,12 +11,12 @@ struct TVMissionPerksView: View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             Text(localization.t("gamification.unlockedPerks"))
                 .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
-                .foregroundStyle(TVDesignTokens.Text.primary)
+                .foregroundStyle(DesignTokens.Colors.Text.primary)
 
             if perks.isEmpty {
                 Text(localization.t("gamification.noPerksYet"))
                     .font(.system(size: TVDesignTokens.FontSize.base))
-                    .foregroundStyle(TVDesignTokens.Text.muted)
+                    .foregroundStyle(DesignTokens.Colors.Text.muted)
             } else {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: TVDesignTokens.Spacing.lg) {
@@ -33,16 +33,16 @@ struct TVMissionPerksView: View {
         VStack(spacing: TVDesignTokens.Spacing.md) {
             Image(systemName: perk.perkType == "outfit" ? "tshirt" : "gift")
                 .font(.system(size: 64))
-                .foregroundStyle(TVDesignTokens.Text.primary)
+                .foregroundStyle(DesignTokens.Colors.Text.primary)
 
             Text(localization.t("gamification.perks.\(perk.perkId)"))
                 .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
-                .foregroundStyle(TVDesignTokens.Text.primary)
+                .foregroundStyle(DesignTokens.Colors.Text.primary)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
         }
         .frame(width: 240, height: 240)
-        .background(TVDesignTokens.Glass.bgMedium)
+        .background(DesignTokens.Colors.Glass.bgMedium)
         .cornerRadius(TVDesignTokens.Radius.md)
         .focusable()
     }

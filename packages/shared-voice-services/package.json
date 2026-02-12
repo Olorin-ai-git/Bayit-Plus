@@ -1,6 +1,6 @@
 {
   "name": "@bayit/shared-voice-services",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Shared voice and AI services for all Bayit+ platforms",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

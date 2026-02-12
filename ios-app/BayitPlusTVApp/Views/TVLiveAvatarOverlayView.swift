@@ -22,7 +22,7 @@ struct TVLiveAvatarOverlayView: View {
                     .frame(width: 280, height: 280)
             } else if let error {
                 Text(error)
-                    .foregroundColor(DesignTokens.Color.error)
+                    .foregroundColor(DesignTokens.Colors.Semantic.error)
                     .font(.system(size: 24))
                     .frame(width: 280, height: 280)
             } else if let scene {

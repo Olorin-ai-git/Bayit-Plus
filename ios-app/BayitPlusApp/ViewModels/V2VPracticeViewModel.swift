@@ -28,7 +28,11 @@ class V2VPracticeViewModel {
     func setupAudio() {
         let session = AVAudioSession.sharedInstance()
         do {
+            #if os(iOS)
             try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
+            #else
+            try session.setCategory(.playAndRecord, mode: .default)
+            #endif
             try session.setActive(true)
         } catch {
             self.error = "Audio session error"

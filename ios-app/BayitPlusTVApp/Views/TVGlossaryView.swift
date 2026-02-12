@@ -12,7 +12,7 @@ struct TVGlossaryView: View {
             gridSection
         }
         .padding(TVDesignTokens.Spacing.xl)
-        .background(TVDesignTokens.Background.primary)
+        .background(DesignTokens.Colors.Background.primary)
         .task {
             await viewModel.fetchEntries(reset: true)
         }

@@ -40,7 +40,7 @@ struct TVNewsClipView: View {
         VStack(spacing: TVDesignTokens.Spacing.lg) {
             ProgressView().tint(.white)
             Text(localization.t("grandparentBridge.title"))
-                .font(.system(size: TVDesignTokens.FontSize.body))
+                .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundColor(.white.opacity(0.6))
         }
     }
@@ -76,7 +76,7 @@ struct TVNewsClipView: View {
             // Right side: clip list
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
                 Text(localization.t("grandparentBridge.clips.title"))
-                    .font(.system(size: TVDesignTokens.FontSize.title, weight: .bold))
+                    .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
                     .foregroundColor(.white)
 
                 ScrollView {
@@ -92,7 +92,7 @@ struct TVNewsClipView: View {
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(String(clip.scriptTextHe.prefix(30)))
                                             .foregroundColor(.white)
-                                            .font(.system(size: TVDesignTokens.FontSize.body, weight: .semibold))
+                                            .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                                             .lineLimit(1)
                                         Text(clip.createdAt)
                                             .foregroundColor(.white.opacity(0.4))
@@ -118,7 +118,7 @@ struct TVNewsClipView: View {
                 if clips.isEmpty {
                     Text(localization.t("grandparentBridge.clips.empty"))
                         .foregroundColor(.white.opacity(0.4))
-                        .font(.system(size: TVDesignTokens.FontSize.body))
+                        .font(.system(size: TVDesignTokens.FontSize.base))
                 }
             }
             .frame(width: 400)

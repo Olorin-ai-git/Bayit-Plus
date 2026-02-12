@@ -297,6 +297,9 @@
 		45F9C7152F3E7D7700A64304 /* LeaderboardModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7132F3E7D7700A64304 /* LeaderboardModels.swift */; };
 		45F9C7172F3E7F1600A64304 /* PhoneticMirrorModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7162F3E7F1600A64304 /* PhoneticMirrorModels.swift */; };
 		45F9C7182F3E7F1600A64304 /* PhoneticMirrorModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7162F3E7F1600A64304 /* PhoneticMirrorModels.swift */; };
+		45F9C71A2F3E84E300A64304 /* V2VModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7192F3E84E300A64304 /* V2VModels.swift */; };
+		45F9C71B2F3E84E300A64304 /* V2VModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7192F3E84E300A64304 /* V2VModels.swift */; };
+		45F9C71D2F3E863F00A64304 /* TVZineReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C71C2F3E863F00A64304 /* TVZineReaderView.swift */; };
 		45FF80E58841A8E5B4D0FEA8 /* TVRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0D3A9866C2019DC8F30B98 /* TVRoute.swift */; };
 		4616C8C73EAE1839E231605F /* CatchUpPreferencesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509CC227EAD2546D4B27554E /* CatchUpPreferencesService.swift */; };
 		461C2C812401D4FA0F51BACD /* SecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B216DEE549F99ECF42DD9E63 /* SecurityViewModel.swift */; };
@@ -1084,6 +1087,8 @@
 		45F9C7102F3E7D5C00A64304 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		45F9C7132F3E7D7700A64304 /* LeaderboardModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardModels.swift; sourceTree = "<group>"; };
 		45F9C7162F3E7F1600A64304 /* PhoneticMirrorModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneticMirrorModels.swift; sourceTree = "<group>"; };
+		45F9C7192F3E84E300A64304 /* V2VModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V2VModels.swift; sourceTree = "<group>"; };
+		45F9C71C2F3E863F00A64304 /* TVZineReaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVZineReaderView.swift; sourceTree = "<group>"; };
 		45FA21AB8481260ED9E0CCB1 /* OfflineCacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineCacheService.swift; sourceTree = "<group>"; };
 		460CDFBC77E18B9BDBF6F11C /* SettingsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRepository.swift; sourceTree = "<group>"; };
 		46744395B72FE5276CC4DCB1 /* LLMSearchModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSearchModels.swift; sourceTree = "<group>"; };
@@ -1658,6 +1663,7 @@
 		29307A2E2650FF9305F13D80 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				45F9C71C2F3E863F00A64304 /* TVZineReaderView.swift */,
 				45F9C6F02F3E7CC100A64304 /* TVAvatar3DPreviewView.swift */,
 				45F9C6F12F3E7CC100A64304 /* TVLiveAvatarOverlayView.swift */,
 				45F9C6F22F3E7CC100A64304 /* TVMagicMirrorSubviews.swift */,
@@ -2385,6 +2391,7 @@
 		B14F159E05862242DD3F6899 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				45F9C7192F3E84E300A64304 /* V2VModels.swift */,
 				45F9C7162F3E7F1600A64304 /* PhoneticMirrorModels.swift */,
 				45F9C7132F3E7D7700A64304 /* LeaderboardModels.swift */,
 				45F9C6D32F3E7C3B00A64304 /* BilingualDubbingModels.swift */,
@@ -3221,6 +3228,7 @@
 				C6F9C7277FF4B1C08608537C /* HouseholdViewModel.swift in Sources */,
 				846E316C976D65C23031444F /* InteractiveSubtitlesViewModel.swift in Sources */,
 				45CA33600608F367225BAF3F /* JudaismViewModel.swift in Sources */,
+				45F9C71B2F3E84E300A64304 /* V2VModels.swift in Sources */,
 				E7BC376A56BF9C6F80806561 /* KeychainHelper.swift in Sources */,
 				615EDB4B7E1EAC3D6DBAC9D9 /* LLMSearchModels.swift in Sources */,
 				14E875D65828FBE6B44112FB /* LLMSearchRepository.swift in Sources */,
@@ -3229,6 +3237,7 @@
 				F81AFF4B030A5FCB7BBF207D /* LeaderboardViewModel.swift in Sources */,
 				FC66DB4E855D8AAA1750F0DF /* LiveDubbingModels.swift in Sources */,
 				D57BBD35BA37F86C9E7EE0C2 /* LiveDubbingRepository.swift in Sources */,
+				45F9C71D2F3E863F00A64304 /* TVZineReaderView.swift in Sources */,
 				CB42A8E2459F16C57C3EADAB /* LiveDubbingViewModel.swift in Sources */,
 				2D8E1BD8B1AC899F333B9AF6 /* LiveDubbingWebSocketService.swift in Sources */,
 				A9D1438A2828D21F44B960A2 /* LiveSubtitleModels.swift in Sources */,
@@ -3768,6 +3777,7 @@
 				1DC839A7C0DDA192492195CD /* MediaRepository.swift in Sources */,
 				E088CDE3B9EBFC4AAB660A25 /* MessageBubble.swift in Sources */,
 				8927FB28357C613AD1FEB21C /* MessageInputBar.swift in Sources */,
+				45F9C71A2F3E84E300A64304 /* V2VModels.swift in Sources */,
 				8210EF6E67E28666267AE46F /* MorningRitualView.swift in Sources */,
 				2578CC86F921B1731A2F4CA0 /* MorningRitualViewModel.swift in Sources */,
 				DF21351C952360106133759F /* MovieDetailLoadingView.swift in Sources */,

@@ -5,7 +5,6 @@
 
 import type {
   VoiceSessionMetrics,
-  IntentUsage,
   VoiceEvent,
   VoiceEventType,
   AnalyticsConfig,

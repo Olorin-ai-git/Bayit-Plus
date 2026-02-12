@@ -160,14 +160,3 @@ struct V2VPracticeView: View {
     }
 }
 
-struct V2VPracticePhrase: Codable, Identifiable {
-    var id: String { phraseHe }
-    let phraseHe: String
-    let transliteration: String
-    let translation: String
-
-    enum CodingKeys: String, CodingKey {
-        case phraseHe = "phrase_he"
-        case transliteration, translation
-    }
-}

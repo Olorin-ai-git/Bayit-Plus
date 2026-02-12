@@ -8,8 +8,7 @@ import type {
   AnimationIntensity,
   AnimationConfig,
   AnimationSequence,
-  AnimationState,
-  AnimationStep
+  AnimationState
 } from './types';
 import { EMOTION_ANIMATION_MAP } from './types';
 

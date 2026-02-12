@@ -1,6 +1,7 @@
 #if os(tvOS)
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SceneKit
 import SwiftUI
 
@@ -36,7 +37,7 @@ struct TVAvatar3DPreviewView: View {
         VStack(spacing: TVDesignTokens.Spacing.lg) {
             ProgressView().tint(.white)
             Text(localization.t("zehAni.avatar3d.loading"))
-                .font(.system(size: TVDesignTokens.FontSize.body))
+                .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundColor(.white.opacity(0.6))
         }
     }
@@ -75,11 +76,11 @@ struct TVAvatar3DPreviewView: View {
     private var errorBody: some View {
         VStack(spacing: TVDesignTokens.Spacing.lg) {
             Text(localization.t("zehAni.avatar3d.errorTitle"))
-                .font(.system(size: TVDesignTokens.FontSize.title, weight: .semibold))
+                .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                 .foregroundColor(.white)
             if let errorMsg = error {
                 Text(errorMsg)
-                    .font(.system(size: TVDesignTokens.FontSize.body))
+                    .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundColor(.white.opacity(0.6))
                     .multilineTextAlignment(.center)
             }
@@ -162,7 +163,7 @@ private struct AvatarSceneView: UIViewRepresentable {
         key.light?.intensity = 800
         key.light?.castsShadow = true
         key.position = SCNVector3(x: 2, y: 4, z: 3)
-        key.look(at: SCNVector3.zero)
+        key.look(at: SCNVector3(0, 0, 0))
         scene.rootNode.addChildNode(key)
     }
 

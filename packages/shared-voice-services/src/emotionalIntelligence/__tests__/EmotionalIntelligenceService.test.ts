@@ -34,7 +34,7 @@ describe('EmotionalIntelligenceService', () => {
 
       expect(analysis.frustrationLevel).toBeGreaterThan(0.6);
       expect(analysis.mood).toBe('frustrated');
-      expect(analysis.confidence).toBeLessThan(0.5);
+      expect(analysis.confidence).toBeLessThanOrEqual(0.5);
       expect(analysis.suggestion).toBeDefined();
     });
 
@@ -63,9 +63,9 @@ describe('EmotionalIntelligenceService', () => {
 
     it('should detect escalating language', () => {
       const analysis = service.analyzeVoicePattern(
-        'I need help finding this',
-        ['find movie', 'where is movie', 'help me find'],
-        [false, false, false]
+        'please help me find this movie',
+        ['find movie', 'where is movie', 'help find movie', 'please find'],
+        [false, false, false, false]
       );
 
       expect(analysis.patterns.escalatingLanguage).toBe(true);

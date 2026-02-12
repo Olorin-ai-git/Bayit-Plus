@@ -244,15 +244,20 @@ describe('VoiceProcessor', () => {
       expect(result.intent.parameters?.level).toBe(50);
     });
 
-    it('should extract content type for search', () => {
-      const result1 = processor.processTranscript('search for a movie', 0.9);
-      expect(result1.intent.parameters?.contentType).toBe('movie');
+    it('should extract content type for search - movie', () => {
+      const result = processor.processTranscript('search for a movie', 0.9);
+      expect(result.intent.parameters?.contentType).toBe('movie');
+    });
 
-      const result2 = processor.processTranscript('find a series', 0.9);
-      expect(result2.intent.parameters?.contentType).toBe('series');
+    it('should extract content type for search - series', () => {
+      const result = processor.processTranscript('find a series', 0.9);
+      expect(result.intent.parameters?.contentType).toBe('series');
+    });
 
-      const result3 = processor.processTranscript('show podcasts', 0.9);
-      expect(result3.intent.parameters?.contentType).toBe('podcast');
+    it('should extract content type for search - podcast', () => {
+      const result = processor.processTranscript('show podcasts', 0.9);
+      expect(result.intent.action).toBe('search'); // Verify it's matching search
+      expect(result.intent.parameters?.contentType).toBe('podcast');
     });
   });
 });

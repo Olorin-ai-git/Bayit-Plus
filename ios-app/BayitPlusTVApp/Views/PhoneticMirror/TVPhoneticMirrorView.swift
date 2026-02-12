@@ -45,7 +45,7 @@ struct TVPhoneticMirrorView: View {
         VStack(spacing: TVDesignTokens.Spacing.lg) {
             ProgressView().tint(.white)
             Text(localization.t("phoneticMirror.loading"))
-                .font(.system(size: TVDesignTokens.FontSize.body))
+                .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundColor(.white.opacity(0.6))
         }
     }
@@ -57,10 +57,10 @@ struct TVPhoneticMirrorView: View {
                     .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
                     .foregroundColor(.white)
                 Text(phrase.transliteration)
-                    .font(.system(size: TVDesignTokens.FontSize.title))
+                    .font(.system(size: TVDesignTokens.FontSize.lg))
                     .foregroundColor(.white.opacity(0.6))
                 Text(phrase.translation)
-                    .font(.system(size: TVDesignTokens.FontSize.body))
+                    .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundColor(.white.opacity(0.4))
             }
 
@@ -79,7 +79,7 @@ struct TVPhoneticMirrorView: View {
                     Text(speechEngine.isListening
                          ? localization.t("phoneticMirror.stopRecording")
                          : localization.t("phoneticMirror.pressToSpeak"))
-                        .font(.system(size: TVDesignTokens.FontSize.body, weight: .semibold))
+                        .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                 }
                 .foregroundColor(.white)
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -96,7 +96,7 @@ struct TVPhoneticMirrorView: View {
         VStack(spacing: TVDesignTokens.Spacing.lg) {
             ProgressView().tint(.white)
             Text(localization.t("phoneticMirror.analyzing"))
-                .font(.system(size: TVDesignTokens.FontSize.body))
+                .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundColor(.white.opacity(0.6))
         }
     }

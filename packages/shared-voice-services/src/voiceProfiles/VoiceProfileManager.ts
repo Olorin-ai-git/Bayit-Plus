@@ -4,7 +4,9 @@
  */
 
 import type { LanguageCode } from '@olorin/shared-i18n';
-import { SUPPORTED_LANGUAGES } from '@olorin/shared-i18n';
+import { languages } from '@olorin/shared-i18n';
+
+const SUPPORTED_LANGUAGES: LanguageCode[] = languages.map(l => l.code);
 import type {
   UserVoiceProfile,
   LanguageVoiceProfile,
@@ -94,9 +96,10 @@ export class VoiceProfileManager {
     let profile = this.profiles.get(userId);
 
     if (!profile && this.storageAdapter) {
-      profile = await this.storageAdapter.load(userId);
-      if (profile) {
-        this.profiles.set(userId, profile);
+      const loadedProfile = await this.storageAdapter.load(userId);
+      if (loadedProfile) {
+        this.profiles.set(userId, loadedProfile);
+        profile = loadedProfile;
       }
     }
 

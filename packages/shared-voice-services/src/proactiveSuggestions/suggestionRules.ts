@@ -3,7 +3,7 @@
  * Predefined rules for generating proactive suggestions
  */
 
-import type { SuggestionRule, SuggestionContext, ProactiveSuggestion } from './types';
+import type { SuggestionRule } from './types';
 
 const RULE_COOLDOWNS = {
   CONTENT_DISCOVERY: 2 * 60 * 60 * 1000, // 2 hours
@@ -26,7 +26,7 @@ export const TIME_BASED_RULES: SuggestionRule[] = [
     condition: (context) => {
       return context.timeOfDay === 'morning' && context.userActivity.isActive;
     },
-    generate: (context) => ({
+    generate: (_context) => ({
       id: `suggestion-${Date.now()}`,
       trigger: 'time-based',
       category: 'content-discovery',
@@ -51,7 +51,7 @@ export const TIME_BASED_RULES: SuggestionRule[] = [
     condition: (context) => {
       return context.timeOfDay === 'evening' && context.userActivity.isActive;
     },
-    generate: (context) => ({
+    generate: (_context) => ({
       id: `suggestion-${Date.now()}`,
       trigger: 'time-based',
       category: 'content-discovery',
@@ -108,7 +108,7 @@ export const CONTEXT_BASED_RULES: SuggestionRule[] = [
     condition: (context) => {
       return context.viewingHistory.length >= 3;
     },
-    generate: (context) => ({
+    generate: (_context) => ({
       id: `suggestion-${Date.now()}`,
       trigger: 'context-based',
       category: 'content-discovery',
@@ -141,7 +141,7 @@ export const PRESENCE_BASED_RULES: SuggestionRule[] = [
       return timeSinceLastInteraction > 24 * 60 * 60 * 1000 && // More than 24 hours
              timeSinceLastInteraction < 7 * 24 * 60 * 60 * 1000; // Less than 7 days
     },
-    generate: (context) => ({
+    generate: (_context) => ({
       id: `suggestion-${Date.now()}`,
       trigger: 'presence-based',
       category: 'engagement',
@@ -172,7 +172,7 @@ export const PATTERN_BASED_RULES: SuggestionRule[] = [
       return context.sessionDuration > 3 * 60 * 60 * 1000 && // 3+ hours
              context.userActivity.isActive;
     },
-    generate: (context) => ({
+    generate: (_context) => ({
       id: `suggestion-${Date.now()}`,
       trigger: 'pattern-based',
       category: 'help',
@@ -203,7 +203,7 @@ export const IDLE_BASED_RULES: SuggestionRule[] = [
              context.userActivity.idleDuration > 5 * 60 * 1000 && // 5 minutes idle
              context.userActivity.idleDuration < 15 * 60 * 1000; // Less than 15 minutes
     },
-    generate: (context) => ({
+    generate: (_context) => ({
       id: `suggestion-${Date.now()}`,
       trigger: 'idle-based',
       category: 'content-discovery',
@@ -229,7 +229,7 @@ export const IDLE_BASED_RULES: SuggestionRule[] = [
       return context.userActivity.isIdle &&
              context.userActivity.idleDuration > 3 * 60 * 1000;
     },
-    generate: (context) => ({
+    generate: (_context) => ({
       id: `suggestion-${Date.now()}`,
       trigger: 'idle-based',
       category: 'feature-education',

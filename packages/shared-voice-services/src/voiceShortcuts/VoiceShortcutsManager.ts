@@ -405,18 +405,33 @@ export class VoiceShortcutsManager {
    * Ensure data is loaded from storage
    */
   private async ensureLoaded(userId: string): Promise<void> {
-    if (this.shortcuts.has(userId) && this.macros.has(userId)) {
+    const hasShortcuts = this.shortcuts.has(userId);
+    const hasMacros = this.macros.has(userId);
+
+    if (hasShortcuts && hasMacros) {
       return;
     }
 
     if (this.storageAdapter) {
       const [shortcuts, macros] = await Promise.all([
-        this.storageAdapter.loadShortcuts(userId),
-        this.storageAdapter.loadMacros(userId)
+        hasShortcuts ? Promise.resolve(this.shortcuts.get(userId)!) : this.storageAdapter.loadShortcuts(userId),
+        hasMacros ? Promise.resolve(this.macros.get(userId)!) : this.storageAdapter.loadMacros(userId)
       ]);
 
-      this.shortcuts.set(userId, shortcuts);
-      this.macros.set(userId, macros);
+      if (!hasShortcuts) {
+        this.shortcuts.set(userId, shortcuts);
+      }
+      if (!hasMacros) {
+        this.macros.set(userId, macros);
+      }
+    } else {
+      // No storage adapter, initialize with empty arrays
+      if (!hasShortcuts) {
+        this.shortcuts.set(userId, []);
+      }
+      if (!hasMacros) {
+        this.macros.set(userId, []);
+      }
     }
   }
 

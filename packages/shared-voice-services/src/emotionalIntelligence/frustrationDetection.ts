@@ -11,7 +11,7 @@ import { extractKeywords } from './patternAnalysis';
  */
 export function detectFrustration(
   currentTranscript: string,
-  commandHistory: string[],
+  _commandHistory: string[],
   patterns: VoicePatterns
 ): number {
   let frustrationScore = 0.0;

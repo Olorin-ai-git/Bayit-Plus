@@ -9,6 +9,7 @@ interface IntentPattern {
   action: VoiceAction;
   patterns: RegExp[];
   entityExtractor?: (transcript: string) => string | undefined;
+  parameterExtractor?: (transcript: string) => Record<string, unknown> | undefined;
 }
 
 const INTENT_PATTERNS: IntentPattern[] = [
@@ -17,11 +18,30 @@ const INTENT_PATTERNS: IntentPattern[] = [
     patterns: [
       /(?:search|find|look for|show me)\s+(.+)/i,
       /(?:where is|where's)\s+(.+)/i,
-      /(?:looking for)\s+(.+)/i
+      /(?:looking for)\s+(.+)/i,
+      /^show\s+(movies|films|episodes|podcasts|audiobooks|radio)\b/i
     ],
     entityExtractor: (transcript) => {
-      const match = transcript.match(/(?:search|find|look for|show me|where is|where's|looking for)\s+(.+)/i);
-      return match?.[1]?.trim();
+      const match = transcript.match(/(?:search|find|look for|show me|where is|where's|looking for)\s+(?:for\s+)?(.+)|^show\s+(.+)/i);
+      return (match?.[1] || match?.[2])?.trim();
+    },
+    parameterExtractor: (transcript) => {
+      // Match plural content types: "movies", "podcasts", "shows", "series"
+      let contentTypeMatch = transcript.match(/\b(movies|films|series|shows|episodes|podcasts|audiobooks)\b/i);
+      if (contentTypeMatch) {
+        // Convert plural to singular
+        const plural = contentTypeMatch[1].toLowerCase();
+        const singular = plural === 'series' ? 'series' : plural.replace(/s$/, '');
+        return { contentType: singular };
+      }
+
+      // Match with article: "a movie", "the series"
+      contentTypeMatch = transcript.match(/(?:a|an|the)\s+(movie|film|series|show|episode|podcast|radio|audiobook)/i);
+      if (contentTypeMatch) {
+        return { contentType: contentTypeMatch[1].toLowerCase() };
+      }
+
+      return undefined;
     }
   },
   {
@@ -38,7 +58,7 @@ const INTENT_PATTERNS: IntentPattern[] = [
   {
     action: 'pause',
     patterns: [
-      /^(?:pause|stop|hold|wait)$/i,
+      /^(?:pause|hold|wait)$/i,
       /pause\s+(?:it|this|playback)/i
     ]
   },
@@ -70,8 +90,20 @@ const INTENT_PATTERNS: IntentPattern[] = [
     patterns: [
       /(?:volume|sound)\s+(?:up|down|louder|quieter|higher|lower)/i,
       /(?:turn|make it)\s+(?:up|down|louder|quieter)/i,
-      /(?:increase|decrease|raise|lower)\s+(?:volume|sound)/i
-    ]
+      /(?:increase|decrease|raise|lower)\s+(?:volume|sound)/i,
+      /(?:set|change)\s+(?:volume|sound)\s+(?:to|at)\s+(\d+)/i
+    ],
+    parameterExtractor: (transcript) => {
+      const match = transcript.match(/(?:set|change)\s+(?:volume|sound)\s+(?:to|at)\s+(\d+)/i);
+      if (match) {
+        return { level: parseInt(match[1], 10) };
+      }
+      const direction = transcript.match(/(?:volume|sound)\s+(up|down|louder|quieter|higher|lower)/i);
+      if (direction) {
+        return { direction: direction[1].toLowerCase() };
+      }
+      return undefined;
+    }
   },
   {
     action: 'settings',
@@ -101,10 +133,12 @@ export function detectIntent(transcript: string): CommandIntent {
     for (const pattern of intentPattern.patterns) {
       if (pattern.test(normalizedTranscript)) {
         const entity = intentPattern.entityExtractor?.(normalizedTranscript);
+        const parameters = intentPattern.parameterExtractor?.(normalizedTranscript);
 
         return {
           action: intentPattern.action,
           entity,
+          parameters,
           query: normalizedTranscript
         };
       }
