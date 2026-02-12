@@ -1,6 +1,6 @@
 # Bayit+ Documentation
 
-**Last Updated:** 2026-02-11
+**Last Updated:** 2026-02-12
 **Total Documents:** 230 files (organized)
 **Documentation Portal:** https://docs.bayitplus.com
 
@@ -18,6 +18,7 @@
 **For Users:**
 - [Beta 500 User Manual](guides/BETA_500_USER_MANUAL.md) - AI features closed beta program
 - [Troubleshooting Guide](guides/TROUBLESHOOTING.md) - Common issues and solutions
+- [Troubleshooting Bayit+](guides/TROUBLESHOOTING_BAYIT.md) - Port conflicts, frontend-backend connectivity, MongoDB (2026-02-12)
 - [i18n Complete Guide](guides/I18N_COMPLETE_GUIDE.md) - 10-language system
 
 ---
@@ -84,6 +85,7 @@ Feature specifications and implementation guides:
 - [Content Categorization System](features/CONTENT_CATEGORIZATION_SYSTEM.md) - Complete guide to multi-axis content organization, kids/youngsters filtering, IMDB integration, and family controls ⭐ **NEW**
 - [AI Features Overview](features/AI_FEATURES_OVERVIEW.md) - Complete AI catalog ⭐ **NEW**
 - [Subtitle System Enhancements](features/SUBTITLE_SYSTEM_ENHANCEMENTS.md) - 21 accessibility, UX, and performance fixes ⭐ **NEW**
+- [Beta 500 Program](features/BETA_500.md) - Closed beta AI credits program, API endpoints, enrollment testing (2026-02-12)
   - Error categorization (network/server/client)
   - WCAG AA accessibility compliance
   - iOS Dynamic Type & VoiceOver support
@@ -162,6 +164,7 @@ Deployment guides and infrastructure:
 - [GCloud Secrets API Configuration](deployment/GCLOUD_SECRETS_API_CONFIGURATION.md) - API retry and subtitle config
 - [GCloud Secrets Schedules Direct](deployment/GCLOUD_SECRETS_SCHEDULES_DIRECT.md) - EPG integration config
 - [LLM Configuration](deployment/LLM_CONFIGURATION.md) - AI model setup and cost optimization
+- [iOS/tvOS App Store Upload](deployment/IOS_TVOS_UPLOAD.md) - Build, archive, and upload process for iOS and tvOS (2026-02-12)
 - Firebase Hosting configuration
 - Google Cloud Run setup
 
