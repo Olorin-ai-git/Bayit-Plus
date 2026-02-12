@@ -107,6 +107,9 @@ final class APIStarStoryRepository: StarStoryRepository, @unchecked Sendable {
     }
 
     func revokeConsent(profileId: String) async throws {
-        try await client.delete("/api/v1/star-story/consent/\(profileId)")
+        let _: EmptyResponse = try await client.delete(
+            "/api/v1/star-story/consent/\(profileId)",
+            as: EmptyResponse.self
+        )
     }
 }

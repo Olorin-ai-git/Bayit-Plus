@@ -31,7 +31,7 @@ class V2VPracticeViewModel {
             try session.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker])
             try session.setActive(true)
         } catch {
-            self.error = LocalizationManager.shared.t("zehAni.v2v.errors.audioSession")
+            self.error = "Audio session error"
         }
     }
 
@@ -55,7 +55,7 @@ class V2VPracticeViewModel {
             isRecording = true
             practiceState = .recording
         } catch {
-            self.error = LocalizationManager.shared.t("zehAni.v2v.errors.recording")
+            self.error = "Recording error"
         }
     }
 
@@ -76,7 +76,7 @@ class V2VPracticeViewModel {
         practiceState = .transforming
 
         guard let phrase = currentPhrase else {
-            error = LocalizationManager.shared.t("zehAni.v2v.errors.noPhrase")
+            error = "No phrase selected"
             practiceState = .idle
             return
         }

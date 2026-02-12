@@ -34,7 +34,7 @@ class PhoneticMirrorViewModel {
             try session.setCategory(.record, mode: .measurement)
             try session.setActive(true)
         } catch {
-            self.error = LocalizationManager.shared.t("phoneticMirror.errors.audioSession")
+            self.error = "Audio session error"
             return
         }
 

@@ -11,3 +11,6 @@ export * from './avatarState';
 
 // Avatar Preferences
 export * from './avatarPreferences';
+
+// Avatar Animations
+export * from './avatarAnimations';

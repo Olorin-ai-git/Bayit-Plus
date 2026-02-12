@@ -14,3 +14,12 @@ export * from './conversationContext';
 
 // Analytics
 export * from './analytics';
+
+// Proactive Suggestions
+export * from './proactiveSuggestions';
+
+// Voice Profiles
+export * from './voiceProfiles';
+
+// Voice Shortcuts
+export * from './voiceShortcuts';

@@ -12,7 +12,7 @@ protocol MissionsRepository: Sendable {
     func fetchLeaderboard(
         scope: LeaderboardScope,
         period: LeaderboardPeriod
-    ) async throws -> LeaderboardResponse
+    ) async throws -> MissionsLeaderboardResponse
 
     func fetchAvailableCoupons() async throws -> CouponsResponse
 
@@ -68,7 +68,7 @@ final class APIMissionsRepository: MissionsRepository, @unchecked Sendable {
     func fetchLeaderboard(
         scope: LeaderboardScope,
         period: LeaderboardPeriod
-    ) async throws -> LeaderboardResponse {
+    ) async throws -> MissionsLeaderboardResponse {
         let queryItems = [
             URLQueryItem(name: "scope", value: scope.rawValue),
             URLQueryItem(name: "period", value: period.rawValue)
@@ -77,7 +77,7 @@ final class APIMissionsRepository: MissionsRepository, @unchecked Sendable {
         return try await client.get(
             "/api/v1/leaderboard",
             queryItems: queryItems,
-            as: LeaderboardResponse.self
+            as: MissionsLeaderboardResponse.self
         )
     }
 
@@ -105,8 +105,10 @@ final class APIMissionsRepository: MissionsRepository, @unchecked Sendable {
     }
 
     func markZineViewed(zineId: String) async throws {
+        struct EmptyBody: Encodable, Sendable {}
         let _: EmptyResponse = try await client.patch(
             "/api/v1/zine/\(zineId)/viewed",
+            body: EmptyBody(),
             as: EmptyResponse.self
         )
     }

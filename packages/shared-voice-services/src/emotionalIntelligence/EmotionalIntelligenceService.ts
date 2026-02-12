@@ -9,8 +9,7 @@ import { getToneAdjustment, adjustTTSRate } from './toneAdjustment';
 import { generateHelpSuggestion, shouldOfferHelp } from './helpSuggestion';
 import type {
   VoiceAnalysis,
-  ToneAdjustment,
-  EmotionalContext
+  ToneAdjustment
 } from './types';
 
 export class EmotionalIntelligenceService {

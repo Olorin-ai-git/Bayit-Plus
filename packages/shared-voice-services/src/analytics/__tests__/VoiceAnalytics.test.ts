@@ -3,7 +3,6 @@
  */
 
 import { VoiceAnalytics } from '../VoiceAnalytics';
-import type { VoiceEvent } from '../types';
 
 describe('VoiceAnalytics', () => {
   let analytics: VoiceAnalytics;

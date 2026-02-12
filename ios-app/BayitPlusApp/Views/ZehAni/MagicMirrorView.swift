@@ -130,7 +130,7 @@ struct MagicMirrorView: View {
     @ViewBuilder
     private func errorView(_ message: String) -> some View {
         Text(message)
-            .foregroundColor(DesignTokens.Color.error)
+            .foregroundColor(DesignTokens.Colors.Semantic.error)
             .font(.system(size: 16))
     }
 

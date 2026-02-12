@@ -1,4 +1,5 @@
 import BayitCore
+import BayitNetworking
 import Foundation
 
 struct GlossaryEntry: Codable, Identifiable {
@@ -28,8 +29,13 @@ final class GlossaryViewModel {
     private var currentSkip: Int = 0
     private let pageSize: Int = 20
     var hasMore: Bool = true
+    private let client: APIClient
 
     static let categories = ["All", "Slang", "Food", "Holidays", "Music", "History", "Proverbs"]
+
+    init(client: APIClient) {
+        self.client = client
+    }
 
     func fetchEntries(reset: Bool = false) async {
         if reset {
@@ -47,9 +53,11 @@ final class GlossaryViewModel {
             if !searchQuery.isEmpty { params["query"] = searchQuery }
             if activeCategory != "All" { params["tags"] = activeCategory.lowercased() }
 
-            let data: [GlossaryEntry] = try await APIClient.shared.get(
-                "/cultural/glossary",
-                parameters: params
+            let queryItems = params.map { URLQueryItem(name: $0.key, value: $0.value) }
+            let data: [GlossaryEntry] = try await client.get(
+                "/api/v1/cultural/glossary",
+                queryItems: queryItems,
+                as: [GlossaryEntry].self
             )
             if reset {
                 entries = data

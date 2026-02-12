@@ -24,7 +24,7 @@ struct LiveAvatarOverlayView: View {
             } else if let error = error {
                 Text(error)
                     .font(.system(size: 12))
-                    .foregroundColor(DesignTokens.Color.error)
+                    .foregroundColor(DesignTokens.Colors.Semantic.error)
                     .padding(8)
             } else {
                 avatarOverlay

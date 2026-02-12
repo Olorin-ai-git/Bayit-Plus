@@ -33,7 +33,7 @@ struct V2VPracticeView: View {
 
                 if let error = viewModel.error {
                     Text(error)
-                        .foregroundColor(DesignTokens.Color.error)
+                        .foregroundColor(DesignTokens.Colors.Semantic.error)
                         .font(.system(size: 14))
                 }
             }
@@ -137,9 +137,16 @@ struct V2VPracticeView: View {
                 let phrases = try await repos.phoneticMirrorRepository.fetchPhrases(
                     profileId: profileId, difficulty: "medium", count: 10
                 )
+                let v2vPhrases = phrases.map { phrase in
+                    V2VPracticePhrase(
+                        phraseHe: phrase.phraseHe,
+                        transliteration: phrase.transliteration,
+                        translation: phrase.translation
+                    )
+                }
                 await MainActor.run {
-                    viewModel.phrases = phrases
-                    viewModel.currentPhrase = phrases.first
+                    viewModel.phrases = v2vPhrases
+                    viewModel.currentPhrase = v2vPhrases.first
                 }
             } catch {
                 await MainActor.run {

@@ -63,14 +63,14 @@ struct LeaderboardUser: Decodable, Sendable, Identifiable {
     let isCurrentUser: Bool
 }
 
-struct LeaderboardResponse: Decodable, Sendable {
+struct MissionsLeaderboardResponse: Decodable, Sendable {
     let users: [LeaderboardUser]
     let currentUserRank: LeaderboardUser?
     let scope: LeaderboardScope
     let period: LeaderboardPeriod
 }
 
-enum LeaderboardScope: String, CaseIterable, Sendable {
+enum LeaderboardScope: String, CaseIterable, Codable, Sendable {
     case global
     case friends
     case family
@@ -84,7 +84,7 @@ enum LeaderboardScope: String, CaseIterable, Sendable {
     }
 }
 
-enum LeaderboardPeriod: String, CaseIterable, Sendable {
+enum LeaderboardPeriod: String, CaseIterable, Codable, Sendable {
     case daily
     case weekly
     case monthly

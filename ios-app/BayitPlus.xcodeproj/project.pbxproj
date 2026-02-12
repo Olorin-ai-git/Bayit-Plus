@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -222,6 +222,81 @@
 		454C436BD07BDC4C154018CD /* TVContentRatingPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C230B61694810E95104F6D18 /* TVContentRatingPickerView.swift */; };
 		455DA6452B2B3BDDB1DE3526 /* AvatarStateMachine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD46EF1945697C016F3A692B /* AvatarStateMachine.swift */; };
 		45CA33600608F367225BAF3F /* JudaismViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2245022D762597C75229CCA9 /* JudaismViewModel.swift */; };
+		45F9C6A32F3E79D400A64304 /* AvatarMeshRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A02F3E79D400A64304 /* AvatarMeshRepository.swift */; };
+		45F9C6A42F3E79D400A64304 /* ZehAniRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A22F3E79D400A64304 /* ZehAniRepository.swift */; };
+		45F9C6A52F3E79D400A64304 /* ZehAniModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A12F3E79D400A64304 /* ZehAniModels.swift */; };
+		45F9C6A62F3E79D400A64304 /* AvatarMeshRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A02F3E79D400A64304 /* AvatarMeshRepository.swift */; };
+		45F9C6A72F3E79D400A64304 /* ZehAniRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A22F3E79D400A64304 /* ZehAniRepository.swift */; };
+		45F9C6A82F3E79D400A64304 /* ZehAniModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A12F3E79D400A64304 /* ZehAniModels.swift */; };
+		45F9C6AA2F3E79DE00A64304 /* TalkBackRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A92F3E79DE00A64304 /* TalkBackRepository.swift */; };
+		45F9C6AB2F3E79DE00A64304 /* TalkBackRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A92F3E79DE00A64304 /* TalkBackRepository.swift */; };
+		45F9C6B42F3E79F900A64304 /* GamificationRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6AE2F3E79F900A64304 /* GamificationRepository.swift */; };
+		45F9C6B52F3E79F900A64304 /* PhoneticMirrorRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6B22F3E79F900A64304 /* PhoneticMirrorRepository.swift */; };
+		45F9C6B62F3E79F900A64304 /* AvatarOutfitRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6AC2F3E79F900A64304 /* AvatarOutfitRepository.swift */; };
+		45F9C6B72F3E79F900A64304 /* GrandparentBridgeRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6AF2F3E79F900A64304 /* GrandparentBridgeRepository.swift */; };
+		45F9C6B82F3E79F900A64304 /* MissionsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6B12F3E79F900A64304 /* MissionsRepository.swift */; };
+		45F9C6B92F3E79F900A64304 /* StarStoryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6B32F3E79F900A64304 /* StarStoryRepository.swift */; };
+		45F9C6BA2F3E79F900A64304 /* InteractiveMissionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6B02F3E79F900A64304 /* InteractiveMissionRepository.swift */; };
+		45F9C6BB2F3E79F900A64304 /* FamilySnapRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6AD2F3E79F900A64304 /* FamilySnapRepository.swift */; };
+		45F9C6BC2F3E79F900A64304 /* GamificationRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6AE2F3E79F900A64304 /* GamificationRepository.swift */; };
+		45F9C6BD2F3E79F900A64304 /* PhoneticMirrorRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6B22F3E79F900A64304 /* PhoneticMirrorRepository.swift */; };
+		45F9C6BE2F3E79F900A64304 /* AvatarOutfitRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6AC2F3E79F900A64304 /* AvatarOutfitRepository.swift */; };
+		45F9C6BF2F3E79F900A64304 /* GrandparentBridgeRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6AF2F3E79F900A64304 /* GrandparentBridgeRepository.swift */; };
+		45F9C6C02F3E79F900A64304 /* MissionsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6B12F3E79F900A64304 /* MissionsRepository.swift */; };
+		45F9C6C12F3E79F900A64304 /* StarStoryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6B32F3E79F900A64304 /* StarStoryRepository.swift */; };
+		45F9C6C22F3E79F900A64304 /* InteractiveMissionRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6B02F3E79F900A64304 /* InteractiveMissionRepository.swift */; };
+		45F9C6C32F3E79F900A64304 /* FamilySnapRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6AD2F3E79F900A64304 /* FamilySnapRepository.swift */; };
+		45F9C6C52F3E7C0600A64304 /* AvatarMeshModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6C42F3E7C0600A64304 /* AvatarMeshModels.swift */; };
+		45F9C6C62F3E7C0600A64304 /* AvatarMeshModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6C42F3E7C0600A64304 /* AvatarMeshModels.swift */; };
+		45F9C6C82F3E7C0F00A64304 /* TalkBackModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6C72F3E7C0F00A64304 /* TalkBackModels.swift */; };
+		45F9C6C92F3E7C0F00A64304 /* TalkBackModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6C72F3E7C0F00A64304 /* TalkBackModels.swift */; };
+		45F9C6CB2F3E7C1B00A64304 /* StarStoryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6CA2F3E7C1B00A64304 /* StarStoryModels.swift */; };
+		45F9C6CC2F3E7C1B00A64304 /* StarStoryModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6CA2F3E7C1B00A64304 /* StarStoryModels.swift */; };
+		45F9C6CE2F3E7C2700A64304 /* MissionsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6CD2F3E7C2700A64304 /* MissionsModels.swift */; };
+		45F9C6CF2F3E7C2700A64304 /* MissionsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6CD2F3E7C2700A64304 /* MissionsModels.swift */; };
+		45F9C6D12F3E7C3100A64304 /* InteractiveMissionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6D02F3E7C3100A64304 /* InteractiveMissionModels.swift */; };
+		45F9C6D22F3E7C3100A64304 /* InteractiveMissionModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6D02F3E7C3100A64304 /* InteractiveMissionModels.swift */; };
+		45F9C6D42F3E7C3B00A64304 /* BilingualDubbingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6D32F3E7C3B00A64304 /* BilingualDubbingModels.swift */; };
+		45F9C6D52F3E7C3B00A64304 /* BilingualDubbingModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6D32F3E7C3B00A64304 /* BilingualDubbingModels.swift */; };
+		45F9C6E32F3E7C6000A64304 /* LiveAvatarOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6DC2F3E7C6000A64304 /* LiveAvatarOverlayView.swift */; };
+		45F9C6E42F3E7C6000A64304 /* MeshGenerationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6DE2F3E7C6000A64304 /* MeshGenerationView.swift */; };
+		45F9C6E52F3E7C6000A64304 /* BiometricConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6D82F3E7C6000A64304 /* BiometricConsentView.swift */; };
+		45F9C6E62F3E7C6000A64304 /* FeedbackInboxView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6DA2F3E7C6000A64304 /* FeedbackInboxView.swift */; };
+		45F9C6E72F3E7C6000A64304 /* SceneTriggerSubviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6DF2F3E7C6000A64304 /* SceneTriggerSubviews.swift */; };
+		45F9C6E82F3E7C6000A64304 /* V2VResultView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6E22F3E7C6000A64304 /* V2VResultView.swift */; };
+		45F9C6E92F3E7C6000A64304 /* V2VPracticeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6E12F3E7C6000A64304 /* V2VPracticeView.swift */; };
+		45F9C6EA2F3E7C6000A64304 /* ContactsManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6D92F3E7C6000A64304 /* ContactsManagementView.swift */; };
+		45F9C6EB2F3E7C6000A64304 /* Avatar3DPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6D62F3E7C6000A64304 /* Avatar3DPreviewView.swift */; };
+		45F9C6EC2F3E7C6000A64304 /* HighlightReelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6DB2F3E7C6000A64304 /* HighlightReelView.swift */; };
+		45F9C6ED2F3E7C6000A64304 /* MagicMirrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6DD2F3E7C6000A64304 /* MagicMirrorView.swift */; };
+		45F9C6EE2F3E7C6000A64304 /* SceneTriggerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6E02F3E7C6000A64304 /* SceneTriggerView.swift */; };
+		45F9C6EF2F3E7C6000A64304 /* BiometricConsentComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6D72F3E7C6000A64304 /* BiometricConsentComponents.swift */; };
+		45F9C6F42F3E7CC100A64304 /* TVLiveAvatarOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6F12F3E7CC100A64304 /* TVLiveAvatarOverlayView.swift */; };
+		45F9C6F52F3E7CC100A64304 /* TVMagicMirrorSubviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6F22F3E7CC100A64304 /* TVMagicMirrorSubviews.swift */; };
+		45F9C6F62F3E7CC100A64304 /* TVMagicMirrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6F32F3E7CC100A64304 /* TVMagicMirrorView.swift */; };
+		45F9C6F72F3E7CC100A64304 /* TVAvatar3DPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6F02F3E7CC100A64304 /* TVAvatar3DPreviewView.swift */; };
+		45F9C6FA2F3E7D2000A64304 /* V2VPracticeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6F92F3E7D2000A64304 /* V2VPracticeViewModel.swift */; };
+		45F9C6FB2F3E7D2000A64304 /* LiveLayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6F82F3E7D2000A64304 /* LiveLayerViewModel.swift */; };
+		45F9C6FC2F3E7D2000A64304 /* V2VPracticeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6F92F3E7D2000A64304 /* V2VPracticeViewModel.swift */; };
+		45F9C6FD2F3E7D2000A64304 /* LiveLayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6F82F3E7D2000A64304 /* LiveLayerViewModel.swift */; };
+		45F9C7002F3E7D3600A64304 /* TalkBackViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6FF2F3E7D3600A64304 /* TalkBackViewModel.swift */; };
+		45F9C7012F3E7D3600A64304 /* StarStoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6FE2F3E7D3600A64304 /* StarStoryViewModel.swift */; };
+		45F9C7022F3E7D3600A64304 /* TalkBackViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6FF2F3E7D3600A64304 /* TalkBackViewModel.swift */; };
+		45F9C7032F3E7D3600A64304 /* StarStoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6FE2F3E7D3600A64304 /* StarStoryViewModel.swift */; };
+		45F9C7082F3E7D4D00A64304 /* MissionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7072F3E7D4D00A64304 /* MissionsViewModel.swift */; };
+		45F9C7092F3E7D4D00A64304 /* BilingualDubbingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7042F3E7D4D00A64304 /* BilingualDubbingViewModel.swift */; };
+		45F9C70A2F3E7D4D00A64304 /* GlossaryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7062F3E7D4D00A64304 /* GlossaryViewModel.swift */; };
+		45F9C70B2F3E7D4D00A64304 /* CulturalContextViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7052F3E7D4D00A64304 /* CulturalContextViewModel.swift */; };
+		45F9C70C2F3E7D4D00A64304 /* MissionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7072F3E7D4D00A64304 /* MissionsViewModel.swift */; };
+		45F9C70D2F3E7D4D00A64304 /* BilingualDubbingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7042F3E7D4D00A64304 /* BilingualDubbingViewModel.swift */; };
+		45F9C70E2F3E7D4D00A64304 /* GlossaryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7062F3E7D4D00A64304 /* GlossaryViewModel.swift */; };
+		45F9C70F2F3E7D4D00A64304 /* CulturalContextViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7052F3E7D4D00A64304 /* CulturalContextViewModel.swift */; };
+		45F9C7112F3E7D5C00A64304 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7102F3E7D5C00A64304 /* NetworkMonitor.swift */; };
+		45F9C7122F3E7D5C00A64304 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7102F3E7D5C00A64304 /* NetworkMonitor.swift */; };
+		45F9C7142F3E7D7700A64304 /* LeaderboardModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7132F3E7D7700A64304 /* LeaderboardModels.swift */; };
+		45F9C7152F3E7D7700A64304 /* LeaderboardModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7132F3E7D7700A64304 /* LeaderboardModels.swift */; };
+		45F9C7172F3E7F1600A64304 /* PhoneticMirrorModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7162F3E7F1600A64304 /* PhoneticMirrorModels.swift */; };
+		45F9C7182F3E7F1600A64304 /* PhoneticMirrorModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C7162F3E7F1600A64304 /* PhoneticMirrorModels.swift */; };
 		45FF80E58841A8E5B4D0FEA8 /* TVRoute.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F0D3A9866C2019DC8F30B98 /* TVRoute.swift */; };
 		4616C8C73EAE1839E231605F /* CatchUpPreferencesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 509CC227EAD2546D4B27554E /* CatchUpPreferencesService.swift */; };
 		461C2C812401D4FA0F51BACD /* SecurityViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B216DEE549F99ECF42DD9E63 /* SecurityViewModel.swift */; };
@@ -806,7 +881,7 @@
 
 /* Begin PBXFileReference section */
 		0015F91DC187DA186C0E1A1E /* TVUserAvatarRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVUserAvatarRow.swift; sourceTree = "<group>"; };
-		01A01BA5A93E00107B1516C2 /* Bayit_Intro_Hebrew.mp4 */ = {isa = PBXFileReference; path = Bayit_Intro_Hebrew.mp4; sourceTree = "<group>"; };
+		01A01BA5A93E00107B1516C2 /* Bayit_Intro_Hebrew.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bayit_Intro_Hebrew.mp4; sourceTree = "<group>"; };
 		0245440A20739935198B875D /* WidgetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsView.swift; sourceTree = "<group>"; };
 		02B1F7FAEA40070A95322309 /* LiveTVRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTVRow.swift; sourceTree = "<group>"; };
 		0327123CE124D3949C5EC95A /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
@@ -963,6 +1038,52 @@
 		44B12627B533A70DD645CD56 /* SearchContentIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchContentIntent.swift; sourceTree = "<group>"; };
 		44D1398DC98DCFE8C5C9B07E /* TVYoungstersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVYoungstersView.swift; sourceTree = "<group>"; };
 		45843B774CA86E2E55B0EDEB /* PlaylistWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistWidgetView.swift; sourceTree = "<group>"; };
+		45F9C6A02F3E79D400A64304 /* AvatarMeshRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarMeshRepository.swift; sourceTree = "<group>"; };
+		45F9C6A12F3E79D400A64304 /* ZehAniModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZehAniModels.swift; sourceTree = "<group>"; };
+		45F9C6A22F3E79D400A64304 /* ZehAniRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZehAniRepository.swift; sourceTree = "<group>"; };
+		45F9C6A92F3E79DE00A64304 /* TalkBackRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalkBackRepository.swift; sourceTree = "<group>"; };
+		45F9C6AC2F3E79F900A64304 /* AvatarOutfitRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarOutfitRepository.swift; sourceTree = "<group>"; };
+		45F9C6AD2F3E79F900A64304 /* FamilySnapRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FamilySnapRepository.swift; sourceTree = "<group>"; };
+		45F9C6AE2F3E79F900A64304 /* GamificationRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamificationRepository.swift; sourceTree = "<group>"; };
+		45F9C6AF2F3E79F900A64304 /* GrandparentBridgeRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GrandparentBridgeRepository.swift; sourceTree = "<group>"; };
+		45F9C6B02F3E79F900A64304 /* InteractiveMissionRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveMissionRepository.swift; sourceTree = "<group>"; };
+		45F9C6B12F3E79F900A64304 /* MissionsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionsRepository.swift; sourceTree = "<group>"; };
+		45F9C6B22F3E79F900A64304 /* PhoneticMirrorRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneticMirrorRepository.swift; sourceTree = "<group>"; };
+		45F9C6B32F3E79F900A64304 /* StarStoryRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarStoryRepository.swift; sourceTree = "<group>"; };
+		45F9C6C42F3E7C0600A64304 /* AvatarMeshModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarMeshModels.swift; sourceTree = "<group>"; };
+		45F9C6C72F3E7C0F00A64304 /* TalkBackModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalkBackModels.swift; sourceTree = "<group>"; };
+		45F9C6CA2F3E7C1B00A64304 /* StarStoryModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarStoryModels.swift; sourceTree = "<group>"; };
+		45F9C6CD2F3E7C2700A64304 /* MissionsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionsModels.swift; sourceTree = "<group>"; };
+		45F9C6D02F3E7C3100A64304 /* InteractiveMissionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractiveMissionModels.swift; sourceTree = "<group>"; };
+		45F9C6D32F3E7C3B00A64304 /* BilingualDubbingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilingualDubbingModels.swift; sourceTree = "<group>"; };
+		45F9C6D62F3E7C6000A64304 /* Avatar3DPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Avatar3DPreviewView.swift; sourceTree = "<group>"; };
+		45F9C6D72F3E7C6000A64304 /* BiometricConsentComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricConsentComponents.swift; sourceTree = "<group>"; };
+		45F9C6D82F3E7C6000A64304 /* BiometricConsentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricConsentView.swift; sourceTree = "<group>"; };
+		45F9C6D92F3E7C6000A64304 /* ContactsManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManagementView.swift; sourceTree = "<group>"; };
+		45F9C6DA2F3E7C6000A64304 /* FeedbackInboxView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackInboxView.swift; sourceTree = "<group>"; };
+		45F9C6DB2F3E7C6000A64304 /* HighlightReelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightReelView.swift; sourceTree = "<group>"; };
+		45F9C6DC2F3E7C6000A64304 /* LiveAvatarOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveAvatarOverlayView.swift; sourceTree = "<group>"; };
+		45F9C6DD2F3E7C6000A64304 /* MagicMirrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MagicMirrorView.swift; sourceTree = "<group>"; };
+		45F9C6DE2F3E7C6000A64304 /* MeshGenerationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeshGenerationView.swift; sourceTree = "<group>"; };
+		45F9C6DF2F3E7C6000A64304 /* SceneTriggerSubviews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneTriggerSubviews.swift; sourceTree = "<group>"; };
+		45F9C6E02F3E7C6000A64304 /* SceneTriggerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneTriggerView.swift; sourceTree = "<group>"; };
+		45F9C6E12F3E7C6000A64304 /* V2VPracticeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V2VPracticeView.swift; sourceTree = "<group>"; };
+		45F9C6E22F3E7C6000A64304 /* V2VResultView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V2VResultView.swift; sourceTree = "<group>"; };
+		45F9C6F02F3E7CC100A64304 /* TVAvatar3DPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVAvatar3DPreviewView.swift; sourceTree = "<group>"; };
+		45F9C6F12F3E7CC100A64304 /* TVLiveAvatarOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVLiveAvatarOverlayView.swift; sourceTree = "<group>"; };
+		45F9C6F22F3E7CC100A64304 /* TVMagicMirrorSubviews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVMagicMirrorSubviews.swift; sourceTree = "<group>"; };
+		45F9C6F32F3E7CC100A64304 /* TVMagicMirrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVMagicMirrorView.swift; sourceTree = "<group>"; };
+		45F9C6F82F3E7D2000A64304 /* LiveLayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveLayerViewModel.swift; sourceTree = "<group>"; };
+		45F9C6F92F3E7D2000A64304 /* V2VPracticeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = V2VPracticeViewModel.swift; sourceTree = "<group>"; };
+		45F9C6FE2F3E7D3600A64304 /* StarStoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarStoryViewModel.swift; sourceTree = "<group>"; };
+		45F9C6FF2F3E7D3600A64304 /* TalkBackViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalkBackViewModel.swift; sourceTree = "<group>"; };
+		45F9C7042F3E7D4D00A64304 /* BilingualDubbingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BilingualDubbingViewModel.swift; sourceTree = "<group>"; };
+		45F9C7052F3E7D4D00A64304 /* CulturalContextViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CulturalContextViewModel.swift; sourceTree = "<group>"; };
+		45F9C7062F3E7D4D00A64304 /* GlossaryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlossaryViewModel.swift; sourceTree = "<group>"; };
+		45F9C7072F3E7D4D00A64304 /* MissionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MissionsViewModel.swift; sourceTree = "<group>"; };
+		45F9C7102F3E7D5C00A64304 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		45F9C7132F3E7D7700A64304 /* LeaderboardModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeaderboardModels.swift; sourceTree = "<group>"; };
+		45F9C7162F3E7F1600A64304 /* PhoneticMirrorModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneticMirrorModels.swift; sourceTree = "<group>"; };
 		45FA21AB8481260ED9E0CCB1 /* OfflineCacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OfflineCacheService.swift; sourceTree = "<group>"; };
 		460CDFBC77E18B9BDBF6F11C /* SettingsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsRepository.swift; sourceTree = "<group>"; };
 		46744395B72FE5276CC4DCB1 /* LLMSearchModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSearchModels.swift; sourceTree = "<group>"; };
@@ -1039,7 +1160,7 @@
 		66B5314D25667BFBAB458DBF /* WidgetAuthTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetAuthTokenProvider.swift; sourceTree = "<group>"; };
 		6790AD6D1AD433BB06095F67 /* NewsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsRepository.swift; sourceTree = "<group>"; };
 		685609FD47D9A6DEFA56E346 /* ChessRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChessRepository.swift; sourceTree = "<group>"; };
-		6886D4E27780A11D52CB3341 /* BayitPlusTVApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BayitPlusTVApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6886D4E27780A11D52CB3341 /* BayitPlusTVApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; name = BayitPlusTVApp.app; path = BayitPlusTV.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		693B168FA7FA4412B8262216 /* ProactiveVoiceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProactiveVoiceViewModel.swift; sourceTree = "<group>"; };
 		69481AE1E4253624D6DF25D6 /* ScreenLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenLoadingView.swift; sourceTree = "<group>"; };
 		69B17096A459106EF20D45DA /* TriviaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriviaViewModel.swift; sourceTree = "<group>"; };
@@ -1136,7 +1257,7 @@
 		98D707DEDF5D4F0FB757C5A8 /* YoungstersViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YoungstersViewModel.swift; sourceTree = "<group>"; };
 		993646F2B82D6776CFA80411 /* TVSearchSuggestionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVSearchSuggestionsView.swift; sourceTree = "<group>"; };
 		9999AF5A4B6AD660A0E7277D /* CompanionVocabularyTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionVocabularyTab.swift; sourceTree = "<group>"; };
-		99B12DD8B934CDED08ADE457 /* Bayit_Intro_English.mp4 */ = {isa = PBXFileReference; path = Bayit_Intro_English.mp4; sourceTree = "<group>"; };
+		99B12DD8B934CDED08ADE457 /* Bayit_Intro_English.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bayit_Intro_English.mp4; sourceTree = "<group>"; };
 		9A7F5214CE188F893045CB3A /* DevicePairingModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicePairingModels.swift; sourceTree = "<group>"; };
 		9A9D2769ABD129158E01819C /* ProactiveSuggestionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProactiveSuggestionEngine.swift; sourceTree = "<group>"; };
 		9B0EE4ED4B81905592B223DD /* Route.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Route.swift; sourceTree = "<group>"; };
@@ -1154,7 +1275,7 @@
 		9F470DFCC581F94E00B2D6BD /* TVVODView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVVODView.swift; sourceTree = "<group>"; };
 		9F52620A92475CF68A1422B3 /* SubtitleSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubtitleSettingsView.swift; sourceTree = "<group>"; };
 		9FA452C9AC8C9E10B8B45BD0 /* ZmanimView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZmanimView.swift; sourceTree = "<group>"; };
-		9FB2652F918A7E996AFD9DF1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		9FB2652F918A7E996AFD9DF1 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		9FD865F2E0F0CE4BE65E5782 /* LiveDubbingWebSocketService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveDubbingWebSocketService.swift; sourceTree = "<group>"; };
 		9FF29CAC6CAC63D148C41B6E /* AvatarModeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarModeView.swift; sourceTree = "<group>"; };
 		A02D9C4022D5A1F016EE3196 /* PodcastsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastsView.swift; sourceTree = "<group>"; };
@@ -1162,7 +1283,7 @@
 		A0C939CE72447E22557F8461 /* TVDeviceCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVDeviceCodeView.swift; sourceTree = "<group>"; };
 		A144BA219665417CC50F1F22 /* AICompanionModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICompanionModels.swift; sourceTree = "<group>"; };
 		A161A2AF53EFCCBED5187AF7 /* BACKEND_VERIFICATION_COMPLETE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = BACKEND_VERIFICATION_COMPLETE.md; sourceTree = "<group>"; };
-		A183D492B19DE3E19D0387A0 /* BayitPlusApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BayitPlusApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A183D492B19DE3E19D0387A0 /* BayitPlusApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; name = BayitPlusApp.app; path = BayitPlus.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A1ADB22D9116820FBF0D9FBF /* QuickActionsMediumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickActionsMediumView.swift; sourceTree = "<group>"; };
 		A1DF6CDCDC51AC0926C0E1DC /* TVWatchPartyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVWatchPartyView.swift; sourceTree = "<group>"; };
 		A256E12400955626BAE3A46B /* PasskeyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasskeyViewModel.swift; sourceTree = "<group>"; };
@@ -1173,7 +1294,7 @@
 		A411AEB3311D450581FEE0FF /* DownloadsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadsViewModel.swift; sourceTree = "<group>"; };
 		A439A07061E2975D7A7FF0B1 /* LLMSearchInterpretationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSearchInterpretationView.swift; sourceTree = "<group>"; };
 		A445848765791447C9765B90 /* TogglePlayPauseIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TogglePlayPauseIntent.swift; sourceTree = "<group>"; };
-		A4B7EE77E525CD45A5F550F8 /* Bayit_Intro_Hebrew.mp4 */ = {isa = PBXFileReference; path = Bayit_Intro_Hebrew.mp4; sourceTree = "<group>"; };
+		A4B7EE77E525CD45A5F550F8 /* Bayit_Intro_Hebrew.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bayit_Intro_Hebrew.mp4; sourceTree = "<group>"; };
 		A56D16A11B0B9389BEE68343 /* TVPasskeyManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVPasskeyManagementView.swift; sourceTree = "<group>"; };
 		A64016594A177BE4D48C04B7 /* DeepLinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkRouter.swift; sourceTree = "<group>"; };
 		A67B518132446B17E19EC359 /* TriviaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TriviaSettingsView.swift; sourceTree = "<group>"; };
@@ -1332,7 +1453,7 @@
 		E69F85FC9D2EFAD546C8A657 /* ShabbatModeWidgetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShabbatModeWidgetView.swift; sourceTree = "<group>"; };
 		E7177389F6DC66B311117A98 /* PodcastDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PodcastDetailViewModel.swift; sourceTree = "<group>"; };
 		E7471B49A94173E891AC122C /* MovieDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailView.swift; sourceTree = "<group>"; };
-		E787ED7BBE96DD993D5035D7 /* Bayit_Intro_English.mp4 */ = {isa = PBXFileReference; path = Bayit_Intro_English.mp4; sourceTree = "<group>"; };
+		E787ED7BBE96DD993D5035D7 /* Bayit_Intro_English.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bayit_Intro_English.mp4; sourceTree = "<group>"; };
 		E7A2B642020C13C1D5829E49 /* LLMSearchRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSearchRepository.swift; sourceTree = "<group>"; };
 		E7E757FBB9545A7E83B478D1 /* SeriesModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeriesModels.swift; sourceTree = "<group>"; };
 		E8722522734C87445257D2DA /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
@@ -1537,6 +1658,10 @@
 		29307A2E2650FF9305F13D80 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				45F9C6F02F3E7CC100A64304 /* TVAvatar3DPreviewView.swift */,
+				45F9C6F12F3E7CC100A64304 /* TVLiveAvatarOverlayView.swift */,
+				45F9C6F22F3E7CC100A64304 /* TVMagicMirrorSubviews.swift */,
+				45F9C6F32F3E7CC100A64304 /* TVMagicMirrorView.swift */,
 				5A396F94626BDAEAD90F9A2E /* Auth */,
 				2D3328ED72209F34F3969A06 /* Avatar */,
 				3F03BDBE68F77784CA38587F /* Chat */,
@@ -2098,6 +2223,18 @@
 		A131CFCBF2A5F0BA7709E8D4 /* Repositories */ = {
 			isa = PBXGroup;
 			children = (
+				45F9C6AC2F3E79F900A64304 /* AvatarOutfitRepository.swift */,
+				45F9C6AD2F3E79F900A64304 /* FamilySnapRepository.swift */,
+				45F9C6AE2F3E79F900A64304 /* GamificationRepository.swift */,
+				45F9C6AF2F3E79F900A64304 /* GrandparentBridgeRepository.swift */,
+				45F9C6B02F3E79F900A64304 /* InteractiveMissionRepository.swift */,
+				45F9C6B12F3E79F900A64304 /* MissionsRepository.swift */,
+				45F9C6B22F3E79F900A64304 /* PhoneticMirrorRepository.swift */,
+				45F9C6B32F3E79F900A64304 /* StarStoryRepository.swift */,
+				45F9C6A92F3E79DE00A64304 /* TalkBackRepository.swift */,
+				45F9C6A02F3E79D400A64304 /* AvatarMeshRepository.swift */,
+				45F9C6A12F3E79D400A64304 /* ZehAniModels.swift */,
+				45F9C6A22F3E79D400A64304 /* ZehAniRepository.swift */,
 				9437AC1601C8B32BB8507712 /* AudiobookRepository.swift */,
 				21F3047D8256FFC6CC757799 /* BetaCreditsRepository.swift */,
 				D6666E2058CFACD88619E0D2 /* CategoryRepository.swift */,
@@ -2248,6 +2385,14 @@
 		B14F159E05862242DD3F6899 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				45F9C7162F3E7F1600A64304 /* PhoneticMirrorModels.swift */,
+				45F9C7132F3E7D7700A64304 /* LeaderboardModels.swift */,
+				45F9C6D32F3E7C3B00A64304 /* BilingualDubbingModels.swift */,
+				45F9C6D02F3E7C3100A64304 /* InteractiveMissionModels.swift */,
+				45F9C6CD2F3E7C2700A64304 /* MissionsModels.swift */,
+				45F9C6CA2F3E7C1B00A64304 /* StarStoryModels.swift */,
+				45F9C6C72F3E7C0F00A64304 /* TalkBackModels.swift */,
+				45F9C6C42F3E7C0600A64304 /* AvatarMeshModels.swift */,
 				A144BA219665417CC50F1F22 /* AICompanionModels.swift */,
 				7DAB84410DA4CB0F3FA9FF3B /* AudiobookModels.swift */,
 				08FA9C0C5E19F1A2583C88F9 /* AudioTrack.swift */,
@@ -2314,6 +2459,19 @@
 		B4F744FFFDE2D22A20C66BA7 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				45F9C6D62F3E7C6000A64304 /* Avatar3DPreviewView.swift */,
+				45F9C6D72F3E7C6000A64304 /* BiometricConsentComponents.swift */,
+				45F9C6D82F3E7C6000A64304 /* BiometricConsentView.swift */,
+				45F9C6D92F3E7C6000A64304 /* ContactsManagementView.swift */,
+				45F9C6DA2F3E7C6000A64304 /* FeedbackInboxView.swift */,
+				45F9C6DB2F3E7C6000A64304 /* HighlightReelView.swift */,
+				45F9C6DC2F3E7C6000A64304 /* LiveAvatarOverlayView.swift */,
+				45F9C6DD2F3E7C6000A64304 /* MagicMirrorView.swift */,
+				45F9C6DE2F3E7C6000A64304 /* MeshGenerationView.swift */,
+				45F9C6DF2F3E7C6000A64304 /* SceneTriggerSubviews.swift */,
+				45F9C6E02F3E7C6000A64304 /* SceneTriggerView.swift */,
+				45F9C6E12F3E7C6000A64304 /* V2VPracticeView.swift */,
+				45F9C6E22F3E7C6000A64304 /* V2VResultView.swift */,
 				9D3D6F66B4A2649322339D34 /* App */,
 				E4545511809BDA5A296CD91E /* Audiobooks */,
 				A9AA3A3AC0315C8B9813B004 /* Auth */,
@@ -2509,6 +2667,7 @@
 		DA46AEF64F3BCCB1AC3EEFA5 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				45F9C7102F3E7D5C00A64304 /* NetworkMonitor.swift */,
 				DD46EF1945697C016F3A692B /* AvatarStateMachine.swift */,
 				249DF2A99EE82078338543D2 /* BiometricAuthService.swift */,
 				B740536702B0A367B464D015 /* FeatureValidationService.swift */,
@@ -2704,6 +2863,14 @@
 		FBA4C64E787EF5FDBFD58DBF /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				45F9C7042F3E7D4D00A64304 /* BilingualDubbingViewModel.swift */,
+				45F9C7052F3E7D4D00A64304 /* CulturalContextViewModel.swift */,
+				45F9C7062F3E7D4D00A64304 /* GlossaryViewModel.swift */,
+				45F9C7072F3E7D4D00A64304 /* MissionsViewModel.swift */,
+				45F9C6FE2F3E7D3600A64304 /* StarStoryViewModel.swift */,
+				45F9C6FF2F3E7D3600A64304 /* TalkBackViewModel.swift */,
+				45F9C6F82F3E7D2000A64304 /* LiveLayerViewModel.swift */,
+				45F9C6F92F3E7D2000A64304 /* V2VPracticeViewModel.swift */,
 				10D6C93148F459D34915E285 /* AICompanionViewModel.swift */,
 				E59F8347D3F3B056C30F0D8C /* AudiobookDetailViewModel.swift */,
 				5145234E59211F38DDFA7EBD /* AudiobooksViewModel.swift */,
@@ -2919,7 +3086,6 @@
 			packageReferences = (
 				84F64C7BE85E3210DBA703C0 /* XCLocalSwiftPackageReference "." */,
 			);
-			preferredProjectObjectVersion = 77;
 			productRefGroup = 74595CB000E97107005642D9 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -3002,10 +3168,19 @@
 				3A89C9E9F3D78373F204CADE /* ChessViewModel+WebSocket.swift in Sources */,
 				9AF1B88741A1CDB7F5815E16 /* ChessViewModel.swift in Sources */,
 				B817EA5B2E55C7EEE45E91E4 /* ChildrenViewModel.swift in Sources */,
+				45F9C6B42F3E79F900A64304 /* GamificationRepository.swift in Sources */,
+				45F9C6B52F3E79F900A64304 /* PhoneticMirrorRepository.swift in Sources */,
+				45F9C6B62F3E79F900A64304 /* AvatarOutfitRepository.swift in Sources */,
+				45F9C6B72F3E79F900A64304 /* GrandparentBridgeRepository.swift in Sources */,
+				45F9C6B82F3E79F900A64304 /* MissionsRepository.swift in Sources */,
+				45F9C6B92F3E79F900A64304 /* StarStoryRepository.swift in Sources */,
+				45F9C6BA2F3E79F900A64304 /* InteractiveMissionRepository.swift in Sources */,
+				45F9C6BB2F3E79F900A64304 /* FamilySnapRepository.swift in Sources */,
 				A66A6F8EB5FD89C7E67AF2FA /* ContentModels.swift in Sources */,
 				3F3CBE19847B46A37B9798E5 /* ContentPickerItem.swift in Sources */,
 				10F9DC2BCB175D831CDB121E /* ContentPickerViewModel.swift in Sources */,
 				032752B316C4669812EC6F8E /* ContentRepository.swift in Sources */,
+				45F9C6AB2F3E79DE00A64304 /* TalkBackRepository.swift in Sources */,
 				B395ADD665BEA9CE34516C5D /* ContentType.swift in Sources */,
 				E47115F093284E0B11940D21 /* ConversationSummary.swift in Sources */,
 				69D8FB006516B740E04F775F /* CultureContentViewModel.swift in Sources */,
@@ -3020,6 +3195,7 @@
 				74D226BCB27A41BBEFD3596F /* DirectMessagesViewModel.swift in Sources */,
 				62C9075E8D1A9AC203A812EC /* DownloadsViewModel.swift in Sources */,
 				30275E69F17C225B65DC5B82 /* DubbingPremiumGateView.swift in Sources */,
+				45F9C6CE2F3E7C2700A64304 /* MissionsModels.swift in Sources */,
 				DF5829EA69BD0B8C500F8467 /* EPGModels.swift in Sources */,
 				D9AF79D3F0EA37648E1403FC /* EPGRepository.swift in Sources */,
 				FE4E036852F1DC46771C909C /* EPGViewModel.swift in Sources */,
@@ -3030,6 +3206,9 @@
 				7D58BD94F17BE20B6F913679 /* FeatureFlags.swift in Sources */,
 				552C066B625450098A58444D /* FeatureValidationService.swift in Sources */,
 				23643ACF059901C2BF51469F /* FlowsViewModel.swift in Sources */,
+				45F9C6A62F3E79D400A64304 /* AvatarMeshRepository.swift in Sources */,
+				45F9C6A72F3E79D400A64304 /* ZehAniRepository.swift in Sources */,
+				45F9C6A82F3E79D400A64304 /* ZehAniModels.swift in Sources */,
 				AB72B858DE01A3C60A8C00E0 /* Friend.swift in Sources */,
 				08ED5349A75C46620DF95BA2 /* FriendRequest.swift in Sources */,
 				AEBBF0A64741ABE62CFD948C /* FriendsRepository.swift in Sources */,
@@ -3093,6 +3272,7 @@
 				2F4D344F1B073E756EB94E6A /* SceneSearchModels.swift in Sources */,
 				702368D0F9C52502366732D0 /* SceneSearchViewModel.swift in Sources */,
 				A5C894ED62833DABEE2774E2 /* SearchModels.swift in Sources */,
+				45F9C6D42F3E7C3B00A64304 /* BilingualDubbingModels.swift in Sources */,
 				3B14E307D85962171D844B6E /* SearchRepository.swift in Sources */,
 				AEAA06A28AC4565EC48AE015 /* SearchViewModel.swift in Sources */,
 				AE9600BFD21C10EA69548004 /* SecurityModels.swift in Sources */,
@@ -3104,6 +3284,7 @@
 				133A3574BFF4CB13A883C52F /* SettingsModels.swift in Sources */,
 				F595A4D04185210091BC8B6E /* SettingsRepository.swift in Sources */,
 				A655D44E31F4BE5269A524A2 /* SettingsViewModel.swift in Sources */,
+				45F9C6C52F3E7C0600A64304 /* AvatarMeshModels.swift in Sources */,
 				7A8DD665EBF13C4AD9D08F03 /* ShabbatModeService.swift in Sources */,
 				D5D512709C69594D71BD7312 /* ShabbatModels.swift in Sources */,
 				60ABAAE58E0FEFBED487D7FA /* ShabbatRepository.swift in Sources */,
@@ -3116,6 +3297,8 @@
 				79DACA279AAC3790FCC5D6BC /* SubtitleFlagsPill.swift in Sources */,
 				38C1A218E0228D874C9EBF9A /* SubtitleLanguageInfo.swift in Sources */,
 				240B682F71AE3CB4DE31FCAD /* SubtitleModels.swift in Sources */,
+				45F9C6FC2F3E7D2000A64304 /* V2VPracticeViewModel.swift in Sources */,
+				45F9C6FD2F3E7D2000A64304 /* LiveLayerViewModel.swift in Sources */,
 				C8CD326E8E5C58941A3E6E17 /* SubtitleRepository+AIGeneration.swift in Sources */,
 				5CC4CB3444D10CECFEA0C51D /* SubtitleRepository.swift in Sources */,
 				4C05A8B531405CFBD0DE1532 /* SupportViewModel.swift in Sources */,
@@ -3143,8 +3326,13 @@
 				E0244F45B41325F440507581 /* TVChatMessageBubble.swift in Sources */,
 				D7A045670D86924B96048D25 /* TVChatbotView.swift in Sources */,
 				8871B5C9BD71DCA46B9A3419 /* TVChatbotViewModel.swift in Sources */,
+				45F9C6CB2F3E7C1B00A64304 /* StarStoryModels.swift in Sources */,
 				1843FED1119B410E5CADA217 /* TVChessBoardView.swift in Sources */,
 				C9A1B22B63F77D193578B714 /* TVChessControlsView.swift in Sources */,
+				45F9C6F42F3E7CC100A64304 /* TVLiveAvatarOverlayView.swift in Sources */,
+				45F9C6F52F3E7CC100A64304 /* TVMagicMirrorSubviews.swift in Sources */,
+				45F9C6F62F3E7CC100A64304 /* TVMagicMirrorView.swift in Sources */,
+				45F9C6F72F3E7CC100A64304 /* TVAvatar3DPreviewView.swift in Sources */,
 				B9C0E027D326728250E92E23 /* TVChessMoveHistoryView.swift in Sources */,
 				3CC03C4064874FFD73CBACEF /* TVChessPieceView.swift in Sources */,
 				1893EDEC63B89DCA1A8D8B4A /* TVChessView.swift in Sources */,
@@ -3158,6 +3346,10 @@
 				A29BFA1018DD61A7068412C0 /* TVConversationView.swift in Sources */,
 				1452156B7E1D6C3EC4D5681E /* TVCreatePartySheet.swift in Sources */,
 				DD5E727C2EBFBA2E82917253 /* TVCreateWidgetView.swift in Sources */,
+				45F9C70C2F3E7D4D00A64304 /* MissionsViewModel.swift in Sources */,
+				45F9C70D2F3E7D4D00A64304 /* BilingualDubbingViewModel.swift in Sources */,
+				45F9C70E2F3E7D4D00A64304 /* GlossaryViewModel.swift in Sources */,
+				45F9C70F2F3E7D4D00A64304 /* CulturalContextViewModel.swift in Sources */,
 				06D41601A56DB0B60B137CA5 /* TVCredentialPanel.swift in Sources */,
 				51BB0630D1D735462D4F3BA1 /* TVCultureClock.swift in Sources */,
 				99C1E652312DAF6C226AFC42 /* TVCultureView.swift in Sources */,
@@ -3167,6 +3359,7 @@
 				D8EF6AAA35DCB09D6B92BD00 /* TVDirectMessagesView.swift in Sources */,
 				686685F1D747F145D18C68B3 /* TVEPGView.swift in Sources */,
 				1E15DF08872618F6014844AD /* TVFamilyControlsView.swift in Sources */,
+				45F9C6D12F3E7C3100A64304 /* InteractiveMissionModels.swift in Sources */,
 				69FFACEAD4FB5841BB617CA5 /* TVFamilyPinModalView.swift in Sources */,
 				FF02AFCD0DB88CAE85F907B7 /* TVFavoritesView.swift in Sources */,
 				C1AA322612F027DD12CAD428 /* TVFlowsView.swift in Sources */,
@@ -3197,6 +3390,8 @@
 				AA1B2C3D4E5F6A7B8C9D0E1F /* TVProfilePillView.swift in Sources */,
 				AF65425F95DE0500C19B2774 /* TVPasskeyManagementView.swift in Sources */,
 				0296044D9350569F7A5FA301 /* TVPlaybackSpeedControlView.swift in Sources */,
+				45F9C7002F3E7D3600A64304 /* TalkBackViewModel.swift in Sources */,
+				45F9C7012F3E7D3600A64304 /* StarStoryViewModel.swift in Sources */,
 				D79A131A9982D6474161792B /* TVPlayerControlBar.swift in Sources */,
 				2A3DC1A55507B50AE68A33CB /* TVPlayerView.swift in Sources */,
 				39E10C413958C1C83A5E8EAD /* TVPodcastDetailView.swift in Sources */,
@@ -3227,6 +3422,7 @@
 				84199EDE6EC45832AE8A3BD2 /* TVSplitSubtitleOverlayView.swift in Sources */,
 				82C1FB63428EB6DC9DB72B05 /* TVStreamLimitExceededView.swift in Sources */,
 				33EFDE17D57007E6BF8E2CF7 /* TVSubscriptionView.swift in Sources */,
+				45F9C6C92F3E7C0F00A64304 /* TalkBackModels.swift in Sources */,
 				6218FD8C693B2D73343A2A08 /* TVSubtitleLanguagePickerView.swift in Sources */,
 				240953A404632A7AF6CA31E2 /* TVSubtitleSettingsView.swift in Sources */,
 				8A7983DB80C7865D0E33C5FD /* TVTimeRangePickerView.swift in Sources */,
@@ -3236,12 +3432,14 @@
 				514AD3004EEB00ECABC9BF33 /* TVUserAvatarRow.swift in Sources */,
 				B3C42C3A94847121D203130E /* TVVODView.swift in Sources */,
 				944DCE0EF73FAB8D9F9C7C22 /* TVVideoPlayerRepresentable.swift in Sources */,
+				45F9C7112F3E7D5C00A64304 /* NetworkMonitor.swift in Sources */,
 				E79C01639868473DE3AA62E9 /* TVVoiceAssistantSheet.swift in Sources */,
 				9BD1C0D0E476E8B5F175E605 /* TVVoiceAvatarFAB.swift in Sources */,
 				0760795A1C4CF2AFE4FAA53E /* TVVoiceOnboardingSteps.swift in Sources */,
 				20C96DA8EECF1E2DEF647FF9 /* TVVoiceOnboardingView.swift in Sources */,
 				AF0764F571D36A9F0BC72EAB /* TVVoiceSelectorView.swift in Sources */,
 				E1226478DD1AD8BB846B313C /* TVWakeWordSettingsView.swift in Sources */,
+				45F9C7182F3E7F1600A64304 /* PhoneticMirrorModels.swift in Sources */,
 				9AAA47AE6A7672206583D534 /* TVWatchPartyView.swift in Sources */,
 				21D150BDB130C6C41B1D591B /* TVWidgetContainerView.swift in Sources */,
 				A1B2C3D4E5F60718191A1B1C /* TVYnetMivzakimContentView.swift in Sources */,
@@ -3273,6 +3471,7 @@
 				2E0C176BD639DCCBD9984AAE /* WidgetModels.swift in Sources */,
 				13D8E236498F11A778467AEB /* WidgetPlayerViewModel.swift in Sources */,
 				9D8993F9587A7EFDBF7AF396 /* WidgetRepository.swift in Sources */,
+				45F9C7142F3E7D7700A64304 /* LeaderboardModels.swift in Sources */,
 				489674BFE5A202F0C51869D9 /* WidgetsViewModel.swift in Sources */,
 				B55EDFCAC6697DE942726545 /* YnetMivzakimViewModel.swift in Sources */,
 				2C17C43592225B637A01065C /* YoungstersViewModel.swift in Sources */,
@@ -3344,6 +3543,7 @@
 				7439714A17F41F527E6D5362 /* ActivityDonationService.swift in Sources */,
 				D0785AA439F0F9E565774A0F /* AddPodcastView.swift in Sources */,
 				B65A9A17C678846F3852F9AF /* AddProfileSheetView.swift in Sources */,
+				45F9C6CF2F3E7C2700A64304 /* MissionsModels.swift in Sources */,
 				9B352628CD7D7ACB56715B7E /* AddToPlaylistIntent.swift in Sources */,
 				3785053C29EA681EBA514E6E /* AgeSliderView.swift in Sources */,
 				B84E0AA660BCEC7006E56EA8 /* AppAPILogger.swift in Sources */,
@@ -3357,8 +3557,17 @@
 				D2443C670A71E30DBD1DA8B5 /* AudiobookDetailViewModel.swift in Sources */,
 				187C163B3B12A7C3336A130C /* AudiobookFilterView.swift in Sources */,
 				C024E1DA7065086BE308EB05 /* AudiobookModels.swift in Sources */,
+				45F9C6D22F3E7C3100A64304 /* InteractiveMissionModels.swift in Sources */,
 				9C118C760178FCCA8DB7C411 /* AudiobookRepository.swift in Sources */,
 				106FC55ADF142CDF6D8BD4F6 /* AudiobooksView.swift in Sources */,
+				45F9C6BC2F3E79F900A64304 /* GamificationRepository.swift in Sources */,
+				45F9C6BD2F3E79F900A64304 /* PhoneticMirrorRepository.swift in Sources */,
+				45F9C6BE2F3E79F900A64304 /* AvatarOutfitRepository.swift in Sources */,
+				45F9C6BF2F3E79F900A64304 /* GrandparentBridgeRepository.swift in Sources */,
+				45F9C6C02F3E79F900A64304 /* MissionsRepository.swift in Sources */,
+				45F9C6C12F3E79F900A64304 /* StarStoryRepository.swift in Sources */,
+				45F9C6C22F3E79F900A64304 /* InteractiveMissionRepository.swift in Sources */,
+				45F9C6C32F3E79F900A64304 /* FamilySnapRepository.swift in Sources */,
 				DB82FD3A838E44A4824E8432 /* AudiobooksViewModel.swift in Sources */,
 				C59B78BE672A2D959E46DE32 /* AuthComponents.swift in Sources */,
 				47CA87F97516F1F5C937FD53 /* AuthFlowView.swift in Sources */,
@@ -3392,6 +3601,19 @@
 				1BADF68071AE7811E0654B1D /* ChapterMarkersView.swift in Sources */,
 				DF58626B9E9379AD73156C7C /* ChapterModels.swift in Sources */,
 				6BEB3C0CD1BBECA4659B63CB /* ChapterNavigationView.swift in Sources */,
+				45F9C6E32F3E7C6000A64304 /* LiveAvatarOverlayView.swift in Sources */,
+				45F9C6E42F3E7C6000A64304 /* MeshGenerationView.swift in Sources */,
+				45F9C6E52F3E7C6000A64304 /* BiometricConsentView.swift in Sources */,
+				45F9C6E62F3E7C6000A64304 /* FeedbackInboxView.swift in Sources */,
+				45F9C6E72F3E7C6000A64304 /* SceneTriggerSubviews.swift in Sources */,
+				45F9C6E82F3E7C6000A64304 /* V2VResultView.swift in Sources */,
+				45F9C6E92F3E7C6000A64304 /* V2VPracticeView.swift in Sources */,
+				45F9C6EA2F3E7C6000A64304 /* ContactsManagementView.swift in Sources */,
+				45F9C6EB2F3E7C6000A64304 /* Avatar3DPreviewView.swift in Sources */,
+				45F9C6EC2F3E7C6000A64304 /* HighlightReelView.swift in Sources */,
+				45F9C6ED2F3E7C6000A64304 /* MagicMirrorView.swift in Sources */,
+				45F9C6EE2F3E7C6000A64304 /* SceneTriggerView.swift in Sources */,
+				45F9C6EF2F3E7C6000A64304 /* BiometricConsentComponents.swift in Sources */,
 				5785E5A8C67479F6361959F5 /* ChapterNavigationViewModel.swift in Sources */,
 				75E191B0DBC33AE00641E6D3 /* ChapterRepository.swift in Sources */,
 				3E347CB1311B45FC3ECC618F /* ChatMessageBubble.swift in Sources */,
@@ -3403,12 +3625,15 @@
 				0BC9B172EE880565D85BE7B4 /* ChessControlsView.swift in Sources */,
 				B1902648EE9562E6C1D9FF6A /* ChessGame.swift in Sources */,
 				E2F61B2E7F1D0402D81A2956 /* ChessMoveHistoryView.swift in Sources */,
+				45F9C6D52F3E7C3B00A64304 /* BilingualDubbingModels.swift in Sources */,
 				3682FA7A75C11E66D0D95811 /* ChessPieceView.swift in Sources */,
 				B23819F3FB80F8FE9A165FA8 /* ChessRepository.swift in Sources */,
 				E20131D0583F4DD5D9C6BC13 /* ChessView.swift in Sources */,
 				FE3D6FB99057AA336B12DCE9 /* ChessViewModel+WebSocket.swift in Sources */,
 				E41F037A573F7A5EBA72FB31 /* ChessViewModel.swift in Sources */,
 				72DF87D55C8A0E150655F179 /* ChildrenView.swift in Sources */,
+				45F9C7022F3E7D3600A64304 /* TalkBackViewModel.swift in Sources */,
+				45F9C7032F3E7D3600A64304 /* StarStoryViewModel.swift in Sources */,
 				46E76BFDD5DBCDD472314CD6 /* ChildrenViewModel.swift in Sources */,
 				9709B55C46DD21CB06AD7F41 /* CityContentRow.swift in Sources */,
 				2CED1DD6D37343EC59701FEE /* CompanionContextTab.swift in Sources */,
@@ -3464,6 +3689,7 @@
 				EBF09AB6C2702B56D4565242 /* FeatureValidationService.swift in Sources */,
 				81BF6C865032E5EF6BD91A7C /* FlowsView.swift in Sources */,
 				86277596B44C947FA0D6749A /* FlowsViewModel.swift in Sources */,
+				45F9C6C82F3E7C0F00A64304 /* TalkBackModels.swift in Sources */,
 				090FE98D5000FFBB7F2A2FCA /* Friend.swift in Sources */,
 				BDD624175EA1586AB1334395 /* FriendRequest.swift in Sources */,
 				8187734EC3B77C6694CD2864 /* FriendRequestCard.swift in Sources */,
@@ -3484,6 +3710,10 @@
 				C3C17D0CDCA7BB6460115F6A /* HouseholdModels.swift in Sources */,
 				F37AFBFA9B4DF929B3DA8011 /* HouseholdRepository.swift in Sources */,
 				7FFF097869D34D557650814D /* HouseholdView.swift in Sources */,
+				45F9C7082F3E7D4D00A64304 /* MissionsViewModel.swift in Sources */,
+				45F9C7092F3E7D4D00A64304 /* BilingualDubbingViewModel.swift in Sources */,
+				45F9C70A2F3E7D4D00A64304 /* GlossaryViewModel.swift in Sources */,
+				45F9C70B2F3E7D4D00A64304 /* CulturalContextViewModel.swift in Sources */,
 				5D778874E4A904A40DF1D1A6 /* HouseholdViewModel.swift in Sources */,
 				7C50CD712E536003EF1B0789 /* InsufficientCreditsModalView.swift in Sources */,
 				F93F647FE0593C0C56B4909A /* InteractiveSubtitlesOverlay.swift in Sources */,
@@ -3491,10 +3721,15 @@
 				769BBF1078DA52BF7E466DC6 /* InteractiveSubtitlesViewModel.swift in Sources */,
 				F1A8A61E3AA0276E7BF64C77 /* JerusalemRowView.swift in Sources */,
 				10E840AFC66DB108E4D6CAD8 /* JoinPartySheet.swift in Sources */,
+				45F9C7152F3E7D7700A64304 /* LeaderboardModels.swift in Sources */,
 				5E72E02602CD09F0A7637D2F /* JudaismView.swift in Sources */,
+				45F9C7122F3E7D5C00A64304 /* NetworkMonitor.swift in Sources */,
 				AD42778439F7AAF9EBF7B95F /* JudaismViewModel.swift in Sources */,
 				CD9185EC949EE2BD8AB7EE74 /* KeychainHelper.swift in Sources */,
 				49959EB689DF675D90E0295B /* LLMSearchInterpretationView.swift in Sources */,
+				45F9C6A32F3E79D400A64304 /* AvatarMeshRepository.swift in Sources */,
+				45F9C6A42F3E79D400A64304 /* ZehAniRepository.swift in Sources */,
+				45F9C6A52F3E79D400A64304 /* ZehAniModels.swift in Sources */,
 				55C7408E06DC0D6BB26B51A8 /* LLMSearchModels.swift in Sources */,
 				6ABC2316E90C481B1187A37E /* LLMSearchRepository.swift in Sources */,
 				D7733CBBCD8A75FE741EE003 /* LLMSearchResultsView.swift in Sources */,
@@ -3577,6 +3812,7 @@
 				C665F5251E275E5E4C54C181 /* ProactiveSuggestionBannerView.swift in Sources */,
 				323FE321FDC3C49054F20E67 /* ProactiveSuggestionEngine.swift in Sources */,
 				AB23496E02482319BABC7DCF /* ProactiveVoiceModels.swift in Sources */,
+				45F9C6CC2F3E7C1B00A64304 /* StarStoryModels.swift in Sources */,
 				CC18D2EA1CC2E060EFD87CCB /* ProactiveVoiceViewModel.swift in Sources */,
 				1870732AE598933624C3E3F8 /* ProfileAccountSections.swift in Sources */,
 				CF080EC7E47F24B20CA9D3AD /* ProfileSelectionView.swift in Sources */,
@@ -3587,6 +3823,7 @@
 				5476CC224B5802DC46A52ACA /* QuizOverlayView.swift in Sources */,
 				8B80EA985FFDE17076C49F34 /* QuizProgressView.swift in Sources */,
 				35B4742D1BCC92261E1A086D /* QuizQuestionView.swift in Sources */,
+				45F9C6C62F3E7C0600A64304 /* AvatarMeshModels.swift in Sources */,
 				DCD12C2AA98B4F2D3781C2D8 /* QuizResultsView.swift in Sources */,
 				016A79786D37A82D63BFCE99 /* RadioModels.swift in Sources */,
 				AA7D1A0FEC42DD01F688C7F9 /* RadioRepository.swift in Sources */,
@@ -3596,6 +3833,7 @@
 				0B2BD36FA23620E0FBDD72DC /* RecordingsView.swift in Sources */,
 				DE2BE994EB07275BFFA4FA52 /* RecordingsViewModel.swift in Sources */,
 				00865227C8238055DDD9F82E /* RegisterView.swift in Sources */,
+				45F9C7172F3E7F1600A64304 /* PhoneticMirrorModels.swift in Sources */,
 				019329C5F050DEA98F6AE8CF /* RepositoryProvider.swift in Sources */,
 				54A32E7222152C242E01BA5F /* ResumeWatchingIntent.swift in Sources */,
 				D73622F1CD6AD6D5DA1682F7 /* RewardModels.swift in Sources */,
@@ -3609,6 +3847,7 @@
 				DEE29CC9C598A03BD01D0C12 /* SceneSearchViewModel.swift in Sources */,
 				2E5D5EA4B07B5FB8012F3D78 /* ScreenLoadingView.swift in Sources */,
 				22F55C64695FB5F2CC91664B /* SearchContentIntent.swift in Sources */,
+				45F9C6AA2F3E79DE00A64304 /* TalkBackRepository.swift in Sources */,
 				09514A89EF58E54609FF62FD /* SearchModels.swift in Sources */,
 				17187959EA66B88D72691DC4 /* SearchRepository.swift in Sources */,
 				868B6A19D79E409181A6A9E3 /* SearchResultsGridView.swift in Sources */,
@@ -3629,6 +3868,8 @@
 				931632A0732ECC6F7EE40B39 /* SettingsViewModel.swift in Sources */,
 				744F02EC5137D60F78FD7689 /* ShabbatBannerView.swift in Sources */,
 				AF4E27E08BF0D95EFB6B0AF2 /* ShabbatModeService.swift in Sources */,
+				45F9C6FA2F3E7D2000A64304 /* V2VPracticeViewModel.swift in Sources */,
+				45F9C6FB2F3E7D2000A64304 /* LiveLayerViewModel.swift in Sources */,
 				C88870A9D054DE7DB6F27009 /* ShabbatModels.swift in Sources */,
 				75562258E91BD53FD53384F8 /* ShabbatRepository.swift in Sources */,
 				B4F3A6530D63507E76CCBE39 /* ShabbatViewModel.swift in Sources */,

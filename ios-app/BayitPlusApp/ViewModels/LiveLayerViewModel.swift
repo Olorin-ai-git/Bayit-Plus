@@ -23,8 +23,8 @@ class LiveLayerViewModel {
     ) async {
         webSocketManager = manager
 
-        guard let wsURL = buildWebSocketURL(contentId: contentId) else {
-            error = LocalizationManager.shared.t("zehAni.liveLayer.errors.invalidURL")
+        guard let wsURL = await buildWebSocketURL(contentId: contentId) else {
+            error = "Invalid URL"
             return
         }
 
@@ -124,9 +124,9 @@ class LiveLayerViewModel {
         }
     }
 
-    private func buildWebSocketURL(contentId: String) -> URL? {
+    private func buildWebSocketURL(contentId: String) async -> URL? {
         guard let wsManager = webSocketManager else { return nil }
-        let baseURL = wsManager.configuration.baseURL
+        let baseURL = await wsManager.configuration.baseURL
 
         var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
         components?.scheme = baseURL.scheme == "https" ? "wss" : "ws"

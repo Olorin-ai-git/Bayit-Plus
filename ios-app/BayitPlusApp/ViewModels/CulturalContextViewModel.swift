@@ -1,5 +1,30 @@
 import BayitCore
+import BayitNetworking
 import Foundation
+
+struct CulturalExplanationData: Identifiable, Sendable {
+    let id: String
+    let referenceId: String
+    let canonicalName: String
+    let canonicalNameEn: String
+    let category: String
+    let subcategory: String
+    let shortExplanation: String
+    let shortExplanationEn: String
+    let imageUrl: String?
+
+    init(referenceId: String, canonicalName: String, canonicalNameEn: String, category: String, subcategory: String, shortExplanation: String, shortExplanationEn: String, imageUrl: String?) {
+        self.id = referenceId
+        self.referenceId = referenceId
+        self.canonicalName = canonicalName
+        self.canonicalNameEn = canonicalNameEn
+        self.category = category
+        self.subcategory = subcategory
+        self.shortExplanation = shortExplanation
+        self.shortExplanationEn = shortExplanationEn
+        self.imageUrl = imageUrl
+    }
+}
 
 @Observable
 final class CulturalContextViewModel {
@@ -7,6 +32,11 @@ final class CulturalContextViewModel {
     var selectedReference: CulturalExplanationData?
     var isLoading: Bool = false
     var showExplanationSheet: Bool = false
+    private let client: APIClient
+
+    init(client: APIClient) {
+        self.client = client
+    }
 
     func detectReferences(text: String) async {
         guard !text.isEmpty else {
@@ -16,9 +46,10 @@ final class CulturalContextViewModel {
 
         isLoading = true
         do {
-            let response: DetectResponse = try await APIClient.shared.post(
-                "/cultural/detect",
-                body: DetectRequest(text: text)
+            let response: DetectResponse = try await client.post(
+                "/api/v1/cultural/detect",
+                body: DetectRequest(text: text),
+                as: DetectResponse.self
             )
             references = response.references.map { ref in
                 CulturalExplanationData(

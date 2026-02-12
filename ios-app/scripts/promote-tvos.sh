@@ -29,20 +29,22 @@ echo -e "${BLUE}📦 Bumping build number: $CURRENT_BUILD → $NEW_BUILD${NC}"
 # Update Info.plist
 plutil -replace CFBundleVersion -string "$NEW_BUILD" BayitPlusTVApp/Info.plist
 
-echo -e "${BLUE}🏗️  Archiving tvOS app (without signing)...${NC}"
+echo -e "${BLUE}🧹 Cleaning build folder...${NC}"
+xcodebuild clean -project BayitPlus.xcodeproj -scheme BayitPlusTVApp -configuration Release > /dev/null 2>&1
 
-# Archive without signing (sign during export) + relax strict concurrency
+echo -e "${BLUE}🏗️  Archiving tvOS app (without signing, with concurrency warnings allowed)...${NC}"
+
+# Archive without signing (sign during export)
 xcodebuild -project BayitPlus.xcodeproj \
   -scheme BayitPlusTVApp \
   -configuration Release \
   -destination 'generic/platform=tvOS' \
   -archivePath /tmp/BayitPlusTVApp.xcarchive \
-  archive \
+  -allowProvisioningUpdates \
   CODE_SIGNING_REQUIRED=NO \
   CODE_SIGNING_ALLOWED=NO \
   DEVELOPMENT_TEAM=963B7732N5 \
-  SWIFT_STRICT_CONCURRENCY=minimal \
-  -quiet
+  archive
 
 echo -e "${GREEN}✅ Archive succeeded${NC}"
 
