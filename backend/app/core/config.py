@@ -2361,6 +2361,11 @@ class Settings(BaseSettings):
         env="MISSION_VOICE_HINT_AFTER_ATTEMPT",
         description="Show pronunciation hint after N failed attempts",
     )
+    MISSION_VOICE_PRAISE_TEXT: str = Field(
+        default="\u05DE\u05E6\u05D5\u05D9\u05DF!",
+        env="MISSION_VOICE_PRAISE_TEXT",
+        description="Hebrew praise text spoken in child voice on correct answer",
+    )
 
     # ============================================
     # Phase 9 - Gamification Levels

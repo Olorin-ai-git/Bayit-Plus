@@ -8504,5 +8504,158 @@
     "complete": "Video uploaded successfully",
     "cameraError": "Could not access camera",
     "uploadError": "Upload failed. Please try again."
+  },
+  "phoneticMirror": {
+    "title": "Phonetic Mirror",
+    "subtitle": "Perfect your Hebrew pronunciation",
+    "practicePhrase": "Practice Phrase",
+    "tapToRecord": "Tap and hold to record",
+    "recording": "Recording...",
+    "evaluating": "Evaluating pronunciation...",
+    "tryAgain": "Try Again",
+    "listenCorrected": "Listen to corrected pronunciation",
+    "nextPhrase": "Next Phrase",
+    "score": "Score",
+    "dailyLimitReached": "Daily practice limit reached",
+    "quality": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair",
+      "needsPractice": "Needs Practice",
+      "noMatch": "No Match"
+    },
+    "feedback": {
+      "title": "Pronunciation Feedback",
+      "stressWrong": "Stress placement",
+      "vowelSwap": "Vowel sound",
+      "consonantSwap": "Consonant sound",
+      "missingSound": "Missing sound",
+      "extraSound": "Extra sound"
+    },
+    "history": {
+      "title": "Practice History",
+      "averageScore": "Average Score",
+      "totalAttempts": "Total Attempts",
+      "noHistory": "No practice sessions yet"
+    },
+    "phrases": {
+      "title": "Practice Phrases",
+      "difficulty": "Difficulty",
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "fromVocabulary": "From Your Vocabulary"
+    }
+  },
+  "voiceDecision": {
+    "title": "Voice Challenge",
+    "instruction": "Say the Hebrew phrase to continue",
+    "listening": "Listening...",
+    "evaluating": "Checking pronunciation...",
+    "correct": "Correct! Well done!",
+    "incorrect": "Not quite. Try again.",
+    "hint": "Listen to the phrase",
+    "attemptsRemaining": "{{count}} attempts remaining",
+    "timeout": "Time's up!",
+    "skipAvailable": "You can skip this challenge",
+    "pronunciationScore": "Pronunciation: {{score}}%",
+    "attempt": "Attempt {{current}} of {{max}}",
+    "listenHint": "Listen to correct pronunciation",
+    "holdToSpeak": "Hold to speak"
+  },
+  "gamification": {
+    "title": "My Progress",
+    "subtitle": "Level up your Hebrew journey",
+    "level": "Level {{level}}",
+    "xp": "XP",
+    "xpToNext": "{{xp}} XP to next level",
+    "totalXp": "Total XP: {{xp}}",
+    "levelUp": "Level Up!",
+    "newLevel": "You reached Level {{level}}!",
+    "newTitle": "New title: {{title}}",
+    "perkUnlocked": "Perk unlocked: {{perk}}",
+    "claimPerk": "Claim",
+    "claimed": "Claimed",
+    "leaderboard": {
+      "title": "Leaderboard",
+      "rank": "#{{rank}}",
+      "empty": "No entries yet"
+    },
+    "stats": {
+      "missionsCompleted": "Missions Completed",
+      "mirrorSessions": "Mirror Sessions",
+      "talkBackAttempts": "Talk Back Attempts"
+    },
+    "perks": {
+      "title": "Perks & Rewards",
+      "locked": "Locked",
+      "unlocked": "Unlocked",
+      "outfit": "Outfit Reward"
+    },
+    "levels": {
+      "tourist": "Tourist",
+      "olehChadash": "Oleh Chadash",
+      "talmid": "Talmid",
+      "tzabar": "Tzabar",
+      "sabra": "Sabra",
+      "madrich": "Madrich"
+    },
+    "dashboard": {
+      "title": "Missions Dashboard",
+      "recentActivity": "Recent Activity",
+      "progress": "Progress"
+    }
+  },
+  "grandparentBridge": {
+    "title": "Grandparent Bridge",
+    "subtitle": "Share your Hebrew progress with family",
+    "generateClip": "Generate News Clip",
+    "generating": "Creating your news clip...",
+    "clipReady": "News clip ready!",
+    "clips": {
+      "title": "My News Clips",
+      "empty": "No clips yet. Complete a session to create one!",
+      "featured": "Words Featured: {{count}}"
+    },
+    "share": {
+      "title": "Share with Family",
+      "whatsApp": "Share via WhatsApp",
+      "email": "Share via Email",
+      "copyLink": "Copy Link",
+      "linkCopied": "Link copied!",
+      "enterPin": "Enter parental PIN to share",
+      "pinVerified": "PIN verified",
+      "shareMessage": "Watch {{name}}'s Hebrew progress on Bayit+!"
+    },
+    "voiceNote": {
+      "title": "Voice Note",
+      "subtitle": "Record a message for {{name}}",
+      "record": "Record Message",
+      "recording": "Recording...",
+      "send": "Send Voice Note",
+      "sent": "Voice note sent!",
+      "maxDuration": "Max {{seconds}} seconds",
+      "tooShort": "Recording too short",
+      "tooLong": "Recording too long"
+    },
+    "newsClip": {
+      "reporter": "{{name}} reporting live from Bayit+",
+      "vocabulary": "Today's Hebrew Words",
+      "watchFull": "Watch Full Clip"
+    }
+  },
+  "chameleon": {
+    "title": "Style Sync",
+    "subtitle": "Your avatar matches the show",
+    "preparing": "Matching avatar to show style...",
+    "ready": "Avatar style matched!",
+    "failed": "Style matching unavailable",
+    "cached": "Style ready",
+    "status": {
+      "analyzing": "Analyzing show style",
+      "transferring": "Applying style to avatar",
+      "validating": "Validating consistency",
+      "complete": "Style transfer complete"
+    }
   }
 }

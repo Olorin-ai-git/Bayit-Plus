@@ -8094,5 +8094,158 @@
     "complete": "वीडियो सफलतापूर्वक अपलोड हुआ",
     "cameraError": "कैमरा एक्सेस नहीं हो सका",
     "uploadError": "अपलोड विफल। कृपया पुनः प्रयास करें।"
+  },
+  "phoneticMirror": {
+    "title": "ध्वन्यात्मक दर्पण",
+    "subtitle": "अपने हिब्रू उच्चारण को बेहतर बनाएं",
+    "practicePhrase": "अभ्यास वाक्य",
+    "tapToRecord": "रिकॉर्ड करने के लिए दबाए रखें",
+    "recording": "रिकॉर्डिंग...",
+    "evaluating": "उच्चारण मूल्यांकन...",
+    "tryAgain": "पुनः प्रयास करें",
+    "listenCorrected": "सही उच्चारण सुनें",
+    "nextPhrase": "अगला वाक्य",
+    "score": "स्कोर",
+    "dailyLimitReached": "दैनिक अभ्यास सीमा पूरी हुई",
+    "quality": {
+      "excellent": "उत्कृष्ट",
+      "good": "अच्छा",
+      "fair": "ठीक",
+      "needsPractice": "अभ्यास आवश्यक",
+      "noMatch": "पहचाना नहीं गया"
+    },
+    "feedback": {
+      "title": "उच्चारण प्रतिक्रिया",
+      "stressWrong": "बलाघात स्थान",
+      "vowelSwap": "स्वर ध्वनि",
+      "consonantSwap": "व्यंजन ध्वनि",
+      "missingSound": "लुप्त ध्वनि",
+      "extraSound": "अतिरिक्त ध्वनि"
+    },
+    "history": {
+      "title": "अभ्यास इतिहास",
+      "averageScore": "औसत स्कोर",
+      "totalAttempts": "कुल प्रयास",
+      "noHistory": "अभी तक कोई अभ्यास सत्र नहीं"
+    },
+    "phrases": {
+      "title": "अभ्यास वाक्य",
+      "difficulty": "कठिनाई",
+      "easy": "आसान",
+      "medium": "मध्यम",
+      "hard": "कठिन",
+      "fromVocabulary": "आपकी शब्दावली से"
+    }
+  },
+  "voiceDecision": {
+    "title": "आवाज चुनौती",
+    "instruction": "जारी रखने के लिए हिब्रू वाक्य बोलें",
+    "listening": "सुन रहे हैं...",
+    "evaluating": "उच्चारण जाँच...",
+    "correct": "सही! शाबाश!",
+    "incorrect": "बिल्कुल नहीं। पुनः प्रयास करें।",
+    "hint": "वाक्य सुनें",
+    "attemptsRemaining": "{{count}} प्रयास शेष",
+    "timeout": "समय समाप्त!",
+    "skipAvailable": "आप इस चुनौती को छोड़ सकते हैं",
+    "pronunciationScore": "उच्चारण: {{score}}%",
+    "attempt": "प्रयास {{current}} / {{max}}",
+    "listenHint": "सही उच्चारण सुनें",
+    "holdToSpeak": "बोलने के लिए दबाएं रखें"
+  },
+  "gamification": {
+    "title": "मेरी प्रगति",
+    "subtitle": "अपनी हिब्रू यात्रा में आगे बढ़ें",
+    "level": "स्तर {{level}}",
+    "xp": "XP",
+    "xpToNext": "अगले स्तर के लिए {{xp}} XP",
+    "totalXp": "कुल XP: {{xp}}",
+    "levelUp": "स्तर बढ़ा!",
+    "newLevel": "आपने स्तर {{level}} प्राप्त किया!",
+    "newTitle": "नया शीर्षक: {{title}}",
+    "perkUnlocked": "लाभ अनलॉक: {{perk}}",
+    "claimPerk": "दावा करें",
+    "claimed": "दावा किया",
+    "leaderboard": {
+      "title": "लीडरबोर्ड",
+      "rank": "#{{rank}}",
+      "empty": "अभी तक कोई प्रविष्टि नहीं"
+    },
+    "stats": {
+      "missionsCompleted": "पूर्ण मिशन",
+      "mirrorSessions": "दर्पण सत्र",
+      "talkBackAttempts": "वार्ता प्रयास"
+    },
+    "perks": {
+      "title": "लाभ और पुरस्कार",
+      "locked": "बंद",
+      "unlocked": "खुला",
+      "outfit": "पोशाक पुरस्कार"
+    },
+    "levels": {
+      "tourist": "पर्यटक",
+      "olehChadash": "ओले खदश",
+      "talmid": "तल्मीद",
+      "tzabar": "त्ज़बर",
+      "sabra": "सबरा",
+      "madrich": "मद्रीख"
+    },
+    "dashboard": {
+      "title": "मिशन डैशबोर्ड",
+      "recentActivity": "हालिया गतिविधि",
+      "progress": "प्रगति"
+    }
+  },
+  "grandparentBridge": {
+    "title": "दादा-दादी का पुल",
+    "subtitle": "परिवार के साथ अपनी हिब्रू प्रगति साझा करें",
+    "generateClip": "समाचार क्लिप बनाएं",
+    "generating": "आपका समाचार क्लिप बना रहे हैं...",
+    "clipReady": "क्लिप तैयार!",
+    "clips": {
+      "title": "मेरे क्लिप",
+      "empty": "अभी तक कोई क्लिप नहीं। एक बनाने के लिए सत्र पूरा करें!",
+      "featured": "प्रदर्शित शब्द: {{count}}"
+    },
+    "share": {
+      "title": "परिवार के साथ साझा करें",
+      "whatsApp": "WhatsApp से साझा करें",
+      "email": "ईमेल से साझा करें",
+      "copyLink": "लिंक कॉपी करें",
+      "linkCopied": "लिंक कॉपी हो गया!",
+      "enterPin": "साझा करने के लिए पैरेंट पिन दर्ज करें",
+      "pinVerified": "पिन सत्यापित",
+      "shareMessage": "Bayit+ पर {{name}} की हिब्रू प्रगति देखें!"
+    },
+    "voiceNote": {
+      "title": "आवाज संदेश",
+      "subtitle": "{{name}} के लिए संदेश रिकॉर्ड करें",
+      "record": "संदेश रिकॉर्ड करें",
+      "recording": "रिकॉर्डिंग...",
+      "send": "आवाज संदेश भेजें",
+      "sent": "आवाज संदेश भेजा गया!",
+      "maxDuration": "अधिकतम {{seconds}} सेकंड",
+      "tooShort": "रिकॉर्डिंग बहुत छोटी",
+      "tooLong": "रिकॉर्डिंग बहुत लंबी"
+    },
+    "newsClip": {
+      "reporter": "{{name}} Bayit+ से लाइव रिपोर्टिंग",
+      "vocabulary": "आज के हिब्रू शब्द",
+      "watchFull": "पूरा क्लिप देखें"
+    }
+  },
+  "chameleon": {
+    "title": "शैली सिंक",
+    "subtitle": "आपका अवतार शो से मेल खाता है",
+    "preparing": "शो शैली से अवतार मिला रहे हैं...",
+    "ready": "अवतार शैली तैयार!",
+    "failed": "शैली सिंक उपलब्ध नहीं",
+    "cached": "शैली तैयार",
+    "status": {
+      "analyzing": "शो शैली का विश्लेषण",
+      "transferring": "अवतार पर शैली लागू करना",
+      "validating": "संगतता सत्यापन",
+      "complete": "शैली स्थानांतरण पूरा"
+    }
   }
 }

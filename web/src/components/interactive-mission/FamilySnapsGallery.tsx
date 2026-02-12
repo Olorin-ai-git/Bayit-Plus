@@ -5,7 +5,7 @@
  */
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Image, FlatList, Pressable, Platform } from 'react-native';
+import { View, Text, TextInput, Image, FlatList, Pressable, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton } from '@bayit/shared/components/ui/GlassButton';
 import { GlassLoadingSpinner } from '@bayit/shared/ui';
@@ -44,6 +44,8 @@ export function FamilySnapsGallery({
   const [loading, setLoading] = useState(true);
   const [selectedSnap, setSelectedSnap] = useState<FamilySnap | null>(null);
   const [sharing, setSharing] = useState(false);
+  const [pinModalSnap, setPinModalSnap] = useState<{ snap: FamilySnap; platform: string } | null>(null);
+  const [pinInput, setPinInput] = useState('');
 
   useEffect(() => {
     fetchSnaps();
@@ -66,35 +68,42 @@ export function FamilySnapsGallery({
 
   const handleShare = useCallback(async (snap: FamilySnap, platform: string) => {
     if (!snap.share_url) {
-      const pin = window.prompt(t('familySnaps.enterPin'));
-      if (!pin) return;
-      setSharing(true);
-      try {
-        const result = await api.post(`/family-snaps/snaps/${snap.snap_id}/share`, {
-          pin,
-        }) as { share_url: string };
-        snap.share_url = result.share_url;
-      } catch (err: any) {
-        snapsLogger.error('Failed to generate share URL', err);
-        return;
-      } finally {
-        setSharing(false);
-      }
+      setPinModalSnap({ snap, platform });
+      setPinInput('');
+      return;
     }
+    openShareLink(snap.share_url, platform);
+  }, []);
 
-    if (Platform.OS === 'web' && snap.share_url) {
-      const url = encodeURIComponent(snap.share_url);
-      const text = encodeURIComponent(t('familySnaps.shareText'));
-
-      const shareUrls: Record<string, string> = {
-        whatsapp: `https://wa.me/?text=${text}%20${url}`,
-        email: `mailto:?subject=${text}&body=${url}`,
-      };
-
-      const shareUrl = shareUrls[platform];
-      if (shareUrl) window.open(shareUrl, '_blank');
+  const handlePinSubmit = useCallback(async () => {
+    if (!pinModalSnap || pinInput.length < 4) return;
+    setSharing(true);
+    try {
+      const result = await api.post(`/family-snaps/snaps/${pinModalSnap.snap.snap_id}/share`, {
+        pin: pinInput,
+      }) as { share_url: string };
+      pinModalSnap.snap.share_url = result.share_url;
+      openShareLink(result.share_url, pinModalSnap.platform);
+    } catch (err: unknown) {
+      snapsLogger.error('Failed to generate share URL', err);
+    } finally {
+      setSharing(false);
+      setPinModalSnap(null);
+      setPinInput('');
     }
-  }, [t]);
+  }, [pinModalSnap, pinInput]);
+
+  const openShareLink = (shareUrl: string, platform: string) => {
+    if (Platform.OS !== 'web') return;
+    const url = encodeURIComponent(shareUrl);
+    const text = encodeURIComponent(t('familySnaps.shareText'));
+    const shareUrls: Record<string, string> = {
+      whatsapp: `https://wa.me/?text=${text}%20${url}`,
+      email: `mailto:?subject=${text}&body=${url}`,
+    };
+    const link = shareUrls[platform];
+    if (link) window.open(link, '_blank');
+  };
 
   const handleDownload = useCallback(async (snap: FamilySnap) => {
     if (Platform.OS === 'web' && snap.composite_url) {
@@ -184,6 +193,39 @@ export function FamilySnapsGallery({
               variant="primary"
               size="sm"
             />
+          </View>
+        </View>
+      )}
+
+      {pinModalSnap && (
+        <View style={styles.pinOverlay}>
+          <View style={styles.pinCard}>
+            <Text style={styles.pinTitle}>{t('familySnaps.enterPin')}</Text>
+            <TextInput
+              style={styles.pinInput}
+              value={pinInput}
+              onChangeText={setPinInput}
+              secureTextEntry
+              maxLength={20}
+              keyboardType="number-pad"
+              autoFocus
+              accessibilityLabel={t('familySnaps.enterPin')}
+            />
+            <View style={styles.pinActions}>
+              <GlassButton
+                title={t('common.cancel')}
+                onPress={() => { setPinModalSnap(null); setPinInput(''); }}
+                variant="ghost"
+                size="sm"
+              />
+              <GlassButton
+                title={t('common.confirm')}
+                onPress={handlePinSubmit}
+                variant="primary"
+                size="sm"
+                disabled={pinInput.length < 4 || sharing}
+              />
+            </View>
           </View>
         </View>
       )}

@@ -8076,6 +8076,22 @@
       "equipFailed": "穿戴失败"
     }
   },
+  "voiceDecision": {
+    "title": "语音挑战",
+    "instruction": "说出希伯来语短语以继续",
+    "listening": "正在聆听...",
+    "evaluating": "正在检查发音...",
+    "correct": "正确！做得好！",
+    "incorrect": "不太对。再试一次。",
+    "hint": "听一下这个短语",
+    "attemptsRemaining": "剩余 {{count}} 次尝试",
+    "timeout": "时间到！",
+    "skipAvailable": "您可以跳过此挑战",
+    "pronunciationScore": "发音: {{score}}%",
+    "attempt": "尝试 {{current}} / {{max}}",
+    "listenHint": "听正确发音",
+    "holdToSpeak": "按住说话"
+  },
   "familySnaps": {
     "title": "家庭照片",
     "newSnap": "新照片",
@@ -8104,5 +8120,155 @@
     "complete": "视频上传成功",
     "cameraError": "无法访问摄像头",
     "uploadError": "上传失败，请重试。"
+  },
+  "phoneticMirror": {
+    "title": "语音镜像",
+    "subtitle": "提升你的希伯来语发音",
+    "practicePhrase": "练习短语",
+    "tapToRecord": "按住录音",
+    "recording": "录音中...",
+    "evaluating": "评估发音...",
+    "tryAgain": "再试一次",
+    "listenCorrected": "听正确发音",
+    "nextPhrase": "下一个短语",
+    "score": "得分",
+    "dailyLimitReached": "已达每日练习上限",
+    "quality": {
+      "excellent": "优秀",
+      "good": "良好",
+      "fair": "一般",
+      "needsPractice": "需要练习",
+      "noMatch": "未识别"
+    },
+    "feedback": {
+      "title": "发音反馈",
+      "stressWrong": "重音位置",
+      "vowelSwap": "元音",
+      "consonantSwap": "辅音",
+      "missingSound": "缺失音",
+      "extraSound": "多余音"
+    },
+    "history": {
+      "title": "练习历史",
+      "averageScore": "平均得分",
+      "totalAttempts": "总尝试次数",
+      "noHistory": "暂无练习记录"
+    },
+    "phrases": {
+      "title": "练习短语",
+      "difficulty": "难度",
+      "easy": "简单",
+      "medium": "中等",
+      "hard": "困难",
+      "fromVocabulary": "来自你的词汇"
+    }
+  },
+  "voiceDecision": {
+    "title": "语音挑战",
+    "instruction": "说出希伯来语短语以继续",
+    "listening": "正在聆听...",
+    "evaluating": "检查发音...",
+    "correct": "正确！做得好！",
+    "incorrect": "不太对。再试一次。",
+    "hint": "听短语",
+    "attemptsRemaining": "剩余{{count}}次尝试",
+    "timeout": "时间到！",
+    "skipAvailable": "你可以跳过这个挑战",
+    "pronunciationScore": "发音: {{score}}%"
+  },
+  "gamification": {
+    "title": "我的进度",
+    "subtitle": "在希伯来语之旅中升级",
+    "level": "等级 {{level}}",
+    "xp": "经验值",
+    "xpToNext": "距下一等级还需{{xp}}经验",
+    "totalXp": "总经验: {{xp}}",
+    "levelUp": "升级了！",
+    "newLevel": "已达到等级{{level}}！",
+    "newTitle": "新头衔: {{title}}",
+    "perkUnlocked": "已解锁特权: {{perk}}",
+    "claimPerk": "领取",
+    "claimed": "已领取",
+    "leaderboard": {
+      "title": "排行榜",
+      "rank": "#{{rank}}",
+      "empty": "暂无记录"
+    },
+    "stats": {
+      "missionsCompleted": "已完成任务",
+      "mirrorSessions": "镜像练习",
+      "talkBackAttempts": "对话尝试"
+    },
+    "perks": {
+      "title": "特权与奖励",
+      "locked": "锁定",
+      "unlocked": "已解锁",
+      "outfit": "服装奖励"
+    },
+    "levels": {
+      "tourist": "游客",
+      "olehChadash": "新移民",
+      "talmid": "学生",
+      "tzabar": "本地人",
+      "sabra": "老手",
+      "madrich": "导师"
+    },
+    "dashboard": {
+      "title": "任务面板",
+      "recentActivity": "近期活动",
+      "progress": "进度"
+    }
+  },
+  "grandparentBridge": {
+    "title": "祖孙桥梁",
+    "subtitle": "与家人分享你的希伯来语进步",
+    "generateClip": "生成新闻片段",
+    "generating": "正在创建新闻片段...",
+    "clipReady": "片段已就绪！",
+    "clips": {
+      "title": "我的片段",
+      "empty": "暂无片段。完成一次课程来创建一个！",
+      "featured": "展示的词汇: {{count}}"
+    },
+    "share": {
+      "title": "分享给家人",
+      "whatsApp": "通过WhatsApp分享",
+      "email": "通过邮件分享",
+      "copyLink": "复制链接",
+      "linkCopied": "链接已复制！",
+      "enterPin": "输入家长PIN码以分享",
+      "pinVerified": "PIN码已验证",
+      "shareMessage": "在Bayit+上查看{{name}}的希伯来语进步！"
+    },
+    "voiceNote": {
+      "title": "语音留言",
+      "subtitle": "给{{name}}录一条消息",
+      "record": "录制消息",
+      "recording": "录音中...",
+      "send": "发送语音留言",
+      "sent": "语音留言已发送！",
+      "maxDuration": "最长{{seconds}}秒",
+      "tooShort": "录音太短",
+      "tooLong": "录音太长"
+    },
+    "newsClip": {
+      "reporter": "{{name}}从Bayit+现场报道",
+      "vocabulary": "今日希伯来语词汇",
+      "watchFull": "观看完整片段"
+    }
+  },
+  "chameleon": {
+    "title": "风格同步",
+    "subtitle": "你的头像适配节目风格",
+    "preparing": "正在将头像匹配节目风格...",
+    "ready": "头像风格已就绪！",
+    "failed": "风格同步不可用",
+    "cached": "风格已就绪",
+    "status": {
+      "analyzing": "分析节目风格",
+      "transferring": "将风格应用于头像",
+      "validating": "验证一致性",
+      "complete": "风格转换完成"
+    }
   }
 }

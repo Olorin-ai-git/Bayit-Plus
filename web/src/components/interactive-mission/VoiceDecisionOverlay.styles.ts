@@ -47,6 +47,25 @@ export const styles = StyleSheet.create({
     color: '#FF9F0A',
     marginBottom: 12,
   },
+  micButton: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: 'rgba(255,59,48,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: 'rgba(255,59,48,0.6)',
+  },
+  micButtonActive: {
+    backgroundColor: 'rgba(255,59,48,0.5)',
+    borderColor: '#FF3B30',
+  },
+  attemptText: {
+    color: 'rgba(255,255,255,0.4)',
+    marginTop: 8,
+    fontSize: 12,
+  },
   hintText: {
     fontSize: 14,
     color: '#FF9F0A',

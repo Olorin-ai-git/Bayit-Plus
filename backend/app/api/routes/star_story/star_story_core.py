@@ -174,6 +174,45 @@ async def list_episodes(
     ]
 
 
+@router.post("/video-selfie/upload")
+async def upload_video_selfie(
+    request: Request,
+    user: User = Depends(get_current_user),
+):
+    """Upload a video selfie for enhanced avatar + voice cloning."""
+    from fastapi import UploadFile, File, Form
+    from app.services.star_story.video_selfie_handler import video_selfie_handler
+
+    form = await request.form()
+    video_file = form.get("video")
+    avatar_id = form.get("avatar_id")
+
+    if not video_file or not avatar_id:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="video and avatar_id are required",
+        )
+
+    video_bytes = await video_file.read()
+    content_type = getattr(video_file, "content_type", "video/webm")
+
+    try:
+        avatar = await video_selfie_handler.process_video_selfie(
+            avatar_id=str(avatar_id),
+            user_id=str(user.id),
+            video_bytes=video_bytes,
+            content_type=content_type,
+        )
+        return {
+            "avatar_id": str(avatar.id),
+            "video_selfie_uploaded": True,
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e),
+        )
+
+
 @router.delete("/consent/{profile_id}")
 async def revoke_consent(
     profile_id: str,

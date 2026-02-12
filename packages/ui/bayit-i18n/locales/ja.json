@@ -8857,5 +8857,158 @@
     "complete": "ビデオが正常にアップロードされました",
     "cameraError": "カメラにアクセスできませんでした",
     "uploadError": "アップロードに失敗しました。もう一度お試しください。"
+  },
+  "phoneticMirror": {
+    "title": "音声ミラー",
+    "subtitle": "ヘブライ語の発音を上達させよう",
+    "practicePhrase": "練習フレーズ",
+    "tapToRecord": "長押しで録音",
+    "recording": "録音中...",
+    "evaluating": "発音を評価中...",
+    "tryAgain": "もう一度",
+    "listenCorrected": "正しい発音を聴く",
+    "nextPhrase": "次のフレーズ",
+    "score": "スコア",
+    "dailyLimitReached": "今日の練習上限に達しました",
+    "quality": {
+      "excellent": "素晴らしい",
+      "good": "良い",
+      "fair": "まずまず",
+      "needsPractice": "練習が必要",
+      "noMatch": "認識不能"
+    },
+    "feedback": {
+      "title": "発音フィードバック",
+      "stressWrong": "アクセントの位置",
+      "vowelSwap": "母音",
+      "consonantSwap": "子音",
+      "missingSound": "抜けた音",
+      "extraSound": "余分な音"
+    },
+    "history": {
+      "title": "練習履歴",
+      "averageScore": "平均スコア",
+      "totalAttempts": "総試行回数",
+      "noHistory": "まだ練習セッションはありません"
+    },
+    "phrases": {
+      "title": "練習フレーズ",
+      "difficulty": "難易度",
+      "easy": "簡単",
+      "medium": "普通",
+      "hard": "難しい",
+      "fromVocabulary": "あなたの語彙から"
+    }
+  },
+  "voiceDecision": {
+    "title": "音声チャレンジ",
+    "instruction": "続けるにはヘブライ語のフレーズを言ってください",
+    "listening": "聞いています...",
+    "evaluating": "発音を確認中...",
+    "correct": "正解！よくできました！",
+    "incorrect": "惜しい。もう一度。",
+    "hint": "フレーズを聴く",
+    "attemptsRemaining": "残り{{count}}回",
+    "timeout": "時間切れ！",
+    "skipAvailable": "このチャレンジをスキップできます",
+    "pronunciationScore": "発音: {{score}}%",
+    "attempt": "試行 {{current}} / {{max}}",
+    "listenHint": "正しい発音を聞く",
+    "holdToSpeak": "押したまま話す"
+  },
+  "gamification": {
+    "title": "マイ進捗",
+    "subtitle": "ヘブライ語の旅でレベルアップ",
+    "level": "レベル {{level}}",
+    "xp": "XP",
+    "xpToNext": "次のレベルまで{{xp}} XP",
+    "totalXp": "合計XP: {{xp}}",
+    "levelUp": "レベルアップ！",
+    "newLevel": "レベル{{level}}に到達！",
+    "newTitle": "新しい称号: {{title}}",
+    "perkUnlocked": "特典アンロック: {{perk}}",
+    "claimPerk": "受け取る",
+    "claimed": "受取済み",
+    "leaderboard": {
+      "title": "リーダーボード",
+      "rank": "#{{rank}}",
+      "empty": "まだエントリーはありません"
+    },
+    "stats": {
+      "missionsCompleted": "完了ミッション",
+      "mirrorSessions": "ミラーセッション",
+      "talkBackAttempts": "会話の試行"
+    },
+    "perks": {
+      "title": "特典と報酬",
+      "locked": "ロック中",
+      "unlocked": "アンロック済み",
+      "outfit": "衣装報酬"
+    },
+    "levels": {
+      "tourist": "ツーリスト",
+      "olehChadash": "オレ・ハダシュ",
+      "talmid": "タルミード",
+      "tzabar": "ツァバル",
+      "sabra": "サブラ",
+      "madrich": "マドリッヒ"
+    },
+    "dashboard": {
+      "title": "ミッションダッシュボード",
+      "recentActivity": "最近のアクティビティ",
+      "progress": "進捗"
+    }
+  },
+  "grandparentBridge": {
+    "title": "おじいちゃんおばあちゃんの橋",
+    "subtitle": "ヘブライ語の上達を家族と共有",
+    "generateClip": "ニュースクリップを作成",
+    "generating": "ニュースクリップを作成中...",
+    "clipReady": "クリップ完成！",
+    "clips": {
+      "title": "マイクリップ",
+      "empty": "まだクリップはありません。セッションを完了して作成しましょう！",
+      "featured": "紹介した単語: {{count}}"
+    },
+    "share": {
+      "title": "家族と共有",
+      "whatsApp": "WhatsAppで共有",
+      "email": "メールで共有",
+      "copyLink": "リンクをコピー",
+      "linkCopied": "リンクをコピーしました！",
+      "enterPin": "共有するには保護者PINを入力",
+      "pinVerified": "PIN確認済み",
+      "shareMessage": "Bayit+で{{name}}のヘブライ語の上達を見てください！"
+    },
+    "voiceNote": {
+      "title": "ボイスメモ",
+      "subtitle": "{{name}}へのメッセージを録音",
+      "record": "メッセージを録音",
+      "recording": "録音中...",
+      "send": "ボイスメモを送信",
+      "sent": "ボイスメモを送信しました！",
+      "maxDuration": "最大{{seconds}}秒",
+      "tooShort": "録音が短すぎます",
+      "tooLong": "録音が長すぎます"
+    },
+    "newsClip": {
+      "reporter": "{{name}}がBayit+から生中継",
+      "vocabulary": "今日のヘブライ語の単語",
+      "watchFull": "クリップ全体を見る"
+    }
+  },
+  "chameleon": {
+    "title": "スタイルシンク",
+    "subtitle": "アバターが番組に合わせて変化",
+    "preparing": "番組のスタイルに合わせています...",
+    "ready": "アバタースタイル完成！",
+    "failed": "スタイルシンク利用不可",
+    "cached": "スタイル準備完了",
+    "status": {
+      "analyzing": "番組スタイルを分析中",
+      "transferring": "アバターにスタイルを適用中",
+      "validating": "一貫性を検証中",
+      "complete": "スタイル転送完了"
+    }
   }
 }

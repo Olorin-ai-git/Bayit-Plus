@@ -8612,5 +8612,158 @@
     "complete": "הוידאו הועלה בהצלחה",
     "cameraError": "לא ניתן לגשת למצלמה",
     "uploadError": "ההעלאה נכשלה. נסה שוב."
+  },
+  "phoneticMirror": {
+    "title": "מראה פונטית",
+    "subtitle": "שפרו את ההגייה העברית שלכם",
+    "practicePhrase": "משפט לתרגול",
+    "tapToRecord": "לחצו והחזיקו כדי להקליט",
+    "recording": "מקליט...",
+    "evaluating": "בודק הגייה...",
+    "tryAgain": "נסו שוב",
+    "listenCorrected": "האזינו להגייה המתוקנת",
+    "nextPhrase": "משפט הבא",
+    "score": "ציון",
+    "dailyLimitReached": "הגעתם למגבלת התרגול היומית",
+    "quality": {
+      "excellent": "מצוין",
+      "good": "טוב",
+      "fair": "סביר",
+      "needsPractice": "דרוש תרגול",
+      "noMatch": "לא זוהה"
+    },
+    "feedback": {
+      "title": "משוב הגייה",
+      "stressWrong": "מיקום הטעם",
+      "vowelSwap": "צליל תנועה",
+      "consonantSwap": "צליל עיצור",
+      "missingSound": "צליל חסר",
+      "extraSound": "צליל מיותר"
+    },
+    "history": {
+      "title": "היסטוריית תרגול",
+      "averageScore": "ציון ממוצע",
+      "totalAttempts": "סה״כ ניסיונות",
+      "noHistory": "אין עדיין תרגולים"
+    },
+    "phrases": {
+      "title": "משפטים לתרגול",
+      "difficulty": "רמת קושי",
+      "easy": "קל",
+      "medium": "בינוני",
+      "hard": "קשה",
+      "fromVocabulary": "מהאוצר מילים שלך"
+    }
+  },
+  "voiceDecision": {
+    "title": "אתגר קולי",
+    "instruction": "אמרו את המשפט בעברית כדי להמשיך",
+    "listening": "מקשיב...",
+    "evaluating": "בודק הגייה...",
+    "correct": "נכון! כל הכבוד!",
+    "incorrect": "לא בדיוק. נסו שוב.",
+    "hint": "האזינו למשפט",
+    "attemptsRemaining": "נותרו {{count}} ניסיונות",
+    "timeout": "נגמר הזמן!",
+    "skipAvailable": "ניתן לדלג על אתגר זה",
+    "pronunciationScore": "הגייה: {{score}}%",
+    "attempt": "ניסיון {{current}} מתוך {{max}}",
+    "listenHint": "הקשיבו להגייה הנכונה",
+    "holdToSpeak": "לחצו והחזיקו כדי לדבר"
+  },
+  "gamification": {
+    "title": "ההתקדמות שלי",
+    "subtitle": "התקדמו במסע העברית שלכם",
+    "level": "רמה {{level}}",
+    "xp": "ניקוד",
+    "xpToNext": "{{xp}} נקודות לרמה הבאה",
+    "totalXp": "סה״כ ניקוד: {{xp}}",
+    "levelUp": "עלית רמה!",
+    "newLevel": "הגעתם לרמה {{level}}!",
+    "newTitle": "תואר חדש: {{title}}",
+    "perkUnlocked": "הטבה נפתחה: {{perk}}",
+    "claimPerk": "מימוש",
+    "claimed": "מומש",
+    "leaderboard": {
+      "title": "טבלת מובילים",
+      "rank": "#{{rank}}",
+      "empty": "אין רשומות עדיין"
+    },
+    "stats": {
+      "missionsCompleted": "משימות שהושלמו",
+      "mirrorSessions": "תרגולי מראה",
+      "talkBackAttempts": "ניסיונות דיבור"
+    },
+    "perks": {
+      "title": "הטבות ופרסים",
+      "locked": "נעול",
+      "unlocked": "פתוח",
+      "outfit": "פרס תלבושת"
+    },
+    "levels": {
+      "tourist": "תייר",
+      "olehChadash": "עולה חדש",
+      "talmid": "תלמיד",
+      "tzabar": "צבר",
+      "sabra": "סברס",
+      "madrich": "מדריך"
+    },
+    "dashboard": {
+      "title": "לוח משימות",
+      "recentActivity": "פעילות אחרונה",
+      "progress": "התקדמות"
+    }
+  },
+  "grandparentBridge": {
+    "title": "גשר הסבים",
+    "subtitle": "שתפו את ההתקדמות בעברית עם המשפחה",
+    "generateClip": "צרו קליפ חדשות",
+    "generating": "יוצר את קליפ החדשות שלכם...",
+    "clipReady": "הקליפ מוכן!",
+    "clips": {
+      "title": "הקליפים שלי",
+      "empty": "אין עדיין קליפים. השלימו תרגול כדי ליצור אחד!",
+      "featured": "מילים שהוצגו: {{count}}"
+    },
+    "share": {
+      "title": "שתפו עם המשפחה",
+      "whatsApp": "שיתוף בוואטסאפ",
+      "email": "שיתוף באימייל",
+      "copyLink": "העתקת קישור",
+      "linkCopied": "הקישור הועתק!",
+      "enterPin": "הזינו קוד הורה לשיתוף",
+      "pinVerified": "הקוד אומת",
+      "shareMessage": "צפו בהתקדמות העברית של {{name}} בבית פלוס!"
+    },
+    "voiceNote": {
+      "title": "הודעה קולית",
+      "subtitle": "הקליטו הודעה ל{{name}}",
+      "record": "הקלטת הודעה",
+      "recording": "מקליט...",
+      "send": "שלחו הודעה קולית",
+      "sent": "ההודעה הקולית נשלחה!",
+      "maxDuration": "עד {{seconds}} שניות",
+      "tooShort": "ההקלטה קצרה מדי",
+      "tooLong": "ההקלטה ארוכה מדי"
+    },
+    "newsClip": {
+      "reporter": "{{name}} מדווח/ת בשידור חי מבית פלוס",
+      "vocabulary": "מילות העברית של היום",
+      "watchFull": "צפו בקליפ המלא"
+    }
+  },
+  "chameleon": {
+    "title": "סנכרון סגנון",
+    "subtitle": "הדמות שלכם מתאימה לתוכנית",
+    "preparing": "מתאים את הדמות לסגנון התוכנית...",
+    "ready": "סגנון הדמות מותאם!",
+    "failed": "התאמת סגנון לא זמינה",
+    "cached": "הסגנון מוכן",
+    "status": {
+      "analyzing": "מנתח סגנון תוכנית",
+      "transferring": "מחיל סגנון על הדמות",
+      "validating": "מאמת עקביות",
+      "complete": "העברת סגנון הושלמה"
+    }
   }
 }

@@ -129,16 +129,9 @@ export function VoiceDecisionOverlay({
           <Pressable
             onPressIn={startRecording}
             onPressOut={stopRecording}
-            style={{
-              width: 72,
-              height: 72,
-              borderRadius: 36,
-              backgroundColor: isRecording ? 'rgba(255,59,48,0.5)' : 'rgba(255,59,48,0.2)',
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderWidth: 2,
-              borderColor: isRecording ? '#FF3B30' : 'rgba(255,59,48,0.6)',
-            }}
+            style={[styles.micButton, isRecording && styles.micButtonActive]}
+            accessibilityLabel={t('voiceDecision.holdToSpeak')}
+            accessibilityRole="button"
           >
             {isRecording ? (
               <MicOff size={28} color="#FF3B30" />
@@ -148,7 +141,7 @@ export function VoiceDecisionOverlay({
           </Pressable>
         )}
 
-        <Text style={{ color: 'rgba(255,255,255,0.4)', marginTop: 8, fontSize: 12 }}>
+        <Text style={styles.attemptText}>
           {t('voiceDecision.attempt', { current: currentAttempt, max: maxAttempts })}
         </Text>
       </View>
@@ -159,7 +152,7 @@ export function VoiceDecisionOverlay({
 
       {lastResult?.corrected_audio_url && (
         <GlassButton
-          label={t('voiceDecision.listenHint')}
+          title={t('voiceDecision.listenHint')}
           onPress={() => {
             if (lastResult.corrected_audio_url) {
               const audio = new Audio(lastResult.corrected_audio_url);

@@ -1,9 +1,9 @@
 """Voice decision handler for voice-phrase interactive mission decisions."""
 
-import logging
 from typing import Optional
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.models.child_avatar import ChildAvatar
 from app.models.interactive_mission_types import MissionDecision
 from app.services.phonetic_mirror.pronunciation_scorer import (
@@ -11,7 +11,7 @@ from app.services.phonetic_mirror.pronunciation_scorer import (
 )
 from app.services.talk_back.voice_evaluator import voice_evaluator
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class VoiceDecisionResult:
@@ -153,7 +153,7 @@ class VoiceDecisionHandler:
             child_voice_service,
         )
 
-        praise_text = "\u05DE\u05E6\u05D5\u05D9\u05DF!"
+        praise_text = settings.MISSION_VOICE_PRAISE_TEXT
         return await child_voice_service.generate_corrected_hebrew(
             avatar, praise_text
         )

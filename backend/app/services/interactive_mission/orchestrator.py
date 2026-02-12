@@ -128,7 +128,7 @@ class InteractiveMissionOrchestrator:
     def _sanitize_error(exc: Exception) -> str:
         """Return a user-safe error message, log raw details separately."""
         error_map = {
-            "ValueError": str(exc),
+            "ValueError": "Request validation failed",
             "httpx.HTTPStatusError": "External service error",
             "httpx.ConnectError": "External service unavailable",
             "httpx.TimeoutException": "External service timeout",

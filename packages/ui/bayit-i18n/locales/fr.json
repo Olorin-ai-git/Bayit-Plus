@@ -9028,5 +9028,158 @@
     "complete": "Video telechargee avec succes",
     "cameraError": "Impossible d'acceder a la camera",
     "uploadError": "Echec du telechargement. Veuillez reessayer."
+  },
+  "phoneticMirror": {
+    "title": "Miroir phonetique",
+    "subtitle": "Perfectionnez votre prononciation en hebreu",
+    "practicePhrase": "Phrase d'entrainement",
+    "tapToRecord": "Maintenez appuye pour enregistrer",
+    "recording": "Enregistrement...",
+    "evaluating": "Evaluation de la prononciation...",
+    "tryAgain": "Reessayer",
+    "listenCorrected": "Ecouter la prononciation corrigee",
+    "nextPhrase": "Phrase suivante",
+    "score": "Score",
+    "dailyLimitReached": "Limite quotidienne atteinte",
+    "quality": {
+      "excellent": "Excellent",
+      "good": "Bien",
+      "fair": "Correct",
+      "needsPractice": "A pratiquer",
+      "noMatch": "Non reconnu"
+    },
+    "feedback": {
+      "title": "Retour sur la prononciation",
+      "stressWrong": "Placement de l'accent",
+      "vowelSwap": "Son voyelle",
+      "consonantSwap": "Son consonne",
+      "missingSound": "Son manquant",
+      "extraSound": "Son supplementaire"
+    },
+    "history": {
+      "title": "Historique d'entrainement",
+      "averageScore": "Score moyen",
+      "totalAttempts": "Tentatives totales",
+      "noHistory": "Aucune session d'entrainement"
+    },
+    "phrases": {
+      "title": "Phrases d'entrainement",
+      "difficulty": "Difficulte",
+      "easy": "Facile",
+      "medium": "Moyen",
+      "hard": "Difficile",
+      "fromVocabulary": "De votre vocabulaire"
+    }
+  },
+  "voiceDecision": {
+    "title": "Defi vocal",
+    "instruction": "Dites la phrase en hebreu pour continuer",
+    "listening": "Ecoute en cours...",
+    "evaluating": "Verification de la prononciation...",
+    "correct": "Correct ! Bravo !",
+    "incorrect": "Pas tout a fait. Reessayez.",
+    "hint": "Ecouter la phrase",
+    "attemptsRemaining": "{{count}} tentatives restantes",
+    "timeout": "Temps ecoule !",
+    "skipAvailable": "Vous pouvez passer ce defi",
+    "pronunciationScore": "Prononciation : {{score}}%",
+    "attempt": "Tentative {{current}} sur {{max}}",
+    "listenHint": "Ecouter la prononciation correcte",
+    "holdToSpeak": "Maintenir pour parler"
+  },
+  "gamification": {
+    "title": "Ma progression",
+    "subtitle": "Progressez dans votre voyage en hebreu",
+    "level": "Niveau {{level}}",
+    "xp": "XP",
+    "xpToNext": "{{xp}} XP pour le niveau suivant",
+    "totalXp": "XP total : {{xp}}",
+    "levelUp": "Niveau superieur !",
+    "newLevel": "Vous avez atteint le Niveau {{level}} !",
+    "newTitle": "Nouveau titre : {{title}}",
+    "perkUnlocked": "Avantage debloque : {{perk}}",
+    "claimPerk": "Reclamer",
+    "claimed": "Reclame",
+    "leaderboard": {
+      "title": "Classement",
+      "rank": "#{{rank}}",
+      "empty": "Aucune entree"
+    },
+    "stats": {
+      "missionsCompleted": "Missions terminees",
+      "mirrorSessions": "Sessions miroir",
+      "talkBackAttempts": "Tentatives de dialogue"
+    },
+    "perks": {
+      "title": "Avantages et recompenses",
+      "locked": "Verrouille",
+      "unlocked": "Debloque",
+      "outfit": "Recompense tenue"
+    },
+    "levels": {
+      "tourist": "Touriste",
+      "olehChadash": "Oleh Chadash",
+      "talmid": "Talmid",
+      "tzabar": "Tzabar",
+      "sabra": "Sabra",
+      "madrich": "Madrich"
+    },
+    "dashboard": {
+      "title": "Tableau de missions",
+      "recentActivity": "Activite recente",
+      "progress": "Progression"
+    }
+  },
+  "grandparentBridge": {
+    "title": "Pont des grands-parents",
+    "subtitle": "Partagez vos progres en hebreu avec la famille",
+    "generateClip": "Generer un clip d'actualites",
+    "generating": "Creation de votre clip...",
+    "clipReady": "Clip pret !",
+    "clips": {
+      "title": "Mes clips",
+      "empty": "Aucun clip. Terminez une session pour en creer un !",
+      "featured": "Mots presentes : {{count}}"
+    },
+    "share": {
+      "title": "Partager avec la famille",
+      "whatsApp": "Partager via WhatsApp",
+      "email": "Partager par email",
+      "copyLink": "Copier le lien",
+      "linkCopied": "Lien copie !",
+      "enterPin": "Entrez le code parental pour partager",
+      "pinVerified": "Code verifie",
+      "shareMessage": "Regardez les progres en hebreu de {{name}} sur Bayit+ !"
+    },
+    "voiceNote": {
+      "title": "Note vocale",
+      "subtitle": "Enregistrez un message pour {{name}}",
+      "record": "Enregistrer un message",
+      "recording": "Enregistrement...",
+      "send": "Envoyer la note vocale",
+      "sent": "Note vocale envoyee !",
+      "maxDuration": "Maximum {{seconds}} secondes",
+      "tooShort": "Enregistrement trop court",
+      "tooLong": "Enregistrement trop long"
+    },
+    "newsClip": {
+      "reporter": "{{name}} en direct de Bayit+",
+      "vocabulary": "Les mots d'hebreu du jour",
+      "watchFull": "Voir le clip complet"
+    }
+  },
+  "chameleon": {
+    "title": "Synchronisation de style",
+    "subtitle": "Votre avatar s'adapte a l'emission",
+    "preparing": "Adaptation de l'avatar au style...",
+    "ready": "Style de l'avatar pret !",
+    "failed": "Synchronisation de style indisponible",
+    "cached": "Style pret",
+    "status": {
+      "analyzing": "Analyse du style de l'emission",
+      "transferring": "Application du style a l'avatar",
+      "validating": "Validation de la coherence",
+      "complete": "Transfert de style termine"
+    }
   }
 }

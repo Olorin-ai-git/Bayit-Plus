@@ -8070,5 +8070,158 @@
     "complete": "ভিডিও সফলভাবে আপলোড হয়েছে",
     "cameraError": "ক্যামেরা অ্যাক্সেস করা যায়নি",
     "uploadError": "আপলোড ব্যর্থ। অনুগ্রহ করে আবার চেষ্টা করুন।"
+  },
+  "phoneticMirror": {
+    "title": "ধ্বনিগত আয়না",
+    "subtitle": "আপনার হিব্রু উচ্চারণ উন্নত করুন",
+    "practicePhrase": "অনুশীলন বাক্য",
+    "tapToRecord": "রেকর্ড করতে চেপে ধরুন",
+    "recording": "রেকর্ড হচ্ছে...",
+    "evaluating": "উচ্চারণ মূল্যায়ন...",
+    "tryAgain": "আবার চেষ্টা করুন",
+    "listenCorrected": "সঠিক উচ্চারণ শুনুন",
+    "nextPhrase": "পরবর্তী বাক্য",
+    "score": "স্কোর",
+    "dailyLimitReached": "দৈনিক অনুশীলন সীমা পূর্ণ",
+    "quality": {
+      "excellent": "চমৎকার",
+      "good": "ভালো",
+      "fair": "মোটামুটি",
+      "needsPractice": "অনুশীলন প্রয়োজন",
+      "noMatch": "চিনতে পারা যায়নি"
+    },
+    "feedback": {
+      "title": "উচ্চারণ প্রতিক্রিয়া",
+      "stressWrong": "ঝোঁকের অবস্থান",
+      "vowelSwap": "স্বরধ্বনি",
+      "consonantSwap": "ব্যঞ্জনধ্বনি",
+      "missingSound": "অনুপস্থিত ধ্বনি",
+      "extraSound": "অতিরিক্ত ধ্বনি"
+    },
+    "history": {
+      "title": "অনুশীলন ইতিহাস",
+      "averageScore": "গড় স্কোর",
+      "totalAttempts": "মোট প্রচেষ্টা",
+      "noHistory": "এখনো কোনো অনুশীলন সেশন নেই"
+    },
+    "phrases": {
+      "title": "অনুশীলন বাক্য",
+      "difficulty": "কঠিনতা",
+      "easy": "সহজ",
+      "medium": "মাঝারি",
+      "hard": "কঠিন",
+      "fromVocabulary": "আপনার শব্দভাণ্ডার থেকে"
+    }
+  },
+  "voiceDecision": {
+    "title": "কণ্ঠ চ্যালেঞ্জ",
+    "instruction": "চালিয়ে যেতে হিব্রু বাক্য বলুন",
+    "listening": "শুনছি...",
+    "evaluating": "উচ্চারণ যাচাই...",
+    "correct": "সঠিক! চমৎকার!",
+    "incorrect": "পুরোপুরি নয়। আবার চেষ্টা করুন।",
+    "hint": "বাক্যটি শুনুন",
+    "attemptsRemaining": "{{count}} প্রচেষ্টা বাকি",
+    "timeout": "সময় শেষ!",
+    "skipAvailable": "আপনি এই চ্যালেঞ্জ এড়িয়ে যেতে পারেন",
+    "pronunciationScore": "উচ্চারণ: {{score}}%",
+    "attempt": "প্রয়াস {{current}} / {{max}}",
+    "listenHint": "সঠিক উচ্চারণ শুনুন",
+    "holdToSpeak": "কথা বলতে চেপে ধরুন"
+  },
+  "gamification": {
+    "title": "আমার অগ্রগতি",
+    "subtitle": "আপনার হিব্রু যাত্রায় এগিয়ে যান",
+    "level": "স্তর {{level}}",
+    "xp": "XP",
+    "xpToNext": "পরবর্তী স্তরের জন্য {{xp}} XP",
+    "totalXp": "মোট XP: {{xp}}",
+    "levelUp": "স্তর বৃদ্ধি!",
+    "newLevel": "আপনি স্তর {{level}} অর্জন করেছেন!",
+    "newTitle": "নতুন উপাধি: {{title}}",
+    "perkUnlocked": "সুবিধা আনলক: {{perk}}",
+    "claimPerk": "দাবি করুন",
+    "claimed": "দাবি করা হয়েছে",
+    "leaderboard": {
+      "title": "লিডারবোর্ড",
+      "rank": "#{{rank}}",
+      "empty": "এখনো কোনো এন্ট্রি নেই"
+    },
+    "stats": {
+      "missionsCompleted": "সম্পন্ন মিশন",
+      "mirrorSessions": "আয়না সেশন",
+      "talkBackAttempts": "কথোপকথন প্রচেষ্টা"
+    },
+    "perks": {
+      "title": "সুবিধা ও পুরস্কার",
+      "locked": "বন্ধ",
+      "unlocked": "খোলা",
+      "outfit": "পোশাক পুরস্কার"
+    },
+    "levels": {
+      "tourist": "পর্যটক",
+      "olehChadash": "ওলে খাদাশ",
+      "talmid": "তালমিদ",
+      "tzabar": "ৎজবর",
+      "sabra": "সাবরা",
+      "madrich": "মাদরিখ"
+    },
+    "dashboard": {
+      "title": "মিশন ড্যাশবোর্ড",
+      "recentActivity": "সাম্প্রতিক কার্যকলাপ",
+      "progress": "অগ্রগতি"
+    }
+  },
+  "grandparentBridge": {
+    "title": "দাদা-দাদির সেতু",
+    "subtitle": "পরিবারের সাথে আপনার হিব্রু অগ্রগতি শেয়ার করুন",
+    "generateClip": "সংবাদ ক্লিপ তৈরি করুন",
+    "generating": "আপনার সংবাদ ক্লিপ তৈরি হচ্ছে...",
+    "clipReady": "ক্লিপ প্রস্তুত!",
+    "clips": {
+      "title": "আমার ক্লিপ",
+      "empty": "এখনো কোনো ক্লিপ নেই। একটি তৈরি করতে সেশন সম্পন্ন করুন!",
+      "featured": "প্রদর্শিত শব্দ: {{count}}"
+    },
+    "share": {
+      "title": "পরিবারের সাথে শেয়ার করুন",
+      "whatsApp": "WhatsApp-এ শেয়ার করুন",
+      "email": "ইমেইলে শেয়ার করুন",
+      "copyLink": "লিংক কপি করুন",
+      "linkCopied": "লিংক কপি হয়েছে!",
+      "enterPin": "শেয়ার করতে অভিভাবক পিন দিন",
+      "pinVerified": "পিন যাচাই হয়েছে",
+      "shareMessage": "Bayit+-এ {{name}}-এর হিব্রু অগ্রগতি দেখুন!"
+    },
+    "voiceNote": {
+      "title": "ভয়েস নোট",
+      "subtitle": "{{name}}-এর জন্য বার্তা রেকর্ড করুন",
+      "record": "বার্তা রেকর্ড করুন",
+      "recording": "রেকর্ড হচ্ছে...",
+      "send": "ভয়েস নোট পাঠান",
+      "sent": "ভয়েস নোট পাঠানো হয়েছে!",
+      "maxDuration": "সর্বোচ্চ {{seconds}} সেকেন্ড",
+      "tooShort": "রেকর্ডিং খুব ছোট",
+      "tooLong": "রেকর্ডিং খুব দীর্ঘ"
+    },
+    "newsClip": {
+      "reporter": "{{name}} Bayit+ থেকে সরাসরি রিপোর্টিং",
+      "vocabulary": "আজকের হিব্রু শব্দ",
+      "watchFull": "সম্পূর্ণ ক্লিপ দেখুন"
+    }
+  },
+  "chameleon": {
+    "title": "স্টাইল সিংক",
+    "subtitle": "আপনার অবতার শো-এর সাথে মিলে যায়",
+    "preparing": "অবতারকে শো স্টাইলের সাথে মেলাচ্ছি...",
+    "ready": "অবতার স্টাইল প্রস্তুত!",
+    "failed": "স্টাইল সিংক অনুপলব্ধ",
+    "cached": "স্টাইল প্রস্তুত",
+    "status": {
+      "analyzing": "শো স্টাইল বিশ্লেষণ",
+      "transferring": "অবতারে স্টাইল প্রয়োগ",
+      "validating": "সামঞ্জস্য যাচাই",
+      "complete": "স্টাইল স্থানান্তর সম্পন্ন"
+    }
   }
 }

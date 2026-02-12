@@ -1,8 +1,15 @@
 """Request/response models and helpers for mission play routes."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from pydantic import BaseModel, Field
 
 from app.core.logging_config import get_logger
+
+if TYPE_CHECKING:
+    from app.models.interactive_mission_types import MissionScene
 
 logger = get_logger(__name__)
 
@@ -27,7 +34,7 @@ class SceneAttemptResponse(BaseModel):
 
 
 async def update_proficiency(
-    user_id: str, profile_id: str, scene, quality: str, score: float,
+    user_id: str, profile_id: str, scene: "MissionScene", quality: str, score: float,
 ) -> None:
     try:
         from app.services.proficiency.assessment_service import assessment_service

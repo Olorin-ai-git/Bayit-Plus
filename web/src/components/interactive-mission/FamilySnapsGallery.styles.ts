@@ -30,4 +30,19 @@ export const styles = StyleSheet.create({
     borderTopColor: 'rgba(255,255,255,0.1)',
   },
   shareRow: { flexDirection: 'row', justifyContent: 'space-around' },
+  pinOverlay: {
+    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center',
+  },
+  pinCard: {
+    backgroundColor: '#282C34', borderRadius: 16, padding: 24,
+    width: 300, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)',
+  },
+  pinTitle: { color: '#fff', fontSize: 16, fontWeight: '600', marginBottom: 16, textAlign: 'center' },
+  pinInput: {
+    backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 8, padding: 12,
+    color: '#fff', fontSize: 18, textAlign: 'center', marginBottom: 16,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)',
+  },
+  pinActions: { flexDirection: 'row', justifyContent: 'space-between' },
 });
