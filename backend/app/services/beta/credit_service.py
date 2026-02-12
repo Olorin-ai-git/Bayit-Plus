@@ -74,6 +74,18 @@ class BetaCreditService:
             "ai_search": self.settings.CREDIT_RATE_AI_SEARCH,
             "ai_recommendations": self.settings.CREDIT_RATE_AI_RECOMMENDATIONS,
             "comprehension_question": self.settings.CREDIT_RATE_COMPREHENSION_QUESTION,
+            "subtitle_nikud": self.settings.CREDIT_RATE_SUBTITLE_NIKUD,
+            "subtitle_shoresh": self.settings.CREDIT_RATE_SUBTITLE_SHORESH,
+            "subtitle_heblish": self.settings.CREDIT_RATE_SUBTITLE_HEBLISH,
+            "subtitle_grammar_flip": self.settings.CREDIT_RATE_SUBTITLE_GRAMMAR_FLIP,
+            "subtitle_slang_synthesis": self.settings.CREDIT_RATE_SUBTITLE_SLANG_SYNTHESIS,
+            "subtitle_engrew": self.settings.CREDIT_RATE_SUBTITLE_ENGREW,
+            "phrase_breakdown": self.settings.CREDIT_RATE_PHRASE_BREAKDOWN,
+            "cultural_detect": self.settings.CREDIT_RATE_CULTURAL_DETECT,
+            "chapter_generation": self.settings.CREDIT_RATE_CHAPTER_GENERATION,
+            "chat_translation": self.settings.CREDIT_RATE_CHAT_TRANSLATION,
+            "star_story_episode": self.settings.CREDIT_RATE_STAR_STORY_EPISODE,
+            "star_story_avatar": self.settings.CREDIT_RATE_STAR_STORY_AVATAR,
         }
         
         if feature not in rate_mapping:

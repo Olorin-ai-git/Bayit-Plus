@@ -78,6 +78,8 @@ def register_all_routers(app: FastAPI) -> None:
         router as admin_recordings_router
     # Quiz and rewards routes
     from app.api.routes import quiz, rewards
+    # Cultural context user routes (Hebrew engagement)
+    from app.api.routes import cultural_context_user
     # Comprehension quiz routes
     from app.api.routes import comprehension
     from app.api.routes.olorin import legacy_router as olorin_legacy_router
@@ -92,6 +94,14 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes.beta import signup, credits, sessions, status
     # Feature validation routes
     from app.api.routes.features import validation as features_validation
+    # Mission and gamification routes (Hebrew engagement)
+    from app.api.routes.missions import missions_core, shekels, leaderboard, zine, coupons
+    # Talk Back routes (Hebrew voice interactivity)
+    from app.api.routes.talk_back import talk_back_core
+    # Bilingual dubbing routes (progressive Hebrew/English)
+    from app.api.routes import bilingual_dubbing
+    # Star in Story routes (generative personalized episodes)
+    from app.api.routes.star_story import star_story_core, star_story_admin
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -331,6 +341,11 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(quiz.router, prefix=f"{prefix}/quiz", tags=["quiz"])
     app.include_router(rewards.router, prefix=f"{prefix}/rewards", tags=["rewards"])
     app.include_router(comprehension.router, prefix=f"{prefix}/comprehension", tags=["comprehension"])
+    app.include_router(
+        cultural_context_user.router,
+        prefix=prefix,
+        tags=["cultural-context"],
+    )
     logger.debug("Registered feature routes")
 
     # ============================================
@@ -501,6 +516,35 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(sessions.router, prefix=prefix, tags=["beta-sessions"])
     app.include_router(status.router, prefix=prefix, tags=["beta-status"])
     logger.debug("Registered Beta 500 closed beta program routes (signup, credits, sessions, status)")
+
+    # ============================================
+    # Hebrew Engagement / Gamification Routes
+    # ============================================
+    app.include_router(missions_core.router, prefix=prefix, tags=["missions"])
+    app.include_router(shekels.router, prefix=prefix, tags=["shekels"])
+    app.include_router(leaderboard.router, prefix=prefix, tags=["leaderboard"])
+    app.include_router(zine.router, prefix=prefix, tags=["zine"])
+    app.include_router(coupons.router, prefix=prefix, tags=["coupons"])
+    logger.debug("Registered Hebrew engagement routes (missions, shekels, leaderboard, zine, coupons)")
+
+    # ============================================
+    # Talk Back Routes (Hebrew Voice Interactivity)
+    # ============================================
+    app.include_router(talk_back_core.router, prefix=prefix, tags=["talk-back"])
+    logger.debug("Registered Talk Back routes (voice questions, responses, stats)")
+
+    # ============================================
+    # Bilingual Dubbing Routes (Progressive Hebrew/English)
+    # ============================================
+    app.include_router(bilingual_dubbing.router, prefix=prefix, tags=["bilingual-dubbing"])
+    logger.debug("Registered bilingual dubbing routes (proficiency, sessions, translation)")
+
+    # ============================================
+    # Star in Story Routes (Generative Personalized Episodes)
+    # ============================================
+    app.include_router(star_story_core.router, prefix=prefix, tags=["star-story"])
+    app.include_router(star_story_admin.router, prefix=prefix, tags=["star-story-admin"])
+    logger.debug("Registered Star in Story routes (consent, avatars, episodes, admin)")
 
     logger.info(f"All API routers registered with prefix {prefix}")
 

@@ -8,7 +8,9 @@ from typing import Optional
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Query
 
+from app.api.dependencies.ai_access import get_credit_service, require_ai_access
 from app.core.security import get_current_active_user, get_optional_user
+from app.services.beta.credit_service import BetaCreditService
 from app.models.chapters import ChapterItemModel, VideoChapters
 from app.models.content import Content, LiveChannel
 from app.models.user import User
@@ -23,21 +25,44 @@ router = APIRouter()
 
 @router.get("/{content_id}")
 async def get_chapters(
-    content_id: str, current_user: Optional[User] = Depends(get_optional_user)
+    content_id: str,
+    current_user: Optional[User] = Depends(get_optional_user),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """
     Get chapters for a specific content item.
     Returns cached chapters if available, or generates new ones.
+    Generation requires Admin, Premium/Family, or Beta-500 access.
     """
     # Check for existing chapters
     existing = await VideoChapters.get_for_content(content_id)
     if existing:
         return _format_chapters_response(existing)
 
-    # No chapters exist - check if content exists
+    # No chapters exist - generation requires AI access
+    if not current_user:
+        raise HTTPException(status_code=401, detail="Authentication required for chapter generation")
+
+    if not current_user.is_admin_role():
+        if current_user.subscription_tier not in ["premium", "family"]:
+            if not current_user.is_beta_user:
+                raise HTTPException(status_code=403, detail="ai_feature_requires_premium")
+
+    # Check if content exists
     content = await Content.get(content_id)
     if not content:
         raise HTTPException(status_code=404, detail="Content not found")
+
+    # Pre-deduct credits for Beta users
+    if current_user.is_beta_user and not current_user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(current_user.id),
+            feature="chapter_generation",
+            usage_amount=1.0,
+            metadata={"content_id": content_id},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
 
     # Generate chapters on-demand
     is_news = content.category_name and any(
@@ -48,7 +73,7 @@ async def get_chapters(
     gen_chapters = await generate_chapters_from_title(
         content_id=content_id,
         content_title=content.title,
-        duration=content.duration or 3600,  # Default 1 hour
+        duration=content.duration or 3600,
         description=content.description,
         is_news=is_news,
     )
@@ -67,7 +92,6 @@ async def get_chapters(
         for c in gen_chapters.chapters
     ]
 
-    # Convert duration to seconds if it's a string
     duration_seconds = parse_duration_to_seconds(content.duration or 3600)
 
     saved = await VideoChapters.create_or_update(
@@ -89,7 +113,8 @@ async def generate_chapters(
     transcript: Optional[str] = Body(
         None, description="Optional transcript for better chapters"
     ),
-    current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """
     Generate or regenerate chapters for content.
@@ -109,6 +134,16 @@ async def generate_chapters(
                 "message": "Chapters already exist. Use force=true to regenerate.",
                 "chapters": _format_chapters_response(existing),
             }
+
+    if current_user.is_beta_user and not current_user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(current_user.id),
+            feature="chapter_generation",
+            usage_amount=1.0,
+            metadata={"content_id": content_id},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
 
     # Generate chapters
     is_news = content.category_name and any(
@@ -166,21 +201,32 @@ async def generate_chapters(
 
 @router.get("/live/{channel_id}")
 async def get_live_chapters(
-    channel_id: str, current_user: Optional[User] = Depends(get_optional_user)
+    channel_id: str,
+    current_user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """
-    Get chapters for live channel content (if recorded).
+    Get chapters for live channel content (always generates).
     For live news, returns typical news structure chapters.
     """
     channel = await LiveChannel.get(channel_id)
     if not channel:
         raise HTTPException(status_code=404, detail="Channel not found")
 
-    # For live channels, generate default news chapter structure
+    if current_user.is_beta_user and not current_user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(current_user.id),
+            feature="chapter_generation",
+            usage_amount=1.0,
+            metadata={"channel_id": channel_id},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+
     gen_chapters = await generate_chapters_from_title(
         content_id=channel_id,
         content_title=f"{channel.name} - שידור חי",
-        duration=3600,  # 1 hour default
+        duration=3600,
         description=channel.description,
         is_news=True,
     )

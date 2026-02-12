@@ -116,6 +116,21 @@ from app.models.dubbing.session import UserDubbingSession, UserQuota
 # Transcript Event Bus models (highlights, search index)
 from app.models.highlight import LiveHighlight
 from app.models.live_transcript_index import LiveTranscriptIndex
+# Hebrew engagement feature models
+from app.models.phrase_breakdown import PhraseBreakdown
+from app.models.daily_mission import MissionTemplate, UserMission
+from app.models.shekel_currency import ShekelWallet, ShekelTransaction
+from app.models.leaderboard import LeaderboardEntry
+from app.models.zine import WeeklyZine
+from app.models.coupon import Coupon, CouponRedemption
+from app.models.child_proficiency import ChildProficiency
+from app.models.talk_back_point import ContentTalkBack
+from app.models.talk_back_attempt import TalkBackAttempt
+from app.models.bilingual_dubbing_session import BilingualDubbingSession
+# Star in Story models
+from app.models.child_avatar import ChildAvatar
+from app.models.story_episode import StoryEpisode
+from app.models.story_generation_job import StoryGenerationJob
 
 
 class Database:
@@ -378,6 +393,24 @@ async def connect_to_mongo():
         PlaylistItem,
         # Public domain documentary import sync tracking
         DocSyncState,
+        # Hebrew engagement feature models
+        PhraseBreakdown,
+        MissionTemplate,
+        UserMission,
+        ShekelWallet,
+        ShekelTransaction,
+        LeaderboardEntry,
+        WeeklyZine,
+        Coupon,
+        CouponRedemption,
+        ChildProficiency,
+        ContentTalkBack,
+        TalkBackAttempt,
+        BilingualDubbingSession,
+        # Star in Story models
+        ChildAvatar,
+        StoryEpisode,
+        StoryGenerationJob,
     ]
 
     # Conditionally add Olorin models based on database separation setting

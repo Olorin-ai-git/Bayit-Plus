@@ -43,6 +43,8 @@ final class TVRepositoryProvider {
     let chess: any ChessRepository
     let directMessages: any DirectMessageRepository
     let widget: any WidgetRepository
+    let missions: any MissionsRepository
+    let starStory: any StarStoryRepository
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
@@ -86,6 +88,8 @@ final class TVRepositoryProvider {
         self.chess = APIChessRepository(client: client, webSocketManager: webSocketManager)
         self.directMessages = APIDirectMessageRepository(client: client, webSocketManager: webSocketManager)
         self.widget = APIWidgetRepository(client: client)
+        self.missions = APIMissionsRepository(client: client)
+        self.starStory = APIStarStoryRepository(client: client)
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         self.offlineCache = OfflineCacheService()

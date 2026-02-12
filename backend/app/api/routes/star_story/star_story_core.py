@@ -1,0 +1,173 @@
+"""
+Star in Story Core Routes.
+
+Avatar CRUD, episode generation, progress polling, and consent management.
+"""
+
+import logging
+from typing import List, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
+
+from app.core.security import get_current_user
+from app.models.child_avatar import AvatarStyle, ChildAvatar
+from app.models.story_episode import EpisodeStatus, StoryEpisode
+from app.models.user import User
+from app.services.star_story.consent_service import consent_service
+from app.services.star_story.orchestrator_service import star_story_orchestrator
+
+logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/star-story", tags=["star-story"])
+
+
+class ConsentRequest(BaseModel):
+    profile_id: str
+    child_first_name: str = Field(..., max_length=50)
+    pin_hash: str
+
+
+class AvatarUploadRequest(BaseModel):
+    avatar_id: str
+    style: AvatarStyle = AvatarStyle.CARTOON_2D
+
+
+class GenerateEpisodeRequest(BaseModel):
+    profile_id: str
+    avatar_id: str
+    theme: str = Field(..., max_length=200)
+    target_vocabulary: List[str] = Field(default_factory=list, max_length=20)
+
+
+@router.post("/consent")
+async def grant_consent(
+    request: ConsentRequest,
+    user: User = Depends(get_current_user),
+):
+    """Grant COPPA parental consent for a child profile."""
+    try:
+        avatar = await consent_service.verify_and_record_consent(
+            user_id=str(user.id),
+            profile_id=request.profile_id,
+            child_first_name=request.child_first_name,
+            pin_hash=request.pin_hash,
+        )
+        return {
+            "avatar_id": str(avatar.id),
+            "status": avatar.status.value,
+            "consent_granted": avatar.has_consent,
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+
+
+@router.get("/avatars")
+async def get_avatars(
+    profile_id: str = Query(...),
+    user: User = Depends(get_current_user),
+):
+    """Get all avatars for a child profile."""
+    avatars = await ChildAvatar.find(
+        ChildAvatar.user_id == str(user.id),
+        ChildAvatar.profile_id == profile_id,
+    ).to_list()
+
+    return [
+        {
+            "avatar_id": str(a.id),
+            "child_first_name": a.child_first_name,
+            "style": a.style.value,
+            "status": a.status.value,
+            "primary_avatar_url": a.primary_avatar_gcs_path,
+            "poses_count": len(a.avatar_poses),
+            "created_at": a.created_at.isoformat(),
+        }
+        for a in avatars
+    ]
+
+
+@router.post("/episodes/generate")
+async def generate_episode(
+    request: GenerateEpisodeRequest,
+    user: User = Depends(get_current_user),
+):
+    """Start generating a personalized episode."""
+    try:
+        episode = await star_story_orchestrator.generate_episode(
+            user_id=str(user.id),
+            profile_id=request.profile_id,
+            avatar_id=request.avatar_id,
+            theme=request.theme,
+            target_vocabulary=request.target_vocabulary,
+        )
+        return {
+            "episode_id": str(episode.id),
+            "status": episode.status.value,
+            "progress_percent": episode.progress_percent,
+        }
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(e)
+        )
+
+
+@router.get("/episodes/{episode_id}/progress")
+async def get_progress(
+    episode_id: str,
+    user: User = Depends(get_current_user),
+):
+    """Poll episode generation progress."""
+    try:
+        return await star_story_orchestrator.get_episode_progress(episode_id)
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(e)
+        )
+
+
+@router.get("/episodes")
+async def list_episodes(
+    profile_id: str = Query(...),
+    limit: int = Query(default=20, ge=1, le=100),
+    user: User = Depends(get_current_user),
+):
+    """List episodes for a child profile."""
+    episodes = await StoryEpisode.find(
+        StoryEpisode.user_id == str(user.id),
+        StoryEpisode.profile_id == profile_id,
+        StoryEpisode.status == EpisodeStatus.READY,
+    ).sort(-StoryEpisode.created_at).limit(limit).to_list()
+
+    return [
+        {
+            "episode_id": str(ep.id),
+            "title": ep.title,
+            "theme": ep.theme,
+            "episode_number": ep.episode_number,
+            "status": ep.status.value,
+            "hls_url": ep.hls_manifest_gcs_path,
+            "thumbnail_url": ep.thumbnail_gcs_path,
+            "duration_seconds": ep.total_duration_seconds,
+            "created_at": ep.created_at.isoformat(),
+        }
+        for ep in episodes
+    ]
+
+
+@router.delete("/consent/{profile_id}")
+async def revoke_consent(
+    profile_id: str,
+    user: User = Depends(get_current_user),
+):
+    """Revoke COPPA consent and cascade delete all data."""
+    revoked = await consent_service.revoke_consent(
+        user_id=str(user.id), profile_id=profile_id
+    )
+    if not revoked:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No avatar found for this profile",
+        )
+    return {"revoked": True}

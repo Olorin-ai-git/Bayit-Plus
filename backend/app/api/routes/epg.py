@@ -4,8 +4,10 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
 
-from app.core.security import get_current_active_user, get_optional_user
+from app.api.dependencies.ai_access import get_credit_service, require_ai_access
+from app.core.security import get_current_premium_user, get_optional_user
 from app.models.user import User
+from app.services.beta.credit_service import BetaCreditService
 from app.services.catchup_service import catchup_service
 from app.services.epg_service import EPGService
 from app.services.llm_search_service import llm_search_service
@@ -18,18 +20,6 @@ class LLMSearchRequest(BaseModel):
     query: str
     timezone: str = "UTC"
     include_user_context: bool = True
-
-
-def get_current_premium_user(
-    current_user: User = Depends(get_current_active_user),
-) -> User:
-    """Dependency to ensure user has premium access"""
-    if not current_user.can_access_premium_features():
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Premium subscription required for LLM search feature",
-        )
-    return current_user
 
 
 @router.get("")
@@ -151,18 +141,19 @@ async def search_epg(
 
 @router.post("/llm-search")
 async def llm_search_epg(
-    request: LLMSearchRequest, current_user: User = Depends(get_current_premium_user)
+    request: LLMSearchRequest,
+    current_user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """
-    LLM-powered natural language search in EPG data (Premium Feature)
+    LLM-powered natural language search in EPG data.
 
-    Uses Claude AI to interpret natural language queries and intelligently
-    search through EPG programming data.
+    Requires Admin, Premium/Family, or Beta-500 access.
 
     Request Body:
-    - query: Natural language search query (e.g., "Show me all shows with actress Tali Sharon")
+    - query: Natural language search query
     - timezone: User's timezone (default: UTC)
-    - include_user_context: Whether to include user preferences in search (default: true)
+    - include_user_context: Whether to include user preferences in search
 
     Returns:
     - success: Whether search succeeded
@@ -171,10 +162,18 @@ async def llm_search_epg(
     - results: List of matching programs with relevance scores
     - total_results: Total number of results
     - execution_time_ms: Total execution time
-
-    Requires: Premium subscription
     """
     try:
+        if current_user.is_beta_user and not current_user.is_admin_role():
+            success, remaining = await credit_service.deduct_credits(
+                user_id=str(current_user.id),
+                feature="ai_search",
+                usage_amount=1.0,
+                metadata={"query": request.query},
+            )
+            if not success:
+                raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+
         # Build user context if requested
         user_context = None
         if request.include_user_context:
@@ -191,8 +190,10 @@ async def llm_search_epg(
 
         return result
 
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"LLM search failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="LLM search failed")
 
 
 @router.get("/{channel_id}/schedule")

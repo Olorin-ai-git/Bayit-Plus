@@ -8,18 +8,18 @@ Provides AI-powered natural language search:
 - Premium user feature
 """
 
-import logging
-
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.api.dependencies.ai_access import get_credit_service, require_ai_access
 from app.api.routes.search_models import LLMSearchRequest
-from app.core.security import get_current_premium_user
+from app.core.logging_config import get_logger
 from app.models.search_analytics import SearchQuery
 from app.models.user import User
+from app.services.beta.credit_service import BetaCreditService
 from app.services.vod_llm_search_service import VODLLMSearchService
 
 router = APIRouter(prefix="/search", tags=["search", "llm"])
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 # Service instance
 llm_search = VODLLMSearchService()
@@ -27,18 +27,16 @@ llm_search = VODLLMSearchService()
 
 @router.post("/llm")
 async def llm_natural_language_search(
-    request: LLMSearchRequest, current_user: User = Depends(get_current_premium_user)
+    request: LLMSearchRequest,
+    current_user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """
-    Natural language search using Claude AI (Premium Feature).
+    Natural language search using Claude AI.
+
+    Requires Admin, Premium/Family, or Beta-500 access.
 
     Interprets complex queries and extracts search criteria automatically.
-
-    Examples:
-    - "Show me Hebrew movies from the 1980s with English subtitles"
-    - "Find comedies starring Sacha Baron Cohen"
-    - "What documentaries about the Holocaust are available?"
-    - "Kids shows in Hebrew for ages 5-7"
 
     Returns:
     - Interpreted search criteria
@@ -46,6 +44,16 @@ async def llm_natural_language_search(
     - Ranked results
     """
     try:
+        if current_user.is_beta_user and not current_user.is_admin_role():
+            success, remaining = await credit_service.deduct_credits(
+                user_id=str(current_user.id),
+                feature="ai_search",
+                usage_amount=1.0,
+                metadata={"query": request.query},
+            )
+            if not success:
+                raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+
         # Build user context
         user_context = (
             {
@@ -81,9 +89,15 @@ async def llm_natural_language_search(
 
         return results
 
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"LLM search failed: {e}", exc_info=True)
+        logger.error(
+            "LLM search failed",
+            extra={"user_id": str(current_user.id), "error": str(e)},
+            exc_info=True,
+        )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"LLM search failed: {str(e)}",
+            detail="LLM search failed",
         )

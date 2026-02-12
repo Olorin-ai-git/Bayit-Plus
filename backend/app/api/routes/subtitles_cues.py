@@ -7,9 +7,12 @@ from datetime import datetime
 from typing import Optional
 
 from beanie import PydanticObjectId
-from fastapi import APIRouter, BackgroundTasks, HTTPException, Query, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
 
+from app.api.dependencies.ai_access import get_credit_service, require_ai_access
 from app.core.logging_config import get_logger
+from app.models.user import User
+from app.services.beta.credit_service import BetaCreditService
 from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.models.ai_generation_job import AIGenerationJob, JobStatus, JobType
 from app.services.security_utils import validate_object_id
@@ -213,6 +216,8 @@ async def generate_nikud_for_track(
     content_id: str,
     language: str = "he",
     force: bool = False,
+    current_user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ) -> dict:
     """
     Start async nikud (vocalization) generation for a subtitle track.
@@ -239,6 +244,17 @@ async def generate_nikud_for_track(
     existing_job = await AIGenerationJob.get_active_job(content_id, JobType.NIKUD)
     if existing_job:
         return existing_job.to_response()
+
+    # Pre-deduct credits for Beta users (background task cannot await)
+    if current_user.is_beta_user and not current_user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(current_user.id),
+            feature="subtitle_nikud",
+            usage_amount=1.0,
+            metadata={"content_id": content_id, "language": language},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
 
     # Create new job
     job = await AIGenerationJob.create_job(
@@ -340,6 +356,8 @@ async def generate_shoresh_for_track(
     content_id: str,
     language: str = "he",
     force: bool = False,
+    current_user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ) -> dict:
     """
     Start async shoresh (root words) generation for a subtitle track.
@@ -367,7 +385,16 @@ async def generate_shoresh_for_track(
     if existing_job:
         return existing_job.to_response()
 
-    # Create new job
+    if current_user.is_beta_user and not current_user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(current_user.id),
+            feature="subtitle_shoresh",
+            usage_amount=1.0,
+            metadata={"content_id": content_id, "language": language},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+
     job = await AIGenerationJob.create_job(
         content_id=content_id,
         job_type=JobType.SHORESH,
@@ -467,6 +494,8 @@ async def generate_heblish_for_track(
     content_id: str,
     language: str = "en",
     force: bool = False,
+    current_user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ) -> dict:
     """
     Start async heblish (English with Hebrew injections) generation for a subtitle track.
@@ -499,7 +528,16 @@ async def generate_heblish_for_track(
     if existing_job:
         return existing_job.to_response()
 
-    # Create new job
+    if current_user.is_beta_user and not current_user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(current_user.id),
+            feature="subtitle_heblish",
+            usage_amount=1.0,
+            metadata={"content_id": content_id, "language": language},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+
     job = await AIGenerationJob.create_job(
         content_id=content_id,
         job_type=JobType.HEBLISH,
@@ -599,6 +637,8 @@ async def generate_grammar_flip_for_track(
     content_id: str,
     language: str = "en",
     force: bool = False,
+    current_user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ) -> dict:
     """
     Start async Grammar-Flip generation for a subtitle track.
@@ -631,7 +671,16 @@ async def generate_grammar_flip_for_track(
     if existing_job:
         return existing_job.to_response()
 
-    # Create new job
+    if current_user.is_beta_user and not current_user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(current_user.id),
+            feature="subtitle_grammar_flip",
+            usage_amount=1.0,
+            metadata={"content_id": content_id, "language": language},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+
     job = await AIGenerationJob.create_job(
         content_id=content_id,
         job_type=JobType.GRAMMAR_FLIP,
@@ -731,6 +780,8 @@ async def generate_slang_synthesis_for_track(
     content_id: str,
     language: str = "en",
     force: bool = False,
+    current_user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ) -> dict:
     """
     Start async Slang Synthesis generation for a subtitle track.
@@ -764,7 +815,16 @@ async def generate_slang_synthesis_for_track(
     if existing_job:
         return existing_job.to_response()
 
-    # Create new job
+    if current_user.is_beta_user and not current_user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(current_user.id),
+            feature="subtitle_slang_synthesis",
+            usage_amount=1.0,
+            metadata={"content_id": content_id, "language": language},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+
     job = await AIGenerationJob.create_job(
         content_id=content_id,
         job_type=JobType.SLANG_SYNTHESIS,
@@ -864,6 +924,8 @@ async def generate_engrew_for_track(
     content_id: str,
     language: str = "he",
     force: bool = False,
+    current_user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ) -> dict:
     """
     Start async Engrew generation for a subtitle track.
@@ -900,7 +962,16 @@ async def generate_engrew_for_track(
     if existing_job:
         return existing_job.to_response()
 
-    # Create new job
+    if current_user.is_beta_user and not current_user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(current_user.id),
+            feature="subtitle_engrew",
+            usage_amount=1.0,
+            metadata={"content_id": content_id, "language": language},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+
     job = await AIGenerationJob.create_job(
         content_id=content_id,
         job_type=JobType.ENGREW,

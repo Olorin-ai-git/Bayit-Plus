@@ -9,27 +9,16 @@ from app.api.routes.channel_chat_models import (
     TranslationResponse,
     validate_id,
 )
-from app.core.config import Settings, get_settings
-from app.core.database import get_database
+from app.api.dependencies.ai_access import get_credit_service, require_ai_access
 from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.user import User
 from app.services.beta.credit_service import BetaCreditService
 from app.services.channel_chat_service import get_channel_chat_service
 from app.services.chat_translation_service import ChatTranslationService
-from app.services.olorin.metering.service import MeteringService
 
 router = APIRouter()
 logger = get_logger(__name__)
-
-
-async def get_credit_service(
-    settings: Settings = Depends(get_settings),
-    db=Depends(get_database),
-) -> BetaCreditService:
-    """Get BetaCreditService dependency with proper initialization."""
-    metering_service = MeteringService()
-    return BetaCreditService(settings=settings, metering_service=metering_service, db=db)
 
 
 async def _fetch_chat_history(
@@ -111,12 +100,16 @@ async def _translate_chat(
     )
 
     try:
-        balance = await credit_service.get_balance(str(current_user.id))
-        if balance is None:
-            raise HTTPException(
-                status_code=403,
-                detail="Chat translation is only available for Beta 500 users",
+        # Beta users: deduct credits before translation
+        if current_user.is_beta_user and not current_user.is_admin_role():
+            success, remaining = await credit_service.deduct_credits(
+                user_id=str(current_user.id),
+                feature="chat_translation",
+                usage_amount=1.0,
+                metadata={"channel_id": channel_id, "to_lang": to_lang},
             )
+            if not success:
+                raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
 
         if from_lang:
             result = await ChatTranslationService.translate_message(
@@ -174,10 +167,10 @@ async def translate_chat_message(
     text: str = Query(..., min_length=1, max_length=5000, description="Text to translate"),
     from_lang: Optional[str] = Query(None, description="Source language code"),
     to_lang: str = Query(..., description="Target language code"),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_ai_access),
     credit_service: BetaCreditService = Depends(get_credit_service),
 ) -> TranslationResponse:
-    """Translate chat message on-demand for live channel (Beta users only)."""
+    """Translate chat message on-demand for live channel."""
     return await _translate_chat(channel_id, text, from_lang, to_lang, current_user, credit_service)
 
 
@@ -187,8 +180,8 @@ async def translate_content_chat_message(
     text: str = Query(..., min_length=1, max_length=5000, description="Text to translate"),
     from_lang: Optional[str] = Query(None, description="Source language code"),
     to_lang: str = Query(..., description="Target language code"),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_ai_access),
     credit_service: BetaCreditService = Depends(get_credit_service),
 ) -> TranslationResponse:
-    """Translate chat message on-demand for VOD content (Beta users only)."""
+    """Translate chat message on-demand for VOD content."""
     return await _translate_chat(content_id, text, from_lang, to_lang, current_user, credit_service)

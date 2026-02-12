@@ -731,6 +731,24 @@ const apiPartyService = {
     api.post(`/party/${partyId}/sync`, null, { params: { position, is_playing: isPlaying } }),
 }
 
+// Star Story Service (API)
+const apiStarStoryService = {
+  grantConsent: (profileId, childFirstName, pinHash) =>
+    api.post('/star-story/consent', { profile_id: profileId, child_first_name: childFirstName, pin_hash: pinHash }),
+  getAvatars: (profileId) =>
+    api.get('/star-story/avatars', { params: { profile_id: profileId } }),
+  generateEpisode: (profileId, avatarId, theme, targetVocabulary) =>
+    api.post('/star-story/episodes/generate', {
+      profile_id: profileId, avatar_id: avatarId, theme, target_vocabulary: targetVocabulary,
+    }),
+  getEpisodeProgress: (episodeId) =>
+    api.get(`/star-story/episodes/${episodeId}/progress`),
+  getEpisodes: (profileId) =>
+    api.get('/star-story/episodes', { params: { profile_id: profileId } }),
+  revokeConsent: (profileId) =>
+    api.delete(`/star-story/consent/${profileId}`),
+}
+
 // ===========================================
 // SERVICE EXPORTS
 // Service exports
@@ -763,5 +781,6 @@ export const judaismService = apiJudaismService
 export const quizService = apiQuizService
 export const rewardsService = apiRewardsService
 export const widgetService = apiWidgetService
+export const starStoryService = apiStarStoryService
 
 export default api

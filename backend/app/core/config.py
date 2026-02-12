@@ -233,6 +233,66 @@ class Settings(BaseSettings):
         description="Credits per comprehension question"
     )
 
+    CREDIT_RATE_SUBTITLE_NIKUD: float = Field(
+        default=15.0,
+        env="CREDIT_RATE_SUBTITLE_NIKUD",
+        description="Credits per nikud subtitle generation"
+    )
+
+    CREDIT_RATE_SUBTITLE_SHORESH: float = Field(
+        default=15.0,
+        env="CREDIT_RATE_SUBTITLE_SHORESH",
+        description="Credits per shoresh subtitle generation"
+    )
+
+    CREDIT_RATE_SUBTITLE_HEBLISH: float = Field(
+        default=15.0,
+        env="CREDIT_RATE_SUBTITLE_HEBLISH",
+        description="Credits per heblish subtitle generation"
+    )
+
+    CREDIT_RATE_SUBTITLE_GRAMMAR_FLIP: float = Field(
+        default=15.0,
+        env="CREDIT_RATE_SUBTITLE_GRAMMAR_FLIP",
+        description="Credits per grammar-flip subtitle generation"
+    )
+
+    CREDIT_RATE_SUBTITLE_SLANG_SYNTHESIS: float = Field(
+        default=15.0,
+        env="CREDIT_RATE_SUBTITLE_SLANG_SYNTHESIS",
+        description="Credits per slang-synthesis subtitle generation"
+    )
+
+    CREDIT_RATE_SUBTITLE_ENGREW: float = Field(
+        default=15.0,
+        env="CREDIT_RATE_SUBTITLE_ENGREW",
+        description="Credits per engrew subtitle generation"
+    )
+
+    CREDIT_RATE_PHRASE_BREAKDOWN: float = Field(
+        default=5.0,
+        env="CREDIT_RATE_PHRASE_BREAKDOWN",
+        description="Credits per phrase breakdown request"
+    )
+
+    CREDIT_RATE_CULTURAL_DETECT: float = Field(
+        default=5.0,
+        env="CREDIT_RATE_CULTURAL_DETECT",
+        description="Credits per cultural reference detection"
+    )
+
+    CREDIT_RATE_CHAPTER_GENERATION: float = Field(
+        default=10.0,
+        env="CREDIT_RATE_CHAPTER_GENERATION",
+        description="Credits per chapter generation request"
+    )
+
+    CREDIT_RATE_CHAT_TRANSLATION: float = Field(
+        default=3.0,
+        env="CREDIT_RATE_CHAT_TRANSLATION",
+        description="Credits per chat translation request"
+    )
+
     # ==========================================
     # PLAYLIST CONFIGURATION
     # ==========================================
@@ -876,6 +936,11 @@ class Settings(BaseSettings):
 
     # Google Cloud Project
     GCP_PROJECT_ID: str
+    GCP_REGION: str = Field(
+        default="us-central1",
+        env="GCP_REGION",
+        description="GCP region for Vertex AI and other services",
+    )
 
     # Apple Sign In / Push Notifications
     APPLE_KEY_ID: str = ""
@@ -1791,6 +1856,275 @@ class Settings(BaseSettings):
         "13tv.co.il",
         "kan.org.il",
     ]
+
+    # ============================================
+    # HEBREW ENGAGEMENT FEATURES CONFIGURATION
+    # ============================================
+
+    # Phase 1 - Phrase Breakdown / Cultural Context
+    PHRASE_BREAKDOWN_AI_MODEL: str = Field(
+        default="claude-sonnet-4-20250514",
+        env="PHRASE_BREAKDOWN_AI_MODEL",
+        description="Claude model for phrase breakdown generation",
+    )
+    PHRASE_BREAKDOWN_CACHE_TTL_DAYS: int = Field(
+        default=90,
+        env="PHRASE_BREAKDOWN_CACHE_TTL_DAYS",
+        description="Cache TTL for phrase breakdowns (days)",
+    )
+
+    # Phase 2 - Daily Missions / Gamification
+    MISSIONS_DAILY_COUNT: int = Field(
+        default=3, ge=1, le=10,
+        env="MISSIONS_DAILY_COUNT",
+        description="Number of daily missions generated per user",
+    )
+    SHEKEL_MISSION_EASY_MIN: int = Field(
+        default=5, ge=1,
+        env="SHEKEL_MISSION_EASY_MIN",
+        description="Min shekels for easy missions",
+    )
+    SHEKEL_MISSION_EASY_MAX: int = Field(
+        default=15, ge=1,
+        env="SHEKEL_MISSION_EASY_MAX",
+        description="Max shekels for easy missions",
+    )
+    SHEKEL_MISSION_MEDIUM_MIN: int = Field(
+        default=15, ge=1,
+        env="SHEKEL_MISSION_MEDIUM_MIN",
+        description="Min shekels for medium missions",
+    )
+    SHEKEL_MISSION_MEDIUM_MAX: int = Field(
+        default=30, ge=1,
+        env="SHEKEL_MISSION_MEDIUM_MAX",
+        description="Max shekels for medium missions",
+    )
+    SHEKEL_MISSION_HARD_MIN: int = Field(
+        default=30, ge=1,
+        env="SHEKEL_MISSION_HARD_MIN",
+        description="Min shekels for hard missions",
+    )
+    SHEKEL_MISSION_HARD_MAX: int = Field(
+        default=60, ge=1,
+        env="SHEKEL_MISSION_HARD_MAX",
+        description="Max shekels for hard missions",
+    )
+    SHEKEL_STREAK_BONUS_MULTIPLIER: float = Field(
+        default=1.5,
+        env="SHEKEL_STREAK_BONUS_MULTIPLIER",
+        description="Multiplier for streak bonus shekels",
+    )
+    SHEKEL_PERFECT_QUIZ_BONUS: int = Field(
+        default=50, ge=0,
+        env="SHEKEL_PERFECT_QUIZ_BONUS",
+        description="Bonus shekels for perfect quiz score",
+    )
+    SHEKEL_PHRASE_LEARN_REWARD: int = Field(
+        default=5, ge=0,
+        env="SHEKEL_PHRASE_LEARN_REWARD",
+        description="Shekels earned per phrase learned",
+    )
+    LEADERBOARD_DISPLAY_NAME_MAX_LENGTH: int = Field(
+        default=50, ge=1, le=100,
+        env="LEADERBOARD_DISPLAY_NAME_MAX_LENGTH",
+        description="Max length for leaderboard display names",
+    )
+    LEADERBOARD_PAGE_SIZE: int = Field(
+        default=25, ge=5, le=100,
+        env="LEADERBOARD_PAGE_SIZE",
+        description="Default page size for leaderboard queries",
+    )
+    LEADERBOARD_RECALCULATION_INTERVAL_HOURS: int = Field(
+        default=1, ge=1,
+        env="LEADERBOARD_RECALCULATION_INTERVAL_HOURS",
+        description="Hours between leaderboard rank recalculations",
+    )
+    ZINE_GENERATION_DAY: int = Field(
+        default=0, ge=0, le=6,
+        env="ZINE_GENERATION_DAY",
+        description="Day of week for zine generation (0=Monday)",
+    )
+    ZINE_MAX_PAGES: int = Field(
+        default=8, ge=4, le=16,
+        env="ZINE_MAX_PAGES",
+        description="Maximum pages per weekly zine",
+    )
+    ZINE_AI_MODEL: str = Field(
+        default="claude-sonnet-4-20250514",
+        env="ZINE_AI_MODEL",
+        description="Claude model for zine content generation",
+    )
+    ZINE_MAX_TOKENS: int = Field(
+        default=4096, ge=1024, le=8192,
+        env="ZINE_MAX_TOKENS",
+        description="Max tokens for zine generation response",
+    )
+
+    # Phase 3 - Talk Back
+    TALK_BACK_RESPONSE_TIMEOUT_SECONDS: int = Field(
+        default=15, ge=5, le=60,
+        env="TALK_BACK_RESPONSE_TIMEOUT_SECONDS",
+        description="Seconds to wait for child's voice response",
+    )
+    TALK_BACK_HINT_DELAY_SECONDS: int = Field(
+        default=5, ge=2, le=30,
+        env="TALK_BACK_HINT_DELAY_SECONDS",
+        description="Seconds before showing hint after question",
+    )
+    TALK_BACK_GENERATE_MAX_CUES: int = Field(
+        default=200, ge=10, le=1000,
+        env="TALK_BACK_GENERATE_MAX_CUES",
+        description="Max subtitle cues to send to AI for point generation",
+    )
+    TALK_BACK_GENERATE_MAX_TOKENS: int = Field(
+        default=4096, ge=512, le=8192,
+        env="TALK_BACK_GENERATE_MAX_TOKENS",
+        description="Max tokens for AI Talk Back point generation",
+    )
+
+    # Phase 4 - Bilingual Bridge
+    BILINGUAL_DUBBING_BEGINNER_MIN_RATIO: float = Field(
+        default=0.10,
+        env="BILINGUAL_DUBBING_BEGINNER_MIN_RATIO",
+        description="Minimum Hebrew ratio for beginner level",
+    )
+    BILINGUAL_DUBBING_BEGINNER_MAX_RATIO: float = Field(
+        default=0.30,
+        env="BILINGUAL_DUBBING_BEGINNER_MAX_RATIO",
+        description="Maximum Hebrew ratio for beginner level",
+    )
+    BILINGUAL_DUBBING_ELEMENTARY_MIN_RATIO: float = Field(
+        default=0.20,
+        env="BILINGUAL_DUBBING_ELEMENTARY_MIN_RATIO",
+        description="Minimum Hebrew ratio for elementary level",
+    )
+    BILINGUAL_DUBBING_ELEMENTARY_MAX_RATIO: float = Field(
+        default=0.50,
+        env="BILINGUAL_DUBBING_ELEMENTARY_MAX_RATIO",
+        description="Maximum Hebrew ratio for elementary level",
+    )
+    BILINGUAL_DUBBING_INTERMEDIATE_MIN_RATIO: float = Field(
+        default=0.40,
+        env="BILINGUAL_DUBBING_INTERMEDIATE_MIN_RATIO",
+        description="Minimum Hebrew ratio for intermediate level",
+    )
+    BILINGUAL_DUBBING_INTERMEDIATE_MAX_RATIO: float = Field(
+        default=0.70,
+        env="BILINGUAL_DUBBING_INTERMEDIATE_MAX_RATIO",
+        description="Maximum Hebrew ratio for intermediate level",
+    )
+    BILINGUAL_DUBBING_ADVANCED_MIN_RATIO: float = Field(
+        default=0.60,
+        env="BILINGUAL_DUBBING_ADVANCED_MIN_RATIO",
+        description="Minimum Hebrew ratio for advanced level",
+    )
+    BILINGUAL_DUBBING_ADVANCED_MAX_RATIO: float = Field(
+        default=0.90,
+        env="BILINGUAL_DUBBING_ADVANCED_MAX_RATIO",
+        description="Maximum Hebrew ratio for advanced level",
+    )
+    RATIO_ADJUSTMENT_STEP: float = Field(
+        default=0.05,
+        env="RATIO_ADJUSTMENT_STEP",
+        description="Step size for ratio adjustments per session",
+    )
+    BILINGUAL_DUBBING_HEBREW_VOICE_ID: str = Field(
+        default="",
+        env="BILINGUAL_DUBBING_HEBREW_VOICE_ID",
+        description="ElevenLabs voice ID for Hebrew in bilingual dubbing",
+    )
+    BILINGUAL_DUBBING_ENGLISH_VOICE_ID: str = Field(
+        default="",
+        env="BILINGUAL_DUBBING_ENGLISH_VOICE_ID",
+        description="ElevenLabs voice ID for English in bilingual dubbing",
+    )
+    BILINGUAL_DUBBING_AI_MODEL: str = Field(
+        default="claude-sonnet-4-20250514",
+        env="BILINGUAL_DUBBING_AI_MODEL",
+        description="Claude model for code-switch translation",
+    )
+    BILINGUAL_DUBBING_MAX_TOKENS: int = Field(
+        default=2048, ge=512, le=8192,
+        env="BILINGUAL_DUBBING_MAX_TOKENS",
+        description="Max tokens for code-switch translation",
+    )
+    BILINGUAL_DUBBING_VOCAB_TARGET: int = Field(
+        default=20, ge=5, le=100,
+        env="BILINGUAL_DUBBING_VOCAB_TARGET",
+        description="Target vocabulary words per session",
+    )
+
+    # Phase 5 - Star in Story
+    RUNWAY_API_KEY: str = Field(
+        default="",
+        env="RUNWAY_API_KEY",
+        description="Runway Gen-4 API key for video generation",
+    )
+    RUNWAY_API_BASE_URL: str = Field(
+        default="https://api.dev.runwayml.com/v1",
+        env="RUNWAY_API_BASE_URL",
+        description="Runway API base URL",
+    )
+    RUNWAY_MODEL_ID: str = Field(
+        default="gen4_turbo",
+        env="RUNWAY_MODEL_ID",
+        description="Runway model ID for video generation",
+    )
+    STAR_STORY_SAFETY_THRESHOLD: float = Field(
+        default=0.9, ge=0.0, le=1.0,
+        env="STAR_STORY_SAFETY_THRESHOLD",
+        description="Minimum safety score for generated content",
+    )
+    STAR_STORY_MAX_EPISODES_PER_DAY: int = Field(
+        default=3, ge=1,
+        env="STAR_STORY_MAX_EPISODES_PER_DAY",
+        description="Maximum episode generations per user per day",
+    )
+    CREDIT_RATE_STAR_STORY_EPISODE: int = Field(
+        default=75,
+        env="CREDIT_RATE_STAR_STORY_EPISODE",
+        description="Beta credits per Star in Story episode",
+    )
+    CREDIT_RATE_STAR_STORY_AVATAR: int = Field(
+        default=10,
+        env="CREDIT_RATE_STAR_STORY_AVATAR",
+        description="Beta credits per avatar generation",
+    )
+    STAR_STORY_PHOTO_RETENTION_DAYS: int = Field(
+        default=7, ge=1,
+        env="STAR_STORY_PHOTO_RETENTION_DAYS",
+        description="Days to retain original photos before auto-delete",
+    )
+    STAR_STORY_EPISODE_RETENTION_DAYS: int = Field(
+        default=90, ge=1,
+        env="STAR_STORY_EPISODE_RETENTION_DAYS",
+        description="Days to retain generated episodes",
+    )
+    STAR_STORY_AI_MODEL: str = Field(
+        default="claude-sonnet-4-5-20250929",
+        env="STAR_STORY_AI_MODEL",
+        description="Claude model for script generation and safety review",
+    )
+    STAR_STORY_AI_MAX_TOKENS: int = Field(
+        default=8192, ge=1024, le=16384,
+        env="STAR_STORY_AI_MAX_TOKENS",
+        description="Max tokens for script generation",
+    )
+    STAR_STORY_NARRATOR_VOICE_ID: str = Field(
+        default="",
+        env="STAR_STORY_NARRATOR_VOICE_ID",
+        description="ElevenLabs voice ID for Star in Story narration",
+    )
+    STAR_STORY_MIN_PHOTO_WIDTH: int = Field(
+        default=480, ge=100,
+        env="STAR_STORY_MIN_PHOTO_WIDTH",
+        description="Minimum photo width in pixels for face detection",
+    )
+    STAR_STORY_MIN_PHOTO_HEIGHT: int = Field(
+        default=480, ge=100,
+        env="STAR_STORY_MIN_PHOTO_HEIGHT",
+        description="Minimum photo height in pixels for face detection",
+    )
 
     # ============================================
     # URL MIGRATION CONFIGURATION (for script consolidation)

@@ -45,6 +45,18 @@ class FeatureName(str, Enum):
     AVATAR_MODE = "avatar_mode"
     PROACTIVE_VOICE = "proactive_voice"
     DEVICE_PAIRING = "device_pairing"
+    # AI subtitle features
+    SUBTITLE_NIKUD = "subtitle_nikud"
+    SUBTITLE_SHORESH = "subtitle_shoresh"
+    SUBTITLE_HEBLISH = "subtitle_heblish"
+    SUBTITLE_GRAMMAR_FLIP = "subtitle_grammar_flip"
+    SUBTITLE_SLANG_SYNTHESIS = "subtitle_slang_synthesis"
+    SUBTITLE_ENGREW = "subtitle_engrew"
+    # AI content features
+    PHRASE_BREAKDOWN = "phrase_breakdown"
+    CULTURAL_DETECT = "cultural_detect"
+    CHAPTER_GENERATION = "chapter_generation"
+    CHAT_TRANSLATION = "chat_translation"
     # UI-only features (always approved)
     TRIVIA = "trivia"
     WAKE_WORD = "wake_word"
@@ -247,53 +259,71 @@ def validate_premium_feature(
         )
 
 
-def validate_ai_feature(
+async def validate_ai_feature(
     current_user: User,
     feature_name: str,
     credit_service: Optional[BetaCreditService] = None
 ) -> ValidationResult:
     """
-    Validate AI-powered feature access (LLM Search, Avatar Mode, Proactive Voice).
+    Validate AI-powered feature access.
 
-    Requirements:
-    - User must be beta enrolled OR have premium subscription
-    - If beta user: must have credits
+    Access tiers:
+    - Admin: unlimited
+    - Premium/Family: unlimited
+    - Beta-500: requires positive credit balance
+    - Basic/Free: denied
 
     Returns:
         ValidationResult with enabled=True if user meets requirements
     """
     try:
-        # Check if user is beta with credits
-        if current_user.is_beta_user:
-            # Beta users need credits for AI features
-            # This is a simplified check - full validation done at usage time
+        if current_user.is_admin_role():
             return ValidationResult(
                 feature=feature_name,
                 enabled=True,
-                reason="beta_user_access"
+                reason="admin_access"
             )
 
-        # Check subscription tier
-        if current_user.subscription_tier not in ["premium", "family"]:
+        if current_user.subscription_tier in ["premium", "family"]:
+            return ValidationResult(
+                feature=feature_name,
+                enabled=True,
+                metadata={"subscription_tier": current_user.subscription_tier}
+            )
+
+        if current_user.is_beta_user and credit_service:
+            balance = await credit_service.get_balance(str(current_user.id))
+            if balance is not None and balance > 0:
+                return ValidationResult(
+                    feature=feature_name,
+                    enabled=True,
+                    reason="beta_user_access",
+                    metadata={"remaining_credits": balance}
+                )
             return ValidationResult(
                 feature=feature_name,
                 enabled=False,
-                reason="requires_premium_or_beta",
-                metadata={
-                    "current_tier": current_user.subscription_tier or "free"
-                }
+                reason="insufficient_credits",
+                metadata={"remaining_credits": balance or 0}
             )
 
         return ValidationResult(
             feature=feature_name,
-            enabled=True,
-            metadata={"subscription_tier": current_user.subscription_tier}
+            enabled=False,
+            reason="requires_premium_or_beta",
+            metadata={
+                "current_tier": current_user.subscription_tier or "free"
+            }
         )
 
     except Exception as e:
         logger.error(
-            f"{feature_name} validation error",
-            extra={"user_id": str(current_user.id), "error": str(e)}
+            "AI feature validation error",
+            extra={
+                "user_id": str(current_user.id),
+                "feature": feature_name,
+                "error": str(e),
+            }
         )
         return ValidationResult(
             feature=feature_name,
@@ -376,9 +406,19 @@ async def validate_feature(
         elif feature_name in [
             FeatureName.LLM_SEARCH,
             FeatureName.AVATAR_MODE,
-            FeatureName.PROACTIVE_VOICE
+            FeatureName.PROACTIVE_VOICE,
+            FeatureName.SUBTITLE_NIKUD,
+            FeatureName.SUBTITLE_SHORESH,
+            FeatureName.SUBTITLE_HEBLISH,
+            FeatureName.SUBTITLE_GRAMMAR_FLIP,
+            FeatureName.SUBTITLE_SLANG_SYNTHESIS,
+            FeatureName.SUBTITLE_ENGREW,
+            FeatureName.PHRASE_BREAKDOWN,
+            FeatureName.CULTURAL_DETECT,
+            FeatureName.CHAPTER_GENERATION,
+            FeatureName.CHAT_TRANSLATION,
         ]:
-            return validate_ai_feature(current_user, feature_name.value, credit_service)
+            return await validate_ai_feature(current_user, feature_name.value, credit_service)
 
         elif feature_name in [
             FeatureName.TRIVIA,
@@ -456,9 +496,19 @@ async def validate_features_batch(
             elif feature_name in [
                 FeatureName.LLM_SEARCH,
                 FeatureName.AVATAR_MODE,
-                FeatureName.PROACTIVE_VOICE
+                FeatureName.PROACTIVE_VOICE,
+                FeatureName.SUBTITLE_NIKUD,
+                FeatureName.SUBTITLE_SHORESH,
+                FeatureName.SUBTITLE_HEBLISH,
+                FeatureName.SUBTITLE_GRAMMAR_FLIP,
+                FeatureName.SUBTITLE_SLANG_SYNTHESIS,
+                FeatureName.SUBTITLE_ENGREW,
+                FeatureName.PHRASE_BREAKDOWN,
+                FeatureName.CULTURAL_DETECT,
+                FeatureName.CHAPTER_GENERATION,
+                FeatureName.CHAT_TRANSLATION,
             ]:
-                result = validate_ai_feature(current_user, feature_name.value, credit_service)
+                result = await validate_ai_feature(current_user, feature_name.value, credit_service)
 
             elif feature_name in [
                 FeatureName.TRIVIA,
