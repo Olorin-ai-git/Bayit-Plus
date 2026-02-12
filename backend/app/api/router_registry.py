@@ -117,6 +117,17 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.routes.grandparent_bridge import bridge_core as gp_bridge
     # Chameleon Engine routes (visual style transfer)
     from app.api.routes.chameleon import style_routes as chameleon_routes
+    # Zeh Ani routes (3D mesh, biometric consent, V2V, identity engine)
+    from app.api.routes.zeh_ani import mesh_routes as za_mesh
+    from app.api.routes.zeh_ani import consent_routes as za_consent
+    from app.api.routes.zeh_ani import v2v_routes as za_v2v
+    from app.api.routes import websocket_v2v
+    # Zeh Ani Phase 3+4 routes (triggers, mirror, live layer, highlights, WhatsApp)
+    from app.api.routes.zeh_ani import trigger_routes as za_triggers
+    from app.api.routes.zeh_ani import mirror_routes as za_mirror
+    from app.api.routes.zeh_ani import highlight_routes as za_highlights
+    from app.api.routes.zeh_ani import whatsapp_routes as za_whatsapp
+    from app.api.routes import websocket_live_layer
 
     # ============================================
     # Health Check Routes (no prefix)
@@ -613,6 +624,26 @@ def register_all_routers(app: FastAPI) -> None:
     # ============================================
     app.include_router(chameleon_routes.router, prefix=prefix, tags=["chameleon"])
     logger.debug("Registered Chameleon Engine routes (prepare, status, cached)")
+
+    # ============================================
+    # Zeh Ani Routes (3D Mesh + Biometric Consent + V2V)
+    # ============================================
+    app.include_router(za_mesh.router, prefix=prefix, tags=["zeh-ani"])
+    app.include_router(za_consent.router, prefix=prefix, tags=["zeh-ani"])
+    app.include_router(za_v2v.router, prefix=prefix, tags=["zeh-ani"])
+    app.include_router(
+        websocket_v2v.router, prefix=prefix,
+        tags=["websocket", "zeh-ani"],
+    )
+    app.include_router(za_triggers.router, prefix=prefix, tags=["zeh-ani"])
+    app.include_router(za_mirror.router, prefix=prefix, tags=["zeh-ani"])
+    app.include_router(za_highlights.router, prefix=prefix, tags=["zeh-ani"])
+    app.include_router(za_whatsapp.router, prefix=prefix, tags=["zeh-ani"])
+    app.include_router(
+        websocket_live_layer.router, prefix=prefix,
+        tags=["websocket", "zeh-ani"],
+    )
+    logger.debug("Registered Zeh Ani routes (mesh, consent, v2v, triggers, mirror, highlights, whatsapp)")
 
     logger.info(f"All API routers registered with prefix {prefix}")
 

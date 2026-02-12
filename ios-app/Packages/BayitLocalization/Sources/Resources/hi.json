@@ -7995,5 +7995,119 @@
     "errors": {
       "unavailable": "Style matching unavailable"
     }
+  },
+  "zehAni": {
+    "mesh": {
+      "title": "3D अवतार",
+      "subtitle": "अपने वीडियो सेल्फी से 3D अवतार बनाएं",
+      "generating": "आपका 3D मॉडल बना रहा है...",
+      "rigging": "एनिमेशन जोड़ रहे हैं...",
+      "ready": "आपका 3D अवतार तैयार है!",
+      "failed": "3D अवतार नहीं बन सका",
+      "retry": "फिर से कोशिश करें",
+      "downloadGlb": "3D मॉडल डाउनलोड करें",
+      "viewIn3d": "3D में देखें"
+    },
+    "consent": {
+      "biometric": {
+        "title": "बायोमेट्रिक डेटा सहमति",
+        "subtitle": "यह सुविधा 3D अवतार बनाने के लिए चेहरे के डेटा का उपयोग करती है",
+        "meshGeneration": "3D अवतार निर्माण",
+        "voiceV2v": "आवाज रूपांतरण",
+        "latentFeatures": "विशेषता विश्लेषण",
+        "enterPin": "परिवार PIN दर्ज करें",
+        "grantConsent": "सहमति दें",
+        "revokeConsent": "सहमति वापस लें",
+        "consentGranted": "सहमति दी गई",
+        "consentRevoked": "सहमति वापस ली गई",
+        "pinRequired": "परिवार PIN आवश्यक है",
+        "invalidPin": "अमान्य PIN"
+      }
+    },
+    "preview3d": {
+      "title": "3D पूर्वावलोकन",
+      "loading": "3D मॉडल लोड हो रहा है...",
+      "rotate": "घुमाने के लिए खींचें",
+      "pinchToZoom": "ज़ूम के लिए पिंच करें",
+      "error": "3D मॉडल लोड नहीं हो सका"
+    },
+    "v2v": {
+      "title": "आवाज अभ्यास",
+      "subtitle": "अपनी आवाज से हिब्रू का अभ्यास करें",
+      "startPractice": "अभ्यास शुरू करें",
+      "listening": "सुन रहा है...",
+      "transforming": "आवाज बदल रही है...",
+      "result": "परिणाम",
+      "before": "पहले",
+      "after": "बाद में",
+      "improvement": "सुधार",
+      "tryAgain": "फिर से कोशिश करें",
+      "sessionComplete": "सत्र पूर्ण",
+      "averageImprovement": "औसत सुधार"
+    },
+    "liveLayer": {
+      "title": "लाइव अवतार",
+      "connecting": "कनेक्ट हो रहा है...",
+      "connected": "कनेक्टेड",
+      "disconnected": "डिस्कनेक्टेड"
+    },
+    "trigger": {
+      "listen": "ध्यान से सुनें",
+      "sayWord": "शब्द बोलें",
+      "correct": "सही!",
+      "tryAgain": "फिर से कोशिश करें",
+      "skip": "छोड़ें",
+      "scoreLabel": "स्कोर"
+    },
+    "magicMirror": {
+      "title": "जादुई आईना",
+      "greeting": "सुप्रभात!",
+      "vocabOfDay": "आज का शब्द",
+      "refresh": "रिफ्रेश",
+      "loading": "अभिवादन लोड हो रहा है...",
+      "error": "अभिवादन लोड नहीं हो सका"
+    },
+    "highlights": {
+      "title": "हाइलाइट वीडियो",
+      "generate": "वीडियो बनाएं",
+      "generating": "बना रहा है...",
+      "ready": "तैयार",
+      "failed": "निर्माण विफल",
+      "share": "साझा करें",
+      "momentCount": "पल",
+      "empty": "अभी तक कोई हाइलाइट वीडियो नहीं",
+      "status": {
+        "pending": "लंबित",
+        "selecting": "पल चुन रहा है",
+        "rendering": "वीडियो रेंडर हो रहा है",
+        "ready": "साझा करने के लिए तैयार",
+        "failed": "विफल"
+      }
+    },
+    "contacts": {
+      "title": "दादा-दादी के संपर्क",
+      "add": "संपर्क जोड़ें",
+      "name": "प्रदर्शित नाम",
+      "phone": "फोन नंबर",
+      "relationship": "रिश्ता",
+      "language": "भाषा",
+      "empty": "अभी तक कोई संपर्क नहीं जोड़ा गया",
+      "delete": "संपर्क हटाएं",
+      "reelsSent": "भेजे गए वीडियो"
+    },
+    "feedback": {
+      "title": "प्रतिक्रिया इनबॉक्स",
+      "empty": "अभी तक कोई प्रतिक्रिया नहीं",
+      "from": "प्रेषक",
+      "voiceMessage": "ध्वनि संदेश",
+      "textMessage": "पाठ संदेश"
+    },
+    "dashboard": {
+      "title": "ज़ेह अनी",
+      "mirrorSection": "जादुई आईना",
+      "reelsSection": "हाइलाइट वीडियो",
+      "contactsSection": "संपर्क",
+      "feedbackSection": "प्रतिक्रिया"
+    }
   }
 }

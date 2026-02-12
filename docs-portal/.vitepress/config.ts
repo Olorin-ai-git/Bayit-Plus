@@ -37,6 +37,8 @@ export default defineConfig({
           { text: 'Mobile Web App (m.bayit.tv)', link: '/guides/MOBILE_WEB_APP_GUIDE' },
           { text: 'Mobile Development', link: '/guides/MOBILE_DEVELOPMENT_GUIDE' },
           { text: 'tvOS Development', link: '/guides/TVOS_DEVELOPMENT_GUIDE' },
+          { text: 'Zeh Ani User Guide', link: '/guides/ZEH_ANI_USER_GUIDE' },
+          { text: 'Family Controls', link: '/guides/FAMILY_CONTROLS_USER_GUIDE' },
           { text: 'Troubleshooting', link: '/guides/TROUBLESHOOTING' },
           { text: 'i18n Guide', link: '/guides/I18N_COMPLETE_GUIDE' },
         ]
@@ -129,16 +131,19 @@ export default defineConfig({
           ]
         },
         {
-          text: 'Features',
+          text: 'User Guides',
           items: [
-            { text: 'i18n Complete Guide', link: '/guides/I18N_COMPLETE_GUIDE' },
+            { text: 'Zeh Ani (It\'s Me)', link: '/guides/ZEH_ANI_USER_GUIDE' },
+            { text: 'Family Controls', link: '/guides/FAMILY_CONTROLS_USER_GUIDE' },
             { text: 'Beta 500 User Manual', link: '/guides/BETA_500_USER_MANUAL' },
+            { text: 'i18n Complete Guide', link: '/guides/I18N_COMPLETE_GUIDE' },
           ]
         },
         {
           text: 'Support',
           items: [
             { text: 'Troubleshooting', link: '/guides/TROUBLESHOOTING' },
+            { text: 'Troubleshooting Bayit+', link: '/guides/TROUBLESHOOTING_BAYIT' },
           ]
         }
       ],

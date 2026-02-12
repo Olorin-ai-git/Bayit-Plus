@@ -8240,5 +8240,119 @@
     "errors": {
       "unavailable": "Style matching unavailable"
     }
+  },
+  "zehAni": {
+    "mesh": {
+      "title": "3D Avatar",
+      "subtitle": "Create your 3D avatar from your video selfie",
+      "generating": "Creating your 3D model...",
+      "rigging": "Adding animations...",
+      "ready": "Your 3D avatar is ready!",
+      "failed": "Could not create 3D avatar",
+      "retry": "Try Again",
+      "downloadGlb": "Download 3D Model",
+      "viewIn3d": "View in 3D"
+    },
+    "consent": {
+      "biometric": {
+        "title": "Biometric Data Consent",
+        "subtitle": "This feature uses facial data to create a 3D avatar",
+        "meshGeneration": "3D Avatar Generation",
+        "voiceV2v": "Voice Transformation",
+        "latentFeatures": "Feature Analysis",
+        "enterPin": "Enter family PIN",
+        "grantConsent": "Grant Consent",
+        "revokeConsent": "Revoke Consent",
+        "consentGranted": "Consent granted",
+        "consentRevoked": "Consent revoked",
+        "pinRequired": "Family PIN is required",
+        "invalidPin": "Invalid PIN"
+      }
+    },
+    "preview3d": {
+      "title": "3D Preview",
+      "loading": "Loading 3D model...",
+      "rotate": "Drag to rotate",
+      "pinchToZoom": "Pinch to zoom",
+      "error": "Could not load 3D model"
+    },
+    "v2v": {
+      "title": "Voice Practice",
+      "subtitle": "Practice Hebrew with your own voice",
+      "startPractice": "Start Practice",
+      "listening": "Listening...",
+      "transforming": "Transforming voice...",
+      "result": "Result",
+      "before": "Before",
+      "after": "After",
+      "improvement": "Improvement",
+      "tryAgain": "Try Again",
+      "sessionComplete": "Session Complete",
+      "averageImprovement": "Average Improvement"
+    },
+    "liveLayer": {
+      "title": "Live Avatar",
+      "connecting": "Connecting...",
+      "connected": "Connected",
+      "disconnected": "Disconnected"
+    },
+    "trigger": {
+      "listen": "Listen carefully",
+      "sayWord": "Say the word",
+      "correct": "Correct!",
+      "tryAgain": "Try again",
+      "skip": "Skip",
+      "scoreLabel": "Score"
+    },
+    "magicMirror": {
+      "title": "Magic Mirror",
+      "greeting": "Good morning!",
+      "vocabOfDay": "Word of the Day",
+      "refresh": "Refresh",
+      "loading": "Loading greeting...",
+      "error": "Could not load greeting"
+    },
+    "highlights": {
+      "title": "Highlight Reels",
+      "generate": "Generate Reel",
+      "generating": "Generating...",
+      "ready": "Ready",
+      "failed": "Generation failed",
+      "share": "Share",
+      "momentCount": "moments",
+      "empty": "No highlight reels yet",
+      "status": {
+        "pending": "Pending",
+        "selecting": "Selecting moments",
+        "rendering": "Rendering video",
+        "ready": "Ready to share",
+        "failed": "Failed"
+      }
+    },
+    "contacts": {
+      "title": "Grandparent Contacts",
+      "add": "Add Contact",
+      "name": "Display Name",
+      "phone": "Phone Number",
+      "relationship": "Relationship",
+      "language": "Language",
+      "empty": "No contacts added yet",
+      "delete": "Remove Contact",
+      "reelsSent": "Reels sent"
+    },
+    "feedback": {
+      "title": "Feedback Inbox",
+      "empty": "No feedback yet",
+      "from": "From",
+      "voiceMessage": "Voice message",
+      "textMessage": "Text message"
+    },
+    "dashboard": {
+      "title": "Zeh Ani",
+      "mirrorSection": "Magic Mirror",
+      "reelsSection": "Highlight Reels",
+      "contactsSection": "Contacts",
+      "feedbackSection": "Feedback"
+    }
   }
 }

@@ -8329,5 +8329,119 @@
     "errors": {
       "unavailable": "התאמת סגנון לא זמינה"
     }
+  },
+  "zehAni": {
+    "mesh": {
+      "title": "אווטאר תלת-ממדי",
+      "subtitle": "צור את האווטאר התלת-ממדי שלך מסרטון סלפי",
+      "generating": "יוצר את המודל התלת-ממדי שלך...",
+      "rigging": "מוסיף אנימציות...",
+      "ready": "האווטאר התלת-ממדי שלך מוכן!",
+      "failed": "לא הצלחנו ליצור אווטאר תלת-ממדי",
+      "retry": "נסה שוב",
+      "downloadGlb": "הורד מודל תלת-ממדי",
+      "viewIn3d": "צפה בתלת-ממד"
+    },
+    "consent": {
+      "biometric": {
+        "title": "הסכמה לנתונים ביומטריים",
+        "subtitle": "תכונה זו משתמשת בנתוני פנים ליצירת אווטאר תלת-ממדי",
+        "meshGeneration": "יצירת אווטאר תלת-ממדי",
+        "voiceV2v": "המרת קול",
+        "latentFeatures": "ניתוח מאפיינים",
+        "enterPin": "הזן קוד משפחתי",
+        "grantConsent": "אשר הסכמה",
+        "revokeConsent": "בטל הסכמה",
+        "consentGranted": "ההסכמה אושרה",
+        "consentRevoked": "ההסכמה בוטלה",
+        "pinRequired": "נדרש קוד משפחתי",
+        "invalidPin": "קוד שגוי"
+      }
+    },
+    "preview3d": {
+      "title": "תצוגה מקדימה תלת-ממדית",
+      "loading": "טוען מודל תלת-ממדי...",
+      "rotate": "גרור לסיבוב",
+      "pinchToZoom": "צבוט לזום",
+      "error": "לא ניתן לטעון מודל תלת-ממדי"
+    },
+    "v2v": {
+      "title": "תרגול קול",
+      "subtitle": "תרגלו עברית עם הקול שלכם",
+      "startPractice": "התחל תרגול",
+      "listening": "מאזין...",
+      "transforming": "ממיר קול...",
+      "result": "תוצאה",
+      "before": "לפני",
+      "after": "אחרי",
+      "improvement": "שיפור",
+      "tryAgain": "נסה שוב",
+      "sessionComplete": "השיעור הושלם",
+      "averageImprovement": "שיפור ממוצע"
+    },
+    "liveLayer": {
+      "title": "אווטאר חי",
+      "connecting": "מתחבר...",
+      "connected": "מחובר",
+      "disconnected": "מנותק"
+    },
+    "trigger": {
+      "listen": "הקשיבו היטב",
+      "sayWord": "אמרו את המילה",
+      "correct": "נכון!",
+      "tryAgain": "נסו שוב",
+      "skip": "דלג",
+      "scoreLabel": "ניקוד"
+    },
+    "magicMirror": {
+      "title": "מראה קסומה",
+      "greeting": "בוקר טוב!",
+      "vocabOfDay": "המילה של היום",
+      "refresh": "רענון",
+      "loading": "טוען ברכה...",
+      "error": "לא ניתן לטעון ברכה"
+    },
+    "highlights": {
+      "title": "סרטוני הדגשה",
+      "generate": "צור סרטון",
+      "generating": "יוצר...",
+      "ready": "מוכן",
+      "failed": "היצירה נכשלה",
+      "share": "שתף",
+      "momentCount": "רגעים",
+      "empty": "אין סרטוני הדגשה עדיין",
+      "status": {
+        "pending": "ממתין",
+        "selecting": "בוחר רגעים",
+        "rendering": "מעבד וידאו",
+        "ready": "מוכן לשיתוף",
+        "failed": "נכשל"
+      }
+    },
+    "contacts": {
+      "title": "אנשי קשר - סבא וסבתא",
+      "add": "הוסף איש קשר",
+      "name": "שם תצוגה",
+      "phone": "מספר טלפון",
+      "relationship": "קרבה משפחתית",
+      "language": "שפה",
+      "empty": "לא נוספו אנשי קשר עדיין",
+      "delete": "הסר איש קשר",
+      "reelsSent": "סרטונים שנשלחו"
+    },
+    "feedback": {
+      "title": "תיבת משוב",
+      "empty": "אין משוב עדיין",
+      "from": "מאת",
+      "voiceMessage": "הודעה קולית",
+      "textMessage": "הודעת טקסט"
+    },
+    "dashboard": {
+      "title": "זה אני",
+      "mirrorSection": "מראה קסומה",
+      "reelsSection": "סרטוני הדגשה",
+      "contactsSection": "אנשי קשר",
+      "feedbackSection": "משוב"
+    }
   }
 }

@@ -8005,5 +8005,119 @@
     "errors": {
       "unavailable": "Style matching unavailable"
     }
+  },
+  "zehAni": {
+    "mesh": {
+      "title": "3D头像",
+      "subtitle": "从您的视频自拍创建3D头像",
+      "generating": "正在创建您的3D模型...",
+      "rigging": "正在添加动画...",
+      "ready": "您的3D头像已准备就绪！",
+      "failed": "无法创建3D头像",
+      "retry": "重试",
+      "downloadGlb": "下载3D模型",
+      "viewIn3d": "查3D查看"
+    },
+    "consent": {
+      "biometric": {
+        "title": "生物识别数据同意",
+        "subtitle": "此功能使用面部数据创建3D头像",
+        "meshGeneration": "3D头像生成",
+        "voiceV2v": "声音转换",
+        "latentFeatures": "特征分析",
+        "enterPin": "输入家庭 PIN",
+        "grantConsent": "授予同意",
+        "revokeConsent": "撤销同意",
+        "consentGranted": "已授予同意",
+        "consentRevoked": "已撤销同意",
+        "pinRequired": "需要家庭 PIN",
+        "invalidPin": "无效 PIN"
+      }
+    },
+    "preview3d": {
+      "title": "3D预览",
+      "loading": "正在加载3D模型...",
+      "rotate": "拖拽旋转",
+      "pinchToZoom": "捨合缩放",
+      "error": "无法加载3D模型"
+    },
+    "v2v": {
+      "title": "语音练习",
+      "subtitle": "用自己的声音练习希伯来语",
+      "startPractice": "开始练习",
+      "listening": "正在聆听...",
+      "transforming": "正在转换语音...",
+      "result": "结果",
+      "before": "转换前",
+      "after": "转换后",
+      "improvement": "改善程度",
+      "tryAgain": "重试",
+      "sessionComplete": "练习完成",
+      "averageImprovement": "平均改善程度"
+    },
+    "liveLayer": {
+      "title": "实时头像",
+      "connecting": "连接中...",
+      "connected": "已连接",
+      "disconnected": "已断开"
+    },
+    "trigger": {
+      "listen": "仔细听",
+      "sayWord": "说出这个词",
+      "correct": "正确！",
+      "tryAgain": "再试一次",
+      "skip": "跳过",
+      "scoreLabel": "得分"
+    },
+    "magicMirror": {
+      "title": "魔镜",
+      "greeting": "早上好！",
+      "vocabOfDay": "每日一词",
+      "refresh": "刷新",
+      "loading": "正在加载问候语...",
+      "error": "无法加载问候语"
+    },
+    "highlights": {
+      "title": "精彩集锦",
+      "generate": "生成视频",
+      "generating": "生成中...",
+      "ready": "就绪",
+      "failed": "生成失败",
+      "share": "分享",
+      "momentCount": "个精彩瞬间",
+      "empty": "还没有精彩集锦",
+      "status": {
+        "pending": "等待中",
+        "selecting": "正在选择精彩瞬间",
+        "rendering": "正在渲染视频",
+        "ready": "可以分享",
+        "failed": "失败"
+      }
+    },
+    "contacts": {
+      "title": "祖父母联系人",
+      "add": "添加联系人",
+      "name": "显示名称",
+      "phone": "电话号码",
+      "relationship": "关系",
+      "language": "语言",
+      "empty": "还没有添加联系人",
+      "delete": "删除联系人",
+      "reelsSent": "已发送视频"
+    },
+    "feedback": {
+      "title": "反馈收件箱",
+      "empty": "还没有反馈",
+      "from": "来自",
+      "voiceMessage": "语音消息",
+      "textMessage": "文字消息"
+    },
+    "dashboard": {
+      "title": "Zeh Ani",
+      "mirrorSection": "魔镜",
+      "reelsSection": "精彩集锦",
+      "contactsSection": "联系人",
+      "feedbackSection": "反馈"
+    }
   }
 }

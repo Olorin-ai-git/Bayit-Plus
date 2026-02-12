@@ -55,6 +55,9 @@ export type RootStackParamList = {
   MissionsDashboard: { profileId: string };
   // Grandparent Bridge
   NewsClip: { profileId: string; avatarId: string };
+  // Zeh Ani - Avatar Mesh
+  MeshAvatar: { avatarId: string; profileId: string };
+  ZehAniDashboard: { profileId: string };
 };
 
 export type MainTabParamList = {

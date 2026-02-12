@@ -8215,5 +8215,119 @@
     "errors": {
       "unavailable": "Style matching unavailable"
     }
+  },
+  "zehAni": {
+    "mesh": {
+      "title": "Avatar 3D",
+      "subtitle": "Crea tu avatar 3D a partir de tu video selfie",
+      "generating": "Creando tu modelo 3D...",
+      "rigging": "Agregando animaciones...",
+      "ready": "Tu avatar 3D esta listo!",
+      "failed": "No se pudo crear el avatar 3D",
+      "retry": "Intentar de nuevo",
+      "downloadGlb": "Descargar modelo 3D",
+      "viewIn3d": "Ver en 3D"
+    },
+    "consent": {
+      "biometric": {
+        "title": "Consentimiento de datos biometricos",
+        "subtitle": "Esta funcion utiliza datos faciales para crear un avatar 3D",
+        "meshGeneration": "Generacion de avatar 3D",
+        "voiceV2v": "Transformacion de voz",
+        "latentFeatures": "Analisis de caracteristicas",
+        "enterPin": "Ingrese el PIN familiar",
+        "grantConsent": "Otorgar consentimiento",
+        "revokeConsent": "Revocar consentimiento",
+        "consentGranted": "Consentimiento otorgado",
+        "consentRevoked": "Consentimiento revocado",
+        "pinRequired": "Se requiere PIN familiar",
+        "invalidPin": "PIN invalido"
+      }
+    },
+    "preview3d": {
+      "title": "Vista previa 3D",
+      "loading": "Cargando modelo 3D...",
+      "rotate": "Arrastra para rotar",
+      "pinchToZoom": "Pellizca para zoom",
+      "error": "No se pudo cargar el modelo 3D"
+    },
+    "v2v": {
+      "title": "Practica de voz",
+      "subtitle": "Practica hebreo con tu propia voz",
+      "startPractice": "Iniciar practica",
+      "listening": "Escuchando...",
+      "transforming": "Transformando voz...",
+      "result": "Resultado",
+      "before": "Antes",
+      "after": "Despues",
+      "improvement": "Mejora",
+      "tryAgain": "Intentar de nuevo",
+      "sessionComplete": "Sesion completada",
+      "averageImprovement": "Mejora promedio"
+    },
+    "liveLayer": {
+      "title": "Avatar en vivo",
+      "connecting": "Conectando...",
+      "connected": "Conectado",
+      "disconnected": "Desconectado"
+    },
+    "trigger": {
+      "listen": "Escucha con atencion",
+      "sayWord": "Di la palabra",
+      "correct": "Correcto!",
+      "tryAgain": "Intenta de nuevo",
+      "skip": "Saltar",
+      "scoreLabel": "Puntuacion"
+    },
+    "magicMirror": {
+      "title": "Espejo magico",
+      "greeting": "Buenos dias!",
+      "vocabOfDay": "Palabra del dia",
+      "refresh": "Actualizar",
+      "loading": "Cargando saludo...",
+      "error": "No se pudo cargar el saludo"
+    },
+    "highlights": {
+      "title": "Videos destacados",
+      "generate": "Generar video",
+      "generating": "Generando...",
+      "ready": "Listo",
+      "failed": "La generacion fallo",
+      "share": "Compartir",
+      "momentCount": "momentos",
+      "empty": "Aun no hay videos destacados",
+      "status": {
+        "pending": "Pendiente",
+        "selecting": "Seleccionando momentos",
+        "rendering": "Renderizando video",
+        "ready": "Listo para compartir",
+        "failed": "Fallido"
+      }
+    },
+    "contacts": {
+      "title": "Contactos de abuelos",
+      "add": "Agregar contacto",
+      "name": "Nombre para mostrar",
+      "phone": "Numero de telefono",
+      "relationship": "Parentesco",
+      "language": "Idioma",
+      "empty": "Aun no se han agregado contactos",
+      "delete": "Eliminar contacto",
+      "reelsSent": "Videos enviados"
+    },
+    "feedback": {
+      "title": "Bandeja de comentarios",
+      "empty": "Aun no hay comentarios",
+      "from": "De",
+      "voiceMessage": "Mensaje de voz",
+      "textMessage": "Mensaje de texto"
+    },
+    "dashboard": {
+      "title": "Zeh Ani",
+      "mirrorSection": "Espejo magico",
+      "reelsSection": "Videos destacados",
+      "contactsSection": "Contactos",
+      "feedbackSection": "Comentarios"
+    }
   }
 }

@@ -83,6 +83,11 @@ class BetaCreditService:
             "video_selfie_avatar": self.settings.CREDIT_RATE_VIDEO_SELFIE_AVATAR,
             "voice_clone_child": self.settings.CREDIT_RATE_VOICE_CLONE_CHILD,
             "family_snap": self.settings.CREDIT_RATE_FAMILY_SNAP,
+            "v2v_transform": self.settings.CREDIT_RATE_V2V_TRANSFORM,
+            "live_layer": self.settings.CREDIT_RATE_LIVE_LAYER,
+            "3d_mesh": self.settings.CREDIT_RATE_3D_MESH,
+            "magic_mirror": self.settings.CREDIT_RATE_MAGIC_MIRROR,
+            "highlight_reel": self.settings.CREDIT_RATE_HIGHLIGHT_REEL,
         }
 
     async def get_credit_rate(self, feature: str) -> float:

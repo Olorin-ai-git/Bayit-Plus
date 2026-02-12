@@ -47,6 +47,7 @@ final class TVRepositoryProvider {
     let starStory: any StarStoryRepository
     let grandparentBridgeRepository: any GrandparentBridgeRepository
     let gamificationRepository: any GamificationRepository
+    let avatarMeshRepository: any AvatarMeshRepository
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
@@ -94,6 +95,7 @@ final class TVRepositoryProvider {
         self.starStory = APIStarStoryRepository(client: client)
         self.grandparentBridgeRepository = APIGrandparentBridgeRepository(client: client)
         self.gamificationRepository = APIGamificationRepository(client: client)
+        self.avatarMeshRepository = APIAvatarMeshRepository(client: client)
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         self.offlineCache = OfflineCacheService()

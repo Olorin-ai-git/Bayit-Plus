@@ -32,6 +32,11 @@ class StyleTransferService:
         show_content_id: str,
     ) -> AvatarStyleCache:
         """Apply style transfer to all avatar poses and cache results."""
+        if avatar.has_3d_mesh and avatar.mesh_id:
+            return await self._delegate_controlnet(
+                avatar, style, show_content_id,
+            )
+
         existing = await AvatarStyleCache.find_one(
             AvatarStyleCache.avatar_id == str(avatar.id),
             AvatarStyleCache.show_content_id == show_content_id,
@@ -149,9 +154,115 @@ class StyleTransferService:
         scores = []
         for pose in poses:
             image_bytes = await storage_service.download_bytes(pose.gcs_path)
-            score = len(image_bytes) / max(len(image_bytes), 1)
-            scores.append(min(score, 1.0))
+            score = await self._clip_score_single(image_bytes)
+            scores.append(score)
         return sum(scores) / len(scores)
+
+    async def _clip_score_single(self, image_bytes: bytes) -> float:
+        """Score image quality via Stability AI image quality endpoint."""
+        timeout = settings.STABILITY_API_TIMEOUT
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            response = await client.post(
+                f"{settings.STABILITY_API_BASE_URL}/v1/generation/image-quality",
+                headers={
+                    "Authorization": f"Bearer {settings.STABILITY_API_KEY}",
+                    "Accept": "application/json",
+                },
+                files={
+                    "image": ("output.png", image_bytes, "image/png"),
+                },
+            )
+            if response.status_code == 200:
+                data = response.json()
+                return float(data.get("quality_score", 0.0))
+        return 0.0
+
+    async def _delegate_controlnet(
+        self, avatar: ChildAvatar, style: StyleDescriptor,
+        show_content_id: str,
+    ) -> AvatarStyleCache:
+        """Delegate to ControlNet service for 3D mesh style transfer."""
+        from app.models.avatar_mesh import AvatarMesh
+        from app.services.zeh_ani.controlnet_style_service import (
+            controlnet_style_service,
+        )
+
+        mesh = await AvatarMesh.find_one(
+            AvatarMesh.avatar_id == str(avatar.id)
+        )
+        if not mesh or not mesh.is_ready:
+            logger.warning(
+                "3D mesh not ready, falling back to 2D transfer",
+                extra={"avatar_id": str(avatar.id)},
+            )
+            return await self._transfer_style_2d(avatar, style, show_content_id)
+
+        style_hash = hashlib.sha256(
+            style.model_dump_json().encode()
+        ).hexdigest()[:16]
+        return await controlnet_style_service.transfer_style_controlnet(
+            avatar=avatar,
+            mesh=mesh,
+            style=style,
+            show_content_id=show_content_id,
+            cache_id=style_hash,
+        )
+
+    async def _transfer_style_2d(
+        self, avatar: ChildAvatar, style: StyleDescriptor,
+        show_content_id: str,
+    ) -> AvatarStyleCache:
+        """Original 2D style transfer path (Stability AI)."""
+        existing = await AvatarStyleCache.find_one(
+            AvatarStyleCache.avatar_id == str(avatar.id),
+            AvatarStyleCache.show_content_id == show_content_id,
+            AvatarStyleCache.status == StyleCacheStatus.READY,
+        )
+        if existing:
+            existing.last_used_at = datetime.now(timezone.utc)
+            await existing.save()
+            return existing
+
+        style_hash = hashlib.sha256(
+            style.model_dump_json().encode()
+        ).hexdigest()[:16]
+        cache_ttl = settings.CHAMELEON_STYLE_CACHE_TTL_HOURS
+        cache = AvatarStyleCache(
+            avatar_id=str(avatar.id),
+            show_content_id=show_content_id,
+            style_embedding_hash=style_hash,
+            style_descriptor=style,
+            status=StyleCacheStatus.GENERATING,
+            expires_at=datetime.now(timezone.utc) + timedelta(hours=cache_ttl),
+        )
+        await cache.insert()
+
+        try:
+            transferred = []
+            for pose in avatar.avatar_poses:
+                if pose.pose_name not in POSE_NAMES:
+                    continue
+                result = await self._transfer_single_pose(
+                    avatar, pose, style, show_content_id, str(cache.id),
+                )
+                if result:
+                    transferred.append(result)
+
+            cache.poses = transferred
+            cache.clip_similarity_score = await self._compute_similarity(
+                transferred
+            )
+            threshold = settings.CHAMELEON_STYLE_SIMILARITY_THRESHOLD
+            if cache.clip_similarity_score >= threshold:
+                cache.status = StyleCacheStatus.READY
+            else:
+                cache.status = StyleCacheStatus.FAILED
+            await cache.save()
+            return cache
+        except Exception as exc:
+            cache.status = StyleCacheStatus.FAILED
+            await cache.save()
+            raise
 
 
 style_transfer_service = StyleTransferService()

@@ -143,6 +143,14 @@ from app.models.gamification_profile import GamificationProfile
 from app.models.grandparent_bridge import GrandparentVoiceNote, NewsClip
 # Chameleon Engine models (avatar style cache)
 from app.models.avatar_style_cache import AvatarStyleCache
+# Zeh Ani models (3D mesh + biometric consent + V2V + triggers + mirror + highlights)
+from app.models.avatar_mesh import AvatarMesh
+from app.models.biometric_consent import BiometricConsent
+from app.models.v2v_session import V2VSession
+from app.models.scene_trigger import ContentSceneTriggers
+from app.models.magic_mirror import MagicMirrorGreeting
+from app.models.highlight_reel import HighlightReel
+from app.models.whatsapp_contact import WhatsAppContact
 
 
 class Database:
@@ -436,6 +444,14 @@ async def connect_to_mongo():
         GrandparentVoiceNote,
         # Chameleon Engine models (avatar style cache)
         AvatarStyleCache,
+        # Zeh Ani models (all phases)
+        AvatarMesh,
+        BiometricConsent,
+        V2VSession,
+        ContentSceneTriggers,
+        MagicMirrorGreeting,
+        HighlightReel,
+        WhatsAppContact,
     ]
 
     # Conditionally add Olorin models based on database separation setting

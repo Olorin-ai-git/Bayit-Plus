@@ -16,6 +16,7 @@
 - [tvOS Development](guides/TVOS_DEVELOPMENT_GUIDE.md) - Apple TV development
 
 **For Users:**
+- [Zeh Ani User Guide](guides/ZEH_ANI_USER_GUIDE.md) - AI-powered Hebrew identity feature for parents and children
 - [Beta 500 User Manual](guides/BETA_500_USER_MANUAL.md) - AI features closed beta program
 - [Troubleshooting Guide](guides/TROUBLESHOOTING.md) - Common issues and solutions
 - [Troubleshooting Bayit+](guides/TROUBLESHOOTING_BAYIT.md) - Port conflicts, frontend-backend connectivity, MongoDB (2026-02-12)
@@ -111,6 +112,7 @@ Platform-specific development documentation:
 
 **Feature Guides:**
 - [HLS Subtitles for AirPlay](guides/HLS_SUBTITLES_AIRPLAY.md) - Apple TV/AirPlay subtitle compatibility implementation ⭐ **NEW**
+- [Zeh Ani User Guide](guides/ZEH_ANI_USER_GUIDE.md) - Complete guide for parents and children using Zeh Ani (It's Me) Hebrew AI feature ⭐ **NEW**
 - [Family Controls User Guide](guides/FAMILY_CONTROLS_USER_GUIDE.md) - Parental controls for safe content (setup, PIN, age limits, viewing hours) ⭐ **NEW**
 - [i18n Complete Guide](guides/I18N_COMPLETE_GUIDE.md) - 10-language internationalization ⭐ **NEW**
 - [Beta 500 User Manual](guides/BETA_500_USER_MANUAL.md) - AI features beta program ⭐ **NEW**

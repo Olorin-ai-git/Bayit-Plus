@@ -81,6 +81,8 @@ class GrandparentVoiceNote(Document):
     integration_status: VoiceNoteIntegrationStatus = (
         VoiceNoteIntegrationStatus.PENDING
     )
+    notification_sent: bool = False
+    transcription_language: Optional[str] = None
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
     )

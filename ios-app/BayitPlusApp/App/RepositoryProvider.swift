@@ -52,6 +52,8 @@ final class RepositoryProvider {
     let phoneticMirrorRepository: any PhoneticMirrorRepository
     let grandparentBridgeRepository: any GrandparentBridgeRepository
     let gamificationRepository: any GamificationRepository
+    let avatarMeshRepository: any AvatarMeshRepository
+    let zehAniRepository: any ZehAniRepository
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
@@ -101,6 +103,8 @@ final class RepositoryProvider {
         self.phoneticMirrorRepository = APIPhoneticMirrorRepository(client: client)
         self.grandparentBridgeRepository = APIGrandparentBridgeRepository(client: client)
         self.gamificationRepository = APIGamificationRepository(client: client)
+        self.avatarMeshRepository = APIAvatarMeshRepository(client: client)
+        self.zehAniRepository = APIZehAniRepository(client: client)
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         self.offlineCache = OfflineCacheService()

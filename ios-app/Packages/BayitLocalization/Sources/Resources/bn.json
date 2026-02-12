@@ -7971,5 +7971,119 @@
     "errors": {
       "unavailable": "Style matching unavailable"
     }
+  },
+  "zehAni": {
+    "mesh": {
+      "title": "3D অ্যাভাটার",
+      "subtitle": "আপনার ভিডিও সেলফি থেকে 3D অ্যাভাটার তৈরি করুন",
+      "generating": "আপনার 3D মডেল তৈরি হচ্ছে...",
+      "rigging": "অ্যানিমেশন যোগ হচ্ছে...",
+      "ready": "আপনার 3D অ্যাভাটার তৈরি!",
+      "failed": "3D অ্যাভাটার তৈরি করা যায়নি",
+      "retry": "আবার চেষ্টা করুন",
+      "downloadGlb": "3D মডেল ডাউনলোড",
+      "viewIn3d": "3D তে দেখুন"
+    },
+    "consent": {
+      "biometric": {
+        "title": "বায়োমেট্রিক ডেটা সম্মতি",
+        "subtitle": "এই বৈশিষ্ট্য 3D অ্যাভাটার তৈরি করতে মুখের ডেটা ব্যবহার করে",
+        "meshGeneration": "3D অ্যাভাটার তৈরি",
+        "voiceV2v": "কণ্ঠস্বর রূপান্তর",
+        "latentFeatures": "বৈশিষ্ট্য বিশ্লেষণ",
+        "enterPin": "পরিবারের PIN দিন",
+        "grantConsent": "সম্মতি দিন",
+        "revokeConsent": "সম্মতি প্রত্যাহার",
+        "consentGranted": "সম্মতি দেওয়া হয়েছে",
+        "consentRevoked": "সম্মতি প্রত্যাহার করা হয়েছে",
+        "pinRequired": "পরিবারের PIN প্রয়োজন",
+        "invalidPin": "অবৈধ PIN"
+      }
+    },
+    "preview3d": {
+      "title": "3D প্রিভিউ",
+      "loading": "3D মডেল লোড হচ্ছে...",
+      "rotate": "ঘোরাতে টানুন",
+      "pinchToZoom": "জুম করতে পিঞ্চ করুন",
+      "error": "3D মডেল লোড করা যায়নি"
+    },
+    "v2v": {
+      "title": "কণ্ঠস্বর অনুশীলন",
+      "subtitle": "নিজের কণ্ঠে হিব্রু অনুশীলন করুন",
+      "startPractice": "অনুশীলন শুরু করুন",
+      "listening": "শুনছে...",
+      "transforming": "কণ্ঠস্বর রূপান্তর হচ্ছে...",
+      "result": "ফলাফল",
+      "before": "আগে",
+      "after": "পরে",
+      "improvement": "উন্নতি",
+      "tryAgain": "আবার চেষ্টা করুন",
+      "sessionComplete": "সেশন সম্পূর্ণ",
+      "averageImprovement": "গড় উন্নতি"
+    },
+    "liveLayer": {
+      "title": "লাইভ অ্যাভাটার",
+      "connecting": "সংযুক্ত হচ্ছে...",
+      "connected": "সংযুক্ত",
+      "disconnected": "সংযোগ বিচ্ছিন্ন"
+    },
+    "trigger": {
+      "listen": "মনোযোগ দিয়ে শুনুন",
+      "sayWord": "শব্দটি বলুন",
+      "correct": "সঠিক!",
+      "tryAgain": "আবার চেষ্টা করুন",
+      "skip": "এড়িয়ে যান",
+      "scoreLabel": "স্কোর"
+    },
+    "magicMirror": {
+      "title": "জাদুর আয়না",
+      "greeting": "সুপ্রভাত!",
+      "vocabOfDay": "আজকের শব্দ",
+      "refresh": "রিফ্রেশ",
+      "loading": "অভিবাদন লোড হচ্ছে...",
+      "error": "অভিবাদন লোড করা যায়নি"
+    },
+    "highlights": {
+      "title": "হাইলাইট ভিডিও",
+      "generate": "ভিডিও তৈরি করুন",
+      "generating": "তৈরি হচ্ছে...",
+      "ready": "প্রস্তুত",
+      "failed": "তৈরি ব্যর্থ হয়েছে",
+      "share": "শেয়ার করুন",
+      "momentCount": "মুহূর্ত",
+      "empty": "এখনো কোনো হাইলাইট ভিডিও নেই",
+      "status": {
+        "pending": "অপেক্ষমান",
+        "selecting": "মুহূর্ত নির্বাচন করছে",
+        "rendering": "ভিডিও রেন্ডার হচ্ছে",
+        "ready": "শেয়ার করতে প্রস্তুত",
+        "failed": "ব্যর্থ"
+      }
+    },
+    "contacts": {
+      "title": "দাদা-দাদির যোগাযোগ",
+      "add": "যোগাযোগ যোগ করুন",
+      "name": "প্রদর্শিত নাম",
+      "phone": "ফোন নম্বর",
+      "relationship": "সম্পর্ক",
+      "language": "ভাষা",
+      "empty": "এখনো কোনো যোগাযোগ যোগ করা হয়নি",
+      "delete": "যোগাযোগ মুছুন",
+      "reelsSent": "পাঠানো ভিডিও"
+    },
+    "feedback": {
+      "title": "প্রতিক্রিয়া ইনবক্স",
+      "empty": "এখনো কোনো প্রতিক্রিয়া নেই",
+      "from": "প্রেরক",
+      "voiceMessage": "ভয়েস বার্তা",
+      "textMessage": "পাঠ্য বার্তা"
+    },
+    "dashboard": {
+      "title": "জেহ আনি",
+      "mirrorSection": "জাদুর আয়না",
+      "reelsSection": "হাইলাইট ভিডিও",
+      "contactsSection": "যোগাযোগ",
+      "feedbackSection": "প্রতিক্রিয়া"
+    }
   }
 }

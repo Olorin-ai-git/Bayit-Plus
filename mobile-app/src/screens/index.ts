@@ -86,3 +86,7 @@ export * from './MissionsDashboardScreen';
 
 // Grandparent Bridge
 export * from './NewsClipScreen';
+
+// Zeh Ani - Avatar Mesh
+export * from './MeshAvatarScreen';
+export * from './ZehAniDashboardScreen';

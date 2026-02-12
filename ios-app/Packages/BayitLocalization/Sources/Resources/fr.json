@@ -8899,5 +8899,119 @@
     "errors": {
       "unavailable": "Style matching unavailable"
     }
+  },
+  "zehAni": {
+    "mesh": {
+      "title": "Avatar 3D",
+      "subtitle": "Creez votre avatar 3D a partir de votre video selfie",
+      "generating": "Creation de votre modele 3D...",
+      "rigging": "Ajout des animations...",
+      "ready": "Votre avatar 3D est pret !",
+      "failed": "Impossible de creer l'avatar 3D",
+      "retry": "Reessayer",
+      "downloadGlb": "Telecharger le modele 3D",
+      "viewIn3d": "Voir en 3D"
+    },
+    "consent": {
+      "biometric": {
+        "title": "Consentement aux donnees biometriques",
+        "subtitle": "Cette fonctionnalite utilise des donnees faciales pour creer un avatar 3D",
+        "meshGeneration": "Generation d'avatar 3D",
+        "voiceV2v": "Transformation vocale",
+        "latentFeatures": "Analyse des caracteristiques",
+        "enterPin": "Entrez le code familial",
+        "grantConsent": "Accorder le consentement",
+        "revokeConsent": "Revoquer le consentement",
+        "consentGranted": "Consentement accorde",
+        "consentRevoked": "Consentement revoque",
+        "pinRequired": "Code familial requis",
+        "invalidPin": "Code invalide"
+      }
+    },
+    "preview3d": {
+      "title": "Apercu 3D",
+      "loading": "Chargement du modele 3D...",
+      "rotate": "Faites glisser pour tourner",
+      "pinchToZoom": "Pincez pour zoomer",
+      "error": "Impossible de charger le modele 3D"
+    },
+    "v2v": {
+      "title": "Pratique vocale",
+      "subtitle": "Pratiquez l'hebreu avec votre propre voix",
+      "startPractice": "Commencer la pratique",
+      "listening": "Ecoute en cours...",
+      "transforming": "Transformation de la voix...",
+      "result": "Resultat",
+      "before": "Avant",
+      "after": "Apres",
+      "improvement": "Amelioration",
+      "tryAgain": "Reessayer",
+      "sessionComplete": "Session terminee",
+      "averageImprovement": "Amelioration moyenne"
+    },
+    "liveLayer": {
+      "title": "Avatar en direct",
+      "connecting": "Connexion...",
+      "connected": "Connecte",
+      "disconnected": "Deconnecte"
+    },
+    "trigger": {
+      "listen": "Ecoutez attentivement",
+      "sayWord": "Dites le mot",
+      "correct": "Correct !",
+      "tryAgain": "Reessayez",
+      "skip": "Passer",
+      "scoreLabel": "Score"
+    },
+    "magicMirror": {
+      "title": "Miroir magique",
+      "greeting": "Bonjour !",
+      "vocabOfDay": "Mot du jour",
+      "refresh": "Actualiser",
+      "loading": "Chargement du message...",
+      "error": "Impossible de charger le message"
+    },
+    "highlights": {
+      "title": "Videos phares",
+      "generate": "Generer une video",
+      "generating": "Generation...",
+      "ready": "Pret",
+      "failed": "La generation a echoue",
+      "share": "Partager",
+      "momentCount": "moments",
+      "empty": "Aucune video phare pour l'instant",
+      "status": {
+        "pending": "En attente",
+        "selecting": "Selection des moments",
+        "rendering": "Rendu de la video",
+        "ready": "Pret a partager",
+        "failed": "Echoue"
+      }
+    },
+    "contacts": {
+      "title": "Contacts grands-parents",
+      "add": "Ajouter un contact",
+      "name": "Nom d'affichage",
+      "phone": "Numero de telephone",
+      "relationship": "Lien de parente",
+      "language": "Langue",
+      "empty": "Aucun contact ajoute pour l'instant",
+      "delete": "Supprimer le contact",
+      "reelsSent": "Videos envoyees"
+    },
+    "feedback": {
+      "title": "Boite de commentaires",
+      "empty": "Aucun commentaire pour l'instant",
+      "from": "De",
+      "voiceMessage": "Message vocal",
+      "textMessage": "Message texte"
+    },
+    "dashboard": {
+      "title": "Zeh Ani",
+      "mirrorSection": "Miroir magique",
+      "reelsSection": "Videos phares",
+      "contactsSection": "Contacts",
+      "feedbackSection": "Commentaires"
+    }
   }
 }

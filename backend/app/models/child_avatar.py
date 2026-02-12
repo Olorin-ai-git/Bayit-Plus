@@ -51,6 +51,7 @@ class ConsentRecord(BaseModel):
     ip_address: Optional[str] = None
     video_selfie_consent: bool = False
     voice_clone_consent: bool = False
+    mesh_consent: bool = False
 
 
 class AvatarPose(BaseModel):
@@ -98,6 +99,16 @@ class ChildAvatar(Document):
         default="not_started",
         description="not_started, training, ready, failed",
     )
+
+    # 3D Mesh (Zeh Ani)
+    mesh_id: Optional[str] = Field(
+        default=None, description="FK to AvatarMesh document ID",
+    )
+    mesh_status: str = Field(
+        default="not_started",
+        description="not_started, pending, generating, rigging, ready, failed",
+    )
+    has_3d_mesh: bool = False
 
     # Outfit wardrobe
     outfit_inventory: List["ProfileOutfitInventory"] = Field(

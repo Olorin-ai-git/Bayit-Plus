@@ -8,6 +8,7 @@ from app.models.phonetic_mirror_attempt import (
     MirrorAttemptResponse, MirrorSource, PhoneticMirrorAttempt,
     PracticePhrase, PronunciationQuality,
 )
+from app.models.child_avatar import ChildAvatar
 from app.services.phonetic_mirror.mirror_helpers import (
     attempt_to_response, award_shekels, calculate_shekels,
     generate_corrected_audio, get_default_phrases, record_proficiency,
@@ -64,6 +65,15 @@ class PhoneticMirrorService:
         corrected_gcs_path = await self._get_correction_if_needed(
             result.overall_score, avatar_id, target_phrase_he
         )
+
+        avatar = await ChildAvatar.find_one(
+            ChildAvatar.user_id == user_id,
+            ChildAvatar.profile_id == profile_id,
+        )
+        if avatar and avatar.has_voice_clone:
+            await self._run_v2v_alongside(
+                avatar, audio_data, target_phrase_he,
+            )
 
         await record_proficiency(
             user_id, profile_id, result.overall_score, target_phrase_he
@@ -189,6 +199,27 @@ class PhoneticMirrorService:
         if score >= settings.PERFECTED_VOICE_PRONUNCIATION_THRESHOLD:
             return None
         return await generate_corrected_audio(avatar_id, target_phrase_he)
+
+    async def _run_v2v_alongside(
+        self, avatar: ChildAvatar,
+        audio_data: bytes, target_phrase_he: str,
+    ) -> None:
+        """Run V2V correction in parallel when voice clone is available."""
+        try:
+            from app.services.zeh_ani.v2v_transform_service import (
+                v2v_transform_service,
+            )
+
+            await v2v_transform_service.transform_voice(
+                avatar=avatar,
+                audio_data=audio_data,
+                target_phrase_he=target_phrase_he,
+            )
+        except Exception as exc:
+            logger.warning(
+                "V2V alongside mirror failed (non-blocking)",
+                extra={"avatar_id": str(avatar.id), "error": str(exc)},
+            )
 
 
 phonetic_mirror_service = PhoneticMirrorService()
