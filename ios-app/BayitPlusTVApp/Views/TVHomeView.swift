@@ -66,10 +66,14 @@ struct TVHomeView: View {
             TVShabbatBannerView()
                 .withAutoLoad()
 
+            // 1. Near Me (first content section)
+            nearMeSections(vm)
+
             // Continue Watching
             if !vm.continueWatching.isEmpty {
                 GlassContentShelf(
                     title: "Continue Watching",
+                    icon: "play.circle.fill",
                     items: vm.continueWatching,
                     maxItems: TVHomeView.maxItemsPerRow,
                     seeAllAction: { coordinator.selectedTab = .favorites }
@@ -89,72 +93,102 @@ struct TVHomeView: View {
                 .focusSection()
             }
 
-            // Category rows (movies, series, etc.)
-            ForEach(vm.categories) { category in
-                GlassContentShelf(
-                    title: category.name,
-                    items: category.items,
-                    maxItems: TVHomeView.maxItemsPerRow,
-                    seeAllAction: { coordinator.selectedTab = seeAllTab(for: category.name) }
-                ) { item in
-                    GlassFocusPoster(
-                        thumbnailURL: item.thumbnail,
-                        title: item.title ?? "Untitled",
-                        badge: item.isSeries == true ? "Series" : nil,
-                        aspectRatio: posterAspectRatio(for: category.name),
-                        onSelect: {
-                            coordinator.presentPlayer(
-                                contentId: item.id,
-                                contentType: TVContentTypeMapper.map(item.type)
-                            )
-                        }
-                    )
-                    .overlay(alignment: .bottomLeading) {
-                        subtitleFlagsOverlay(for: item)
-                    }
-                }
-            }
-
-            // Live TV
-            if !vm.liveChannels.isEmpty {
-                tvLiveChannelsShelf(vm.liveChannels)
-            }
-
-            // Location-based sections
-            if let israelisResponse = vm.israelisInCity,
-               let content = israelisResponse.content,
-               let newsArticles = content.newsArticles, !newsArticles.isEmpty {
-                let items = newsArticles + (content.communityEvents ?? [])
-                TVLocationContentRow(
-                    title: "Israelis in Your City",
-                    items: items,
-                    coverage: israelisResponse.coverage
-                )
-            }
-
-            if let businessesResponse = vm.israeliBusinesses,
-               let content = businessesResponse.content,
-               let businesses = content.newsArticles, !businesses.isEmpty {
-                TVLocationContentRow(
-                    title: "Israeli Businesses Near You",
-                    items: businesses,
-                    coverage: businessesResponse.coverage
-                )
-            }
-
-            // Trending
+            // 2. What's Hot in Israel
             if !vm.trendingContent.isEmpty {
                 TVTrendingRow(items: vm.trendingContent)
             }
 
-            // City content
+            // 3. Tel Aviv
+            if let telAviv = vm.telAvivContent, !telAviv.items.isEmpty {
+                TVCityContentRow(title: "Tel Aviv", items: telAviv.items)
+            }
+
+            // 4. Jerusalem
             if let jerusalem = vm.jerusalemContent, !jerusalem.items.isEmpty {
                 TVCityContentRow(title: "Jerusalem", items: jerusalem.items)
             }
 
-            if let telAviv = vm.telAvivContent, !telAviv.items.isEmpty {
-                TVCityContentRow(title: "Tel Aviv", items: telAviv.items)
+            // 5. Live TV
+            if !vm.liveChannels.isEmpty {
+                tvLiveChannelsShelf(vm.liveChannels)
             }
+
+            // 6-13. Category rows in explicit order
+            ForEach(sortedCategories(vm.categories)) { category in
+                categoryShelf(category)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func nearMeSections(_ vm: HomeViewModel) -> some View {
+        if let israelisResponse = vm.israelisInCity,
+           let content = israelisResponse.content,
+           let newsArticles = content.newsArticles, !newsArticles.isEmpty {
+            let items = newsArticles + (content.communityEvents ?? [])
+            TVLocationContentRow(
+                title: "Israelis in Your City",
+                items: items,
+                coverage: israelisResponse.coverage
+            )
+        }
+
+        if let businessesResponse = vm.israeliBusinesses,
+           let content = businessesResponse.content,
+           let businesses = content.newsArticles, !businesses.isEmpty {
+            TVLocationContentRow(
+                title: "Israeli Businesses Near You",
+                items: businesses,
+                coverage: businessesResponse.coverage
+            )
+        }
+    }
+
+    private func categoryShelf(_ category: ContentCategory) -> some View {
+        GlassContentShelf(
+            title: category.name.replacingOccurrences(of: "-", with: " ").localizedCapitalized,
+            icon: categoryIcon(for: category.name),
+            items: category.items,
+            maxItems: TVHomeView.maxItemsPerRow,
+            seeAllAction: { coordinator.selectedTab = seeAllTab(for: category.name) }
+        ) { item in
+            GlassFocusPoster(
+                thumbnailURL: item.thumbnail,
+                title: item.title ?? "Untitled",
+                badge: item.isSeries == true ? "Series" : nil,
+                aspectRatio: posterAspectRatio(for: category.name),
+                onSelect: {
+                    coordinator.presentPlayer(
+                        contentId: item.id,
+                        contentType: TVContentTypeMapper.map(item.type)
+                    )
+                }
+            )
+            .overlay(alignment: .bottomLeading) {
+                subtitleFlagsOverlay(for: item)
+            }
+        }
+    }
+
+    /// Sort categories to match the desired home screen order.
+    private func sortedCategories(_ categories: [ContentCategory]) -> [ContentCategory] {
+        let order: [(String) -> Bool] = [
+            { $0.contains("israeli") && $0.contains("movie") },
+            { $0.contains("israeli") && $0.contains("series") },
+            { $0.contains("movie") && !$0.contains("israeli") },
+            { $0.contains("kid") || $0.contains("children") },
+            { $0.contains("document") },
+            { $0.contains("series") && !$0.contains("israeli") },
+            { $0.contains("podcast") },
+            { $0.contains("audiobook") },
+        ]
+
+        return categories.sorted { a, b in
+            let aName = a.name.lowercased()
+            let bName = b.name.lowercased()
+            let aIndex = order.firstIndex(where: { $0(aName) }) ?? order.count
+            let bIndex = order.firstIndex(where: { $0(bName) }) ?? order.count
+            return aIndex < bIndex
         }
     }
 
@@ -239,7 +273,22 @@ struct TVHomeView: View {
         let name = categoryName.lowercased()
         if name.contains("podcast") { return .podcasts }
         if name.contains("audiobook") { return .audiobooks }
+        if name.contains("kid") || name.contains("children") { return .children }
         return .vod
+    }
+
+    /// SF Symbol icon for a category name.
+    private func categoryIcon(for categoryName: String) -> String {
+        let name = categoryName.lowercased()
+        if name.contains("israeli") && name.contains("movie") { return "film.fill" }
+        if name.contains("israeli") && name.contains("series") { return "tv.fill" }
+        if name.contains("movie") { return "film" }
+        if name.contains("series") { return "tv" }
+        if name.contains("kid") || name.contains("children") { return "figure.and.child.holdinghands" }
+        if name.contains("document") { return "doc.text.image" }
+        if name.contains("podcast") { return "mic.fill" }
+        if name.contains("audiobook") { return "headphones" }
+        return "square.grid.2x2"
     }
 
     @ViewBuilder
@@ -397,15 +446,15 @@ struct TVHomeView: View {
         let displayChannels = Array(channels.prefix(Self.maxItemsPerRow))
 
         return VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            // Header with "Show All"
+            // Header - matches GlassContentShelf style
             HStack {
                 HStack(spacing: TVDesignTokens.Spacing.md) {
-                    Image(systemName: "tv.fill")
+                    Image(systemName: "dot.radiowaves.left.and.right")
                         .font(.system(size: TVDesignTokens.FontSize.xl))
                         .foregroundColor(DesignTokens.Primary.p500)
 
                     Text("Live TV")
-                        .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+                        .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                         .foregroundColor(DesignTokens.Text.primary)
                 }
 
@@ -447,6 +496,7 @@ struct TVHomeView: View {
             .padding(.vertical, TVDesignTokens.Spacing.md)
             .focusSection()
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, TVDesignTokens.Spacing.lg)
         .background(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
@@ -459,7 +509,7 @@ struct TVHomeView: View {
         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
         .overlay(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
-                .stroke(Color.white.opacity(0.08), lineWidth: 1)
+                .stroke(Color.white.opacity(0.1), lineWidth: 2)
         )
         .padding(.horizontal, TVDesignTokens.Spacing.xl)
     }

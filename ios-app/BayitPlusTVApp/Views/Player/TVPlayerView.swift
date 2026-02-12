@@ -279,7 +279,7 @@ struct TVPlayerView: View {
     private func triviaCard(_ fact: TriviaFact) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
             HStack(spacing: TVDesignTokens.Spacing.xs) {
-                Image(systemName: "lightbulb.fill")
+                Image(systemName: triviaIconName(for: fact.category))
                     .font(.system(size: 18))
                     .foregroundStyle(DesignTokens.Primary.p400)
                 Text(fact.category?.uppercased() ?? "TRIVIA")
@@ -289,7 +289,7 @@ struct TVPlayerView: View {
                     .foregroundStyle(DesignTokens.Primary.p400)
             }
 
-            Text(fact.text ?? "")
+            Text(triviaFactText(fact))
                 .font(.system(size: TVDesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .lineLimit(3)
@@ -299,6 +299,30 @@ struct TVPlayerView: View {
         .frame(maxWidth: 500, alignment: .leading)
         .background(Color.black.opacity(0.75))
         .cornerRadius(TVDesignTokens.Radius.lg)
+    }
+
+    private func triviaFactText(_ fact: TriviaFact) -> String {
+        if let translations = fact.translations,
+           let text = translations[selectedAILanguage] {
+            return text
+        }
+        switch selectedAILanguage {
+        case "he": if let he = fact.textHe { return he }
+        case "en": if let en = fact.textEn { return en }
+        case "es": if let es = fact.textEs { return es }
+        default: break
+        }
+        return fact.text ?? ""
+    }
+
+    private func triviaIconName(for category: String?) -> String {
+        switch (category ?? "").lowercased() {
+        case "cast": return "person.fill"
+        case "production": return "film"
+        case "historical": return "clock.fill"
+        case "cultural": return "globe"
+        default: return "lightbulb.fill"
+        }
     }
 
     // MARK: - Progress Bar

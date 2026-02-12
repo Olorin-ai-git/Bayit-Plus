@@ -6,17 +6,32 @@ import SwiftUI
 struct TVTrendingRow: View {
     let items: [CultureTrendingItem]
 
-    var body: some View {
-        GeometryReader { geo in
-            ZStack(alignment: .topLeading) {
-                // Masada panoramic background
-                Image("Masada")
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: geo.size.width, height: geo.size.height)
-                    .clipped()
+    /// Max cards that fit the 1920pt screen without horizontal scrolling.
+    private static let maxVisibleCards = 4
 
-                // Gradient overlay for readability
+    var body: some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
+            header
+            topicsRow
+            sourcesFooter
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, TVDesignTokens.Spacing.lg)
+        .background {
+            Canvas { context, size in
+                let resolved = context.resolve(Image("Masada"))
+                let imgSize = resolved.size
+                guard imgSize.width > 0, imgSize.height > 0 else { return }
+                let scale = max(size.width / imgSize.width, size.height / imgSize.height)
+                let w = imgSize.width * scale
+                let h = imgSize.height * scale
+                context.draw(resolved, in: CGRect(
+                    x: (size.width - w) / 2,
+                    y: (size.height - h) / 2,
+                    width: w, height: h
+                ))
+            }
+            .overlay {
                 LinearGradient(
                     stops: [
                         .init(color: .black.opacity(0.5), location: 0),
@@ -27,17 +42,8 @@ struct TVTrendingRow: View {
                     startPoint: .top,
                     endPoint: .bottom
                 )
-
-                // Content overlay
-                VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-                    header
-                    topicsCarousel
-                    sourcesFooter
-                }
-                .padding(.vertical, TVDesignTokens.Spacing.lg)
             }
         }
-        .frame(height: 500)
         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
         .overlay(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
@@ -61,16 +67,20 @@ struct TVTrendingRow: View {
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)
     }
 
-    private var topicsCarousel: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            LazyHStack(spacing: TVDesignTokens.Spacing.focusGap) {
-                ForEach(items) { item in
+    private var topicsRow: some View {
+        HStack(spacing: TVDesignTokens.Spacing.focusGap) {
+            ForEach(Array(items.prefix(Self.maxVisibleCards))) { item in
+                Button {
+                    // Topic card tapped -- no-op for now (news cards are read-only)
+                } label: {
                     TVTrendingTopicCard(item: item)
-                        .tvFocusStyle()
                 }
+                .buttonStyle(.card)
+                .tvFocusStyle()
             }
-            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
         }
+        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+        .padding(.vertical, TVDesignTokens.Spacing.md)
         .focusSection()
     }
 

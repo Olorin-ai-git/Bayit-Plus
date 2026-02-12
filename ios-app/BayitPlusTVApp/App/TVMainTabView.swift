@@ -124,13 +124,12 @@ struct TVMainTabView: View {
                 }
             }
 
-            // Widget sidebar
+            // Widget sidebar (no .focusSection to avoid trapping focus)
             if let vm = dockViewModel, !vm.restoredWidgets.isEmpty {
                 TVWidgetSidebarView(
                     widgets: vm.restoredWidgets,
                     onMinimize: { widgetId in vm.minimizeWidget(widgetId: widgetId) }
                 )
-                .focusSection()
             }
         }
         .ignoresSafeArea(.all, edges: .trailing)

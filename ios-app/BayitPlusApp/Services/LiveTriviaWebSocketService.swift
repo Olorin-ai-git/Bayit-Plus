@@ -130,27 +130,27 @@ final class LiveTriviaWebSocketService {
     }
 
     private func parseTriviaFact(from json: [String: Any]) -> TriviaFact? {
-        guard let id = json["id"] as? String else {
+        guard let factId = json["fact_id"] as? String ?? json["id"] as? String else {
             return nil
         }
 
-        let text = json["text"] as? String
-        let textHe = json["text_he"] as? String
-        let textEn = json["text_en"] as? String
-        let textEs = json["text_es"] as? String
-        let category = json["category"] as? String
-        let timestamp = json["timestamp"] as? Double
-        let languageVariants = json["language_variants"] as? [String: String]
-
         return TriviaFact(
-            id: id,
-            text: text,
-            textHe: textHe,
-            textEn: textEn,
-            textEs: textEs,
-            category: category,
-            timestamp: timestamp != nil ? String(timestamp!) : nil,
-            languageVariants: languageVariants
+            factId: factId,
+            text: json["text"] as? String,
+            textHe: json["text_he"] as? String,
+            textEn: json["text_en"] as? String,
+            textEs: json["text_es"] as? String,
+            category: json["category"] as? String,
+            triggerTime: json["trigger_time"] as? Double ?? json["timestamp"] as? Double,
+            triggerType: json["trigger_type"] as? String ?? "random",
+            displayDuration: json["display_duration"] as? Int ?? 15,
+            priority: json["priority"] as? Int ?? 5,
+            sourceLanguage: json["source_language"] as? String,
+            translations: json["translations"] as? [String: String],
+            relatedPerson: json["related_person"] as? String,
+            chainId: json["chain_id"] as? String,
+            chainOrder: json["chain_order"] as? Int,
+            hasFollowUp: json["has_follow_up"] as? Bool
         )
     }
 }

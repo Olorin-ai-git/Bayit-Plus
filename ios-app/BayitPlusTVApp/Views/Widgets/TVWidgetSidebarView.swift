@@ -42,7 +42,6 @@ struct TVWidgetSidebarView: View {
                                 widget: widget,
                                 onMinimize: { onMinimize(widget.id) }
                             )
-                            .focusSection()
                         }
                     }
                     .padding(.horizontal, TVDesignTokens.Spacing.xl)

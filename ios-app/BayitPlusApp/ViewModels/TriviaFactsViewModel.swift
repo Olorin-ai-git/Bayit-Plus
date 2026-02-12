@@ -18,8 +18,19 @@ final class TriviaFactsViewModel {
     private let offlineCache: OfflineCacheService
     private var autoDismissTask: Task<Void, Never>?
     private let logger = BayitLogger(category: "TriviaFacts")
-    private let displayWindow: TimeInterval = 30.0 // Configurable display window
     private var liveWebSocketService: LiveTriviaWebSocketService?
+
+    /// IDs of facts already shown this session (prevents duplicates).
+    private var shownFactIds: Set<String> = []
+
+    /// Last playback time a random fact was shown (for interval gating).
+    private var lastRandomFactTime: Double = -.infinity
+
+    /// Interval between random facts (matches web app "normal" frequency = 5 min).
+    private let randomFactInterval: TimeInterval = 300.0
+
+    /// Window around a timed trigger to consider a match.
+    private let timedDisplayWindow: TimeInterval = 30.0
 
     init(repository: any TriviaRepository, offlineCache: OfflineCacheService) {
         self.repository = repository
@@ -38,22 +49,26 @@ final class TriviaFactsViewModel {
                 contentId: contentId,
                 language: language ?? "en"
             )
-            facts = response.trivia
+            facts = response.facts
+            shownFactIds = []
+            lastRandomFactTime = -.infinity
 
             await offlineCache.save(response, forKey: cacheKey)
 
             logger.info("Trivia facts loaded", context: [
                 "contentId": contentId,
-                "factCount": String(facts.count)
+                "factCount": String(facts.count),
             ])
         } catch {
             if let cached = await offlineCache.load(forKey: cacheKey, as: TriviaResponse.self) {
-                facts = cached.trivia
+                facts = cached.facts
+                shownFactIds = []
+                lastRandomFactTime = -.infinity
                 logger.info("Using cached trivia facts", context: ["contentId": contentId])
             } else {
                 self.error = error.localizedDescription
                 logger.error("Failed to load trivia facts", error: error, context: [
-                    "contentId": contentId
+                    "contentId": contentId,
                 ])
             }
         }
@@ -61,29 +76,25 @@ final class TriviaFactsViewModel {
         isLoading = false
     }
 
+    /// Update active fact based on current playback time.
+    /// Handles both timed facts (trigger_type=time with trigger_time) and random facts
+    /// (shown periodically), matching the web app behavior.
     @MainActor
     func updateActiveFact(currentTime: Double) {
-        autoDismissTask?.cancel()
+        // Don't interrupt an active fact that's still being displayed
+        if activeFact != nil { return }
 
-        let currentFact = facts.first { fact in
-            guard let timestampStr = fact.timestamp,
-                  let timestamp = Double(timestampStr) else { return false }
-            let timeDiff = abs(currentTime - timestamp)
-            return timeDiff <= displayWindow
+        // 1. Check timed facts first (highest priority)
+        if let timedFact = nextTimedFact(at: currentTime) {
+            showFact(timedFact)
+            return
         }
 
-        if currentFact?.id != activeFact?.id {
-            activeFact = currentFact
-
-            if activeFact != nil {
-                let duration: TimeInterval = 15.0
-                autoDismissTask = Task {
-                    try? await Task.sleep(for: .seconds(duration))
-                    if !Task.isCancelled {
-                        await self.dismissFact()
-                    }
-                }
-            }
+        // 2. Show random/untimed facts on interval (web parity)
+        let elapsed = currentTime - lastRandomFactTime
+        if elapsed >= randomFactInterval, let randomFact = nextRandomFact() {
+            lastRandomFactTime = currentTime
+            showFact(randomFact)
         }
     }
 
@@ -97,6 +108,44 @@ final class TriviaFactsViewModel {
     func cleanup() {
         autoDismissTask?.cancel()
         activeFact = nil
+        shownFactIds = []
+    }
+
+    // MARK: - Fact Selection Helpers
+
+    /// Find a timed fact whose trigger_time is within the display window of the current time.
+    private func nextTimedFact(at currentTime: Double) -> TriviaFact? {
+        facts.first { fact in
+            guard fact.triggerType == "time",
+                  let triggerTime = fact.triggerTime,
+                  !shownFactIds.contains(fact.id) else { return false }
+            return abs(currentTime - triggerTime) <= timedDisplayWindow
+        }
+    }
+
+    /// Pick the next unshown random/untimed fact (sorted by priority descending).
+    private func nextRandomFact() -> TriviaFact? {
+        facts
+            .filter { !shownFactIds.contains($0.id) }
+            .filter { $0.triggerType != "time" || $0.triggerTime == nil }
+            .sorted { ($0.priority ?? 5) > ($1.priority ?? 5) }
+            .first
+    }
+
+    /// Display a fact with auto-dismiss after its configured duration.
+    @MainActor
+    private func showFact(_ fact: TriviaFact) {
+        autoDismissTask?.cancel()
+        activeFact = fact
+        shownFactIds.insert(fact.id)
+
+        let duration = TimeInterval(fact.displayDuration ?? 15)
+        autoDismissTask = Task {
+            try? await Task.sleep(for: .seconds(duration))
+            if !Task.isCancelled {
+                await self.dismissFact()
+            }
+        }
     }
 
     @MainActor
@@ -150,16 +199,9 @@ final class TriviaFactsViewModel {
         isConnected = false
     }
 
+    /// Display a live-received fact (delegates to showFact for consistent behavior).
     @MainActor
     private func displayFact(_ fact: TriviaFact) {
-        activeFact = fact
-
-        let duration: TimeInterval = 15.0
-        autoDismissTask = Task {
-            try? await Task.sleep(for: .seconds(duration))
-            if !Task.isCancelled {
-                await self.dismissFact()
-            }
-        }
+        showFact(fact)
     }
 }

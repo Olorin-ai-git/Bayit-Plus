@@ -3,20 +3,31 @@ import Foundation
 // MARK: - Trivia
 
 /// A trivia fact with multilingual text variants.
+/// Maps to backend `TriviaFactResponse` (snake_case → camelCase via APIClient decoder).
 struct TriviaFact: Codable, Sendable, Identifiable {
-    let id: String
+    let factId: String
     let text: String?
     let textHe: String?
     let textEn: String?
     let textEs: String?
     let category: String?
-    let timestamp: String?
-    let languageVariants: [String: String]?
+    let triggerTime: Double?
+    let triggerType: String?
+    let displayDuration: Int?
+    let priority: Int?
+    let sourceLanguage: String?
+    let translations: [String: String]?
+    let relatedPerson: String?
+    let chainId: String?
+    let chainOrder: Int?
+    let hasFollowUp: Bool?
+
+    var id: String { factId }
 }
 
-/// Response from GET /api/v1/content/{id}/trivia
+/// Response from GET /api/v1/trivia/{content_id}
 struct TriviaResponse: Codable, Sendable {
-    let trivia: [TriviaFact]
+    let facts: [TriviaFact]
     let contentId: String?
     let isEnriched: Bool?
 }

@@ -1,13 +1,14 @@
 #if os(tvOS)
 import SwiftUI
 
-/// Horizontal content shelf for tvOS.
-/// Displays a titled row of focusable content items.
+/// Horizontal content shelf for tvOS with glass background container.
+/// Displays a titled row of focusable content items inside a glassmorphic card.
 /// When `maxItems` is set, shows only that many items in a single row (no scroll).
 /// When `seeAllAction` is provided, the header shows a focusable "Show All" button.
 /// Follows Apple TV HIG for content browsing rows.
 public struct GlassContentShelf<Item: Identifiable, ItemView: View>: View {
     let title: String
+    let icon: String?
     let items: [Item]
     let itemWidth: CGFloat
     let maxItems: Int?
@@ -16,6 +17,7 @@ public struct GlassContentShelf<Item: Identifiable, ItemView: View>: View {
 
     public init(
         title: String,
+        icon: String? = nil,
         items: [Item],
         itemWidth: CGFloat = TVDesignTokens.MinSize.posterWidth,
         maxItems: Int? = nil,
@@ -23,6 +25,7 @@ public struct GlassContentShelf<Item: Identifiable, ItemView: View>: View {
         @ViewBuilder itemBuilder: @escaping (Item) -> ItemView
     ) {
         self.title = title
+        self.icon = icon
         self.items = items
         self.itemWidth = itemWidth
         self.maxItems = maxItems
@@ -50,7 +53,7 @@ public struct GlassContentShelf<Item: Identifiable, ItemView: View>: View {
                             .tvFocusStyle()
                     }
                 }
-                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                .padding(.horizontal, TVDesignTokens.Spacing.xxl)
                 .padding(.vertical, TVDesignTokens.Spacing.md)
                 .focusSection()
             } else {
@@ -63,21 +66,45 @@ public struct GlassContentShelf<Item: Identifiable, ItemView: View>: View {
                                 .tvFocusStyle()
                         }
                     }
-                    .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                    .padding(.horizontal, TVDesignTokens.Spacing.xxl)
                     .padding(.vertical, TVDesignTokens.Spacing.md)
                 }
                 .focusSection()
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, TVDesignTokens.Spacing.lg)
+        .background(
+            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                .fill(Color.white.opacity(0.04))
+                .background(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                        .fill(.ultraThinMaterial.opacity(0.2))
+                )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
+        .overlay(
+            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                .stroke(Color.white.opacity(0.1), lineWidth: 2)
+        )
+        .padding(.horizontal, TVDesignTokens.Spacing.xl)
     }
 
     // MARK: - Header with optional "Show All"
 
     private var shelfHeader: some View {
         HStack {
-            Text(title)
-                .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
-                .foregroundStyle(DesignTokens.Text.primary)
+            HStack(spacing: TVDesignTokens.Spacing.md) {
+                if let icon {
+                    Image(systemName: icon)
+                        .font(.system(size: TVDesignTokens.FontSize.xl))
+                        .foregroundColor(DesignTokens.Primary.p500)
+                }
+
+                Text(title)
+                    .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
+                    .foregroundStyle(DesignTokens.Text.primary)
+            }
 
             Spacer()
 
@@ -108,7 +135,7 @@ public struct GlassContentShelf<Item: Identifiable, ItemView: View>: View {
                 )
             }
         }
-        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
     }
 }
 #endif

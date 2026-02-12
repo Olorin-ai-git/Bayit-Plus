@@ -112,8 +112,16 @@ struct TriviaFactsOverlayView: View {
     // MARK: - Helpers
 
     private func factText(_ fact: TriviaFact) -> String {
-        if let variants = fact.languageVariants, let text = variants[currentLanguage] {
+        // New schema: check translations dict
+        if let translations = fact.translations, let text = translations[currentLanguage] {
             return text
+        }
+        // Legacy fields fallback
+        switch currentLanguage {
+        case "he": if let he = fact.textHe { return he }
+        case "en": if let en = fact.textEn { return en }
+        case "es": if let es = fact.textEs { return es }
+        default: break
         }
         return fact.text ?? ""
     }
