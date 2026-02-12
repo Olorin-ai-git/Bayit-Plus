@@ -73,6 +73,7 @@ def register_all_routers(app: FastAPI) -> None:
                                 websocket_chess, websocket_dm,
                                 websocket_live_dubbing,
                                 websocket_live_subtitles, websocket_live_trivia,
+                                websocket_bilingual_dubbing, websocket_talk_back,
                                 widget_toggle, widgets, youngsters, zman)
     from app.api.routes.admin.recordings import \
         router as admin_recordings_router
@@ -97,7 +98,7 @@ def register_all_routers(app: FastAPI) -> None:
     # Mission and gamification routes (Hebrew engagement)
     from app.api.routes.missions import missions_core, shekels, leaderboard, zine, coupons
     # Talk Back routes (Hebrew voice interactivity)
-    from app.api.routes.talk_back import talk_back_core
+    from app.api.routes.talk_back import talk_back_core, talk_back_admin, talk_back_dashboard
     # Bilingual dubbing routes (progressive Hebrew/English)
     from app.api.routes import bilingual_dubbing
     # Star in Story routes (generative personalized episodes)
@@ -473,6 +474,14 @@ def register_all_routers(app: FastAPI) -> None:
     app.include_router(
         websocket_dm.router, prefix=prefix, tags=["websocket", "direct-messages"]
     )
+    app.include_router(
+        websocket_talk_back.router, prefix=prefix, tags=["websocket", "talk-back"]
+    )
+    app.include_router(
+        websocket_bilingual_dubbing.router,
+        prefix=prefix,
+        tags=["websocket", "bilingual-dubbing"],
+    )
     logger.debug("Registered websocket routes")
 
     # ============================================
@@ -531,7 +540,9 @@ def register_all_routers(app: FastAPI) -> None:
     # Talk Back Routes (Hebrew Voice Interactivity)
     # ============================================
     app.include_router(talk_back_core.router, prefix=prefix, tags=["talk-back"])
-    logger.debug("Registered Talk Back routes (voice questions, responses, stats)")
+    app.include_router(talk_back_admin.router, prefix=prefix, tags=["talk-back-admin"])
+    app.include_router(talk_back_dashboard.router, prefix=prefix, tags=["talk-back-dashboard"])
+    logger.debug("Registered Talk Back routes (core, admin, dashboard)")
 
     # ============================================
     # Bilingual Dubbing Routes (Progressive Hebrew/English)
