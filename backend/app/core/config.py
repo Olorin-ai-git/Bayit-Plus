@@ -293,6 +293,30 @@ class Settings(BaseSettings):
         description="Credits per chat translation request"
     )
 
+    CREDIT_RATE_TALK_BACK_RESPOND: float = Field(
+        default=5.0,
+        env="CREDIT_RATE_TALK_BACK_RESPOND",
+        description="Credits per Talk Back voice response evaluation"
+    )
+
+    CREDIT_RATE_BILINGUAL_SESSION: float = Field(
+        default=10.0,
+        env="CREDIT_RATE_BILINGUAL_SESSION",
+        description="Credits per bilingual dubbing session start"
+    )
+
+    CREDIT_RATE_BILINGUAL_TRANSLATE: float = Field(
+        default=3.0,
+        env="CREDIT_RATE_BILINGUAL_TRANSLATE",
+        description="Credits per bilingual segment translation"
+    )
+
+    CREDIT_RATE_ZINE_GENERATION: float = Field(
+        default=15.0,
+        env="CREDIT_RATE_ZINE_GENERATION",
+        description="Credits per AI weekly zine generation"
+    )
+
     # ==========================================
     # PLAYLIST CONFIGURATION
     # ==========================================

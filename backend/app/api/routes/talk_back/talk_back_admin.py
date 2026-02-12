@@ -4,7 +4,6 @@ Talk Back Admin Routes.
 CRUD for talk back points and AI generation from subtitles.
 """
 
-import logging
 import uuid
 from datetime import datetime, timezone
 from typing import List, Optional
@@ -14,6 +13,7 @@ from pydantic import BaseModel, Field
 
 from app.core.ai_clients import get_anthropic_client
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.talk_back_point import (
     ContentTalkBack,
@@ -23,7 +23,7 @@ from app.models.talk_back_point import (
 from app.models.user import User
 from app.services.subtitle_service import fetch_subtitles
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 router = APIRouter(prefix="/talk-back/admin", tags=["talk-back-admin"])
 
 
@@ -160,6 +160,12 @@ async def generate_talk_back_points(
     user: User = Depends(get_current_user),
 ):
     """AI-generate Talk Back points from content subtitles."""
+    if not user.is_admin_role():
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required for AI generation",
+        )
+
     subtitle_track = await fetch_subtitles(request.subtitle_url)
     if not subtitle_track or not subtitle_track.cues:
         raise HTTPException(

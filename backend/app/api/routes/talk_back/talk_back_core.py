@@ -5,12 +5,13 @@ Endpoints for retrieving talk back points, submitting voice responses,
 requesting hints, and viewing engagement stats.
 """
 
-import logging
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
+from app.api.dependencies.ai_access import get_credit_service, require_ai_access
+from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.talk_back_attempt import (
     TalkBackAttemptResponse,
@@ -18,9 +19,10 @@ from app.models.talk_back_attempt import (
 )
 from app.models.talk_back_point import TalkBackPointResponse
 from app.models.user import User
+from app.services.beta.credit_service import BetaCreditService
 from app.services.talk_back.orchestrator import talk_back_orchestrator
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 router = APIRouter(prefix="/talk-back", tags=["talk-back"])
 
 
@@ -74,7 +76,8 @@ async def get_talk_back_points(
 async def submit_response(
     request: RespondRequest,
     profile_id: Optional[str] = Query(None),
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Submit a voice response to a Talk Back question."""
     if not profile_id:
@@ -82,6 +85,16 @@ async def submit_response(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="profile_id is required for Talk Back",
         )
+
+    if user.is_beta_user and not user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(user.id),
+            feature="talk_back_respond",
+            usage_amount=1.0,
+            metadata={"content_id": request.content_id, "point_id": request.point_id},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
 
     try:
         result = await talk_back_orchestrator.process_response(

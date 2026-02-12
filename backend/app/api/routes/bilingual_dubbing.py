@@ -5,21 +5,23 @@ Endpoints for proficiency status, session management,
 ratio overrides, and vocabulary tracking.
 """
 
-import logging
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
+from app.api.dependencies.ai_access import get_credit_service, require_ai_access
+from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.bilingual_dubbing_session import BilingualSessionResponse
 from app.models.child_proficiency import ProficiencyResponse
 from app.models.user import User
+from app.services.beta.credit_service import BetaCreditService
 from app.services.olorin.dubbing.bilingual_service import (
     bilingual_dubbing_service,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 router = APIRouter(
     prefix="/bilingual-dubbing", tags=["bilingual-dubbing"]
 )
@@ -53,9 +55,20 @@ async def get_proficiency(
 @router.post("/session/start", response_model=BilingualSessionResponse)
 async def start_session(
     request: StartSessionRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Start a new bilingual dubbing session."""
+    if user.is_beta_user and not user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(user.id),
+            feature="bilingual_session",
+            usage_amount=1.0,
+            metadata={"content_id": request.content_id, "profile_id": request.profile_id},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+
     session = await bilingual_dubbing_service.start_session(
         user_id=str(user.id),
         profile_id=request.profile_id,
@@ -76,9 +89,20 @@ async def start_session(
 @router.post("/session/translate")
 async def translate_segment(
     request: TranslateRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Translate a segment with code-switching."""
+    if user.is_beta_user and not user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(user.id),
+            feature="bilingual_translate",
+            usage_amount=1.0,
+            metadata={"session_id": request.session_id},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+
     try:
         result = await bilingual_dubbing_service.translate_segment(
             session_id=request.session_id,

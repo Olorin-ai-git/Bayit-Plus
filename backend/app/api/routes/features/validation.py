@@ -57,6 +57,12 @@ class FeatureName(str, Enum):
     CULTURAL_DETECT = "cultural_detect"
     CHAPTER_GENERATION = "chapter_generation"
     CHAT_TRANSLATION = "chat_translation"
+    # Hebrew engagement AI features
+    TALK_BACK_RESPOND = "talk_back_respond"
+    BILINGUAL_SESSION = "bilingual_session"
+    BILINGUAL_TRANSLATE = "bilingual_translate"
+    STAR_STORY_EPISODE = "star_story_episode"
+    ZINE_GENERATION = "zine_generation"
     # UI-only features (always approved)
     TRIVIA = "trivia"
     WAKE_WORD = "wake_word"
@@ -417,6 +423,11 @@ async def validate_feature(
             FeatureName.CULTURAL_DETECT,
             FeatureName.CHAPTER_GENERATION,
             FeatureName.CHAT_TRANSLATION,
+            FeatureName.TALK_BACK_RESPOND,
+            FeatureName.BILINGUAL_SESSION,
+            FeatureName.BILINGUAL_TRANSLATE,
+            FeatureName.STAR_STORY_EPISODE,
+            FeatureName.ZINE_GENERATION,
         ]:
             return await validate_ai_feature(current_user, feature_name.value, credit_service)
 
@@ -507,6 +518,11 @@ async def validate_features_batch(
                 FeatureName.CULTURAL_DETECT,
                 FeatureName.CHAPTER_GENERATION,
                 FeatureName.CHAT_TRANSLATION,
+                FeatureName.TALK_BACK_RESPOND,
+                FeatureName.BILINGUAL_SESSION,
+                FeatureName.BILINGUAL_TRANSLATE,
+                FeatureName.STAR_STORY_EPISODE,
+                FeatureName.ZINE_GENERATION,
             ]:
                 result = await validate_ai_feature(current_user, feature_name.value, credit_service)
 

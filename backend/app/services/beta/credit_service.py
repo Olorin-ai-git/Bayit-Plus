@@ -86,6 +86,10 @@ class BetaCreditService:
             "chat_translation": self.settings.CREDIT_RATE_CHAT_TRANSLATION,
             "star_story_episode": self.settings.CREDIT_RATE_STAR_STORY_EPISODE,
             "star_story_avatar": self.settings.CREDIT_RATE_STAR_STORY_AVATAR,
+            "talk_back_respond": self.settings.CREDIT_RATE_TALK_BACK_RESPOND,
+            "bilingual_session": self.settings.CREDIT_RATE_BILINGUAL_SESSION,
+            "bilingual_translate": self.settings.CREDIT_RATE_BILINGUAL_TRANSLATE,
+            "zine_generation": self.settings.CREDIT_RATE_ZINE_GENERATION,
         }
         
         if feature not in rate_mapping:

@@ -4,20 +4,22 @@ Star in Story Core Routes.
 Avatar CRUD, episode generation, progress polling, and consent management.
 """
 
-import logging
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
+from app.api.dependencies.ai_access import get_credit_service, require_ai_access
+from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.child_avatar import AvatarStyle, ChildAvatar
 from app.models.story_episode import EpisodeStatus, StoryEpisode
 from app.models.user import User
+from app.services.beta.credit_service import BetaCreditService
 from app.services.star_story.consent_service import consent_service
 from app.services.star_story.orchestrator_service import star_story_orchestrator
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 router = APIRouter(prefix="/star-story", tags=["star-story"])
 
 
@@ -91,9 +93,20 @@ async def get_avatars(
 @router.post("/episodes/generate")
 async def generate_episode(
     request: GenerateEpisodeRequest,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Start generating a personalized episode."""
+    if user.is_beta_user and not user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(user.id),
+            feature="star_story_episode",
+            usage_amount=1.0,
+            metadata={"profile_id": request.profile_id, "theme": request.theme},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+
     try:
         episode = await star_story_orchestrator.generate_episode(
             user_id=str(user.id),

@@ -4,18 +4,20 @@ Weekly AI Zine Routes.
 Endpoints for retrieving current/archived zines and marking as viewed.
 """
 
-import logging
 from datetime import datetime, timezone
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
+from app.api.dependencies.ai_access import get_credit_service, require_ai_access
+from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.user import User
 from app.models.zine import ZineListResponse, ZinePageResponse, ZineResponse
+from app.services.beta.credit_service import BetaCreditService
 from app.services.zine.zine_generation_service import zine_generation_service
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 router = APIRouter(prefix="/zine", tags=["zine"])
 
 
@@ -50,9 +52,20 @@ def _zine_to_response(zine) -> ZineResponse:
 @router.get("/current", response_model=ZineResponse)
 async def get_current_zine(
     profile_id: Optional[str] = Query(None),
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_ai_access),
+    credit_service: BetaCreditService = Depends(get_credit_service),
 ):
     """Get the current week's zine."""
+    if user.is_beta_user and not user.is_admin_role():
+        success, remaining = await credit_service.deduct_credits(
+            user_id=str(user.id),
+            feature="zine_generation",
+            usage_amount=1.0,
+            metadata={"profile_id": profile_id},
+        )
+        if not success:
+            raise HTTPException(status_code=402, detail="Insufficient Beta 500 credits")
+
     week_key = datetime.now(timezone.utc).strftime("%Y-W%W")
 
     zine = await zine_generation_service.get_current_zine(
