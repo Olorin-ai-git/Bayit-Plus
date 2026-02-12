@@ -12,10 +12,16 @@ export const QUALITY_COLORS: Record<string, string> = {
   no_match: Colors.Error.default,
 };
 
+const WORD_SCORE_THRESHOLDS = {
+  EXCELLENT: 0.9,
+  GOOD: 0.7,
+  FAIR: 0.5,
+} as const;
+
 export function getWordColor(score: number): string {
-  if (score >= 0.9) return Colors.Success.default;
-  if (score >= 0.7) return Colors.Success.s400;
-  if (score >= 0.5) return Colors.Warning.default;
+  if (score >= WORD_SCORE_THRESHOLDS.EXCELLENT) return Colors.Success.default;
+  if (score >= WORD_SCORE_THRESHOLDS.GOOD) return Colors.Success.s400;
+  if (score >= WORD_SCORE_THRESHOLDS.FAIR) return Colors.Warning.default;
   return Colors.Error.default;
 }
 
@@ -27,13 +33,13 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   phraseCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: Colors.Glass.whiteSubtle,
     borderRadius: 20,
     padding: 28,
     width: '100%',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
+    borderColor: Colors.Glass.whiteMedium,
   },
   phraseHebrew: {
     fontSize: 32,
@@ -53,15 +59,15 @@ export const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: 'rgba(239, 68, 68, 0.2)',
+    backgroundColor: Colors.Error.alpha20,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 32,
     borderWidth: 2,
-    borderColor: 'rgba(239, 68, 68, 0.6)',
+    borderColor: Colors.Error.alpha60,
   },
   micBtnActive: {
-    backgroundColor: 'rgba(239, 68, 68, 0.5)',
+    backgroundColor: Colors.Error.alpha50,
     borderColor: Colors.Error.default,
   },
   feedbackContainer: {

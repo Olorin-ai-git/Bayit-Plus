@@ -75,12 +75,12 @@ export const styles = StyleSheet.create({
     marginTop: 8,
   },
   clipCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    backgroundColor: Colors.Glass.whiteSubtle,
     borderRadius: 16,
     padding: 16,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: Colors.Glass.whiteLight,
   },
   clipCardSelected: {
     borderColor: Colors.Glass.borderFocus,

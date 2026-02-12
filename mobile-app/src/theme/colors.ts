@@ -95,6 +95,9 @@ export const ErrorColor = {
   e500: '#ef4444',
   e600: '#dc2626',
   default: '#ef4444',
+  alpha20: 'rgba(239, 68, 68, 0.2)',
+  alpha50: 'rgba(239, 68, 68, 0.5)',
+  alpha60: 'rgba(239, 68, 68, 0.6)',
 } as const;
 
 /** Semantic info colors */
@@ -135,6 +138,10 @@ export const Glass = {
   purpleLight: 'rgba(88, 28, 135, 0.35)',
   purpleStrong: 'rgba(88, 28, 135, 0.55)',
   purpleGlow: 'rgba(126, 34, 206, 0.35)',
+  whiteSubtle: 'rgba(255, 255, 255, 0.05)',
+  whiteLight: 'rgba(255, 255, 255, 0.08)',
+  whiteMedium: 'rgba(255, 255, 255, 0.1)',
+  whiteStrong: 'rgba(255, 255, 255, 0.2)',
 } as const;
 
 /** Text colors (dark mode - light text on dark backgrounds) */
