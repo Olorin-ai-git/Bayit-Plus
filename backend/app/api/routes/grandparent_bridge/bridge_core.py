@@ -1,10 +1,12 @@
 """Grandparent Bridge REST API endpoints."""
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
-from pydantic import BaseModel
+from fastapi import (
+    APIRouter, Depends, HTTPException, Request, UploadFile, File, Form,
+)
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
+from app.core.rate_limiter import RATE_LIMITS, limiter
 from app.core.security import get_current_user
 from app.models.grandparent_bridge import (
     NewsClip,
@@ -21,28 +23,13 @@ from app.services.grandparent_bridge.voice_note_service import (
     voice_note_service,
 )
 
+from .schemas import GenerateClipRequest, ShareClipRequest, VerifyPinRequest
+
 logger = get_logger(__name__)
 router = APIRouter(
     prefix="/grandparent-bridge",
     tags=["grandparent-bridge"],
 )
-
-
-class GenerateClipRequest(BaseModel):
-    profile_id: str
-    avatar_id: str
-    session_summary: dict
-
-
-class ShareClipRequest(BaseModel):
-    pin: str
-    recipient_name: str = ""
-    recipient_phone_hash: str = ""
-    language: str = "he"
-
-
-class VerifyPinRequest(BaseModel):
-    pin: str
 
 
 def _clip_response(clip: NewsClip) -> dict:
@@ -65,16 +52,16 @@ def _clip_response(clip: NewsClip) -> dict:
 
 @router.post("/generate-clip")
 async def generate_clip(
-    request: GenerateClipRequest,
+    body: GenerateClipRequest,
     user: User = Depends(get_current_user),
 ):
     """Generate a news clip from a learning session."""
     try:
         clip = await news_clip_service.generate_news_clip(
             user_id=str(user.id),
-            profile_id=request.profile_id,
-            avatar_id=request.avatar_id,
-            session_summary=request.session_summary,
+            profile_id=body.profile_id,
+            avatar_id=body.avatar_id,
+            session_summary=body.session_summary,
         )
         return _clip_response(clip)
     except ValueError as e:
@@ -99,9 +86,11 @@ async def list_clips(
 
 
 @router.post("/{clip_id}/share")
+@limiter.limit(RATE_LIMITS["grandparent_share"])
 async def share_clip(
+    request: Request,
     clip_id: str,
-    request: ShareClipRequest,
+    body: ShareClipRequest,
     user: User = Depends(get_current_user),
 ):
     """Share a clip and generate WhatsApp link (PIN-gated for COPPA)."""
@@ -110,22 +99,20 @@ async def share_clip(
         raise HTTPException(status_code=404, detail="Clip not found")
 
     pin_valid = await family_controls_service.verify_pin(
-        user_id=str(user.id), pin=request.pin,
+        user_id=str(user.id), pin=body.pin,
     )
     if not pin_valid:
-        raise HTTPException(
-            status_code=400, detail="Invalid family PIN",
-        )
+        raise HTTPException(status_code=400, detail="Invalid family PIN")
 
-    if request.recipient_name:
-        clip.recipient_name = request.recipient_name
-    if request.recipient_phone_hash:
-        clip.recipient_phone_hash = request.recipient_phone_hash
+    if body.recipient_name:
+        clip.recipient_name = body.recipient_name
+    if body.recipient_phone_hash:
+        clip.recipient_phone_hash = body.recipient_phone_hash
 
     whatsapp_link = share_service.generate_whatsapp_link(
         share_url=clip.share_url or "",
-        child_name=request.recipient_name,
-        language=request.language,
+        child_name=body.recipient_name,
+        language=body.language,
     )
 
     clip.whatsapp_sent = True
@@ -138,8 +125,22 @@ async def share_clip(
     }
 
 
+def _validate_audio_upload(audio: UploadFile) -> None:
+    """Validate audio content type against allowed types from settings."""
+    if (
+        audio.content_type
+        and audio.content_type not in settings.GRANDPARENT_BRIDGE_ALLOWED_AUDIO_TYPES
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Unsupported audio format",
+        )
+
+
 @router.post("/{clip_id}/voice-note")
+@limiter.limit(RATE_LIMITS["grandparent_voice_note"])
 async def upload_voice_note(
+    request: Request,
     clip_id: str,
     audio: UploadFile = File(...),
     share_token: str = Form(...),
@@ -149,7 +150,12 @@ async def upload_voice_note(
     if not clip or clip.share_token != share_token:
         raise HTTPException(status_code=403, detail="Invalid share token")
 
+    _validate_audio_upload(audio)
+
     audio_data = await audio.read()
+    if len(audio_data) > settings.GRANDPARENT_VOICE_NOTE_MAX_SIZE_BYTES:
+        raise HTTPException(status_code=413, detail="Voice note file too large")
+
     try:
         voice_note = await voice_note_service.process_voice_note(
             audio_data=audio_data,
@@ -177,14 +183,16 @@ async def get_share_landing(share_token: str):
 
 
 @router.post("/share/{share_token}/verify-pin")
+@limiter.limit(RATE_LIMITS["grandparent_pin_verify"])
 async def verify_pin(
+    request: Request,
     share_token: str,
-    request: VerifyPinRequest,
+    body: VerifyPinRequest,
 ):
     """Verify family PIN for share access (no auth required)."""
     try:
         is_valid = await share_service.verify_share_pin(
-            share_token=share_token, pin=request.pin,
+            share_token=share_token, pin=body.pin,
         )
         return {"verified": is_valid}
     except ValueError as e:

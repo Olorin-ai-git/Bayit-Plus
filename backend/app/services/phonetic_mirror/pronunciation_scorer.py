@@ -1,6 +1,5 @@
 """Pronunciation scoring service for Hebrew phonetic mirror sessions."""
 
-import re
 from typing import List, Optional, Tuple
 
 from app.core.config import settings
@@ -9,6 +8,11 @@ from app.models.phonetic_mirror_attempt import (
     PhonemeFeedback,
     PhonemeIssueType,
     PronunciationQuality,
+)
+from app.services.phonetic_mirror.text_utils import (
+    classify_phoneme_issue,
+    levenshtein_distance,
+    normalize_hebrew,
 )
 
 logger = get_logger(__name__)
@@ -61,8 +65,8 @@ class PronunciationScoringService:
                 word_feedback=[],
             )
 
-        normalized_transcript = self._normalize_hebrew(transcript)
-        normalized_target = self._normalize_hebrew(target_phrase)
+        normalized_transcript = normalize_hebrew(transcript)
+        normalized_target = normalize_hebrew(target_phrase)
 
         transcript_words = normalized_transcript.split()
         target_words = normalized_target.split()
@@ -151,69 +155,13 @@ class PronunciationScoringService:
         if not heard or not expected:
             return 0.0, PhonemeIssueType.MISSING_SOUND
 
-        distance = self._levenshtein_distance(heard, expected)
+        distance = levenshtein_distance(heard, expected)
         max_len = max(len(heard), len(expected))
         similarity = 1.0 - (distance / max_len) if max_len > 0 else 0.0
 
-        issue_type = self._classify_issue(heard, expected, similarity)
+        issue_type = classify_phoneme_issue(heard, expected, similarity)
 
         return similarity, issue_type
-
-    def _classify_issue(
-        self,
-        heard: str,
-        expected: str,
-        similarity: float,
-    ) -> Optional[PhonemeIssueType]:
-        """Classify the type of pronunciation issue."""
-        if similarity >= 0.9:
-            return None
-
-        heard_chars = set(heard)
-        expected_chars = set(expected)
-        vowel_chars = set("\u05B0\u05B1\u05B2\u05B3\u05B4\u05B5\u05B6\u05B7\u05B8\u05B9\u05BA\u05BB")
-
-        vowel_diff = (heard_chars ^ expected_chars) & vowel_chars
-        consonant_diff = (heard_chars ^ expected_chars) - vowel_chars
-
-        if vowel_diff and not consonant_diff:
-            return PhonemeIssueType.VOWEL_SWAP
-
-        if consonant_diff and not vowel_diff:
-            return PhonemeIssueType.CONSONANT_SWAP
-
-        if len(heard) > len(expected) + 1:
-            return PhonemeIssueType.EXTRA_SOUND
-
-        if len(heard) < len(expected) - 1:
-            return PhonemeIssueType.MISSING_SOUND
-
-        return PhonemeIssueType.STRESS_WRONG
-
-    def _normalize_hebrew(self, text: str) -> str:
-        """Normalize Hebrew text: remove nikud, whitespace, punctuation."""
-        cleaned = re.sub(r"[\u0591-\u05C7]", "", text)
-        cleaned = re.sub(r"[^\u0590-\u05FF\s]", "", cleaned)
-        cleaned = re.sub(r"\s+", " ", cleaned).strip()
-        return cleaned
-
-    def _levenshtein_distance(self, s1: str, s2: str) -> int:
-        """Compute Levenshtein edit distance between two strings."""
-        if len(s1) < len(s2):
-            return self._levenshtein_distance(s2, s1)
-
-        previous_row = list(range(len(s2) + 1))
-
-        for i, c1 in enumerate(s1):
-            current_row = [i + 1]
-            for j, c2 in enumerate(s2):
-                insertions = previous_row[j + 1] + 1
-                deletions = current_row[j] + 1
-                substitutions = previous_row[j] + (c1 != c2)
-                current_row.append(min(insertions, deletions, substitutions))
-            previous_row = current_row
-
-        return previous_row[-1]
 
     def _determine_quality(
         self, score: float

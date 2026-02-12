@@ -2464,6 +2464,19 @@ class Settings(BaseSettings):
         env="GRANDPARENT_BRIDGE_VOICE_NOTE_RETENTION_DAYS",
         description="Days to retain grandparent voice notes before cleanup",
     )
+    GRANDPARENT_VOICE_NOTE_MAX_SIZE_BYTES: int = Field(
+        default=10_485_760, ge=1_048_576,
+        env="GRANDPARENT_VOICE_NOTE_MAX_SIZE_BYTES",
+        description="Maximum voice note upload size in bytes (default 10 MB)",
+    )
+    GRANDPARENT_BRIDGE_ALLOWED_AUDIO_TYPES: list[str] = Field(
+        default=[
+            "audio/webm", "audio/wav", "audio/mp3",
+            "audio/mpeg", "audio/ogg", "audio/m4a",
+        ],
+        env="GRANDPARENT_BRIDGE_ALLOWED_AUDIO_TYPES",
+        description="Allowed MIME types for grandparent voice note uploads",
+    )
 
     # ============================================
     # Phase 11 - Chameleon Engine (Visual Style Sync)
@@ -2492,6 +2505,124 @@ class Settings(BaseSettings):
         default=5, ge=1, le=20,
         env="CHAMELEON_FRAME_SAMPLE_COUNT",
         description="Number of frames to sample for style analysis",
+    )
+
+    # ============================================
+    # ZEH ANI: DIGITAL SOUL (Phase 1 - 3D Mesh + Biometrics)
+    # ============================================
+    READY_PLAYER_ME_API_KEY: str = Field(
+        default="",
+        env="READY_PLAYER_ME_API_KEY",
+        description="Ready Player Me API key for 3D avatar mesh generation",
+    )
+    READY_PLAYER_ME_APP_ID: str = Field(
+        default="",
+        env="READY_PLAYER_ME_APP_ID",
+        description="Ready Player Me application identifier",
+    )
+    READY_PLAYER_ME_BASE_URL: str = Field(
+        default="https://api.readyplayer.me",
+        env="READY_PLAYER_ME_BASE_URL",
+        description="Ready Player Me API base URL",
+    )
+    READY_PLAYER_ME_TIMEOUT: float = Field(
+        default=120.0, ge=10.0, le=300.0,
+        env="READY_PLAYER_ME_TIMEOUT",
+        description="Timeout in seconds for RPM mesh generation requests",
+    )
+    READY_PLAYER_ME_POLL_INTERVAL: float = Field(
+        default=3.0, ge=1.0, le=30.0,
+        env="READY_PLAYER_ME_POLL_INTERVAL",
+        description="Interval in seconds between RPM status polls",
+    )
+    READY_PLAYER_ME_MAX_POLLS: int = Field(
+        default=40, ge=5, le=200,
+        env="READY_PLAYER_ME_MAX_POLLS",
+        description="Maximum number of RPM status poll attempts",
+    )
+    CREDIT_RATE_3D_MESH: int = Field(
+        default=50, ge=0,
+        env="CREDIT_RATE_3D_MESH",
+        description="Beta credits per 3D mesh generation",
+    )
+    CONTROLNET_API_BASE_URL: str = Field(
+        default="",
+        env="CONTROLNET_API_BASE_URL",
+        description="ControlNet (Replicate) API base URL for style transfer",
+    )
+    CONTROLNET_API_KEY: str = Field(
+        default="",
+        env="CONTROLNET_API_KEY",
+        description="ControlNet (Replicate) API key",
+    )
+    CONTROLNET_TIMEOUT: float = Field(
+        default=90.0, ge=10.0, le=300.0,
+        env="CONTROLNET_TIMEOUT",
+        description="Timeout in seconds for ControlNet style transfer requests",
+    )
+    CONTROLNET_STYLE_STRENGTH: float = Field(
+        default=0.65, ge=0.0, le=1.0,
+        env="CONTROLNET_STYLE_STRENGTH",
+        description="ControlNet IP-Adapter style transfer strength",
+    )
+    BIOMETRIC_VECTOR_ENCRYPTION_KEY_ID: str = Field(
+        default="",
+        env="BIOMETRIC_VECTOR_ENCRYPTION_KEY_ID",
+        description="KMS key ID for encrypting biometric latent vectors",
+    )
+    BIOMETRIC_LATENT_VECTOR_MAX_SIZE_BYTES: int = Field(
+        default=8192, ge=1024, le=65536,
+        env="BIOMETRIC_LATENT_VECTOR_MAX_SIZE_BYTES",
+        description="Maximum allowed size in bytes for biometric latent vectors",
+    )
+
+    # ============================================
+    # ZEH ANI: PHONETIC MIRROR V2 (Phase 2 - V2V Audio Pipeline)
+    # ============================================
+    ELEVENLABS_V2V_MODEL: str = Field(
+        default="eleven_english_sts_v2",
+        env="ELEVENLABS_V2V_MODEL",
+        description="ElevenLabs voice-to-voice model ID",
+    )
+    ELEVENLABS_V2V_TIMEOUT: float = Field(
+        default=10.0, ge=2.0, le=60.0,
+        env="ELEVENLABS_V2V_TIMEOUT",
+        description="Timeout in seconds for V2V transform requests",
+    )
+    ELEVENLABS_V2V_SIMILARITY_BOOST: float = Field(
+        default=0.8, ge=0.0, le=1.0,
+        env="ELEVENLABS_V2V_SIMILARITY_BOOST",
+        description="Voice similarity boost for V2V transforms",
+    )
+    CREDIT_RATE_V2V_TRANSFORM: float = Field(
+        default=8.0, ge=0.0,
+        env="CREDIT_RATE_V2V_TRANSFORM",
+        description="Beta credits per V2V voice transform",
+    )
+    WHISPER_CHILD_SPEECH_MODEL: str = Field(
+        default="large-v3",
+        env="WHISPER_CHILD_SPEECH_MODEL",
+        description="Whisper model optimized for child speech recognition",
+    )
+    WHISPER_CODE_SWITCH_ENABLED: bool = Field(
+        default=True,
+        env="WHISPER_CODE_SWITCH_ENABLED",
+        description="Enable Hebrew-English code-switch detection",
+    )
+    WHISPER_LANGUAGE_HINTS: str = Field(
+        default="he,en",
+        env="WHISPER_LANGUAGE_HINTS",
+        description="Comma-separated language hints for Whisper ASR",
+    )
+    V2V_MAX_LATENCY_MS: int = Field(
+        default=1500, ge=500, le=5000,
+        env="V2V_MAX_LATENCY_MS",
+        description="Maximum acceptable latency in ms for V2V pipeline",
+    )
+    V2V_EDGE_CACHE_TTL_SECONDS: int = Field(
+        default=300, ge=60, le=3600,
+        env="V2V_EDGE_CACHE_TTL_SECONDS",
+        description="TTL for edge-cached V2V transform results",
     )
 
     # ============================================

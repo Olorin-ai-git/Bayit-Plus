@@ -116,6 +116,10 @@ try:
         "comprehension_question": _dev_limit("20/minute"),  # AI question retrieval/generation
         "comprehension_submit": _dev_limit("10/minute"),  # Answer submission (write + credit deduction)
         "comprehension_scenes": _dev_limit("60/minute"),  # Scene marker listing (lightweight read)
+        # Grandparent Bridge - COPPA-sensitive sharing and voice note endpoints
+        "grandparent_pin_verify": _dev_limit("5/minute"),  # PIN brute-force protection
+        "grandparent_share": _dev_limit("10/hour"),  # Clip sharing rate limit
+        "grandparent_voice_note": _dev_limit("20/hour"),  # Voice note upload rate limit
     }
 
     RATE_LIMITING_ENABLED = True

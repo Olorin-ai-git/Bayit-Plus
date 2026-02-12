@@ -16,10 +16,7 @@ struct TVPhoneticMirrorView: View {
     @State private var currentIdx = 0
     @State private var phase: Phase = .loading
     @State private var lastResult: MirrorAttemptResult?
-    @State private var listening = false
-    @State private var recognizer: SFSpeechRecognizer?
-    @State private var engine: AVAudioEngine?
-    @State private var recTask: SFSpeechRecognitionTask?
+    @State private var speechEngine = TVSpeechRecognitionEngine()
     @State private var error: String?
     private let logger = BayitLogger(category: "TVPhoneticMirror")
     private enum Phase { case loading, idle, listening, processing, feedback }
@@ -40,7 +37,7 @@ struct TVPhoneticMirrorView: View {
             }
         }
         .onAppear { setupAndLoad() }
-        .onDisappear { cleanup() }
+        .onDisappear { speechEngine.cleanup() }
         .onExitCommand { onClose?() }
     }
 
@@ -68,12 +65,18 @@ struct TVPhoneticMirrorView: View {
             }
 
             Button {
-                if listening { stopListening() } else { startListening() }
+                if speechEngine.isListening {
+                    speechEngine.stopListening()
+                } else {
+                    speechEngine.startListening(localization: localization) { transcript in
+                        handleTranscript(transcript)
+                    }
+                }
             } label: {
                 HStack(spacing: 12) {
-                    Image(systemName: listening ? "mic.slash.fill" : "mic.fill")
+                    Image(systemName: speechEngine.isListening ? "mic.slash.fill" : "mic.fill")
                         .font(.system(size: 28))
-                    Text(listening
+                    Text(speechEngine.isListening
                          ? localization.t("phoneticMirror.stopRecording")
                          : localization.t("phoneticMirror.pressToSpeak"))
                         .font(.system(size: TVDesignTokens.FontSize.body, weight: .semibold))
@@ -81,7 +84,7 @@ struct TVPhoneticMirrorView: View {
                 .foregroundColor(.white)
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
                 .padding(.vertical, TVDesignTokens.Spacing.lg)
-                .background(listening ? Color.red.opacity(0.6) : Color.red.opacity(0.3))
+                .background(speechEngine.isListening ? Color.red.opacity(0.6) : Color.red.opacity(0.3))
                 .clipShape(RoundedRectangle(cornerRadius: 20))
             }
             .buttonStyle(.card)
@@ -126,10 +129,7 @@ struct TVPhoneticMirrorView: View {
     }
 
     private func setupAndLoad() {
-        recognizer = SFSpeechRecognizer(locale: Locale(identifier: "he-IL"))
-        engine = AVAudioEngine()
-        SFSpeechRecognizer.requestAuthorization { _ in }
-
+        speechEngine.setup()
         Task {
             do {
                 let fetched = try await repos.phoneticMirrorRepository.fetchPhrases(
@@ -143,43 +143,6 @@ struct TVPhoneticMirrorView: View {
                 await MainActor.run { self.error = error.localizedDescription }
             }
         }
-    }
-
-    private func startListening() {
-        guard let recognizer = recognizer, recognizer.isAvailable,
-              let engine = engine else { return }
-        listening = true
-
-        let request = SFSpeechAudioBufferRecognitionRequest()
-        request.shouldReportPartialResults = false
-
-        let inputNode = engine.inputNode
-        let format = inputNode.outputFormat(forBus: 0)
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: format) { buffer, _ in
-            request.append(buffer)
-        }
-
-        do {
-            try engine.start()
-        } catch {
-            self.error = localization.t("phoneticMirror.errors.audioEngine")
-            return
-        }
-
-        recTask = recognizer.recognitionTask(with: request) { result, err in
-            if let result = result, result.isFinal {
-                stopListening()
-                handleTranscript(result.bestTranscription.formattedString)
-            }
-        }
-    }
-
-    private func stopListening() {
-        engine?.stop()
-        engine?.inputNode.removeTap(onBus: 0)
-        recTask?.cancel()
-        recTask = nil
-        listening = false
     }
 
     private func handleTranscript(_ transcript: String) {
@@ -206,10 +169,6 @@ struct TVPhoneticMirrorView: View {
                 }
             }
         }
-    }
-
-    private func cleanup() {
-        stopListening()
     }
 }
 #endif

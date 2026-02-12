@@ -4,13 +4,14 @@
  * audio recording, waveform visualization, and pronunciation feedback.
  */
 
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { View, Text, Pressable, Platform } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { View, Text, Pressable } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Mic, MicOff, RotateCcw, ChevronRight } from 'lucide-react-native';
 import { GlassButton } from '@bayit/shared/components/ui/GlassButton';
 import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { usePhoneticMirrorStore } from '@/stores/phoneticMirrorStore';
+import { useAudioRecorder } from '@/hooks/useAudioRecorder';
 import { PronunciationFeedback } from './PronunciationFeedback';
 import { styles } from './PhoneticMirrorPanel.styles';
 
@@ -30,9 +31,6 @@ const QUALITY_COLORS: Record<string, string> = {
 
 export function PhoneticMirrorPanel({ avatarId, profileId, onClose }: PhoneticMirrorPanelProps) {
   const { t } = useTranslation();
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
-  const [isRecording, setIsRecording] = useState(false);
 
   const {
     mirrorState,
@@ -48,6 +46,32 @@ export function PhoneticMirrorPanel({ avatarId, profileId, onClose }: PhoneticMi
     reset,
   } = usePhoneticMirrorStore();
 
+  const handleRecordingComplete = useCallback(async (blob: Blob) => {
+    if (currentPhrase) {
+      await submitAttempt({
+        audio: blob,
+        targetPhraseHe: currentPhrase.phrase_he,
+        targetTransliteration: currentPhrase.transliteration,
+        avatarId,
+        profileId,
+      });
+    }
+  }, [currentPhrase, avatarId, profileId, submitAttempt]);
+
+  const handleRecordingError = useCallback(() => {
+    setMirrorState('error');
+  }, [setMirrorState]);
+
+  const { isRecording, startRecording, stopRecording } = useAudioRecorder({
+    onRecordingComplete: handleRecordingComplete,
+    onError: handleRecordingError,
+  });
+
+  const handleStartRecording = useCallback(async () => {
+    await startRecording();
+    setMirrorState('recording');
+  }, [startRecording, setMirrorState]);
+
   useEffect(() => {
     fetchPhrases(profileId);
   }, [profileId, fetchPhrases]);
@@ -57,49 +81,6 @@ export function PhoneticMirrorPanel({ avatarId, profileId, onClose }: PhoneticMi
       setCurrentPhrase(phrases[0]);
     }
   }, [phrases, currentPhrase, setCurrentPhrase]);
-
-  const startRecording = useCallback(async () => {
-    if (Platform.OS !== 'web') return;
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-      chunksRef.current = [];
-
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-
-      recorder.onstop = async () => {
-        stream.getTracks().forEach((track) => track.stop());
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-
-        if (currentPhrase) {
-          await submitAttempt({
-            audio: blob,
-            targetPhraseHe: currentPhrase.phrase_he,
-            targetTransliteration: currentPhrase.transliteration,
-            avatarId,
-            profileId,
-          });
-        }
-      };
-
-      mediaRecorderRef.current = recorder;
-      recorder.start();
-      setIsRecording(true);
-      setMirrorState('recording');
-    } catch {
-      setMirrorState('error');
-    }
-  }, [currentPhrase, avatarId, profileId, submitAttempt, setMirrorState]);
-
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
-  }, [isRecording]);
 
   const handleNextPhrase = useCallback(() => {
     const currentIdx = phrases.findIndex((p) => p.phrase_he === currentPhrase?.phrase_he);
@@ -145,7 +126,7 @@ export function PhoneticMirrorPanel({ avatarId, profileId, onClose }: PhoneticMi
 
       {(mirrorState === 'idle' || mirrorState === 'recording') && (
         <Pressable
-          onPressIn={startRecording}
+          onPressIn={handleStartRecording}
           onPressOut={stopRecording}
           style={[styles.recordButton, isRecording && styles.recordButtonActive]}
         >

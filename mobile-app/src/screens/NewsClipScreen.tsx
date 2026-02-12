@@ -10,7 +10,7 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared-hooks';
 import { GlassButton, GlassLoadingSpinner } from '@bayit/shared/ui';
-import { NativeIcon } from '@olorin/shared-icons/native';
+import { OlorinIcon } from '@olorin/icons/native';
 import api from '@bayit/shared-services/api';
 import { Colors } from '../theme/colors';
 import logger from '@/utils/logger';
@@ -106,7 +106,7 @@ export const NewsClipScreen: React.FC = () => {
         {selectedClip && (
           <View style={styles.clipDetail}>
             <View style={styles.videoPlaceholder}>
-              <NativeIcon name="play-circle" size={48} color="rgba(255,255,255,0.4)" />
+              <OlorinIcon name="play-circle" size={48} color="rgba(255,255,255,0.4)" />
             </View>
 
             <Text style={[styles.scriptText, { textAlign }]}>{selectedClip.script_text_he}</Text>
