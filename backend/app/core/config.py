@@ -1948,6 +1948,26 @@ class Settings(BaseSettings):
         env="SHEKEL_PHRASE_LEARN_REWARD",
         description="Shekels earned per phrase learned",
     )
+    SHEKEL_REWARD_EXCELLENT: int = Field(
+        default=10, ge=0,
+        env="SHEKEL_REWARD_EXCELLENT",
+        description="Shekels earned for excellent pronunciation quality",
+    )
+    SHEKEL_REWARD_GOOD: int = Field(
+        default=5, ge=0,
+        env="SHEKEL_REWARD_GOOD",
+        description="Shekels earned for good pronunciation quality",
+    )
+    SHEKEL_REWARD_FAIR: int = Field(
+        default=2, ge=0,
+        env="SHEKEL_REWARD_FAIR",
+        description="Shekels earned for fair pronunciation quality",
+    )
+    SHEKEL_REWARD_NEEDS_PRACTICE: int = Field(
+        default=1, ge=0,
+        env="SHEKEL_REWARD_NEEDS_PRACTICE",
+        description="Shekels earned for needs-practice pronunciation quality",
+    )
     LEADERBOARD_DISPLAY_NAME_MAX_LENGTH: int = Field(
         default=50, ge=1, le=100,
         env="LEADERBOARD_DISPLAY_NAME_MAX_LENGTH",
@@ -2336,6 +2356,26 @@ class Settings(BaseSettings):
         default=20, ge=1,
         env="PERFECTED_VOICE_MAX_PER_DAY",
         description="Maximum phonetic mirror attempts per user per day",
+    )
+    PRONUNCIATION_THRESHOLD_EXCELLENT: float = Field(
+        default=0.9, ge=0.0, le=1.0,
+        env="PRONUNCIATION_THRESHOLD_EXCELLENT",
+        description="Score threshold for excellent pronunciation quality",
+    )
+    PRONUNCIATION_THRESHOLD_GOOD: float = Field(
+        default=0.7, ge=0.0, le=1.0,
+        env="PRONUNCIATION_THRESHOLD_GOOD",
+        description="Score threshold for good pronunciation quality",
+    )
+    PRONUNCIATION_THRESHOLD_FAIR: float = Field(
+        default=0.5, ge=0.0, le=1.0,
+        env="PRONUNCIATION_THRESHOLD_FAIR",
+        description="Score threshold for fair pronunciation quality",
+    )
+    PRONUNCIATION_THRESHOLD_NEEDS_PRACTICE: float = Field(
+        default=0.2, ge=0.0, le=1.0,
+        env="PRONUNCIATION_THRESHOLD_NEEDS_PRACTICE",
+        description="Score threshold for needs-practice pronunciation quality",
     )
 
     # ============================================

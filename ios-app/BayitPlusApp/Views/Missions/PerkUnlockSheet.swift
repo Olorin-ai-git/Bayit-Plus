@@ -11,8 +11,9 @@ struct PerkUnlockSheet: View {
 
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.lg) {
-            Text(perk.perkType == "outfit" ? "👕" : "🎁")
+            Image(systemName: perk.perkType == "outfit" ? "tshirt" : "gift")
                 .font(.system(size: 64))
+                .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.top, DesignTokens.Spacing.lg)
 
             Text(localization.t("gamification.perks.\(perk.perkId)"))

@@ -137,7 +137,7 @@ export function PhoneticMirrorPanel({ avatarId, profileId, onClose }: PhoneticMi
       {mirrorState === 'processing' && (
         <View style={styles.scoreDisplay}>
           <GlassLoadingSpinner />
-          <Text style={[styles.qualityText, { marginTop: 12 }]}>
+          <Text style={[styles.qualityText, styles.analyzingText]}>
             {t('phoneticMirror.analyzing')}
           </Text>
         </View>
@@ -179,7 +179,7 @@ export function PhoneticMirrorPanel({ avatarId, profileId, onClose }: PhoneticMi
 
           {lastResult.corrected_audio_url && (
             <GlassButton
-              label={t('phoneticMirror.listenCorrect')}
+              title={t('phoneticMirror.listenCorrect')}
               onPress={() => {
                 if (lastResult.corrected_audio_url) {
                   const audio = new Audio(lastResult.corrected_audio_url);
@@ -190,15 +190,15 @@ export function PhoneticMirrorPanel({ avatarId, profileId, onClose }: PhoneticMi
             />
           )}
 
-          <View style={{ flexDirection: 'row', gap: 12, marginTop: 16 }}>
+          <View style={styles.feedbackActions}>
             <GlassButton
-              label={t('phoneticMirror.tryAgain')}
+              title={t('phoneticMirror.tryAgain')}
               onPress={handleRetry}
               variant="secondary"
               icon={<RotateCcw size={16} color="#FFFFFF" />}
             />
             <GlassButton
-              label={t('phoneticMirror.nextPhrase')}
+              title={t('phoneticMirror.nextPhrase')}
               onPress={handleNextPhrase}
               variant="primary"
               icon={<ChevronRight size={16} color="#FFFFFF" />}
@@ -208,7 +208,7 @@ export function PhoneticMirrorPanel({ avatarId, profileId, onClose }: PhoneticMi
       )}
 
       {error && (
-        <Text style={{ color: '#FF3B30', marginTop: 12, textAlign: 'center' }}>
+        <Text style={styles.errorText}>
           {error}
         </Text>
       )}

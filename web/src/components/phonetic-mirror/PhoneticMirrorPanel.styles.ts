@@ -68,4 +68,17 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#FFFFFF',
   },
+  analyzingText: {
+    marginTop: 12,
+  },
+  feedbackActions: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 16,
+  },
+  errorText: {
+    color: '#FF3B30',
+    marginTop: 12,
+    textAlign: 'center',
+  },
 });

@@ -1,6 +1,6 @@
 """Chameleon Engine REST API endpoints for style transfer."""
 
-import logging
+from app.core.logging_config import get_logger
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel
@@ -10,7 +10,7 @@ from app.models.avatar_style_cache import AvatarStyleCache, StyleCacheStatus
 from app.models.user import User
 from app.services.chameleon.orchestrator import chameleon_orchestrator
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 router = APIRouter(prefix="/chameleon", tags=["chameleon"])
 
 

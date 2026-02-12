@@ -6763,7 +6763,6 @@
     "recordings": "録画",
     "rewards": "特典",
     "household": "世帯",
-    "displayName": "表示名",
     "phoneNumber": "電話番号",
     "mfa": "多要素認証"
   },
@@ -8735,5 +8734,31 @@
     "loading": "コンテンツを読み込み中...",
     "news": "ニュース",
     "trending": "トレンド"
+  },
+  "phoneticMirror": {
+    "errors": {
+      "audioSession": "Failed to configure audio session",
+      "recording": "Failed to start recording",
+      "noPhrase": "No phrase selected",
+      "audioEngine": "Audio engine failed to start"
+    },
+    "issues": {
+      "stressWrong": "Stress placement",
+      "vowelSwap": "Vowel substitution",
+      "consonantSwap": "Consonant mix-up",
+      "missingSound": "Missing sound",
+      "extraSound": "Extra sound"
+    },
+    "loading": "Loading phrases...",
+    "analyzing": "Analyzing pronunciation...",
+    "pressToSpeak": "Press to speak",
+    "stopRecording": "Stop recording",
+    "tryAgain": "Try Again",
+    "nextPhrase": "Next Phrase"
+  },
+  "chameleon": {
+    "errors": {
+      "unavailable": "Style matching unavailable"
+    }
   }
 }

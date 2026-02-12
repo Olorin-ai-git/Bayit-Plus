@@ -1,11 +1,10 @@
 """Grandparent Bridge REST API endpoints."""
 
-import logging
-
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel
 
 from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.grandparent_bridge import (
     NewsClip,
@@ -13,6 +12,7 @@ from app.models.grandparent_bridge import (
     ShareLandingResponse,
 )
 from app.models.user import User
+from app.services.family_controls_service import family_controls_service
 from app.services.grandparent_bridge.news_clip_service import (
     news_clip_service,
 )
@@ -21,7 +21,7 @@ from app.services.grandparent_bridge.voice_note_service import (
     voice_note_service,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 router = APIRouter(
     prefix="/grandparent-bridge",
     tags=["grandparent-bridge"],
@@ -35,6 +35,7 @@ class GenerateClipRequest(BaseModel):
 
 
 class ShareClipRequest(BaseModel):
+    pin: str
     recipient_name: str = ""
     recipient_phone_hash: str = ""
     language: str = "he"
@@ -103,10 +104,18 @@ async def share_clip(
     request: ShareClipRequest,
     user: User = Depends(get_current_user),
 ):
-    """Share a clip and generate WhatsApp link."""
+    """Share a clip and generate WhatsApp link (PIN-gated for COPPA)."""
     clip = await NewsClip.get(clip_id)
     if not clip or clip.user_id != str(user.id):
         raise HTTPException(status_code=404, detail="Clip not found")
+
+    pin_valid = await family_controls_service.verify_pin(
+        user_id=str(user.id), pin=request.pin,
+    )
+    if not pin_valid:
+        raise HTTPException(
+            status_code=400, detail="Invalid family PIN",
+        )
 
     if request.recipient_name:
         clip.recipient_name = request.recipient_name

@@ -1,6 +1,6 @@
 """Perk unlock service for gamification level rewards."""
 
-import logging
+from app.core.logging_config import get_logger
 from datetime import datetime, timezone
 from typing import List
 
@@ -10,7 +10,7 @@ from app.models.gamification_profile import (
     UnlockedPerk,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class PerkUnlockService:

@@ -164,8 +164,8 @@ export const PhoneticMirrorScreen: React.FC = () => {
           ))}
 
           <View style={styles.actions}>
-            <GlassButton label={t('phoneticMirror.tryAgain')} onPress={handleRetry} variant="secondary" />
-            <GlassButton label={t('phoneticMirror.nextPhrase')} onPress={handleNext} variant="primary" />
+            <GlassButton title={t('phoneticMirror.tryAgain')} onPress={handleRetry} variant="secondary" />
+            <GlassButton title={t('phoneticMirror.nextPhrase')} onPress={handleNext} variant="primary" />
           </View>
         </View>
       )}

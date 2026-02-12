@@ -86,6 +86,29 @@ class LipsyncService:
             },
         )
 
+    async def generate_talking_head(
+        self,
+        face_image_path: str,
+        audio_path: Optional[str],
+        mission_id: str,
+        scene_number: int,
+    ) -> Optional[str]:
+        """
+        Generate a lip-synced talking-head video via D-ID.
+
+        Public interface for both mission scenes and external callers
+        (e.g. Grandparent Bridge news clips).
+
+        Input: avatar face image + Hebrew audio
+        Output: GCS path to the generated video
+        """
+        return await self._generate_talking_head(
+            face_image_path=face_image_path,
+            audio_path=audio_path,
+            mission_id=mission_id,
+            scene_number=scene_number,
+        )
+
     async def _generate_talking_head(
         self,
         face_image_path: str,

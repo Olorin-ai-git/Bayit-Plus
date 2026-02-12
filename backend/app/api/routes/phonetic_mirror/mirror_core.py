@@ -1,6 +1,6 @@
 """Phonetic Mirror REST API endpoints."""
 
-import logging
+from app.core.logging_config import get_logger
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
@@ -14,7 +14,7 @@ from app.models.phonetic_mirror_attempt import (
 from app.models.user import User
 from app.services.phonetic_mirror.mirror_service import phonetic_mirror_service
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 router = APIRouter()
 
 

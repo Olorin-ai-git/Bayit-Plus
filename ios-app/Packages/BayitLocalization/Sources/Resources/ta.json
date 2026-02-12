@@ -8043,5 +8043,31 @@
     "loading": "உள்ளடக்கம் ஏற்றப்படுகிறது...",
     "news": "செய்திகள்",
     "trending": "டிரெண்டிங்"
+  },
+  "phoneticMirror": {
+    "errors": {
+      "audioSession": "Failed to configure audio session",
+      "recording": "Failed to start recording",
+      "noPhrase": "No phrase selected",
+      "audioEngine": "Audio engine failed to start"
+    },
+    "issues": {
+      "stressWrong": "Stress placement",
+      "vowelSwap": "Vowel substitution",
+      "consonantSwap": "Consonant mix-up",
+      "missingSound": "Missing sound",
+      "extraSound": "Extra sound"
+    },
+    "loading": "Loading phrases...",
+    "analyzing": "Analyzing pronunciation...",
+    "pressToSpeak": "Press to speak",
+    "stopRecording": "Stop recording",
+    "tryAgain": "Try Again",
+    "nextPhrase": "Next Phrase"
+  },
+  "chameleon": {
+    "errors": {
+      "unavailable": "Style matching unavailable"
+    }
   }
 }

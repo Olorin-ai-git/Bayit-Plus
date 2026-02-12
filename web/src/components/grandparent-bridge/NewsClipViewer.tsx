@@ -11,7 +11,7 @@ import { Send, Plus } from 'lucide-react-native';
 import { GlassButton, GlassLoadingSpinner, GlassCard } from '@bayit/shared/ui';
 import { useGrandparentBridgeStore } from '@/stores/grandparentBridgeStore';
 import type { NewsClip } from '@/stores/grandparentBridgeStore.types';
-import { styles } from './NewsClipViewer.styles';
+import { styles, videoElementStyle } from './NewsClipViewer.styles';
 
 interface NewsClipViewerProps {
   avatarId: string;
@@ -71,7 +71,7 @@ export function NewsClipViewer({ avatarId, profileId, sessionSummary, onSharePre
         </View>
         {sessionSummary && (
           <GlassButton
-            label={t('grandparentBridge.generateClip')}
+            title={t('grandparentBridge.generateClip')}
             onPress={handleGenerate}
             variant="primary"
             icon={<Plus size={16} color="#FFFFFF" />}
@@ -82,9 +82,9 @@ export function NewsClipViewer({ avatarId, profileId, sessionSummary, onSharePre
 
       {generating && (
         <GlassCard>
-          <View style={{ alignItems: 'center', padding: 24 }}>
+          <View style={styles.generatingContainer}>
             <GlassLoadingSpinner />
-            <Text style={[styles.subtitle, { marginTop: 12 }]}>
+            <Text style={[styles.subtitle, styles.generatingText]}>
               {t('grandparentBridge.generating')}
             </Text>
           </View>
@@ -97,7 +97,7 @@ export function NewsClipViewer({ avatarId, profileId, sessionSummary, onSharePre
             ref={videoRef}
             src={selectedClip.video_gcs_path}
             controls
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            style={videoElementStyle}
           />
         </View>
       )}
@@ -111,12 +111,12 @@ export function NewsClipViewer({ avatarId, profileId, sessionSummary, onSharePre
               </View>
             ))}
           </View>
-          <Text style={[styles.subtitle, { marginTop: 8 }]}>
+          <Text style={[styles.subtitle, styles.featuredCount]}>
             {t('grandparentBridge.clips.featured', { count: selectedClip.vocabulary_featured.length })}
           </Text>
           <View style={styles.actions}>
             <GlassButton
-              label={t('grandparentBridge.share.title')}
+              title={t('grandparentBridge.share.title')}
               onPress={() => onSharePress?.(selectedClip)}
               variant="secondary"
               icon={<Send size={16} color="#FFFFFF" />}

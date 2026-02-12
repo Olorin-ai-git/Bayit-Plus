@@ -139,7 +139,7 @@ export function VoiceNoteRecorder({ clipId, shareToken, recipientName, maxDurati
           <View style={recorderStyles.actions}>
             {phase !== 'uploading' && (
               <GlassButton
-                label={phase === 'recording' ? t('grandparentBridge.voiceNote.recording') : t('grandparentBridge.voiceNote.record')}
+                title={phase === 'recording' ? t('grandparentBridge.voiceNote.recording') : t('grandparentBridge.voiceNote.record')}
                 onPress={phase === 'recording' ? stopRecording : startRecording}
                 variant={phase === 'recording' ? 'secondary' : 'primary'}
                 icon={phase === 'recording' ? <MicOff size={16} color="#FF3B30" /> : <Mic size={16} color="#FFFFFF" />}
@@ -147,7 +147,7 @@ export function VoiceNoteRecorder({ clipId, shareToken, recipientName, maxDurati
             )}
             {audioBlob && phase === 'idle' && (
               <GlassButton
-                label={t('grandparentBridge.voiceNote.send')}
+                title={t('grandparentBridge.voiceNote.send')}
                 onPress={handleUpload}
                 variant="primary"
                 icon={<Send size={16} color="#FFFFFF" />}

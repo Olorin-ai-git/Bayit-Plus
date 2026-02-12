@@ -8303,5 +8303,31 @@
     "loading": "טוען תוכן...",
     "news": "חדשות",
     "trending": "פופולרי"
+  },
+  "phoneticMirror": {
+    "errors": {
+      "audioSession": "כשל בהגדרת מערכת אודיו",
+      "recording": "כשל בהתחלת הקלטה",
+      "noPhrase": "לא נבחר ביטוי",
+      "audioEngine": "מנוע השמע נכשל"
+    },
+    "issues": {
+      "stressWrong": "מיקום הטעם",
+      "vowelSwap": "החלפת תנועה",
+      "consonantSwap": "ערבוב עיצורים",
+      "missingSound": "צליל חסר",
+      "extraSound": "צליל נוסף"
+    },
+    "loading": "טוען ביטויים...",
+    "analyzing": "מנתח הגייה...",
+    "pressToSpeak": "לחץ לדיבור",
+    "stopRecording": "עצור הקלטה",
+    "tryAgain": "נסה שוב",
+    "nextPhrase": "ביטוי הבא"
+  },
+  "chameleon": {
+    "errors": {
+      "unavailable": "התאמת סגנון לא זמינה"
+    }
   }
 }

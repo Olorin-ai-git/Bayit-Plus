@@ -1,7 +1,9 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 struct PronunciationFeedbackView: View {
+    @Environment(LocalizationManager.self) private var localization
     let feedback: [PhonemeFeedbackItem]
 
     var body: some View {
@@ -46,13 +48,19 @@ struct PronunciationFeedbackView: View {
     }
 
     private func issueLabel(_ issue: String) -> String {
-        let labels: [String: String] = [
-            "stress_wrong": "Stress placement",
-            "vowel_swap": "Vowel substitution",
-            "consonant_swap": "Consonant mix-up",
-            "missing_sound": "Missing sound",
-            "extra_sound": "Extra sound",
-        ]
-        return labels[issue] ?? issue
+        switch issue {
+        case "stress_wrong":
+            return localization.t("phoneticMirror.issues.stressWrong")
+        case "vowel_swap":
+            return localization.t("phoneticMirror.issues.vowelSwap")
+        case "consonant_swap":
+            return localization.t("phoneticMirror.issues.consonantSwap")
+        case "missing_sound":
+            return localization.t("phoneticMirror.issues.missingSound")
+        case "extra_sound":
+            return localization.t("phoneticMirror.issues.extraSound")
+        default:
+            return issue
+        }
     }
 }

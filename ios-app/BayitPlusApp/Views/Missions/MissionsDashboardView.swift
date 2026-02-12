@@ -94,8 +94,9 @@ struct MissionsDashboardView: View {
     private func perkItem(_ perk: UnlockedPerk) -> some View {
         GlassCard(padding: DesignTokens.Spacing.md) {
             VStack(spacing: DesignTokens.Spacing.sm) {
-                Text(perk.perkType == "outfit" ? "👕" : "🎁")
+                Image(systemName: perk.perkType == "outfit" ? "tshirt" : "gift")
                     .font(.system(size: 32))
+                    .foregroundStyle(DesignTokens.Text.primary)
 
                 Text(localization.t("gamification.perks.\(perk.perkId)"))
                     .font(.system(size: DesignTokens.FontSize.xs, weight: .semibold))
@@ -168,9 +169,7 @@ struct MissionsDashboardView: View {
         error = nil
 
         do {
-            let url = URL(string: "\(repos.baseURL)/api/v1/gamification/profile?profile_id=\(profileId)")!
-            let (data, _) = try await URLSession.shared.data(from: url)
-            profile = try JSONDecoder().decode(GamificationProfile.self, from: data)
+            profile = try await repos.gamificationRepository.fetchProfile(profileId: profileId)
         } catch {
             self.error = error.localizedDescription
         }

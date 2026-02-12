@@ -91,7 +91,7 @@ export function ShareSheet({ clip, visible, onClose }: ShareSheetProps) {
               keyboardType="numeric"
             />
             <GlassButton
-              label={verifying ? '...' : t('grandparentBridge.share.pinVerified')}
+              title={verifying ? '...' : t('grandparentBridge.share.pinVerified')}
               onPress={handleVerifyPin}
               variant="primary"
               disabled={verifying || pin.length < 4}
@@ -105,19 +105,19 @@ export function ShareSheet({ clip, visible, onClose }: ShareSheetProps) {
               placeholder={t('grandparentBridge.share.title')}
             />
             <GlassButton
-              label={t('grandparentBridge.share.whatsApp')}
+              title={t('grandparentBridge.share.whatsApp')}
               onPress={handleWhatsAppShare}
               variant="primary"
               icon={<Share2 size={16} color="#FFFFFF" />}
             />
             <GlassButton
-              label={t('grandparentBridge.share.email')}
+              title={t('grandparentBridge.share.email')}
               onPress={handleEmailShare}
               variant="secondary"
               icon={<Mail size={16} color="#FFFFFF" />}
             />
             <GlassButton
-              label={linkCopied ? t('grandparentBridge.share.linkCopied') : t('grandparentBridge.share.copyLink')}
+              title={linkCopied ? t('grandparentBridge.share.linkCopied') : t('grandparentBridge.share.copyLink')}
               onPress={handleCopyLink}
               variant="secondary"
               icon={linkCopied ? <Check size={16} color="#34C759" /> : <Copy size={16} color="#FFFFFF" />}

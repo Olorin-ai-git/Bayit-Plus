@@ -108,4 +108,7 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#ffffff',
   },
+  statRowLast: {
+    borderBottomWidth: 0,
+  },
 });

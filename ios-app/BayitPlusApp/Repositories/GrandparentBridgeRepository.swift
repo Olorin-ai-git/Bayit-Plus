@@ -15,6 +15,10 @@ protocol GrandparentBridgeRepository: Sendable {
     func shareClip(
         clipId: String, recipientName: String, language: String
     ) async throws -> BridgeShareResult
+
+    func verifyPin(
+        token: String, pin: String
+    ) async throws -> Bool
 }
 
 final class APIGrandparentBridgeRepository: GrandparentBridgeRepository, @unchecked Sendable {
@@ -62,6 +66,23 @@ final class APIGrandparentBridgeRepository: GrandparentBridgeRepository, @unchec
             body: body,
             as: BridgeShareResult.self
         )
+    }
+
+    func verifyPin(
+        token: String, pin: String
+    ) async throws -> Bool {
+        struct VerifyRequest: Encodable {
+            let pin: String
+        }
+        struct VerifyResponse: Decodable {
+            let valid: Bool
+        }
+        let response = try await client.post(
+            "/api/v1/grandparent-bridge/share/\(token)/verify-pin",
+            body: VerifyRequest(pin: pin),
+            as: VerifyResponse.self
+        )
+        return response.valid
     }
 }
 

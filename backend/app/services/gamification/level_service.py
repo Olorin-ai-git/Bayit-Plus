@@ -1,6 +1,6 @@
 """Level progression service for gamification XP and level-ups."""
 
-import logging
+from app.core.logging_config import get_logger
 import math
 from datetime import datetime, timezone
 from typing import List, Optional
@@ -15,7 +15,7 @@ from app.models.gamification_profile import (
     XPAwardResult,
 )
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class LevelProgressionService:

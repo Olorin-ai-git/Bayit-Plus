@@ -1,6 +1,6 @@
 """Gamification level progression API endpoints."""
 
-import logging
+from app.core.logging_config import get_logger
 
 from fastapi import APIRouter, Depends, HTTPException
 
@@ -9,7 +9,7 @@ from app.models.user import User
 from app.services.gamification.level_service import level_service
 from app.services.gamification.perk_service import perk_service
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 router = APIRouter()
 
 

@@ -74,7 +74,7 @@ class NewsClipService:
                     lipsync_service,
                 )
 
-                video_path = await lipsync_service._generate_talking_head(
+                video_path = await lipsync_service.generate_talking_head(
                     face_image_path=avatar.primary_avatar_gcs_path,
                     audio_path=audio_path,
                     mission_id=f"newsclip_{clip.id}",

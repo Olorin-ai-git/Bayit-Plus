@@ -162,7 +162,7 @@ struct TVPhoneticMirrorView: View {
         do {
             try engine.start()
         } catch {
-            self.error = "Audio engine failed to start"
+            self.error = localization.t("phoneticMirror.errors.audioEngine")
             return
         }
 

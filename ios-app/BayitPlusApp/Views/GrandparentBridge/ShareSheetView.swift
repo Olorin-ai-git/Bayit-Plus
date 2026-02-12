@@ -104,7 +104,7 @@ struct ShareSheetView: View {
               let token = shareUrl.components(separatedBy: "/share/").last else { return }
         Task {
             do {
-                let result = try await BridgePinVerifier.verify(token: token, pin: pin)
+                let result = try await repository.verifyPin(token: token, pin: pin)
                 await MainActor.run { pinVerified = result }
             } catch {
                 await MainActor.run { self.error = error.localizedDescription }
@@ -145,13 +145,5 @@ struct ShareSheetView: View {
     private func copyShareLink() {
         guard let shareUrl = clip.shareUrl else { return }
         UIPasteboard.general.string = shareUrl
-    }
-}
-
-enum BridgePinVerifier {
-    static func verify(token: String, pin: String) async throws -> Bool {
-        let url = URL(string: "/api/v1/grandparent-bridge/share/\(token)/verify-pin")!
-        // Delegated to APIClient in production via repository pattern
-        return true
     }
 }

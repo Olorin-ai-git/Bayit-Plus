@@ -1,3 +1,4 @@
+import React from 'react';
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
@@ -88,4 +89,24 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
   },
+  generatingContainer: {
+    alignItems: 'center',
+    padding: 24,
+  },
+  generatingText: {
+    marginTop: 12,
+  },
+  featuredCount: {
+    marginTop: 8,
+  },
 });
+
+/**
+ * Styles for native HTML elements that cannot use StyleSheet.
+ * Used by the <video> element in NewsClipViewer.
+ */
+export const videoElementStyle: React.CSSProperties = {
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+};

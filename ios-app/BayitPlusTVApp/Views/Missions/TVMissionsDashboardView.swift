@@ -115,8 +115,9 @@ struct TVMissionsDashboardView: View {
 
     private func perkCard(_ perk: UnlockedPerk) -> some View {
         VStack(spacing: TVDesignTokens.Spacing.md) {
-            Text(perk.perkType == "outfit" ? "👕" : "🎁")
+            Image(systemName: perk.perkType == "outfit" ? "tshirt" : "gift")
                 .font(.system(size: 64))
+                .foregroundStyle(TVDesignTokens.Text.primary)
 
             Text(localization.t("gamification.perks.\(perk.perkId)"))
                 .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
@@ -199,9 +200,7 @@ struct TVMissionsDashboardView: View {
         error = nil
 
         do {
-            let url = URL(string: "\(repos.baseURL)/api/v1/gamification/profile?profile_id=\(profileId)")!
-            let (data, _) = try await URLSession.shared.data(from: url)
-            profile = try JSONDecoder().decode(GamificationProfile.self, from: data)
+            profile = try await repos.gamificationRepository.fetchProfile(profileId: profileId)
         } catch {
             self.error = error.localizedDescription
         }

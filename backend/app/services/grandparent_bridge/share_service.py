@@ -107,7 +107,7 @@ class BridgeShareService:
         if not controls:
             return False
 
-        is_valid = family_controls_service.verify_pin(controls, pin)
+        is_valid = await family_controls_service.verify_pin(clip.user_id, pin)
         if is_valid:
             clip.share_pin_verified = True
             await clip.save()

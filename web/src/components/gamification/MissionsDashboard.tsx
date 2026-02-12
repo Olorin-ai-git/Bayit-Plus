@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Platform } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import { GlassButton } from '@bayit/shared/components/ui/GlassButton';
+import { OlorinIcon } from '@olorin/icons';
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { LevelProgressBar } from './LevelProgressBar';
 import { PerkUnlockModal } from './PerkUnlockModal';
@@ -102,7 +103,9 @@ export function MissionsDashboard({ profileId }: MissionsDashboardProps) {
                 style={styles.perkItem}
                 onTouchEnd={() => setSelectedPerk(perk)}
               >
-                <Text style={styles.perkIcon}>{perk.perk_type === 'outfit' ? '👕' : '🎁'}</Text>
+                <View style={styles.perkIcon}>
+                  <OlorinIcon name={perk.perk_type === 'outfit' ? 'shirt' : 'gift'} size={32} />
+                </View>
                 <Text style={styles.perkName}>
                   {t(`gamification.perks.${perk.perk_id}`, { defaultValue: perk.perk_id })}
                 </Text>
@@ -125,7 +128,7 @@ export function MissionsDashboard({ profileId }: MissionsDashboardProps) {
             <Text style={styles.statLabel}>{t('gamification.talkBackAttempts')}</Text>
             <Text style={styles.statValue}>{profile.talk_back_attempts}</Text>
           </View>
-          <View style={[styles.statRow, { borderBottomWidth: 0 }]}>
+          <View style={[styles.statRow, styles.statRowLast]}>
             <Text style={styles.statLabel}>{t('gamification.totalXP')}</Text>
             <Text style={styles.statValue}>{profile.total_xp}</Text>
           </View>

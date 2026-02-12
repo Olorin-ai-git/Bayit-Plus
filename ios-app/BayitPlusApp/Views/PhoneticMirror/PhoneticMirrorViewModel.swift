@@ -1,4 +1,5 @@
 import AVFoundation
+import BayitLocalization
 import Speech
 import SwiftUI
 
@@ -33,7 +34,7 @@ class PhoneticMirrorViewModel {
             try session.setCategory(.record, mode: .measurement)
             try session.setActive(true)
         } catch {
-            self.error = "Failed to configure audio session"
+            self.error = LocalizationManager.shared.t("phoneticMirror.errors.audioSession")
             return
         }
 
@@ -54,7 +55,7 @@ class PhoneticMirrorViewModel {
             isRecording = true
             mirrorState = .recording
         } catch {
-            self.error = "Failed to start recording"
+            self.error = LocalizationManager.shared.t("phoneticMirror.errors.recording")
         }
     }
 
@@ -80,7 +81,7 @@ class PhoneticMirrorViewModel {
         mirrorState = .processing
 
         guard let phrase = currentPhrase else {
-            error = "No phrase selected"
+            error = LocalizationManager.shared.t("phoneticMirror.errors.noPhrase")
             mirrorState = .idle
             return
         }

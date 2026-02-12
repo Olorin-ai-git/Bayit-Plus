@@ -1,24 +1,20 @@
 """Phonetic Mirror service for Hebrew pronunciation practice."""
 
-import logging
-from datetime import datetime, timezone
 from typing import List, Optional
 
 from app.core.config import settings
-from app.models.child_avatar import ChildAvatar
-from app.models.child_proficiency import ProficiencyLevel
+from app.core.logging_config import get_logger
 from app.models.phonetic_mirror_attempt import (
-    MirrorAttemptResponse,
-    MirrorSource,
-    PhoneticMirrorAttempt,
-    PracticePhrase,
-    PronunciationQuality,
+    MirrorAttemptResponse, MirrorSource, PhoneticMirrorAttempt,
+    PracticePhrase, PronunciationQuality,
 )
-from app.services.phonetic_mirror.pronunciation_scorer import (
-    pronunciation_scorer,
+from app.services.phonetic_mirror.mirror_helpers import (
+    attempt_to_response, award_shekels, calculate_shekels,
+    generate_corrected_audio, get_default_phrases, record_proficiency,
 )
+from app.services.phonetic_mirror.pronunciation_scorer import pronunciation_scorer
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class PhoneticMirrorService:
@@ -57,7 +53,7 @@ class PhoneticMirrorService:
                 source=source,
             )
             await attempt.insert()
-            return self._to_response(attempt, corrected_url=None)
+            return attempt_to_response(attempt, corrected_url=None)
 
         result = pronunciation_scorer.score_pronunciation(
             transcript=transcript,
@@ -65,23 +61,17 @@ class PhoneticMirrorService:
             detected_language="he",
         )
 
-        corrected_gcs_path = None
-        threshold = settings.PERFECTED_VOICE_PRONUNCIATION_THRESHOLD
-        if result.overall_score < threshold:
-            corrected_gcs_path = await self._generate_corrected_audio(
-                avatar_id, target_phrase_he
-            )
+        corrected_gcs_path = await self._get_correction_if_needed(
+            result.overall_score, avatar_id, target_phrase_he
+        )
 
-        await self._record_proficiency(
+        await record_proficiency(
             user_id, profile_id, result.overall_score, target_phrase_he
         )
 
-        shekels = self._calculate_shekels(result.overall_score, result.quality)
-
+        shekels = calculate_shekels(result.quality)
         if shekels > 0:
-            await self._award_shekels(
-                user_id, profile_id, shekels, target_phrase_he
-            )
+            await award_shekels(user_id, profile_id, shekels, target_phrase_he)
 
         from app.services.gamification.level_service import level_service
 
@@ -121,7 +111,7 @@ class PhoneticMirrorService:
             },
         )
 
-        return self._to_response(attempt, corrected_gcs_path)
+        return attempt_to_response(attempt, corrected_gcs_path)
 
     async def get_practice_phrases(
         self,
@@ -154,9 +144,7 @@ class PhoneticMirrorService:
                 )
 
         if len(phrases) < count:
-            defaults = self._get_default_phrases(
-                difficulty, count - len(phrases)
-            )
+            defaults = get_default_phrases(difficulty, count - len(phrases))
             phrases.extend(defaults)
 
         return phrases[:count]
@@ -189,114 +177,18 @@ class PhoneticMirrorService:
         avg_score = sum(scores) / len(scores) if scores else 0.0
 
         return {
-            "attempts": [self._to_response(a, a.corrected_audio_gcs_path) for a in attempts],
+            "attempts": [attempt_to_response(a, a.corrected_audio_gcs_path) for a in attempts],
             "total": total,
             "average_score": round(avg_score, 3),
         }
 
-    async def _generate_corrected_audio(
-        self, avatar_id: str, hebrew_text: str
+    async def _get_correction_if_needed(
+        self, score: float, avatar_id: str, target_phrase_he: str
     ) -> Optional[str]:
-        """Generate corrected pronunciation audio using child voice clone."""
-        avatar = await ChildAvatar.get(avatar_id)
-        if not avatar or not avatar.has_voice_clone:
+        """Generate corrected audio if score is below threshold."""
+        if score >= settings.PERFECTED_VOICE_PRONUNCIATION_THRESHOLD:
             return None
-
-        from app.services.interactive_mission.child_voice_service import (
-            child_voice_service,
-        )
-
-        return await child_voice_service.generate_corrected_hebrew(
-            avatar, hebrew_text
-        )
-
-    async def _record_proficiency(
-        self,
-        user_id: str,
-        profile_id: str,
-        score: float,
-        phrase: str,
-    ) -> None:
-        """Record assessment and update vocabulary proficiency."""
-        from app.services.proficiency.assessment_service import (
-            assessment_service,
-        )
-
-        await assessment_service.record_assessment(
-            user_id=user_id,
-            profile_id=profile_id,
-            source="phonetic_mirror",
-            score=score,
-            words_tested=1,
-            words_correct=1 if score >= settings.PERFECTED_VOICE_PRONUNCIATION_THRESHOLD else 0,
-        )
-
-    async def _award_shekels(
-        self,
-        user_id: str,
-        profile_id: str,
-        amount: int,
-        phrase: str,
-    ) -> None:
-        """Award shekels for pronunciation practice."""
-        from app.services.mission.shekel_service import shekel_service
-        from app.models.shekel_currency import TransactionType
-
-        await shekel_service.earn_shekels(
-            user_id=user_id,
-            profile_id=profile_id,
-            amount=amount,
-            transaction_type=TransactionType.MISSION_REWARD,
-            description=f"Phonetic mirror practice: {phrase[:30]}",
-            description_he=f"תרגול הגייה: {phrase[:30]}",
-        )
-
-    def _calculate_shekels(
-        self, score: float, quality: PronunciationQuality
-    ) -> int:
-        """Calculate shekel reward based on pronunciation score."""
-        rewards = {
-            PronunciationQuality.EXCELLENT: 10,
-            PronunciationQuality.GOOD: 5,
-            PronunciationQuality.FAIR: 2,
-            PronunciationQuality.NEEDS_PRACTICE: 1,
-            PronunciationQuality.NO_MATCH: 0,
-        }
-        return rewards.get(quality, 0)
-
-    def _get_default_phrases(
-        self, difficulty: str, count: int
-    ) -> List[PracticePhrase]:
-        """Return default practice phrases by difficulty level."""
-        beginner = [
-            PracticePhrase(phrase_he="\u05E9\u05DC\u05D5\u05DD", transliteration="shalom", translation="hello/peace", difficulty="easy", category="greetings"),
-            PracticePhrase(phrase_he="\u05EA\u05D5\u05D3\u05D4", transliteration="toda", translation="thank you", difficulty="easy", category="greetings"),
-            PracticePhrase(phrase_he="\u05D1\u05D5\u05E7\u05E8 \u05D8\u05D5\u05D1", transliteration="boker tov", translation="good morning", difficulty="easy", category="greetings"),
-        ]
-        medium = [
-            PracticePhrase(phrase_he="\u05DE\u05D4 \u05E0\u05E9\u05DE\u05E2", transliteration="ma nishma", translation="how are you", difficulty="medium", category="conversation"),
-            PracticePhrase(phrase_he="\u05D0\u05E0\u05D9 \u05DC\u05D5\u05DE\u05D3 \u05E2\u05D1\u05E8\u05D9\u05EA", transliteration="ani lomed ivrit", translation="I am learning Hebrew", difficulty="medium", category="conversation"),
-        ]
-        phrase_map = {"easy": beginner, "medium": medium, "hard": medium}
-        return phrase_map.get(difficulty, medium)[:count]
-
-    def _to_response(
-        self,
-        attempt: PhoneticMirrorAttempt,
-        corrected_url: Optional[str],
-    ) -> MirrorAttemptResponse:
-        """Convert attempt document to API response."""
-        return MirrorAttemptResponse(
-            id=str(attempt.id) if attempt.id else "",
-            pronunciation_score=attempt.pronunciation_score,
-            quality=attempt.quality.value,
-            phoneme_feedback=attempt.phoneme_feedback,
-            corrected_audio_url=corrected_url,
-            shekels_earned=attempt.shekels_earned,
-            input_transcript=attempt.input_transcript,
-            target_phrase_he=attempt.target_phrase_he,
-            created_at=attempt.created_at.isoformat(),
-        )
+        return await generate_corrected_audio(avatar_id, target_phrase_he)
 
 
 phonetic_mirror_service = PhoneticMirrorService()

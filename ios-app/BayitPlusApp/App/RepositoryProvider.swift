@@ -51,6 +51,7 @@ final class RepositoryProvider {
     let familySnapRepository: any FamilySnapRepository
     let phoneticMirrorRepository: any PhoneticMirrorRepository
     let grandparentBridgeRepository: any GrandparentBridgeRepository
+    let gamificationRepository: any GamificationRepository
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
@@ -99,6 +100,7 @@ final class RepositoryProvider {
         self.familySnapRepository = APIFamilySnapRepository(client: client)
         self.phoneticMirrorRepository = APIPhoneticMirrorRepository(client: client)
         self.grandparentBridgeRepository = APIGrandparentBridgeRepository(client: client)
+        self.gamificationRepository = APIGamificationRepository(client: client)
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         self.offlineCache = OfflineCacheService()

@@ -3,6 +3,7 @@ import { View, Text, ScrollView, SafeAreaView, StyleSheet, Pressable } from 'rea
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton, GlassLoadingSpinner } from '@bayit/shared/ui';
+import { OlorinIcon } from '@olorin/icons/native';
 import { NativeIcon } from '@olorin/shared-icons/native';
 import { useDirection } from '@bayit/shared-hooks';
 import api from '@bayit/shared-services/api';
@@ -79,9 +80,7 @@ export const MissionsDashboardScreen: React.FC = () => {
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
           <Text style={styles.errorText}>{error}</Text>
-          <GlassButton variant="primary" onPress={loadProfile} className="mt-4">
-            {t('common.retry')}
-          </GlassButton>
+          <GlassButton variant="primary" onPress={loadProfile} title={t('common.retry')} style={styles.retryButton} />
         </View>
       </SafeAreaView>
     );
@@ -123,7 +122,9 @@ export const MissionsDashboardScreen: React.FC = () => {
           <View style={styles.perkGrid}>
             {profile.unlocked_perks.map((perk) => (
               <View key={perk.perk_id} style={styles.perkItem}>
-                <Text style={styles.perkIcon}>{perk.perk_type === 'outfit' ? '👕' : '🎁'}</Text>
+                <View style={styles.perkIcon}>
+                  <OlorinIcon name={perk.perk_type === 'outfit' ? 'shirt' : 'gift'} size={32} />
+                </View>
                 <Text style={[styles.perkName, { textAlign: 'center' }]}>
                   {t(`gamification.perks.${perk.perk_id}`, { defaultValue: perk.perk_id })}
                 </Text>
@@ -146,7 +147,7 @@ export const MissionsDashboardScreen: React.FC = () => {
             <Text style={[styles.statLabel, { textAlign }]}>{t('gamification.talkBackAttempts')}</Text>
             <Text style={styles.statValue}>{profile.talk_back_attempts}</Text>
           </View>
-          <View style={[styles.statRow, { borderBottomWidth: 0 }]}>
+          <View style={[styles.statRow, styles.statRowLast]}>
             <Text style={[styles.statLabel, { textAlign }]}>{t('gamification.totalXP')}</Text>
             <Text style={styles.statValue}>{profile.total_xp}</Text>
           </View>
@@ -270,6 +271,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: Colors.Text.primary,
+  },
+  statRowLast: {
+    borderBottomWidth: 0,
+  },
+  retryButton: {
+    marginTop: 16,
   },
 });
 

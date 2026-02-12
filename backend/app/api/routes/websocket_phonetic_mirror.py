@@ -1,7 +1,8 @@
 """Phonetic Mirror WebSocket endpoint for real-time pronunciation feedback."""
 
 import json
-import logging
+
+from app.core.logging_config import get_logger
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
@@ -13,7 +14,7 @@ from app.models.child_avatar import ChildAvatar
 from app.models.phonetic_mirror_attempt import MirrorSource
 from app.services.phonetic_mirror.mirror_service import phonetic_mirror_service
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 router = APIRouter()
 
 

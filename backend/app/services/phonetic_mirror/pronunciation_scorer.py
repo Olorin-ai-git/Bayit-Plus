@@ -1,23 +1,17 @@
 """Pronunciation scoring service for Hebrew phonetic mirror sessions."""
 
-import logging
 import re
 from typing import List, Optional, Tuple
 
+from app.core.config import settings
+from app.core.logging_config import get_logger
 from app.models.phonetic_mirror_attempt import (
     PhonemeFeedback,
     PhonemeIssueType,
     PronunciationQuality,
 )
 
-logger = logging.getLogger(__name__)
-
-QUALITY_THRESHOLDS = {
-    PronunciationQuality.EXCELLENT: 0.9,
-    PronunciationQuality.GOOD: 0.7,
-    PronunciationQuality.FAIR: 0.5,
-    PronunciationQuality.NEEDS_PRACTICE: 0.2,
-}
+logger = get_logger(__name__)
 
 
 class WordAlignment:
@@ -224,10 +218,15 @@ class PronunciationScoringService:
     def _determine_quality(
         self, score: float
     ) -> PronunciationQuality:
-        """Map overall score to quality tier."""
-        for quality, threshold in QUALITY_THRESHOLDS.items():
-            if score >= threshold:
-                return quality
+        """Map overall score to quality tier using configured thresholds."""
+        if score >= settings.PRONUNCIATION_THRESHOLD_EXCELLENT:
+            return PronunciationQuality.EXCELLENT
+        if score >= settings.PRONUNCIATION_THRESHOLD_GOOD:
+            return PronunciationQuality.GOOD
+        if score >= settings.PRONUNCIATION_THRESHOLD_FAIR:
+            return PronunciationQuality.FAIR
+        if score >= settings.PRONUNCIATION_THRESHOLD_NEEDS_PRACTICE:
+            return PronunciationQuality.NEEDS_PRACTICE
         return PronunciationQuality.NO_MATCH
 
 

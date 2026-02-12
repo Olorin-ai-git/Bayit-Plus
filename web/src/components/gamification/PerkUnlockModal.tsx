@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, Modal, Pressable, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { GlassModal } from '@bayit/shared/ui';
 import { GlassButton } from '@bayit/shared/components/ui/GlassButton';
+import { OlorinIcon } from '@olorin/icons';
 import type { UnlockedPerk } from '@/stores/gamificationStore.types';
 
 interface PerkUnlockModalProps {
@@ -24,79 +26,51 @@ export function PerkUnlockModal({
   }
 
   return (
-    <Modal
+    <GlassModal
       visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
+      onClose={onClose}
+      title={t(`gamification.perks.${perk.perk_id}`, { defaultValue: perk.perk_id })}
     >
-      <Pressable style={styles.overlay} onPress={onClose}>
-        <Pressable style={styles.modal} onPress={(e) => e.stopPropagation()}>
-          <View style={styles.content}>
-            <Text style={styles.icon}>
-              {perk.perk_type === 'outfit' ? '👕' : '🎁'}
-            </Text>
-            <Text style={styles.title}>
-              {t(`gamification.perks.${perk.perk_id}`, { defaultValue: perk.perk_id })}
-            </Text>
-            <Text style={styles.subtitle}>
-              {t('gamification.unlockedAtLevel', { level: perk.level_unlocked })}
-            </Text>
-            <Text style={styles.description}>
-              {t(`gamification.perkDescriptions.${perk.perk_id}`, {
-                defaultValue: t('gamification.perkUnlocked'),
-              })}
-            </Text>
+      <View style={styles.content}>
+        <View style={styles.iconContainer}>
+          <OlorinIcon name={perk.perk_type === 'outfit' ? 'shirt' : 'gift'} size={64} />
+        </View>
+        <Text style={styles.subtitle}>
+          {t('gamification.unlockedAtLevel', { level: perk.level_unlocked })}
+        </Text>
+        <Text style={styles.description}>
+          {t(`gamification.perkDescriptions.${perk.perk_id}`, {
+            defaultValue: t('gamification.perkUnlocked'),
+          })}
+        </Text>
 
-            <View style={styles.buttonContainer}>
-              <GlassButton
-                title={t('gamification.claim')}
-                onPress={() => onClaim(perk.perk_id)}
-                variant="primary"
-                size="md"
-              />
-              <GlassButton
-                title={t('common.close')}
-                onPress={onClose}
-                variant="secondary"
-                size="md"
-              />
-            </View>
-          </View>
-        </Pressable>
-      </Pressable>
-    </Modal>
+        <View style={styles.buttonContainer}>
+          <GlassButton
+            title={t('gamification.claim')}
+            onPress={() => onClaim(perk.perk_id)}
+            variant="primary"
+            size="md"
+          />
+          <GlassButton
+            title={t('common.close')}
+            onPress={onClose}
+            variant="secondary"
+            size="md"
+          />
+        </View>
+      </View>
+    </GlassModal>
   );
 }
 
 const styles = StyleSheet.create({
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.75)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modal: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderRadius: 16,
-    padding: 24,
-    maxWidth: 400,
-    width: '90%',
-    backdropFilter: 'blur(10px)',
-  },
   content: {
     alignItems: 'center',
+    padding: 16,
   },
-  icon: {
-    fontSize: 64,
+  iconContainer: {
     marginBottom: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#ffffff',
-    marginBottom: 8,
-    textAlign: 'center',
+    alignItems: 'center',
   },
   subtitle: {
     fontSize: 14,

@@ -124,12 +124,12 @@ export const NewsClipScreen: React.FC = () => {
 
             <View style={styles.actions}>
               <GlassButton
-                label={t('grandparentBridge.share.whatsApp')}
+                title={t('grandparentBridge.share.whatsApp')}
                 onPress={handleShare}
                 variant="primary"
               />
               <GlassButton
-                label={t('grandparentBridge.share.copyLink')}
+                title={t('grandparentBridge.share.copyLink')}
                 onPress={() => {
                   if (selectedClip?.share_url) {
                     bridgeLogger.info('Link copy requested', { clipId: selectedClip.id });

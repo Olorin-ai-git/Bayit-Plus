@@ -1,4 +1,5 @@
 import BayitCore
+import BayitLocalization
 import BayitNetworking
 import Foundation
 
@@ -91,7 +92,7 @@ final class ChameleonAvatarProvider {
                 logger.info("Style transfer ready: \(cacheId)")
             } else if data.status == "failed" {
                 await MainActor.run {
-                    error = "Style matching unavailable"
+                    error = LocalizationManager.shared.t("chameleon.errors.unavailable")
                     isLoading = false
                     stopPolling()
                 }
