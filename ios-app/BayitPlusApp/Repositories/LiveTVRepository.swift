@@ -114,11 +114,43 @@ final class APILiveTVRepository: LiveTVRepository, @unchecked Sendable {
 
     private let client: APIClient
 
+    /// Allowed characters for path component validation (alphanumeric, hyphens, underscores).
+    private static let allowedPathCharacters = CharacterSet(
+        charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
+    )
+
+    /// Maximum length for a path component identifier.
+    private static let maxPathComponentLength = 64
+
     /// Initialize with an `APIClient` instance.
     ///
     /// - Parameter client: The actor-based API client for network requests.
     init(client: APIClient) {
         self.client = client
+    }
+
+    // MARK: - Path Validation
+
+    /// Validates and returns a sanitized path component, rejecting traversal patterns
+    /// and characters outside the allowed set.
+    ///
+    /// - Parameter component: Raw identifier string (e.g., channel ID).
+    /// - Throws: `APIError.unknown` if the component contains forbidden characters or patterns.
+    /// - Returns: The validated component, safe for URL path interpolation.
+    private func validatedPathComponent(_ component: String) throws -> String {
+        guard !component.isEmpty else {
+            throw APIError.unknown(statusCode: nil, message: "Path component cannot be empty")
+        }
+
+        guard component.count <= Self.maxPathComponentLength else {
+            throw APIError.unknown(statusCode: nil, message: "Path component exceeds maximum length")
+        }
+
+        guard component.unicodeScalars.allSatisfy({ Self.allowedPathCharacters.contains($0) }) else {
+            throw APIError.unknown(statusCode: nil, message: "Path component contains invalid characters")
+        }
+
+        return component
     }
 
     // MARK: - LiveTVRepository
@@ -145,8 +177,9 @@ final class APILiveTVRepository: LiveTVRepository, @unchecked Sendable {
     }
 
     func fetchChannelDetail(id: String) async throws -> ChannelDetail {
+        let safeId = try validatedPathComponent(id)
         return try await client.get(
-            "/api/v1/live/\(id)",
+            "/api/v1/live/\(safeId)",
             as: ChannelDetail.self
         )
     }
@@ -155,6 +188,7 @@ final class APILiveTVRepository: LiveTVRepository, @unchecked Sendable {
         channelId: String,
         date: String?
     ) async throws -> ChannelEPGResponse {
+        let safeId = try validatedPathComponent(channelId)
         var queryItems: [URLQueryItem] = []
 
         if let date {
@@ -162,22 +196,24 @@ final class APILiveTVRepository: LiveTVRepository, @unchecked Sendable {
         }
 
         return try await client.get(
-            "/api/v1/live/\(channelId)/epg",
+            "/api/v1/live/\(safeId)/epg",
             queryItems: queryItems,
             as: ChannelEPGResponse.self
         )
     }
 
     func fetchStreamURL(channelId: String) async throws -> LiveStreamResponse {
+        let safeId = try validatedPathComponent(channelId)
         return try await client.get(
-            "/api/v1/live/\(channelId)/stream",
+            "/api/v1/live/\(safeId)/stream",
             as: LiveStreamResponse.self
         )
     }
 
     func fetchCatchUp(channelId: String) async throws -> CatchUpResponse {
+        let safeId = try validatedPathComponent(channelId)
         return try await client.get(
-            "/api/v1/live/\(channelId)/catchup",
+            "/api/v1/live/\(safeId)/catchup",
             as: CatchUpResponse.self
         )
     }
@@ -187,20 +223,22 @@ final class APILiveTVRepository: LiveTVRepository, @unchecked Sendable {
         windowMinutes: Int,
         targetLanguage: String
     ) async throws -> CatchUpSummaryResponse {
+        let safeId = try validatedPathComponent(channelId)
         let queryItems = [
             URLQueryItem(name: "window_minutes", value: String(windowMinutes)),
             URLQueryItem(name: "target_language", value: targetLanguage)
         ]
         return try await client.get(
-            "/api/v1/live/\(channelId)/catchup",
+            "/api/v1/live/\(safeId)/catchup",
             queryItems: queryItems,
             as: CatchUpSummaryResponse.self
         )
     }
 
     func checkCatchUpAvailability(channelId: String) async throws -> CatchUpAvailabilityResponse {
+        let safeId = try validatedPathComponent(channelId)
         return try await client.get(
-            "/api/v1/live/\(channelId)/catchup/available",
+            "/api/v1/live/\(safeId)/catchup/available",
             as: CatchUpAvailabilityResponse.self
         )
     }
@@ -209,37 +247,41 @@ final class APILiveTVRepository: LiveTVRepository, @unchecked Sendable {
         channelId: String,
         windowMinutes: Int
     ) async throws -> TranscriptTimelineResponse {
+        let safeId = try validatedPathComponent(channelId)
         let queryItems = [
             URLQueryItem(name: "window_minutes", value: String(windowMinutes))
         ]
         return try await client.get(
-            "/api/v1/live/\(channelId)/transcripts",
+            "/api/v1/live/\(safeId)/transcripts",
             queryItems: queryItems,
             as: TranscriptTimelineResponse.self
         )
     }
 
     func fetchTranscriptStatus(channelId: String) async throws -> TranscriptStatusResponse {
+        let safeId = try validatedPathComponent(channelId)
         return try await client.get(
-            "/api/v1/live/\(channelId)/transcripts/status",
+            "/api/v1/live/\(safeId)/transcripts/status",
             as: TranscriptStatusResponse.self
         )
     }
 
     func searchScenes(channelId: String, query: String) async throws -> SceneSearchResponse {
+        let safeId = try validatedPathComponent(channelId)
         struct SceneSearchRequest: Encodable, Sendable {
             let query: String
         }
         return try await client.post(
-            "/api/v1/live/\(channelId)/scene-search",
+            "/api/v1/live/\(safeId)/scene-search",
             body: SceneSearchRequest(query: query),
             as: SceneSearchResponse.self
         )
     }
 
     func fetchChannelChatHistory(channelId: String) async throws -> ChannelChatHistoryResponse {
+        let safeId = try validatedPathComponent(channelId)
         return try await client.get(
-            "/api/v1/live/\(channelId)/chat/history",
+            "/api/v1/live/\(safeId)/chat/history",
             as: ChannelChatHistoryResponse.self
         )
     }
