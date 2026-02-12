@@ -86,18 +86,18 @@ struct V2VPracticeView: View {
         } label: {
             ZStack {
                 Circle()
-                    .fill(viewModel.isRecording ? Color.blue.opacity(0.5) : Color.blue.opacity(0.2))
+                    .fill(viewModel.isRecording ? DesignTokens.Primary.default.opacity(0.5) : DesignTokens.Primary.default.opacity(0.2))
                     .frame(width: 80, height: 80)
                     .overlay(
                         Circle().stroke(
-                            viewModel.isRecording ? Color.blue : Color.blue.opacity(0.6),
+                            viewModel.isRecording ? DesignTokens.Primary.default : DesignTokens.Primary.default.opacity(0.6),
                             lineWidth: 2
                         )
                     )
 
                 Image(systemName: viewModel.isRecording ? "mic.slash.fill" : "mic.fill")
                     .font(.system(size: 32))
-                    .foregroundColor(.blue)
+                    .foregroundColor(DesignTokens.Primary.default)
             }
         }
     }

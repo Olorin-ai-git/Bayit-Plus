@@ -94,15 +94,33 @@ final class APIAvatarMeshRepository: AvatarMeshRepository, @unchecked Sendable {
             "consent_type": consentType,
             "pin": pin,
         ]
-        struct GenericResponse: Decodable {
-            let success: Bool
+        struct BiometricConsentResponse: Decodable {
+            let id: String
+            let consentType: String
+            let active: Bool
+            let grantedAt: String
+            let onDeviceOnly: Bool
+
+            enum CodingKeys: String, CodingKey {
+                case id
+                case consentType = "consent_type"
+                case active
+                case grantedAt = "granted_at"
+                case onDeviceOnly = "on_device_only"
+            }
         }
         let response = try await client.post(
             "/api/v1/zeh-ani/consent/biometric",
             body: body,
-            as: GenericResponse.self
+            as: BiometricConsentResponse.self
         )
-        return ["success": response.success]
+        return [
+            "id": response.id,
+            "consent_type": response.consentType,
+            "active": response.active,
+            "granted_at": response.grantedAt,
+            "on_device_only": response.onDeviceOnly
+        ]
     }
 
     func checkBiometricConsent(
@@ -118,14 +136,22 @@ final class APIAvatarMeshRepository: AvatarMeshRepository, @unchecked Sendable {
         profileId: String,
         consentType: String
     ) async throws -> Bool {
-        struct RevokeResponse: Decodable {
-            let success: Bool
+        struct RevokeConsentResponse: Decodable {
+            let profileId: String
+            let consentType: String
+            let revoked: Bool
+
+            enum CodingKeys: String, CodingKey {
+                case profileId = "profile_id"
+                case consentType = "consent_type"
+                case revoked
+            }
         }
         let response = try await client.delete(
             "/api/v1/zeh-ani/consent/biometric/\(profileId)?consent_type=\(consentType)",
-            as: RevokeResponse.self
+            as: RevokeConsentResponse.self
         )
-        return response.success
+        return response.revoked
     }
 
     func getMagicMirrorGreeting(

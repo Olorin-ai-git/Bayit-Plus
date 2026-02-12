@@ -83,7 +83,7 @@ class V2VPracticeViewModel {
 
         let audioBase64 = audioData.base64EncodedString()
         let payload: [String: Any] = [
-            "type": "v2v_transform",
+            "type": "audio_chunk",
             "audio": audioBase64,
             "target_phrase": phrase.phraseHe,
             "avatar_id": avatarId

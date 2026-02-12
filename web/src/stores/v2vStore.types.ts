@@ -1,7 +1,7 @@
 export interface V2VTransformResult {
   input_transcript: string;
   corrected_transcript: string;
-  v2v_audio_gcs_path: string;
+  v2v_audio_url: string;
   latency_ms: number;
   score_before: number;
   score_after: number;

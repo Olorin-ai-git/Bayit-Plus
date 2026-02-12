@@ -52,7 +52,7 @@ class LiveLayerViewModel {
         currentTimestamp = seconds
         let payload: [String: Any] = [
             "type": "timestamp_update",
-            "timestamp": seconds
+            "current_time": seconds
         ]
 
         do {
@@ -160,7 +160,7 @@ struct LiveLayerTrigger: Codable, Identifiable {
     let timestampSec: Double
 
     enum CodingKeys: String, CodingKey {
-        case id
+        case id = "trigger_id"
         case targetWordHe = "target_word_he"
         case promptText = "prompt_text"
         case triggerType = "trigger_type"

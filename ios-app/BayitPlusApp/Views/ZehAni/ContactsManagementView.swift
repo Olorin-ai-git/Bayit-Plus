@@ -99,7 +99,7 @@ struct ContactsManagementView: View {
             if contact.totalReelsSent > 0 {
                 Divider().background(Color.white.opacity(0.1))
                 HStack {
-                    Text("\(contact.totalReelsSent) reels").font(.system(size: DesignTokens.FontSize.sm))
+                    Text(localization.t("zehAni.contacts.reelCount", ["count": "\(contact.totalReelsSent)"])).font(.system(size: DesignTokens.FontSize.sm))
                         .foregroundColor(DesignTokens.Text.muted)
                     Spacer()
                     if let lastSent = contact.lastSentAt {

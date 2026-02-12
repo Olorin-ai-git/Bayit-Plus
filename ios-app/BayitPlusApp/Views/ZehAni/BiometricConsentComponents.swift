@@ -82,7 +82,7 @@ struct BiometricConsentStatusCard: View {
                         .font(.system(size: 13))
                     Spacer()
                     Text(consent.active ? localization.t("common.active") : localization.t("common.inactive"))
-                        .foregroundColor(consent.active ? .green : .gray)
+                        .foregroundColor(consent.active ? DesignTokens.Success.default : DesignTokens.Text.muted)
                         .font(.system(size: 13, weight: .medium))
                 }
             }

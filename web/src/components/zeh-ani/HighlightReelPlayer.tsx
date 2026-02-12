@@ -1,6 +1,7 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import logger from '@bayit/shared-utils/logger';
+import api from '@/services/api';
 import type { HighlightReel } from '@/stores/zehAniStore.types';
 
 const playerLogger = logger.scope('HighlightReelPlayer');
@@ -16,8 +17,27 @@ export function HighlightReelPlayer({ reel }: HighlightReelPlayerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null);
 
   const shareUrl = `${SHARE_URL_PREFIX}/share/reel/${reel.share_token}`;
+
+  useEffect(() => {
+    const loadMediaUrls = async () => {
+      if (!reel.has_video) return;
+      try {
+        const videoData = await api.get(`/zeh-ani/highlights/${reel.id}/video`) as { signed_url: string };
+        setVideoUrl(videoData.signed_url);
+        if (reel.has_thumbnail) {
+          const thumbData = await api.get(`/zeh-ani/highlights/${reel.id}/thumbnail`) as { signed_url: string };
+          setThumbnailUrl(thumbData.signed_url);
+        }
+      } catch (loadError) {
+        playerLogger.error('Failed to load media URLs', loadError);
+      }
+    };
+    loadMediaUrls();
+  }, [reel.id, reel.has_video, reel.has_thumbnail]);
 
   const handlePlayToggle = useCallback(() => {
     if (!videoRef.current) return;
@@ -49,12 +69,12 @@ export function HighlightReelPlayer({ reel }: HighlightReelPlayerProps) {
   return (
     <div className="rounded-2xl bg-white/5 border border-white/10 overflow-hidden backdrop-blur-md">
       <div className="relative aspect-video bg-black">
-        {reel.video_gcs_path ? (
+        {videoUrl ? (
           <>
             <video
               ref={videoRef}
-              src={reel.video_gcs_path}
-              poster={reel.thumbnail_gcs_path || undefined}
+              src={videoUrl}
+              poster={thumbnailUrl || undefined}
               className="w-full h-full object-contain"
               onEnded={() => setPlaying(false)}
             />

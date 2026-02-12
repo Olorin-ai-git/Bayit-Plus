@@ -28,9 +28,9 @@ interface MeshStatus {
 }
 
 type Phase = 'loading' | 'consent' | 'generating' | 'ready' | 'error';
-const CONSENT_TYPES = ['face_scan', 'voice_print'] as const;
+const CONSENT_TYPES = ['mesh_generation', 'voice_v2v', 'latent_features'] as const;
 const POLL_INTERVAL_MS = 3000;
-const TERMINAL_STATUSES = ['completed', 'failed'];
+const TERMINAL_STATUSES = ['ready', 'failed'];
 
 const allConsentsGranted = (entries: ConsentEntry[]) =>
   CONSENT_TYPES.every((ct) => entries.some((c) => c.consent_type === ct && c.active));
@@ -70,7 +70,7 @@ export const MeshAvatarScreen: React.FC = () => {
         setMeshStatus(status);
         if (!TERMINAL_STATUSES.includes(status.status)) return;
         if (pollRef.current) clearInterval(pollRef.current);
-        if (status.status === 'completed') { await loadThumbnail(); setPhase('ready'); }
+        if (status.status === 'ready') { await loadThumbnail(); setPhase('ready'); }
         else { setError(status.error_message || t('zehAni.mesh.errors.generationFailed')); setPhase('error'); }
       } catch (err: any) { meshLogger.warn('Poll failed', { avatarId, error: err }); }
     }, POLL_INTERVAL_MS);
@@ -80,7 +80,7 @@ export const MeshAvatarScreen: React.FC = () => {
     try {
       const status = await api.get(`/zeh-ani/mesh/${avatarId}`) as MeshStatus;
       setMeshStatus(status);
-      if (status.status === 'completed') { await loadThumbnail(); setPhase('ready'); }
+      if (status.status === 'ready') { await loadThumbnail(); setPhase('ready'); }
       else if (status.status === 'failed') { setError(status.error_message || t('zehAni.mesh.errors.generationFailed')); setPhase('error'); }
       else { setPhase('generating'); startPolling(); }
     } catch { setPhase('consent'); }
@@ -123,7 +123,7 @@ export const MeshAvatarScreen: React.FC = () => {
     try {
       const status = await api.post('/zeh-ani/mesh/generate', { avatar_id: avatarId, profile_id: profileId, pin }) as MeshStatus;
       setMeshStatus(status);
-      if (status.status === 'completed') { await loadThumbnail(); setPhase('ready'); }
+      if (status.status === 'ready') { await loadThumbnail(); setPhase('ready'); }
       else { startPolling(); }
       meshLogger.info('Mesh generation started', { avatarId });
     } catch (err: any) {

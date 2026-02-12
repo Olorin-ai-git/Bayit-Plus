@@ -9,8 +9,8 @@ export interface HighlightReel {
   id: string;
   avatar_id: string;
   moments: HighlightMoment[];
-  video_gcs_path: string | null;
-  thumbnail_gcs_path: string | null;
+  has_video: boolean;
+  has_thumbnail: boolean;
   share_token: string;
   status: string;
   credits_charged: number;
@@ -29,7 +29,7 @@ export interface FeedbackEntry {
   id: string;
   contact_id: string;
   contact_name: string;
-  voice_note_gcs_path: string | null;
+  voice_note_url: string | null;
   transcript: string | null;
   detected_language: string | null;
   created_at: string;

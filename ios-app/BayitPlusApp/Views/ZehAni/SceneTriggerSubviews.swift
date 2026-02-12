@@ -45,18 +45,18 @@ struct SceneTriggerRecordButton: View {
         Button(action: onTap) {
             ZStack {
                 Circle()
-                    .fill(isRecording ? Color.red.opacity(0.5) : Color.green.opacity(0.2))
+                    .fill(isRecording ? DesignTokens.ErrorColor.default.opacity(0.5) : DesignTokens.Success.default.opacity(0.2))
                     .frame(width: 100, height: 100)
                     .overlay(
                         Circle().stroke(
-                            isRecording ? Color.red : Color.green.opacity(0.6),
+                            isRecording ? DesignTokens.ErrorColor.default : DesignTokens.Success.default.opacity(0.6),
                             lineWidth: 3
                         )
                     )
 
                 Image(systemName: isRecording ? "mic.slash.fill" : "mic.fill")
                     .font(.system(size: 40))
-                    .foregroundColor(isRecording ? .red : .green)
+                    .foregroundColor(isRecording ? DesignTokens.ErrorColor.default : DesignTokens.Success.default)
             }
         }
     }

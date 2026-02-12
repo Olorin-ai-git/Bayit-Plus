@@ -9,14 +9,14 @@ const wsLogger = logger.scope('V2VWebSocket');
 const WS_RECONNECT_DELAY_MS = 3000;
 const MAX_RECONNECT_ATTEMPTS = 5;
 
-function getWebSocketUrl(avatarId: string, token: string): string {
+function getWebSocketUrl(avatarId: string): string {
   const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const wsHost = import.meta.env.VITE_WS_URL ||
     (import.meta.env.PROD
       ? import.meta.env.VITE_WS_PROD_HOST
       : `${window.location.hostname}:8000`);
   const cleanHost = wsHost.replace(/^wss?:\/\//, '');
-  return `${wsProtocol}//${cleanHost}/api/v1/ws/v2v/${avatarId}?token=${token}`;
+  return `${wsProtocol}//${cleanHost}/api/v1/ws/v2v/${avatarId}`;
 }
 
 export interface V2VWebSocketHook {
@@ -37,11 +37,12 @@ export function useV2VWebSocket(
   const connectWebSocket = useCallback(() => {
     if (!token || wsRef.current?.readyState === WebSocket.OPEN) return;
 
-    const url = getWebSocketUrl(avatarId, token);
+    const url = getWebSocketUrl(avatarId);
     const ws = new WebSocket(url);
 
     ws.onopen = () => {
       reconnectCountRef.current = 0;
+      ws.send(JSON.stringify({ type: 'authenticate', token }));
       useV2VStore.setState({ wsConnected: true });
       wsLogger.info('V2V WebSocket connected', { avatarId });
     };

@@ -136,14 +136,14 @@ export function FeedbackInbox({ profileId }: FeedbackInboxProps) {
               </p>
             )}
 
-            {entry.voice_note_gcs_path && (
+            {entry.voice_note_url && (
               <VoiceNotePlayer
-                src={entry.voice_note_gcs_path}
+                src={entry.voice_note_url}
                 entryId={entry.id}
               />
             )}
 
-            {!entry.transcript && !entry.voice_note_gcs_path && (
+            {!entry.transcript && !entry.voice_note_url && (
               <p className="text-xs text-white/30 mt-1 italic">
                 {t('zehAni.feedback.noContent')}
               </p>
