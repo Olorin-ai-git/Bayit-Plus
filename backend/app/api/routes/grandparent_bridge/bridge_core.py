@@ -128,8 +128,8 @@ async def share_clip(
 def _validate_audio_upload(audio: UploadFile) -> None:
     """Validate audio content type against allowed types from settings."""
     if (
-        audio.content_type
-        and audio.content_type not in settings.GRANDPARENT_BRIDGE_ALLOWED_AUDIO_TYPES
+        not audio.content_type
+        or audio.content_type not in settings.GRANDPARENT_BRIDGE_ALLOWED_AUDIO_TYPES
     ):
         raise HTTPException(
             status_code=400,

@@ -1,39 +1,29 @@
-/**
- * NewsClipScreen - Grandparent Bridge news clip viewer
- *
- * Video player for AI-generated news clips, clip list,
- * vocabulary display, and share actions for family sharing.
- */
+/** NewsClipScreen - Grandparent Bridge news clip viewer with PIN-gated sharing. */
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, Pressable, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, Pressable, SafeAreaView, ScrollView } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useDirection } from '@bayit/shared-hooks';
-import { GlassButton, GlassLoadingSpinner } from '@bayit/shared/ui';
+import { GlassLoadingSpinner } from '@bayit/shared/ui';
+import { GlassButton, GlassInput, GlassModal } from '@olorin/glass-ui/native';
 import { OlorinIcon } from '@olorin/icons/native';
 import api from '@bayit/shared-services/api';
 import { Colors } from '../theme/colors';
 import logger from '@/utils/logger';
+import { styles } from './NewsClipScreen.styles';
 
 const bridgeLogger = logger.scope('NewsClipScreen');
+const MIN_PIN_LEN = 4;
+const MAX_PIN_LEN = 6;
+const PIN_FILTER = /[^0-9]/g;
 
 interface NewsClip {
-  id: string;
-  avatar_id: string;
-  script_text: string;
-  script_text_he: string;
-  vocabulary_featured: string[];
-  video_gcs_path: string | null;
-  share_url: string | null;
-  status: string;
-  created_at: string;
+  id: string; avatar_id: string; script_text: string; script_text_he: string;
+  vocabulary_featured: string[]; video_gcs_path: string | null;
+  share_url: string | null; status: string; created_at: string;
 }
 
-interface ShareResult {
-  clip_id: string;
-  share_url: string | null;
-  whatsapp_link: string;
-}
+interface ShareResult { clip_id: string; share_url: string | null; whatsapp_link: string; }
 
 type Phase = 'loading' | 'idle' | 'generating' | 'sharing';
 
@@ -48,10 +38,10 @@ export const NewsClipScreen: React.FC = () => {
   const [clips, setClips] = useState<NewsClip[]>([]);
   const [selectedClip, setSelectedClip] = useState<NewsClip | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [sharePin, setSharePin] = useState('');
 
-  useEffect(() => {
-    loadClips();
-  }, []);
+  useEffect(() => { loadClips(); }, []);
 
   const loadClips = useCallback(async () => {
     try {
@@ -69,30 +59,43 @@ export const NewsClipScreen: React.FC = () => {
     }
   }, [profileId, t]);
 
-  const handleShare = useCallback(async () => {
+  const handlePinChange = useCallback((v: string) => {
+    setSharePin(v.replace(PIN_FILTER, '').slice(0, MAX_PIN_LEN));
+  }, []);
+
+  const handleShareRequest = useCallback(() => {
     if (!selectedClip) return;
-    setPhase('sharing');
+    setSharePin(''); setShowPinModal(true);
+  }, [selectedClip]);
+
+  const handlePinClose = useCallback(() => {
+    setShowPinModal(false); setSharePin('');
+  }, []);
+
+  const handleShareConfirm = useCallback(async () => {
+    if (!selectedClip || sharePin.length < MIN_PIN_LEN) return;
+    setShowPinModal(false); setPhase('sharing');
     try {
-      const result = await api.post(`/grandparent-bridge/${selectedClip.id}/share`, {
-        recipient_name: '',
-        language: 'he',
+      await api.post(`/grandparent-bridge/${selectedClip.id}/share`, {
+        pin: sharePin, recipient_name: '', language: 'he',
       }) as ShareResult;
       bridgeLogger.info('Clip shared', { clipId: selectedClip.id });
-      // Native share integration handled by platform
       setPhase('idle');
     } catch (err: any) {
       setError(err?.message || t('grandparentBridge.share.title'));
       setPhase('idle');
       bridgeLogger.error('Failed to share clip', err);
+    } finally { setSharePin(''); }
+  }, [selectedClip, sharePin, t]);
+
+  const handleCopyLink = useCallback(() => {
+    if (selectedClip?.share_url) {
+      bridgeLogger.info('Link copy requested', { clipId: selectedClip.id });
     }
-  }, [selectedClip, t]);
+  }, [selectedClip]);
 
   if (phase === 'loading') {
-    return (
-      <SafeAreaView style={styles.container}>
-        <GlassLoadingSpinner />
-      </SafeAreaView>
-    );
+    return <SafeAreaView style={styles.container}><GlassLoadingSpinner /></SafeAreaView>;
   }
 
   return (
@@ -106,11 +109,9 @@ export const NewsClipScreen: React.FC = () => {
         {selectedClip && (
           <View style={styles.clipDetail}>
             <View style={styles.videoPlaceholder}>
-              <OlorinIcon name="play-circle" size={48} color="rgba(255,255,255,0.4)" />
+              <OlorinIcon name="play-circle" size={48} color={Colors.Text.disabled} />
             </View>
-
             <Text style={[styles.scriptText, { textAlign }]}>{selectedClip.script_text_he}</Text>
-
             <View style={styles.vocabularyContainer}>
               {selectedClip.vocabulary_featured.map((word) => (
                 <View key={word} style={styles.vocabTag}>
@@ -121,22 +122,11 @@ export const NewsClipScreen: React.FC = () => {
             <Text style={styles.featuredCount}>
               {t('grandparentBridge.clips.featured', { count: selectedClip.vocabulary_featured.length })}
             </Text>
-
             <View style={styles.actions}>
-              <GlassButton
-                title={t('grandparentBridge.share.whatsApp')}
-                onPress={handleShare}
-                variant="primary"
-              />
-              <GlassButton
-                title={t('grandparentBridge.share.copyLink')}
-                onPress={() => {
-                  if (selectedClip?.share_url) {
-                    bridgeLogger.info('Link copy requested', { clipId: selectedClip.id });
-                  }
-                }}
-                variant="secondary"
-              />
+              <GlassButton title={t('grandparentBridge.share.whatsApp')}
+                onPress={handleShareRequest} variant="primary" />
+              <GlassButton title={t('grandparentBridge.share.copyLink')}
+                onPress={handleCopyLink} variant="secondary" />
             </View>
           </View>
         )}
@@ -148,45 +138,34 @@ export const NewsClipScreen: React.FC = () => {
         <Text style={styles.sectionTitle}>{t('grandparentBridge.clips.title')}</Text>
 
         {clips.map((clip) => (
-          <Pressable
-            key={clip.id}
-            onPress={() => setSelectedClip(clip)}
-            style={[styles.clipCard, selectedClip?.id === clip.id && styles.clipCardSelected]}
-          >
-            <Text style={styles.clipCardTitle}>
-              {clip.script_text_he.slice(0, 40)}
-            </Text>
-            <Text style={styles.clipCardDate}>
-              {new Date(clip.created_at).toLocaleDateString()}
-            </Text>
+          <Pressable key={clip.id} onPress={() => setSelectedClip(clip)}
+            style={[styles.clipCard, selectedClip?.id === clip.id && styles.clipCardSelected]}>
+            <Text style={styles.clipCardTitle}>{clip.script_text_he.slice(0, 40)}</Text>
+            <Text style={styles.clipCardDate}>{new Date(clip.created_at).toLocaleDateString()}</Text>
           </Pressable>
         ))}
 
         {error && <Text style={styles.errorText}>{error}</Text>}
       </ScrollView>
+
+      <GlassModal visible={showPinModal} onClose={handlePinClose}
+        title={t('grandparentBridge.share.title')}>
+        <View style={styles.pinModalContent}>
+          <Text style={styles.pinDescription}>{t('grandparentBridge.share.enterPin')}</Text>
+          <GlassInput placeholder="****" value={sharePin} onChangeText={handlePinChange}
+            onSubmitEditing={handleShareConfirm} keyboardType="number-pad" secureTextEntry
+            maxLength={MAX_PIN_LEN} returnKeyType="done"
+            accessibilityLabel={t('grandparentBridge.share.enterPin')} />
+          <Text style={styles.pinCharCount}>{sharePin.length}/{MAX_PIN_LEN}</Text>
+          <View style={styles.pinActions}>
+            <GlassButton variant="secondary" onPress={handlePinClose}
+              title={t('common.cancel')} style={styles.pinActionBtn} />
+            <GlassButton variant="primary" onPress={handleShareConfirm}
+              disabled={sharePin.length < MIN_PIN_LEN}
+              title={t('common.confirm')} style={styles.pinActionBtn} />
+          </View>
+        </View>
+      </GlassModal>
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#1E1E2E' },
-  scrollContent: { padding: 20 },
-  header: { marginBottom: 20 },
-  title: { fontSize: 24, fontWeight: '700', color: '#FFF' },
-  subtitle: { fontSize: 14, color: 'rgba(255,255,255,0.5)', marginTop: 4 },
-  clipDetail: { marginBottom: 24 },
-  videoPlaceholder: { width: '100%', aspectRatio: 16 / 9, backgroundColor: '#000', borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
-  scriptText: { fontSize: 18, color: '#FFF', fontWeight: '600', marginBottom: 12 },
-  vocabularyContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
-  vocabTag: { backgroundColor: 'rgba(99,102,241,0.2)', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 12 },
-  vocabText: { fontSize: 13, color: '#A5B4FC', fontWeight: '500' },
-  featuredCount: { fontSize: 12, color: 'rgba(255,255,255,0.4)', marginBottom: 12 },
-  actions: { flexDirection: 'row', gap: 12, marginTop: 8 },
-  sectionTitle: { fontSize: 18, fontWeight: '600', color: '#FFF', marginBottom: 12, marginTop: 8 },
-  clipCard: { backgroundColor: 'rgba(255,255,255,0.05)', borderRadius: 16, padding: 16, marginBottom: 10, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
-  clipCardSelected: { borderColor: 'rgba(99,102,241,0.6)', backgroundColor: 'rgba(99,102,241,0.1)' },
-  clipCardTitle: { fontSize: 15, fontWeight: '600', color: '#FFF', marginBottom: 4 },
-  clipCardDate: { fontSize: 12, color: 'rgba(255,255,255,0.4)' },
-  emptyText: { fontSize: 15, color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 40, marginBottom: 24 },
-  errorText: { color: '#FF3B30', marginTop: 12, textAlign: 'center' },
-});

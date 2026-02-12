@@ -2377,6 +2377,11 @@ class Settings(BaseSettings):
         env="PRONUNCIATION_THRESHOLD_NEEDS_PRACTICE",
         description="Score threshold for needs-practice pronunciation quality",
     )
+    PHONEME_SIMILARITY_MATCH_THRESHOLD: float = Field(
+        default=0.9, ge=0.0, le=1.0,
+        env="PHONEME_SIMILARITY_MATCH_THRESHOLD",
+        description="Similarity threshold above which phoneme is considered a match (no issue)",
+    )
 
     # ============================================
     # Phase 8 - Voice-First Interactive Missions
@@ -2623,6 +2628,104 @@ class Settings(BaseSettings):
         default=300, ge=60, le=3600,
         env="V2V_EDGE_CACHE_TTL_SECONDS",
         description="TTL for edge-cached V2V transform results",
+    )
+
+    # ============================================
+    # ZEH ANI: NARRATIVE ORCHESTRATION (Phase 3 - Live Layer + Magic Mirror)
+    # ============================================
+    SYNCLABS_API_KEY: str = Field(
+        default="",
+        env="SYNCLABS_API_KEY",
+        description="SyncLabs API key for real-time lip-sync",
+    )
+    SYNCLABS_BASE_URL: str = Field(
+        default="https://api.synclabs.so",
+        env="SYNCLABS_BASE_URL",
+        description="SyncLabs API base URL",
+    )
+    SYNCLABS_TIMEOUT: float = Field(
+        default=15.0, ge=5.0, le=60.0,
+        env="SYNCLABS_TIMEOUT",
+        description="Timeout in seconds for SyncLabs requests",
+    )
+    SYNCLABS_WEBSOCKET_URL: str = Field(
+        default="wss://api.synclabs.so/ws",
+        env="SYNCLABS_WEBSOCKET_URL",
+        description="SyncLabs WebSocket URL for streaming lip-sync",
+    )
+    CREDIT_RATE_LIVE_LAYER: float = Field(
+        default=2.0, ge=0.0,
+        env="CREDIT_RATE_LIVE_LAYER",
+        description="Beta credits per live layer interaction",
+    )
+    CREDIT_RATE_SYNCLABS_LIPSYNC: float = Field(
+        default=3.0, ge=0.0,
+        env="CREDIT_RATE_SYNCLABS_LIPSYNC",
+        description="Beta credits per SyncLabs lip-sync generation",
+    )
+    SCENE_TRIGGER_LOOKAHEAD_SECONDS: float = Field(
+        default=5.0, ge=1.0, le=30.0,
+        env="SCENE_TRIGGER_LOOKAHEAD_SECONDS",
+        description="Seconds to look ahead for upcoming scene triggers",
+    )
+    SCENE_TRIGGER_MAX_PER_CONTENT: int = Field(
+        default=20, ge=1, le=100,
+        env="SCENE_TRIGGER_MAX_PER_CONTENT",
+        description="Maximum scene triggers per content item",
+    )
+    MAGIC_MIRROR_GREETING_REFRESH_HOURS: int = Field(
+        default=12, ge=1, le=48,
+        env="MAGIC_MIRROR_GREETING_REFRESH_HOURS",
+        description="Hours between magic mirror greeting refreshes",
+    )
+    CREDIT_RATE_MAGIC_MIRROR: float = Field(
+        default=5.0, ge=0.0,
+        env="CREDIT_RATE_MAGIC_MIRROR",
+        description="Beta credits per magic mirror greeting generation",
+    )
+
+    # ============================================
+    # ZEH ANI: GRANDPARENT LOOP (Phase 4 - Highlights + WhatsApp)
+    # ============================================
+    HIGHLIGHT_REEL_DURATION_SECONDS: int = Field(
+        default=30, ge=10, le=120,
+        env="HIGHLIGHT_REEL_DURATION_SECONDS",
+        description="Target duration for generated highlight reels",
+    )
+    HIGHLIGHT_REEL_MIN_INTERACTIONS: int = Field(
+        default=3, ge=1, le=20,
+        env="HIGHLIGHT_REEL_MIN_INTERACTIONS",
+        description="Minimum interactions required for reel generation",
+    )
+    CREDIT_RATE_HIGHLIGHT_REEL: int = Field(
+        default=20, ge=0,
+        env="CREDIT_RATE_HIGHLIGHT_REEL",
+        description="Beta credits per highlight reel generation",
+    )
+    TWILIO_WHATSAPP_NUMBER: str = Field(
+        default="",
+        env="TWILIO_WHATSAPP_NUMBER",
+        description="Twilio WhatsApp sender number",
+    )
+    TWILIO_WHATSAPP_TEMPLATE_SID: str = Field(
+        default="",
+        env="TWILIO_WHATSAPP_TEMPLATE_SID",
+        description="Twilio WhatsApp approved template SID",
+    )
+    TWILIO_WHATSAPP_CONTENT_SID: str = Field(
+        default="",
+        env="TWILIO_WHATSAPP_CONTENT_SID",
+        description="Twilio WhatsApp content SID for media messages",
+    )
+    GRANDPARENT_FEEDBACK_NOTIFICATION_ENABLED: bool = Field(
+        default=True,
+        env="GRANDPARENT_FEEDBACK_NOTIFICATION_ENABLED",
+        description="Enable in-app notifications for grandparent replies",
+    )
+    GRANDPARENT_REPLY_TRANSCRIPTION_ENABLED: bool = Field(
+        default=True,
+        env="GRANDPARENT_REPLY_TRANSCRIPTION_ENABLED",
+        description="Enable automatic transcription of grandparent voice replies",
     )
 
     # ============================================

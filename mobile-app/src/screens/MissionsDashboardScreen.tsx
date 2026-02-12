@@ -4,7 +4,6 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { GlassButton, GlassLoadingSpinner } from '@bayit/shared/ui';
 import { OlorinIcon } from '@olorin/icons/native';
-import { NativeIcon } from '@olorin/shared-icons/native';
 import { useDirection } from '@bayit/shared-hooks';
 import api from '@bayit/shared-services/api';
 import logger from '@/utils/logger';

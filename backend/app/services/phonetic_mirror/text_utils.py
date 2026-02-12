@@ -8,6 +8,7 @@ phoneme issue classification for pronunciation scoring.
 import re
 from typing import Optional
 
+from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.models.phonetic_mirror_attempt import PhonemeIssueType
 
@@ -58,7 +59,7 @@ def classify_phoneme_issue(
     Analyzes character-level differences to determine whether the issue
     involves vowels, consonants, extra/missing sounds, or stress placement.
     """
-    if similarity >= 0.9:
+    if similarity >= settings.PHONEME_SIMILARITY_MATCH_THRESHOLD:
         return None
 
     heard_chars = set(heard)

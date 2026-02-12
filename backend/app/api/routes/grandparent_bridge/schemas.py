@@ -1,6 +1,25 @@
 """Grandparent Bridge API request and response schemas."""
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, conlist, constr
+
+
+class SessionSummary(BaseModel):
+    """Typed summary of a child's learning session for news clip generation."""
+
+    vocabulary: conlist(constr(max_length=100), max_length=50) = Field(
+        default_factory=list,
+        description="Hebrew vocabulary words practiced in the session",
+    )
+    topics: conlist(constr(max_length=200), max_length=20) = Field(
+        default_factory=list,
+        description="Learning topics covered in the session",
+    )
+    score: int = Field(
+        default=0,
+        ge=0,
+        le=100,
+        description="Session score as a percentage",
+    )
 
 
 class GenerateClipRequest(BaseModel):
@@ -8,7 +27,7 @@ class GenerateClipRequest(BaseModel):
 
     profile_id: str = Field(..., min_length=1, max_length=100)
     avatar_id: str = Field(..., min_length=1, max_length=100)
-    session_summary: dict
+    session_summary: SessionSummary
 
 
 class ShareClipRequest(BaseModel):

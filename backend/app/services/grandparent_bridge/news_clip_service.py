@@ -9,6 +9,7 @@ Pipeline: script generation -> Hebrew TTS -> lip-synced video -> share token.
 import hashlib
 from uuid import uuid4
 
+from app.api.routes.grandparent_bridge.schemas import SessionSummary
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.models.child_avatar import ChildAvatar
@@ -25,7 +26,7 @@ class NewsClipService:
         user_id: str,
         profile_id: str,
         avatar_id: str,
-        session_summary: dict,
+        session_summary: SessionSummary,
     ) -> NewsClip:
         """
         Generate a news report clip from a learning session.
@@ -129,7 +130,7 @@ class NewsClipService:
 
     async def _generate_script(
         self,
-        session_summary: dict,
+        session_summary: SessionSummary,
         child_name: str,
     ) -> tuple:
         """Generate bilingual news report script via Claude."""
@@ -137,9 +138,9 @@ class NewsClipService:
 
         client = get_anthropic_client()
 
-        vocabulary = session_summary.get("vocabulary", [])
-        topics = session_summary.get("topics", [])
-        score = session_summary.get("score", 0)
+        vocabulary = session_summary.vocabulary
+        topics = session_summary.topics
+        score = session_summary.score
 
         prompt = (
             f"Write a short, fun news report script for a children's avatar "
