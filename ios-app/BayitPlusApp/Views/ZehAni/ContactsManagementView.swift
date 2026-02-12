@@ -16,6 +16,7 @@ struct ContactsManagementView: View {
     @State private var newPhoneNumber = ""
     @State private var newRelationship = "grandparent"
     @State private var newLanguage = "he"
+    @State private var newPin = ""
     @State private var isSaving = false
 
     private let relationships = ["grandparent", "parent", "aunt", "uncle", "other"]
@@ -132,13 +133,15 @@ struct ContactsManagementView: View {
                             .padding(DesignTokens.Spacing.sm).background(DesignTokens.Glass.bg)
                             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.default))
                     }
+                    SecureField(localization.t("zehAni.contacts.pin"), text: $newPin)
+                        .keyboardType(.numberPad).textFieldStyle(.roundedBorder)
                     if let error = error {
                         Text(error).foregroundColor(DesignTokens.ErrorColor.default).font(.system(size: DesignTokens.FontSize.sm))
                     }
                     Button { Task { await saveContact() } } label: {
                         Text(localization.t("common.save")).frame(maxWidth: .infinity).padding(DesignTokens.Spacing.md)
                     }
-                    .disabled(isSaving || newDisplayName.isEmpty || newPhoneNumber.isEmpty).buttonStyle(.borderedProminent)
+                    .disabled(isSaving || newDisplayName.isEmpty || newPhoneNumber.isEmpty || newPin.isEmpty).buttonStyle(.borderedProminent)
                 }
                 .padding(DesignTokens.Spacing.xl)
             }
@@ -161,7 +164,7 @@ struct ContactsManagementView: View {
         do {
             let newContact = try await repos.zehAniRepository.addContact(
                 profileId: profileId, phoneNumber: newPhoneNumber, displayName: newDisplayName,
-                relationship: newRelationship, language: newLanguage
+                relationship: newRelationship, language: newLanguage, pin: newPin
             )
             contacts.insert(newContact, at: 0); showAddSheet = false; resetForm()
         } catch { self.error = error.localizedDescription }
@@ -175,7 +178,7 @@ struct ContactsManagementView: View {
     }
 
     private func resetForm() {
-        newDisplayName = ""; newPhoneNumber = ""; newRelationship = "grandparent"; newLanguage = "he"; error = nil
+        newDisplayName = ""; newPhoneNumber = ""; newRelationship = "grandparent"; newLanguage = "he"; newPin = ""; error = nil
     }
 
     private func maskedPhone(_ phone: String) -> String {

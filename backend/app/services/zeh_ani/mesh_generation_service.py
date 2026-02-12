@@ -82,18 +82,9 @@ class MeshGenerationService:
                 str(avatar.id), glb_bytes
             )
 
-            mesh.glb_gcs_path = gcs_path
-            mesh.thumbnail_gcs_path = thumbnail_path
-            mesh.blend_shapes = blend_shapes
-            mesh.bone_count = bone_count
-            mesh.vertex_count = vertex_count
-            mesh.status = MeshStatus.READY
-            mesh.updated_at = datetime.now(timezone.utc)
-            await mesh.save()
-
             from app.services.zeh_ani import deduct_zeh_ani_credits
 
-            await deduct_zeh_ani_credits(
+            success, _remaining = await deduct_zeh_ani_credits(
                 user_id=avatar.user_id,
                 feature="3d_mesh",
                 usage_amount=1.0,
@@ -102,6 +93,21 @@ class MeshGenerationService:
                     "avatar_id": str(avatar.id),
                 },
             )
+            if not success:
+                mesh.status = MeshStatus.FAILED
+                mesh.error_message = "Insufficient credits"
+                mesh.updated_at = datetime.now(timezone.utc)
+                await mesh.save()
+                raise ValueError("Insufficient credits for 3D mesh generation")
+
+            mesh.glb_gcs_path = gcs_path
+            mesh.thumbnail_gcs_path = thumbnail_path
+            mesh.blend_shapes = blend_shapes
+            mesh.bone_count = bone_count
+            mesh.vertex_count = vertex_count
+            mesh.status = MeshStatus.READY
+            mesh.updated_at = datetime.now(timezone.utc)
+            await mesh.save()
 
             avatar.mesh_id = str(mesh.id)
             avatar.mesh_status = "ready"

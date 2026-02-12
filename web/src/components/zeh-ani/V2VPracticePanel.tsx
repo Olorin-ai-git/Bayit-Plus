@@ -1,10 +1,9 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuthStore } from '@bayit/shared-stores/authStore';
 import logger from '@bayit/shared-utils/logger';
 import { useV2VStore } from '@/stores/v2vStore';
 import { V2VWaveformCompare } from './V2VWaveformCompare';
-import type { V2VTransformResult } from '@/stores/v2vStore.types';
+import { useV2VWebSocket } from './useV2VWebSocket';
 
 const panelLogger = logger.scope('V2VPracticePanel');
 
@@ -15,82 +14,20 @@ interface V2VPracticePanelProps {
   profileId: string;
 }
 
-const WS_RECONNECT_DELAY_MS = 3000;
-const MAX_RECONNECT_ATTEMPTS = 5;
-
-function getWebSocketUrl(avatarId: string, token: string): string {
-  const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-  const wsHost = import.meta.env.VITE_WS_URL ||
-    (import.meta.env.PROD
-      ? import.meta.env.VITE_WS_PROD_HOST
-      : `${window.location.hostname}:8000`);
-  const cleanHost = wsHost.replace(/^wss?:\/\//, '');
-  return `${wsProtocol}//${cleanHost}/api/v1/ws/v2v/${avatarId}?token=${token}`;
-}
-
 export function V2VPracticePanel({ avatarId, profileId }: V2VPracticePanelProps) {
   const { t } = useTranslation();
-  const token = useAuthStore((s) => s.token);
-  const { lastResult, loading, error, transformVoice, clearError } = useV2VStore();
+  const { lastResult, error, transformVoice, clearError } = useV2VStore();
 
   const [panelState, setPanelState] = useState<PanelState>('idle');
-  const [wsResult, setWsResult] = useState<V2VTransformResult | null>(null);
   const [targetPhrase] = useState(() => t('zehAni.v2v.defaultPhrase'));
 
-  const wsRef = useRef<WebSocket | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
-  const reconnectCountRef = useRef(0);
+
+  const onWsResult = useCallback(() => setPanelState('result'), []);
+  const { wsRef, wsResult, setWsResult } = useV2VWebSocket(avatarId, onWsResult);
 
   const displayResult = wsResult || lastResult;
-
-  const connectWebSocket = useCallback(() => {
-    if (!token || wsRef.current?.readyState === WebSocket.OPEN) return;
-
-    const url = getWebSocketUrl(avatarId, token);
-    const ws = new WebSocket(url);
-
-    ws.onopen = () => {
-      reconnectCountRef.current = 0;
-      useV2VStore.setState({ wsConnected: true });
-      panelLogger.info('V2V WebSocket connected', { avatarId });
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data) as V2VTransformResult;
-        setWsResult(data);
-        setPanelState('result');
-        panelLogger.info('V2V result received via WebSocket', {
-          scoreDelta: String(data.score_delta),
-        });
-      } catch (parseError) {
-        panelLogger.error('Failed to parse WebSocket message', parseError);
-      }
-    };
-
-    ws.onclose = () => {
-      useV2VStore.setState({ wsConnected: false });
-      if (reconnectCountRef.current < MAX_RECONNECT_ATTEMPTS) {
-        reconnectCountRef.current += 1;
-        setTimeout(connectWebSocket, WS_RECONNECT_DELAY_MS);
-      }
-    };
-
-    ws.onerror = (wsError) => {
-      panelLogger.error('V2V WebSocket error', wsError);
-    };
-
-    wsRef.current = ws;
-  }, [avatarId, token]);
-
-  useEffect(() => {
-    connectWebSocket();
-    return () => {
-      wsRef.current?.close();
-      wsRef.current = null;
-    };
-  }, [connectWebSocket]);
 
   const startRecording = useCallback(async () => {
     clearError();
@@ -122,11 +59,7 @@ export function V2VPracticePanel({ avatarId, profileId }: V2VPracticePanelProps)
             }));
           } else {
             await transformVoice(avatarId, profileId, base64, targetPhrase);
-            if (useV2VStore.getState().lastResult) {
-              setPanelState('result');
-            } else {
-              setPanelState('idle');
-            }
+            setPanelState(useV2VStore.getState().lastResult ? 'result' : 'idle');
           }
         };
         reader.readAsDataURL(blob);
@@ -142,7 +75,7 @@ export function V2VPracticePanel({ avatarId, profileId }: V2VPracticePanelProps)
         error: micError?.message || t('zehAni.v2v.errors.micDenied'),
       });
     }
-  }, [avatarId, profileId, targetPhrase, clearError, transformVoice, t]);
+  }, [avatarId, profileId, targetPhrase, clearError, transformVoice, t, wsRef, setWsResult]);
 
   const stopRecording = useCallback(() => {
     mediaRecorderRef.current?.stop();
@@ -153,7 +86,7 @@ export function V2VPracticePanel({ avatarId, profileId }: V2VPracticePanelProps)
     setPanelState('idle');
     setWsResult(null);
     clearError();
-  }, [clearError]);
+  }, [clearError, setWsResult]);
 
   return (
     <div className="rounded-2xl bg-white/5 border border-white/10 p-6 backdrop-blur-md">

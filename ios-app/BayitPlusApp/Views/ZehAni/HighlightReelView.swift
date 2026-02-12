@@ -137,7 +137,8 @@ struct HighlightReelView: View {
     private func shareReel(_ reel: HighlightReelItem) {
         guard let shareToken = reel.shareToken else { return }
         let shareText = localization.t("zehAni.highlights.share")
-        let shareUrl = "https://bayit.tv/zeh-ani/reels/\(shareToken)"
+        let webHost = repos.configuration.environment == .production ? "bayit.tv" : "staging.bayit.tv"
+        let shareUrl = "https://\(webHost)/zeh-ani/reels/\(shareToken)"
         let items: [Any] = [shareText, shareUrl]
         let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
         if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
