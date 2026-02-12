@@ -72,6 +72,12 @@ async def handle_trigger_response(websocket: WebSocket, user, content_id, messag
     avatar = await ChildAvatar.find_one(
         ChildAvatar.user_id == str(user.id),
     )
+    if not avatar:
+        await websocket.send_json({
+            "type": "error",
+            "message": "No active avatar profile",
+        })
+        return
 
     audio_data = base64.b64decode(audio_b64)
     if len(audio_data) > settings.WEBSOCKET_MAX_AUDIO_PAYLOAD_BYTES:

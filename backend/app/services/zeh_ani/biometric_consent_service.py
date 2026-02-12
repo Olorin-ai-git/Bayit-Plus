@@ -29,7 +29,7 @@ class BiometricConsentService:
         latent_features_cloud: bool = False,
     ) -> BiometricConsent:
         """Grant biometric consent after PIN verification."""
-        await self._verify_pin(user_id, pin)
+        await self.verify_pin(user_id, pin)
 
         existing = await BiometricConsent.find_one(
             BiometricConsent.user_id == user_id,
@@ -166,7 +166,7 @@ class BiometricConsentService:
             result[ctype.value] = has
         return result
 
-    async def _verify_pin(self, user_id: str, pin: str) -> None:
+    async def verify_pin(self, user_id: str, pin: str) -> None:
         """Verify family PIN before consent operations."""
         family_controls = await FamilyControls.find_one(
             FamilyControls.user_id == user_id

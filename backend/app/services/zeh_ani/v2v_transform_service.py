@@ -1,13 +1,4 @@
-"""
-Voice-to-Voice Transform Service.
-
-Orchestrates the V2V pronunciation correction pipeline:
-1. Whisper transcribe child speech (with code-switch detection)
-2. ElevenLabs TTS generates "perfect Hebrew" audio
-3. ElevenLabs V2V skins TTS audio with child's voice frequency
-4. Score pronunciation before/after via pronunciation_scorer
-5. Return corrected audio + score delta
-"""
+"""Voice-to-Voice Transform Service -- V2V pronunciation correction pipeline."""
 
 import time
 from datetime import datetime, timezone
@@ -130,6 +121,10 @@ class V2VTransformService:
                         "session_id": str(session.id),
                     },
                 )
+                return {
+                    "error": "insufficient_credits",
+                    "input_transcript": input_transcript,
+                }
 
         from app.services.gamification.level_service import level_service
 
@@ -150,10 +145,18 @@ class V2VTransformService:
             },
         )
 
+        from app.services.olorin.storage_service import storage_service
+
+        audio_gcs_path = v2v_path if v2v_audio else tts_path
+        audio_signed_url = await storage_service.generate_signed_url(
+            audio_gcs_path,
+            expiry_seconds=settings.MESH_SIGNED_URL_EXPIRY_SECONDS,
+        )
+
         return {
             "input_transcript": input_transcript,
             "corrected_transcript": target_phrase_he,
-            "v2v_audio_gcs_path": v2v_path if v2v_audio else tts_path,
+            "v2v_audio_url": audio_signed_url,
             "latency_ms": latency_ms,
             "score_before": round(score_before, 3),
             "score_after": round(score_after, 3),

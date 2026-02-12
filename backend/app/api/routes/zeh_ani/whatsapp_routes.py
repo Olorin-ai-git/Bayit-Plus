@@ -52,7 +52,7 @@ async def add_contact(
 ):
     """Add an approved grandparent WhatsApp contact after PIN verification."""
     try:
-        await biometric_consent_service._verify_pin(str(user.id), body.pin)
+        await biometric_consent_service.verify_pin(str(user.id), body.pin)
     except ValueError as exc:
         raise HTTPException(status_code=403, detail=str(exc))
 

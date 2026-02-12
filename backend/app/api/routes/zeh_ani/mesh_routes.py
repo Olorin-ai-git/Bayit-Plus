@@ -74,6 +74,10 @@ async def generate_mesh(
             status_code=400, detail="Avatar must be ready before mesh gen"
         )
 
+    await biometric_consent_service.verify_pin(
+        str(user.id), request.pin,
+    )
+
     has_consent = await biometric_consent_service.has_biometric_consent(
         user_id=str(user.id),
         profile_id=request.profile_id,
@@ -97,13 +101,20 @@ async def generate_mesh(
 
     mesh = existing
     if not mesh:
-        mesh = AvatarMesh(
-            avatar_id=str(avatar.id),
-            user_id=str(user.id),
-            profile_id=request.profile_id,
-            status=MeshStatus.PENDING,
-        )
-        await mesh.insert()
+        from pymongo.errors import DuplicateKeyError
+
+        try:
+            mesh = AvatarMesh(
+                avatar_id=str(avatar.id),
+                user_id=str(user.id),
+                profile_id=request.profile_id,
+                status=MeshStatus.PENDING,
+            )
+            await mesh.insert()
+        except DuplicateKeyError:
+            mesh = await AvatarMesh.find_one(
+                AvatarMesh.avatar_id == str(avatar.id),
+            )
 
     return _mesh_response(mesh)
 

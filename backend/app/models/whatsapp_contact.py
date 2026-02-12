@@ -2,7 +2,7 @@
 WhatsApp Contact Model.
 
 Stores approved grandparent contacts for automated highlight reel sharing.
-Phone numbers are stored as SHA-256 hashes for privacy compliance.
+Phone numbers are stored as HMAC-SHA256 hashes (salted) for privacy compliance.
 """
 
 from datetime import datetime, timezone
@@ -16,7 +16,7 @@ class WhatsAppContact(Document):
     """
     Approved grandparent contact for WhatsApp sharing.
 
-    Phone numbers are hashed (SHA-256) and never stored in plaintext.
+    Phone numbers are hashed (HMAC-SHA256 with salt) and never stored in plaintext.
     Each contact must be explicitly approved by the parent via PIN.
     """
 
@@ -25,7 +25,7 @@ class WhatsAppContact(Document):
 
     # Contact info (privacy-preserving)
     phone_hash: str = Field(
-        ..., description="SHA-256 hash of phone number",
+        ..., description="HMAC-SHA256 hash of phone number (salted)",
     )
     display_name: str = Field(..., max_length=100)
     relationship: str = Field(

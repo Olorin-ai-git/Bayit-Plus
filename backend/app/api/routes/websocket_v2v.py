@@ -178,11 +178,19 @@ async def _handle_audio_chunk(websocket, user, avatar, session, message):
         session=session,
     )
 
+    if result.get("error") == "insufficient_credits":
+        await websocket.send_json({
+            "type": "error",
+            "message": "Insufficient credits for V2V transform",
+            "recoverable": True,
+        })
+        return
+
     await websocket.send_json({
         "type": "v2v_result",
         "input_transcript": result["input_transcript"],
         "corrected_transcript": result["corrected_transcript"],
-        "v2v_audio_path": result["v2v_audio_gcs_path"],
+        "v2v_audio_url": result["v2v_audio_url"],
         "latency_ms": result["latency_ms"],
         "score_before": result["score_before"],
         "score_after": result["score_after"],
