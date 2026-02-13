@@ -57,9 +57,19 @@ async def get_trivia(
     validated_id = validate_object_id(content_id)
 
     existing = await ContentTrivia.get_for_content(validated_id)
-    if existing and existing.is_enriched:
+    if existing and existing.is_enriched and "ai" in existing.sources_used:
+        logger.debug(
+            "Returning cached AI-enriched trivia",
+            extra={"content_id": content_id, "sources": existing.sources_used}
+        )
         return format_trivia_response(
             existing, language, multilingual, include_metadata=True
+        )
+
+    if existing and existing.is_enriched and "ai" not in existing.sources_used:
+        logger.info(
+            "Regenerating trivia: cached version has no AI facts",
+            extra={"content_id": content_id, "sources": existing.sources_used}
         )
 
     content = await Content.get(validated_id)

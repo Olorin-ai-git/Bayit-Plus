@@ -61,15 +61,24 @@ public final class MediaPlayer {
         let asset = AVURLAsset(url: url)
         let item = AVPlayerItem(asset: asset)
 
+        // Configure buffering for better seek performance
+        item.preferredForwardBufferDuration = 30.0  // Preload 30 seconds
+        item.canUseNetworkResourcesForLiveStreamingWhilePaused = true
+
         tearDownItemObservers()
         avPlayer.replaceCurrentItem(with: item)
+
+        // Enable automatic waiting to minimize stalls
+        avPlayer.automaticallyWaitsToMinimizeStalling = true
+
         setupItemObservers(for: item)
 
         logger.info(
             "Media loaded",
             context: [
                 "contentType": contentType.rawValue,
-                "url": url.lastPathComponent
+                "url": url.lastPathComponent,
+                "bufferDuration": "30s"
             ]
         )
     }

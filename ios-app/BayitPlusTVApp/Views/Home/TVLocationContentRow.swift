@@ -45,7 +45,7 @@ struct TVLocationContentRow: View {
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
                 .stroke(Color.white.opacity(0.1), lineWidth: 2)
         )
-        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
     }
 
     private var titleWithLocation: some View {

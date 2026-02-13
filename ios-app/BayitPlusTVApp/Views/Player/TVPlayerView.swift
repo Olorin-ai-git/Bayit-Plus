@@ -50,6 +50,10 @@ struct TVPlayerView: View {
     @State private var isResolvingStream = true
     @State private var streamError: String?
 
+    // Focus management
+    @FocusState private var controlBarFocused: Bool
+    @State private var seekPreviewPosition: TimeInterval?
+
     // MARK: - Split Subtitle State
 
     @State private var splitModeEnabled = false
@@ -130,6 +134,8 @@ struct TVPlayerView: View {
                                 isSplitEnabled: splitModeEnabled,
                                 splitLanguages: splitLanguages
                             )
+                            .focused($controlBarFocused)
+                            .defaultFocus($controlBarFocused, true)
                         }
                     }
                     .padding(.bottom, TVDesignTokens.Spacing.xxl)
@@ -142,6 +148,11 @@ struct TVPlayerView: View {
         .onChange(of: mediaPlayer.currentTime) { _, newTime in
             subtitlesVM?.updateActiveCue(currentTime: newTime)
             triviaVM?.updateActiveFact(currentTime: newTime)
+        }
+        .onChange(of: showControlButtons) { _, isVisible in
+            if isVisible {
+                controlBarFocused = true
+            }
         }
         .onPlayPauseCommand { mediaPlayer.togglePlayPause() }
         .onMoveCommand { direction in
@@ -310,16 +321,51 @@ struct TVPlayerView: View {
                             height: 6
                         )
 
-                    // Progress
+                    // Progress (with seek preview)
                     RoundedRectangle(cornerRadius: 3)
                         .fill(DesignTokens.Primary.p400)
                         .frame(
-                            width: geo.size.width * progressFraction,
+                            width: geo.size.width * (seekPreviewPosition != nil
+                                ? seekPreviewPosition! / max(mediaPlayer.duration, 1)
+                                : progressFraction),
                             height: 6
                         )
+
+                    // Seek indicator
+                    if seekPreviewPosition != nil {
+                        Circle()
+                            .fill(DesignTokens.Primary.p300)
+                            .frame(width: 12, height: 12)
+                            .offset(x: geo.size.width * (seekPreviewPosition! / max(mediaPlayer.duration, 1)) - 6)
+                    }
                 }
             }
             .frame(height: 6)
+            .focusable()
+            .focusEffectDisabled()
+            .onMoveCommand { direction in
+                switch direction {
+                case .left:
+                    let current = seekPreviewPosition ?? mediaPlayer.currentTime
+                    seekPreviewPosition = max(0, current - 10)
+                case .right:
+                    let current = seekPreviewPosition ?? mediaPlayer.currentTime
+                    seekPreviewPosition = min(mediaPlayer.duration, current + 10)
+                default:
+                    break
+                }
+            }
+            .onPlayPauseCommand {
+                if let pos = seekPreviewPosition {
+                    Task {
+                        await mediaPlayer.seek(to: pos)
+                        seekPreviewPosition = nil
+                    }
+                }
+            }
+            .onExitCommand {
+                seekPreviewPosition = nil
+            }
 
             HStack {
                 Text(formatTime(mediaPlayer.currentTime))

@@ -87,7 +87,7 @@ public struct GlassContentShelf<Item: Identifiable, ItemView: View>: View {
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
                 .stroke(Color.white.opacity(0.1), lineWidth: 2)
         )
-        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
     }
 
     // MARK: - Header with optional "Show All"
