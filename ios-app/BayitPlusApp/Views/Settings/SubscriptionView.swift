@@ -8,6 +8,8 @@ struct SubscriptionView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: SubscriptionViewModel?
+    @State private var showDisclosure = false
+    @State private var pendingCheckoutURL: URL?
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -33,6 +35,9 @@ struct SubscriptionView: View {
             }
         }
         .background(DesignTokens.Background.primary)
+        .sheet(isPresented: $showDisclosure) {
+            externalPaymentDisclosure
+        }
         .task {
             if viewModel == nil {
                 viewModel = SubscriptionViewModel(repository: repos.settings)
@@ -167,15 +172,8 @@ struct SubscriptionView: View {
                         Task { @MainActor in
                             guard !vm.isProcessing else { return }
                             if let url = await vm.subscribe(to: plan) {
-                                await MainActor.run {
-                                    UIApplication.shared.open(url, options: [:]) { success in
-                                        if !success {
-                                            Task { @MainActor in
-                                                vm.setError("Failed to open subscription page. Please try again.")
-                                            }
-                                        }
-                                    }
-                                }
+                                pendingCheckoutURL = url
+                                showDisclosure = true
                             } else if vm.error == nil {
                                 vm.setError("Unable to start subscription. Please try again later.")
                             }
@@ -207,5 +205,74 @@ struct SubscriptionView: View {
             Task { await vm.cancelSubscription() }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    // MARK: - External Payment Disclosure
+
+    private var externalPaymentDisclosure: some View {
+        VStack(spacing: 0) {
+            // Header
+            HStack {
+                Spacer()
+                Button(action: { showDisclosure = false }) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.system(size: 28))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+            }
+            .padding(DesignTokens.Spacing.lg)
+
+            // Content
+            VStack(spacing: DesignTokens.Spacing.xl) {
+                Image(systemName: "safari.fill")
+                    .font(.system(size: 60))
+                    .foregroundStyle(DesignTokens.Primary.default)
+
+                VStack(spacing: DesignTokens.Spacing.md) {
+                    Text(localization.t("subscription.externalPaymentTitle"))
+                        .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
+                        .foregroundStyle(DesignTokens.Text.primary)
+                        .multilineTextAlignment(.center)
+
+                    Text(localization.t("subscription.externalPaymentMessage"))
+                        .font(.system(size: DesignTokens.FontSize.md))
+                        .foregroundStyle(DesignTokens.Text.secondary)
+                        .multilineTextAlignment(.center)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                VStack(spacing: DesignTokens.Spacing.sm) {
+                    GlassButton(
+                        localization.t("subscription.continueToWebsite"),
+                        variant: .primary
+                    ) {
+                        if let url = pendingCheckoutURL {
+                            UIApplication.shared.open(url, options: [:]) { success in
+                                if !success {
+                                    Task { @MainActor in
+                                        viewModel?.setError("Failed to open subscription page. Please try again.")
+                                    }
+                                }
+                            }
+                        }
+                        showDisclosure = false
+                    }
+
+                    GlassButton(
+                        localization.t("common.cancel"),
+                        variant: .ghost
+                    ) {
+                        showDisclosure = false
+                        pendingCheckoutURL = nil
+                    }
+                }
+            }
+            .padding(DesignTokens.Spacing.xl)
+
+            Spacer()
+        }
+        .background(DesignTokens.Background.primary)
+        .presentationDetents([.medium])
+        .presentationDragIndicator(.visible)
     }
 }

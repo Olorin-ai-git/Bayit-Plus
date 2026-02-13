@@ -2639,6 +2639,33 @@
       "listeningLabel": "オロリンが聞いています",
       "processingLabel": "オロリンが処理しています",
       "gestureLabel": "オロリン {{gesture}}"
+    },
+    "selfie": {
+      "title": "ビデオセルフィーを録画",
+      "instructions": "カメラを見て、ゆっくり頭を左右に回してください。3Dアバターの作成に役立ちます。",
+      "recording": "録画中...",
+      "maxDuration": "最大10秒"
+    },
+    "processing": {
+      "uploading": "ビデオをアップロード中",
+      "uploadingDesc": "ビデオセルフィーがアップロードされ、3Dアバターがまもなく生成されます。",
+      "retryUpload": "再試行"
+    },
+    "settings": {
+      "title": "アバター設定",
+      "meshStatus": "3Dモデルステータス",
+      "reRecord": "ビデオセルフィーを再録画",
+      "delete": "アバターを削除",
+      "deleting": "削除中...",
+      "deleteConfirmTitle": "アバターを削除しますか？",
+      "deleteConfirm": "削除",
+      "deleteConfirmDesc": "アバターと関連するすべてのデータが完全に削除されます。この操作は元に戻せません。",
+      "statusReady": "準備完了",
+      "statusGenerating": "生成中...",
+      "statusRigging": "アニメーション追加中...",
+      "statusPending": "保留中",
+      "statusFailed": "失敗",
+      "statusUnknown": "不明"
     }
   },
   "bar": {
@@ -7578,7 +7605,10 @@
     "monthly": "月額",
     "subscribe": "登録",
     "yearly": "年額",
-    "tvSubscribeMessage": "bayit.tvまたはモバイルデバイスから購読"
+    "tvSubscribeMessage": "bayit.tvまたはモバイルデバイスから購読",
+    "externalPaymentTitle": "ウェブサイトに進む",
+    "externalPaymentMessage": "サブスクリプションを完了するために当社のウェブサイトにリダイレクトされます。サブスクリプションは Bayit+ アカウントを通じて管理されます。",
+    "continueToWebsite": "ウェブサイトに進む"
   },
   "subtitles": {
     "nikud": "ニクド",
@@ -8923,7 +8953,9 @@
       "error": "あいさつを読み込めませんでした",
       "noAvatar": "アバターを作成",
       "noAvatarDesc": "お子様のアバターを設定して、毎日のヘブライ語の語彙を含むパーソナライズされたマジックミラーの挨拶を解除しましょう。",
-      "createAvatar": "始める"
+      "createAvatar": "始める",
+      "noCreditsTitle": "クレジットが残っていません",
+      "noCreditsDesc": "すべてのAIクレジットを使い切りました。プランをアップグレードするか、クレジットが更新されるまでお待ちください。"
     },
     "highlights": {
       "title": "ハイライト動画",

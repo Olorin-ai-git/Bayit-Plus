@@ -3048,6 +3048,33 @@
       "listeningLabel": "Olorin écoute",
       "processingLabel": "Olorin traite",
       "gestureLabel": "Olorin {{gesture}}"
+    },
+    "selfie": {
+      "title": "Enregistrer un Video Selfie",
+      "instructions": "Regardez la camera et tournez lentement la tete a gauche et a droite. Cela nous aide a creer votre avatar 3D.",
+      "recording": "Enregistrement...",
+      "maxDuration": "Maximum 10 secondes"
+    },
+    "processing": {
+      "uploading": "Telechargement de la video",
+      "uploadingDesc": "Votre video selfie est en cours de telechargement et votre avatar 3D sera genere sous peu.",
+      "retryUpload": "Reessayer"
+    },
+    "settings": {
+      "title": "Parametres de l'Avatar",
+      "meshStatus": "Statut du modele 3D",
+      "reRecord": "Re-enregistrer le video selfie",
+      "delete": "Supprimer l'Avatar",
+      "deleting": "Suppression...",
+      "deleteConfirmTitle": "Supprimer l'Avatar ?",
+      "deleteConfirm": "Supprimer",
+      "deleteConfirmDesc": "Cela supprimera definitivement l'avatar et toutes les donnees associees. Cette action est irreversible.",
+      "statusReady": "Pret",
+      "statusGenerating": "Generation...",
+      "statusRigging": "Ajout des animations...",
+      "statusPending": "En attente",
+      "statusFailed": "Echec",
+      "statusUnknown": "Inconnu"
     }
   },
   "bar": {
@@ -7523,7 +7550,10 @@
     "monthly": "Mensuel",
     "subscribe": "S'abonner",
     "yearly": "Annuel",
-    "tvSubscribeMessage": "Abonnez-vous sur bayit.tv ou depuis votre appareil mobile"
+    "tvSubscribeMessage": "Abonnez-vous sur bayit.tv ou depuis votre appareil mobile",
+    "externalPaymentTitle": "Continuer vers le site web",
+    "externalPaymentMessage": "Vous serez redirigé vers notre site web pour finaliser votre abonnement. Votre abonnement sera géré via votre compte Bayit+.",
+    "continueToWebsite": "Continuer vers le site web"
   },
   "subtitles": {
     "nikud": "Nikud",
@@ -9067,7 +9097,9 @@
       "error": "Impossible de charger le message",
       "noAvatar": "Creez votre avatar",
       "noAvatarDesc": "Configurez l'avatar de votre enfant pour debloquer les salutations personnalisees du Miroir Magique avec du vocabulaire hebreu quotidien.",
-      "createAvatar": "Commencer"
+      "createAvatar": "Commencer",
+      "noCreditsTitle": "Plus de credits disponibles",
+      "noCreditsDesc": "Vous avez utilise tous vos credits IA. Mettez a niveau votre forfait ou attendez le renouvellement de vos credits."
     },
     "highlights": {
       "title": "Videos phares",

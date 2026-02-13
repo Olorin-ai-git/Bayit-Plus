@@ -3339,6 +3339,33 @@
       "listeningLabel": "Wizard is listening",
       "processingLabel": "Wizard is processing your request",
       "focusHint": "Press select to interact with the wizard"
+    },
+    "selfie": {
+      "title": "Record Video Selfie",
+      "instructions": "Look at the camera and slowly turn your head left and right. This helps us create your 3D avatar.",
+      "recording": "Recording...",
+      "maxDuration": "Maximum 10 seconds"
+    },
+    "processing": {
+      "uploading": "Uploading Video",
+      "uploadingDesc": "Your video selfie is being uploaded and your 3D avatar will be generated shortly.",
+      "retryUpload": "Retry Upload"
+    },
+    "settings": {
+      "title": "Avatar Settings",
+      "meshStatus": "3D Model Status",
+      "reRecord": "Re-record Video Selfie",
+      "delete": "Delete Avatar",
+      "deleting": "Deleting...",
+      "deleteConfirmTitle": "Delete Avatar?",
+      "deleteConfirm": "Delete",
+      "deleteConfirmDesc": "This will permanently delete the avatar and all associated data. This action cannot be undone.",
+      "statusReady": "Ready",
+      "statusGenerating": "Generating...",
+      "statusRigging": "Adding animations...",
+      "statusPending": "Pending",
+      "statusFailed": "Failed",
+      "statusUnknown": "Unknown"
     }
   },
   "badges": {
@@ -7375,7 +7402,10 @@
     "monthly": "Monthly",
     "subscribe": "Subscribe",
     "yearly": "Yearly",
-    "tvSubscribeMessage": "Subscribe at bayit.tv or from your mobile device"
+    "tvSubscribeMessage": "Subscribe at bayit.tv or from your mobile device",
+    "externalPaymentTitle": "Continue to Website",
+    "externalPaymentMessage": "You will be redirected to our website to complete your subscription. Your subscription will be managed through your Bayit+ account.",
+    "continueToWebsite": "Continue to Website"
   },
   "subtitles": {
     "nikud": "Nikud",
@@ -8355,7 +8385,9 @@
       "error": "Could not load greeting",
       "noAvatar": "Create Your Avatar",
       "noAvatarDesc": "Set up your child's avatar to unlock personalized Magic Mirror greetings with daily Hebrew vocabulary.",
-      "createAvatar": "Get Started"
+      "createAvatar": "Get Started",
+      "noCreditsTitle": "No Credits Remaining",
+      "noCreditsDesc": "You have used all your AI credits. Upgrade your plan or wait for your credits to refresh."
     },
     "highlights": {
       "title": "Highlight Reels",

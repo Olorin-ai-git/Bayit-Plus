@@ -3292,6 +3292,33 @@
       "listeningLabel": "Olorin sta ascoltando",
       "processingLabel": "Olorin sta elaborando",
       "gestureLabel": "Olorin {{gesture}}"
+    },
+    "selfie": {
+      "title": "Registra Video Selfie",
+      "instructions": "Guarda la fotocamera e gira lentamente la testa a sinistra e a destra. Questo ci aiuta a creare il tuo avatar 3D.",
+      "recording": "Registrazione...",
+      "maxDuration": "Massimo 10 secondi"
+    },
+    "processing": {
+      "uploading": "Caricamento Video",
+      "uploadingDesc": "Il tuo video selfie e in fase di caricamento e il tuo avatar 3D verra generato a breve.",
+      "retryUpload": "Riprova"
+    },
+    "settings": {
+      "title": "Impostazioni Avatar",
+      "meshStatus": "Stato del Modello 3D",
+      "reRecord": "Registra di nuovo il video selfie",
+      "delete": "Elimina Avatar",
+      "deleting": "Eliminazione...",
+      "deleteConfirmTitle": "Eliminare l'Avatar?",
+      "deleteConfirm": "Elimina",
+      "deleteConfirmDesc": "Questo eliminera permanentemente l'avatar e tutti i dati associati. Questa azione non puo essere annullata.",
+      "statusReady": "Pronto",
+      "statusGenerating": "Generazione...",
+      "statusRigging": "Aggiunta animazioni...",
+      "statusPending": "In attesa",
+      "statusFailed": "Fallito",
+      "statusUnknown": "Sconosciuto"
     }
   },
   "bar": {
@@ -7177,7 +7204,10 @@
     "monthly": "Mensile",
     "subscribe": "Abbonati",
     "yearly": "Annuale",
-    "tvSubscribeMessage": "Abbonati su bayit.tv o dal tuo dispositivo mobile"
+    "tvSubscribeMessage": "Abbonati su bayit.tv o dal tuo dispositivo mobile",
+    "externalPaymentTitle": "Continua al sito web",
+    "externalPaymentMessage": "Sarai reindirizzato al nostro sito web per completare il tuo abbonamento. Il tuo abbonamento sarà gestito tramite il tuo account Bayit+.",
+    "continueToWebsite": "Continua al sito web"
   },
   "subtitles": {
     "nikud": "Nikud",
@@ -8411,7 +8441,9 @@
       "error": "Impossibile caricare il saluto",
       "noAvatar": "Crea il tuo avatar",
       "noAvatarDesc": "Configura l'avatar di tuo figlio per sbloccare i saluti personalizzati dello Specchio Magico con il vocabolario ebraico quotidiano.",
-      "createAvatar": "Inizia"
+      "createAvatar": "Inizia",
+      "noCreditsTitle": "Nessun credito rimanente",
+      "noCreditsDesc": "Hai esaurito tutti i tuoi crediti IA. Aggiorna il tuo piano o attendi il rinnovo dei crediti."
     },
     "highlights": {
       "title": "Video in evidenza",

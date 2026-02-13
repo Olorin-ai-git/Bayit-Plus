@@ -3283,6 +3283,33 @@
       "listeningLabel": "אולורין מקשיב",
       "processingLabel": "אולורין מעבד",
       "gestureLabel": "אולורין {{gesture}}"
+    },
+    "selfie": {
+      "title": "הקלטת סלפי וידאו",
+      "instructions": "הסתכלו למצלמה וסובבו את הראש לאט שמאלה וימינה. זה עוזר לנו ליצור את הדמות התלת-ממדית שלכם.",
+      "recording": "מקליט...",
+      "maxDuration": "מקסימום 10 שניות"
+    },
+    "processing": {
+      "uploading": "מעלה וידאו",
+      "uploadingDesc": "סלפי הוידאו שלכם מועלה והדמות התלת-ממדית תיווצר בקרוב.",
+      "retryUpload": "נסו שוב"
+    },
+    "settings": {
+      "title": "הגדרות דמות",
+      "meshStatus": "סטטוס מודל תלת-ממדי",
+      "reRecord": "הקלטה מחדש של סלפי וידאו",
+      "delete": "מחיקת דמות",
+      "deleting": "מוחק...",
+      "deleteConfirmTitle": "למחוק את הדמות?",
+      "deleteConfirm": "מחיקה",
+      "deleteConfirmDesc": "פעולה זו תמחק את הדמות וכל הנתונים המשויכים לצמיתות. לא ניתן לבטל פעולה זו.",
+      "statusReady": "מוכן",
+      "statusGenerating": "יוצר...",
+      "statusRigging": "מוסיף אנימציות...",
+      "statusPending": "ממתין",
+      "statusFailed": "נכשל",
+      "statusUnknown": "לא ידוע"
     }
   },
   "badges": {
@@ -7242,7 +7269,10 @@
     "monthly": "חודשי",
     "subscribe": "הירשם",
     "yearly": "שנתי",
-    "tvSubscribeMessage": "הירשם ב-bayit.tv או מהמכשיר הנייד שלך"
+    "tvSubscribeMessage": "הירשם ב-bayit.tv או מהמכשיר הנייד שלך",
+    "externalPaymentTitle": "המשך לאתר",
+    "externalPaymentMessage": "תועבר לאתר שלנו כדי להשלים את המנוי שלך. המנוי שלך ינוהל דרך חשבון Bayit+ שלך.",
+    "continueToWebsite": "המשך לאתר"
   },
   "subtitles": {
     "nikud": "ניקוד",
@@ -8497,7 +8527,9 @@
       "error": "לא ניתן לטעון ברכה",
       "noAvatar": "יצירת האווטאר שלך",
       "noAvatarDesc": "הגדירו את האווטאר של הילד כדי לקבל ברכות מראה קסם מותאמות אישית עם אוצר מילים יומי בעברית.",
-      "createAvatar": "בואו נתחיל"
+      "createAvatar": "בואו נתחיל",
+      "noCreditsTitle": "לא נותרו קרדיטים",
+      "noCreditsDesc": "השתמשת בכל קרדיטי הבינה המלאכותית שלך. שדרג את התוכנית שלך או המתן לחידוש הקרדיטים."
     },
     "highlights": {
       "title": "סרטוני הדגשה",

@@ -3065,6 +3065,33 @@
       "listeningLabel": "奥洛林正在聆听",
       "processingLabel": "奥洛林正在处理",
       "gestureLabel": "奥洛林 {{gesture}}"
+    },
+    "selfie": {
+      "title": "录制视频自拍",
+      "instructions": "看着摄像头，慢慢地左右转动头部。这有助于我们创建您的3D头像。",
+      "recording": "录制中...",
+      "maxDuration": "最长10秒"
+    },
+    "processing": {
+      "uploading": "上传视频中",
+      "uploadingDesc": "您的视频自拍正在上传，3D头像将很快生成。",
+      "retryUpload": "重试"
+    },
+    "settings": {
+      "title": "头像设置",
+      "meshStatus": "3D模型状态",
+      "reRecord": "重新录制视频自拍",
+      "delete": "删除头像",
+      "deleting": "删除中...",
+      "deleteConfirmTitle": "删除头像？",
+      "deleteConfirm": "删除",
+      "deleteConfirmDesc": "这将永久删除头像及所有相关数据。此操作无法撤消。",
+      "statusReady": "就绪",
+      "statusGenerating": "生成中...",
+      "statusRigging": "添加动画中...",
+      "statusPending": "待处理",
+      "statusFailed": "失败",
+      "statusUnknown": "未知"
     }
   },
   "bar": {
@@ -6936,7 +6963,10 @@
     "monthly": "月度",
     "subscribe": "订阅",
     "yearly": "年度",
-    "tvSubscribeMessage": "在 bayit.tv 或从您的移动设备订阅"
+    "tvSubscribeMessage": "在 bayit.tv 或从您的移动设备订阅",
+    "externalPaymentTitle": "继续访问网站",
+    "externalPaymentMessage": "您将被重定向到我们的网站以完成订阅。您的订阅将通过您的 Bayit+ 账户管理。",
+    "continueToWebsite": "继续访问网站"
   },
   "subtitles": {
     "nikud": "希伯来语标点",
@@ -8168,7 +8198,9 @@
       "error": "无法加载问候语",
       "noAvatar": "创建你的头像",
       "noAvatarDesc": "设置您孩子的头像，解锁包含每日希伯来语词汇的个性化魔镜问候。",
-      "createAvatar": "开始"
+      "createAvatar": "开始",
+      "noCreditsTitle": "没有剩余积分",
+      "noCreditsDesc": "您已用完所有AI积分。请升级您的计划或等待积分刷新。"
     },
     "highlights": {
       "title": "精彩集锦",

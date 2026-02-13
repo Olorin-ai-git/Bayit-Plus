@@ -76,14 +76,13 @@ final class SubscriptionViewModel {
         isProcessing = false
     }
 
-    /// Price formatted for the selected billing period.
+    /// Display text for the selected billing period (no pricing per Apple guidelines).
     func displayPrice(for plan: SubscriptionPlan) -> String {
         switch selectedBillingPeriod {
         case .monthly:
-            return String(format: "$%.2f/mo", plan.price)
+            return "Monthly Plan"
         case .yearly:
-            let yearly = plan.priceYearly ?? (plan.price * 10)
-            return String(format: "$%.2f/yr", yearly)
+            return "Yearly Plan"
         }
     }
 
