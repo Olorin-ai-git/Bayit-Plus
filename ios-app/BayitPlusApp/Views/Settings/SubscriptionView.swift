@@ -62,7 +62,7 @@ struct SubscriptionView: View {
             HStack(spacing: DesignTokens.Spacing.md) {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.system(size: DesignTokens.FontSize.lg))
-                    .foregroundStyle(DesignTokens.Error.default)
+                    .foregroundStyle(DesignTokens.ErrorColor.default)
 
                 Text(message)
                     .font(.system(size: DesignTokens.FontSize.sm))

@@ -15,17 +15,17 @@ struct PodcastsView: View {
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            PageHeader(
-                icon: "headphones",
-                title: "Podcasts",
-                trailing: Button {
+            HStack {
+                PageHeader(icon: "headphones", title: "Podcasts")
+                Button {
                     showAddSheet = true
                 } label: {
                     Image(systemName: "plus.circle.fill")
                         .font(.system(size: 24))
                         .foregroundStyle(DesignTokens.Primary.default)
                 }
-            )
+                .padding(.trailing, DesignTokens.Spacing.lg)
+            }
 
             if let vm = viewModel {
                 if vm.isLoading && vm.shows.isEmpty {

@@ -143,12 +143,12 @@ struct SettingsView: View {
                     HStack(spacing: DesignTokens.Spacing.md) {
                         Image(systemName: "trash.fill")
                             .font(.system(size: DesignTokens.FontSize.lg))
-                            .foregroundStyle(DesignTokens.Error.default)
+                            .foregroundStyle(DesignTokens.ErrorColor.default)
                             .frame(width: 32)
 
                         Text(localization.t("settings.deleteAccount"))
                             .font(.system(size: DesignTokens.FontSize.md))
-                            .foregroundStyle(DesignTokens.Error.default)
+                            .foregroundStyle(DesignTokens.ErrorColor.default)
 
                         Spacer()
 
