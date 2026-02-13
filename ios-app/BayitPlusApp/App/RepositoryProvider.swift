@@ -54,6 +54,7 @@ final class RepositoryProvider {
     let gamificationRepository: any GamificationRepository
     let avatarMeshRepository: any AvatarMeshRepository
     let zehAniRepository: any ZehAniRepository
+    let webSocketManager: WebSocketManager
     let authTokenProvider: AuthTokenProvider
     let configuration: any EnvironmentConfiguration
     let offlineCache: OfflineCacheService
@@ -105,6 +106,7 @@ final class RepositoryProvider {
         self.gamificationRepository = APIGamificationRepository(client: client)
         self.avatarMeshRepository = APIAvatarMeshRepository(client: client)
         self.zehAniRepository = APIZehAniRepository(client: client)
+        self.webSocketManager = webSocketManager
         self.authTokenProvider = authTokenProvider
         self.configuration = configuration
         self.offlineCache = OfflineCacheService()

@@ -9,8 +9,10 @@ struct TVLiveAvatarOverlayView: View {
 
     let avatarId: String
     let contentId: String
+    var lipsyncWeights: [String: Float] = [:]
 
     @State private var scene: SCNScene?
+    @State private var avatarNode: SCNNode?
     @State private var isLoading = true
     @State private var error: String?
 
@@ -41,6 +43,9 @@ struct TVLiveAvatarOverlayView: View {
         }
         .padding(40)
         .onAppear { loadMesh() }
+        .onChange(of: lipsyncWeights) { _, newWeights in
+            applyBlendShapes(newWeights)
+        }
     }
 
     private func loadMesh() {
@@ -74,11 +79,29 @@ struct TVLiveAvatarOverlayView: View {
                 keyNode.eulerAngles = SCNVector3(-Float.pi / 4, Float.pi / 6, 0)
                 loadedScene.rootNode.addChildNode(keyNode)
 
+                avatarNode = findMeshNode(in: loadedScene.rootNode)
                 scene = loadedScene
                 isLoading = false
             } catch {
                 self.error = localization.t("zehAni.preview3d.error")
                 isLoading = false
+            }
+        }
+    }
+
+    private func findMeshNode(in root: SCNNode) -> SCNNode? {
+        if root.morpher != nil { return root }
+        for child in root.childNodes {
+            if let found = findMeshNode(in: child) { return found }
+        }
+        return nil
+    }
+
+    private func applyBlendShapes(_ weights: [String: Float]) {
+        guard let node = avatarNode, let morpher = node.morpher else { return }
+        for (name, weight) in weights {
+            if let index = morpher.targets.firstIndex(where: { $0.name == name }) {
+                morpher.setWeight(CGFloat(weight), forTargetAt: index)
             }
         }
     }

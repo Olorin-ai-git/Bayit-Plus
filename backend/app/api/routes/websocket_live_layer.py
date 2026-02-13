@@ -9,6 +9,7 @@ from app.api.routes.websocket_helpers.auth_helpers import (
     get_user_from_token,
 )
 from app.api.routes.websocket_helpers.live_layer_handlers import (
+    handle_start_lipsync,
     handle_timestamp_update,
     handle_trigger_response,
 )
@@ -149,6 +150,10 @@ async def _handle_messages(websocket, user, content_id):
         elif msg_type == "trigger_response":
             await handle_trigger_response(
                 websocket, user, content_id, message,
+            )
+        elif msg_type == "start_lipsync":
+            await handle_start_lipsync(
+                websocket, user, message,
             )
         elif msg_type == "heartbeat":
             await websocket.send_json({"type": "heartbeat_ack"})

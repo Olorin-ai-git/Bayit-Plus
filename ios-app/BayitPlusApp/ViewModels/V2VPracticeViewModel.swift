@@ -14,12 +14,14 @@ class V2VPracticeViewModel {
     var scoreDelta: Double = 0
     var latencyMs: Int = 0
     var isRecording = false
+    var isConnected = false
     var error: String?
 
     private var audioRecorder: AVAudioRecorder?
     private var recordingURL: URL?
     private var wsConnection: WebSocketConnection?
     private var receiveTask: Task<Void, Never>?
+    private var webSocketManager: WebSocketManager?
 
     enum PracticeState {
         case idle, recording, transforming, result
@@ -36,6 +38,31 @@ class V2VPracticeViewModel {
             try session.setActive(true)
         } catch {
             self.error = "Audio session error"
+        }
+    }
+
+    @MainActor
+    func connect(
+        avatarId: String,
+        manager: WebSocketManager,
+        authToken: String
+    ) async {
+        webSocketManager = manager
+
+        guard let wsURL = await buildWebSocketURL(
+            avatarId: avatarId
+        ) else {
+            error = "Invalid WebSocket URL"
+            return
+        }
+
+        do {
+            let conn = try await manager.connect(to: wsURL, authToken: authToken)
+            wsConnection = conn
+            isConnected = true
+            startReceiving(connection: conn)
+        } catch {
+            self.error = error.localizedDescription
         }
     }
 
@@ -89,8 +116,7 @@ class V2VPracticeViewModel {
         let payload: [String: Any] = [
             "type": "audio_chunk",
             "audio": audioBase64,
-            "target_phrase": phrase.phraseHe,
-            "avatar_id": avatarId
+            "target_phrase_he": phrase.phraseHe
         ]
 
         do {
@@ -134,6 +160,53 @@ class V2VPracticeViewModel {
         practiceState = .idle
     }
 
+    private func startReceiving(connection: WebSocketConnection) {
+        receiveTask = Task { [weak self] in
+            let stream = await connection.receive()
+            for await text in stream {
+                await self?.handleWSMessage(text)
+            }
+            await MainActor.run { self?.isConnected = false }
+        }
+    }
+
+    @MainActor
+    private func handleWSMessage(_ text: String) {
+        guard let data = text.data(using: .utf8),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let type = json["type"] as? String else {
+            return
+        }
+
+        switch type {
+        case "authenticated":
+            break
+        case "v2v_result":
+            handleV2VResult(json)
+        case "session_completed":
+            break
+        case "heartbeat_ack":
+            break
+        case "error":
+            error = json["message"] as? String
+            if practiceState == .transforming {
+                practiceState = .idle
+            }
+        default:
+            break
+        }
+    }
+
+    private func buildWebSocketURL(avatarId: String) async -> URL? {
+        guard let wsManager = webSocketManager else { return nil }
+        let baseURL = await wsManager.configuration.baseURL
+
+        var components = URLComponents(url: baseURL, resolvingAgainstBaseURL: false)
+        components?.scheme = baseURL.scheme == "https" ? "wss" : "ws"
+        components?.path = "/ws/v2v/\(avatarId)"
+        return components?.url
+    }
+
     func cleanup() {
         audioRecorder?.stop()
         audioRecorder = nil
@@ -143,5 +216,6 @@ class V2VPracticeViewModel {
             Task { await conn.disconnect() }
         }
         wsConnection = nil
+        isConnected = false
     }
 }

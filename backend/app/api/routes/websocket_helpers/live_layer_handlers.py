@@ -1,5 +1,6 @@
 """Handlers for Live Layer WebSocket message processing."""
 
+import asyncio
 import base64
 
 from fastapi import WebSocket
@@ -104,3 +105,69 @@ async def handle_trigger_response(websocket: WebSocket, user, content_id, messag
         "type": "trigger_result",
         **result,
     })
+
+
+async def handle_start_lipsync(websocket: WebSocket, user, message):
+    """Load cached lip-sync data and relay blend shape frames to the client."""
+    avatar_id = message.get("avatar_id", "")
+    if not avatar_id:
+        await websocket.send_json({
+            "type": "error",
+            "message": "Missing avatar_id for lip-sync",
+        })
+        return
+
+    avatar = await ChildAvatar.find_one(
+        ChildAvatar.user_id == str(user.id),
+    )
+    if not avatar or not avatar.mesh_glb_gcs_path:
+        await websocket.send_json({
+            "type": "error",
+            "message": "No avatar mesh available for lip-sync",
+        })
+        return
+
+    from app.services.olorin.storage_service import storage_service
+
+    lipsync_path = (
+        f"zeh-ani/mirror/{str(user.id)}/{avatar.profile_id}"
+        f"/greeting_lipsync.json"
+    )
+
+    try:
+        import json
+
+        lipsync_bytes = await storage_service.download_bytes(lipsync_path)
+        lipsync_data = json.loads(lipsync_bytes.decode("utf-8"))
+    except Exception as exc:
+        logger.warning(
+            "No cached lip-sync data available",
+            extra={"avatar_id": avatar_id, "error": str(exc)},
+        )
+        await websocket.send_json({
+            "type": "error",
+            "message": "No lip-sync data available",
+            "recoverable": True,
+        })
+        return
+
+    frames = lipsync_data.get("frames", [])
+    fps = lipsync_data.get("fps", 30)
+    frame_interval = 1.0 / fps
+
+    logger.info(
+        "Streaming lip-sync frames",
+        extra={
+            "avatar_id": avatar_id,
+            "frame_count": len(frames),
+            "fps": fps,
+        },
+    )
+
+    for frame in frames:
+        await websocket.send_json({
+            "type": "lipsync_weights",
+            "timestamp": frame.get("timestamp", 0),
+            "weights": frame.get("weights", {}),
+        })
+        await asyncio.sleep(frame_interval)

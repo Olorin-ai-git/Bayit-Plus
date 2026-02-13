@@ -42,6 +42,7 @@ struct V2VPracticeView: View {
         .onAppear {
             viewModel.setupAudio()
             loadPhraseSet()
+            connectWebSocket()
         }
         .onDisappear {
             viewModel.cleanup()
@@ -146,6 +147,19 @@ struct V2VPracticeView: View {
                     viewModel.error = error.localizedDescription
                 }
             }
+        }
+    }
+
+    private func connectWebSocket() {
+        Task {
+            guard let token = try? await repos.authTokenProvider.currentToken() else {
+                return
+            }
+            await viewModel.connect(
+                avatarId: avatarId,
+                manager: repos.webSocketManager,
+                authToken: token
+            )
         }
     }
 
