@@ -117,6 +117,14 @@ struct TVSettingsView: View {
             }
 
             settingsNavRow(
+                icon: "lightbulb.fill",
+                title: "Trivia Settings",
+                detail: nil
+            ) {
+                TVTriviaSettingsView()
+            }
+
+            settingsNavRow(
                 icon: "flame",
                 title: localization.t("judaism.shabbat.title"),
                 detail: nil
