@@ -112,6 +112,20 @@ struct RouteDestinationResolver {
             MFASetupView()
         case .phoneVerification:
             PhoneVerificationView()
+        case .zehAni:
+            ZehAniHubView()
+        case .zehAniMagicMirror(let profileId):
+            MagicMirrorView(profileId: profileId)
+        case .zehAniV2V(let avatarId, let profileId):
+            V2VPracticeView(avatarId: avatarId, profileId: profileId)
+        case .zehAniAvatar3D(let avatarId):
+            Avatar3DPreviewView(avatarId: avatarId)
+        case .zehAniHighlights(let profileId):
+            HighlightReelView(profileId: profileId)
+        case .zehAniContacts(let profileId):
+            ContactsManagementView(profileId: profileId)
+        case .zehAniFeedback(let profileId):
+            FeedbackInboxView(profileId: profileId)
         default:
             ErrorStateView(
                 message: "Screen not available",

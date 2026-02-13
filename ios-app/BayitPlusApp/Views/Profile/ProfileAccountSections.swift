@@ -165,6 +165,9 @@ extension ProfileView {
 
     var menuSection: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
+            menuRow(icon: "person.fill.viewfinder", title: "profile.zehAni") {
+                coordinator.pushToCurrentTab(.zehAni)
+            }
             menuRow(icon: "heart.fill", title: "profile.favorites") {
                 coordinator.pushToCurrentTab(.favorites)
             }

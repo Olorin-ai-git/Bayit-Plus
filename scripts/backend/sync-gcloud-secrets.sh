@@ -120,7 +120,12 @@ ENV_EOF
       if [[ -n "$value" ]]; then
         echo -e "  ${GREEN}✓${NC} $gcloud_secret → $env_var"
         if [[ "$DRY_RUN" == false ]]; then
-          echo "$env_var=\"$value\"" >> "$full_path"
+          # Use single quotes for JSON arrays/objects to preserve inner double quotes
+          if [[ "$value" =~ ^\[.*\]$ ]] || [[ "$value" =~ ^\{.*\}$ ]]; then
+            echo "$env_var='$value'" >> "$full_path"
+          else
+            echo "$env_var=\"$value\"" >> "$full_path"
+          fi
         fi
         ((found_count++))
       else

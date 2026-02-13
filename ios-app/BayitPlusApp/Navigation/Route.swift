@@ -121,6 +121,15 @@ public enum Route: Hashable {
     // Security & Verification
     case mfaSetup
     case phoneVerification
+
+    // Zeh Ani (Me in the Story)
+    case zehAni
+    case zehAniMagicMirror(profileId: String)
+    case zehAniV2V(avatarId: String, profileId: String)
+    case zehAniAvatar3D(avatarId: String)
+    case zehAniHighlights(profileId: String)
+    case zehAniContacts(profileId: String)
+    case zehAniFeedback(profileId: String)
 }
 
 // MARK: - Breadcrumb Labels
@@ -187,6 +196,13 @@ extension Route {
         case .conversation: return "Conversation"
         case .mfaSetup: return "MFA Setup"
         case .phoneVerification: return "Phone Verification"
+        case .zehAni: return "Me in the Story"
+        case .zehAniMagicMirror: return "Magic Mirror"
+        case .zehAniV2V: return "Voice Practice"
+        case .zehAniAvatar3D: return "3D Avatar"
+        case .zehAniHighlights: return "Highlights"
+        case .zehAniContacts: return "Contacts"
+        case .zehAniFeedback: return "Feedback"
         }
     }
 }
