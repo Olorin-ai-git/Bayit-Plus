@@ -11,7 +11,7 @@ struct TVSubtitleWord: Identifiable {
     let hasCulturalRef: Bool
 }
 
-struct TVTranslationResult {
+struct TVTranslationResult: Decodable {
     let word: String
     let translation: String
     let transliteration: String
@@ -60,9 +60,10 @@ final class TVInteractiveSubtitleViewModel {
         selectedWord = word
         isLoading = true
         do {
-            let result: TVTranslationResult = try await client.post(
+            let result = try await client.post(
                 "/subtitles/translate-word",
-                body: ["word": word.text]
+                body: ["word": word.text],
+                as: TVTranslationResult.self
             )
             translationResult = result
         } catch {

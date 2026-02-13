@@ -4,7 +4,7 @@ import BayitDesignSystem
 import BayitNetworking
 import SwiftUI
 
-struct CulturalReference: Identifiable {
+struct CulturalReference: Identifiable, Decodable {
     let id: String
     let canonicalName: String
     let canonicalNameEn: String
@@ -12,6 +12,30 @@ struct CulturalReference: Identifiable {
     let shortExplanation: String
     let shortExplanationEn: String
     let imageUrl: String?
+}
+
+struct CulturalDetectionResponse: Decodable {
+    let references: [CulturalReferenceDTO]
+}
+
+struct CulturalReferenceDTO: Decodable {
+    let referenceId: String
+    let canonicalName: String
+    let canonicalNameEn: String?
+    let category: String
+    let shortExplanation: String
+    let shortExplanationEn: String?
+    let imageUrl: String?
+
+    enum CodingKeys: String, CodingKey {
+        case referenceId = "reference_id"
+        case canonicalName = "canonical_name"
+        case canonicalNameEn = "canonical_name_en"
+        case category
+        case shortExplanation = "short_explanation"
+        case shortExplanationEn = "short_explanation_en"
+        case imageUrl = "image_url"
+    }
 }
 
 @Observable
@@ -46,24 +70,21 @@ final class TVCulturalContextViewModel {
     func detectReferences(text: String) async {
         isLoading = true
         do {
-            let result: [String: Any] = try await client.post(
+            let result = try await client.post(
                 "/cultural/detect",
-                body: ["text": text]
+                body: ["text": text],
+                as: CulturalDetectionResponse.self
             )
-            if let refs = result["references"] as? [[String: Any]] {
-                references = refs.compactMap { dict in
-                    guard let id = dict["reference_id"] as? String,
-                          let name = dict["canonical_name"] as? String else { return nil }
-                    return CulturalReference(
-                        id: id,
-                        canonicalName: name,
-                        canonicalNameEn: dict["canonical_name_en"] as? String ?? name,
-                        category: dict["category"] as? String ?? "",
-                        shortExplanation: dict["short_explanation"] as? String ?? "",
-                        shortExplanationEn: dict["short_explanation_en"] as? String ?? "",
-                        imageUrl: dict["image_url"] as? String
-                    )
-                }
+            references = result.references.map { dto in
+                CulturalReference(
+                    id: dto.referenceId,
+                    canonicalName: dto.canonicalName,
+                    canonicalNameEn: dto.canonicalNameEn ?? dto.canonicalName,
+                    category: dto.category,
+                    shortExplanation: dto.shortExplanation,
+                    shortExplanationEn: dto.shortExplanationEn ?? dto.shortExplanation,
+                    imageUrl: dto.imageUrl
+                )
             }
         } catch {
             references = []
@@ -148,7 +169,7 @@ struct TVCulturalContextOverlay: View {
                 .font(.callout)
                 .foregroundStyle(DesignTokens.Colors.Text.secondary)
 
-            Divider().background(DesignTokens.Colors.border.opacity(0.3))
+            Divider().background(DesignTokens.Colors.Glass.border.opacity(0.3))
 
             Text(ref.shortExplanationEn)
                 .font(.body)
