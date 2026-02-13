@@ -1,3 +1,4 @@
+import BayitAuth
 import BayitCore
 import BayitNetworking
 import Foundation
@@ -35,6 +36,38 @@ final class GlossaryViewModel {
 
     init(client: APIClient) {
         self.client = client
+    }
+
+    // Convenience initializer for standalone use
+    convenience init() {
+        let appConfig = AppConfiguration()
+        #if os(tvOS)
+        let networkConfig = TVAppNetworkConfiguration(appConfig: appConfig)
+        let apiLogger = TVAppAPILogger()
+        let authConfig = TVAppAuthConfiguration()
+        let authMgr = AuthManager(configuration: authConfig, logger: apiLogger)
+
+        let client = APIClient(
+            configuration: networkConfig,
+            authTokenProvider: authMgr.authTokenProvider,
+            locationProvider: TVLocationProvider(),
+            logger: apiLogger
+        )
+        #else
+        let networkConfig = AppNetworkConfiguration(appConfig: appConfig)
+        let apiLogger = AppAPILogger()
+        let authConfig = AppAuthConfiguration()
+        let authMgr = AuthManager(configuration: authConfig, logger: apiLogger)
+
+        let client = APIClient(
+            configuration: networkConfig,
+            authTokenProvider: authMgr.authTokenProvider,
+            locationProvider: AppLocationProvider(),
+            logger: apiLogger
+        )
+        #endif
+
+        self.init(client: client)
     }
 
     func fetchEntries(reset: Bool = false) async {

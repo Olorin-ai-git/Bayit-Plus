@@ -44,7 +44,7 @@ struct TVSubtitleModePicker: View {
             Text("Subtitle Mode")
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundStyle(TVDesignTokens.Colors.textPrimary)
+                .foregroundStyle(DesignTokens.Colors.Text.primary)
 
             LazyVGrid(
                 columns: [
@@ -62,7 +62,7 @@ struct TVSubtitleModePicker: View {
         }
         .padding(TVDesignTokens.Spacing.xxl)
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.CornerRadius.xxl))
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
     }
 
     private func modeCard(mode: SubtitleMode) -> some View {
@@ -78,18 +78,18 @@ struct TVSubtitleModePicker: View {
                     .font(.title2)
                     .foregroundStyle(
                         isSelected
-                            ? TVDesignTokens.Colors.primaryAccent
-                            : TVDesignTokens.Colors.textSecondary
+                            ? DesignTokens.Primary.default
+                            : DesignTokens.Colors.Text.secondary
                     )
 
                 Text(mode.rawValue)
                     .font(.callout)
                     .fontWeight(isSelected ? .bold : .regular)
-                    .foregroundStyle(TVDesignTokens.Colors.textPrimary)
+                    .foregroundStyle(DesignTokens.Colors.Text.primary)
 
                 Text(mode.description)
                     .font(.caption2)
-                    .foregroundStyle(TVDesignTokens.Colors.textSecondary)
+                    .foregroundStyle(DesignTokens.Colors.Text.secondary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
             }
@@ -97,15 +97,15 @@ struct TVSubtitleModePicker: View {
             .frame(maxWidth: .infinity)
             .background(
                 isSelected
-                    ? TVDesignTokens.Colors.primaryAccent.opacity(0.15)
-                    : TVDesignTokens.Colors.surface.opacity(0.6)
+                    ? DesignTokens.Primary.default.opacity(0.15)
+                    : DesignTokens.Colors.Glass.background.opacity(0.6)
             )
-            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.CornerRadius.xl))
+            .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
             .overlay(
-                RoundedRectangle(cornerRadius: TVDesignTokens.CornerRadius.xl)
+                RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
                     .stroke(
                         isFocused
-                            ? TVDesignTokens.Colors.primaryAccent
+                            ? DesignTokens.Primary.default
                             : Color.clear,
                         lineWidth: 3
                     )

@@ -1,3 +1,4 @@
+import BayitAuth
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
@@ -8,7 +9,9 @@ struct SettingsView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
+    @Environment(AuthManager.self) private var authManager
     @State private var viewModel: SettingsViewModel?
+    @State private var showDeleteAccountConfirmation = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -20,6 +23,7 @@ struct SettingsView: View {
                         preferencesSection(vm)
                         navigationSection
                         privacySection
+                        dangerZoneSection(vm)
                         appInfoSection
                     }
                 }
@@ -126,6 +130,55 @@ struct SettingsView: View {
             navRow(icon: "doc.plaintext", title: localization.t("settings.termsOfService")) {}
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    // MARK: - Danger Zone
+
+    private func dangerZoneSection(_ vm: SettingsViewModel) -> some View {
+        VStack(spacing: DesignTokens.Spacing.sm) {
+            sectionHeader(localization.t("settings.dangerZone"))
+
+            GlassCard {
+                Button(action: { showDeleteAccountConfirmation = true }) {
+                    HStack(spacing: DesignTokens.Spacing.md) {
+                        Image(systemName: "trash.fill")
+                            .font(.system(size: DesignTokens.FontSize.lg))
+                            .foregroundStyle(DesignTokens.Error.default)
+                            .frame(width: 32)
+
+                        Text(localization.t("settings.deleteAccount"))
+                            .font(.system(size: DesignTokens.FontSize.md))
+                            .foregroundStyle(DesignTokens.Error.default)
+
+                        Spacer()
+
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: DesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Text.muted)
+                    }
+                    .padding(DesignTokens.Spacing.md)
+                }
+            }
+        }
+        .padding(.horizontal, DesignTokens.Spacing.lg)
+        .alert(
+            localization.t("settings.deleteAccountConfirmTitle"),
+            isPresented: $showDeleteAccountConfirmation
+        ) {
+            Button(localization.t("common.cancel"), role: .cancel) {}
+            Button(localization.t("settings.deleteAccountConfirm"), role: .destructive) {
+                Task {
+                    do {
+                        try await vm.deleteAccount()
+                        await authManager.signOut()
+                    } catch {
+                        // Error is already set in viewModel
+                    }
+                }
+            }
+        } message: {
+            Text(localization.t("settings.deleteAccountConfirmMessage"))
+        }
     }
 
     // MARK: - App Info

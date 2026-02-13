@@ -7251,7 +7251,12 @@
     "watchPartyInvitations": "Watch Party Invitations",
     "watchPartyInvitationsDescription": "Notifications when friends invite you to watch together",
     "signOut": "Sign Out",
-    "profile": "Profile"
+    "profile": "Profile",
+    "dangerZone": "Danger Zone",
+    "deleteAccount": "Delete Account",
+    "deleteAccountConfirmTitle": "Delete Account?",
+    "deleteAccountConfirmMessage": "This will permanently delete your account and all associated data. This action cannot be undone.",
+    "deleteAccountConfirm": "Delete Account"
   },
   "shabbat": {
     "activate": "Activate",

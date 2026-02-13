@@ -1,7 +1,9 @@
 #if os(tvOS)
 import AVKit
 import BayitCore
-import Speech
+// NOTE: Speech framework not available on tvOS
+// This file cannot be used as-is. Alternative implementation needed.
+// import Speech // NOT AVAILABLE ON TVOS
 
 @Observable
 final class TVSpeechRecognitionEngine {

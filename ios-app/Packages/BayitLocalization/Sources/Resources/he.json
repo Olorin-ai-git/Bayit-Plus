@@ -7065,7 +7065,12 @@
     "watchPartyInvitations": "הזמנות לצפייה משותפת",
     "watchPartyInvitationsDescription": "התראות כשחברים מזמינים אותך לצפות יחד",
     "signOut": "התנתק",
-    "profile": "פרופיל"
+    "profile": "פרופיל",
+    "dangerZone": "אזור מסוכן",
+    "deleteAccount": "מחק חשבון",
+    "deleteAccountConfirmTitle": "למחוק חשבון?",
+    "deleteAccountConfirmMessage": "פעולה זו תמחק לצמיתות את החשבון שלך ואת כל הנתונים המשויכים אליו. לא ניתן לבטל פעולה זו.",
+    "deleteAccountConfirm": "מחק חשבון"
   },
   "shabbat": {
     "activate": "הפעל",

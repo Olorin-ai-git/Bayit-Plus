@@ -63,5 +63,9 @@
 	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string></string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>We need speech recognition for Hebrew pronunciation practice and interactive missions.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need microphone access for speech recognition features.</string>
 </dict>
 </plist>

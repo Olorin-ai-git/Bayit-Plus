@@ -1,4 +1,7 @@
+import BayitAuth
+import BayitCore
 import BayitDesignSystem
+import BayitNetworking
 import SwiftUI
 
 struct CulturalReference: Identifiable {
@@ -16,11 +19,34 @@ final class TVCulturalContextViewModel {
     var references: [CulturalReference] = []
     var selectedReference: CulturalReference?
     var isLoading: Bool = false
+    private let client: APIClient
+
+    init(client: APIClient) {
+        self.client = client
+    }
+
+    // Convenience initializer for standalone use
+    convenience init() {
+        let appConfig = AppConfiguration()
+        let networkConfig = TVAppNetworkConfiguration(appConfig: appConfig)
+        let apiLogger = TVAppAPILogger()
+        let authConfig = TVAppAuthConfiguration()
+        let authMgr = AuthManager(configuration: authConfig, logger: apiLogger)
+
+        let client = APIClient(
+            configuration: networkConfig,
+            authTokenProvider: authMgr.authTokenProvider,
+            locationProvider: TVLocationProvider(),
+            logger: apiLogger
+        )
+
+        self.init(client: client)
+    }
 
     func detectReferences(text: String) async {
         isLoading = true
         do {
-            let result: [String: Any] = try await APIClient.shared.post(
+            let result: [String: Any] = try await client.post(
                 "/cultural/detect",
                 body: ["text": text]
             )
@@ -85,11 +111,11 @@ struct TVCulturalContextOverlay: View {
                     } label: {
                         HStack(spacing: TVDesignTokens.Spacing.sm) {
                             Image(systemName: "info.circle.fill")
-                                .foregroundStyle(TVDesignTokens.Colors.warning)
+                                .foregroundStyle(DesignTokens.Colors.Semantic.warning)
                                 .font(.caption)
                             Text(ref.canonicalNameEn)
                                 .font(.callout)
-                                .foregroundStyle(TVDesignTokens.Colors.textPrimary)
+                                .foregroundStyle(DesignTokens.Colors.Text.primary)
                         }
                         .padding(.horizontal, TVDesignTokens.Spacing.lg)
                         .padding(.vertical, TVDesignTokens.Spacing.sm)
@@ -107,31 +133,31 @@ struct TVCulturalContextOverlay: View {
                 Text(ref.canonicalName)
                     .font(.title3)
                     .fontWeight(.bold)
-                    .foregroundStyle(TVDesignTokens.Colors.textPrimary)
+                    .foregroundStyle(DesignTokens.Colors.Text.primary)
                 Spacer()
                 Text(ref.category.capitalized)
                     .font(.caption)
-                    .foregroundStyle(TVDesignTokens.Colors.primaryAccent)
+                    .foregroundStyle(DesignTokens.Primary.default)
                     .padding(.horizontal, TVDesignTokens.Spacing.sm)
                     .padding(.vertical, 2)
-                    .background(TVDesignTokens.Colors.primaryAccent.opacity(0.15))
+                    .background(DesignTokens.Primary.default.opacity(0.15))
                     .clipShape(Capsule())
             }
 
             Text(ref.canonicalNameEn)
                 .font(.callout)
-                .foregroundStyle(TVDesignTokens.Colors.textSecondary)
+                .foregroundStyle(DesignTokens.Colors.Text.secondary)
 
-            Divider().background(TVDesignTokens.Colors.border.opacity(0.3))
+            Divider().background(DesignTokens.Colors.border.opacity(0.3))
 
             Text(ref.shortExplanationEn)
                 .font(.body)
-                .foregroundStyle(TVDesignTokens.Colors.textSecondary)
+                .foregroundStyle(DesignTokens.Colors.Text.secondary)
                 .lineLimit(4)
         }
         .padding(TVDesignTokens.Spacing.lg)
         .frame(maxWidth: 700)
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.CornerRadius.xl))
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
     }
 }

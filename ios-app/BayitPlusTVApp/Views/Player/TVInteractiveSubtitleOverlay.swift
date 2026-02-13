@@ -1,7 +1,10 @@
+import BayitAuth
+import BayitCore
 import BayitDesignSystem
+import BayitNetworking
 import SwiftUI
 
-struct SubtitleWord: Identifiable {
+struct TVSubtitleWord: Identifiable {
     let id = UUID()
     let text: String
     let isHebrew: Bool
@@ -17,24 +20,47 @@ struct TVTranslationResult {
 
 @Observable
 final class TVInteractiveSubtitleViewModel {
-    var words: [SubtitleWord] = []
-    var selectedWord: SubtitleWord?
+    var words: [TVSubtitleWord] = []
+    var selectedWord: TVSubtitleWord?
     var translationResult: TVTranslationResult?
     var isLoading: Bool = false
+    private let client: APIClient
+
+    init(client: APIClient) {
+        self.client = client
+    }
+
+    // Convenience initializer for standalone use
+    convenience init() {
+        let appConfig = AppConfiguration()
+        let networkConfig = TVAppNetworkConfiguration(appConfig: appConfig)
+        let apiLogger = TVAppAPILogger()
+        let authConfig = TVAppAuthConfiguration()
+        let authMgr = AuthManager(configuration: authConfig, logger: apiLogger)
+
+        let client = APIClient(
+            configuration: networkConfig,
+            authTokenProvider: authMgr.authTokenProvider,
+            locationProvider: TVLocationProvider(),
+            logger: apiLogger
+        )
+
+        self.init(client: client)
+    }
 
     func parseSubtitleLine(_ text: String) {
         words = text.split(separator: " ").map { word in
             let str = String(word)
             let isHebrew = str.unicodeScalars.contains { $0.value >= 0x0590 && $0.value <= 0x05FF }
-            return SubtitleWord(text: str, isHebrew: isHebrew, hasCulturalRef: false)
+            return TVSubtitleWord(text: str, isHebrew: isHebrew, hasCulturalRef: false)
         }
     }
 
-    func selectWord(_ word: SubtitleWord) async {
+    func selectWord(_ word: TVSubtitleWord) async {
         selectedWord = word
         isLoading = true
         do {
-            let result: TVTranslationResult = try await APIClient.shared.post(
+            let result: TVTranslationResult = try await client.post(
                 "/subtitles/translate-word",
                 body: ["word": word.text]
             )
@@ -83,8 +109,8 @@ struct TVInteractiveSubtitleOverlay: View {
                             .fontWeight(word.isHebrew ? .bold : .regular)
                             .foregroundStyle(
                                 word.isHebrew
-                                    ? TVDesignTokens.Colors.primaryAccent
-                                    : TVDesignTokens.Colors.textPrimary
+                                    ? DesignTokens.Primary.default
+                                    : DesignTokens.Colors.Text.primary
                             )
                             .padding(.horizontal, TVDesignTokens.Spacing.md)
                             .padding(.vertical, TVDesignTokens.Spacing.sm)
@@ -104,18 +130,18 @@ struct TVInteractiveSubtitleOverlay: View {
                 Text(result.word)
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundStyle(TVDesignTokens.Colors.textPrimary)
+                    .foregroundStyle(DesignTokens.Colors.Text.primary)
                 Text(result.transliteration)
                     .font(.callout)
-                    .foregroundStyle(TVDesignTokens.Colors.primaryAccent)
+                    .foregroundStyle(DesignTokens.Primary.default)
                     .italic()
                 Text(result.translation)
                     .font(.body)
-                    .foregroundStyle(TVDesignTokens.Colors.textSecondary)
+                    .foregroundStyle(DesignTokens.Colors.Text.secondary)
                 if !result.example.isEmpty {
                     Text(result.example)
                         .font(.caption)
-                        .foregroundStyle(TVDesignTokens.Colors.textSecondary)
+                        .foregroundStyle(DesignTokens.Colors.Text.secondary)
                         .multilineTextAlignment(.center)
                 }
             }
@@ -123,6 +149,6 @@ struct TVInteractiveSubtitleOverlay: View {
         .padding(TVDesignTokens.Spacing.lg)
         .frame(maxWidth: 600)
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.CornerRadius.xl))
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
     }
 }

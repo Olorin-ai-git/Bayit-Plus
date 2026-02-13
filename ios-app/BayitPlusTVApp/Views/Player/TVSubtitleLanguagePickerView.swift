@@ -63,20 +63,18 @@ struct TVSubtitleLanguagePickerView: View {
                         splitButton
                     }
 
-                    #if os(iOS)
-                    // OpenSubtitles download (iOS only)
+                    // OpenSubtitles download
                     if let repo = repository, !contentId.isEmpty {
                         Divider()
                             .background(DesignTokens.Text.muted.opacity(0.3))
                             .padding(.vertical, TVDesignTokens.Spacing.sm)
 
-                        OpenSubtitlesDownloadView(
+                        TVOpenSubtitlesDownloadView(
                             contentId: contentId,
                             repository: repo,
                             onSuccess: { onSubtitlesRefresh?() }
                         )
                     }
-                    #endif
                 }
             }
         }

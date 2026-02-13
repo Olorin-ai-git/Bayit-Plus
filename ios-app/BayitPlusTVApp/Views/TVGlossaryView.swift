@@ -22,11 +22,11 @@ struct TVGlossaryView: View {
         HStack {
             Image(systemName: "book.fill")
                 .font(.title2)
-                .foregroundStyle(TVDesignTokens.Colors.primaryAccent)
+                .foregroundStyle(DesignTokens.Colors.Primary.light)
             Text("Hebrew Glossary")
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundStyle(TVDesignTokens.Colors.textPrimary)
+                .foregroundStyle(DesignTokens.Colors.Text.primary)
             Spacer()
         }
     }
@@ -86,17 +86,17 @@ struct TVGlossaryView: View {
             Text(entry.phrase)
                 .font(.title3)
                 .fontWeight(.bold)
-                .foregroundStyle(TVDesignTokens.Colors.textPrimary)
+                .foregroundStyle(DesignTokens.Colors.Text.primary)
                 .environment(\.layoutDirection, .rightToLeft)
 
             Text(entry.transliteration)
                 .font(.caption)
-                .foregroundStyle(TVDesignTokens.Colors.primaryAccent)
+                .foregroundStyle(DesignTokens.Colors.Primary.light)
                 .italic()
 
             Text(entry.translation)
                 .font(.body)
-                .foregroundStyle(TVDesignTokens.Colors.textSecondary)
+                .foregroundStyle(DesignTokens.Colors.Text.secondary)
                 .lineLimit(2)
 
             if !entry.tags.isEmpty {
@@ -104,10 +104,10 @@ struct TVGlossaryView: View {
                     ForEach(entry.tags.prefix(3), id: \.self) { tag in
                         Text(tag)
                             .font(.caption2)
-                            .foregroundStyle(TVDesignTokens.Colors.primaryAccent)
+                            .foregroundStyle(DesignTokens.Colors.Primary.light)
                             .padding(.horizontal, TVDesignTokens.Spacing.sm)
                             .padding(.vertical, 2)
-                            .background(TVDesignTokens.Colors.primaryAccent.opacity(0.15))
+                            .background(DesignTokens.Colors.Primary.light.opacity(0.15))
                             .clipShape(Capsule())
                     }
                 }
@@ -115,14 +115,14 @@ struct TVGlossaryView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(TVDesignTokens.Spacing.lg)
-        .background(TVDesignTokens.Colors.surface.opacity(0.8))
-        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.CornerRadius.xl))
+        .background(DesignTokens.Colors.Glass.background.opacity(0.8))
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
         .overlay(
-            RoundedRectangle(cornerRadius: TVDesignTokens.CornerRadius.xl)
+            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
                 .stroke(
                     focusedEntry == entry.id
-                        ? TVDesignTokens.Colors.primaryAccent
-                        : TVDesignTokens.Colors.border.opacity(0.25),
+                        ? DesignTokens.Colors.Primary.light
+                        : DesignTokens.Colors.Glass.border.opacity(0.25),
                     lineWidth: focusedEntry == entry.id ? 3 : 1
                 )
         )

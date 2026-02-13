@@ -6945,7 +6945,12 @@
     "watchPartyInvitations": "Invitaciones a Watch Party",
     "watchPartyInvitationsDescription": "Notificaciones cuando amigos te invitan a ver juntos",
     "signOut": "Cerrar sesión",
-    "profile": "Perfil"
+    "profile": "Perfil",
+    "dangerZone": "Zona de peligro",
+    "deleteAccount": "Eliminar cuenta",
+    "deleteAccountConfirmTitle": "¿Eliminar cuenta?",
+    "deleteAccountConfirmMessage": "Esto eliminará permanentemente tu cuenta y todos los datos asociados. Esta acción no se puede deshacer.",
+    "deleteAccountConfirm": "Eliminar cuenta"
   },
   "shabbat": {
     "activate": "Activar",

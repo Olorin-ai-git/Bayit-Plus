@@ -9,6 +9,7 @@ final class SettingsViewModel {
     private(set) var isLoading = false
     private(set) var error: String?
     private(set) var isSaving = false
+    private(set) var isDeletingAccount = false
     private(set) var preferences: UserPreferencesDetail?
 
     var autoTranslate = false
@@ -101,6 +102,21 @@ final class SettingsViewModel {
             )
         } catch {
             self.error = error.localizedDescription
+        }
+    }
+
+    @MainActor
+    func deleteAccount() async throws {
+        isDeletingAccount = true
+        error = nil
+
+        do {
+            _ = try await userRepository.deleteAccount()
+            isDeletingAccount = false
+        } catch {
+            isDeletingAccount = false
+            self.error = error.localizedDescription
+            throw error
         }
     }
 

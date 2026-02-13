@@ -9,19 +9,43 @@ struct TVLocationContentRow: View {
     let coverage: Coverage?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             titleWithLocation
-                .padding(.horizontal, TVDesignTokens.Spacing.xxl)
 
-            GlassContentShelf(title: "", items: items, itemWidth: 280) { item in
-                GlassFocusPoster(
-                    thumbnailURL: item.imageUrl,
-                    title: item.title ?? "Untitled",
-                    subtitle: locationSubtitle(for: item),
-                    aspectRatio: 1.0  // Square
-                )
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: TVDesignTokens.Spacing.focusGap) {
+                    ForEach(items) { item in
+                        GlassFocusPoster(
+                            thumbnailURL: item.imageUrl,
+                            title: item.title ?? "Untitled",
+                            subtitle: locationSubtitle(for: item),
+                            aspectRatio: 1.0  // Square
+                        )
+                        .frame(width: 280)
+                        .tvFocusStyle()
+                    }
+                }
+                .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+                .padding(.vertical, TVDesignTokens.Spacing.md)
             }
+            .focusSection()
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, TVDesignTokens.Spacing.lg)
+        .background(
+            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                .fill(Color.white.opacity(0.04))
+                .background(
+                    RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                        .fill(.ultraThinMaterial.opacity(0.2))
+                )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl))
+        .overlay(
+            RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
+                .stroke(Color.white.opacity(0.1), lineWidth: 2)
+        )
+        .padding(.horizontal, TVDesignTokens.Spacing.xl)
     }
 
     private var titleWithLocation: some View {
@@ -42,6 +66,7 @@ struct TVLocationContentRow: View {
                 }
             }
         }
+        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
     }
 
     private func locationSubtitle(for item: LocationItem) -> String? {

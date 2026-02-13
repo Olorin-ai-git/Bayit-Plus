@@ -7299,7 +7299,12 @@
     "watchPartyInvitations": "Invitations Watch Party",
     "watchPartyInvitationsDescription": "Notifications d'invitations à regarder ensemble",
     "signOut": "Déconnexion",
-    "profile": "Profil"
+    "profile": "Profil",
+    "dangerZone": "Zone dangereuse",
+    "deleteAccount": "Supprimer le compte",
+    "deleteAccountConfirmTitle": "Supprimer le compte?",
+    "deleteAccountConfirmMessage": "Cette action supprimera définitivement votre compte et toutes les données associées. Cette action est irréversible.",
+    "deleteAccountConfirm": "Supprimer le compte"
   },
   "shabbat": {
     "activate": "Activer",

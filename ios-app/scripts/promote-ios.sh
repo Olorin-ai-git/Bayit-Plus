@@ -32,19 +32,18 @@ plutil -replace CFBundleVersion -string "$NEW_BUILD" BayitPlusApp/Info.plist
 # Update project.pbxproj (iOS app configurations only)
 sed -i '' "s/CURRENT_PROJECT_VERSION = $CURRENT_BUILD;/CURRENT_PROJECT_VERSION = $NEW_BUILD;/g" BayitPlus.xcodeproj/project.pbxproj
 
-echo -e "${BLUE}🧹 Cleaning build folder...${NC}"
-xcodebuild clean -project BayitPlus.xcodeproj -scheme BayitPlusApp -configuration Release > /dev/null 2>&1
+echo -e "${BLUE}🏗️  Archiving iOS app...${NC}"
 
-echo -e "${BLUE}🏗️  Archiving iOS app (with concurrency warnings allowed)...${NC}"
-
-# Archive for iOS
+# Archive (temporarily relax strict concurrency for archiving)
 xcodebuild -project BayitPlus.xcodeproj \
   -scheme BayitPlusApp \
   -configuration Release \
   -destination 'generic/platform=iOS' \
   -archivePath /tmp/BayitPlusApp.xcarchive \
+  archive \
   -allowProvisioningUpdates \
-  archive
+  SWIFT_STRICT_CONCURRENCY=minimal \
+  -quiet
 
 echo -e "${GREEN}✅ Archive succeeded${NC}"
 

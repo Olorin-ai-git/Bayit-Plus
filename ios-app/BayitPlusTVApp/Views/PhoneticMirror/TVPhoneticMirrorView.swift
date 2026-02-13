@@ -2,7 +2,12 @@
 import AVKit
 import BayitCore
 import BayitDesignSystem
-import Speech
+// NOTE: Speech framework not available on tvOS
+// For speech recognition on tvOS, use:
+// 1. Keyboard dictation (system-level)
+// 2. Third-party speech libs
+// 3. Custom AVFoundation + backend transcription
+// import Speech // NOT AVAILABLE ON TVOS
 import SwiftUI
 
 struct TVPhoneticMirrorView: View {

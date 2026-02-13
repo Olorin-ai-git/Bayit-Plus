@@ -279,67 +279,15 @@ struct TVPlayerView: View {
 
     @ViewBuilder
     private var triviaOverlay: some View {
-        if let vm = triviaVM, let fact = vm.activeFact {
-            VStack {
-                Spacer()
-                HStack {
-                    triviaCard(fact)
-                        .padding(.leading, TVDesignTokens.Spacing.xl)
-                    Spacer()
-                }
-                .padding(.bottom, TVDesignTokens.Spacing.xxxl)
-            }
-            .transition(.opacity.combined(with: .move(edge: .bottom)))
-            .animation(.easeInOut(duration: 0.3), value: fact.id)
-        }
-    }
-
-    private func triviaCard(_ fact: TriviaFact) -> some View {
-        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-            HStack(spacing: TVDesignTokens.Spacing.xs) {
-                Image(systemName: triviaIconName(for: fact.category))
-                    .font(.system(size: 18))
-                    .foregroundStyle(DesignTokens.Primary.p400)
-                Text(fact.category?.uppercased() ?? "TRIVIA")
-                    .font(.system(
-                        size: TVDesignTokens.FontSize.xs, weight: .bold
-                    ))
-                    .foregroundStyle(DesignTokens.Primary.p400)
-            }
-
-            Text(triviaFactText(fact))
-                .font(.system(size: TVDesignTokens.FontSize.md))
-                .foregroundStyle(DesignTokens.Text.primary)
-                .lineLimit(3)
-                .environment(\.layoutDirection, .rightToLeft)
-        }
-        .padding(TVDesignTokens.Spacing.lg)
-        .frame(maxWidth: 500, alignment: .leading)
-        .background(Color.black.opacity(0.75))
-        .cornerRadius(TVDesignTokens.Radius.lg)
-    }
-
-    private func triviaFactText(_ fact: TriviaFact) -> String {
-        if let translations = fact.translations,
-           let text = translations[selectedAILanguage] {
-            return text
-        }
-        switch selectedAILanguage {
-        case "he": if let he = fact.textHe { return he }
-        case "en": if let en = fact.textEn { return en }
-        case "es": if let es = fact.textEs { return es }
-        default: break
-        }
-        return fact.text ?? ""
-    }
-
-    private func triviaIconName(for category: String?) -> String {
-        switch (category ?? "").lowercased() {
-        case "cast": return "person.fill"
-        case "production": return "film"
-        case "historical": return "clock.fill"
-        case "cultural": return "globe"
-        default: return "lightbulb.fill"
+        if let vm = triviaVM {
+            TVTriviaFactsOverlayView(
+                viewModel: vm,
+                contentId: contentId,
+                currentTime: mediaPlayer.currentTime,
+                isSubtitlesActive: selectedSubtitleLanguage != nil || liveSubtitlesVM?.isEnabled == true,
+                currentLanguage: selectedAILanguage,
+                onDismiss: { vm.dismissFact() }
+            )
         }
     }
 

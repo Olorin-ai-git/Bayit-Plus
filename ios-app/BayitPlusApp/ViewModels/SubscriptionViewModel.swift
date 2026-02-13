@@ -90,6 +90,10 @@ final class SubscriptionViewModel {
     var isSubscribed: Bool {
         currentSubscription?.status == "active"
     }
+
+    func setError(_ message: String) {
+        error = message
+    }
 }
 
 /// Billing period options for subscription checkout.

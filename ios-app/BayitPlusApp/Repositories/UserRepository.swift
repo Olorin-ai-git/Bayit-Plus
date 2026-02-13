@@ -88,6 +88,12 @@ protocol UserRepository: Sendable {
 
     /// Get current verification status.
     func getVerificationStatus() async throws -> VerificationStatusResponse
+
+    // MARK: - Account Management
+
+    /// Permanently delete the current user's account and all associated data.
+    /// This action is irreversible per Apple App Store Guideline 5.1.1(v).
+    func deleteAccount() async throws -> MessageResponse
 }
 
 /// Production implementation of `UserRepository` using `APIClient`.
@@ -292,6 +298,15 @@ final class APIUserRepository: UserRepository, @unchecked Sendable {
         return try await client.get(
             "/api/v1/verification/status",
             as: VerificationStatusResponse.self
+        )
+    }
+
+    // MARK: - Account Management
+
+    func deleteAccount() async throws -> MessageResponse {
+        return try await client.delete(
+            "/api/v1/user/account",
+            as: MessageResponse.self
         )
     }
 }

@@ -24,7 +24,18 @@ extension AuthManager {
         do {
             try Task.checkCancellation()
 
-            let rootVC = try await resolveRootViewController()
+            let rootVC: UIViewController
+            do {
+                rootVC = try await resolveRootViewController()
+            } catch {
+                isLoading = false
+                let err = AuthError.googleSignInFailed(
+                    underlying: "Could not find root view controller"
+                )
+                self.error = err
+                logger.error("Google Sign In: No root view controller", metadata: [:])
+                throw err
+            }
 
             let googleConfig = GIDConfiguration(
                 clientID: configuration.googleClientID,
@@ -34,12 +45,30 @@ extension AuthManager {
 
             try Task.checkCancellation()
 
-            let result = try await GIDSignIn.sharedInstance.signIn(
-                withPresenting: rootVC
-            )
+            let result: GIDSignInResult
+            do {
+                result = try await GIDSignIn.sharedInstance.signIn(
+                    withPresenting: rootVC
+                )
+            } catch let gidError {
+                isLoading = false
+                let err = AuthError.googleSignInFailed(
+                    underlying: "Google SDK error: \(gidError.localizedDescription)"
+                )
+                error = err
+                logger.error(
+                    "Google Sign In: SDK error",
+                    metadata: ["error": gidError.localizedDescription]
+                )
+                throw err
+            }
 
             guard let idToken = result.user.idToken?.tokenString else {
-                throw AuthError.missingIDToken
+                isLoading = false
+                let err = AuthError.missingIDToken
+                error = err
+                logger.error("Google Sign In: Missing ID token", metadata: [:])
+                throw err
             }
 
             try Task.checkCancellation()
@@ -49,13 +78,41 @@ extension AuthManager {
                 accessToken: result.user.accessToken.tokenString
             )
 
-            let authResult = try await Auth.auth().signIn(with: credential)
+            let authResult: AuthDataResult
+            do {
+                authResult = try await Auth.auth().signIn(with: credential)
+            } catch let firebaseError {
+                isLoading = false
+                let err = AuthError.googleSignInFailed(
+                    underlying: "Firebase auth failed: \(firebaseError.localizedDescription)"
+                )
+                error = err
+                logger.error(
+                    "Google Sign In: Firebase authentication failed",
+                    metadata: ["error": firebaseError.localizedDescription]
+                )
+                throw err
+            }
 
-            // Pass the Google ID token for backend JWT exchange
-            try await handleFirebaseAuthResult(
-                authResult,
-                providerToken: .google(idToken: idToken)
-            )
+            try Task.checkCancellation()
+
+            do {
+                try await handleFirebaseAuthResult(
+                    authResult,
+                    providerToken: .google(idToken: idToken)
+                )
+            } catch let backendError {
+                isLoading = false
+                let err = AuthError.googleSignInFailed(
+                    underlying: "Backend exchange failed: \(backendError.localizedDescription)"
+                )
+                error = err
+                logger.error(
+                    "Google Sign In: Backend token exchange failed",
+                    metadata: ["error": backendError.localizedDescription]
+                )
+                throw err
+            }
 
             logger.info(
                 "Google sign-in succeeded",
@@ -63,6 +120,7 @@ extension AuthManager {
             )
         } catch is CancellationError {
             isLoading = false
+            error = AuthError.cancelled
             throw AuthError.cancelled
         } catch let authError as AuthError {
             isLoading = false
@@ -74,6 +132,10 @@ extension AuthManager {
             )
             isLoading = false
             self.error = wrapped
+            logger.error(
+                "Google Sign In: Unexpected error",
+                metadata: ["error": error.localizedDescription]
+            )
             throw wrapped
         }
     }
@@ -93,13 +155,21 @@ extension AuthManager {
 
             guard let appleIDCredential = appleResult.credential
                     as? ASAuthorizationAppleIDCredential else {
-                throw AuthError.appleSignInFailed(underlying: "Invalid credential type")
+                isLoading = false
+                let err = AuthError.appleSignInFailed(underlying: "Invalid credential type")
+                error = err
+                logger.error("Apple Sign In: Invalid credential type", metadata: [:])
+                throw err
             }
 
             guard let identityTokenData = appleIDCredential.identityToken,
                   let identityToken = String(data: identityTokenData, encoding: .utf8)
             else {
-                throw AuthError.missingIDToken
+                isLoading = false
+                let err = AuthError.missingIDToken
+                error = err
+                logger.error("Apple Sign In: Missing identity token", metadata: [:])
+                throw err
             }
 
             try Task.checkCancellation()
@@ -110,9 +180,24 @@ extension AuthManager {
                 fullName: appleIDCredential.fullName
             )
 
-            let authResult = try await Auth.auth().signIn(with: credential)
+            let authResult: AuthDataResult
+            do {
+                authResult = try await Auth.auth().signIn(with: credential)
+            } catch let firebaseError {
+                isLoading = false
+                let err = AuthError.appleSignInFailed(
+                    underlying: "Firebase auth failed: \(firebaseError.localizedDescription)"
+                )
+                error = err
+                logger.error(
+                    "Apple Sign In: Firebase authentication failed",
+                    metadata: ["error": firebaseError.localizedDescription]
+                )
+                throw err
+            }
 
-            // Build full name from Apple's PersonNameComponents
+            try Task.checkCancellation()
+
             let fullName: String? = {
                 guard let nameComponents = appleIDCredential.fullName else {
                     return nil
@@ -122,15 +207,27 @@ extension AuthManager {
                 return name.isEmpty ? nil : name
             }()
 
-            // Pass the Apple identity token for backend JWT exchange
-            try await handleFirebaseAuthResult(
-                authResult,
-                providerToken: .apple(
-                    identityToken: identityToken,
-                    fullName: fullName,
-                    email: appleIDCredential.email
+            do {
+                try await handleFirebaseAuthResult(
+                    authResult,
+                    providerToken: .apple(
+                        identityToken: identityToken,
+                        fullName: fullName,
+                        email: appleIDCredential.email
+                    )
                 )
-            )
+            } catch let backendError {
+                isLoading = false
+                let err = AuthError.appleSignInFailed(
+                    underlying: "Backend exchange failed: \(backendError.localizedDescription)"
+                )
+                error = err
+                logger.error(
+                    "Apple Sign In: Backend token exchange failed",
+                    metadata: ["error": backendError.localizedDescription]
+                )
+                throw err
+            }
 
             logger.info(
                 "Apple sign-in succeeded",
@@ -138,6 +235,7 @@ extension AuthManager {
             )
         } catch is CancellationError {
             isLoading = false
+            error = AuthError.cancelled
             throw AuthError.cancelled
         } catch let authError as AuthError {
             isLoading = false
@@ -149,6 +247,10 @@ extension AuthManager {
             )
             isLoading = false
             self.error = wrapped
+            logger.error(
+                "Apple Sign In: Unexpected error",
+                metadata: ["error": error.localizedDescription]
+            )
             throw wrapped
         }
     }

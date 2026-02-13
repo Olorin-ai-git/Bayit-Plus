@@ -1,0 +1,176 @@
+# BayitPlusTVApp - Missing Files Report
+
+## Executive Summary
+
+**Status:** ⚠️ 9 Swift files are missing from the Xcode project
+**Impact:** Build may fail if these files are referenced
+**Action Required:** Add missing files to Xcode project
+**Report Generated:** 2026-02-12
+
+---
+
+## Missing Files Details
+
+### 🔴 HIGH PRIORITY (Must Add - Used by other code)
+
+These files are actively referenced by other Swift files and MUST be added:
+
+#### 1. Missions Module (3 files)
+- **Location:** `BayitPlusTVApp/Views/Missions/`
+- **Files:**
+  - `TVMissionLevelCardView.swift` - Referenced by TVMissionsDashboardView
+  - `TVMissionPerksView.swift` - Referenced by TVMissionsDashboardView
+  - `TVMissionsDashboardView.swift` - Parent view for missions
+- **Impact:** Missions feature will not compile without these
+
+#### 2. PhoneticMirror Module (2 files)
+- **Location:** `BayitPlusTVApp/Views/PhoneticMirror/`
+- **Files:**
+  - `TVPhoneticMirrorView.swift` - Main view
+  - `TVSpeechRecognitionEngine.swift` - Used by TVPhoneticMirrorView
+- **Impact:** PhoneticMirror feature will not compile
+
+---
+
+### 🟡 LOW PRIORITY (Can add later - Not currently used)
+
+These files exist but are not referenced by other code:
+
+#### 3. GrandparentBridge Module (1 file)
+- `BayitPlusTVApp/Views/GrandparentBridge/TVNewsClipView.swift`
+
+#### 4. InteractiveMission Module (1 file)
+- `BayitPlusTVApp/Views/InteractiveMission/TVInteractiveMissionPlayerView.swift`
+
+#### 5. StarStory Module (2 files)
+- `BayitPlusTVApp/Views/StarStory/TVStarStoryGalleryView.swift`
+- `BayitPlusTVApp/Views/StarStory/TVStarStoryPlayerView.swift`
+
+---
+
+## Asset Catalogs Status
+
+✅ **All asset catalogs are properly configured**
+
+- `BayitPlusTVApp/Assets.xcassets` - Referenced in project
+- Individual asset files are managed as part of the bundle (normal behavior)
+- 34 asset files inside the bundle are properly managed by Xcode
+
+---
+
+## How to Fix
+
+### Option 1: Add All Files at Once (Recommended)
+
+1. Open `BayitPlus.xcodeproj` in Xcode
+2. Right-click on `BayitPlusTVApp/Views/` in Project Navigator
+3. Select "Add Files to BayitPlus..."
+4. Hold `⌘` (Command) and select these folders:
+   - `GrandparentBridge/`
+   - `InteractiveMission/`
+   - `Missions/`
+   - `PhoneticMirror/`
+   - `StarStory/`
+5. Ensure these options are selected:
+   - ✅ Copy items if needed (unchecked - files already in place)
+   - ✅ Create groups
+   - ✅ Add to targets: **BayitPlusTVApp**
+6. Click "Add"
+
+### Option 2: Add High Priority Files Only (Quick Fix)
+
+If you want to fix compile errors quickly, add only:
+
+1. `BayitPlusTVApp/Views/Missions/` folder (all 3 files)
+2. `BayitPlusTVApp/Views/PhoneticMirror/` folder (both files)
+
+This will prevent build failures while allowing you to add the rest later.
+
+---
+
+## Statistics
+
+| Category | Count |
+|----------|-------|
+| Total Swift files in BayitPlusTVApp | 164 |
+| Swift files properly in project | 155 |
+| **Missing Swift files** | **9** |
+| High priority (must add) | 5 |
+| Low priority (optional) | 4 |
+| Asset catalog files | 34 (properly managed) |
+
+---
+
+## Verification
+
+After adding the files, verify with:
+
+```bash
+# Check if all files are now in the project
+grep -c "\.swift in Sources" BayitPlus.xcodeproj/project.pbxproj
+```
+
+**Expected result:** Should be ~1647 (current: 1638 + 9 new files)
+
+---
+
+## Impact Assessment
+
+### Will the project build without these files?
+
+**Maybe.** It depends on which code paths are executed:
+
+- ✅ **Core functionality**: Will build (all player, home, settings files are present)
+- ⚠️ **Missions feature**: Will **NOT** build if accessed (missing dependencies)
+- ⚠️ **PhoneticMirror feature**: Will **NOT** build if accessed (missing dependencies)
+- ✅ **Other features**: Should build normally
+
+### Should I add them all?
+
+**Yes, recommended.** Even if some files aren't currently used:
+- Prevents future compilation errors
+- Maintains code completeness
+- Ensures all features are available
+- Takes only a few minutes
+
+---
+
+## Our Recent Changes (Already in Project ✅)
+
+These files were added during our recent enhancements and are **already properly configured**:
+
+- ✅ `TVOpenSubtitlesDownloadView.swift` - OpenSubtitles integration
+- ✅ `TVTriviaFactsOverlayView.swift` - AI-based trivia
+- ✅ `TVLocationContentRow.swift` - Homepage sections (modified)
+
+---
+
+## Next Steps
+
+1. ✅ Add missing files to Xcode project (see instructions above)
+2. ✅ Build project (`⌘+B`) to verify no compilation errors
+3. ✅ Run on tvOS simulator to test
+4. ✅ Commit changes to version control
+5. ✅ Test affected features:
+   - Missions dashboard
+   - PhoneticMirror (if available)
+   - All three recent enhancements
+
+---
+
+## Quick Reference: Folders to Add
+
+```
+BayitPlusTVApp/Views/
+├── GrandparentBridge/      (1 file)
+├── InteractiveMission/     (1 file)
+├── Missions/               (3 files) 🔴 HIGH PRIORITY
+├── PhoneticMirror/         (2 files) 🔴 HIGH PRIORITY
+└── StarStory/              (2 files)
+```
+
+**Total:** 5 folders, 9 Swift files
+
+---
+
+*Report generated by comprehensive file scan on 2026-02-12*

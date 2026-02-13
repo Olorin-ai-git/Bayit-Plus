@@ -19,6 +19,9 @@ struct SubscriptionView: View {
                         ErrorStateView(message: error) { Task { await vm.load() } }
                     } else {
                         headerSection
+                        if let error = vm.error {
+                            errorBanner(error, vm)
+                        }
                         billingPeriodPicker(vm)
                         planCards(vm)
                         if vm.isSubscribed {
@@ -50,6 +53,32 @@ struct SubscriptionView: View {
                 .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
         }
+    }
+
+    // MARK: - Error Banner
+
+    private func errorBanner(_ message: String, _ vm: SubscriptionViewModel) -> some View {
+        GlassCard {
+            HStack(spacing: DesignTokens.Spacing.md) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: DesignTokens.FontSize.lg))
+                    .foregroundStyle(DesignTokens.Error.default)
+
+                Text(message)
+                    .font(.system(size: DesignTokens.FontSize.sm))
+                    .foregroundStyle(DesignTokens.Text.secondary)
+
+                Spacer()
+
+                Button(action: { vm.setError("") }) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: DesignTokens.FontSize.sm))
+                        .foregroundStyle(DesignTokens.Text.muted)
+                }
+            }
+            .padding(DesignTokens.Spacing.md)
+        }
+        .padding(.horizontal, DesignTokens.Spacing.lg)
     }
 
     // MARK: - Billing Period
@@ -135,12 +164,24 @@ struct SubscriptionView: View {
                         variant: .primary,
                         isLoading: vm.isProcessing
                     ) {
-                        Task {
+                        Task { @MainActor in
+                            guard !vm.isProcessing else { return }
                             if let url = await vm.subscribe(to: plan) {
-                                await UIApplication.shared.open(url)
+                                await MainActor.run {
+                                    UIApplication.shared.open(url, options: [:]) { success in
+                                        if !success {
+                                            Task { @MainActor in
+                                                vm.setError("Failed to open subscription page. Please try again.")
+                                            }
+                                        }
+                                    }
+                                }
+                            } else if vm.error == nil {
+                                vm.setError("Unable to start subscription. Please try again later.")
                             }
                         }
                     }
+                    .disabled(vm.isProcessing)
                 }
             }
             .padding(DesignTokens.Spacing.lg)

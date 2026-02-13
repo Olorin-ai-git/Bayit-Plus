@@ -2,7 +2,9 @@
 import AVKit
 import BayitCore
 import BayitDesignSystem
-import Speech
+// NOTE: Speech framework not available on tvOS
+// For voice-controlled missions, implement alternative using backend transcription
+// import Speech // NOT AVAILABLE ON TVOS
 import SwiftUI
 
 /// tvOS interactive mission player: HLS video with speech-gated Hebrew decisions, focus buttons, voice input, scoring.
