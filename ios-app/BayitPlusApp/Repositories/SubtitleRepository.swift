@@ -99,8 +99,8 @@ final class APISubtitleRepository: SubtitleRepository, @unchecked Sendable {
         ]
         _ = try await client.post(
             "/api/v1/subtitles/preferences/\(update.contentId)",
-            queryItems: queryItems,
             body: EmptyRequest(),
+            queryItems: queryItems,
             as: MessageResponse.self
         )
     }

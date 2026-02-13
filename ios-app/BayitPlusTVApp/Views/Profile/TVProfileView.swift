@@ -505,7 +505,7 @@ struct TVProfileView: View {
                 showingAccountSettings = true
             }
 
-            if !profile.emailVerified ?? true {
+            if !(profile.emailVerified ?? false) {
                 actionRow(
                     icon: "envelope.badge",
                     title: "Verify Email",
@@ -516,7 +516,7 @@ struct TVProfileView: View {
                 }
             }
 
-            if !profile.phoneVerified ?? true && profile.phoneNumber != nil {
+            if !(profile.phoneVerified ?? false) && profile.phoneNumber != nil {
                 actionRow(
                     icon: "phone.badge.checkmark",
                     title: "Verify Phone",

@@ -572,8 +572,10 @@ async def get_podcasts(
         user_subscriptions = {}
         if current_user:
             subscriptions = await UserPodcastSubscription.find(
-                UserPodcastSubscription.user_id == str(current_user.id),
-                UserPodcastSubscription.is_deleted == False,
+                {
+                    "user_id": str(current_user.id),
+                    "is_deleted": False,
+                }
             ).to_list()
             for sub in subscriptions:
                 user_subscriptions[sub.podcast_id] = sub.is_user_added
@@ -679,7 +681,7 @@ async def get_podcast(
 
         # Get latest episodes
         episodes = (
-            await PodcastEpisode.find(PodcastEpisode.podcast_id == show_id)
+            await PodcastEpisode.find({"podcast_id": show_id})
             .sort("-published_at")
             .limit(50)
             .to_list()
@@ -738,14 +740,14 @@ async def get_episodes(
             raise HTTPException(status_code=404, detail="Podcast not found")
 
         episodes = (
-            await PodcastEpisode.find(PodcastEpisode.podcast_id == show_id)
+            await PodcastEpisode.find({"podcast_id": show_id})
             .sort("-published_at")
             .skip(skip)
             .limit(limit)
             .to_list()
         )
 
-        total = await PodcastEpisode.find(PodcastEpisode.podcast_id == show_id).count()
+        total = await PodcastEpisode.find({"podcast_id": show_id}).count()
 
         return {
             "episodes": [

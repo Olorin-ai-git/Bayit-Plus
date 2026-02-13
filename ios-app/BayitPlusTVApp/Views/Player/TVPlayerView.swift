@@ -18,6 +18,14 @@ struct TVPlayerView: View {
     let contentType: MediaContentType
     let channelId: String?
 
+    // MARK: - Initializer
+
+    init(contentId: String, contentType: MediaContentType, channelId: String?) {
+        self.contentId = contentId
+        self.contentType = contentType
+        self.channelId = channelId
+    }
+
     // MARK: - ViewModels
 
     @State private var subtitlesVM: InteractiveSubtitlesViewModel?
@@ -50,7 +58,7 @@ struct TVPlayerView: View {
     @State private var isResolvingStream = true
     @State private var streamError: String?
     @State private var initialPosition: TimeInterval = 0
-    nonisolated(unsafe) private var progressTrackingTask: Task<Void, Never>?
+    @State private var progressTrackingTask: Task<Void, Never>? = nil
     private let progressIntervalSeconds: TimeInterval = 15
 
     // Focus management
@@ -819,6 +827,7 @@ struct TVPlayerView: View {
         }
     }
 
+    @MainActor
     private func cleanup() {
         progressTrackingTask?.cancel()
         progressTrackingTask = nil
@@ -845,12 +854,13 @@ struct TVPlayerView: View {
         }
     }
 
+    @MainActor
     private func startProgressTracking() {
-        progressTrackingTask = Task { [weak self] in
+        progressTrackingTask = Task {
             while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(self?.progressIntervalSeconds ?? 15))
+                try? await Task.sleep(for: .seconds(progressIntervalSeconds))
                 guard !Task.isCancelled else { break }
-                await self?.saveProgress()
+                await saveProgress()
             }
         }
     }

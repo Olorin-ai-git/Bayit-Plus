@@ -43,9 +43,10 @@ struct TVSplitSubtitleOverlayView: View {
                     sideBySideLayout
                 }
             }
-            .padding(.horizontal, TVDesignTokens.Spacing.xxl)
-            .padding(.bottom, TVDesignTokens.Spacing.xxxxl)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
+        .padding(.horizontal, UIScreen.main.bounds.width * 0.1)
+        .padding(.bottom, TVDesignTokens.Spacing.xxxxl)
     }
 
     // MARK: - Stacked Layout
@@ -81,39 +82,40 @@ struct TVSplitSubtitleOverlayView: View {
             // Primary language (left)
             VStack(spacing: TVDesignTokens.Spacing.xs) {
                 if let primary = activeCue(from: primaryCues) {
-                    languageLabel(primaryLanguage)
                     subtitleBubbleWithBorder(
                         text: primary.text ?? "",
-                        font: TVDesignTokens.FontSize.lg,
-                        weight: .medium,
+                        font: TVDesignTokens.FontSize.md,
+                        weight: .semibold,
                         color: .white,
-                        bgOpacity: 0.75,
+                        bgOpacity: 0.9,
                         borderEdge: .leading,
                         borderColor: Color(hex: "#3b82f6")
                     )
+                    languageLabel(primaryLanguage)
                 }
             }
             .frame(maxWidth: .infinity)
 
-            // Divider
+            // Divider - constrained to not stretch
             Rectangle()
                 .fill(Color.white.opacity(0.25))
                 .frame(width: 2)
+                .frame(maxHeight: 60)
                 .cornerRadius(1)
 
             // Secondary language (right)
             VStack(spacing: TVDesignTokens.Spacing.xs) {
                 if let secondary = activeCue(from: secondaryCues) {
-                    languageLabel(secondaryLanguage)
                     subtitleBubbleWithBorder(
                         text: secondary.text ?? "",
-                        font: TVDesignTokens.FontSize.lg,
-                        weight: .medium,
-                        color: DesignTokens.Text.secondary,
-                        bgOpacity: 0.6,
+                        font: TVDesignTokens.FontSize.md,
+                        weight: .semibold,
+                        color: .white,
+                        bgOpacity: 0.9,
                         borderEdge: .trailing,
                         borderColor: Color(hex: "#8b5cf6")
                     )
+                    languageLabel(secondaryLanguage)
                 }
             }
             .frame(maxWidth: .infinity)
@@ -152,25 +154,41 @@ struct TVSplitSubtitleOverlayView: View {
             .font(.system(size: font, weight: weight))
             .foregroundStyle(color)
             .multilineTextAlignment(.center)
-            .padding(.horizontal, TVDesignTokens.Spacing.xl)
-            .padding(.vertical, TVDesignTokens.Spacing.sm)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 4)
             .background(.black.opacity(bgOpacity))
             .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm))
-            .overlay(alignment: borderEdge.alignment) {
+            .shadow(color: .black.opacity(0.8), radius: 4, x: 0, y: 0)
+            .overlay(alignment: borderEdge == .leading ? .leading : .trailing) {
                 Rectangle()
                     .fill(borderColor)
-                    .frame(
-                        width: borderEdge == .leading || borderEdge == .trailing ? 3 : nil,
-                        height: borderEdge == .top || borderEdge == .bottom ? 3 : nil
+                    .frame(width: 3)
+                    .clipShape(
+                        UnevenRoundedRectangle(
+                            topLeadingRadius: borderEdge == .leading ? TVDesignTokens.Radius.sm : 0,
+                            bottomLeadingRadius: borderEdge == .leading ? TVDesignTokens.Radius.sm : 0,
+                            bottomTrailingRadius: borderEdge == .trailing ? TVDesignTokens.Radius.sm : 0,
+                            topTrailingRadius: borderEdge == .trailing ? TVDesignTokens.Radius.sm : 0
+                        )
                     )
             }
     }
 
     private func languageLabel(_ code: String) -> some View {
         let info = SubtitleLanguages.info(for: code)
-        return Text(info?.nativeName ?? code)
-            .font(.system(size: TVDesignTokens.FontSize.xs, weight: .semibold))
-            .foregroundStyle(DesignTokens.Primary.p400)
+        return HStack(spacing: 8) {
+            if let emojiFlag = info?.emojiFlag {
+                Text(emojiFlag)
+                    .font(.system(size: 22))
+            }
+            Text(info?.nativeName ?? code)
+                .font(.system(size: 18, weight: .medium))
+                .foregroundStyle(Color.white.opacity(0.7))
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Color.white.opacity(0.15))
+        .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.sm / 2))
     }
 
     private func activeCue(from cues: [SubtitleCue]) -> SubtitleCue? {

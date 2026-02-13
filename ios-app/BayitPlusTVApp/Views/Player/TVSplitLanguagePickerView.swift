@@ -66,7 +66,7 @@ struct TVSplitLanguagePickerView: View {
             }
         }
         .padding(TVDesignTokens.Spacing.xxl)
-        .frame(maxWidth: 800)
+        .frame(maxWidth: 1100)
         .background(DesignTokens.Background.primary)
         .onExitCommand { onDismiss() }
         .onAppear {
@@ -128,7 +128,7 @@ struct TVSplitLanguagePickerView: View {
                                 .foregroundStyle(DesignTokens.Primary.p400)
                         }
                     }
-                    .frame(width: 280)
+                    .frame(width: 360)
                     .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
                     .padding(.horizontal, TVDesignTokens.Spacing.lg)
                 }
