@@ -104,36 +104,41 @@ struct TVSplitLanguagePickerView: View {
                 .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            ForEach(availableLanguages, id: \.self) { lang in
-                let info = SubtitleLanguages.info(for: lang)
-                let isSelected = selection.wrappedValue == lang
+            ScrollView {
+                VStack(spacing: TVDesignTokens.Spacing.md) {
+                    ForEach(availableLanguages, id: \.self) { lang in
+                        let info = SubtitleLanguages.info(for: lang)
+                        let isSelected = selection.wrappedValue == lang
 
-                Button {
-                    selection.wrappedValue = lang
-                } label: {
-                    HStack(spacing: TVDesignTokens.Spacing.md) {
-                        Text(info?.emojiFlag ?? "")
-                            .font(.system(size: 28))
+                        Button {
+                            selection.wrappedValue = lang
+                        } label: {
+                            HStack(spacing: TVDesignTokens.Spacing.md) {
+                                Text(info?.emojiFlag ?? "")
+                                    .font(.system(size: 28))
 
-                        Text(info?.nativeName ?? lang)
-                            .font(.system(size: TVDesignTokens.FontSize.md))
-                            .foregroundStyle(DesignTokens.Text.primary)
-                            .lineLimit(1)
+                                Text(info?.nativeName ?? lang)
+                                    .font(.system(size: TVDesignTokens.FontSize.md))
+                                    .foregroundStyle(DesignTokens.Text.primary)
+                                    .lineLimit(1)
 
-                        Spacer()
+                                Spacer()
 
-                        if isSelected {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 24))
-                                .foregroundStyle(DesignTokens.Primary.p400)
+                                if isSelected {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: 24))
+                                        .foregroundStyle(DesignTokens.Primary.p400)
+                                }
+                            }
+                            .frame(width: 360)
+                            .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
+                            .padding(.horizontal, TVDesignTokens.Spacing.lg)
                         }
+                        .buttonStyle(.card)
                     }
-                    .frame(width: 360)
-                    .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
-                    .padding(.horizontal, TVDesignTokens.Spacing.lg)
                 }
-                .buttonStyle(.card)
             }
+            .frame(maxHeight: 600)
         }
     }
 }
