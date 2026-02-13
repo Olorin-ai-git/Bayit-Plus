@@ -14,14 +14,14 @@ struct TVOpenSubtitlesDownloadView: View {
 
     var body: some View {
         VStack(spacing: TVDesignTokens.Spacing.md) {
-            if result == nil && error == nil {
-                downloadButton
-            } else if isLoading {
+            if isLoading {
                 loadingView
             } else if let result = result {
                 resultView(result)
             } else if let error = error {
                 errorView(error)
+            } else {
+                downloadButton
             }
 
             attributionText
