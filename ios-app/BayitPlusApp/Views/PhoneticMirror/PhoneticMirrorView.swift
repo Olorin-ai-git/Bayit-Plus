@@ -31,7 +31,7 @@ struct PhoneticMirrorView: View {
                 }
 
                 if let error = viewModel.error {
-                    Text(error)
+                    Text(localization.t(error))
                         .foregroundColor(DesignTokens.ErrorColor.default)
                         .font(.system(size: 14))
                 }

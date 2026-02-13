@@ -93,7 +93,7 @@ final class ChameleonAvatarProvider {
                 logger.info("Style transfer ready: \(cacheId)")
             } else if data.status == "failed" {
                 await MainActor.run {
-                    error = "Style transfer unavailable"
+                    error = "chameleon.errors.unavailable"
                     isLoading = false
                     stopPolling()
                 }

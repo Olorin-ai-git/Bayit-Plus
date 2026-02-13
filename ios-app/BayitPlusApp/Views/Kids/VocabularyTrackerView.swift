@@ -120,7 +120,7 @@ struct VocabularyTrackerView: View {
                         .overlay {
                             if isCurrent {
                                 Circle()
-                                    .stroke(DesignTokens.Primary.light, lineWidth: 2)
+                                    .stroke(DesignTokens.Primary.p400, lineWidth: 2)
                             }
                         }
 
@@ -164,7 +164,7 @@ struct VocabularyTrackerView: View {
                     .foregroundStyle(DesignTokens.Text.secondary)
                 Text("Score: \(Int(proficiency.overallScore))/100")
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
-                    .foregroundStyle(DesignTokens.Primary.light)
+                    .foregroundStyle(DesignTokens.Primary.p400)
             }
             .frame(maxWidth: .infinity)
         }

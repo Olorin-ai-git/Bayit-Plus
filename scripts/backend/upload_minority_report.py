@@ -214,6 +214,13 @@ async def get_tmdb_metadata(title: str, api_key: str) -> dict | None:
 async def main():
     settings = get_settings()
 
+    # Fix credentials path if pointing to stale location
+    creds_path = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "")
+    correct_creds = str(PROJECT_ROOT / "backend" / "credentials" / "bayit-plus-7c3927963c21.json")
+    if not os.path.exists(creds_path) and os.path.exists(correct_creds):
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = correct_creds
+        logger.info("Fixed GOOGLE_APPLICATION_CREDENTIALS -> %s", correct_creds)
+
     logger.info("=" * 70)
     logger.info("Minority Report - HLS Upload Pipeline")
     logger.info("=" * 70)
@@ -349,11 +356,13 @@ async def main():
 
     except Exception as e:
         logger.error("Pipeline failed: %s", e)
+        logger.error("Temp directory preserved for retry: %s", temp_dir)
         import traceback
         traceback.print_exc()
         sys.exit(1)
 
-    finally:
+    else:
+        # Only clean up on success
         logger.info("Cleaning up temp directory: %s", temp_dir)
         shutil.rmtree(temp_dir, ignore_errors=True)
 

@@ -97,7 +97,7 @@ struct TVNewsClipView: View {
                                             .lineLimit(1)
                                         Text(clip.createdAt)
                                             .foregroundColor(.white.opacity(0.4))
-                                            .font(.system(size: TVDesignTokens.FontSize.caption))
+                                            .font(.system(size: TVDesignTokens.FontSize.xs))
                                     }
                                     Spacer()
                                     if index == selectedIdx {
@@ -132,7 +132,7 @@ struct TVNewsClipView: View {
         HStack(spacing: TVDesignTokens.Spacing.sm) {
             ForEach(clip.vocabularyFeatured, id: \.self) { word in
                 Text(word)
-                    .font(.system(size: TVDesignTokens.FontSize.caption, weight: .medium))
+                    .font(.system(size: TVDesignTokens.FontSize.xs, weight: .medium))
                     .foregroundColor(.blue)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 6)
@@ -142,7 +142,7 @@ struct TVNewsClipView: View {
         }
 
         Text(localization.t("grandparentBridge.clips.featured", ["count": "\(clip.vocabularyFeatured.count)"]))
-            .font(.system(size: TVDesignTokens.FontSize.caption))
+            .font(.system(size: TVDesignTokens.FontSize.xs))
             .foregroundColor(.white.opacity(0.4))
     }
 

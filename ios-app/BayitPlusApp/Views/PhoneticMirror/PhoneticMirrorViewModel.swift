@@ -55,7 +55,7 @@ class PhoneticMirrorViewModel {
             isRecording = true
             mirrorState = .recording
         } catch {
-            self.error = "Recording failed"
+            self.error = "phoneticMirror.errors.recording"
         }
     }
 
@@ -81,7 +81,7 @@ class PhoneticMirrorViewModel {
         mirrorState = .processing
 
         guard let phrase = currentPhrase else {
-            error = "No phrase selected"
+            error = "phoneticMirror.errors.noPhrase"
             mirrorState = .idle
             return
         }

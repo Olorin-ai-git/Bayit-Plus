@@ -35,7 +35,7 @@ struct VoiceDecisionView: View {
                 if let hint = hint, !hint.isEmpty {
                     Text(hint)
                         .font(.system(size: 14))
-                        .foregroundColor(DesignTokens.Color.warning)
+                        .foregroundColor(DesignTokens.Warning.default)
                         .multilineTextAlignment(.center)
                 }
             }
@@ -78,7 +78,7 @@ struct VoiceDecisionView: View {
         VStack(spacing: 12) {
             Text("\(countdown)")
                 .font(.system(size: 48, weight: .heavy))
-                .foregroundColor(DesignTokens.Color.warning)
+                .foregroundColor(DesignTokens.Warning.default)
 
             Button {
                 if isListening { stopListening() } else { startListening() }

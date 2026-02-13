@@ -77,8 +77,7 @@ struct TVTriviaSettingsView: View {
             GlassButton(
                 isEnabled ? "Trivia Enabled" : "Trivia Disabled",
                 variant: isEnabled ? .primary : .ghost,
-                size: .large,
-                fullWidth: false
+                size: .large
             ) {
                 isEnabled.toggle()
                 Task { await savePreferences() }
@@ -123,7 +122,7 @@ struct TVTriviaSettingsView: View {
 
                     GlassButton(
                         category.displayName,
-                        variant: isSelected ? .warning : .ghost,
+                        variant: isSelected ? .primary : .ghost,
                         size: .medium
                     ) {
                         if isOnlySelected { return } // Keep at least one category
@@ -208,21 +207,21 @@ struct TVTriviaSettingsView: View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 24))
-                .foregroundStyle(DesignTokens.Danger.default)
+                .foregroundStyle(DesignTokens.ErrorColor.default)
 
             Text(message)
                 .font(.system(size: TVDesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
         .padding(TVDesignTokens.Spacing.lg)
-        .background(DesignTokens.Danger.default.opacity(0.1))
+        .background(DesignTokens.ErrorColor.default.opacity(0.1))
         .cornerRadius(TVDesignTokens.Radius.md)
     }
 
     // MARK: - Done Button
 
     private var doneButton: some View {
-        GlassButton("Done", variant: .secondary, size: .large, fullWidth: false) {
+        GlassButton("Done", variant: .secondary, size: .large) {
             dismiss()
         }
         .focused($focusedField, equals: .done)
@@ -336,9 +335,4 @@ enum TriviaCategory: String, CaseIterable, Sendable {
         case .fun: return "Fun Facts"
         }
     }
-}
-
-#Preview {
-    TVTriviaSettingsView()
-        .environment(TVRepositoryProvider())
 }

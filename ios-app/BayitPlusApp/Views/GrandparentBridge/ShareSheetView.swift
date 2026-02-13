@@ -30,7 +30,7 @@ struct ShareSheetView: View {
 
                     if let error = error {
                         Text(error)
-                            .foregroundColor(DesignTokens.Color.error)
+                            .foregroundColor(DesignTokens.ErrorColor.default)
                             .font(.system(size: 13))
                     }
                 }

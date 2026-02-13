@@ -140,9 +140,10 @@ struct V2VPracticeView: View {
                 let phrases = try await repos.phoneticMirrorRepository.fetchPhrases(
                     profileId: profileId, difficulty: "medium", count: 10
                 )
+                let mapped = phrases.map { V2VPracticePhrase(phraseHe: $0.phraseHe, transliteration: $0.transliteration, translation: $0.translation) }
                 await MainActor.run {
-                    viewModel.phrases = phrases
-                    viewModel.currentPhrase = phrases.first
+                    viewModel.phrases = mapped
+                    viewModel.currentPhrase = mapped.first
                 }
             } catch {
                 await MainActor.run {
