@@ -113,6 +113,12 @@ struct GenerateEpisodeResponse: Decodable {
     let episodeId: String
 }
 
+struct VideoSelfieUploadResponse: Decodable {
+    let avatarId: String
+    let status: String
+    let message: String?
+}
+
 struct AvatarsResponse: Decodable {
     let avatars: [StarStoryAvatar]
 }

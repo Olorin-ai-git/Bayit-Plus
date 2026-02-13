@@ -80,16 +80,3 @@ struct MirrorHistoryResponse: Codable {
     }
 }
 
-private extension Data {
-    mutating func appendMultipart(name: String, value: String, boundary: String) {
-        let field = "--\(boundary)\r\nContent-Disposition: form-data; name=\"\(name)\"\r\n\r\n\(value)\r\n"
-        append(field.data(using: .utf8)!)
-    }
-
-    mutating func appendMultipartFile(name: String, filename: String, mimeType: String, data: Data, boundary: String) {
-        let header = "--\(boundary)\r\nContent-Disposition: form-data; name=\"\(name)\"; filename=\"\(filename)\"\r\nContent-Type: \(mimeType)\r\n\r\n"
-        append(header.data(using: .utf8)!)
-        append(data)
-        append("\r\n".data(using: .utf8)!)
-    }
-}

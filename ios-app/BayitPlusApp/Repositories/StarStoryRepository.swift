@@ -26,6 +26,11 @@ protocol StarStoryRepository: Sendable {
         profileId: String
     ) async throws -> EpisodesResponse
 
+    func uploadVideoSelfie(
+        avatarId: String,
+        videoData: Data
+    ) async throws -> VideoSelfieUploadResponse
+
     func revokeConsent(profileId: String) async throws
 }
 
@@ -103,6 +108,28 @@ final class APIStarStoryRepository: StarStoryRepository, @unchecked Sendable {
             "/api/v1/star-story/episodes",
             queryItems: queryItems,
             as: EpisodesResponse.self
+        )
+    }
+
+    func uploadVideoSelfie(
+        avatarId: String,
+        videoData: Data
+    ) async throws -> VideoSelfieUploadResponse {
+        let boundary = UUID().uuidString
+        var body = Data()
+
+        body.appendMultipart(name: "avatar_id", value: avatarId, boundary: boundary)
+        body.appendMultipartFile(
+            name: "video", filename: "selfie.mp4",
+            mimeType: "video/mp4", data: videoData, boundary: boundary
+        )
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+
+        return try await client.postRaw(
+            "/api/v1/star-story/video-selfie/upload",
+            body: body,
+            contentType: "multipart/form-data; boundary=\(boundary)",
+            as: VideoSelfieUploadResponse.self
         )
     }
 

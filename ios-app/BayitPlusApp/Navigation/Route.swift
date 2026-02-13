@@ -130,6 +130,7 @@ public enum Route: Hashable {
     case zehAniHighlights(profileId: String)
     case zehAniContacts(profileId: String)
     case zehAniFeedback(profileId: String)
+    case zehAniAvatarSettings(profileId: String, avatarId: String)
 }
 
 // MARK: - Breadcrumb Labels
@@ -203,6 +204,7 @@ extension Route {
         case .zehAniHighlights: return "Highlights"
         case .zehAniContacts: return "Contacts"
         case .zehAniFeedback: return "Feedback"
+        case .zehAniAvatarSettings: return "Avatar Settings"
         }
     }
 }

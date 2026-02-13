@@ -6,14 +6,17 @@ import SwiftUI
 
 struct MagicMirrorView: View {
     @Environment(RepositoryProvider.self) private var repos
+    @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
 
     let profileId: String
 
     @State private var greeting: MagicMirrorGreeting?
+    @State private var activeAvatarId: String?
     @State private var isLoading = true
     @State private var error: String?
     @State private var noAvatar = false
+    @State private var insufficientCredits = false
     @State private var showAvatarCreation = false
     @State private var starStoryVM: StarStoryViewModel?
     @State private var sceneView: SCNView?
@@ -25,14 +28,33 @@ struct MagicMirrorView: View {
             DesignTokens.Background.primary.ignoresSafeArea()
 
             VStack(spacing: DesignTokens.Spacing.lg) {
-                ZehAniBreadcrumb(currentLabel: "Magic Mirror")
+                HStack {
+                    ZehAniBreadcrumb(currentLabel: "Magic Mirror")
+                    Spacer()
+                    if greeting != nil, let avatarId = activeAvatarId {
+                        Button {
+                            coordinator.push(.zehAniAvatarSettings(
+                                profileId: profileId, avatarId: avatarId
+                            ))
+                        } label: {
+                            Image(systemName: "gearshape")
+                                .font(.system(size: DesignTokens.FontSize.lg))
+                                .foregroundStyle(DesignTokens.Text.secondary)
+                        }
+                    }
+                }
 
                 if isLoading {
                     Spacer()
                     ProgressView().tint(.white)
                     Spacer()
                 } else if noAvatar {
-                    createAvatarPrompt
+                    MagicMirrorNoAvatarPrompt {
+                        starStoryVM = StarStoryViewModel(repository: repos.starStory)
+                        showAvatarCreation = true
+                    }
+                } else if insufficientCredits {
+                    MagicMirrorNoCreditsPrompt()
                 } else if let error = error {
                     Spacer()
                     errorView(error)
@@ -57,41 +79,6 @@ struct MagicMirrorView: View {
         .onAppear { loadGreeting() }
     }
 
-    // MARK: - Create Avatar Prompt
-
-    private var createAvatarPrompt: some View {
-        VStack(spacing: DesignTokens.Spacing.xl) {
-            Spacer()
-
-            Image(systemName: "wand.and.stars")
-                .font(.system(size: 56))
-                .foregroundStyle(DesignTokens.Primary.p400)
-
-            Text(localization.t("zehAni.magicMirror.noAvatar"))
-                .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
-                .foregroundStyle(DesignTokens.Text.primary)
-                .multilineTextAlignment(.center)
-
-            Text(localization.t("zehAni.magicMirror.noAvatarDesc"))
-                .font(.system(size: DesignTokens.FontSize.sm))
-                .foregroundStyle(DesignTokens.Text.muted)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, DesignTokens.Spacing.xl)
-
-            GlassButton(
-                localization.t("zehAni.magicMirror.createAvatar"),
-                variant: .primary
-            ) {
-                starStoryVM = StarStoryViewModel(
-                    repository: repos.starStory
-                )
-                showAvatarCreation = true
-            }
-
-            Spacer()
-        }
-    }
-
     // MARK: - Greeting Content
 
     @ViewBuilder
@@ -99,8 +86,10 @@ struct MagicMirrorView: View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: DesignTokens.Spacing.lg) {
                 avatarSceneView
-                greetingCard(greeting)
-                vocabularyCard(greeting)
+                MagicMirrorGreetingCard(greeting: greeting)
+                if let vocab = greeting.vocabularyOfTheDay, !vocab.isEmpty {
+                    MagicMirrorVocabCard(vocabulary: vocab)
+                }
             }
         }
     }
@@ -108,7 +97,7 @@ struct MagicMirrorView: View {
     @ViewBuilder
     private var avatarSceneView: some View {
         SceneKitViewWrapper(
-            scene: createAvatarScene(),
+            scene: MagicMirrorSceneBuilder.createScene(),
             onUpdate: { view in
                 self.sceneView = view
                 if !isAnimating { startGreetingAnimation() }
@@ -120,56 +109,6 @@ struct MagicMirrorView: View {
             RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
                 .stroke(DesignTokens.Glass.border, lineWidth: 1)
         )
-    }
-
-    @ViewBuilder
-    private func greetingCard(_ greeting: MagicMirrorGreeting) -> some View {
-        GlassCard {
-            VStack(spacing: DesignTokens.Spacing.sm) {
-                Text(greeting.greetingTextHe)
-                    .font(.system(size: DesignTokens.FontSize.xxl, weight: .bold))
-                    .foregroundStyle(DesignTokens.Text.primary)
-                    .multilineTextAlignment(.center)
-
-                Text(greeting.greetingTextEn)
-                    .font(.system(size: DesignTokens.FontSize.md))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-                    .multilineTextAlignment(.center)
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func vocabularyCard(_ greeting: MagicMirrorGreeting) -> some View {
-        GlassCard {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-                Text(localization.t("zehAni.magicMirror.vocabOfDay"))
-                    .font(.system(
-                        size: DesignTokens.FontSize.md, weight: .semibold
-                    ))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-
-                ForEach(greeting.vocabularyWords, id: \.wordHe) { word in
-                    HStack {
-                        Text(word.wordHe)
-                            .font(.system(
-                                size: DesignTokens.FontSize.lg, weight: .medium
-                            ))
-                            .foregroundStyle(DesignTokens.Text.primary)
-
-                        Text(word.transliteration)
-                            .font(.system(size: DesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.muted)
-
-                        Spacer()
-
-                        Text(word.translation)
-                            .font(.system(size: DesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.secondary)
-                    }
-                }
-            }
-        }
     }
 
     // MARK: - Error & Refresh
@@ -190,25 +129,6 @@ struct MagicMirrorView: View {
         }
     }
 
-    // MARK: - Scene
-
-    private func createAvatarScene() -> SCNScene {
-        let scene = SCNScene()
-
-        let cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 60)
-        scene.rootNode.addChildNode(cameraNode)
-
-        let lightNode = SCNNode()
-        lightNode.light = SCNLight()
-        lightNode.light?.type = .omni
-        lightNode.position = SCNVector3(x: 0, y: 20, z: 60)
-        scene.rootNode.addChildNode(lightNode)
-
-        return scene
-    }
-
     private func startGreetingAnimation() {
         isAnimating = true
     }
@@ -219,21 +139,31 @@ struct MagicMirrorView: View {
         isLoading = true
         error = nil
         noAvatar = false
+        insufficientCredits = false
 
         Task {
             do {
-                let fetched = try await repos.avatarMeshRepository.getMagicMirrorGreeting(
+                async let greetingTask = repos.avatarMeshRepository.getMagicMirrorGreeting(
                     profileId: profileId
                 )
+                async let avatarsTask = repos.starStory.fetchAvatars(profileId: profileId)
+
+                let fetched = try await greetingTask
+                let avatarsResponse = try? await avatarsTask
+
                 await MainActor.run {
                     greeting = fetched
+                    activeAvatarId = avatarsResponse?.avatars.first?.avatarId
                     isLoading = false
                 }
             } catch let apiError as APIError {
                 await MainActor.run {
-                    if case .notFound = apiError {
+                    switch apiError {
+                    case .notFound:
                         noAvatar = true
-                    } else {
+                    case .paymentRequired:
+                        insufficientCredits = true
+                    default:
                         self.error = apiError.localizedDescription
                     }
                     isLoading = false

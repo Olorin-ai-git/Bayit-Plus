@@ -44,6 +44,19 @@ final class StarStoryViewModel {
         childFirstName: String,
         pin: String
     ) async -> Bool {
+        let response = await grantConsentFull(
+            profileId: profileId,
+            childFirstName: childFirstName,
+            pin: pin
+        )
+        return response?.success ?? false
+    }
+
+    func grantConsentFull(
+        profileId: String,
+        childFirstName: String,
+        pin: String
+    ) async -> ConsentResponse? {
         errorMessage = nil
 
         do {
@@ -53,10 +66,27 @@ final class StarStoryViewModel {
                 pin: pin
             )
             logger.info("Consent granted: \(response.success)")
-            return response.success
+            return response
         } catch {
             errorMessage = error.localizedDescription
             logger.error("Failed to grant consent", error: error)
+            return nil
+        }
+    }
+
+    func uploadVideoSelfie(avatarId: String, videoData: Data) async -> Bool {
+        errorMessage = nil
+
+        do {
+            let response = try await repository.uploadVideoSelfie(
+                avatarId: avatarId,
+                videoData: videoData
+            )
+            logger.info("Video selfie uploaded for avatar \(response.avatarId)")
+            return true
+        } catch {
+            errorMessage = error.localizedDescription
+            logger.error("Failed to upload video selfie", error: error)
             return false
         }
     }
@@ -109,6 +139,27 @@ final class StarStoryViewModel {
         } catch {
             errorMessage = error.localizedDescription
             logger.error("Failed to revoke consent", error: error)
+        }
+    }
+
+    func processVideoAndGenerateMesh(
+        avatarId: String, videoData: Data,
+        profileId: String, pin: String,
+        meshRepo: any AvatarMeshRepository
+    ) async -> Bool {
+        let uploaded = await uploadVideoSelfie(avatarId: avatarId, videoData: videoData)
+        guard uploaded else { return false }
+
+        do {
+            _ = try await meshRepo.generateMesh(
+                avatarId: avatarId, profileId: profileId, pin: pin
+            )
+            logger.info("Mesh generation triggered for avatar \(avatarId)")
+            return true
+        } catch {
+            errorMessage = error.localizedDescription
+            logger.error("Failed to trigger mesh generation", error: error)
+            return false
         }
     }
 

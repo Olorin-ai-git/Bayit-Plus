@@ -126,6 +126,8 @@ struct RouteDestinationResolver {
             ContactsManagementView(profileId: profileId)
         case .zehAniFeedback(let profileId):
             FeedbackInboxView(profileId: profileId)
+        case .zehAniAvatarSettings(let profileId, let avatarId):
+            AvatarSettingsView(profileId: profileId, avatarId: avatarId)
         default:
             ErrorStateView(
                 message: "Screen not available",

@@ -58,6 +58,8 @@
 	<string>Bayit+ uses Face ID to securely sign in to your account</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Bayit+ uses your location to show Israeli community content near you</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Bayit+ uses the camera to record a video selfie for creating your 3D avatar</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bayit+ uses the microphone for voice commands</string>
 	<key>NSPrivacyPolicyURL</key>
