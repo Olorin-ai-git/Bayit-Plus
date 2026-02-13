@@ -9,6 +9,7 @@ struct TVContentCard: View {
     let badge: String?
     let aspectRatio: CGFloat
     let placeholderIcon: String
+    let availableSubtitleLanguages: [String]?
     let onSelect: () -> Void
 
     @Environment(\.isFocused) private var isFocused
@@ -23,6 +24,7 @@ struct TVContentCard: View {
         badge: String? = nil,
         aspectRatio: CGFloat = 2.0/3.0,
         placeholderIcon: String = "photo",
+        availableSubtitleLanguages: [String]? = nil,
         onSelect: @escaping () -> Void
     ) {
         self.imageURL = imageURL
@@ -31,6 +33,7 @@ struct TVContentCard: View {
         self.badge = badge
         self.aspectRatio = aspectRatio
         self.placeholderIcon = placeholderIcon
+        self.availableSubtitleLanguages = availableSubtitleLanguages
         self.onSelect = onSelect
     }
 
@@ -44,6 +47,9 @@ struct TVContentCard: View {
                     .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.poster))
                     .overlay(alignment: .topTrailing) {
                         badgeOverlay
+                    }
+                    .overlay(alignment: .bottomLeading) {
+                        subtitleFlagsOverlay
                     }
 
                 // Title
@@ -106,6 +112,34 @@ struct TVContentCard: View {
                 .background(DesignTokens.Primary.default.opacity(0.9))
                 .clipShape(Capsule())
                 .padding(TVDesignTokens.Spacing.sm)
+        }
+    }
+
+    @ViewBuilder
+    private var subtitleFlagsOverlay: some View {
+        if let languages = availableSubtitleLanguages, !languages.isEmpty {
+            HStack(spacing: TVDesignTokens.Spacing.xxs) {
+                ForEach(languages.prefix(5), id: \.self) { language in
+                    Text(SubtitleLanguages.emojiFlag(for: language))
+                        .font(.system(size: TVDesignTokens.FontSize.md))
+                }
+                if languages.count > 5 {
+                    Text("+\(languages.count - 5)")
+                        .font(.system(size: TVDesignTokens.FontSize.xs, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.8))
+                }
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.sm)
+            .padding(.vertical, TVDesignTokens.Spacing.xxs)
+            .background(
+                Capsule()
+                    .fill(Color.black.opacity(0.7))
+                    .overlay(
+                        Capsule()
+                            .strokeBorder(Color.white.opacity(0.2), lineWidth: 1)
+                    )
+            )
+            .padding(TVDesignTokens.Spacing.sm)
         }
     }
 }

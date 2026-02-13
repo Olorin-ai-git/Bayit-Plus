@@ -1,6 +1,7 @@
 #if os(tvOS)
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SceneKit
 import SwiftUI
 

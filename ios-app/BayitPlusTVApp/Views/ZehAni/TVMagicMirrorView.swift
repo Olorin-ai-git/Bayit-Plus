@@ -81,7 +81,7 @@ struct TVMagicMirrorView: View {
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
                 .stroke(DesignTokens.Colors.Glass.border, lineWidth: 2)
         )
-        .shadow(color: DesignTokens.Colors.Glass.purpleGlow, radius: 12, x: 0, y: 4)
+        .shadow(color: DesignTokens.Glass.purpleGlow, radius: 12, x: 0, y: 4)
     }
 
     private func createAvatarScene() -> SCNScene {

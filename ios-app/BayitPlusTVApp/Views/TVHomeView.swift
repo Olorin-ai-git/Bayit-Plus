@@ -190,7 +190,7 @@ struct TVHomeView: View {
             title: section.title,
             icon: section.icon,
             items: category.items,
-            maxItems: 4,
+            maxItems: 15,
             seeAllAction: { coordinator.selectedTab = seeAllTab(for: section) }
         ) { item in
             TVContentCard(
@@ -198,7 +198,8 @@ struct TVHomeView: View {
                 title: item.title ?? "Untitled",
                 badge: item.isSeries == true ? "Series" : nil,
                 aspectRatio: section.aspectRatio,
-                placeholderIcon: placeholderIcon(for: section)
+                placeholderIcon: placeholderIcon(for: section),
+                availableSubtitleLanguages: item.availableSubtitleLanguages
             ) {
                 coordinator.presentPlayer(
                     contentId: item.id,
