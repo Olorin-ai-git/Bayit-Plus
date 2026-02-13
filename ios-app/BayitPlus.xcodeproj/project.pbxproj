@@ -36,7 +36,6 @@
 		08714D515F09DA38DB4F5F3C /* CardActionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1861A667CCF8DA3C026CCCD5 /* CardActionsViewModel.swift */; };
 		0890C4EF0C5F01BE565569C2 /* LLMSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FFB4D2C781073C666487C8 /* LLMSearchViewModel.swift */; };
 		08CA70D5B7675A1D012AC8BD /* MediaRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA2C857ED8976190EF83CDB /* MediaRepository.swift */; };
-		08E5AFB8515661BC91AFA798 /* LeaderboardModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AABE3E64DEF8C9B37F0A8E5 /* LeaderboardModels.swift */; };
 		08ED5349A75C46620DF95BA2 /* FriendRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1F73D43F7706740FE9019BD /* FriendRequest.swift */; };
 		090FE98D5000FFBB7F2A2FCA /* Friend.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AD3E1F0B577CB6636E6F091 /* Friend.swift */; };
 		09514A89EF58E54609FF62FD /* SearchModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40F5688B6282AEDA547F5390 /* SearchModels.swift */; };
@@ -438,7 +437,6 @@
 		79DACA279AAC3790FCC5D6BC /* SubtitleFlagsPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB9D4E3FE6779CDE7F7677FD /* SubtitleFlagsPill.swift */; };
 		7A5E4D06AD3EAA8938502EA8 /* WatchPartyViewModel+WebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB4DBDD260A6285764933FAD /* WatchPartyViewModel+WebSocket.swift */; };
 		7A8DD665EBF13C4AD9D08F03 /* ShabbatModeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1525F35743AEE573F635720C /* ShabbatModeService.swift */; };
-		7B371DAC320388A67B35BC2B /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E75ED1BECA95315C0468380 /* NetworkMonitor.swift */; };
 		7BADDABDC6F65996B47B43B2 /* WidgetPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29F38F55CCBD6788BBA16107 /* WidgetPlayerViewModel.swift */; };
 		7C36EE42506783AB2D950DE7 /* LiveDubbingOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27061F8914EB6D43EB3044DC /* LiveDubbingOverlayView.swift */; };
 		7C50CD712E536003EF1B0789 /* InsufficientCreditsModalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0CA77C1A98B0EECBD653E4 /* InsufficientCreditsModalView.swift */; };
@@ -3745,7 +3743,6 @@
 				3D73F591B0CADEE993ECD3C5 /* LLMSearchView.swift in Sources */,
 				268CC2EF5A7D68266CFD92DC /* LLMSearchViewModel.swift in Sources */,
 				19615E142AC50D427A03BB6B /* LanguageSettingsView.swift in Sources */,
-				08E5AFB8515661BC91AFA798 /* LeaderboardModels.swift in Sources */,
 				FFCD63AF55BBBD0DFEAF8550 /* LeaderboardView.swift in Sources */,
 				F3E795927958CCB8C133D708 /* LeaderboardViewModel.swift in Sources */,
 				C6A780F0ED834BD1C2E5CA08 /* LiveActivityManager.swift in Sources */,
@@ -3784,7 +3781,6 @@
 				4F49E780BD1DA88303899522 /* MovieDetailView.swift in Sources */,
 				95575FEDFC1B087907DD5EDF /* MovieDetailViewModel.swift in Sources */,
 				537383B566D2E39EFE8317CB /* NavigationCoordinator.swift in Sources */,
-				7B371DAC320388A67B35BC2B /* NetworkMonitor.swift in Sources */,
 				95144A916DD734E3FE45ABC9 /* NewsModels.swift in Sources */,
 				0B27176C4F209D6527691CCA /* NewsRepository.swift in Sources */,
 				180BCEFD0E97A6E7DB84FC9A /* NotificationSettingsView.swift in Sources */,
