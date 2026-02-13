@@ -100,10 +100,10 @@ class SubtitleTrackDoc(Document):
         cls, content_id: str, language: Optional[str] = None
     ) -> List["SubtitleTrackDoc"]:
         """Get all subtitle tracks for content"""
-        query = cls.find(cls.content_id == content_id)
         if language:
-            query = query.find(cls.language == language)
-        return await query.to_list()
+            return await cls.find(cls.content_id == content_id, cls.language == language).to_list()
+        else:
+            return await cls.find(cls.content_id == content_id).to_list()
 
     @classmethod
     async def get_default_track(cls, content_id: str) -> Optional["SubtitleTrackDoc"]:
