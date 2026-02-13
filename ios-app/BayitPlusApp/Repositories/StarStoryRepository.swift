@@ -8,7 +8,7 @@ protocol StarStoryRepository: Sendable {
     func grantConsent(
         profileId: String,
         childFirstName: String,
-        pinHash: String
+        pin: String
     ) async throws -> ConsentResponse
 
     func generateEpisode(
@@ -51,12 +51,12 @@ final class APIStarStoryRepository: StarStoryRepository, @unchecked Sendable {
     func grantConsent(
         profileId: String,
         childFirstName: String,
-        pinHash: String
+        pin: String
     ) async throws -> ConsentResponse {
         let request = ConsentRequest(
             profileId: profileId,
             childFirstName: childFirstName,
-            pinHash: pinHash
+            pin: pin
         )
         return try await client.post(
             "/api/v1/star-story/consent",

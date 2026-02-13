@@ -3864,7 +3864,8 @@
     "yesterday": "Ieri",
     "more": "altro",
     "minutesShort": "min",
-    "notAvailable": "N/D"
+    "notAvailable": "N/D",
+    "continue": "Continua"
   },
   "components": {
     "select": {
@@ -8407,7 +8408,10 @@
       "vocabOfDay": "Parola del giorno",
       "refresh": "Aggiorna",
       "loading": "Caricamento saluto...",
-      "error": "Impossibile caricare il saluto"
+      "error": "Impossibile caricare il saluto",
+      "noAvatar": "Crea il tuo avatar",
+      "noAvatarDesc": "Configura l'avatar di tuo figlio per sbloccare i saluti personalizzati dello Specchio Magico con il vocabolario ebraico quotidiano.",
+      "createAvatar": "Inizia"
     },
     "highlights": {
       "title": "Video in evidenza",
@@ -8464,6 +8468,44 @@
       "feedbackDesc": "Ricevi messaggi vocali e di testo dalla tua famiglia",
       "consent": "Consenso biometrico",
       "consentDesc": "Gestisci le impostazioni di consenso per dati facciali e vocali"
+    }
+  },
+  "starStory": {
+    "title": "Protagonista nella storia",
+    "subtitle": "Storie personalizzate in ebraico con il tuo bambino come protagonista",
+    "createAvatar": "Crea avatar",
+    "consentTitle": "Consenso dei genitori",
+    "consentBody": "Abbiamo bisogno del tuo permesso per creare un avatar personalizzato per il tuo bambino. L'avatar verra utilizzato in storie interattive per l'apprendimento dell'ebraico.",
+    "childNameLabel": "Nome del bambino",
+    "familyPinLabel": "PIN familiare",
+    "consentCheckbox": "Acconsento alla creazione di un avatar personalizzato per mio figlio",
+    "uploadPhoto": "Carica una foto",
+    "selectPhoto": "Scegli una foto",
+    "photoHint": "Una foto chiara frontale funziona meglio",
+    "chooseStyle": "Scegli uno stile",
+    "generateAvatar": "Crea avatar",
+    "avatars": "Avatar",
+    "addAvatar": "Aggiungi avatar",
+    "episodes": "Episodi",
+    "newEpisode": "Nuovo episodio",
+    "createEpisode": "Crea un episodio",
+    "createEpisodeSubtitle": "Scegli un tema e genera una storia personalizzata",
+    "selectTheme": "Seleziona un tema",
+    "vocabulary": "Vocabolario",
+    "vocabularyHint": "Le parole saranno integrate naturalmente nella storia",
+    "creditCost": "1 credito",
+    "creditInfo": "Ogni episodio utilizza 1 credito Beta 500",
+    "generate": "Genera episodio",
+    "generatingEpisode": "Generazione del tuo episodio...",
+    "generationFailed": "Generazione fallita",
+    "generationEstimate": "Di solito ci vogliono alcuni minuti",
+    "theme": {
+      "adventure": "Avventura",
+      "friendship": "Amicizia",
+      "nature": "Natura",
+      "holiday": "Festivita",
+      "family": "Famiglia",
+      "school": "Scuola"
     }
   }
 }

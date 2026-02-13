@@ -3998,7 +3998,8 @@
     "yesterday": "Yesterday",
     "more": "more",
     "minutesShort": "min",
-    "notAvailable": "N/A"
+    "notAvailable": "N/A",
+    "continue": "Continue"
   },
   "components": {
     "select": {
@@ -8351,7 +8352,10 @@
       "vocabOfDay": "Word of the Day",
       "refresh": "Refresh",
       "loading": "Loading greeting...",
-      "error": "Could not load greeting"
+      "error": "Could not load greeting",
+      "noAvatar": "Create Your Avatar",
+      "noAvatarDesc": "Set up your child's avatar to unlock personalized Magic Mirror greetings with daily Hebrew vocabulary.",
+      "createAvatar": "Get Started"
     },
     "highlights": {
       "title": "Highlight Reels",
@@ -8408,6 +8412,44 @@
       "feedbackDesc": "Receive voice and text messages from family",
       "consent": "Biometric Consent",
       "consentDesc": "Manage consent settings for facial and voice data"
+    }
+  },
+  "starStory": {
+    "title": "Star in Story",
+    "subtitle": "Personalized Hebrew stories starring your child",
+    "createAvatar": "Create Avatar",
+    "consentTitle": "Parental Consent",
+    "consentBody": "We need your permission to create a personalized avatar for your child. The avatar will be used in interactive Hebrew learning stories.",
+    "childNameLabel": "Child's First Name",
+    "familyPinLabel": "Family PIN",
+    "consentCheckbox": "I consent to creating a personalized avatar for my child",
+    "uploadPhoto": "Upload a Photo",
+    "selectPhoto": "Choose a Photo",
+    "photoHint": "A clear front-facing photo works best",
+    "chooseStyle": "Choose a Style",
+    "generateAvatar": "Create Avatar",
+    "avatars": "Avatars",
+    "addAvatar": "Add Avatar",
+    "episodes": "Episodes",
+    "newEpisode": "New Episode",
+    "createEpisode": "Create an Episode",
+    "createEpisodeSubtitle": "Choose a theme and generate a personalized story",
+    "selectTheme": "Select a Theme",
+    "vocabulary": "Vocabulary",
+    "vocabularyHint": "Words will be naturally woven into the story",
+    "creditCost": "1 Credit",
+    "creditInfo": "Each episode uses 1 Beta 500 credit",
+    "generate": "Generate Episode",
+    "generatingEpisode": "Generating your episode...",
+    "generationFailed": "Generation failed",
+    "generationEstimate": "This usually takes a few minutes",
+    "theme": {
+      "adventure": "Adventure",
+      "friendship": "Friendship",
+      "nature": "Nature",
+      "holiday": "Holiday",
+      "family": "Family",
+      "school": "School"
     }
   }
 }

@@ -3889,7 +3889,8 @@
     "yesterday": "אתמול",
     "more": "עוד",
     "minutesShort": "דק'",
-    "notAvailable": "לא זמין"
+    "notAvailable": "לא זמין",
+    "continue": "המשך"
   },
   "components": {
     "select": {
@@ -8493,7 +8494,10 @@
       "vocabOfDay": "המילה של היום",
       "refresh": "רענון",
       "loading": "טוען ברכה...",
-      "error": "לא ניתן לטעון ברכה"
+      "error": "לא ניתן לטעון ברכה",
+      "noAvatar": "יצירת האווטאר שלך",
+      "noAvatarDesc": "הגדירו את האווטאר של הילד כדי לקבל ברכות מראה קסם מותאמות אישית עם אוצר מילים יומי בעברית.",
+      "createAvatar": "בואו נתחיל"
     },
     "highlights": {
       "title": "סרטוני הדגשה",
@@ -8550,6 +8554,44 @@
       "feedbackDesc": "קבל הודעות קוליות וטקסטיות ממשפחה",
       "consent": "הסכמה ביומטרית",
       "consentDesc": "נהל הגדרות הסכמה לנתוני פנים וקול"
+    }
+  },
+  "starStory": {
+    "title": "כוכב בסיפור",
+    "subtitle": "סיפורים מותאמים אישית בעברית עם הילד שלך בתפקיד הראשי",
+    "createAvatar": "צור אווטאר",
+    "consentTitle": "הסכמת הורים",
+    "consentBody": "אנו צריכים את אישורך כדי ליצור אווטאר מותאם אישית לילדך. האווטאר ישמש בסיפורי לימוד עברית אינטראקטיביים.",
+    "childNameLabel": "שם פרטי של הילד",
+    "familyPinLabel": "קוד PIN משפחתי",
+    "consentCheckbox": "אני מסכים/ה ליצירת אווטאר מותאם אישית לילדי",
+    "uploadPhoto": "העלה תמונה",
+    "selectPhoto": "בחר תמונה",
+    "photoHint": "תמונה ברורה מלפנים עובדת הכי טוב",
+    "chooseStyle": "בחר סגנון",
+    "generateAvatar": "צור אווטאר",
+    "avatars": "אווטארים",
+    "addAvatar": "הוסף אווטאר",
+    "episodes": "פרקים",
+    "newEpisode": "פרק חדש",
+    "createEpisode": "צור פרק",
+    "createEpisodeSubtitle": "בחר נושא וצור סיפור מותאם אישית",
+    "selectTheme": "בחר נושא",
+    "vocabulary": "אוצר מילים",
+    "vocabularyHint": "המילים ישולבו באופן טבעי בסיפור",
+    "creditCost": "קרדיט אחד",
+    "creditInfo": "כל פרק משתמש בקרדיט אחד של Beta 500",
+    "generate": "צור פרק",
+    "generatingEpisode": "מייצר את הפרק שלך...",
+    "generationFailed": "היצירה נכשלה",
+    "generationEstimate": "זה בדרך כלל לוקח כמה דקות",
+    "theme": {
+      "adventure": "הרפתקה",
+      "friendship": "חברות",
+      "nature": "טבע",
+      "holiday": "חג",
+      "family": "משפחה",
+      "school": "בית ספר"
     }
   }
 }

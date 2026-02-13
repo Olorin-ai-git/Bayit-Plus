@@ -3777,7 +3777,8 @@
     "yesterday": "Ayer",
     "more": "más",
     "minutesShort": "min",
-    "notAvailable": "N/D"
+    "notAvailable": "N/D",
+    "continue": "Continuar"
   },
   "components": {
     "select": {
@@ -8379,7 +8380,10 @@
       "vocabOfDay": "Palabra del dia",
       "refresh": "Actualizar",
       "loading": "Cargando saludo...",
-      "error": "No se pudo cargar el saludo"
+      "error": "No se pudo cargar el saludo",
+      "noAvatar": "Crea tu avatar",
+      "noAvatarDesc": "Configura el avatar de tu hijo para desbloquear saludos personalizados del Espejo Magico con vocabulario diario en hebreo.",
+      "createAvatar": "Comenzar"
     },
     "highlights": {
       "title": "Videos destacados",
@@ -8436,6 +8440,44 @@
       "feedbackDesc": "Recibe mensajes de voz y texto de tu familia",
       "consent": "Consentimiento biometrico",
       "consentDesc": "Administra la configuracion de consentimiento para datos faciales y de voz"
+    }
+  },
+  "starStory": {
+    "title": "Estrella en el cuento",
+    "subtitle": "Cuentos personalizados en hebreo protagonizados por tu hijo",
+    "createAvatar": "Crear avatar",
+    "consentTitle": "Consentimiento parental",
+    "consentBody": "Necesitamos tu permiso para crear un avatar personalizado para tu hijo. El avatar se usara en cuentos interactivos de aprendizaje de hebreo.",
+    "childNameLabel": "Nombre del nino",
+    "familyPinLabel": "PIN familiar",
+    "consentCheckbox": "Doy mi consentimiento para crear un avatar personalizado para mi hijo",
+    "uploadPhoto": "Subir una foto",
+    "selectPhoto": "Elegir una foto",
+    "photoHint": "Una foto clara de frente funciona mejor",
+    "chooseStyle": "Elegir un estilo",
+    "generateAvatar": "Crear avatar",
+    "avatars": "Avatares",
+    "addAvatar": "Agregar avatar",
+    "episodes": "Episodios",
+    "newEpisode": "Nuevo episodio",
+    "createEpisode": "Crear un episodio",
+    "createEpisodeSubtitle": "Elige un tema y genera un cuento personalizado",
+    "selectTheme": "Seleccionar un tema",
+    "vocabulary": "Vocabulario",
+    "vocabularyHint": "Las palabras se integraran naturalmente en el cuento",
+    "creditCost": "1 credito",
+    "creditInfo": "Cada episodio usa 1 credito de Beta 500",
+    "generate": "Generar episodio",
+    "generatingEpisode": "Generando tu episodio...",
+    "generationFailed": "La generacion fallo",
+    "generationEstimate": "Esto generalmente toma unos minutos",
+    "theme": {
+      "adventure": "Aventura",
+      "friendship": "Amistad",
+      "nature": "Naturaleza",
+      "holiday": "Festividad",
+      "family": "Familia",
+      "school": "Escuela"
     }
   }
 }

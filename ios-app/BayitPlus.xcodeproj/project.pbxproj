@@ -237,6 +237,14 @@
 		45D5C2A22F3F75B90067807A /* TVLiveAvatarOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C29D2F3F75B90067807A /* TVLiveAvatarOverlayView.swift */; };
 		45D5C2A32F3F75B90067807A /* TVAvatar3DPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C29C2F3F75B90067807A /* TVAvatar3DPreviewView.swift */; };
 		45D5C2A42F3F75B90067807A /* TVMagicMirrorSubviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C29E2F3F75B90067807A /* TVMagicMirrorSubviews.swift */; };
+		45D5C2D72F3FB2560067807A /* EpisodeGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C2D32F3FB2560067807A /* EpisodeGeneratorView.swift */; };
+		45D5C2D82F3FB2560067807A /* StarStoryHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C2D52F3FB2560067807A /* StarStoryHomeView.swift */; };
+		45D5C2D92F3FB2560067807A /* AvatarCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C2D22F3FB2560067807A /* AvatarCreationView.swift */; };
+		45D5C2DA2F3FB2560067807A /* EpisodeProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C2D42F3FB2560067807A /* EpisodeProgressView.swift */; };
+		45D5C2DB2F3FB2560067807A /* EpisodeGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C2D32F3FB2560067807A /* EpisodeGeneratorView.swift */; };
+		45D5C2DC2F3FB2560067807A /* StarStoryHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C2D52F3FB2560067807A /* StarStoryHomeView.swift */; };
+		45D5C2DD2F3FB2560067807A /* AvatarCreationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C2D22F3FB2560067807A /* AvatarCreationView.swift */; };
+		45D5C2DE2F3FB2560067807A /* EpisodeProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C2D42F3FB2560067807A /* EpisodeProgressView.swift */; };
 		45F9C6A32F3E79D400A64304 /* AvatarMeshRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A02F3E79D400A64304 /* AvatarMeshRepository.swift */; };
 		45F9C6A42F3E79D400A64304 /* ZehAniRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A22F3E79D400A64304 /* ZehAniRepository.swift */; };
 		45F9C6A52F3E79D400A64304 /* ZehAniModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A12F3E79D400A64304 /* ZehAniModels.swift */; };
@@ -641,6 +649,7 @@
 		B1354EFAFE070F9F96B8C386 /* DirectMessageRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E67B6CB222E4F8F88AEBEF /* DirectMessageRepository.swift */; };
 		B136861DA3577A63760C059B /* SUBTITLE_FEATURES_IMPLEMENTATION.md in Resources */ = {isa = PBXBuildFile; fileRef = AA8878A1E58746FA9748C7E5 /* SUBTITLE_FEATURES_IMPLEMENTATION.md */; };
 		B1902648EE9562E6C1D9FF6A /* ChessGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 947C5C98003880872D8CD3C9 /* ChessGame.swift */; };
+		B1C2D3E52F4A8B0000ZEHANI /* ZehAniBreadcrumb.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E42F4A8B0000ZEHANI /* ZehAniBreadcrumb.swift */; };
 		B20DC3DB2EFEC9907A28840A /* BayitNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = 4061B6BF78A39FF68139749C /* BayitNetworking */; };
 		B23819F3FB80F8FE9A165FA8 /* ChessRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685609FD47D9A6DEFA56E346 /* ChessRepository.swift */; };
 		B24D50ED41A3BDC1EE220E47 /* TVJoinPartySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BCD6D7116D34E5B96A790A5 /* TVJoinPartySheet.swift */; };
@@ -1080,6 +1089,10 @@
 		45D5C29D2F3F75B90067807A /* TVLiveAvatarOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVLiveAvatarOverlayView.swift; sourceTree = "<group>"; };
 		45D5C29E2F3F75B90067807A /* TVMagicMirrorSubviews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVMagicMirrorSubviews.swift; sourceTree = "<group>"; };
 		45D5C29F2F3F75B90067807A /* TVMagicMirrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVMagicMirrorView.swift; sourceTree = "<group>"; };
+		45D5C2D22F3FB2560067807A /* AvatarCreationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarCreationView.swift; sourceTree = "<group>"; };
+		45D5C2D32F3FB2560067807A /* EpisodeGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeGeneratorView.swift; sourceTree = "<group>"; };
+		45D5C2D42F3FB2560067807A /* EpisodeProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EpisodeProgressView.swift; sourceTree = "<group>"; };
+		45D5C2D52F3FB2560067807A /* StarStoryHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StarStoryHomeView.swift; sourceTree = "<group>"; };
 		45F9C6A02F3E79D400A64304 /* AvatarMeshRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarMeshRepository.swift; sourceTree = "<group>"; };
 		45F9C6A12F3E79D400A64304 /* ZehAniModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZehAniModels.swift; sourceTree = "<group>"; };
 		45F9C6A22F3E79D400A64304 /* ZehAniRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZehAniRepository.swift; sourceTree = "<group>"; };
@@ -1373,6 +1386,7 @@
 		AEE1D2018050AC6AA29F29C5 /* QuickActionsTimelineProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickActionsTimelineProvider.swift; sourceTree = "<group>"; };
 		AF1CA6C087EC98A87EAFA8E3 /* LLMSearchResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMSearchResultsView.swift; sourceTree = "<group>"; };
 		AFC525DF6B819768EA21DDEF /* TVRepositoryProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVRepositoryProvider.swift; sourceTree = "<group>"; };
+		B1C2D3E42F4A8B0000ZEHANI /* ZehAniBreadcrumb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZehAniBreadcrumb.swift; sourceTree = "<group>"; };
 		B1E48CF314AC7B0A97B206E8 /* HouseholdViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseholdViewModel.swift; sourceTree = "<group>"; };
 		B1F38B2DB3CC85234249A723 /* TelAvivRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TelAvivRowView.swift; sourceTree = "<group>"; };
 		B1F73D43F7706740FE9019BD /* FriendRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendRequest.swift; sourceTree = "<group>"; };
@@ -1926,6 +1940,17 @@
 				45D5C29F2F3F75B90067807A /* TVMagicMirrorView.swift */,
 			);
 			path = ZehAni;
+			sourceTree = "<group>";
+		};
+		45D5C2D62F3FB2560067807A /* StarStory */ = {
+			isa = PBXGroup;
+			children = (
+				45D5C2D22F3FB2560067807A /* AvatarCreationView.swift */,
+				45D5C2D32F3FB2560067807A /* EpisodeGeneratorView.swift */,
+				45D5C2D42F3FB2560067807A /* EpisodeProgressView.swift */,
+				45D5C2D52F3FB2560067807A /* StarStoryHomeView.swift */,
+			);
+			path = StarStory;
 			sourceTree = "<group>";
 		};
 		45F9C73F2F3EB05F00A64304 /* GrandparentBridge */ = {
@@ -2613,12 +2638,14 @@
 		B4F744FFFDE2D22A20C66BA7 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				45D5C2D62F3FB2560067807A /* StarStory */,
 				45F9C6D62F3E7C6000A64304 /* Avatar3DPreviewView.swift */,
 				45F9C6D72F3E7C6000A64304 /* BiometricConsentComponents.swift */,
 				45F9C6D82F3E7C6000A64304 /* BiometricConsentView.swift */,
 				45F9C6D92F3E7C6000A64304 /* ContactsManagementView.swift */,
 				45F9C6DA2F3E7C6000A64304 /* FeedbackInboxView.swift */,
 				45F9C6DB2F3E7C6000A64304 /* HighlightReelView.swift */,
+				B1C2D3E42F4A8B0000ZEHANI /* ZehAniBreadcrumb.swift */,
 				45F9C6DC2F3E7C6000A64304 /* LiveAvatarOverlayView.swift */,
 				45F9C6DD2F3E7C6000A64304 /* MagicMirrorView.swift */,
 				45F9C6DE2F3E7C6000A64304 /* MeshGenerationView.swift */,
@@ -3562,6 +3589,10 @@
 				4A77FB6CD537CAA365A1AF66 /* TVOnlineStatusBadge.swift in Sources */,
 				10A931FBABB97E9EFFEDB2CB /* TVPageHeader.swift in Sources */,
 				AA1B2C3D4E5F6A7B8C9D0E1F /* TVProfilePillView.swift in Sources */,
+				45D5C2DB2F3FB2560067807A /* EpisodeGeneratorView.swift in Sources */,
+				45D5C2DC2F3FB2560067807A /* StarStoryHomeView.swift in Sources */,
+				45D5C2DD2F3FB2560067807A /* AvatarCreationView.swift in Sources */,
+				45D5C2DE2F3FB2560067807A /* EpisodeProgressView.swift in Sources */,
 				AF65425F95DE0500C19B2774 /* TVPasskeyManagementView.swift in Sources */,
 				0296044D9350569F7A5FA301 /* TVPlaybackSpeedControlView.swift in Sources */,
 				45F9C7002F3E7D3600A64304 /* TalkBackViewModel.swift in Sources */,
@@ -3785,6 +3816,7 @@
 				45F9C6E42F3E7C6000A64304 /* MeshGenerationView.swift in Sources */,
 				45F9C6E52F3E7C6000A64304 /* BiometricConsentView.swift in Sources */,
 				45F9C6E62F3E7C6000A64304 /* FeedbackInboxView.swift in Sources */,
+				B1C2D3E52F4A8B0000ZEHANI /* ZehAniBreadcrumb.swift in Sources */,
 				45F9C6E72F3E7C6000A64304 /* SceneTriggerSubviews.swift in Sources */,
 				45F9C6E82F3E7C6000A64304 /* V2VResultView.swift in Sources */,
 				45F9C6E92F3E7C6000A64304 /* V2VPracticeView.swift in Sources */,
@@ -3820,6 +3852,10 @@
 				B6547634F78A300C605DB461 /* CompanionQuizTab.swift in Sources */,
 				B4FBA21688335FDCB6EE36CC /* CompanionVocabularyTab.swift in Sources */,
 				A51F7B96B3F2C08B04D06539 /* ComprehensionQuizOverlayView.swift in Sources */,
+				45D5C2D72F3FB2560067807A /* EpisodeGeneratorView.swift in Sources */,
+				45D5C2D82F3FB2560067807A /* StarStoryHomeView.swift in Sources */,
+				45D5C2D92F3FB2560067807A /* AvatarCreationView.swift in Sources */,
+				45D5C2DA2F3FB2560067807A /* EpisodeProgressView.swift in Sources */,
 				7F8D3C94387E027FD35D49BF /* ContentModels.swift in Sources */,
 				5929754C7D9144042154FF96 /* ContentPickerItem.swift in Sources */,
 				9480C9959713ADE21A12D905 /* ContentPickerView.swift in Sources */,

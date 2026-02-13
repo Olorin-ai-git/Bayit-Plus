@@ -3629,7 +3629,8 @@
     "yesterday": "昨天",
     "more": "更多",
     "minutesShort": "分钟",
-    "notAvailable": "N/A"
+    "notAvailable": "N/A",
+    "continue": "继续"
   },
   "components": {
     "select": {
@@ -8164,7 +8165,10 @@
       "vocabOfDay": "每日一词",
       "refresh": "刷新",
       "loading": "正在加载问候语...",
-      "error": "无法加载问候语"
+      "error": "无法加载问候语",
+      "noAvatar": "创建你的头像",
+      "noAvatarDesc": "设置您孩子的头像，解锁包含每日希伯来语词汇的个性化魔镜问候。",
+      "createAvatar": "开始"
     },
     "highlights": {
       "title": "精彩集锦",
@@ -8221,6 +8225,44 @@
       "feedbackDesc": "接收家人的语音和文字消息",
       "consent": "生物识别同意",
       "consentDesc": "管理面部和语音数据的同意设置"
+    }
+  },
+  "starStory": {
+    "title": "故事之星",
+    "subtitle": "以您的孩子为主角的个性化希伯来语故事",
+    "createAvatar": "创建头像",
+    "consentTitle": "家长同意",
+    "consentBody": "我们需要您的许可来为您的孩子创建个性化头像。该头像将用于互动式希伯来语学习故事中。",
+    "childNameLabel": "孩子的名字",
+    "familyPinLabel": "家庭PIN码",
+    "consentCheckbox": "我同意为我的孩子创建个性化头像",
+    "uploadPhoto": "上传照片",
+    "selectPhoto": "选择照片",
+    "photoHint": "清晰的正面照片效果最佳",
+    "chooseStyle": "选择风格",
+    "generateAvatar": "创建头像",
+    "avatars": "头像",
+    "addAvatar": "添加头像",
+    "episodes": "剧集",
+    "newEpisode": "新剧集",
+    "createEpisode": "创建剧集",
+    "createEpisodeSubtitle": "选择主题并生成个性化故事",
+    "selectTheme": "选择主题",
+    "vocabulary": "词汇",
+    "vocabularyHint": "词汇将自然地融入故事中",
+    "creditCost": "1个积分",
+    "creditInfo": "每个剧集使用1个Beta 500积分",
+    "generate": "生成剧集",
+    "generatingEpisode": "正在生成您的剧集...",
+    "generationFailed": "生成失败",
+    "generationEstimate": "这通常需要几分钟",
+    "theme": {
+      "adventure": "冒险",
+      "friendship": "友谊",
+      "nature": "自然",
+      "holiday": "节日",
+      "family": "家庭",
+      "school": "学校"
     }
   }
 }

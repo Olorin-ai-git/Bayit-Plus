@@ -63,7 +63,7 @@ struct EpisodeProgressView: View {
 
             GlassButton(
                 localization.t("common.cancel"),
-                variant: .outline,
+                variant: .secondary,
                 size: .medium
             ) {
                 viewModel.cancelPolling()

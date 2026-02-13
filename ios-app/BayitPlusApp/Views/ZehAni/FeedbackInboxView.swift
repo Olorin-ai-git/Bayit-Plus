@@ -19,6 +19,8 @@ struct FeedbackInboxView: View {
             DesignTokens.Background.primary.ignoresSafeArea()
 
             VStack(spacing: 0) {
+                ZehAniBreadcrumb(currentLabel: "Feedback")
+
                 HStack {
                     Text(localization.t("zehAni.feedback.title"))
                         .font(.system(size: DesignTokens.FontSize.xxxl, weight: .bold))

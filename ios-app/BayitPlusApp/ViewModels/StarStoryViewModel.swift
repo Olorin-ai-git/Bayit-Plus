@@ -42,7 +42,7 @@ final class StarStoryViewModel {
     func grantConsent(
         profileId: String,
         childFirstName: String,
-        pinHash: String
+        pin: String
     ) async -> Bool {
         errorMessage = nil
 
@@ -50,7 +50,7 @@ final class StarStoryViewModel {
             let response = try await repository.grantConsent(
                 profileId: profileId,
                 childFirstName: childFirstName,
-                pinHash: pinHash
+                pin: pin
             )
             logger.info("Consent granted: \(response.success)")
             return response.success

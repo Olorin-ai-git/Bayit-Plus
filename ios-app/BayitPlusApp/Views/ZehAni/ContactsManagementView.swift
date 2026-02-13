@@ -27,6 +27,8 @@ struct ContactsManagementView: View {
             DesignTokens.Background.primary.ignoresSafeArea()
 
             VStack(spacing: 0) {
+                ZehAniBreadcrumb(currentLabel: "Contacts")
+
                 HStack {
                     Text(localization.t("zehAni.contacts.title"))
                         .font(.system(size: DesignTokens.FontSize.xxxl, weight: .bold))

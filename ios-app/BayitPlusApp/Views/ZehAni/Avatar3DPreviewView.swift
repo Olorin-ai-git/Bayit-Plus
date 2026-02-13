@@ -25,6 +25,12 @@ struct Avatar3DPreviewView: View {
             ZStack {
                 DesignTokens.Background.primary.ignoresSafeArea()
 
+                VStack {
+                    ZehAniBreadcrumb(currentLabel: "3D Avatar")
+                    Spacer()
+                }
+                .zIndex(1)
+
                 switch loadingState {
                 case .loading:
                     loadingView

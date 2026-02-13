@@ -10,7 +10,9 @@ struct ZehAniHubView: View {
     @State private var profileId: String?
     @State private var isLoading = true
     @State private var error: String?
+    @State private var hasConsent = false
     @State private var showConsent = false
+    @State private var pendingDestination: Route?
 
     var body: some View {
         ZStack {
@@ -72,6 +74,11 @@ struct ZehAniHubView: View {
         .sheet(isPresented: $showConsent) {
             BiometricConsentView(profileId: profileId)
         }
+        .onChange(of: showConsent) { _, isShowing in
+            if !isShowing {
+                Task { await checkConsentAndNavigate() }
+            }
+        }
     }
 
     private func featureCard(
@@ -79,7 +86,7 @@ struct ZehAniHubView: View {
     ) -> some View {
         GlassCard {
             Button {
-                coordinator.pushToCurrentTab(destination)
+                navigateWithConsentCheck(destination)
             } label: {
                 HStack(spacing: DesignTokens.Spacing.md) {
                     Image(systemName: icon)
@@ -140,16 +147,51 @@ struct ZehAniHubView: View {
         }
     }
 
+    // MARK: - Consent Gate
+
+    private func navigateWithConsentCheck(_ destination: Route) {
+        if hasConsent {
+            coordinator.pushToCurrentTab(destination)
+        } else {
+            pendingDestination = destination
+            showConsent = true
+        }
+    }
+
+    private func checkConsentAndNavigate() async {
+        guard let profileId else { return }
+        hasConsent = await checkConsent(profileId: profileId)
+        if hasConsent, let destination = pendingDestination {
+            pendingDestination = nil
+            coordinator.pushToCurrentTab(destination)
+        } else {
+            pendingDestination = nil
+        }
+    }
+
+    // MARK: - Data Loading
+
     private func loadProfile() async {
         isLoading = true
         error = nil
         do {
             let profile = try await repos.user.fetchProfile()
             profileId = profile.id
+            hasConsent = await checkConsent(profileId: profile.id)
             isLoading = false
         } catch {
             self.error = error.localizedDescription
             isLoading = false
+        }
+    }
+
+    private func checkConsent(profileId: String) async -> Bool {
+        do {
+            let status = try await repos.avatarMeshRepository
+                .checkBiometricConsent(profileId: profileId)
+            return status.consents.contains { $0.active }
+        } catch {
+            return false
         }
     }
 }

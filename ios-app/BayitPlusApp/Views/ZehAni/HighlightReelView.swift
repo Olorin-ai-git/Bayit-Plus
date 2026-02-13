@@ -18,6 +18,8 @@ struct HighlightReelView: View {
             DesignTokens.Background.primary.ignoresSafeArea()
 
             VStack(spacing: 0) {
+                ZehAniBreadcrumb(currentLabel: "Highlights")
+
                 HStack {
                     Text(localization.t("zehAni.highlights.title"))
                         .font(.system(size: DesignTokens.FontSize.xxxl, weight: .bold))

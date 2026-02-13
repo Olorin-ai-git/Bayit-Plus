@@ -91,11 +91,15 @@ enum GenerationStage: String, CaseIterable, Sendable {
 struct ConsentRequest: Encodable {
     let profileId: String
     let childFirstName: String
-    let pinHash: String
+    let pin: String
 }
 
 struct ConsentResponse: Decodable {
-    let success: Bool
+    let avatarId: String
+    let status: String
+    let consentGranted: Bool
+
+    var success: Bool { consentGranted }
 }
 
 struct GenerateEpisodeRequest: Encodable {

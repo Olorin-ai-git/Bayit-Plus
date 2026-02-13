@@ -18,6 +18,8 @@ struct V2VPracticeView: View {
             DesignTokens.Background.primary.ignoresSafeArea()
 
             VStack(spacing: 24) {
+                ZehAniBreadcrumb(currentLabel: "Voice Practice")
+
                 if viewModel.practiceState == .idle || viewModel.practiceState == .recording {
                     targetPhraseCard
                     recordButton

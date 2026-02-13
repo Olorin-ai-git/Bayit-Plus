@@ -1,5 +1,6 @@
 import BayitDesignSystem
 import BayitLocalization
+import BayitNetworking
 import SceneKit
 import SwiftUI
 
@@ -12,6 +13,9 @@ struct MagicMirrorView: View {
     @State private var greeting: MagicMirrorGreeting?
     @State private var isLoading = true
     @State private var error: String?
+    @State private var noAvatar = false
+    @State private var showAvatarCreation = false
+    @State private var starStoryVM: StarStoryViewModel?
     @State private var sceneView: SCNView?
     @State private var avatarNode: SCNNode?
     @State private var isAnimating = false
@@ -20,33 +24,84 @@ struct MagicMirrorView: View {
         ZStack {
             DesignTokens.Background.primary.ignoresSafeArea()
 
-            VStack(spacing: 20) {
+            VStack(spacing: DesignTokens.Spacing.lg) {
+                ZehAniBreadcrumb(currentLabel: "Magic Mirror")
+
                 if isLoading {
-                    ProgressView()
-                        .tint(.white)
+                    Spacer()
+                    ProgressView().tint(.white)
+                    Spacer()
+                } else if noAvatar {
+                    createAvatarPrompt
                 } else if let error = error {
+                    Spacer()
                     errorView(error)
+                    refreshButton
+                    Spacer()
                 } else if let greeting = greeting {
                     greetingContent(greeting)
+                    refreshButton
                 }
-
-                refreshButton
             }
-            .padding(24)
+            .padding(.horizontal, DesignTokens.Spacing.lg)
         }
-        .onAppear {
-            loadGreeting()
+        .sheet(isPresented: $showAvatarCreation) {
+            AvatarCreationView(
+                profileId: profileId,
+                viewModel: starStoryVM
+            )
+        }
+        .onChange(of: showAvatarCreation) { _, isShowing in
+            if !isShowing { loadGreeting() }
+        }
+        .onAppear { loadGreeting() }
+    }
+
+    // MARK: - Create Avatar Prompt
+
+    private var createAvatarPrompt: some View {
+        VStack(spacing: DesignTokens.Spacing.xl) {
+            Spacer()
+
+            Image(systemName: "wand.and.stars")
+                .font(.system(size: 56))
+                .foregroundStyle(DesignTokens.Primary.p400)
+
+            Text(localization.t("zehAni.magicMirror.noAvatar"))
+                .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .multilineTextAlignment(.center)
+
+            Text(localization.t("zehAni.magicMirror.noAvatarDesc"))
+                .font(.system(size: DesignTokens.FontSize.sm))
+                .foregroundStyle(DesignTokens.Text.muted)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, DesignTokens.Spacing.xl)
+
+            GlassButton(
+                localization.t("zehAni.magicMirror.createAvatar"),
+                variant: .primary
+            ) {
+                starStoryVM = StarStoryViewModel(
+                    repository: repos.starStory
+                )
+                showAvatarCreation = true
+            }
+
+            Spacer()
         }
     }
 
+    // MARK: - Greeting Content
+
     @ViewBuilder
     private func greetingContent(_ greeting: MagicMirrorGreeting) -> some View {
-        VStack(spacing: 20) {
-            avatarSceneView
-
-            greetingCard(greeting)
-
-            vocabularyCard(greeting)
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: DesignTokens.Spacing.lg) {
+                avatarSceneView
+                greetingCard(greeting)
+                vocabularyCard(greeting)
+            }
         }
     }
 
@@ -56,95 +111,86 @@ struct MagicMirrorView: View {
             scene: createAvatarScene(),
             onUpdate: { view in
                 self.sceneView = view
-                if !isAnimating {
-                    startGreetingAnimation()
-                }
+                if !isAnimating { startGreetingAnimation() }
             }
         )
         .frame(height: 200)
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
         .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(.white.opacity(0.15), lineWidth: 1)
+            RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
+                .stroke(DesignTokens.Glass.border, lineWidth: 1)
         )
     }
 
     @ViewBuilder
     private func greetingCard(_ greeting: MagicMirrorGreeting) -> some View {
-        VStack(spacing: 12) {
-            Text(greeting.greetingTextHe)
-                .font(.system(size: 28, weight: .bold))
-                .foregroundColor(.white)
-                .multilineTextAlignment(.center)
+        GlassCard {
+            VStack(spacing: DesignTokens.Spacing.sm) {
+                Text(greeting.greetingTextHe)
+                    .font(.system(size: DesignTokens.FontSize.xxl, weight: .bold))
+                    .foregroundStyle(DesignTokens.Text.primary)
+                    .multilineTextAlignment(.center)
 
-            Text(greeting.greetingTextEn)
-                .font(.system(size: 16))
-                .foregroundColor(.white.opacity(0.6))
-                .multilineTextAlignment(.center)
+                Text(greeting.greetingTextEn)
+                    .font(.system(size: DesignTokens.FontSize.md))
+                    .foregroundStyle(DesignTokens.Text.secondary)
+                    .multilineTextAlignment(.center)
+            }
         }
-        .padding(24)
-        .frame(maxWidth: .infinity)
-        .background(.white.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(.white.opacity(0.1), lineWidth: 1)
-        )
     }
 
     @ViewBuilder
     private func vocabularyCard(_ greeting: MagicMirrorGreeting) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text(localization.t("zehAni.magicMirror.vocabOfDay"))
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.white.opacity(0.8))
+        GlassCard {
+            VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
+                Text(localization.t("zehAni.magicMirror.vocabOfDay"))
+                    .font(.system(
+                        size: DesignTokens.FontSize.md, weight: .semibold
+                    ))
+                    .foregroundStyle(DesignTokens.Text.secondary)
 
-            ForEach(greeting.vocabularyWords, id: \.wordHe) { word in
-                HStack {
-                    Text(word.wordHe)
-                        .font(.system(size: 18, weight: .medium))
-                        .foregroundColor(.white)
+                ForEach(greeting.vocabularyWords, id: \.wordHe) { word in
+                    HStack {
+                        Text(word.wordHe)
+                            .font(.system(
+                                size: DesignTokens.FontSize.lg, weight: .medium
+                            ))
+                            .foregroundStyle(DesignTokens.Text.primary)
 
-                    Text(word.transliteration)
-                        .font(.system(size: 14))
-                        .foregroundColor(.white.opacity(0.5))
+                        Text(word.transliteration)
+                            .font(.system(size: DesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Text.muted)
 
-                    Spacer()
+                        Spacer()
 
-                    Text(word.translation)
-                        .font(.system(size: 14))
-                        .foregroundColor(.white.opacity(0.7))
+                        Text(word.translation)
+                            .font(.system(size: DesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Text.secondary)
+                    }
                 }
             }
         }
-        .padding(20)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.white.opacity(0.05))
-        .clipShape(RoundedRectangle(cornerRadius: 16))
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(.white.opacity(0.1), lineWidth: 1)
-        )
     }
+
+    // MARK: - Error & Refresh
 
     @ViewBuilder
     private func errorView(_ message: String) -> some View {
         Text(message)
-            .foregroundColor(DesignTokens.Colors.Semantic.error)
-            .font(.system(size: 16))
+            .foregroundStyle(DesignTokens.ErrorColor.default)
+            .font(.system(size: DesignTokens.FontSize.md))
     }
 
     private var refreshButton: some View {
-        Button {
+        GlassButton(
+            localization.t("zehAni.magicMirror.refresh"),
+            variant: .secondary
+        ) {
             loadGreeting()
-        } label: {
-            HStack {
-                Image(systemName: "arrow.clockwise")
-                Text(localization.t("zehAni.magicMirror.refresh"))
-            }
         }
-        .buttonStyle(.borderedProminent)
     }
+
+    // MARK: - Scene
 
     private func createAvatarScene() -> SCNScene {
         let scene = SCNScene()
@@ -167,17 +213,29 @@ struct MagicMirrorView: View {
         isAnimating = true
     }
 
+    // MARK: - Data Loading
+
     private func loadGreeting() {
         isLoading = true
         error = nil
+        noAvatar = false
 
         Task {
             do {
-                let fetchedGreeting = try await repos.avatarMeshRepository.getMagicMirrorGreeting(
+                let fetched = try await repos.avatarMeshRepository.getMagicMirrorGreeting(
                     profileId: profileId
                 )
                 await MainActor.run {
-                    greeting = fetchedGreeting
+                    greeting = fetched
+                    isLoading = false
+                }
+            } catch let apiError as APIError {
+                await MainActor.run {
+                    if case .notFound = apiError {
+                        noAvatar = true
+                    } else {
+                        self.error = apiError.localizedDescription
+                    }
                     isLoading = false
                 }
             } catch {

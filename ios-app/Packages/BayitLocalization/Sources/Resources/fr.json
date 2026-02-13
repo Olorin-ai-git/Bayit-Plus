@@ -3742,7 +3742,8 @@
     "yesterday": "Hier",
     "more": "plus",
     "minutesShort": "min",
-    "notAvailable": "N/D"
+    "notAvailable": "N/D",
+    "continue": "Continuer"
   },
   "components": {
     "loading": "Chargement...",
@@ -9063,7 +9064,10 @@
       "vocabOfDay": "Mot du jour",
       "refresh": "Actualiser",
       "loading": "Chargement du message...",
-      "error": "Impossible de charger le message"
+      "error": "Impossible de charger le message",
+      "noAvatar": "Creez votre avatar",
+      "noAvatarDesc": "Configurez l'avatar de votre enfant pour debloquer les salutations personnalisees du Miroir Magique avec du vocabulaire hebreu quotidien.",
+      "createAvatar": "Commencer"
     },
     "highlights": {
       "title": "Videos phares",
@@ -9120,6 +9124,44 @@
       "feedbackDesc": "Recevez des messages vocaux et textuels de votre famille",
       "consent": "Consentement biometrique",
       "consentDesc": "Gerez les parametres de consentement pour les donnees faciales et vocales"
+    }
+  },
+  "starStory": {
+    "title": "Vedette du conte",
+    "subtitle": "Des contes personnalises en hebreu avec votre enfant en vedette",
+    "createAvatar": "Creer un avatar",
+    "consentTitle": "Consentement parental",
+    "consentBody": "Nous avons besoin de votre autorisation pour creer un avatar personnalise pour votre enfant. L'avatar sera utilise dans des contes interactifs d'apprentissage de l'hebreu.",
+    "childNameLabel": "Prenom de l'enfant",
+    "familyPinLabel": "PIN familial",
+    "consentCheckbox": "Je consens a la creation d'un avatar personnalise pour mon enfant",
+    "uploadPhoto": "Telecharger une photo",
+    "selectPhoto": "Choisir une photo",
+    "photoHint": "Une photo claire de face fonctionne le mieux",
+    "chooseStyle": "Choisir un style",
+    "generateAvatar": "Creer un avatar",
+    "avatars": "Avatars",
+    "addAvatar": "Ajouter un avatar",
+    "episodes": "Episodes",
+    "newEpisode": "Nouvel episode",
+    "createEpisode": "Creer un episode",
+    "createEpisodeSubtitle": "Choisissez un theme et generez un conte personnalise",
+    "selectTheme": "Selectionner un theme",
+    "vocabulary": "Vocabulaire",
+    "vocabularyHint": "Les mots seront naturellement integres dans le conte",
+    "creditCost": "1 credit",
+    "creditInfo": "Chaque episode utilise 1 credit Beta 500",
+    "generate": "Generer l'episode",
+    "generatingEpisode": "Generation de votre episode...",
+    "generationFailed": "La generation a echoue",
+    "generationEstimate": "Cela prend generalement quelques minutes",
+    "theme": {
+      "adventure": "Aventure",
+      "friendship": "Amitie",
+      "nature": "Nature",
+      "holiday": "Fete",
+      "family": "Famille",
+      "school": "Ecole"
     }
   }
 }

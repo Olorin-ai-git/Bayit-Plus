@@ -124,7 +124,7 @@ struct AvatarCreationView: View {
                     }
                 }
             }
-            GlassButton(localization.t("common.back"), variant: .outline, size: .medium) {
+            GlassButton(localization.t("common.back"), variant: .secondary, size: .medium) {
                 currentStep = .consent
             }
         }
@@ -141,7 +141,7 @@ struct AvatarCreationView: View {
             GlassButton(localization.t("starStory.generateAvatar"), variant: .primary, size: .large) {
                 dismiss()
             }
-            GlassButton(localization.t("common.back"), variant: .outline, size: .medium) {
+            GlassButton(localization.t("common.back"), variant: .secondary, size: .medium) {
                 currentStep = .photo
             }
         }
@@ -173,7 +173,7 @@ struct AvatarCreationView: View {
     private func submitConsent() async {
         errorMessage = nil
         let success = await viewModel?.grantConsent(
-            profileId: profileId, childFirstName: childName, pinHash: familyPin
+            profileId: profileId, childFirstName: childName, pin: familyPin
         ) ?? false
         if success { currentStep = .photo } else { errorMessage = viewModel?.errorMessage }
     }

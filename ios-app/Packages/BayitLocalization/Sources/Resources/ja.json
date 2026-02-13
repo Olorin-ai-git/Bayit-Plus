@@ -3676,7 +3676,8 @@
     "signIn": "ログイン",
     "thisContent": "このコンテンツ",
     "minutesShort": "分",
-    "notAvailable": "N/A"
+    "notAvailable": "N/A",
+    "continue": "続ける"
   },
   "components": {
     "select": {
@@ -8919,7 +8920,10 @@
       "vocabOfDay": "今日の単語",
       "refresh": "更新",
       "loading": "あいさつを読み込み中...",
-      "error": "あいさつを読み込めませんでした"
+      "error": "あいさつを読み込めませんでした",
+      "noAvatar": "アバターを作成",
+      "noAvatarDesc": "お子様のアバターを設定して、毎日のヘブライ語の語彙を含むパーソナライズされたマジックミラーの挨拶を解除しましょう。",
+      "createAvatar": "始める"
     },
     "highlights": {
       "title": "ハイライト動画",
@@ -8976,6 +8980,44 @@
       "feedbackDesc": "家族からの音声やテキストメッセージを受信",
       "consent": "生体認証の同意",
       "consentDesc": "顔と音声データの同意設定を管理"
+    }
+  },
+  "starStory": {
+    "title": "物語のスター",
+    "subtitle": "お子様が主役のパーソナライズされたヘブライ語の物語",
+    "createAvatar": "アバターを作成",
+    "consentTitle": "保護者の同意",
+    "consentBody": "お子様のパーソナライズされたアバターを作成するために、あなたの許可が必要です。アバターはインタラクティブなヘブライ語学習の物語で使用されます。",
+    "childNameLabel": "お子様の名前",
+    "familyPinLabel": "ファミリーPIN",
+    "consentCheckbox": "子供のパーソナライズされたアバターの作成に同意します",
+    "uploadPhoto": "写真をアップロード",
+    "selectPhoto": "写真を選択",
+    "photoHint": "正面からの鮮明な写真が最適です",
+    "chooseStyle": "スタイルを選択",
+    "generateAvatar": "アバターを作成",
+    "avatars": "アバター",
+    "addAvatar": "アバターを追加",
+    "episodes": "エピソード",
+    "newEpisode": "新しいエピソード",
+    "createEpisode": "エピソードを作成",
+    "createEpisodeSubtitle": "テーマを選んでパーソナライズされた物語を生成",
+    "selectTheme": "テーマを選択",
+    "vocabulary": "語彙",
+    "vocabularyHint": "単語は物語に自然に織り込まれます",
+    "creditCost": "1クレジット",
+    "creditInfo": "各エピソードはBeta 500クレジットを1つ使用します",
+    "generate": "エピソードを生成",
+    "generatingEpisode": "エピソードを生成中...",
+    "generationFailed": "生成に失敗しました",
+    "generationEstimate": "通常数分かかります",
+    "theme": {
+      "adventure": "冒険",
+      "friendship": "友情",
+      "nature": "自然",
+      "holiday": "祝日",
+      "family": "家族",
+      "school": "学校"
     }
   }
 }

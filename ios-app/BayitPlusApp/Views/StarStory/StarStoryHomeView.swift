@@ -9,6 +9,7 @@ struct StarStoryHomeView: View {
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: StarStoryViewModel?
     @State private var showAvatarCreation = false
+    @State private var showEpisodeGenerator = false
 
     let profileId: String
 
@@ -45,6 +46,15 @@ struct StarStoryHomeView: View {
                 profileId: profileId,
                 viewModel: viewModel
             )
+        }
+        .sheet(isPresented: $showEpisodeGenerator) {
+            if let vm = viewModel, let avatarId = vm.avatars.first?.avatarId {
+                EpisodeGeneratorView(
+                    profileId: profileId,
+                    avatarId: avatarId,
+                    viewModel: vm
+                )
+            }
         }
     }
 
@@ -126,7 +136,7 @@ struct StarStoryHomeView: View {
     }
 
     private var addAvatarButton: some View {
-        GlassButton(localization.t("starStory.addAvatar"), variant: .outline, size: .medium) {
+        GlassButton(localization.t("starStory.addAvatar"), variant: .secondary, size: .medium) {
             showAvatarCreation = true
         }
         .frame(width: 110, height: 140)
@@ -141,7 +151,7 @@ struct StarStoryHomeView: View {
                 Spacer()
                 if !vm.avatars.isEmpty {
                     GlassButton(localization.t("starStory.newEpisode"), variant: .primary, size: .small) {
-                        coordinator.pushToCurrentTab(.starStoryGenerate(profileId: profileId, avatarId: vm.avatars.first?.avatarId ?? ""))
+                        showEpisodeGenerator = true
                     }
                 }
             }
@@ -170,7 +180,9 @@ struct StarStoryHomeView: View {
             width: .infinity
         ) {
             if let url = episode.hlsUrl {
-                coordinator.pushToCurrentTab(.starStoryPlayer(episodeId: episode.episodeId, hlsUrl: url))
+                coordinator.pushToCurrentTab(
+                    .player(contentId: episode.episodeId, contentType: .movie)
+                )
             }
         }
     }
