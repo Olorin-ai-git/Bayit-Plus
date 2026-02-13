@@ -129,6 +129,7 @@
 		2526604C4359EA1423460FC1 /* RadioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A971C7776E6E11D23807909E /* RadioView.swift */; };
 		253C15F564420A06EC23B604 /* TVAppAuthConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F00D36274DE375B78EAE2B /* TVAppAuthConfiguration.swift */; };
 		2578CC86F921B1731A2F4CA0 /* MorningRitualViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19CE4FFD736B23904DFCD963 /* MorningRitualViewModel.swift */; };
+		25C325005A457441DA8805FE /* ZehAniHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 030F381EE0FBA4C3E1B9BC12 /* ZehAniHubView.swift */; };
 		261A98F88B4D55A5070BE1C4 /* PlaybackSessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A070263D1B172F92FFF2A542 /* PlaybackSessionService.swift */; };
 		268CC2EF5A7D68266CFD92DC /* LLMSearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FFB4D2C781073C666487C8 /* LLMSearchViewModel.swift */; };
 		26C04FF172D047F54195F308 /* BetaCreditsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21F3047D8256FFC6CC757799 /* BetaCreditsRepository.swift */; };
@@ -908,6 +909,7 @@
 		01A01BA5A93E00107B1516C2 /* Bayit_Intro_Hebrew.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = Bayit_Intro_Hebrew.mp4; sourceTree = "<group>"; };
 		0245440A20739935198B875D /* WidgetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetsView.swift; sourceTree = "<group>"; };
 		02B1F7FAEA40070A95322309 /* LiveTVRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTVRow.swift; sourceTree = "<group>"; };
+		030F381EE0FBA4C3E1B9BC12 /* ZehAniHubView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ZehAniHubView.swift; sourceTree = "<group>"; };
 		0327123CE124D3949C5EC95A /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
 		03AA22313315CD06D1302B39 /* SupportViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportViewModel.swift; sourceTree = "<group>"; };
 		04B9F1CD8C64CF2B05A989C0 /* AuthComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthComponents.swift; sourceTree = "<group>"; };
@@ -2667,6 +2669,7 @@
 				C02C71BD3F06DDD242B96308 /* WatchParty */,
 				9480831F85B87C6693558C6B /* Widgets */,
 				9E57DBD711233F18B0FB04DC /* SplashView.swift */,
+				030F381EE0FBA4C3E1B9BC12 /* ZehAniHubView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -4131,6 +4134,7 @@
 				886D8E45A4A61E729D32E1B0 /* ZmanimView.swift in Sources */,
 				0414D820C63D02335610CBF2 /* CatchUpPreferencesService.swift in Sources */,
 				DF783F43FDF6CF41157FF9B6 /* CatchUpAutoPromptView.swift in Sources */,
+				25C325005A457441DA8805FE /* ZehAniHubView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

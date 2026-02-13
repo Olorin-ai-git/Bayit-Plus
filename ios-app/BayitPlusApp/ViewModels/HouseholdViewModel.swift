@@ -1,17 +1,23 @@
+import BayitNetworking
 import Foundation
 import Observation
 
 /// ViewModel for household management - fetch household info,
-/// add/remove members.
+/// invite members, or create a new household.
 @MainActor
 @Observable
 final class HouseholdViewModel {
     private(set) var household: Household?
     private(set) var isLoading = false
     private(set) var error: String?
-    private(set) var isAddingMember = false
+    private(set) var noHousehold = false
+    private(set) var isCreating = false
+    private(set) var isInviting = false
+    private(set) var inviteSent = false
 
-    var newMemberUserId = ""
+    var newHouseholdName = ""
+    var inviteEmail = ""
+    var inviteRole = "child"
 
     private let repository: any HouseholdRepository
 
@@ -26,9 +32,16 @@ final class HouseholdViewModel {
         guard !isLoading else { return }
         isLoading = true
         error = nil
+        noHousehold = false
 
         do {
             household = try await repository.fetchHousehold()
+        } catch let apiError as APIError {
+            if case .notFound = apiError {
+                noHousehold = true
+            } else {
+                self.error = apiError.localizedDescription
+            }
         } catch {
             self.error = error.localizedDescription
         }
@@ -36,35 +49,62 @@ final class HouseholdViewModel {
         isLoading = false
     }
 
-    // MARK: - Member Management
+    // MARK: - Household Creation
 
     @MainActor
-    func addMember() async {
-        let userId = newMemberUserId.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !userId.isEmpty else { return }
+    func createHousehold() async {
+        let name = newHouseholdName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !name.isEmpty else { return }
 
-        isAddingMember = true
+        isCreating = true
         error = nil
 
         do {
-            let request = HouseholdAddMemberRequest(userId: userId)
-            _ = try await repository.addMember(request)
-            newMemberUserId = ""
-            await load()
+            household = try await repository.createHousehold(name: name)
+            noHousehold = false
+            newHouseholdName = ""
         } catch {
             self.error = error.localizedDescription
         }
 
-        isAddingMember = false
+        isCreating = false
+    }
+
+    // MARK: - Member Management
+
+    @MainActor
+    func inviteMember() async {
+        let email = inviteEmail.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !email.isEmpty, let householdId = household?.householdId else { return }
+
+        isInviting = true
+        error = nil
+        inviteSent = false
+
+        do {
+            try await repository.inviteMember(
+                householdId: householdId, email: email, role: inviteRole
+            )
+            inviteEmail = ""
+            inviteRole = "child"
+            inviteSent = true
+        } catch {
+            self.error = error.localizedDescription
+        }
+
+        isInviting = false
     }
 
     @MainActor
     func removeMember(_ member: HouseholdMember) async {
-        guard let userId = member.userId else { return }
+        guard let userId = member.userId,
+              let householdId = household?.householdId else { return }
         error = nil
 
         do {
-            try await repository.removeMember(userId: userId)
+            try await repository.removeMember(
+                householdId: householdId, userId: userId
+            )
             await load()
         } catch {
             self.error = error.localizedDescription
@@ -75,10 +115,6 @@ final class HouseholdViewModel {
 
     var memberCount: Int {
         household?.members?.count ?? 0
-    }
-
-    var maxProfiles: Int {
-        household?.maxProfiles ?? 0
     }
 
     func isOwner(_ member: HouseholdMember) -> Bool {

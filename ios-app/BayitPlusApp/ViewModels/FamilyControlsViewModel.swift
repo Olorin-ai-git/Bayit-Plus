@@ -1,3 +1,4 @@
+import BayitNetworking
 import Foundation
 import Observation
 #if os(iOS)
@@ -23,6 +24,7 @@ final class FamilyControlsViewModel {
     var kidsMaxAge: Double = 12
     var youngstersMaxAge: Double = 17
     var selectedRating: ContentRating = .pg13
+    var viewingHoursEnabled: Bool = false
     var allowedHoursStart: Date = {
         var components = DateComponents()
         components.hour = 8
@@ -51,10 +53,16 @@ final class FamilyControlsViewModel {
         error = nil
 
         do {
-            let prefs = try await repository.fetchPreferences()
+            let prefs = try await repository.fetchControls()
             preferences = prefs
             syncLocalState(from: prefs)
-            isPinSet = prefs.pinHash != nil
+            isPinSet = true
+        } catch let apiError as APIError {
+            if case .notFound = apiError {
+                isPinSet = false
+            } else {
+                self.error = apiError.localizedDescription
+            }
         } catch {
             self.error = error.localizedDescription
         }
@@ -75,7 +83,12 @@ final class FamilyControlsViewModel {
         error = nil
 
         do {
-            try await repository.setPin(FamilyPinRequest(pin: pin))
+            let request = FamilyControlsSetupRequest(
+                pin: pin,
+                kidsAgeLimit: Int(kidsMaxAge),
+                youngstersAgeLimit: Int(youngstersMaxAge)
+            )
+            try await repository.setup(request)
             isPinSet = true
             isPinVerified = true
             #if os(iOS)
@@ -102,11 +115,11 @@ final class FamilyControlsViewModel {
             let response = try await repository.verifyPin(
                 FamilyPinRequest(pin: pin)
             )
-            if response.valid == true {
+            if response.status == "success" {
                 isPinVerified = true
                 #if os(iOS)
-            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            #endif
+                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                #endif
             } else {
                 error = "Invalid PIN"
                 #if os(iOS)
@@ -128,19 +141,20 @@ final class FamilyControlsViewModel {
         error = nil
         successMessage = nil
 
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
+        let startHour = Calendar.current.component(.hour, from: allowedHoursStart)
+        let endHour = Calendar.current.component(.hour, from: allowedHoursEnd)
 
-        let update = FamilyControlsPreferencesUpdate(
-            kidsMaxAge: Int(kidsMaxAge),
-            youngstersMaxAge: Int(youngstersMaxAge),
-            maxRating: selectedRating.rawValue,
-            allowedHoursStart: formatter.string(from: allowedHoursStart),
-            allowedHoursEnd: formatter.string(from: allowedHoursEnd)
+        let update = FamilyControlsUpdateRequest(
+            kidsAgeLimit: Int(kidsMaxAge),
+            youngstersAgeLimit: Int(youngstersMaxAge),
+            maxContentRating: selectedRating.rawValue,
+            viewingHoursEnabled: viewingHoursEnabled,
+            viewingStartHour: startHour,
+            viewingEndHour: endHour
         )
 
         do {
-            let saved = try await repository.updatePreferences(update)
+            let saved = try await repository.updateControls(update)
             preferences = saved
             successMessage = "Settings saved"
             #if os(iOS)
@@ -156,26 +170,34 @@ final class FamilyControlsViewModel {
     // MARK: - Private
 
     private func syncLocalState(from prefs: FamilyControlsPreferences) {
-        if let kids = prefs.kidsMaxAge {
+        if let kids = prefs.kidsAgeLimit {
             kidsMaxAge = Double(kids)
         }
-        if let youngsters = prefs.youngstersMaxAge {
+        if let youngsters = prefs.youngstersAgeLimit {
             youngstersMaxAge = Double(youngsters)
         }
-        if let ratingStr = prefs.maxRating,
+        if let ratingStr = prefs.maxContentRating,
            let rating = ContentRating(rawValue: ratingStr) {
             selectedRating = rating
         }
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        if let startStr = prefs.allowedHoursStart,
-           let start = formatter.date(from: startStr) {
-            allowedHoursStart = start
+        if let enabled = prefs.viewingHoursEnabled {
+            viewingHoursEnabled = enabled
         }
-        if let endStr = prefs.allowedHoursEnd,
-           let end = formatter.date(from: endStr) {
-            allowedHoursEnd = end
+        if let start = prefs.viewingStartHour {
+            var components = DateComponents()
+            components.hour = start
+            components.minute = 0
+            if let date = Calendar.current.date(from: components) {
+                allowedHoursStart = date
+            }
+        }
+        if let end = prefs.viewingEndHour {
+            var components = DateComponents()
+            components.hour = end
+            components.minute = 0
+            if let date = Calendar.current.date(from: components) {
+                allowedHoursEnd = date
+            }
         }
     }
 }

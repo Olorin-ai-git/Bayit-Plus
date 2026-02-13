@@ -101,7 +101,10 @@ public final class NavigationCoordinator {
              .helpCenter, .rewards, .passkeyManagement, .onboardingAI,
              .friends, .watchParty, .watchPartyDetail,
              .chess, .directMessages, .conversation,
-             .mfaSetup, .phoneVerification:
+             .mfaSetup, .phoneVerification,
+             .zehAni, .zehAniMagicMirror, .zehAniV2V,
+             .zehAniAvatar3D, .zehAniHighlights,
+             .zehAniContacts, .zehAniFeedback:
             pushToCurrentTab(route)
         }
     }

@@ -100,14 +100,6 @@ final class APIAvatarMeshRepository: AvatarMeshRepository, @unchecked Sendable {
             let active: Bool
             let grantedAt: String
             let onDeviceOnly: Bool
-
-            enum CodingKeys: String, CodingKey {
-                case id
-                case consentType = "consent_type"
-                case active
-                case grantedAt = "granted_at"
-                case onDeviceOnly = "on_device_only"
-            }
         }
         let response = try await client.post(
             "/api/v1/zeh-ani/consent/biometric",
@@ -140,12 +132,6 @@ final class APIAvatarMeshRepository: AvatarMeshRepository, @unchecked Sendable {
             let profileId: String
             let consentType: String
             let revoked: Bool
-
-            enum CodingKeys: String, CodingKey {
-                case profileId = "profile_id"
-                case consentType = "consent_type"
-                case revoked
-            }
         }
         let response = try await client.delete(
             "/api/v1/zeh-ani/consent/biometric/\(profileId)?consent_type=\(consentType)",

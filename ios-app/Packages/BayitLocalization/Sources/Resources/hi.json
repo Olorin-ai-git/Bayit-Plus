@@ -4346,37 +4346,37 @@
       "failedToUpdatePin": "PIN अपडेट करने में विफल। पुराना PIN जांचें।"
     },
     "household": {
-      "title": "Household",
-      "create": "Create Household",
-      "name": "Household Name",
-      "members": "Members",
-      "inviteMember": "Invite Member",
-      "removeMember": "Remove Member",
-      "role": "Role",
+      "title": "घर प्रबंधन",
+      "create": "घर बनाएं",
+      "name": "घर का नाम",
+      "members": "सदस्य",
+      "inviteMember": "सदस्य को आमंत्रित करें",
+      "removeMember": "सदस्य हटाएं",
+      "role": "भूमिका",
       "roles": {
-        "parent": "Parent",
-        "child": "Child",
-        "guardian": "Guardian"
+        "parent": "अभिभावक",
+        "child": "बच्चा",
+        "guardian": "संरक्षक"
       },
-      "sharedControls": "Shared Controls",
+      "sharedControls": "साझा नियंत्रण",
       "invitation": {
-        "title": "Invitation",
-        "email": "Email Address",
-        "send": "Send Invitation",
-        "accept": "Accept Invitation",
-        "code": "Invitation Code",
-        "expires": "Expires",
-        "pending": "Pending Invitations"
+        "title": "आमंत्रण",
+        "email": "ईमेल पता",
+        "send": "आमंत्रण भेजें",
+        "accept": "आमंत्रण स्वीकार करें",
+        "code": "आमंत्रण कोड",
+        "expires": "समाप्ति",
+        "pending": "लंबित आमंत्रण"
       }
     },
     "profile": {
-      "title": "Profile Controls",
-      "override": "Override Controls",
-      "inherit": "Inherit Controls",
-      "inheritHousehold": "Inherit from Household",
-      "inheritAccount": "Inherit from Account",
-      "hierarchy": "Control Hierarchy",
-      "source": "Controls Source"
+      "title": "प्रोफ़ाइल नियंत्रण",
+      "override": "नियंत्रण ओवरराइड करें",
+      "inherit": "नियंत्रण विरासत में लें",
+      "inheritHousehold": "घर से विरासत में मिला",
+      "inheritAccount": "खाते से विरासत में मिला",
+      "hierarchy": "नियंत्रण पदानुक्रम",
+      "source": "नियंत्रण स्रोत"
     },
     "contentBlockedAbove": "{{rating}} से ऊपर रेट की गई सामग्री को ब्लॉक किया जाएगा",
     "placeholders": {
@@ -4873,6 +4873,61 @@
     }
   },
   "household": {
+    "title": "घर प्रबंधन",
+    "subtitle": "अपने पारिवारिक घर और साझा नियंत्रण प्रबंधित करें",
+    "create": "घर बनाएं",
+    "createButton": "घर बनाएं",
+    "createHousehold": "घर बनाएं",
+    "createDescription": "कई खातों के लिए पारिवारिक नियंत्रण प्रबंधित करने के लिए एक घर बनाएं। माता-पिता सभी घर के सदस्यों के लिए आयु-उपयुक्त सामग्री सीमा निर्धारित कर सकते हैं।",
+    "name": "घर का नाम",
+    "householdName": "घर का नाम",
+    "namePlaceholder": "उदा., शर्मा परिवार",
+    "creating": "बना रहे हैं...",
+    "members": "सदस्य",
+    "memberCount": "{{count}} सदस्य",
+    "memberCount_plural": "{{count}} सदस्य",
+    "inviteMember": "सदस्य को आमंत्रित करें",
+    "removeMember": "सदस्य हटाएं",
+    "remove": "हटाएं",
+    "confirmRemoveMember": "क्या आप वाकई इस सदस्य को अपने घर से हटाना चाहते हैं?",
+    "delete": "घर हटाएं",
+    "confirmDelete": "क्या आप वाकई इस घर को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।",
+    "role": "भूमिका",
+    "roleParent": "अभिभावक",
+    "roleChild": "बच्चा",
+    "roleGuardian": "संरक्षक",
+    "roles": {
+      "parent": "अभिभावक",
+      "child": "बच्चा",
+      "guardian": "संरक्षक"
+    },
+    "sharedControls": "साझा नियंत्रण",
+    "email": "ईमेल पता",
+    "emailPlaceholder": "family@example.com",
+    "sendInvitation": "आमंत्रण भेजें",
+    "pendingInvitations": "लंबित आमंत्रण",
+    "expires": "समाप्ति",
+    "invitation": {
+      "title": "आमंत्रण",
+      "email": "ईमेल पता",
+      "send": "आमंत्रण भेजें",
+      "accept": "आमंत्रण स्वीकार करें",
+      "code": "आमंत्रण कोड",
+      "expires": "समाप्ति",
+      "pending": "लंबित आमंत्रण"
+    },
+    "invitationSent": "आमंत्रण सफलतापूर्वक भेजा गया!",
+    "acceptingInvitation": "आमंत्रण स्वीकार कर रहे हैं",
+    "invitationAccepted": "आप सफलतापूर्वक {{name}} में शामिल हो गए!",
+    "invitationExpired": "इस आमंत्रण की अवधि समाप्त हो गई है। कृपया नया आमंत्रण अनुरोध करें।",
+    "invalidInvitationLink": "अमान्य आमंत्रण लिंक। कृपया URL जांचें।",
+    "invalidInvitationCode": "अमान्य आमंत्रण कोड। कृपया लिंक जांचें।",
+    "invitationAcceptFailed": "आमंत्रण स्वीकार करने में विफल। कृपया पुनः प्रयास करें।",
+    "mustBeLoggedIn": "घर का आमंत्रण स्वीकार करने के लिए आपको लॉग इन होना चाहिए।",
+    "redirectingToHousehold": "आपके घर पर रीडायरेक्ट हो रहा है...",
+    "goToHousehold": "घर पर जाएं",
+    "success": "सफलता!",
+    "error": "त्रुटि",
     "addButton": "जोड़ें",
     "addMember": "सदस्य जोड़ें",
     "membersTitle": "सदस्य",
@@ -8006,22 +8061,38 @@
       "failed": "3D अवतार नहीं बन सका",
       "retry": "फिर से कोशिश करें",
       "downloadGlb": "3D मॉडल डाउनलोड करें",
-      "viewIn3d": "3D में देखें"
+      "viewIn3d": "3D में देखें",
+      "statusFailed": "जनरेशन विफल",
+      "statusGenerating": "3D मॉडल जनरेट हो रहा है...",
+      "statusIdle": "जनरेट करने के लिए तैयार",
+      "statusReady": "3D मॉडल तैयार",
+      "statusRigging": "एनिमेशन जोड़ रहे हैं...",
+      "viewPreview": "3D प्रीव्यू देखें"
     },
     "consent": {
       "biometric": {
         "title": "बायोमेट्रिक डेटा सहमति",
         "subtitle": "यह सुविधा 3D अवतार बनाने के लिए चेहरे के डेटा का उपयोग करती है",
+        "explanation": "हम वैयक्तिकृत AI अनुभव बनाने के लिए आपके चेहरे और आवाज के डेटा का उपयोग करते हैं। इस डेटा को सुरक्षित रूप से संसाधित किया जाता है और कभी भी तीसरे पक्ष के साथ साझा नहीं किया जाता।",
+        "privacy": "आपका बायोमेट्रिक डेटा एन्क्रिप्टेड और सुरक्षित रूप से संग्रहीत है। आप किसी भी समय सहमति वापस ले सकते हैं।",
+        "pinLabel": "परिवार PIN",
+        "consentTypes": "सहमति के प्रकार",
         "meshGeneration": "3D अवतार निर्माण",
-        "voiceV2v": "आवाज रूपांतरण",
+        "voiceV2V": "आवाज रूपांतरण",
         "latentFeatures": "विशेषता विश्लेषण",
+        "currentStatus": "वर्तमान स्थिति",
+        "pinPlaceholder": "पिन दर्ज करें",
         "enterPin": "परिवार PIN दर्ज करें",
+        "submit": "सहमति सबमिट करें",
         "grantConsent": "सहमति दें",
         "revokeConsent": "सहमति वापस लें",
         "consentGranted": "सहमति दी गई",
         "consentRevoked": "सहमति वापस ली गई",
         "pinRequired": "परिवार PIN आवश्यक है",
-        "invalidPin": "अमान्य PIN"
+        "invalidPin": "अमान्य PIN",
+        "familyControlsRequired": "पारिवारिक नियंत्रण आवश्यक",
+        "familyControlsExplain": "बायोमेट्रिक सहमति के लिए पहले पारिवारिक नियंत्रण सेट अप करना आवश्यक है। बायोमेट्रिक डेटा एक्सेस की सुरक्षा के लिए एक पारिवारिक पिन का उपयोग किया जाता है। अपना पिन बनाने के लिए पारिवारिक नियंत्रण पर जाएं।",
+        "goToFamilyControls": "पारिवारिक नियंत्रण पर जाएं"
       }
     },
     "preview3d": {
@@ -8030,6 +8101,11 @@
       "rotate": "घुमाने के लिए खींचें",
       "pinchToZoom": "ज़ूम के लिए पिंच करें",
       "error": "3D मॉडल लोड नहीं हो सका"
+    },
+    "preview": {
+      "error": "प्रीव्यू लोड नहीं हो सका",
+      "loading": "प्रीव्यू लोड हो रहा है...",
+      "title": "3D प्रीव्यू"
     },
     "v2v": {
       "title": "आवाज अभ्यास",
@@ -8043,7 +8119,11 @@
       "improvement": "सुधार",
       "tryAgain": "फिर से कोशिश करें",
       "sessionComplete": "सत्र पूर्ण",
-      "averageImprovement": "औसत सुधार"
+      "averageImprovement": "औसत सुधार",
+      "beforeAfter": "पहले और बाद",
+      "latency": "विलंबता",
+      "nextPhrase": "अगला वाक्य",
+      "retry": "पुनः प्रयास"
     },
     "liveLayer": {
       "title": "लाइव अवतार",
@@ -8057,7 +8137,15 @@
       "correct": "सही!",
       "tryAgain": "फिर से कोशिश करें",
       "skip": "छोड़ें",
-      "scoreLabel": "स्कोर"
+      "scoreLabel": "स्कोर",
+      "continue": "जारी रखें",
+      "dismiss": "बंद करें",
+      "errors": {
+        "microphoneFailed": "माइक्रोफ़ोन एक्सेस नहीं हो सका"
+      },
+      "incorrect": "बिल्कुल सही नहीं",
+      "prompt": "स्क्रीन पर दिखाया गया शब्द बोलें",
+      "success": "शाबाश!"
     },
     "magicMirror": {
       "title": "जादुई आईना",
@@ -8093,7 +8181,8 @@
       "language": "भाषा",
       "empty": "अभी तक कोई संपर्क नहीं जोड़ा गया",
       "delete": "संपर्क हटाएं",
-      "reelsSent": "भेजे गए वीडियो"
+      "reelsSent": "भेजे गए वीडियो",
+      "pin": "पारिवारिक पिन"
     },
     "feedback": {
       "title": "प्रतिक्रिया इनबॉक्स",
@@ -8108,6 +8197,19 @@
       "reelsSection": "हाइलाइट वीडियो",
       "contactsSection": "संपर्क",
       "feedbackSection": "प्रतिक्रिया"
+    },
+    "hub": {
+      "title": "ज़ेह अनी केंद्र",
+      "magicMirror": "जादुई आईना",
+      "magicMirrorDesc": "वैयक्तिकृत अभिवादन और दैनिक हिब्रू शब्दों के साथ इंटरैक्टिव AI आईना",
+      "highlights": "हाइलाइट वीडियो",
+      "highlightsDesc": "प्रियजनों के साथ यादगार पलों का संकलन बनाएं और साझा करें",
+      "contacts": "दादा-दादी के संपर्क",
+      "contactsDesc": "अपने हाइलाइट वीडियो साझा करने के लिए संपर्कों को प्रबंधित करें",
+      "feedback": "प्रतिक्रिया इनबॉक्स",
+      "feedbackDesc": "परिवार से ध्वनि और पाठ संदेश प्राप्त करें",
+      "consent": "बायोमेट्रिक सहमति",
+      "consentDesc": "चेहरे और आवाज डेटा के लिए सहमति सेटिंग प्रबंधित करें"
     }
   }
 }

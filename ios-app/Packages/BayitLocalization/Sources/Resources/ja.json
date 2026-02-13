@@ -4583,37 +4583,37 @@
       "failedToUpdatePin": "PINの更新に失敗しました。古いPINを確認してください。"
     },
     "household": {
-      "title": "Household",
-      "create": "Create Household",
-      "name": "Household Name",
-      "members": "Members",
-      "inviteMember": "Invite Member",
-      "removeMember": "Remove Member",
-      "role": "Role",
+      "title": "世帯管理",
+      "create": "世帯を作成",
+      "name": "世帯名",
+      "members": "メンバー",
+      "inviteMember": "メンバーを招待",
+      "removeMember": "メンバーを削除",
+      "role": "役割",
       "roles": {
-        "parent": "Parent",
-        "child": "Child",
-        "guardian": "Guardian"
+        "parent": "保護者",
+        "child": "子供",
+        "guardian": "後見人"
       },
-      "sharedControls": "Shared Controls",
+      "sharedControls": "共有コントロール",
       "invitation": {
-        "title": "Invitation",
-        "email": "Email Address",
-        "send": "Send Invitation",
-        "accept": "Accept Invitation",
-        "code": "Invitation Code",
-        "expires": "Expires",
-        "pending": "Pending Invitations"
+        "title": "招待",
+        "email": "メールアドレス",
+        "send": "招待を送信",
+        "accept": "招待を受け入れる",
+        "code": "招待コード",
+        "expires": "有効期限",
+        "pending": "保留中の招待"
       }
     },
     "profile": {
-      "title": "Profile Controls",
-      "override": "Override Controls",
-      "inherit": "Inherit Controls",
-      "inheritHousehold": "Inherit from Household",
-      "inheritAccount": "Inherit from Account",
-      "hierarchy": "Control Hierarchy",
-      "source": "Controls Source"
+      "title": "プロフィールコントロール",
+      "override": "コントロールをオーバーライド",
+      "inherit": "コントロールを継承",
+      "inheritHousehold": "世帯から継承",
+      "inheritAccount": "アカウントから継承",
+      "hierarchy": "コントロール階層",
+      "source": "コントロールのソース"
     },
     "contentBlockedAbove": "{{rating}}より上の評価のコンテンツはブロックされます",
     "placeholders": {
@@ -5175,6 +5175,61 @@
     "liveTV": "ライブTV"
   },
   "household": {
+    "title": "世帯管理",
+    "subtitle": "家族の世帯と共有コントロールを管理",
+    "create": "世帯を作成",
+    "createButton": "世帯を作成",
+    "createHousehold": "世帯を作成",
+    "createDescription": "複数のアカウントのファミリーコントロールを管理するために世帯を作成します。保護者は世帯の全メンバーに対して年齢に適したコンテンツ制限を設定できます。",
+    "name": "世帯名",
+    "householdName": "世帯名",
+    "namePlaceholder": "例：田中家",
+    "creating": "作成中...",
+    "members": "メンバー",
+    "memberCount": "{{count}} 人のメンバー",
+    "memberCount_plural": "{{count}} 人のメンバー",
+    "inviteMember": "メンバーを招待",
+    "removeMember": "メンバーを削除",
+    "remove": "削除",
+    "confirmRemoveMember": "このメンバーを世帯から削除してもよろしいですか？",
+    "delete": "世帯を削除",
+    "confirmDelete": "この世帯を削除してもよろしいですか？この操作は元に戻せません。",
+    "role": "役割",
+    "roleParent": "保護者",
+    "roleChild": "子供",
+    "roleGuardian": "後見人",
+    "roles": {
+      "parent": "保護者",
+      "child": "子供",
+      "guardian": "後見人"
+    },
+    "sharedControls": "共有コントロール",
+    "email": "メールアドレス",
+    "emailPlaceholder": "family@example.com",
+    "sendInvitation": "招待を送信",
+    "pendingInvitations": "保留中の招待",
+    "expires": "有効期限",
+    "invitation": {
+      "title": "招待",
+      "email": "メールアドレス",
+      "send": "招待を送信",
+      "accept": "招待を受け入れる",
+      "code": "招待コード",
+      "expires": "有効期限",
+      "pending": "保留中の招待"
+    },
+    "invitationSent": "招待が正常に送信されました！",
+    "acceptingInvitation": "招待を受け入れ中",
+    "invitationAccepted": "{{name}}に正常に参加しました！",
+    "invitationExpired": "この招待の有効期限が切れました。新しい招待をリクエストしてください。",
+    "invalidInvitationLink": "無効な招待リンクです。URLを確認してください。",
+    "invalidInvitationCode": "無効な招待コードです。リンクを確認してください。",
+    "invitationAcceptFailed": "招待の受け入れに失敗しました。もう一度お試しください。",
+    "mustBeLoggedIn": "世帯の招待を受け入れるにはログインが必要です。",
+    "redirectingToHousehold": "世帯にリダイレクト中...",
+    "goToHousehold": "世帯に移動",
+    "success": "成功！",
+    "error": "エラー",
     "addButton": "追加",
     "addMember": "メンバーを追加",
     "membersTitle": "メンバー",
@@ -6434,6 +6489,7 @@
   },
   "profile": {
     "title": "プロフィール",
+    "zehAni": "ゼー・アニ",
     "editProfile": "プロフィールを編集",
     "displayName": "表示名",
     "username": "ユーザー名",
@@ -8771,22 +8827,38 @@
       "failed": "3Dアバターを作成できませんでした",
       "retry": "やり直す",
       "downloadGlb": "3Dモデルをダウンロード",
-      "viewIn3d": "3Dで見る"
+      "viewIn3d": "3Dで見る",
+      "statusFailed": "生成に失敗",
+      "statusGenerating": "3Dモデルを生成中...",
+      "statusIdle": "生成準備完了",
+      "statusReady": "3Dモデル完成",
+      "statusRigging": "アニメーション追加中...",
+      "viewPreview": "3Dプレビューを見る"
     },
     "consent": {
       "biometric": {
         "title": "生体認証データの同意",
         "subtitle": "この機能は顔データを使用して3Dアバターを作成します",
+        "explanation": "顔と音声のデータを使用してパーソナライズされたAI体験を作成します。このデータは安全に処理され、第三者と共有されることはありません。",
+        "privacy": "生体認証データは暗号化され、安全に保存されます。いつでも同意を取り消すことができます。",
+        "pinLabel": "ファミリーPIN",
+        "consentTypes": "同意の種類",
         "meshGeneration": "3Dアバター生成",
-        "voiceV2v": "音声変換",
+        "voiceV2V": "音声変換",
         "latentFeatures": "特徴分析",
+        "currentStatus": "現在のステータス",
+        "pinPlaceholder": "PINを入力",
         "enterPin": "ファミリーPINを入力",
+        "submit": "同意を送信",
         "grantConsent": "同意する",
         "revokeConsent": "同意を取り消す",
         "consentGranted": "同意しました",
         "consentRevoked": "同意を取り消しました",
         "pinRequired": "ファミリーPINが必要です",
-        "invalidPin": "無効なPIN"
+        "invalidPin": "無効なPIN",
+        "familyControlsRequired": "ファミリーコントロールが必要です",
+        "familyControlsExplain": "生体認証の同意には、ファミリーコントロールを先に設定する必要があります。ファミリーPINは生体データへのアクセスを保護するために使用されます。PINを作成するにはファミリーコントロールに移動してください。",
+        "goToFamilyControls": "ファミリーコントロールへ移動"
       }
     },
     "preview3d": {
@@ -8795,6 +8867,11 @@
       "rotate": "ドラッグで回転",
       "pinchToZoom": "ピンチでズーム",
       "error": "3Dモデルを読み込めませんでした"
+    },
+    "preview": {
+      "error": "プレビューを読み込めません",
+      "loading": "プレビューを読み込み中...",
+      "title": "3Dプレビュー"
     },
     "v2v": {
       "title": "音声練習",
@@ -8808,7 +8885,11 @@
       "improvement": "改善度",
       "tryAgain": "もう一度",
       "sessionComplete": "セッション完了",
-      "averageImprovement": "平均改善度"
+      "averageImprovement": "平均改善度",
+      "beforeAfter": "ビフォー・アフター",
+      "latency": "レイテンシ",
+      "nextPhrase": "次のフレーズ",
+      "retry": "リトライ"
     },
     "liveLayer": {
       "title": "ライブアバター",
@@ -8822,7 +8903,15 @@
       "correct": "正解！",
       "tryAgain": "もう一度試してください",
       "skip": "スキップ",
-      "scoreLabel": "スコア"
+      "scoreLabel": "スコア",
+      "continue": "続ける",
+      "dismiss": "閉じる",
+      "errors": {
+        "microphoneFailed": "マイクにアクセスできません"
+      },
+      "incorrect": "もう少し",
+      "prompt": "画面に表示された単語を言ってください",
+      "success": "すばらしい!"
     },
     "magicMirror": {
       "title": "魔法の鏡",
@@ -8858,7 +8947,8 @@
       "language": "言語",
       "empty": "連絡先はまだ追加されていません",
       "delete": "連絡先を削除",
-      "reelsSent": "送信済み動画"
+      "reelsSent": "送信済み動画",
+      "pin": "ファミリーPIN"
     },
     "feedback": {
       "title": "フィードバック受信箱",
@@ -8873,6 +8963,19 @@
       "reelsSection": "ハイライト動画",
       "contactsSection": "連絡先",
       "feedbackSection": "フィードバック"
+    },
+    "hub": {
+      "title": "ゼー・アニ ハブ",
+      "magicMirror": "魔法の鏡",
+      "magicMirrorDesc": "パーソナライズされた挨拶と毎日のヘブライ語単語を備えたインタラクティブAIミラー",
+      "highlights": "ハイライト動画",
+      "highlightsDesc": "大切な人と思い出の瞬間をまとめた動画を生成・共有",
+      "contacts": "祖父母の連絡先",
+      "contactsDesc": "ハイライト動画を共有するための連絡先を管理",
+      "feedback": "フィードバック受信箱",
+      "feedbackDesc": "家族からの音声やテキストメッセージを受信",
+      "consent": "生体認証の同意",
+      "consentDesc": "顔と音声データの同意設定を管理"
     }
   }
 }

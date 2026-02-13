@@ -1,0 +1,703 @@
+
+ ▐▛███▜▌   Claude Code v2.1.39
+▝▜█████▛▘  Opus 4.6 · Claude Max
+  ▘▘ ▝▝    ~/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app
+
+✻ Conversation compacted (ctrl+o for history)
+
+  ⎿  Read BayitPlusApp/Navigation/NavigationCoordinator.swift (156 lines)
+  ⎿  Read BayitPlusApp/Views/ZehAniHubView.swift (156 lines)
+  ⎿  Read BayitPlusApp/Views/ZehAni/ZehAniHubView.swift (156 lines)
+  ⎿  Read BayitPlusApp/Navigation/RouteDestinationResolver.swift (137 lines)
+  ⎿  Read BayitPlusApp/Navigation/Route.swift (210 lines)
+
+⏺ Task "Build iOS target to verify" completed in background
+
+⏺ Task "Build tvOS target to verify" completed in background
+  ⎿  Skills restored (bayit-start, bayit-add-subtitles)
+
+⏺ Continuing with the Biometric Consent decoding error investigation. Let me
+  check the backend endpoint and the iOS model side by side.
+
+⏺ Searched for 3 patterns, read 3 files (ctrl+o to expand)
+
+⏺ Now let me check the backend endpoint to see what it actually returns.
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ The backend response structure looks correct. The issue might be in how the
+  APIClient handles errors. Let me check the networking layer and the biometric
+  consent service.
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ The backend response format matches the iOS model. The issue must be in the
+  networking layer. Let me find the APIClient.
+
+⏺ Searched for 2 patterns, read 2 files (ctrl+o to expand)
+
+⏺ Now let me see how decodeResponse works, and check the convenience methods.
+
+⏺ Read 2 files (ctrl+o to expand)
+
+⏺ Let me find the decodeResponse method - it's called in the execution flow but
+  I need to see its implementation.
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Found it. The jsonDecoder at APIClient.swift:52 uses .convertFromSnakeCase key
+   decoding strategy. This conflicts with the explicit CodingKeys in
+  AvatarMeshModels.swift that map to snake_case. When .convertFromSnakeCase is
+  active, JSON key "profile_id" gets converted to "profileId" before matching
+  CodingKeys, but the CodingKey has stringValue = "profile_id" (explicit), so it
+   doesn't match the converted key.
+
+  Let me verify this theory by checking other working models.
+
+⏺ Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Now I see the root cause. The APIClient uses keyDecodingStrategy = 
+  .convertFromSnakeCase (line 52), which automatically converts JSON keys like
+  "profile_id" to "profileId". But BiometricConsentStatus also defines explicit
+  CodingKeys mapping profileId = "profile_id". These conflict: the decoder
+  converts "profile_id" to "profileId" in the JSON, then the CodingKey asks for
+  "profile_id" (its explicit stringValue) which no longer exists.
+
+  Other models survive because their properties are Optional (missing key =
+  nil), but BiometricConsentStatus.profileId is non-optional String, so it
+  throws keyNotFound.
+
+  The fix is to remove the redundant explicit snake_case mappings from the
+  CodingKeys in AvatarMeshModels.swift.
+
+⏺ Update(BayitPlusApp/Models/AvatarMeshModels.swift)
+  ⎿  Added 3 lines, removed 48 lines
+      1  import Foundation
+      2  
+      3 +/// APIClient uses .convertFromSnakeCase key decoding, so explic
+        +it                                                              
+      4 +/// snake_case CodingKeys are unnecessary and would conflict.   
+      5 +                                                                
+      6  struct AvatarMeshStatus: Codable, Identifiable {
+      7      let id: String
+      8      let avatarId: String
+     ...
+      17      let errorMessage: String?
+      18      let createdAt: String
+      19      let updatedAt: String
+      17 -                                                               
+      18 -    enum CodingKeys: String, CodingKey {                       
+      19 -        case id                                                
+      20 -        case avatarId = "avatar_id"                            
+      21 -        case userId = "user_id"                                
+      22 -        case status                                            
+      23 -        case glbGcsPath = "glb_gcs_path"                       
+      24 -        case thumbnailGcsPath = "thumbnail_gcs_path"           
+      25 -        case blendShapes = "blend_shapes"                      
+      26 -        case boneCount = "bone_count"                          
+      27 -        case vertexCount = "vertex_count"                      
+      28 -        case creditsCharged = "credits_charged"                
+      29 -        case errorMessage = "error_message"                    
+      30 -        case createdAt = "created_at"                          
+      31 -        case updatedAt = "updated_at"                          
+      32 -    }                                                          
+      20  }
+      21  
+      22  struct MeshBlendShapeInfo: Codable {
+      23      let name: String
+      24      let defaultWeight: Double
+      38 -                                                               
+      39 -    enum CodingKeys: String, CodingKey {                       
+      40 -        case name                                              
+      41 -        case defaultWeight = "default_weight"                  
+      42 -    }                                                          
+      25  }
+      26  
+      27  struct MeshGlbUrl: Codable {
+      28      let avatarId: String
+      29      let signedUrl: String
+      30      let expiresInSeconds: Int
+      49 -                                                               
+      50 -    enum CodingKeys: String, CodingKey {                       
+      51 -        case avatarId = "avatar_id"                            
+      52 -        case signedUrl = "signed_url"                          
+      53 -        case expiresInSeconds = "expires_in_seconds"           
+      54 -    }                                                          
+      31  }
+      32  
+      33  struct BiometricConsentStatus: Codable {
+      34      let profileId: String
+      35      let consents: [ConsentEntry]
+      60 -                                                               
+      61 -    enum CodingKeys: String, CodingKey {                       
+      62 -        case profileId = "profile_id"                          
+      63 -        case consents                                          
+      64 -    }                                                          
+      36  }
+      37  
+      38  struct ConsentEntry: Codable, Identifiable {
+      39      var id: String { consentType }
+      40      let consentType: String
+      41      let active: Bool
+      71 -                                                               
+      72 -    enum CodingKeys: String, CodingKey {                       
+      73 -        case consentType = "consent_type"                      
+      74 -        case active                                            
+      75 -    }                                                          
+      42  }
+      43  
+      44  struct MagicMirrorGreeting: Codable {
+      45      let greetingTextHe: String
+      46      let greetingTextEn: String
+      47      let vocabularyWords: [VocabWord]
+      82 -                                                               
+      83 -    enum CodingKeys: String, CodingKey {                       
+      84 -        case greetingTextHe = "greeting_text_he"               
+      85 -        case greetingTextEn = "greeting_text_en"               
+      86 -        case vocabularyWords = "vocabulary_words"              
+      87 -    }                                                          
+      48  }
+      49  
+      50  struct VocabWord: Codable {
+      51      let wordHe: String
+      52      let transliteration: String
+      53      let translation: String
+      94 -                                                               
+      95 -    enum CodingKeys: String, CodingKey {                       
+      96 -        case wordHe = "word_he"                                
+      97 -        case transliteration, translation                      
+      98 -    }                                                          
+      54  }
+
+⏺ Now let me also check the grantBiometricConsent response struct in the
+  repository - it also has explicit CodingKeys that would conflict.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(BayitPlusApp/Repositories/AvatarMeshRepository.swift)
+  ⎿  Removed 8 lines
+      100              let active: Bool
+      101              let grantedAt: String
+      102              let onDeviceOnly: Bool
+      103 -                                                              
+      104 -            enum CodingKeys: String, CodingKey {              
+      105 -                case id                                       
+      106 -                case consentType = "consent_type"             
+      107 -                case active                                   
+      108 -                case grantedAt = "granted_at"                 
+      109 -                case onDeviceOnly = "on_device_only"          
+      110 -            }                                                 
+      103          }
+      104          let response = try await client.post(
+      105              "/api/v1/zeh-ani/consent/biometric",
+
+⏺ Now let me also fix the revoke consent response struct in the same file.
+
+⏺ Update(BayitPlusApp/Repositories/AvatarMeshRepository.swift)
+  ⎿  Removed 6 lines
+      132              let profileId: String
+      133              let consentType: String
+      134              let revoked: Bool
+      135 -                                                              
+      136 -            enum CodingKeys: String, CodingKey {              
+      137 -                case profileId = "profile_id"                 
+      138 -                case consentType = "consent_type"             
+      139 -                case revoked                                  
+      140 -            }                                                 
+      135          }
+      136          let response = try await client.delete(
+      137              "/api/v1/zeh-ani/consent/biometric/\(profileId)?co
+           nsent_type=\(consentType)",
+
+⏺ Now there's also a request body issue. The grantBiometricConsent sends a
+  request body with [String: String] dict where keys are manually snake_case.
+  But the APIClient's encoder uses .convertToSnakeCase. Let me check.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me build to verify the fix compiles.
+
+⏺ Bash(xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusApp -destination
+       'platform=iOS Simulator,id=F5A927F5-2156-4B34-999B-418837BA3CA4'
+      -derivedDataPath buil…)
+  ⎿      Signing Identity:     "Sign to Run Locally"
+
+         /usr/bin/codesign --force --sign - --timestamp\=none --generate-en
+     … +48 lines (ctrl+o to expand)
+  ⎿  (timeout 5m)
+
+⏺ Build succeeded. Now let me install and relaunch on the simulator.
+
+⏺ Bash(xcrun simctl install F5A927F5-2156-4B34-999B-418837BA3CA4
+      /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app/bu
+      ild/Build/Products/Debug-iph…)
+  ⎿  tv.bayit.plus: 9386
+
+⏺ App is running (PID 9386). The fix removes all the redundant explicit
+  snake_case CodingKeys from AvatarMeshModels.swift and the inline response
+  structs in AvatarMeshRepository.swift.
+
+  Root cause: The APIClient's JSONDecoder is configured with
+  .convertFromSnakeCase, which automatically converts JSON keys like
+  "profile_id" to "profileId" before matching against CodingKeys. The models
+  also defined explicit CodingKeys with profileId = "profile_id", creating a
+  double-conversion conflict -- the decoder would look for the literal key
+  "profile_id" in the already-converted JSON (where it had become "profileId"),
+  causing keyNotFound.
+
+  Fix: Removed all explicit snake_case CodingKeys mappings from:
+  - AvatarMeshModels.swift - all 7 model structs (AvatarMeshStatus,
+  MeshBlendShapeInfo, MeshGlbUrl, BiometricConsentStatus, ConsentEntry,
+  MagicMirrorGreeting, VocabWord)
+  - AvatarMeshRepository.swift - BiometricConsentResponse and
+  RevokeConsentResponse inline structs
+
+  Navigate to Profile > Me in the Story > Biometric Consent again to verify the
+  error is resolved.
+
+✻ Sautéed for 8m 1s
+
+[Image #2]
+
+⏺ The decoding fix worked - the consent status loads correctly now. Two issues
+  visible:
+
+  1. Missing translations - "zehAni.consent.biometric.voiceV2V" and
+  "zehAni.consent.biometric.currentStatus" show raw keys instead of translated
+  text
+  2. 400 error - "Family controls not configured for this account" is expected
+  business logic (user needs to set up Family Controls first before granting
+  biometric consent)
+
+  Let me fix the missing translations.
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Let me find the localization files to add the missing translation keys.
+
+⏺ Searched for 4 patterns (ctrl+o to expand)
+
+⏺ Explore(Find localization files for iOS)
+  ⎿  Done (30 tool uses · 40.6k tokens · 1m 13s)
+
+⏺ The agent found the issue. The JSON has voiceV2v (lowercase 'v') but Swift
+  asks for voiceV2V (uppercase 'V'). Let me check the exact JSON keys.
+
+⏺ Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Found both issues:
+  1. Case mismatch: JSON has voiceV2v but Swift uses voiceV2V
+  2. Missing key: currentStatus doesn't exist in the locale files
+
+  Let me see the full consent section in the English locale to understand the
+  structure.
+
+⏺ Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Two fixes needed in en.json:
+  1. voiceV2v → voiceV2V (to match Swift code)
+  2. Add missing currentStatus and pinPlaceholder keys
+
+⏺ Update(Packages/BayitLocalization/Sources/Resources/en.json)
+  ⎿  Added 3 lines, removed 1 line
+      8268          "pinLabel": "Family PIN",
+      8269          "consentTypes": "Consent Types",
+      8270          "meshGeneration": "3D Avatar Generation",
+      8271 -        "voiceV2v": "Voice Transformation",                  
+      8271 +        "voiceV2V": "Voice Transformation",                  
+      8272          "latentFeatures": "Feature Analysis",
+      8273 +        "currentStatus": "Current Status",                   
+      8274 +        "pinPlaceholder": "Enter PIN",                       
+      8275          "enterPin": "Enter family PIN",
+      8276          "submit": "Submit Consent",
+      8277          "grantConsent": "Grant Consent",
+
+⏺ Now let me fix the same keys in the Hebrew locale file.
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Update(Packages/BayitLocalization/Sources/Resources/he.json)
+  ⎿  File must be read first
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(Packages/BayitLocalization/Sources/Resources/he.json)
+  ⎿  Added 3 lines, removed 1 line
+      8357          "pinLabel": "קוד משפחתי",
+      8358          "consentTypes": "סוגי הסכמה",
+      8359          "meshGeneration": "יצירת אווטאר תלת-ממדי",
+      8360 -        "voiceV2v": "המרת קול",                              
+      8360 +        "voiceV2V": "המרת קול",                              
+      8361          "latentFeatures": "ניתוח מאפיינים",
+      8362 +        "currentStatus": "סטטוס נוכחי",                      
+      8363 +        "pinPlaceholder": "הזן קוד",                         
+      8364          "enterPin": "הזן קוד משפחתי",
+      8365          "submit": "שלח הסכמה",
+      8366          "grantConsent": "אשר הסכמה",
+
+⏺ Now let me fix the remaining 8 locale files in parallel.
+
+⏺ Task(Fix locale files voiceV2V keys)
+  ⎿  Done (31 tool uses · 28.4k tokens · 1m 4s)
+
+⏺ All 10 locale files updated. Now let me rebuild, install, and relaunch.
+
+⏺ Bash(xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusApp -destination
+       'platform=iOS Simulator,id=F5A927F5-2156-4B34-999B-418837BA3CA4'
+      -derivedDataPath buil…)
+  ⎿      cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
+     /ios-app
+         builtin-validationUtility /Users/olorin/Documents/Projects/olorin/
+     … +4 lines (ctrl+o to expand)
+  ⎿  (timeout 5m)
+
+⏺ Bash(xcrun simctl install F5A927F5-2156-4B34-999B-418837BA3CA4
+      /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-app/bu
+      ild/Build/Products/Debug-iph…)
+  ⎿  tv.bayit.plus: 19899
+
+⏺ App is running (PID 19899). Here's a summary of all fixes applied:
+
+  1. Decoding error fix (AvatarMeshModels.swift, AvatarMeshRepository.swift)
+  - Removed redundant explicit snake_case CodingKeys that conflicted with
+  APIClient's .convertFromSnakeCase decoder strategy
+
+  2. Missing translations (all 10 locale files)
+  - Fixed voiceV2v → voiceV2V (case mismatch between JSON key and Swift code)
+  - Added missing currentStatus key with proper translations in all 10 languages
+  - Added missing pinPlaceholder key with proper translations in all 10
+  languages
+
+  3. Expected 400 error - "Family controls not configured for this account" is
+  correct behavior. The user needs to set up Family Controls (Profile > Settings
+   > Family Controls) before they can grant biometric consent. This is a COPPA
+  compliance requirement, not a bug.
+
+  Navigate to Profile > Me in the Story > Biometric Consent again to verify the
+  translation labels now display properly.
+
+✻ Brewed for 4m 48s
+
+❯ No, if user tries to activate this feature, add a warning label that it   
+  will auto activate family controls                                        
+
+⏺ Let me check the family controls setup flow to understand how to auto-activate
+   it.
+
+⏺ Searched for 4 patterns, read 2 files (ctrl+o to expand)
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ OR disable the access to feature with a warning explaining that family    
+  controls needs to be activated first and where                            
+
+⏺ Let me check how RepositoryProvider exposes family controls.
+
+⏺ Searched for 3 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Good, repos.familyControls is available. Now let me check what
+  FamilyControlsRepository.verifyPin returns and how to detect if controls
+  aren't set up.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now I have the full picture. I'll modify BiometricConsentView to proactively
+  check if family controls are configured, and show a warning + disable submit
+  if not.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Now let me also check the NavigationCoordinator to see the route for Family
+  Controls so I can direct the user there.
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Good, .familyControls route exists. Now let me update the view to check for
+  family controls on load and show a warning with a link to set them up.
+
+⏺ Update(BayitPlusApp/Views/BiometricConsentView.swift)
+  ⎿  Added 1 line
+      16      @State private var currentConsents: BiometricConsentStatus?
+      17      @State private var submitting = false
+      18      @State private var error: String?
+      19 +    @State private var familyControlsMissing = false           
+      20  
+      21      var body: some View {
+      22          NavigationStack {
+
+⏺ Now add the warning banner and disable the form when family controls are
+  missing.
+
+⏺ Update(BayitPlusApp/Views/BiometricConsentView.swift)
+  ⎿  Added 9 lines, removed 1 line
+      27                      VStack(spacing: 24) {
+      28                          BiometricConsentExplanation()
+      29  
+      30 +                        if familyControlsMissing {             
+      31 +                            familyControlsWarning              
+      32 +                        }                                      
+      33 +                                                               
+      34                          BiometricConsentPINInput(pin: $pin)
+      35 +                            .opacity(familyControlsMissing ? 0.
+         +4 : 1)                                                         
+      36 +                            .disabled(familyControlsMissing)   
+      37  
+      38                          BiometricConsentToggles(
+      39                              meshGenerationConsent: $meshGenerat
+          ionConsent,
+      40                              voiceV2VConsent: $voiceV2VConsent,
+      41                              latentFeaturesConsent: $latentFeatu
+          resConsent
+      42                          )
+      43 +                        .opacity(familyControlsMissing ? 0.4 : 
+         +1)                                                             
+      44 +                        .disabled(familyControlsMissing)       
+      45  
+      46                          if let consents = currentConsents {
+      47                              BiometricConsentStatusCard(consents
+          : consents)
+     ...
+      50                          BiometricConsentSubmitButton(
+      51                              pin: pin,
+      52                              submitting: submitting,
+      45 -                            hasAnyConsentEnabled: hasAnyConsent
+         -Enabled,                                                       
+      53 +                            hasAnyConsentEnabled: hasAnyConsent
+         +Enabled && !familyControlsMissing,                             
+      54                              onSubmit: submitConsents
+      55                          )
+      56  
+
+⏺ Now update the .task to also check family controls, and add the warning view.
+
+⏺ Update(BayitPlusApp/Views/BiometricConsentView.swift)
+  ⎿  Added 1 line
+      73                  }
+      74              }
+      75              .task {
+      76 +                await checkFamilyControls()                    
+      77                  await fetchCurrentConsent()
+      78              }
+      79          }
+
+⏺ Now add the warning view and the family controls check method.
+
+⏺ Update(BayitPlusApp/Views/BiometricConsentView.swift)
+  ⎿  Added 37 lines
+       79          }
+       80      }
+       81  
+       82 +    private var familyControlsWarning: some View {            
+       83 +        VStack(alignment: .leading, spacing: 12) {            
+       84 +            HStack(spacing: 8) {                              
+       85 +                Image(systemName: "exclamationmark.triangle.fi
+          +ll")                                                          
+       86 +                    .foregroundColor(DesignTokens.Warning.defa
+          +ult)                                                          
+       87 +                Text(localization.t("zehAni.consent.biometric.
+          +familyControlsRequired"))                                     
+       88 +                    .font(.system(size: 14, weight: .semibold)
+          +)                                                             
+       89 +                    .foregroundColor(DesignTokens.Warning.defa
+          +ult)                                                          
+       90 +            }                                                 
+       91 +            Text(localization.t("zehAni.consent.biometric.fami
+          +lyControlsExplain"))                                          
+       92 +                .font(.system(size: 13))                      
+       93 +                .foregroundColor(.white.opacity(0.7))         
+       94 +                .fixedSize(horizontal: false, vertical: true) 
+       95 +            Button {                                          
+       96 +                dismiss()                                     
+       97 +                DispatchQueue.main.asyncAfter(deadline: .now()
+          + + 0.3) {                                                     
+       98 +                    coordinator.navigate(to: .familyControls) 
+       99 +                }                                             
+      100 +            } label: {                                        
+      101 +                Text(localization.t("zehAni.consent.biometric.
+          +goToFamilyControls"))                                         
+      102 +                    .font(.system(size: 14, weight: .medium)) 
+      103 +                    .foregroundColor(DesignTokens.Primary.defa
+          +ult)                                                          
+      104 +            }                                                 
+      105 +        }                                                     
+      106 +        .padding(16)                                          
+      107 +        .background(DesignTokens.Warning.default.opacity(0.1))
+      108 +        .cornerRadius(12)                                     
+      109 +    }                                                         
+      110 +                                                              
+      111      private var hasAnyConsentEnabled: Bool {
+      112          meshGenerationConsent || voiceV2VConsent || latentFeat
+           uresConsent
+      113      }
+      114  
+      115 +    private func checkFamilyControls() async {                
+      116 +        do {                                                  
+      117 +            _ = try await repositories.familyControls.fetchPre
+          +ferences()                                                    
+      118 +        } catch {                                             
+      119 +            await MainActor.run { familyControlsMissing = true
+          + }                                                            
+      120 +        }                                                     
+      121 +    }                                                         
+      122 +                                                              
+      123      private func fetchCurrentConsent() async {
+      124          do {
+      125              let consents = try await repositories.avatarMeshRe
+           pository.checkBiometricConsent(profileId: profileId)
+
+⏺ I need to also add the coordinator environment since the warning button
+  navigates to Family Controls.
+
+⏺ Update(BayitPlusApp/Views/BiometricConsentView.swift)
+  ⎿  Added 1 line
+       4  
+       5  struct BiometricConsentView: View {
+       6      @Environment(RepositoryProvider.self) private var repositor
+          ies
+       7 +    @Environment(NavigationCoordinator.self) private var coordi
+         +nator                                                          
+       8      @Environment(LocalizationManager.self) private var localiza
+          tion
+       9      @Environment(\.dismiss) private var dismiss
+      10  
+
+⏺ Now add the translation keys. Let me also update the duplicate file in ZehAni/
+   folder and all locale files.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Good, 186 lines - under the 200-line limit. Now sync the duplicate file and
+  add translation keys.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Bash(cp /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus/ios-ap
+      p/BayitPlusApp/Views/BiometricConsentView.swift
+      /Users/olorin/Documents/Projects/olorin…)
+  ⎿  Done
+
+⏺ Now add the 3 new translation keys to the en.json and he.json locale files,
+  then the rest.
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(Packages/BayitLocalization/Sources/Resources/en.json)
+  ⎿  Added 4 lines, removed 1 line
+      8279          "consentGranted": "Consent granted",
+      8280          "consentRevoked": "Consent revoked",
+      8281          "pinRequired": "Family PIN is required",
+      8282 -        "invalidPin": "Invalid PIN"                          
+      8282 +        "invalidPin": "Invalid PIN",                         
+      8283 +        "familyControlsRequired": "Family Controls Required",
+      8284 +        "familyControlsExplain": "Biometric consent requires 
+           +Family Controls to be set up first. A family PIN is used to p
+           +rotect biometric data access. Go to Family Controls to create
+           + your PIN.",                                                 
+      8285 +        "goToFamilyControls": "Go to Family Controls"        
+      8286        }
+      8287      },
+      8288      "preview3d": {
+
+⏺ Read 1 file (ctrl+o to expand)
+
+⏺ Update(Packages/BayitLocalization/Sources/Resources/he.json)
+  ⎿  Added 4 lines, removed 1 line
+      8368          "consentGranted": "ההסכמה אושרה",
+      8369          "consentRevoked": "ההסכמה בוטלה",
+      8370          "pinRequired": "נדרש קוד משפחתי",
+      8371 -        "invalidPin": "קוד שגוי"                             
+      8371 +        "invalidPin": "קוד שגוי",                            
+      8372 +        "familyControlsRequired": "נדרשות בקרות משפחתיות",   
+      8373 +        "familyControlsExplain": "הסכמה ביומטרית דורשת הגדרת 
+           +בקרות משפחתיות תחילה. קוד משפחתי משמש להגנה על גישה לנתונים ב
+           +יומטריים. עבור לבקרות משפחתיות כדי ליצור את הקוד שלך.",      
+      8374 +        "goToFamilyControls": "עבור לבקרות משפחתיות"         
+      8375        }
+      8376      },
+      8377      "preview3d": {
+
+⏺ Now add the keys to the remaining 8 locale files.
+
+⏺ Task(Add family controls locale keys)
+  ⎿  Done (19 tool uses · 31.1k tokens · 1m 2s)
+
+❯ check all the text facing text in the Zeh Ani feature, many still missing 
+   localization values including placeholders                               
+
+⏺ Let me first build to verify the current changes compile, then audit all Zeh
+  Ani views for missing translations.
+
+⏺ Bash(xcodebuild -project BayitPlus.xcodeproj -scheme BayitPlusApp -destination
+       'platform=iOS Simulator,id=F5A927F5-2156-4B34-999B-418837BA3CA4'
+      -derivedDataPath buil…)
+  ⎿      cd /Users/olorin/Documents/Projects/olorin/olorin-media/bayit-plus
+     /ios-app
+         builtin-validationUtility /Users/olorin/Documents/Projects/olorin/
+     … +4 lines (ctrl+o to expand)
+  ⎿  (timeout 5m)
+
+⏺ Good, builds clean. Now let me do a comprehensive audit of all Zeh Ani views
+  for localization keys, then cross-reference with what's actually in the locale
+   files.
+
+⏺ Searched for 8 patterns (ctrl+o to expand)
+
+⏺ Let me extract all localization keys used across all Zeh Ani views and
+  cross-reference with what exists in the locale file.
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Now let me also get the keys from the root-level copies and the hub view.
+
+⏺ Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Now let me extract all unique zehAni.* keys needed and check which exist in
+  the en.json.
+
+⏺ Bash(grep -roh 'localization\.t("zehAni\.[^"]*")' BayitPlusApp/Views/ZehAni/
+      BayitPlusApp/Views/ZehAniHubView.swift
+      BayitPlusApp/Views/MagicMirrorView.swift BayitPlu…)
+  ⎿  zehAni.consent.biometric.consentTypes
+     zehAni.consent.biometric.currentStatus
+     zehAni.consent.biometric.explanation
+     … +25 lines (ctrl+o to expand)
+
+⏺ Now let me check which of these keys exist in en.json (flattened
+  dot-notation).
+
+⏺ Bash(python3 -c "
+      import json, sys…)
+  ⎿  === MISSING KEYS ===
+       MISSING: zehAni.contacts.pin
+       MISSING: zehAni.mesh.statusFailed
+     … +98 lines (ctrl+o to expand)
+
+⏺ 20 missing keys. Let me also check the common.* keys used by these views.
+
+⏺ Bash(python3 -c "
+      import json…)
+  ⎿    OK: common.active = 'Active'
+       OK: common.inactive = 'Inactive'
+       OK: common.close = 'Close'
+     … +2 lines (ctrl+o to expand)
+
+⏺ Good, common keys are fine. The 20 missing keys fall into clear groups - some
+  have close matches already in the JSON (e.g. zehAni.preview3d.* exists but
+  code uses zehAni.preview.*). The cleanest fix is to add all 20 missing keys.
+  Let me do it in one pass across all 10 locale files.
+
+⏺ Task(Add 20 missing zehAni locale keys)
+  ⎿  Done (87 tool uses · 81.8k tokens · 4m 41s)
+
+❯ clicking profile-> household management shows access denied although I am 
+   logged in . {"asctime": "2026-02-13 12:34:43,739", "levelname":          
+  "WARNING", "name": "app.middleware.error_handlers", "message": "HTTP 401: 
+   Not authenticated", "taskName": "starlette.middleware.base.BaseHTTPMiddl 
+  eware.__call__.<locals>.call_next.<locals>.coro", "path":                 
+  "/api/v1/household/", "method": "GET", "status_code": 401, "timestamp":   
+  "2026-02-13T17:34:43.739154+00:00"}                                       
+  INFO:     127.0.0.1:54907 - "GET /api/v1/household/ HTTP/1.1" 401         
+  Unauthorized                                                              
+  ⎿  [Image #3]
+  ⎿  Context limit reached · /compact or /clear to continue
+
+✻ Baked for 10m 24s

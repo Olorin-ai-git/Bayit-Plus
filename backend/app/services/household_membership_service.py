@@ -48,8 +48,13 @@ class HouseholdMembershipService:
         if not household.is_parent(inviter_id):
             raise PermissionError("Only parents can invite members")
 
-        if household.get_invitation_by_email(invitee_email):
-            raise ValueError("Unable to send invitation at this time")
+        existing = household.get_invitation_by_email(invitee_email)
+        if existing:
+            if existing.expires_at < datetime.now(timezone.utc):
+                household.remove_invitation(existing.invitation_id)
+                await household.save()
+            else:
+                raise ValueError("An invitation has already been sent to this email")
 
         invitation_id = secrets.token_urlsafe(32)
         expires_at = datetime.now(timezone.utc) + timedelta(days=7)

@@ -4534,37 +4534,37 @@
       "failedToUpdatePin": "Échec de la mise à jour du PIN. Vérifiez l'ancien PIN."
     },
     "household": {
-      "title": "Household",
-      "create": "Create Household",
-      "name": "Household Name",
-      "members": "Members",
-      "inviteMember": "Invite Member",
-      "removeMember": "Remove Member",
+      "title": "Gestion du Foyer",
+      "create": "Creer un Foyer",
+      "name": "Nom du Foyer",
+      "members": "Membres",
+      "inviteMember": "Inviter un Membre",
+      "removeMember": "Supprimer un Membre",
       "role": "Role",
       "roles": {
         "parent": "Parent",
-        "child": "Child",
-        "guardian": "Guardian"
+        "child": "Enfant",
+        "guardian": "Tuteur"
       },
-      "sharedControls": "Shared Controls",
+      "sharedControls": "Controles Partages",
       "invitation": {
         "title": "Invitation",
-        "email": "Email Address",
-        "send": "Send Invitation",
-        "accept": "Accept Invitation",
-        "code": "Invitation Code",
-        "expires": "Expires",
-        "pending": "Pending Invitations"
+        "email": "Adresse E-mail",
+        "send": "Envoyer l'Invitation",
+        "accept": "Accepter l'Invitation",
+        "code": "Code d'Invitation",
+        "expires": "Expire",
+        "pending": "Invitations en Attente"
       }
     },
     "profile": {
-      "title": "Profile Controls",
-      "override": "Override Controls",
-      "inherit": "Inherit Controls",
-      "inheritHousehold": "Inherit from Household",
-      "inheritAccount": "Inherit from Account",
-      "hierarchy": "Control Hierarchy",
-      "source": "Controls Source"
+      "title": "Controles du Profil",
+      "override": "Remplacer les Controles",
+      "inherit": "Heriter des Controles",
+      "inheritHousehold": "Heriter du Foyer",
+      "inheritAccount": "Heriter du Compte",
+      "hierarchy": "Hierarchie des Controles",
+      "source": "Source des Controles"
     },
     "contentBlockedAbove": "Le contenu classé au-dessus de {{rating}} sera bloqué",
     "placeholders": {
@@ -5151,6 +5151,61 @@
     "podcasts": "Podcasts"
   },
   "household": {
+    "title": "Gestion du Foyer",
+    "subtitle": "Gerez votre foyer familial et les controles partages",
+    "create": "Creer un Foyer",
+    "createButton": "Creer un Foyer",
+    "createHousehold": "Creer un Foyer",
+    "createDescription": "Creez un foyer pour gerer les controles familiaux de plusieurs comptes. Les parents peuvent definir des limites de contenu adaptees a l'age pour tous les membres du foyer.",
+    "name": "Nom du Foyer",
+    "householdName": "Nom du Foyer",
+    "namePlaceholder": "ex., Famille Dupont",
+    "creating": "Creation en cours...",
+    "members": "Membres",
+    "memberCount": "{{count}} membre",
+    "memberCount_plural": "{{count}} membres",
+    "inviteMember": "Inviter un Membre",
+    "removeMember": "Supprimer un Membre",
+    "remove": "Supprimer",
+    "confirmRemoveMember": "Etes-vous sur de vouloir supprimer ce membre de votre foyer ?",
+    "delete": "Supprimer le Foyer",
+    "confirmDelete": "Etes-vous sur de vouloir supprimer ce foyer ? Cette action est irreversible.",
+    "role": "Role",
+    "roleParent": "Parent",
+    "roleChild": "Enfant",
+    "roleGuardian": "Tuteur",
+    "roles": {
+      "parent": "Parent",
+      "child": "Enfant",
+      "guardian": "Tuteur"
+    },
+    "sharedControls": "Controles Partages",
+    "email": "Adresse E-mail",
+    "emailPlaceholder": "family@example.com",
+    "sendInvitation": "Envoyer l'Invitation",
+    "pendingInvitations": "Invitations en Attente",
+    "expires": "Expire",
+    "invitation": {
+      "title": "Invitation",
+      "email": "Adresse E-mail",
+      "send": "Envoyer l'Invitation",
+      "accept": "Accepter l'Invitation",
+      "code": "Code d'Invitation",
+      "expires": "Expire",
+      "pending": "Invitations en Attente"
+    },
+    "invitationSent": "Invitation envoyee avec succes !",
+    "acceptingInvitation": "Acceptation de l'Invitation",
+    "invitationAccepted": "Vous avez rejoint {{name}} avec succes !",
+    "invitationExpired": "Cette invitation a expire. Veuillez demander une nouvelle invitation.",
+    "invalidInvitationLink": "Lien d'invitation invalide. Veuillez verifier l'URL.",
+    "invalidInvitationCode": "Code d'invitation invalide. Veuillez verifier le lien.",
+    "invitationAcceptFailed": "Echec de l'acceptation de l'invitation. Veuillez reessayer.",
+    "mustBeLoggedIn": "Vous devez etre connecte pour accepter une invitation de foyer.",
+    "redirectingToHousehold": "Redirection vers votre foyer...",
+    "goToHousehold": "Aller au Foyer",
+    "success": "Succes !",
+    "error": "Erreur",
     "addButton": "Ajouter",
     "addMember": "Ajouter un membre",
     "membersTitle": "Membres",
@@ -6411,6 +6466,7 @@
     }
   },
   "profile": {
+    "zehAni": "Zeh Ani",
     "complimentaryPremium": "ACCÈS PREMIUM GRATUIT",
     "emailVerified": "Email vérifié",
     "emailUnverified": "Email non vérifié",
@@ -8915,22 +8971,38 @@
       "failed": "Impossible de creer l'avatar 3D",
       "retry": "Reessayer",
       "downloadGlb": "Telecharger le modele 3D",
-      "viewIn3d": "Voir en 3D"
+      "viewIn3d": "Voir en 3D",
+      "statusFailed": "La generation a echoue",
+      "statusGenerating": "Generation du modele 3D...",
+      "statusIdle": "Pret a generer",
+      "statusReady": "Modele 3D pret",
+      "statusRigging": "Ajout des animations...",
+      "viewPreview": "Voir l'apercu 3D"
     },
     "consent": {
       "biometric": {
         "title": "Consentement aux donnees biometriques",
         "subtitle": "Cette fonctionnalite utilise des donnees faciales pour creer un avatar 3D",
+        "explanation": "Nous utilisons vos donnees faciales et vocales pour creer des experiences IA personnalisees. Ces donnees sont traitees de maniere securisee et ne sont jamais partagees avec des tiers.",
+        "privacy": "Vos donnees biometriques sont cryptees et stockees en toute securite. Vous pouvez revoquer votre consentement a tout moment.",
+        "pinLabel": "Code familial",
+        "consentTypes": "Types de consentement",
         "meshGeneration": "Generation d'avatar 3D",
-        "voiceV2v": "Transformation vocale",
+        "voiceV2V": "Transformation vocale",
         "latentFeatures": "Analyse des caracteristiques",
+        "currentStatus": "Statut actuel",
+        "pinPlaceholder": "Entrez le PIN",
         "enterPin": "Entrez le code familial",
+        "submit": "Soumettre le consentement",
         "grantConsent": "Accorder le consentement",
         "revokeConsent": "Revoquer le consentement",
         "consentGranted": "Consentement accorde",
         "consentRevoked": "Consentement revoque",
         "pinRequired": "Code familial requis",
-        "invalidPin": "Code invalide"
+        "invalidPin": "Code invalide",
+        "familyControlsRequired": "Controles parentaux requis",
+        "familyControlsExplain": "Le consentement biometrique necessite la configuration des controles parentaux. Un code PIN familial est utilise pour proteger l'acces aux donnees biometriques. Allez dans Controles parentaux pour creer votre PIN.",
+        "goToFamilyControls": "Aller aux controles parentaux"
       }
     },
     "preview3d": {
@@ -8939,6 +9011,11 @@
       "rotate": "Faites glisser pour tourner",
       "pinchToZoom": "Pincez pour zoomer",
       "error": "Impossible de charger le modele 3D"
+    },
+    "preview": {
+      "error": "Impossible de charger l'apercu",
+      "loading": "Chargement de l'apercu...",
+      "title": "Apercu 3D"
     },
     "v2v": {
       "title": "Pratique vocale",
@@ -8952,7 +9029,11 @@
       "improvement": "Amelioration",
       "tryAgain": "Reessayer",
       "sessionComplete": "Session terminee",
-      "averageImprovement": "Amelioration moyenne"
+      "averageImprovement": "Amelioration moyenne",
+      "beforeAfter": "Avant et apres",
+      "latency": "Latence",
+      "nextPhrase": "Phrase suivante",
+      "retry": "Reessayer"
     },
     "liveLayer": {
       "title": "Avatar en direct",
@@ -8966,7 +9047,15 @@
       "correct": "Correct !",
       "tryAgain": "Reessayez",
       "skip": "Passer",
-      "scoreLabel": "Score"
+      "scoreLabel": "Score",
+      "continue": "Continuer",
+      "dismiss": "Fermer",
+      "errors": {
+        "microphoneFailed": "Impossible d'acceder au microphone"
+      },
+      "incorrect": "Pas tout a fait",
+      "prompt": "Dites le mot affiche a l'ecran",
+      "success": "Excellent!"
     },
     "magicMirror": {
       "title": "Miroir magique",
@@ -9002,7 +9091,8 @@
       "language": "Langue",
       "empty": "Aucun contact ajoute pour l'instant",
       "delete": "Supprimer le contact",
-      "reelsSent": "Videos envoyees"
+      "reelsSent": "Videos envoyees",
+      "pin": "PIN familial"
     },
     "feedback": {
       "title": "Boite de commentaires",
@@ -9017,6 +9107,19 @@
       "reelsSection": "Videos phares",
       "contactsSection": "Contacts",
       "feedbackSection": "Commentaires"
+    },
+    "hub": {
+      "title": "Centre Zeh Ani",
+      "magicMirror": "Miroir magique",
+      "magicMirrorDesc": "Miroir IA interactif avec salutations personnalisees et mots hebreux quotidiens",
+      "highlights": "Videos phares",
+      "highlightsDesc": "Generez et partagez des compilations de moments memorables avec vos proches",
+      "contacts": "Contacts grands-parents",
+      "contactsDesc": "Gerez les contacts pour partager vos videos phares",
+      "feedback": "Boite de commentaires",
+      "feedbackDesc": "Recevez des messages vocaux et textuels de votre famille",
+      "consent": "Consentement biometrique",
+      "consentDesc": "Gerez les parametres de consentement pour les donnees faciales et vocales"
     }
   }
 }

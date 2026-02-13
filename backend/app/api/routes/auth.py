@@ -30,6 +30,18 @@ class GoogleAuthCode(BaseModel):
     state: str | None = None  # CSRF protection token
 
 
+class GoogleMobileAuth(BaseModel):
+    """Mobile Google Sign-In request with ID token."""
+    id_token: str
+
+
+class AppleMobileAuth(BaseModel):
+    """Mobile Apple Sign-In request with identity token."""
+    identity_token: str
+    full_name: str | None = None
+    email: str | None = None
+
+
 router = APIRouter()
 
 
@@ -443,6 +455,141 @@ async def refresh_access_token(request: Request, refresh_request: RefreshTokenRe
             detail="Could not refresh token",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
+# ==========================================
+# MOBILE AUTHENTICATION ENDPOINTS
+# ==========================================
+
+@router.post("/mobile/google", response_model=TokenResponse)
+@limiter.limit("10/minute")
+async def mobile_google_signin(request: Request, auth_data: GoogleMobileAuth):
+    """Handle Google Sign-In from iOS/Android apps with ID token validation.
+
+    This endpoint is called by mobile apps after they obtain a Google ID token
+    via the Google Sign-In SDK. The backend validates the token with Google
+    and creates/updates the user account.
+    """
+    from google.auth.transport import requests as google_requests
+    from google.oauth2 import id_token
+
+    try:
+        # Verify the Google ID token
+        idinfo = id_token.verify_oauth2_token(
+            auth_data.id_token,
+            google_requests.Request(),
+            settings.GOOGLE_CLIENT_ID
+        )
+
+        # Token is valid, extract user info
+        google_id = idinfo.get("sub")
+        email = idinfo.get("email")
+        name = idinfo.get("name", email.split("@")[0] if email else "User")
+        picture = idinfo.get("picture")
+
+        if not google_id or not email:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid Google ID token: missing required fields"
+            )
+
+        # Check if user exists by google_id or email
+        user = await User.find_one(User.google_id == google_id)
+
+        if not user:
+            # Check if email exists (user registered with email/password)
+            user = await User.find_one(User.email == email)
+
+            if user:
+                # Link Google account to existing user
+                user.google_id = google_id
+                user.auth_provider = "google"
+                user.email_verified = True
+                user.email_verified_at = datetime.now(timezone.utc)
+                if picture and not user.avatar:
+                    user.avatar = picture
+                user.update_verification_status()
+                await user.save()
+            else:
+                # Create new user
+                user = User(
+                    email=email,
+                    name=name,
+                    google_id=google_id,
+                    auth_provider="google",
+                    role="viewer",
+                    avatar=picture,
+                    email_verified=True,
+                    email_verified_at=datetime.now(timezone.utc),
+                    phone_verified=False,
+                    is_verified=False,
+                )
+                await user.insert()
+
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Inactive user"
+            )
+
+        # Update last login and avatar
+        user.last_login = datetime.now(timezone.utc)
+        if picture and not user.avatar:
+            user.avatar = picture
+
+        # Sync beta user status
+        await _sync_beta_user_status(user)
+        await user.save()
+
+        # Audit log
+        await audit_logger.log_oauth_login(user, request, "google")
+
+        # Create JWT tokens
+        jwt_token = create_access_token(data={"sub": str(user.id)})
+        refresh_token = create_refresh_token(
+            user_id=str(user.id),
+            secret_key=settings.SECRET_KEY,
+            algorithm=settings.ALGORITHM,
+        )
+
+        logger.info(f"Mobile Google sign-in succeeded for user: {user.email}")
+
+        return TokenResponse(
+            access_token=jwt_token,
+            refresh_token=refresh_token,
+            user=user.to_response(),
+        )
+
+    except ValueError as e:
+        # Token validation failed
+        logger.error(f"Google ID token validation failed: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid Google ID token: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Mobile Google sign-in failed: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Google sign-in failed"
+        )
+
+
+@router.post("/mobile/apple", response_model=TokenResponse)
+@limiter.limit("10/minute")
+async def mobile_apple_signin(request: Request, auth_data: AppleMobileAuth):
+    """Handle Apple Sign-In from iOS/tvOS apps with identity token validation.
+
+    This endpoint is called by mobile apps after they obtain an Apple identity token
+    via Sign in with Apple. The backend validates the token and creates/updates the user account.
+    """
+    # TODO: Implement Apple Sign-In token validation
+    # This requires the Apple public keys and JWT validation
+    # For now, return not implemented
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="Apple Sign-In for mobile is not yet implemented"
+    )
 
 
 @router.get("/google/url")

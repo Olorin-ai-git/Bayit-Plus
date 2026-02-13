@@ -4612,37 +4612,37 @@
       "failedToUpdatePin": "נכשל בעדכון קוד PIN. בדוק קוד PIN ישן."
     },
     "household": {
-      "title": "Household",
-      "create": "Create Household",
-      "name": "Household Name",
-      "members": "Members",
-      "inviteMember": "Invite Member",
-      "removeMember": "Remove Member",
-      "role": "Role",
+      "title": "ניהול משק בית",
+      "create": "צור משק בית",
+      "name": "שם משק הבית",
+      "members": "חברים",
+      "inviteMember": "הזמן חבר",
+      "removeMember": "הסר חבר",
+      "role": "תפקיד",
       "roles": {
-        "parent": "Parent",
-        "child": "Child",
-        "guardian": "Guardian"
+        "parent": "הורה",
+        "child": "ילד",
+        "guardian": "אפוטרופוס"
       },
-      "sharedControls": "Shared Controls",
+      "sharedControls": "בקרות משותפות",
       "invitation": {
-        "title": "Invitation",
-        "email": "Email Address",
-        "send": "Send Invitation",
-        "accept": "Accept Invitation",
-        "code": "Invitation Code",
-        "expires": "Expires",
-        "pending": "Pending Invitations"
+        "title": "הזמנה",
+        "email": "כתובת אימייל",
+        "send": "שלח הזמנה",
+        "accept": "קבל הזמנה",
+        "code": "קוד הזמנה",
+        "expires": "תוקף",
+        "pending": "הזמנות ממתינות"
       }
     },
     "profile": {
-      "title": "Profile Controls",
-      "override": "Override Controls",
-      "inherit": "Inherit Controls",
-      "inheritHousehold": "Inherit from Household",
-      "inheritAccount": "Inherit from Account",
-      "hierarchy": "Control Hierarchy",
-      "source": "Controls Source"
+      "title": "בקרות פרופיל",
+      "override": "עקוף בקרות",
+      "inherit": "ירש בקרות",
+      "inheritHousehold": "ירושה ממשק הבית",
+      "inheritAccount": "ירושה מהחשבון",
+      "hierarchy": "היררכיית בקרות",
+      "source": "מקור בקרות"
     },
     "contentBlockedAbove": "תוכן בדירוג מעל {{rating}} יחסם",
     "placeholders": {
@@ -5175,6 +5175,61 @@
     "businesses_load_error": "לא ניתן לטעון רשימות עסקים. נסה שוב."
   },
   "household": {
+    "title": "ניהול משק בית",
+    "subtitle": "נהל את משק הבית המשפחתי שלך ואת הבקרות המשותפות",
+    "create": "צור משק בית",
+    "createButton": "צור משק בית",
+    "createHousehold": "צור משק בית",
+    "createDescription": "צור משק בית לניהול בקרות משפחתיות עבור מספר חשבונות. הורים יכולים להגדיר מגבלות תוכן מותאמות גיל לכל חברי משק הבית.",
+    "name": "שם משק הבית",
+    "householdName": "שם משק הבית",
+    "namePlaceholder": "לדוגמה, משפחת כהן",
+    "creating": "יוצר...",
+    "members": "חברים",
+    "memberCount": "{{count}} חבר",
+    "memberCount_plural": "{{count}} חברים",
+    "inviteMember": "הזמן חבר",
+    "removeMember": "הסר חבר",
+    "remove": "הסר",
+    "confirmRemoveMember": "האם אתה בטוח שברצונך להסיר חבר זה ממשק הבית שלך?",
+    "delete": "מחק משק בית",
+    "confirmDelete": "האם אתה בטוח שברצונך למחוק משק בית זה? פעולה זו אינה ניתנת לביטול.",
+    "role": "תפקיד",
+    "roleParent": "הורה",
+    "roleChild": "ילד",
+    "roleGuardian": "אפוטרופוס",
+    "roles": {
+      "parent": "הורה",
+      "child": "ילד",
+      "guardian": "אפוטרופוס"
+    },
+    "sharedControls": "בקרות משותפות",
+    "email": "כתובת אימייל",
+    "emailPlaceholder": "family@example.com",
+    "sendInvitation": "שלח הזמנה",
+    "pendingInvitations": "הזמנות ממתינות",
+    "expires": "תוקף",
+    "invitation": {
+      "title": "הזמנה",
+      "email": "כתובת אימייל",
+      "send": "שלח הזמנה",
+      "accept": "קבל הזמנה",
+      "code": "קוד הזמנה",
+      "expires": "תוקף",
+      "pending": "הזמנות ממתינות"
+    },
+    "invitationSent": "ההזמנה נשלחה בהצלחה!",
+    "acceptingInvitation": "מקבל הזמנה",
+    "invitationAccepted": "הצטרפת בהצלחה ל-{{name}}!",
+    "invitationExpired": "תוקף הזמנה זו פג. בקש הזמנה חדשה.",
+    "invalidInvitationLink": "קישור הזמנה לא תקין. בדוק את הכתובת.",
+    "invalidInvitationCode": "קוד הזמנה לא תקין. בדוק את הקישור.",
+    "invitationAcceptFailed": "קבלת ההזמנה נכשלה. נסה שוב.",
+    "mustBeLoggedIn": "עליך להיות מחובר כדי לקבל הזמנה למשק בית.",
+    "redirectingToHousehold": "מפנה למשק הבית שלך...",
+    "goToHousehold": "עבור למשק הבית",
+    "success": "הצלחה!",
+    "error": "שגיאה",
     "addButton": "הוסף",
     "addMember": "הוסף חבר",
     "membersTitle": "חברים",
@@ -6275,6 +6330,7 @@
   },
   "profile": {
     "title": "הפרופיל שלי",
+    "zehAni": "זה אני",
     "profileDetails": "פרטי פרופיל",
     "name": "שם",
     "notSet": "לא הוגדר",
@@ -8345,22 +8401,38 @@
       "failed": "לא הצלחנו ליצור אווטאר תלת-ממדי",
       "retry": "נסה שוב",
       "downloadGlb": "הורד מודל תלת-ממדי",
-      "viewIn3d": "צפה בתלת-ממד"
+      "viewIn3d": "צפה בתלת-ממד",
+      "statusFailed": "היצירה נכשלה",
+      "statusGenerating": "יוצר מודל תלת-ממדי...",
+      "statusIdle": "מוכן ליצירה",
+      "statusReady": "המודל התלת-ממדי מוכן",
+      "statusRigging": "מוסיף אנימציות...",
+      "viewPreview": "צפה בתצוגה מקדימה"
     },
     "consent": {
       "biometric": {
         "title": "הסכמה לנתונים ביומטריים",
         "subtitle": "תכונה זו משתמשת בנתוני פנים ליצירת אווטאר תלת-ממדי",
+        "explanation": "אנו משתמשים בנתוני הפנים והקול שלך ליצירת חוויות AI מותאמות אישית. נתונים אלו מעובדים בצורה מאובטחת ולעולם לא משותפים עם צדדים שלישיים.",
+        "privacy": "הנתונים הביומטריים שלך מוצפנים ומאוחסנים בצורה מאובטחת. תוכל לבטל את ההסכמה בכל עת.",
+        "pinLabel": "קוד משפחתי",
+        "consentTypes": "סוגי הסכמה",
         "meshGeneration": "יצירת אווטאר תלת-ממדי",
-        "voiceV2v": "המרת קול",
+        "voiceV2V": "המרת קול",
         "latentFeatures": "ניתוח מאפיינים",
+        "currentStatus": "סטטוס נוכחי",
+        "pinPlaceholder": "הזן קוד",
         "enterPin": "הזן קוד משפחתי",
+        "submit": "שלח הסכמה",
         "grantConsent": "אשר הסכמה",
         "revokeConsent": "בטל הסכמה",
         "consentGranted": "ההסכמה אושרה",
         "consentRevoked": "ההסכמה בוטלה",
         "pinRequired": "נדרש קוד משפחתי",
-        "invalidPin": "קוד שגוי"
+        "invalidPin": "קוד שגוי",
+        "familyControlsRequired": "נדרשות בקרות משפחתיות",
+        "familyControlsExplain": "הסכמה ביומטרית דורשת הגדרת בקרות משפחתיות תחילה. קוד משפחתי משמש להגנה על גישה לנתונים ביומטריים. עבור לבקרות משפחתיות כדי ליצור את הקוד שלך.",
+        "goToFamilyControls": "עבור לבקרות משפחתיות"
       }
     },
     "preview3d": {
@@ -8369,6 +8441,11 @@
       "rotate": "גרור לסיבוב",
       "pinchToZoom": "צבוט לזום",
       "error": "לא ניתן לטעון מודל תלת-ממדי"
+    },
+    "preview": {
+      "error": "לא ניתן לטעון תצוגה מקדימה",
+      "loading": "טוען תצוגה מקדימה...",
+      "title": "תצוגה תלת-ממדית"
     },
     "v2v": {
       "title": "תרגול קול",
@@ -8382,7 +8459,11 @@
       "improvement": "שיפור",
       "tryAgain": "נסה שוב",
       "sessionComplete": "השיעור הושלם",
-      "averageImprovement": "שיפור ממוצע"
+      "averageImprovement": "שיפור ממוצע",
+      "beforeAfter": "לפני ואחרי",
+      "latency": "זמן תגובה",
+      "nextPhrase": "המשפט הבא",
+      "retry": "נסה שוב"
     },
     "liveLayer": {
       "title": "אווטאר חי",
@@ -8396,7 +8477,15 @@
       "correct": "נכון!",
       "tryAgain": "נסו שוב",
       "skip": "דלג",
-      "scoreLabel": "ניקוד"
+      "scoreLabel": "ניקוד",
+      "continue": "המשך",
+      "dismiss": "סגור",
+      "errors": {
+        "microphoneFailed": "לא ניתן לגשת למיקרופון"
+      },
+      "incorrect": "לא בדיוק",
+      "prompt": "אמור את המילה שמופיעה על המסך",
+      "success": "כל הכבוד!"
     },
     "magicMirror": {
       "title": "מראה קסומה",
@@ -8432,7 +8521,8 @@
       "language": "שפה",
       "empty": "לא נוספו אנשי קשר עדיין",
       "delete": "הסר איש קשר",
-      "reelsSent": "סרטונים שנשלחו"
+      "reelsSent": "סרטונים שנשלחו",
+      "pin": "קוד משפחתי"
     },
     "feedback": {
       "title": "תיבת משוב",
@@ -8447,6 +8537,19 @@
       "reelsSection": "סרטוני הדגשה",
       "contactsSection": "אנשי קשר",
       "feedbackSection": "משוב"
+    },
+    "hub": {
+      "title": "מרכז זה אני",
+      "magicMirror": "מראה קסומה",
+      "magicMirrorDesc": "מראה AI אינטראקטיבית עם ברכות מותאמות אישית ומילים בעברית יומיות",
+      "highlights": "סרטוני הדגשה",
+      "highlightsDesc": "צור ושתף קומפילציות של רגעים בלתי נשכחים עם יקיריך",
+      "contacts": "אנשי קשר סבא וסבתא",
+      "contactsDesc": "נהל אנשי קשר לשיתוף סרטוני ההדגשה שלך",
+      "feedback": "תיבת משוב",
+      "feedbackDesc": "קבל הודעות קוליות וטקסטיות ממשפחה",
+      "consent": "הסכמה ביומטרית",
+      "consentDesc": "נהל הגדרות הסכמה לנתוני פנים וקול"
     }
   }
 }

@@ -4358,37 +4358,37 @@
       "failedToUpdatePin": "更新PIN码失败。请检查旧PIN码。"
     },
     "household": {
-      "title": "Household",
-      "create": "Create Household",
-      "name": "Household Name",
-      "members": "Members",
-      "inviteMember": "Invite Member",
-      "removeMember": "Remove Member",
-      "role": "Role",
+      "title": "家庭管理",
+      "create": "创建家庭",
+      "name": "家庭名称",
+      "members": "成员",
+      "inviteMember": "邀请成员",
+      "removeMember": "移除成员",
+      "role": "角色",
       "roles": {
-        "parent": "Parent",
-        "child": "Child",
-        "guardian": "Guardian"
+        "parent": "家长",
+        "child": "孩子",
+        "guardian": "监护人"
       },
-      "sharedControls": "Shared Controls",
+      "sharedControls": "共享控制",
       "invitation": {
-        "title": "Invitation",
-        "email": "Email Address",
-        "send": "Send Invitation",
-        "accept": "Accept Invitation",
-        "code": "Invitation Code",
-        "expires": "Expires",
-        "pending": "Pending Invitations"
+        "title": "邀请",
+        "email": "邮箱地址",
+        "send": "发送邀请",
+        "accept": "接受邀请",
+        "code": "邀请码",
+        "expires": "过期时间",
+        "pending": "待处理邀请"
       }
     },
     "profile": {
-      "title": "Profile Controls",
-      "override": "Override Controls",
-      "inherit": "Inherit Controls",
-      "inheritHousehold": "Inherit from Household",
-      "inheritAccount": "Inherit from Account",
-      "hierarchy": "Control Hierarchy",
-      "source": "Controls Source"
+      "title": "个人资料控制",
+      "override": "覆盖控制",
+      "inherit": "继承控制",
+      "inheritHousehold": "从家庭继承",
+      "inheritAccount": "从账户继承",
+      "hierarchy": "控制层级",
+      "source": "控制来源"
     },
     "contentBlockedAbove": "评级高于 {{rating}} 的内容将被屏蔽",
     "placeholders": {
@@ -4885,6 +4885,61 @@
     "podcasts": "播客"
   },
   "household": {
+    "title": "家庭管理",
+    "subtitle": "管理您的家庭和共享控制",
+    "create": "创建家庭",
+    "createButton": "创建家庭",
+    "createHousehold": "创建家庭",
+    "createDescription": "创建一个家庭来管理多个账户的家庭控制。家长可以为所有家庭成员设置适龄内容限制。",
+    "name": "家庭名称",
+    "householdName": "家庭名称",
+    "namePlaceholder": "例如，王家",
+    "creating": "创建中...",
+    "members": "成员",
+    "memberCount": "{{count}} 位成员",
+    "memberCount_plural": "{{count}} 位成员",
+    "inviteMember": "邀请成员",
+    "removeMember": "移除成员",
+    "remove": "移除",
+    "confirmRemoveMember": "确定要将此成员从您的家庭中移除吗？",
+    "delete": "删除家庭",
+    "confirmDelete": "确定要删除此家庭吗？此操作无法撤消。",
+    "role": "角色",
+    "roleParent": "家长",
+    "roleChild": "孩子",
+    "roleGuardian": "监护人",
+    "roles": {
+      "parent": "家长",
+      "child": "孩子",
+      "guardian": "监护人"
+    },
+    "sharedControls": "共享控制",
+    "email": "邮箱地址",
+    "emailPlaceholder": "family@example.com",
+    "sendInvitation": "发送邀请",
+    "pendingInvitations": "待处理邀请",
+    "expires": "过期时间",
+    "invitation": {
+      "title": "邀请",
+      "email": "邮箱地址",
+      "send": "发送邀请",
+      "accept": "接受邀请",
+      "code": "邀请码",
+      "expires": "过期时间",
+      "pending": "待处理邀请"
+    },
+    "invitationSent": "邀请发送成功！",
+    "acceptingInvitation": "正在接受邀请",
+    "invitationAccepted": "您已成功加入 {{name}}！",
+    "invitationExpired": "此邀请已过期。请申请新的邀请。",
+    "invalidInvitationLink": "无效的邀请链接。请检查URL。",
+    "invalidInvitationCode": "无效的邀请码。请检查链接。",
+    "invitationAcceptFailed": "接受邀请失败。请重试。",
+    "mustBeLoggedIn": "您必须登录才能接受家庭邀请。",
+    "redirectingToHousehold": "正在重定向到您的家庭...",
+    "goToHousehold": "前往家庭",
+    "success": "成功！",
+    "error": "错误",
     "addButton": "添加",
     "addMember": "添加成员",
     "membersTitle": "成员",
@@ -5974,6 +6029,7 @@
   },
   "profile": {
     "title": "我的资料",
+    "zehAni": "Zeh Ani",
     "profileDetails": "资料详情",
     "name": "姓名",
     "notSet": "未设置",
@@ -8016,22 +8072,38 @@
       "failed": "无法创建3D头像",
       "retry": "重试",
       "downloadGlb": "下载3D模型",
-      "viewIn3d": "查3D查看"
+      "viewIn3d": "查3D查看",
+      "statusFailed": "生成失败",
+      "statusGenerating": "正在生成3D模型...",
+      "statusIdle": "准备生成",
+      "statusReady": "3D模型就绪",
+      "statusRigging": "添加动画中...",
+      "viewPreview": "查看3D预览"
     },
     "consent": {
       "biometric": {
         "title": "生物识别数据同意",
         "subtitle": "此功能使用面部数据创建3D头像",
+        "explanation": "我们使用您的面部和语音数据创建个性化AI体验。这些数据经过安全处理,绝不会与第三方共享。",
+        "privacy": "您的生物识别数据已加密并安全存储。您可以随时撤销同意。",
+        "pinLabel": "家庭 PIN",
+        "consentTypes": "同意类型",
         "meshGeneration": "3D头像生成",
-        "voiceV2v": "声音转换",
+        "voiceV2V": "声音转换",
         "latentFeatures": "特征分析",
+        "currentStatus": "当前状态",
+        "pinPlaceholder": "输入PIN",
         "enterPin": "输入家庭 PIN",
+        "submit": "提交同意",
         "grantConsent": "授予同意",
         "revokeConsent": "撤销同意",
         "consentGranted": "已授予同意",
         "consentRevoked": "已撤销同意",
         "pinRequired": "需要家庭 PIN",
-        "invalidPin": "无效 PIN"
+        "invalidPin": "无效 PIN",
+        "familyControlsRequired": "需要家庭控制",
+        "familyControlsExplain": "生物识别同意需要先设置家庭控制。家庭PIN码用于保护生物识别数据的访问。前往家庭控制创建您的PIN码。",
+        "goToFamilyControls": "前往家庭控制"
       }
     },
     "preview3d": {
@@ -8040,6 +8112,11 @@
       "rotate": "拖拽旋转",
       "pinchToZoom": "捨合缩放",
       "error": "无法加载3D模型"
+    },
+    "preview": {
+      "error": "无法加载预览",
+      "loading": "加载预览中...",
+      "title": "3D预览"
     },
     "v2v": {
       "title": "语音练习",
@@ -8053,7 +8130,11 @@
       "improvement": "改善程度",
       "tryAgain": "重试",
       "sessionComplete": "练习完成",
-      "averageImprovement": "平均改善程度"
+      "averageImprovement": "平均改善程度",
+      "beforeAfter": "前后对比",
+      "latency": "延迟",
+      "nextPhrase": "下一个短语",
+      "retry": "重试"
     },
     "liveLayer": {
       "title": "实时头像",
@@ -8067,7 +8148,15 @@
       "correct": "正确！",
       "tryAgain": "再试一次",
       "skip": "跳过",
-      "scoreLabel": "得分"
+      "scoreLabel": "得分",
+      "continue": "继续",
+      "dismiss": "关闭",
+      "errors": {
+        "microphoneFailed": "无法访问麦克风"
+      },
+      "incorrect": "不太对",
+      "prompt": "说出屏幕上显示的单词",
+      "success": "太棒了!"
     },
     "magicMirror": {
       "title": "魔镜",
@@ -8103,7 +8192,8 @@
       "language": "语言",
       "empty": "还没有添加联系人",
       "delete": "删除联系人",
-      "reelsSent": "已发送视频"
+      "reelsSent": "已发送视频",
+      "pin": "家庭PIN"
     },
     "feedback": {
       "title": "反馈收件箱",
@@ -8118,6 +8208,19 @@
       "reelsSection": "精彩集锦",
       "contactsSection": "联系人",
       "feedbackSection": "反馈"
+    },
+    "hub": {
+      "title": "Zeh Ani中心",
+      "magicMirror": "魔镜",
+      "magicMirrorDesc": "带有个性化问候和每日希伯来语单词的交互式AI魔镜",
+      "highlights": "精彩集锦",
+      "highlightsDesc": "生成并与亲人分享难忘的瞬间集锦",
+      "contacts": "祖父母联系人",
+      "contactsDesc": "管理联系人以分享您的精彩集锦",
+      "feedback": "反馈收件箱",
+      "feedbackDesc": "接收家人的语音和文字消息",
+      "consent": "生物识别同意",
+      "consentDesc": "管理面部和语音数据的同意设置"
     }
   }
 }

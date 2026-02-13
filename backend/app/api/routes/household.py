@@ -48,13 +48,22 @@ class InvitationResponse(BaseModel):
     expires_at: str
 
 
-def _format_household_response(household: Household) -> HouseholdResponse:
-    """Format household for API response."""
+async def _format_household_response(household: Household) -> HouseholdResponse:
+    """Format household for API response, enriching members with user details."""
+    enriched_members = []
+    for member in household.members:
+        member_data = member.model_dump()
+        user = await User.get(member.user_id)
+        if user:
+            member_data["display_name"] = user.name or user.email
+            member_data["avatar"] = getattr(user, "avatar", None)
+        enriched_members.append(member_data)
+
     return HouseholdResponse(
         household_id=household.household_id,
         name=household.name,
         owner_id=household.owner_id,
-        members=[m.model_dump() for m in household.members],
+        members=enriched_members,
         shared_controls_id=household.shared_controls_id,
         created_at=household.created_at.isoformat(),
         updated_at=household.updated_at.isoformat(),
@@ -71,12 +80,12 @@ async def create_household(
         household = await household_service.create_household(
             owner_id=str(current_user.id), name=data.name
         )
-        return _format_household_response(household)
+        return await _format_household_response(household)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.get("/", response_model=HouseholdResponse)
+@router.get("", response_model=HouseholdResponse)
 async def get_household(
     current_user: User = Depends(get_current_active_user),
 ):
@@ -88,7 +97,7 @@ async def get_household(
             detail="User does not belong to any household",
         )
 
-    return _format_household_response(household)
+    return await _format_household_response(household)
 
 
 @router.patch("/{household_id}", response_model=HouseholdResponse)
@@ -114,7 +123,7 @@ async def update_household(
         household.name = data.name
         await household.save()
 
-    return _format_household_response(household)
+    return await _format_household_response(household)
 
 
 @router.delete("/{household_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -172,7 +181,7 @@ async def update_shared_controls(
             requester_id=str(current_user.id),
             controls_id=controls_id,
         )
-        return _format_household_response(household)
+        return await _format_household_response(household)
     except PermissionError as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=str(e))
     except ValueError as e:
@@ -210,7 +219,7 @@ async def accept_invitation(
         household = await household_service.accept_invitation(
             user_id=str(current_user.id), invitation_code=data.invitation_code
         )
-        return _format_household_response(household)
+        return await _format_household_response(household)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 

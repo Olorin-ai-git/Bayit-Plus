@@ -69,10 +69,6 @@ struct TVContentRatingPickerView: View {
             return localization.t("familyControls.ratingPG")
         case .pg13:
             return localization.t("familyControls.ratingPG13")
-        case .r:
-            return localization.t("familyControls.ratingR")
-        case .nc17:
-            return localization.t("familyControls.ratingNC17")
         }
     }
 }

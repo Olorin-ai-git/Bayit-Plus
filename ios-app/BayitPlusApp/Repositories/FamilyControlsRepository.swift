@@ -3,10 +3,10 @@ import Foundation
 
 /// Repository protocol for family controls and parental PIN API operations.
 protocol FamilyControlsRepository: Sendable {
-    func setPin(_ request: FamilyPinRequest) async throws
+    func setup(_ request: FamilyControlsSetupRequest) async throws
     func verifyPin(_ request: FamilyPinRequest) async throws -> FamilyPinVerifyResponse
-    func fetchPreferences() async throws -> FamilyControlsPreferences
-    func updatePreferences(_ update: FamilyControlsPreferencesUpdate) async throws -> FamilyControlsPreferences
+    func fetchControls() async throws -> FamilyControlsPreferences
+    func updateControls(_ update: FamilyControlsUpdateRequest) async throws -> FamilyControlsPreferences
 }
 
 /// Production implementation of `FamilyControlsRepository` using `APIClient`.
@@ -18,36 +18,40 @@ final class APIFamilyControlsRepository: FamilyControlsRepository, @unchecked Se
         self.client = client
     }
 
-    func setPin(_ request: FamilyPinRequest) async throws {
+    func setup(_ request: FamilyControlsSetupRequest) async throws {
         _ = try await client.post(
-            "/api/v1/family-controls/pin",
+            "/api/v1/family/controls/setup",
             body: request,
-            as: MessageResponse.self
+            as: FamilyControlsWrappedResponse.self
         )
     }
 
     func verifyPin(_ request: FamilyPinRequest) async throws -> FamilyPinVerifyResponse {
         return try await client.post(
-            "/api/v1/family-controls/verify",
+            "/api/v1/family/controls/verify-pin",
             body: request,
             as: FamilyPinVerifyResponse.self
         )
     }
 
-    func fetchPreferences() async throws -> FamilyControlsPreferences {
+    func fetchControls() async throws -> FamilyControlsPreferences {
         return try await client.get(
-            "/api/v1/family-controls/preferences",
+            "/api/v1/family/controls",
             as: FamilyControlsPreferences.self
         )
     }
 
-    func updatePreferences(
-        _ update: FamilyControlsPreferencesUpdate
+    func updateControls(
+        _ update: FamilyControlsUpdateRequest
     ) async throws -> FamilyControlsPreferences {
-        return try await client.put(
-            "/api/v1/family-controls/preferences",
+        let response = try await client.patch(
+            "/api/v1/family/controls",
             body: update,
-            as: FamilyControlsPreferences.self
+            as: FamilyControlsWrappedResponse.self
         )
+        guard let controls = response.controls else {
+            throw APIError.decodingError(underlying: "Missing controls in response")
+        }
+        return controls
     }
 }

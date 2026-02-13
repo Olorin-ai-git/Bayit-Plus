@@ -3,12 +3,15 @@ import Foundation
 // MARK: - Household Management
 
 /// A household with members and profile limits.
+/// Backend returns `household_id` which maps to `householdId` via convertFromSnakeCase.
 struct Household: Decodable, Sendable, Identifiable {
-    let id: String
+    let householdId: String
     let name: String?
     let ownerId: String?
     let members: [HouseholdMember]?
-    let maxProfiles: Int?
+    let sharedControlsId: String?
+
+    var id: String { householdId }
 }
 
 /// A member within a household.
@@ -23,7 +26,3 @@ struct HouseholdMember: Decodable, Sendable, Identifiable {
     var stableId: String { id ?? userId ?? UUID().uuidString }
 }
 
-/// Request body for POST /api/v1/household/members
-struct HouseholdAddMemberRequest: Encodable, Sendable {
-    let userId: String
-}

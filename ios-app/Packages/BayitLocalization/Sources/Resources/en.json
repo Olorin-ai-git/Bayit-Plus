@@ -4798,6 +4798,7 @@
         "expires": "Expires",
         "pending": "Pending Invitations"
       },
+      "invitationSent": "Invitation sent successfully!",
       "acceptingInvitation": "Accepting Invitation",
       "invitationAccepted": "You've successfully joined {{name}}!",
       "invitationExpired": "This invitation has expired. Please request a new invitation.",
@@ -5301,6 +5302,7 @@
     "sendInvitation": "Send Invitation",
     "pendingInvitations": "Pending Invitations",
     "expires": "Expires",
+    "invitationSent": "Invitation sent successfully!",
     "acceptingInvitation": "Accepting Invitation",
     "invitationAccepted": "You've successfully joined {{name}}!",
     "invitationExpired": "This invitation has expired. Please request a new invitation.",
@@ -6406,6 +6408,7 @@
   },
   "profile": {
     "title": "My Profile",
+    "zehAni": "Zeh Ani",
     "profileDetails": "Profile Details",
     "name": "Name",
     "notSet": "Not set",
@@ -8256,22 +8259,38 @@
       "failed": "Could not create 3D avatar",
       "retry": "Try Again",
       "downloadGlb": "Download 3D Model",
-      "viewIn3d": "View in 3D"
+      "viewIn3d": "View in 3D",
+      "statusFailed": "Generation failed",
+      "statusGenerating": "Generating 3D model...",
+      "statusIdle": "Ready to generate",
+      "statusReady": "3D model ready",
+      "statusRigging": "Adding animations...",
+      "viewPreview": "View 3D Preview"
     },
     "consent": {
       "biometric": {
         "title": "Biometric Data Consent",
         "subtitle": "This feature uses facial data to create a 3D avatar",
+        "explanation": "We use your facial and voice data to create personalized AI experiences. This data is processed securely and never shared with third parties.",
+        "privacy": "Your biometric data is encrypted and stored securely. You can revoke consent at any time.",
+        "pinLabel": "Family PIN",
+        "consentTypes": "Consent Types",
         "meshGeneration": "3D Avatar Generation",
-        "voiceV2v": "Voice Transformation",
+        "voiceV2V": "Voice Transformation",
         "latentFeatures": "Feature Analysis",
+        "currentStatus": "Current Status",
+        "pinPlaceholder": "Enter PIN",
         "enterPin": "Enter family PIN",
+        "submit": "Submit Consent",
         "grantConsent": "Grant Consent",
         "revokeConsent": "Revoke Consent",
         "consentGranted": "Consent granted",
         "consentRevoked": "Consent revoked",
         "pinRequired": "Family PIN is required",
-        "invalidPin": "Invalid PIN"
+        "invalidPin": "Invalid PIN",
+        "familyControlsRequired": "Family Controls Required",
+        "familyControlsExplain": "Biometric consent requires Family Controls to be set up first. A family PIN is used to protect biometric data access. Go to Family Controls to create your PIN.",
+        "goToFamilyControls": "Go to Family Controls"
       }
     },
     "preview3d": {
@@ -8280,6 +8299,11 @@
       "rotate": "Drag to rotate",
       "pinchToZoom": "Pinch to zoom",
       "error": "Could not load 3D model"
+    },
+    "preview": {
+      "error": "Could not load preview",
+      "loading": "Loading preview...",
+      "title": "3D Preview"
     },
     "v2v": {
       "title": "Voice Practice",
@@ -8293,7 +8317,11 @@
       "improvement": "Improvement",
       "tryAgain": "Try Again",
       "sessionComplete": "Session Complete",
-      "averageImprovement": "Average Improvement"
+      "averageImprovement": "Average Improvement",
+      "beforeAfter": "Before & After",
+      "latency": "Latency",
+      "nextPhrase": "Next Phrase",
+      "retry": "Retry"
     },
     "liveLayer": {
       "title": "Live Avatar",
@@ -8307,7 +8335,15 @@
       "correct": "Correct!",
       "tryAgain": "Try again",
       "skip": "Skip",
-      "scoreLabel": "Score"
+      "scoreLabel": "Score",
+      "continue": "Continue",
+      "dismiss": "Dismiss",
+      "errors": {
+        "microphoneFailed": "Could not access microphone"
+      },
+      "incorrect": "Not quite right",
+      "prompt": "Say the word shown on screen",
+      "success": "Great job!"
     },
     "magicMirror": {
       "title": "Magic Mirror",
@@ -8343,7 +8379,8 @@
       "language": "Language",
       "empty": "No contacts added yet",
       "delete": "Remove Contact",
-      "reelsSent": "Reels sent"
+      "reelsSent": "Reels sent",
+      "pin": "Family PIN"
     },
     "feedback": {
       "title": "Feedback Inbox",
@@ -8358,6 +8395,19 @@
       "reelsSection": "Highlight Reels",
       "contactsSection": "Contacts",
       "feedbackSection": "Feedback"
+    },
+    "hub": {
+      "title": "Zeh Ani Hub",
+      "magicMirror": "Magic Mirror",
+      "magicMirrorDesc": "Interactive AI mirror with personalized greetings and daily Hebrew words",
+      "highlights": "Highlight Reels",
+      "highlightsDesc": "Generate and share memorable moment compilations with loved ones",
+      "contacts": "Grandparent Contacts",
+      "contactsDesc": "Manage contacts to share your highlight reels",
+      "feedback": "Feedback Inbox",
+      "feedbackDesc": "Receive voice and text messages from family",
+      "consent": "Biometric Consent",
+      "consentDesc": "Manage consent settings for facial and voice data"
     }
   }
 }

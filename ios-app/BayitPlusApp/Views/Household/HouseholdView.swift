@@ -3,12 +3,11 @@ import BayitLocalization
 import SwiftUI
 
 /// Household management screen with member list, add/remove functionality,
-/// and owner badge indicators.
+/// and owner badge indicators. Shows a create flow when no household exists.
 struct HouseholdView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: HouseholdViewModel?
-    @State private var showingAddMember = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -17,6 +16,8 @@ struct HouseholdView: View {
                     if vm.isLoading && vm.household == nil {
                         ProgressView().tint(.white)
                             .padding(.top, DesignTokens.Spacing.xxxxl)
+                    } else if vm.noHousehold {
+                        createHouseholdSection(vm)
                     } else if let error = vm.error, vm.household == nil {
                         ErrorStateView(message: error) {
                             Task { await vm.load() }
@@ -39,6 +40,56 @@ struct HouseholdView: View {
         }
     }
 
+    // MARK: - Create Household
+
+    private func createHouseholdSection(_ vm: HouseholdViewModel) -> some View {
+        VStack(spacing: DesignTokens.Spacing.xl) {
+            Spacer().frame(height: DesignTokens.Spacing.xl)
+
+            Image(systemName: "house.fill")
+                .font(.system(size: 48))
+                .foregroundStyle(DesignTokens.Primary.p400)
+
+            Text(localization.t("household.createHousehold"))
+                .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.primary)
+
+            Text(localization.t("household.createDescription"))
+                .font(.system(size: DesignTokens.FontSize.sm))
+                .foregroundStyle(DesignTokens.Text.muted)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, DesignTokens.Spacing.xl)
+
+            GlassCard {
+                VStack(spacing: DesignTokens.Spacing.md) {
+                    GlassTextField(
+                        localization.t("household.namePlaceholder"),
+                        text: Binding(
+                            get: { vm.newHouseholdName },
+                            set: { vm.newHouseholdName = $0 }
+                        )
+                    )
+
+                    if let error = vm.error {
+                        Text(error)
+                            .font(.system(size: DesignTokens.FontSize.xs))
+                            .foregroundStyle(DesignTokens.ErrorColor.default)
+                    }
+
+                    GlassButton(
+                        localization.t("household.createButton"),
+                        variant: .primary,
+                        isLoading: vm.isCreating
+                    ) {
+                        HapticFeedbackService.impact(style: .medium)
+                        Task { await vm.createHousehold() }
+                    }
+                }
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+        }
+    }
+
     // MARK: - Header
 
     private func householdHeader(_ vm: HouseholdViewModel) -> some View {
@@ -48,12 +99,12 @@ struct HouseholdView: View {
                     .font(.system(size: 36))
                     .foregroundStyle(DesignTokens.Primary.p400)
 
-                Text(vm.household?.name ?? localization.t("household.myHousehold"))
+                Text(vm.household?.name ?? localization.t("household.title"))
                     .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
                 Text(
-                    "\(vm.memberCount) / \(vm.maxProfiles) \(localization.t("household.members"))"
+                    "\(vm.memberCount) \(localization.t("household.members"))"
                 )
                     .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
@@ -67,7 +118,7 @@ struct HouseholdView: View {
     private func membersSection(_ vm: HouseholdViewModel) -> some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
             HStack {
-                Text(localization.t("household.membersTitle"))
+                Text(localization.t("household.members"))
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.muted)
                     .textCase(.uppercase)
@@ -89,12 +140,11 @@ struct HouseholdView: View {
     ) -> some View {
         GlassCard {
             HStack(spacing: DesignTokens.Spacing.md) {
-                // Avatar
                 avatarView(member)
 
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
                     HStack(spacing: DesignTokens.Spacing.sm) {
-                        Text(member.displayName ?? localization.t("household.unknown"))
+                        Text(member.displayName ?? "?")
                             .font(.system(
                                 size: DesignTokens.FontSize.base,
                                 weight: .medium
@@ -103,7 +153,7 @@ struct HouseholdView: View {
 
                         if vm.isOwner(member) {
                             GlassBadge(
-                                text: localization.t("household.owner"),
+                                text: localization.t("household.roleParent"),
                                 variant: .primary
                             )
                         }
@@ -167,28 +217,75 @@ struct HouseholdView: View {
     private func addMemberSection(_ vm: HouseholdViewModel) -> some View {
         GlassCard {
             VStack(spacing: DesignTokens.Spacing.md) {
-                Text(localization.t("household.addMember"))
+                Text(localization.t("household.inviteMember"))
                     .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
                 GlassTextField(
-                    localization.t("household.userIdPlaceholder"),
+                    localization.t("household.emailPlaceholder"),
                     text: Binding(
-                        get: { vm.newMemberUserId },
-                        set: { vm.newMemberUserId = $0 }
+                        get: { vm.inviteEmail },
+                        set: { vm.inviteEmail = $0 }
                     )
                 )
+                .keyboardType(.emailAddress)
+                .textContentType(.emailAddress)
+                .autocapitalization(.none)
+
+                rolePicker(vm)
+
+                if let error = vm.error {
+                    Text(error)
+                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .foregroundStyle(DesignTokens.ErrorColor.default)
+                }
+
+                if vm.inviteSent {
+                    Text(localization.t("household.invitationSent"))
+                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .foregroundStyle(DesignTokens.Success.default)
+                }
 
                 GlassButton(
-                    localization.t("household.addButton"),
+                    localization.t("household.sendInvitation"),
                     variant: .primary,
-                    isLoading: vm.isAddingMember
+                    isLoading: vm.isInviting
                 ) {
                     HapticFeedbackService.impact(style: .medium)
-                    Task { await vm.addMember() }
+                    Task { await vm.inviteMember() }
                 }
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
+    }
+
+    // MARK: - Role Picker
+
+    private func rolePicker(_ vm: HouseholdViewModel) -> some View {
+        HStack(spacing: 0) {
+            roleButton("child", label: localization.t("household.roleChild"), vm: vm)
+            roleButton("parent", label: localization.t("household.roleParent"), vm: vm)
+        }
+        .glassCard(radius: DesignTokens.Radius.md, padding: DesignTokens.Spacing.xs)
+    }
+
+    private func roleButton(
+        _ role: String, label: String, vm: HouseholdViewModel
+    ) -> some View {
+        let isSelected = vm.inviteRole == role
+
+        return Button {
+            vm.inviteRole = role
+        } label: {
+            Text(label)
+                .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                .foregroundStyle(
+                    isSelected ? DesignTokens.Text.primary : DesignTokens.Text.muted
+                )
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, DesignTokens.Spacing.sm)
+                .background(isSelected ? DesignTokens.Glass.bgMedium : Color.clear)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+        }
     }
 }

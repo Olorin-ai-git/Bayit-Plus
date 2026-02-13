@@ -8,6 +8,7 @@ from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
+from starlette.requests import Request
 
 from app.core.security import get_current_active_user
 from app.core.rate_limiter import limiter, RATE_LIMITS
@@ -90,7 +91,8 @@ async def get_family_controls(
 @router.post("/controls/setup")
 @limiter.limit(RATE_LIMITS["family_pin_setup"])
 async def setup_family_controls(
-    request: FamilyControlsSetupRequest,
+    request: Request,
+    body: FamilyControlsSetupRequest,
     current_user: User = Depends(get_current_active_user),
 ):
     """
@@ -119,9 +121,9 @@ async def setup_family_controls(
     # Create controls
     controls = await family_controls_service.setup_family_controls(
         user_id=str(current_user.id),
-        pin=request.pin,
-        kids_age_limit=request.kids_age_limit,
-        youngsters_age_limit=request.youngsters_age_limit,
+        pin=body.pin,
+        kids_age_limit=body.kids_age_limit,
+        youngsters_age_limit=body.youngsters_age_limit,
     )
 
     return {
@@ -134,7 +136,8 @@ async def setup_family_controls(
 @router.patch("/controls")
 @limiter.limit(RATE_LIMITS["family_controls_update"])
 async def update_family_controls(
-    request: FamilyControlsUpdateRequest,
+    request: Request,
+    body: FamilyControlsUpdateRequest,
     current_user: User = Depends(get_current_active_user),
 ):
     """
@@ -155,14 +158,14 @@ async def update_family_controls(
     """
     controls = await family_controls_service.update_settings(
         user_id=str(current_user.id),
-        kids_age_limit=request.kids_age_limit,
-        youngsters_age_limit=request.youngsters_age_limit,
-        kids_enabled=request.kids_enabled,
-        youngsters_enabled=request.youngsters_enabled,
-        max_content_rating=request.max_content_rating,
-        viewing_hours_enabled=request.viewing_hours_enabled,
-        viewing_start_hour=request.viewing_start_hour,
-        viewing_end_hour=request.viewing_end_hour,
+        kids_age_limit=body.kids_age_limit,
+        youngsters_age_limit=body.youngsters_age_limit,
+        kids_enabled=body.kids_enabled,
+        youngsters_enabled=body.youngsters_enabled,
+        max_content_rating=body.max_content_rating,
+        viewing_hours_enabled=body.viewing_hours_enabled,
+        viewing_start_hour=body.viewing_start_hour,
+        viewing_end_hour=body.viewing_end_hour,
     )
 
     if not controls:
@@ -181,7 +184,8 @@ async def update_family_controls(
 @router.post("/controls/verify-pin")
 @limiter.limit(RATE_LIMITS["family_pin_verify"])
 async def verify_family_pin(
-    request: PINVerificationRequest,
+    request: Request,
+    body: PINVerificationRequest,
     current_user: User = Depends(get_current_active_user),
 ):
     """
@@ -206,7 +210,7 @@ async def verify_family_pin(
     try:
         is_valid = await family_controls_service.verify_pin(
             str(current_user.id),
-            request.pin,
+            body.pin,
         )
 
         if not is_valid:
@@ -230,7 +234,8 @@ async def verify_family_pin(
 @router.post("/controls/reset-pin")
 @limiter.limit(RATE_LIMITS["family_pin_setup"])
 async def reset_family_pin(
-    request: PINUpdateRequest,
+    request: Request,
+    body: PINUpdateRequest,
     current_user: User = Depends(get_current_active_user),
 ):
     """
@@ -247,8 +252,8 @@ async def reset_family_pin(
     try:
         success = await family_controls_service.update_pin(
             user_id=str(current_user.id),
-            old_pin=request.old_pin,
-            new_pin=request.new_pin,
+            old_pin=body.old_pin,
+            new_pin=body.new_pin,
         )
 
         if not success:

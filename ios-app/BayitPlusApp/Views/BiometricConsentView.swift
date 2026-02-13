@@ -4,6 +4,7 @@ import SwiftUI
 
 struct BiometricConsentView: View {
     @Environment(RepositoryProvider.self) private var repositories
+    @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
     @Environment(\.dismiss) private var dismiss
 
@@ -16,6 +17,7 @@ struct BiometricConsentView: View {
     @State private var currentConsents: BiometricConsentStatus?
     @State private var submitting = false
     @State private var error: String?
+    @State private var familyControlsMissing = false
 
     var body: some View {
         NavigationStack {
@@ -26,13 +28,21 @@ struct BiometricConsentView: View {
                     VStack(spacing: 24) {
                         BiometricConsentExplanation()
 
+                        if familyControlsMissing {
+                            familyControlsWarning
+                        }
+
                         BiometricConsentPINInput(pin: $pin)
+                            .opacity(familyControlsMissing ? 0.4 : 1)
+                            .disabled(familyControlsMissing)
 
                         BiometricConsentToggles(
                             meshGenerationConsent: $meshGenerationConsent,
                             voiceV2VConsent: $voiceV2VConsent,
                             latentFeaturesConsent: $latentFeaturesConsent
                         )
+                        .opacity(familyControlsMissing ? 0.4 : 1)
+                        .disabled(familyControlsMissing)
 
                         if let consents = currentConsents {
                             BiometricConsentStatusCard(consents: consents)
@@ -41,7 +51,7 @@ struct BiometricConsentView: View {
                         BiometricConsentSubmitButton(
                             pin: pin,
                             submitting: submitting,
-                            hasAnyConsentEnabled: hasAnyConsentEnabled,
+                            hasAnyConsentEnabled: hasAnyConsentEnabled && !familyControlsMissing,
                             onSubmit: submitConsents
                         )
 
@@ -64,13 +74,51 @@ struct BiometricConsentView: View {
                 }
             }
             .task {
+                await checkFamilyControls()
                 await fetchCurrentConsent()
             }
         }
     }
 
+    private var familyControlsWarning: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(DesignTokens.Warning.default)
+                Text(localization.t("zehAni.consent.biometric.familyControlsRequired"))
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(DesignTokens.Warning.default)
+            }
+            Text(localization.t("zehAni.consent.biometric.familyControlsExplain"))
+                .font(.system(size: 13))
+                .foregroundColor(.white.opacity(0.7))
+                .fixedSize(horizontal: false, vertical: true)
+            Button {
+                dismiss()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    coordinator.navigate(to: .familyControls)
+                }
+            } label: {
+                Text(localization.t("zehAni.consent.biometric.goToFamilyControls"))
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(DesignTokens.Primary.default)
+            }
+        }
+        .padding(16)
+        .background(DesignTokens.Warning.default.opacity(0.1))
+        .cornerRadius(12)
+    }
+
     private var hasAnyConsentEnabled: Bool {
         meshGenerationConsent || voiceV2VConsent || latentFeaturesConsent
+    }
+
+    private func checkFamilyControls() async {
+        do {
+            _ = try await repositories.familyControls.fetchControls()
+        } catch {
+            await MainActor.run { familyControlsMissing = true }
+        }
     }
 
     private func fetchCurrentConsent() async {

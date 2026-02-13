@@ -4423,37 +4423,37 @@
       "failedToUpdatePin": "PIN புதுப்பிக்க முடியவில்லை. பழைய PIN ஐ சரிபார்க்கவும்."
     },
     "household": {
-      "title": "Household",
-      "create": "Create Household",
-      "name": "Household Name",
-      "members": "Members",
-      "inviteMember": "Invite Member",
-      "removeMember": "Remove Member",
-      "role": "Role",
+      "title": "குடும்ப நிர்வாகம்",
+      "create": "குடும்பத்தை உருவாக்கு",
+      "name": "குடும்பப் பெயர்",
+      "members": "உறுப்பினர்கள்",
+      "inviteMember": "உறுப்பினரை அழை",
+      "removeMember": "உறுப்பினரை நீக்கு",
+      "role": "பங்கு",
       "roles": {
-        "parent": "Parent",
-        "child": "Child",
-        "guardian": "Guardian"
+        "parent": "பெற்றோர்",
+        "child": "குழந்தை",
+        "guardian": "பாதுகாவலர்"
       },
-      "sharedControls": "Shared Controls",
+      "sharedControls": "பகிரப்பட்ட கட்டுப்பாடுகள்",
       "invitation": {
-        "title": "Invitation",
-        "email": "Email Address",
-        "send": "Send Invitation",
-        "accept": "Accept Invitation",
-        "code": "Invitation Code",
-        "expires": "Expires",
-        "pending": "Pending Invitations"
+        "title": "அழைப்பு",
+        "email": "மின்னஞ்சல் முகவரி",
+        "send": "அழைப்பை அனுப்பு",
+        "accept": "அழைப்பை ஏற்கவும்",
+        "code": "அழைப்புக் குறியீடு",
+        "expires": "காலாவதியாகிறது",
+        "pending": "நிலுவையிலுள்ள அழைப்புகள்"
       }
     },
     "profile": {
-      "title": "Profile Controls",
-      "override": "Override Controls",
-      "inherit": "Inherit Controls",
-      "inheritHousehold": "Inherit from Household",
-      "inheritAccount": "Inherit from Account",
-      "hierarchy": "Control Hierarchy",
-      "source": "Controls Source"
+      "title": "சுயவிவர கட்டுப்பாடுகள்",
+      "override": "கட்டுப்பாடுகளை மீறு",
+      "inherit": "கட்டுப்பாடுகளை பெறு",
+      "inheritHousehold": "வீட்டிலிருந்து பெறவும்",
+      "inheritAccount": "கணக்கிலிருந்து பெறவும்",
+      "hierarchy": "கட்டுப்பாட்டு படிநிலை",
+      "source": "கட்டுப்பாடு மூலம்"
     },
     "contentBlockedAbove": "{{rating}} க்கு மேல் மதிப்பிடப்பட்ட உள்ளடக்கம் தடுக்கப்படும்",
     "placeholders": {
@@ -4950,6 +4950,61 @@
     }
   },
   "household": {
+    "title": "குடும்ப நிர்வாகம்",
+    "subtitle": "உங்கள் குடும்பத்தையும் பகிரப்பட்ட கட்டுப்பாடுகளையும் நிர்வகிக்கவும்",
+    "create": "குடும்பத்தை உருவாக்கு",
+    "createButton": "குடும்பத்தை உருவாக்கு",
+    "createHousehold": "குடும்பத்தை உருவாக்கு",
+    "createDescription": "பல கணக்குகளுக்கான குடும்ப கட்டுப்பாடுகளை நிர்வகிக்க ஒரு குடும்பத்தை உருவாக்கவும். பெற்றோர் அனைத்து குடும்ப உறுப்பினர்களுக்கும் வயதுக்கு ஏற்ற உள்ளடக்க வரம்புகளை அமைக்கலாம்.",
+    "name": "குடும்பப் பெயர்",
+    "householdName": "குடும்பப் பெயர்",
+    "namePlaceholder": "எ.கா., குமார் குடும்பம்",
+    "creating": "உருவாக்குகிறது...",
+    "members": "உறுப்பினர்கள்",
+    "memberCount": "{{count}} உறுப்பினர்",
+    "memberCount_plural": "{{count}} உறுப்பினர்கள்",
+    "inviteMember": "உறுப்பினரை அழை",
+    "removeMember": "உறுப்பினரை நீக்கு",
+    "remove": "நீக்கு",
+    "confirmRemoveMember": "இந்த உறுப்பினரை உங்கள் குடும்பத்திலிருந்து நீக்க விரும்புகிறீர்களா?",
+    "delete": "குடும்பத்தை நீக்கு",
+    "confirmDelete": "இந்தக் குடும்பத்தை நீக்க விரும்புகிறீர்களா? இந்தச் செயலை மாற்ற முடியாது.",
+    "role": "பங்கு",
+    "roleParent": "பெற்றோர்",
+    "roleChild": "குழந்தை",
+    "roleGuardian": "பாதுகாவலர்",
+    "roles": {
+      "parent": "பெற்றோர்",
+      "child": "குழந்தை",
+      "guardian": "பாதுகாவலர்"
+    },
+    "sharedControls": "பகிரப்பட்ட கட்டுப்பாடுகள்",
+    "email": "மின்னஞ்சல் முகவரி",
+    "emailPlaceholder": "family@example.com",
+    "sendInvitation": "அழைப்பை அனுப்பு",
+    "pendingInvitations": "நிலுவையிலுள்ள அழைப்புகள்",
+    "expires": "காலாவதியாகிறது",
+    "invitation": {
+      "title": "அழைப்பு",
+      "email": "மின்னஞ்சல் முகவரி",
+      "send": "அழைப்பை அனுப்பு",
+      "accept": "அழைப்பை ஏற்கவும்",
+      "code": "அழைப்புக் குறியீடு",
+      "expires": "காலாவதியாகிறது",
+      "pending": "நிலுவையிலுள்ள அழைப்புகள்"
+    },
+    "invitationSent": "அழைப்பு வெற்றிகரமாக அனுப்பப்பட்டது!",
+    "acceptingInvitation": "அழைப்பை ஏற்றுக்கொள்கிறது",
+    "invitationAccepted": "{{name}}-இல் வெற்றிகரமாக இணைந்துவிட்டீர்கள்!",
+    "invitationExpired": "இந்த அழைப்பின் காலாவதி தேதி முடிந்துவிட்டது. புதிய அழைப்பைக் கோரவும்.",
+    "invalidInvitationLink": "தவறான அழைப்பு இணைப்பு. URL ஐ சரிபார்க்கவும்.",
+    "invalidInvitationCode": "தவறான அழைப்புக் குறியீடு. இணைப்பைச் சரிபார்க்கவும்.",
+    "invitationAcceptFailed": "அழைப்பை ஏற்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+    "mustBeLoggedIn": "குடும்ப அழைப்பை ஏற்க உள்நுழைந்திருக்க வேண்டும்.",
+    "redirectingToHousehold": "உங்கள் குடும்பத்திற்கு திருப்பி விடப்படுகிறது...",
+    "goToHousehold": "குடும்பத்திற்குச் செல்",
+    "success": "வெற்றி!",
+    "error": "பிழை",
     "addButton": "சேர்",
     "addMember": "உறுப்பினரைச் சேர்",
     "membersTitle": "உறுப்பினர்கள்",
@@ -8080,22 +8135,38 @@
       "failed": "3D அவதாரை உருவாக்க இயலவில்லை",
       "retry": "மீண்டும் முயற்சிக்கவும்",
       "downloadGlb": "3D மாதிரி பதிவிறக்கம்",
-      "viewIn3d": "3D இல் பார்க்க"
+      "viewIn3d": "3D இல் பார்க்க",
+      "statusFailed": "உருவாக்கம் தோல்வி",
+      "statusGenerating": "3D மாதிரி உருவாக்கம்...",
+      "statusIdle": "உருவாக்க தயார்",
+      "statusReady": "3D மாதிரி தயார்",
+      "statusRigging": "அனிமேஷன்கள் சேர்க்கிறது...",
+      "viewPreview": "3D முன்னோட்டம் காண்க"
     },
     "consent": {
       "biometric": {
         "title": "உயிர்மெட்ரிக் தரவு ஒப்புதல்",
         "subtitle": "இந்த அம்சம் 3D அவதார் உருவாக்க முக தரவை பயன்படுத்துகிறது",
+        "explanation": "தனிப்பயனாக்கப்பட்ட AI அனுபவங்களை உருவாக்க உங்கள் முக மற்றும் குரல் தரவை பயன்படுத்துகிறோம். இந்த தரவு பாதுகாப்பாக செயலாக்கப்படுகிறது மற்றும் மூன்றாம் தரப்புகளுடன் ஒருபோதும் பகிரப்படாது.",
+        "privacy": "உங்கள் பயோமெட்ரிக் தரவு குறியாக்கம் செய்யப்பட்டு பாதுகாப்பாக சேமிக்கப்படுகிறது. நீங்கள் எந்த நேரத்திலும் ஒப்புதலை ரத்து செய்யலாம்.",
+        "pinLabel": "குடும்ப PIN",
+        "consentTypes": "ஒப்புதல் வகைகள்",
         "meshGeneration": "3D அவதார் உருவாக்கம்",
-        "voiceV2v": "குரல் மாற்றம்",
+        "voiceV2V": "குரல் மாற்றம்",
         "latentFeatures": "அம்ச விச்லேஷணை",
+        "currentStatus": "தற்போதைய நிலை",
+        "pinPlaceholder": "PIN உள்ளிடவும்",
         "enterPin": "குடும்ப PIN உள்ளிடவும்",
+        "submit": "ஒப்புதல் சமர்ப்பிக்கவும்",
         "grantConsent": "ஒப்புதல் அளிக்க",
         "revokeConsent": "ஒப்புதல் ரத்து",
         "consentGranted": "ஒப்புதல் அளிக்கப்பட்டது",
         "consentRevoked": "ஒப்புதல் ரத்து செய்யப்பட்டது",
         "pinRequired": "குடும்ப PIN தேவை",
-        "invalidPin": "தவறான PIN"
+        "invalidPin": "தவறான PIN",
+        "familyControlsRequired": "குடும்பக் கட்டுப்பாடுகள் தேவை",
+        "familyControlsExplain": "பயோமெட்ரிக் ஒப்புதலுக்கு முதலில் குடும்பக் கட்டுப்பாடுகளை அமைக்க வேண்டும். பயோமெட்ரிக் தரவு அணுகலைப் பாதுகாக்க குடும்ப பின் பயன்படுத்தப்படுகிறது. உங்கள் பின்னை உருவாக்க குடும்பக் கட்டுப்பாடுகளுக்குச் செல்லவும்.",
+        "goToFamilyControls": "குடும்பக் கட்டுப்பாடுகளுக்குச் செல்"
       }
     },
     "preview3d": {
@@ -8104,6 +8175,11 @@
       "rotate": "சுழற்ற இழுக்கவும்",
       "pinchToZoom": "பெரிதாக்க சிட்டிக்கவும்",
       "error": "3D மாதிரி ஏற்ற இயலவில்லை"
+    },
+    "preview": {
+      "error": "முன்னோட்டம் ஏற்ற இயலவில்லை",
+      "loading": "முன்னோட்டம் ஏற்றுகிறது...",
+      "title": "3D முன்னோட்டம்"
     },
     "v2v": {
       "title": "குரல் பயிற்சி",
@@ -8117,7 +8193,11 @@
       "improvement": "முன்னேற்றம்",
       "tryAgain": "மீண்டும் முயற்சிக்கவும்",
       "sessionComplete": "அமர்வு நிறைவடைந்தது",
-      "averageImprovement": "சராசரி முன்னேற்றம்"
+      "averageImprovement": "சராசரி முன்னேற்றம்",
+      "beforeAfter": "முன்னும் பின்னும்",
+      "latency": "தாமதம்",
+      "nextPhrase": "அடுத்த சொற்றொடர்",
+      "retry": "மீண்டும் முயற்சி"
     },
     "liveLayer": {
       "title": "நேரடி அவதாரம்",
@@ -8131,7 +8211,15 @@
       "correct": "சரி!",
       "tryAgain": "மீண்டும் முயற்சிக்கவும்",
       "skip": "தவிர்",
-      "scoreLabel": "மதிப்பெண்"
+      "scoreLabel": "மதிப்பெண்",
+      "continue": "தொடர்க",
+      "dismiss": "மூடு",
+      "errors": {
+        "microphoneFailed": "மைக்ரோஃபோனை அணுக இயலவில்லை"
+      },
+      "incorrect": "சரியாக இல்லை",
+      "prompt": "திரையில் காட்டப்படும் வார்த்தையைச் சொல்லுங்கள்",
+      "success": "அருமை!"
     },
     "magicMirror": {
       "title": "மாய கண்ணாடி",
@@ -8167,7 +8255,8 @@
       "language": "மொழி",
       "empty": "இன்னும் தொடர்புகள் சேர்க்கப்படவில்லை",
       "delete": "தொடர்பு நீக்கு",
-      "reelsSent": "அனுப்பிய வீடியோக்கள்"
+      "reelsSent": "அனுப்பிய வீடியோக்கள்",
+      "pin": "குடும்ப பின்"
     },
     "feedback": {
       "title": "கருத்து வரவுப்பெட்டி",
@@ -8182,6 +8271,19 @@
       "reelsSection": "சிறப்பம்ச வீடியோக்கள்",
       "contactsSection": "தொடர்புகள்",
       "feedbackSection": "கருத்துகள்"
+    },
+    "hub": {
+      "title": "ஜெஹ் அனி மையம்",
+      "magicMirror": "மாய கண்ணாடி",
+      "magicMirrorDesc": "தனிப்பயனாக்கப்பட்ட வாழ்த்துகள் மற்றும் தினசரி ஹீப்ரு சொற்களுடன் ஊடாடும் AI கண்ணாடி",
+      "highlights": "சிறப்பம்ச வீடியோக்கள்",
+      "highlightsDesc": "அன்பானவர்களுடன் மறக்கமுடியாத தருணங்களின் தொகுப்புகளை உருவாக்கி பகிரவும்",
+      "contacts": "தாத்தா பாட்டி தொடர்புகள்",
+      "contactsDesc": "உங்கள் சிறப்பம்ச வீடியோக்களை பகிர தொடர்புகளை நிர்வகிக்கவும்",
+      "feedback": "கருத்து வரவுப்பெட்டி",
+      "feedbackDesc": "குடும்பத்தினரிடமிருந்து குரல் மற்றும் உரை செய்திகளைப் பெறவும்",
+      "consent": "உயிர்மெட்ரிக் ஒப்புதல்",
+      "consentDesc": "முக மற்றும் குரல் தரவுக்கான ஒப்புதல் அமைப்புகளை நிர்வகிக்கவும்"
     }
   }
 }
