@@ -60,25 +60,11 @@ struct TVMagicMirrorVocabularyCard: View {
                 .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                 .foregroundStyle(DesignTokens.Colors.Text.primary)
 
-            VStack(spacing: TVDesignTokens.Spacing.md) {
-                ForEach(greeting.vocabularyWords, id: \.wordHe) { word in
-                    HStack {
-                        Text(word.wordHe)
-                            .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
-                            .foregroundStyle(DesignTokens.Colors.Text.primary)
-
-                        Text(word.transliteration)
-                            .font(.system(size: TVDesignTokens.FontSize.base))
-                            .foregroundStyle(DesignTokens.Colors.Text.muted)
-
-                        Spacer()
-
-                        Text(word.translation)
-                            .font(.system(size: TVDesignTokens.FontSize.base))
-                            .foregroundStyle(DesignTokens.Colors.Text.secondary)
-                    }
+            if let vocab = greeting.vocabularyOfTheDay {
+                Text(vocab)
+                    .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
+                    .foregroundStyle(DesignTokens.Colors.Text.primary)
                     .padding(.vertical, TVDesignTokens.Spacing.sm)
-                }
             }
         }
         .padding(TVDesignTokens.Spacing.xl)

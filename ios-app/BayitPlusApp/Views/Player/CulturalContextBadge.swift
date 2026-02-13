@@ -7,29 +7,31 @@ struct CulturalContextBadge: View {
     let onTap: () -> Void
 
     var body: some View {
-        Button(action: onTap) {
+        Button {
+            onTap()
+        } label: {
             HStack(spacing: DesignTokens.Spacing.xs) {
                 Image(systemName: "info.circle.fill")
                     .font(.caption2)
-                    .foregroundStyle(DesignTokens.Colors.warning)
+                    .foregroundStyle(DesignTokens.Warning.default)
                 Text(referenceName)
                     .font(.caption)
                     .fontWeight(.medium)
-                    .foregroundStyle(DesignTokens.Colors.textPrimary)
+                    .foregroundStyle(DesignTokens.Text.primary)
                     .lineLimit(1)
             }
             .padding(.horizontal, DesignTokens.Spacing.sm)
             .padding(.vertical, DesignTokens.Spacing.xxs)
             .background(
                 isSelected
-                    ? DesignTokens.Colors.warning.opacity(0.25)
-                    : DesignTokens.Colors.surface.opacity(0.7)
+                    ? DesignTokens.Warning.default.opacity(0.25)
+                    : DesignTokens.Glass.bg.opacity(0.7)
             )
             .clipShape(Capsule())
             .overlay(
                 Capsule().stroke(
                     isSelected
-                        ? DesignTokens.Colors.warning.opacity(0.6)
+                        ? DesignTokens.Warning.default.opacity(0.6)
                         : Color.clear,
                     lineWidth: 1
                 )

@@ -159,6 +159,10 @@ final class MissionsViewModel {
         isRedeemingCouponId = nil
     }
 
+    func dismissRedemption() {
+        lastRedemptionCode = nil
+    }
+
     func fetchZines() async {
         errorMessage = nil
         do {

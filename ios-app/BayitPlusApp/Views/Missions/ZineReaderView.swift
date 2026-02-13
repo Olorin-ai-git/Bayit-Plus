@@ -69,7 +69,7 @@ struct ZineReaderView: View {
 
             GlassButton(
                 localization.t("zine.archive"),
-                variant: .outline,
+                variant: .ghost,
                 size: .small,
                 icon: Image(systemName: "archivebox")
             ) {
@@ -140,7 +140,7 @@ struct ZineReaderView: View {
         HStack(spacing: DesignTokens.Spacing.lg) {
             GlassButton(
                 localization.t("common.previous"),
-                variant: .outline,
+                variant: .ghost,
                 size: .small,
                 icon: Image(systemName: "chevron.left")
             ) {
@@ -154,7 +154,7 @@ struct ZineReaderView: View {
 
             GlassButton(
                 localization.t("common.next"),
-                variant: .outline,
+                variant: .ghost,
                 size: .small,
                 icon: Image(systemName: "chevron.right")
             ) {

@@ -10,6 +10,7 @@ struct Household: Decodable, Sendable, Identifiable {
     let ownerId: String?
     let members: [HouseholdMember]?
     let sharedControlsId: String?
+    let maxProfiles: Int?
 
     var id: String { householdId }
 }

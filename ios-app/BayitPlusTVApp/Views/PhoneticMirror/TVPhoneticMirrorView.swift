@@ -2,6 +2,7 @@
 import AVKit
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 // NOTE: Speech framework not available on tvOS
 // For speech recognition on tvOS, use:
 // 1. Keyboard dictation (system-level)

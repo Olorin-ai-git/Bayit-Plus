@@ -1,17 +1,6 @@
 import BayitDesignSystem
 import SwiftUI
 
-struct CulturalExplanationData {
-    let referenceId: String
-    let canonicalName: String
-    let canonicalNameEn: String
-    let category: String
-    let subcategory: String
-    let shortExplanation: String
-    let shortExplanationEn: String
-    let imageUrl: String?
-}
-
 struct CulturalExplanationSheet: View {
     let data: CulturalExplanationData
     let onDismiss: () -> Void
@@ -19,14 +8,14 @@ struct CulturalExplanationSheet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
             headerSection
-            Divider().background(DesignTokens.Colors.border.opacity(0.3))
+            Divider().background(DesignTokens.Glass.border.opacity(0.3))
             explanationSection
             Spacer()
             dismissButton
         }
         .padding(DesignTokens.Spacing.lg)
-        .background(DesignTokens.Colors.surface.opacity(0.95))
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.xxl))
+        .background(DesignTokens.Glass.bgMedium.opacity(0.95))
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.xl))
         .presentationDetents([.medium])
     }
 
@@ -36,14 +25,14 @@ struct CulturalExplanationSheet: View {
                 Text(data.canonicalName)
                     .font(.title2)
                     .fontWeight(.bold)
-                    .foregroundStyle(DesignTokens.Colors.textPrimary)
+                    .foregroundStyle(DesignTokens.Text.primary)
                     .environment(\.layoutDirection, .rightToLeft)
                 Spacer()
                 categoryBadge
             }
             Text(data.canonicalNameEn)
                 .font(.headline)
-                .foregroundStyle(DesignTokens.Colors.textSecondary)
+                .foregroundStyle(DesignTokens.Text.secondary)
         }
     }
 
@@ -52,16 +41,16 @@ struct CulturalExplanationSheet: View {
             Text(data.category.capitalized)
                 .font(.caption2)
                 .fontWeight(.semibold)
-                .foregroundStyle(DesignTokens.Colors.primaryAccent)
+                .foregroundStyle(DesignTokens.Primary.p400)
             if !data.subcategory.isEmpty {
                 Text("/ \(data.subcategory)")
                     .font(.caption2)
-                    .foregroundStyle(DesignTokens.Colors.textSecondary)
+                    .foregroundStyle(DesignTokens.Text.secondary)
             }
         }
         .padding(.horizontal, DesignTokens.Spacing.sm)
         .padding(.vertical, DesignTokens.Spacing.xxs)
-        .background(DesignTokens.Colors.primaryAccent.opacity(0.15))
+        .background(DesignTokens.Primary.p400.opacity(0.15))
         .clipShape(Capsule())
     }
 
@@ -70,28 +59,30 @@ struct CulturalExplanationSheet: View {
             if !data.shortExplanation.isEmpty {
                 Text(data.shortExplanation)
                     .font(.body)
-                    .foregroundStyle(DesignTokens.Colors.textPrimary)
+                    .foregroundStyle(DesignTokens.Text.primary)
                     .environment(\.layoutDirection, .rightToLeft)
             }
 
             if !data.shortExplanationEn.isEmpty {
                 Text(data.shortExplanationEn)
                     .font(.body)
-                    .foregroundStyle(DesignTokens.Colors.textSecondary)
+                    .foregroundStyle(DesignTokens.Text.secondary)
             }
         }
     }
 
     private var dismissButton: some View {
-        Button(action: onDismiss) {
+        Button {
+            onDismiss()
+        } label: {
             Text("Close")
                 .font(.callout)
                 .fontWeight(.semibold)
-                .foregroundStyle(DesignTokens.Colors.textPrimary)
+                .foregroundStyle(DesignTokens.Text.primary)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, DesignTokens.Spacing.sm)
-                .background(DesignTokens.Colors.primaryAccent)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.lg))
+                .background(DesignTokens.Primary.default)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
         }
         .buttonStyle(.plain)
     }

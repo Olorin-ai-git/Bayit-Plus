@@ -78,7 +78,7 @@ struct LeaderboardRowCard: View {
         switch user.position {
         case 1: return (DesignTokens.Warning.default, DesignTokens.Text.primary)
         case 2: return (DesignTokens.Text.muted, DesignTokens.Text.primary)
-        case 3: return (DesignTokens.ErrorColor.e700, DesignTokens.Text.primary)
+        case 3: return (DesignTokens.ErrorColor.default, DesignTokens.Text.primary)
         default: return (DesignTokens.Glass.bgMedium, DesignTokens.Text.secondary)
         }
     }

@@ -13,22 +13,22 @@ struct TVMissionLevelCardView: View {
                 .font(.system(size: 96, weight: .bold))
                 .foregroundStyle(DesignTokens.Colors.Text.primary)
 
-            Text(localization.isRTL ? profile.levelTitleHe : profile.levelTitle)
+            Text(localization.currentLanguage.isRTL ? profile.levelTitleHe : profile.levelTitle)
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .semibold))
-                .foregroundStyle(TVDesignTokens.gold)
+                .foregroundStyle(DesignTokens.gold)
 
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
-                        .fill(DesignTokens.Colors.Glass.bgMedium)
+                        .fill(DesignTokens.Glass.bgMedium)
                         .frame(height: 20)
 
                     RoundedRectangle(cornerRadius: TVDesignTokens.Radius.md)
                         .fill(
                             LinearGradient(
                                 colors: [
-                                    TVDesignTokens.Primary.p500,
-                                    TVDesignTokens.Primary.p400
+                                    DesignTokens.Primary.p500,
+                                    DesignTokens.Primary.p400
                                 ],
                                 startPoint: .leading,
                                 endPoint: .trailing
@@ -61,7 +61,7 @@ struct TVMissionLevelCardView: View {
         if profile.xpToNextLevel > 0 {
             return localization.t(
                 "gamification.xpProgress",
-                replacements: [
+                [
                     "current": String(profile.currentXp),
                     "next": String(profile.xpToNextLevel)
                 ]

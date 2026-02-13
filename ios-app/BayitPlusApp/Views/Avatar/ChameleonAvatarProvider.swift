@@ -22,7 +22,8 @@ final class ChameleonAvatarProvider {
     }
 
     deinit {
-        stopPolling()
+        pollTimer?.invalidate()
+        pollTimer = nil
     }
 
     // MARK: - Public
@@ -92,11 +93,11 @@ final class ChameleonAvatarProvider {
                 logger.info("Style transfer ready: \(cacheId)")
             } else if data.status == "failed" {
                 await MainActor.run {
-                    error = LocalizationManager.shared.t("chameleon.errors.unavailable")
+                    error = "Style transfer unavailable"
                     isLoading = false
                     stopPolling()
                 }
-                logger.warn("Style transfer failed: \(cacheId)")
+                logger.warning("Style transfer failed: \(cacheId)")
             }
         } catch {
             await MainActor.run {

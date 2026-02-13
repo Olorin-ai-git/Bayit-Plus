@@ -117,6 +117,10 @@ final class HouseholdViewModel {
         household?.members?.count ?? 0
     }
 
+    var maxProfiles: Int {
+        household?.maxProfiles ?? 5
+    }
+
     func isOwner(_ member: HouseholdMember) -> Bool {
         member.userId == household?.ownerId
     }

@@ -97,7 +97,7 @@ struct LiveAvatarOverlayView: View {
     }
 
     private func fetchMeshURL() async throws -> URL {
-        let response = try await repos.avatarMesh.getMeshGlbUrl(avatarId: avatarId)
+        let response = try await repos.avatarMeshRepository.getMeshGlbUrl(avatarId: avatarId)
         guard let meshURL = URL(string: response.signedUrl) else {
             throw URLError(.badURL)
         }

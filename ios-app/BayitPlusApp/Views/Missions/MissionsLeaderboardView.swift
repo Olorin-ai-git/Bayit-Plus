@@ -2,7 +2,7 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-struct LeaderboardView: View {
+struct MissionsLeaderboardView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: MissionsViewModel?
@@ -156,7 +156,7 @@ struct LeaderboardView: View {
         switch position {
         case 1: return (DesignTokens.Warning.default, DesignTokens.Text.primary)
         case 2: return (DesignTokens.Text.muted, DesignTokens.Text.primary)
-        case 3: return (DesignTokens.ErrorColor.e700, DesignTokens.Text.primary)
+        case 3: return (DesignTokens.ErrorColor.default, DesignTokens.Text.primary)
         default: return (DesignTokens.Glass.bgMedium, DesignTokens.Text.secondary)
         }
     }

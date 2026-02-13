@@ -121,7 +121,7 @@ struct TalkBackDashboardView: View {
                 Text(attempt.quality.replacingOccurrences(of: "_", with: " "))
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.primary)
-                    .textCase(.capitalize)
+                    .textCase(.uppercase)
 
                 Text("\(Int(attempt.accuracyScore * 100))% | +\(attempt.shekelsEarned)")
                     .font(.system(size: DesignTokens.FontSize.xs))
@@ -145,7 +145,7 @@ struct TalkBackDashboardView: View {
         case "correct_root": return DesignTokens.Info.default
         case "close_phonetic": return DesignTokens.Warning.default
         case "right_language": return DesignTokens.Primary.default
-        case "wrong_language": return DesignTokens.Danger.default
+        case "wrong_language": return DesignTokens.ErrorColor.default
         default: return DesignTokens.Text.muted
         }
     }

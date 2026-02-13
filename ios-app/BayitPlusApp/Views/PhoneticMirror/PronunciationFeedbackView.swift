@@ -41,10 +41,10 @@ struct PronunciationFeedbackView: View {
     }
 
     private func scoreColor(_ score: Double) -> Color {
-        if score >= 0.9 { return DesignTokens.Color.success }
-        if score >= 0.7 { return DesignTokens.Color.success.opacity(0.8) }
-        if score >= 0.5 { return DesignTokens.Color.warning }
-        return DesignTokens.Color.error
+        if score >= 0.9 { return DesignTokens.Success.default }
+        if score >= 0.7 { return DesignTokens.Success.default.opacity(0.8) }
+        if score >= 0.5 { return DesignTokens.Warning.default }
+        return DesignTokens.ErrorColor.default
     }
 
     private func issueLabel(_ issue: String) -> String {

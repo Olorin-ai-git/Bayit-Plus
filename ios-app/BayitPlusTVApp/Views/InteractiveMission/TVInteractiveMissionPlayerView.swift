@@ -2,9 +2,7 @@
 import AVKit
 import BayitCore
 import BayitDesignSystem
-// NOTE: Speech framework not available on tvOS
-// For voice-controlled missions, implement alternative using backend transcription
-// import Speech // NOT AVAILABLE ON TVOS
+import BayitLocalization
 import SwiftUI
 
 /// tvOS interactive mission player: HLS video with speech-gated Hebrew decisions, focus buttons, voice input, scoring.
@@ -18,12 +16,9 @@ struct TVInteractiveMissionPlayerView: View {
     @State private var phase: Phase = .loading
     @State private var scene: Int = 1
     @State private var countdown: Int = 0
-    @State private var listening = false
     @State private var lastResult: AttemptResult?
     @State private var player: AVPlayer?
-    @State private var recognizer: SFSpeechRecognizer?
-    @State private var recTask: SFSpeechRecognitionTask?
-    @State private var engine: AVAudioEngine?
+    @State private var speechEngine = TVSpeechRecognitionEngine()
     @State private var attempt = 1
     @State private var shekels = 0
     @State private var score = 0.0
@@ -43,7 +38,7 @@ struct TVInteractiveMissionPlayerView: View {
             if phase == .playing || phase == .decision { progressBar }
         }
         .task { await load() }
-        .onAppear { setupSpeech() }
+        .onAppear { speechEngine.setup() }
         .onDisappear { cleanup() }
         .onExitCommand { cleanup(); onComplete?() }
         .onPlayPauseCommand { player?.rate == 0 ? player?.play() : player?.pause() }
@@ -98,8 +93,8 @@ struct TVInteractiveMissionPlayerView: View {
                         .frame(minHeight: TVDesignTokens.MinSize.focusableHeight)
                 }.buttonStyle(.card).tvFocusStyle().disabled(attempt > maxAttempts)
             }
-            GlassButton(listening ? localization.t("interactiveMission.listening") : localization.t("interactiveMission.speakHebrew"),
-                         variant: listening ? .secondary : .primary, size: .large) { toggleVoice() }
+            GlassButton(speechEngine.isListening ? localization.t("interactiveMission.listening") : localization.t("interactiveMission.speakHebrew"),
+                         variant: speechEngine.isListening ? .secondary : .primary, size: .large) { toggleVoice() }
                 .tvFocusStyle().disabled(countdown > 0 || attempt > maxAttempts)
         }
         .padding(TVDesignTokens.Spacing.xxxxl).frame(maxWidth: 900)
@@ -177,25 +172,17 @@ struct TVInteractiveMissionPlayerView: View {
             } catch { logger.error("Complete failed", error: error) }
         }
     }
-    private func setupSpeech() {
-        recognizer = SFSpeechRecognizer(locale: Locale(identifier: "he-IL"))
-        engine = AVAudioEngine(); SFSpeechRecognizer.requestAuthorization { _ in }
-    }
-    private func toggleVoice() { listening ? stopVoice() : startVoice() }
-    private func startVoice() {
-        guard let rec = recognizer, let eng = engine, rec.isAvailable else { return }
-        let req = SFSpeechAudioBufferRecognitionRequest(); let node = eng.inputNode
-        recTask = rec.recognitionTask(with: req) { res, _ in
-            if let r = res, r.isFinal { submit(r.bestTranscription.formattedString) }
+    private func toggleVoice() {
+        if speechEngine.isListening {
+            speechEngine.stopListening()
+        } else {
+            speechEngine.startListening(localization: localization) { transcript in
+                submit(transcript)
+            }
         }
-        node.installTap(onBus: 0, bufferSize: 1024, format: node.outputFormat(forBus: 0)) { b, _ in req.append(b) }
-        eng.prepare(); try? eng.start(); listening = true
-    }
-    private func stopVoice() {
-        engine?.stop(); engine?.inputNode.removeTap(onBus: 0); recTask?.cancel(); listening = false
     }
     private func cleanup() {
-        player?.pause(); player = nil; stopVoice(); engine = nil; recognizer = nil
+        player?.pause(); player = nil; speechEngine.cleanup()
     }
 }
 #endif

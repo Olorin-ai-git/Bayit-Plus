@@ -4,7 +4,7 @@ import BayitLocalization
 import SwiftUI
 
 struct TVMissionsDashboardView: View {
-    @Environment(RepositoryProvider.self) private var repos
+    @Environment(TVRepositoryProvider.self) private var repos
     @Environment(LocalizationManager.self) private var localization
     @State private var profile: GamificationProfile?
     @State private var isLoading = false

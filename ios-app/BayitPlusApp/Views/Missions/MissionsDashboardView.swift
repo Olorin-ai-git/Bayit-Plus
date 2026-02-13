@@ -46,7 +46,7 @@ struct MissionsDashboardView: View {
                     .font(.system(size: 48, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
-                Text(localization.isRTL ? profile.levelTitleHe : profile.levelTitle)
+                Text(localization.layoutDirection == .rightToLeft ? profile.levelTitleHe : profile.levelTitle)
                     .font(.system(size: DesignTokens.FontSize.xl, weight: .semibold))
                     .foregroundStyle(DesignTokens.gold)
 
@@ -54,7 +54,7 @@ struct MissionsDashboardView: View {
                     currentXp: profile.currentXp,
                     xpToNextLevel: profile.xpToNextLevel,
                     level: profile.currentLevel,
-                    title: localization.isRTL ? profile.levelTitleHe : profile.levelTitle
+                    title: localization.layoutDirection == .rightToLeft ? profile.levelTitleHe : profile.levelTitle
                 )
             }
             .padding(.vertical, DesignTokens.Spacing.md)

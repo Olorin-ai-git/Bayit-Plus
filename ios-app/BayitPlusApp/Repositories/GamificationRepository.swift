@@ -74,15 +74,19 @@ struct GamificationProfile: Codable {
     }
 }
 
-struct UnlockedPerk: Codable {
+struct UnlockedPerk: Codable, Identifiable {
     let perkId: String
     let perkType: String
+    let levelUnlocked: Int?
     let unlockedAt: String
-    let claimed: Bool
+    let claimed: Bool?
+
+    var id: String { perkId }
 
     enum CodingKeys: String, CodingKey {
         case perkId = "perk_id"
         case perkType = "perk_type"
+        case levelUnlocked = "level_unlocked"
         case unlockedAt = "unlocked_at"
         case claimed
     }

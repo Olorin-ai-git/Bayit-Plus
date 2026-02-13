@@ -53,6 +53,7 @@ final class RepositoryProvider {
     let grandparentBridgeRepository: any GrandparentBridgeRepository
     let gamificationRepository: any GamificationRepository
     let avatarMeshRepository: any AvatarMeshRepository
+    let talkBack: any TalkBackRepository
     let zehAniRepository: any ZehAniRepository
     let webSocketManager: WebSocketManager
     let authTokenProvider: AuthTokenProvider
@@ -105,6 +106,7 @@ final class RepositoryProvider {
         self.grandparentBridgeRepository = APIGrandparentBridgeRepository(client: client)
         self.gamificationRepository = APIGamificationRepository(client: client)
         self.avatarMeshRepository = APIAvatarMeshRepository(client: client)
+        self.talkBack = APITalkBackRepository(client: client)
         self.zehAniRepository = APIZehAniRepository(client: client)
         self.webSocketManager = webSocketManager
         self.authTokenProvider = authTokenProvider

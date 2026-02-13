@@ -74,11 +74,11 @@ struct MissionProgressCard: View {
 
             GeometryReader { geometry in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.xs)
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
                         .fill(DesignTokens.Glass.bgMedium)
                         .frame(height: 6)
 
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.xs)
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
                         .fill(progressGradient)
                         .frame(
                             width: geometry.size.width * progressPercentage,

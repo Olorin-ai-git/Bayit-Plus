@@ -2,6 +2,7 @@
 import AVKit
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 struct TVNewsClipView: View {

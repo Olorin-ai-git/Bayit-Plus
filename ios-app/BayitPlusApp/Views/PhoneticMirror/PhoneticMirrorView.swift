@@ -32,7 +32,7 @@ struct PhoneticMirrorView: View {
 
                 if let error = viewModel.error {
                     Text(error)
-                        .foregroundColor(DesignTokens.Color.error)
+                        .foregroundColor(DesignTokens.ErrorColor.default)
                         .font(.system(size: 14))
                 }
             }
@@ -142,11 +142,11 @@ struct PhoneticMirrorView: View {
 
     private func qualityColor(_ quality: String) -> Color {
         switch quality {
-        case "excellent": return DesignTokens.Color.success
-        case "good": return DesignTokens.Color.success.opacity(0.8)
-        case "fair": return DesignTokens.Color.warning
+        case "excellent": return DesignTokens.Success.default
+        case "good": return DesignTokens.Success.default.opacity(0.8)
+        case "fair": return DesignTokens.Warning.default
         case "needs_practice": return .orange
-        default: return DesignTokens.Color.error
+        default: return DesignTokens.ErrorColor.default
         }
     }
 

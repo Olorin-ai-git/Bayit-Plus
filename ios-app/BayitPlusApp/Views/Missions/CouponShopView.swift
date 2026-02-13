@@ -180,7 +180,7 @@ struct CouponShopView: View {
                         variant: .primary,
                         size: .medium
                     ) {
-                        viewModel?.lastRedemptionCode = nil
+                        viewModel?.dismissRedemption()
                     }
                 }
                 .padding(DesignTokens.Spacing.xl)

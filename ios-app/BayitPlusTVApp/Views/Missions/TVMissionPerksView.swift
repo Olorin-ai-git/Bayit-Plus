@@ -42,7 +42,7 @@ struct TVMissionPerksView: View {
                 .lineLimit(2)
         }
         .frame(width: 240, height: 240)
-        .background(DesignTokens.Colors.Glass.bgMedium)
+        .background(DesignTokens.Glass.bgMedium)
         .cornerRadius(TVDesignTokens.Radius.md)
         .focusable()
     }

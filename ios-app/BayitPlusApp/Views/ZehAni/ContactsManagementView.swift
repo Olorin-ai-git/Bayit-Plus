@@ -125,12 +125,12 @@ struct ContactsManagementView: View {
                         .textFieldStyle(.roundedBorder)
                     TextField(localization.t("zehAni.contacts.phone"), text: $newPhoneNumber)
                         .keyboardType(.phonePad).textFieldStyle(.roundedBorder)
-                    Menu { ForEach(relationships, id: \.self) { Button($0.capitalized) { newRelationship = $0 } } } label: {
+                    Menu { ForEach(relationships, id: \.self) { rel in Button { newRelationship = rel } label: { Text(rel.capitalized) } } } label: {
                         HStack { Text(newRelationship.capitalized); Spacer(); Image(systemName: "chevron.down") }
                             .padding(DesignTokens.Spacing.sm).background(DesignTokens.Glass.bg)
                             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.default))
                     }
-                    Menu { ForEach(languages, id: \.self) { Button($0.uppercased()) { newLanguage = $0 } } } label: {
+                    Menu { ForEach(languages, id: \.self) { lang in Button { newLanguage = lang } label: { Text(lang.uppercased()) } } } label: {
                         HStack { Text(newLanguage.uppercased()); Spacer(); Image(systemName: "chevron.down") }
                             .padding(DesignTokens.Spacing.sm).background(DesignTokens.Glass.bg)
                             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.default))

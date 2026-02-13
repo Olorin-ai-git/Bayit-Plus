@@ -52,7 +52,7 @@ struct LevelProgressView: View {
         if xpToNextLevel > 0 {
             return localization.t(
                 "gamification.xpProgress",
-                replacements: [
+                [
                     "current": String(currentXp),
                     "next": String(xpToNextLevel)
                 ]

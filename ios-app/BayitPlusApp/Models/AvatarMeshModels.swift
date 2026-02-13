@@ -42,13 +42,14 @@ struct ConsentEntry: Codable, Identifiable {
 }
 
 struct MagicMirrorGreeting: Codable {
+    let id: String
+    let userId: String
+    let profileId: String
     let greetingTextHe: String
     let greetingTextEn: String
-    let vocabularyWords: [VocabWord]
-}
-
-struct VocabWord: Codable {
-    let wordHe: String
-    let transliteration: String
-    let translation: String
+    let greetingAudioGcsPath: String?
+    let lipsyncDataGcsPath: String?
+    let vocabularyOfTheDay: String?
+    let generatedAt: String
+    let expiresAt: String?
 }

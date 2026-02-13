@@ -22,7 +22,7 @@ struct InteractiveMissionPlayerView: View {
             if viewModel.playState == .loading {
                 LoadingView()
             } else if viewModel.playState == .playing, let player = viewModel.player, let mission = viewModel.mission {
-                VideoPlayerView(player: player, currentScene: viewModel.currentScene, totalScenes: mission.scenes.count)
+                MissionVideoPlayerView(player: player, currentScene: viewModel.currentScene, totalScenes: mission.scenes.count)
             } else if viewModel.playState == .decision {
                 decisionOverlay
             } else if viewModel.playState == .complete {

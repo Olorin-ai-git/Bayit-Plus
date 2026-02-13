@@ -1,6 +1,7 @@
 import BayitDesignSystem
 import BayitLocalization
 import AVFoundation
+import AVKit
 import SwiftUI
 
 struct LoadingView: View {
@@ -17,7 +18,7 @@ struct LoadingView: View {
     }
 }
 
-struct VideoPlayerView: View {
+struct MissionVideoPlayerView: View {
     let player: AVPlayer
     let currentScene: Int
     let totalScenes: Int

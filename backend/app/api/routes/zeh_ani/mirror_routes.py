@@ -6,7 +6,10 @@ from app.core.logging_config import get_logger
 from app.core.security import get_current_user
 from app.models.child_avatar import ChildAvatar
 from app.models.user import User
-from app.services.zeh_ani.magic_mirror_service import magic_mirror_service
+from app.services.zeh_ani.magic_mirror_service import (
+    InsufficientCreditsError,
+    magic_mirror_service,
+)
 
 logger = get_logger(__name__)
 router = APIRouter(prefix="/zeh-ani/magic-mirror", tags=["zeh-ani"])
@@ -52,11 +55,18 @@ async def get_daily_greeting(
     """Get the daily Magic Mirror greeting for a child profile."""
     avatar = await _resolve_avatar(user, profile_id)
 
-    greeting = await magic_mirror_service.get_or_generate_greeting(
-        user_id=str(user.id),
-        profile_id=profile_id,
-        avatar_id=str(avatar.id),
-    )
+    try:
+        greeting = await magic_mirror_service.get_or_generate_greeting(
+            user_id=str(user.id),
+            profile_id=profile_id,
+            avatar_id=str(avatar.id),
+            user=user,
+        )
+    except InsufficientCreditsError:
+        raise HTTPException(
+            status_code=402,
+            detail="Insufficient credits for Magic Mirror greeting",
+        )
 
     return _greeting_dict(greeting)
 
@@ -69,11 +79,18 @@ async def refresh_greeting(
     """Force-refresh the Magic Mirror greeting for a child profile."""
     avatar = await _resolve_avatar(user, profile_id)
 
-    greeting = await magic_mirror_service.generate_daily_greeting(
-        user_id=str(user.id),
-        profile_id=profile_id,
-        avatar_id=str(avatar.id),
-    )
+    try:
+        greeting = await magic_mirror_service.generate_daily_greeting(
+            user_id=str(user.id),
+            profile_id=profile_id,
+            avatar_id=str(avatar.id),
+            user=user,
+        )
+    except InsufficientCreditsError:
+        raise HTTPException(
+            status_code=402,
+            detail="Insufficient credits for Magic Mirror greeting",
+        )
 
     logger.info(
         "Magic Mirror greeting refreshed",

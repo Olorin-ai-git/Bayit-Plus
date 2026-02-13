@@ -50,7 +50,7 @@ struct TransactionRowCard: View {
         case .earned: return ("plus.circle.fill", DesignTokens.Success.default)
         case .spent: return ("minus.circle.fill", DesignTokens.ErrorColor.default)
         case .bonus: return ("gift.fill", DesignTokens.Warning.default)
-        case .penalty: return ("exclamationmark.triangle.fill", DesignTokens.ErrorColor.e700)
+        case .penalty: return ("exclamationmark.triangle.fill", DesignTokens.ErrorColor.default)
         }
     }
 

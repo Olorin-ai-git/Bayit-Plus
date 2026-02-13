@@ -141,34 +141,8 @@ struct MagicMirrorView: View {
 
     @ViewBuilder
     private func vocabularyCard(_ greeting: MagicMirrorGreeting) -> some View {
-        GlassCard {
-            VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-                Text(localization.t("zehAni.magicMirror.vocabOfDay"))
-                    .font(.system(
-                        size: DesignTokens.FontSize.md, weight: .semibold
-                    ))
-                    .foregroundStyle(DesignTokens.Text.secondary)
-
-                ForEach(greeting.vocabularyWords, id: \.wordHe) { word in
-                    HStack {
-                        Text(word.wordHe)
-                            .font(.system(
-                                size: DesignTokens.FontSize.lg, weight: .medium
-                            ))
-                            .foregroundStyle(DesignTokens.Text.primary)
-
-                        Text(word.transliteration)
-                            .font(.system(size: DesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.muted)
-
-                        Spacer()
-
-                        Text(word.translation)
-                            .font(.system(size: DesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Text.secondary)
-                    }
-                }
-            }
+        if let vocab = greeting.vocabularyOfTheDay {
+            MagicMirrorVocabCard(vocabulary: vocab)
         }
     }
 

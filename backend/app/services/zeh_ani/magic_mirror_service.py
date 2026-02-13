@@ -6,13 +6,19 @@ avatar. Combines proficiency-based vocabulary selection, TTS via the child's
 cloned voice, and lip-sync blend shape data for animated 3D greeting playback.
 """
 
+from __future__ import annotations
+
 from datetime import datetime, timedelta, timezone
+from typing import TYPE_CHECKING
 
 from app.core.config import settings
 from app.core.logging_config import get_logger
 from app.models.child_avatar import ChildAvatar
 from app.models.child_proficiency import ChildProficiency
 from app.models.magic_mirror import MagicMirrorGreeting
+
+if TYPE_CHECKING:
+    from app.models.user import User
 from app.services.zeh_ani.mirror_greeting_helpers import (
     build_greeting_text,
     generate_greeting_audio,
@@ -23,6 +29,10 @@ from app.services.zeh_ani.mirror_greeting_helpers import (
 logger = get_logger(__name__)
 
 
+class InsufficientCreditsError(Exception):
+    """Raised when a user lacks credits for a Zeh Ani feature."""
+
+
 class MagicMirrorService:
     """Generates and caches personalized daily Magic Mirror greetings."""
 
@@ -31,12 +41,15 @@ class MagicMirrorService:
         user_id: str,
         profile_id: str,
         avatar_id: str,
+        user: User | None = None,
     ) -> MagicMirrorGreeting:
         """
         Generate a fresh daily greeting for the child's 3D avatar.
 
         Pipeline: fetch proficiency -> select vocabulary -> build greeting
         text -> generate TTS audio -> generate lip-sync data -> store.
+
+        Admin users bypass credit deduction.
         """
         avatar = await ChildAvatar.get(avatar_id)
         if not avatar or avatar.user_id != user_id:
@@ -83,10 +96,13 @@ class MagicMirrorService:
                 "profile_id": profile_id,
                 "greeting_id": str(greeting.id),
             },
+            user=user,
         )
         if not success:
             await greeting.delete()
-            raise ValueError("Insufficient credits for magic mirror greeting")
+            raise InsufficientCreditsError(
+                "Insufficient credits for magic mirror greeting"
+            )
 
         logger.info(
             "Magic Mirror greeting generated",
@@ -94,7 +110,6 @@ class MagicMirrorService:
                 "user_id": user_id,
                 "profile_id": profile_id,
                 "vocabulary": vocab_word,
-                "credits_charged": settings.CREDIT_RATE_MAGIC_MIRROR,
             },
         )
 
@@ -105,6 +120,7 @@ class MagicMirrorService:
         user_id: str,
         profile_id: str,
         avatar_id: str,
+        user: User | None = None,
     ) -> MagicMirrorGreeting:
         """Return cached greeting if not expired, else generate a new one."""
         existing = await MagicMirrorGreeting.find_one(
@@ -125,7 +141,7 @@ class MagicMirrorService:
             return existing
 
         return await self.generate_daily_greeting(
-            user_id, profile_id, avatar_id,
+            user_id, profile_id, avatar_id, user=user,
         )
 
 

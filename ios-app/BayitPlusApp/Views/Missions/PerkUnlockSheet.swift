@@ -24,7 +24,7 @@ struct PerkUnlockSheet: View {
             Text(
                 localization.t(
                     "gamification.unlockedAtLevel",
-                    replacements: ["level": String(perk.levelUnlocked)]
+                    ["level": String(perk.levelUnlocked ?? 0)]
                 )
             )
             .font(.system(size: DesignTokens.FontSize.base))
@@ -61,47 +61,5 @@ struct PerkUnlockSheet: View {
         .background(DesignTokens.Background.elevated)
         .presentationDetents([.medium])
         .presentationDragIndicator(.visible)
-    }
-}
-
-struct UnlockedPerk: Codable, Identifiable {
-    let perkId: String
-    let perkType: String
-    let levelUnlocked: Int
-    let unlockedAt: String
-
-    var id: String { perkId }
-
-    enum CodingKeys: String, CodingKey {
-        case perkId = "perk_id"
-        case perkType = "perk_type"
-        case levelUnlocked = "level_unlocked"
-        case unlockedAt = "unlocked_at"
-    }
-}
-
-struct GamificationProfile: Codable {
-    let currentLevel: Int
-    let currentXp: Int
-    let totalXp: Int
-    let xpToNextLevel: Int
-    let levelTitle: String
-    let levelTitleHe: String
-    let unlockedPerks: [UnlockedPerk]
-    let missionsCompleted: Int
-    let mirrorSessions: Int
-    let talkBackAttempts: Int
-
-    enum CodingKeys: String, CodingKey {
-        case currentLevel = "current_level"
-        case currentXp = "current_xp"
-        case totalXp = "total_xp"
-        case xpToNextLevel = "xp_to_next_level"
-        case levelTitle = "level_title"
-        case levelTitleHe = "level_title_he"
-        case unlockedPerks = "unlocked_perks"
-        case missionsCompleted = "missions_completed"
-        case mirrorSessions = "mirror_sessions"
-        case talkBackAttempts = "talk_back_attempts"
     }
 }
