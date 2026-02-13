@@ -80,3 +80,70 @@ async def get_trivia(
     trivia = await generator.generate_trivia(content, enrich=True, language=language)
 
     return format_trivia_response(trivia, language, multilingual, include_metadata=True)
+
+
+@router.get("/{content_id}/quiz")
+@limiter.limit(RATE_LIMITS.get("quiz_get", "30/minute"))
+async def get_vod_quiz(
+    request: Request,
+    content_id: str,
+    profile_id: Optional[str] = None,
+    language: str = "he",
+    current_user: Optional[User] = Depends(get_optional_user),
+    _rollout: None = Depends(check_trivia_rollout),
+) -> dict:
+    """
+    Get AI-generated quiz for VOD content (movies, series).
+    Generates quiz questions from trivia facts or content metadata.
+
+    Args:
+        content_id: Content item ID
+        profile_id: Optional profile ID (unused, for API compatibility)
+        language: Preferred language for questions
+        current_user: Optional authenticated user
+    """
+    validated_id = validate_object_id(content_id)
+
+    content = await Content.get(validated_id)
+    if not content:
+        raise HTTPException(status_code=404, detail="Content not found")
+
+    # Generate trivia facts first
+    generator = TriviaGenerationService()
+    trivia = await generator.generate_trivia(content, enrich=True, language=language)
+
+    if not trivia or not trivia.facts:
+        logger.warning(
+            "No trivia facts available for quiz generation",
+            extra={"content_id": content_id}
+        )
+        raise HTTPException(
+            status_code=404,
+            detail="Could not generate quiz for this content"
+        )
+
+    # Convert trivia facts to quiz questions
+    from app.services.trivia.trivia_to_quiz_converter import convert_trivia_to_quiz
+
+    questions = await convert_trivia_to_quiz(trivia.facts, content, language)
+
+    if not questions:
+        raise HTTPException(
+            status_code=404,
+            detail="Could not generate quiz questions from trivia"
+        )
+
+    logger.info(
+        "VOD quiz generated",
+        extra={
+            "content_id": content_id,
+            "question_count": len(questions),
+            "language": language
+        }
+    )
+
+    return {
+        "quiz_id": str(trivia.id),
+        "content_id": content_id,
+        "questions": questions
+    }

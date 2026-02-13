@@ -2,12 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>CATCHUP_AUTO_PROMPT_SECONDS</key>
-	<string>15</string>
-	<key>CATCHUP_CREDIT_COST</key>
-	<string>1</string>
-	<key>CATCHUP_DEFAULT_WINDOW_MINUTES</key>
-	<string>15</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -40,26 +34,11 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>16</string>
+	<string>1</string>
 	<key>GOOGLE_CLIENT_ID</key>
 	<string>624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com</string>
 	<key>GOOGLE_SERVER_CLIENT_ID</key>
 	<string>624470113582-7p34b1tpqlfob5sh4cl9eoospmvao1at.apps.googleusercontent.com</string>
-	<key>IP_GEOLOCATION_URL</key>
-	<string>https://ipapi.co/json/</string>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoadsForMedia</key>
-		<true/>
-		<key>NSAllowsLocalNetworking</key>
-		<true/>
-	</dict>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>We need microphone access for speech recognition features.</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>We need speech recognition for Hebrew pronunciation practice and interactive missions.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -67,5 +46,13 @@
 	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string></string>
+	<key>FEATURE_TRIVIA</key>
+	<string>true</string>
+	<key>FEATURE_INTERACTIVE_SUBTITLES</key>
+	<string>true</string>
+	<key>FEATURE_CHAPTER_NAVIGATION</key>
+	<string>true</string>
+	<key>FEATURE_LIVE_DUBBING</key>
+	<string>true</string>
 </dict>
 </plist>
