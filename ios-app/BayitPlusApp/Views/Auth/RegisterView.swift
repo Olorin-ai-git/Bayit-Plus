@@ -200,12 +200,30 @@ struct RegisterView: View {
             AuthComponents.SocialButton(
                 title: "Continue with Google",
                 iconName: "g.circle.fill",
-                action: { Task { try await handleGoogleSignIn() } }
+                action: {
+                    Task {
+                        do {
+                            try await handleGoogleSignIn()
+                        } catch {
+                            // Error is already handled by authManager
+                            print("Google Sign In error: \(error.localizedDescription)")
+                        }
+                    }
+                }
             )
             AuthComponents.SocialButton(
                 title: "Continue with Apple",
                 iconName: "apple.logo",
-                action: { Task { try await handleAppleSignIn() } }
+                action: {
+                    Task {
+                        do {
+                            try await handleAppleSignIn()
+                        } catch {
+                            // Error is already handled by authManager
+                            print("Apple Sign In error: \(error.localizedDescription)")
+                        }
+                    }
+                }
             )
         }
     }

@@ -27,6 +27,7 @@ extension AuthManager {
 
             let controller = ASAuthorizationController(authorizationRequests: [request])
             controller.delegate = delegate
+            controller.presentationContextProvider = delegate
 
             // Keep delegate alive for the duration of the flow
             objc_setAssociatedObject(
@@ -67,10 +68,11 @@ private enum AssociatedKeys {
     static var delegateKey: UInt8 = 0
 }
 
-// MARK: - ASAuthorizationControllerDelegate Bridge
+// MARK: - ASAuthorizationControllerDelegate and PresentationContextProvider Bridge
 
 /// Bridges the delegate callback pattern to a Swift concurrency continuation.
-private final class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, @unchecked Sendable {
+/// Also provides presentation context for the Sign in with Apple UI.
+private final class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding, @unchecked Sendable {
 
     private let continuation: CheckedContinuation<AppleSignInResult, Error>
     private let nonce: String
@@ -100,6 +102,24 @@ private final class AppleSignInDelegate: NSObject, ASAuthorizationControllerDele
         } else {
             continuation.resume(throwing: AuthError.appleSignInFailed(underlying: error.localizedDescription))
         }
+    }
+
+    // MARK: - ASAuthorizationControllerPresentationContextProviding
+
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        #if os(iOS)
+        // Get the active window scene and return its key window
+        guard let windowScene = UIApplication.shared.connectedScenes
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+              let window = windowScene.windows.first(where: { $0.isKeyWindow }) else {
+            // Fallback to first available window
+            return UIApplication.shared.windows.first ?? UIWindow()
+        }
+        return window
+        #else
+        // tvOS doesn't require presentation context
+        return UIWindow()
+        #endif
     }
 }
 

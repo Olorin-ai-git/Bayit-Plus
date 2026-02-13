@@ -14,6 +14,7 @@ import { config } from '../config/appConfig';
 import { getContentPosterUrl } from '@bayit/shared-utils/youtube';
 import { formatContentMetadata } from '@bayit/shared-utils/metadataFormatters';
 import { GlassBadgeTV } from './GlassBadgeTV';
+import { SubtitleFlagsTV } from './SubtitleFlagsTV';
 import styles from './styles/ContentCard.styles';
 
 export interface ContentCardProps {
@@ -48,10 +49,6 @@ export const ContentCard: React.FC<ContentCardProps> = ({
   const imageUrl = getContentPosterUrl({ backdrop, thumbnail, poster_url, stream_url });
 
   const metadataSubtitle = subtitle || formatContentMetadata({ year, duration, rating, imdb_rating });
-  const subtitleCount = available_subtitle_languages?.length || 0;
-  const finalSubtitle = subtitleCount > 0
-    ? `${metadataSubtitle}${metadataSubtitle ? ' ' : ''}CC ${subtitleCount} lang${subtitleCount === 1 ? '' : 's'}`
-    : metadataSubtitle;
 
   const isNew = () => {
     const dateStr = created_at || published_at;
@@ -112,12 +109,15 @@ export const ContentCard: React.FC<ContentCardProps> = ({
               <GlassBadgeTV variant="rating" value={numericRating.toFixed(1)} />
             )}
           </View>
+          {available_subtitle_languages && available_subtitle_languages.length > 0 && (
+            <SubtitleFlagsTV languages={available_subtitle_languages} size="small" position="bottom-right" />
+          )}
         </View>
         <View style={styles.contentOverlay}>
           <View style={styles.textContainer}>
             <Text style={styles.title} numberOfLines={2} ellipsizeMode="tail">{title}</Text>
-            {finalSubtitle && (
-              <Text style={styles.subtitle} numberOfLines={2} ellipsizeMode="tail">{finalSubtitle}</Text>
+            {metadataSubtitle && (
+              <Text style={styles.subtitle} numberOfLines={2} ellipsizeMode="tail">{metadataSubtitle}</Text>
             )}
           </View>
         </View>

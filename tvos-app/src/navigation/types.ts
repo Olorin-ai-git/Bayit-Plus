@@ -44,6 +44,9 @@ export type RootStackParamList = {
   FamilyControls: undefined;
   Household: undefined;
   Recordings: undefined;
+  AIVoiceSettings: undefined;
+  SecuritySettings: undefined;
+  DevicesManager: undefined;
 
   // Beta AI features
   BetaAI: undefined;

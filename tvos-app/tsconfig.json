@@ -11,6 +11,7 @@
       "@bayit/i18n": ["../packages/ui/bayit-i18n"],
       "@bayit/i18n/native": ["../packages/ui/bayit-i18n/native.ts"],
       "@bayit/shared": ["../shared/components"],
+      "@bayit/shared/*": ["../shared/*"],
       "@bayit/shared-screens": ["../shared/screens"],
       "@bayit/shared-services": ["../shared/services"],
       "@bayit/shared-stores": ["../shared/stores"],

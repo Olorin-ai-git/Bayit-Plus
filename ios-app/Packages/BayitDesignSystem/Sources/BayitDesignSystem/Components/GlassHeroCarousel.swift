@@ -10,6 +10,7 @@ public struct GlassHeroCarousel<Item: Identifiable, ItemView: View>: View {
 
     @State private var currentIndex = 0
     @State private var autoAdvanceTask: Task<Void, Never>?
+    @FocusState private var isFocused: Bool
 
     public init(
         items: [Item],
@@ -40,7 +41,18 @@ public struct GlassHeroCarousel<Item: Identifiable, ItemView: View>: View {
             pageIndicator
         }
         .focusable(true)
+        .focused($isFocused)
         .focusSection()
+        .onMoveCommand { direction in
+            handleMove(direction)
+        }
+        .onChange(of: isFocused) { _, focused in
+            if focused {
+                stopAutoAdvance()
+            } else {
+                startAutoAdvance()
+            }
+        }
         .onAppear { startAutoAdvance() }
         .onDisappear { stopAutoAdvance() }
     }
@@ -60,6 +72,33 @@ public struct GlassHeroCarousel<Item: Identifiable, ItemView: View>: View {
                     )
                     .animation(.easeInOut(duration: 0.2), value: currentIndex)
             }
+        }
+    }
+
+    // MARK: - Navigation
+
+    private func handleMove(_ direction: MoveCommandDirection) {
+        switch direction {
+        case .left:
+            moveToPrevious()
+        case .right:
+            moveToNext()
+        default:
+            break
+        }
+    }
+
+    private func moveToPrevious() {
+        guard items.count > 1 else { return }
+        withAnimation(.easeInOut(duration: 0.5)) {
+            currentIndex = currentIndex == 0 ? items.count - 1 : currentIndex - 1
+        }
+    }
+
+    private func moveToNext() {
+        guard items.count > 1 else { return }
+        withAnimation(.easeInOut(duration: 0.5)) {
+            currentIndex = (currentIndex + 1) % items.count
         }
     }
 

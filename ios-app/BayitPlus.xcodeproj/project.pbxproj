@@ -231,6 +231,11 @@
 		45D5C2972F3EDAFB0067807A /* TVAvatarPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C28E2F3EDAFB0067807A /* TVAvatarPickerView.swift */; };
 		45D5C2982F3EDAFB0067807A /* TVProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C2912F3EDAFB0067807A /* TVProfileView.swift */; };
 		45D5C2992F3EDAFB0067807A /* TVAccountSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C28D2F3EDAFB0067807A /* TVAccountSettingsView.swift */; };
+		45D5C29B2F3F75940067807A /* TVContentSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C29A2F3F75940067807A /* TVContentSection.swift */; };
+		45D5C2A12F3F75B90067807A /* TVMagicMirrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C29F2F3F75B90067807A /* TVMagicMirrorView.swift */; };
+		45D5C2A22F3F75B90067807A /* TVLiveAvatarOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C29D2F3F75B90067807A /* TVLiveAvatarOverlayView.swift */; };
+		45D5C2A32F3F75B90067807A /* TVAvatar3DPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C29C2F3F75B90067807A /* TVAvatar3DPreviewView.swift */; };
+		45D5C2A42F3F75B90067807A /* TVMagicMirrorSubviews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45D5C29E2F3F75B90067807A /* TVMagicMirrorSubviews.swift */; };
 		45F9C6A32F3E79D400A64304 /* AvatarMeshRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A02F3E79D400A64304 /* AvatarMeshRepository.swift */; };
 		45F9C6A42F3E79D400A64304 /* ZehAniRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A22F3E79D400A64304 /* ZehAniRepository.swift */; };
 		45F9C6A52F3E79D400A64304 /* ZehAniModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45F9C6A12F3E79D400A64304 /* ZehAniModels.swift */; };
@@ -1073,6 +1078,11 @@
 		45D5C2902F3EDAFB0067807A /* TVPreferencesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVPreferencesView.swift; sourceTree = "<group>"; };
 		45D5C2912F3EDAFB0067807A /* TVProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVProfileView.swift; sourceTree = "<group>"; };
 		45D5C2922F3EDAFB0067807A /* TVViewingHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVViewingHistoryView.swift; sourceTree = "<group>"; };
+		45D5C29A2F3F75940067807A /* TVContentSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVContentSection.swift; sourceTree = "<group>"; };
+		45D5C29C2F3F75B90067807A /* TVAvatar3DPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVAvatar3DPreviewView.swift; sourceTree = "<group>"; };
+		45D5C29D2F3F75B90067807A /* TVLiveAvatarOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVLiveAvatarOverlayView.swift; sourceTree = "<group>"; };
+		45D5C29E2F3F75B90067807A /* TVMagicMirrorSubviews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVMagicMirrorSubviews.swift; sourceTree = "<group>"; };
+		45D5C29F2F3F75B90067807A /* TVMagicMirrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVMagicMirrorView.swift; sourceTree = "<group>"; };
 		45F9C6A02F3E79D400A64304 /* AvatarMeshRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarMeshRepository.swift; sourceTree = "<group>"; };
 		45F9C6A12F3E79D400A64304 /* ZehAniModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZehAniModels.swift; sourceTree = "<group>"; };
 		45F9C6A22F3E79D400A64304 /* ZehAniRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZehAniRepository.swift; sourceTree = "<group>"; };
@@ -1718,6 +1728,8 @@
 		29307A2E2650FF9305F13D80 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				45D5C2A02F3F75B90067807A /* ZehAni */,
+				45D5C29A2F3F75940067807A /* TVContentSection.swift */,
 				45D5C2932F3EDAFB0067807A /* Profile */,
 				45D5C2852F3ECF170067807A /* TVContentCard.swift */,
 				45D5C2862F3ECF170067807A /* TVContentSection.swift */,
@@ -1916,6 +1928,17 @@
 				45D5C2922F3EDAFB0067807A /* TVViewingHistoryView.swift */,
 			);
 			path = Profile;
+			sourceTree = "<group>";
+		};
+		45D5C2A02F3F75B90067807A /* ZehAni */ = {
+			isa = PBXGroup;
+			children = (
+				45D5C29C2F3F75B90067807A /* TVAvatar3DPreviewView.swift */,
+				45D5C29D2F3F75B90067807A /* TVLiveAvatarOverlayView.swift */,
+				45D5C29E2F3F75B90067807A /* TVMagicMirrorSubviews.swift */,
+				45D5C29F2F3F75B90067807A /* TVMagicMirrorView.swift */,
+			);
+			path = ZehAni;
 			sourceTree = "<group>";
 		};
 		45F9C73F2F3EB05F00A64304 /* GrandparentBridge */ = {
@@ -3423,6 +3446,10 @@
 				E39E21A3F03F2E062303B8C0 /* RecentSearchesService.swift in Sources */,
 				431B29574074BE1796843F68 /* RecordingsViewModel.swift in Sources */,
 				41ADE8455C1C215BE941507F /* RewardModels.swift in Sources */,
+				45D5C2A12F3F75B90067807A /* TVMagicMirrorView.swift in Sources */,
+				45D5C2A22F3F75B90067807A /* TVLiveAvatarOverlayView.swift in Sources */,
+				45D5C2A32F3F75B90067807A /* TVAvatar3DPreviewView.swift in Sources */,
+				45D5C2A42F3F75B90067807A /* TVMagicMirrorSubviews.swift in Sources */,
 				CCC56AC8BE3CD1C9FA4A98D6 /* RewardRepository.swift in Sources */,
 				D1359CEA3ACCF22BE285FC27 /* RewardsViewModel.swift in Sources */,
 				2F4D344F1B073E756EB94E6A /* SceneSearchModels.swift in Sources */,
@@ -3530,6 +3557,7 @@
 				89500FF1A65266236FF548AE /* TVFriendsView.swift in Sources */,
 				AFD90D3757B1364C136BABB4 /* TVHomeView.swift in Sources */,
 				C6B30AB8D366828E5977A227 /* TVHouseholdView.swift in Sources */,
+				45D5C29B2F3F75940067807A /* TVContentSection.swift in Sources */,
 				B24D50ED41A3BDC1EE220E47 /* TVJoinPartySheet.swift in Sources */,
 				5DD86E7C9CAC4F218CB3F354 /* TVJudaismView.swift in Sources */,
 				71CDE7463BD205BEFEA48005 /* TVLLMSearchInterpretationView.swift in Sources */,

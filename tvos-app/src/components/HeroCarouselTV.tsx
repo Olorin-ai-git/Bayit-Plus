@@ -24,6 +24,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { config } from '../config/appConfig';
 import { getContentPosterUrl } from '@bayit/shared-utils/youtube';
+import { SubtitleFlagsTV } from './SubtitleFlagsTV';
 import styles, { HERO_WIDTH, AUTO_ADVANCE_INTERVAL } from './styles/HeroCarouselTV.styles';
 
 export interface HeroItem {
@@ -84,7 +85,6 @@ export const HeroCarouselTV: React.FC<HeroCarouselTVProps> = ({
       poster_url: item.poster_url, stream_url: item.stream_url,
     });
     const isFirst = index === 0;
-    const subtitleCount = item.available_subtitle_languages?.length || 0;
 
     return (
       <Pressable
@@ -120,15 +120,11 @@ export const HeroCarouselTV: React.FC<HeroCarouselTVProps> = ({
               {item.description && (
                 <Text style={styles.heroDescription} numberOfLines={3} ellipsizeMode="tail">{item.description}</Text>
               )}
-              {subtitleCount > 0 && (
-                <View style={styles.subtitleIndicator}>
-                  <Text style={styles.subtitleIndicatorText}>
-                    CC {subtitleCount} {subtitleCount === 1 ? 'language' : 'languages'}
-                  </Text>
-                </View>
-              )}
             </View>
           </LinearGradient>
+          {item.available_subtitle_languages && item.available_subtitle_languages.length > 0 && (
+            <SubtitleFlagsTV languages={item.available_subtitle_languages} size="medium" position="bottom-right" />
+          )}
         </Animated.View>
       </Pressable>
     );

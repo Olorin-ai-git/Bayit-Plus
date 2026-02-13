@@ -28,3 +28,8 @@ export { PodcastsScreen } from './PodcastsScreen';
 export { ChildrenScreen } from './ChildrenScreen';
 export { FlowsScreen } from './FlowsScreen';
 export { JudaismScreen } from './JudaismScreen';
+
+// Profile Detail Screens
+export { AIVoiceSettingsScreen } from './AIVoiceSettingsScreen';
+export { SecuritySettingsScreen } from './SecuritySettingsScreen';
+export { DevicesManagerScreen } from './DevicesManagerScreen';

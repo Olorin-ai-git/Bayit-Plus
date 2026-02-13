@@ -12,7 +12,7 @@ import React, { useState} from 'react';
 import { View, Text, Pressable, ScrollView,Image} from 'react-native';
 import { useTranslation} from 'react-i18next';
 import { useQuery} from '@tanstack/react-query';
-import { User, Settings, Clock, Star, LogOut} from 'lucide-react-native';
+import { User, Settings, Clock, Star, LogOut, Bot, Shield, Monitor} from 'lucide-react-native';
 import { api} from '@bayit/shared-services';
 import { TVHeader} from '../components/TVHeader';
 import { queryKeys} from '../config/queryClient';
@@ -50,6 +50,27 @@ export const ProfileScreen: React.FC<{ navigation: any}> = ({ navigation}) => {
  });
 
   const profileOptions: ProfileOption[] = [
+    {
+      id: 'ai_voice',
+      title: t('tvos.profile.aiVoiceSettings', 'AI & Voice Settings'),
+      subtitle: t('tvos.profile.aiVoiceSettingsSubtitle', 'AI assistant and voice preferences'),
+      icon: Bot,
+      onPress: () => navigation.navigate('AIVoiceSettings'),
+   },
+    {
+      id: 'security',
+      title: t('tvos.profile.securitySettings', 'Security'),
+      subtitle: t('tvos.profile.securitySettingsSubtitle', 'Security status and device management'),
+      icon: Shield,
+      onPress: () => navigation.navigate('SecuritySettings'),
+   },
+    {
+      id: 'devices',
+      title: t('tvos.profile.devicesManager', 'Connected Devices'),
+      subtitle: t('tvos.profile.devicesManagerSubtitle', 'Manage your connected devices'),
+      icon: Monitor,
+      onPress: () => navigation.navigate('DevicesManager'),
+   },
     {
       id: 'watch_history',
       title: t('tvos.profile.watchHistory', 'Watch History'),

@@ -28,3 +28,18 @@ export {
 
 // Voice helper hooks (extracted to hooks/)
 export { useVoiceSession, useAudioDucking, useWakeWord } from '../hooks/useVoiceHelpers';
+
+// Avatar Store
+export { useAvatarStore } from './avatarStore';
+
+// Enhanced Voice Store
+export { useEnhancedVoiceStore } from './enhancedVoiceStore';
+
+// AI/Voice Settings Store
+export { useAIVoiceSettingsStore } from './aiVoiceSettingsStore';
+
+// Security Settings Store
+export { useSecuritySettingsStore } from './securitySettingsStore';
+
+// Devices Store
+export { useDevicesStore } from './devicesStore';
