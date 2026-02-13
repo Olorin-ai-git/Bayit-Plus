@@ -327,16 +327,28 @@ async def process_vod_content(
 
         try:
             # Use TMDB to fetch metadata
-            is_series = item.is_series or item.content_type == "series"
+            # Check if content is a series using content_format or content_type
+            is_series = (
+                item.content_format == "series" or
+                item.content_type == "series" or
+                item.series_id is not None or
+                item.total_episodes is not None
+            )
+
+            # Clean title for TMDB search (remove release tags, quality info, etc.)
+            search_title = cleanup_service.clean_title_for_tmdb_search(item.title)
 
             # For series episodes, extract series name
-            search_title = item.title
             if is_series:
                 # Extract series name from episode title
-                cleaned = cleanup_service.clean_title(item.title)
+                cleaned = cleanup_service.clean_title(search_title)
                 if cleaned.get("series_name"):
                     search_title = cleaned["series_name"]
                     print(f"   🔍 Searching TMDB for series: {search_title}")
+
+            # Show cleaned title being searched
+            if search_title != item.title:
+                print(f"   🔍 Cleaned title for search: {search_title}")
 
             if is_series:
                 metadata = await tmdb.enrich_series_content(search_title, item.year)
@@ -347,58 +359,60 @@ async def process_vod_content(
                 fields_updated = []
 
                 if not dry_run:
-                    # Update poster and backdrop
-                    item.poster_url = metadata["poster"]
-                    item.thumbnail = metadata["poster"]
+                    # Build update dict with only non-null values
+                    update_dict = {
+                        "poster_url": metadata["poster"],
+                        "thumbnail": metadata["poster"],
+                    }
                     fields_updated.append("poster")
 
                     if metadata.get("backdrop"):
-                        item.backdrop = metadata["backdrop"]
+                        update_dict["backdrop"] = metadata["backdrop"]
                         fields_updated.append("backdrop")
 
                     # Update TMDB ID
                     if metadata.get("tmdb_id") and not item.tmdb_id:
-                        item.tmdb_id = str(metadata["tmdb_id"])
+                        update_dict["tmdb_id"] = str(metadata["tmdb_id"])
                         fields_updated.append("tmdb_id")
 
                     # Update IMDB ID
                     if metadata.get("imdb_id") and not item.imdb_id:
-                        item.imdb_id = metadata["imdb_id"]
+                        update_dict["imdb_id"] = metadata["imdb_id"]
                         fields_updated.append("imdb_id")
 
                     # Update description if missing
                     if metadata.get("overview") and not item.description:
-                        item.description = metadata["overview"]
-                        item.description_en = metadata["overview"]
+                        update_dict["description"] = metadata["overview"]
+                        update_dict["description_en"] = metadata["overview"]
                         fields_updated.append("description")
 
                     # Update rating
                     if metadata.get("imdb_rating") and not item.imdb_rating:
-                        item.imdb_rating = metadata["imdb_rating"]
+                        update_dict["imdb_rating"] = metadata["imdb_rating"]
                         fields_updated.append("rating")
 
                     if metadata.get("imdb_votes") and not item.imdb_votes:
-                        item.imdb_votes = metadata["imdb_votes"]
+                        update_dict["imdb_votes"] = metadata["imdb_votes"]
 
                     # Update genres
                     if metadata.get("genres") and not item.genres:
-                        item.genres = metadata["genres"]
+                        update_dict["genres"] = metadata["genres"]
                         if metadata["genres"]:
-                            item.genre = metadata["genres"][0]
+                            update_dict["genre"] = metadata["genres"][0]
                         fields_updated.append("genres")
 
                     # Update cast and director
                     if metadata.get("cast") and not item.cast:
-                        item.cast = metadata["cast"]
+                        update_dict["cast"] = metadata["cast"]
                         fields_updated.append("cast")
 
                     if metadata.get("director") and not item.director:
-                        item.director = metadata["director"]
+                        update_dict["director"] = metadata["director"]
                         fields_updated.append("director")
 
                     # Update year if missing
                     if metadata.get("release_year") and not item.year:
-                        item.year = metadata["release_year"]
+                        update_dict["year"] = metadata["release_year"]
                         fields_updated.append("year")
 
                     # Update runtime for movies
@@ -407,25 +421,26 @@ async def process_vod_content(
                         runtime_min = metadata["runtime"]
                         hours = runtime_min // 60
                         minutes = runtime_min % 60
-                        item.duration = f"{hours}:{minutes:02d}:00"
+                        update_dict["duration"] = f"{hours}:{minutes:02d}:00"
                         fields_updated.append("duration")
 
                     # Update series-specific fields
                     if is_series:
                         if metadata.get("total_seasons") and not item.total_seasons:
-                            item.total_seasons = metadata["total_seasons"]
+                            update_dict["total_seasons"] = metadata["total_seasons"]
                             fields_updated.append("seasons")
 
                         if metadata.get("total_episodes") and not item.total_episodes:
-                            item.total_episodes = metadata["total_episodes"]
+                            update_dict["total_episodes"] = metadata["total_episodes"]
                             fields_updated.append("episodes")
 
                     # Update trailer URL
                     if metadata.get("trailer_url") and not item.trailer_url:
-                        item.trailer_url = metadata["trailer_url"]
+                        update_dict["trailer_url"] = metadata["trailer_url"]
                         fields_updated.append("trailer")
 
-                    await item.save()
+                    # Use direct MongoDB update to bypass revision checking
+                    await Content.find_one(Content.id == item.id).update({"$set": update_dict})
 
                 print(f"   ✅ Enriched from TMDB")
                 print(f"      Poster: {metadata['poster'][:60]}...")
@@ -435,7 +450,11 @@ async def process_vod_content(
                 print(f"   ⚠️  No metadata found on TMDB")
 
         except Exception as e:
-            print(f"   ❌ Error: {str(e)}")
+            import traceback
+            error_msg = str(e) or repr(e)
+            print(f"   ❌ Error: {error_msg}")
+            if not error_msg:
+                print(f"      Traceback: {traceback.format_exc()[:500]}")
             error_count += 1
 
         print("")
@@ -506,8 +525,8 @@ async def process_podcasts(
 
             if artwork_url:
                 if not dry_run:
-                    podcast.cover = artwork_url
-                    await podcast.save()
+                    # Use direct MongoDB update to bypass revision checking
+                    await Podcast.find_one(Podcast.id == podcast.id).update({"$set": {"cover": artwork_url}})
 
                 print(f"   ✅ Attached artwork from RSS feed")
                 print(f"      Artwork: {artwork_url[:60]}...")
@@ -516,7 +535,11 @@ async def process_podcasts(
                 print(f"   ⚠️  No artwork found in RSS feed")
 
         except Exception as e:
-            print(f"   ❌ Error: {str(e)}")
+            import traceback
+            error_msg = str(e) or repr(e)
+            print(f"   ❌ Error: {error_msg}")
+            if not error_msg:
+                print(f"      Traceback: {traceback.format_exc()[:500]}")
             error_count += 1
 
         print("")
