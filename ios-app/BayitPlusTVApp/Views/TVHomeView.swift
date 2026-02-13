@@ -9,9 +9,6 @@ struct TVHomeView: View {
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: HomeViewModel?
 
-    /// Max items visible in one row without scrolling.
-    static let maxItemsPerRow = 5
-
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             if let vm = viewModel {
@@ -27,6 +24,7 @@ struct TVHomeView: View {
             }
         }
         .background(DesignTokens.Background.primary)
+        .ignoresSafeArea(.container, edges: .horizontal)
         .task {
             if viewModel == nil {
                 viewModel = HomeViewModel(
@@ -39,6 +37,12 @@ struct TVHomeView: View {
             await viewModel?.loadFeatured()
             ShabbatModeService.shared.startPolling(repository: repos.shabbat)
             cacheTopShelfData()
+        }
+        .onAppear {
+            // Refresh continue watching when returning to home
+            Task {
+                await viewModel?.refresh()
+            }
         }
     }
 
@@ -102,7 +106,7 @@ struct TVHomeView: View {
             title: "Continue Watching",
             icon: "play.circle.fill",
             items: vm.continueWatching,
-            maxItems: Self.maxItemsPerRow,
+            maxItems: 4,
             seeAllAction: { coordinator.selectedTab = .favorites }
         ) { item in
             TVContentCard(
@@ -160,7 +164,7 @@ struct TVHomeView: View {
             title: "Live TV",
             icon: "dot.radiowaves.left.and.right",
             items: vm.liveChannels,
-            maxItems: Self.maxItemsPerRow,
+            maxItems: 4,
             seeAllAction: { coordinator.selectedTab = .liveTV }
         ) { channel in
             TVContentCard(
@@ -186,7 +190,7 @@ struct TVHomeView: View {
             title: section.title,
             icon: section.icon,
             items: category.items,
-            maxItems: Self.maxItemsPerRow,
+            maxItems: 4,
             seeAllAction: { coordinator.selectedTab = seeAllTab(for: section) }
         ) { item in
             TVContentCard(

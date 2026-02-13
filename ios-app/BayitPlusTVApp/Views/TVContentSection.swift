@@ -7,18 +7,15 @@ struct TVContentSection<Item, CardContent: View>: View {
     let title: String
     let icon: String
     let items: [Item]
-    let maxItems: Int
+    let maxItems: Int?
     let seeAllAction: (() -> Void)?
     let cardBuilder: (Item) -> CardContent
-
-    /// Section width with horizontal padding on each side
-    private let sectionPadding = TVDesignTokens.Spacing.xxl
 
     init(
         title: String,
         icon: String,
         items: [Item],
-        maxItems: Int = 5,
+        maxItems: Int? = nil,
         seeAllAction: (() -> Void)? = nil,
         @ViewBuilder cardBuilder: @escaping (Item) -> CardContent
     ) {
@@ -30,8 +27,11 @@ struct TVContentSection<Item, CardContent: View>: View {
         self.cardBuilder = cardBuilder
     }
 
-    private var visibleItems: ArraySlice<Item> {
-        items.prefix(maxItems)
+    private var visibleItems: [Item] {
+        if let maxItems = maxItems {
+            return Array(items.prefix(maxItems))
+        }
+        return items
     }
 
     var body: some View {
@@ -48,7 +48,7 @@ struct TVContentSection<Item, CardContent: View>: View {
 
                 Spacer()
 
-                if items.count > maxItems, let action = seeAllAction {
+                if let maxItems = maxItems, items.count > maxItems, let action = seeAllAction {
                     Button(action: action) {
                         HStack(spacing: TVDesignTokens.Spacing.sm) {
                             Text("See All")
@@ -63,7 +63,6 @@ struct TVContentSection<Item, CardContent: View>: View {
                     .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal, sectionPadding)
 
             // Horizontal scrolling cards
             ScrollView(.horizontal, showsIndicators: false) {
@@ -72,13 +71,13 @@ struct TVContentSection<Item, CardContent: View>: View {
                         cardBuilder(visibleItems[index])
                     }
                 }
-                .padding(.horizontal, sectionPadding)
                 .padding(.vertical, TVDesignTokens.Spacing.md)
             }
             .clipped()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, TVDesignTokens.Spacing.lg)
+        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
         .background(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
                 .fill(Color.white.opacity(0.04))
@@ -92,7 +91,6 @@ struct TVContentSection<Item, CardContent: View>: View {
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.xl)
                 .stroke(Color.white.opacity(0.1), lineWidth: 2)
         )
-        .padding(.horizontal, sectionPadding)
         .focusSection()
     }
 }

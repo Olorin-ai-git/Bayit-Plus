@@ -22,7 +22,6 @@ struct TVShabbatBannerView: View {
             }
             .buttonStyle(.card)
             .tvFocusStyle()
-            .padding(.horizontal, TVDesignTokens.Spacing.xl)
         }
     }
 
