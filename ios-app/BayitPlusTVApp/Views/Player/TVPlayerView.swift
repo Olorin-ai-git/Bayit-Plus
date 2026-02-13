@@ -49,6 +49,9 @@ struct TVPlayerView: View {
     @State private var audioTracks: [AudioTrack] = []
     @State private var isResolvingStream = true
     @State private var streamError: String?
+    @State private var initialPosition: TimeInterval = 0
+    nonisolated(unsafe) private var progressTrackingTask: Task<Void, Never>?
+    private let progressIntervalSeconds: TimeInterval = 15
 
     // Focus management
     @FocusState private var controlBarFocused: Bool
@@ -564,6 +567,10 @@ struct TVPlayerView: View {
                 await subtitlesVM?.loadCues(
                     contentId: contentId, language: language
                 )
+                // Save subtitle preference for VOD content
+                if !isLive {
+                    await saveSubtitlePreference(language: language)
+                }
             }
         } else {
             subtitlesVM = nil
@@ -680,6 +687,20 @@ struct TVPlayerView: View {
             isResolvingStream = false
 
             await loadAvailableLanguages()
+
+            // Load resume position and subtitle preferences for VOD
+            if !isLive {
+                await loadResumePosition()
+                await loadSubtitlePreference()
+
+                // Seek to resume position if available
+                if initialPosition > 0 {
+                    await mediaPlayer.seek(to: initialPosition)
+                }
+
+                // Start periodic progress tracking
+                startProgressTracking()
+            }
         } catch {
             streamError = "Unable to load stream. Please try again."
             isResolvingStream = false
@@ -799,6 +820,9 @@ struct TVPlayerView: View {
     }
 
     private func cleanup() {
+        progressTrackingTask?.cancel()
+        progressTrackingTask = nil
+        Task { await saveProgress() }
         mediaPlayer.pause()
         liveDubbingVM?.cleanup()
         liveSubtitlesVM?.cleanup()
@@ -806,6 +830,78 @@ struct TVPlayerView: View {
         catchUpVM?.reset()
         catchUpVM = nil
     }
+
+    // MARK: - Progress Tracking
+
+    @MainActor
+    private func loadResumePosition() async {
+        do {
+            let history = try await repos.media.fetchContinueWatching()
+            if let item = history.items.first(where: { $0.id == contentId }) {
+                initialPosition = item.position ?? 0
+            }
+        } catch {
+            // Resume position is optional - continue without it
+        }
+    }
+
+    private func startProgressTracking() {
+        progressTrackingTask = Task { [weak self] in
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .seconds(self?.progressIntervalSeconds ?? 15))
+                guard !Task.isCancelled else { break }
+                await self?.saveProgress()
+            }
+        }
+    }
+
+    @MainActor
+    private func saveProgress() async {
+        guard mediaPlayer.currentTime > 0, mediaPlayer.duration > 0 else { return }
+
+        let request = WatchProgressRequest(
+            contentId: contentId,
+            contentType: contentType == .vod ? "vod" : "podcast",
+            position: mediaPlayer.currentTime,
+            duration: mediaPlayer.duration
+        )
+
+        do {
+            _ = try await repos.media.updateProgress(request: request)
+        } catch {
+            // Progress save failures are non-critical
+        }
+    }
+
+    // MARK: - Subtitle Preferences
+
+    @MainActor
+    private func loadSubtitlePreference() async {
+        do {
+            let response = try await repos.subtitle.fetchPreferences(contentId: contentId)
+            if let language = response.language, !language.isEmpty {
+                // Auto-select saved subtitle preference
+                handleSubtitleSelection(language)
+            }
+        } catch {
+            // Subtitle preferences are optional - continue without them
+        }
+    }
+
+    @MainActor
+    private func saveSubtitlePreference(language: String) async {
+        let update = SubtitlePreferencesUpdate(
+            contentId: contentId,
+            language: language
+        )
+
+        do {
+            try await repos.subtitle.updatePreferences(update)
+        } catch {
+            // Preference save failures are non-critical
+        }
+    }
+
 }
 
 // MARK: - Stream Resolution Error

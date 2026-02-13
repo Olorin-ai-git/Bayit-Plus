@@ -40,7 +40,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>15</string>
+	<string>16</string>
 	<key>GOOGLE_CLIENT_ID</key>
 	<string>624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com</string>
 	<key>GOOGLE_SERVER_CLIENT_ID</key>
@@ -56,6 +56,10 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need microphone access for speech recognition features.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>We need speech recognition for Hebrew pronunciation practice and interactive missions.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -63,9 +67,5 @@
 	</dict>
 	<key>UILaunchStoryboardName</key>
 	<string></string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>We need speech recognition for Hebrew pronunciation practice and interactive missions.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>We need microphone access for speech recognition features.</string>
 </dict>
 </plist>

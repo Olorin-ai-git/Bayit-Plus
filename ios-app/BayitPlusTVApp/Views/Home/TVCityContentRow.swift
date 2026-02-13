@@ -82,6 +82,7 @@ struct TVCityContentRow: View {
                 .stroke(Color.white.opacity(0.1), lineWidth: 2)
         )
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+        .padding(.horizontal, 4) // Additional padding to ensure visibility
     }
 
     private var header: some View {

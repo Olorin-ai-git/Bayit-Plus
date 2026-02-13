@@ -97,6 +97,18 @@ final class PodcastsViewModel {
     }
 
     @MainActor
+    func removePodcast(id: String) async {
+        do {
+            try await repository.removeCustomPodcast(id: id)
+            shows.removeAll { $0.id == id }
+            logger.info("Podcast removed", context: ["id": id])
+        } catch {
+            self.error = "Failed to remove podcast"
+            logger.error("Failed to remove podcast", error: error)
+        }
+    }
+
+    @MainActor
     func refresh() async {
         isSyncing = true
         do {

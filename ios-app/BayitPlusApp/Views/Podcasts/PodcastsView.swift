@@ -6,6 +6,7 @@ struct PodcastsView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @State private var viewModel: PodcastsViewModel?
+    @State private var showAddSheet = false
 
     private let columns = [
         GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
@@ -14,7 +15,17 @@ struct PodcastsView: View {
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
-            PageHeader(icon: "headphones", title: "Podcasts")
+            PageHeader(
+                icon: "headphones",
+                title: "Podcasts",
+                trailing: Button {
+                    showAddSheet = true
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.system(size: 24))
+                        .foregroundStyle(DesignTokens.Primary.default)
+                }
+            )
 
             if let vm = viewModel {
                 if vm.isLoading && vm.shows.isEmpty {
@@ -33,6 +44,16 @@ struct PodcastsView: View {
         .background(DesignTokens.Background.primary)
         .refreshable {
             await viewModel?.refresh()
+        }
+        .sheet(isPresented: $showAddSheet) {
+            AddPodcastView(
+                repository: repos.podcasts,
+                onDismiss: { showAddSheet = false },
+                onAdded: {
+                    showAddSheet = false
+                    Task { await viewModel?.refresh() }
+                }
+            )
         }
         .task {
             if viewModel == nil {
@@ -78,9 +99,15 @@ struct PodcastsView: View {
     private func showGrid(_ vm: PodcastsViewModel) -> some View {
         LazyVGrid(columns: columns, spacing: DesignTokens.Spacing.md) {
             ForEach(vm.shows) { show in
-                PodcastShowCard(show: show) {
-                    coordinator.navigate(to: .podcastDetail(showId: show.id))
-                }
+                PodcastShowCard(
+                    show: show,
+                    onTap: {
+                        coordinator.navigate(to: .podcastDetail(showId: show.id))
+                    },
+                    onDelete: show.isUserAdded == true ? {
+                        await vm.removePodcast(id: show.id)
+                    } : nil
+                )
                 .onAppear {
                     if show.id == vm.shows.last?.id {
                         Task { await vm.loadMore() }
@@ -114,6 +141,7 @@ struct PodcastsView: View {
 private struct PodcastShowCard: View {
     let show: PodcastShow
     let onTap: () -> Void
+    let onDelete: (() async -> Void)?
 
     var body: some View {
         Button(action: onTap) {
@@ -148,6 +176,15 @@ private struct PodcastShowCard: View {
             .glassCard()
         }
         .buttonStyle(.plain)
+        .contextMenu {
+            if show.isUserAdded == true {
+                Button(role: .destructive) {
+                    Task { await onDelete?() }
+                } label: {
+                    Label("Remove Podcast", systemImage: "trash")
+                }
+            }
+        }
     }
 
     private var coverImage: some View {

@@ -8,6 +8,7 @@ struct TVPodcastsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: PodcastsViewModel?
+    @State private var showAddSheet = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -24,6 +25,16 @@ struct TVPodcastsView: View {
             }
         }
         .background(DesignTokens.Background.primary)
+        .sheet(isPresented: $showAddSheet) {
+            TVAddPodcastView(
+                repository: repos.podcasts,
+                onDismiss: { showAddSheet = false },
+                onAdded: {
+                    showAddSheet = false
+                    Task { await viewModel?.refresh() }
+                }
+            )
+        }
         .task {
             if viewModel == nil {
                 viewModel = PodcastsViewModel(repository: repos.podcasts)
@@ -98,6 +109,24 @@ struct TVPodcastsView: View {
                 Spacer()
 
                 Button {
+                    showAddSheet = true
+                } label: {
+                    HStack(spacing: TVDesignTokens.Spacing.sm) {
+                        Image(systemName: "plus.circle")
+                            .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
+                        Text("Add Podcast")
+                            .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
+                    }
+                    .foregroundStyle(DesignTokens.Primary.default)
+                    .padding(.horizontal, TVDesignTokens.Spacing.lg)
+                    .padding(.vertical, TVDesignTokens.Spacing.md)
+                    .background(DesignTokens.Glass.bg)
+                    .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.default))
+                }
+                .buttonStyle(.card)
+                .tvFocusStyle()
+
+                Button {
                     Task { await vm.refresh() }
                 } label: {
                     HStack(spacing: TVDesignTokens.Spacing.sm) {
@@ -141,6 +170,15 @@ struct TVPodcastsView: View {
                         }
                     )
                     .tvFocusStyle()
+                    .contextMenu {
+                        if show.isUserAdded == true {
+                            Button(role: .destructive) {
+                                Task { await vm.removePodcast(id: show.id) }
+                            } label: {
+                                Label("Remove Podcast", systemImage: "trash")
+                            }
+                        }
+                    }
                 }
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)

@@ -60,6 +60,12 @@ protocol PodcastRepository: Sendable {
     /// - Throws: `NetworkError` if the request fails.
     func addCustomPodcast(rssUrl: String) async throws
 
+    /// Remove/unsubscribe from a custom podcast.
+    ///
+    /// - Parameter id: Podcast ID to unsubscribe from.
+    /// - Throws: `NetworkError` if the request fails.
+    func removeCustomPodcast(id: String) async throws
+
     /// Refresh all podcasts: sync latest episodes from RSS feeds and remove old episodes.
     ///
     /// - Throws: `NetworkError` if the request fails.
@@ -147,6 +153,13 @@ final class APIPodcastRepository: PodcastRepository, @unchecked Sendable {
         _ = try await client.post(
             "/api/v1/podcasts/custom",
             body: AddPodcastRequest(rssUrl: rssUrl),
+            as: MessageResponse.self
+        )
+    }
+
+    func removeCustomPodcast(id: String) async throws {
+        _ = try await client.delete(
+            "/api/v1/podcasts/subscriptions/\(id)",
             as: MessageResponse.self
         )
     }

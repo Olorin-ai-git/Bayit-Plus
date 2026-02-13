@@ -22,6 +22,8 @@ struct PodcastShow: Decodable, Sendable, Identifiable {
     let episodeCount: Int?
     let latestEpisode: String?
     let availableLanguages: [String]?
+    let isSubscribed: Bool?
+    let isUserAdded: Bool?
 }
 
 /// A podcast category

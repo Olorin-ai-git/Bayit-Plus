@@ -10,6 +10,7 @@ from app.api.routes.content.beta_filter import (build_beta_content_filter,
 from app.core.security import get_current_user, get_optional_user
 from app.models.content import Podcast, PodcastEpisode
 from app.models.user import User
+from app.models.user_podcast_subscription import UserPodcastSubscription
 from app.services.apple_podcasts_converter import convert_apple_podcasts_to_rss
 from app.services.podcast_scraper import fetch_rss_feed
 from app.core.config import settings
@@ -118,13 +119,46 @@ async def add_podcast_from_url(
     """Create a Podcast document + episodes from a resolved RSS URL."""
     rss_url = body.rss_url.strip()
 
-    # Check for duplicate
+    # Check if podcast already exists
     existing = await Podcast.find_one(Podcast.rss_feed == rss_url)
     if existing:
-        raise HTTPException(
-            status_code=409,
-            detail="A podcast with this RSS feed already exists",
+        # Check if user already subscribed
+        existing_sub = await UserPodcastSubscription.find_one(
+            UserPodcastSubscription.user_id == str(current_user.id),
+            UserPodcastSubscription.podcast_id == str(existing.id),
+            UserPodcastSubscription.is_deleted == False,
         )
+
+        if existing_sub:
+            raise HTTPException(
+                status_code=409,
+                detail="Already subscribed to this podcast",
+            )
+
+        # Create subscription to existing podcast
+        subscription = UserPodcastSubscription(
+            user_id=str(current_user.id),
+            podcast_id=str(existing.id),
+            is_user_added=True,
+            subscribed_at=datetime.utcnow(),
+        )
+        await subscription.insert()
+
+        logger.info(
+            "User subscribed to existing podcast",
+            extra={
+                "podcast_id": str(existing.id),
+                "title": existing.title,
+                "user_id": str(current_user.id),
+            },
+        )
+
+        return {
+            "id": str(existing.id),
+            "title": existing.title,
+            "episode_count": existing.episode_count,
+            "message": "Subscribed to existing podcast",
+        }
 
     # Parse RSS feed for episodes
     episodes_data = await fetch_rss_episodes(rss_url, max_episodes=15)
@@ -154,6 +188,15 @@ async def add_podcast_from_url(
         updated_at=datetime.utcnow(),
     )
     await podcast.insert()
+
+    # Create user subscription
+    subscription = UserPodcastSubscription(
+        user_id=str(current_user.id),
+        podcast_id=str(podcast.id),
+        is_user_added=True,
+        subscribed_at=datetime.utcnow(),
+    )
+    await subscription.insert()
 
     # Create PodcastEpisode documents
     episodes_added = 0
@@ -198,6 +241,56 @@ async def add_podcast_from_url(
         "title": title,
         "episode_count": episodes_added,
     }
+
+
+@router.post("/custom")
+async def add_podcast_from_url_alias(
+    body: AddFromUrlRequest,
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Alias for /add-from-url endpoint.
+    Create a Podcast document + episodes from a resolved RSS URL.
+    """
+    return await add_podcast_from_url(body, current_user)
+
+
+@router.delete("/subscriptions/{podcast_id}")
+async def unsubscribe_from_podcast(
+    podcast_id: str,
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Unsubscribe from a podcast (soft delete).
+    Only the subscription owner can unsubscribe.
+    """
+    subscription = await UserPodcastSubscription.find_one(
+        UserPodcastSubscription.user_id == str(current_user.id),
+        UserPodcastSubscription.podcast_id == podcast_id,
+        UserPodcastSubscription.is_deleted == False,
+    )
+
+    if not subscription:
+        raise HTTPException(
+            status_code=404,
+            detail="Subscription not found",
+        )
+
+    # Soft delete
+    subscription.is_deleted = True
+    subscription.deleted_at = datetime.utcnow()
+    await subscription.save()
+
+    logger.info(
+        "User unsubscribed from podcast",
+        extra={
+            "user_id": str(current_user.id),
+            "podcast_id": podcast_id,
+            "was_user_added": subscription.is_user_added,
+        },
+    )
+
+    return {"message": "Unsubscribed from podcast"}
 
 
 @router.get("/categories")
@@ -475,6 +568,16 @@ async def get_podcasts(
             for cat_id, name in sorted(categories_map.items(), key=lambda x: x[1])
         ]
 
+        # Get user subscriptions if authenticated
+        user_subscriptions = {}
+        if current_user:
+            subscriptions = await UserPodcastSubscription.find(
+                UserPodcastSubscription.user_id == str(current_user.id),
+                UserPodcastSubscription.is_deleted == False,
+            ).to_list()
+            for sub in subscriptions:
+                user_subscriptions[sub.podcast_id] = sub.is_user_added
+
         return {
             "shows": [
                 {
@@ -491,6 +594,8 @@ async def get_podcasts(
                         else None
                     ),
                     "availableLanguages": show_languages.get(str(show.id), []),
+                    "isSubscribed": str(show.id) in user_subscriptions,
+                    "isUserAdded": user_subscriptions.get(str(show.id), False),
                 }
                 for show in shows
             ],

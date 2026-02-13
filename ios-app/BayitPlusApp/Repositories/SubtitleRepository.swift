@@ -87,15 +87,20 @@ final class APISubtitleRepository: SubtitleRepository, @unchecked Sendable {
 
     func fetchPreferences(contentId: String) async throws -> SubtitlePreferencesResponse {
         return try await client.get(
-            "/api/v1/subtitles/\(contentId)/preferences",
+            "/api/v1/subtitles/preferences/\(contentId)",
             as: SubtitlePreferencesResponse.self
         )
     }
 
     func updatePreferences(_ update: SubtitlePreferencesUpdate) async throws {
-        _ = try await client.put(
-            "/api/v1/subtitles/preferences",
-            body: update,
+        let queryItems = [
+            URLQueryItem(name: "language", value: update.language),
+            URLQueryItem(name: "hebrew_mode", value: "regular")
+        ]
+        _ = try await client.post(
+            "/api/v1/subtitles/preferences/\(update.contentId)",
+            queryItems: queryItems,
+            body: EmptyRequest(),
             as: MessageResponse.self
         )
     }
