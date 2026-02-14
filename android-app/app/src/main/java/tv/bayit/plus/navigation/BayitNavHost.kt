@@ -8,16 +8,26 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
+import tv.bayit.plus.feature.audiobooks.AudiobooksRoute
 import tv.bayit.plus.feature.auth.register.RegisterRoute
+import tv.bayit.plus.feature.culture.CultureRoute
+import tv.bayit.plus.feature.culture.flows.FlowsRoute
+import tv.bayit.plus.feature.culture.judaism.JudaismRoute
+import tv.bayit.plus.feature.culture.morning.MorningRitualRoute
 import tv.bayit.plus.feature.home.HomeRoute
+import tv.bayit.plus.feature.kids.children.ChildrenRoute
+import tv.bayit.plus.feature.kids.youngsters.YoungstersRoute
 import tv.bayit.plus.feature.livetv.LiveTVRoute
 import tv.bayit.plus.feature.player.PlayerRoute
 import tv.bayit.plus.feature.podcasts.PodcastsRoute
 import tv.bayit.plus.feature.profile.selection.ProfileSelectionRoute
+import tv.bayit.plus.feature.radio.RadioRoute
 import tv.bayit.plus.feature.search.SearchRoute
 import tv.bayit.plus.feature.vod.VodRoute
 import tv.bayit.plus.feature.vod.detail.MovieDetailRoute
+import tv.bayit.plus.feature.vod.recordings.RecordingsRoute
 import tv.bayit.plus.feature.vod.series.SeriesDetailRoute
+import tv.bayit.plus.feature.vod.trending.TrendingRoute
 
 @Composable
 fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
@@ -35,7 +45,9 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
         composable<Route.Vod> {
             VodRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
         }
-        composable<Route.Radio> { GlassLoadingIndicator() }
+        composable<Route.Radio> {
+            RadioRoute(onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) })
+        }
         composable<Route.Podcasts> {
             PodcastsRoute(onNavigateToPodcast = { id -> navController.navigate(Route.PodcastDetail(showId = id)) })
         }
@@ -91,7 +103,9 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
         composable<Route.Favorites> { GlassLoadingIndicator() }
         composable<Route.Playlist> { GlassLoadingIndicator() }
         composable<Route.Downloads> { GlassLoadingIndicator() }
-        composable<Route.Recordings> { GlassLoadingIndicator() }
+        composable<Route.Recordings> {
+            RecordingsRoute(onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) })
+        }
         composable<Route.Settings> { GlassLoadingIndicator() }
         composable<Route.LanguageSettings> { GlassLoadingIndicator() }
         composable<Route.NotificationSettings> { GlassLoadingIndicator() }
@@ -99,13 +113,27 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
         composable<Route.Subscription> { GlassLoadingIndicator() }
         composable<Route.Security> { GlassLoadingIndicator() }
         composable<Route.ConnectedAccounts> { GlassLoadingIndicator() }
-        composable<Route.Children> { GlassLoadingIndicator() }
-        composable<Route.Youngsters> { GlassLoadingIndicator() }
-        composable<Route.Judaism> { GlassLoadingIndicator() }
-        composable<Route.Flows> { GlassLoadingIndicator() }
-        composable<Route.MorningRitual> { GlassLoadingIndicator() }
-        composable<Route.Culture> { GlassLoadingIndicator() }
-        composable<Route.Audiobooks> { GlassLoadingIndicator() }
+        composable<Route.Children> {
+            ChildrenRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
+        }
+        composable<Route.Youngsters> {
+            YoungstersRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
+        }
+        composable<Route.Judaism> {
+            JudaismRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
+        }
+        composable<Route.Flows> {
+            FlowsRoute(onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) })
+        }
+        composable<Route.MorningRitual> {
+            MorningRitualRoute()
+        }
+        composable<Route.Culture> {
+            CultureRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
+        }
+        composable<Route.Audiobooks> {
+            AudiobooksRoute(onNavigateToAudiobook = { id -> navController.navigate(Route.AudiobookDetail(audiobookId = id)) })
+        }
         composable<Route.AudiobookDetail> { GlassLoadingIndicator() }
         composable<Route.Friends> { GlassLoadingIndicator() }
         composable<Route.DirectMessages> { GlassLoadingIndicator() }
@@ -116,7 +144,9 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
         composable<Route.ActivityFeed> { GlassLoadingIndicator() }
         composable<Route.Trivia> { GlassLoadingIndicator() }
         composable<Route.Rewards> { GlassLoadingIndicator() }
-        composable<Route.Trending> { GlassLoadingIndicator() }
+        composable<Route.Trending> {
+            TrendingRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
+        }
         composable<Route.LlmSearch> { GlassLoadingIndicator() }
         composable<Route.Chatbot> { GlassLoadingIndicator() }
         composable<Route.VoiceOnboarding> { GlassLoadingIndicator() }
