@@ -7,6 +7,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.feature.home.HomeRoute
+import tv.bayit.plus.feature.livetv.LiveTVRoute
+import tv.bayit.plus.feature.vod.VodRoute
 
 @Composable
 fun BayitNavHost(
@@ -31,8 +33,24 @@ fun BayitNavHost(
                 },
             )
         }
-        composable<Route.LiveTV> { GlassLoadingIndicator() }
-        composable<Route.Vod> { GlassLoadingIndicator() }
+        composable<Route.LiveTV> {
+            LiveTVRoute(
+                onNavigateToPlayer = { contentId, contentType ->
+                    navController.navigate(Route.Player(contentId = contentId, contentType = contentType))
+                },
+            )
+        }
+        composable<Route.Vod> {
+            VodRoute(
+                onNavigateToContent = { contentId, contentType ->
+                    when (contentType) {
+                        "series" -> navController.navigate(Route.SeriesDetail(seriesId = contentId))
+                        "collection" -> navController.navigate(Route.CollectionDetail(collectionId = contentId))
+                        else -> navController.navigate(Route.MovieDetail(movieId = contentId))
+                    }
+                },
+            )
+        }
         composable<Route.Radio> { GlassLoadingIndicator() }
         composable<Route.Podcasts> { GlassLoadingIndicator() }
         composable<Route.Search> { GlassLoadingIndicator() }
