@@ -6,6 +6,7 @@ import retrofit2.http.Query
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.ContentRepository
+import tv.bayit.plus.core.model.CollectionDetail
 import tv.bayit.plus.core.model.ContentDetail
 import tv.bayit.plus.core.model.ContentItem
 import tv.bayit.plus.core.model.FeaturedResponse
@@ -36,6 +37,11 @@ class ApiContentRepository(
         client.safeApiCall { service.getContentDetail(id) }
     }
 
+    override suspend fun getCollectionById(collectionId: String): BayitResult<Any> =
+        runCatchingResult {
+            client.safeApiCall { service.getCollectionDetail(collectionId) }
+        }
+
     override suspend fun getFeatured(): BayitResult<List<Any>> = runCatchingResult {
         val response = client.safeApiCall { service.getFeatured() }
         buildList {
@@ -64,6 +70,11 @@ private interface ContentService {
 
     @GET("api/v1/content/{id}")
     suspend fun getContentDetail(@Path("id") id: String): ContentDetail
+
+    @GET("api/v1/content/collections/{collectionId}")
+    suspend fun getCollectionDetail(
+        @Path("collectionId") collectionId: String,
+    ): CollectionDetail
 
     @GET("api/v1/content/all")
     suspend fun getAllContent(

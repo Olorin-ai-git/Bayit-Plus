@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.feature.audiobooks.AudiobooksRoute
+import tv.bayit.plus.feature.audiobooks.detail.AudiobookDetailRoute
 import tv.bayit.plus.feature.auth.register.RegisterRoute
 import tv.bayit.plus.feature.culture.CultureRoute
 import tv.bayit.plus.feature.culture.flows.FlowsRoute
@@ -23,6 +24,7 @@ import tv.bayit.plus.feature.missions.interactive.InteractiveMissionRoute
 import tv.bayit.plus.feature.missions.story.StarStoryRoute
 import tv.bayit.plus.feature.player.PlayerRoute
 import tv.bayit.plus.feature.podcasts.PodcastsRoute
+import tv.bayit.plus.feature.podcasts.detail.PodcastDetailRoute
 import tv.bayit.plus.feature.profile.selection.ProfileSelectionRoute
 import tv.bayit.plus.feature.radio.RadioRoute
 import tv.bayit.plus.feature.rewards.RewardsRoute
@@ -47,6 +49,7 @@ import tv.bayit.plus.feature.social.watchparty.WatchPartyRoute
 import tv.bayit.plus.feature.social.watchparty.active.ActivePartyRoute
 import tv.bayit.plus.feature.trivia.TriviaRoute
 import tv.bayit.plus.feature.vod.VodRoute
+import tv.bayit.plus.feature.vod.collection.CollectionDetailRoute
 import tv.bayit.plus.feature.vod.detail.MovieDetailRoute
 import tv.bayit.plus.feature.vod.recordings.RecordingsRoute
 import tv.bayit.plus.feature.vod.series.SeriesDetailRoute
@@ -95,8 +98,18 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
                 onNavigateBack = { navController.popBackStack() },
             )
         }
-        composable<Route.CollectionDetail> { GlassLoadingIndicator() }
-        composable<Route.PodcastDetail> { GlassLoadingIndicator() }
+        composable<Route.CollectionDetail> {
+            CollectionDetailRoute(
+                onNavigateToMovie = { id -> navController.navigate(Route.MovieDetail(movieId = id)) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.PodcastDetail> {
+            PodcastDetailRoute(
+                onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
         composable<Route.Epg> { GlassLoadingIndicator() }
         composable<Route.Login> { GlassLoadingIndicator() }
         composable<Route.Register> {
@@ -184,7 +197,12 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
         composable<Route.Audiobooks> {
             AudiobooksRoute(onNavigateToAudiobook = { id -> navController.navigate(Route.AudiobookDetail(audiobookId = id)) })
         }
-        composable<Route.AudiobookDetail> { GlassLoadingIndicator() }
+        composable<Route.AudiobookDetail> {
+            AudiobookDetailRoute(
+                onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
         composable<Route.Friends> {
             FriendsRoute(onNavigateBack = { navController.popBackStack() })
         }
