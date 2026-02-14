@@ -19,7 +19,6 @@ struct MagicMirrorView: View {
     @State private var existingAvatarId: String?
     @State private var glbData: Data?
     @State private var meshLoadFailed = false
-    @State private var debugInfo: String = ""
 
     var body: some View {
         ZStack {
@@ -41,14 +40,6 @@ struct MagicMirrorView: View {
                     Spacer()
                 } else if let greeting = greeting {
                     greetingContent(greeting)
-                    #if DEBUG
-                    if !debugInfo.isEmpty {
-                        Text(debugInfo)
-                            .font(.system(size: 10))
-                            .foregroundStyle(.red)
-                            .padding(4)
-                    }
-                    #endif
                     reRecordButton
                     refreshButton
                 }
@@ -215,19 +206,8 @@ struct MagicMirrorView: View {
                 async let avatarsTask = repos.starStory.fetchAvatars(profileId: profileId)
 
                 let fetched = try await greetingTask
-                let avatarsResponse: AvatarsResponse?
-                do {
-                    avatarsResponse = try await avatarsTask
-                } catch {
-                    avatarsResponse = nil
-                    await MainActor.run {
-                        debugInfo = "Avatars decode: \(error)"
-                    }
-                }
+                let avatarsResponse = try? await avatarsTask
                 let avatarId = avatarsResponse?.avatars.first?.avatarId
-                await MainActor.run {
-                    debugInfo += " | id=\(avatarId ?? "nil") cnt=\(avatarsResponse?.avatars.count ?? -1)"
-                }
 
                 await MainActor.run {
                     greeting = fetched
@@ -264,22 +244,21 @@ struct MagicMirrorView: View {
                 avatarId: avatarId
             )
             guard let url = URL(string: meshGlb.signedUrl) else {
-                await MainActor.run {
-                    meshLoadFailed = true
-                    debugInfo += " | badURL"
-                }
+                await MainActor.run { meshLoadFailed = true }
                 return
             }
-            let (data, _) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await URLSession.shared.data(from: url)
+            let httpStatus = (response as? HTTPURLResponse)?.statusCode ?? 0
+            let isValidGlb = (httpStatus == 200 || httpStatus == 0) && data.count > 50_000
             await MainActor.run {
-                debugInfo += " | glb=\(data.count)B"
-                glbData = data
+                if isValidGlb {
+                    glbData = data
+                } else {
+                    meshLoadFailed = true
+                }
             }
         } catch {
-            await MainActor.run {
-                meshLoadFailed = true
-                debugInfo += " | meshErr=\(error)"
-            }
+            await MainActor.run { meshLoadFailed = true }
         }
     }
 }
