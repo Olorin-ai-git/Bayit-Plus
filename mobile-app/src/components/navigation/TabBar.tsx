@@ -29,9 +29,9 @@ const TAB_ICONS: Record<string, string> = {
   Home: 'home',
   LiveTV: 'live',
   VOD: 'vod',
-  Radio: 'radio',
+  ZehAni: 'zehani',
   Podcasts: 'podcasts',
-  Profile: 'profile',
+  Search: 'search',
 };
 
 // Tab labels for display
@@ -39,9 +39,9 @@ const TAB_LABELS: Record<string, string> = {
   Home: 'Home',
   LiveTV: 'Live',
   VOD: 'VOD',
-  Radio: 'Radio',
-  Podcasts: 'Pods',
-  Profile: 'Profile',
+  ZehAni: 'Zeh Ani',
+  Podcasts: 'Podcasts',
+  Search: 'Search',
 };
 
 export default function TabBar(props: TabBarProps) {

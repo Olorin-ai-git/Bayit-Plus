@@ -89,6 +89,9 @@ struct ContentItem: Decodable, Sendable, Identifiable, Hashable {
     let hasSubtitles: Bool?
     let author: String?
     let narrator: String?
+    let isCollectionParent: Bool?
+    let availableMovies: Int?
+    let totalMovies: Int?
 
     static func == (lhs: ContentItem, rhs: ContentItem) -> Bool {
         lhs.id == rhs.id
@@ -146,6 +149,36 @@ struct RelatedItem: Decodable, Sendable, Identifiable {
     let duration: String?
     let year: Int?
     let type: String?
+}
+
+// MARK: - Collections
+
+/// Response from GET /api/v1/content/collections/{id}
+struct CollectionDetail: Decodable, Sendable, Identifiable {
+    let id: String
+    let title: String?
+    let description: String?
+    let thumbnail: String?
+    let backdrop: String?
+    let availableMovies: Int?
+    let totalMovies: Int?
+    let promoText: String?
+    let movies: [CollectionMovie]
+}
+
+/// Movie within a collection
+struct CollectionMovie: Decodable, Sendable, Identifiable {
+    let id: String
+    let title: String?
+    let thumbnail: String?
+    let year: Int?
+    let duration: String?
+    let order: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id, title, thumbnail, year, duration
+        case order = "collection_order"
+    }
 }
 
 // MARK: - Search

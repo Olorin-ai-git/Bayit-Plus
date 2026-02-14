@@ -14,7 +14,8 @@ export type RootStackParamList = {
     type: 'vod' | 'live' | 'radio' | 'podcast';
     t?: number; // Optional timestamp in seconds for scene search deep links
   };
-  Search: { query?: string };
+  Radio: undefined;
+  Profile: undefined;
   MorningRitual: undefined;
   Judaism: { category?: string };
   Children: undefined;
@@ -58,15 +59,17 @@ export type RootStackParamList = {
   // Zeh Ani - Avatar Mesh
   MeshAvatar: { avatarId: string; profileId: string };
   ZehAniDashboard: { profileId: string };
+  // Widgets
+  Widgets: undefined;
 };
 
 export type MainTabParamList = {
   Home: undefined;
   LiveTV: undefined;
   VOD: undefined;
-  Radio: undefined;
+  ZehAni: { profileId: string };
   Podcasts: undefined;
-  Profile: undefined;
+  Search: { query?: string };
 };
 
 // Navigation props types

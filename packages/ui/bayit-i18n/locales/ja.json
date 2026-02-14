@@ -5630,7 +5630,21 @@
     "noContent": "コンテンツがありません",
     "noContentInCategory": "このカテゴリにはコンテンツが見つかりません",
     "filters": "フィルター",
-    "loadingContent": "映画とシリーズを読み込み中..."
+    "loadingContent": "映画とシリーズを読み込み中...",
+    "collectionsOnly": "コレクション",
+    "moviesOnly": "映画",
+    "seriesOnly": "シリーズ",
+    "collection": {
+      "playAll": "すべて再生",
+      "movies": "映画",
+      "available": "の",
+      "of": "の",
+      "notFound": "コレクションが見つかりません",
+      "watchCollection": "コレクションを見る",
+      "detail": "コレクションの詳細",
+      "aiRecommendation": "AI推奨",
+      "watchNow": "今すぐ見る"
+    }
   },
   "voice": {
     "title": "音声",

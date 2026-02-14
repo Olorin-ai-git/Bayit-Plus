@@ -1,3 +1,4 @@
+import BayitDesignSystem
 import BayitVoice
 import SwiftUI
 
@@ -17,8 +18,8 @@ struct MainTabView: View {
 
             GlassTabBar()
 
-            // Floating restored widgets (PiP windows) - shown on all tabs except widgets
-            if let vm = dockViewModel, coordinator.selectedTab != .widgets {
+            // Floating restored widgets (PiP windows) - shown on all tabs
+            if let vm = dockViewModel {
                 ForEach(vm.restoredWidgets) { widget in
                     PiPWidgetContainerView(
                         widget: widget,
@@ -36,8 +37,8 @@ struct MainTabView: View {
                 }
             }
 
-            // Floating widget dock (left edge, vertically centered) - hidden on widgets tab
-            if let vm = dockViewModel, coordinator.selectedTab != .widgets {
+            // Floating widget dock (left edge, vertically centered) - shown on all tabs
+            if let vm = dockViewModel {
                 PiPWidgetManagerView(
                     widgets: vm.minimizedWidgets,
                     isDockVisible: vm.isDockVisible,
@@ -60,8 +61,8 @@ struct MainTabView: View {
                         VoiceAvatarFAB {
                             isVoiceModalPresented = true
                         }
-                        .padding(.trailing, 20)
-                        .padding(.bottom, 90)  // Above tab bar
+                        .padding(.trailing, DesignTokens.Spacing.lg)
+                        .padding(.bottom, 100)  // Above 6-tab bar
                     }
                 }
             }
@@ -110,12 +111,12 @@ struct MainTabView: View {
             LiveTVView()
         case .vod:
             VODView()
-        case .radio:
-            RadioView()
+        case .zehAni:
+            ZehAniHubView()
         case .podcasts:
             PodcastsView()
-        case .widgets:
-            WidgetsView()
+        case .search:
+            SearchView()
         }
     }
 

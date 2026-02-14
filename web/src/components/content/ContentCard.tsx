@@ -49,6 +49,10 @@ interface Content {
   // AI Enhancement fields (for educational content like Kan Educational)
   is_ai_enhanced?: boolean;
   ai_features?: string[];  // ['vocabulary', 'context', 'quiz', 'translation']
+  // Collection fields
+  is_collection_parent?: boolean;
+  available_movies?: number;
+  total_movies?: number;
 }
 
 interface ContentCardProps {
@@ -217,6 +221,9 @@ export default function ContentCard({ content, showProgress = false, showActions
       if (content.type === 'radio') return { pathname: `/radio/${content.id}` };
       if (content.type === 'podcast') return { pathname: `/podcasts/${content.id}` };
 
+      // Collection parent (movie collection)
+      if (content.is_collection_parent) return { pathname: `/vod/collection/${content.id}` };
+
       if (content.type === 'series' || isSeriesContent(content as any)) return { pathname: `/vod/series/${content.id}` };
 
       // Default to movie/VOD page
@@ -382,6 +389,16 @@ export default function ContentCard({ content, showProgress = false, showActions
               <View style={[styles.episodesBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
                 <Text style={styles.episodesText}>
                   {content.total_episodes} {t('content.episodes')}
+                </Text>
+              </View>
+            )}
+
+            {/* Collection Badge - for movie collections */}
+            {content.is_collection_parent && content.available_movies !== undefined && content.available_movies > 0 && (
+              <View style={[styles.episodesBadge, isRTL ? { left: 'auto', right: spacing.sm } : {}]}>
+                <Text style={styles.episodesText}>
+                  {content.available_movies} {t('vod.collection.movies', 'movies')}
+                  {content.total_movies && content.total_movies > content.available_movies && ` ${t('vod.collection.of', 'of')} ${content.total_movies}`}
                 </Text>
               </View>
             )}

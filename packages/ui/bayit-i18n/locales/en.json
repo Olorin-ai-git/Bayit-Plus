@@ -6613,7 +6613,21 @@
     "noContent": "No content available",
     "noContentInCategory": "No content found in this category",
     "filters": "Filters",
-    "loadingContent": "Loading movies and series..."
+    "loadingContent": "Loading movies and series...",
+    "collectionsOnly": "Collections",
+    "moviesOnly": "Movies",
+    "seriesOnly": "Series",
+    "collection": {
+      "playAll": "Play All",
+      "movies": "movies",
+      "available": "of",
+      "of": "of",
+      "notFound": "Collection not found",
+      "watchCollection": "Watch Collection",
+      "detail": "Collection Details",
+      "aiRecommendation": "AI Recommendation",
+      "watchNow": "Watch Now"
+    }
   },
   "voice": {
     "listening": "Listening...",

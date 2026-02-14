@@ -147,5 +147,3 @@ final class APIMissionsRepository: MissionsRepository, @unchecked Sendable {
         )
     }
 }
-
-private struct EmptyResponse: Decodable {}

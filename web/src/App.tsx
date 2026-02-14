@@ -102,6 +102,7 @@ const SubscribePage = lazy(() => import('./pages/SubscribePage'))
 const WatchPage = lazy(() => import('./pages/WatchPage'))
 const SeriesDetailPage = lazy(() => import('./pages/SeriesDetailPage'))
 const MovieDetailPage = lazy(() => import('./pages/MovieDetailPage'))
+const CollectionDetailPage = lazy(() => import('./pages/collection-detail/CollectionDetailPage'))
 const JudaismPage = lazy(() => import('./pages/JudaismPage'))
 const ChildrenPage = lazy(() => import('./pages/ChildrenPage'))
 const FavoritesPage = lazy(() => import('./pages/FavoritesPage'))
@@ -290,6 +291,7 @@ const AppContent = () => {
         <Route path="/vod" element={<VODPage />} />
         <Route path="/vod/series/:seriesId" element={<SeriesDetailPage />} />
         <Route path="/vod/movie/:movieId" element={<MovieDetailPage />} />
+        <Route path="/vod/collection/:collectionId" element={<CollectionDetailPage />} />
         <Route path="/vod/:contentId" element={<WatchPage type="vod" />} />
         <Route path="/radio" element={<RadioPage />} />
         <Route path="/radio/:stationId" element={<WatchPage type="radio" />} />

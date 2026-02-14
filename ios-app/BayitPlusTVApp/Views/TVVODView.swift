@@ -8,6 +8,7 @@ struct TVVODView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: VODViewModel?
+    @State private var featuredCollection: CollectionDetail?
 
     private let columns = [
         GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
@@ -21,6 +22,20 @@ struct TVVODView: View {
         NavigationStack {
             ScrollView(.vertical, showsIndicators: false) {
                 if let vm = viewModel {
+                    contentTypeFilters(vm)
+
+                    if let collection = featuredCollection, vm.selectedType == .all {
+                        TVCollectionPromoBannerView(
+                            collectionId: collection.id,
+                            title: collection.title ?? "Collection",
+                            posterUrl: collection.thumbnail,
+                            promoText: collection.promoText ?? "Discover this amazing collection",
+                            movieCount: collection.availableMovies ?? 0
+                        )
+                        .padding(.horizontal, TVDesignTokens.Spacing.xl)
+                        .padding(.vertical, TVDesignTokens.Spacing.lg)
+                    }
+
                     if vm.isLoading && vm.items.isEmpty {
                         loadingGrid
                     } else if let error = vm.error, vm.items.isEmpty {
@@ -38,7 +53,37 @@ struct TVVODView: View {
                     viewModel = VODViewModel(repository: repos.content)
                 }
                 await viewModel?.loadContent()
+                await loadFeaturedCollection()
             }
+        }
+    }
+
+    private func loadFeaturedCollection() async {
+        do {
+            let response = try await repos.content.fetchCollections(page: 1, limit: 1)
+            if let firstCollection = response.items.first {
+                featuredCollection = try await repos.content.fetchCollectionDetail(id: firstCollection.id)
+            }
+        } catch {
+            // Silently fail - banner is optional
+        }
+    }
+
+    private func contentTypeFilters(_ vm: VODViewModel) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: TVDesignTokens.Spacing.md) {
+                ForEach(VODFilterType.allCases) { type in
+                    TVFilterPill(
+                        title: type.displayName,
+                        isSelected: vm.selectedType == type
+                    ) {
+                        vm.selectedType = type
+                        Task { await vm.loadContent() }
+                    }
+                }
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            .padding(.vertical, TVDesignTokens.Spacing.lg)
         }
     }
 
@@ -58,10 +103,12 @@ struct TVVODView: View {
                         thumbnailURL: item.thumbnail,
                         title: item.title ?? "Untitled",
                         subtitle: vodSubtitle(for: item),
-                        badge: item.isSeries == true ? "Series" : nil,
+                        badge: badgeText(for: item),
                         aspectRatio: 2 / 3,
                         onSelect: {
-                            if item.isSeries == true {
+                            if item.isCollectionParent == true {
+                                coordinator.fullscreenRoute = .collectionDetail(collectionId: item.id)
+                            } else if item.isSeries == true {
                                 coordinator.fullscreenRoute = .seriesDetail(seriesId: item.id)
                             } else {
                                 coordinator.fullscreenRoute = .movieDetail(movieId: item.id)
@@ -116,5 +163,54 @@ struct TVVODView: View {
         if let year = item.year { parts.append(String(year)) }
         if let duration = item.duration { parts.append(duration) }
         return parts.isEmpty ? nil : parts.joined(separator: " | ")
+    }
+
+    private func badgeText(for item: ContentItem) -> String? {
+        if item.isCollectionParent == true {
+            if let available = item.availableMovies, let total = item.totalMovies, total > available {
+                return "\(available) of \(total) movies"
+            } else if let available = item.availableMovies {
+                return "\(available) movies"
+            }
+            return "Collection"
+        } else if item.isSeries == true {
+            return "Series"
+        }
+        return nil
+    }
+}
+
+/// tvOS filter pill with focus support
+private struct TVFilterPill: View {
+    let title: String
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    @FocusState private var isFocused: Bool
+
+    var body: some View {
+        Button(action: onTap) {
+            Text(title)
+                .font(.system(
+                    size: TVDesignTokens.FontSize.lg,
+                    weight: isSelected ? .bold : .medium
+                ))
+                .foregroundColor(
+                    isSelected ? DesignTokens.Text.primary : DesignTokens.Text.muted
+                )
+                .padding(.horizontal, TVDesignTokens.Spacing.lg)
+                .padding(.vertical, TVDesignTokens.Spacing.md)
+                .background(
+                    isSelected ? DesignTokens.Glass.bgStrong : DesignTokens.Glass.bg
+                )
+                .clipShape(Capsule())
+                .scaleEffect(isFocused ? 1.05 : 1.0)
+                .shadow(
+                    color: isFocused ? DesignTokens.Primary.default.opacity(0.5) : .clear,
+                    radius: isFocused ? 8 : 0
+                )
+        }
+        .buttonStyle(.plain)
+        .focused($isFocused)
     }
 }

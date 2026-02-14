@@ -45,15 +45,21 @@ struct ARFaceCaptureView: View {
 
     private var promptOverlay: some View {
         Text(localization.t(captureSession.currentPromptKey))
+            .id(captureSession.currentPromptKey)
             .font(.system(size: DesignTokens.FontSize.lg, weight: .semibold))
             .foregroundStyle(DesignTokens.Text.primary)
             .padding(.horizontal, DesignTokens.Spacing.lg)
             .padding(.vertical, DesignTokens.Spacing.sm)
             .background(
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
-                    .fill(DesignTokens.Glass.bg.opacity(0.85))
+                    .fill(captureSession.expressionDetected
+                        ? DesignTokens.Primary.p400.opacity(0.85)
+                        : DesignTokens.Glass.bg.opacity(0.85))
             )
             .padding(.bottom, DesignTokens.Spacing.md)
+            .transition(.opacity.combined(with: .scale))
+            .animation(.easeInOut(duration: 0.3), value: captureSession.currentPromptKey)
+            .animation(.easeInOut(duration: 0.2), value: captureSession.expressionDetected)
     }
 
     @ViewBuilder

@@ -6,6 +6,7 @@ struct PodcastsView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @State private var viewModel: PodcastsViewModel?
+    @State private var radioStations: [RadioStationItem] = []
     @State private var showAddSheet = false
 
     private let columns = [
@@ -60,16 +61,30 @@ struct PodcastsView: View {
                 viewModel = PodcastsViewModel(repository: repos.podcasts)
             }
             await viewModel?.loadInitial()
+            await loadRadioStations()
         }
     }
 
     private func contentView(_ vm: PodcastsViewModel) -> some View {
         LazyVStack(spacing: DesignTokens.Spacing.lg) {
+            if !radioStations.isEmpty {
+                RadioStationsRow(stations: radioStations, coordinator: coordinator)
+            }
+
             if !vm.categories.isEmpty {
                 categoryFilters(vm)
             }
 
             showGrid(vm)
+        }
+    }
+
+    private func loadRadioStations() async {
+        do {
+            let response = try await repos.radio.fetchStations(cultureId: nil, genre: nil)
+            radioStations = Array(response.stations.prefix(8))
+        } catch {
+            radioStations = []
         }
     }
 

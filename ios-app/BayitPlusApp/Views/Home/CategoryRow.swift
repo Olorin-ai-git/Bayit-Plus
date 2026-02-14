@@ -169,7 +169,7 @@ struct CategoryRow: View {
         if name.contains("podcast") {
             coordinator.selectedTab = .podcasts
         } else if name.contains("radio") {
-            coordinator.selectedTab = .radio
+            coordinator.navigate(to: .radio)
         } else if name.contains("live") {
             coordinator.selectedTab = .liveTV
         } else if name.contains("kid") || name.contains("children") {

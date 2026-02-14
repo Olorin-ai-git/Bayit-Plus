@@ -17,7 +17,7 @@ public final class NavigationCoordinator {
     /// Currently selected tab
     var selectedTab: AppTab = .home
 
-    /// Whether a fullscreen modal is presented (player, search)
+    /// Whether a fullscreen modal is presented (player)
     var fullscreenRoute: Route?
 
     /// Whether the auth flow is being shown
@@ -74,18 +74,26 @@ public final class NavigationCoordinator {
             paths[.vod] = NavigationPath()
             breadcrumbTrails[.vod] = []
         case .radio:
-            selectedTab = .radio
-            paths[.radio] = NavigationPath()
-            breadcrumbTrails[.radio] = []
+            // Radio is no longer a tab -- push as content on current tab
+            pushToCurrentTab(route)
+        case .zehAni:
+            selectedTab = .zehAni
+            paths[.zehAni] = NavigationPath()
+            breadcrumbTrails[.zehAni] = []
         case .podcasts:
             selectedTab = .podcasts
             paths[.podcasts] = NavigationPath()
             breadcrumbTrails[.podcasts] = []
 
-        case .player, .search:
+        case .search:
+            selectedTab = .search
+            paths[.search] = NavigationPath()
+            breadcrumbTrails[.search] = []
+
+        case .player:
             fullscreenRoute = route
 
-        case .movieDetail, .seriesDetail, .podcastDetail, .epg:
+        case .movieDetail, .seriesDetail, .collectionDetail, .podcastDetail, .epg:
             pushToCurrentTab(route)
 
         case .profile, .favorites, .playlist, .downloads,
@@ -98,11 +106,11 @@ public final class NavigationCoordinator {
              .audiobookDetail, .trending, .interactiveSubtitles,
              .chapters, .chatbot, .avatarMode, .betaCredits,
              .subscriptionGate, .household, .devicePairing,
-             .helpCenter, .rewards, .passkeyManagement, .onboardingAI,
+             .helpCenter, .rewards, .widgets, .passkeyManagement, .onboardingAI,
              .friends, .watchParty, .watchPartyDetail,
              .chess, .directMessages, .conversation,
              .mfaSetup, .phoneVerification,
-             .zehAni, .zehAniMagicMirror, .zehAniV2V,
+             .zehAniMagicMirror, .zehAniV2V,
              .zehAniAvatar3D, .zehAniHighlights,
              .zehAniContacts, .zehAniFeedback,
              .zehAniAvatarSettings:
@@ -138,7 +146,7 @@ public final class NavigationCoordinator {
         breadcrumbTrails[selectedTab] = []
     }
 
-    /// Present a route as a fullscreen modal (player, search)
+    /// Present a route as a fullscreen modal (player)
     func presentFullscreen(_ route: Route) {
         fullscreenRoute = route
     }

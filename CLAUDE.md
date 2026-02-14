@@ -24,6 +24,8 @@
 
 **Backend testing**: Test ALL endpoints with curl before marking complete. Verify status codes, error handling, auth, CORS, and frontend integration.
 
+**NEVER USE METRO**: When running iOS/tvOS simulators, use ONLY native Xcode builds. Metro bundler causes build conflicts. Use `xcodebuild` or Xcode GUI directly. Never use `npx react-native run-ios` with Metro.
+
 ## Project Structure
 
 ```
@@ -56,10 +58,10 @@ cd backend && poetry install && poetry run uvicorn app.main:app --host 0.0.0.0 -
 # Web
 cd web && npm install && npm start    # Vite on :3000, proxies /api to :8000
 
-# Mobile/tvOS
-cd mobile-app && npm run ios          # iOS
-cd mobile-app && npm run android      # Android
-cd tvos-app && npm run ios            # Apple TV
+# Mobile/tvOS (NEVER use Metro - use Xcode only)
+# iOS - Open mobile-app/ios/BayitPlusMobile.xcworkspace in Xcode, then Build & Run
+# Android - Use Android Studio or: cd mobile-app && npm run android
+# tvOS - Open tvos-app/ios/BayitPlusTVOS.xcworkspace in Xcode, then Build & Run
 ```
 
 ## Reference Docs

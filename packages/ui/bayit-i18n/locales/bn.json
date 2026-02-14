@@ -4895,7 +4895,21 @@
     "noContent": "কোনো কন্টেন্ট নেই",
     "noContentInCategory": "এই বিভাগে কোনো কন্টেন্ট নেই",
     "filters": "ফিল্টার",
-    "loadingContent": "সিনেমা ও সিরিজ লোড হচ্ছে..."
+    "loadingContent": "সিনেমা ও সিরিজ লোড হচ্ছে...",
+    "collectionsOnly": "সংগ্রহ",
+    "moviesOnly": "চলচ্চিত্র",
+    "seriesOnly": "সিরিজ",
+    "collection": {
+      "playAll": "সব চালান",
+      "movies": "চলচ্চিত্র",
+      "available": "এর",
+      "of": "এর",
+      "notFound": "সংগ্রহ পাওয়া যায়নি",
+      "watchCollection": "সংগ্রহ দেখুন",
+      "detail": "সংগ্রহের বিবরণ",
+      "aiRecommendation": "এআই সুপারিশ",
+      "watchNow": "এখন দেখুন"
+    }
   },
   "voice": {
     "listening": "শুনছে...",

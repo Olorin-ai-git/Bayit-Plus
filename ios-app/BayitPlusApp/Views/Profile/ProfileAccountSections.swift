@@ -165,6 +165,12 @@ extension ProfileView {
 
     var menuSection: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
+            menuRow(icon: "globe", title: "profile.language") {
+                coordinator.pushToCurrentTab(.languageSettings)
+            }
+            menuRow(icon: "square.grid.2x2", title: "profile.widgets") {
+                coordinator.pushToCurrentTab(.widgets)
+            }
             menuRow(icon: "person.fill.viewfinder", title: "profile.zehAni") {
                 coordinator.pushToCurrentTab(.zehAni)
             }

@@ -5546,7 +5546,21 @@
     "noContent": "无可用内容",
     "noContentInCategory": "此分类下无内容",
     "filters": "筛选",
-    "loadingContent": "正在加载电影和剧集..."
+    "loadingContent": "正在加载电影和剧集...",
+    "collectionsOnly": "合集",
+    "moviesOnly": "电影",
+    "seriesOnly": "剧集",
+    "collection": {
+      "playAll": "播放全部",
+      "movies": "电影",
+      "available": "的",
+      "of": "的",
+      "notFound": "未找到合集",
+      "watchCollection": "观看合集",
+      "detail": "合集详情",
+      "aiRecommendation": "AI推荐",
+      "watchNow": "立即观看"
+    }
   },
   "voice": {
     "listening": "正在听...",
@@ -8090,17 +8104,14 @@
     "title": "语音挑战",
     "instruction": "说出希伯来语短语以继续",
     "listening": "正在聆听...",
-    "evaluating": "正在检查发音...",
+    "evaluating": "检查发音...",
     "correct": "正确！做得好！",
     "incorrect": "不太对。再试一次。",
-    "hint": "听一下这个短语",
-    "attemptsRemaining": "剩余 {{count}} 次尝试",
+    "hint": "听短语",
+    "attemptsRemaining": "剩余{{count}}次尝试",
     "timeout": "时间到！",
-    "skipAvailable": "您可以跳过此挑战",
-    "pronunciationScore": "发音: {{score}}%",
-    "attempt": "尝试 {{current}} / {{max}}",
-    "listenHint": "听正确发音",
-    "holdToSpeak": "按住说话"
+    "skipAvailable": "你可以跳过这个挑战",
+    "pronunciationScore": "发音: {{score}}%"
   },
   "familySnaps": {
     "title": "家庭照片",
@@ -8172,19 +8183,6 @@
       "hard": "困难",
       "fromVocabulary": "来自你的词汇"
     }
-  },
-  "voiceDecision": {
-    "title": "语音挑战",
-    "instruction": "说出希伯来语短语以继续",
-    "listening": "正在聆听...",
-    "evaluating": "检查发音...",
-    "correct": "正确！做得好！",
-    "incorrect": "不太对。再试一次。",
-    "hint": "听短语",
-    "attemptsRemaining": "剩余{{count}}次尝试",
-    "timeout": "时间到！",
-    "skipAvailable": "你可以跳过这个挑战",
-    "pronunciationScore": "发音: {{score}}%"
   },
   "gamification": {
     "title": "我的进度",

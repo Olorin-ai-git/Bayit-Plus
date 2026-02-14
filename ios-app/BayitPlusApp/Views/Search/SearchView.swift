@@ -50,23 +50,13 @@ struct SearchView: View {
                             vm.onQueryChanged()
                         }
                     ),
-                    // Placeholder includes movies/series if legacy features enabled
-                    placeholder: featureFlags.isLegacyFeaturesEnabled
-                        ? "Search movies, series, podcasts, channels..."
-                        : "Search podcasts, channels...",
+                    placeholder: "Search movies, series, podcasts, channels...",
                     showVoiceButton: true,
                     onVoiceTap: {
                         coordinator.navigate(to: .voiceOnboarding)
                     }
                 )
             }
-
-            Button("Cancel") {
-                coordinator.dismissFullscreen()
-            }
-            .font(.system(size: DesignTokens.FontSize.md))
-            .foregroundColor(DesignTokens.Primary.default)
-            .accessibilityLabel("Cancel search")
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.vertical, DesignTokens.Spacing.md)
@@ -77,8 +67,7 @@ struct SearchView: View {
     private func filterPills(_ vm: SearchViewModel) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: DesignTokens.Spacing.sm) {
-                // VOD (Movies) filter chip is a legacy feature - controlled by feature flag
-                ForEach(SearchContentTypeFilter.allCases.filter { $0 != .vod || featureFlags.isLegacyFeaturesEnabled }, id: \.self) { filter in
+                ForEach(SearchContentTypeFilter.allCases, id: \.self) { filter in
                     GlassChip(
                         title: filter.displayLabel,
                         isSelected: vm.selectedFilter == filter
@@ -110,7 +99,6 @@ struct SearchView: View {
         } else if !vm.results.isEmpty {
             resultsHeader(vm)
             SearchResultsGridView(results: vm.results) { route in
-                coordinator.dismissFullscreen()
                 coordinator.navigate(to: route)
             }
         } else if vm.hasSearched {

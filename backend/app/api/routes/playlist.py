@@ -20,6 +20,7 @@ from app.models.playlist import (
 from app.models.user import User
 from .playlist_helpers import (
     PlaylistAddRequest,
+    PlaylistBulkAddRequest,
     PlaylistReorderRequest,
     PlaylistToggleRequest,
     enrich_playlist_item,
@@ -155,6 +156,69 @@ async def clear_playlist(
 
     logger.info("Playlist cleared via API", extra={"user_id": user_id})
     return {"message": "Playlist cleared", "item_count": 0, "items": []}
+
+
+@router.post("/items/bulk")
+async def bulk_add_to_playlist(
+    data: PlaylistBulkAddRequest,
+    current_user: User = Depends(get_current_active_user),
+):
+    """
+    Add multiple items to playlist in order.
+    Useful for "Play All" in collections - clears playlist and adds all items.
+
+    Args:
+        data: Bulk add request with list of content IDs
+        current_user: Authenticated user
+
+    Returns:
+        Updated playlist with all items
+    """
+    if data.content_type == ContentType.RADIO:
+        raise HTTPException(
+            status_code=400,
+            detail="Radio stations cannot be added to playlists",
+        )
+
+    user_id = str(current_user.id)
+
+    # Clear existing playlist
+    await PlaylistItem.find(PlaylistItem.user_id == user_id).delete()
+    logger.info(f"Cleared playlist for bulk add (user: {user_id})")
+
+    # Add all items in order
+    added_count = 0
+    for position, content_id in enumerate(data.content_ids):
+        content_meta = await get_content_metadata(content_id, data.content_type)
+        if not content_meta:
+            logger.warning(
+                f"Content not found during bulk add: {content_id}"
+            )
+            continue
+
+        new_item = PlaylistItem(
+            user_id=user_id,
+            content_id=content_id,
+            content_type=data.content_type,
+            title=content_meta["title"],
+            thumbnail=content_meta.get("thumbnail"),
+            duration=content_meta.get("duration"),
+            position=position,
+        )
+        await new_item.insert()
+        added_count += 1
+
+    logger.info(
+        f"Bulk added {added_count} items to playlist",
+        extra={"user_id": user_id, "requested": len(data.content_ids)},
+    )
+
+    items = await _get_user_items(user_id)
+    return {
+        "message": f"Added {added_count} items to playlist",
+        "item_count": len(items),
+        "items": [enrich_playlist_item(i) for i in items],
+    }
 
 
 @router.put("/items/reorder")

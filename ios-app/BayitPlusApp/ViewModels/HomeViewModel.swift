@@ -20,11 +20,13 @@ final class HomeViewModel {
     private(set) var jerusalemContent: CityContentResponse?
     private(set) var trendingContent: [CultureTrendingItem] = []
     private(set) var youngstersTrending: [SectionContentItem] = []
+    private(set) var radioStations: [RadioStationItem] = []
     private(set) var isLoading = false
     private(set) var error: String?
 
     private let repository: any ContentRepository
     private let liveTVRepository: any LiveTVRepository
+    private let radioRepository: any RadioRepository
     private let locationProvider: any LocationProvider
     private let featureFlags: FeatureFlags
     private let categoryRepository: (any CategoryRepository)?
@@ -32,12 +34,14 @@ final class HomeViewModel {
     init(
         repository: any ContentRepository,
         liveTVRepository: any LiveTVRepository,
+        radioRepository: any RadioRepository,
         locationProvider: any LocationProvider,
         featureFlags: FeatureFlags,
         categoryRepository: (any CategoryRepository)? = nil
     ) {
         self.repository = repository
         self.liveTVRepository = liveTVRepository
+        self.radioRepository = radioRepository
         self.locationProvider = locationProvider
         self.featureFlags = featureFlags
         self.categoryRepository = categoryRepository
@@ -88,6 +92,7 @@ final class HomeViewModel {
     @MainActor
     private func loadAdditionalSections() async {
         async let liveTask = loadLiveChannels()
+        async let radioTask = loadRadioStations()
         async let continueTask = loadContinueWatching()
         async let telAvivTask = loadTelAvivContent()
         async let jerusalemTask = loadJerusalemContent()
@@ -96,6 +101,7 @@ final class HomeViewModel {
         async let youngstersTask = loadYoungstersTrending()
 
         await liveTask
+        await radioTask
         await continueTask
         await telAvivTask
         await jerusalemTask
@@ -124,6 +130,16 @@ final class HomeViewModel {
         } catch {
             // Non-blocking: silently fail and hide section
             liveChannels = []
+        }
+    }
+
+    @MainActor
+    private func loadRadioStations() async {
+        do {
+            let response = try await radioRepository.fetchStations(cultureId: nil, genre: nil)
+            radioStations = Array(response.stations.prefix(8))
+        } catch {
+            radioStations = []
         }
     }
 

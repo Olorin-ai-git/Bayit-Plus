@@ -17,9 +17,7 @@ struct MagicMirrorView: View {
     @State private var showAvatarCreation = false
     @State private var starStoryVM: StarStoryViewModel?
     @State private var existingAvatarId: String?
-    @State private var sceneView: SCNView?
-    @State private var avatarNode: SCNNode?
-    @State private var isAnimating = false
+    @State private var glbData: Data?
 
     var body: some View {
         ZStack {
@@ -111,19 +109,20 @@ struct MagicMirrorView: View {
 
     @ViewBuilder
     private var avatarSceneView: some View {
-        SceneKitViewWrapper(
-            scene: createAvatarScene(),
-            onUpdate: { view in
-                self.sceneView = view
-                if !isAnimating { startGreetingAnimation() }
-            }
-        )
-        .frame(height: 200)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
-        .overlay(
+        if let glbData = glbData {
+            SceneKitView(glbData: glbData)
+                .frame(height: 280)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+                .overlay(
+                    RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
+                        .stroke(DesignTokens.Glass.border, lineWidth: 1)
+                )
+        } else {
             RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                .stroke(DesignTokens.Glass.border, lineWidth: 1)
-        )
+                .fill(DesignTokens.Glass.bg.opacity(0.3))
+                .frame(height: 280)
+                .overlay { ProgressView().tint(.white) }
+        }
     }
 
     @ViewBuilder
@@ -175,35 +174,13 @@ struct MagicMirrorView: View {
         }
     }
 
-    // MARK: - Scene
-
-    private func createAvatarScene() -> SCNScene {
-        let scene = SCNScene()
-
-        let cameraNode = SCNNode()
-        cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3(x: 0, y: 0, z: 60)
-        scene.rootNode.addChildNode(cameraNode)
-
-        let lightNode = SCNNode()
-        lightNode.light = SCNLight()
-        lightNode.light?.type = .omni
-        lightNode.position = SCNVector3(x: 0, y: 20, z: 60)
-        scene.rootNode.addChildNode(lightNode)
-
-        return scene
-    }
-
-    private func startGreetingAnimation() {
-        isAnimating = true
-    }
-
     // MARK: - Data Loading
 
     private func loadGreeting() {
         isLoading = true
         error = nil
         noAvatar = false
+        glbData = nil
 
         Task {
             do {
@@ -214,10 +191,16 @@ struct MagicMirrorView: View {
 
                 let fetched = try await greetingTask
                 let avatarsResponse = try? await avatarsTask
+                let avatarId = avatarsResponse?.avatars.first?.avatarId
+
                 await MainActor.run {
                     greeting = fetched
-                    existingAvatarId = avatarsResponse?.avatars.first?.avatarId
+                    existingAvatarId = avatarId
                     isLoading = false
+                }
+
+                if let avatarId {
+                    await loadAvatarMesh(avatarId: avatarId)
                 }
             } catch let apiError as APIError {
                 await MainActor.run {
@@ -234,6 +217,19 @@ struct MagicMirrorView: View {
                     isLoading = false
                 }
             }
+        }
+    }
+
+    private func loadAvatarMesh(avatarId: String) async {
+        do {
+            let meshGlb = try await repos.avatarMeshRepository.fetchGlbUrl(
+                avatarId: avatarId
+            )
+            guard let url = URL(string: meshGlb.signedUrl) else { return }
+            let (data, _) = try await URLSession.shared.data(from: url)
+            await MainActor.run { glbData = data }
+        } catch {
+            // Greeting still shows without avatar mesh
         }
     }
 }

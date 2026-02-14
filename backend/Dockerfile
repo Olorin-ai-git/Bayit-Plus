@@ -31,9 +31,12 @@ RUN poetry config virtualenvs.create false && \
 # Production stage
 FROM python:3.11-slim
 
-# Install runtime dependencies
+# Install runtime dependencies (xvfb + mesa for headless 3D mesh thumbnail rendering)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
+    xvfb \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Create non-root user
@@ -64,4 +67,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
 
 # Run application - reads PORT from environment (Cloud Run sets PORT=8080)
 # Falls back to 8000 for local development
-CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4"
+CMD sh -c "xvfb-run --auto-servernum --server-num=99 -s '-screen 0 512x512x24 -nolisten tcp' uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4"

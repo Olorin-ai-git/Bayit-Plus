@@ -7,6 +7,7 @@ import { useResponsive } from '@/hooks/useResponsive';
 import { Film, Tv, Search, ChevronLeft, ChevronRight, SlidersHorizontal, Mic, X } from 'lucide-react';
 import ContentCard from '@/components/content/ContentCard';
 import AnimatedCard from '@/components/common/AnimatedCard';
+import { CollectionPromoBanner } from '@/components/banners/CollectionPromoBanner';
 import { WidgetToggleProvider } from '@/contexts/WidgetToggleContext';
 import api from '@/services/api';
 import { colors, spacing, borderRadius } from '@olorin/design-tokens';
@@ -67,11 +68,12 @@ export default function VODPage() {
   const [allContent, setAllContent] = useState<ContentItem[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [featuredCollection, setFeaturedCollection] = useState<any>(null);
   const [selectedCategory, setSelectedCategory] = useState(
     searchParams.get('category') || 'all'
   );
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
-  const [contentTypeFilter, setContentTypeFilter] = useState<'all' | 'movies' | 'series'>('all');
+  const [contentTypeFilter, setContentTypeFilter] = useState<'all' | 'movies' | 'series' | 'collections'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -125,6 +127,22 @@ export default function VODPage() {
     loadContent();
   }, [selectedCategory, selectedSubcategory, contentTypeFilter, currentPage, debouncedSearch]);
 
+  // Load featured collection for banner
+  useEffect(() => {
+    const loadFeaturedCollection = async () => {
+      try {
+        const response = await api.get('/content/collections', { page: 1, limit: 1 });
+        if (response.items && response.items.length > 0) {
+          const collectionDetail = await api.get(`/content/collections/${response.items[0].id}`);
+          setFeaturedCollection(collectionDetail);
+        }
+      } catch (error) {
+        // Silently fail - banner is optional
+      }
+    };
+    loadFeaturedCollection();
+  }, []);
+
   const loadCategories = async () => {
     try {
       const data = await api.get('/content/categories', { params: { content_type: 'vod' } });
@@ -148,6 +166,23 @@ export default function VODPage() {
 
       let items: ContentItem[] = [];
       let total = 0;
+
+      // Special handling for collections filter
+      if (contentTypeFilter === 'collections') {
+        const data = await api.get('/content/collections', {
+          params: {
+            skip: (currentPage - 1) * itemsPerPage,
+            limit: itemsPerPage,
+            published_only: true,
+          }
+        });
+        items = data || [];
+        total = items.length; // API returns full list, we paginate client-side
+        setAllContent(items);
+        setTotalItems(total);
+        setLoading(false);
+        return;
+      }
 
       // Determine which content types to fetch based on filter
       const fetchMovies = contentTypeFilter === 'all' || contentTypeFilter === 'movies';
@@ -430,7 +465,25 @@ export default function VODPage() {
             isActive={contentTypeFilter === 'series'}
             onPress={() => setContentTypeFilter('series')}
           />
+          <GlassCategoryPill
+            label={t('vod.collectionsOnly', 'Collections')}
+            isActive={contentTypeFilter === 'collections'}
+            onPress={() => setContentTypeFilter('collections')}
+          />
         </ScrollView>
+
+        {/* Featured Collection Banner */}
+        {featuredCollection && contentTypeFilter === 'all' && (
+          <View style={{ paddingHorizontal: spacing.lg, paddingVertical: spacing.md }}>
+            <CollectionPromoBanner
+              collectionId={featuredCollection.id}
+              title={featuredCollection.title}
+              posterUrl={featuredCollection.thumbnail}
+              promoText={featuredCollection.promoText || 'Discover this amazing collection'}
+              movieCount={featuredCollection.availableMovies || 0}
+            />
+          </View>
+        )}
 
         {/* Category Filter */}
         <ScrollView

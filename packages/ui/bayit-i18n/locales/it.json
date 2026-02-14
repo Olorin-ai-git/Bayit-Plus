@@ -5150,7 +5150,21 @@
     "noContent": "Nessun contenuto disponibile",
     "noContentInCategory": "Nessun contenuto trovato in questa categoria",
     "filters": "Filtri",
-    "loadingContent": "Caricamento film e serie..."
+    "loadingContent": "Caricamento film e serie...",
+    "collectionsOnly": "Collezioni",
+    "moviesOnly": "Film",
+    "seriesOnly": "Serie",
+    "collection": {
+      "playAll": "Riproduci tutto",
+      "movies": "film",
+      "available": "di",
+      "of": "di",
+      "notFound": "Collezione non trovata",
+      "watchCollection": "Guarda la collezione",
+      "detail": "Dettagli della collezione",
+      "aiRecommendation": "Raccomandazione IA",
+      "watchNow": "Guarda ora"
+    }
   },
   "voiceOnboarding": {
     "welcome": {

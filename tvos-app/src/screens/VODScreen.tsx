@@ -28,12 +28,21 @@ interface VODItem {
   rating?: string;
 }
 
-const CATEGORIES = ['All', 'Movies', 'Series', 'Action', 'Comedy', 'Drama', 'Documentary'];
-
 export const VODScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const { t } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [focusedIndex, setFocusedIndex] = useState(0);
+
+  const CATEGORIES = [
+    { key: 'All', label: t('vod.allContent', 'All Content') },
+    { key: 'Movies', label: t('vod.moviesOnly', 'Movies') },
+    { key: 'Series', label: t('vod.seriesOnly', 'Series') },
+    { key: 'Collections', label: t('vod.collectionsOnly', 'Collections') },
+    { key: 'Action', label: t('vod.categories.action', 'Action') },
+    { key: 'Comedy', label: t('vod.categories.comedy', 'Comedy') },
+    { key: 'Drama', label: t('vod.categories.drama', 'Drama') },
+    { key: 'Documentary', label: t('vod.categories.documentary', 'Documentary') },
+  ];
 
   const { data: vodItems, isLoading } = useQuery({
     queryKey: ['vod', selectedCategory],
@@ -49,13 +58,13 @@ export const VODScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
     navigation.navigate('Player', { vodId: item.id });
   };
 
-  const renderCategory = ({ item }: { item: string }) => {
-    const isSelected = selectedCategory === item;
+  const renderCategory = ({ item }: { item: { key: string; label: string } }) => {
+    const isSelected = selectedCategory === item.key;
     return (
-      <Pressable onPress={() => setSelectedCategory(item)} style={styles.categoryButton}>
+      <Pressable onPress={() => setSelectedCategory(item.key)} style={styles.categoryButton}>
         <View style={[styles.category, isSelected && styles.categorySelected]}>
           <Text style={[styles.categoryText, isSelected && styles.categoryTextSelected]}>
-            {item}
+            {item.label}
           </Text>
         </View>
       </Pressable>
@@ -87,7 +96,7 @@ export const VODScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           horizontal
           data={CATEGORIES}
           renderItem={renderCategory}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.key}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.categoriesContent}
         />

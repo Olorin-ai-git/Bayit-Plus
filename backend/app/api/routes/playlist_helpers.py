@@ -46,6 +46,23 @@ class PlaylistToggleRequest(BaseModel):
     content_type: str = "vod"
 
 
+class PlaylistBulkAddRequest(BaseModel):
+    """Request body for adding multiple items to playlist in order."""
+
+    content_ids: list[str]
+    content_type: ContentType = ContentType.VOD
+
+    @field_validator("content_ids")
+    @classmethod
+    def validate_content_ids(cls, v: list[str]) -> list[str]:
+        if not v:
+            raise ValueError("content_ids cannot be empty")
+        for content_id in v:
+            if not re.match(CONTENT_ID_PATTERN, content_id):
+                raise ValueError(f"Invalid content_id format: {content_id}")
+        return v
+
+
 async def get_content_metadata(
     content_id: str, content_type: ContentType
 ) -> Optional[dict]:

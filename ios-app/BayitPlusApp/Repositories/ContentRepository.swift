@@ -88,6 +88,22 @@ protocol ContentRepository: Sendable {
     /// - Returns: Continue watching response with progress data.
     /// - Throws: `NetworkError` if the request fails.
     func fetchContinueWatching() async throws -> ContinueWatchingResponse
+
+    /// Fetch collections (movie franchises).
+    ///
+    /// - Parameters:
+    ///   - page: Page number (1-indexed).
+    ///   - limit: Number of items per page.
+    /// - Returns: Paginated collections list.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchCollections(page: Int, limit: Int) async throws -> ContentListResponse
+
+    /// Fetch collection detail with all movies.
+    ///
+    /// - Parameter id: Collection ID.
+    /// - Returns: Collection detail with movies list.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchCollectionDetail(id: String) async throws -> CollectionDetail
 }
 
 /// Production implementation of `ContentRepository` using `APIClient`.
@@ -213,6 +229,26 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
         return try await client.get(
             "/api/v1/history/continue",
             as: ContinueWatchingResponse.self
+        )
+    }
+
+    func fetchCollections(page: Int, limit: Int) async throws -> ContentListResponse {
+        let queryItems = [
+            URLQueryItem(name: "page", value: String(page)),
+            URLQueryItem(name: "limit", value: String(limit))
+        ]
+
+        return try await client.get(
+            "/api/v1/content/collections",
+            queryItems: queryItems,
+            as: ContentListResponse.self
+        )
+    }
+
+    func fetchCollectionDetail(id: String) async throws -> CollectionDetail {
+        return try await client.get(
+            "/api/v1/content/collections/\(id)",
+            as: CollectionDetail.self
         )
     }
 }

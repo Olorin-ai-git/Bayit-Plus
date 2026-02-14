@@ -83,6 +83,8 @@ struct TVContentView: View {
             )
         case .movieDetail(let movieId):
             TVMovieDetailView(movieId: movieId)
+        case .collectionDetail(let collectionId):
+            TVCollectionDetailView(collectionId: collectionId)
         case .seriesDetail(let seriesId):
             TVSeriesDetailView(seriesId: seriesId)
         case .podcastDetail(let showId):

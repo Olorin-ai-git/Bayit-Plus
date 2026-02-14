@@ -5076,7 +5076,21 @@
     "noContent": "कोई सामग्री उपलब्ध नहीं",
     "noContentInCategory": "इस श्रेणी में कोई सामग्री नहीं मिली",
     "filters": "फ़िल्टर",
-    "loadingContent": "फ़िल्में और श्रृंखलाएँ लोड हो रही हैं..."
+    "loadingContent": "फ़िल्में और श्रृंखलाएँ लोड हो रही हैं...",
+    "collectionsOnly": "संग्रह",
+    "moviesOnly": "फ़िल्में",
+    "seriesOnly": "सीरीज़",
+    "collection": {
+      "playAll": "सभी चलाएं",
+      "movies": "फ़िल्में",
+      "available": "का",
+      "of": "का",
+      "notFound": "संग्रह नहीं मिला",
+      "watchCollection": "संग्रह देखें",
+      "detail": "संग्रह विवरण",
+      "aiRecommendation": "एआई अनुशंसा",
+      "watchNow": "अभी देखें"
+    }
   },
   "voice": {
     "listening": "सुन रहे हैं...",

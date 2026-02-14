@@ -14,6 +14,8 @@ struct RouteDestinationResolver {
             MovieDetailView(movieId: movieId)
         case .seriesDetail(let seriesId):
             SeriesDetailView(seriesId: seriesId)
+        case .collectionDetail(let collectionId):
+            CollectionDetailView(collectionId: collectionId)
         case .podcastDetail(let showId):
             PodcastDetailView(showId: showId)
         case .epg:
@@ -94,6 +96,10 @@ struct RouteDestinationResolver {
             HelpView()
         case .rewards:
             RewardsView()
+        case .widgets:
+            WidgetsView()
+        case .radio:
+            RadioView()
         case .passkeyManagement:
             PasskeyManagementView()
         case .onboardingAI:

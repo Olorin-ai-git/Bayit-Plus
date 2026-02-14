@@ -117,6 +117,74 @@ class TMDBService:
         data = await self._make_request(f"/tv/{tmdb_id}/season/{season_number}")
         return data
 
+    async def get_collection_details(self, collection_id: int) -> Optional[Dict]:
+        """
+        Get detailed collection information including all movies.
+
+        Args:
+            collection_id: TMDB collection ID
+
+        Returns:
+            Collection metadata with movie list
+        """
+        data = await self._make_request(f"/collection/{collection_id}")
+        return data
+
+    async def enrich_collection_metadata(
+        self, collection_id: int, collection_name: str
+    ) -> Dict[str, Any]:
+        """
+        Fetch full collection metadata from TMDB.
+
+        Args:
+            collection_id: TMDB collection ID
+            collection_name: Collection name (fallback)
+
+        Returns:
+            Dict with collection metadata
+        """
+        result = {
+            "collection_id": collection_id,
+            "collection_name": collection_name,
+            "collection_poster": None,
+            "collection_backdrop": None,
+            "collection_overview": None,
+            "total_movies": 0,
+            "movie_ids": [],
+        }
+
+        details = await self.get_collection_details(collection_id)
+        if not details:
+            logger.warning(
+                f"🔍 TMDB: Failed to get collection details for ID {collection_id}"
+            )
+            return result
+
+        result["collection_name"] = details.get("name", collection_name)
+        result["collection_overview"] = details.get("overview")
+
+        # Poster and backdrop
+        if details.get("poster_path"):
+            result["collection_poster"] = self.get_image_url(
+                details["poster_path"], "w500"
+            )
+        if details.get("backdrop_path"):
+            result["collection_backdrop"] = self.get_image_url(
+                details["backdrop_path"], "w1280"
+            )
+
+        # Extract movie IDs and count
+        parts = details.get("parts", [])
+        result["total_movies"] = len(parts)
+        result["movie_ids"] = [p.get("id") for p in parts if p.get("id")]
+
+        logger.info(
+            f"🎬 TMDB: Collection '{result['collection_name']}' has "
+            f"{result['total_movies']} movies"
+        )
+
+        return result
+
     async def get_movie_videos(self, tmdb_id: int) -> List[Dict]:
         """
         Get trailers and videos for a movie.
@@ -184,6 +252,9 @@ class TMDBService:
             "tagline": None,
             "status": None,
             "popularity": None,
+            "collection_id": None,
+            "collection_name": None,
+            "collection_poster": None,
         }
 
         # Search for the movie
@@ -205,6 +276,20 @@ class TMDBService:
         # Extract IMDB ID
         external_ids = details.get("external_ids", {})
         result["imdb_id"] = external_ids.get("imdb_id")
+
+        # Extract collection information (belongs_to_collection)
+        belongs_to_collection = details.get("belongs_to_collection")
+        if belongs_to_collection:
+            result["collection_id"] = belongs_to_collection.get("id")
+            result["collection_name"] = belongs_to_collection.get("name")
+            if belongs_to_collection.get("poster_path"):
+                result["collection_poster"] = self.get_image_url(
+                    belongs_to_collection["poster_path"], "w500"
+                )
+            logger.info(
+                f"🎬 TMDB: Movie belongs to collection "
+                f"'{result['collection_name']}' (ID: {result['collection_id']})"
+            )
 
         # Extract other metadata
         result["overview"] = details.get("overview")

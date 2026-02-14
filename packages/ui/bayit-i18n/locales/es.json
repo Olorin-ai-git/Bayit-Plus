@@ -6311,6 +6311,22 @@
     "noContentInCategory": "No se encontró contenido en esta categoría",
     "filters": "Filtros",
     "loadingContent": "Cargando películas y series..."
+    ,
+    "collectionsOnly": "Colecciones",
+    "moviesOnly": "Películas",
+    "seriesOnly": "Series",
+    "collection": {
+      "playAll": "Reproducir todo",
+      "movies": "películas",
+      "available": "de",
+      "of": "de",
+      "notFound": "Colección no encontrada",
+      "watchCollection": "Ver colección",
+      "detail": "Detalles de colección",
+      "aiRecommendation": "Recomendación IA",
+      "watchNow": "Ver ahora"
+    }
+
   },
   "voice": {
     "listening": "Escuchando...",

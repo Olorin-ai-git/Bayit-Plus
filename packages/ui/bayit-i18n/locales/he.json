@@ -6443,7 +6443,21 @@
     "noContent": "אין תוכן זמין",
     "noContentInCategory": "לא נמצא תוכן בקטגוריה זו",
     "filters": "מסננים",
-    "loadingContent": "טוען סרטים וסדרות..."
+    "loadingContent": "טוען סרטים וסדרות...",
+    "collectionsOnly": "אוספים",
+    "moviesOnly": "סרטים",
+    "seriesOnly": "סדרות",
+    "collection": {
+      "playAll": "נגן הכל",
+      "movies": "סרטים",
+      "available": "מתוך",
+      "of": "מתוך",
+      "notFound": "האוסף לא נמצא",
+      "watchCollection": "צפה באוסף",
+      "detail": "פרטי אוסף",
+      "aiRecommendation": "המלצת בינה מלאכותית",
+      "watchNow": "צפה עכשיו"
+    }
   },
   "voice": {
     "listening": "מקשיב...",

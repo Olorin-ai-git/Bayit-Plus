@@ -2,74 +2,71 @@ import BayitAuth
 import BayitDesignSystem
 import SwiftUI
 
-/// Top navigation bar with scrollable action buttons
+/// Fixed top navigation bar with brand name, playlist, and profile avatar.
 struct TopNavigationBar: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(NavigationCoordinator.self) private var coordinator
-    @Environment(FeatureFlags.self) private var featureFlags
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: DesignTokens.Spacing.md) {
-                navButton(icon: "music.note.list", label: "Playlist") {
-                    coordinator.navigate(to: .playlist)
-                }
+        HStack(spacing: DesignTokens.Spacing.md) {
+            Text("Bayit+")
+                .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
+                .foregroundColor(DesignTokens.Primary.p400)
 
-                navButton(icon: "globe", label: "Language settings") {
-                    coordinator.navigate(to: .languageSettings)
-                }
+            Spacer()
 
-                navButton(icon: "person.circle", label: "Profile") {
-                    coordinator.navigate(to: .profile)
-                }
-
-                if authManager.user?.isBetaUser == true {
-                    navButton(
-                        icon: "sparkles",
-                        label: "Beta Credits",
-                        tint: DesignTokens.Primary.p400
-                    ) {
-                        coordinator.navigate(to: .betaCredits)
-                    }
-                }
-
-                if featureFlags.isLegacyFeaturesEnabled {
-                    navButton(
-                        icon: "figure.and.child.holdinghands",
-                        label: "Kids"
-                    ) {
-                        coordinator.navigate(to: .children)
-                    }
-
-                    navButton(icon: "record.circle", label: "Recordings") {
-                        coordinator.navigate(to: .recordings)
-                    }
-                }
-
-                navButton(icon: "magnifyingglass", label: "Search") {
-                    coordinator.presentFullscreen(.search)
-                }
+            Button {
+                coordinator.navigate(to: .playlist)
+            } label: {
+                Image(systemName: "music.note.list")
+                    .font(.system(size: 20))
+                    .foregroundColor(DesignTokens.Text.primary)
+                    .frame(width: 44, height: 44)
+                    .background(DesignTokens.Glass.bgMedium)
+                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
             }
+            .accessibilityLabel("Playlist")
+
+            Button {
+                coordinator.navigate(to: .profile)
+            } label: {
+                profileAvatar
+            }
+            .accessibilityLabel("Profile")
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.vertical, DesignTokens.Spacing.sm)
         .background(DesignTokens.Background.primary)
     }
 
-    private func navButton(
-        icon: String,
-        label: String,
-        tint: Color = DesignTokens.Text.primary,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button(action: action) {
-            Image(systemName: icon)
-                .font(.system(size: 20))
-                .foregroundColor(tint)
-                .frame(width: 44, height: 44)
-                .background(DesignTokens.Glass.bgMedium)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+    @ViewBuilder
+    private var profileAvatar: some View {
+        if let photoURL = authManager.user?.photoURL {
+            AsyncImage(url: photoURL) { phase in
+                switch phase {
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 32, height: 32)
+                        .clipShape(Circle())
+                default:
+                    avatarFallback
+                }
+            }
+        } else {
+            avatarFallback
         }
-        .accessibilityLabel(label)
+    }
+
+    private var avatarFallback: some View {
+        Circle()
+            .fill(DesignTokens.Glass.bgMedium)
+            .frame(width: 32, height: 32)
+            .overlay(
+                Image(systemName: "person.fill")
+                    .font(.system(size: 14))
+                    .foregroundColor(DesignTokens.Text.secondary)
+            )
     }
 }

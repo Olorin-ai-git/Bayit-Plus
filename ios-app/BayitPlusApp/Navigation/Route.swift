@@ -13,6 +13,7 @@ public enum Route: Hashable {
     case player(contentId: String, contentType: ContentType)
     case movieDetail(movieId: String)
     case seriesDetail(seriesId: String)
+    case collectionDetail(collectionId: String)
     case podcastDetail(showId: String)
     case epg
 
@@ -101,6 +102,9 @@ public enum Route: Hashable {
     // Rewards
     case rewards
 
+    // Widgets
+    case widgets
+
     // Passkey Management
     case passkeyManagement
 
@@ -148,6 +152,7 @@ extension Route {
         case .player: return "Player"
         case .movieDetail: return "Movie"
         case .seriesDetail: return "Series"
+        case .collectionDetail: return "Collection"
         case .podcastDetail: return "Podcast"
         case .epg: return "TV Guide"
         case .search: return "Search"
@@ -189,6 +194,7 @@ extension Route {
         case .devicePairing: return "Devices"
         case .helpCenter: return "Help"
         case .rewards: return "Rewards"
+        case .widgets: return "Widgets"
         case .passkeyManagement: return "Passkeys"
         case .onboardingAI: return "Setup"
         case .friends: return "Friends"

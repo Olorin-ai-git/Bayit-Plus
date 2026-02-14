@@ -1,36 +1,35 @@
+import BayitDesignSystem
 import SwiftUI
 
 /// Glass morphism tab bar with animated selection indicator.
 /// Extracted from MainTabView to keep each file under 200 lines.
 struct GlassTabBar: View {
     @Environment(NavigationCoordinator.self) private var coordinator
-    @Environment(FeatureFlags.self) private var featureFlags
 
     var body: some View {
         HStack(spacing: 0) {
-            // VOD tab is a legacy feature - controlled by feature flag
-            ForEach(AppTab.allCases.filter { $0 != .vod || featureFlags.isLegacyFeaturesEnabled }) { tab in
+            ForEach(AppTab.allCases) { tab in
                 tabBarButton(for: tab)
             }
         }
-        .padding(.horizontal, 4)
-        .padding(.vertical, 8)
+        .padding(.horizontal, DesignTokens.Spacing.xs)
+        .padding(.vertical, DesignTokens.Spacing.sm)
         .background {
             ZStack {
-                Color.black.opacity(0.85)
+                DesignTokens.Glass.bgStrong
                 Rectangle()
                     .fill(.ultraThinMaterial)
                     .environment(\.colorScheme, .dark)
             }
         }
-        .clipShape(RoundedRectangle(cornerRadius: 24))
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.xl))
         .overlay(
-            RoundedRectangle(cornerRadius: 24)
-                .stroke(Color.purple.opacity(0.25), lineWidth: 1)
+            RoundedRectangle(cornerRadius: DesignTokens.Radius.xl)
+                .stroke(DesignTokens.Glass.border, lineWidth: 1)
         )
-        .padding(.horizontal, 16)
-        .padding(.bottom, 4)
-        .shadow(color: Color.purple.opacity(0.2), radius: 8, y: 4)
+        .padding(.horizontal, DesignTokens.Spacing.base)
+        .padding(.bottom, DesignTokens.Spacing.xs)
+        .shadow(color: DesignTokens.Glass.purpleGlow, radius: DesignTokens.Spacing.sm, y: DesignTokens.Spacing.xs)
     }
 
     private func tabBarButton(for tab: AppTab) -> some View {
@@ -38,28 +37,32 @@ struct GlassTabBar: View {
 
         return Button {
             withAnimation(.spring(duration: 0.3, bounce: 0.15)) {
-                coordinator.selectedTab = tab
+                if isSelected {
+                    coordinator.popToRoot()
+                } else {
+                    coordinator.selectedTab = tab
+                }
             }
         } label: {
-            VStack(spacing: 2) {
+            VStack(spacing: DesignTokens.Spacing.xxs) {
                 Image(systemName: isSelected ? tab.selectedIconName : tab.iconName)
-                    .font(.system(size: 18))
+                    .font(.system(size: DesignTokens.FontSize.lg))
                     .symbolVariant(isSelected ? .fill : .none)
 
                 Text(tab.title)
-                    .font(.system(size: 10, weight: .medium))
+                    .font(.system(size: DesignTokens.FontSize.xs, weight: .medium))
             }
             .foregroundStyle(isSelected
-                ? Color(red: 0.75, green: 0.32, blue: 0.99)
-                : Color.white.opacity(0.5))
+                ? DesignTokens.Primary.p400
+                : DesignTokens.Text.muted)
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 8)
+            .padding(.vertical, DesignTokens.Spacing.sm)
             .background(
                 isSelected
-                    ? Color.purple.opacity(0.15)
+                    ? DesignTokens.Glass.borderLight
                     : Color.clear
             )
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
         }
         .accessibilityIdentifier("tab_\(tab.rawValue)")
         .accessibilityLabel(tab.title)

@@ -15,6 +15,7 @@ final class RepositoryProvider {
     let series: any SeriesRepository
     let media: any MediaRepository
     let user: any UserRepository
+    let playlist: any PlaylistRepository
     let epg: any EPGRepository
     let category: any CategoryRepository
     let voice: any VoiceRepository
@@ -68,6 +69,7 @@ final class RepositoryProvider {
         self.series = APISeriesRepository(client: client)
         self.media = APIMediaRepository(client: client)
         self.user = APIUserRepository(client: client)
+        self.playlist = APIPlaylistRepository(client: client)
         self.epg = APIEPGRepository(client: client)
         self.category = APICategoryRepository(client: client)
         self.voice = APIVoiceRepository(client: client)

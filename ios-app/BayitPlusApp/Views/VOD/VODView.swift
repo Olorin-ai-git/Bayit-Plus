@@ -6,6 +6,7 @@ struct VODView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @State private var viewModel: VODViewModel?
+    @State private var featuredCollection: CollectionDetail?
 
     private let columns = [
         GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
@@ -18,6 +19,20 @@ struct VODView: View {
             PageHeader(icon: "film.fill", title: "VOD")
 
             if let vm = viewModel {
+                contentTypeFilters(vm)
+
+                if let collection = featuredCollection, vm.selectedType == .all {
+                    CollectionPromoBannerView(
+                        collectionId: collection.id,
+                        title: collection.title ?? "Collection",
+                        posterUrl: collection.thumbnail,
+                        promoText: collection.promoText ?? "Discover this amazing collection",
+                        movieCount: collection.availableMovies ?? 0
+                    )
+                    .padding(.horizontal, DesignTokens.Spacing.lg)
+                    .padding(.vertical, DesignTokens.Spacing.sm)
+                }
+
                 if vm.isLoading && vm.items.isEmpty {
                     loadingGrid
                 } else if let error = vm.error, vm.items.isEmpty {
@@ -40,6 +55,36 @@ struct VODView: View {
                 viewModel = VODViewModel(repository: repos.content)
             }
             await viewModel?.loadContent()
+            await loadFeaturedCollection()
+        }
+    }
+
+    private func loadFeaturedCollection() async {
+        do {
+            let response = try await repos.content.fetchCollections(page: 1, limit: 1)
+            if let firstCollection = response.items.first {
+                featuredCollection = try await repos.content.fetchCollectionDetail(id: firstCollection.id)
+            }
+        } catch {
+            // Silently fail - banner is optional
+        }
+    }
+
+    private func contentTypeFilters(_ vm: VODViewModel) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                ForEach(VODFilterType.allCases) { type in
+                    FilterPill(
+                        title: type.displayName,
+                        isSelected: vm.selectedType == type
+                    ) {
+                        vm.selectedType = type
+                        Task { await vm.loadContent() }
+                    }
+                }
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+            .padding(.vertical, DesignTokens.Spacing.sm)
         }
     }
 
@@ -83,7 +128,9 @@ struct VODView: View {
     }
 
     private func navigateToItem(_ item: ContentItem) {
-        if item.isSeries == true {
+        if item.isCollectionParent == true {
+            coordinator.navigate(to: .collectionDetail(collectionId: item.id))
+        } else if item.isSeries == true {
             coordinator.navigate(to: .seriesDetail(seriesId: item.id))
         } else {
             coordinator.navigate(to: .movieDetail(movieId: item.id))
@@ -108,7 +155,11 @@ private struct VODCard: View {
                         subtitlePill
                     }
                     .overlay(alignment: .bottomLeading) {
-                        seriesBadge
+                        if item.isCollectionParent == true {
+                            collectionBadge
+                        } else {
+                            seriesBadge
+                        }
                     }
 
                 VStack(alignment: .leading, spacing: 2) {
@@ -189,6 +240,31 @@ private struct VODCard: View {
         }
     }
 
+    private var collectionBadge: some View {
+        let badgeText: String
+        if let available = item.availableMovies, let total = item.totalMovies, total > available {
+            badgeText = "\(available) of \(total) movies"
+        } else if let available = item.availableMovies {
+            badgeText = "\(available) movies"
+        } else {
+            badgeText = "Collection"
+        }
+
+        return Text(badgeText)
+            .font(.system(
+                size: DesignTokens.FontSize.xs,
+                weight: .semibold
+            ))
+            .foregroundColor(DesignTokens.Text.primary)
+            .padding(.horizontal, DesignTokens.Spacing.sm)
+            .padding(.vertical, 3)
+            .background(DesignTokens.Glass.bgStrong)
+            .clipShape(
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.sm)
+            )
+            .padding(DesignTokens.Spacing.xs)
+    }
+
     private var subtitle: String? {
         var parts: [String] = []
         if let year = item.year { parts.append(String(year)) }
@@ -205,5 +281,32 @@ private struct VODCard: View {
             langs.insert("en")
         }
         return langs
+    }
+}
+
+/// Filter pill button component
+private struct FilterPill: View {
+    let title: String
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            Text(title)
+                .font(.system(
+                    size: DesignTokens.FontSize.sm,
+                    weight: isSelected ? .semibold : .medium
+                ))
+                .foregroundColor(
+                    isSelected ? DesignTokens.Text.primary : DesignTokens.Text.muted
+                )
+                .padding(.horizontal, DesignTokens.Spacing.md)
+                .padding(.vertical, DesignTokens.Spacing.sm)
+                .background(
+                    isSelected ? DesignTokens.Glass.bgStrong : DesignTokens.Glass.bg
+                )
+                .clipShape(Capsule())
+        }
+        .buttonStyle(.plain)
     }
 }

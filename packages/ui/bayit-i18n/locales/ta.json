@@ -4989,7 +4989,21 @@
     "noContent": "உள்ளடக்கம் இல்லை",
     "noContentInCategory": "இந்த வகையில் உள்ளடக்கம் இல்லை",
     "filters": "வடிகட்டிகள்",
-    "loadingContent": "திரைப்படங்கள் மற்றும் தொடர்கள் ஏற்றப்படுகின்றன..."
+    "loadingContent": "திரைப்படங்கள் மற்றும் தொடர்கள் ஏற்றப்படுகின்றன...",
+    "collectionsOnly": "தொகுப்புகள்",
+    "moviesOnly": "திரைப்படங்கள்",
+    "seriesOnly": "தொடர்கள்",
+    "collection": {
+      "playAll": "அனைத்தையும் இயக்கு",
+      "movies": "திரைப்படங்கள்",
+      "available": "இல்",
+      "of": "இல்",
+      "notFound": "தொகுப்பு கிடைக்கவில்லை",
+      "watchCollection": "தொகுப்பைப் பார்",
+      "detail": "தொகுப்பு விவரங்கள்",
+      "aiRecommendation": "AI பரிந்துரை",
+      "watchNow": "இப்போது பார்"
+    }
   },
   "voice": {
     "listening": "கேட்கிறது...",
@@ -8154,17 +8168,14 @@
     "title": "குரல் சவால்",
     "instruction": "தொடர எபிரேய சொற்றொடரைச் சொல்லுங்கள்",
     "listening": "கேட்கிறது...",
-    "evaluating": "உச்சரிப்பை சரிபார்க்கிறது...",
+    "evaluating": "உச்சரிப்பு சரிபார்ப்பு...",
     "correct": "சரி! நன்றாக செய்தீர்கள்!",
     "incorrect": "சரியாக இல்லை. மீண்டும் முயற்சிக்கவும்.",
     "hint": "சொற்றொடரைக் கேளுங்கள்",
     "attemptsRemaining": "{{count}} முயற்சிகள் மீதமுள்ளன",
     "timeout": "நேரம் முடிந்தது!",
-    "skipAvailable": "இந்த சவாலை தவிர்க்கலாம்",
-    "pronunciationScore": "உச்சரிப்பு: {{score}}%",
-    "attempt": "முயற்சி {{current}} / {{max}}",
-    "listenHint": "சரியான உச்சரிப்பைக் கேளுங்கள்",
-    "holdToSpeak": "பேச அழுத்தி வைக்கவும்"
+    "skipAvailable": "இந்த சவாலைத் தவிர்க்கலாம்",
+    "pronunciationScore": "உச்சரிப்பு: {{score}}%"
   },
   "familySnaps": {
     "title": "குடும்ப புகைப்படங்கள்",
@@ -8236,19 +8247,6 @@
       "hard": "கடினம்",
       "fromVocabulary": "உங்கள் சொல்வளத்திலிருந்து"
     }
-  },
-  "voiceDecision": {
-    "title": "குரல் சவால்",
-    "instruction": "தொடர எபிரேய சொற்றொடரைச் சொல்லுங்கள்",
-    "listening": "கேட்கிறது...",
-    "evaluating": "உச்சரிப்பு சரிபார்ப்பு...",
-    "correct": "சரி! நன்றாக செய்தீர்கள்!",
-    "incorrect": "சரியாக இல்லை. மீண்டும் முயற்சிக்கவும்.",
-    "hint": "சொற்றொடரைக் கேளுங்கள்",
-    "attemptsRemaining": "{{count}} முயற்சிகள் மீதமுள்ளன",
-    "timeout": "நேரம் முடிந்தது!",
-    "skipAvailable": "இந்த சவாலைத் தவிர்க்கலாம்",
-    "pronunciationScore": "உச்சரிப்பு: {{score}}%"
   },
   "gamification": {
     "title": "என் முன்னேற்றம்",

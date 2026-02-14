@@ -70,6 +70,7 @@ export const VODScreenMobile: React.FC = () => {
   const [filteredContent, setFilteredContent] = useState<Content[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [contentTypeFilter, setContentTypeFilter] = useState<'all' | 'movies' | 'series' | 'collections'>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -87,7 +88,7 @@ export const VODScreenMobile: React.FC = () => {
 
   useEffect(() => {
     filterContent();
-  }, [selectedCategory, content]);
+  }, [selectedCategory, content, contentTypeFilter]);
 
   const loadContent = async () => {
     try {
@@ -155,13 +156,23 @@ export const VODScreenMobile: React.FC = () => {
   };
 
   const filterContent = () => {
-    if (!selectedCategory) {
-      setFilteredContent(content);
-    } else {
-      setFilteredContent(
-        content.filter((item) => item.category === selectedCategory)
-      );
+    let filtered = content;
+
+    // Filter by content type
+    if (contentTypeFilter === 'movies') {
+      filtered = filtered.filter((item) => item.type === 'movie');
+    } else if (contentTypeFilter === 'series') {
+      filtered = filtered.filter((item) => item.type === 'series');
+    } else if (contentTypeFilter === 'collections') {
+      filtered = filtered.filter((item) => (item as any).is_collection_parent === true);
     }
+
+    // Filter by category
+    if (selectedCategory) {
+      filtered = filtered.filter((item) => item.category === selectedCategory);
+    }
+
+    setFilteredContent(filtered);
   };
 
   const onRefresh = async () => {
@@ -202,16 +213,46 @@ export const VODScreenMobile: React.FC = () => {
 
   return (
     <View className="flex-1 bg-background" style={safeAreaPadding}>
+      {/* Content Type filters - Movies/Series/Collections */}
+      <View className="py-2">
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 24, gap: 8 }}
+        >
+          <GlassCategoryPill
+            category={{ id: 'all', name: t('vod.allContent') }}
+            selected={contentTypeFilter === 'all'}
+            onPress={() => setContentTypeFilter('all')}
+          />
+          <GlassCategoryPill
+            category={{ id: 'movies', name: t('vod.moviesOnly') }}
+            selected={contentTypeFilter === 'movies'}
+            onPress={() => setContentTypeFilter('movies')}
+          />
+          <GlassCategoryPill
+            category={{ id: 'series', name: t('vod.seriesOnly') }}
+            selected={contentTypeFilter === 'series'}
+            onPress={() => setContentTypeFilter('series')}
+          />
+          <GlassCategoryPill
+            category={{ id: 'collections', name: t('vod.collectionsOnly') }}
+            selected={contentTypeFilter === 'collections'}
+            onPress={() => setContentTypeFilter('collections')}
+          />
+        </ScrollView>
+      </View>
+
       {/* Category filters - horizontal scroll */}
       {categories.length > 0 && (
-        <View className="py-4">
+        <View className="py-2">
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 24, gap: 8 }}
           >
             <GlassCategoryPill
-              category={{ id: 'all', name: t('vod.allContent') }}
+              category={{ id: 'all', name: t('vod.allCategories') }}
               selected={selectedCategory === null}
               onPress={() => setSelectedCategory(null)}
             />

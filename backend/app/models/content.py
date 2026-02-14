@@ -148,6 +148,27 @@ class Content(Document):
     imdb_rating: Optional[float] = None
     imdb_votes: Optional[int] = None
 
+    # Movie Collection fields (TMDB collections support)
+    tmdb_collection_id: Optional[int] = None  # TMDB collection ID
+    tmdb_collection_name: Optional[str] = None  # Collection name from TMDB
+    tmdb_collection_poster_path: Optional[str] = None  # Collection poster URL
+    is_collection_parent: bool = False  # True if this is a collection parent document
+    collection_parent_id: Optional[str] = None  # Links movie to its collection parent
+    collection_order: Optional[int] = None  # Order in collection (1, 2, 3...)
+    collection_total_movies: Optional[int] = None  # Total movies in TMDB collection
+
+    # AI-generated promotional text (10 languages) for collections
+    promo_text: Optional[str] = None  # Hebrew
+    promo_text_en: Optional[str] = None  # English
+    promo_text_es: Optional[str] = None  # Spanish
+    promo_text_fr: Optional[str] = None  # French
+    promo_text_it: Optional[str] = None  # Italian
+    promo_text_hi: Optional[str] = None  # Hindi
+    promo_text_ta: Optional[str] = None  # Tamil
+    promo_text_bn: Optional[str] = None  # Bengali
+    promo_text_ja: Optional[str] = None  # Japanese
+    promo_text_zh: Optional[str] = None  # Chinese
+
     # Trailer/Preview
     trailer_url: Optional[str] = None
     preview_url: Optional[str] = None  # 5-second preview clip
@@ -331,6 +352,13 @@ class Content(Document):
             # Beta content indexes
             IndexModel("is_beta_content", sparse=True),
             IndexModel([("is_beta_content", 1), ("is_published", 1)], sparse=True),
+            # Movie Collection indexes
+            "tmdb_collection_id",
+            "is_collection_parent",
+            "collection_parent_id",
+            ("collection_parent_id", "collection_order"),
+            ("tmdb_collection_id", "is_published"),
+            ("is_collection_parent", "is_published"),
         ]
 
 

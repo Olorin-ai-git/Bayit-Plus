@@ -8,21 +8,19 @@ struct BreadcrumbBar: View {
     var body: some View {
         let entries = coordinator.currentBreadcrumbs
 
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: DesignTokens.Spacing.xs) {
-                ForEach(Array(entries.enumerated()), id: \.element.id) { index, entry in
-                    let isLast = index == entries.count - 1
+        FlowLayout(spacing: DesignTokens.Spacing.xs) {
+            ForEach(Array(entries.enumerated()), id: \.element.id) { index, entry in
+                let isLast = index == entries.count - 1
 
-                    if index > 0 {
-                        chevronSeparator
-                    }
-
-                    breadcrumbItem(entry, isActive: isLast)
+                if index > 0 {
+                    chevronSeparator
                 }
+
+                breadcrumbItem(entry, isActive: isLast)
             }
-            .padding(.horizontal, DesignTokens.Spacing.lg)
-            .padding(.vertical, DesignTokens.Spacing.sm)
         }
+        .padding(.horizontal, DesignTokens.Spacing.lg)
+        .padding(.vertical, DesignTokens.Spacing.sm)
         .background(DesignTokens.Glass.bg)
     }
 
@@ -64,5 +62,56 @@ struct BreadcrumbBar: View {
         Image(systemName: "chevron.right")
             .font(.system(size: 10, weight: .semibold))
             .foregroundColor(DesignTokens.Text.muted)
+    }
+}
+
+private struct FlowLayout: Layout {
+    let spacing: CGFloat
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let result = arrange(proposal: proposal, subviews: subviews)
+        return result.size
+    }
+
+    func placeSubviews(
+        in bounds: CGRect,
+        proposal: ProposedViewSize,
+        subviews: Subviews,
+        cache: inout ()
+    ) {
+        let result = arrange(proposal: proposal, subviews: subviews)
+        for (index, position) in result.positions.enumerated() {
+            subviews[index].place(
+                at: CGPoint(x: bounds.minX + position.x, y: bounds.minY + position.y),
+                proposal: .unspecified
+            )
+        }
+    }
+
+    private func arrange(
+        proposal: ProposedViewSize,
+        subviews: Subviews
+    ) -> (size: CGSize, positions: [CGPoint]) {
+        let maxWidth = proposal.width ?? .infinity
+        var positions: [CGPoint] = []
+        var currentX: CGFloat = 0
+        var currentY: CGFloat = 0
+        var rowHeight: CGFloat = 0
+        var maxHeight: CGFloat = 0
+
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            if currentX + size.width > maxWidth, currentX > 0 {
+                currentX = 0
+                currentY += rowHeight + spacing
+                rowHeight = 0
+            }
+            positions.append(CGPoint(x: currentX, y: currentY))
+            currentX += size.width + spacing
+            rowHeight = max(rowHeight, size.height)
+            maxHeight = max(maxHeight, currentY + rowHeight)
+        }
+
+        return (CGSize(width: maxWidth, height: maxHeight), positions)
     }
 }

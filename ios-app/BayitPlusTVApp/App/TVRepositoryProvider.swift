@@ -15,6 +15,7 @@ final class TVRepositoryProvider {
     let radio: any RadioRepository
     let series: any SeriesRepository
     let media: any MediaRepository
+    let playlist: any PlaylistRepository
     let epg: any EPGRepository
     let category: any CategoryRepository
     let settings: any SettingsRepository
@@ -64,6 +65,7 @@ final class TVRepositoryProvider {
         self.radio = APIRadioRepository(client: client)
         self.series = APISeriesRepository(client: client)
         self.media = APIMediaRepository(client: client)
+        self.playlist = APIPlaylistRepository(client: client)
         self.epg = APIEPGRepository(client: client)
         self.category = APICategoryRepository(client: client)
         self.settings = APISettingsRepository(client: client)

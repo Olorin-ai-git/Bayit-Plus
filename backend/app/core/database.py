@@ -32,6 +32,7 @@ from app.models.chess import ChessChatMessage, ChessGame
 from app.models.content import (Content, EPGEntry, LiveChannel, Podcast,
                                 PodcastEpisode, RadioStation,
                                 TranslationStageMetrics)
+from app.models.user_podcast_subscription import UserPodcastSubscription
 from app.models.content_embedding import ContentEmbedding, RecapSession
 from app.models.content_taxonomy import (Audience, ContentSection, Genre,
                                          SectionSubcategory)
@@ -254,6 +255,7 @@ async def connect_to_mongo():
         RadioStation,
         Podcast,
         PodcastEpisode,
+        UserPodcastSubscription,
         TranslationStageMetrics,
         # Content taxonomy models (new classification system)
         ContentSection,

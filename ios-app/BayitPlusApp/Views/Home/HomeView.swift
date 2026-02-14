@@ -46,6 +46,7 @@ struct HomeView: View {
                 viewModel = HomeViewModel(
                     repository: repos.content,
                     liveTVRepository: repos.liveTV,
+                    radioRepository: repos.radio,
                     locationProvider: locationProvider,
                     featureFlags: featureFlags,
                     categoryRepository: repos.category
@@ -95,6 +96,11 @@ struct HomeView: View {
         // Live TV row
         if !vm.liveChannels.isEmpty {
             LiveTVRow(channels: vm.liveChannels, coordinator: coordinator)
+        }
+
+        // Radio stations row
+        if !vm.radioStations.isEmpty {
+            RadioStationsRow(stations: vm.radioStations, coordinator: coordinator)
         }
 
         // Location-based sections

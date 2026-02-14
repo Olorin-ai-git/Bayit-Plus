@@ -13,6 +13,7 @@ struct FaceCaptureResult: Sendable {
     let faceTexture: Data?
 }
 
+@MainActor
 @Observable
 final class ARFaceCaptureSession: NSObject, @preconcurrency ARSessionDelegate {
 
@@ -25,8 +26,11 @@ final class ARFaceCaptureSession: NSObject, @preconcurrency ARSessionDelegate {
         case unsupported
     }
 
+    private enum PromptPhase { case reading, awaiting, holding }
+
     private(set) var phase: CapturePhase = .waiting
     private(set) var currentPromptKey: String = "zehAni.arCapture.holdStill"
+    private(set) var expressionDetected = false
     private(set) var captureResult: FaceCaptureResult?
 
     private var arSession: ARSession?
@@ -37,11 +41,17 @@ final class ARFaceCaptureSession: NSObject, @preconcurrency ARSessionDelegate {
     private var collectedNames: [String] = []
     private var capturedTexture: Data?
     private var stabilityFrameCount = 0
-    private var captureStartTime: Date?
+    private var currentPromptPhase: PromptPhase = .reading
+    private var promptPhaseStartTime: Date?
+    private var expressionHeldFrames = 0
     private let logger = BayitLogger(category: "ARFaceCapture")
 
     private let requiredStabilityFrames = 15
-    private let captureDurationSeconds: TimeInterval = 3.0
+    private let promptReadDelay: TimeInterval = 1.5
+    private let expressionThreshold: Float = 0.35
+    private let requiredHoldFrames = 20
+    private let neutralHoldDuration: TimeInterval = 1.0
+    private let maxPromptWaitDuration: TimeInterval = 10.0
 
     private let promptSequence: [(key: String, blendShape: String?)] = [
         ("zehAni.arCapture.holdStill", nil),
@@ -84,8 +94,11 @@ final class ARFaceCaptureSession: NSObject, @preconcurrency ARSessionDelegate {
         collectedDeltas.removeAll()
         collectedNames.removeAll()
         stabilityFrameCount = 0
-        captureStartTime = nil
         promptIndex = 0
+        currentPromptPhase = .reading
+        promptPhaseStartTime = nil
+        expressionHeldFrames = 0
+        expressionDetected = false
     }
 
     private func captureNeutralGeometry(from anchor: ARFaceAnchor) {
@@ -109,49 +122,16 @@ final class ARFaceCaptureSession: NSObject, @preconcurrency ARSessionDelegate {
         let geometry = anchor.geometry
         let currentVerts = (0..<geometry.vertices.count).map { geometry.vertices[$0] }
 
-        let deltas = zip(currentVerts, neutral).map { current, base in
-            SIMD3<Float>(
-                current.x - base.x,
-                current.y - base.y,
-                current.z - base.z
-            )
-        }
-
-        let dominantBlendShape = anchor.blendShapeLocation(
-            for: currentPromptBlendShape()
-        )
-        let hasMeaningfulDelta = deltas.contains { simd_length($0) > 0.0005 }
-
-        if dominantBlendShape > 0.3 || hasMeaningfulDelta {
-            let blendShapeEntries = Array(anchor.blendShapes.keys)
-            for location in blendShapeEntries {
-                let weight = anchor.blendShapes[location]?.floatValue ?? 0.0
-                if weight > 0.1 {
-                    let name = location.rawValue
-                    if !collectedNames.contains(name) {
-                        let morphDelta = zip(currentVerts, neutral).map { c, b in
-                            SIMD3<Float>(c.x - b.x, c.y - b.y, c.z - b.z)
-                        }
-                        collectedNames.append(name)
-                        collectedDeltas.append(morphDelta)
-                    }
-                }
+        for (location, weight) in anchor.blendShapes {
+            let value = weight.floatValue
+            guard value > 0.1 else { continue }
+            let name = location.rawValue
+            guard !collectedNames.contains(name) else { continue }
+            let morphDelta = zip(currentVerts, neutral).map { c, b in
+                SIMD3<Float>(c.x - b.x, c.y - b.y, c.z - b.z)
             }
-        }
-    }
-
-    private func currentPromptBlendShape() -> ARFaceAnchor.BlendShapeLocation {
-        guard promptIndex < promptSequence.count,
-              let key = promptSequence[promptIndex].blendShape else {
-            return .jawOpen
-        }
-        return ARFaceAnchor.BlendShapeLocation(rawValue: key)
-    }
-
-    private func advancePrompt() {
-        promptIndex += 1
-        if promptIndex < promptSequence.count {
-            currentPromptKey = promptSequence[promptIndex].key
+            collectedNames.append(name)
+            collectedDeltas.append(morphDelta)
         }
     }
 
@@ -190,6 +170,104 @@ final class ARFaceCaptureSession: NSObject, @preconcurrency ARSessionDelegate {
             + "\(collectedNames.count) morph targets"
         )
     }
+
+    // MARK: - Prompt State Machine
+
+    private func updateCaptureProgress() {
+        let promptFraction: Float
+        switch currentPromptPhase {
+        case .reading: promptFraction = 0.0
+        case .awaiting: promptFraction = 0.3
+        case .holding:
+            let holdProgress = min(Float(expressionHeldFrames) / Float(requiredHoldFrames), 1.0)
+            promptFraction = 0.3 + 0.7 * holdProgress
+        }
+        let overall = (Float(promptIndex) + promptFraction) / Float(promptSequence.count)
+        phase = .capturing(progress: overall)
+    }
+
+    private func beginNextPrompt() {
+        currentPromptPhase = .reading
+        promptPhaseStartTime = Date()
+        expressionDetected = false
+        expressionHeldFrames = 0
+    }
+
+    private func finishCurrentPrompt(session: ARSession) {
+        promptIndex += 1
+        if promptIndex < promptSequence.count {
+            currentPromptKey = promptSequence[promptIndex].key
+            beginNextPrompt()
+        } else {
+            if let frame = session.currentFrame {
+                captureTextureFromFrame(frame)
+            }
+            stopSession()
+            completeFaceCapture()
+        }
+    }
+
+    private func handleCapturing(
+        faceAnchor: ARFaceAnchor, session: ARSession
+    ) {
+        if promptPhaseStartTime == nil { beginNextPrompt() }
+        guard let phaseStart = promptPhaseStartTime else { return }
+        let elapsed = Date().timeIntervalSince(phaseStart)
+        updateCaptureProgress()
+
+        switch currentPromptPhase {
+        case .reading:
+            if elapsed >= promptReadDelay {
+                currentPromptPhase = .awaiting
+                promptPhaseStartTime = Date()
+            }
+
+        case .awaiting:
+            let target = promptSequence[promptIndex]
+            if target.blendShape == nil {
+                if let frame = session.currentFrame {
+                    captureTextureFromFrame(frame)
+                }
+                if elapsed >= neutralHoldDuration {
+                    finishCurrentPrompt(session: session)
+                }
+            } else if let blendShapeKey = target.blendShape {
+                let location = ARFaceAnchor.BlendShapeLocation(
+                    rawValue: blendShapeKey
+                )
+                let value = faceAnchor.blendShapes[location]?.floatValue ?? 0
+                if value > expressionThreshold {
+                    expressionDetected = true
+                    currentPromptPhase = .holding
+                    promptPhaseStartTime = Date()
+                    expressionHeldFrames = 0
+                } else if elapsed >= maxPromptWaitDuration {
+                    collectMorphTargetDeltas(from: faceAnchor)
+                    finishCurrentPrompt(session: session)
+                }
+            }
+
+        case .holding:
+            guard let blendShapeKey = promptSequence[promptIndex].blendShape else {
+                finishCurrentPrompt(session: session)
+                return
+            }
+            let location = ARFaceAnchor.BlendShapeLocation(rawValue: blendShapeKey)
+            let value = faceAnchor.blendShapes[location]?.floatValue ?? 0
+            if value > expressionThreshold {
+                expressionHeldFrames += 1
+                if expressionHeldFrames >= requiredHoldFrames {
+                    collectMorphTargetDeltas(from: faceAnchor)
+                    finishCurrentPrompt(session: session)
+                }
+            } else {
+                expressionDetected = false
+                expressionHeldFrames = 0
+                currentPromptPhase = .awaiting
+                promptPhaseStartTime = Date()
+            }
+        }
+    }
 }
 
 // MARK: - ARSessionDelegate
@@ -207,40 +285,16 @@ extension ARFaceCaptureSession {
             if stabilityFrameCount >= requiredStabilityFrames {
                 captureNeutralGeometry(from: faceAnchor)
                 phase = .detected
-                captureStartTime = Date()
                 logger.info("Face detected and stabilized")
             }
 
         case .detected:
             phase = .capturing(progress: 0)
             currentPromptKey = promptSequence[0].key
-            captureStartTime = Date()
+            beginNextPrompt()
 
         case .capturing:
-            guard let startTime = captureStartTime else { return }
-            let elapsed = Date().timeIntervalSince(startTime)
-            let progress = Float(min(elapsed / captureDurationSeconds, 1.0))
-            phase = .capturing(progress: progress)
-
-            let promptDuration = captureDurationSeconds / Double(promptSequence.count)
-            let expectedPromptIndex = min(
-                Int(elapsed / promptDuration),
-                promptSequence.count - 1
-            )
-            if expectedPromptIndex > promptIndex {
-                advancePrompt()
-            }
-
-            collectMorphTargetDeltas(from: faceAnchor)
-
-            if let frame = session.currentFrame {
-                captureTextureFromFrame(frame)
-            }
-
-            if elapsed >= captureDurationSeconds {
-                stopSession()
-                completeFaceCapture()
-            }
+            handleCapturing(faceAnchor: faceAnchor, session: session)
 
         case .complete, .failed, .unsupported:
             break
@@ -250,14 +304,6 @@ extension ARFaceCaptureSession {
     func session(_ session: ARSession, didFailWithError error: Error) {
         logger.error("ARSession failed", error: error)
         phase = .failed("zehAni.arCapture.noFace")
-    }
-}
-
-private extension ARFaceAnchor {
-    func blendShapeLocation(
-        for location: ARFaceAnchor.BlendShapeLocation
-    ) -> Float {
-        blendShapes[location]?.floatValue ?? 0.0
     }
 }
 
