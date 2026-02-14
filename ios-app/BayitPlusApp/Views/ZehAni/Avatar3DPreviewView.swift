@@ -136,7 +136,7 @@ struct SceneKitView: UIViewRepresentable {
         let tempURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString + ".glb")
         do {
-            try data.write(to: tempURL, options: [.completeFileProtection])
+            try data.write(to: tempURL, options: [.completeFileProtectionUnlessOpen])
             defer { try? FileManager.default.removeItem(at: tempURL) }
             return try SCNScene(url: tempURL, options: nil)
         } catch {

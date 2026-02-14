@@ -7,6 +7,7 @@ struct AvatarCreationView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(LocalizationManager.self) private var localization
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.scenePhase) private var scenePhase
 
     let profileId: String
     let viewModel: StarStoryViewModel?
@@ -57,6 +58,12 @@ struct AvatarCreationView: View {
             .onDisappear {
                 familyPin = ""
                 videoData = nil
+            }
+            .onChange(of: scenePhase) { _, phase in
+                if phase == .background {
+                    familyPin = ""
+                    videoData = nil
+                }
             }
         }
     }

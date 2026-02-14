@@ -108,7 +108,7 @@ struct LiveAvatarOverlayView: View {
         let (data, _) = try await URLSession.shared.data(from: url)
         let tempURL = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString + ".glb")
-        try data.write(to: tempURL, options: [.completeFileProtection])
+        try data.write(to: tempURL, options: [.completeFileProtectionUnlessOpen])
         defer { try? FileManager.default.removeItem(at: tempURL) }
         let scene = try SCNScene(url: tempURL, options: nil)
         return scene.rootNode.childNodes.first ?? SCNNode()
