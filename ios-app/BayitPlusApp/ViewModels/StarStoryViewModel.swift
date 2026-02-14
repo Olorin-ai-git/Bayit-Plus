@@ -163,6 +163,31 @@ final class StarStoryViewModel {
         }
     }
 
+    func uploadARKitMesh(
+        avatarId: String,
+        glbData: Data,
+        profileId: String,
+        pin: String,
+        meshRepo: any AvatarMeshRepository
+    ) async -> Bool {
+        errorMessage = nil
+
+        do {
+            let status = try await meshRepo.uploadGlbMesh(
+                avatarId: avatarId,
+                profileId: profileId,
+                pin: pin,
+                glbData: glbData
+            )
+            logger.info("ARKit mesh uploaded for avatar \(status.avatarId)")
+            return status.status == "ready"
+        } catch {
+            errorMessage = error.localizedDescription
+            logger.error("Failed to upload ARKit mesh", error: error)
+            return false
+        }
+    }
+
     func cancelPolling() {
         pollTask?.cancel()
         pollTask = nil

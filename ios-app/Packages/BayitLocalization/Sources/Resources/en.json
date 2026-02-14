@@ -8300,6 +8300,17 @@
       "statusRigging": "Adding animations...",
       "viewPreview": "View 3D Preview"
     },
+    "arCapture": {
+      "title": "Face Scan",
+      "subtitle": "Create your 3D avatar with face scanning",
+      "holdStill": "Hold still...",
+      "smile": "Smile!",
+      "openMouth": "Open mouth wide",
+      "raiseBrows": "Raise eyebrows",
+      "processing": "Building your 3D model...",
+      "complete": "Face scan complete!",
+      "noFace": "No face detected. Please try again."
+    },
     "consent": {
       "biometric": {
         "title": "Biometric Data Consent",

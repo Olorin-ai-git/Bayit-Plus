@@ -18,6 +18,15 @@ from app.models.avatar_mesh import MeshBlendShape
 logger = get_logger(__name__)
 
 
+def validate_glb_header(glb_bytes: bytes) -> bool:
+    """Validate that bytes contain a valid glTF 2.0 binary header."""
+    if len(glb_bytes) < 12:
+        return False
+    magic = struct.unpack_from("<I", glb_bytes, 0)[0]
+    version = struct.unpack_from("<I", glb_bytes, 4)[0]
+    return magic == 0x46546C67 and version == 2
+
+
 def parse_mesh_metadata(
     glb_bytes: bytes,
 ) -> Tuple[List[MeshBlendShape], int, int]:

@@ -8356,6 +8356,17 @@
       "statusRigging": "Aggiunta animazioni...",
       "viewPreview": "Vedi anteprima 3D"
     },
+    "arCapture": {
+      "title": "Scansione del viso",
+      "subtitle": "Crea il tuo avatar 3D con la scansione facciale",
+      "holdStill": "Resta fermo...",
+      "smile": "Sorridi!",
+      "openMouth": "Apri bene la bocca",
+      "raiseBrows": "Alza le sopracciglia",
+      "processing": "Costruzione del tuo modello 3D...",
+      "complete": "Scansione facciale completata!",
+      "noFace": "Nessun volto rilevato. Riprova."
+    },
     "consent": {
       "biometric": {
         "title": "Consenso dati biometrici",

@@ -8113,6 +8113,17 @@
       "statusRigging": "添加动画中...",
       "viewPreview": "查看3D预览"
     },
+    "arCapture": {
+      "title": "\u9762\u90e8\u626b\u63cf",
+      "subtitle": "\u901a\u8fc7\u9762\u90e8\u626b\u63cf\u521b\u5efa\u60a8\u76843D\u5934\u50cf",
+      "holdStill": "\u4fdd\u6301\u4e0d\u52a8...",
+      "smile": "\u5fae\u7b11\uff01",
+      "openMouth": "\u5f20\u5927\u5634\u5df4",
+      "raiseBrows": "\u62ac\u8d77\u7709\u6bdb",
+      "processing": "\u6b63\u5728\u6784\u5efa\u60a8\u76843D\u6a21\u578b...",
+      "complete": "\u9762\u90e8\u626b\u63cf\u5b8c\u6210\uff01",
+      "noFace": "\u672a\u68c0\u6d4b\u5230\u9762\u90e8\u3002\u8bf7\u91cd\u8bd5\u3002"
+    },
     "consent": {
       "biometric": {
         "title": "生物识别数据同意",

@@ -31,6 +31,7 @@ class MeshResponse(BaseModel):
     avatar_id: str
     user_id: str
     status: str
+    source: str = "rpm"
     has_glb: bool = False
     has_thumbnail: bool = False
     blend_shapes: List[MeshBlendShapeResponse] = Field(default_factory=list)

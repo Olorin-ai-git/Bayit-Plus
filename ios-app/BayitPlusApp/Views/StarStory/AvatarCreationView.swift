@@ -1,3 +1,4 @@
+import ARKit
 import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
@@ -134,17 +135,30 @@ struct AvatarCreationView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, DesignTokens.Spacing.lg)
                 .padding(.top, DesignTokens.Spacing.sm)
-            SelfieRecorderView(
-                onVideoRecorded: { data in
-                    videoData = data
-                    currentStep = .processing
-                    Task { await processVideo() }
-                },
-                onCancel: { currentStep = .consent }
-            )
-            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
-            .padding(.horizontal, DesignTokens.Spacing.lg)
-            .padding(.top, DesignTokens.Spacing.md)
+
+            if ARFaceTrackingConfiguration.isSupported {
+                ARFaceCaptureView(
+                    onCaptureComplete: { glbData in
+                        Task { await processARKitCapture(glbData: glbData) }
+                    },
+                    onCancel: { currentStep = .consent }
+                )
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+                .padding(.horizontal, DesignTokens.Spacing.lg)
+                .padding(.top, DesignTokens.Spacing.md)
+            } else {
+                SelfieRecorderView(
+                    onVideoRecorded: { data in
+                        videoData = data
+                        currentStep = .processing
+                        Task { await processVideo() }
+                    },
+                    onCancel: { currentStep = .consent }
+                )
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+                .padding(.horizontal, DesignTokens.Spacing.lg)
+                .padding(.top, DesignTokens.Spacing.md)
+            }
         }
     }
 
@@ -181,6 +195,29 @@ struct AvatarCreationView: View {
             showMeshGeneration = true
         } else {
             isUploading = false
+            errorMessage = viewModel?.errorMessage
+        }
+    }
+
+    private func processARKitCapture(glbData: Data) async {
+        guard let avatarId else { return }
+        isUploading = true
+        errorMessage = nil
+        currentStep = .processing
+
+        let success = await viewModel?.uploadARKitMesh(
+            avatarId: avatarId,
+            glbData: glbData,
+            profileId: profileId,
+            pin: familyPin,
+            meshRepo: repos.avatarMeshRepository
+        ) ?? false
+
+        isUploading = false
+        if success {
+            familyPin = ""
+            dismiss()
+        } else {
             errorMessage = viewModel?.errorMessage
         }
     }

@@ -8868,6 +8868,17 @@
       "statusRigging": "アニメーション追加中...",
       "viewPreview": "3Dプレビューを見る"
     },
+    "arCapture": {
+      "title": "\u30d5\u30a7\u30a4\u30b9\u30b9\u30ad\u30e3\u30f3",
+      "subtitle": "\u30d5\u30a7\u30a4\u30b9\u30b9\u30ad\u30e3\u30f3\u30673D\u30a2\u30d0\u30bf\u30fc\u3092\u4f5c\u6210",
+      "holdStill": "\u52d5\u304b\u306a\u3044\u3067...",
+      "smile": "\u7b11\u3063\u3066\uff01",
+      "openMouth": "\u53e3\u3092\u5927\u304d\u304f\u958b\u3051\u3066",
+      "raiseBrows": "\u7709\u3092\u4e0a\u3052\u3066",
+      "processing": "3D\u30e2\u30c7\u30eb\u3092\u69cb\u7bc9\u4e2d...",
+      "complete": "\u30d5\u30a7\u30a4\u30b9\u30b9\u30ad\u30e3\u30f3\u5b8c\u4e86\uff01",
+      "noFace": "\u9854\u304c\u691c\u51fa\u3055\u308c\u307e\u305b\u3093\u3067\u3057\u305f\u3002\u3082\u3046\u4e00\u5ea6\u304a\u8a66\u3057\u304f\u3060\u3055\u3044\u3002"
+    },
     "consent": {
       "biometric": {
         "title": "生体認証データの同意",

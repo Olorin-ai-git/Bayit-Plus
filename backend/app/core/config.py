@@ -2551,6 +2551,16 @@ class Settings(BaseSettings):
         env="CREDIT_RATE_3D_MESH",
         description="Beta credits per 3D mesh generation",
     )
+    CREDIT_RATE_3D_MESH_ARKIT: int = Field(
+        default=25, ge=0,
+        env="CREDIT_RATE_3D_MESH_ARKIT",
+        description="Beta credits per on-device ARKit mesh capture",
+    )
+    MAX_GLB_UPLOAD_SIZE_BYTES: int = Field(
+        default=10_485_760, ge=1_048_576, le=52_428_800,
+        env="MAX_GLB_UPLOAD_SIZE_BYTES",
+        description="Maximum GLB file upload size in bytes",
+    )
     CONTROLNET_API_BASE_URL: str = Field(
         default="",
         env="CONTROLNET_API_BASE_URL",

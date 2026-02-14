@@ -9012,6 +9012,17 @@
       "statusRigging": "Ajout des animations...",
       "viewPreview": "Voir l'apercu 3D"
     },
+    "arCapture": {
+      "title": "Scan du visage",
+      "subtitle": "Cr\u00e9ez votre avatar 3D par scan facial",
+      "holdStill": "Restez immobile...",
+      "smile": "Souriez !",
+      "openMouth": "Ouvrez grand la bouche",
+      "raiseBrows": "Levez les sourcils",
+      "processing": "Construction de votre mod\u00e8le 3D...",
+      "complete": "Scan facial termin\u00e9 !",
+      "noFace": "Aucun visage d\u00e9tect\u00e9. Veuillez r\u00e9essayer."
+    },
     "consent": {
       "biometric": {
         "title": "Consentement aux donnees biometriques",

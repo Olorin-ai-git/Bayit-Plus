@@ -8328,6 +8328,17 @@
       "statusRigging": "Agregando animaciones...",
       "viewPreview": "Ver vista previa 3D"
     },
+    "arCapture": {
+      "title": "Escaneo facial",
+      "subtitle": "Crea tu avatar 3D con escaneo facial",
+      "holdStill": "No te muevas...",
+      "smile": "\u00a1Sonr\u00ede!",
+      "openMouth": "Abre bien la boca",
+      "raiseBrows": "Levanta las cejas",
+      "processing": "Construyendo tu modelo 3D...",
+      "complete": "\u00a1Escaneo facial completado!",
+      "noFace": "No se detect\u00f3 ning\u00fan rostro. Int\u00e9ntalo de nuevo."
+    },
     "consent": {
       "biometric": {
         "title": "Consentimiento de datos biometricos",

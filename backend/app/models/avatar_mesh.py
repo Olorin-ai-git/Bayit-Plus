@@ -13,6 +13,13 @@ from beanie import Document, Indexed
 from pydantic import BaseModel, Field
 
 
+class MeshSource(str, Enum):
+    """Origin of the 3D mesh data."""
+
+    RPM = "rpm"
+    ARKIT = "arkit_on_device"
+
+
 class MeshStatus(str, Enum):
     """3D mesh generation lifecycle."""
 
@@ -45,7 +52,8 @@ class AvatarMesh(Document):
     user_id: Indexed(str)
     profile_id: str
 
-    # Ready Player Me tracking
+    # Generation source and tracking
+    source: MeshSource = MeshSource.RPM
     rpm_render_id: Optional[str] = None
 
     # GCS storage paths

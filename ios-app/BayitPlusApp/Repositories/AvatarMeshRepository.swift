@@ -32,6 +32,13 @@ protocol AvatarMeshRepository: Sendable {
         consentType: String
     ) async throws -> Bool
 
+    func uploadGlbMesh(
+        avatarId: String,
+        profileId: String,
+        pin: String,
+        glbData: Data
+    ) async throws -> AvatarMeshStatus
+
     func getMagicMirrorGreeting(
         profileId: String
     ) async throws -> MagicMirrorGreeting
@@ -81,6 +88,31 @@ final class APIAvatarMeshRepository: AvatarMeshRepository, @unchecked Sendable {
         return try await client.get(
             "/api/v1/zeh-ani/mesh/\(avatarId)/glb",
             as: MeshGlbUrl.self
+        )
+    }
+
+    func uploadGlbMesh(
+        avatarId: String,
+        profileId: String,
+        pin: String,
+        glbData: Data
+    ) async throws -> AvatarMeshStatus {
+        let boundary = UUID().uuidString
+        var body = Data()
+        body.appendMultipart(name: "avatar_id", value: avatarId, boundary: boundary)
+        body.appendMultipart(name: "profile_id", value: profileId, boundary: boundary)
+        body.appendMultipart(name: "pin", value: pin, boundary: boundary)
+        body.appendMultipartFile(
+            name: "glb_file", filename: "avatar.glb",
+            mimeType: "model/gltf-binary", data: glbData, boundary: boundary
+        )
+        body.append("--\(boundary)--\r\n".data(using: .utf8)!)
+
+        return try await client.postRaw(
+            "/api/v1/zeh-ani/mesh/upload-glb",
+            body: body,
+            contentType: "multipart/form-data; boundary=\(boundary)",
+            as: AvatarMeshStatus.self
         )
     }
 
