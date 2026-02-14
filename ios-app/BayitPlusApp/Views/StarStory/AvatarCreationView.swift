@@ -54,6 +54,10 @@ struct AvatarCreationView: View {
                     currentStep = .recordVideo
                 }
             }
+            .onDisappear {
+                familyPin = ""
+                videoData = nil
+            }
         }
     }
 

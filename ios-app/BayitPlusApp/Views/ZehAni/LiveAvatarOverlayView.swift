@@ -23,9 +23,9 @@ struct LiveAvatarOverlayView: View {
                     .tint(.white)
             } else if let error = error {
                 Text(error)
-                    .font(.system(size: 12))
-                    .foregroundColor(DesignTokens.ErrorColor.default)
-                    .padding(8)
+                    .font(.system(size: DesignTokens.FontSize.xs))
+                    .foregroundStyle(DesignTokens.ErrorColor.default)
+                    .padding(DesignTokens.Spacing.sm)
             } else {
                 avatarOverlay
             }
@@ -45,13 +45,13 @@ struct LiveAvatarOverlayView: View {
             }
         )
         .frame(width: 160, height: 160)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(.white.opacity(0.2), lineWidth: 1)
+            RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
+                .stroke(DesignTokens.Glass.border, lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
-        .padding(16)
+        .shadow(color: .black.opacity(0.3), radius: DesignTokens.Spacing.sm, x: 0, y: 4)
+        .padding(DesignTokens.Spacing.base)
     }
 
     private func createScene() -> SCNScene {
@@ -106,8 +106,10 @@ struct LiveAvatarOverlayView: View {
 
     private func loadGLBNode(from url: URL) async throws -> SCNNode {
         let (data, _) = try await URLSession.shared.data(from: url)
-        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("avatar.glb")
-        try data.write(to: tempURL)
+        let tempURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString + ".glb")
+        try data.write(to: tempURL, options: [.completeFileProtection])
+        defer { try? FileManager.default.removeItem(at: tempURL) }
         let scene = try SCNScene(url: tempURL, options: nil)
         return scene.rootNode.childNodes.first ?? SCNNode()
     }

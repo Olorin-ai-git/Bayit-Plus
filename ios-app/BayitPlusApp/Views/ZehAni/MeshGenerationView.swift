@@ -29,11 +29,11 @@ struct MeshGenerationView: View {
             ZStack {
                 DesignTokens.Background.primary.ignoresSafeArea()
 
-                VStack(spacing: 32) {
+                VStack(spacing: DesignTokens.Spacing.xxl) {
                     statusSection
                     actionSection
                 }
-                .padding(24)
+                .padding(DesignTokens.Spacing.xl)
             }
             .navigationTitle(localization.t("zehAni.mesh.title"))
             .navigationBarTitleDisplayMode(.inline)
@@ -58,7 +58,7 @@ struct MeshGenerationView: View {
     }
 
     private var statusSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: DesignTokens.Spacing.base) {
             if meshState == .generating || meshState == .rigging {
                 ProgressView()
                     .progressViewStyle(.circular)
@@ -67,8 +67,8 @@ struct MeshGenerationView: View {
             }
 
             Text(statusText)
-                .foregroundColor(.white)
-                .font(.system(size: 18, weight: .medium))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .font(.system(size: DesignTokens.FontSize.lg, weight: .medium))
                 .multilineTextAlignment(.center)
 
             if meshState == .ready, let thumbnailPath = meshStatus?.thumbnailGcsPath {
@@ -78,37 +78,35 @@ struct MeshGenerationView: View {
                     ProgressView()
                 }
                 .frame(width: 200, height: 200)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
             }
 
             if let error = error {
                 Text(error)
-                    .foregroundColor(DesignTokens.ErrorColor.default)
-                    .font(.system(size: 14))
+                    .foregroundStyle(DesignTokens.ErrorColor.default)
+                    .font(.system(size: DesignTokens.FontSize.sm))
             }
         }
     }
 
     private var actionSection: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: DesignTokens.Spacing.md) {
             if meshState == .ready {
-                Button {
+                GlassButton(
+                    localization.t("zehAni.mesh.viewPreview"),
+                    variant: .primary, size: .large
+                ) {
                     showPreview = true
-                } label: {
-                    Text(localization.t("zehAni.mesh.viewPreview"))
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.borderedProminent)
             }
 
             if meshState == .failed {
-                Button {
+                GlassButton(
+                    localization.t("common.retry"),
+                    variant: .secondary, size: .large
+                ) {
                     retry()
-                } label: {
-                    Text(localization.t("common.retry"))
-                        .frame(maxWidth: .infinity)
                 }
-                .buttonStyle(.bordered)
             }
         }
     }

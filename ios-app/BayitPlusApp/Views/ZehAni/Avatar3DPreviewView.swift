@@ -59,35 +59,32 @@ struct Avatar3DPreviewView: View {
     }
 
     private var loadingView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: DesignTokens.Spacing.base) {
             ProgressView()
                 .progressViewStyle(.circular)
                 .scaleEffect(1.5)
                 .tint(.white)
             Text(localization.t("zehAni.preview.loading"))
-                .foregroundColor(.white.opacity(0.7))
-                .font(.system(size: 15))
+                .foregroundStyle(DesignTokens.Text.muted)
+                .font(.system(size: DesignTokens.FontSize.sm))
         }
     }
 
     private var errorView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: DesignTokens.Spacing.base) {
             Text(localization.t("zehAni.preview.error"))
-                .foregroundColor(DesignTokens.ErrorColor.default)
-                .font(.system(size: 16))
+                .foregroundStyle(DesignTokens.ErrorColor.default)
+                .font(.system(size: DesignTokens.FontSize.base))
             if let error = error {
                 Text(error)
-                    .foregroundColor(.white.opacity(0.6))
-                    .font(.system(size: 14))
+                    .foregroundStyle(DesignTokens.Text.muted)
+                    .font(.system(size: DesignTokens.FontSize.sm))
             }
-            Button {
+            GlassButton(localization.t("common.retry"), variant: .secondary, size: .medium) {
                 Task { await loadGlb() }
-            } label: {
-                Text(localization.t("common.retry"))
             }
-            .buttonStyle(.bordered)
         }
-        .padding(24)
+        .padding(DesignTokens.Spacing.xl)
     }
 
     private func loadGlb() async {
@@ -136,13 +133,14 @@ struct SceneKitView: UIViewRepresentable {
     func updateUIView(_ uiView: SCNView, context: Context) {}
 
     private func loadGLB(from data: Data) -> SCNScene? {
-        let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("avatar.glb")
+        let tempURL = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString + ".glb")
         do {
-            try data.write(to: tempURL)
-            let scene = try SCNScene(url: tempURL, options: nil)
-            try? FileManager.default.removeItem(at: tempURL)
-            return scene
+            try data.write(to: tempURL, options: [.completeFileProtection])
+            defer { try? FileManager.default.removeItem(at: tempURL) }
+            return try SCNScene(url: tempURL, options: nil)
         } catch {
+            try? FileManager.default.removeItem(at: tempURL)
             return nil
         }
     }

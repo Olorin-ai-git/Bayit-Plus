@@ -33,7 +33,10 @@ struct ARFaceCaptureView: View {
             }
         }
         .onAppear { captureSession.startSession() }
-        .onDisappear { captureSession.stopSession() }
+        .onDisappear {
+            captureSession.stopSession()
+            captureSession.clearBiometricData()
+        }
         .onChange(of: captureSession.phase) { _, newPhase in
             if case .complete = newPhase {
                 buildGLB()
@@ -113,17 +116,15 @@ struct ARFaceCaptureView: View {
         isBuilding = true
 
         Task.detached(priority: .userInitiated) {
-            guard let glbData = GLBBuilder.build(from: result) else {
-                await MainActor.run {
-                    isBuilding = false
+            let glbData = GLBBuilder.build(from: result)
+            await MainActor.run {
+                captureSession.clearBiometricData()
+                isBuilding = false
+                if let glbData {
+                    onCaptureComplete(glbData)
+                } else {
                     logger.error("GLB build failed from capture result")
                 }
-                return
-            }
-
-            await MainActor.run {
-                isBuilding = false
-                onCaptureComplete(glbData)
             }
         }
     }

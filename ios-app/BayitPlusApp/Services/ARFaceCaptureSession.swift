@@ -73,6 +73,19 @@ final class ARFaceCaptureSession: NSObject, @preconcurrency ARSessionDelegate {
         arSession = nil
     }
 
+    func clearBiometricData() {
+        captureResult = nil
+        capturedTexture = nil
+        neutralVertices = nil
+        triangleIndices = nil
+        textureCoordinates = nil
+        collectedDeltas.removeAll()
+        collectedNames.removeAll()
+        stabilityFrameCount = 0
+        captureStartTime = nil
+        promptIndex = 0
+    }
+
     private func captureNeutralGeometry(from anchor: ARFaceAnchor) {
         let geometry = anchor.geometry
         neutralVertices = (0..<geometry.vertices.count).map { geometry.vertices[$0] }

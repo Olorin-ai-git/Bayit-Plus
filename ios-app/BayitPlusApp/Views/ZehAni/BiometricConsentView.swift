@@ -25,7 +25,7 @@ struct BiometricConsentView: View {
                 DesignTokens.Background.primary.ignoresSafeArea()
 
                 ScrollView {
-                    VStack(spacing: 24) {
+                    VStack(spacing: DesignTokens.Spacing.xl) {
                         BiometricConsentExplanation()
 
                         if familyControlsMissing {
@@ -57,11 +57,11 @@ struct BiometricConsentView: View {
 
                         if let error = error {
                             Text(error)
-                                .foregroundColor(DesignTokens.ErrorColor.default)
-                                .font(.system(size: 14))
+                                .foregroundStyle(DesignTokens.ErrorColor.default)
+                                .font(.system(size: DesignTokens.FontSize.sm))
                         }
                     }
-                    .padding(24)
+                    .padding(DesignTokens.Spacing.xl)
                 }
             }
             .navigationTitle(localization.t("zehAni.consent.biometric.title"))
@@ -73,6 +73,7 @@ struct BiometricConsentView: View {
                     }
                 }
             }
+            .onDisappear { pin = "" }
             .task {
                 await checkFamilyControls()
                 await fetchCurrentConsent()
@@ -81,17 +82,17 @@ struct BiometricConsentView: View {
     }
 
     private var familyControlsWarning: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
+            HStack(spacing: DesignTokens.Spacing.sm) {
                 Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(DesignTokens.Warning.default)
+                    .foregroundStyle(DesignTokens.Warning.default)
                 Text(localization.t("zehAni.consent.biometric.familyControlsRequired"))
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(DesignTokens.Warning.default)
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                    .foregroundStyle(DesignTokens.Warning.default)
             }
             Text(localization.t("zehAni.consent.biometric.familyControlsExplain"))
-                .font(.system(size: 13))
-                .foregroundColor(.white.opacity(0.7))
+                .font(.system(size: DesignTokens.FontSize.xs))
+                .foregroundStyle(DesignTokens.Text.muted)
                 .fixedSize(horizontal: false, vertical: true)
             Button {
                 dismiss()
@@ -100,13 +101,13 @@ struct BiometricConsentView: View {
                 }
             } label: {
                 Text(localization.t("zehAni.consent.biometric.goToFamilyControls"))
-                    .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(DesignTokens.Primary.default)
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                    .foregroundStyle(DesignTokens.Primary.default)
             }
         }
-        .padding(16)
+        .padding(DesignTokens.Spacing.base)
         .background(DesignTokens.Warning.default.opacity(0.1))
-        .cornerRadius(12)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
     }
 
     private var hasAnyConsentEnabled: Bool {
@@ -138,11 +139,11 @@ struct BiometricConsentView: View {
     private func updateTogglesFromConsents(_ consents: BiometricConsentStatus) {
         for consent in consents.consents {
             switch consent.consentType {
-            case "mesh_generation":
+            case BiometricConsentType.meshGeneration.rawValue:
                 meshGenerationConsent = consent.active
-            case "voice_v2v":
+            case BiometricConsentType.voiceV2V.rawValue:
                 voiceV2VConsent = consent.active
-            case "latent_features":
+            case BiometricConsentType.latentFeatures.rawValue:
                 latentFeaturesConsent = consent.active
             default:
                 break
@@ -158,17 +159,17 @@ struct BiometricConsentView: View {
             do {
                 if meshGenerationConsent {
                     _ = try await repositories.avatarMeshRepository.grantBiometricConsent(
-                        profileId: profileId, consentType: "mesh_generation", pin: pin
+                        profileId: profileId, consentType: BiometricConsentType.meshGeneration.rawValue, pin: pin
                     )
                 }
                 if voiceV2VConsent {
                     _ = try await repositories.avatarMeshRepository.grantBiometricConsent(
-                        profileId: profileId, consentType: "voice_v2v", pin: pin
+                        profileId: profileId, consentType: BiometricConsentType.voiceV2V.rawValue, pin: pin
                     )
                 }
                 if latentFeaturesConsent {
                     _ = try await repositories.avatarMeshRepository.grantBiometricConsent(
-                        profileId: profileId, consentType: "latent_features", pin: pin
+                        profileId: profileId, consentType: BiometricConsentType.latentFeatures.rawValue, pin: pin
                     )
                 }
                 await fetchCurrentConsent()

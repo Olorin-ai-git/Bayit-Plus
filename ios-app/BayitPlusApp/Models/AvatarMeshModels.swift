@@ -30,6 +30,12 @@ struct MeshGlbUrl: Codable {
     let expiresInSeconds: Int
 }
 
+enum BiometricConsentType: String, CaseIterable {
+    case meshGeneration = "mesh_generation"
+    case voiceV2V = "voice_v2v"
+    case latentFeatures = "latent_features"
+}
+
 struct BiometricConsentStatus: Codable {
     let profileId: String
     let consents: [ConsentEntry]
