@@ -32,7 +32,6 @@ struct ARFaceCaptureView: View {
                 buildingOverlay
             }
         }
-        .onAppear { captureSession.startSession() }
         .onDisappear {
             captureSession.stopSession()
             captureSession.clearBiometricData()
@@ -140,6 +139,7 @@ private struct ARFaceSceneView: UIViewRepresentable {
         sceneView.automaticallyUpdatesLighting = true
         sceneView.scene = SCNScene()
         sceneView.delegate = context.coordinator
+        session.startSession(using: sceneView.session)
         return sceneView
     }
 

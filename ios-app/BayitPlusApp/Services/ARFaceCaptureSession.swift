@@ -51,13 +51,14 @@ final class ARFaceCaptureSession: NSObject, @preconcurrency ARSessionDelegate {
     ]
     private var promptIndex = 0
 
-    func startSession() {
+    func startSession(using existingSession: ARSession? = nil) {
         guard ARFaceTrackingConfiguration.isSupported else {
             phase = .unsupported
             return
         }
 
-        let session = ARSession()
+        clearBiometricData()
+        let session = existingSession ?? arSession ?? ARSession()
         session.delegate = self
         let config = ARFaceTrackingConfiguration()
         config.maximumNumberOfTrackedFaces = 1
@@ -65,6 +66,7 @@ final class ARFaceCaptureSession: NSObject, @preconcurrency ARSessionDelegate {
         session.run(config, options: [.resetTracking, .removeExistingAnchors])
         arSession = session
         phase = .waiting
+        currentPromptKey = promptSequence[0].key
         logger.info("ARKit face tracking session started")
     }
 
