@@ -5260,6 +5260,9 @@
     "selectLanguage": "בחר שפה",
     "selectOutputLanguage": "בחר שפת פלט"
   },
+  "listen": {
+    "title": "האזנה"
+  },
   "podcasts": {
     "title": "פודקאסטים",
     "episodes": "פרקים",

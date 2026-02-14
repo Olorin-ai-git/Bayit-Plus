@@ -19,6 +19,7 @@ export type RootStackParamList = {
   MorningRitual: undefined;
   Judaism: { category?: string };
   Children: undefined;
+  Youngsters: undefined;
   Playlist: undefined;
   Favorites: undefined;
   Downloads: undefined;
@@ -67,7 +68,7 @@ export type MainTabParamList = {
   Home: undefined;
   LiveTV: undefined;
   VOD: undefined;
-  ZehAni: { profileId: string };
+  ZehAni: { profileId?: string };
   Podcasts: undefined;
   Search: { query?: string };
 };

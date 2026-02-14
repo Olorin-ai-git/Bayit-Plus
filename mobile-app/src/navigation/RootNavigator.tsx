@@ -42,8 +42,11 @@ import { SubscribeScreen } from '../screens/SubscribeScreen';
 const PlayerScreenMobile = React.lazy(() =>
   import('../screens').then((mod) => ({ default: mod.PlayerScreenMobile }))
 );
-const SearchScreenMobile = React.lazy(() =>
-  import('../screens').then((mod) => ({ default: mod.SearchScreenMobile }))
+const RadioScreenMobile = React.lazy(() =>
+  import('../screens/SimpleRadioScreenMobile').then((mod) => ({ default: mod.RadioScreenMobile }))
+);
+const ProfileScreenLazy = React.lazy(() =>
+  import('../screens/ProfileScreen').then((mod) => ({ default: mod.ProfileScreen }))
 );
 const SettingsScreenMobile = React.lazy(() =>
   import('../screens').then((mod) => ({ default: mod.SettingsScreenMobile }))
@@ -166,14 +169,10 @@ export const RootNavigator: React.FC = () => {
           animation: 'slide_from_bottom',
         }}
       />
-      <Stack.Screen
-        name="Search"
-        component={LazyScreen(SearchScreenMobile)}
-        options={{
-          presentation: 'modal',
-          animation: 'slide_from_bottom',
-        }}
-      />
+
+      {/* Radio & Profile - pushed as stack screens (no longer tabs) */}
+      <Stack.Screen name="Radio" component={LazyScreen(RadioScreenMobile)} />
+      <Stack.Screen name="Profile" component={LazyScreen(ProfileScreenLazy)} />
 
       {/* Content Screens - Lazy loaded (on-demand navigation) */}
       <Stack.Screen name="MorningRitual" component={MorningRitualScreen} />

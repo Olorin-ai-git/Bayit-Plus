@@ -37,11 +37,15 @@ export const linking: LinkingOptions<RootStackParamList> = {
           Home: 'home',
           LiveTV: 'live',
           VOD: 'vod',
-          Radio: 'radio',
+          ZehAni: 'zeh-ani',
           Podcasts: 'podcasts',
-          Profile: 'profile',
+          Search: 'search',
         },
       },
+
+      // Stack screens (no longer tabs)
+      Radio: 'radio',
+      Profile: 'profile',
 
       // Player (with content ID and optional timestamp for scene search)
       Player: {
@@ -59,16 +63,7 @@ export const linking: LinkingOptions<RootStackParamList> = {
       // Note: Direct content links (live/:channelId, vod/:contentId, etc.)
       // are handled through the Player screen with id/type params
 
-      // Search with query
-      Search: {
-        path: 'search',
-        parse: {
-          query: (query: string) => query || '',
-        },
-        stringify: {
-          query: (query?: string) => query || '',
-        },
-      },
+      // Note: Search is now handled as a tab under Main.screens.Search
 
       // Continue watching - handled via Home screen
 

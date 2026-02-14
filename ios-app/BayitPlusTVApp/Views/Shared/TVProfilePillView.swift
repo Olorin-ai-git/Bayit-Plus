@@ -49,13 +49,13 @@ struct TVProfilePillView: View {
             }
 
             Button {
-                coordinator.selectedTab = .favorites
+                coordinator.selectedTab = .profile
             } label: {
                 Label("Favorites", systemImage: "star")
             }
 
             Button {
-                coordinator.selectedTab = .settings
+                coordinator.selectedTab = .profile
             } label: {
                 Label("Settings", systemImage: "gearshape")
             }

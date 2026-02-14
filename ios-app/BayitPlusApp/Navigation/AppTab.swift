@@ -17,7 +17,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .liveTV: return "Live"
         case .vod: return "VOD"
         case .zehAni: return "Zeh Ani"
-        case .podcasts: return "Podcasts"
+        case .podcasts: return "Listen"
         case .search: return "Search"
         }
     }

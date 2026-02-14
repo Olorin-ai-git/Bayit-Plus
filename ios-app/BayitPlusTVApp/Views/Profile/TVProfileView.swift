@@ -17,6 +17,11 @@ struct TVProfileView: View {
     @State private var showingPreferences = false
     @State private var showingAccountSettings = false
     @State private var showingViewingHistory = false
+    @State private var showingFavorites = false
+    @State private var showingRecordings = false
+    @State private var showingFriends = false
+    @State private var showingMessages = false
+    @State private var showingSettings = false
 
     var body: some View {
         NavigationStack {
@@ -83,6 +88,21 @@ struct TVProfileView: View {
                     onDismiss: { showingViewingHistory = false }
                 )
             }
+            .fullScreenCover(isPresented: $showingFavorites) {
+                TVFavoritesView()
+            }
+            .fullScreenCover(isPresented: $showingRecordings) {
+                TVRecordingsView()
+            }
+            .fullScreenCover(isPresented: $showingFriends) {
+                TVFriendsView()
+            }
+            .fullScreenCover(isPresented: $showingMessages) {
+                TVDirectMessagesView()
+            }
+            .fullScreenCover(isPresented: $showingSettings) {
+                TVSettingsView()
+            }
         }
     }
 
@@ -101,6 +121,7 @@ struct TVProfileView: View {
             }
 
             quickActionsSection
+            socialSection
             accountManagementSection(profile)
             advancedSection
             signOutSection
@@ -449,7 +470,7 @@ struct TVProfileView: View {
                 subtitle: "View your favorite content",
                 color: DesignTokens.ErrorColor.e400
             ) {
-                coordinator.selectedTab = .favorites
+                showingFavorites = true
             }
 
             actionRow(
@@ -458,7 +479,7 @@ struct TVProfileView: View {
                 subtitle: "Manage DVR recordings",
                 color: DesignTokens.Warning.default
             ) {
-                coordinator.selectedTab = .recordings
+                showingRecordings = true
             }
 
             actionRow(
@@ -563,6 +584,50 @@ struct TVProfileView: View {
             }
         } header: {
             sectionHeader("Advanced")
+        }
+    }
+
+    // MARK: - Social
+
+    private var socialSection: some View {
+        Section {
+            actionRow(
+                icon: "person.2.fill",
+                title: "Friends",
+                subtitle: "Connect with other viewers",
+                color: DesignTokens.Primary.p400
+            ) {
+                showingFriends = true
+            }
+
+            actionRow(
+                icon: "bubble.left.and.bubble.right",
+                title: "Messages",
+                subtitle: "Direct messages",
+                color: DesignTokens.Info.default
+            ) {
+                showingMessages = true
+            }
+
+            actionRow(
+                icon: "gear",
+                title: "Settings",
+                subtitle: "App settings and preferences",
+                color: DesignTokens.Text.secondary
+            ) {
+                showingSettings = true
+            }
+
+            actionRow(
+                icon: "square.grid.2x2",
+                title: "Widgets",
+                subtitle: "Manage your widgets",
+                color: DesignTokens.Secondary.s400
+            ) {
+                // Widgets are managed via the overlay dock
+            }
+        } header: {
+            sectionHeader("Social & Settings")
         }
     }
 

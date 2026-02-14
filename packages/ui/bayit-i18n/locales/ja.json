@@ -4286,6 +4286,9 @@
     "selectLanguage": "言語を選択",
     "selectOutputLanguage": "出力言語を選択"
   },
+  "listen": {
+    "title": "聴く"
+  },
   "podcasts": {
     "title": "ポッドキャスト",
     "subtitle": "ポッドキャストを発見",

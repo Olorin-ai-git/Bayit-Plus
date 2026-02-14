@@ -30,6 +30,7 @@ struct TVHomeView: View {
                 viewModel = HomeViewModel(
                     repository: repos.content,
                     liveTVRepository: repos.liveTV,
+                    radioRepository: repos.radio,
                     locationProvider: TVLocationProvider(),
                     featureFlags: FeatureFlags()
                 )
@@ -107,7 +108,7 @@ struct TVHomeView: View {
             icon: "play.circle.fill",
             items: vm.continueWatching,
             maxItems: 4,
-            seeAllAction: { coordinator.selectedTab = .favorites }
+            seeAllAction: { coordinator.selectedTab = .profile }
         ) { item in
             TVContentCard(
                 imageURL: item.thumbnail,
@@ -212,11 +213,10 @@ struct TVHomeView: View {
     /// Routes "Show All" to the correct tab based on section type.
     private func seeAllTab(for section: TVHomeSection) -> TVTab {
         switch section {
-        case .podcasts: return .podcasts
-        case .audiobooks: return .audiobooks
-        case .kids: return .children
+        case .podcasts, .audiobooks: return .podcasts
+        case .kids, .youngsters: return .kids
         case .liveTV: return .liveTV
-        case .continueWatching: return .favorites
+        case .continueWatching: return .profile
         default: return .vod
         }
     }

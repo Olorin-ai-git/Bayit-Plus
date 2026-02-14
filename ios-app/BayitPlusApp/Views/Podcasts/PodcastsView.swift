@@ -17,7 +17,7 @@ struct PodcastsView: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             HStack {
-                PageHeader(icon: "headphones", title: "Podcasts")
+                PageHeader(icon: "headphones", title: "Listen")
                 Button {
                     showAddSheet = true
                 } label: {
@@ -70,6 +70,11 @@ struct PodcastsView: View {
             if !radioStations.isEmpty {
                 RadioStationsRow(stations: radioStations, coordinator: coordinator)
             }
+
+            Text("Podcasts")
+                .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
+                .foregroundColor(DesignTokens.Text.primary)
+                .padding(.horizontal, DesignTokens.Spacing.lg)
 
             if !vm.categories.isEmpty {
                 categoryFilters(vm)

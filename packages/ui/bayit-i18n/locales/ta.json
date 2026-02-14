@@ -3941,6 +3941,9 @@
     "selectLanguage": "மொழியைத் தேர்வுசெய்",
     "selectOutputLanguage": "வெளியீட்டு மொழியைத் தேர்வுசெய்"
   },
+  "listen": {
+    "title": "கேளுங்கள்"
+  },
   "podcasts": {
     "title": "Podcast கள்",
     "episodes": "அத்தியாயங்கள்",

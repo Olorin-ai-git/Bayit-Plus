@@ -2,7 +2,7 @@
  * Main Tab Navigator
  * Bottom tab navigation for main app screens
  *
- * Updated to use mobile-optimized screens with responsive design
+ * Tabs: Home | Live | VOD | Zeh Ani | Podcasts | Search
  */
 
 import React from 'react';
@@ -10,13 +10,13 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { MainTabParamList } from './types';
 import TabBar from '../components/navigation/TabBar';
 
-// Import simplified mobile screens (no external dependencies)
+// Import mobile screens
 import { HomeScreenMobile } from '../screens/SimpleHomeScreenMobile';
 import { LiveTVScreenMobile } from '../screens/SimpleLiveTVScreenMobile';
-import { VODScreenMobile } from '../screens/SimpleVODScreenMobile';
-import { RadioScreenMobile } from '../screens/SimpleRadioScreenMobile';
+import { VODScreenMobile } from '../screens/VODScreenMobile';
 import { PodcastsScreenMobile } from '../screens/SimplePodcastsScreenMobile';
-import { ProfileScreen } from '../screens/ProfileScreen';
+import { SearchScreenMobile } from '../screens/SearchScreenMobile';
+import { ZehAniDashboardScreen } from '../screens/ZehAniDashboardScreen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -36,7 +36,7 @@ export const MainTabNavigator: React.FC = () => {
       <Tab.Screen
         name="LiveTV"
         component={LiveTVScreenMobile}
-        options={{ tabBarLabel: 'Live TV' }}
+        options={{ tabBarLabel: 'Live' }}
       />
       <Tab.Screen
         name="VOD"
@@ -44,19 +44,19 @@ export const MainTabNavigator: React.FC = () => {
         options={{ tabBarLabel: 'VOD' }}
       />
       <Tab.Screen
-        name="Radio"
-        component={RadioScreenMobile}
-        options={{ tabBarLabel: 'Radio' }}
+        name="ZehAni"
+        component={ZehAniDashboardScreen}
+        options={{ tabBarLabel: 'Zeh Ani' }}
       />
       <Tab.Screen
         name="Podcasts"
         component={PodcastsScreenMobile}
-        options={{ tabBarLabel: 'Podcasts' }}
+        options={{ tabBarLabel: 'Listen' }}
       />
       <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{ tabBarLabel: 'Profile' }}
+        name="Search"
+        component={SearchScreenMobile}
+        options={{ tabBarLabel: 'Search' }}
       />
     </Tab.Navigator>
   );

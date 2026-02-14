@@ -56,17 +56,12 @@ enum TVDeepLinkRouter {
         switch first {
         case "home": return .home
         case "live": return .liveTV
-        case "podcasts": return .podcasts
-        case "audiobooks": return .audiobooks
-        case "search": return .search
         case "vod": return .vod
-        case "favorites": return .favorites
-        case "profile": return .profile
-        case "settings": return .settings
-        case "messages": return .messages
-        case "chess": return .chess
-        case "chatbot", "ai-chat": return .aiChat
-        case "avatar": return .avatar
+        case "zeh-ani", "avatar", "chess", "chatbot", "ai-chat": return .zehAni
+        case "podcasts", "audiobooks": return .podcasts
+        case "kids", "children", "youngsters": return .kids
+        case "search": return .search
+        case "profile", "settings", "favorites", "messages", "friends": return .profile
         default: return nil
         }
     }

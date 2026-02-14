@@ -102,7 +102,7 @@ export function PodcastsScreenMobile() {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Mic size={24} color={Colors.Info.default} strokeWidth={2} />
-          <Text style={styles.headerTitle}>{t('podcasts.title')}</Text>
+          <Text style={styles.headerTitle}>{t('listen.title')}</Text>
         </View>
         {podcasts.length > 0 && (
           <View style={styles.countBadge}>
@@ -110,6 +110,9 @@ export function PodcastsScreenMobile() {
           </View>
         )}
       </View>
+
+      {/* Podcasts Section Label */}
+      <Text style={styles.sectionLabel}>{t('podcasts.title')}</Text>
 
       {/* Category Filter */}
       <ScrollView
@@ -195,6 +198,13 @@ const styles = StyleSheet.create({
   },
   headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   headerTitle: { fontSize: 24, fontWeight: 'bold', color: Colors.Text.primary },
+  sectionLabel: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: Colors.Text.primary,
+    paddingHorizontal: 16,
+    paddingTop: 4,
+  },
   countBadge: {
     backgroundColor: Colors.Glass.borderLight,
     paddingHorizontal: 12,

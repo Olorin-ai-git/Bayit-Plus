@@ -4,34 +4,22 @@ import Foundation
 import Observation
 import SwiftUI
 
-/// tvOS tab definitions
+/// tvOS tab definitions - 8 primary tabs for 10-foot UI clarity.
+/// Secondary features are accessible as sub-sections within hub tabs:
+/// - Zeh Ani: Avatar, Rewards, Beta Credits, Watch Party, Trivia, Chess, AI Chat
+/// - Podcasts: includes Audiobooks section
+/// - Kids: Children + Youngsters
+/// - Profile: Friends, Messages, Settings, Favorites, Recordings, Widgets
+/// - Home: Judaism, Flows, Culture, Household as content rows
 enum TVTab: String, CaseIterable, Identifiable, Sendable {
     case home
     case liveTV
     case vod
+    case zehAni
     case podcasts
-    case audiobooks
-    case children
-    case youngsters
-    case judaism
-    case flows
-    case culture
-    case household
-    case recordings
-    case epg
-    case favorites
-    case watchParty
-    case trivia
-    case friends
-    case messages
-    case chess
-    case aiChat
-    case avatar
-    case rewards
-    case betaCredits
+    case kids
     case search
     case profile
-    case settings
 
     var id: String { rawValue }
 
@@ -40,29 +28,11 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .home: return "Home"
         case .liveTV: return "Live"
         case .vod: return "VOD"
-        case .podcasts: return "Podcasts"
-        case .audiobooks: return "Audiobooks"
-        case .children: return "Kids"
-        case .youngsters: return "Youngsters"
-        case .judaism: return "Judaism"
-        case .flows: return "Flows"
-        case .culture: return "Culture"
-        case .household: return "Household"
-        case .recordings: return "Recordings"
-        case .epg: return "Guide"
-        case .favorites: return "Favorites"
-        case .watchParty: return "Watch Party"
-        case .trivia: return "Trivia"
-        case .friends: return "Friends"
-        case .messages: return "Messages"
-        case .chess: return "Chess"
-        case .aiChat: return "AI Chat"
-        case .avatar: return "Avatar"
-        case .rewards: return "Rewards"
-        case .betaCredits: return "Beta"
+        case .zehAni: return "Zeh Ani"
+        case .podcasts: return "Listen"
+        case .kids: return "Kids"
         case .search: return "Search"
         case .profile: return "Profile"
-        case .settings: return "Settings"
         }
     }
 
@@ -71,29 +41,11 @@ enum TVTab: String, CaseIterable, Identifiable, Sendable {
         case .home: return "house"
         case .liveTV: return "play.tv"
         case .vod: return "film"
+        case .zehAni: return "person.fill.viewfinder"
         case .podcasts: return "headphones"
-        case .audiobooks: return "book.closed"
-        case .children: return "figure.and.child.holdinghands"
-        case .youngsters: return "figure.wave"
-        case .judaism: return "star.of.david"
-        case .flows: return "line.3.horizontal.decrease.circle"
-        case .culture: return "building.columns"
-        case .household: return "house.fill"
-        case .recordings: return "record.circle"
-        case .epg: return "calendar"
-        case .favorites: return "heart"
-        case .watchParty: return "tv.and.hifispeaker.fill"
-        case .trivia: return "questionmark.circle"
-        case .friends: return "person.2"
-        case .messages: return "bubble.left.and.bubble.right"
-        case .chess: return "checkerboard.rectangle"
-        case .aiChat: return "bubble.left.and.bubble.right.fill"
-        case .avatar: return "person.crop.circle.badge.moon"
-        case .rewards: return "trophy"
-        case .betaCredits: return "sparkles"
+        case .kids: return "figure.and.child.holdinghands"
         case .search: return "magnifyingglass"
         case .profile: return "person.crop.circle"
-        case .settings: return "gear"
         }
     }
 }

@@ -4167,6 +4167,9 @@
     "selectLanguage": "Seleziona lingua",
     "selectOutputLanguage": "Seleziona lingua di output"
   },
+  "listen": {
+    "title": "Ascolta"
+  },
   "podcasts": {
     "title": "Podcast",
     "episodes": "episodi",

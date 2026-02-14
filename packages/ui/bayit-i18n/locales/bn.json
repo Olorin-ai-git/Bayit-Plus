@@ -3852,6 +3852,9 @@
     "selectLanguage": "ভাষা নির্বাচন করুন",
     "selectOutputLanguage": "আউটপুট ভাষা নির্বাচন করুন"
   },
+  "listen": {
+    "title": "শুনুন"
+  },
   "podcasts": {
     "title": "Podcast",
     "episodes": "পর্ব",

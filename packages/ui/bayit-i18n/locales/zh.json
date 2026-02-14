@@ -4377,6 +4377,9 @@
     "selectLanguage": "选择语言",
     "selectOutputLanguage": "选择输出语言"
   },
+  "listen": {
+    "title": "收听"
+  },
   "podcasts": {
     "title": "播客",
     "episodes": "集",

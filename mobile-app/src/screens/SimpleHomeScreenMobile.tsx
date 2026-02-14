@@ -42,8 +42,8 @@ interface QuickAccessItem {
 const QUICK_ACCESS: QuickAccessItem[] = [
   { id: '1', title: 'Live TV', subtitle: 'Watch Now', type: 'live' },
   { id: '2', title: 'Movies & Series', subtitle: 'On Demand', type: 'vod' },
-  { id: '3', title: 'Israeli Radio', subtitle: 'All Stations', type: 'radio' },
-  { id: '4', title: 'Podcasts', subtitle: 'Hebrew Content', type: 'podcast' },
+  { id: '3', title: 'Podcasts', subtitle: 'Hebrew Content', type: 'podcast' },
+  { id: '4', title: 'Israeli Radio', subtitle: 'All Stations', type: 'radio' },
 ];
 
 const getIconForType = (type: string) => {
@@ -209,8 +209,12 @@ function QuickAccessRow({ title, items }: { title: string; items: QuickAccessIte
   const navigation = useNavigation<any>();
 
   const handlePress = (item: QuickAccessItem) => {
-    const routes: Record<string, string> = { live: 'LiveTV', vod: 'VOD', radio: 'Radio', podcast: 'Podcasts' };
-    navigation.navigate(routes[item.type] || 'Home');
+    const tabRoutes: Record<string, string> = { live: 'LiveTV', vod: 'VOD', podcast: 'Podcasts' };
+    if (item.type === 'radio') {
+      navigation.navigate('Radio');
+    } else {
+      navigation.navigate(tabRoutes[item.type] || 'Home');
+    }
   };
 
   return (

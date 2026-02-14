@@ -40,7 +40,7 @@ const TAB_LABELS: Record<string, string> = {
   LiveTV: 'Live',
   VOD: 'VOD',
   ZehAni: 'Zeh Ani',
-  Podcasts: 'Podcasts',
+  Podcasts: 'Listen',
   Search: 'Search',
 };
 
