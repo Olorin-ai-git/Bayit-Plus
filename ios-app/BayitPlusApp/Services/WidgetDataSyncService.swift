@@ -106,6 +106,9 @@ final class WidgetDataSyncService {
         WidgetCenter.shared.reloadTimelines(
             ofKind: WidgetConfigurationKeys.WidgetKind.playlist
         )
+        WidgetCenter.shared.reloadTimelines(
+            ofKind: WidgetConfigurationKeys.WidgetKind.configurablePlaylist
+        )
         logger.info("Synced playlists", context: [
             "count": String(items.count)
         ])

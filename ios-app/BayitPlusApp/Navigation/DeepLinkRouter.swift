@@ -6,6 +6,11 @@ public enum DeepLink {
     /// Parse a URL into a Route
     /// Handles both bayitplus:// scheme and bayit.tv universal links
     static func route(from url: URL) -> Route? {
+        // Validate URL scheme - only accept bayitplus:// and bayit.tv
+        guard url.scheme == "bayitplus" || url.host == "bayit.tv" else {
+            return nil
+        }
+
         let pathComponents = url.pathComponents.filter { $0 != "/" }
 
         guard let first = pathComponents.first else {
@@ -14,18 +19,21 @@ public enum DeepLink {
 
         switch first {
         case "play":
-            guard let contentId = pathComponents.dropFirst().first else { return nil }
+            guard let contentId = pathComponents.dropFirst().first,
+                  let sanitized = sanitizeContentID(contentId) else { return nil }
             let typeString = url.queryValue(for: "type") ?? "movie"
             let contentType = ContentType(rawValue: typeString) ?? .movie
-            return .player(contentId: contentId, contentType: contentType)
+            return .player(contentId: sanitized, contentType: contentType)
 
         case "movie":
-            guard let movieId = pathComponents.dropFirst().first else { return nil }
-            return .movieDetail(movieId: movieId)
+            guard let movieId = pathComponents.dropFirst().first,
+                  let sanitized = sanitizeContentID(movieId) else { return nil }
+            return .movieDetail(movieId: sanitized)
 
         case "series":
-            guard let seriesId = pathComponents.dropFirst().first else { return nil }
-            return .seriesDetail(seriesId: seriesId)
+            guard let seriesId = pathComponents.dropFirst().first,
+                  let sanitized = sanitizeContentID(seriesId) else { return nil }
+            return .seriesDetail(seriesId: sanitized)
 
         case "search":
             return .search
@@ -94,8 +102,9 @@ public enum DeepLink {
             return .voiceOnboarding
 
         case "trivia":
-            guard let contentId = pathComponents.dropFirst().first else { return nil }
-            return .trivia(contentId: contentId)
+            guard let contentId = pathComponents.dropFirst().first,
+                  let sanitized = sanitizeContentID(contentId) else { return nil }
+            return .trivia(contentId: sanitized)
 
         case "llmSearch":
             return .llmSearch
@@ -170,6 +179,28 @@ public enum DeepLink {
         default:
             return .home
         }
+    }
+
+    /// Sanitize content ID to prevent path traversal and injection attacks.
+    /// Only allows alphanumeric characters, hyphens, and underscores.
+    private static func sanitizeContentID(_ id: String) -> String? {
+        // Prevent path traversal
+        guard !id.contains(".."), !id.contains("/"), !id.contains("\\") else {
+            return nil
+        }
+
+        // Allow only safe characters: alphanumeric, hyphen, underscore
+        let allowed = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-_"))
+        guard id.unicodeScalars.allSatisfy({ allowed.contains($0) }) else {
+            return nil
+        }
+
+        // Prevent excessively long IDs (reasonable MongoDB ObjectId is 24 chars)
+        guard id.count <= 64 else {
+            return nil
+        }
+
+        return id
     }
 }
 

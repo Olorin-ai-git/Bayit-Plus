@@ -8,10 +8,10 @@ struct NowPlayingMediumView: View {
     let entry: NowPlayingEntry
 
     var body: some View {
-        Link(destination: deepLink) {
-            if let data = entry.nowPlaying {
-                HStack(spacing: DesignTokens.Spacing.md) {
-                    // Channel logo
+        if let data = entry.nowPlaying {
+            HStack(spacing: DesignTokens.Spacing.md) {
+                // Channel logo (tappable to open app)
+                Link(destination: deepLink) {
                     AsyncImage(url: data.logoURL) { image in
                         image.resizable().aspectRatio(contentMode: .fit)
                     } placeholder: {
@@ -21,7 +21,10 @@ struct NowPlayingMediumView: View {
                     }
                     .frame(width: 56, height: 56)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
+                }
 
+                // Content info (tappable to open app)
+                Link(destination: deepLink) {
                     VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
                         // Channel name + live indicator
                         HStack(spacing: DesignTokens.Spacing.xs) {
@@ -56,25 +59,50 @@ struct NowPlayingMediumView: View {
                             }
                         }
                     }
+                }
 
-                    Spacer()
+                Spacer()
 
-                    // Play/pause indicator
+                // Interactive play/pause button (iOS 17+)
+                if #available(iOS 17.0, *) {
+                    Button(intent: TogglePlayPauseIntent(
+                        contentID: data.channelID,
+                        isPlaying: data.isPlaying
+                    )) {
+                        Image(systemName: data.isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                            .font(.system(size: DesignTokens.FontSize.xxxl))
+                            .foregroundStyle(DesignTokens.Primary.p400)
+                    }
+                    .buttonStyle(.plain)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .accessibilityLabel(data.isPlaying ? "Pause" : "Play")
+                    .accessibilityHint("Toggles playback of \(data.channelName)")
+                } else {
+                    // Fallback for iOS 16 - just show icon
                     Image(systemName: data.isPlaying ? "pause.circle.fill" : "play.circle.fill")
                         .font(.system(size: DesignTokens.FontSize.xxxl))
                         .foregroundStyle(DesignTokens.Primary.p400)
                 }
-                .padding(DesignTokens.Spacing.md)
-            } else {
+            }
+            .padding(DesignTokens.Spacing.md)
+            .containerBackground(for: .widget) {
+                LinearGradient(
+                    colors: [DesignTokens.Background.primary, DesignTokens.Background.elevated],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            }
+        } else {
+            Link(destination: WidgetDeepLinks.liveTV) {
                 emptyState
             }
-        }
-        .containerBackground(for: .widget) {
-            LinearGradient(
-                colors: [DesignTokens.Background.primary, DesignTokens.Background.elevated],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
+            .containerBackground(for: .widget) {
+                LinearGradient(
+                    colors: [DesignTokens.Background.primary, DesignTokens.Background.elevated],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            }
         }
     }
 

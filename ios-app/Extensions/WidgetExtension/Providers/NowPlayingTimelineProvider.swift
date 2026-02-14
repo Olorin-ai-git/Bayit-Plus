@@ -4,11 +4,11 @@ import BayitWidgetShared
 import BayitCore
 
 /// Timeline provider for the Now Playing widget.
-/// Reads current playback state from shared data and refreshes every 5 minutes.
+/// Reads current playback state from shared data and refreshes every 2 minutes.
 struct NowPlayingTimelineProvider: TimelineProvider {
 
     private let logger = BayitLogger(category: "NowPlayingWidget")
-    private static let refreshIntervalMinutes: TimeInterval = 5
+    private static let refreshIntervalMinutes: TimeInterval = 2
 
     func placeholder(in context: Context) -> NowPlayingEntry {
         NowPlayingEntry.placeholder
@@ -16,14 +16,16 @@ struct NowPlayingTimelineProvider: TimelineProvider {
 
     func getSnapshot(in context: Context, completion: @escaping @Sendable (NowPlayingEntry) -> Void) {
         Task { @Sendable in
-            let data = await WidgetDataStore.shared.readNowPlaying()
+            let isAuthenticated = SharedKeychainHelper().readAuthToken() != nil
+            let data = isAuthenticated ? await WidgetDataStore.shared.readNowPlaying() : nil
             completion(NowPlayingEntry(date: .now, nowPlaying: data))
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<NowPlayingEntry>) -> Void) {
         Task { @Sendable in
-            let data = await WidgetDataStore.shared.readNowPlaying()
+            let isAuthenticated = SharedKeychainHelper().readAuthToken() != nil
+            let data = isAuthenticated ? await WidgetDataStore.shared.readNowPlaying() : nil
             let entry = NowPlayingEntry(date: .now, nowPlaying: data)
             let refreshDate = Date().addingTimeInterval(Self.refreshIntervalMinutes * 60)
             let timeline = Timeline(entries: [entry], policy: .after(refreshDate))

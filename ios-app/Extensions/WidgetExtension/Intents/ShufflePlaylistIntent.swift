@@ -20,8 +20,12 @@ struct ShufflePlaylistIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
+        guard SharedKeychainHelper().readAuthToken() != nil else {
+            throw IntentError.notAuthenticated
+        }
+
         let intent = SharedPendingIntent(
-            action: "shufflePlaylist",
+            action: PendingIntentActions.shufflePlaylist,
             contentID: playlistID
         )
         await WidgetDataStore.shared.writePendingIntent(intent)

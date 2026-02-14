@@ -1,11 +1,10 @@
 import BayitMedia
+import BayitWidgetShared
 import Foundation
 import Observation
 
 /// ViewModel coordinating media playback, stream loading, and watch history.
-///
-/// Bridges the app's repository layer with BayitMedia's MediaPlayer,
-/// handling stream URL resolution, progress tracking, and content-specific behavior.
+/// Orchestrates StreamResolver, ProgressTracker, and MediaPlayerWidgetBridge.
 @MainActor
 @Observable
 final class MediaPlayerViewModel {
@@ -28,13 +27,10 @@ final class MediaPlayerViewModel {
 
     // MARK: - Private
 
+    private let streamResolver: StreamResolver
+    private let progressTracker: ProgressTracker
+    private let widgetBridge: MediaPlayerWidgetBridge
     private let repository: any MediaRepository
-    private let contentRepository: any ContentRepository
-    private let liveTVRepository: any LiveTVRepository
-    private let radioRepository: any RadioRepository
-    private let podcastRepository: any PodcastRepository
-    nonisolated(unsafe) private var progressTrackingTask: Task<Void, Never>?
-    private let progressIntervalSeconds: TimeInterval = 15
 
     // MARK: - Init
 
@@ -46,20 +42,31 @@ final class MediaPlayerViewModel {
         contentRepository: any ContentRepository,
         liveTVRepository: any LiveTVRepository,
         radioRepository: any RadioRepository,
-        podcastRepository: any PodcastRepository
+        podcastRepository: any PodcastRepository,
+        widgetSync: WidgetDataSyncService
     ) {
         self.contentId = contentId
         self.contentType = contentType
         self.player = player
         self.repository = repository
-        self.contentRepository = contentRepository
-        self.liveTVRepository = liveTVRepository
-        self.radioRepository = radioRepository
-        self.podcastRepository = podcastRepository
-    }
-
-    deinit {
-        progressTrackingTask?.cancel()
+        self.streamResolver = StreamResolver(
+            mediaRepository: repository,
+            contentRepository: contentRepository,
+            liveTVRepository: liveTVRepository,
+            radioRepository: radioRepository,
+            podcastRepository: podcastRepository
+        )
+        self.progressTracker = ProgressTracker(
+            repository: repository,
+            player: player,
+            contentId: contentId,
+            contentType: contentType,
+            intervalSeconds: 15
+        )
+        self.widgetBridge = MediaPlayerWidgetBridge(
+            mediaPlayer: player,
+            widgetSync: widgetSync
+        )
     }
 
     // MARK: - Loading
@@ -71,103 +78,61 @@ final class MediaPlayerViewModel {
         errorMessage = nil
 
         do {
+            // Resolve stream URL and metadata
+            let resolved = try await streamResolver.resolveStream(
+                contentId: contentId,
+                contentType: contentType
+            )
+
+            // Update view model state
+            title = resolved.title
+            subtitle = resolved.subtitle
+            artworkURL = resolved.artworkURL
+            currentQuality = resolved.quality
+            availableQualities = resolved.availableQualities
+            availableSubtitleLanguages = resolved.availableSubtitles
+
+            // Load resume position
+            await progressTracker.loadResumePosition()
+            initialPosition = progressTracker.initialPosition
+
+            // Load and play
             let mediaType = mapContentType(contentType)
-
-            switch contentType {
-            case .live, .liveTV:
-                let channel = try await liveTVRepository.fetchChannelDetail(id: contentId)
-                title = channel.name
-                subtitle = channel.currentShow
-                if let logoStr = channel.thumbnail ?? channel.logo,
-                   let url = URL(string: logoStr) {
-                    artworkURL = url
-                }
-
-                let stream = try await repository.fetchLiveStream(channelId: contentId)
-                currentQuality = stream.quality
-                availableQualities = stream.availableQualities ?? []
-                let streamURLStr = stream.url ?? channel.streamUrl ?? ""
-                guard let url = URL(string: streamURLStr), !streamURLStr.isEmpty else {
-                    errorMessage = "Invalid stream URL"
-                    isLoading = false
-                    return
-                }
-                player.load(url: url, contentType: mediaType)
-
-            case .radio:
-                let station = try await radioRepository.fetchStationDetail(id: contentId)
-                title = station.name
-                subtitle = station.currentShow
-                if let logoStr = station.logo, let url = URL(string: logoStr) {
-                    artworkURL = url
-                }
-
-                let stream = try await repository.fetchRadioStream(stationId: contentId)
-                let streamURLStr = stream.url ?? ""
-                guard let url = URL(string: streamURLStr), !streamURLStr.isEmpty else {
-                    errorMessage = "Invalid stream URL"
-                    isLoading = false
-                    return
-                }
-                player.load(url: url, contentType: mediaType)
-
-            case .podcast:
-                let podcastDetail = try await podcastRepository.fetchPodcastDetail(id: contentId)
-                title = podcastDetail.episodes?.first?.title ?? podcastDetail.title
-                subtitle = podcastDetail.title
-                if let coverStr = podcastDetail.cover, let url = URL(string: coverStr) {
-                    artworkURL = url
-                }
-
-                let audioURLStr = podcastDetail.episodes?.first?.audioUrl
-                    ?? podcastDetail.latestEpisode?.audioUrl
-                    ?? ""
-                guard let url = URL(string: audioURLStr), !audioURLStr.isEmpty else {
-                    errorMessage = "No audio URL available for this episode"
-                    isLoading = false
-                    return
-                }
-                player.load(url: url, contentType: mediaType)
-
-            default:
-                let detail = try await contentRepository.fetchContentDetail(id: contentId)
-                title = detail.title
-                subtitle = detail.category
-                availableSubtitleLanguages = detail.availableSubtitleLanguages ?? []
-                if let backdropStr = detail.backdrop, let url = URL(string: backdropStr) {
-                    artworkURL = url
-                }
-
-                let streamURL = try await resolveStreamURL(detail: detail)
-                guard let url = URL(string: streamURL), !streamURL.isEmpty else {
-                    errorMessage = "Invalid stream URL"
-                    isLoading = false
-                    return
-                }
-                player.load(url: url, contentType: mediaType)
-            }
-
-            // Fetch resume position from watch history
-            await loadResumePosition()
+            player.load(url: resolved.url, contentType: mediaType)
 
             isLoading = false
 
             // Auto-play after loading
             player.play()
 
+            // Immediately sync playback to widgets
+            await syncToWidgets()
+
             // Seek to resume position if available
             if initialPosition > 0 {
                 await player.seek(to: initialPosition)
             }
 
-            // Start periodic progress tracking for non-live content
+            // Start periodic progress tracking for seekable content
             if mediaType.isSeekable {
-                startProgressTracking()
+                progressTracker.startTracking()
             }
+        } catch let error as StreamResolutionError {
+            errorMessage = error.errorDescription
+            isLoading = false
         } catch {
             errorMessage = error.localizedDescription
             isLoading = false
         }
+    }
+
+    // MARK: - Playback Control
+
+    /// Manually sync current playback state to widgets.
+    /// Call this after toggling play/pause from UI controls.
+    @MainActor
+    func syncPlaybackState() async {
+        await syncToWidgets()
     }
 
     // MARK: - Quality
@@ -190,6 +155,9 @@ final class MediaPlayerViewModel {
             player.load(url: url, contentType: mediaType)
             player.play()
             await player.seek(to: currentPos)
+
+            // Sync quality change to widgets
+            await syncToWidgets()
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -200,76 +168,12 @@ final class MediaPlayerViewModel {
     /// Stop playback and save final progress.
     @MainActor
     func cleanup() async {
-        progressTrackingTask?.cancel()
-        progressTrackingTask = nil
-        await saveProgress()
+        await progressTracker.stopTracking()
         player.stop()
+        await widgetBridge.clearNowPlaying()
     }
 
     // MARK: - Private
-
-    private func resolveStreamURL(detail: ContentDetail) async throws -> String {
-        switch contentType {
-        case .live, .liveTV:
-            let stream = try await repository.fetchLiveStream(channelId: contentId)
-            currentQuality = stream.quality
-            availableQualities = stream.availableQualities ?? []
-            return stream.url ?? detail.streamUrl ?? ""
-
-        case .radio:
-            let stream = try await repository.fetchRadioStream(stationId: contentId)
-            return stream.url ?? ""
-
-        case .movie, .series, .episode, .podcast, .audiobook:
-            let stream = try await repository.fetchStream(
-                contentId: contentId,
-                quality: nil
-            )
-            currentQuality = stream.quality
-            availableQualities = stream.availableQualities ?? []
-            return stream.url ?? detail.streamUrl ?? ""
-        }
-    }
-
-    @MainActor
-    private func loadResumePosition() async {
-        do {
-            let history = try await repository.fetchContinueWatching()
-            if let item = history.items.first(where: { $0.id == contentId }) {
-                initialPosition = item.position ?? 0
-            }
-        } catch {
-            // Resume position is optional - continue without it
-        }
-    }
-
-    private func startProgressTracking() {
-        progressTrackingTask = Task { [weak self] in
-            while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(self?.progressIntervalSeconds ?? 15))
-                guard !Task.isCancelled else { break }
-                await self?.saveProgress()
-            }
-        }
-    }
-
-    @MainActor
-    private func saveProgress() async {
-        guard player.currentTime > 0, player.duration > 0 else { return }
-
-        let request = WatchProgressRequest(
-            contentId: contentId,
-            contentType: contentType.rawValue,
-            position: player.currentTime,
-            duration: player.duration
-        )
-
-        do {
-            _ = try await repository.updateProgress(request: request)
-        } catch {
-            // Progress save failures are non-critical
-        }
-    }
 
     private func mapContentType(_ type: ContentType) -> MediaContentType {
         switch type {
@@ -279,5 +183,18 @@ final class MediaPlayerViewModel {
         case .podcast: return .podcast
         case .audiobook: return .audiobook
         }
+    }
+
+    /// Sync current playback state to widgets immediately.
+    @MainActor
+    private func syncToWidgets() async {
+        guard let title = title else { return }
+        await widgetBridge.syncNow(
+            contentID: contentId,
+            contentType: contentType,
+            title: title,
+            subtitle: subtitle,
+            artworkURL: artworkURL
+        )
     }
 }

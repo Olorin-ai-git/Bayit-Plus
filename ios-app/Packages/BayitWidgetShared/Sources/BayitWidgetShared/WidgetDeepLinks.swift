@@ -62,7 +62,17 @@ public enum WidgetDeepLinks {
         buildURL(path: "playlist/\(id)")
     }
 
-    /// Deep link to an audiobook detail.
+    /// Deep link to a specific channel.
+    public static func channel(_ channelID: String) -> URL {
+        buildURL(path: "channel/\(channelID)")
+    }
+
+    /// Deep link to a specific radio station.
+    public static func station(_ stationID: String) -> URL {
+        buildURL(path: "station/\(stationID)")
+    }
+
+    /// Deep link to a specific audiobook detail.
     public static func audiobook(id: String) -> URL {
         buildURL(path: "audiobooks/\(id)")
     }

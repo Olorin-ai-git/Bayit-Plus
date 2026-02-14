@@ -12,13 +12,14 @@ public enum WidgetConfigurationKeys {
     public static var appGroupID: String {
         guard let groupID = Bundle.main.object(forInfoDictionaryKey: "WIDGET_APP_GROUP_ID") as? String
             ?? ProcessInfo.processInfo.environment["WIDGET_APP_GROUP_ID"] else {
-            return defaultAppGroupID
+            fatalError("""
+                WIDGET_APP_GROUP_ID not configured.
+                Add to Info.plist or set WIDGET_APP_GROUP_ID environment variable.
+                Required for widget data sharing.
+                """)
         }
         return groupID
     }
-
-    /// Fallback App Group ID derived from bundle prefix convention.
-    private static let defaultAppGroupID = "group.tv.bayit.plus"
 
     // MARK: - UserDefaults Keys
 
@@ -43,6 +44,7 @@ public enum WidgetConfigurationKeys {
         public static let quickActions = "BayitQuickActions"
         public static let shabbatMode = "BayitShabbatMode"
         public static let playlist = "BayitPlaylist"
+        public static let configurablePlaylist = "BayitConfigurablePlaylist"
     }
 
     // MARK: - Keychain

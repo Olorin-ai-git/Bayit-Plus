@@ -13,6 +13,7 @@ struct NowPlayingLockScreenInlineView: View {
         if let data = entry.nowPlaying {
             Label {
                 Text("\(data.channelName) - \(data.showTitle)")
+                    .privacySensitive()
             } icon: {
                 Image(systemName: data.isPlaying ? "play.fill" : "pause.fill")
             }
@@ -67,12 +68,14 @@ struct NowPlayingLockScreenRectangularView: View {
                     Text(data.channelName)
                         .font(.system(size: DesignTokens.FontSize.sm, weight: .bold))
                         .lineLimit(1)
+                        .privacySensitive()
                 }
 
                 Text(data.showTitle)
                     .font(.system(size: DesignTokens.FontSize.xs))
                     .lineLimit(1)
                     .foregroundStyle(.secondary)
+                    .privacySensitive()
 
                 // Progress bar
                 ProgressView(value: min(max(data.progress, 0), 1))

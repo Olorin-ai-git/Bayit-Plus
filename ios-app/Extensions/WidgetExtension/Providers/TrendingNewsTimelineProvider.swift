@@ -16,14 +16,16 @@ struct TrendingNewsTimelineProvider: TimelineProvider {
 
     func getSnapshot(in context: Context, completion: @escaping @Sendable (TrendingNewsEntry) -> Void) {
         Task { @Sendable in
-            let summary = await WidgetDataStore.shared.readTrendingSummary()
+            let isAuthenticated = SharedKeychainHelper().readAuthToken() != nil
+            let summary = isAuthenticated ? await WidgetDataStore.shared.readTrendingSummary() : nil
             completion(TrendingNewsEntry(date: .now, summary: summary))
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<TrendingNewsEntry>) -> Void) {
         Task { @Sendable in
-            let summary = await WidgetDataStore.shared.readTrendingSummary()
+            let isAuthenticated = SharedKeychainHelper().readAuthToken() != nil
+            let summary = isAuthenticated ? await WidgetDataStore.shared.readTrendingSummary() : nil
             let entry = TrendingNewsEntry(date: .now, summary: summary)
             let refreshDate = Date().addingTimeInterval(Self.refreshIntervalMinutes * 60)
             let timeline = Timeline(entries: [entry], policy: .after(refreshDate))

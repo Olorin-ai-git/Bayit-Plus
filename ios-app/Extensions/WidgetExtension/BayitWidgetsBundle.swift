@@ -10,6 +10,12 @@ struct BayitWidgetsBundle: WidgetBundle {
         QuickActionsWidget()
         ShabbatModeWidget()
         PlaylistWidget()
+
+        // Configurable widgets (iOS 17+)
+        if #available(iOS 17.0, *) {
+            ConfigurablePlaylistWidget()
+        }
+
         NowPlayingLiveActivityView()
     }
 }

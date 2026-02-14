@@ -18,6 +18,8 @@ struct BayitPlusApp: App {
     @State private var mediaPlayer = MediaPlayer()
     @State private var widgetSyncService = WidgetDataSyncService()
     @State private var liveActivityManager = LiveActivityManager()
+    @State private var mediaPlayerWidgetBridge: MediaPlayerWidgetBridge?
+    @State private var pendingIntentHandler: PendingIntentHandler?
     @State private var locationProvider: AppLocationProvider
     @State private var featureFlags = FeatureFlags()
 
@@ -58,6 +60,19 @@ struct BayitPlusApp: App {
         _locationProvider = State(initialValue: locProvider)
     }
 
+    /// Initialize the media player widget bridge after app launch.
+    private func initializeWidgetBridge() {
+        if mediaPlayerWidgetBridge == nil {
+            mediaPlayerWidgetBridge = MediaPlayerWidgetBridge(
+                mediaPlayer: mediaPlayer,
+                widgetSync: widgetSyncService
+            )
+        }
+        if pendingIntentHandler == nil {
+            pendingIntentHandler = PendingIntentHandler(mediaPlayer: mediaPlayer)
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -70,6 +85,17 @@ struct BayitPlusApp: App {
                 .environment(liveActivityManager)
                 .environment(locationProvider)
                 .environment(featureFlags)
+                .task {
+                    initializeWidgetBridge()
+
+                    // Process pending intents from widgets
+                    await pendingIntentHandler?.processPendingIntents()
+
+                    if let bridge = mediaPlayerWidgetBridge {
+                        // Inject bridge into environment if needed
+                        // await bridge.syncNow(...) will be called by ViewModels
+                    }
+                }
                 .bayitLocalization(localizationManager)
                 .preferredColorScheme(.dark)
                 .onOpenURL { url in

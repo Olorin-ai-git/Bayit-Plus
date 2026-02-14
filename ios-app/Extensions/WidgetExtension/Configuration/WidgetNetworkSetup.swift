@@ -39,9 +39,13 @@ enum WidgetNetworkClient {
     private static var baseURL: URL {
         let info = Bundle.main.infoDictionary ?? [:]
 
-        let urlString = info["API_BASE_URL"] as? String
-            ?? ProcessInfo.processInfo.environment["API_BASE_URL"]
-            ?? defaultBaseURL
+        guard let urlString = info["API_BASE_URL"] as? String
+            ?? ProcessInfo.processInfo.environment["API_BASE_URL"] else {
+            fatalError("""
+                API_BASE_URL not configured for widget extension.
+                Add to Info.plist or set API_BASE_URL environment variable.
+                """)
+        }
 
         guard let url = URL(string: urlString) else {
             fatalError("Invalid API_BASE_URL for widget: \(urlString)")
@@ -49,24 +53,20 @@ enum WidgetNetworkClient {
         return url
     }
 
-    private static var defaultBaseURL: String {
-        let env = AppEnvironment.current
-        switch env {
-        case .development:
-            return "http://localhost:8000/api/v1"
-        case .staging:
-            return "https://staging-api.bayit.tv/api/v1"
-        case .production:
-            return "https://api.bayit.tv/api/v1"
-        }
-    }
-
     private static let logger = BayitLogger(category: "WidgetNetwork")
 
     private static let session: URLSession = {
+        let info = Bundle.main.infoDictionary ?? [:]
+        let requestTimeout = (info["WIDGET_REQUEST_TIMEOUT"] as? TimeInterval)
+            ?? (ProcessInfo.processInfo.environment["WIDGET_REQUEST_TIMEOUT"].flatMap { TimeInterval($0) })
+            ?? fatalError("WIDGET_REQUEST_TIMEOUT not configured")
+        let resourceTimeout = (info["WIDGET_RESOURCE_TIMEOUT"] as? TimeInterval)
+            ?? (ProcessInfo.processInfo.environment["WIDGET_RESOURCE_TIMEOUT"].flatMap { TimeInterval($0) })
+            ?? fatalError("WIDGET_RESOURCE_TIMEOUT not configured")
+
         let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 15
-        config.timeoutIntervalForResource = 30
+        config.timeoutIntervalForRequest = requestTimeout
+        config.timeoutIntervalForResource = resourceTimeout
         return URLSession(configuration: config)
     }()
 

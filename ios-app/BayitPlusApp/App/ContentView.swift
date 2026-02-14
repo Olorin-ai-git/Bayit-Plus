@@ -9,6 +9,7 @@ struct ContentView: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(RepositoryProvider.self) private var repositories
     @Environment(MediaPlayer.self) private var mediaPlayer
+    @Environment(WidgetDataSyncService.self) private var widgetSync
 
     @State private var showingSplash = true
 
@@ -76,7 +77,8 @@ struct ContentView: View {
                 contentRepository: repositories.content,
                 liveTVRepository: repositories.liveTV,
                 radioRepository: repositories.radio,
-                podcastRepository: repositories.podcasts
+                podcastRepository: repositories.podcasts,
+                widgetSync: widgetSync
             )
         case .search:
             SearchView()

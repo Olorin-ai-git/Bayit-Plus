@@ -23,9 +23,13 @@ struct ResumeContentIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
+        guard SharedKeychainHelper().readAuthToken() != nil else {
+            throw IntentError.notAuthenticated
+        }
+
         let sharedType = SharedContentType(rawValue: contentType) ?? .vod
         let intent = SharedPendingIntent(
-            action: "resumeContent",
+            action: PendingIntentActions.resumeContent,
             contentID: contentID,
             contentType: sharedType
         )

@@ -80,7 +80,7 @@ struct PlayerView: View {
     init(contentId: String, contentType: ContentType, player: MediaPlayer,
          repository: any MediaRepository, contentRepository: any ContentRepository,
          liveTVRepository: any LiveTVRepository, radioRepository: any RadioRepository,
-         podcastRepository: any PodcastRepository) {
+         podcastRepository: any PodcastRepository, widgetSync: WidgetDataSyncService) {
         self.contentId = contentId
         self.contentType = contentType
         _viewModel = State(initialValue: MediaPlayerViewModel(
@@ -91,7 +91,8 @@ struct PlayerView: View {
             contentRepository: contentRepository,
             liveTVRepository: liveTVRepository,
             radioRepository: radioRepository,
-            podcastRepository: podcastRepository
+            podcastRepository: podcastRepository,
+            widgetSync: widgetSync
         ))
     }
 
@@ -462,7 +463,10 @@ struct PlayerView: View {
                 currentTime: viewModel.player.currentTime,
                 duration: viewModel.player.duration,
                 bufferedTime: viewModel.player.bufferedTime,
-                onPlayPause: { viewModel.player.togglePlayPause() },
+                onPlayPause: {
+                    viewModel.player.togglePlayPause()
+                    Task { await viewModel.syncPlaybackState() }
+                },
                 onSkipForward: { Task { await viewModel.player.skipForward() } },
                 onSkipBackward: { Task { await viewModel.player.skipBackward() } },
                 onSeek: { time in Task { await viewModel.player.seek(to: time) } }

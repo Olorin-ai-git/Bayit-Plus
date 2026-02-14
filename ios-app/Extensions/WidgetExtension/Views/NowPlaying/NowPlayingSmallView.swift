@@ -8,44 +8,67 @@ struct NowPlayingSmallView: View {
     let entry: NowPlayingEntry
 
     var body: some View {
-        Link(destination: deepLink) {
-            VStack(spacing: DesignTokens.Spacing.sm) {
-                if let data = entry.nowPlaying {
-                    // Channel logo
-                    AsyncImage(url: data.logoURL) { image in
-                        image.resizable().aspectRatio(contentMode: .fit)
-                    } placeholder: {
-                        Image(systemName: contentIcon(for: data.contentType))
-                            .font(.system(size: DesignTokens.FontSize.xxl))
+        VStack(spacing: DesignTokens.Spacing.sm) {
+            if let data = entry.nowPlaying {
+                // Channel logo and content (tappable to open app)
+                Link(destination: deepLink) {
+                    VStack(spacing: DesignTokens.Spacing.sm) {
+                        // Channel logo
+                        AsyncImage(url: data.logoURL) { image in
+                            image.resizable().aspectRatio(contentMode: .fit)
+                        } placeholder: {
+                            Image(systemName: contentIcon(for: data.contentType))
+                                .font(.system(size: DesignTokens.FontSize.xxl))
+                                .foregroundStyle(DesignTokens.Primary.p400)
+                        }
+                        .frame(width: 40, height: 40)
+                        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+
+                        // Show title
+                        Text(data.showTitle)
+                            .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
+                            .foregroundStyle(DesignTokens.Text.primary)
+                            .lineLimit(2)
+                            .multilineTextAlignment(.center)
+                            .accessibilityLabel("Now playing: \(data.showTitle)")
+
+                        // Channel name
+                        Text(data.channelName)
+                            .font(.system(size: DesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Text.secondary)
+                            .lineLimit(1)
+                            .accessibilityLabel("On \(data.channelName)")
+                    }
+                }
+
+                // Interactive play/pause button (iOS 17+)
+                if #available(iOS 17.0, *) {
+                    Button(intent: TogglePlayPauseIntent(
+                        contentID: data.channelID,
+                        isPlaying: data.isPlaying
+                    )) {
+                        Image(systemName: data.isPlaying ? "pause.fill" : "play.fill")
+                            .font(.system(size: DesignTokens.FontSize.lg))
                             .foregroundStyle(DesignTokens.Primary.p400)
                     }
-                    .frame(width: 40, height: 40)
-                    .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
-
-                    // Show title
-                    Text(data.showTitle)
-                        .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
-                        .foregroundStyle(DesignTokens.Text.primary)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
-
-                    // Channel name
-                    Text(data.channelName)
-                        .font(.system(size: DesignTokens.FontSize.xs))
-                        .foregroundStyle(DesignTokens.Text.secondary)
-                        .lineLimit(1)
-
-                    // Play indicator
-                    Image(systemName: data.isPlaying ? "pause.fill" : "play.fill")
-                        .font(.system(size: DesignTokens.FontSize.md))
-                        .foregroundStyle(DesignTokens.Primary.p400)
+                    .buttonStyle(.plain)
+                    .frame(minWidth: 44, minHeight: 44)
+                    .accessibilityLabel(data.isPlaying ? "Pause" : "Play")
+                    .accessibilityHint("Toggles playback")
                 } else {
+                    // Fallback for iOS 16 - just show icon
+                    Image(systemName: data.isPlaying ? "pause.fill" : "play.fill")
+                        .font(.system(size: DesignTokens.FontSize.lg))
+                        .foregroundStyle(DesignTokens.Primary.p400)
+                }
+            } else {
+                Link(destination: WidgetDeepLinks.liveTV) {
                     emptyState
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .padding(DesignTokens.Spacing.md)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(DesignTokens.Spacing.md)
         .containerBackground(for: .widget) {
             LinearGradient(
                 colors: [DesignTokens.Background.primary, DesignTokens.Background.elevated],

@@ -20,8 +20,12 @@ struct PlayPlaylistIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
+        guard SharedKeychainHelper().readAuthToken() != nil else {
+            throw IntentError.notAuthenticated
+        }
+
         let intent = SharedPendingIntent(
-            action: "playPlaylist",
+            action: PendingIntentActions.playPlaylist,
             contentID: playlistID
         )
         await WidgetDataStore.shared.writePendingIntent(intent)
