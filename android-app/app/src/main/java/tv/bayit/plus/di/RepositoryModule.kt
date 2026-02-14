@@ -52,6 +52,16 @@ import tv.bayit.plus.core.data.repository.VoiceRepository
 import tv.bayit.plus.core.data.repository.WatchPartyRepository
 import tv.bayit.plus.core.data.repository.WidgetRepository
 import tv.bayit.plus.core.data.repository.ZehAniRepository
+import tv.bayit.plus.core.data.repository.impl.ApiCategoryRepository
+import tv.bayit.plus.core.data.repository.impl.ApiContentRepository
+import tv.bayit.plus.core.data.repository.impl.ApiEPGRepository
+import tv.bayit.plus.core.data.repository.impl.ApiLiveTVRepository
+import tv.bayit.plus.core.data.repository.impl.ApiMediaRepository
+import tv.bayit.plus.core.data.repository.impl.ApiPodcastRepository
+import tv.bayit.plus.core.data.repository.impl.ApiRadioRepository
+import tv.bayit.plus.core.data.repository.impl.ApiSeriesRepository
+import tv.bayit.plus.core.data.repository.impl.ApiSettingsRepository
+import tv.bayit.plus.core.data.repository.impl.ApiUserRepository
 import tv.bayit.plus.core.network.BayitApiClient
 import tv.bayit.plus.core.network.websocket.WebSocketManager
 import javax.inject.Singleton

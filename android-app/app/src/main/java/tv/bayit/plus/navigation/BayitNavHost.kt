@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
+import tv.bayit.plus.feature.home.HomeRoute
 
 @Composable
 fun BayitNavHost(
@@ -20,7 +21,16 @@ fun BayitNavHost(
         modifier = modifier,
     ) {
         // Tab roots
-        composable<Route.Home> { GlassLoadingIndicator() }
+        composable<Route.Home> {
+            HomeRoute(
+                onNavigateToContent = { contentId, contentType ->
+                    navController.navigate(Route.MovieDetail(movieId = contentId))
+                },
+                onNavigateToPlayer = { contentId, contentType ->
+                    navController.navigate(Route.Player(contentId = contentId, contentType = contentType))
+                },
+            )
+        }
         composable<Route.LiveTV> { GlassLoadingIndicator() }
         composable<Route.Vod> { GlassLoadingIndicator() }
         composable<Route.Radio> { GlassLoadingIndicator() }
