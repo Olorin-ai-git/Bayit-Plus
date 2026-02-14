@@ -91,7 +91,7 @@ public final class NavigationCoordinator {
         case .profile, .favorites, .playlist, .downloads,
              .recordings, .settings, .languageSettings,
              .notificationSettings, .billing, .subscription,
-             .security, .children, .youngsters, .judaism,
+             .security, .connectedAccounts, .children, .youngsters, .judaism,
              .flows, .morningRitual, .voiceOnboarding, .support,
              .trivia, .llmSearch, .familyControls, .shabbatMode,
              .jerusalemContent, .telAvivContent, .audiobooks,

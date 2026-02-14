@@ -148,9 +148,13 @@ class User(Document):
     # Beta 500 program
     is_beta_user: bool = False
 
-    # OAuth
+    # OAuth - Multi-provider support
     google_id: Optional[str] = None
-    auth_provider: str = "local"  # local, google
+    apple_id: Optional[str] = None
+    auth_provider: str = "local"  # Primary provider: local, google, apple
+    linked_providers: List[str] = Field(
+        default_factory=list
+    )  # All linked providers: ["local", "google", "apple"]
 
     # Email verification
     email_verified: bool = False
@@ -295,6 +299,9 @@ class User(Document):
             "email_verification_token",
             "phone_number",
             "is_verified",
+            # OAuth provider indexes
+            "google_id",
+            "apple_id",
             # Payment workflow indexes (CRITICAL for performance)
             "payment_pending",  # Access control checks (high frequency)
             [("role", 1), ("subscription_tier", 1)],  # Viewer migration queries

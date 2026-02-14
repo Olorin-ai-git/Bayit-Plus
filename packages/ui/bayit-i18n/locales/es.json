@@ -5850,6 +5850,16 @@
       "medium": "Mediano",
       "large": "Grande"
     },
+    "connectedAccounts": "Cuentas Conectadas",
+    "connectedAccountsDescription": "Administra cómo inicias sesión en Bayit+. Puedes vincular varias cuentas para un acceso más fácil.",
+    "linkedAccounts": "Cuentas Vinculadas",
+    "linkNewAccount": "Vincular Nueva Cuenta",
+    "noLinkedAccounts": "No hay cuentas vinculadas",
+    "allAccountsLinked": "Todos los tipos de cuenta están vinculados",
+    "primary": "Principal",
+    "unlink": "Desvincular",
+    "unlinkAccountConfirmTitle": "¿Desvincular Cuenta?",
+    "unlinkConfirm": "Desvincular",
     "familyAndSafety": "Family & Safety",
     "familyControls": "Family Controls"
   },

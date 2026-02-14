@@ -602,6 +602,13 @@ class Settings(BaseSettings):
     )
     GOOGLE_IOS_CLIENT_ID: str = ""  # iOS Google Sign-In SDK client ID
 
+    # Apple OAuth (optional - only required if using Apple Sign-In)
+    APPLE_CLIENT_ID: str = ""  # Service ID (e.g., com.bayit.bayit-plus)
+    APPLE_TEAM_ID: str = ""  # Apple Developer Team ID
+    APPLE_KEY_ID: str = ""  # Private Key ID
+    APPLE_PRIVATE_KEY: str = ""  # Private Key content (PEM format)
+    APPLE_JWKS_URL: str = "https://appleid.apple.com/auth/keys"  # Apple JWKS endpoint
+
     # Audible OAuth Integration (optional - enables audiobook syncing for premium users)
     # Obtain credentials from https://developer.amazon.com/
     # Leave empty to disable the feature gracefully

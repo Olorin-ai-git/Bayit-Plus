@@ -98,6 +98,9 @@ struct SettingsView: View {
             navRow(icon: "lock.shield", title: localization.t("settings.security")) {
                 coordinator.pushToCurrentTab(.security)
             }
+            navRow(icon: "link.circle", title: localization.t("settings.connectedAccounts")) {
+                coordinator.pushToCurrentTab(.connectedAccounts)
+            }
             navRow(icon: "person.3", title: localization.t("settings.familyControls")) {
                 coordinator.pushToCurrentTab(.familyControls)
             }

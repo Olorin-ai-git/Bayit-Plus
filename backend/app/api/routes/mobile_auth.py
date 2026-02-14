@@ -76,7 +76,10 @@ async def _find_or_create_google_user(
         user = await User.find_one(User.email == email)
         if user:
             user.google_id = google_id
-            user.auth_provider = "google"
+            if "google" not in user.linked_providers:
+                user.linked_providers.append("google")
+            if not user.auth_provider or user.auth_provider == "local":
+                user.auth_provider = "google"
             user.email_verified = True
             user.email_verified_at = datetime.now(timezone.utc)
             if picture and not user.avatar:
@@ -89,6 +92,7 @@ async def _find_or_create_google_user(
                 name=name,
                 google_id=google_id,
                 auth_provider="google",
+                linked_providers=["google"],
                 role="viewer",
                 avatar=picture,
                 email_verified=True,
@@ -105,15 +109,17 @@ async def _find_or_create_apple_user(
     apple_sub: str, email: str, name: str
 ) -> User:
     """Find existing user by Apple sub or email, or create new."""
-    # Search by auth_provider + email since we use email as lookup key
-    user = await User.find_one(
-        User.email == email, User.auth_provider == "apple"
-    )
+    # Search by Apple ID first
+    user = await User.find_one(User.apple_id == apple_sub)
 
     if not user:
         user = await User.find_one(User.email == email)
         if user:
-            user.auth_provider = "apple"
+            user.apple_id = apple_sub
+            if "apple" not in user.linked_providers:
+                user.linked_providers.append("apple")
+            if not user.auth_provider or user.auth_provider == "local":
+                user.auth_provider = "apple"
             user.email_verified = True
             user.email_verified_at = datetime.now(timezone.utc)
             user.update_verification_status()
@@ -122,7 +128,9 @@ async def _find_or_create_apple_user(
             user = User(
                 email=email,
                 name=name,
+                apple_id=apple_sub,
                 auth_provider="apple",
+                linked_providers=["apple"],
                 role="viewer",
                 email_verified=True,
                 email_verified_at=datetime.now(timezone.utc),

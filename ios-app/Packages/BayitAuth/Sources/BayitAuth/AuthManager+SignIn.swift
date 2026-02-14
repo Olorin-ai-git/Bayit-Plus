@@ -487,7 +487,7 @@ extension AuthManager {
     #if os(iOS)
     /// Resolves the current key window's root view controller for presenting sign-in UI.
     /// Available on iOS only. tvOS uses a different presentation model.
-    private func resolveRootViewController() async throws -> UIViewController {
+    func resolveRootViewController() async throws -> UIViewController {
         guard let windowScene = await MainActor.run(body: {
             UIApplication.shared.connectedScenes
                 .compactMap { $0 as? UIWindowScene }

@@ -23,6 +23,11 @@ public enum AuthError: LocalizedError, Sendable {
     case devicePairingFailed(underlying: String)
     case sessionExpired
     case invalidEmailFormat
+    case linkedProvidersFetchFailed(underlying: String)
+    case linkProviderFailed(underlying: String)
+    case unlinkProviderFailed(underlying: String)
+    case providerAlreadyLinked(underlying: String)
+    case networkError(underlying: String)
 
     /// User-facing message suitable for display in the UI.
     /// Avoids exposing technical details.
@@ -62,6 +67,16 @@ public enum AuthError: LocalizedError, Sendable {
             return "Your session has expired. Please sign in again."
         case .invalidEmailFormat:
             return "Please enter a valid email address"
+        case .linkedProvidersFetchFailed:
+            return "Could not load linked accounts"
+        case .linkProviderFailed:
+            return "Could not link account. Please try again."
+        case .unlinkProviderFailed:
+            return "Could not unlink account. You must keep at least one sign-in method."
+        case .providerAlreadyLinked:
+            return "This account is already linked to another user"
+        case .networkError:
+            return "Network error. Please check your connection."
         }
     }
 
@@ -109,6 +124,16 @@ public enum AuthError: LocalizedError, Sendable {
             return "Session has expired"
         case .invalidEmailFormat:
             return "Invalid email format"
+        case .linkedProvidersFetchFailed(let underlying):
+            return "Linked providers fetch failed: \(underlying)"
+        case .linkProviderFailed(let underlying):
+            return "Link provider failed: \(underlying)"
+        case .unlinkProviderFailed(let underlying):
+            return "Unlink provider failed: \(underlying)"
+        case .providerAlreadyLinked(let underlying):
+            return "Provider already linked: \(underlying)"
+        case .networkError(let underlying):
+            return "Network error: \(underlying)"
         }
     }
 }

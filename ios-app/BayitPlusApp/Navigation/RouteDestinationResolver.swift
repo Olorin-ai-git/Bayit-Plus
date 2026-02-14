@@ -40,6 +40,8 @@ struct RouteDestinationResolver {
             SubscriptionView()
         case .security:
             SecurityView()
+        case .connectedAccounts:
+            ConnectedAccountsView()
         case .children:
             ChildrenView()
         case .youngsters:

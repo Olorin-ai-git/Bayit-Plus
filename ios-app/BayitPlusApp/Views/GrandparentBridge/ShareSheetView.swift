@@ -21,7 +21,7 @@ struct ShareSheetView: View {
             ZStack {
                 DesignTokens.Background.primary.ignoresSafeArea()
 
-                VStack(spacing: 24) {
+                VStack(spacing: DesignTokens.Spacing.xl) {
                     if !pinVerified {
                         pinVerificationSection
                     } else {
@@ -30,11 +30,11 @@ struct ShareSheetView: View {
 
                     if let error = error {
                         Text(error)
-                            .foregroundColor(DesignTokens.ErrorColor.default)
-                            .font(.system(size: 13))
+                            .foregroundStyle(DesignTokens.ErrorColor.default)
+                            .font(.system(size: DesignTokens.FontSize.sm))
                     }
                 }
-                .padding(24)
+                .padding(DesignTokens.Spacing.xl)
             }
             .navigationTitle(localization.t("grandparentBridge.share.title"))
             .navigationBarTitleDisplayMode(.inline)
@@ -43,59 +43,63 @@ struct ShareSheetView: View {
                     Button(localization.t("common.close")) { dismiss() }
                 }
             }
+            .onDisappear {
+                pin = ""
+            }
         }
     }
 
     private var pinVerificationSection: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: DesignTokens.Spacing.lg) {
             Text(localization.t("grandparentBridge.share.enterPin"))
-                .foregroundColor(.white.opacity(0.7))
-                .font(.system(size: 15))
+                .foregroundStyle(DesignTokens.Text.secondary)
+                .font(.system(size: DesignTokens.FontSize.base))
 
-            SecureField("", text: $pin)
-                .keyboardType(.numberPad)
-                .textFieldStyle(.roundedBorder)
+            GlassTextField("", text: $pin, isSecure: true)
                 .frame(maxWidth: 200)
-                .multilineTextAlignment(.center)
 
-            Button(localization.t("grandparentBridge.share.pinVerified")) {
+            GlassButton(
+                localization.t("grandparentBridge.share.pinVerified"),
+                variant: .primary,
+                size: .medium,
+                isDisabled: pin.count < 4
+            ) {
                 verifyPin()
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(pin.count < 4)
         }
     }
 
     private var shareActionsSection: some View {
-        VStack(spacing: 16) {
-            TextField(localization.t("grandparentBridge.share.title"), text: $recipientName)
-                .textFieldStyle(.roundedBorder)
+        VStack(spacing: DesignTokens.Spacing.lg) {
+            GlassTextField(localization.t("grandparentBridge.share.title"), text: $recipientName)
 
-            Button {
+            GlassButton(
+                localization.t("grandparentBridge.share.whatsApp"),
+                variant: .primary,
+                size: .large,
+                isLoading: sharing,
+                icon: Image(systemName: "square.and.arrow.up")
+            ) {
                 shareViaWhatsApp()
-            } label: {
-                Label(localization.t("grandparentBridge.share.whatsApp"), systemImage: "square.and.arrow.up")
-                    .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(.green)
-            .disabled(sharing)
 
-            Button {
+            GlassButton(
+                localization.t("grandparentBridge.share.email"),
+                variant: .secondary,
+                size: .large,
+                icon: Image(systemName: "envelope")
+            ) {
                 shareViaSystem()
-            } label: {
-                Label(localization.t("grandparentBridge.share.email"), systemImage: "envelope")
-                    .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.bordered)
 
-            Button {
+            GlassButton(
+                localization.t("grandparentBridge.share.copyLink"),
+                variant: .secondary,
+                size: .large,
+                icon: Image(systemName: "doc.on.doc")
+            ) {
                 copyShareLink()
-            } label: {
-                Label(localization.t("grandparentBridge.share.copyLink"), systemImage: "doc.on.doc")
-                    .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.bordered)
         }
     }
 

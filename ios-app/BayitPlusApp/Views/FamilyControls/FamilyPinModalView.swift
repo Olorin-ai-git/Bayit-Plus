@@ -79,6 +79,9 @@ struct FamilyPinModalView: View {
         .onAppear {
             isPinFocused = true
         }
+        .onDisappear {
+            pin = ""
+        }
     }
 
     private var pinInput: some View {

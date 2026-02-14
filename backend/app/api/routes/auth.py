@@ -143,6 +143,8 @@ async def register(request: Request, user_data: UserCreate):
         name=user_data.name,
         hashed_password=get_password_hash(user_data.password),
         role="viewer",
+        auth_provider="local",
+        linked_providers=["local"],
         email_verified=False,
         phone_verified=False,
         is_verified=False,
@@ -503,7 +505,10 @@ async def mobile_google_signin(request: Request, auth_data: GoogleMobileAuth):
             if user:
                 # Link Google account to existing user
                 user.google_id = google_id
-                user.auth_provider = "google"
+                if not user.auth_provider or user.auth_provider == "local":
+                    user.auth_provider = "google"
+                if "google" not in user.linked_providers:
+                    user.linked_providers.append("google")
                 user.email_verified = True
                 user.email_verified_at = datetime.now(timezone.utc)
                 if picture and not user.avatar:
@@ -517,6 +522,7 @@ async def mobile_google_signin(request: Request, auth_data: GoogleMobileAuth):
                     name=name,
                     google_id=google_id,
                     auth_provider="google",
+                    linked_providers=["google"],
                     role="viewer",
                     avatar=picture,
                     email_verified=True,
@@ -583,13 +589,132 @@ async def mobile_apple_signin(request: Request, auth_data: AppleMobileAuth):
     This endpoint is called by mobile apps after they obtain an Apple identity token
     via Sign in with Apple. The backend validates the token and creates/updates the user account.
     """
-    # TODO: Implement Apple Sign-In token validation
-    # This requires the Apple public keys and JWT validation
-    # For now, return not implemented
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Apple Sign-In for mobile is not yet implemented"
-    )
+    import jwt
+    from jwt import PyJWKClient
+
+    try:
+        # Apple's public key URL for JWT verification
+        jwks_url = "https://appleid.apple.com/auth/keys"
+        jwks_client = PyJWKClient(jwks_url)
+
+        # Get signing key from Apple
+        signing_key = jwks_client.get_signing_key_from_jwt(auth_data.identity_token)
+
+        # Verify and decode the identity token
+        decoded_token = jwt.decode(
+            auth_data.identity_token,
+            signing_key.key,
+            algorithms=["RS256"],
+            audience=settings.APPLE_CLIENT_ID,
+            options={"verify_exp": True},
+        )
+
+        # Extract user info from token
+        apple_id = decoded_token.get("sub")
+        email = decoded_token.get("email") or auth_data.email
+        email_verified = decoded_token.get("email_verified", False)
+
+        # Use provided full_name or derive from email
+        name = auth_data.full_name or (email.split("@")[0] if email else "User")
+
+        if not apple_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid Apple identity token: missing subject"
+            )
+
+        # Check if user exists by apple_id or email
+        user = await User.find_one(User.apple_id == apple_id)
+
+        if not user:
+            # Check if email exists (user registered with email/password or Google)
+            if email:
+                user = await User.find_one(User.email == email)
+
+            if user:
+                # Link Apple account to existing user
+                user.apple_id = apple_id
+                if not user.auth_provider or user.auth_provider == "local":
+                    user.auth_provider = "apple"
+                if "apple" not in user.linked_providers:
+                    user.linked_providers.append("apple")
+                if email_verified:
+                    user.email_verified = True
+                    user.email_verified_at = datetime.now(timezone.utc)
+                user.update_verification_status()
+                await user.save()
+            else:
+                # Create new user
+                if not email:
+                    raise HTTPException(
+                        status_code=status.HTTP_400_BAD_REQUEST,
+                        detail="Email is required for first-time Apple Sign-In"
+                    )
+
+                user = User(
+                    email=email,
+                    name=name,
+                    apple_id=apple_id,
+                    auth_provider="apple",
+                    linked_providers=["apple"],
+                    role="viewer",
+                    email_verified=email_verified,
+                    email_verified_at=datetime.now(timezone.utc) if email_verified else None,
+                    phone_verified=False,
+                    is_verified=False,
+                )
+                await user.insert()
+
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Inactive user"
+            )
+
+        # Update last login
+        user.last_login = datetime.now(timezone.utc)
+
+        # Sync beta user status
+        await _sync_beta_user_status(user)
+        await user.save()
+
+        # Audit log
+        await audit_logger.log_oauth_login(user, request, "apple")
+
+        # Create JWT tokens
+        jwt_token = create_access_token(data={"sub": str(user.id)})
+        refresh_token = create_refresh_token(
+            user_id=str(user.id),
+            secret_key=settings.SECRET_KEY,
+            algorithm=settings.ALGORITHM,
+        )
+
+        logger.info(f"Mobile Apple sign-in succeeded for user: {user.email}")
+
+        return TokenResponse(
+            access_token=jwt_token,
+            refresh_token=refresh_token,
+            user=user.to_response(),
+        )
+
+    except jwt.ExpiredSignatureError:
+        logger.error("Apple identity token expired")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Apple identity token expired"
+        )
+    except jwt.InvalidTokenError as e:
+        logger.error(f"Invalid Apple identity token: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid Apple identity token: {str(e)}"
+        )
+    except Exception as e:
+        logger.error(f"Mobile Apple sign-in failed: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Apple sign-in failed"
+        )
 
 
 @router.get("/google/url")
@@ -712,7 +837,10 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
         if user:
             # Link Google account to existing user
             user.google_id = google_id
-            user.auth_provider = "google"
+            if "google" not in user.linked_providers:
+                user.linked_providers.append("google")
+            if not user.auth_provider or user.auth_provider == "local":
+                user.auth_provider = "google"
             user.email_verified = True  # Google pre-verified email
             user.email_verified_at = datetime.now(timezone.utc)
             # Update avatar from Google if not already set
@@ -727,6 +855,7 @@ async def google_callback(request: Request, auth_data: GoogleAuthCode):
                 name=name,
                 google_id=google_id,
                 auth_provider="google",
+                linked_providers=["google"],
                 role="viewer",
                 avatar=picture,  # Save Google profile picture
                 email_verified=True,  # Google pre-verified

@@ -34,7 +34,7 @@ def register_all_routers(app: FastAPI) -> None:
     from app.api.endpoints import (analytics_router, tts_router, voice_router,
                                    wake_word_router)
     # Import search sub-routers
-    from app.api.routes import (admin, admin_audiobooks, admin_categories,
+    from app.api.routes import (account_linking, admin, admin_audiobooks, admin_categories,
                                 admin_content_importer, admin_content_vod_read,
                                 admin_content_vod_toggles,
                                 admin_content_vod_write, admin_cultures,
@@ -174,6 +174,11 @@ def register_all_routers(app: FastAPI) -> None:
         mfa.router,
         prefix=f"{prefix}/auth",
         tags=["mfa"],
+    )
+    app.include_router(
+        account_linking.router,
+        prefix=f"{prefix}/auth",
+        tags=["account-linking"],
     )
     logger.debug("Registered auth routes")
 

@@ -40,7 +40,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>45</string>
+	<string>49</string>
 	<key>FEATURE_LEGACY_FEATURES</key>
 	<string>true</string>
 	<key>GOOGLE_CLIENT_ID</key>
@@ -56,14 +56,14 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Bayit+ uses the camera to record a video selfie for creating your 3D avatar</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Bayit+ accesses your photo library to select a video selfie for creating your 3D avatar</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Bayit+ uses Face ID to securely sign in to your account</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Bayit+ uses your location to show Israeli community content near you</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Bayit+ uses the microphone for voice commands</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Bayit+ accesses your photo library to select a video selfie for creating your 3D avatar</string>
 	<key>NSPrivacyPolicyURL</key>
 	<string>https://bayit.tv/privacy</string>
 	<key>NSSiriUsageDescription</key>
