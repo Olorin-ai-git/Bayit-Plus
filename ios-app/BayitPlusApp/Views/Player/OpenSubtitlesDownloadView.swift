@@ -193,7 +193,7 @@ struct OpenSubtitlesDownloadView: View {
             // Parse user-friendly error messages
             let errorDescription = error.localizedDescription
             if errorDescription.contains("quota") || errorDescription.contains("100 subtitles") {
-                self.error = localization.t("subtitles.quotaExceeded")
+                self.error = localization.t("subtitles.quotaExceededLabel")
             } else if errorDescription.contains("429") || errorDescription.contains("Too Many Requests") {
                 self.error = localization.t("subtitles.rateLimitExceeded")
             } else if errorDescription.contains("decode") || errorDescription.contains("format") {

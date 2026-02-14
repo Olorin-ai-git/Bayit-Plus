@@ -9,7 +9,7 @@ struct StarStoryAvatar: Codable, Sendable, Identifiable {
     let status: String
     let primaryAvatarUrl: String?
     let posesCount: Int
-    let createdAt: Date
+    let createdAt: String
 
     var id: String { avatarId }
 }
@@ -37,7 +37,7 @@ struct StarStoryEpisode: Codable, Sendable, Identifiable {
     let hlsUrl: String?
     let thumbnailUrl: String?
     let durationSeconds: Int
-    let createdAt: Date
+    let createdAt: String
 
     var id: String { episodeId }
 

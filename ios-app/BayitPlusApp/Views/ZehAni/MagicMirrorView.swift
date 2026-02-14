@@ -18,6 +18,7 @@ struct MagicMirrorView: View {
     @State private var starStoryVM: StarStoryViewModel?
     @State private var existingAvatarId: String?
     @State private var glbData: Data?
+    @State private var meshLoadFailed = false
 
     var body: some View {
         ZStack {
@@ -117,6 +118,20 @@ struct MagicMirrorView: View {
                     RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
                         .stroke(DesignTokens.Glass.border, lineWidth: 1)
                 )
+        } else if meshLoadFailed {
+            RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
+                .fill(DesignTokens.Glass.bg.opacity(0.3))
+                .frame(height: 280)
+                .overlay {
+                    VStack(spacing: DesignTokens.Spacing.sm) {
+                        Image(systemName: "person.crop.circle")
+                            .font(.system(size: 48))
+                            .foregroundStyle(DesignTokens.Text.muted)
+                        Text(localization.t("zehAni.magicMirror.meshUnavailable"))
+                            .font(.system(size: DesignTokens.FontSize.sm))
+                            .foregroundStyle(DesignTokens.Text.muted)
+                    }
+                }
         } else {
             RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
                 .fill(DesignTokens.Glass.bg.opacity(0.3))
@@ -181,6 +196,7 @@ struct MagicMirrorView: View {
         error = nil
         noAvatar = false
         glbData = nil
+        meshLoadFailed = false
 
         Task {
             do {
@@ -201,6 +217,8 @@ struct MagicMirrorView: View {
 
                 if let avatarId {
                     await loadAvatarMesh(avatarId: avatarId)
+                } else {
+                    await MainActor.run { meshLoadFailed = true }
                 }
             } catch let apiError as APIError {
                 await MainActor.run {
@@ -225,11 +243,14 @@ struct MagicMirrorView: View {
             let meshGlb = try await repos.avatarMeshRepository.fetchGlbUrl(
                 avatarId: avatarId
             )
-            guard let url = URL(string: meshGlb.signedUrl) else { return }
+            guard let url = URL(string: meshGlb.signedUrl) else {
+                await MainActor.run { meshLoadFailed = true }
+                return
+            }
             let (data, _) = try await URLSession.shared.data(from: url)
             await MainActor.run { glbData = data }
         } catch {
-            // Greeting still shows without avatar mesh
+            await MainActor.run { meshLoadFailed = true }
         }
     }
 }

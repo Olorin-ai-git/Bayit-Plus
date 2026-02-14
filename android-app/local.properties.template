@@ -1,0 +1,13 @@
+## Bayit+ Android App - Local Configuration Template
+## Copy this file to local.properties and update with your values
+
+# Android SDK location
+sdk.dir=/Users/USERNAME/Library/Android/sdk
+
+# API Configuration (optional - defaults used if not specified)
+bayit.api.baseUrl=https://api.bayit.tv/
+bayit.ws.baseUrl=wss://ws.bayit.tv/
+
+# Firebase (required for build)
+# Download google-services.json from Firebase Console
+# Place at: app/google-services.json

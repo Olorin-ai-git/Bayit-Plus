@@ -54,7 +54,7 @@ struct CreditBalanceWidgetView: View {
             VStack(spacing: DesignTokens.Spacing.md) {
                 HStack {
                     statusDot(vm)
-                    Text(localization.t("beta.credits"))
+                    Text(localization.t("beta.creditsLabel"))
                         .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                         .foregroundStyle(DesignTokens.Text.secondary)
                     Spacer()

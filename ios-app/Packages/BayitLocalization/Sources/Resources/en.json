@@ -411,7 +411,8 @@
       "voiceManagement": "Voice Management",
       "triviaAnalytics": "Trivia Analytics",
       "liveAiDataFlow": "Live AI Data Flow",
-      "systemHealth": "System Health"
+      "systemHealth": "System Health",
+      "playlist": "Playlist"
     },
     "liveQuotas": {
       "title": "Live Feature Quota Management",
@@ -2951,9 +2952,13 @@
   },
   "aiCompanion": {
     "title": "AI Learning Companion",
-    "vocabulary": "Vocabulary",
+    "vocabulary": {
+      "empty": "No vocabulary available yet"
+    },
     "context": "Episode Context",
-    "quiz": "Quick Quiz",
+    "quiz": {
+      "empty": "No quiz available yet"
+    },
     "nowPlaying": "Now Playing",
     "upNext": "Up Next",
     "timeRemaining": "Time Remaining",
@@ -2962,7 +2967,9 @@
     "noContext": "No episode context available",
     "noQuiz": "No quiz questions available for this episode",
     "checkAnswer": "Check Answer",
-    "concepts": "Key Concepts"
+    "concepts": "Key Concepts",
+    "quizLabel": "Quick Quiz",
+    "vocabularyLabel": "Vocabulary"
   },
   "audible": {
     "accountLinked": "Your Audible account is now linked to Bayit+",
@@ -3114,7 +3121,10 @@
     "details": "Details",
     "loading": "Loading audiobooks...",
     "sortOrder": "Order",
-    "subscription": "Subscription"
+    "subscription": "Subscription",
+    "by": "By",
+    "speed": "Speed:",
+    "loadingAudiobooks": "Loading audiobooks..."
   },
   "auth": {
     "loginRequired": "Login Required",
@@ -3368,7 +3378,21 @@
       "statusPending": "Pending",
       "statusFailed": "Failed",
       "statusUnknown": "Unknown"
-    }
+    },
+    "askPlaceholder": "Ask me anything...",
+    "choose": "Choose Avatar",
+    "dynamic": "Dynamic",
+    "gradient": "Gradient",
+    "mode": "Avatar Mode",
+    "photo": "Photo",
+    "photoUploadSoon": "Photo upload coming soon",
+    "preferences": "Avatar Preferences",
+    "save": "Save Avatar",
+    "simulatorHint": "Tap below to generate a synthetic face mesh and test the full upload pipeline.",
+    "simulatorUnavailable": "Simulator: ARKit unavailable",
+    "subtle": "Subtle",
+    "type": "Avatar Type",
+    "useIosOrWeb": "Use the iOS or web app to upload a custom avatar"
   },
   "badges": {
     "aiEnhanced": "AI Enhanced",
@@ -3386,7 +3410,11 @@
     "closeButton": "×"
   },
   "beta": {
-    "credits": "Credits",
+    "credits": {
+      "loading": "Loading Credits...",
+      "remaining": "Credits Remaining",
+      "title": "Beta 500"
+    },
     "beta500": "Beta 500",
     "creditsExplanation": "Credits are used for AI-powered features like search, recommendations, and dubbing.",
     "criticalMessage": "Your credits are almost depleted. Upgrade to continue using AI features.",
@@ -3401,7 +3429,8 @@
     "upgrade": "Upgrade",
     "upgradeMessage": "Upgrade to Premium for unlimited AI credits and exclusive features.",
     "upgradeTitle": "Upgrade to Premium",
-    "usage": "Usage"
+    "usage": "Usage",
+    "creditsLabel": "Credits"
   },
   "billing": {
     "currentPlan": "Current Plan",
@@ -3505,7 +3534,11 @@
     "userLeft": "A user left the chat",
     "placeholder": "Send a message...",
     "send": "Send",
-    "translationBeta": "Translation (Beta)"
+    "translationBeta": "Translation (Beta)",
+    "liveChat": "Live Chat",
+    "chatPlaceholder": "Say something...",
+    "chatRequiresConnection": "Chat requires an active connection",
+    "sendMessage": "Send a message..."
   },
   "channels": {
     "kanEducational": "Kan Educational",
@@ -3541,7 +3574,9 @@
   },
   "chat": {
     "title": "Bayit+ Assistant",
-    "greeting": "Hello! I'm Bayit+ smart assistant. How can I help you today? Click the microphone and speak, or type a message."
+    "greeting": "Hello! I'm Bayit+ smart assistant. How can I help you today? Click the microphone and speak, or type a message.",
+    "loading": "Loading Messages...",
+    "typing": "Typing..."
   },
   "chatbot": {
     "title": "Bayit+ Assistant",
@@ -3574,12 +3609,15 @@
       "multiContent": "Show side by side..."
     },
     "listening": "Listening...",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "startConversation": "Start a Conversation",
+    "askAboutContent": "Ask about content, get personalized recommendations, or just chat.",
+    "typePlaceholder": "Type a message..."
   },
   "chess": {
     "title": "Chess",
     "welcome": "Welcome to Chess",
-    "subtitle": "Play chess with friends and family around the world",
+    "subtitle": "Play against friends or AI",
     "createGame": "Create New Game",
     "joinGame": "Join Game",
     "gameCode": "Game Code",
@@ -3631,12 +3669,13 @@
     "disconnected": "Disconnected",
     "theirTurn": "Their turn",
     "acceptDraw": "Accept Draw",
-    "blackTurn": "Black's turn",
+    "blackTurn": "Black's Turn",
     "declineDraw": "Decline Draw",
-    "drawOffered": "Draw offered",
+    "drawOffered": "Draw Offered",
     "opponent": "Opponent",
-    "whiteTurn": "White's turn",
-    "you": "You"
+    "whiteTurn": "White's Turn",
+    "you": "You",
+    "code": "Code: {{code}}"
   },
   "children": {
     "title": "Kids",
@@ -4028,7 +4067,23 @@
     "more": "more",
     "minutesShort": "min",
     "notAvailable": "N/A",
-    "continue": "Continue"
+    "continue": "Continue",
+    "showAll": "Show All",
+    "change": "Change",
+    "confidence": "Confidence",
+    "generate": "Generate",
+    "high": "High",
+    "learnMore": "Learn More",
+    "low": "Low",
+    "maybeLater": "Maybe Later",
+    "medium": "Medium",
+    "or": "or",
+    "percent": "%",
+    "playlist": "Playlist",
+    "preview": "Preview",
+    "saveChanges": "Save Changes",
+    "today": "Today",
+    "unavailable": "Unavailable"
   },
   "components": {
     "select": {
@@ -4060,7 +4115,8 @@
     "explanation": "Explanation",
     "loading": "Loading question...",
     "insufficient_credits": "Insufficient credits for comprehension question",
-    "error": "Error loading question"
+    "error": "Error loading question",
+    "comprehensionCheck": "Comprehension Check"
   },
   "content": {
     "play": "Play",
@@ -4097,7 +4153,19 @@
     "availableSubtitles": "Available Subtitles",
     "subtitleSelected": "Selected: {{language}}",
     "trailer": "Trailer",
-    "trailerNotAvailable": "Trailer not available for this title"
+    "trailerNotAvailable": "Trailer not available for this title",
+    "movieDetail": {
+      "director": "Director:",
+      "cast": "Cast",
+      "related": "Related"
+    },
+    "seriesDetail": {
+      "related": "Related",
+      "episode": "Episode {{number}}",
+      "seasons": "{{count}} Seasons",
+      "episodes": "{{count}} Episodes"
+    },
+    "related": "Related"
   },
   "cultureCities": {
     "connectionTo": "{{city}} Connection",
@@ -4169,7 +4237,8 @@
     "indian": {
       "name": "Indian",
       "description": "Indian community content"
-    }
+    },
+    "loading": "Loading Culture..."
   },
   "demo": {
     "banner": "DEMO MODE",
@@ -4389,7 +4458,10 @@
     },
     "noVoicesAvailable": "No voices available",
     "premiumRequired": "Premium subscription required",
-    "selectInputLanguage": "Select input language"
+    "selectInputLanguage": "Select input language",
+    "upgradeForDubbing": "Upgrade to Premium to access live dubbing",
+    "maybeLater": "Maybe Later",
+    "liveOnly": "Live dubbing is only available for live channels"
   },
   "email": {
     "greeting": "Hello",
@@ -4627,7 +4699,8 @@
     "scheduleUnavailable": "The TV programming schedule is currently unavailable. Please check back later or contact support if this persists.",
     "noProgramsAvailable": "No programs are available for the selected time range. Try adjusting your filters or check back later.",
     "loading": "Loading TV guide...",
-    "empty": "No programs available"
+    "empty": "No programs available",
+    "noSchedule": "No schedule available"
   },
   "errors": {
     "networkError": "Network Error",
@@ -4734,7 +4807,9 @@
       "invalidChannel": "Invalid channel ID"
     },
     "initializationFailed": "Failed to Initialize",
-    "reloadButton": "Reload"
+    "reloadButton": "Reload",
+    "streamUnavailableTitle": "Stream Unavailable",
+    "streamUnavailable": "This stream is temporarily unavailable. Please try again later."
   },
   "familyControls": {
     "title": "Family Controls",
@@ -5128,7 +5203,15 @@
     "removeFailed": "Failed to remove friend",
     "friendsCount": "{{count}} friends",
     "gamesCount": "{{count}} games",
-    "alreadyFriends": "Friends"
+    "alreadyFriends": "Friends",
+    "searchUsers": "Search users...",
+    "searchToAdd": "Search for users to add friends",
+    "loadingFriends": "Loading Friends...",
+    "searchResults": "Search Results ({{count}})",
+    "pending": "Pending",
+    "empty": "No friends yet",
+    "emptyHint": "Search for friends to connect",
+    "loading": "Loading Friends..."
   },
   "gate": {
     "contentLocked": "Content Locked",
@@ -5233,7 +5316,8 @@
   "hero": {
     "watch": "Watch",
     "moreInfo": "More Info",
-    "addToList": "Add to List"
+    "addToList": "Add to List",
+    "watchNow": "Watch Now"
   },
   "highlights": {
     "title": "Highlights",
@@ -5300,7 +5384,11 @@
     "israeli_businesses_nearby": "Israeli Businesses Near You - From {{city}}",
     "searching_businesses": "Searching for Israeli businesses in {{city}}...",
     "no_businesses_found": "No Israeli businesses found in {{city}}",
-    "businesses_load_error": "Unable to load business listings. Please try again."
+    "businesses_load_error": "Unable to load business listings. Please try again.",
+    "liveTVRow": "Live TV",
+    "continueWatchingRow": "Continue Watching",
+    "contentFrom": "Content from {{city}} ({{distance}} miles away)",
+    "youngsters": "Youngsters"
   },
   "household": {
     "title": "Household Management",
@@ -5350,7 +5438,9 @@
     "myHousehold": "My Household",
     "owner": "Owner",
     "unknown": "Unknown",
-    "userIdPlaceholder": "Enter user email or ID"
+    "userIdPlaceholder": "Enter user email or ID",
+    "loadingHousehold": "Loading Household...",
+    "loading": "Loading Household..."
   },
   "jerusalem": {
     "title": "Jerusalem Connection",
@@ -5708,7 +5798,25 @@
     "createAccount": "Create Account",
     "bayitThinking": "Bayit is thinking...",
     "unexpectedError": "An unexpected error occurred",
-    "signUpNow": "Sign up now"
+    "signUpNow": "Sign up now",
+    "continueWithApple": "Continue with Apple",
+    "signInWithFaceId": "Sign in with Face ID",
+    "signInWithTouchId": "Sign in with Touch ID",
+    "signInWithBiometric": "Sign in with Biometric",
+    "deviceCode": {
+      "signInOnDevice": "Sign in on your phone or computer",
+      "waitingForActivation": "Waiting for activation..."
+    },
+    "qrCode": {
+      "scanToSignIn": "Scan to Sign In",
+      "usePhoneCamera": "Use your phone camera",
+      "scanWithPhone": "Scan with your phone to sign in",
+      "phoneConnected": "Phone connected",
+      "completeSignIn": "Complete sign-in on your phone",
+      "signingIn": "Signing you in...",
+      "signedIn": "Signed in successfully",
+      "expired": "QR code expired"
+    }
   },
   "nav": {
     "home": "Home",
@@ -5741,7 +5849,8 @@
     "liveChannels": "Live Channels",
     "menu": "Menu",
     "more": "More",
-    "playlist": "Playlist"
+    "playlist": "Playlist",
+    "zehAni": "Zeh Ani"
   },
   "notFound": {
     "title": "Page Not Found",
@@ -6107,7 +6216,24 @@
     "secondaryLanguage": "Secondary Language",
     "dualLanguageHint": "Select a second language for split screen",
     "currentLanguage": "Current language",
-    "selectOutputLanguage": "Select Output Language"
+    "selectOutputLanguage": "Select Output Language",
+    "liveDubbing": "Live Dubbing",
+    "liveDubbingOnlyLive": "Live dubbing is only available for live channels",
+    "director": "Director",
+    "castLabel": "Cast",
+    "related": "Related",
+    "audioTrack": "Audio Track",
+    "episode": "Episode",
+    "episodes": "Episodes",
+    "loadingEpisode": "Loading episode...",
+    "loadingStream": "Loading stream...",
+    "premiumRequired": "Premium Required",
+    "season": "Season",
+    "seasons": "Seasons",
+    "streamLimitReached": "Stream Limit Reached",
+    "upgradeToPremium": "Upgrade to Premium",
+    "upgradeToPremiumDubbing": "Upgrade to Premium to access live dubbing",
+    "videoQuality": "Video Quality"
   },
   "playlist": {
     "title": "My Playlist",
@@ -6226,24 +6352,19 @@
     "loadError": "Failed to load podcasts. Please check your connection.",
     "loading": "Loading podcasts...",
     "noPodcastsFound": "No podcasts found",
-    "addPodcast": {
-      "title": "Add Podcast",
-      "urlPlaceholder": "Paste podcast URL here",
-      "providerRSS": "RSS URL",
-      "providerApple": "Apple Podcasts",
-      "providerSpotify": "Spotify",
-      "resolve": "Resolve",
-      "resolving": "Resolving...",
-      "preview": "Preview",
-      "author": "Author",
-      "episodesFound": "{{count}} episodes found",
-      "addPodcast": "Add Podcast",
-      "adding": "Adding...",
-      "success": "Podcast added successfully",
-      "errorResolve": "Could not resolve this URL",
-      "errorAdd": "Could not add podcast",
-      "errorDuplicate": "This podcast already exists"
-    }
+    "addPodcast": "Add Podcast",
+    "noEpisodes": "No episodes available",
+    "podcastRssUrl": "Podcast RSS URL",
+    "podcastAdded": "Podcast added successfully",
+    "podcastNotFound": "Podcast not found",
+    "radio": "Radio",
+    "loadingPodcasts": "Loading Podcasts...",
+    "addedSuccess": "Podcast added successfully",
+    "allPodcasts": "All Podcasts",
+    "notFound": "Podcast not found",
+    "removePodcast": "Remove Podcast",
+    "rssUrl": "Podcast RSS URL",
+    "rssUrlHint": "Enter the RSS feed URL for your podcast"
   },
   "portal": {
     "nav": {
@@ -6444,7 +6565,7 @@
     "zehAni": "Zeh Ani",
     "profileDetails": "Profile Details",
     "name": "Name",
-    "notSet": "Not set",
+    "notSet": "Not Set",
     "email": "Email",
     "editProfile": "Edit Profile",
     "notificationSettings": "Notification Settings",
@@ -6699,7 +6820,7 @@
     "premium": "Premium",
     "basic": "Basic",
     "upgrade": "Upgrade to Premium",
-    "memberSince": "Member since",
+    "memberSince": "Member since {{date}}",
     "aiAssistant": "AI Assistant",
     "voiceSettings": "Voice",
     "subscriptionButton": "Subscription",
@@ -6735,11 +6856,23 @@
     "rewards": "Rewards",
     "household": "Household",
     "displayName": "Display Name",
-    "phoneNumber": "Phone Number",
+    "phoneNumber": "Phone number",
     "mfa": "Multi-Factor Authentication",
-    "notSet": "Not Set",
     "verified": "Verified",
-    "notVerified": "Not Verified"
+    "notVerified": "Not Verified",
+    "beta500Description": "Access to AI features and experimental content",
+    "beta500Member": "Beta 500 Member",
+    "credits": "Credits",
+    "emailAddress": "Email address",
+    "linkSignInMethods": "Link multiple sign-in methods for easier access",
+    "loading": "Loading Profile...",
+    "loadingHistory": "Loading History...",
+    "noData": "No Profile Data",
+    "noViewingHistory": "No Viewing History",
+    "noViewingHistoryDescription": "Start watching content to see your history here",
+    "primarySignIn": "Primary sign-in method",
+    "signOut": "Sign Out",
+    "signOutConfirmation": "You'll need to sign in again"
   },
   "mfa": {
     "title": "Multi-Factor Authentication",
@@ -6816,7 +6949,17 @@
     "loading": "Loading profiles...",
     "manage": "Manage Profiles",
     "whoIsWatching": "Who's Watching?",
-    "manageProfiles": "Manage Profiles"
+    "manageProfiles": "Manage Profiles",
+    "whosWatching": "Who's watching?",
+    "profileName": "Profile Name",
+    "enterName": "Enter name",
+    "avatarColor": "Avatar Color",
+    "kidsProfile": "Kids Profile",
+    "kidsProfileDescription": "Restricts content to kid-friendly selections",
+    "displayName": "Display Name",
+    "edit": "Edit Profile",
+    "kidsProfileHint": "Restricts content to kid-friendly selections",
+    "preferences": "Preferences"
   },
   "quiz": {
     "title": "Quiz Time!",
@@ -6843,7 +6986,8 @@
     "timeBonus": "Time Bonus",
     "streakBonus": "Streak Bonus",
     "newBadge": "New Badge!",
-    "totalScore": "Total Score"
+    "totalScore": "Total Score",
+    "complete": "Quiz Complete"
   },
   "quota": {
     "subtitleExceeded": "Subtitle quota exceeded. Please try again later.",
@@ -6976,7 +7120,9 @@
       "fillAllFields": "Please fill in all fields",
       "registrationFailed": "Registration failed. Please try again.",
       "googleFailed": "Sign up with Google failed. Please try again."
-    }
+    },
+    "continueWithApple": "Continue with Apple",
+    "joinBayitPlus": "Join Bayit+ streaming"
   },
   "rewards": {
     "title": "My Rewards",
@@ -7011,7 +7157,9 @@
     },
     "level": "Level",
     "points": "Points",
-    "streak": "Streak"
+    "streak": "Streak",
+    "dayStreak": "{{count}} day streak",
+    "loading": "Loading Rewards..."
   },
   "ritual": {
     "title": "Morning Ritual",
@@ -7162,13 +7310,20 @@
     "smartSearchPlaceholder": "e.g., 'Israeli comedies from the 90s with subtitles'",
     "searchWithAI": "Search with AI",
     "aiInterpretation": "AI Interpretation:",
-    "confidence": "Confidence:",
+    "confidence": "Confidence",
     "exampleQueries": "Example Queries:",
     "exampleQuery1": "Show me Hebrew movies from the 1980s with English subtitles",
     "exampleQuery2": "Find comedies starring Sacha Baron Cohen",
     "exampleQuery3": "What documentaries about the Holocaust are available?",
     "exampleQuery4": "Kids shows in Hebrew for ages 5-7",
-    "poweredByAI": "🤖 Powered by Claude AI. Results may vary based on query interpretation."
+    "poweredByAI": "🤖 Powered by Claude AI. Results may vary based on query interpretation.",
+    "trendingSearches": "Trending Searches",
+    "noResultsFound": "No results found",
+    "tryDifferentSearch": "Try a different search term",
+    "clear": "Clear",
+    "clearRecent": "Clear recent searches",
+    "query": "Search query",
+    "search": "Search"
   },
   "security": {
     "changePassword": "Change Password",
@@ -7292,7 +7447,43 @@
     "deleteAccount": "Delete Account",
     "deleteAccountConfirmTitle": "Delete Account?",
     "deleteAccountConfirmMessage": "This will permanently delete your account and all associated data. This action cannot be undone.",
-    "deleteAccountConfirm": "Delete Account"
+    "deleteAccountConfirm": "Delete Account",
+    "connectedAccounts": "Connected Accounts",
+    "connectedAccountsDescription": "Manage how you sign in to Bayit+. You can link multiple accounts for easier access.",
+    "linkedAccounts": "Linked Accounts",
+    "linkNewAccount": "Link New Account",
+    "noLinkedAccounts": "No linked accounts",
+    "allAccountsLinked": "All account types are linked",
+    "primary": "Primary",
+    "unlink": "Unlink",
+    "unlinkAccountConfirmTitle": "Unlink Account?",
+    "unlinkConfirm": "Unlink",
+    "autoplayDescription": "Automatically play the next episode when one finishes",
+    "autoplayNextEpisode": "Autoplay Next Episode",
+    "contentRating": "Content Rating",
+    "contentRatingDescription": "Content above this rating will be filtered from recommendations",
+    "contentRestrictions": "Content Restrictions",
+    "languageSubtitles": "Language & Subtitles",
+    "linkAppleAccount": "Link Apple Account",
+    "linkGoogleAccount": "Link Google Account",
+    "notificationsDescription": "Receive updates about new content and features",
+    "playbackSettings": "Playback Settings",
+    "qualityAuto": "Auto (Recommended)",
+    "qualityHigh": "High (1080p)",
+    "qualityLow": "Low (480p)",
+    "qualityMedium": "Medium (720p)",
+    "ratingAdultsOnly": "Adults Only",
+    "ratingAllAges": "All Ages",
+    "ratingMature": "Mature (R)",
+    "ratingPG": "Parental Guidance (PG)",
+    "ratingPG13": "PG-13",
+    "rtl": "RTL",
+    "sensitivity": "Sensitivity",
+    "subtitleLanguage": "Subtitle Language",
+    "unlinkConfirmation": "Are you sure you want to unlink your {{provider}} account?",
+    "videoQuality": "Video Quality",
+    "wakeWord": "Hey Bayit",
+    "wakeWordDescription": "Activate voice control by saying the wake word."
   },
   "shabbat": {
     "activate": "Activate",
@@ -7500,19 +7691,7 @@
     },
     "loading": "Loading subtitles...",
     "splitScreen": {
-      "title": "Split Screen",
-      "toggle": "Split Screen",
-      "description": "Show two languages side-by-side",
-      "selectLanguages": "Select 2 Languages",
-      "selectTwoLanguages": "Select exactly 2 languages for split view",
-      "confirm": "Apply Split Screen",
-      "cancel": "Cancel",
-      "left": "Left",
-      "right": "Right",
-      "maxLanguagesReached": "Maximum 2 languages can be selected",
-      "enabled": "Split screen enabled",
-      "disabled": "Split screen disabled",
-      "castingNotSupported": "Not supported while casting"
+      "title": "Split Screen Subtitles"
     },
     "error": {
       "title": "Subtitle Error",
@@ -7522,7 +7701,43 @@
       "cuesFailed": "Failed to load subtitle text",
       "networkError": "Network error - please check your connection",
       "serverError": "Server error - please try again later"
-    }
+    },
+    "noHebrewSubtitles": "No Hebrew Subtitles",
+    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
+    "aiModes": "AI Modes",
+    "splitDisplay": "Split Display",
+    "twoLanguagesSideBySide": "Show two languages side-by-side",
+    "selectTwoLanguages": "Select Two Languages",
+    "chooseTwoLanguages": "Choose two languages for split screen subtitles",
+    "startSplitScreen": "Start Split Screen",
+    "subtitleSettings": "Subtitle Settings",
+    "fontSize": "Font Size",
+    "backgroundOpacity": "Background Opacity",
+    "position": "Position",
+    "preview": "Preview",
+    "sampleSubtitleText": "Sample subtitle text",
+    "hebrewLearningModes": "Hebrew Learning Modes",
+    "englishLearningModes": "English Learning Modes",
+    "failed": "Failed: {{count}}",
+    "fromOpenSubs": "From OpenSubtitles.com",
+    "hebrewDisplayMode": "Hebrew Display Mode",
+    "hebrewModeHint": "Choose how you want Hebrew subtitles displayed. Nikud adds vowel marks for easier reading, while Shoresh shows root words for language learning.",
+    "imported": "Imported {{count}} subtitle tracks",
+    "modes": "Subtitle Modes",
+    "noAdditionalFound": "No additional subtitles found",
+    "quotaExceeded": {
+      "message": "You have exceeded the subtitle download quota",
+      "title": "Quota Exceeded"
+    },
+    "rateLimitExceeded": "Rate limit exceeded. Please try again later.",
+    "sampleText": "Sample subtitle text",
+    "searchingOpenSubs": "Searching OpenSubtitles...",
+    "selectTwoLanguagesDescription": "Choose two languages for split screen subtitles",
+    "skipped": "Skipped: {{count}} (already exists)",
+    "splitDisplayDescription": "Show two languages side by side",
+    "title": "Subtitles",
+    "quotaExceededLabel": "Quota exceeded",
+    "splitScreenLabel": "Split Screen"
   },
   "success": {
     "continue": "Continue",
@@ -7784,23 +7999,10 @@
     "wantToKnowMore": "Want to know more?",
     "followUpHint": "Tap to see a follow-up fact that dives deeper into this story",
     "settings": {
-      "title": "Trivia & Fun Facts",
-      "enabled": "Show Trivia",
-      "enabledDescription": "Display interesting facts during playback",
-      "frequency": "Frequency",
-      "frequencyHint": "Change trivia display frequency",
-      "categories": "Categories",
-      "category": "category",
-      "selectCategory": "Tap to select this category",
-      "deselectCategory": "Tap to deselect this category",
-      "displayDuration": "Display Duration",
-      "durationHint": "Change how long trivia is displayed",
-      "seconds": "seconds",
-      "displayLanguages": "Display Languages",
-      "languageHint": "Select 1-3 languages to display for each fact",
-      "language": "language",
-      "selectLanguage": "Select this language",
-      "deselectLanguage": "Deselect this language"
+      "autoPlay": "Auto-play Trivia",
+      "resetConfirm": "This will reset all trivia settings to their default values.",
+      "title": "Trivia Settings",
+      "frequency": "Frequency"
     },
     "categories": {
       "cast": "Cast",
@@ -7818,7 +8020,20 @@
     "errors": {
       "loadFailed": "Failed to load trivia",
       "saveFailed": "Failed to save trivia preferences"
-    }
+    },
+    "questionCount": "Question {{current}} / {{total}}",
+    "score": "Score: {{score}}",
+    "quizComplete": "Quiz Complete",
+    "percentCorrect": "{{percent}}% correct",
+    "loadingTrivia": "Loading Trivia...",
+    "autoShowDescription": "Automatically show trivia during playback",
+    "badgesEarned": "Badges Earned",
+    "leaderboard": "Leaderboard",
+    "loading": "Loading Trivia...",
+    "selectContent": "Select content to start a quiz",
+    "selectLanguagesHint": "Select up to 3 languages for trivia facts",
+    "title": "Trivia",
+    "topPlayers": "Top Players"
   },
   "tvLogin": {
     "invalidQR": "Invalid QR code. Please scan again from your TV.",
@@ -7842,7 +8057,17 @@
     "error": "Something went wrong",
     "tryAgain": "Try Again",
     "securityNote": "Your credentials are sent securely and are never stored on the TV.",
-    "footer": "Having trouble? Make sure you scanned a fresh QR code from your TV."
+    "footer": "Having trouble? Make sure you scanned a fresh QR code from your TV.",
+    "completeOnPhone": "Complete sign-in on your phone",
+    "deviceCodeInstruction": "Sign in on your phone or computer",
+    "phoneConnected": "Phone connected",
+    "qrExpired": "QR code expired",
+    "qrSubtitle": "Use your phone camera",
+    "qrTitle": "Scan to Sign In",
+    "scanWithPhone": "Scan with your phone to sign in",
+    "signedIn": "Sign-in successful",
+    "signingIn": "Signing you in...",
+    "waitingForActivation": "Waiting for activation..."
   },
   "uploads": {
     "status": {
@@ -7896,7 +8121,21 @@
     "noContent": "No content available",
     "noContentInCategory": "No content found in this category",
     "filters": "Filters",
-    "loadingContent": "Loading movies and series..."
+    "loadingContent": "Loading movies and series...",
+    "collectionsOnly": "Collections",
+    "moviesOnly": "Movies",
+    "seriesOnly": "Series",
+    "collection": {
+      "playAll": "Play All",
+      "movies": "movies",
+      "available": "of",
+      "of": "of",
+      "notFound": "Collection not found",
+      "watchCollection": "Watch Collection",
+      "detail": "Collection Details",
+      "aiRecommendation": "AI Recommendation",
+      "watchNow": "Watch Now"
+    }
   },
   "voice": {
     "listening": "Listening...",
@@ -7923,7 +8162,32 @@
     },
     "wizardResponse": "Wizard response",
     "dismissResponse": "Dismiss voice response",
-    "dismissResponseHint": "Tap to hide the wizard response"
+    "dismissResponseHint": "Tap to hide the wizard response",
+    "appleTVLimitation": "Apple TV Limitation",
+    "appleTVLimitationDescription": "Wake word detection requires continuous microphone access, which is not available on Apple TV. Use the Siri Remote or on-screen controls instead.",
+    "chooseLanguage": "Choose Language",
+    "chooseLanguageDesc": "Select your preferred language for voice commands.",
+    "closeAssistant": "Close voice assistant",
+    "controlPlayback": "Control playback with your voice",
+    "heyBayit": "Hey Bayit",
+    "high": "High",
+    "low": "Low",
+    "multipleLanguages": "Multiple Languages",
+    "notAvailableOnAppleTV": "Not available on Apple TV",
+    "permissionsDesc": "Voice features need access to your microphone and speech recognition.",
+    "permissionsRequired": "Permissions Required",
+    "realtimeDubbing": "Real-time Dubbing",
+    "searchWithVoice": "Search with voice",
+    "selectVoice": "Select Voice",
+    "sensitivity": "Sensitivity",
+    "tapToClose": "Tap outside or swipe down to close",
+    "thinking": "Thinking...",
+    "title": "Voice Assistant",
+    "voiceAssistant": "Voice Assistant",
+    "voiceControl": "Voice Control",
+    "voiceControlDesc": "Control your experience with your voice. Search, navigate, and play content hands-free.",
+    "voicesAvailable": "voices available",
+    "wakeWordDescription": "Activate voice control by saying the wake word."
   },
   "voiceMode": {
     "voiceOnly": "Voice Only",
@@ -7938,14 +8202,7 @@
       "title": "Welcome to Voice Control",
       "description": "Control Bayit+ with your voice for a hands-free experience"
     },
-    "features": {
-      "voiceCommands": "Voice Commands",
-      "voiceCommandsDesc": "Navigate, search, and control playback with natural speech",
-      "tts": "Text-to-Speech",
-      "ttsDesc": "Hear responses and content descriptions read aloud",
-      "wakeWord": "Wake Word",
-      "wakeWordDesc": "Say 'Bayit' to activate voice control anytime"
-    },
+    "features": "AI Features",
     "getStarted": "Get Started",
     "permissions": {
       "title": "Microphone Access",
@@ -7976,7 +8233,10 @@
       },
       "startUsing": "Start Using Voice Control"
     },
-    "skip": "Skip for now"
+    "skip": "Skip for now",
+    "chooseLanguage": "Choose Language",
+    "chooseLanguageDescription": "Select your preferred language for AI features.",
+    "featuresDescription": "Ask questions, get recommendations, and explore content with AI."
   },
   "watch": {
     "notFound": "Content not found",
@@ -8004,7 +8264,7 @@
     "createTitle": "Create Watch Party",
     "joinTitle": "Join Party",
     "enterCode": "Enter Room Code",
-    "roomCode": "Room Code",
+    "roomCode": "Code: {{code}}",
     "roomCodeHint": "Enter 8-character room code to join party",
     "copyCode": "Copy Code",
     "codeCopied": "Code Copied!",
@@ -8085,7 +8345,15 @@
     "startVoice": "Start Voice",
     "stopVoice": "Stop Voice",
     "voiceInputHint": "Voice Input Hint",
-    "watching": "Watching"
+    "watching": "Watching",
+    "createOrJoin": "Create or Join",
+    "createParty": "Create Watch Party",
+    "loading": "Loading Watch Parties...",
+    "maxGuests": "Max guests",
+    "myParties": "MY PARTIES",
+    "noParties": "No active watch parties",
+    "subtitle": "Watch together with friends",
+    "type": "Type"
   },
   "widget": {
     "103fmEpisodes": "103FM Episodes",
@@ -8211,7 +8479,25 @@
     "noContent": "No content available",
     "podcastEpisode": "Podcast Episode",
     "radioStation": "Radio Station",
-    "webContent": "Web Content"
+    "webContent": "Web Content",
+    "title": "Widgets",
+    "createFirst": "Create your first personal widget",
+    "createWidget": "Create Widget",
+    "widgetTitle": "Widget Title",
+    "contentType": "Content Type",
+    "enterWidgetTitle": "Enter widget title",
+    "descriptionOptional": "Description (optional)",
+    "loadingWidgets": "Loading Widgets...",
+    "browseContent": "Browse Content",
+    "content": "Content",
+    "contentId": "Content ID",
+    "create": "Create",
+    "createFirstWidget": "Create your first personal widget",
+    "enterTitle": "Enter widget title",
+    "loading": "Loading Widgets...",
+    "noContentFound": "No content found",
+    "selectContent": "Select Content",
+    "ynetBreakingNews": "Ynet Breaking News"
   },
   "youngsters": {
     "title": "Youngsters",
@@ -8264,7 +8550,8 @@
       "audioSession": "Failed to configure audio session",
       "recording": "Failed to start recording",
       "noPhrase": "No phrase selected",
-      "audioEngine": "Audio engine failed to start"
+      "audioEngine": "Audio engine failed to start",
+      "speechUnavailable": "Speech recognition unavailable"
     },
     "issues": {
       "stressWrong": "Stress placement",
@@ -8278,11 +8565,62 @@
     "pressToSpeak": "Press to speak",
     "stopRecording": "Stop recording",
     "tryAgain": "Try Again",
-    "nextPhrase": "Next Phrase"
+    "nextPhrase": "Next Phrase",
+    "title": "Phonetic Mirror",
+    "subtitle": "Perfect your Hebrew pronunciation",
+    "practicePhrase": "Practice Phrase",
+    "tapToRecord": "Tap and hold to record",
+    "recording": "Recording...",
+    "evaluating": "Evaluating pronunciation...",
+    "listenCorrected": "Listen to corrected pronunciation",
+    "score": "Score",
+    "dailyLimitReached": "Daily practice limit reached",
+    "quality": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair",
+      "needsPractice": "Needs Practice",
+      "noMatch": "No Match"
+    },
+    "feedback": {
+      "title": "Pronunciation Feedback",
+      "stressWrong": "Stress placement",
+      "vowelSwap": "Vowel sound",
+      "consonantSwap": "Consonant sound",
+      "missingSound": "Missing sound",
+      "extraSound": "Extra sound"
+    },
+    "history": {
+      "title": "Practice History",
+      "averageScore": "Average Score",
+      "totalAttempts": "Total Attempts",
+      "noHistory": "No practice sessions yet"
+    },
+    "phrases": {
+      "title": "Practice Phrases",
+      "difficulty": "Difficulty",
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard",
+      "fromVocabulary": "From Your Vocabulary"
+    },
+    "listenCorrect": "Listen to the correct pronunciation"
   },
   "chameleon": {
     "errors": {
       "unavailable": "Style matching unavailable"
+    },
+    "title": "Style Sync",
+    "subtitle": "Your avatar matches the show",
+    "preparing": "Matching avatar to show style...",
+    "ready": "Avatar style matched!",
+    "failed": "Style matching unavailable",
+    "cached": "Style ready",
+    "status": {
+      "analyzing": "Analyzing show style",
+      "transferring": "Applying style to avatar",
+      "validating": "Validating consistency",
+      "complete": "Style transfer complete"
     }
   },
   "zehAni": {
@@ -8403,7 +8741,8 @@
       "noAvatarDesc": "Set up your child's avatar to unlock personalized Magic Mirror greetings with daily Hebrew vocabulary.",
       "createAvatar": "Get Started",
       "noCreditsTitle": "No Credits Remaining",
-      "noCreditsDesc": "You have used all your AI credits. Upgrade your plan or wait for your credits to refresh."
+      "noCreditsDesc": "You have used all your AI credits. Upgrade your plan or wait for your credits to refresh.",
+      "meshUnavailable": "3D mesh unavailable"
     },
     "highlights": {
       "title": "Highlight Reels",
@@ -8460,7 +8799,14 @@
       "feedbackDesc": "Receive voice and text messages from family",
       "consent": "Biometric Consent",
       "consentDesc": "Manage consent settings for facial and voice data"
-    }
+    },
+    "avatar3d": {
+      "errorTitle": "3D Avatar Error",
+      "loading": "Loading 3D Avatar...",
+      "resetCamera": "Reset Camera",
+      "title": "3D Avatar Preview"
+    },
+    "subtitle": "Interactive experiences and social features"
   },
   "starStory": {
     "title": "Star in Story",
@@ -8498,6 +8844,785 @@
       "holiday": "Holiday",
       "family": "Family",
       "school": "School"
+    },
+    "createFirst": "Create First Avatar",
+    "consent": {
+      "title": "Family Safety Consent",
+      "description": "Star in Story creates personalized content. A parent or guardian must provide consent.",
+      "childName": "Child First Name",
+      "familyPin": "Family PIN",
+      "agree": "I consent as parent/guardian",
+      "continue": "Continue",
+      "cancel": "Cancel"
+    },
+    "avatar": {
+      "preview": "Preview Avatar",
+      "approve": "Approve Avatar",
+      "regenerate": "Regenerate",
+      "regenerating": "Regenerating...",
+      "styleCartoon": "Cartoon 2D",
+      "stylePixar": "Pixar 3D",
+      "chooseStyle": "Choose Avatar Style"
+    },
+    "generation": {
+      "title": "Creating Your Episode",
+      "ready": "Episode Ready",
+      "failed": "Generation Failed",
+      "estimate": "This may take a few minutes",
+      "stages": {
+        "script": "Writing Script",
+        "video": "Generating Video",
+        "audio": "Creating Audio",
+        "assembly": "Assembling Episode",
+        "safety": "Safety Review"
+      }
+    },
+    "player": {
+      "episode": "Episode {{number}}",
+      "back": "Back"
+    },
+    "characters": "Characters",
+    "createEpisodesHint": "Create episodes from the Bayit+ mobile app or web",
+    "loading": "Loading Star in Story...",
+    "noEpisodes": "No Episodes Yet"
+  },
+  "voiceAssistant": {
+    "title": "Voice Assistant",
+    "listening": "Listening...",
+    "transcribing": "Transcribing...",
+    "thinking": "Thinking...",
+    "typePlaceholder": "Type your question..."
+  },
+  "forgotPasswordPage": {
+    "title": "Forgot Password",
+    "subtitle": "Enter your email and we'll send you a link to reset your password.",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email address",
+    "submit": "Send Reset Link",
+    "submitting": "Sending...",
+    "backToLogin": "Back to Login",
+    "successTitle": "Check Your Email",
+    "successMessage": "We've sent a password reset link to {{email}}.",
+    "successHint": "Didn't receive the email? Check your spam folder or try again in a few minutes.",
+    "errors": {
+      "emailRequired": "Email is required",
+      "requestFailed": "Failed to send reset link. Please try again."
     }
+  },
+  "resetPasswordPage": {
+    "title": "Reset Password",
+    "subtitle": "Enter your new password below.",
+    "newPassword": "New Password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter new password",
+    "submit": "Reset Password",
+    "submitting": "Resetting...",
+    "backToLogin": "Back to Login",
+    "requestNewLink": "Request a New Link",
+    "successTitle": "Password Reset Successfully",
+    "successMessage": "Your password has been updated. You can now sign in with your new password.",
+    "signIn": "Sign In",
+    "requirements": {
+      "title": "Password Requirements",
+      "minLength": "At least 8 characters",
+      "uppercase": "One uppercase letter",
+      "lowercase": "One lowercase letter",
+      "digit": "One number",
+      "special": "One special character"
+    },
+    "errors": {
+      "invalidToken": "This reset link has expired or is invalid. Please request a new one.",
+      "missingToken": "Invalid or missing reset link. Please request a new password reset.",
+      "passwordRequired": "Password is required",
+      "confirmRequired": "Please confirm your password",
+      "passwordMismatch": "Passwords do not match",
+      "resetFailed": "Failed to reset password. Please try again."
+    }
+  },
+  "splash": {
+    "bayit": "Bayit",
+    "plus": "+",
+    "poweredBy": "Powered by Olorin.ai"
+  },
+  "sceneSearch": {
+    "title": "Scene Search",
+    "placeholder": "Search for a topic or scene...",
+    "noScenesFound": "No scenes found",
+    "noResults": "No scenes found"
+  },
+  "streamLimit": {
+    "title": "Stream Limit Reached",
+    "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue."
+  },
+  "wakeWord": {
+    "title": "Hey Bayit",
+    "description": "Activate voice control by saying the wake word.",
+    "detection": "Wake Word Detection",
+    "detectionDescription": "Listen for \"Hey Bayit\" to activate voice control",
+    "sensitivity": "Sensitivity",
+    "low": "Low",
+    "high": "High"
+  },
+  "aiSearch": {
+    "aiInterpretation": "AI Interpretation",
+    "confidence": "Confidence",
+    "trySuggestion": "Try asking:",
+    "noResults": "No results found",
+    "tryRephrasing": "Try rephrasing your question"
+  },
+  "tvos": {
+    "home": {
+      "continueWatching": "Continue Watching",
+      "trendingNow": "Trending Now",
+      "liveTV": "Live TV",
+      "forYou": "For You",
+      "newReleases": "New Releases",
+      "radioStations": "Radio Stations",
+      "podcasts": "Podcasts",
+      "moviesAndSeries": "Movies & Series"
+    },
+    "radio": {
+      "title": "Radio Stations",
+      "loading": "Loading stations...",
+      "empty": "No stations available",
+      "genre": "Genre",
+      "allGenres": "All Genres",
+      "nowPlaying": "Now Playing",
+      "liveIndicator": "LIVE"
+    },
+    "podcasts": {
+      "title": "Podcasts",
+      "loading": "Loading podcasts...",
+      "empty": "No podcasts available",
+      "episodes": "episodes",
+      "latestEpisode": "Latest:",
+      "subscribe": "Subscribe",
+      "subscribed": "Subscribed"
+    },
+    "vod": {
+      "title": "Movies & Series",
+      "loading": "Loading content...",
+      "empty": "No content available",
+      "movies": "Movies",
+      "series": "Series",
+      "allContent": "All Content"
+    },
+    "search": {
+      "title": "Search",
+      "voiceSearch": "Voice Search",
+      "listening": "Listening...",
+      "placeholder": "Search for content...",
+      "noResults": "No results found",
+      "tryDifferent": "Try a different search term",
+      "searching": "Searching...",
+      "searchForContent": "Search for content",
+      "useVoiceOrType": "Use voice search or type to find movies, shows, and more"
+    },
+    "profile": {
+      "title": "Profile",
+      "watchHistory": "Watch History",
+      "watchHistorySubtitle": "View your recently watched content",
+      "favorites": "Favorites",
+      "settings": "Settings",
+      "settingsSubtitle": "App preferences and configuration",
+      "signOut": "Sign Out",
+      "signOutSubtitle": "Log out of your account",
+      "signOutConfirm": "Are you sure you want to sign out?",
+      "hoursWatched": "Hours Watched",
+      "profileOptions": "Profile Options",
+      "loadingProfile": "Loading profile..."
+    },
+    "settings": {
+      "title": "Settings",
+      "general": "General",
+      "audio": "Audio & Subtitles",
+      "display": "Display",
+      "about": "About",
+      "version": "Version",
+      "language": "Language",
+      "subtitles": "Subtitles",
+      "autoPlay": "Auto-Play",
+      "notifications": "Notifications",
+      "voiceSettings": "Voice Settings",
+      "voiceControl": "Voice Control",
+      "enableVoiceCommands": "Enable voice commands",
+      "wakeWord": "Wake Word",
+      "wakeWordSubtitle": "Optional wake word detection",
+      "speechRate": "Speech Rate",
+      "displaySettings": "Display Settings",
+      "safeZones": "Safe Zones",
+      "focusScale": "Focus Scale",
+      "multiWindow": "Multi-Window",
+      "maxWindows": "Max Windows",
+      "defaultLayout": "Default Layout",
+      "appInfo": "Bayit+ for tvOS v1.0.0"
+    },
+    "children": {
+      "title": "Kids Zone",
+      "safeMode": "Safe Mode",
+      "ageGroup": "Age Group",
+      "contentType": "Content Type",
+      "educational": "Educational",
+      "cartoons": "Cartoons",
+      "allContent": "All Kids Content",
+      "loading": "Loading kids content...",
+      "empty": "No kids content available"
+    },
+    "judaism": {
+      "title": "Torah & Judaism",
+      "category": "Category",
+      "allCategories": "All Categories",
+      "dailyStudy": "Daily Study",
+      "shiurim": "Shiurim",
+      "loading": "Loading content...",
+      "empty": "No content available",
+      "holidayOccasion": "Holiday / Occasion"
+    },
+    "flows": {
+      "title": "Content Flows",
+      "loading": "Loading flows...",
+      "empty": "No flows available",
+      "items": "items",
+      "startFlow": "Start Flow"
+    },
+    "favorites": {
+      "title": "Favorites",
+      "loading": "Loading favorites...",
+      "empty": "No favorites yet",
+      "emptyHint": "Add content to favorites to see it here",
+      "removeConfirm": "Remove from favorites?"
+    },
+    "player": {
+      "loading": "Loading player...",
+      "unableToLoad": "Unable to load content",
+      "tryAgain": "Please try again later",
+      "info": "Info",
+      "description": "Description",
+      "cast": "Cast",
+      "director": "Director",
+      "resume": "Resume",
+      "playFromStart": "Play from Start",
+      "live": "LIVE",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "close": "Close",
+      "subtitles": "Subtitles",
+      "playbackSpeed": "Playback Speed"
+    },
+    "aiSearch": {
+      "title": "AI Search",
+      "subtitle": "Search with AI",
+      "searchPlaceholder": "Ask anything about content...",
+      "voiceSearch": "Voice Search",
+      "noResults": "No results found",
+      "searching": "Searching...",
+      "creditsUsed": "Credits used",
+      "filterAll": "All",
+      "filterMovies": "Movies",
+      "filterSeries": "Series",
+      "filterLiveTV": "Live TV",
+      "filterRadio": "Radio",
+      "filterPodcasts": "Podcasts",
+      "enrollRequired": "Beta 500 Enrollment Required",
+      "enrollDescription": "Join the Beta 500 program to access AI-powered search",
+      "hint": "Try asking about topics, actors, or genres",
+      "placeholder": "Ask anything about our content...",
+      "trySuggestion": "Try asking:"
+    },
+    "aiRecommendations": {
+      "title": "AI Recommendations",
+      "subtitle": "Personalized for you",
+      "refresh": "Refresh",
+      "refreshing": "Refreshing...",
+      "noRecommendations": "No recommendations yet",
+      "basedOn": "Based on your viewing history",
+      "liveTV": "Live TV",
+      "movies": "Movies & Series",
+      "radio": "Radio",
+      "podcasts": "Podcasts",
+      "seeAll": "See All",
+      "relevance": "Relevance",
+      "notEnrolled": "Beta 500 Required",
+      "enrollPrompt": "Join the Beta 500 program to access personalized AI recommendations",
+      "error": "Failed to load recommendations",
+      "featureName": "AI Recommendations",
+      "sections": {
+        "live_tv": "Live TV",
+        "vod": "Movies & Series",
+        "radio": "Radio",
+        "podcasts": "Podcasts"
+      }
+    },
+    "common": {
+      "newBadge": "NEW",
+      "noContent": "No content available",
+      "seeAll": "See All",
+      "retry": "Retry",
+      "back": "Back"
+    },
+    "auth": {
+      "welcomeBack": "Welcome Back",
+      "signInToContinue": "Sign in to continue your journey",
+      "email": "EMAIL",
+      "emailPlaceholder": "your@email.com",
+      "password": "PASSWORD"
+    }
+  },
+  "missions": {
+    "title": "Daily Missions",
+    "subtitle": "Complete missions to earn Shekels",
+    "dailyMissions": "Today's Missions",
+    "missionCompleted": "Mission Completed",
+    "claimReward": "Claim Reward",
+    "claimed": "Claimed",
+    "progress": "{{current}} / {{target}}",
+    "streakBonus": "Streak Bonus",
+    "allCompleted": "All missions completed for today",
+    "refreshTime": "New missions in {{hours}}h {{minutes}}m",
+    "tabs": {
+      "missions": "Missions",
+      "leaderboard": "Leaderboard",
+      "rewards": "Rewards"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "types": {
+      "watchContent": "Watch Content",
+      "completeQuiz": "Complete Quiz",
+      "useSubtitles": "Use Subtitles",
+      "maintainStreak": "Maintain Streak",
+      "learnPhrase": "Learn a Phrase"
+    },
+    "claim": "Claim",
+    "loading": "Loading Missions...",
+    "shekels": "Shekels",
+    "shekelsAvailable": "Shekels Available"
+  },
+  "shekels": {
+    "title": "Shekels",
+    "balance": "Balance",
+    "totalEarned": "Total Earned",
+    "totalSpent": "Total Spent",
+    "transactions": "Transactions",
+    "earned": "Earned",
+    "spent": "Spent",
+    "earnRates": "Earn Rates",
+    "noTransactions": "No transactions yet"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "global": "Global",
+    "friends": "Friends",
+    "family": "Family",
+    "rank": "Rank",
+    "points": "Points",
+    "yourRank": "Your Rank",
+    "period": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "allTime": "All Time"
+    },
+    "empty": "No entries yet",
+    "loading": "Loading Leaderboard...",
+    "myRank": "My Rank",
+    "you": "YOU"
+  },
+  "talkBack": {
+    "title": "Talk Back",
+    "subtitle": "Practice Hebrew with characters",
+    "question": "Question",
+    "respond": "Respond",
+    "listening": "Listening...",
+    "evaluating": "Evaluating...",
+    "skip": "Skip",
+    "tryAgain": "Try Again",
+    "continue": "Continue",
+    "submit": "Submit",
+    "pointsEarned": "{{points}} points earned",
+    "feedback": {
+      "excellent": "Excellent",
+      "good": "Good job",
+      "fair": "Not bad",
+      "tryHebrew": "Try answering in Hebrew"
+    },
+    "stats": {
+      "title": "Talk Back Stats",
+      "totalAttempts": "Total Attempts",
+      "hebrewRate": "Hebrew Response Rate",
+      "wordsLearned": "Words Learned",
+      "averageAccuracy": "Average Accuracy",
+      "shekelsEarned": "Shekels Earned"
+    },
+    "dashboard": {
+      "title": "Talk Back Dashboard",
+      "engagement": "Engagement",
+      "progress": "Progress",
+      "accuracy": "Accuracy",
+      "attempts": "Attempts",
+      "hebrewRate": "Hebrew Rate",
+      "recentAttempts": "Recent Attempts",
+      "shekels": "Shekels Earned"
+    }
+  },
+  "bilingual": {
+    "title": "Bilingual Bridge",
+    "subtitle": "Progressive Hebrew dubbing",
+    "enabled": "Bilingual Bridge On",
+    "disabled": "Bilingual Bridge Off",
+    "languageRatio": "Language Ratio",
+    "hebrewPercent": "Hebrew {{percent}}%",
+    "englishPercent": "English {{percent}}%",
+    "wordsLearned": "{{count}} words learned",
+    "level": {
+      "beginner": "Beginner",
+      "elementary": "Elementary",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "sessionActive": "Session Active",
+    "vocabulary": {
+      "title": "Vocabulary Tracker",
+      "known": "Known Words",
+      "learning": "Learning",
+      "mastered": "Mastered"
+    },
+    "words": "words"
+  },
+  "glossary": {
+    "title": "Glossary",
+    "search": "Search phrases...",
+    "categories": "Categories",
+    "allCategories": "All",
+    "loadMore": "Load More",
+    "noResults": "No results found",
+    "entry": {
+      "origin": "Origin",
+      "example": "Example",
+      "funFact": "Fun Fact",
+      "transliteration": "Transliteration"
+    },
+    "funFact": "Fun Fact"
+  },
+  "culturalContext": {
+    "title": "Cultural Context",
+    "reference": "Cultural Reference",
+    "explanation": "Explanation",
+    "related": "Related References",
+    "loading": "Loading reference...",
+    "noReferences": "No cultural references detected",
+    "categories": {
+      "slang": "Slang",
+      "tradition": "Tradition",
+      "history": "History",
+      "food": "Food",
+      "music": "Music",
+      "holiday": "Holiday"
+    },
+    "phraseBreakdown": {
+      "title": "Phrase Breakdown",
+      "origin": "Origin",
+      "usage": "Common Usage",
+      "funFact": "Fun Fact"
+    },
+    "funFact": "Fun Fact"
+  },
+  "interactiveMission": {
+    "title": "Interactive Mission",
+    "loading": "Loading mission...",
+    "preparing": "Preparing Mission...",
+    "listening": "Listening...",
+    "speak": "Speak",
+    "speakHebrew": "Speak Hebrew",
+    "complete": "Mission Complete",
+    "continue": "Continue",
+    "attemptOf": "Attempt {{current}} of {{max}} - Try again",
+    "totalScore": "Score: {{score}}",
+    "shekelsEarned": "{{amount}} Shekels Earned",
+    "backToMissions": "Back to Missions",
+    "generating": "Generating mission...",
+    "available": "Available Missions",
+    "noMissions": "No missions available",
+    "startMission": "Start Mission",
+    "sceneProgress": "Scene {{current}} of {{total}}",
+    "tryAgain": "Try Again",
+    "hint": "Hint",
+    "timeout": "Time's up",
+    "feedbackExcellent": "Excellent pronunciation",
+    "feedbackGood": "Good job",
+    "feedbackRetry": "Try once more",
+    "errors": {
+      "fetchFailed": "Failed to fetch missions",
+      "generateFailed": "Failed to generate mission",
+      "loadFailed": "Failed to load mission",
+      "submitFailed": "Failed to submit attempt",
+      "completeFailed": "Failed to complete mission"
+    }
+  },
+  "avatarWardrobe": {
+    "title": "Wardrobe",
+    "purchase": "Purchase",
+    "purchasing": "Purchasing...",
+    "equip": "Equip",
+    "unequip": "Unequip",
+    "owned": "Owned",
+    "insufficientShekels": "Not enough Shekels",
+    "rarity": {
+      "common": "Common",
+      "uncommon": "Uncommon",
+      "rare": "Rare",
+      "epic": "Epic",
+      "legendary": "Legendary"
+    },
+    "category": {
+      "israeliHeritage": "Israeli Heritage",
+      "holiday": "Holiday",
+      "sports": "Sports",
+      "fantasy": "Fantasy",
+      "showCharacter": "Show Character"
+    },
+    "empty": "No outfits available yet",
+    "balance": "Balance: {{amount}}",
+    "errors": {
+      "loadFailed": "Failed to load wardrobe",
+      "purchaseFailed": "Purchase failed",
+      "equipFailed": "Equip failed"
+    }
+  },
+  "familySnaps": {
+    "title": "Family Snaps",
+    "newSnap": "New Snap",
+    "empty": "No snaps yet",
+    "download": "Download",
+    "share": "Share",
+    "shareWhatsApp": "Share on WhatsApp",
+    "shareEmail": "Share via Email",
+    "shareText": "Check out my Bayit+ Family Snap!",
+    "enterPin": "Enter parental PIN to share",
+    "generating": "Creating your snap...",
+    "shareSuccess": "Share link created",
+    "template": {
+      "sideBySide": "Side by Side",
+      "actionPose": "Action Pose",
+      "groupPhoto": "Group Photo"
+    }
+  },
+  "videoSelfie": {
+    "title": "Video Selfie",
+    "instructions": "Record a 10-second video. Look at the camera, turn your head slowly, and say Shalom.",
+    "startCamera": "Start Camera",
+    "record": "Start Recording",
+    "recording": "Recording...",
+    "uploading": "Uploading video...",
+    "complete": "Video uploaded successfully",
+    "cameraError": "Could not access camera",
+    "uploadError": "Upload failed. Please try again."
+  },
+  "voiceDecision": {
+    "title": "Voice Challenge",
+    "instruction": "Say the Hebrew phrase to continue",
+    "listening": "Listening...",
+    "evaluating": "Checking pronunciation...",
+    "correct": "Correct! Well done!",
+    "incorrect": "Not quite. Try again.",
+    "hint": "Listen to the phrase",
+    "attemptsRemaining": "{{count}} attempts remaining",
+    "timeout": "Time's up!",
+    "skipAvailable": "You can skip this challenge",
+    "pronunciationScore": "Pronunciation: {{score}}%",
+    "attempt": "Attempt {{current}} of {{max}}",
+    "listenHint": "Listen to correct pronunciation",
+    "holdToSpeak": "Hold to speak"
+  },
+  "gamification": {
+    "title": "My Progress",
+    "subtitle": "Level up your Hebrew journey",
+    "level": "Level {{level}}",
+    "xp": "XP",
+    "xpToNext": "{{xp}} XP to next level",
+    "totalXp": "Total XP: {{xp}}",
+    "levelUp": "Level Up!",
+    "newLevel": "You reached Level {{level}}!",
+    "newTitle": "New title: {{title}}",
+    "perkUnlocked": "Perk unlocked: {{perk}}",
+    "claimPerk": "Claim",
+    "claimed": "Claimed",
+    "leaderboard": {
+      "title": "Leaderboard",
+      "rank": "#{{rank}}",
+      "empty": "No entries yet"
+    },
+    "stats": {
+      "missionsCompleted": "Missions Completed",
+      "mirrorSessions": "Mirror Sessions",
+      "talkBackAttempts": "Talk Back Attempts"
+    },
+    "perks": {
+      "title": "Perks & Rewards",
+      "locked": "Locked",
+      "unlocked": "Unlocked",
+      "outfit": "Outfit Reward"
+    },
+    "levels": {
+      "tourist": "Tourist",
+      "olehChadash": "Oleh Chadash",
+      "talmid": "Talmid",
+      "tzabar": "Tzabar",
+      "sabra": "Sabra",
+      "madrich": "Madrich"
+    },
+    "dashboard": {
+      "title": "Missions Dashboard",
+      "recentActivity": "Recent Activity",
+      "progress": "Progress"
+    },
+    "activity": "Activity",
+    "claim": "Claim",
+    "maxLevel": "Max Level",
+    "mirrorSessions": "Mirror Sessions",
+    "missionsCompleted": "Missions Completed",
+    "noPerksYet": "No perks unlocked yet",
+    "talkBackAttempts": "TalkBack Attempts",
+    "totalXP": "Total XP",
+    "unlockedPerks": "Unlocked Perks"
+  },
+  "grandparentBridge": {
+    "title": "Grandparent Bridge",
+    "subtitle": "Share your Hebrew progress with family",
+    "generateClip": "Generate News Clip",
+    "generating": "Creating your news clip...",
+    "clipReady": "News clip ready!",
+    "clips": {
+      "title": "My News Clips",
+      "empty": "No clips yet. Complete a session to create one!",
+      "featured": "Words Featured: {{count}}"
+    },
+    "share": {
+      "title": "Share with Family",
+      "whatsApp": "Share via WhatsApp",
+      "email": "Share via Email",
+      "copyLink": "Copy Link",
+      "linkCopied": "Link copied!",
+      "enterPin": "Enter parental PIN to share",
+      "pinVerified": "PIN verified",
+      "shareMessage": "Watch {{name}}'s Hebrew progress on Bayit+!"
+    },
+    "voiceNote": {
+      "title": "Voice Note",
+      "subtitle": "Record a message for {{name}}",
+      "record": "Record Message",
+      "recording": "Recording...",
+      "send": "Send Voice Note",
+      "sent": "Voice note sent!",
+      "maxDuration": "Max {{seconds}} seconds",
+      "tooShort": "Recording too short",
+      "tooLong": "Recording too long"
+    },
+    "newsClip": {
+      "reporter": "{{name}} reporting live from Bayit+",
+      "vocabulary": "Today's Hebrew Words",
+      "watchFull": "Watch Full Clip"
+    }
+  },
+  "ai": {
+    "languageDescription": "Select target language for live translation, dubbing, and trivia",
+    "languageTitle": "AI Language"
+  },
+  "bilingualBridge": {
+    "languageRatio": "Language Ratio",
+    "wordsLearned": "words learned"
+  },
+  "coupons": {
+    "noneAvailable": "No coupons available",
+    "redeem": "Redeem",
+    "redeemed": "Redeemed"
+  },
+  "enterPiP": "Enter Picture in Picture",
+  "exitPiP": "Exit Picture in Picture",
+  "languages": {
+    "english": "English",
+    "french": "French",
+    "hebrew": "Hebrew",
+    "russian": "Russian",
+    "spanish": "Spanish"
+  },
+  "messages": {
+    "loading": "Loading Conversations...",
+    "noConversations": "No conversations",
+    "searchConversations": "Search conversations",
+    "startChatHint": "Start chatting with friends from the mobile app"
+  },
+  "mission": {
+    "complete": "Mission Complete!",
+    "complete_error": "Failed to complete mission",
+    "continue": "Continue",
+    "final_score": "Final Score",
+    "listening": "Listening...",
+    "load_error": "Failed to load mission",
+    "loading": "Loading mission...",
+    "speak_challenge": "Speak the challenge phrase",
+    "submit_error": "Failed to submit",
+    "tap_to_speak": "Tap to speak"
+  },
+  "snaps": {
+    "characters": "Characters",
+    "download": "Download",
+    "download_error": "Failed to download snap",
+    "empty_subtitle": "Create your first family snap",
+    "empty_title": "No Snaps Yet",
+    "generate": "Generate",
+    "generate_first": "Generate your first snap",
+    "load_error": "Failed to load snaps",
+    "loading": "Loading snaps...",
+    "retry": "Retry",
+    "share": "Share",
+    "subtitle": "AI-powered family photos",
+    "title": "Family Snaps"
+  },
+  "vocabulary": {
+    "hebrewRatio": "Hebrew Ratio",
+    "totalWordsLearned": "Total Words Learned",
+    "known": "Known",
+    "learning": "Learning"
+  },
+  "wallet": {
+    "earned": "Earned",
+    "noTransactions": "No transactions yet",
+    "recentTransactions": "Recent Transactions",
+    "shekelsAvailable": "Shekels Available",
+    "shekelsBalance": "Shekels Balance",
+    "spent": "Spent"
+  },
+  "wardrobe": {
+    "balance": "Balance",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "confirm_purchase": "Confirm Purchase",
+    "equip": "Equip",
+    "equip_error": "Failed to equip item",
+    "insufficient_balance": "Insufficient balance",
+    "load_error": "Failed to load wardrobe",
+    "loading": "Loading wardrobe...",
+    "owned": "Owned",
+    "purchase": "Purchase",
+    "purchase_error": "Failed to purchase item",
+    "subtitle": "Customize your avatar",
+    "title": "Wardrobe",
+    "unequip": "Unequip",
+    "unequip_error": "Failed to unequip item"
+  },
+  "zine": {
+    "archive": "Archive",
+    "emptyPages": "No pages to display",
+    "failedToLoad": "Failed to Load Page {{page}}",
+    "loadingPage": "Loading Page...",
+    "noCurrentZine": "No current zine available",
+    "noPagesAvailable": "No Pages Available",
+    "noPagesDescription": "This zine has no pages to display.",
+    "pageIndicator": "Page {{current}} of {{total}}"
   }
 }

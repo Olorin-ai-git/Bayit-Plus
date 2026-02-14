@@ -194,7 +194,7 @@ private struct SplitModeToggleView: View {
                 .foregroundColor(.purple)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(localization.t("subtitles.splitScreen"))
+                Text(localization.t("subtitles.splitScreenLabel"))
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
 

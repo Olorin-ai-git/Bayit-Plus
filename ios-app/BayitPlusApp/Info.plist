@@ -40,7 +40,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>54</string>
+	<string>56</string>
 	<key>FEATURE_LEGACY_FEATURES</key>
 	<string>true</string>
 	<key>GOOGLE_CLIENT_ID</key>
