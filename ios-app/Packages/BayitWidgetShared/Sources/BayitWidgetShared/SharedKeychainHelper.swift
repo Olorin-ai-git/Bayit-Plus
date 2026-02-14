@@ -25,7 +25,7 @@ public struct SharedKeychainHelper: Sendable {
             kSecAttrService as String: accessGroup,
             kSecAttrAccount as String: WidgetConfigurationKeys.keychainAuthTokenKey,
             kSecAttrAccessGroup as String: accessGroup,
-            kSecReturnData as String: kCFBooleanTrue!,
+            kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne,
         ]
 

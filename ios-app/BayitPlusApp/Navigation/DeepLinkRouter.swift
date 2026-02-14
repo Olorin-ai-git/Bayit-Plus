@@ -122,8 +122,9 @@ public enum DeepLink {
             return .telAvivContent
 
         case "audiobooks":
-            if let audiobookId = pathComponents.dropFirst().first {
-                return .audiobookDetail(audiobookId: audiobookId)
+            if let audiobookId = pathComponents.dropFirst().first,
+               let sanitized = sanitizeContentID(audiobookId) {
+                return .audiobookDetail(audiobookId: sanitized)
             }
             return .audiobooks
 
@@ -161,8 +162,9 @@ public enum DeepLink {
             return .friends
 
         case "party":
-            if let code = pathComponents.dropFirst().first {
-                return .watchPartyDetail(partyId: code)
+            if let code = pathComponents.dropFirst().first,
+               let sanitized = sanitizeContentID(code) {
+                return .watchPartyDetail(partyId: sanitized)
             }
             return .watchParty
 
@@ -171,8 +173,9 @@ public enum DeepLink {
             return .chess(gameId: gameId)
 
         case "dm":
-            if let friendId = pathComponents.dropFirst().first {
-                return .conversation(friendId: friendId)
+            if let friendId = pathComponents.dropFirst().first,
+               let sanitized = sanitizeContentID(friendId) {
+                return .conversation(friendId: sanitized)
             }
             return .directMessages
 

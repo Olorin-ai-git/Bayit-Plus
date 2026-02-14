@@ -26,18 +26,24 @@ struct ContinueWatchingSmallView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 80)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                    .accessibilityLabel("Thumbnail for \(item.title)")
 
                     // Title
                     Text(item.title)
                         .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
                         .foregroundStyle(DesignTokens.Text.primary)
                         .lineLimit(1)
+                        .accessibilityLabel("Continue watching \(item.title)")
 
                     // Progress bar
                     progressBar(progress: item.progress)
+                        .accessibilityLabel("\(Int(item.progress * 100)) percent complete")
                 }
                 .padding(DesignTokens.Spacing.md)
+                .frame(minWidth: 44, minHeight: 44)
             }
+            .accessibilityLabel("Continue watching \(item.title)")
+            .accessibilityHint("Opens \(item.title) where you left off")
             .containerBackground(for: .widget) {
                 LinearGradient(
                     colors: [DesignTokens.Background.primary, DesignTokens.Background.elevated],
@@ -61,8 +67,11 @@ struct ContinueWatchingSmallView: View {
                     .foregroundStyle(DesignTokens.Text.secondary)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(minWidth: 44, minHeight: 44)
             .padding(DesignTokens.Spacing.md)
         }
+        .accessibilityLabel("No recent content")
+        .accessibilityHint("Opens home screen to start watching")
         .containerBackground(for: .widget) {
             LinearGradient(
                 colors: [DesignTokens.Background.primary, DesignTokens.Background.elevated],

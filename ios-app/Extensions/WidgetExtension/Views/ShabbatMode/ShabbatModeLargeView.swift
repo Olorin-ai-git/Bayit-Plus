@@ -15,9 +15,11 @@ struct ShabbatModeLargeView: View {
                     Image(systemName: flameIcon)
                         .font(.system(size: DesignTokens.FontSize.xxl))
                         .foregroundStyle(flameColor)
+                        .accessibilityLabel(isShabbatActive ? "Shabbat candles lit" : "Shabbat candles")
                     Text(statusTitle)
                         .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                         .foregroundStyle(DesignTokens.Text.primary)
+                        .accessibilityAddTraits(.isHeader)
                     Spacer()
                 }
 
@@ -78,11 +80,13 @@ struct ShabbatModeLargeView: View {
                         HStack {
                             Spacer()
                             Image(systemName: "location")
-                                .font(.system(size: DesignTokens.FontSize.xs))
+                                .font(.system(size: DesignTokens.FontSize.sm))
                             Text(city)
-                                .font(.system(size: DesignTokens.FontSize.xs))
+                                .font(.system(size: DesignTokens.FontSize.sm))
                         }
                         .foregroundStyle(DesignTokens.Text.muted)
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("Location: \(city)")
                     }
                 } else {
                     Spacer()
@@ -94,7 +98,10 @@ struct ShabbatModeLargeView: View {
                 }
             }
             .padding(DesignTokens.Spacing.base)
+            .frame(minWidth: 44, minHeight: 44)
         }
+        .accessibilityLabel(accessibilityDescription)
+        .accessibilityHint("Opens Shabbat mode settings")
         .containerBackground(for: .widget) {
             LinearGradient(
                 colors: [DesignTokens.Background.primary, DesignTokens.Background.elevated],
@@ -102,6 +109,25 @@ struct ShabbatModeLargeView: View {
                 endPoint: .bottomTrailing
             )
         }
+    }
+
+    private var accessibilityDescription: String {
+        var parts: [String] = [statusTitle]
+        if let data = entry.shabbatData {
+            if let countdown = data.countdown, let label = data.countdownLabel {
+                parts.append("\(countdown) \(label)")
+            }
+            if let candle = data.candleLighting {
+                parts.append("Candle lighting at \(candle)")
+            }
+            if let havdalah = data.havdalah {
+                parts.append("Havdalah at \(havdalah)")
+            }
+            if let parasha = data.parashaEnglish {
+                parts.append("Torah portion: \(parasha)")
+            }
+        }
+        return parts.joined(separator: ", ")
     }
 
     private func detailRow(icon: String, title: String, value: String) -> some View {
@@ -118,6 +144,8 @@ struct ShabbatModeLargeView: View {
                 .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.primary)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title) at \(value)")
     }
 
     private var isShabbatActive: Bool {

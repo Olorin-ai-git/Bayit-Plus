@@ -91,11 +91,10 @@ final class PendingIntentHandler {
         }
     }
 
-    /// Clear processed nonces older than expiration time.
+    /// Clear all processed nonces.
     /// Call periodically to prevent memory growth.
+    /// Since pending intents expire in 5 minutes, clearing all nonces after 10 minutes is safe.
     func cleanupProcessedNonces() {
-        // Keep only recent nonces (last 10 minutes)
-        let cutoff = Date().addingTimeInterval(-600)
         processedNonces.removeAll()
         logger.debug("Cleaned up processed nonces")
     }

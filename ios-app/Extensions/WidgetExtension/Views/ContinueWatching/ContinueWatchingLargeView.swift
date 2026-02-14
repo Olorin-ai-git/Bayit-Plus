@@ -24,12 +24,16 @@ struct ContinueWatchingLargeView: View {
                 Text("Continue Watching")
                     .font(.system(size: DesignTokens.FontSize.md, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
+                    .accessibilityAddTraits(.isHeader)
                 Spacer()
                 Link(destination: WidgetDeepLinks.home) {
                     Text("See All")
                         .font(.system(size: DesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Primary.p400)
                 }
+                .frame(minWidth: 44, minHeight: 44)
+                .accessibilityLabel("See all content")
+                .accessibilityHint("Opens home screen")
             }
 
             if displayItems.isEmpty {
@@ -45,6 +49,10 @@ struct ContinueWatchingLargeView: View {
                         )) {
                             itemCell(item)
                         }
+                        .frame(minWidth: 44, minHeight: 44)
+                        .accessibilityLabel("Continue watching \(item.title)")
+                        .accessibilityHint("Opens \(item.title) where you left off")
+                        .accessibilityValue("\(Int(item.progress * 100)) percent complete, \(remainingText(item))")
                     }
                 }
             }
@@ -100,13 +108,13 @@ struct ContinueWatchingLargeView: View {
 
             // Title
             Text(item.title)
-                .font(.system(size: DesignTokens.FontSize.xs, weight: .medium))
+                .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .lineLimit(2)
 
             // Duration remaining
             Text(remainingText(item))
-                .font(.system(size: DesignTokens.FontSize.xs))
+                .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
                 .lineLimit(1)
         }

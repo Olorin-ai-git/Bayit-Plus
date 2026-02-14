@@ -18,9 +18,10 @@ struct ContinueWatchingMediumView: View {
                 Text("Continue Watching")
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
+                    .accessibilityAddTraits(.isHeader)
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .font(.system(size: DesignTokens.FontSize.xs))
+                    .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
             }
 
@@ -32,6 +33,10 @@ struct ContinueWatchingMediumView: View {
                         Link(destination: WidgetDeepLinks.content(id: item.contentID, type: item.contentType)) {
                             itemCard(item)
                         }
+                        .frame(minWidth: 44, minHeight: 44)
+                        .accessibilityLabel("Continue watching \(item.title)")
+                        .accessibilityHint("Opens \(item.title) where you left off")
+                        .accessibilityValue("\(Int(item.progress * 100)) percent complete")
                     }
                 }
             }
@@ -80,7 +85,7 @@ struct ContinueWatchingMediumView: View {
 
             // Title
             Text(item.title)
-                .font(.system(size: DesignTokens.FontSize.xs, weight: .medium))
+                .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .lineLimit(1)
         }

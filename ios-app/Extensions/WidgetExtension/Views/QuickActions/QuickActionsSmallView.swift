@@ -43,11 +43,12 @@ struct QuickActionsSmallView: View {
                     .foregroundStyle(DesignTokens.Primary.p400)
 
                 Text(label)
-                    .font(.system(size: DesignTokens.FontSize.xs, weight: .medium))
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(minWidth: 44, minHeight: 44)
             .background(
                 RoundedRectangle(cornerRadius: DesignTokens.Radius.md)
                     .fill(DesignTokens.Glass.bg)
@@ -57,6 +58,8 @@ struct QuickActionsSmallView: View {
                     )
             )
         }
+        .accessibilityLabel("Open \(label)")
+        .accessibilityHint("Opens the \(label) section")
     }
 }
 

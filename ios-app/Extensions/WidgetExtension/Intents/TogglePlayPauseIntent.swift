@@ -2,21 +2,6 @@ import AppIntents
 import BayitWidgetShared
 import WidgetKit
 
-/// Errors that can occur during widget intent execution.
-enum IntentError: Error, CustomLocalizedStringResourceConvertible {
-    case notAuthenticated
-    case unauthorized
-
-    var localizedStringResource: LocalizedStringResource {
-        switch self {
-        case .notAuthenticated:
-            return "Please sign in to Bayit+ to use this feature"
-        case .unauthorized:
-            return "You don't have permission to access this content"
-        }
-    }
-}
-
 /// In-widget play/pause toggle.
 /// Writes a pending intent for the main app to handle.
 @available(iOS 17.0, *)

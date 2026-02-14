@@ -21,9 +21,10 @@ struct PlaylistMediumView: View {
                 Text("My Playlists")
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
+                    .accessibilityAddTraits(.isHeader)
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .font(.system(size: DesignTokens.FontSize.xs))
+                    .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
             }
 
@@ -65,6 +66,7 @@ struct PlaylistMediumView: View {
                     .frame(maxWidth: .infinity)
                     .frame(height: 55)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                    .accessibilityLabel("Playlist thumbnail for \(playlist.name)")
 
                     // Play overlay
                     Image(systemName: "play.fill")
@@ -72,22 +74,26 @@ struct PlaylistMediumView: View {
                         .foregroundStyle(.white)
                         .padding(DesignTokens.Spacing.xs)
                         .background(Circle().fill(Color.black.opacity(0.6)))
+                        .accessibilityLabel("Play")
                 }
 
                 // Name
                 Text(playlist.name)
-                    .font(.system(size: DesignTokens.FontSize.xs, weight: .medium))
+                    .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.primary)
                     .lineLimit(1)
 
                 // Item count
                 Text(itemCountText(playlist.itemCount))
-                    .font(.system(size: DesignTokens.FontSize.xs))
+                    .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity)
+            .frame(minWidth: 44, minHeight: 44)
         }
+        .accessibilityLabel("Playlist: \(playlist.name), \(itemCountText(playlist.itemCount))")
+        .accessibilityHint("Opens and plays \(playlist.name)")
     }
 
     private func itemCountText(_ count: Int) -> String {

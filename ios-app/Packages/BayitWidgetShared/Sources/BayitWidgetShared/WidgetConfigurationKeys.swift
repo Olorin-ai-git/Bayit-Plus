@@ -51,9 +51,15 @@ public enum WidgetConfigurationKeys {
 
     /// Keychain access group for sharing auth tokens with the widget extension.
     public static var keychainAccessGroup: String {
-        Bundle.main.object(forInfoDictionaryKey: "KEYCHAIN_ACCESS_GROUP") as? String
-            ?? ProcessInfo.processInfo.environment["KEYCHAIN_ACCESS_GROUP"]
-            ?? defaultAppGroupID
+        guard let accessGroup = Bundle.main.object(forInfoDictionaryKey: "KEYCHAIN_ACCESS_GROUP") as? String
+            ?? ProcessInfo.processInfo.environment["KEYCHAIN_ACCESS_GROUP"] else {
+            fatalError("""
+                KEYCHAIN_ACCESS_GROUP not configured.
+                Add to Info.plist or set KEYCHAIN_ACCESS_GROUP environment variable.
+                Required for keychain data sharing between app and widgets.
+                """)
+        }
+        return accessGroup
     }
 
     /// Keychain key for the auth token.

@@ -1,6 +1,8 @@
 import BayitDesignSystem
 import BayitLocalization
+import ModelIO
 import SceneKit
+import SceneKit.ModelIO
 import SwiftUI
 
 struct TVLiveAvatarOverlayView: View {
@@ -60,9 +62,15 @@ struct TVLiveAvatarOverlayView: View {
                     return
                 }
 
-                let loadedScene = try SCNScene(url: url, options: [
-                    .checkConsistency: true,
-                ])
+                let (glbData, _) = try await URLSession.shared.data(from: url)
+                let tempDir = FileManager.default.temporaryDirectory
+                    .appendingPathComponent("bayit-tvlive-\(UUID().uuidString)")
+                try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+                let tempURL = tempDir.appendingPathComponent("avatar.glb")
+                try glbData.write(to: tempURL)
+                let asset = MDLAsset(url: tempURL)
+                asset.loadTextures()
+                let loadedScene = SCNScene(mdlAsset: asset)
 
                 let ambient = SCNLight()
                 ambient.type = .ambient

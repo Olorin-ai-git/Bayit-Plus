@@ -57,12 +57,16 @@ enum WidgetNetworkClient {
 
     private static let session: URLSession = {
         let info = Bundle.main.infoDictionary ?? [:]
-        let requestTimeout = (info["WIDGET_REQUEST_TIMEOUT"] as? TimeInterval)
-            ?? (ProcessInfo.processInfo.environment["WIDGET_REQUEST_TIMEOUT"].flatMap { TimeInterval($0) })
-            ?? fatalError("WIDGET_REQUEST_TIMEOUT not configured")
-        let resourceTimeout = (info["WIDGET_RESOURCE_TIMEOUT"] as? TimeInterval)
-            ?? (ProcessInfo.processInfo.environment["WIDGET_RESOURCE_TIMEOUT"].flatMap { TimeInterval($0) })
-            ?? fatalError("WIDGET_RESOURCE_TIMEOUT not configured")
+
+        guard let requestTimeout = (info["WIDGET_REQUEST_TIMEOUT"] as? TimeInterval)
+            ?? (ProcessInfo.processInfo.environment["WIDGET_REQUEST_TIMEOUT"].flatMap { TimeInterval($0) }) else {
+            fatalError("WIDGET_REQUEST_TIMEOUT not configured. Add to Info.plist.")
+        }
+
+        guard let resourceTimeout = (info["WIDGET_RESOURCE_TIMEOUT"] as? TimeInterval)
+            ?? (ProcessInfo.processInfo.environment["WIDGET_RESOURCE_TIMEOUT"].flatMap { TimeInterval($0) }) else {
+            fatalError("WIDGET_RESOURCE_TIMEOUT not configured. Add to Info.plist.")
+        }
 
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = requestTimeout

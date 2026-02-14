@@ -27,6 +27,7 @@ struct PlaylistSmallView: View {
                         .frame(maxWidth: .infinity)
                         .frame(height: 70)
                         .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+                        .accessibilityLabel("Playlist thumbnail for \(playlist.name)")
 
                         // Play overlay
                         Image(systemName: "play.fill")
@@ -34,6 +35,7 @@ struct PlaylistSmallView: View {
                             .foregroundStyle(.white)
                             .padding(DesignTokens.Spacing.sm)
                             .background(Circle().fill(Color.black.opacity(0.6)))
+                            .accessibilityLabel("Play")
                     }
 
                     // Playlist name
@@ -44,11 +46,14 @@ struct PlaylistSmallView: View {
 
                     // Item count
                     Text(itemCountText(playlist.itemCount))
-                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .font(.system(size: DesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Text.muted)
                 }
                 .padding(DesignTokens.Spacing.md)
+                .frame(minWidth: 44, minHeight: 44)
             }
+            .accessibilityLabel("Playlist: \(playlist.name), \(itemCountText(playlist.itemCount))")
+            .accessibilityHint("Opens and plays \(playlist.name)")
             .containerBackground(for: .widget) {
                 LinearGradient(
                     colors: [DesignTokens.Background.primary, DesignTokens.Background.elevated],
@@ -76,8 +81,11 @@ struct PlaylistSmallView: View {
                     .foregroundStyle(DesignTokens.Text.secondary)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(minWidth: 44, minHeight: 44)
             .padding(DesignTokens.Spacing.md)
         }
+        .accessibilityLabel("No playlists available")
+        .accessibilityHint("Opens home screen to create playlists")
         .containerBackground(for: .widget) {
             LinearGradient(
                 colors: [DesignTokens.Background.primary, DesignTokens.Background.elevated],

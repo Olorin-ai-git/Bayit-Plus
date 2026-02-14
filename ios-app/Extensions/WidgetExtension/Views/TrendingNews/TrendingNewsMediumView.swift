@@ -22,11 +22,13 @@ struct TrendingNewsMediumView: View {
                 Text("Trending")
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
+                    .accessibilityAddTraits(.isHeader)
                 Spacer()
                 if let summary = entry.summary {
                     Text(formattedTime(summary.lastUpdated))
-                        .font(.system(size: DesignTokens.FontSize.xs))
+                        .font(.system(size: DesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Text.muted)
+                        .accessibilityLabel("Updated \(formattedTime(summary.lastUpdated))")
                 }
             }
 
@@ -36,7 +38,7 @@ struct TrendingNewsMediumView: View {
                     Link(destination: WidgetDeepLinks.trending) {
                         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
                             Text("Top Story")
-                                .font(.system(size: DesignTokens.FontSize.xs))
+                                .font(.system(size: DesignTokens.FontSize.sm))
                                 .foregroundStyle(DesignTokens.Primary.p400)
                             Text(summary.topStory)
                                 .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
@@ -44,7 +46,10 @@ struct TrendingNewsMediumView: View {
                                 .lineLimit(3)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(minWidth: 44, minHeight: 44)
                     }
+                    .accessibilityLabel("Top trending story: \(summary.topStory)")
+                    .accessibilityHint("Opens trending news section")
 
                     // Topics list
                     if !displayTopics.isEmpty {
@@ -75,11 +80,14 @@ struct TrendingNewsMediumView: View {
             Circle()
                 .fill(importanceColor(topic.importance))
                 .frame(width: 6, height: 6)
+                .accessibilityLabel("Importance level \(topic.importance)")
             Text(topic.title)
-                .font(.system(size: DesignTokens.FontSize.xs, weight: .medium))
+                .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .lineLimit(1)
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(topic.title), importance \(topic.importance)")
     }
 
     private func importanceColor(_ importance: Int) -> Color {
