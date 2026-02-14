@@ -21,6 +21,10 @@ struct VODView: View {
             if let vm = viewModel {
                 contentTypeFilters(vm)
 
+                if !vm.categories.isEmpty {
+                    categoryFilters(vm)
+                }
+
                 if let collection = featuredCollection, vm.selectedType == .all {
                     CollectionPromoBannerView(
                         collectionId: collection.id,
@@ -61,9 +65,9 @@ struct VODView: View {
 
     private func loadFeaturedCollection() async {
         do {
-            let response = try await repos.content.fetchCollections(page: 1, limit: 1)
-            if let firstCollection = response.items.first {
-                featuredCollection = try await repos.content.fetchCollectionDetail(id: firstCollection.id)
+            let collections = try await repos.content.fetchCollections(skip: 0, limit: 1)
+            if let first = collections.first {
+                featuredCollection = try await repos.content.fetchCollectionDetail(id: first.id)
             }
         } catch {
             // Silently fail - banner is optional
@@ -80,6 +84,32 @@ struct VODView: View {
                     ) {
                         vm.selectedType = type
                         Task { await vm.loadContent() }
+                    }
+                }
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+            .padding(.vertical, DesignTokens.Spacing.sm)
+        }
+    }
+
+    private func categoryFilters(_ vm: VODViewModel) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: DesignTokens.Spacing.sm) {
+                FilterPill(
+                    title: "All Categories",
+                    isSelected: vm.selectedCategory == nil
+                ) {
+                    vm.selectedCategory = nil
+                    vm.applyFilters()
+                }
+
+                ForEach(vm.categories) { category in
+                    FilterPill(
+                        title: category.name,
+                        isSelected: vm.selectedCategory == category.id
+                    ) {
+                        vm.selectedCategory = category.id
+                        vm.applyFilters()
                     }
                 }
             }

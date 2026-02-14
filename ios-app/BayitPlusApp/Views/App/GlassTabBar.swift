@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Glass morphism tab bar with animated selection indicator.
 /// Extracted from MainTabView to keep each file under 200 lines.
 struct GlassTabBar: View {
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
         HStack(spacing: 0) {
@@ -32,6 +34,10 @@ struct GlassTabBar: View {
         .shadow(color: DesignTokens.Glass.purpleGlow, radius: DesignTokens.Spacing.sm, y: DesignTokens.Spacing.xs)
     }
 
+    private func tabLabel(_ tab: AppTab) -> String {
+        tab.hasLocalizationKey ? localization.t(tab.localizationKey) : tab.title
+    }
+
     private func tabBarButton(for tab: AppTab) -> some View {
         let isSelected = coordinator.selectedTab == tab
 
@@ -49,7 +55,7 @@ struct GlassTabBar: View {
                     .font(.system(size: DesignTokens.FontSize.lg))
                     .symbolVariant(isSelected ? .fill : .none)
 
-                Text(tab.title)
+                Text(tabLabel(tab))
                     .font(.system(size: DesignTokens.FontSize.xs, weight: .medium))
             }
             .foregroundStyle(isSelected
@@ -65,7 +71,7 @@ struct GlassTabBar: View {
             .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
         }
         .accessibilityIdentifier("tab_\(tab.rawValue)")
-        .accessibilityLabel(tab.title)
+        .accessibilityLabel(tabLabel(tab))
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

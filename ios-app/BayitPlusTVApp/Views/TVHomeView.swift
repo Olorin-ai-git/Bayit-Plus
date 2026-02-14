@@ -70,6 +70,11 @@ struct TVHomeView: View {
             TVShabbatBannerView()
                 .withAutoLoad()
 
+            // Radio stations
+            if !vm.radioStations.isEmpty {
+                radioStationsSection(vm.radioStations)
+            }
+
             // All content sections in fixed order
             ForEach(TVHomeSection.allCases, id: \.rawValue) { section in
                 if section.hasData(in: vm) {
@@ -180,6 +185,30 @@ struct TVHomeView: View {
                     contentId: channel.id,
                     contentType: .liveTV,
                     channelId: channel.id
+                )
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func radioStationsSection(_ stations: [RadioStationItem]) -> some View {
+        TVContentSection(
+            title: "Radio",
+            icon: "radio",
+            items: stations,
+            maxItems: 8,
+            seeAllAction: { coordinator.selectedTab = .podcasts }
+        ) { station in
+            TVContentCard(
+                imageURL: station.logo,
+                title: station.name ?? "Station",
+                subtitle: station.currentSong ?? station.currentShow,
+                aspectRatio: 1.0,
+                placeholderIcon: "radio"
+            ) {
+                coordinator.presentPlayer(
+                    contentId: station.id,
+                    contentType: .radio
                 )
             }
         }

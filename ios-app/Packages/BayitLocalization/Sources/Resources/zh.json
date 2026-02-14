@@ -5777,6 +5777,9 @@
       }
     }
   },
+  "listen": {
+    "title": "收听"
+  },
   "podcasts": {
     "title": "播客",
     "episodes": "集",

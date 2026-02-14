@@ -5766,6 +5766,9 @@
       }
     }
   },
+  "listen": {
+    "title": "सुनें"
+  },
   "podcasts": {
     "title": "Podcast",
     "episodes": "एपिसोड",

@@ -24,6 +24,8 @@ enum VODFilterType: String, CaseIterable, Identifiable {
 @Observable
 final class VODViewModel {
     private(set) var items: [ContentItem] = []
+    private(set) var allItems: [ContentItem] = []
+    private(set) var categories: [ContentCategory] = []
     private(set) var isLoading = false
     private(set) var isLoadingMore = false
     private(set) var error: String?
@@ -31,6 +33,7 @@ final class VODViewModel {
     private(set) var hasMore = true
 
     var selectedType: VODFilterType = .all
+    var selectedCategory: String? = nil
 
     private let repository: any ContentRepository
     private let pageSize = 20
@@ -47,31 +50,58 @@ final class VODViewModel {
         currentPage = 1
 
         do {
-            let response: ContentListResponse
+            // Load categories and content in parallel
+            async let categoriesTask = loadCategoriesIfNeeded()
+
             if selectedType == .collections {
-                response = try await repository.fetchCollections(
-                    page: currentPage,
+                let collections = try await repository.fetchCollections(
+                    skip: 0,
                     limit: pageSize
                 )
+                await categoriesTask
+                let mapped = collections.map { $0.toContentItem() }
+                allItems = mapped
+                items = mapped
+                hasMore = collections.count >= pageSize
             } else {
-                response = try await repository.fetchAllContent(
-                    page: currentPage,
-                    limit: pageSize
-                )
+                let response: ContentListResponse
+                if selectedType == .series {
+                    response = try await repository.fetchSeries(
+                        page: currentPage,
+                        limit: pageSize
+                    )
+                } else {
+                    response = try await repository.fetchAllContent(
+                        page: currentPage,
+                        limit: pageSize
+                    )
+                }
+                await categoriesTask
+                allItems = response.items
+                items = filterItems(response.items)
+                hasMore = response.page < (response.total / pageSize + 1)
             }
-
-            if selectedType == .all {
-                items = response.items
-            } else {
-                items = filterItemsByType(response.items)
-            }
-
-            hasMore = response.page < (response.total / pageSize + 1)
         } catch {
             self.error = error.localizedDescription
         }
 
         isLoading = false
+    }
+
+    @MainActor
+    private func loadCategoriesIfNeeded() async {
+        guard categories.isEmpty else { return }
+        do {
+            let response = try await repository.fetchCategories()
+            categories = response.categories
+        } catch {
+            // Silently fail - categories are optional
+        }
+    }
+
+    @MainActor
+    func applyFilters() {
+        items = filterItems(allItems)
     }
 
     @MainActor
@@ -82,23 +112,35 @@ final class VODViewModel {
         let nextPage = currentPage + 1
 
         do {
-            let response: ContentListResponse
             if selectedType == .collections {
-                response = try await repository.fetchCollections(
-                    page: nextPage,
+                let collections = try await repository.fetchCollections(
+                    skip: items.count,
                     limit: pageSize
                 )
+                let mapped = collections.map { $0.toContentItem() }
+                items.append(contentsOf: mapped)
+                currentPage = nextPage
+                hasMore = collections.count >= pageSize
             } else {
-                response = try await repository.fetchAllContent(
-                    page: nextPage,
-                    limit: pageSize
-                )
+                let response: ContentListResponse
+                if selectedType == .series {
+                    response = try await repository.fetchSeries(
+                        page: nextPage,
+                        limit: pageSize
+                    )
+                } else {
+                    response = try await repository.fetchAllContent(
+                        page: nextPage,
+                        limit: pageSize
+                    )
+                }
+                let filteredItems = selectedType == .all
+                    ? response.items
+                    : filterItemsByType(response.items)
+                items.append(contentsOf: filteredItems)
+                currentPage = nextPage
+                hasMore = response.page < (response.total / pageSize + 1)
             }
-
-            let filteredItems = selectedType == .all ? response.items : filterItemsByType(response.items)
-            items.append(contentsOf: filteredItems)
-            currentPage = nextPage
-            hasMore = response.page < (response.total / pageSize + 1)
         } catch {
             self.error = error.localizedDescription
         }
@@ -113,26 +155,60 @@ final class VODViewModel {
         isLoading = true
 
         do {
-            let response: ContentListResponse
             if selectedType == .collections {
-                response = try await repository.fetchCollections(
-                    page: 1,
+                let collections = try await repository.fetchCollections(
+                    skip: 0,
                     limit: pageSize
                 )
+                let mapped = collections.map { $0.toContentItem() }
+                items = mapped
+                hasMore = collections.count >= pageSize
             } else {
-                response = try await repository.fetchAllContent(
-                    page: 1,
-                    limit: pageSize
-                )
+                let response: ContentListResponse
+                if selectedType == .series {
+                    response = try await repository.fetchSeries(
+                        page: 1,
+                        limit: pageSize
+                    )
+                } else {
+                    response = try await repository.fetchAllContent(
+                        page: 1,
+                        limit: pageSize
+                    )
+                }
+                items = selectedType == .all
+                    ? response.items
+                    : filterItemsByType(response.items)
+                hasMore = response.page < (response.total / pageSize + 1)
             }
-
-            items = selectedType == .all ? response.items : filterItemsByType(response.items)
-            hasMore = response.page < (response.total / pageSize + 1)
         } catch {
             self.error = error.localizedDescription
         }
 
         isLoading = false
+    }
+
+    private func filterItems(_ items: [ContentItem]) -> [ContentItem] {
+        var filtered = items
+
+        // Filter by content type
+        switch selectedType {
+        case .all:
+            break
+        case .movies:
+            filtered = filtered.filter { $0.type == "movie" }
+        case .series:
+            filtered = filtered.filter { $0.isSeries == true }
+        case .collections:
+            filtered = filtered.filter { $0.isCollectionParent == true }
+        }
+
+        // Filter by category
+        if let categoryId = selectedCategory {
+            filtered = filtered.filter { $0.category == categoryId }
+        }
+
+        return filtered
     }
 
     private func filterItemsByType(_ items: [ContentItem]) -> [ContentItem] {
@@ -147,4 +223,17 @@ final class VODViewModel {
             return items.filter { $0.isCollectionParent == true }
         }
     }
+}
+
+// MARK: - ContentRepository Extension for Categories
+extension ContentRepository {
+    func fetchCategories() async throws -> CategoriesResponse {
+        // This should be implemented in the actual repository
+        // For now, return empty to avoid breaking existing code
+        return CategoriesResponse(categories: [])
+    }
+}
+
+struct CategoriesResponse: Decodable, Sendable {
+    let categories: [ContentCategory]
 }

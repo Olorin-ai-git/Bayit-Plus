@@ -11,6 +11,7 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
 
     public var id: String { rawValue }
 
+    /// Fallback title (English). Prefer `localizationKey` with LocalizationManager.
     public var title: String {
         switch self {
         case .home: return "Home"
@@ -19,6 +20,26 @@ public enum AppTab: String, CaseIterable, Identifiable, Sendable {
         case .zehAni: return "Zeh Ani"
         case .podcasts: return "Listen"
         case .search: return "Search"
+        }
+    }
+
+    /// i18n key for the tab label.
+    public var localizationKey: String {
+        switch self {
+        case .home: return "nav.home"
+        case .liveTV: return "nav.liveTV"
+        case .vod: return "nav.vod"
+        case .zehAni: return "nav.zehAni"
+        case .podcasts: return "listen.title"
+        case .search: return "nav.search"
+        }
+    }
+
+    /// Whether the tab has a valid i18n key. Tabs without a key use `title`.
+    public var hasLocalizationKey: Bool {
+        switch self {
+        case .home, .vod, .search, .podcasts: return true
+        case .liveTV, .zehAni: return false
         }
     }
 

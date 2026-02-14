@@ -5839,6 +5839,9 @@
       }
     }
   },
+  "listen": {
+    "title": "கேளுங்கள்"
+  },
   "podcasts": {
     "title": "Podcast கள்",
     "episodes": "அத்தியாயங்கள்",

@@ -8,11 +8,11 @@ import asyncio
 import sys
 from pathlib import Path
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
+SCRIPT_DIR = Path(__file__).parent
+PROJECT_ROOT = SCRIPT_DIR.parent.parent
+sys.path.insert(0, str(PROJECT_ROOT / "backend"))
 
-from app.core.config import settings
-from app.core.database import init_db
+from app.core.database import connect_to_mongo
 from app.core.logging_config import get_logger
 from app.services.collection_detector_service import collection_detector_service
 
@@ -27,8 +27,8 @@ async def migrate_collections():
 
     # Initialize database
     logger.info("Connecting to MongoDB...")
-    await init_db()
-    logger.info(f"Connected to: {settings.MONGODB_DATABASE}")
+    await connect_to_mongo()
+    logger.info("Connected to MongoDB")
 
     # Run collection scan
     logger.info("Scanning movies for collections...")

@@ -35,9 +35,9 @@ final class CollectionDetailViewTests: XCTestCase {
             totalMovies: 3,
             promoText: "An epic journey through Middle-earth",
             movies: [
-                CollectionMovie(id: "m1", title: "Fellowship", thumbnail: nil, year: 2001, duration: "2h 58m", order: 1),
-                CollectionMovie(id: "m2", title: "Two Towers", thumbnail: nil, year: 2002, duration: "2h 59m", order: 2),
-                CollectionMovie(id: "m3", title: "Return", thumbnail: nil, year: 2003, duration: "3h 21m", order: 3)
+                CollectionMovie(id: "m1", title: "Fellowship", thumbnail: nil, year: 2001, duration: "2h 58m", collectionOrder: 1),
+                CollectionMovie(id: "m2", title: "Two Towers", thumbnail: nil, year: 2002, duration: "2h 59m", collectionOrder: 2),
+                CollectionMovie(id: "m3", title: "Return", thumbnail: nil, year: 2003, duration: "3h 21m", collectionOrder: 3)
             ]
         )
         mockRepository.collectionDetailResult = .success(expectedCollection)
@@ -100,9 +100,9 @@ final class CollectionDetailViewTests: XCTestCase {
             totalMovies: 3,
             promoText: nil,
             movies: [
-                CollectionMovie(id: "m3", title: "Third", thumbnail: nil, year: nil, duration: nil, order: 3),
-                CollectionMovie(id: "m1", title: "First", thumbnail: nil, year: nil, duration: nil, order: 1),
-                CollectionMovie(id: "m2", title: "Second", thumbnail: nil, year: nil, duration: nil, order: 2)
+                CollectionMovie(id: "m3", title: "Third", thumbnail: nil, year: nil, duration: nil, collectionOrder: 3),
+                CollectionMovie(id: "m1", title: "First", thumbnail: nil, year: nil, duration: nil, collectionOrder: 1),
+                CollectionMovie(id: "m2", title: "Second", thumbnail: nil, year: nil, duration: nil, collectionOrder: 2)
             ]
         )
         mockRepository.collectionDetailResult = .success(collection)
@@ -111,7 +111,7 @@ final class CollectionDetailViewTests: XCTestCase {
         await viewModel.loadCollection()
 
         // Then
-        let sortedMovies = viewModel.collection?.movies.sorted(by: { $0.order < $1.order })
+        let sortedMovies = viewModel.collection?.movies.sorted(by: { ($0.collectionOrder ?? 0) < ($1.collectionOrder ?? 0) })
         XCTAssertEqual(sortedMovies?[0].title, "First")
         XCTAssertEqual(sortedMovies?[1].title, "Second")
         XCTAssertEqual(sortedMovies?[2].title, "Third")
@@ -130,8 +130,8 @@ final class CollectionDetailViewTests: XCTestCase {
             totalMovies: 3,
             promoText: "Test promo text",
             movies: [
-                CollectionMovie(id: "m1", title: "Movie 1", thumbnail: nil, year: 2020, duration: "2h", order: 1),
-                CollectionMovie(id: "m2", title: "Movie 2", thumbnail: nil, year: 2021, duration: "2h 10m", order: 2)
+                CollectionMovie(id: "m1", title: "Movie 1", thumbnail: nil, year: 2020, duration: "2h", collectionOrder: 1),
+                CollectionMovie(id: "m2", title: "Movie 2", thumbnail: nil, year: 2021, duration: "2h 10m", collectionOrder: 2)
             ]
         )
     }
@@ -142,7 +142,7 @@ final class CollectionDetailViewTests: XCTestCase {
 class MockContentRepository: ContentRepository {
     var collectionDetailResult: Result<CollectionDetail, Error>?
     var collectionDetailDelay: TimeInterval = 0
-    var collectionsResult: Result<ContentListResponse, Error>?
+    var collectionsResult: Result<[CollectionListItem], Error>?
 
     func fetchCollectionDetail(id: String) async throws -> CollectionDetail {
         if collectionDetailDelay > 0 {
@@ -158,10 +158,10 @@ class MockContentRepository: ContentRepository {
         }
     }
 
-    func fetchCollections(page: Int, limit: Int) async throws -> ContentListResponse {
+    func fetchCollections(skip: Int, limit: Int) async throws -> [CollectionListItem] {
         switch collectionsResult {
-        case .success(let response):
-            return response
+        case .success(let items):
+            return items
         case .failure(let error):
             throw error
         case .none:
@@ -180,6 +180,7 @@ class MockContentRepository: ContentRepository {
     func fetchJerusalemContent() async throws -> CityContentResponse { fatalError("Not implemented") }
     func fetchTrending(cultureId: String) async throws -> [CultureTrendingItem] { fatalError("Not implemented") }
     func fetchContinueWatching() async throws -> ContinueWatchingResponse { fatalError("Not implemented") }
+    func fetchSeries(page: Int, limit: Int) async throws -> ContentListResponse { fatalError("Not implemented") }
 }
 
 enum NetworkError: Error {

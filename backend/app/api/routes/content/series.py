@@ -56,17 +56,13 @@ async def list_all_series(
     # Parent series should NEVER have season/episode numbers
     # Also exclude series with no episodes from user-facing endpoints
 
-    # Build list of series category names (for index-backed queries)
+    # Match any category containing series-related keywords (case-insensitive)
     from app.api.routes.content.utils import SERIES_CATEGORY_KEYWORDS
-    series_categories = SERIES_CATEGORY_KEYWORDS + [
-        "Israeli Series", "israeli series",
-        "סדרות ישראליות",  # Israeli Series in Hebrew
-    ]
+    series_regex = "|".join(SERIES_CATEGORY_KEYWORDS)
 
     filters = {
         "is_published": True,
-        # Use $in for better performance (can use category_name index)
-        "category_name": {"$in": series_categories},
+        "category_name": {"$regex": series_regex, "$options": "i"},
         "total_episodes": {"$gt": 0},  # Hide series without episodes
         "$or": [
             {"series_id": None},

@@ -6078,6 +6078,9 @@
       }
     }
   },
+  "listen": {
+    "title": "האזנה"
+  },
   "podcasts": {
     "title": "פודקאסטים",
     "episodes": "פרקים",

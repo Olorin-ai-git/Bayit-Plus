@@ -1,14 +1,16 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Radio stations row on the home screen
 struct RadioStationsRow: View {
+    @Environment(LocalizationManager.self) private var localization
     let stations: [RadioStationItem]
     let coordinator: NavigationCoordinator
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text("Radio")
+            Text(localization.t("radio.title"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
                 .padding(.horizontal, DesignTokens.Spacing.lg)

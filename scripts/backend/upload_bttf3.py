@@ -101,15 +101,96 @@ async def get_tmdb_metadata(title: str, api_key: str) -> dict | None:
                 return None
             m = results[0]
             year = int(m["release_date"][:4]) if m.get("release_date") else None
-            return {
+            result = {
                 "title": m.get("title"), "description": m.get("overview"), "year": year,
                 "rating": m.get("vote_average"), "tmdb_id": m.get("id"),
                 "thumbnail": f"https://image.tmdb.org/t/p/w500{m['poster_path']}" if m.get("poster_path") else None,
                 "backdrop": f"https://image.tmdb.org/t/p/original{m['backdrop_path']}" if m.get("backdrop_path") else None,
+                "collection_id": None, "collection_name": None, "collection_poster": None,
             }
+            tmdb_id = m.get("id")
+            if tmdb_id:
+                details_resp = await client.get(
+                    f"https://api.themoviedb.org/3/movie/{tmdb_id}",
+                    params={"api_key": api_key}, timeout=10.0,
+                )
+                if details_resp.status_code == 200:
+                    details = details_resp.json()
+                    btc = details.get("belongs_to_collection")
+                    if btc:
+                        result["collection_id"] = btc.get("id")
+                        result["collection_name"] = btc.get("name")
+                        if btc.get("poster_path"):
+                            result["collection_poster"] = f"https://image.tmdb.org/t/p/w500{btc['poster_path']}"
+                        logger.info("  Collection: %s (ID: %s)", result["collection_name"], result["collection_id"])
+            return result
     except Exception as e:
         logger.warning("TMDB error: %s", e)
         return None
+
+
+async def detect_collection(db, content_id: str, tmdb_collection_id: int, tmdb_collection_name: str, api_key: str):
+    """Auto-detect and create/update collection parent if 2+ movies share the same collection."""
+    if not tmdb_collection_id:
+        return
+    movies = await db.content.find(
+        {"tmdb_collection_id": tmdb_collection_id, "is_collection_parent": {"$ne": True}},
+    ).to_list(length=100)
+    if len(movies) < 2:
+        logger.info("  Collection has %d movie(s) - need 2+ to create collection parent", len(movies))
+        return
+    parent = await db.content.find_one({"tmdb_collection_id": tmdb_collection_id, "is_collection_parent": True})
+    import httpx
+    collection_meta = {"name": tmdb_collection_name, "overview": None, "poster": None, "backdrop": None, "total": 0}
+    try:
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(
+                f"https://api.themoviedb.org/3/collection/{tmdb_collection_id}",
+                params={"api_key": api_key}, timeout=10.0,
+            )
+            if resp.status_code == 200:
+                cdata = resp.json()
+                collection_meta["name"] = cdata.get("name", tmdb_collection_name)
+                collection_meta["overview"] = cdata.get("overview")
+                collection_meta["total"] = len(cdata.get("parts", []))
+                if cdata.get("poster_path"):
+                    collection_meta["poster"] = f"https://image.tmdb.org/t/p/w500{cdata['poster_path']}"
+                if cdata.get("backdrop_path"):
+                    collection_meta["backdrop"] = f"https://image.tmdb.org/t/p/w1280{cdata['backdrop_path']}"
+    except Exception as e:
+        logger.warning("  Failed to fetch collection metadata: %s", e)
+    now = datetime.now(UTC)
+    if not parent:
+        parent_doc = {
+            "_id": ObjectId(), "title": collection_meta["name"], "title_en": collection_meta["name"],
+            "description": collection_meta["overview"] or "", "description_en": collection_meta["overview"] or "",
+            "thumbnail": collection_meta["poster"], "backdrop": collection_meta["backdrop"],
+            "poster_url": collection_meta["poster"], "tmdb_collection_id": tmdb_collection_id,
+            "tmdb_collection_name": collection_meta["name"], "tmdb_collection_poster_path": collection_meta["poster"],
+            "is_collection_parent": True, "collection_total_movies": collection_meta["total"],
+            "content_format": "collection", "content_type": "movie", "stream_url": "",
+            "source_provider": "tmdb_collection", "source_id": str(tmdb_collection_id),
+            "section_ids": ["movies"], "primary_section_id": "movies",
+            "is_published": True, "is_featured": False, "is_series": False,
+            "created_at": now, "updated_at": now,
+        }
+        await db.content.insert_one(parent_doc)
+        parent_id = str(parent_doc["_id"])
+        logger.info("  Created collection parent: %s (ID: %s)", collection_meta["name"], parent_id)
+    else:
+        parent_id = str(parent["_id"])
+        await db.content.update_one(
+            {"_id": parent["_id"]},
+            {"$set": {"title": collection_meta["name"], "collection_total_movies": collection_meta["total"], "updated_at": now}},
+        )
+        logger.info("  Updated collection parent: %s", collection_meta["name"])
+    sorted_movies = sorted(movies, key=lambda m: m.get("year", 0))
+    for idx, movie_doc in enumerate(sorted_movies, start=1):
+        await db.content.update_one(
+            {"_id": movie_doc["_id"]},
+            {"$set": {"collection_parent_id": parent_id, "collection_order": idx}},
+        )
+        logger.info("  Linked '%s' to collection (order: %d)", movie_doc.get("title"), idx)
 
 
 async def main():
@@ -160,7 +241,11 @@ async def main():
             "category_name": "Movies", "is_published": True, "is_featured": False, "is_series": False,
             "year": int(tmdb["year"]) if (tmdb and tmdb.get("year")) else 1990,
             "rating": tmdb.get("rating") if tmdb else None,
-            "tmdb_id": tmdb.get("tmdb_id") if tmdb else None, "imdb_id": IMDB_ID,
+            "tmdb_id": tmdb.get("tmdb_id") if tmdb else None,
+            "tmdb_collection_id": tmdb.get("collection_id") if tmdb else None,
+            "tmdb_collection_name": tmdb.get("collection_name") if tmdb else None,
+            "tmdb_collection_poster_path": tmdb.get("collection_poster") if tmdb else None,
+            "imdb_id": IMDB_ID,
             "has_subtitles": False, "available_subtitle_languages": [],
             "metadata": {
                 "hls_migrated_at": datetime.now(UTC).isoformat()[:10],
@@ -176,6 +261,15 @@ async def main():
 
         await db.content.insert_one(content_data)
         logger.info("  Created: %s", content_data["_id"])
+
+        if tmdb and tmdb.get("collection_id"):
+            logger.info("STAGE 5: Detecting collections...")
+            await detect_collection(
+                db, str(content_data["_id"]),
+                tmdb["collection_id"], tmdb.get("collection_name", ""),
+                settings.TMDB_API_KEY,
+            )
+
         client.close()
 
         logger.info("=" * 70)

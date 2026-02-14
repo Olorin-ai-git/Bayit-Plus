@@ -60,9 +60,9 @@ struct TVVODView: View {
 
     private func loadFeaturedCollection() async {
         do {
-            let response = try await repos.content.fetchCollections(page: 1, limit: 1)
-            if let firstCollection = response.items.first {
-                featuredCollection = try await repos.content.fetchCollectionDetail(id: firstCollection.id)
+            let collections = try await repos.content.fetchCollections(skip: 0, limit: 1)
+            if let first = collections.first {
+                featuredCollection = try await repos.content.fetchCollectionDetail(id: first.id)
             }
         } catch {
             // Silently fail - banner is optional

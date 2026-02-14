@@ -153,6 +153,48 @@ struct RelatedItem: Decodable, Sendable, Identifiable {
 
 // MARK: - Collections
 
+/// Item from GET /api/v1/content/collections (array response)
+struct CollectionListItem: Decodable, Sendable, Identifiable {
+    let id: String
+    let title: String?
+    let titleEn: String?
+    let thumbnail: String?
+    let backdrop: String?
+    let promoText: String?
+    let promoTextEn: String?
+    let availableMovies: Int
+    let totalMovies: Int
+    let tmdbCollectionId: Int?
+
+    /// Convert to ContentItem for display in the VOD grid
+    func toContentItem() -> ContentItem {
+        ContentItem(
+            id: id,
+            title: title,
+            description: promoText,
+            thumbnail: thumbnail,
+            backdrop: backdrop,
+            duration: nil,
+            year: nil,
+            category: nil,
+            categorySlug: nil,
+            categoryNameKey: nil,
+            categoryNameEn: nil,
+            categoryNameEs: nil,
+            type: "collection",
+            isSeries: nil,
+            totalEpisodes: nil,
+            availableSubtitleLanguages: nil,
+            hasSubtitles: nil,
+            author: nil,
+            narrator: nil,
+            isCollectionParent: true,
+            availableMovies: availableMovies,
+            totalMovies: totalMovies
+        )
+    }
+}
+
 /// Response from GET /api/v1/content/collections/{id}
 struct CollectionDetail: Decodable, Sendable, Identifiable {
     let id: String
@@ -173,12 +215,7 @@ struct CollectionMovie: Decodable, Sendable, Identifiable {
     let thumbnail: String?
     let year: Int?
     let duration: String?
-    let order: Int
-
-    enum CodingKeys: String, CodingKey {
-        case id, title, thumbnail, year, duration
-        case order = "collection_order"
-    }
+    let collectionOrder: Int?
 }
 
 // MARK: - Search

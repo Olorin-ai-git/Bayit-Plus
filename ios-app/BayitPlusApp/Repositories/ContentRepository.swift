@@ -89,14 +89,23 @@ protocol ContentRepository: Sendable {
     /// - Throws: `NetworkError` if the request fails.
     func fetchContinueWatching() async throws -> ContinueWatchingResponse
 
-    /// Fetch collections (movie franchises).
+    /// Fetch series (parent series, not episodes).
     ///
     /// - Parameters:
     ///   - page: Page number (1-indexed).
     ///   - limit: Number of items per page.
-    /// - Returns: Paginated collections list.
+    /// - Returns: Paginated series list.
     /// - Throws: `NetworkError` if the request fails.
-    func fetchCollections(page: Int, limit: Int) async throws -> ContentListResponse
+    func fetchSeries(page: Int, limit: Int) async throws -> ContentListResponse
+
+    /// Fetch collections (movie franchises).
+    ///
+    /// - Parameters:
+    ///   - skip: Number of items to skip (pagination offset).
+    ///   - limit: Maximum number of items to return.
+    /// - Returns: Array of collection list items.
+    /// - Throws: `NetworkError` if the request fails.
+    func fetchCollections(skip: Int, limit: Int) async throws -> [CollectionListItem]
 
     /// Fetch collection detail with all movies.
     ///
@@ -104,6 +113,9 @@ protocol ContentRepository: Sendable {
     /// - Returns: Collection detail with movies list.
     /// - Throws: `NetworkError` if the request fails.
     func fetchCollectionDetail(id: String) async throws -> CollectionDetail
+
+    /// Fetch content categories for filtering.
+    func fetchCategories() async throws -> CategoriesResponse
 }
 
 /// Production implementation of `ContentRepository` using `APIClient`.
@@ -232,16 +244,29 @@ final class APIContentRepository: ContentRepository, @unchecked Sendable {
         )
     }
 
-    func fetchCollections(page: Int, limit: Int) async throws -> ContentListResponse {
+    func fetchSeries(page: Int, limit: Int) async throws -> ContentListResponse {
         let queryItems = [
             URLQueryItem(name: "page", value: String(page)),
             URLQueryItem(name: "limit", value: String(limit))
         ]
 
         return try await client.get(
-            "/api/v1/content/collections",
+            "/api/v1/content/series",
             queryItems: queryItems,
             as: ContentListResponse.self
+        )
+    }
+
+    func fetchCollections(skip: Int, limit: Int) async throws -> [CollectionListItem] {
+        let queryItems = [
+            URLQueryItem(name: "skip", value: String(skip)),
+            URLQueryItem(name: "limit", value: String(limit))
+        ]
+
+        return try await client.get(
+            "/api/v1/content/collections",
+            queryItems: queryItems,
+            as: [CollectionListItem].self
         )
     }
 

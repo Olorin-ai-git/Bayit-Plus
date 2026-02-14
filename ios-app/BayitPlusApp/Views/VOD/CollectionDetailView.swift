@@ -153,7 +153,7 @@ struct CollectionDetailView: View {
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
 
-            ForEach(movies.sorted(by: { $0.order < $1.order })) { movie in
+            ForEach(movies.sorted(by: { ($0.collectionOrder ?? 0) < ($1.collectionOrder ?? 0) })) { movie in
                 MovieRow(movie: movie) {
                     coordinator.navigate(to: .movieDetail(movieId: movie.id))
                 }
@@ -162,7 +162,7 @@ struct CollectionDetailView: View {
     }
 
     private func playAll(_ movies: [CollectionMovie]) async {
-        let movieIds = movies.sorted(by: { $0.order < $1.order }).map { $0.id }
+        let movieIds = movies.sorted(by: { ($0.collectionOrder ?? 0) < ($1.collectionOrder ?? 0) }).map { $0.id }
         guard !movieIds.isEmpty else { return }
 
         do {
@@ -181,7 +181,7 @@ private struct MovieRow: View {
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: DesignTokens.Spacing.md) {
-                Text("\(movie.order).")
+                Text("\(movie.collectionOrder ?? 0).")
                     .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                     .foregroundColor(DesignTokens.Text.muted)
                     .frame(width: 30, alignment: .trailing)

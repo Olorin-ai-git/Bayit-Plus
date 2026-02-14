@@ -1,3 +1,4 @@
+#if os(tvOS)
 import BayitDesignSystem
 import SwiftUI
 
@@ -13,7 +14,7 @@ struct TVCollectionDetailView: View {
         ScrollView(.vertical, showsIndicators: false) {
             if let vm = viewModel {
                 if vm.isLoading && vm.collection == nil {
-                    ScreenLoadingView()
+                    loadingView
                 } else if let error = vm.error, vm.collection == nil {
                     tvErrorState(error) {
                         Task { await vm.loadCollection() }
@@ -22,7 +23,7 @@ struct TVCollectionDetailView: View {
                     collectionContent(collection)
                 }
             } else {
-                ScreenLoadingView()
+                loadingView
             }
         }
         .background(DesignTokens.Background.primary)
@@ -35,6 +36,15 @@ struct TVCollectionDetailView: View {
             }
             await viewModel?.loadCollection()
         }
+    }
+
+    private var loadingView: some View {
+        VStack(spacing: TVDesignTokens.Spacing.xl) {
+            ProgressView()
+                .tint(DesignTokens.Primary.default)
+                .scaleEffect(1.5)
+        }
+        .frame(maxWidth: .infinity, minHeight: 400)
     }
 
     private func collectionContent(_ collection: CollectionDetail) -> some View {
@@ -75,24 +85,23 @@ struct TVCollectionDetailView: View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             Text(collection.title ?? "Collection")
                 .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
-                .foregroundColor(DesignTokens.Text.primary)
+                .foregroundStyle(DesignTokens.Text.primary)
 
             if let available = collection.availableMovies,
                let total = collection.totalMovies {
                 Text(total > available ? "\(available) of \(total) movies" : "\(available) movies")
                     .font(.system(size: TVDesignTokens.FontSize.xl))
-                    .foregroundColor(DesignTokens.Text.muted)
+                    .foregroundStyle(DesignTokens.Text.muted)
             }
 
             if !collection.movies.isEmpty {
-                GlassFocusButton(
-                    title: "Play All",
-                    icon: "play.fill",
-                    style: .primary,
-                    size: .large
-                ) {
+                Button {
                     Task { await playAll(collection.movies) }
+                } label: {
+                    Label("Play All", systemImage: "play.fill")
+                        .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                 }
+                .buttonStyle(.card)
             }
         }
     }
@@ -101,16 +110,16 @@ struct TVCollectionDetailView: View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
             HStack(spacing: TVDesignTokens.Spacing.xs) {
                 Image(systemName: "sparkles")
-                    .foregroundColor(DesignTokens.Primary.default)
+                    .foregroundStyle(DesignTokens.Primary.default)
                 Text("AI Recommendation")
                     .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
-                    .foregroundColor(DesignTokens.Text.muted)
+                    .foregroundStyle(DesignTokens.Text.muted)
                     .textCase(.uppercase)
             }
 
             Text(text)
                 .font(.system(size: TVDesignTokens.FontSize.lg))
-                .foregroundColor(DesignTokens.Text.primary)
+                .foregroundStyle(DesignTokens.Text.primary)
                 .lineSpacing(6)
         }
         .padding(TVDesignTokens.Spacing.lg)
@@ -122,7 +131,7 @@ struct TVCollectionDetailView: View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             Text("Movies")
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
-                .foregroundColor(DesignTokens.Text.primary)
+                .foregroundStyle(DesignTokens.Text.primary)
 
             let columns = [
                 GridItem(.flexible(), spacing: TVDesignTokens.Spacing.focusGap),
@@ -131,17 +140,17 @@ struct TVCollectionDetailView: View {
             ]
 
             LazyVGrid(columns: columns, spacing: TVDesignTokens.Spacing.focusGap) {
-                ForEach(movies.sorted(by: { $0.order < $1.order })) { movie in
-                    GlassFocusPoster(
-                        thumbnailURL: movie.thumbnail,
+                ForEach(movies.sorted(by: { ($0.collectionOrder ?? 0) < ($1.collectionOrder ?? 0) })) { movie in
+                    TVContentCard(
+                        imageURL: movie.thumbnail,
                         title: movie.title ?? "Untitled",
                         subtitle: movieSubtitle(movie),
-                        badge: "\(movie.order)",
+                        badge: "\(movie.collectionOrder ?? 0)",
                         aspectRatio: 16 / 9,
-                        onSelect: {
-                            coordinator.fullscreenRoute = .movieDetail(movieId: movie.id)
-                        }
-                    )
+                        placeholderIcon: "film"
+                    ) {
+                        coordinator.fullscreenRoute = .movieDetail(movieId: movie.id)
+                    }
                 }
             }
         }
@@ -155,26 +164,16 @@ struct TVCollectionDetailView: View {
     }
 
     private func playAll(_ movies: [CollectionMovie]) async {
-        let movieIds = movies.sorted(by: { $0.order < $1.order }).map { $0.id }
+        let movieIds = movies.sorted(by: { ($0.collectionOrder ?? 0) < ($1.collectionOrder ?? 0) }).map { $0.id }
         guard !movieIds.isEmpty else { return }
 
         do {
             try await repos.playlist.addBulkToPlaylist(contentIds: movieIds)
             coordinator.fullscreenRoute = .movieDetail(movieId: movieIds[0])
         } catch {
-            viewModel?.error = "Failed to create playlist"
+            // Playlist creation failed - navigate to first movie directly
+            coordinator.fullscreenRoute = .movieDetail(movieId: movieIds[0])
         }
     }
 }
-
-private func tvErrorState(_ message: String, retry: @escaping () -> Void) -> some View {
-    VStack(spacing: TVDesignTokens.Spacing.lg) {
-        Text(message)
-            .font(.system(size: TVDesignTokens.FontSize.xl))
-            .foregroundColor(DesignTokens.Text.secondary)
-
-        GlassFocusButton(title: "Retry", icon: "arrow.clockwise", style: .secondary, size: .medium, action: retry)
-    }
-    .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .padding(TVDesignTokens.Spacing.xl)
-}
+#endif

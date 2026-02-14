@@ -45,8 +45,10 @@ class CollectionDetectorService:
 
         # Find all movies with same collection ID
         movies_in_collection = await Content.find(
-            Content.tmdb_collection_id == collection_id,
-            Content.is_collection_parent == False,  # noqa: E712
+            {
+                "tmdb_collection_id": collection_id,
+                "is_collection_parent": {"$ne": True},
+            }
         ).to_list()
 
         if len(movies_in_collection) < 2:
@@ -63,8 +65,10 @@ class CollectionDetectorService:
 
         # Check if collection parent already exists
         collection_parent = await Content.find_one(
-            Content.tmdb_collection_id == collection_id,
-            Content.is_collection_parent == True,  # noqa: E712
+            {
+                "tmdb_collection_id": collection_id,
+                "is_collection_parent": True,
+            }
         )
 
         # Fetch full collection metadata from TMDB
@@ -92,6 +96,8 @@ class CollectionDetectorService:
                 primary_section_id="movies",
                 is_published=True,
                 stream_url="",  # Required field but not used for collections
+                source_provider="tmdb_collection",  # Required for unique index
+                source_id=str(collection_id),  # Required for unique index
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow(),
             )
@@ -123,9 +129,10 @@ class CollectionDetectorService:
         for idx, movie_doc in enumerate(
             sorted(movies_in_collection, key=lambda m: m.year or 0), start=1
         ):
-            movie_doc.collection_parent_id = str(collection_parent.id)
-            movie_doc.collection_order = idx
-            await movie_doc.save()
+            await movie_doc.set({
+                Content.collection_parent_id: str(collection_parent.id),
+                Content.collection_order: idx,
+            })
             linked_count += 1
             logger.info(
                 f"Linked movie '{movie_doc.title}' to collection "
@@ -152,8 +159,10 @@ class CollectionDetectorService:
 
         # Find all movies with TMDB collection IDs
         movies = await Content.find(
-            Content.tmdb_collection_id != None,  # noqa: E711
-            Content.is_collection_parent == False,  # noqa: E712
+            {
+                "tmdb_collection_id": {"$exists": True, "$ne": None},
+                "is_collection_parent": {"$ne": True},
+            }
         ).to_list()
 
         logger.info(

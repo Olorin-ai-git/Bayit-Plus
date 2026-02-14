@@ -5752,6 +5752,9 @@
       }
     }
   },
+  "listen": {
+    "title": "শুনুন"
+  },
   "podcasts": {
     "title": "Podcast",
     "episodes": "পর্ব",

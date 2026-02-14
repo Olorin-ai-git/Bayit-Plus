@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
-/// Podcasts screen with category filters and show grid
+/// Listen screen with radio stations, category filters and podcast show grid
 struct PodcastsView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: PodcastsViewModel?
     @State private var radioStations: [RadioStationItem] = []
     @State private var showAddSheet = false
@@ -17,7 +19,7 @@ struct PodcastsView: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             HStack {
-                PageHeader(icon: "headphones", title: "Listen")
+                PageHeader(icon: "headphones", title: localization.t("listen.title"))
                 Button {
                     showAddSheet = true
                 } label: {
@@ -71,9 +73,10 @@ struct PodcastsView: View {
                 RadioStationsRow(stations: radioStations, coordinator: coordinator)
             }
 
-            Text("Podcasts")
+            Text(localization.t("podcasts.title"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, DesignTokens.Spacing.lg)
 
             if !vm.categories.isEmpty {

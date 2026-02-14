@@ -2,12 +2,13 @@ import BayitDesignSystem
 import BayitMedia
 import SwiftUI
 
-/// tvOS Podcasts screen with horizontal shelves organized by category.
-/// Reuses PodcastsViewModel from shared ViewModels.
+/// tvOS Listen screen - Radio stations and Podcasts in one tab.
+/// Reuses PodcastsViewModel and RadioViewModel from shared ViewModels.
 struct TVPodcastsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: PodcastsViewModel?
+    @State private var radioStations: [RadioStationItem] = []
     @State private var showAddSheet = false
 
     var body: some View {
@@ -39,13 +40,29 @@ struct TVPodcastsView: View {
             if viewModel == nil {
                 viewModel = PodcastsViewModel(repository: repos.podcasts)
             }
-            await viewModel?.loadInitial()
+            async let podcastsLoad: () = viewModel?.loadInitial() ?? ()
+            async let radioLoad: () = loadRadioStations()
+            _ = await (podcastsLoad, radioLoad)
         }
     }
 
     @ViewBuilder
     private func contentSections(_ vm: PodcastsViewModel) -> some View {
         LazyVStack(spacing: TVDesignTokens.Spacing.xl) {
+            // Radio stations section
+            if !radioStations.isEmpty {
+                radioSection
+            }
+
+            // Podcasts section label
+            if !vm.shows.isEmpty {
+                Text("Podcasts")
+                    .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+                    .foregroundStyle(DesignTokens.Text.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            }
+
             if !vm.categories.isEmpty {
                 categoryFilters(vm)
             }
@@ -183,6 +200,49 @@ struct TVPodcastsView: View {
             }
             .padding(.horizontal, TVDesignTokens.Spacing.xl)
             .padding(.vertical, TVDesignTokens.Spacing.md)
+        }
+    }
+
+    // MARK: - Radio
+
+    private var radioSection: some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
+            Text("Radio")
+                .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .padding(.leading, TVDesignTokens.Spacing.xl)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: TVDesignTokens.Spacing.focusGap) {
+                    ForEach(radioStations) { station in
+                        TVContentCard(
+                            imageURL: station.logo,
+                            title: station.name ?? "Station",
+                            subtitle: station.currentSong ?? station.currentShow,
+                            aspectRatio: 1.0,
+                            placeholderIcon: "radio"
+                        ) {
+                            coordinator.presentPlayer(
+                                contentId: station.id,
+                                contentType: .radio
+                            )
+                        }
+                        .frame(width: TVDesignTokens.MinSize.posterWidth)
+                    }
+                }
+                .padding(.horizontal, TVDesignTokens.Spacing.xl)
+            }
+        }
+    }
+
+    private func loadRadioStations() async {
+        do {
+            let response = try await repos.radio.fetchStations(cultureId: nil, genre: nil)
+            await MainActor.run {
+                radioStations = Array(response.stations.prefix(8))
+            }
+        } catch {
+            // Radio is supplementary - fail silently
         }
     }
 

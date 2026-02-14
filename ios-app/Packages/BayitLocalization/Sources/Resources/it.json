@@ -6018,6 +6018,9 @@
       }
     }
   },
+  "listen": {
+    "title": "Ascolta"
+  },
   "podcasts": {
     "title": "Podcast",
     "episodes": "episodi",

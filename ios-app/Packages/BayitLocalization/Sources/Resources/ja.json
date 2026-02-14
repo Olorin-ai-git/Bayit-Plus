@@ -6202,6 +6202,9 @@
       }
     }
   },
+  "listen": {
+    "title": "聴く"
+  },
   "podcasts": {
     "title": "ポッドキャスト",
     "subtitle": "ポッドキャストを発見",

@@ -5943,6 +5943,9 @@
       }
     }
   },
+  "listen": {
+    "title": "Escuchar"
+  },
   "podcasts": {
     "title": "Podcasts",
     "episodes": "episodios",
