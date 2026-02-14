@@ -15,6 +15,35 @@ from app.core.storage import (
 logger = get_logger(__name__)
 
 
+def _compute_engine_sign_kwargs(client) -> dict:
+    """Return signing kwargs for Compute Engine credentials on Cloud Run.
+
+    Cloud Run uses metadata-server credentials that lack a private key,
+    so ``blob.generate_signed_url`` cannot sign locally.  When we detect
+    Compute Engine credentials we refresh the token and pass
+    ``service_account_email`` + ``access_token`` so the GCS library
+    delegates signing to the IAM ``signBlob`` API instead.
+    """
+    try:
+        from google.auth import compute_engine as ce_auth
+
+        credentials = client._credentials
+        if isinstance(credentials, ce_auth.Credentials):
+            from google.auth.transport import (
+                requests as google_auth_requests,
+            )
+
+            auth_request = google_auth_requests.Request()
+            credentials.refresh(auth_request)
+            return {
+                "service_account_email": credentials.service_account_email,
+                "access_token": credentials.token,
+            }
+    except ImportError:
+        pass
+    return {}
+
+
 class OlorinStorageService:
     """High-level async storage operations used by Olorin services."""
 
@@ -84,10 +113,13 @@ class OlorinStorageService:
 
         gcs = self._require_gcs()
         blob = gcs.bucket.blob(remote_path)
+
+        sign_kwargs = _compute_engine_sign_kwargs(gcs.client)
         return blob.generate_signed_url(
             version="v4",
             expiration=timedelta(seconds=expiry_seconds),
             method="GET",
+            **sign_kwargs,
         )
 
     async def delete_file(self, remote_path: str) -> bool:

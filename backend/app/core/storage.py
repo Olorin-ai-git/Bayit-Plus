@@ -354,6 +354,34 @@ class S3StorageProvider(StorageProvider):
             return False
 
 
+def _gcs_compute_engine_sign_kwargs(client) -> dict:
+    """Return signing kwargs when running on Compute Engine (Cloud Run).
+
+    Compute Engine credentials lack a private key, so
+    ``blob.generate_signed_url`` cannot sign locally.  We detect this
+    and pass ``service_account_email`` + ``access_token`` so the GCS
+    library delegates signing to the IAM ``signBlob`` API.
+    """
+    try:
+        from google.auth import compute_engine as ce_auth
+
+        credentials = client._credentials
+        if isinstance(credentials, ce_auth.Credentials):
+            from google.auth.transport import (
+                requests as google_auth_requests,
+            )
+
+            auth_request = google_auth_requests.Request()
+            credentials.refresh(auth_request)
+            return {
+                "service_account_email": credentials.service_account_email,
+                "access_token": credentials.token,
+            }
+    except ImportError:
+        pass
+    return {}
+
+
 class GCSStorageProvider(StorageProvider):
     """Google Cloud Storage provider"""
 
@@ -511,12 +539,13 @@ class GCSStorageProvider(StorageProvider):
         blob = self.bucket.blob(blob_name)
 
         try:
-            # Generate signed upload URL (valid for 1 hour)
+            sign_kwargs = _gcs_compute_engine_sign_kwargs(self.client)
             url = blob.generate_signed_url(
                 version="v4",
                 expiration=self.datetime.timedelta(hours=1),
                 method="PUT",
                 content_type=content_type,
+                **sign_kwargs,
             )
 
             return {
