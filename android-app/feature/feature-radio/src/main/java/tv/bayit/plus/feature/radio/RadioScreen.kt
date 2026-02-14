@@ -1,6 +1,5 @@
 package tv.bayit.plus.feature.radio
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,7 +43,6 @@ fun RadioRoute(
     viewModel: RadioViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
     RadioScreen(
         uiState = uiState,
         onStationClick = { station -> onNavigateToPlayer(station.id, "radio") },
@@ -71,12 +69,7 @@ internal fun RadioScreen(
                 modifier = modifier,
             ) {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    uiState.nowPlayingStationId?.let { playingId ->
-                        val playingStation = uiState.stations.firstOrNull { it.id == playingId }
-                        if (playingStation != null) {
-                            NowPlayingBar(station = playingStation)
-                        }
-                    }
+                    NowPlayingBar(uiState)
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(2),
                         contentPadding = PaddingValues(DesignTokens.Spacing.base),
@@ -84,10 +77,7 @@ internal fun RadioScreen(
                         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
                         modifier = Modifier.fillMaxSize(),
                     ) {
-                        items(
-                            items = uiState.stations,
-                            key = { it.id },
-                        ) { station ->
+                        items(items = uiState.stations, key = { it.id }) { station ->
                             RadioGridItem(
                                 station = station,
                                 isFavorite = station.id in uiState.favoriteIds,
@@ -99,132 +89,50 @@ internal fun RadioScreen(
                 }
             }
         }
-        is RadioUiState.Error -> RadioErrorSection(
-            message = uiState.message,
-            onRetry = onRefresh,
-            modifier = modifier,
-        )
+        is RadioUiState.Error -> RadioErrorSection(message = uiState.message, onRetry = onRefresh, modifier = modifier)
     }
 }
 
 @Composable
-private fun NowPlayingBar(
-    station: RadioStationItem,
-    modifier: Modifier = Modifier,
-) {
-    GlassCard(modifier = modifier.fillMaxWidth().padding(horizontal = DesignTokens.Spacing.base)) {
+private fun NowPlayingBar(uiState: RadioUiState.Success) {
+    val playingId = uiState.nowPlayingStationId ?: return
+    val station = uiState.stations.firstOrNull { it.id == playingId } ?: return
+    GlassCard(modifier = Modifier.fillMaxWidth().padding(horizontal = DesignTokens.Spacing.base)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             CachedAsyncImage(
-                url = station.logo,
-                contentDescription = station.name,
-                modifier = Modifier
-                    .width(DesignTokens.Spacing.xxxxl)
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(DesignTokens.Radius.sm)),
+                url = station.logo, contentDescription = station.name,
+                modifier = Modifier.width(DesignTokens.Spacing.xxxxl).aspectRatio(1f).clip(RoundedCornerShape(DesignTokens.Radius.sm)),
             )
             Spacer(modifier = Modifier.width(DesignTokens.Spacing.md))
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Now Playing",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = DesignTokens.Colors.Primary.light,
-                )
-                station.name?.let { name ->
-                    Text(
-                        text = name,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = DesignTokens.Colors.Text.primary,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-                station.currentSong?.let { song ->
-                    Text(
-                        text = song,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = DesignTokens.Colors.Text.secondary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
+                Text(text = "Now Playing", style = MaterialTheme.typography.labelSmall, color = DesignTokens.Colors.Primary.light)
+                station.name?.let { Text(text = it, style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                station.currentSong?.let { Text(text = it, style = MaterialTheme.typography.bodySmall, color = DesignTokens.Colors.Text.secondary, maxLines = 1, overflow = TextOverflow.Ellipsis) }
             }
         }
     }
 }
 
 @Composable
-private fun RadioGridItem(
-    station: RadioStationItem,
-    isFavorite: Boolean,
-    onClick: () -> Unit,
-    onFavoriteClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+private fun RadioGridItem(station: RadioStationItem, isFavorite: Boolean, onClick: () -> Unit, onFavoriteClick: () -> Unit, modifier: Modifier = Modifier) {
     GlassCard(modifier = modifier.clickable(onClick = onClick)) {
         Column {
-            CachedAsyncImage(
-                url = station.logo,
-                contentDescription = station.name,
-                modifier = Modifier.fillMaxWidth().aspectRatio(1f),
-            )
+            CachedAsyncImage(url = station.logo, contentDescription = station.name, modifier = Modifier.fillMaxWidth().aspectRatio(1f))
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
-            station.name?.let { name ->
-                Text(
-                    text = name,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = DesignTokens.Colors.Text.primary,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-            station.genre?.let { genre ->
-                Text(
-                    text = genre,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = DesignTokens.Colors.Text.secondary,
-                    maxLines = 1,
-                )
-            }
-            station.currentShow?.let { show ->
-                Text(
-                    text = show,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = DesignTokens.Colors.Text.muted,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
+            station.name?.let { Text(text = it, style = MaterialTheme.typography.bodyMedium, color = DesignTokens.Colors.Text.primary, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis) }
+            station.genre?.let { Text(text = it, style = MaterialTheme.typography.labelSmall, color = DesignTokens.Colors.Text.secondary, maxLines = 1) }
+            station.currentShow?.let { Text(text = it, style = MaterialTheme.typography.labelSmall, color = DesignTokens.Colors.Text.muted, maxLines = 1, overflow = TextOverflow.Ellipsis) }
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
-            GlassButton(
-                text = if (isFavorite) "Favorited" else "Favorite",
-                onClick = onFavoriteClick,
-                isPrimary = !isFavorite,
-            )
+            GlassButton(text = if (isFavorite) "Favorited" else "Favorite", onClick = onFavoriteClick, isPrimary = !isFavorite)
         }
     }
 }
 
 @Composable
-private fun RadioErrorSection(
-    message: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
-        ) {
-            Text(
-                text = message,
-                style = MaterialTheme.typography.bodyLarge,
-                color = DesignTokens.Colors.Semantic.error,
-            )
+private fun RadioErrorSection(message: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md)) {
+            Text(text = message, style = MaterialTheme.typography.bodyLarge, color = DesignTokens.Colors.Semantic.error)
             GlassButton(text = "Retry", onClick = onRetry)
         }
     }

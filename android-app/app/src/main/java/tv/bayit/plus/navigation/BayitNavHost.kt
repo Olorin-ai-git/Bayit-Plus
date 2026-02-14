@@ -23,6 +23,17 @@ import tv.bayit.plus.feature.podcasts.PodcastsRoute
 import tv.bayit.plus.feature.profile.selection.ProfileSelectionRoute
 import tv.bayit.plus.feature.radio.RadioRoute
 import tv.bayit.plus.feature.search.SearchRoute
+import tv.bayit.plus.feature.settings.SettingsRoute
+import tv.bayit.plus.feature.settings.accounts.ConnectedAccountsRoute
+import tv.bayit.plus.feature.settings.billing.BillingRoute
+import tv.bayit.plus.feature.settings.family.FamilyControlsRoute
+import tv.bayit.plus.feature.settings.help.HelpRoute
+import tv.bayit.plus.feature.settings.household.HouseholdRoute
+import tv.bayit.plus.feature.settings.language.LanguageSettingsRoute
+import tv.bayit.plus.feature.settings.notifications.NotificationSettingsRoute
+import tv.bayit.plus.feature.settings.profile.ProfileRoute
+import tv.bayit.plus.feature.settings.security.SecurityRoute
+import tv.bayit.plus.feature.settings.subscription.SubscriptionRoute
 import tv.bayit.plus.feature.vod.VodRoute
 import tv.bayit.plus.feature.vod.detail.MovieDetailRoute
 import tv.bayit.plus.feature.vod.recordings.RecordingsRoute
@@ -99,20 +110,47 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
         }
         composable<Route.AddProfile> { GlassLoadingIndicator() }
         composable<Route.EditProfile> { GlassLoadingIndicator() }
-        composable<Route.Profile> { GlassLoadingIndicator() }
+        composable<Route.Profile> {
+            ProfileRoute(onNavigateBack = { navController.popBackStack() })
+        }
         composable<Route.Favorites> { GlassLoadingIndicator() }
         composable<Route.Playlist> { GlassLoadingIndicator() }
         composable<Route.Downloads> { GlassLoadingIndicator() }
         composable<Route.Recordings> {
             RecordingsRoute(onNavigateToPlayer = { id, type -> navController.navigate(Route.Player(contentId = id, contentType = type)) })
         }
-        composable<Route.Settings> { GlassLoadingIndicator() }
-        composable<Route.LanguageSettings> { GlassLoadingIndicator() }
-        composable<Route.NotificationSettings> { GlassLoadingIndicator() }
-        composable<Route.Billing> { GlassLoadingIndicator() }
-        composable<Route.Subscription> { GlassLoadingIndicator() }
-        composable<Route.Security> { GlassLoadingIndicator() }
-        composable<Route.ConnectedAccounts> { GlassLoadingIndicator() }
+        composable<Route.Settings> {
+            SettingsRoute(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToMenuItem = { route -> navController.navigateToSettingsSubScreen(route) },
+                onLoggedOut = {
+                    navController.navigate(Route.Login) {
+                        popUpTo(Route.Home) { inclusive = true }
+                    }
+                },
+            )
+        }
+        composable<Route.LanguageSettings> {
+            LanguageSettingsRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.NotificationSettings> {
+            NotificationSettingsRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.Billing> {
+            BillingRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.Subscription> {
+            SubscriptionRoute(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToUpgrade = { navController.navigate(Route.Subscribe) },
+            )
+        }
+        composable<Route.Security> {
+            SecurityRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.ConnectedAccounts> {
+            ConnectedAccountsRoute(onNavigateBack = { navController.popBackStack() })
+        }
         composable<Route.Children> {
             ChildrenRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
         }
@@ -154,15 +192,24 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
         composable<Route.ShabbatMode> { GlassLoadingIndicator() }
         composable<Route.JerusalemContent> { GlassLoadingIndicator() }
         composable<Route.TelAvivContent> { GlassLoadingIndicator() }
-        composable<Route.FamilyControls> { GlassLoadingIndicator() }
-        composable<Route.Household> { GlassLoadingIndicator() }
+        composable<Route.FamilyControls> {
+            FamilyControlsRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.Household> {
+            HouseholdRoute(onNavigateBack = { navController.popBackStack() })
+        }
         composable<Route.DevicePairing> { GlassLoadingIndicator() }
         composable<Route.BetaCredits> { GlassLoadingIndicator() }
         composable<Route.SubscriptionGate> { GlassLoadingIndicator() }
         composable<Route.AvatarMode> { GlassLoadingIndicator() }
         composable<Route.PasskeyManagement> { GlassLoadingIndicator() }
         composable<Route.Widgets> { GlassLoadingIndicator() }
-        composable<Route.HelpCenter> { GlassLoadingIndicator() }
+        composable<Route.HelpCenter> {
+            HelpRoute(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToSupport = { navController.navigate(Route.Support) },
+            )
+        }
         composable<Route.Support> { GlassLoadingIndicator() }
         composable<Route.MfaSetup> { GlassLoadingIndicator() }
         composable<Route.PhoneVerification> { GlassLoadingIndicator() }
@@ -203,5 +250,23 @@ private fun NavController.navigateToContent(contentId: String, contentType: Stri
         "collection" -> navigate(Route.CollectionDetail(collectionId = contentId))
         "podcast" -> navigate(Route.PodcastDetail(showId = contentId))
         else -> navigate(Route.MovieDetail(movieId = contentId))
+    }
+}
+
+/**
+ * Maps settings menu item route strings to their corresponding navigation routes.
+ */
+private fun NavController.navigateToSettingsSubScreen(route: String) {
+    when (route) {
+        "profile" -> navigate(Route.Profile)
+        "language" -> navigate(Route.LanguageSettings)
+        "notifications" -> navigate(Route.NotificationSettings)
+        "subscription" -> navigate(Route.Subscription)
+        "billing" -> navigate(Route.Billing)
+        "security" -> navigate(Route.Security)
+        "accounts" -> navigate(Route.ConnectedAccounts)
+        "family" -> navigate(Route.FamilyControls)
+        "household" -> navigate(Route.Household)
+        "help" -> navigate(Route.HelpCenter)
     }
 }
