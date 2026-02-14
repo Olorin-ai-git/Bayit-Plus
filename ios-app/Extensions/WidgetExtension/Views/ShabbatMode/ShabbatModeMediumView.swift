@@ -110,7 +110,6 @@ struct ShabbatModeMediumView: View {
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel("\(label) at \(time)")
-        }
     }
 
     private var isShabbatActive: Bool {

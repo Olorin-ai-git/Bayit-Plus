@@ -21,7 +21,7 @@ struct SwitchChannelIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult {
         guard SharedKeychainHelper().readAuthToken() != nil else {
-            throw IntentError.notAuthenticated
+            throw WidgetIntentError.notAuthenticated
         }
 
         let intent = SharedPendingIntent(

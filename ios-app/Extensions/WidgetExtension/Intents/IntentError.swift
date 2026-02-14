@@ -1,11 +1,11 @@
 import AppIntents
 
 /// Errors that can occur during widget intent execution.
-enum IntentError: Error, CustomLocalizedStringResourceConvertible {
+public enum WidgetIntentError: Error, CustomLocalizedStringResourceConvertible {
     case notAuthenticated
     case unauthorized
 
-    var localizedStringResource: LocalizedStringResource {
+    public var localizedStringResource: LocalizedStringResource {
         switch self {
         case .notAuthenticated:
             return "Please sign in to Bayit+ to use this feature"

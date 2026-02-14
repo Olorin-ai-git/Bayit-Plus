@@ -20,7 +20,7 @@ struct TogglePlayPauseIntent: AppIntent {
     func perform() async throws -> some IntentResult {
         // Verify authentication before allowing playback control
         guard SharedKeychainHelper().readAuthToken() != nil else {
-            throw IntentError.notAuthenticated
+            throw WidgetIntentError.notAuthenticated
         }
 
         // Write pending intent for main app to handle
