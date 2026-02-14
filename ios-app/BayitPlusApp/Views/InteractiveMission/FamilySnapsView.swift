@@ -113,11 +113,11 @@ struct FamilySnapsView: View {
             VStack(spacing: DesignTokens.Spacing.sm) {
                 Image(systemName: "exclamationmark.triangle")
                     .font(.system(size: 32))
-                    .foregroundColor(DesignTokens.Colors.Semantic.error)
+                    .foregroundColor(DesignTokens.ErrorColor.default)
 
                 Text(message)
                     .font(.system(size: DesignTokens.FontSize.base))
-                    .foregroundColor(DesignTokens.Colors.Semantic.error)
+                    .foregroundColor(DesignTokens.ErrorColor.default)
                     .multilineTextAlignment(.center)
 
                 GlassButton(localization.t("snaps.retry"), variant: .secondary, size: .medium) {

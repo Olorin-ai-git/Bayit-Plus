@@ -25,14 +25,14 @@ struct GlossaryView: View {
     private var searchField: some View {
         HStack(spacing: DesignTokens.Spacing.sm) {
             Image(systemName: "magnifyingglass")
-                .foregroundStyle(DesignTokens.Colors.textSecondary)
+                .foregroundStyle(DesignTokens.Text.secondary)
             TextField("Search phrases...", text: $viewModel.searchQuery)
-                .foregroundStyle(DesignTokens.Colors.textPrimary)
+                .foregroundStyle(DesignTokens.Text.primary)
                 .onSubmit { Task { await viewModel.search() } }
         }
         .padding(DesignTokens.Spacing.sm)
-        .background(DesignTokens.Colors.surface)
-        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.CornerRadius.lg))
+        .background(DesignTokens.Glass.bgMedium)
+        .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
     }
 
     private var categoryChips: some View {
@@ -49,8 +49,8 @@ struct GlossaryView: View {
                             .padding(.vertical, DesignTokens.Spacing.xs)
                             .background(
                                 viewModel.activeCategory == category
-                                    ? DesignTokens.Colors.primaryAccent
-                                    : DesignTokens.Colors.surface
+                                    ? DesignTokens.Primary.p400
+                                    : DesignTokens.Glass.bgMedium
                             )
                             .clipShape(Capsule())
                     }
@@ -70,7 +70,7 @@ struct GlossaryView: View {
                 Button("Load More") {
                     Task { await viewModel.loadMore() }
                 }
-                .foregroundStyle(DesignTokens.Colors.primaryAccent)
+                .foregroundStyle(DesignTokens.Primary.p400)
                 .padding(.vertical, DesignTokens.Spacing.sm)
             }
 
@@ -82,7 +82,7 @@ struct GlossaryView: View {
 
             if let error = viewModel.errorMessage {
                 Text(error)
-                    .foregroundStyle(DesignTokens.Colors.error)
+                    .foregroundStyle(DesignTokens.ErrorColor.default)
                     .font(.caption)
             }
         }

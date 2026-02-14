@@ -61,7 +61,9 @@ final class APIStarStoryRepository: StarStoryRepository, @unchecked Sendable {
         let request = ConsentRequest(
             profileId: profileId,
             childFirstName: childFirstName,
-            pin: pin
+            pin: pin,
+            videoSelfieConsent: true,
+            voiceCloneConsent: true
         )
         return try await client.post(
             "/api/v1/star-story/consent",

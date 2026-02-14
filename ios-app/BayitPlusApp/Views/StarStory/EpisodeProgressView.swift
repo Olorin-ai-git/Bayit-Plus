@@ -26,7 +26,7 @@ struct EpisodeProgressView: View {
                 .font(.system(size: DesignTokens.FontSize.xxxl))
                 .foregroundStyle(
                     isFailed
-                        ? DesignTokens.Colors.Semantic.error
+                        ? DesignTokens.ErrorColor.default
                         : DesignTokens.Primary.p400
                 )
 
@@ -46,10 +46,10 @@ struct EpisodeProgressView: View {
                 GlassCard {
                     HStack(spacing: DesignTokens.Spacing.sm) {
                         Image(systemName: "xmark.circle")
-                            .foregroundStyle(DesignTokens.Colors.Semantic.error)
+                            .foregroundStyle(DesignTokens.ErrorColor.default)
                         Text(errorMsg)
                             .font(.system(size: DesignTokens.FontSize.sm))
-                            .foregroundStyle(DesignTokens.Colors.Semantic.error)
+                            .foregroundStyle(DesignTokens.ErrorColor.default)
                     }
                 }
                 .padding(.horizontal, DesignTokens.Spacing.lg)
@@ -104,7 +104,7 @@ struct EpisodeProgressView: View {
             Circle()
                 .fill(
                     index < currentStageIndex
-                        ? DesignTokens.Colors.Semantic.success
+                        ? DesignTokens.Success.default
                         : index == currentStageIndex
                             ? DesignTokens.Primary.p400
                             : DesignTokens.Glass.bg

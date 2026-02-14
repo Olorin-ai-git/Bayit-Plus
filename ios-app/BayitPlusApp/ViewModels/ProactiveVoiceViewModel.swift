@@ -40,7 +40,7 @@ final class ProactiveVoiceViewModel {
 
     // MARK: - Configuration
 
-    private static var configuredAutoDismissInterval: TimeInterval {
+    private nonisolated static var configuredAutoDismissInterval: TimeInterval {
         if let value = ProcessInfo.processInfo.environment["PROACTIVE_AUTO_DISMISS_SECONDS"],
            let interval = TimeInterval(value) {
             return interval

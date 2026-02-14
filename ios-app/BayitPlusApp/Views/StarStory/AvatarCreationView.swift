@@ -108,7 +108,7 @@ struct AvatarCreationView: View {
                 if let error = errorMessage {
                     Text(error)
                         .font(.system(size: DesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Colors.Semantic.error)
+                        .foregroundStyle(DesignTokens.ErrorColor.default)
                 }
                 GlassButton(localization.t("common.continue"), variant: .primary, size: .large) {
                     Task { await submitConsent() }
@@ -173,9 +173,9 @@ struct AvatarCreationView: View {
             profileId: profileId, pin: familyPin,
             meshRepo: repos.avatarMeshRepository
         ) ?? false
-        self.videoData = nil
 
         if success {
+            self.videoData = nil
             familyPin = ""
             isUploading = false
             showMeshGeneration = true

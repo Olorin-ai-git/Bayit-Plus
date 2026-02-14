@@ -118,7 +118,7 @@ struct AvatarWardrobeView: View {
         GlassCard {
             Text(message)
                 .font(.system(size: DesignTokens.FontSize.base))
-                .foregroundColor(DesignTokens.Colors.Semantic.error)
+                .foregroundColor(DesignTokens.ErrorColor.default)
                 .padding(DesignTokens.Spacing.md)
         }
     }

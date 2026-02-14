@@ -3297,7 +3297,9 @@
       "title": "Registra Video Selfie",
       "instructions": "Guarda la fotocamera e gira lentamente la testa a sinistra e a destra. Questo ci aiuta a creare il tuo avatar 3D.",
       "recording": "Registrazione...",
-      "maxDuration": "Massimo 10 secondi"
+      "maxDuration": "Massimo 10 secondi",
+      "uploadFromLibrary": "Carica dalla Libreria",
+      "dropHint": "Oppure trascina e rilascia un file video qui"
     },
     "processing": {
       "uploading": "Caricamento Video",

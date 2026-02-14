@@ -75,7 +75,7 @@ struct MagicMirrorNoCreditsPrompt: View {
             Spacer()
             Image(systemName: "creditcard.trianglebadge.exclamationmark")
                 .font(.system(size: 56))
-                .foregroundStyle(DesignTokens.Colors.Semantic.warning)
+                .foregroundStyle(DesignTokens.Warning.default)
             Text(localization.t("zehAni.magicMirror.noCreditsTitle"))
                 .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)

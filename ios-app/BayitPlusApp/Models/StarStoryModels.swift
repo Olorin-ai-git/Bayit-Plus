@@ -92,6 +92,8 @@ struct ConsentRequest: Encodable {
     let profileId: String
     let childFirstName: String
     let pin: String
+    let videoSelfieConsent: Bool
+    let voiceCloneConsent: Bool
 }
 
 struct ConsentResponse: Decodable {
@@ -115,8 +117,7 @@ struct GenerateEpisodeResponse: Decodable {
 
 struct VideoSelfieUploadResponse: Decodable {
     let avatarId: String
-    let status: String
-    let message: String?
+    let videoSelfieUploaded: Bool
 }
 
 struct AvatarsResponse: Decodable {

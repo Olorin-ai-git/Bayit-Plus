@@ -43,13 +43,13 @@ struct V2VResultView: View {
             scoreBar(
                 label: localization.t("zehAni.v2v.before"),
                 score: animatedBefore,
-                color: DesignTokens.Colors.Semantic.warning
+                color: DesignTokens.Warning.default
             )
 
             scoreBar(
                 label: localization.t("zehAni.v2v.after"),
                 score: animatedAfter,
-                color: DesignTokens.Colors.Semantic.success
+                color: DesignTokens.Success.default
             )
         }
     }
@@ -85,7 +85,7 @@ struct V2VResultView: View {
     private var improvementIndicator: some View {
         HStack(spacing: 6) {
             Image(systemName: scoreDelta > 0 ? "arrow.up.circle.fill" : "arrow.down.circle.fill")
-                .foregroundColor(scoreDelta > 0 ? DesignTokens.Colors.Semantic.success : DesignTokens.Colors.Semantic.error)
+                .foregroundColor(scoreDelta > 0 ? DesignTokens.Success.default : DesignTokens.ErrorColor.default)
                 .font(.system(size: 20))
 
             Text("\(localization.t("zehAni.v2v.improvement")): \(formatDelta(scoreDelta))")

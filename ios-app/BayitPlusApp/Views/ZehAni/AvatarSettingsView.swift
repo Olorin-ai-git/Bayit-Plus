@@ -109,7 +109,7 @@ struct AvatarSettingsView: View {
                 if let error {
                     Text(error)
                         .font(.system(size: DesignTokens.FontSize.xs))
-                        .foregroundStyle(DesignTokens.Colors.Semantic.error)
+                        .foregroundStyle(DesignTokens.ErrorColor.default)
                 }
             }
         }
@@ -130,9 +130,9 @@ struct AvatarSettingsView: View {
 
     private var meshStatusColor: Color {
         switch meshStatus?.status.lowercased() {
-        case "ready", "completed": return DesignTokens.Colors.Semantic.success
-        case "generating", "rigging", "pending": return DesignTokens.Colors.Semantic.warning
-        case "failed", "error": return DesignTokens.Colors.Semantic.error
+        case "ready", "completed": return DesignTokens.Success.default
+        case "generating", "rigging", "pending": return DesignTokens.Warning.default
+        case "failed", "error": return DesignTokens.ErrorColor.default
         default: return DesignTokens.Text.muted
         }
     }

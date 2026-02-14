@@ -62,11 +62,17 @@ async def extract_first_frame(video_bytes: bytes) -> bytes:
 
 async def validate_face(video_bytes: bytes) -> None:
     """Extract first frame and validate face detection."""
-    from app.services.star_story.avatar_generation_service import avatar_generation_service
+    from app.services.star_story.face_detection_service import face_detection_service
     first_frame = await extract_first_frame(video_bytes)
-    face_detected = await avatar_generation_service.detect_face(first_frame)
-    if not face_detected:
-        raise ValueError(
-            "No face detected in video selfie. "
-            "Please ensure your face is clearly visible."
-        )
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+        tmp.write(first_frame)
+        tmp_path = tmp.name
+    try:
+        result = await face_detection_service.detect_face(tmp_path)
+        if not result.get("face_detected"):
+            raise ValueError(
+                "No face detected in video selfie. "
+                "Please ensure your face is clearly visible."
+            )
+    finally:
+        Path(tmp_path).unlink(missing_ok=True)

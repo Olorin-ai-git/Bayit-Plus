@@ -35,7 +35,7 @@ struct V2VPracticeView: View {
 
                 if let error = viewModel.error {
                     Text(error)
-                        .foregroundColor(DesignTokens.Colors.Semantic.error)
+                        .foregroundColor(DesignTokens.ErrorColor.default)
                         .font(.system(size: 14))
                 }
             }

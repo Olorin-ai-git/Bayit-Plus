@@ -58,7 +58,7 @@ struct ErrorOverlayView: View {
             GlassCard {
                 Text(message)
                     .font(.system(size: DesignTokens.FontSize.base))
-                    .foregroundColor(DesignTokens.Colors.Semantic.error)
+                    .foregroundColor(DesignTokens.ErrorColor.default)
                     .padding(DesignTokens.Spacing.md)
             }
             .padding(DesignTokens.Spacing.md)
@@ -102,7 +102,7 @@ struct DecisionOverlayView: View {
                     if let result = lastResult, !result.success {
                         Text(localization.t("mission.attempt_failed", ["attempt": String(currentAttempt), "max": "3"]))
                             .font(.system(size: DesignTokens.FontSize.sm))
-                            .foregroundColor(DesignTokens.Colors.Semantic.error)
+                            .foregroundColor(DesignTokens.ErrorColor.default)
                     }
 
                     GlassButton(

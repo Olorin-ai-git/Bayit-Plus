@@ -72,7 +72,7 @@ struct SceneTriggerErrorView: View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 60))
-                .foregroundColor(DesignTokens.Colors.Semantic.error)
+                .foregroundColor(DesignTokens.ErrorColor.default)
 
             Text(message)
                 .font(.system(size: 16))
@@ -97,7 +97,7 @@ struct SceneTriggerSuccessView: View {
         VStack(spacing: 20) {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 80))
-                .foregroundColor(DesignTokens.Colors.Semantic.success)
+                .foregroundColor(DesignTokens.Success.default)
 
             Text(localization.t("zehAni.trigger.success"))
                 .font(.system(size: 24, weight: .bold))
@@ -107,7 +107,7 @@ struct SceneTriggerSuccessView: View {
                 onContinue()
             }
             .buttonStyle(.borderedProminent)
-            .tint(DesignTokens.Colors.Semantic.success)
+            .tint(DesignTokens.Success.default)
         }
         .onAppear {
             DispatchQueue.main.asyncAfter(deadline: .now() + autoAdvanceDelay) {
@@ -128,7 +128,7 @@ struct SceneTriggerRetryView: View {
         VStack(spacing: 20) {
             Image(systemName: "xmark.circle.fill")
                 .font(.system(size: 60))
-                .foregroundColor(DesignTokens.Colors.Semantic.error)
+                .foregroundColor(DesignTokens.ErrorColor.default)
 
             Text(localization.t("zehAni.trigger.incorrect"))
                 .font(.system(size: 20, weight: .semibold))

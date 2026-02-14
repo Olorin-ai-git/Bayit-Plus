@@ -86,14 +86,14 @@ struct NewsClipView: View {
                 .onAppear { player = AVPlayer(url: url) }
         }
 
-        FlowLayout(spacing: 8) {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 80), spacing: 8)], spacing: 8) {
             ForEach(clip.vocabularyFeatured, id: \.self) { word in
                 Text(word)
                     .font(.system(size: 13, weight: .medium))
-                    .foregroundColor(DesignTokens.Color.accent)
+                    .foregroundColor(DesignTokens.Primary.p400)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 4)
-                    .background(DesignTokens.Color.accent.opacity(0.15))
+                    .background(DesignTokens.Primary.p400.opacity(0.15))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
@@ -134,15 +134,15 @@ struct NewsClipView: View {
                     }
                     Spacer()
                     if clip.id == selectedClip?.id {
-                        Circle().fill(DesignTokens.Color.accent).frame(width: 8, height: 8)
+                        Circle().fill(DesignTokens.Primary.p400).frame(width: 8, height: 8)
                     }
                 }
                 .padding(16)
-                .background(clip.id == selectedClip?.id ? DesignTokens.Color.accent.opacity(0.1) : .white.opacity(0.05))
+                .background(clip.id == selectedClip?.id ? DesignTokens.Primary.p400.opacity(0.1) : .white.opacity(0.05))
                 .clipShape(RoundedRectangle(cornerRadius: 16))
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(clip.id == selectedClip?.id ? DesignTokens.Color.accent.opacity(0.5) : .white.opacity(0.08), lineWidth: 1)
+                        .stroke(clip.id == selectedClip?.id ? DesignTokens.Primary.p400.opacity(0.5) : .white.opacity(0.08), lineWidth: 1)
                 )
             }
         }

@@ -54,12 +54,17 @@ private struct DynamicKey: CodingKey {
     init?(intValue: Int) { nil }
 }
 
-private struct RawDataBody: Encodable, Sendable {
+struct RawDataBody: Encodable, Sendable, RawBodyProvider {
     let data: Data
+    var rawData: Data { data }
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(data)
     }
+}
+
+protocol RawBodyProvider {
+    var rawData: Data { get }
 }
 
 // MARK: - Convenience HTTP Methods

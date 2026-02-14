@@ -3344,7 +3344,9 @@
       "title": "Record Video Selfie",
       "instructions": "Look at the camera and slowly turn your head left and right. This helps us create your 3D avatar.",
       "recording": "Recording...",
-      "maxDuration": "Maximum 10 seconds"
+      "maxDuration": "Maximum 10 seconds",
+      "uploadFromLibrary": "Upload from Library",
+      "dropHint": "Or drag and drop a video file here"
     },
     "processing": {
       "uploading": "Uploading Video",

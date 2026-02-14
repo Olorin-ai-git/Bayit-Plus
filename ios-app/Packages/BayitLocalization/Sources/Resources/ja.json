@@ -2644,7 +2644,9 @@
       "title": "ビデオセルフィーを録画",
       "instructions": "カメラを見て、ゆっくり頭を左右に回してください。3Dアバターの作成に役立ちます。",
       "recording": "録画中...",
-      "maxDuration": "最大10秒"
+      "maxDuration": "最大10秒",
+      "uploadFromLibrary": "ライブラリからアップロード",
+      "dropHint": "またはビデオファイルをここにドラッグ&ドロップ"
     },
     "processing": {
       "uploading": "ビデオをアップロード中",

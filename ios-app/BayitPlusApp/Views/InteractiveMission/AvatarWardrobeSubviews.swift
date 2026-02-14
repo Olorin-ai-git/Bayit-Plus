@@ -137,7 +137,7 @@ struct OutfitDetailCard: View {
                         if shekelBalance < outfit.priceShekel {
                             Text(localization.t("wardrobe.insufficient_balance"))
                                 .font(.system(size: DesignTokens.FontSize.sm))
-                                .foregroundColor(DesignTokens.Colors.Semantic.error)
+                                .foregroundColor(DesignTokens.ErrorColor.default)
                         }
                     }
                 }

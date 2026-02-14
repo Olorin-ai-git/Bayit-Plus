@@ -34,7 +34,9 @@ extension APIClient {
         await applyLocationHeaders(to: &urlRequest)
         applyPerRequestHeaders(apiRequest.headers, to: &urlRequest)
 
-        if let body = apiRequest.body {
+        if let rawProvider = apiRequest.body as? RawBodyProvider {
+            urlRequest.httpBody = rawProvider.rawData
+        } else if let body = apiRequest.body {
             urlRequest.httpBody = try jsonEncoder.encode(body)
         }
 

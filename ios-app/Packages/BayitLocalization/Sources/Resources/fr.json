@@ -3053,7 +3053,9 @@
       "title": "Enregistrer un Video Selfie",
       "instructions": "Regardez la camera et tournez lentement la tete a gauche et a droite. Cela nous aide a creer votre avatar 3D.",
       "recording": "Enregistrement...",
-      "maxDuration": "Maximum 10 secondes"
+      "maxDuration": "Maximum 10 secondes",
+      "uploadFromLibrary": "Importer de la Bibliotheque",
+      "dropHint": "Ou glissez-deposez un fichier video ici"
     },
     "processing": {
       "uploading": "Telechargement de la video",

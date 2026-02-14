@@ -37,7 +37,7 @@ enum AuthComponents {
         let message: String
 
         var body: some View {
-            let errorColor = DesignTokens.Colors.Semantic.error
+            let errorColor = DesignTokens.ErrorColor.default
             Text(message)
                 .font(.system(size: 14))
                 .foregroundStyle(errorColor)

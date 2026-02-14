@@ -104,7 +104,8 @@ public final class NavigationCoordinator {
              .mfaSetup, .phoneVerification,
              .zehAni, .zehAniMagicMirror, .zehAniV2V,
              .zehAniAvatar3D, .zehAniHighlights,
-             .zehAniContacts, .zehAniFeedback:
+             .zehAniContacts, .zehAniFeedback,
+             .zehAniAvatarSettings:
             pushToCurrentTab(route)
         }
     }

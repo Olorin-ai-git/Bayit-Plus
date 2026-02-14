@@ -40,7 +40,9 @@ import subprocess
 import tempfile
 
 # Add backend directory to Python path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+SCRIPT_DIR = Path(__file__).parent
+PROJECT_ROOT = SCRIPT_DIR.parent.parent
+sys.path.insert(0, str(PROJECT_ROOT / "backend"))
 
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId

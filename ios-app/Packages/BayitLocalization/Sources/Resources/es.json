@@ -3145,7 +3145,9 @@
       "title": "Grabar Video Selfie",
       "instructions": "Mira a la camara y gira la cabeza lentamente a la izquierda y a la derecha. Esto nos ayuda a crear tu avatar 3D.",
       "recording": "Grabando...",
-      "maxDuration": "Maximo 10 segundos"
+      "maxDuration": "Maximo 10 segundos",
+      "uploadFromLibrary": "Subir de la Biblioteca",
+      "dropHint": "O arrastra y suelta un archivo de video aqui"
     },
     "processing": {
       "uploading": "Subiendo Video",

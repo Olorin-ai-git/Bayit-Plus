@@ -29,10 +29,10 @@ struct VideoProcessingStepView: View {
             } else if let error = errorMessage {
                 Image(systemName: "exclamationmark.triangle")
                     .font(.system(size: 48))
-                    .foregroundStyle(DesignTokens.Colors.Semantic.error)
+                    .foregroundStyle(DesignTokens.ErrorColor.default)
                 Text(error)
                     .font(.system(size: DesignTokens.FontSize.sm))
-                    .foregroundStyle(DesignTokens.Colors.Semantic.error)
+                    .foregroundStyle(DesignTokens.ErrorColor.default)
                     .multilineTextAlignment(.center)
                 GlassButton(localization.t("avatar.processing.retryUpload"), variant: .secondary, size: .medium) {
                     onRetry()

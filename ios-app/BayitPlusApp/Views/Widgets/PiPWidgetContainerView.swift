@@ -217,7 +217,7 @@ struct PiPWidgetContainerView: View {
     private var radioContentView: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
             HStack(spacing: DesignTokens.Spacing.md) {
-                coverThumbnail(fallbackIcon: "radio", fallbackColor: DesignTokens.Colors.Semantic.warning)
+                coverThumbnail(fallbackIcon: "radio", fallbackColor: DesignTokens.Warning.default)
 
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
                     Text(widget.title)
@@ -254,7 +254,7 @@ struct PiPWidgetContainerView: View {
     private var podcastContentView: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
             HStack(spacing: DesignTokens.Spacing.md) {
-                coverThumbnail(fallbackIcon: "mic.fill", fallbackColor: DesignTokens.Colors.Semantic.success)
+                coverThumbnail(fallbackIcon: "mic.fill", fallbackColor: DesignTokens.Success.default)
 
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
                     Text(widget.title)
@@ -315,7 +315,7 @@ struct PiPWidgetContainerView: View {
     private var audiobookContentView: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
             HStack(spacing: DesignTokens.Spacing.md) {
-                coverThumbnail(fallbackIcon: "book.fill", fallbackColor: DesignTokens.Colors.Semantic.info)
+                coverThumbnail(fallbackIcon: "book.fill", fallbackColor: DesignTokens.Info.default)
 
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
                     Text(widget.title)

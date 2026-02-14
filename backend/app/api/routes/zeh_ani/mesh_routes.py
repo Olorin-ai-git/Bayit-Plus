@@ -69,9 +69,9 @@ async def generate_mesh(
     )
     if not avatar:
         raise HTTPException(status_code=404, detail="Avatar not found")
-    if not avatar.is_ready:
+    if not avatar.video_selfie_gcs_path:
         raise HTTPException(
-            status_code=400, detail="Avatar must be ready before mesh gen"
+            status_code=400, detail="Video selfie required before mesh gen"
         )
 
     await biometric_consent_service.verify_pin(

@@ -3070,7 +3070,9 @@
       "title": "录制视频自拍",
       "instructions": "看着摄像头，慢慢地左右转动头部。这有助于我们创建您的3D头像。",
       "recording": "录制中...",
-      "maxDuration": "最长10秒"
+      "maxDuration": "最长10秒",
+      "uploadFromLibrary": "从相册上传",
+      "dropHint": "或将视频文件拖放到此处"
     },
     "processing": {
       "uploading": "上传视频中",

@@ -16,6 +16,7 @@ struct MagicMirrorView: View {
     @State private var noAvatar = false
     @State private var showAvatarCreation = false
     @State private var starStoryVM: StarStoryViewModel?
+    @State private var existingAvatarId: String?
     @State private var sceneView: SCNView?
     @State private var avatarNode: SCNNode?
     @State private var isAnimating = false
@@ -40,6 +41,7 @@ struct MagicMirrorView: View {
                     Spacer()
                 } else if let greeting = greeting {
                     greetingContent(greeting)
+                    reRecordButton
                     refreshButton
                 }
             }
@@ -48,7 +50,9 @@ struct MagicMirrorView: View {
         .sheet(isPresented: $showAvatarCreation) {
             AvatarCreationView(
                 profileId: profileId,
-                viewModel: starStoryVM
+                viewModel: starStoryVM,
+                skipConsent: existingAvatarId != nil,
+                existingAvatarId: existingAvatarId
             )
         }
         .onChange(of: showAvatarCreation) { _, isShowing in
@@ -164,6 +168,13 @@ struct MagicMirrorView: View {
         }
     }
 
+    private var reRecordButton: some View {
+        GlassButton(localization.t("avatar.settings.reRecord"), variant: .secondary) {
+            starStoryVM = StarStoryViewModel(repository: repos.starStory)
+            showAvatarCreation = true
+        }
+    }
+
     // MARK: - Scene
 
     private func createAvatarScene() -> SCNScene {
@@ -196,11 +207,16 @@ struct MagicMirrorView: View {
 
         Task {
             do {
-                let fetched = try await repos.avatarMeshRepository.getMagicMirrorGreeting(
+                async let greetingTask = repos.avatarMeshRepository.getMagicMirrorGreeting(
                     profileId: profileId
                 )
+                async let avatarsTask = repos.starStory.fetchAvatars(profileId: profileId)
+
+                let fetched = try await greetingTask
+                let avatarsResponse = try? await avatarsTask
                 await MainActor.run {
                     greeting = fetched
+                    existingAvatarId = avatarsResponse?.avatars.first?.avatarId
                     isLoading = false
                 }
             } catch let apiError as APIError {

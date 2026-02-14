@@ -73,7 +73,7 @@ struct Avatar3DPreviewView: View {
     private var errorView: some View {
         VStack(spacing: 16) {
             Text(localization.t("zehAni.preview.error"))
-                .foregroundColor(DesignTokens.Colors.Semantic.error)
+                .foregroundColor(DesignTokens.ErrorColor.default)
                 .font(.system(size: 16))
             if let error = error {
                 Text(error)
