@@ -133,7 +133,7 @@ struct ConnectedAccountsView: View {
                         if provider.isPrimary {
                             Text(localization.t("settings.primary"))
                                 .font(.system(size: DesignTokens.FontSize.xs, weight: .semibold))
-                                .foregroundStyle(DesignTokens.Text.inverted)
+                                .foregroundStyle(.white)
                                 .padding(.horizontal, DesignTokens.Spacing.sm)
                                 .padding(.vertical, DesignTokens.Spacing.xxs)
                                 .background(DesignTokens.Primary.default)
@@ -336,14 +336,15 @@ struct ConnectedAccountsView: View {
     NavigationStack {
         ConnectedAccountsView()
             .environment(AuthManager(
-                configuration: AuthConfiguration(
-                    googleClientID: "",
-                    googleServerClientID: "",
-                    appleTeamID: "",
-                    keychainAccessGroup: ""
+                configuration: AppAuthConfiguration(
+                    googleClientID: "preview-client-id",
+                    googleServerClientID: "preview-server-client-id",
+                    bundleID: "tv.bayit.plus.preview",
+                    keychainServiceName: "tv.bayit.plus.preview"
                 ),
-                logger: ConsoleLogger()
+                logger: AppAPILogger()
             ))
             .environment(LocalizationManager())
     }
 }
+
