@@ -83,18 +83,20 @@ async def get_avatars(
         ChildAvatar.profile_id == profile_id,
     ).to_list()
 
-    return [
-        {
-            "avatar_id": str(a.id),
-            "child_first_name": a.child_first_name,
-            "style": a.style.value,
-            "status": a.status.value,
-            "primary_avatar_url": a.primary_avatar_gcs_path,
-            "poses_count": len(a.avatar_poses),
-            "created_at": a.created_at.isoformat(),
-        }
-        for a in avatars
-    ]
+    return {
+        "avatars": [
+            {
+                "avatar_id": str(a.id),
+                "child_first_name": a.child_first_name,
+                "style": a.style.value,
+                "status": a.status.value,
+                "primary_avatar_url": a.primary_avatar_gcs_path,
+                "poses_count": len(a.avatar_poses),
+                "created_at": a.created_at.isoformat(),
+            }
+            for a in avatars
+        ]
+    }
 
 
 @router.post("/episodes/generate")
@@ -162,20 +164,22 @@ async def list_episodes(
         StoryEpisode.status == EpisodeStatus.READY,
     ).sort(-StoryEpisode.created_at).limit(limit).to_list()
 
-    return [
-        {
-            "episode_id": str(ep.id),
-            "title": ep.title,
-            "theme": ep.theme,
-            "episode_number": ep.episode_number,
-            "status": ep.status.value,
-            "hls_url": ep.hls_manifest_gcs_path,
-            "thumbnail_url": ep.thumbnail_gcs_path,
-            "duration_seconds": ep.total_duration_seconds,
-            "created_at": ep.created_at.isoformat(),
-        }
-        for ep in episodes
-    ]
+    return {
+        "episodes": [
+            {
+                "episode_id": str(ep.id),
+                "title": ep.title,
+                "theme": ep.theme,
+                "episode_number": ep.episode_number,
+                "status": ep.status.value,
+                "hls_url": ep.hls_manifest_gcs_path,
+                "thumbnail_url": ep.thumbnail_gcs_path,
+                "duration_seconds": ep.total_duration_seconds,
+                "created_at": ep.created_at.isoformat(),
+            }
+            for ep in episodes
+        ]
+    }
 
 
 @router.post("/video-selfie/upload")
