@@ -235,6 +235,7 @@ async def upload_glb_mesh(
             "avatar_id": str(avatar.id),
             "source": MeshSource.ARKIT.value,
         },
+        user=user,
     )
     if not success:
         raise HTTPException(

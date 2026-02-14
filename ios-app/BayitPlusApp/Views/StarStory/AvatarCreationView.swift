@@ -136,6 +136,11 @@ struct AvatarCreationView: View {
                 .padding(.horizontal, DesignTokens.Spacing.lg)
                 .padding(.top, DesignTokens.Spacing.sm)
 
+            #if targetEnvironment(simulator)
+            simulatorCaptureView
+                .padding(.horizontal, DesignTokens.Spacing.lg)
+                .padding(.top, DesignTokens.Spacing.md)
+            #else
             if ARFaceTrackingConfiguration.isSupported {
                 ARFaceCaptureView(
                     onCaptureComplete: { glbData in
@@ -159,8 +164,49 @@ struct AvatarCreationView: View {
                 .padding(.horizontal, DesignTokens.Spacing.lg)
                 .padding(.top, DesignTokens.Spacing.md)
             }
+            #endif
         }
     }
+
+    // MARK: - Simulator Debug
+
+    #if targetEnvironment(simulator)
+    private var simulatorCaptureView: some View {
+        VStack(spacing: DesignTokens.Spacing.lg) {
+            Spacer()
+            Image(systemName: "face.smiling")
+                .font(.system(size: DesignTokens.FontSize.xxxl))
+                .foregroundStyle(DesignTokens.Primary.p400)
+            Text("Simulator: ARKit unavailable")
+                .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
+                .foregroundStyle(DesignTokens.Text.primary)
+            Text("Tap below to generate a synthetic face mesh and test the full upload pipeline.")
+                .font(.system(size: DesignTokens.FontSize.sm))
+                .foregroundStyle(DesignTokens.Text.muted)
+                .multilineTextAlignment(.center)
+            GlassButton("Use Sample Face", variant: .primary, size: .large) {
+                Task { await buildSyntheticAndUpload() }
+            }
+            .disabled(isUploading)
+            GlassButton(localization.t("common.cancel"), variant: .ghost, size: .medium) {
+                currentStep = .consent
+            }
+            Spacer()
+        }
+    }
+
+    private func buildSyntheticAndUpload() async {
+        let result = ARFaceCaptureSession.syntheticResult()
+        let glbData = await Task.detached(priority: .userInitiated) {
+            GLBBuilder.build(from: result)
+        }.value
+        guard let glbData else {
+            errorMessage = localization.t("zehAni.arCapture.noFace")
+            return
+        }
+        await processARKitCapture(glbData: glbData)
+    }
+    #endif
 
     // MARK: - Actions
 
