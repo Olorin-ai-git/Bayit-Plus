@@ -1,9 +1,11 @@
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Viewing history screen for tvOS - shows what user has watched.
 struct TVViewingHistoryView: View {
+    @Environment(LocalizationManager.self) private var localization
     let onDismiss: () -> Void
 
     @State private var historyItems: [HistoryItem] = []
@@ -167,7 +169,7 @@ struct TVViewingHistoryView: View {
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(2.0)
 
-            Text("Loading History...")
+            Text(localization.t("profile.loadingHistory"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -202,11 +204,11 @@ struct TVViewingHistoryView: View {
                 .font(.system(size: 72))
                 .foregroundStyle(DesignTokens.Text.muted)
 
-            Text("No Viewing History")
+            Text(localization.t("profile.noViewingHistory"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
-            Text("Start watching content to see your history here")
+            Text(localization.t("profile.noViewingHistoryDescription"))
                 .font(.system(size: TVDesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

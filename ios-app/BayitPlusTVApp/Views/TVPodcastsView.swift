@@ -209,7 +209,7 @@ struct TVPodcastsView: View {
 
     private var radioSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Radio")
+            Text(localization.t("radio.title"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.leading, TVDesignTokens.Spacing.xl)
@@ -253,7 +253,7 @@ struct TVPodcastsView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Podcasts...")
+            Text(localization.t("podcasts.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

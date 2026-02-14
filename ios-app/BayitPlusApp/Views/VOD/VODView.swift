@@ -175,6 +175,8 @@ private struct VODCard: View {
     let item: ContentItem
     let onTap: () -> Void
 
+    @Environment(LocalizationManager.self) private var localization
+
     var body: some View {
         Button(action: onTap) {
             VStack(alignment: .leading, spacing: 0) {
@@ -256,7 +258,7 @@ private struct VODCard: View {
     @ViewBuilder
     private var seriesBadge: some View {
         if item.isSeries == true {
-            Text("Series")
+            Text(localization.t("vod.series"))
                 .font(.system(
                     size: DesignTokens.FontSize.xs,
                     weight: .semibold

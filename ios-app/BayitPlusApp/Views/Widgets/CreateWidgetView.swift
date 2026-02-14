@@ -199,11 +199,11 @@ struct CreateWidgetView: View {
 
     private var vodContentIdField: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Text("Content ID")
+            Text(localization.t("widgets.contentId"))
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
-            TextField("Content ID", text: $vodContentId)
+            TextField(localization.t("widgets.contentId"), text: $vodContentId)
                 .font(.system(size: DesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(DesignTokens.Spacing.md)
@@ -250,7 +250,7 @@ struct CreateWidgetView: View {
                 syncPickerTab(for: selectedContentType)
                 showContentPicker = true
             } label: {
-                Text("Change")
+                Text(localization.t("common.change"))
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                     .foregroundStyle(DesignTokens.Primary.default)
             }

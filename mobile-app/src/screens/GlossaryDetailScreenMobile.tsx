@@ -1,10 +1,7 @@
 /**
- * GlossaryDetailScreenMobile
- *
- * Detailed word view with full definition, etymology,
- * usage examples, audio pronunciation, and related words.
+ * GlossaryDetailScreenMobile - Detailed word view with full definition,
+ * etymology, usage examples, audio pronunciation, and related words.
  */
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, SafeAreaView, TouchableOpacity } from 'react-native';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
@@ -21,16 +18,9 @@ const moduleLogger = logger.scope('GlossaryDetailScreenMobile');
 type RouteParams = { wordId: string };
 
 interface GlossaryWord {
-  phrase: string;
-  nikud?: string;
-  transliteration: string;
-  partOfSpeech?: string;
-  translation: string;
-  origin: string;
-  usageExample: string;
-  funFact: string;
-  tags: string[];
-  audioUrl?: string;
+  phrase: string; nikud?: string; transliteration: string; partOfSpeech?: string;
+  translation: string; origin: string; usageExample: string; funFact: string;
+  tags: string[]; audioUrl?: string;
   relatedWords?: Array<{ phrase: string; transliteration: string; id: string }>;
   contextQuotes?: Array<{ text: string; source: string }>;
 }

@@ -1,9 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS wake word settings view. Informational only — wake word not functional on Apple TV.
 struct TVWakeWordSettingsView: View {
-
+    @Environment(LocalizationManager.self) private var localization
     @State private var sensitivity: Double = 0.5
 
     var body: some View {
@@ -34,11 +35,11 @@ struct TVWakeWordSettingsView: View {
                     .foregroundStyle(DesignTokens.Primary.p300)
             }
 
-            Text("Hey Bayit")
+            Text(localization.t("voice.heyBayit"))
                 .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Activate voice control by saying the wake word.")
+            Text(localization.t("voice.wakeWordDescription"))
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -55,11 +56,11 @@ struct TVWakeWordSettingsView: View {
                     .foregroundStyle(DesignTokens.Primary.p400)
 
                 VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
-                    Text("Apple TV Limitation")
+                    Text(localization.t("voice.appleTVLimitation"))
                         .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                         .foregroundStyle(DesignTokens.Text.primary)
 
-                    Text("Wake word detection requires continuous microphone access, which is not available on Apple TV. Use the Siri Remote or on-screen controls instead.")
+                    Text(localization.t("voice.appleTVLimitationDescription"))
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Text.muted)
                 }
@@ -77,7 +78,7 @@ struct TVWakeWordSettingsView: View {
     private var sensitivityDisplaySection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             HStack {
-                Text("Sensitivity")
+                Text(localization.t("voice.sensitivity"))
                     .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
@@ -102,11 +103,11 @@ struct TVWakeWordSettingsView: View {
             .frame(height: 8)
 
             HStack {
-                Text("Low")
+                Text(localization.t("voice.low"))
                     .font(.system(size: TVDesignTokens.FontSize.xs))
                     .foregroundStyle(DesignTokens.Text.disabled)
                 Spacer()
-                Text("High")
+                Text(localization.t("voice.high"))
                     .font(.system(size: TVDesignTokens.FontSize.xs))
                     .foregroundStyle(DesignTokens.Text.disabled)
             }
@@ -125,7 +126,7 @@ struct TVWakeWordSettingsView: View {
                 .fill(DesignTokens.Text.disabled)
                 .frame(width: 16, height: 16)
 
-            Text("Not available on Apple TV")
+            Text(localization.t("voice.notAvailableOnAppleTV"))
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.secondary)
 

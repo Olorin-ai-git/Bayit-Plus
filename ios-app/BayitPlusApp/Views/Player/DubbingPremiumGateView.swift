@@ -92,7 +92,7 @@ struct DubbingPremiumGateView: View {
         Button {
             onDismiss()
         } label: {
-            Text("Maybe Later")
+            Text(localization.t("common.maybeLater"))
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

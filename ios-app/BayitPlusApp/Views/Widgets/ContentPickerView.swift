@@ -167,7 +167,7 @@ struct ContentPickerView: View {
                 .font(.system(size: 36))
                 .foregroundStyle(DesignTokens.Text.disabled)
 
-            Text("No \(viewModel.selectedTab.displayLabel.lowercased()) found")
+            Text(localization.t("widgets.noContentFound"))
                 .font(.system(size: DesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.muted)
                 .multilineTextAlignment(.center)

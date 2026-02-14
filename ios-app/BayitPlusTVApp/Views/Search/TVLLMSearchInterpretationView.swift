@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Displays the AI interpretation of a natural language search query
 /// with a confidence meter bar and percentage indicator. tvOS version.
 struct TVLLMSearchInterpretationView: View {
+    @Environment(LocalizationManager.self) private var localization
     let interpretation: SearchInterpretation
 
     var body: some View {
@@ -45,7 +47,7 @@ struct TVLLMSearchInterpretationView: View {
 
     private func confidenceMeter(_ confidence: Double) -> some View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
-            Text("Confidence")
+            Text(localization.t("search.confidence"))
                 .font(.system(size: TVDesignTokens.FontSize.xs))
                 .foregroundStyle(DesignTokens.Text.muted)
 

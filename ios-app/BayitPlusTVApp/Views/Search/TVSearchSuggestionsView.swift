@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS-optimized search suggestions showing trending and recent searches
 /// as horizontally scrollable GlassChip rows for Siri Remote navigation.
 struct TVSearchSuggestionsView: View {
+    @Environment(LocalizationManager.self) private var localization
     let trendingSearches: [String]
     let recentSearches: [String]
     let onSelect: (String) -> Void
@@ -32,7 +34,7 @@ struct TVSearchSuggestionsView: View {
                     .foregroundColor(DesignTokens.Primary.default)
                     .accessibilityHidden(true)
 
-                Text("Trending Searches")
+                Text(localization.t("search.trendingSearches"))
                     .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
                     .foregroundColor(DesignTokens.Text.primary)
             }
@@ -65,7 +67,7 @@ struct TVSearchSuggestionsView: View {
                         .foregroundColor(DesignTokens.Text.secondary)
                         .accessibilityHidden(true)
 
-                    Text("Recent Searches")
+                    Text(localization.t("search.recentSearches"))
                         .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
                         .foregroundColor(DesignTokens.Text.primary)
                 }

@@ -87,7 +87,7 @@ struct LeaderboardView: View {
                 .foregroundStyle(DesignTokens.gold)
 
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-                Text("Top Players")
+                Text(localization.t("trivia.topPlayers"))
                     .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 

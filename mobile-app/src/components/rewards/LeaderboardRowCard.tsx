@@ -27,7 +27,7 @@ interface LeaderboardRowCardProps {
 const RANK_COLORS: Record<number, string> = {
   1: Colors.Special.gold,
   2: Colors.Dark.d300,
-  3: '#CD7F32',
+  3: Colors.Warning.w600,
 };
 
 export const LeaderboardRowCard: React.FC<LeaderboardRowCardProps> = ({

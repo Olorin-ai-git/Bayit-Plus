@@ -1,9 +1,11 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// fullScreenCover with card-style buttons for selecting HLS quality on tvOS.
 struct TVQualitySelectorView: View {
+    @Environment(LocalizationManager.self) private var localization
     let currentQuality: StreamQuality
     let onSelect: (StreamQuality) -> Void
 
@@ -11,7 +13,7 @@ struct TVQualitySelectorView: View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             Spacer()
 
-            Text("Video Quality")
+            Text(localization.t("player.videoQuality"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 

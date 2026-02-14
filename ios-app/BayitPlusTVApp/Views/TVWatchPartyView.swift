@@ -73,7 +73,7 @@ struct TVWatchPartyView: View {
             Text(party.contentTitle ?? party.contentId).font(.system(size: TVDesignTokens.FontSize.display, weight: .bold)).foregroundStyle(DesignTokens.Text.primary)
             HStack(spacing: TVDesignTokens.Spacing.md) {
                 Text("\(party.participantCount) watching").font(.system(size: TVDesignTokens.FontSize.lg)).foregroundStyle(DesignTokens.Text.secondary)
-                Text("Code: \(party.roomCode)").font(.system(size: TVDesignTokens.FontSize.base)).foregroundStyle(DesignTokens.Text.muted)
+                Text(localization.t("watchParty.roomCode", ["code": party.roomCode])).font(.system(size: TVDesignTokens.FontSize.base)).foregroundStyle(DesignTokens.Text.muted)
             }
         }.frame(maxWidth: .infinity).padding(.vertical, TVDesignTokens.Spacing.xl)
     }

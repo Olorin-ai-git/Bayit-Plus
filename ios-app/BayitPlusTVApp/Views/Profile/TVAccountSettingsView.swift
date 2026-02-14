@@ -1,9 +1,11 @@
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Account security and settings screen for tvOS.
 struct TVAccountSettingsView: View {
+    @Environment(LocalizationManager.self) private var localization
     let profile: ProfileResponse
     let viewModel: ProfileViewModel
     let onDismiss: () -> Void
@@ -95,7 +97,7 @@ struct TVAccountSettingsView: View {
                             .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                             .foregroundStyle(DesignTokens.Text.primary)
 
-                        Text("Primary sign-in method")
+                        Text(localization.t("profile.primarySignIn"))
                             .font(.system(size: TVDesignTokens.FontSize.sm))
                             .foregroundStyle(DesignTokens.Text.secondary)
                     }
@@ -119,7 +121,7 @@ struct TVAccountSettingsView: View {
         } header: {
             sectionHeader("Linked Accounts")
         } footer: {
-            Text("Link multiple sign-in methods for easier access")
+            Text(localization.t("profile.linkSignInMethods"))
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -140,7 +142,7 @@ struct TVAccountSettingsView: View {
                         .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                         .foregroundStyle(DesignTokens.Text.primary)
 
-                    Text("Email address")
+                    Text(localization.t("profile.emailAddress"))
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
@@ -151,7 +153,7 @@ struct TVAccountSettingsView: View {
                     HStack(spacing: 6) {
                         Image(systemName: "checkmark.seal.fill")
                             .font(.system(size: 20))
-                        Text("Verified")
+                        Text(localization.t("profile.verified"))
                             .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
                     }
                     .foregroundStyle(DesignTokens.Success.default)
@@ -179,7 +181,7 @@ struct TVAccountSettingsView: View {
                             .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                             .foregroundStyle(DesignTokens.Text.primary)
 
-                        Text("Phone number")
+                        Text(localization.t("profile.phoneNumber"))
                             .font(.system(size: TVDesignTokens.FontSize.sm))
                             .foregroundStyle(DesignTokens.Text.secondary)
                     }
@@ -190,7 +192,7 @@ struct TVAccountSettingsView: View {
                         HStack(spacing: 6) {
                             Image(systemName: "checkmark.seal.fill")
                                 .font(.system(size: 20))
-                            Text("Verified")
+                            Text(localization.t("profile.verified"))
                                 .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
                         }
                         .foregroundStyle(DesignTokens.Success.default)

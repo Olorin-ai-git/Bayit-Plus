@@ -94,7 +94,7 @@ struct OpenSubtitlesDownloadView: View {
                     .foregroundStyle(DesignTokens.Success.default)
                     .font(.system(size: 16))
 
-                Text("Imported \(imported.count) subtitle track\(imported.count == 1 ? "" : "s")")
+                Text(localization.t("subtitles.imported", ["count": "\(imported.count)"]))
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
             }
@@ -123,7 +123,7 @@ struct OpenSubtitlesDownloadView: View {
                     .foregroundStyle(DesignTokens.Warning.default)
                     .font(.system(size: 16))
 
-                Text("Failed: \(failed.count)")
+                Text(localization.t("subtitles.failed", ["count": "\(failed.count)"]))
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
             }
@@ -144,7 +144,7 @@ struct OpenSubtitlesDownloadView: View {
                     .foregroundStyle(DesignTokens.Text.muted)
                     .font(.system(size: 16))
 
-                Text("Skipped: \(skipped.count) (already exists)")
+                Text(localization.t("subtitles.skipped", ["count": "\(skipped.count)"]))
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.muted)
             }

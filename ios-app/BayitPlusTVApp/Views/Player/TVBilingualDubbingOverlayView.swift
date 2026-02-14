@@ -112,11 +112,11 @@ struct TVBilingualDubbingOverlayView: View {
                 .clipShape(Capsule())
 
                 HStack {
-                    Text("Hebrew \(hebrewPercent)%")
+                    Text("\(localization.t("languages.hebrew")) \(hebrewPercent)%")
                         .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
                         .foregroundStyle(DesignTokens.Info.i400)
                     Spacer()
-                    Text("English \(englishPercent)%")
+                    Text("\(localization.t("languages.english")) \(englishPercent)%")
                         .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
                         .foregroundStyle(DesignTokens.Text.muted)
                 }

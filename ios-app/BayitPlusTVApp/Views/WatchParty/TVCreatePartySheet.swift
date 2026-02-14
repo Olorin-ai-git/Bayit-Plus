@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS modal sheet for creating a new watch party.
 /// Provides content ID, content type, and participant limit selection.
 struct TVCreatePartySheet: View {
+    @Environment(LocalizationManager.self) private var localization
     @Binding var isPresented: Bool
     let onCreate: (CreatePartyRequest) -> Void
 
@@ -18,7 +20,7 @@ struct TVCreatePartySheet: View {
     var body: some View {
         GlassModal(isPresented: $isPresented) {
             VStack(spacing: TVDesignTokens.Spacing.lg) {
-                Text("Create Watch Party")
+                Text(localization.t("watchParty.createParty"))
                     .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
@@ -38,7 +40,7 @@ struct TVCreatePartySheet: View {
 
     private var contentTypePicker: some View {
         HStack {
-            Text("Type")
+            Text(localization.t("watchParty.type"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
             Spacer()
@@ -54,7 +56,7 @@ struct TVCreatePartySheet: View {
 
     private var participantPicker: some View {
         HStack {
-            Text("Max guests")
+            Text(localization.t("watchParty.maxGuests"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
             Spacer()

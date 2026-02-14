@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Zine Reader with full-screen page viewing and remote navigation.
 /// Uses PageTabViewStyle for horizontal page-by-page navigation.
 struct TVZineReaderView: View {
+    @Environment(LocalizationManager.self) private var localization
     let zineId: String
     let zineTitle: String
     let pageUrls: [String]
@@ -103,7 +105,7 @@ struct TVZineReaderView: View {
 
     private var pageIndicator: some View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
-            Text("Page \(currentPage + 1) of \(pageUrls.count)")
+            Text(localization.t("zine.pageIndicator", ["current": "\(currentPage + 1)", "total": "\(pageUrls.count)"]))
                 .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.lg)
@@ -134,7 +136,7 @@ struct TVZineReaderView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Page...")
+            Text(localization.t("zine.loadingPage"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -148,7 +150,7 @@ struct TVZineReaderView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Warning.default)
 
-            Text("Failed to Load Page \(pageNumber)")
+            Text(localization.t("zine.failedToLoad", ["page": "\(pageNumber)"]))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
@@ -162,11 +164,11 @@ struct TVZineReaderView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Text.muted)
 
-            Text("No Pages Available")
+            Text(localization.t("zine.noPagesAvailable"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("This zine has no pages to display.")
+            Text(localization.t("zine.noPagesDescription"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)

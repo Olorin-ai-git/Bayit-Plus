@@ -180,7 +180,7 @@ struct TVChessView: View {
     }
 
     private func gameCodeDisplay(_ code: String) -> some View {
-        Text("Code: \(code)")
+        Text(localization.t("chess.code", ["code": code]))
             .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium, design: .monospaced))
             .foregroundStyle(DesignTokens.Text.muted)
             .padding(.top, TVDesignTokens.Spacing.sm)

@@ -93,7 +93,7 @@ struct TriviaSettingsView: View {
                                 .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
                                 .foregroundStyle(DesignTokens.Text.primary)
 
-                            Text("Automatically show trivia during playback")
+                            Text(localization.t("trivia.autoShowDescription"))
                                 .font(.system(size: DesignTokens.FontSize.sm))
                                 .foregroundStyle(DesignTokens.Text.muted)
                         }

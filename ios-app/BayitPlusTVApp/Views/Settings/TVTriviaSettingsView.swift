@@ -70,7 +70,7 @@ struct TVTriviaSettingsView: View {
                     .font(.system(size: 32))
                     .foregroundStyle(DesignTokens.Warning.default)
 
-                Text("Trivia Settings")
+                Text(localization.t("trivia.settings"))
                     .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
             }

@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
 /// tvOS Live TV screen with a grid of channel cards.
 /// Reuses LiveTVViewModel from shared ViewModels.
 struct TVLiveTVView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: LiveTVViewModel?
@@ -42,7 +44,7 @@ struct TVLiveTVView: View {
 
     private func channelGrid(_ channels: [LiveChannelItem]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Live TV")
+            Text(localization.t("liveTV.title"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.leading, TVDesignTokens.Spacing.xl)

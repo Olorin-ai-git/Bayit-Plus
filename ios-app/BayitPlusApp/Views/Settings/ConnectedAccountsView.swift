@@ -60,7 +60,7 @@ struct ConnectedAccountsView: View {
                 }
             }
         } message: { provider in
-            Text("Are you sure you want to unlink your \(provider.provider.displayName) account?")
+            Text(localization.t("settings.unlinkConfirmation", ["provider": provider.provider.displayName]))
         }
     }
 
@@ -188,7 +188,7 @@ struct ConnectedAccountsView: View {
             if !isAppleLinked {
                 linkProviderButton(
                     icon: "apple.logo",
-                    title: "Link Apple Account"
+                    title: localization.t("settings.linkAppleAccount")
                 ) {
                     await linkApple()
                 }

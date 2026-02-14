@@ -278,7 +278,7 @@ struct TVProfileView: View {
                 HStack(spacing: TVDesignTokens.Spacing.xs) {
                     Image(systemName: "calendar")
                         .font(.system(size: TVDesignTokens.FontSize.xs))
-                    Text("Member since \(date.formatted(.dateTime.year().month()))")
+                    Text(localization.t("profile.memberSince", ["date": date.formatted(.dateTime.year().month())]))
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                 }
                 .padding(.horizontal, TVDesignTokens.Spacing.sm)
@@ -420,11 +420,11 @@ struct TVProfileView: View {
                     )
 
                 VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
-                    Text("Beta 500 Member")
+                    Text(localization.t("profile.beta500Member"))
                         .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                         .foregroundStyle(DesignTokens.Text.primary)
 
-                    Text("Access to AI features and experimental content")
+                    Text(localization.t("profile.beta500Description"))
                         .font(.system(size: TVDesignTokens.FontSize.md))
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
@@ -436,7 +436,7 @@ struct TVProfileView: View {
                         .font(.system(size: TVDesignTokens.FontSize.display, weight: .bold))
                         .foregroundStyle(DesignTokens.Primary.p400)
 
-                    Text("Credits")
+                    Text(localization.t("profile.credits"))
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Text.muted)
                 }
@@ -644,11 +644,11 @@ struct TVProfileView: View {
                         .frame(width: 32)
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Sign Out")
+                        Text(localization.t("profile.signOut"))
                             .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                             .foregroundStyle(DesignTokens.Colors.Semantic.error)
 
-                        Text("You'll need to sign in again")
+                        Text(localization.t("profile.signOutConfirmation"))
                             .font(.system(size: TVDesignTokens.FontSize.sm))
                             .foregroundStyle(DesignTokens.Text.muted)
                     }
@@ -706,7 +706,7 @@ struct TVProfileView: View {
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(2.0)
 
-            Text("Loading Profile...")
+            Text(localization.t("profile.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -728,7 +728,7 @@ struct TVProfileView: View {
             Button {
                 Task { await viewModel.load() }
             } label: {
-                Text("Retry")
+                Text(localization.t("common.retry"))
                     .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
                     .padding(.horizontal, TVDesignTokens.Spacing.xl)
                     .padding(.vertical, TVDesignTokens.Spacing.md)
@@ -746,7 +746,7 @@ struct TVProfileView: View {
                 .font(.system(size: 72))
                 .foregroundStyle(DesignTokens.Text.muted)
 
-            Text("No Profile Data")
+            Text(localization.t("profile.noData"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }

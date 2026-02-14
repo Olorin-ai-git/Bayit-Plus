@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Daily Missions screen with focus-navigable mission cards.
 /// Reuses MissionsViewModel from shared ViewModels.
 struct TVDailyMissionsView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var viewModel: MissionsViewModel?
 
@@ -47,7 +49,7 @@ struct TVDailyMissionsView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Primary.default)
 
-            Text("Daily Missions")
+            Text(localization.t("missions.title"))
                 .font(.system(size: TVDesignTokens.FontSize.display, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -59,7 +61,7 @@ struct TVDailyMissionsView: View {
                     Text("\(balance.balance)")
                         .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                         .foregroundStyle(DesignTokens.Text.primary)
-                    Text("Shekels")
+                    Text(localization.t("missions.shekels"))
                         .font(.system(size: TVDesignTokens.FontSize.lg))
                         .foregroundStyle(DesignTokens.Text.muted)
                 }
@@ -168,7 +170,7 @@ struct TVDailyMissionsView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Missions...")
+            Text(localization.t("missions.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

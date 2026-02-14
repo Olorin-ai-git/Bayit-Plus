@@ -10,26 +10,9 @@ import { api } from '@bayit/shared-services/api';
 import logger from '@/utils/logger';
 
 const moduleLogger = logger.scope('useStarStory');
-
 const POLL_INTERVAL_MS = 3000;
 
-export interface StarStoryAvatar {
-  id: string;
-  name: string;
-  thumbnail?: string;
-  profileId: string;
-}
-
-export interface StarStoryEpisode {
-  id: string;
-  title: string;
-  theme: string;
-  status: 'pending' | 'processing' | 'complete' | 'error';
-  thumbnail?: string;
-  videoUrl?: string;
-  createdAt: string;
-  progress?: GenerationProgress;
-}
+export interface StarStoryAvatar { id: string; name: string; thumbnail?: string; profileId: string }
 
 export interface GenerationProgress {
   currentStep: 'script' | 'voiceover' | 'animation' | 'rendering';
@@ -37,229 +20,98 @@ export interface GenerationProgress {
   estimatedTimeRemaining?: number;
 }
 
-interface GenerateParams {
-  profileId: string;
-  avatarId: string;
-  theme: string;
-  targetVocabulary: string[];
+export interface StarStoryEpisode {
+  id: string; title: string; theme: string;
+  status: 'pending' | 'processing' | 'complete' | 'error';
+  thumbnail?: string; videoUrl?: string; createdAt: string;
+  progress?: GenerationProgress;
 }
 
-interface StarStoryState {
-  avatars: StarStoryAvatar[];
-  episodes: StarStoryEpisode[];
-  activeGeneration: StarStoryEpisode | null;
-  isLoading: boolean;
-  isGenerating: boolean;
-  error: string | null;
-}
+interface GenerateParams { profileId: string; avatarId: string; theme: string; targetVocabulary: string[] }
 
 export function useStarStory(profileId: string) {
-  const [state, setState] = useState<StarStoryState>({
-    avatars: [],
-    episodes: [],
-    activeGeneration: null,
-    isLoading: true,
-    isGenerating: false,
-    error: null,
-  });
+  const [avatars, setAvatars] = useState<StarStoryAvatar[]>([]);
+  const [episodes, setEpisodes] = useState<StarStoryEpisode[]>([]);
+  const [activeGeneration, setActiveGeneration] = useState<StarStoryEpisode | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const isMountedRef = useRef(true);
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
-    isMountedRef.current = true;
-    if (profileId) {
-      loadData();
-    }
-    return () => {
-      isMountedRef.current = false;
-      stopPolling();
-    };
+    mountedRef.current = true;
+    if (profileId) loadData();
+    return () => { mountedRef.current = false; stopPolling(); };
   }, [profileId]);
 
-  const stopPolling = useCallback(() => {
-    if (pollTimerRef.current) {
-      clearInterval(pollTimerRef.current);
-      pollTimerRef.current = null;
-    }
-  }, []);
+  const stopPolling = useCallback(() => { if (pollRef.current) { clearInterval(pollRef.current); pollRef.current = null; } }, []);
 
   const loadData = useCallback(async () => {
     if (!profileId) return;
-
-    setState(prev => ({ ...prev, isLoading: true, error: null }));
-
+    setIsLoading(true); setError(null);
     try {
-      const [avatarsRes, episodesRes] = await Promise.allSettled([
+      const [avRes, epRes] = await Promise.allSettled([
         api.get('/star-story/avatars', { params: { profile_id: profileId } }),
         api.get('/star-story/episodes', { params: { profile_id: profileId } }),
       ]);
+      if (!mountedRef.current) return;
 
-      if (!isMountedRef.current) return;
+      const av = avRes.status === 'fulfilled' ? (avRes.value?.avatars || []) : [];
+      const ep = epRes.status === 'fulfilled' ? (epRes.value?.episodes || []) : [];
+      if (avRes.status === 'rejected') moduleLogger.warn('Avatars load failed', { error: avRes.reason });
+      if (epRes.status === 'rejected') moduleLogger.warn('Episodes load failed', { error: epRes.reason });
 
-      const avatars = avatarsRes.status === 'fulfilled'
-        ? (avatarsRes.value?.avatars || [])
-        : [];
-      const episodes = episodesRes.status === 'fulfilled'
-        ? (episodesRes.value?.episodes || [])
-        : [];
-
-      if (avatarsRes.status === 'rejected') {
-        moduleLogger.warn('Failed to load avatars', { error: avatarsRes.reason });
-      }
-      if (episodesRes.status === 'rejected') {
-        moduleLogger.warn('Failed to load episodes', { error: episodesRes.reason });
-      }
-
-      const activeGeneration = episodes.find(
-        (ep: StarStoryEpisode) => ep.status === 'processing' || ep.status === 'pending'
-      ) || null;
-
-      setState(prev => ({
-        ...prev,
-        avatars,
-        episodes,
-        activeGeneration,
-        isLoading: false,
-      }));
-
-      if (activeGeneration) {
-        startPolling(activeGeneration.id);
-      }
+      const active = ep.find((e: StarStoryEpisode) => e.status === 'processing' || e.status === 'pending') || null;
+      setAvatars(av); setEpisodes(ep); setActiveGeneration(active); setIsLoading(false);
+      if (active) startPolling(active.id);
     } catch (err) {
-      moduleLogger.error('Failed to load Star Story data', {
-        error: err instanceof Error ? err.message : String(err),
-        profileId,
-      });
-      if (isMountedRef.current) {
-        setState(prev => ({
-          ...prev,
-          isLoading: false,
-          error: err instanceof Error ? err.message : String(err),
-        }));
-      }
+      moduleLogger.error('Star Story data load failed', { error: err instanceof Error ? err.message : String(err), profileId });
+      if (mountedRef.current) { setIsLoading(false); setError(err instanceof Error ? err.message : String(err)); }
     }
   }, [profileId]);
 
   const startPolling = useCallback((episodeId: string) => {
     stopPolling();
-
-    pollTimerRef.current = setInterval(async () => {
+    pollRef.current = setInterval(async () => {
       try {
-        const progressData = await api.get(`/star-story/episodes/${episodeId}/progress`);
-
-        if (!isMountedRef.current) {
-          stopPolling();
-          return;
-        }
-
-        const typedProgress = progressData as unknown as {
-          status: string;
-          current_step: string;
-          progress: number;
-          estimated_time_remaining?: number;
+        const pd = await api.get(`/star-story/episodes/${episodeId}/progress`) as unknown as {
+          status: string; current_step: string; progress: number; estimated_time_remaining?: number;
         };
+        if (!mountedRef.current) { stopPolling(); return; }
 
-        const episode: Partial<StarStoryEpisode> = {
-          id: episodeId,
-          status: typedProgress.status as StarStoryEpisode['status'],
-          progress: {
-            currentStep: typedProgress.current_step as GenerationProgress['currentStep'],
-            progress: typedProgress.progress,
-            estimatedTimeRemaining: typedProgress.estimated_time_remaining,
-          },
-        };
+        const prog: GenerationProgress = { currentStep: pd.current_step as GenerationProgress['currentStep'], progress: pd.progress, estimatedTimeRemaining: pd.estimated_time_remaining };
+        const isComplete = pd.status === 'complete' || pd.status === 'error';
 
-        setState(prev => {
-          const updatedEpisodes = prev.episodes.map(ep =>
-            ep.id === episodeId ? { ...ep, ...episode } : ep
-          );
-
-          const isComplete = typedProgress.status === 'complete' || typedProgress.status === 'error';
-
-          if (isComplete) {
-            stopPolling();
-          }
-
-          return {
-            ...prev,
-            episodes: updatedEpisodes,
-            activeGeneration: isComplete ? null : { ...prev.activeGeneration!, ...episode } as StarStoryEpisode,
-            isGenerating: !isComplete,
-          };
-        });
-      } catch (err) {
-        moduleLogger.warn('Progress poll failed', {
-          episodeId,
-          error: err instanceof Error ? err.message : String(err),
-        });
-      }
+        setEpisodes(prev => prev.map(ep => ep.id === episodeId ? { ...ep, status: pd.status as StarStoryEpisode['status'], progress: prog } : ep));
+        if (isComplete) { stopPolling(); setActiveGeneration(null); setIsGenerating(false); }
+        else { setActiveGeneration(prev => prev ? { ...prev, status: pd.status as StarStoryEpisode['status'], progress: prog } : prev); }
+      } catch (err) { moduleLogger.warn('Progress poll failed', { episodeId, error: err instanceof Error ? err.message : String(err) }); }
     }, POLL_INTERVAL_MS);
   }, [stopPolling]);
 
   const generateEpisode = useCallback(async (params: GenerateParams) => {
-    setState(prev => ({ ...prev, isGenerating: true, error: null }));
-
+    setIsGenerating(true); setError(null);
     try {
-      const response = await api.post('/star-story/episodes/generate', {
-        profile_id: params.profileId,
-        avatar_id: params.avatarId,
-        theme: params.theme,
-        target_vocabulary: params.targetVocabulary,
-      });
+      const resp = await api.post('/star-story/episodes/generate', {
+        profile_id: params.profileId, avatar_id: params.avatarId, theme: params.theme, target_vocabulary: params.targetVocabulary,
+      }) as unknown as { episode_id: string; title: string; theme: string; status: string };
+      if (!mountedRef.current) return;
 
-      if (!isMountedRef.current) return;
-
-      const typedResponse = response as unknown as {
-        episode_id: string;
-        title: string;
-        theme: string;
-        status: string;
-      };
-
-      const newEpisode: StarStoryEpisode = {
-        id: typedResponse.episode_id,
-        title: typedResponse.title,
-        theme: typedResponse.theme,
-        status: 'pending',
-        createdAt: new Date().toISOString(),
-      };
-
-      setState(prev => ({
-        ...prev,
-        episodes: [newEpisode, ...prev.episodes],
-        activeGeneration: newEpisode,
-      }));
-
-      startPolling(newEpisode.id);
+      const newEp: StarStoryEpisode = { id: resp.episode_id, title: resp.title, theme: resp.theme, status: 'pending', createdAt: new Date().toISOString() };
+      setEpisodes(prev => [newEp, ...prev]);
+      setActiveGeneration(newEp);
+      startPolling(newEp.id);
     } catch (err) {
-      moduleLogger.error('Failed to generate episode', {
-        error: err instanceof Error ? err.message : String(err),
-        profileId: params.profileId,
-      });
-      if (isMountedRef.current) {
-        setState(prev => ({
-          ...prev,
-          isGenerating: false,
-          error: err instanceof Error ? err.message : String(err),
-        }));
-      }
+      moduleLogger.error('Episode generation failed', { error: err instanceof Error ? err.message : String(err), profileId: params.profileId });
+      if (mountedRef.current) { setIsGenerating(false); setError(err instanceof Error ? err.message : String(err)); }
     }
   }, [startPolling]);
 
-  const refresh = useCallback(async () => {
-    await loadData();
-  }, [loadData]);
-
   return {
-    avatars: state.avatars,
-    episodes: state.episodes,
-    activeGeneration: state.activeGeneration,
-    isLoading: state.isLoading,
-    isGenerating: state.isGenerating,
-    error: state.error,
-    generateEpisode,
-    refresh,
+    avatars, episodes, activeGeneration, isLoading, isGenerating, error,
+    generateEpisode, refresh: useCallback(async () => { await loadData(); }, [loadData]),
   };
 }
 
