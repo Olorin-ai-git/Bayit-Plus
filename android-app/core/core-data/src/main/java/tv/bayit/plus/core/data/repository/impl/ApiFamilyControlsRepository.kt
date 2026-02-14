@@ -6,8 +6,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
-import retrofit2.http.PUT
-import retrofit2.http.Path
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.FamilyControlsRepository
@@ -20,10 +18,6 @@ import tv.bayit.plus.core.network.api.BayitApiClient
  * correlation IDs, retry, rate limiting, and structured error mapping. Every
  * public method wraps the network call in [runCatchingResult] so callers receive
  * a [BayitResult] instead of raw exceptions.
- *
- * Family controls use the unified /api/v1/family/controls endpoints for PIN-
- * protected parental controls. Profile management uses /api/v1/family/profiles.
- * Screen time and content restrictions are per-profile settings.
  *
  * Endpoint paths mirror the iOS APIFamilyControlsRepository and web api.js.
  */
@@ -72,11 +66,8 @@ class ApiFamilyControlsRepository(
             Unit
         }
 
-    override suspend fun getContentRestrictions(
-        profileId: String,
-    ): BayitResult<Any> = runCatchingResult {
-        client.safeApiCall { service.getControls() }
-    }
+    override suspend fun getContentRestrictions(profileId: String): BayitResult<Any> =
+        runCatchingResult { client.safeApiCall { service.getControls() } }
 
     override suspend fun setContentRestrictions(
         profileId: String,
@@ -91,17 +82,16 @@ class ApiFamilyControlsRepository(
         Unit
     }
 
-    override suspend fun getScreenTimeRules(
-        profileId: String,
-    ): BayitResult<Any> = runCatchingResult {
-        val response = client.safeApiCall { service.getSections() }
-        ScreenTimeRules(
-            viewingHoursEnabled = response.viewingHoursEnabled,
-            viewingAllowed = response.viewingAllowed,
-            viewingHours = response.viewingHours,
-            blockReason = response.blockReason,
-        )
-    }
+    override suspend fun getScreenTimeRules(profileId: String): BayitResult<Any> =
+        runCatchingResult {
+            val response = client.safeApiCall { service.getSections() }
+            ScreenTimeRules(
+                viewingHoursEnabled = response.viewingHoursEnabled,
+                viewingAllowed = response.viewingAllowed,
+                viewingHours = response.viewingHours,
+                blockReason = response.blockReason,
+            )
+        }
 
     override suspend fun setScreenTimeRules(
         profileId: String,
@@ -118,28 +108,22 @@ class ApiFamilyControlsRepository(
 }
 
 private interface FamilyControlsService {
-
     @GET("api/v1/family/controls")
     suspend fun getControls(): FamilyControlsResponse
 
     @PATCH("api/v1/family/controls")
-    suspend fun updateControls(
-        @Body request: FamilyControlsUpdateBody,
-    ): FamilyControlsWrappedResponse
+    suspend fun updateControls(@Body request: FamilyControlsUpdateBody): FamilyControlsWrappedResponse
 
     @GET("api/v1/family/controls/sections")
     suspend fun getSections(): FamilySectionsResponse
 
     @POST("api/v1/family/controls/setup")
-    suspend fun createProfile(
-        @Body request: ProfileCreateBody,
-    ): FamilyControlsWrappedResponse
+    suspend fun createProfile(@Body request: ProfileCreateBody): FamilyControlsWrappedResponse
 
     @POST("api/v1/family/controls/migrate")
     suspend fun resetControls(): FamilyControlsWrappedResponse
 }
 
-/** Response from GET /api/v1/family/controls. */
 @Serializable
 private data class FamilyControlsResponse(
     @SerialName("user_id") val userId: String? = null,
@@ -155,15 +139,12 @@ private data class FamilyControlsResponse(
     @SerialName("updated_at") val updatedAt: String? = null,
 )
 
-/** Wrapped response from setup/update endpoints. */
 @Serializable
 private data class FamilyControlsWrappedResponse(
-    val status: String? = null,
-    val message: String? = null,
+    val status: String? = null, val message: String? = null,
     val controls: FamilyControlsResponse? = null,
 )
 
-/** Response from GET /api/v1/family/controls/sections. */
 @Serializable
 private data class FamilySectionsResponse(
     val kids: FamilySectionInfo? = null,
@@ -175,31 +156,22 @@ private data class FamilySectionsResponse(
     @SerialName("block_reason") val blockReason: String? = null,
 )
 
-/** Information about a single family section (kids or youngsters). */
 @Serializable
 private data class FamilySectionInfo(
-    val enabled: Boolean? = null,
-    @SerialName("age_limit") val ageLimit: Int? = null,
+    val enabled: Boolean? = null, @SerialName("age_limit") val ageLimit: Int? = null,
 )
 
-/** Viewing hours range within the sections response. */
 @Serializable
-private data class ViewingHoursInfo(
-    val start: Int? = null,
-    val end: Int? = null,
-)
+private data class ViewingHoursInfo(val start: Int? = null, val end: Int? = null)
 
-/** Request body for creating a profile via the setup endpoint. */
 @Serializable
 private data class ProfileCreateBody(
-    val name: String,
-    @SerialName("age_group") val ageGroup: String,
+    val name: String, @SerialName("age_group") val ageGroup: String,
     val pin: String = "0000",
     @SerialName("kids_age_limit") val kidsAgeLimit: Int = 12,
     @SerialName("youngsters_age_limit") val youngstersAgeLimit: Int = 17,
 )
 
-/** Request body for updating family controls. */
 @Serializable
 private data class FamilyControlsUpdateBody(
     @SerialName("kids_age_limit") val kidsAgeLimit: Int? = null,
@@ -212,7 +184,6 @@ private data class FamilyControlsUpdateBody(
     @SerialName("viewing_end_hour") val viewingEndHour: Int? = null,
 )
 
-/** Screen time rules extracted from the sections response. */
 @Serializable
 private data class ScreenTimeRules(
     @SerialName("viewing_hours_enabled") val viewingHoursEnabled: Boolean? = null,

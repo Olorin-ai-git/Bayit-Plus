@@ -9,7 +9,6 @@ import retrofit2.http.Query
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.runCatchingResult
 import tv.bayit.plus.core.data.repository.ShabbatRepository
-import tv.bayit.plus.core.model.MessageResponse
 import tv.bayit.plus.core.network.api.BayitApiClient
 
 /**
@@ -20,10 +19,8 @@ import tv.bayit.plus.core.network.api.BayitApiClient
  * public method wraps the network call in [runCatchingResult] so callers receive
  * a [BayitResult] instead of raw exceptions.
  *
- * Shabbat times come from GET /api/v1/zman/shabbat. Shabbat mode and auto-
- * schedule preferences are managed through the zman preferences endpoint
- * (POST /api/v1/zman/preferences) and the zman time endpoint
- * (GET /api/v1/zman/time) which includes Shabbat status.
+ * Shabbat times come from GET /api/v1/zman/shabbat. Mode and auto-schedule
+ * preferences are managed via POST /api/v1/zman/preferences.
  *
  * Endpoint paths mirror the iOS APIShabbatRepository and web api.js.
  */
@@ -101,7 +98,7 @@ private data class ShabbatTimesResponse(
     @SerialName("parasha_hebrew") val parashaHebrew: String? = null,
 )
 
-/** Response from GET /api/v1/zman/time. */
+/** Response from GET /api/v1/zman/time with nested Israel/local/shabbat info. */
 @Serializable
 private data class ZmanTimeResponse(
     val israel: ZmanIsraelTime? = null,
@@ -109,20 +106,14 @@ private data class ZmanTimeResponse(
     val shabbat: ZmanShabbatStatus? = null,
 )
 
-/** Israel time information within the zman response. */
 @Serializable
 private data class ZmanIsraelTime(
-    val time: String? = null,
-    val datetime: String? = null,
-    val day: String? = null,
+    val time: String? = null, val datetime: String? = null, val day: String? = null,
 )
 
-/** Local time information within the zman response. */
 @Serializable
 private data class ZmanLocalTime(
-    val time: String? = null,
-    val datetime: String? = null,
-    val timezone: String? = null,
+    val time: String? = null, val datetime: String? = null, val timezone: String? = null,
 )
 
 /** Shabbat status within the zman response. */
@@ -147,7 +138,6 @@ private data class ShabbatContentResponse(
     val atmosphere: ShabbatAtmosphere? = null,
 )
 
-/** A section of Shabbat content with a title and items. */
 @Serializable
 private data class ShabbatContentSection(
     val title: String? = null,
@@ -155,20 +145,13 @@ private data class ShabbatContentSection(
     val items: List<ShabbatServiceContentItem> = emptyList(),
 )
 
-/** A content item within a Shabbat content section. */
 @Serializable
 private data class ShabbatServiceContentItem(
-    val id: String? = null,
-    val title: String? = null,
-    val name: String? = null,
-    val description: String? = null,
-    val thumbnail: String? = null,
-    val logo: String? = null,
-    val type: String? = null,
-    val duration: String? = null,
+    val id: String? = null, val title: String? = null, val name: String? = null,
+    val description: String? = null, val thumbnail: String? = null,
+    val logo: String? = null, val type: String? = null, val duration: String? = null,
 )
 
-/** Shabbat atmosphere/theme information. */
 @Serializable
 private data class ShabbatAtmosphere(
     val message: String? = null,
@@ -193,7 +176,6 @@ private data class ZmanPreferencesUpdateResponse(
     val preferences: ZmanPreferencesValues? = null,
 )
 
-/** Preferences values within the update response. */
 @Serializable
 private data class ZmanPreferencesValues(
     @SerialName("show_israel_time") val showIsraelTime: Boolean? = null,
