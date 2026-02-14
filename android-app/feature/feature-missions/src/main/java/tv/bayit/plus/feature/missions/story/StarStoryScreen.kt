@@ -1,12 +1,11 @@
-package tv.bayit.plus.feature.rewards
+package tv.bayit.plus.feature.missions.story
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -18,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.GlassButton
@@ -28,16 +26,17 @@ import tv.bayit.plus.designsystem.theme.DesignTokens
 private const val GRID_COLUMNS = 2
 
 @Composable
-fun RewardsRoute(
+fun StarStoryRoute(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: RewardsViewModel = hiltViewModel(),
+    viewModel: StarStoryViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    RewardsScreen(
+    StarStoryScreen(
         uiState = uiState,
-        onClaimReward = viewModel::claimReward,
+        onStoryClick = viewModel::markAsViewed,
+        onReaction = viewModel::reactToStory,
         onRefresh = viewModel::refresh,
         onRetry = viewModel::retry,
         modifier = modifier,
@@ -45,22 +44,24 @@ fun RewardsRoute(
 }
 
 @Composable
-internal fun RewardsScreen(
-    uiState: RewardsUiState,
-    onClaimReward: (String) -> Unit,
+internal fun StarStoryScreen(
+    uiState: StarStoryUiState,
+    onStoryClick: (String) -> Unit,
+    onReaction: (String, String) -> Unit,
     onRefresh: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (uiState) {
-        is RewardsUiState.Loading -> GlassLoadingIndicator(modifier = modifier)
-        is RewardsUiState.Success -> RewardsContent(
+        is StarStoryUiState.Loading -> GlassLoadingIndicator(modifier = modifier)
+        is StarStoryUiState.Success -> StarStoryContent(
             uiState = uiState,
-            onClaimReward = onClaimReward,
+            onStoryClick = onStoryClick,
+            onReaction = onReaction,
             onRefresh = onRefresh,
             modifier = modifier,
         )
-        is RewardsUiState.Error -> RewardsErrorSection(
+        is StarStoryUiState.Error -> StarStoryErrorSection(
             message = uiState.message,
             onRetry = onRetry,
             modifier = modifier,
@@ -69,9 +70,10 @@ internal fun RewardsScreen(
 }
 
 @Composable
-private fun RewardsContent(
-    uiState: RewardsUiState.Success,
-    onClaimReward: (String) -> Unit,
+private fun StarStoryContent(
+    uiState: StarStoryUiState.Success,
+    onStoryClick: (String) -> Unit,
+    onReaction: (String, String) -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -87,47 +89,27 @@ private fun RewardsContent(
             horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
             modifier = Modifier.fillMaxSize(),
         ) {
-            item(key = "points_header", span = { GridItemSpan(GRID_COLUMNS) }) {
-                PointsBalanceCard(points = uiState.pointsBalance)
+            item(key = "story_header", span = { GridItemSpan(GRID_COLUMNS) }) {
+                StoryHeader()
             }
-            if (uiState.availableRewards.isNotEmpty()) {
-                item(key = "available_label", span = { GridItemSpan(GRID_COLUMNS) }) {
-                    SectionLabel(text = "Available Rewards")
-                }
-                items(items = uiState.availableRewards, key = { it.id }) { reward ->
-                    RewardGridItem(
-                        reward = reward,
-                        isClaiming = uiState.claimingRewardId == reward.id,
-                        canAfford = uiState.pointsBalance >= reward.points,
-                        onClaim = { onClaimReward(reward.id) },
-                    )
+            if (uiState.starProfiles.isNotEmpty()) {
+                item(key = "profiles_row", span = { GridItemSpan(GRID_COLUMNS) }) {
+                    StarProfilesRow(profiles = uiState.starProfiles)
                 }
             }
-            if (uiState.earnedRewards.isNotEmpty()) {
-                item(key = "earned_label", span = { GridItemSpan(GRID_COLUMNS) }) {
-                    SectionLabel(text = "Earned Rewards")
-                }
-                items(items = uiState.earnedRewards, key = { "earned_${it.id}" }) { reward ->
-                    EarnedRewardItem(reward = reward)
-                }
+            items(items = uiState.stories, key = { it.id }) { story ->
+                StoryGridItem(
+                    story = story,
+                    onClick = { onStoryClick(story.id) },
+                    onReaction = { reaction -> onReaction(story.id, reaction) },
+                )
             }
         }
     }
 }
 
 @Composable
-internal fun SectionLabel(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleLarge,
-        color = DesignTokens.Colors.Text.primary,
-        fontWeight = FontWeight.Bold,
-        modifier = modifier.padding(top = DesignTokens.Spacing.sm),
-    )
-}
-
-@Composable
-private fun RewardsErrorSection(
+private fun StarStoryErrorSection(
     message: String,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,

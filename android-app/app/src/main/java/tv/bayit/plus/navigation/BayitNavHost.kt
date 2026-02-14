@@ -18,10 +18,14 @@ import tv.bayit.plus.feature.home.HomeRoute
 import tv.bayit.plus.feature.kids.children.ChildrenRoute
 import tv.bayit.plus.feature.kids.youngsters.YoungstersRoute
 import tv.bayit.plus.feature.livetv.LiveTVRoute
+import tv.bayit.plus.feature.missions.MissionsDashboardRoute
+import tv.bayit.plus.feature.missions.interactive.InteractiveMissionRoute
+import tv.bayit.plus.feature.missions.story.StarStoryRoute
 import tv.bayit.plus.feature.player.PlayerRoute
 import tv.bayit.plus.feature.podcasts.PodcastsRoute
 import tv.bayit.plus.feature.profile.selection.ProfileSelectionRoute
 import tv.bayit.plus.feature.radio.RadioRoute
+import tv.bayit.plus.feature.rewards.RewardsRoute
 import tv.bayit.plus.feature.search.SearchRoute
 import tv.bayit.plus.feature.settings.SettingsRoute
 import tv.bayit.plus.feature.settings.accounts.ConnectedAccountsRoute
@@ -34,6 +38,14 @@ import tv.bayit.plus.feature.settings.notifications.NotificationSettingsRoute
 import tv.bayit.plus.feature.settings.profile.ProfileRoute
 import tv.bayit.plus.feature.settings.security.SecurityRoute
 import tv.bayit.plus.feature.settings.subscription.SubscriptionRoute
+import tv.bayit.plus.feature.social.chess.ChessRoute
+import tv.bayit.plus.feature.social.conversation.ConversationRoute
+import tv.bayit.plus.feature.social.feed.ActivityFeedRoute
+import tv.bayit.plus.feature.social.friends.FriendsRoute
+import tv.bayit.plus.feature.social.messages.DirectMessagesRoute
+import tv.bayit.plus.feature.social.watchparty.WatchPartyRoute
+import tv.bayit.plus.feature.social.watchparty.active.ActivePartyRoute
+import tv.bayit.plus.feature.trivia.TriviaRoute
 import tv.bayit.plus.feature.vod.VodRoute
 import tv.bayit.plus.feature.vod.detail.MovieDetailRoute
 import tv.bayit.plus.feature.vod.recordings.RecordingsRoute
@@ -173,15 +185,43 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
             AudiobooksRoute(onNavigateToAudiobook = { id -> navController.navigate(Route.AudiobookDetail(audiobookId = id)) })
         }
         composable<Route.AudiobookDetail> { GlassLoadingIndicator() }
-        composable<Route.Friends> { GlassLoadingIndicator() }
-        composable<Route.DirectMessages> { GlassLoadingIndicator() }
-        composable<Route.Conversation> { GlassLoadingIndicator() }
-        composable<Route.WatchParty> { GlassLoadingIndicator() }
-        composable<Route.WatchPartyDetail> { GlassLoadingIndicator() }
-        composable<Route.Chess> { GlassLoadingIndicator() }
-        composable<Route.ActivityFeed> { GlassLoadingIndicator() }
-        composable<Route.Trivia> { GlassLoadingIndicator() }
-        composable<Route.Rewards> { GlassLoadingIndicator() }
+        composable<Route.Friends> {
+            FriendsRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.DirectMessages> {
+            DirectMessagesRoute(
+                onNavigateToConversation = { friendId ->
+                    navController.navigate(Route.Conversation(friendId = friendId))
+                },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.Conversation> {
+            ConversationRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.WatchParty> {
+            WatchPartyRoute(
+                onNavigateToActiveParty = { partyId ->
+                    navController.navigate(Route.WatchPartyDetail(partyId = partyId))
+                },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable<Route.WatchPartyDetail> {
+            ActivePartyRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.Chess> {
+            ChessRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.ActivityFeed> {
+            ActivityFeedRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.Trivia> {
+            TriviaRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.Rewards> {
+            RewardsRoute(onNavigateBack = { navController.popBackStack() })
+        }
         composable<Route.Trending> {
             TrendingRoute(onNavigateToContent = { id, type -> navController.navigateToContent(id, type) })
         }
@@ -225,9 +265,20 @@ fun BayitNavHost(modifier: Modifier = Modifier, startRoute: Route? = null) {
         composable<Route.ZehAniContacts> { GlassLoadingIndicator() }
         composable<Route.ZehAniFeedback> { GlassLoadingIndicator() }
         composable<Route.ZehAniAvatarSettings> { GlassLoadingIndicator() }
-        composable<Route.MissionsDashboard> { GlassLoadingIndicator() }
-        composable<Route.InteractiveMission> { GlassLoadingIndicator() }
-        composable<Route.StarStory> { GlassLoadingIndicator() }
+        composable<Route.MissionsDashboard> {
+            MissionsDashboardRoute(
+                onNavigateToInteractiveMission = { missionId ->
+                    navController.navigate(Route.InteractiveMission(missionId = missionId))
+                },
+                onNavigateToStarStory = { navController.navigate(Route.StarStory) },
+            )
+        }
+        composable<Route.InteractiveMission> {
+            InteractiveMissionRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.StarStory> {
+            StarStoryRoute(onNavigateBack = { navController.popBackStack() })
+        }
         composable<Route.V2VPractice> { GlassLoadingIndicator() }
         composable<Route.AvatarWardrobe> { GlassLoadingIndicator() }
         composable<Route.MeshAvatar> { GlassLoadingIndicator() }

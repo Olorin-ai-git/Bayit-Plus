@@ -1,4 +1,4 @@
-package tv.bayit.plus.feature.rewards
+package tv.bayit.plus.feature.missions
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -6,11 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -18,26 +15,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
-private const val GRID_COLUMNS = 2
-
 @Composable
-fun RewardsRoute(
-    onNavigateBack: () -> Unit,
+fun MissionsDashboardRoute(
+    onNavigateToInteractiveMission: (String) -> Unit,
+    onNavigateToStarStory: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: RewardsViewModel = hiltViewModel(),
+    viewModel: MissionsDashboardViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    RewardsScreen(
+    MissionsDashboardScreen(
         uiState = uiState,
+        onTabSelected = viewModel::selectTab,
         onClaimReward = viewModel::claimReward,
+        onMissionClick = onNavigateToInteractiveMission,
+        onStarStoryClick = onNavigateToStarStory,
         onRefresh = viewModel::refresh,
         onRetry = viewModel::retry,
         modifier = modifier,
@@ -45,22 +43,28 @@ fun RewardsRoute(
 }
 
 @Composable
-internal fun RewardsScreen(
-    uiState: RewardsUiState,
+internal fun MissionsDashboardScreen(
+    uiState: MissionsDashboardUiState,
+    onTabSelected: (MissionTab) -> Unit,
     onClaimReward: (String) -> Unit,
+    onMissionClick: (String) -> Unit,
+    onStarStoryClick: () -> Unit,
     onRefresh: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (uiState) {
-        is RewardsUiState.Loading -> GlassLoadingIndicator(modifier = modifier)
-        is RewardsUiState.Success -> RewardsContent(
+        is MissionsDashboardUiState.Loading -> GlassLoadingIndicator(modifier = modifier)
+        is MissionsDashboardUiState.Success -> MissionsContent(
             uiState = uiState,
+            onTabSelected = onTabSelected,
             onClaimReward = onClaimReward,
+            onMissionClick = onMissionClick,
+            onStarStoryClick = onStarStoryClick,
             onRefresh = onRefresh,
             modifier = modifier,
         )
-        is RewardsUiState.Error -> RewardsErrorSection(
+        is MissionsDashboardUiState.Error -> MissionsErrorSection(
             message = uiState.message,
             onRetry = onRetry,
             modifier = modifier,
@@ -69,65 +73,58 @@ internal fun RewardsScreen(
 }
 
 @Composable
-private fun RewardsContent(
-    uiState: RewardsUiState.Success,
+private fun MissionsContent(
+    uiState: MissionsDashboardUiState.Success,
+    onTabSelected: (MissionTab) -> Unit,
     onClaimReward: (String) -> Unit,
+    onMissionClick: (String) -> Unit,
+    onStarStoryClick: () -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val missions = when (uiState.selectedTab) {
+        MissionTab.DAILY -> uiState.dailyMissions
+        MissionTab.WEEKLY -> uiState.weeklyMissions
+    }
+
     PullToRefreshBox(
         isRefreshing = uiState.isRefreshing,
         onRefresh = onRefresh,
         modifier = modifier,
     ) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(GRID_COLUMNS),
+        LazyColumn(
             contentPadding = PaddingValues(DesignTokens.Spacing.base),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
-            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
             modifier = Modifier.fillMaxSize(),
         ) {
-            item(key = "points_header", span = { GridItemSpan(GRID_COLUMNS) }) {
-                PointsBalanceCard(points = uiState.pointsBalance)
+            item(key = "missions_header") {
+                MissionsHeader()
             }
-            if (uiState.availableRewards.isNotEmpty()) {
-                item(key = "available_label", span = { GridItemSpan(GRID_COLUMNS) }) {
-                    SectionLabel(text = "Available Rewards")
-                }
-                items(items = uiState.availableRewards, key = { it.id }) { reward ->
-                    RewardGridItem(
-                        reward = reward,
-                        isClaiming = uiState.claimingRewardId == reward.id,
-                        canAfford = uiState.pointsBalance >= reward.points,
-                        onClaim = { onClaimReward(reward.id) },
-                    )
-                }
+            item(key = "tab_selector") {
+                MissionTabSelector(selectedTab = uiState.selectedTab, onTabSelected = onTabSelected)
             }
-            if (uiState.earnedRewards.isNotEmpty()) {
-                item(key = "earned_label", span = { GridItemSpan(GRID_COLUMNS) }) {
-                    SectionLabel(text = "Earned Rewards")
-                }
-                items(items = uiState.earnedRewards, key = { "earned_${it.id}" }) { reward ->
-                    EarnedRewardItem(reward = reward)
-                }
+            item(key = "star_story_link") {
+                GlassButton(
+                    text = "Star Stories",
+                    onClick = onStarStoryClick,
+                    isPrimary = false,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            items(items = missions, key = { it.id }) { mission ->
+                MissionCard(
+                    mission = mission,
+                    isClaiming = uiState.claimingMissionId == mission.id,
+                    onClaimReward = { onClaimReward(mission.id) },
+                    onClick = { onMissionClick(mission.id) },
+                )
             }
         }
     }
 }
 
 @Composable
-internal fun SectionLabel(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.titleLarge,
-        color = DesignTokens.Colors.Text.primary,
-        fontWeight = FontWeight.Bold,
-        modifier = modifier.padding(top = DesignTokens.Spacing.sm),
-    )
-}
-
-@Composable
-private fun RewardsErrorSection(
+private fun MissionsErrorSection(
     message: String,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,

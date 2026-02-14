@@ -1,4 +1,4 @@
-package tv.bayit.plus.feature.trivia
+package tv.bayit.plus.feature.missions.interactive
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,26 +15,33 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import tv.bayit.plus.core.model.InteractiveMissionDetail
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.designsystem.component.GlassProgressBar
+import tv.bayit.plus.designsystem.component.GlassSpinner
+import tv.bayit.plus.designsystem.component.SpinnerSize
 import tv.bayit.plus.designsystem.theme.DesignTokens
 
 @Composable
-fun TriviaRoute(
+fun InteractiveMissionRoute(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: TriviaViewModel = hiltViewModel(),
+    viewModel: InteractiveMissionViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    TriviaScreen(
+    InteractiveMissionScreen(
         uiState = uiState,
-        onAnswerSelected = viewModel::selectAnswer,
-        onNextQuestion = viewModel::nextQuestion,
+        onSubmitStep = viewModel::submitStep,
+        onAbandon = {
+            viewModel.abandon()
+            onNavigateBack()
+        },
         onRetry = viewModel::retry,
         onFinish = onNavigateBack,
         modifier = modifier,
@@ -43,28 +49,28 @@ fun TriviaRoute(
 }
 
 @Composable
-internal fun TriviaScreen(
-    uiState: TriviaUiState,
-    onAnswerSelected: (Int) -> Unit,
-    onNextQuestion: () -> Unit,
+internal fun InteractiveMissionScreen(
+    uiState: InteractiveMissionUiState,
+    onSubmitStep: () -> Unit,
+    onAbandon: () -> Unit,
     onRetry: () -> Unit,
     onFinish: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (uiState) {
-        is TriviaUiState.Loading -> GlassLoadingIndicator(modifier = modifier)
-        is TriviaUiState.Playing -> PlayingSection(
+        is InteractiveMissionUiState.Loading -> GlassLoadingIndicator(modifier = modifier)
+        is InteractiveMissionUiState.InProgress -> InProgressSection(
             uiState = uiState,
-            onAnswerSelected = onAnswerSelected,
-            onNextQuestion = onNextQuestion,
+            onSubmitStep = onSubmitStep,
+            onAbandon = onAbandon,
             modifier = modifier,
         )
-        is TriviaUiState.Finished -> FinishedSection(
-            uiState = uiState,
+        is InteractiveMissionUiState.Completed -> CompletedSection(
+            mission = uiState.mission,
             onFinish = onFinish,
             modifier = modifier,
         )
-        is TriviaUiState.Error -> TriviaErrorSection(
+        is InteractiveMissionUiState.Error -> MissionErrorSection(
             message = uiState.message,
             onRetry = onRetry,
             modifier = modifier,
@@ -73,15 +79,16 @@ internal fun TriviaScreen(
 }
 
 @Composable
-private fun PlayingSection(
-    uiState: TriviaUiState.Playing,
-    onAnswerSelected: (Int) -> Unit,
-    onNextQuestion: () -> Unit,
+private fun InProgressSection(
+    uiState: InteractiveMissionUiState.InProgress,
+    onSubmitStep: () -> Unit,
+    onAbandon: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val question = uiState.session.questions[uiState.currentIndex]
-    val totalQuestions = uiState.session.questions.size
-    val progress = (uiState.currentIndex + 1).toFloat() / totalQuestions.toFloat()
+    val mission = uiState.mission
+    val currentStep = mission.steps.getOrNull(uiState.currentStepIndex)
+    val totalSteps = mission.steps.size
+    val progress = if (totalSteps > 0) (uiState.currentStepIndex + 1).toFloat() / totalSteps.toFloat() else 0f
 
     Column(
         modifier = modifier
@@ -89,81 +96,71 @@ private fun PlayingSection(
             .padding(DesignTokens.Spacing.base),
         verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
     ) {
-        TimerAndScoreBar(
-            timeRemaining = uiState.timeRemaining,
-            score = uiState.score,
-            questionNumber = uiState.currentIndex + 1,
-            totalQuestions = totalQuestions,
-        )
+        MissionHeader(title = mission.title, stepNumber = uiState.currentStepIndex + 1, totalSteps = totalSteps)
         GlassProgressBar(progress = progress)
-        QuestionCard(questionText = question.question)
-        AnswerOptions(
-            options = question.options,
-            selectedAnswer = uiState.selectedAnswer,
-            onAnswerSelected = onAnswerSelected,
-        )
-        if (uiState.selectedAnswer != null) {
-            GlassButton(
-                text = "Next",
-                onClick = onNextQuestion,
-                modifier = Modifier.fillMaxWidth(),
-            )
+        currentStep?.let { step -> StepCard(step = step) }
+        Spacer(modifier = Modifier.weight(1f))
+        if (uiState.isSubmitting) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                GlassSpinner(size = SpinnerSize.MEDIUM)
+            }
+        } else {
+            GlassButton(text = "Submit Step", onClick = onSubmitStep, modifier = Modifier.fillMaxWidth())
         }
+        GlassButton(text = "Abandon Mission", onClick = onAbandon, isPrimary = false, modifier = Modifier.fillMaxWidth())
     }
 }
 
 @Composable
-private fun FinishedSection(
-    uiState: TriviaUiState.Finished,
+private fun CompletedSection(
+    mission: InteractiveMissionDetail,
     onFinish: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
+    Box(
         modifier = modifier
             .fillMaxSize()
             .padding(DesignTokens.Spacing.base),
-        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
+        contentAlignment = Alignment.Center,
     ) {
-        item(key = "score_summary") {
-            GlassCard(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
+        ) {
+            GlassCard {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text(
-                        text = "Trivia Complete",
+                        text = "Mission Complete",
                         style = MaterialTheme.typography.headlineMedium,
-                        color = DesignTokens.Colors.Primary.light,
+                        color = DesignTokens.Colors.Semantic.success,
                         fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
                     )
                     Spacer(modifier = Modifier.height(DesignTokens.Spacing.sm))
                     Text(
-                        text = "${uiState.score} / ${uiState.totalQuestions}",
-                        style = MaterialTheme.typography.displaySmall,
-                        color = DesignTokens.Colors.gold,
-                        fontWeight = FontWeight.Bold,
+                        text = mission.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = DesignTokens.Colors.Text.primary,
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(modifier = Modifier.height(DesignTokens.Spacing.xs))
+                    Text(
+                        text = "${mission.totalSteps} steps completed",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = DesignTokens.Colors.Text.secondary,
                     )
                 }
             }
-        }
-        if (uiState.leaderboard.isNotEmpty()) {
-            item(key = "leaderboard_header") {
-                Text(
-                    text = "Leaderboard",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = DesignTokens.Colors.Text.primary,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
-        }
-        item(key = "finish_button") {
             GlassButton(text = "Done", onClick = onFinish, modifier = Modifier.fillMaxWidth())
         }
     }
 }
 
 @Composable
-private fun TriviaErrorSection(
+private fun MissionErrorSection(
     message: String,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
