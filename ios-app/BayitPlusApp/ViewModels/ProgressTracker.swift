@@ -45,7 +45,9 @@ final class ProgressTracker {
     /// Start periodic progress tracking.
     /// Saves progress every N seconds as configured.
     func startTracking() {
-        stopTracking()
+        // Cancel any existing tracking task
+        trackingTask?.cancel()
+        trackingTask = nil
 
         trackingTask = Task { [weak self] in
             while !Task.isCancelled {
