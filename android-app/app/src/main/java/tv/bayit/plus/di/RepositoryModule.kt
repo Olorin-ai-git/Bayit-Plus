@@ -34,6 +34,7 @@ import tv.bayit.plus.core.data.repository.PasskeyRepository
 import tv.bayit.plus.core.data.repository.PhoneticMirrorRepository
 import tv.bayit.plus.core.data.repository.PlaylistRepository
 import tv.bayit.plus.core.data.repository.PodcastRepository
+import tv.bayit.plus.core.data.repository.ProfileRepository
 import tv.bayit.plus.core.data.repository.RadioRepository
 import tv.bayit.plus.core.data.repository.RewardRepository
 import tv.bayit.plus.core.data.repository.SearchRepository
@@ -82,6 +83,7 @@ import tv.bayit.plus.core.data.repository.impl.ApiPasskeyRepository
 import tv.bayit.plus.core.data.repository.impl.ApiPhoneticMirrorRepository
 import tv.bayit.plus.core.data.repository.impl.ApiPlaylistRepository
 import tv.bayit.plus.core.data.repository.impl.ApiPodcastRepository
+import tv.bayit.plus.core.data.repository.impl.ApiProfileRepository
 import tv.bayit.plus.core.data.repository.impl.ApiRadioRepository
 import tv.bayit.plus.core.data.repository.impl.ApiRewardRepository
 import tv.bayit.plus.core.data.repository.impl.ApiSearchRepository
@@ -142,6 +144,11 @@ object RepositoryModule {
     @Singleton
     fun provideUserRepository(client: BayitApiClient): UserRepository =
         ApiUserRepository(client)
+
+    @Provides
+    @Singleton
+    fun provideProfileRepository(client: BayitApiClient): ProfileRepository =
+        ApiProfileRepository(client)
 
     @Provides
     @Singleton
