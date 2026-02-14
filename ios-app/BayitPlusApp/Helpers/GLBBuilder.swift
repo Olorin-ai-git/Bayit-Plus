@@ -1,5 +1,6 @@
 import BayitCore
 import Foundation
+import simd
 
 enum GLBBuilder {
 

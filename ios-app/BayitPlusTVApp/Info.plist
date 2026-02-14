@@ -34,15 +34,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>4</string>
-	<key>FEATURE_CHAPTER_NAVIGATION</key>
-	<string>true</string>
-	<key>FEATURE_INTERACTIVE_SUBTITLES</key>
-	<string>true</string>
-	<key>FEATURE_LIVE_DUBBING</key>
-	<string>true</string>
-	<key>FEATURE_TRIVIA</key>
-	<string>true</string>
+	<string>1</string>
 	<key>GOOGLE_CLIENT_ID</key>
 	<string>624470113582-21du9rcqdbrc6lhk8vctbtqulhoobavf.apps.googleusercontent.com</string>
 	<key>GOOGLE_SERVER_CLIENT_ID</key>

@@ -14,9 +14,9 @@ struct FaceCaptureResult: Sendable {
 }
 
 @Observable
-final class ARFaceCaptureSession: NSObject {
+final class ARFaceCaptureSession: NSObject, @preconcurrency ARSessionDelegate {
 
-    enum CapturePhase: Sendable {
+    enum CapturePhase: Equatable, Sendable {
         case waiting
         case detected
         case capturing(progress: Float)
@@ -152,7 +152,7 @@ final class ARFaceCaptureSession: NSObject {
         capturedTexture = uiImage.pngData()
     }
 
-    private func finalize() {
+    private func completeFaceCapture() {
         guard let verts = neutralVertices,
               let indices = triangleIndices,
               let uvs = textureCoordinates else {
@@ -177,7 +177,9 @@ final class ARFaceCaptureSession: NSObject {
     }
 }
 
-extension ARFaceCaptureSession: @preconcurrency ARSessionDelegate {
+// MARK: - ARSessionDelegate
+
+extension ARFaceCaptureSession {
 
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         guard let faceAnchor = anchors.compactMap({ $0 as? ARFaceAnchor }).first else {
@@ -222,7 +224,7 @@ extension ARFaceCaptureSession: @preconcurrency ARSessionDelegate {
 
             if elapsed >= captureDurationSeconds {
                 stopSession()
-                finalize()
+                completeFaceCapture()
             }
 
         case .complete, .failed, .unsupported:
