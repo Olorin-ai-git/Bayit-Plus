@@ -1,11 +1,13 @@
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Collection detail screen showing all movies in a collection with Play All functionality
 struct CollectionDetailView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: CollectionDetailViewModel?
 
     private let logger = BayitLogger(category: "CollectionDetail")
@@ -53,7 +55,7 @@ struct CollectionDetailView: View {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
                 collectionHeader(collection)
 
-                if let promoText = collection.promoText {
+                if let promoText = collection.localizedPromoText {
                     promoCard(promoText)
                 }
 
@@ -99,7 +101,7 @@ struct CollectionDetailView: View {
             HStack(spacing: DesignTokens.Spacing.sm) {
                 if let available = collection.availableMovies,
                    let total = collection.totalMovies {
-                    Text(total > available ? "\(available) of \(total) movies" : "\(available) movies")
+                    Text(total > available ? "\(available) \(localization.t("vod.collection.of")) \(total) \(localization.t("vod.collection.movies"))" : "\(available) \(localization.t("vod.collection.movies"))")
                         .font(.system(size: DesignTokens.FontSize.md))
                         .foregroundColor(DesignTokens.Text.muted)
                 }
@@ -111,7 +113,7 @@ struct CollectionDetailView: View {
                 } label: {
                     HStack {
                         Image(systemName: "play.fill")
-                        Text("Play All")
+                        Text(localization.t("vod.collection.playAll"))
                             .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                     }
                     .foregroundColor(.white)
@@ -131,7 +133,7 @@ struct CollectionDetailView: View {
             HStack(spacing: DesignTokens.Spacing.xs) {
                 Image(systemName: "sparkles")
                     .foregroundColor(DesignTokens.Primary.default)
-                Text("AI Recommendation")
+                Text(localization.t("vod.collection.aiRecommendation"))
                     .font(.system(size: DesignTokens.FontSize.xs, weight: .semibold))
                     .foregroundColor(DesignTokens.Text.muted)
                     .textCase(.uppercase)
@@ -149,7 +151,7 @@ struct CollectionDetailView: View {
 
     private func moviesSection(_ movies: [CollectionMovie]) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text("Movies")
+            Text(localization.t("vod.collection.movies").capitalized)
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
 
@@ -167,7 +169,7 @@ struct CollectionDetailView: View {
 
         do {
             try await repos.playlist.addBulkToPlaylist(contentIds: movieIds)
-            coordinator.navigate(to: .movieDetail(movieId: movieIds[0]))
+            coordinator.navigate(to: .player(contentId: movieIds[0], contentType: .movie))
         } catch {
             logger.error("Failed to create playlist: \(error.localizedDescription)")
         }

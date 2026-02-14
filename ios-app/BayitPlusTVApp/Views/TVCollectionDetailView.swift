@@ -1,11 +1,13 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS collection detail screen with remote focus navigation
 struct TVCollectionDetailView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: CollectionDetailViewModel?
 
     let collectionId: String
@@ -56,7 +58,7 @@ struct TVCollectionDetailView: View {
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
                 collectionHeader(collection)
 
-                if let promoText = collection.promoText {
+                if let promoText = collection.localizedPromoText {
                     promoCard(promoText)
                 }
 
@@ -89,7 +91,7 @@ struct TVCollectionDetailView: View {
 
             if let available = collection.availableMovies,
                let total = collection.totalMovies {
-                Text(total > available ? "\(available) of \(total) movies" : "\(available) movies")
+                Text(total > available ? "\(available) \(localization.t("vod.collection.of")) \(total) \(localization.t("vod.collection.movies"))" : "\(available) \(localization.t("vod.collection.movies"))")
                     .font(.system(size: TVDesignTokens.FontSize.xl))
                     .foregroundStyle(DesignTokens.Text.muted)
             }
@@ -98,7 +100,7 @@ struct TVCollectionDetailView: View {
                 Button {
                     Task { await playAll(collection.movies) }
                 } label: {
-                    Label("Play All", systemImage: "play.fill")
+                    Label(localization.t("vod.collection.playAll"), systemImage: "play.fill")
                         .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                 }
                 .buttonStyle(.card)
@@ -111,7 +113,7 @@ struct TVCollectionDetailView: View {
             HStack(spacing: TVDesignTokens.Spacing.xs) {
                 Image(systemName: "sparkles")
                     .foregroundStyle(DesignTokens.Primary.default)
-                Text("AI Recommendation")
+                Text(localization.t("vod.collection.aiRecommendation"))
                     .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.muted)
                     .textCase(.uppercase)
@@ -129,7 +131,7 @@ struct TVCollectionDetailView: View {
 
     private func moviesGrid(_ movies: [CollectionMovie]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("Movies")
+            Text(localization.t("vod.collection.movies").capitalized)
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -169,10 +171,9 @@ struct TVCollectionDetailView: View {
 
         do {
             try await repos.playlist.addBulkToPlaylist(contentIds: movieIds)
-            coordinator.fullscreenRoute = .movieDetail(movieId: movieIds[0])
+            coordinator.fullscreenRoute = .player(contentId: movieIds[0], contentType: .movie, channelId: nil)
         } catch {
-            // Playlist creation failed - navigate to first movie directly
-            coordinator.fullscreenRoute = .movieDetail(movieId: movieIds[0])
+            coordinator.fullscreenRoute = .player(contentId: movieIds[0], contentType: .movie, channelId: nil)
         }
     }
 }
