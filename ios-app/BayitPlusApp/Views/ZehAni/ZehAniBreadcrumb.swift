@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Compact breadcrumb for Zeh Ani child screens: "Zeh Ani > Screen Name"
 struct ZehAniBreadcrumb: View {
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
 
     let currentLabel: String
 
@@ -12,7 +14,7 @@ struct ZehAniBreadcrumb: View {
             Button {
                 coordinator.pop()
             } label: {
-                Text("Zeh Ani")
+                Text(localization.t("nav.zehAni"))
                     .font(.system(size: DesignTokens.FontSize.xs, weight: .medium))
                     .foregroundStyle(DesignTokens.Primary.p400)
             }

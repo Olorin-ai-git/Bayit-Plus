@@ -1,5 +1,6 @@
 #if os(iOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Modal shown when user exceeds maximum concurrent streams.
@@ -10,17 +11,19 @@ struct StreamLimitExceededView: View {
     let onDisconnect: (String) -> Void
     let onDismiss: () -> Void
 
+    @Environment(LocalizationManager.self) private var localization
+
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.lg) {
             Image(systemName: "tv.and.mediabox")
                 .font(.system(size: 48))
                 .foregroundStyle(DesignTokens.Warning.default)
 
-            Text("Stream Limit Reached")
+            Text(localization.t("player.streamLimitReached"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("You can watch on up to \(maxStreams) devices at once. Disconnect a device to continue.")
+            Text(localization.t("player.streamLimitMessage", ["maxStreams": "\(maxStreams)"]))
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)

@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 import UIKit
 
@@ -7,6 +8,7 @@ import UIKit
 struct LLMSearchView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: LLMSearchViewModel?
 
     var body: some View {
@@ -45,7 +47,7 @@ struct LLMSearchView: View {
 
     private var headerBar: some View {
         HStack {
-            Text("AI Search")
+            Text(localization.t("tvos.aiSearch.title"))
                 .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -59,7 +61,7 @@ struct LLMSearchView: View {
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .frame(width: 44, height: 44)
             }
-            .accessibilityLabel("Close AI search")
+            .accessibilityLabel(localization.t("common.close"))
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.vertical, DesignTokens.Spacing.md)
@@ -72,7 +74,7 @@ struct LLMSearchView: View {
         if let vm = viewModel {
             VStack(spacing: DesignTokens.Spacing.md) {
                 GlassTextField(
-                    "Ask anything about our content...",
+                    localization.t("tvos.aiSearch.placeholder"),
                     text: Binding(
                         get: { vm.query },
                         set: { newValue in
@@ -83,11 +85,11 @@ struct LLMSearchView: View {
                     icon: Image(systemName: "sparkles")
                 )
                 .padding(.horizontal, DesignTokens.Spacing.lg)
-                .accessibilityLabel("Search query")
-                .accessibilityHint("Type a natural language question about content")
+                .accessibilityLabel(localization.t("search.query"))
+                .accessibilityHint(localization.t("tvos.aiSearch.hint"))
 
                 GlassButton(
-                    "Search",
+                    localization.t("search.search"),
                     variant: .primary,
                     size: .medium,
                     isDisabled: vm.query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
@@ -111,7 +113,7 @@ struct LLMSearchView: View {
 
     private var exampleQueries: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text("Try asking:")
+            Text(localization.t("tvos.aiSearch.trySuggestion"))
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.muted)
                 .padding(.horizontal, DesignTokens.Spacing.lg)
@@ -131,7 +133,7 @@ struct LLMSearchView: View {
             }
         }
         .accessibilityElement(children: .contain)
-        .accessibilityLabel("Example search queries")
+        .accessibilityLabel(localization.t("search.exampleQueries"))
     }
 
     // MARK: - Suggestions

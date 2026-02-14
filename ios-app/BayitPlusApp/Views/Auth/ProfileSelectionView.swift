@@ -1,5 +1,6 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 // MARK: - Avatar Colors
@@ -18,6 +19,7 @@ private let avatarColors: [Color] = [
 /// Profile selection screen matching web app design - "Who's watching?"
 struct ProfileSelectionView: View {
     @Environment(AuthManager.self) private var authManager
+    @Environment(LocalizationManager.self) private var localization
     @State private var isManageMode = false
     @State private var showAddProfile = false
 
@@ -104,7 +106,7 @@ struct ProfileSelectionView: View {
                         .foregroundStyle(DesignTokens.Colors.Text.muted)
                 }
 
-                Text("Add Profile")
+                Text(localization.t("profiles.addProfile"))
                     .font(.system(size: 14))
                     .foregroundStyle(DesignTokens.Colors.Text.muted)
             }

@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Judaism content screen with calendar events, category shelves, and news.
 /// Reuses JudaismViewModel from shared ViewModels.
 struct TVJudaismView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: JudaismViewModel?
 
     var body: some View {
@@ -53,7 +55,7 @@ struct TVJudaismView: View {
 
     private func calendarShelf(_ vm: JudaismViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("Jewish Calendar")
+            Text(localization.t("judaism.calendar"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -121,7 +123,7 @@ struct TVJudaismView: View {
 
     private func newsShelf(_ vm: JudaismViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("Jewish News")
+            Text(localization.t("judaism.news"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -166,7 +168,7 @@ struct TVJudaismView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Jewish Content...")
+            Text(localization.t("tvos.judaism.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

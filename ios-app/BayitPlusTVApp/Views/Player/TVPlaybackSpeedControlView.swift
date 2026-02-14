@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS playback speed selector: horizontal row of focusable GlassChip buttons.
 /// Speeds range from 0.5x to 2.0x with a "Playback Speed" header.
 struct TVPlaybackSpeedControlView: View {
+    @Environment(LocalizationManager.self) private var localization
     let currentSpeed: Float
     let onSpeedSelected: (Float) -> Void
     var onDismiss: (() -> Void)?
@@ -12,7 +14,7 @@ struct TVPlaybackSpeedControlView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("Playback Speed")
+            Text(localization.t("player.playbackSpeed"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
 

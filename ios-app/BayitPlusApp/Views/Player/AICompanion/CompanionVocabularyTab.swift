@@ -1,9 +1,11 @@
 #if os(iOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Vocabulary tab showing relevant terms from current content.
 struct CompanionVocabularyTab: View {
+    @Environment(LocalizationManager.self) private var localization
     let viewModel: AICompanionViewModel
 
     var body: some View {
@@ -64,7 +66,7 @@ struct CompanionVocabularyTab: View {
             Image(systemName: "textformat.abc")
                 .font(.system(size: 32))
                 .foregroundStyle(DesignTokens.Text.muted)
-            Text("No vocabulary available yet")
+            Text(localization.t("aiCompanion.vocabulary.empty"))
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
             Spacer()

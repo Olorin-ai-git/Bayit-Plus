@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Beta Credits screen showing Beta 500 credit balance.
 /// Reuses BetaCreditsViewModel from shared ViewModels.
 struct TVBetaCreditsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: BetaCreditsViewModel?
 
     var body: some View {
@@ -38,7 +40,7 @@ struct TVBetaCreditsView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Primary.default)
 
-            Text("Beta 500")
+            Text(localization.t("beta.credits.title"))
                 .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -55,7 +57,7 @@ struct TVBetaCreditsView: View {
                 .font(.system(size: 80, weight: .bold))
                 .foregroundStyle(statusColor(vm))
 
-            Text("Credits Remaining")
+            Text(localization.t("beta.credits.remaining"))
                 .font(.system(size: TVDesignTokens.FontSize.xl))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
@@ -124,7 +126,7 @@ struct TVBetaCreditsView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Credits...")
+            Text(localization.t("beta.credits.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

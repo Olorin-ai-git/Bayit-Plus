@@ -1,10 +1,12 @@
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 struct TVPodcastDetailView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: PodcastDetailViewModel?
 
     let showId: String
@@ -95,7 +97,7 @@ struct TVPodcastDetailView: View {
                 }
 
                 if let episodeCount = detail.episodeCount {
-                    Text("\(episodeCount) Episodes")
+                    Text("\(episodeCount) \(localization.t("podcasts.episodes"))")
                         .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
                         .foregroundStyle(DesignTokens.Text.muted)
                 }
@@ -107,7 +109,7 @@ struct TVPodcastDetailView: View {
 
     private func episodeList(_ vm: PodcastDetailViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Episodes")
+            Text(localization.t("podcasts.episodes"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)

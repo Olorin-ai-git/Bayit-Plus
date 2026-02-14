@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Displays evaluation results after a Talk Back voice response.
 /// Shows star rating, score, points earned, and encouraging feedback.
 struct TalkBackResultView: View {
 
+    @Environment(LocalizationManager.self) private var localization
     let evaluation: TalkBackEvaluation
     let onTryAgain: () -> Void
     let onContinue: () -> Void
@@ -59,7 +61,7 @@ struct TalkBackResultView: View {
     }
 
     private var pointsEarnedLabel: some View {
-        Text("+\(evaluation.pointsEarned) points")
+        Text("+\(evaluation.pointsEarned) \(localization.t("leaderboard.points"))")
             .font(.system(size: DesignTokens.FontSize.md, weight: .bold))
             .foregroundStyle(DesignTokens.Success.s400)
     }

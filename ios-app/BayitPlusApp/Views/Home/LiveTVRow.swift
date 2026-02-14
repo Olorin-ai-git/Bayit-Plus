@@ -1,14 +1,16 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Live TV channels row on the home screen
 struct LiveTVRow: View {
+    @Environment(LocalizationManager.self) private var localization
     let channels: [LiveChannelItem]
     let coordinator: NavigationCoordinator
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text("Live TV")
+            Text(localization.t("home.liveTV"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
                 .padding(.horizontal, DesignTokens.Spacing.lg)

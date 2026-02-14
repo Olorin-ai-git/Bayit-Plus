@@ -15,7 +15,8 @@ import {
   RefreshControl,  ImageBackground,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Home, Tv, Film, Radio, Mic, Play, ChevronRight, ChevronLeft, Clock, Star } from 'lucide-react-native';
+import { Home, Tv, Film, Radio, Mic, Play, ChevronRight, ChevronLeft, Clock, Star, Globe } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 import { liveService, contentService, Channel, ContentItem } from '../services/api';
 import { Colors } from '../theme/colors';
 
@@ -323,6 +324,8 @@ function LiveChannelRow({ channels, loading }: { channels: Channel[]; loading: b
 }
 
 export function HomeScreenMobile() {
+  const navigation = useNavigation<any>();
+  const { i18n } = useTranslation();
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [channels, setChannels] = useState<Channel[]>([]);
@@ -411,6 +414,16 @@ export function HomeScreenMobile() {
           <Home size={24} color={Colors.Primary.p600} strokeWidth={2} />
           <Text style={styles.logoText}>Bayit+</Text>
         </View>
+        <View style={styles.headerActions}>
+          <Pressable
+            style={styles.languageButton}
+            onPress={() => navigation.navigate('LanguageSettings')}
+            accessibilityLabel="Language settings"
+          >
+            <Globe size={16} color={Colors.Text.primary} />
+            <Text style={styles.languageCode}>{i18n.language.toUpperCase()}</Text>
+          </Pressable>
+        </View>
       </View>
 
       {/* Hero Carousel */}
@@ -477,13 +490,26 @@ const styles = StyleSheet.create({
   contentContainer: { paddingBottom: 20 },
   header: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 16,
     paddingHorizontal: 16,
   },
   logoContainer: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   logoText: { fontSize: 24, fontWeight: 'bold', color: COLORS.text },
+  headerActions: { flexDirection: 'row', alignItems: 'center' },
+  languageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 12,
+    height: 36,
+    backgroundColor: COLORS.surfaceLight,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.borderLight,
+  },
+  languageCode: { fontSize: 12, fontWeight: '600', color: COLORS.text },
 
   // Hero Carousel
   heroContainer: { height: CAROUSEL_HEIGHT, marginBottom: 24, position: 'relative' },

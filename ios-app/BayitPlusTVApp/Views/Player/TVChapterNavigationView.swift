@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Standalone chapter navigation screen for tvOS.
@@ -7,6 +8,7 @@ import SwiftUI
 struct TVChapterNavigationView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: ChapterNavigationViewModel?
 
     let contentId: String
@@ -68,7 +70,7 @@ struct TVChapterNavigationView: View {
             Button {
                 Task { await viewModel.loadChapters(contentId: contentId) }
             } label: {
-                Text("Retry")
+                Text(localization.t("common.retry"))
                     .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
                     .foregroundColor(DesignTokens.Text.primary)
                     .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -90,7 +92,7 @@ struct TVChapterNavigationView: View {
                 .font(.system(size: 72))
                 .foregroundColor(DesignTokens.Text.muted)
 
-            Text("No chapters available")
+            Text(localization.t("chapters.noChapters"))
                 .font(.system(size: TVDesignTokens.FontSize.md))
                 .foregroundColor(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)

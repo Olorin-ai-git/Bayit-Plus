@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS subtitle language picker with AI mode chips, split display, and OpenSubtitles.
 /// Uses focusable card buttons for Siri Remote navigation.
 struct TVSubtitleLanguagePickerView: View {
+    @Environment(LocalizationManager.self) private var localization
     let availableLanguages: [String]
     let selectedLanguage: String?
     let isSplitEnabled: Bool
@@ -34,7 +36,7 @@ struct TVSubtitleLanguagePickerView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Subtitles")
+            Text(localization.t("subtitles.title"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
 
@@ -98,7 +100,7 @@ struct TVSubtitleLanguagePickerView: View {
                     .font(.system(size: 28))
                     .foregroundStyle(DesignTokens.Text.secondary)
 
-                Text("Off")
+                Text(localization.t("subtitles.off"))
                     .font(.system(
                         size: TVDesignTokens.FontSize.md, weight: .medium
                     ))
@@ -174,7 +176,7 @@ struct TVSubtitleLanguagePickerView: View {
 
     private var hebrewModeChips: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-            Text("AI Modes:")
+            Text(localization.t("subtitles.aiModes"))
                 .font(.system(
                     size: TVDesignTokens.FontSize.sm, weight: .medium
                 ))
@@ -253,7 +255,7 @@ struct TVSubtitleLanguagePickerView: View {
 
     private var englishModeChips: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-            Text("AI Modes:")
+            Text(localization.t("subtitles.aiModes"))
                 .font(.system(
                     size: TVDesignTokens.FontSize.sm, weight: .medium
                 ))
@@ -347,14 +349,14 @@ struct TVSubtitleLanguagePickerView: View {
                     .foregroundStyle(DesignTokens.Primary.p400)
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Split Display")
+                        Text(localization.t("subtitles.splitDisplay"))
                             .font(.system(
                                 size: TVDesignTokens.FontSize.md,
                                 weight: .medium
                             ))
                             .foregroundStyle(DesignTokens.Text.primary)
 
-                        Text("Two languages side by side")
+                        Text(localization.t("subtitles.twoLanguagesSideBySide"))
                             .font(.system(size: TVDesignTokens.FontSize.sm))
                             .foregroundStyle(DesignTokens.Text.muted)
                     }

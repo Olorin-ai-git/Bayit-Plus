@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 import UIKit
 
 /// Voice selector sheet for live dubbing - displays available voices with language and description.
 struct VoiceSelectorView: View {
+    @Environment(LocalizationManager.self) private var localization
     let voices: [DubbingVoice]
     let selectedVoice: DubbingVoice?
     let onSelect: (DubbingVoice) -> Void
@@ -23,7 +25,7 @@ struct VoiceSelectorView: View {
                 .padding(DesignTokens.Spacing.lg)
             }
             .background(DesignTokens.Background.primary)
-            .navigationTitle("Select Voice")
+            .navigationTitle(localization.t("dubbing.selectVoice"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -46,7 +48,7 @@ struct VoiceSelectorView: View {
                 .font(.system(size: 24))
                 .foregroundStyle(DesignTokens.Primary.p400)
 
-            Text("\(voices.count) voices available")
+            Text(localization.t("dubbing.voicesAvailable", ["count": "\(voices.count)"]))
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

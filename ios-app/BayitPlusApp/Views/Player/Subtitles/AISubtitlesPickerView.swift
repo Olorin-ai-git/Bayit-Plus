@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Modal for selecting Hebrew AI subtitle display modes and triggering generation.
 /// Supports regular, nikud, shoresh, and heblish modes with AI generation for admins.
 struct AISubtitlesPickerView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(LocalizationManager.self) private var localization
 
     let contentId: String
     let currentMode: SubtitleHebrewMode
@@ -65,7 +67,7 @@ struct AISubtitlesPickerView: View {
             VStack(spacing: DesignTokens.Spacing.md) {
                 // Header
                 HStack {
-                    Text("Hebrew Display Mode")
+                    Text(localization.t("subtitles.hebrewDisplayMode"))
                         .font(.system(size: 20, weight: .bold))
                         .foregroundColor(.white)
 
@@ -205,7 +207,7 @@ struct AISubtitlesPickerView: View {
                 await handleGenerateMode(mode)
             }
         } label: {
-            Text("Generate")
+            Text(localization.t("common.generate"))
                 .font(.system(size: 14, weight: .bold))
                 .foregroundColor(.white)
                 .padding(.horizontal, DesignTokens.Spacing.md)
@@ -260,7 +262,7 @@ struct AISubtitlesPickerView: View {
     }
 
     private var unavailableBadge: some View {
-        Text("Unavailable")
+        Text(localization.t("common.unavailable"))
             .font(.system(size: 12, weight: .semibold))
             .foregroundColor(.red.opacity(0.9))
             .padding(.horizontal, DesignTokens.Spacing.sm)
@@ -276,7 +278,7 @@ struct AISubtitlesPickerView: View {
             Image(systemName: "info.circle")
                 .foregroundColor(.blue)
 
-            Text("Choose how you want Hebrew subtitles displayed. Nikud adds vowel marks for easier reading, while Shoresh shows root words for language learning.")
+            Text(localization.t("subtitles.hebrewModeHint"))
                 .font(.system(size: 13))
                 .foregroundColor(.blue.opacity(0.9))
                 .multilineTextAlignment(.leading)
@@ -335,11 +337,11 @@ struct AISubtitlesPickerView: View {
                 .foregroundColor(.orange)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text("No Hebrew Subtitles")
+                Text(localization.t("subtitles.noHebrewSubtitles"))
                     .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.orange)
 
-                Text("Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.")
+                Text(localization.t("subtitles.uploadHebrewFirst"))
                     .font(.system(size: 12))
                     .foregroundColor(.orange.opacity(0.7))
             }

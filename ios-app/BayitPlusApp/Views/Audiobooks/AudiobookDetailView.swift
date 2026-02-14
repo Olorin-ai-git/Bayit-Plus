@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 import UIKit
 
@@ -6,6 +7,7 @@ import UIKit
 struct AudiobookDetailView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: AudiobookDetailViewModel?
 
     let audiobookId: String
@@ -163,7 +165,7 @@ struct AudiobookDetailView: View {
 
     private func chapterList(_ audiobook: Audiobook, vm: AudiobookDetailViewModel) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Text("Chapters")
+            Text(localization.t("audiobooks.chapters"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
                 .padding(.horizontal, DesignTokens.Spacing.lg)

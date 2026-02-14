@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS message thread view for a conversation with a friend.
 /// Reuses DirectMessagesViewModel from shared ViewModels.
 struct TVConversationView: View {
+    @Environment(LocalizationManager.self) private var localization
     let friendId: String
 
     @Environment(TVRepositoryProvider.self) private var repos
@@ -115,7 +117,7 @@ struct TVConversationView: View {
                 ProgressView()
                     .tint(DesignTokens.Text.muted)
                     .scaleEffect(0.8)
-                Text("Typing...")
+                Text(localization.t("chat.typing"))
                     .font(.system(size: TVDesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
             }
@@ -132,7 +134,7 @@ struct TVConversationView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Messages...")
+            Text(localization.t("chat.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

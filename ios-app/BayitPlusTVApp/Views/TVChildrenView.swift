@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Children content screen with age-group filtering and category shelves.
@@ -6,6 +7,7 @@ import SwiftUI
 struct TVChildrenView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: ChildrenViewModel?
     @State private var selectedAgeGroupId: String?
 
@@ -121,7 +123,7 @@ struct TVChildrenView: View {
     private func categoryGrid(_ vm: ChildrenViewModel) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: TVDesignTokens.Spacing.md) {
-                filterChip("All", isSelected: selectedCategoryId == nil) {
+                filterChip(localization.t("common.all"), isSelected: selectedCategoryId == nil) {
                     selectedCategoryId = nil
                     Task { await vm.loadContent(category: nil, ageGroup: selectedAgeGroupId) }
                 }
@@ -141,7 +143,7 @@ struct TVChildrenView: View {
 
     private func contentGrid(_ vm: ChildrenViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("Content")
+            Text(localization.t("tvos.children.allContent"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -199,7 +201,7 @@ struct TVChildrenView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Kids Content...")
+            Text(localization.t("tvos.children.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Game control buttons for resign and draw offer during a tvOS chess match.
-/// Uses hardcoded English strings matching tvOS convention (no BayitLocalization).
 struct TVChessControlsView: View {
+    @Environment(LocalizationManager.self) private var localization
+
     let gameStatus: ChessGameStatus
     let drawOffered: Bool
     let onResign: () -> Void
@@ -50,7 +52,7 @@ struct TVChessControlsView: View {
 
     private var drawResponseButtons: some View {
         VStack(spacing: TVDesignTokens.Spacing.sm) {
-            Text("Draw Offered")
+            Text(localization.t("chess.drawOffered"))
                 .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
 

@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Reusable tvOS content section with consistent width, padding, and card layout.
 /// Renders a horizontal scrolling shelf with a capitalized title and icon.
 struct TVContentSection<Item, CardContent: View>: View {
+    @Environment(LocalizationManager.self) private var localization
     let title: String
     let icon: String
     let items: [Item]
@@ -51,7 +53,7 @@ struct TVContentSection<Item, CardContent: View>: View {
                 if let maxItems = maxItems, items.count > maxItems, let action = seeAllAction {
                     Button(action: action) {
                         HStack(spacing: TVDesignTokens.Spacing.sm) {
-                            Text("See All")
+                            Text(localization.t("tvos.common.seeAll"))
                                 .font(.system(size: TVDesignTokens.FontSize.md))
                                 .foregroundStyle(DesignTokens.Primary.default)
 

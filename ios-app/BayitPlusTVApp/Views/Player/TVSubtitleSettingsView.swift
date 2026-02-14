@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS subtitle display settings: font size, background opacity, and position.
@@ -6,6 +7,7 @@ import SwiftUI
 /// Dismiss via Menu button on the Siri Remote (no X button).
 struct TVSubtitleSettingsView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(LocalizationManager.self) private var localization
     @AppStorage("subtitleFontSize") private var fontSize: Double = 18
     @AppStorage("subtitleBackgroundOpacity") private var backgroundOpacity: Double = 0.6
     @AppStorage("subtitlePosition") private var position: String = "bottom"
@@ -16,7 +18,7 @@ struct TVSubtitleSettingsView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Subtitle Settings")
+            Text(localization.t("subtitles.title"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
 
@@ -38,7 +40,7 @@ struct TVSubtitleSettingsView: View {
     private var fontSizeCard: some View {
         GlassCard {
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-                Text("Font Size")
+                Text(localization.t("subtitles.fontSize"))
                     .font(.system(size: TVDesignTokens.FontSize.md))
                     .foregroundColor(DesignTokens.Text.primary)
 
@@ -70,7 +72,7 @@ struct TVSubtitleSettingsView: View {
     private var backgroundOpacityCard: some View {
         GlassCard {
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-                Text("Background Opacity")
+                Text(localization.t("subtitles.backgroundOpacity"))
                     .font(.system(size: TVDesignTokens.FontSize.md))
                     .foregroundColor(DesignTokens.Text.primary)
 
@@ -102,7 +104,7 @@ struct TVSubtitleSettingsView: View {
     private var positionCard: some View {
         GlassCard {
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-                Text("Position")
+                Text(localization.t("subtitles.position"))
                     .font(.system(size: TVDesignTokens.FontSize.md))
                     .foregroundColor(DesignTokens.Text.primary)
 
@@ -127,7 +129,7 @@ struct TVSubtitleSettingsView: View {
     private var previewSection: some View {
         GlassCard {
             VStack(spacing: TVDesignTokens.Spacing.sm) {
-                Text("Preview")
+                Text(localization.t("common.preview"))
                     .font(.system(size: TVDesignTokens.FontSize.sm))
                     .foregroundColor(DesignTokens.Text.muted)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -137,7 +139,7 @@ struct TVSubtitleSettingsView: View {
                         .fill(Color.black)
                         .frame(height: 160)
 
-                    Text("Sample subtitle text")
+                    Text(localization.t("subtitles.sampleText"))
                         .font(.system(size: fontSize))
                         .foregroundColor(.white)
                         .padding(.horizontal, TVDesignTokens.Spacing.sm)

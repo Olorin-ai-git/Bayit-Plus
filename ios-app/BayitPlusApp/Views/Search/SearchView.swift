@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Search screen with unified search, content type filter pills,
@@ -7,6 +8,7 @@ struct SearchView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(FeatureFlags.self) private var featureFlags
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: SearchViewModel?
 
     var body: some View {
@@ -50,7 +52,7 @@ struct SearchView: View {
                             vm.onQueryChanged()
                         }
                     ),
-                    placeholder: "Search movies, series, podcasts, channels...",
+                    placeholder: localization.t("search.placeholder"),
                     showVoiceButton: true,
                     onVoiceTap: {
                         coordinator.navigate(to: .voiceOnboarding)
@@ -107,13 +109,13 @@ struct SearchView: View {
     }
 
     private func resultsHeader(_ vm: SearchViewModel) -> some View {
-        Text("\(vm.totalResults) results")
+        Text("\(vm.totalResults) \(localization.t("search.resultsFor"))")
             .font(.system(size: DesignTokens.FontSize.sm))
             .foregroundColor(DesignTokens.Text.muted)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, DesignTokens.Spacing.lg)
             .padding(.top, DesignTokens.Spacing.sm)
-            .accessibilityLabel("\(vm.totalResults) results found")
+            .accessibilityLabel("\(vm.totalResults) \(localization.t("search.resultsFor"))")
     }
 
     private func showSuggestions(_ vm: SearchViewModel) -> Bool {
@@ -129,7 +131,7 @@ struct SearchView: View {
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.2)
 
-            Text("Searching...")
+            Text(localization.t("search.searching"))
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundColor(DesignTokens.Text.muted)
         }
@@ -144,11 +146,11 @@ struct SearchView: View {
                 .foregroundColor(DesignTokens.Text.muted)
                 .accessibilityHidden(true)
 
-            Text("No results found")
+            Text(localization.t("search.noResults"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .semibold))
                 .foregroundColor(DesignTokens.Text.secondary)
 
-            Text("Try a different search term")
+            Text(localization.t("search.tryDifferent"))
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundColor(DesignTokens.Text.muted)
         }

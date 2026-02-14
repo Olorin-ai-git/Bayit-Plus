@@ -1,11 +1,13 @@
 import AVKit
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
 /// tvOS full-screen playback view for Star in Story episodes.
 struct TVStarStoryPlayerView: View {
     @Environment(MediaPlayer.self) private var mediaPlayer
+    @Environment(LocalizationManager.self) private var localization
     @Environment(\.dismiss) private var dismiss
 
     let episodeId: String
@@ -157,7 +159,7 @@ struct TVStarStoryPlayerView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(2.0)
-            Text("Loading episode...")
+            Text(localization.t("player.loadingEpisode"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

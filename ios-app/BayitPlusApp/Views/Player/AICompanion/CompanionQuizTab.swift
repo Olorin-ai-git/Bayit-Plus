@@ -1,9 +1,11 @@
 #if os(iOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Quiz tab with interactive questions about current content.
 struct CompanionQuizTab: View {
+    @Environment(LocalizationManager.self) private var localization
     let viewModel: AICompanionViewModel
 
     var body: some View {
@@ -96,7 +98,7 @@ struct CompanionQuizTab: View {
             Image(systemName: "questionmark.circle")
                 .font(.system(size: 32))
                 .foregroundStyle(DesignTokens.Text.muted)
-            Text("No quiz available yet")
+            Text(localization.t("aiCompanion.quiz.empty"))
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
             Spacer()

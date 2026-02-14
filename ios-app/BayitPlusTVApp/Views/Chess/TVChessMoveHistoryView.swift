@@ -1,14 +1,17 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Scrollable horizontal move history list for tvOS chess.
 /// Displays algebraic notation move pairs scaled for 10-foot UI.
 struct TVChessMoveHistoryView: View {
+    @Environment(LocalizationManager.self) private var localization
+
     let moves: [ChessMove]
 
     var body: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-            Text("Move History")
+            Text(localization.t("chess.moveHistory"))
                 .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.secondary)
 

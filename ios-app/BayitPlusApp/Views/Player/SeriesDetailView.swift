@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Series detail screen with season picker, episode list, and related content
 struct SeriesDetailView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: SeriesDetailViewModel?
 
     let seriesId: String
@@ -79,12 +81,12 @@ struct SeriesDetailView: View {
                             .foregroundColor(DesignTokens.Text.secondary)
                     }
                     if let seasons = detail.totalSeasons {
-                        Text("\(seasons) Seasons")
+                        Text("\(seasons) \(localization.t("player.seasons"))")
                             .font(.system(size: DesignTokens.FontSize.xs))
                             .foregroundColor(DesignTokens.Text.secondary)
                     }
                     if let episodes = detail.totalEpisodes {
-                        Text("\(episodes) Episodes")
+                        Text("\(episodes) \(localization.t("player.episodes"))")
                             .font(.system(size: DesignTokens.FontSize.xs))
                             .foregroundColor(DesignTokens.Text.secondary)
                     }
@@ -145,7 +147,7 @@ struct SeriesDetailView: View {
             HStack(spacing: DesignTokens.Spacing.sm) {
                 ForEach(vm.seasons) { season in
                     GlassChip(
-                        title: "Season \(season.seasonNumber)",
+                        title: "\(localization.t("player.season")) \(season.seasonNumber)",
                         isSelected: vm.selectedSeason == season.seasonNumber
                     ) {
                         Task { await vm.loadEpisodes(season: season.seasonNumber) }
@@ -179,7 +181,7 @@ struct SeriesDetailView: View {
 
     private func relatedSection(_ items: [RelatedItem]) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text("Related")
+            Text(localization.t("content.relatedContent"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
                 .padding(.horizontal, DesignTokens.Spacing.lg)
@@ -218,6 +220,7 @@ struct SeriesDetailView: View {
 
 /// Episode row card for the episode list
 private struct EpisodeRow: View {
+    @Environment(LocalizationManager.self) private var localization
     let episode: EpisodeItem
     let onTap: () -> Void
 
@@ -230,12 +233,12 @@ private struct EpisodeRow: View {
 
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
                     if let number = episode.episodeNumber {
-                        Text("Episode \(number)")
+                        Text("\(localization.t("player.episode")) \(number)")
                             .font(.system(size: DesignTokens.FontSize.xs))
                             .foregroundColor(DesignTokens.Text.muted)
                     }
 
-                    Text(episode.title ?? "Episode")
+                    Text(episode.title ?? localization.t("player.episode"))
                         .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                         .foregroundColor(DesignTokens.Text.primary)
                         .lineLimit(2)

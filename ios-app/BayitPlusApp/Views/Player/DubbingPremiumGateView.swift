@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Lightweight inline premium gate for live dubbing feature.
@@ -7,6 +8,7 @@ struct DubbingPremiumGateView: View {
     let onDismiss: () -> Void
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.lg) {
@@ -32,11 +34,11 @@ struct DubbingPremiumGateView: View {
                 .font(.system(size: 48))
                 .foregroundStyle(DesignTokens.Warning.default)
 
-            Text("Premium Required")
+            Text(localization.t("player.premiumRequired"))
                 .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Upgrade to Premium to access live dubbing")
+            Text(localization.t("player.upgradeToPremiumDubbing"))
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.muted)
                 .multilineTextAlignment(.center)
@@ -74,7 +76,7 @@ struct DubbingPremiumGateView: View {
 
     private var upgradeButton: some View {
         GlassButton(
-            "Upgrade to Premium",
+            localization.t("player.upgradeToPremium"),
             variant: .primary,
             size: .large,
             icon: Image(systemName: "crown.fill")

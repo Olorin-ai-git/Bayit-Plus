@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Culture screen displaying Jerusalem and Tel Aviv content shelves.
 /// Reuses CultureContentViewModel from shared ViewModels.
 struct TVCultureView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: CultureContentViewModel?
 
     var body: some View {
@@ -100,7 +102,7 @@ struct TVCultureView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Culture...")
+            Text(localization.t("cultures.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

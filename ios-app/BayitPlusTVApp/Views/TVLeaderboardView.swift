@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Leaderboard screen with focus-navigable scope selector and ranked entries.
 /// Reuses MissionsViewModel from shared ViewModels for leaderboard data.
 struct TVLeaderboardView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: MissionsViewModel?
     @FocusState private var focusedScope: LeaderboardScope?
 
@@ -47,7 +49,7 @@ struct TVLeaderboardView: View {
             Image(systemName: "trophy.fill")
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Warning.default)
-            Text("Leaderboard")
+            Text(localization.t("leaderboard.title"))
                 .font(.system(size: TVDesignTokens.FontSize.display, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
         }
@@ -93,13 +95,14 @@ struct TVLeaderboardView: View {
     private var loadingState: some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             ProgressView().tint(DesignTokens.Primary.default).scaleEffect(1.5)
-            Text("Loading Leaderboard...").font(.system(size: TVDesignTokens.FontSize.lg)).foregroundStyle(DesignTokens.Text.muted)
+            Text(localization.t("leaderboard.loading")).font(.system(size: TVDesignTokens.FontSize.lg)).foregroundStyle(DesignTokens.Text.muted)
         }
         .frame(maxWidth: .infinity, minHeight: 400)
     }
 }
 
 struct TVLeaderboardRow: View {
+    @Environment(LocalizationManager.self) private var localization
     let user: LeaderboardUser
 
     var body: some View {
@@ -165,7 +168,7 @@ struct TVLeaderboardRow: View {
             HStack(spacing: TVDesignTokens.Spacing.md) {
                 Text(user.displayName).font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold)).foregroundStyle(DesignTokens.Text.primary)
                 if user.isCurrentUser {
-                    Text("YOU")
+                    Text(localization.t("leaderboard.you"))
                         .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
                         .foregroundStyle(DesignTokens.Primary.default)
                         .padding(.horizontal, TVDesignTokens.Spacing.sm)

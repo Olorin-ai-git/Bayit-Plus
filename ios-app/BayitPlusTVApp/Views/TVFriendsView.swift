@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Friends screen with search, friend requests, and friends grid.
 /// Reuses FriendsViewModel from shared ViewModels.
 struct TVFriendsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: FriendsViewModel?
 
     private let columns = [
@@ -63,7 +65,7 @@ struct TVFriendsView: View {
     private func searchSection(_ vm: FriendsViewModel) -> some View {
         @Bindable var bindableVM = vm
         return HStack(spacing: TVDesignTokens.Spacing.md) {
-            GlassTextField("Search users...", text: $bindableVM.searchQuery)
+            GlassTextField(localization.t("friends.findPlayers"), text: $bindableVM.searchQuery)
                 .accessibilityLabel("Search for users")
 
             if !vm.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
@@ -81,7 +83,7 @@ struct TVFriendsView: View {
 
     private func requestsSection(_ requests: [FriendRequest]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Friend Requests (\(requests.count))")
+            Text(localization.t("friends.requests", ["count": "\(requests.count)"]))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.leading, TVDesignTokens.Spacing.xl)
@@ -123,7 +125,7 @@ struct TVFriendsView: View {
 
     private func friendsGrid(_ friends: [Friend]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Friends (\(friends.count))")
+            Text(localization.t("friends.list", ["count": "\(friends.count)"]))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.leading, TVDesignTokens.Spacing.xl)
@@ -151,8 +153,8 @@ struct TVFriendsView: View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             Image(systemName: "person.2").font(.system(size: TVDesignTokens.FontSize.hero)).foregroundStyle(DesignTokens.Text.muted)
             VStack(spacing: TVDesignTokens.Spacing.md) {
-                Text("No friends yet").font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold)).foregroundStyle(DesignTokens.Text.primary)
-                Text("Search for users to add friends").font(.system(size: TVDesignTokens.FontSize.lg)).foregroundStyle(DesignTokens.Text.secondary).multilineTextAlignment(.center).frame(maxWidth: 600)
+                Text(localization.t("friends.empty")).font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold)).foregroundStyle(DesignTokens.Text.primary)
+                Text(localization.t("friends.emptyHint")).font(.system(size: TVDesignTokens.FontSize.lg)).foregroundStyle(DesignTokens.Text.secondary).multilineTextAlignment(.center).frame(maxWidth: 600)
             }
         }.frame(maxWidth: .infinity).padding(.top, TVDesignTokens.Spacing.xxxxl)
     }
@@ -160,7 +162,7 @@ struct TVFriendsView: View {
     private var loadingState: some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             ProgressView().tint(DesignTokens.Primary.default).scaleEffect(1.5)
-            Text("Loading Friends...").font(.system(size: TVDesignTokens.FontSize.lg)).foregroundStyle(DesignTokens.Text.muted)
+            Text(localization.t("friends.loading")).font(.system(size: TVDesignTokens.FontSize.lg)).foregroundStyle(DesignTokens.Text.muted)
         }.frame(maxWidth: .infinity, minHeight: 400)
     }
 }

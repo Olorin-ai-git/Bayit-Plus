@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Watch Party screen with create/join sheets, chat input, and leave functionality.
 /// Reuses WatchPartyViewModel from shared ViewModels.
 struct TVWatchPartyView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: WatchPartyViewModel?
     @State private var chatText = ""
 
@@ -78,7 +80,7 @@ struct TVWatchPartyView: View {
 
     private func participantsList(_ participants: [ParticipantState]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("PARTICIPANTS").font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold)).foregroundStyle(DesignTokens.Text.muted).textCase(.uppercase)
+            Text(localization.t("watchParty.participants")).font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold)).foregroundStyle(DesignTokens.Text.muted).textCase(.uppercase)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: TVDesignTokens.Spacing.lg) {
                     ForEach(participants) { participant in
@@ -92,14 +94,14 @@ struct TVWatchPartyView: View {
 
     private func chatSection(_ messages: [PartyChatMessage], chatEnabled: Bool, vm: WatchPartyViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("CHAT").font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold)).foregroundStyle(DesignTokens.Text.muted).textCase(.uppercase)
+            Text(localization.t("channelChat.title")).font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold)).foregroundStyle(DesignTokens.Text.muted).textCase(.uppercase)
             LazyVStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
                 ForEach(messages.suffix(5)) { msg in
                     chatMessageRow(msg)
                 }
             }
             if chatEnabled {
-                TVMessageInputBar(text: $chatText, placeholder: "Send a message...") { text in
+                TVMessageInputBar(text: $chatText, placeholder: localization.t("channelChat.sendMessage")) { text in
                     Task { await vm.sendChat(text) }
                 }
             }
@@ -136,8 +138,8 @@ struct TVWatchPartyView: View {
     private var lobbyHeader: some View {
         VStack(spacing: TVDesignTokens.Spacing.md) {
             Image(systemName: "tv.and.hifispeaker.fill").font(.system(size: TVDesignTokens.FontSize.hero)).foregroundStyle(DesignTokens.Text.muted)
-            Text("Watch Party").font(.system(size: TVDesignTokens.FontSize.display, weight: .bold)).foregroundStyle(DesignTokens.Text.primary)
-            Text("Watch together with friends and family").font(.system(size: TVDesignTokens.FontSize.lg)).foregroundStyle(DesignTokens.Text.secondary)
+            Text(localization.t("watchParty.title")).font(.system(size: TVDesignTokens.FontSize.display, weight: .bold)).foregroundStyle(DesignTokens.Text.primary)
+            Text(localization.t("watchParty.subtitle")).font(.system(size: TVDesignTokens.FontSize.lg)).foregroundStyle(DesignTokens.Text.secondary)
         }.frame(maxWidth: .infinity)
     }
 
@@ -152,7 +154,7 @@ struct TVWatchPartyView: View {
 
     private func existingPartiesList(_ vm: WatchPartyViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("MY PARTIES").font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold)).foregroundStyle(DesignTokens.Text.muted).textCase(.uppercase)
+            Text(localization.t("watchParty.myParties")).font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold)).foregroundStyle(DesignTokens.Text.muted).textCase(.uppercase)
             LazyVStack(spacing: TVDesignTokens.Spacing.md) {
                 ForEach(vm.myParties) { party in partyCard(party, vm: vm) }
             }
@@ -174,15 +176,15 @@ struct TVWatchPartyView: View {
 
     private var emptyState: some View {
         VStack(spacing: TVDesignTokens.Spacing.lg) {
-            Text("No active watch parties").font(.system(size: TVDesignTokens.FontSize.xl)).foregroundStyle(DesignTokens.Text.secondary)
-            Text("Create or join a watch party").font(.system(size: TVDesignTokens.FontSize.lg)).foregroundStyle(DesignTokens.Text.muted).multilineTextAlignment(.center).frame(maxWidth: 600)
+            Text(localization.t("watchParty.noParties")).font(.system(size: TVDesignTokens.FontSize.xl)).foregroundStyle(DesignTokens.Text.secondary)
+            Text(localization.t("watchParty.createOrJoin")).font(.system(size: TVDesignTokens.FontSize.lg)).foregroundStyle(DesignTokens.Text.muted).multilineTextAlignment(.center).frame(maxWidth: 600)
         }.frame(maxWidth: .infinity).padding(.top, TVDesignTokens.Spacing.xl)
     }
 
     private var loadingState: some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             ProgressView().tint(DesignTokens.Primary.default).scaleEffect(1.5)
-            Text("Loading Watch Parties...").font(.system(size: TVDesignTokens.FontSize.lg)).foregroundStyle(DesignTokens.Text.muted)
+            Text(localization.t("watchParty.loading")).font(.system(size: TVDesignTokens.FontSize.lg)).foregroundStyle(DesignTokens.Text.muted)
         }.frame(maxWidth: .infinity, minHeight: 400)
     }
 }

@@ -1,11 +1,13 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS AI chatbot conversation view with text and voice input.
 struct TVChatbotView: View {
 
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: TVChatbotViewModel?
 
     var body: some View {
@@ -48,11 +50,11 @@ struct TVChatbotView: View {
                     .foregroundStyle(DesignTokens.Primary.p300)
             }
 
-            Text("Start a Conversation")
+            Text(localization.t("chatbot.welcome"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Ask about content, get personalized recommendations, or use the microphone on your Siri Remote.")
+            Text(localization.t("chatbot.greeting"))
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -88,7 +90,7 @@ struct TVChatbotView: View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
             ProgressView()
                 .tint(DesignTokens.Primary.p300)
-            Text("Transcribing audio...")
+            Text(localization.t("voice.processing"))
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -151,7 +153,7 @@ struct TVChatbotView: View {
         HStack(spacing: TVDesignTokens.Spacing.lg) {
             microphoneButton(vm)
 
-            TextField("Type a message...", text: Bindable(vm).inputText)
+            TextField(localization.t("chatbot.placeholder"), text: Bindable(vm).inputText)
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .submitLabel(.send)

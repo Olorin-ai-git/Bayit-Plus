@@ -1,5 +1,6 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitLocalization
 import BayitNetworking
 import SwiftUI
 
@@ -7,6 +8,7 @@ import SwiftUI
 /// Reuses ChannelChatViewModel from shared ViewModels.
 struct TVChannelChatView: View {
 
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: ChannelChatViewModel
     let channelId: String
     let authToken: String
@@ -40,7 +42,7 @@ struct TVChannelChatView: View {
                 .fill(viewModel.isConnected ? DesignTokens.Success.default : DesignTokens.Text.muted)
                 .frame(width: 12, height: 12)
 
-            Text("Live Chat")
+            Text(localization.t("channelChat.title"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -103,7 +105,7 @@ struct TVChannelChatView: View {
 
     private var inputBar: some View {
         HStack(spacing: TVDesignTokens.Spacing.lg) {
-            TextField("Say something...", text: Bindable(viewModel).inputText)
+            TextField(localization.t("channelChat.inputPlaceholder"), text: Bindable(viewModel).inputText)
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .submitLabel(.send)

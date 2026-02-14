@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Full-screen AI chatbot conversation view.
@@ -8,6 +9,7 @@ import SwiftUI
 struct ChatbotView: View {
 
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: ChatbotViewModel
 
     init(repository: any ChatRepository) {
@@ -111,11 +113,11 @@ struct ChatbotView: View {
                     .foregroundStyle(DesignTokens.Primary.p300)
             }
 
-            Text("Start a Conversation")
+            Text(localization.t("chatbot.welcome"))
                 .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Ask about content, get personalized recommendations, or just chat.")
+            Text(localization.t("chatbot.greeting"))
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -176,7 +178,7 @@ struct ChatbotView: View {
         HStack(spacing: DesignTokens.Spacing.sm) {
             voiceButton
 
-            TextField("Type a message...", text: Bindable(viewModel).inputText)
+            TextField(localization.t("chatbot.placeholder"), text: Bindable(viewModel).inputText)
                 .font(.system(size: DesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.horizontal, DesignTokens.Spacing.md)

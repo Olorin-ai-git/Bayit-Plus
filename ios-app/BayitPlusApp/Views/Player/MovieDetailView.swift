@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Movie detail screen with backdrop, metadata, cast, and related content
 struct MovieDetailView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: MovieDetailViewModel?
 
     let movieId: String
@@ -126,7 +128,7 @@ struct MovieDetailView: View {
 
             if let director = detail.director {
                 HStack {
-                    Text("Director:")
+                    Text(localization.t("content.director") + ":")
                         .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
                         .foregroundColor(DesignTokens.Text.muted)
                     Text(director)
@@ -140,7 +142,7 @@ struct MovieDetailView: View {
 
     private func actionButtons(_ detail: ContentDetail) -> some View {
         HStack(spacing: DesignTokens.Spacing.md) {
-            GlassButton("Play", variant: .primary, size: .large,
+            GlassButton(localization.t("content.play"), variant: .primary, size: .large,
                          icon: Image(systemName: "play.fill")) {
                 coordinator.presentFullscreen(.player(
                     contentId: detail.id,
@@ -149,7 +151,7 @@ struct MovieDetailView: View {
             }
 
             if viewModel?.hasTrailer == true, let trailerUrl = detail.trailerUrl {
-                GlassButton("Trailer", variant: .secondary, size: .large,
+                GlassButton(localization.t("content.trailer"), variant: .secondary, size: .large,
                              icon: Image(systemName: "film")) {
                     coordinator.presentFullscreen(.player(
                         contentId: trailerUrl,
@@ -163,7 +165,7 @@ struct MovieDetailView: View {
 
     private func castSection(_ cast: [String]) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text("Cast")
+            Text(localization.t("content.cast"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
 
@@ -176,7 +178,7 @@ struct MovieDetailView: View {
 
     private func relatedSection(_ items: [RelatedItem]) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text("Related")
+            Text(localization.t("content.relatedContent"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
                 .padding(.horizontal, DesignTokens.Spacing.lg)

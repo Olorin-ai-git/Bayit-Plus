@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Displays the AI interpretation of a natural language search query
 /// with a confidence meter bar and percentage indicator.
 struct LLMSearchInterpretationView: View {
+    @Environment(LocalizationManager.self) private var localization
     let interpretation: SearchInterpretation
 
     var body: some View {
@@ -23,7 +25,7 @@ struct LLMSearchInterpretationView: View {
             }
         }
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("AI interpretation: \(interpretation.text ?? "")")
+        .accessibilityLabel("\(localization.t("aiCompanion.title")): \(interpretation.text ?? "")")
     }
 
     // MARK: - Header
@@ -34,7 +36,7 @@ struct LLMSearchInterpretationView: View {
                 .foregroundStyle(DesignTokens.Primary.p400)
                 .accessibilityHidden(true)
 
-            Text("AI Interpretation")
+            Text(localization.t("aiCompanion.title"))
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -44,7 +46,7 @@ struct LLMSearchInterpretationView: View {
 
     private func confidenceMeter(_ confidence: Double) -> some View {
         HStack(spacing: DesignTokens.Spacing.sm) {
-            Text("Confidence")
+            Text(localization.t("common.confidence"))
                 .font(.system(size: DesignTokens.FontSize.xs))
                 .foregroundStyle(DesignTokens.Text.muted)
 
@@ -66,7 +68,7 @@ struct LLMSearchInterpretationView: View {
                 .frame(width: 36, alignment: .trailing)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Confidence: \(Int(confidence * 100)) percent")
+        .accessibilityLabel("\(localization.t("common.confidence")): \(Int(confidence * 100)) \(localization.t("common.percent"))")
     }
 
     private func confidenceColor(_ confidence: Double) -> Color {

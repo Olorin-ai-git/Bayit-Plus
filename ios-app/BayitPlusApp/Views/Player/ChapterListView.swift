@@ -1,16 +1,18 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 import UIKit
 
 /// Vertical chapter list presented as a sheet with active chapter tracking and auto-scroll
 struct ChapterListView: View {
+    @Environment(LocalizationManager.self) private var localization
     let chapters: [Chapter]
     let activeChapter: Chapter?
     let onChapterSelected: (Chapter) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text("Chapters")
+            Text(localization.t("player.chapters"))
                 .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
                 .padding(.horizontal, DesignTokens.Spacing.lg)

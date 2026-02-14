@@ -1,7 +1,9 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 struct CulturalExplanationSheet: View {
+    @Environment(LocalizationManager.self) private var localization
     let data: CulturalExplanationData
     let onDismiss: () -> Void
 
@@ -75,7 +77,7 @@ struct CulturalExplanationSheet: View {
         Button {
             onDismiss()
         } label: {
-            Text("Close")
+            Text(localization.t("common.close"))
                 .font(.callout)
                 .fontWeight(.semibold)
                 .foregroundStyle(DesignTokens.Text.primary)

@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Trending culture news row (What's Hot in Israel)
 /// Displays news topic cards matching the web CultureTrendingRow design.
 struct TrendingRow: View {
+    @Environment(LocalizationManager.self) private var localization
     let items: [CultureTrendingItem]
     let coordinator: NavigationCoordinator
 
@@ -78,7 +80,7 @@ struct TrendingRow: View {
         return Group {
             if !sources.isEmpty {
                 HStack(spacing: DesignTokens.Spacing.xs) {
-                    Text("Sources:")
+                    Text(localization.t("trending.sources"))
                         .font(.system(size: DesignTokens.FontSize.xs))
                         .foregroundColor(DesignTokens.Text.muted)
 

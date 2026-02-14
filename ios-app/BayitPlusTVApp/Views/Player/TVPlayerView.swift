@@ -2,12 +2,14 @@ import AVKit
 import BayitAuth
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
 /// tvOS full-screen video player with complete subtitle, AI, dubbing, trivia,
 /// split display, chapter, audio track, and speed controls.
 struct TVPlayerView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(MediaPlayer.self) private var mediaPlayer
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(AuthManager.self) private var authManager
@@ -521,7 +523,7 @@ struct TVPlayerView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(2.0)
-            Text("Loading stream...")
+            Text(localization.t("player.loadingStream"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

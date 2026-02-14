@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Rewards screen displaying points, level, streak, and badges.
 /// Reuses RewardsViewModel from shared ViewModels.
 struct TVRewardsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: RewardsViewModel?
 
     private let badgeColumns = [
@@ -57,7 +59,7 @@ struct TVRewardsView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Warning.default)
 
-            Text("Level \(vm.level)")
+            Text("\(localization.t("gamification.level")) \(vm.level)")
                 .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -83,7 +85,7 @@ struct TVRewardsView: View {
             .frame(height: 12)
             .frame(maxWidth: 500)
 
-            Text("\(vm.points) points")
+            Text("\(vm.points) \(localization.t("leaderboard.points"))")
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
@@ -132,7 +134,7 @@ struct TVRewardsView: View {
 
     private func badgesSection(_ badges: [Badge]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Badges")
+            Text(localization.t("rewards.badges"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -188,7 +190,7 @@ struct TVRewardsView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Rewards...")
+            Text(localization.t("rewards.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

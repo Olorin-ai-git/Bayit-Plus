@@ -1,15 +1,18 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Search results section for the tvOS Friends screen.
 /// Displays matching users with "Add" button for non-friends.
 struct TVFriendSearchResultsSection: View {
+    @Environment(LocalizationManager.self) private var localization
+
     let results: [UserSearchResult]
     let onSendRequest: (String) async -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Search Results (\(results.count))")
+            Text(localization.t("friends.searchResults", ["count": "\(results.count)"]))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.leading, TVDesignTokens.Spacing.xl)
@@ -34,7 +37,7 @@ struct TVFriendSearchResultsSection: View {
                     }
                     .tvFocusStyle()
                 } else if result.hasPendingRequest {
-                    Text("Pending")
+                    Text(localization.t("friends.pending"))
                         .font(.system(size: TVDesignTokens.FontSize.base))
                         .foregroundStyle(DesignTokens.Text.muted)
                 }

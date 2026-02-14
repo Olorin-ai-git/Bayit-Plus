@@ -1,11 +1,13 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Bilingual Bridge dubbing overlay. Designed for 10-foot viewing distance
 /// with large text, focus-friendly toggle, level indicator, ratio display,
 /// and vocabulary count. Uses TVDesignTokens for spacing and sizing.
 struct TVBilingualDubbingOverlayView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(\.dismiss) private var dismiss
     @Bindable var viewModel: BilingualDubbingViewModel
     let contentId: String
@@ -90,7 +92,7 @@ struct TVBilingualDubbingOverlayView: View {
             padding: TVDesignTokens.Spacing.lg
         ) {
             VStack(spacing: TVDesignTokens.Spacing.md) {
-                Text("Language Ratio")
+                Text(localization.t("bilingualBridge.languageRatio"))
                     .font(.system(size: TVDesignTokens.FontSize.md, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
@@ -146,7 +148,7 @@ struct TVBilingualDubbingOverlayView: View {
                         Text("\(proficiency.totalWordsLearned)")
                             .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
                             .foregroundStyle(DesignTokens.Text.primary)
-                        Text("words learned")
+                        Text(localization.t("bilingualBridge.wordsLearned"))
                             .font(.system(size: TVDesignTokens.FontSize.sm))
                             .foregroundStyle(DesignTokens.Text.secondary)
                     }

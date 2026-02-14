@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
@@ -7,6 +8,7 @@ import SwiftUI
 struct TVPodcastsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: PodcastsViewModel?
     @State private var radioStations: [RadioStationItem] = []
     @State private var showAddSheet = false
@@ -56,7 +58,7 @@ struct TVPodcastsView: View {
 
             // Podcasts section label
             if !vm.shows.isEmpty {
-                Text("Podcasts")
+                Text(localization.t("podcasts.title"))
                     .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -76,7 +78,7 @@ struct TVPodcastsView: View {
     private func categoryFilters(_ vm: PodcastsViewModel) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: TVDesignTokens.Spacing.md) {
-                categoryChip("All", isSelected: vm.selectedCategory == nil) {
+                categoryChip(localization.t("common.all"), isSelected: vm.selectedCategory == nil) {
                     Task { await vm.filterByCategory(nil) }
                 }
 
@@ -119,7 +121,7 @@ struct TVPodcastsView: View {
 
         return VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             HStack {
-                Text(vm.selectedCategory != nil ? "Podcasts" : "All Podcasts")
+                Text(vm.selectedCategory != nil ? localization.t("podcasts.title") : localization.t("podcasts.allPodcasts"))
                     .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
@@ -131,7 +133,7 @@ struct TVPodcastsView: View {
                     HStack(spacing: TVDesignTokens.Spacing.sm) {
                         Image(systemName: "plus.circle")
                             .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
-                        Text("Add Podcast")
+                        Text(localization.t("podcasts.addPodcast"))
                             .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                     }
                     .foregroundStyle(DesignTokens.Primary.default)
@@ -156,7 +158,7 @@ struct TVPodcastsView: View {
                                     : .default,
                                 value: vm.isSyncing
                             )
-                        Text("Refresh")
+                        Text(localization.t("common.refresh"))
                             .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                     }
                     .foregroundStyle(DesignTokens.Text.secondary)
@@ -192,7 +194,7 @@ struct TVPodcastsView: View {
                             Button(role: .destructive) {
                                 Task { await vm.removePodcast(id: show.id) }
                             } label: {
-                                Label("Remove Podcast", systemImage: "trash")
+                                Label(localization.t("podcasts.removePodcast"), systemImage: "trash")
                             }
                         }
                     }

@@ -44,6 +44,9 @@ export * from './DownloadsScreenMobile';
 // Content detail screens
 export * from './MovieDetailScreenMobile';
 export * from './SeriesDetailScreenMobile';
+export { default as CollectionDetailScreenMobile } from './CollectionDetailScreenMobile';
+export { default as AudiobooksScreenMobile } from './AudiobooksScreenMobile';
+export { default as AudiobookDetailScreenMobile } from './AudiobookDetailScreenMobile';
 
 // Kids mode
 export * from './ChildrenScreenMobile';
@@ -66,6 +69,13 @@ export * from './ActivePartyScreen';
 
 // Social/Friends
 export { default as FriendsScreen } from './FriendsScreen';
+
+// Direct Messages
+export * from './DirectMessagesScreenMobile';
+export * from './ConversationScreenMobile';
+
+// Chess
+export * from './ChessScreenMobile';
 
 // Payment screens
 export * from './PaymentSuccessScreen';
@@ -90,3 +100,35 @@ export * from './NewsClipScreen';
 // Zeh Ani - Avatar Mesh
 export * from './MeshAvatarScreen';
 export * from './ZehAniDashboardScreen';
+
+// Trivia/Quiz
+export * from './TriviaScreenMobile';
+
+// Rewards
+export * from './RewardsScreenMobile';
+
+// Glossary
+export * from './GlossaryScreenMobile';
+export * from './GlossaryDetailScreenMobile';
+
+// Culture
+export * from './CultureScreenMobile';
+
+// Star Story
+export * from './StarStoryScreenMobile';
+
+// ZehAni V2V Practice
+export * from './V2VPracticeScreenMobile';
+
+// Auth & Security
+export * from './MFASetupScreenMobile';
+export * from './PhoneVerificationScreenMobile';
+export * from './PasskeyManagementScreenMobile';
+export * from './ConnectedAccountsScreenMobile';
+
+// Home & Discovery
+export * from './HelpScreenMobile';
+export * from './AIOnboardingScreenMobile';
+
+// Widgets
+export * from './WidgetGalleryScreenMobile';

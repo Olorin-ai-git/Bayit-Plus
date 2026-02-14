@@ -1,10 +1,12 @@
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Trivia Settings View - Full parity with web app
 /// Manages trivia preferences: enable/disable, frequency, categories, duration, languages
 struct TVTriviaSettingsView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(\.dismiss) private var dismiss
     @Environment(TVRepositoryProvider.self) private var repos
 
@@ -170,7 +172,7 @@ struct TVTriviaSettingsView: View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
             sectionHeader(icon: "globe", title: "Languages")
 
-            Text("Select up to 3 languages for trivia facts")
+            Text(localization.t("trivia.selectLanguagesHint"))
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
 

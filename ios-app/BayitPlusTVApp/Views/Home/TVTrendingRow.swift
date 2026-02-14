@@ -1,9 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Trending culture news row for tvOS (What's Hot in Israel)
 /// Optimized for 10-foot UI with focus navigation
 struct TVTrendingRow: View {
+    @Environment(LocalizationManager.self) private var localization
+
     let items: [CultureTrendingItem]
 
     /// Max cards that fit the 1920pt screen without horizontal scrolling.
@@ -88,7 +91,7 @@ struct TVTrendingRow: View {
         return Group {
             if !sources.isEmpty {
                 HStack(spacing: TVDesignTokens.Spacing.xs) {
-                    Text("Sources:")
+                    Text(localization.t("trending.sources"))
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundColor(DesignTokens.Text.muted)
 

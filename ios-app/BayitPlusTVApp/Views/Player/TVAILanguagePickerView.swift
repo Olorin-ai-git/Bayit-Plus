@@ -1,9 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS AI language picker for selecting the target language for live features.
 /// Uses focusable card buttons for Siri Remote navigation.
 struct TVAILanguagePickerView: View {
+    @Environment(LocalizationManager.self) private var localization
+
     let selectedLanguage: String
     let onSelect: (String) -> Void
     let onDismiss: () -> Void
@@ -31,11 +34,11 @@ struct TVAILanguagePickerView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("AI Language")
+            Text(localization.t("ai.languageTitle"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
 
-            Text("Select target language for live translation, dubbing, and trivia")
+            Text(localization.t("ai.languageDescription"))
                 .font(.system(size: TVDesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.muted)
 

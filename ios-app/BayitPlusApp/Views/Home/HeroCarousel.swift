@@ -1,8 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Auto-rotating hero carousel with navigation arrows and Watch Now button
 struct HeroCarousel: View {
+    @Environment(LocalizationManager.self) private var localization
     let items: [SpotlightItem]
     let coordinator: NavigationCoordinator
 
@@ -56,7 +58,7 @@ struct HeroCarousel: View {
                             Image(systemName: "play.fill")
                                 .font(.system(size: 16))
 
-                            Text("Watch Now")
+                            Text(localization.t("hero.watch"))
                                 .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                         }
                         .foregroundColor(.black)

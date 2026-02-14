@@ -1,5 +1,6 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import BayitNetworking
 import SwiftUI
 import UIKit
@@ -11,6 +12,7 @@ import UIKit
 /// A glass vertical divider separates the two panels.
 struct TVSignInView: View {
     @Environment(AuthManager.self) private var authManager
+    @Environment(LocalizationManager.self) private var localization
 
     let onAuthSuccess: () -> Void
     let logger: APILogger
@@ -68,9 +70,9 @@ struct TVSignInView: View {
                     )
             }
 
-            (Text("Bayit")
+            (Text(localization.t("splash.bayit"))
                 .foregroundColor(.white)
-            + Text("+")
+            + Text(localization.t("splash.plus"))
                 .foregroundColor(DesignTokens.Colors.Primary.base))
                 .font(.system(
                     size: TVDesignTokens.FontSize.xxxl,

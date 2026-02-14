@@ -1,5 +1,6 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import LocalAuthentication
 import SwiftUI
 
@@ -7,6 +8,7 @@ import SwiftUI
 struct LoginView: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(RepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
 
     @State private var email = ""
     @State private var password = ""
@@ -51,12 +53,12 @@ struct LoginView: View {
 
     private var cardHeader: some View {
         VStack(spacing: DesignTokens.Spacing.sm) {
-            Text("Welcome Back")
+            Text(localization.t("login.title"))
                 .font(.system(size: DesignTokens.FontSize.xxxl, weight: .bold))
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
 
-            Text("Sign in to continue to Bayit+")
+            Text(localization.t("login.subtitle"))
                 .font(.system(size: 15))
                 .foregroundStyle(DesignTokens.Colors.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -76,7 +78,7 @@ struct LoginView: View {
 
     private var emailField: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Text("Email")
+            Text(localization.t("login.email"))
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(Color.white.opacity(0.7))
 
@@ -92,11 +94,11 @@ struct LoginView: View {
     private var passwordField: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
             HStack {
-                Text("Password")
+                Text(localization.t("login.password"))
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(Color.white.opacity(0.7))
                 Spacer()
-                Button("Forgot password?") {}
+                Button(localization.t("login.forgotPassword")) {}
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(DesignTokens.Colors.Primary.base)
             }
@@ -120,7 +122,7 @@ struct LoginView: View {
                         .tint(.black)
                         .scaleEffect(0.8)
                 }
-                Text("Sign In")
+                Text(localization.t("login.submit"))
                     .font(.system(size: 16, weight: .semibold))
             }
             .frame(maxWidth: .infinity)
@@ -148,7 +150,7 @@ struct LoginView: View {
             }
 
             AuthComponents.SocialButton(
-                title: "Continue with Google",
+                title: localization.t("login.continueWithGoogle"),
                 iconName: "g.circle.fill",
                 action: {
                     Task {
@@ -162,7 +164,7 @@ struct LoginView: View {
                 }
             )
             AuthComponents.SocialButton(
-                title: "Continue with Apple",
+                title: localization.t("login.continueWithApple"),
                 iconName: "apple.logo",
                 action: {
                     Task {
@@ -181,9 +183,9 @@ struct LoginView: View {
 
     private var biometricButtonTitle: String {
         switch biometricService.biometricType() {
-        case .faceID: return "Sign in with Face ID"
-        case .touchID: return "Sign in with Touch ID"
-        case .none: return "Sign in with Biometric"
+        case .faceID: return localization.t("login.signInWithFaceId")
+        case .touchID: return localization.t("login.signInWithTouchId")
+        case .none: return localization.t("login.signInWithBiometric")
         }
     }
 
@@ -205,9 +207,9 @@ struct LoginView: View {
                 .padding(.bottom, DesignTokens.Spacing.lg)
 
             Button(action: onRegister) {
-                Text("Don't have an account? ")
+                Text("\(localization.t("login.noAccount")) ")
                     .foregroundStyle(DesignTokens.Colors.Text.muted)
-                + Text("Sign Up")
+                + Text(localization.t("login.signUp"))
                     .foregroundStyle(DesignTokens.Colors.Primary.base)
                     .bold()
             }
@@ -218,7 +220,7 @@ struct LoginView: View {
     // MARK: - Terms Footer
 
     private var termsFooter: some View {
-        Text("By continuing, you agree to our Terms of Service and Privacy Policy")
+        Text(localization.t("login.termsNotice"))
             .font(.system(size: 12))
             .foregroundStyle(DesignTokens.Colors.Text.secondary)
             .multilineTextAlignment(.center)

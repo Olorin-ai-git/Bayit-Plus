@@ -1,17 +1,19 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Vertical chapter list for tvOS with focus-based navigation and active chapter auto-scroll.
 /// Adapted from iOS ChapterListView: replaces tap gestures with focusable Button wrappers,
 /// uses TVDesignTokens for 10-foot spacing/typography, and removes haptic feedback.
 struct TVChapterListView: View {
+    @Environment(LocalizationManager.self) private var localization
     let chapters: [Chapter]
     let activeChapter: Chapter?
     let onChapterSelected: (Chapter) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("Chapters")
+            Text(localization.t("chapters.title"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.lg)

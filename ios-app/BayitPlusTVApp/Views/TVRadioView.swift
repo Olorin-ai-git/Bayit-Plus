@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
@@ -7,6 +8,7 @@ import SwiftUI
 struct TVRadioView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: RadioViewModel?
 
     private let columns = [
@@ -43,7 +45,7 @@ struct TVRadioView: View {
 
     private func stationsGrid(_ stations: [RadioStationItem]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Radio")
+            Text(localization.t("radio.title"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.leading, TVDesignTokens.Spacing.xl)

@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Household management screen with member list and add/remove functionality.
 /// Reuses HouseholdViewModel from shared ViewModels.
 struct TVHouseholdView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: HouseholdViewModel?
 
     var body: some View {
@@ -60,7 +62,7 @@ struct TVHouseholdView: View {
 
     private func membersSection(_ vm: HouseholdViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("MEMBERS")
+            Text(localization.t("household.members"))
                 .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.muted)
                 .textCase(.uppercase)
@@ -87,7 +89,7 @@ struct TVHouseholdView: View {
                             .foregroundStyle(DesignTokens.Text.primary)
 
                         if vm.isOwner(member) {
-                            Text("OWNER")
+                            Text(localization.t("household.owner"))
                                 .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
                                 .foregroundStyle(DesignTokens.Primary.default)
                                 .padding(.horizontal, TVDesignTokens.Spacing.sm)
@@ -147,7 +149,7 @@ struct TVHouseholdView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Household...")
+            Text(localization.t("household.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

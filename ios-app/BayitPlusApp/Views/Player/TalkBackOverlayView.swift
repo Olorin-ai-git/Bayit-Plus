@@ -1,5 +1,6 @@
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Main Talk Back overlay presented during content playback.
@@ -7,6 +8,7 @@ import SwiftUI
 /// Provides Hebrew voice engagement with character-driven prompts.
 struct TalkBackOverlayView: View {
 
+    @Environment(LocalizationManager.self) private var localization
     @Bindable var viewModel: TalkBackViewModel
     let sessionId: String
     let contentId: String
@@ -120,7 +122,7 @@ struct TalkBackOverlayView: View {
             }
             .onAppear { startMicPulse() }
 
-            Text("Listening...")
+            Text(localization.t("talkBack.listening"))
                 .font(.system(size: DesignTokens.FontSize.base, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
@@ -133,7 +135,7 @@ struct TalkBackOverlayView: View {
         VStack(spacing: DesignTokens.Spacing.md) {
             GlassSpinner(size: .medium)
 
-            Text("Evaluating...")
+            Text(localization.t("talkBack.evaluating"))
                 .font(.system(size: DesignTokens.FontSize.base, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }

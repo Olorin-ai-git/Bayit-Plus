@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
@@ -7,6 +8,7 @@ import SwiftUI
 struct TVLLMSearchView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: LLMSearchViewModel?
 
     var body: some View {
@@ -47,11 +49,11 @@ struct TVLLMSearchView: View {
                 .foregroundStyle(DesignTokens.Primary.p400)
                 .accessibilityHidden(true)
 
-            Text("AI Search")
+            Text(localization.t("tvos.aiSearch.title"))
                 .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Ask anything about our content")
+            Text(localization.t("tvos.aiSearch.subtitle"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
@@ -101,7 +103,7 @@ struct TVLLMSearchView: View {
 
     private var exampleQueries: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("Try asking:")
+            Text(localization.t("tvos.aiSearch.trySuggestion"))
                 .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.muted)
 

@@ -1,9 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// City-specific content row for tvOS matching the trending section style.
 /// Uses VStack with background image, fixed card row, and focus navigation.
 struct TVCityContentRow: View {
+    @Environment(LocalizationManager.self) private var localization
+
     let title: String
     let items: [CityContentItem]
 
@@ -129,7 +132,7 @@ struct TVCityContentRow: View {
         return Group {
             if !sources.isEmpty {
                 HStack(spacing: TVDesignTokens.Spacing.xs) {
-                    Text("Sources:")
+                    Text(localization.t("trending.sources"))
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundColor(DesignTokens.Text.muted)
 

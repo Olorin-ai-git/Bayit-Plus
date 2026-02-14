@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Flows screen showing content sequences with thumbnail and item lists.
 /// Reuses FlowsViewModel from shared ViewModels.
 struct TVFlowsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: FlowsViewModel?
 
     var body: some View {
@@ -60,7 +62,7 @@ struct TVFlowsView: View {
 
             HStack(spacing: TVDesignTokens.Spacing.md) {
                 if let count = flow.totalItems {
-                    Text("\(count) items")
+                    Text("\(count) \(localization.t("tvos.flows.items"))")
                         .font(.system(size: TVDesignTokens.FontSize.base))
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
@@ -108,7 +110,7 @@ struct TVFlowsView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Text.muted)
 
-            Text("No flows available")
+            Text(localization.t("tvos.flows.empty"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
@@ -121,7 +123,7 @@ struct TVFlowsView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Flows...")
+            Text(localization.t("tvos.flows.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import BayitVoice
 import SwiftUI
 import UIKit
@@ -21,6 +22,8 @@ struct VoiceAssistantSheet: View {
     @State private var errorMessage: String?
     @State private var audioLevel: CGFloat = 0
 
+    @Environment(LocalizationManager.self) private var localization
+
     var body: some View {
         ZStack {
             DesignTokens.Background.primary.ignoresSafeArea()
@@ -38,7 +41,7 @@ struct VoiceAssistantSheet: View {
 
                 voiceButton
 
-                Text("Tap outside or swipe down to close")
+                Text(localization.t("voice.tapToClose"))
                     .font(.system(size: DesignTokens.FontSize.xs))
                     .foregroundStyle(DesignTokens.Text.muted)
                     .padding(.bottom, DesignTokens.Spacing.md)
@@ -52,7 +55,7 @@ struct VoiceAssistantSheet: View {
 
     private var header: some View {
         HStack {
-            Text("Voice Assistant")
+            Text(localization.t("voice.voiceAssistant"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -69,7 +72,7 @@ struct VoiceAssistantSheet: View {
                     .background(DesignTokens.Glass.bgMedium)
                     .clipShape(Circle())
             }
-            .accessibilityLabel("Close voice assistant")
+            .accessibilityLabel(localization.t("voice.closeAssistant"))
         }
     }
 
@@ -185,14 +188,14 @@ struct VoiceAssistantSheet: View {
             }
 
             if isListening && transcript.isEmpty {
-                Text("Listening...")
+                Text(localization.t("voice.listening"))
                     .font(.system(size: DesignTokens.FontSize.md))
                     .foregroundStyle(DesignTokens.Text.muted)
                     .transition(.opacity)
             }
 
             if isProcessing {
-                Text("Thinking...")
+                Text(localization.t("voice.thinking"))
                     .font(.system(size: DesignTokens.FontSize.md))
                     .foregroundStyle(DesignTokens.Text.muted)
                     .transition(.opacity)

@@ -1,6 +1,7 @@
 #if os(tvOS)
 import AVFoundation
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
@@ -8,6 +9,7 @@ import SwiftUI
 /// content details, and inline playback controls. Glassmorphic design for 10-foot UI.
 /// Custom widgets (e.g. Ynet Mivzakim) render their own content instead of poster+play.
 struct TVWidgetContainerView: View {
+    @Environment(LocalizationManager.self) private var localization
 
     let widget: WidgetItem
     let onMinimize: () -> Void
@@ -316,7 +318,7 @@ struct TVWidgetContainerView: View {
                     Image(systemName: "play.fill")
                         .font(.system(size: 20))
 
-                    Text("Play")
+                    Text(localization.t("player.play"))
                         .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
                 }
                 .foregroundStyle(.white)

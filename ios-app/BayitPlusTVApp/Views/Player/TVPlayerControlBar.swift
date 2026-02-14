@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
@@ -7,6 +8,7 @@ import SwiftUI
 /// and live-specific features (catch-up, scene search, channel chat).
 /// Each button is focusable with card styling for natural Siri Remote navigation.
 struct TVPlayerControlBar: View {
+    @Environment(LocalizationManager.self) private var localization
     let contentType: MediaContentType
     let onSubtitles: () -> Void
     let onDubbing: () -> Void
@@ -95,7 +97,7 @@ struct TVPlayerControlBar: View {
                     }
                 }
 
-                Text("Subtitles")
+                Text(localization.t("subtitles.title"))
                     .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
                     .foregroundStyle(hasActiveSubtitles
                         ? DesignTokens.Primary.p400

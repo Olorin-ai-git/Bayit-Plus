@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// VOD screen showing a paginated grid of movies and series
 struct VODView: View {
     @Environment(RepositoryProvider.self) private var repos
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: VODViewModel?
     @State private var featuredCollection: CollectionDetail?
 
@@ -30,7 +32,7 @@ struct VODView: View {
                         collectionId: collection.id,
                         title: collection.title ?? "Collection",
                         posterUrl: collection.thumbnail,
-                        promoText: collection.promoText ?? "Discover this amazing collection",
+                        promoText: collection.localizedPromoText ?? "Discover this amazing collection",
                         movieCount: collection.availableMovies ?? 0
                     )
                     .padding(.horizontal, DesignTokens.Spacing.lg)
@@ -96,7 +98,7 @@ struct VODView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: DesignTokens.Spacing.sm) {
                 FilterPill(
-                    title: "All Categories",
+                    title: localization.t("vod.allCategories"),
                     isSelected: vm.selectedCategory == nil
                 ) {
                     vm.selectedCategory = nil

@@ -1,6 +1,7 @@
 #if os(tvOS)
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Talk Back overlay - uses multiple-choice instead of microphone.
@@ -128,10 +129,12 @@ struct TVTalkBackOverlayView: View {
         }
     }
 
+    @Environment(LocalizationManager.self) private var localization
+
     private var evaluatingView: some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             GlassSpinner(size: .large)
-            Text("Evaluating...")
+            Text(localization.t("talkBack.evaluating"))
                 .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }

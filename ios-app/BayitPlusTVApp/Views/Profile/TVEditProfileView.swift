@@ -1,9 +1,12 @@
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Edit profile screen for tvOS - allows changing display name.
 struct TVEditProfileView: View {
+    @Environment(LocalizationManager.self) private var localization
+
     let profile: ProfileResponse
     let viewModel: ProfileViewModel
     let onDismiss: () -> Void
@@ -22,7 +25,7 @@ struct TVEditProfileView: View {
     var body: some View {
         VStack(spacing: TVDesignTokens.Spacing.xxxl) {
             // Header
-            Text("Edit Profile")
+            Text(localization.t("profiles.edit"))
                 .font(.system(size: TVDesignTokens.FontSize.display, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -31,11 +34,11 @@ struct TVEditProfileView: View {
 
             // Display name field
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-                Text("Display Name")
+                Text(localization.t("profiles.displayName"))
                     .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.secondary)
 
-                TextField("Enter your name", text: $displayName)
+                TextField(localization.t("profiles.enterName"), text: $displayName)
                     .font(.system(size: TVDesignTokens.FontSize.xl))
                     .padding(TVDesignTokens.Spacing.lg)
                     .background(DesignTokens.Glass.bgMedium)
@@ -49,7 +52,7 @@ struct TVEditProfileView: View {
                 Button {
                     onDismiss()
                 } label: {
-                    Text("Cancel")
+                    Text(localization.t("common.cancel"))
                         .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                         .foregroundStyle(DesignTokens.Text.secondary)
                         .frame(width: 220, height: 70)
@@ -65,7 +68,7 @@ struct TVEditProfileView: View {
                         ProgressView()
                             .tint(.white)
                     } else {
-                        Text("Save Changes")
+                        Text(localization.t("common.saveChanges"))
                             .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
                             .foregroundStyle(.white)
                     }

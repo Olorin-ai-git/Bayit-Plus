@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS promotional banner for collections with remote focus navigation
 struct TVCollectionPromoBannerView: View {
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
 
     let collectionId: String
     let title: String
@@ -35,7 +37,7 @@ struct TVCollectionPromoBannerView: View {
                             .foregroundColor(DesignTokens.Primary.default)
                             .font(.system(size: TVDesignTokens.FontSize.xl))
 
-                        Text("AI Recommendation")
+                        Text(localization.t("vod.collection.aiRecommendation"))
                             .font(.system(
                                 size: TVDesignTokens.FontSize.md,
                                 weight: .semibold
@@ -58,14 +60,14 @@ struct TVCollectionPromoBannerView: View {
                         .lineLimit(4)
                         .lineSpacing(4)
 
-                    Text("\(movieCount) movies")
+                    Text("\(movieCount) \(localization.t("vod.collection.movies"))")
                         .font(.system(size: TVDesignTokens.FontSize.md))
                         .foregroundColor(DesignTokens.Text.muted)
                         .padding(.top, TVDesignTokens.Spacing.sm)
 
                     HStack(spacing: TVDesignTokens.Spacing.sm) {
                         Image(systemName: "play.fill")
-                        Text("Watch Now")
+                        Text(localization.t("vod.collection.watchNow"))
                             .font(.system(
                                 size: TVDesignTokens.FontSize.lg,
                                 weight: .semibold

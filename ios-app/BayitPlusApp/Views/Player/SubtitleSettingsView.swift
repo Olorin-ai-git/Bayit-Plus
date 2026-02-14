@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 import UIKit
 
 /// Subtitle display settings: font size, background opacity, and position
 struct SubtitleSettingsView: View {
+    @Environment(LocalizationManager.self) private var localization
     @AppStorage("subtitleFontSize") private var fontSize: Double = 18
     @AppStorage("subtitleBackgroundOpacity") private var backgroundOpacity: Double = 0.6
     @AppStorage("subtitlePosition") private var position: String = "bottom"
@@ -17,7 +19,7 @@ struct SubtitleSettingsView: View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.lg) {
             // Header
             HStack {
-                Text("Subtitle Settings")
+                Text(localization.t("settings.subtitles"))
                     .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                     .foregroundColor(DesignTokens.Text.primary)
 
@@ -35,7 +37,7 @@ struct SubtitleSettingsView: View {
             GlassCard {
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
                     HStack {
-                        Text("Font Size")
+                        Text(localization.t("subtitles.fontSize"))
                             .font(.system(size: DesignTokens.FontSize.md))
                             .foregroundColor(DesignTokens.Text.primary)
                         Spacer()
@@ -55,7 +57,7 @@ struct SubtitleSettingsView: View {
             GlassCard {
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
                     HStack {
-                        Text("Background Opacity")
+                        Text(localization.t("subtitles.backgroundOpacity"))
                             .font(.system(size: DesignTokens.FontSize.md))
                             .foregroundColor(DesignTokens.Text.primary)
                         Spacer()
@@ -74,7 +76,7 @@ struct SubtitleSettingsView: View {
             // Position Picker
             GlassCard {
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-                    Text("Position")
+                    Text(localization.t("subtitles.position"))
                         .font(.system(size: DesignTokens.FontSize.md))
                         .foregroundColor(DesignTokens.Text.primary)
 
@@ -112,7 +114,7 @@ struct SubtitleSettingsView: View {
     private var previewSection: some View {
         GlassCard {
             VStack(spacing: DesignTokens.Spacing.sm) {
-                Text("Preview")
+                Text(localization.t("common.preview"))
                     .font(.system(size: DesignTokens.FontSize.xs))
                     .foregroundColor(DesignTokens.Text.muted)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -122,7 +124,7 @@ struct SubtitleSettingsView: View {
                         .fill(Color.black)
                         .frame(height: 80)
 
-                    Text("Sample subtitle text")
+                    Text(localization.t("subtitles.sampleText"))
                         .font(.system(size: fontSize))
                         .foregroundColor(.white)
                         .padding(.horizontal, DesignTokens.Spacing.sm)

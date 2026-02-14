@@ -1,7 +1,9 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 struct TVGlossaryView: View {
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel = GlossaryViewModel()
     @FocusState private var focusedEntry: String?
 
@@ -23,7 +25,7 @@ struct TVGlossaryView: View {
             Image(systemName: "book.fill")
                 .font(.title2)
                 .foregroundStyle(DesignTokens.Colors.Primary.light)
-            Text("Hebrew Glossary")
+            Text(localization.t("glossary.title"))
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundStyle(DesignTokens.Colors.Text.primary)

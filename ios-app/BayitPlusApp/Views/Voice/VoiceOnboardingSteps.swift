@@ -1,19 +1,22 @@
 import BayitDesignSystem
+import BayitLocalization
 import BayitVoice
 import SwiftUI
 
 /// Welcome step content for voice onboarding.
 struct VoiceWelcomeStep: View {
 
+    @Environment(LocalizationManager.self) private var localization
+
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.xl) {
             voiceOrbIcon
 
-            Text("Voice Control")
+            Text(localization.t("voice.voiceControl"))
                 .font(.system(size: DesignTokens.FontSize.xxxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Control your experience with your voice. Search, navigate, and play content hands-free.")
+            Text(localization.t("voice.voiceControlDesc"))
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -25,10 +28,10 @@ struct VoiceWelcomeStep: View {
 
     private var featureList: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
-            featureRow(icon: "magnifyingglass", text: "Search with your voice")
-            featureRow(icon: "play.circle", text: "Control playback hands-free")
-            featureRow(icon: "globe", text: "Speak in multiple languages")
-            featureRow(icon: "waveform", text: "Real-time dubbing control")
+            featureRow(icon: "magnifyingglass", text: localization.t("voice.searchWithVoice"))
+            featureRow(icon: "play.circle", text: localization.t("voice.controlPlayback"))
+            featureRow(icon: "globe", text: localization.t("voice.multipleLanguages"))
+            featureRow(icon: "waveform", text: localization.t("voice.realtimeDubbing"))
         }
         .padding(.top, DesignTokens.Spacing.base)
     }
@@ -71,17 +74,19 @@ struct VoicePermissionsStep: View {
 
     let permissions: VoicePermissions
 
+    @Environment(LocalizationManager.self) private var localization
+
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.xl) {
             Image(systemName: "lock.shield")
                 .font(.system(size: 56))
                 .foregroundStyle(DesignTokens.Primary.p400)
 
-            Text("Permissions Required")
+            Text(localization.t("voice.permissionsRequired"))
                 .font(.system(size: DesignTokens.FontSize.xxxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Voice features need access to your microphone and speech recognition.")
+            Text(localization.t("voice.permissionsDesc"))
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -128,17 +133,19 @@ struct VoiceLanguageSelectStep: View {
     @Binding var selectedLanguage: SupportedLanguage
     let availableLanguages: [SupportedLanguage]
 
+    @Environment(LocalizationManager.self) private var localization
+
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.xl) {
             Image(systemName: "globe")
                 .font(.system(size: 56))
                 .foregroundStyle(DesignTokens.Primary.p400)
 
-            Text("Choose Language")
+            Text(localization.t("voice.chooseLanguage"))
                 .font(.system(size: DesignTokens.FontSize.xxxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Select your preferred language for voice commands.")
+            Text(localization.t("voice.chooseLanguageDesc"))
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)

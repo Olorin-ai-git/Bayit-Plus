@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Recordings screen showing DVR recorded content with status badges.
 /// Reuses RecordingsViewModel from shared ViewModels.
 struct TVRecordingsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: RecordingsViewModel?
 
     var body: some View {
@@ -136,7 +138,7 @@ struct TVRecordingsView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Text.muted)
 
-            Text("No recordings")
+            Text(localization.t("recordings.empty"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
@@ -149,7 +151,7 @@ struct TVRecordingsView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Recordings...")
+            Text(localization.t("recordings.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 #if os(iOS)
 import UIKit
@@ -6,6 +7,7 @@ import UIKit
 
 /// Sheet-presented list of available audio tracks with radio-button selection
 struct AudioTrackSelectorView: View {
+    @Environment(LocalizationManager.self) private var localization
     let tracks: [AudioTrack]
     @Binding var selectedTrackId: String?
     let onDismiss: () -> Void
@@ -13,7 +15,7 @@ struct AudioTrackSelectorView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
             HStack {
-                Text("Audio Track")
+                Text(localization.t("player.audioTrack"))
                     .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                     .foregroundColor(DesignTokens.Text.primary)
 

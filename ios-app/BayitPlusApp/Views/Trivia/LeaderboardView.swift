@@ -26,7 +26,7 @@ struct LeaderboardView: View {
                     leaderboardList
                 }
             }
-            .navigationTitle("Trivia Leaderboard")
+            .navigationTitle(localization.t("trivia.leaderboard"))
             .navigationBarTitleDisplayMode(.large)
             .task {
                 if viewModel.entries.isEmpty {

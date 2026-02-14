@@ -1,10 +1,12 @@
 #if os(iOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Search input and timeline results with thumbnails for scene search.
 struct SceneSearchView: View {
 
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: SceneSearchViewModel
     let channelId: String
     let onSeek: (TimeInterval) -> Void
@@ -42,7 +44,7 @@ struct SceneSearchView: View {
 
     private var header: some View {
         HStack {
-            Text("Scene Search")
+            Text(localization.t("sceneSearch.title"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
             Spacer()
@@ -62,7 +64,7 @@ struct SceneSearchView: View {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(DesignTokens.Text.muted)
 
-            TextField("Search for a topic or scene...", text: Bindable(viewModel).query)
+            TextField(localization.t("sceneSearch.placeholder"), text: Bindable(viewModel).query)
                 .font(.system(size: DesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .submitLabel(.search)
@@ -136,7 +138,7 @@ struct SceneSearchView: View {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 36))
                 .foregroundStyle(DesignTokens.Text.muted)
-            Text("No scenes found for \"\(viewModel.query)\"")
+            Text(localization.t("sceneSearch.noResults"))
                 .font(.system(size: DesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
             Spacer()

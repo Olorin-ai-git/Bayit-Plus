@@ -1,6 +1,7 @@
 #if os(iOS)
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Form for creating a personal widget with content type selection.
@@ -12,6 +13,7 @@ struct CreateWidgetView: View {
     let onDismiss: () -> Void
 
     @Environment(RepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
 
     @State private var title = ""
     @State private var description = ""
@@ -47,14 +49,14 @@ struct CreateWidgetView: View {
                 .padding(DesignTokens.Spacing.lg)
             }
             .background(DesignTokens.Background.primary)
-            .navigationTitle("Create Widget")
+            .navigationTitle(localization.t("widgets.createWidget"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { onDismiss() }
+                    Button(localization.t("common.cancel")) { onDismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    GlassButton("Save", variant: .primary, size: .small) {
+                    GlassButton(localization.t("common.save"), variant: .primary, size: .small) {
                         Task { await save() }
                     }
                     .disabled(!isFormValid || isSaving)
@@ -91,18 +93,18 @@ struct CreateWidgetView: View {
 
     private var titleSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Text("Widget Title")
+            Text(localization.t("widgets.widgetTitle"))
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
-            TextField("Enter widget title", text: $title)
+            TextField(localization.t("widgets.enterWidgetTitle"), text: $title)
                 .font(.system(size: DesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(DesignTokens.Spacing.md)
                 .background(DesignTokens.Glass.bgLight)
                 .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.md))
 
-            TextField("Description (optional)", text: $description)
+            TextField(localization.t("widgets.descriptionOptional"), text: $description)
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(DesignTokens.Spacing.md)
@@ -115,7 +117,7 @@ struct CreateWidgetView: View {
 
     private var contentTypeSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Text("Content Type")
+            Text(localization.t("widgets.contentType"))
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
@@ -178,14 +180,14 @@ struct CreateWidgetView: View {
 
     @ViewBuilder
     private var pickerSection: some View {
-        Text("Content")
+        Text(localization.t("widgets.content"))
             .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
             .foregroundStyle(DesignTokens.Text.secondary)
 
         if let selected = selectedContent {
             selectedContentCard(selected)
         } else {
-            GlassButton("Browse Content", variant: .secondary, size: .medium,
+            GlassButton(localization.t("widgets.browseContent"), variant: .secondary, size: .medium,
                          icon: Image(systemName: "square.grid.2x2")) {
                 syncPickerTab(for: selectedContentType)
                 showContentPicker = true

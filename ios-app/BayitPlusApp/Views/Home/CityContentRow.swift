@@ -1,8 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// City-specific content row with panoramic background image and glass carousel cards
 struct CityContentRow: View {
+    @Environment(LocalizationManager.self) private var localization
     let title: String
     let items: [CityContentItem]
     var onShowAll: (() -> Void)?
@@ -72,7 +74,7 @@ struct CityContentRow: View {
                             if let onShowAll {
                                 Button(action: onShowAll) {
                                     HStack(spacing: DesignTokens.Spacing.xs) {
-                                        Text("Show All")
+                                        Text(localization.t("common.showAll"))
                                             .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                                         Image(systemName: "chevron.right")
                                             .font(.system(size: DesignTokens.FontSize.xs))
@@ -174,7 +176,7 @@ struct CityContentRow: View {
         let sources = Set(items.compactMap(\.sourceName)).sorted()
         return Group {
             if !sources.isEmpty {
-                Text("Sources: \(sources.joined(separator: ", "))")
+                Text("\(localization.t("trending.sources")) \(sources.joined(separator: ", "))")
                     .font(.system(size: DesignTokens.FontSize.xs))
                     .foregroundColor(.white.opacity(0.5))
                     .lineLimit(2)

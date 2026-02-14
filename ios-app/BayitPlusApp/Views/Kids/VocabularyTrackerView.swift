@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Parent dashboard displaying Hebrew vocabulary learning progress.
@@ -6,6 +7,8 @@ import SwiftUI
 struct VocabularyTrackerView: View {
     @Bindable var viewModel: BilingualDubbingViewModel
     let profileId: String
+
+    @Environment(LocalizationManager.self) private var localization
 
     private let levelOrder = ["beginner", "elementary", "intermediate", "advanced"]
 
@@ -52,7 +55,7 @@ struct VocabularyTrackerView: View {
                 HStack(spacing: DesignTokens.Spacing.lg) {
                     statColumn(
                         value: proficiency.vocabularyKnownCount,
-                        label: "Known",
+                        label: localization.t("vocabulary.known"),
                         color: DesignTokens.Success.default
                     )
 
@@ -62,7 +65,7 @@ struct VocabularyTrackerView: View {
 
                     statColumn(
                         value: proficiency.vocabularyLearningCount,
-                        label: "Learning",
+                        label: localization.t("vocabulary.learning"),
                         color: DesignTokens.Info.default
                     )
                 }
@@ -72,7 +75,7 @@ struct VocabularyTrackerView: View {
             // Hebrew Ratio
             GlassCard {
                 VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-                    Text("Hebrew Ratio")
+                    Text(localization.t("vocabulary.hebrewRatio"))
                         .font(.system(size: DesignTokens.FontSize.base, weight: .semibold))
                         .foregroundStyle(DesignTokens.Text.primary)
 
@@ -159,10 +162,10 @@ struct VocabularyTrackerView: View {
                 Text("\(proficiency.totalWordsLearned)")
                     .font(.system(size: DesignTokens.FontSize.display, weight: .heavy))
                     .foregroundStyle(DesignTokens.Text.primary)
-                Text("Total Words Learned")
+                Text(localization.t("vocabulary.totalWordsLearned"))
                     .font(.system(size: DesignTokens.FontSize.base))
                     .foregroundStyle(DesignTokens.Text.secondary)
-                Text("Score: \(Int(proficiency.overallScore))/100")
+                Text(localization.t("vocabulary.score", ["score": "\(Int(proficiency.overallScore))", "max": "100"]))
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                     .foregroundStyle(DesignTokens.Primary.p400)
             }

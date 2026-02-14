@@ -110,6 +110,133 @@ const ActivityFeedScreen = React.lazy(() =>
   import('../screens/ActivityFeedScreen').then((mod) => ({ default: mod.ActivityFeedScreen }))
 );
 
+// Lazy load: Watch Party screens
+const WatchPartyScreen = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.WatchPartyScreen }))
+);
+const ActivePartyScreen = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.ActivePartyScreen }))
+);
+
+// Lazy load: Interactive Missions / ZehAni screens
+const InteractiveMissionScreen = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.InteractiveMissionScreen }))
+);
+const AvatarWardrobeScreen = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.AvatarWardrobeScreen }))
+);
+const VideoSelfieScreen = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.VideoSelfieScreen }))
+);
+const PhoneticMirrorScreen = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.PhoneticMirrorScreen }))
+);
+const MissionsDashboardScreen = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.MissionsDashboardScreen }))
+);
+const NewsClipScreen = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.NewsClipScreen }))
+);
+const MeshAvatarScreen = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.MeshAvatarScreen }))
+);
+const ZehAniDashboardScreen = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.ZehAniDashboardScreen }))
+);
+
+// Lazy load: Family & Profile screens
+const FamilyControlsScreenMobile = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.FamilyControlsScreenMobile }))
+);
+const HouseholdScreenMobile = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.HouseholdScreenMobile }))
+);
+const AddProfileScreen = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.AddProfileScreen }))
+);
+const EditProfileScreen = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.EditProfileScreen }))
+);
+const ForgotPasswordScreen = React.lazy(() =>
+  import('../screens').then((mod) => ({ default: mod.ForgotPasswordScreen }))
+);
+
+// Lazy load: Content screens
+const CollectionDetailScreenMobile = React.lazy(() =>
+  import('../screens/CollectionDetailScreenMobile').then((mod) => ({ default: mod.default }))
+);
+const AudiobooksScreenMobile = React.lazy(() =>
+  import('../screens/AudiobooksScreenMobile').then((mod) => ({ default: mod.default }))
+);
+const AudiobookDetailScreenMobile = React.lazy(() =>
+  import('../screens/AudiobookDetailScreenMobile').then((mod) => ({ default: mod.default }))
+);
+
+// Lazy load: Gamification screens (Phase 2)
+const TriviaScreenMobile = React.lazy(() =>
+  import('../screens/TriviaScreenMobile').then((mod) => ({ default: mod.TriviaScreenMobile }))
+);
+const RewardsScreenMobile = React.lazy(() =>
+  import('../screens/RewardsScreenMobile').then((mod) => ({ default: mod.RewardsScreenMobile }))
+);
+
+// Lazy load: Social screens (Phase 3)
+const DirectMessagesScreenMobile = React.lazy(() =>
+  import('../screens/DirectMessagesScreenMobile').then((mod) => ({ default: mod.DirectMessagesScreenMobile }))
+);
+const ConversationScreenMobile = React.lazy(() =>
+  import('../screens/ConversationScreenMobile').then((mod) => ({ default: mod.ConversationScreenMobile }))
+);
+const ChessScreenMobile = React.lazy(() =>
+  import('../screens/ChessScreenMobile').then((mod) => ({ default: mod.ChessScreenMobile }))
+);
+
+// Lazy load: Cultural screens (Phase 4)
+const GlossaryScreenMobile = React.lazy(() =>
+  import('../screens/GlossaryScreenMobile').then((mod) => ({ default: mod.GlossaryScreenMobile }))
+);
+const GlossaryDetailScreenMobile = React.lazy(() =>
+  import('../screens/GlossaryDetailScreenMobile').then((mod) => ({ default: mod.GlossaryDetailScreenMobile }))
+);
+const CultureScreenMobile = React.lazy(() =>
+  import('../screens/CultureScreenMobile').then((mod) => ({ default: mod.CultureScreenMobile }))
+);
+const StarStoryScreenMobile = React.lazy(() =>
+  import('../screens/StarStoryScreenMobile').then((mod) => ({ default: mod.StarStoryScreenMobile }))
+);
+
+// Lazy load: ZehAni V2V (Phase 5)
+const V2VPracticeScreenMobile = React.lazy(() =>
+  import('../screens/V2VPracticeScreenMobile').then((mod) => ({ default: mod.V2VPracticeScreenMobile }))
+);
+
+// Lazy load: Auth & Security screens (Phase 6)
+const MFASetupScreenMobile = React.lazy(() =>
+  import('../screens/MFASetupScreenMobile').then((mod) => ({ default: mod.MFASetupScreenMobile }))
+);
+const PhoneVerificationScreenMobile = React.lazy(() =>
+  import('../screens/PhoneVerificationScreenMobile').then((mod) => ({ default: mod.PhoneVerificationScreenMobile }))
+);
+const PasskeyManagementScreenMobile = React.lazy(() =>
+  import('../screens/PasskeyManagementScreenMobile').then((mod) => ({ default: mod.PasskeyManagementScreenMobile }))
+);
+const ConnectedAccountsScreenMobile = React.lazy(() =>
+  import('../screens/ConnectedAccountsScreenMobile').then((mod) => ({ default: mod.ConnectedAccountsScreenMobile }))
+);
+
+// Lazy load: Home & Discovery screens (Phase 7)
+const HelpScreenMobile = React.lazy(() =>
+  import('../screens/HelpScreenMobile').then((mod) => ({ default: mod.HelpScreenMobile }))
+);
+const AIOnboardingScreenMobile = React.lazy(() =>
+  import('../screens/AIOnboardingScreenMobile').then((mod) => ({ default: mod.AIOnboardingScreenMobile }))
+);
+
+// Lazy load: Widgets (Phase 8)
+const WidgetGalleryScreenMobile = React.lazy(() =>
+  import('../screens/WidgetGalleryScreenMobile').then((mod) => ({ default: mod.WidgetGalleryScreenMobile }))
+);
+
 // Loading component shown while lazy-loaded screens are loading
 const LazyScreenFallback: React.FC = () => (
   <View
@@ -263,6 +390,63 @@ export const RootNavigator: React.FC = () => {
 
       {/* Support - Using shared SupportScreen */}
       <Stack.Screen name="Support" component={SupportScreen} />
+
+      {/* Watch Party Screens - Lazy loaded */}
+      <Stack.Screen name="WatchParty" component={LazyScreen(WatchPartyScreen)} />
+      <Stack.Screen name="ActiveParty" component={LazyScreen(ActivePartyScreen)} />
+
+      {/* Interactive Missions / ZehAni - Lazy loaded */}
+      <Stack.Screen name="InteractiveMission" component={LazyScreen(InteractiveMissionScreen)} />
+      <Stack.Screen name="AvatarWardrobe" component={LazyScreen(AvatarWardrobeScreen)} />
+      <Stack.Screen name="VideoSelfie" component={LazyScreen(VideoSelfieScreen)} />
+      <Stack.Screen name="PhoneticMirror" component={LazyScreen(PhoneticMirrorScreen)} />
+      <Stack.Screen name="MissionsDashboard" component={LazyScreen(MissionsDashboardScreen)} />
+      <Stack.Screen name="NewsClip" component={LazyScreen(NewsClipScreen)} />
+      <Stack.Screen name="MeshAvatar" component={LazyScreen(MeshAvatarScreen)} />
+      <Stack.Screen name="ZehAniDashboard" component={LazyScreen(ZehAniDashboardScreen)} />
+
+      {/* Family & Profile - Lazy loaded */}
+      <Stack.Screen name="FamilyControls" component={LazyScreen(FamilyControlsScreenMobile)} />
+      <Stack.Screen name="Household" component={LazyScreen(HouseholdScreenMobile)} />
+      <Stack.Screen name="AddProfile" component={LazyScreen(AddProfileScreen)} />
+      <Stack.Screen name="EditProfile" component={LazyScreen(EditProfileScreen)} />
+      <Stack.Screen name="ForgotPassword" component={LazyScreen(ForgotPasswordScreen)} />
+
+      {/* Content - Lazy loaded */}
+      <Stack.Screen name="CollectionDetail" component={LazyScreen(CollectionDetailScreenMobile)} />
+      <Stack.Screen name="Audiobooks" component={LazyScreen(AudiobooksScreenMobile)} />
+      <Stack.Screen name="AudiobookDetail" component={LazyScreen(AudiobookDetailScreenMobile)} />
+
+      {/* Gamification - Lazy loaded (Phase 2) */}
+      <Stack.Screen name="Trivia" component={LazyScreen(TriviaScreenMobile)} />
+      <Stack.Screen name="Rewards" component={LazyScreen(RewardsScreenMobile)} />
+
+      {/* Social - Lazy loaded (Phase 3) */}
+      <Stack.Screen name="DirectMessages" component={LazyScreen(DirectMessagesScreenMobile)} />
+      <Stack.Screen name="Conversation" component={LazyScreen(ConversationScreenMobile)} />
+      <Stack.Screen name="Chess" component={LazyScreen(ChessScreenMobile)} />
+
+      {/* Cultural - Lazy loaded (Phase 4) */}
+      <Stack.Screen name="Glossary" component={LazyScreen(GlossaryScreenMobile)} />
+      <Stack.Screen name="GlossaryDetail" component={LazyScreen(GlossaryDetailScreenMobile)} />
+      <Stack.Screen name="Culture" component={LazyScreen(CultureScreenMobile)} />
+      <Stack.Screen name="StarStory" component={LazyScreen(StarStoryScreenMobile)} />
+
+      {/* ZehAni V2V - Lazy loaded (Phase 5) */}
+      <Stack.Screen name="V2VPractice" component={LazyScreen(V2VPracticeScreenMobile)} />
+
+      {/* Auth & Security - Lazy loaded (Phase 6) */}
+      <Stack.Screen name="MFASetup" component={LazyScreen(MFASetupScreenMobile)} />
+      <Stack.Screen name="PhoneVerification" component={LazyScreen(PhoneVerificationScreenMobile)} />
+      <Stack.Screen name="PasskeyManagement" component={LazyScreen(PasskeyManagementScreenMobile)} />
+      <Stack.Screen name="ConnectedAccounts" component={LazyScreen(ConnectedAccountsScreenMobile)} />
+
+      {/* Home & Discovery - Lazy loaded (Phase 7) */}
+      <Stack.Screen name="Help" component={LazyScreen(HelpScreenMobile)} />
+      <Stack.Screen name="AIOnboarding" component={LazyScreen(AIOnboardingScreenMobile)} />
+
+      {/* Widgets - Lazy loaded (Phase 8) */}
+      <Stack.Screen name="WidgetGallery" component={LazyScreen(WidgetGalleryScreenMobile)} />
 
       {/* Admin (Conditional) */}
       {/* <Stack.Screen name="Admin" component={AdminNavigator} /> */}

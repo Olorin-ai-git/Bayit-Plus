@@ -1,14 +1,16 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Continue watching row with progress indicators
 struct ContinueWatchingRow: View {
+    @Environment(LocalizationManager.self) private var localization
     let items: [WatchHistoryItem]
     let coordinator: NavigationCoordinator
 
     var body: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text("Continue Watching")
+            Text(localization.t("home.continueWatching"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
                 .padding(.horizontal, DesignTokens.Spacing.lg)

@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Player overlay for Bilingual Bridge dubbing controls.
 /// Shows ratio gauge, vocabulary count, toggle, and level badge
 /// in a compact non-intrusive layout during playback.
 struct BilingualDubbingOverlayView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Bindable var viewModel: BilingualDubbingViewModel
     let contentId: String
     let profileId: String
@@ -109,7 +111,7 @@ struct BilingualDubbingOverlayView: View {
                 Text("\(proficiency.totalWordsLearned)")
                     .font(.system(size: DesignTokens.FontSize.md, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
-                Text("words")
+                Text(localization.t("bilingual.words"))
                     .font(.system(size: DesignTokens.FontSize.xs))
                     .foregroundStyle(DesignTokens.Text.muted)
             }

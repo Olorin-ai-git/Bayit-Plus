@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS voice selector for live dubbing. Presented as a full-screen cover
 /// and dismissed via the Menu button on the Siri Remote. Each voice card
 /// is a focusable Button with card styling for natural Siri Remote navigation.
 struct TVVoiceSelectorView: View {
+    @Environment(LocalizationManager.self) private var localization
     let voices: [DubbingVoice]
     let selectedVoice: DubbingVoice?
     let onSelect: (DubbingVoice) -> Void
@@ -25,7 +27,7 @@ struct TVVoiceSelectorView: View {
     // MARK: - Title
 
     private var titleView: some View {
-        Text("Select Voice")
+        Text(localization.t("voice.selectVoice"))
             .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
             .foregroundStyle(DesignTokens.Text.primary)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -38,7 +40,7 @@ struct TVVoiceSelectorView: View {
             Image(systemName: "waveform.circle")
                 .font(.system(size: 30))
                 .foregroundStyle(DesignTokens.Primary.p400)
-            Text("\(voices.count) voices available")
+            Text("\(voices.count) \(localization.t("voice.voicesAvailable"))")
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

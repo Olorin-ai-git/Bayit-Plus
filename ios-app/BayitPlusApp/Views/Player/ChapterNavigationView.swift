@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Standalone chapter navigation screen wrapper.
 /// Instantiates ChapterNavigationViewModel, loads chapters, and delegates to ChapterListView.
 struct ChapterNavigationView: View {
     @Environment(RepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: ChapterNavigationViewModel?
 
     let contentId: String
@@ -50,7 +52,7 @@ struct ChapterNavigationView: View {
                 .font(.system(size: 48))
                 .foregroundColor(DesignTokens.Text.muted)
 
-            Text("No chapters available")
+            Text(localization.t("chapters.noChapters"))
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundColor(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)

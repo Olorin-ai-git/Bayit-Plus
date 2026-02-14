@@ -1,12 +1,14 @@
 #if os(iOS)
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import BayitNetworking
 import SwiftUI
 
 /// Live channel chat panel for viewing and sending messages.
 struct ChannelChatView: View {
 
+    @Environment(\.localizationManager) private var localization
     @State private var viewModel: ChannelChatViewModel
     let channelId: String
     let authToken: String
@@ -53,7 +55,7 @@ struct ChannelChatView: View {
             Circle()
                 .fill(viewModel.isConnected ? DesignTokens.Success.default : DesignTokens.Text.muted)
                 .frame(width: 8, height: 8)
-            Text("Live Chat")
+            Text(localization?.t("channelChat.title") ?? "Live Chat")
                 .font(.system(size: DesignTokens.FontSize.md, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
             Spacer()
@@ -114,7 +116,7 @@ struct ChannelChatView: View {
 
     private var inputBar: some View {
         HStack(spacing: DesignTokens.Spacing.sm) {
-            TextField("Say something...", text: Bindable(viewModel).inputText)
+            TextField(localization?.t("channelChat.inputPlaceholder") ?? "Say something...", text: Bindable(viewModel).inputText)
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .submitLabel(.send)

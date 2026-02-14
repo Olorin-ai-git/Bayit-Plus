@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Trivia screen with focus-based quiz answer selection.
 /// Reuses TriviaViewModel from shared ViewModels.
 struct TVTriviaView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: TriviaViewModel?
     @State private var contentId: String = ""
 
@@ -42,11 +44,11 @@ struct TVTriviaView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Primary.default)
 
-            Text("Trivia")
+            Text(localization.t("trivia.title"))
                 .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Select content to start a quiz")
+            Text(localization.t("trivia.selectContent"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -87,13 +89,13 @@ struct TVTriviaView: View {
 
     private func progressBar(_ vm: TriviaViewModel) -> some View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
-            Text("Question \(vm.currentQuestionIndex + 1) / \(vm.totalQuestions)")
+            Text(localization.t("trivia.questionCount"))
                 .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
             Spacer()
 
-            Text("Score: \(vm.score)")
+            Text(localization.t("trivia.score"))
                 .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
                 .foregroundStyle(DesignTokens.Primary.default)
         }
@@ -150,7 +152,7 @@ struct TVTriviaView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Warning.default)
 
-            Text("Quiz Complete")
+            Text(localization.t("quiz.complete"))
                 .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -174,7 +176,7 @@ struct TVTriviaView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Trivia...")
+            Text(localization.t("trivia.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

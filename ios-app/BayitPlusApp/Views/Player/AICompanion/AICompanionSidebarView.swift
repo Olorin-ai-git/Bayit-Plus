@@ -1,10 +1,12 @@
 #if os(iOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Slide-in AI companion sidebar with Context, Quiz, Vocabulary tabs.
 struct AICompanionSidebarView: View {
 
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: AICompanionViewModel
     let contentId: String
     let onDismiss: () -> Void
@@ -32,7 +34,7 @@ struct AICompanionSidebarView: View {
         HStack {
             Image(systemName: "sparkles")
                 .foregroundStyle(DesignTokens.Primary.p300)
-            Text("AI Companion")
+            Text(localization.t("aiCompanion.title"))
                 .font(.system(size: DesignTokens.FontSize.md, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
             Spacer()

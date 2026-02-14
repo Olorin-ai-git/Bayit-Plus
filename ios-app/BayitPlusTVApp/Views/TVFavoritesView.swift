@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Favorites screen displaying favorited content in a grid shelf.
 /// Reuses FavoritesViewModel from shared ViewModels.
 struct TVFavoritesView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: FavoritesViewModel?
 
     var body: some View {
@@ -50,11 +52,11 @@ struct TVFavoritesView: View {
                 .foregroundStyle(DesignTokens.Text.muted)
 
             VStack(spacing: TVDesignTokens.Spacing.md) {
-                Text("No favorites yet")
+                Text(localization.t("tvos.favorites.empty"))
                     .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
-                Text("Add content to your favorites to see them here")
+                Text(localization.t("tvos.favorites.emptyHint"))
                     .font(.system(size: TVDesignTokens.FontSize.lg))
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .multilineTextAlignment(.center)
@@ -70,7 +72,7 @@ struct TVFavoritesView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Favorites...")
+            Text(localization.t("tvos.favorites.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

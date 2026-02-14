@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Full-screen AI avatar interaction view.
@@ -9,6 +10,7 @@ import SwiftUI
 struct AvatarModeView: View {
 
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: AvatarViewModel
 
     init(stateMachine: AvatarStateMachine, repository: any ChatRepository) {
@@ -64,7 +66,7 @@ struct AvatarModeView: View {
 
             Spacer()
 
-            Text("Avatar Mode")
+            Text(localization.t("avatar.mode"))
                 .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.primary)
 

@@ -1,10 +1,12 @@
 #if os(iOS)
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Modal for adding a podcast via custom RSS URL.
 struct AddPodcastView: View {
+    @Environment(LocalizationManager.self) private var localization
 
     @State private var rssUrl = ""
     @State private var isLoading = false
@@ -22,7 +24,7 @@ struct AddPodcastView: View {
             header
 
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-                Text("Podcast RSS URL")
+                Text(localization.t("podcasts.rssUrl"))
                     .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.secondary)
 
@@ -50,13 +52,13 @@ struct AddPodcastView: View {
                 HStack(spacing: DesignTokens.Spacing.sm) {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundStyle(DesignTokens.Success.default)
-                    Text("Podcast added successfully")
+                    Text(localization.t("podcasts.addedSuccess"))
                         .font(.system(size: DesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Success.default)
                 }
             }
 
-            GlassButton("Add Podcast", variant: .primary, size: .large) {
+            GlassButton(localization.t("podcasts.addPodcast"), variant: .primary, size: .large) {
                 Task { await addPodcast() }
             }
             .disabled(rssUrl.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isLoading)
@@ -69,7 +71,7 @@ struct AddPodcastView: View {
 
     private var header: some View {
         HStack {
-            Text("Add Podcast")
+            Text(localization.t("podcasts.addPodcast"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
             Spacer()

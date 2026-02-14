@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS avatar preferences for customizing style, voice, personality, and animations.
@@ -7,6 +8,7 @@ struct TVAvatarPreferencesView: View {
     let viewModel: TVAvatarViewModel
 
     @Environment(\.dismiss) private var dismiss
+    @Environment(LocalizationManager.self) private var localization
     @State private var selectedStyle: String
     @State private var selectedVoice: String
     @State private var selectedPersonality: String
@@ -29,7 +31,7 @@ struct TVAvatarPreferencesView: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: TVDesignTokens.Spacing.xl) {
-                Text("Avatar Preferences")
+                Text(localization.t("avatar.preferences"))
                     .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 

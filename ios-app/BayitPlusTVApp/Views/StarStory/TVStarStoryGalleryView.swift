@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS focus-navigable episode gallery for Star in Story.
 /// Consumption-only: no photo upload or avatar creation on tvOS.
 struct TVStarStoryGalleryView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
     @State private var viewModel: StarStoryViewModel?
@@ -58,7 +60,7 @@ struct TVStarStoryGalleryView: View {
             Text("Star in Story")
                 .font(.system(size: TVDesignTokens.FontSize.display, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
-            Text("Personalized Hebrew stories")
+            Text(localization.t("starStory.subtitle"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
@@ -68,7 +70,7 @@ struct TVStarStoryGalleryView: View {
 
     private func avatarShelf(_ vm: StarStoryViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("Characters")
+            Text(localization.t("starStory.characters"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
             ScrollView(.horizontal, showsIndicators: false) {
@@ -116,7 +118,7 @@ struct TVStarStoryGalleryView: View {
 
     private func episodeGrid(_ vm: StarStoryViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("Episodes")
+            Text(localization.t("starStory.episodes"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
             LazyVGrid(columns: gridColumns, spacing: TVDesignTokens.Spacing.focusGap) {
@@ -149,10 +151,10 @@ struct TVStarStoryGalleryView: View {
             Image(systemName: "film.stack")
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Text.muted)
-            Text("No Episodes Yet")
+            Text(localization.t("starStory.noEpisodes"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.secondary)
-            Text("Create episodes from the Bayit+ mobile app or web")
+            Text(localization.t("starStory.createEpisodesHint"))
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.muted)
                 .multilineTextAlignment(.center)
@@ -163,7 +165,7 @@ struct TVStarStoryGalleryView: View {
     private var loadingState: some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             ProgressView().tint(DesignTokens.Primary.default).scaleEffect(1.5)
-            Text("Loading Star in Story...")
+            Text(localization.t("starStory.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

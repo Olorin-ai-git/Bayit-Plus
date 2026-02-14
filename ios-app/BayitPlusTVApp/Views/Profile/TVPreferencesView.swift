@@ -1,9 +1,12 @@
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Preferences management screen for tvOS.
 struct TVPreferencesView: View {
+    @Environment(LocalizationManager.self) private var localization
+
     let preferences: ProfilePreferences?
     let viewModel: ProfileViewModel
     let onDismiss: () -> Void
@@ -39,10 +42,10 @@ struct TVPreferencesView: View {
                 notificationSection
             }
             .listStyle(.grouped)
-            .navigationTitle("Preferences")
+            .navigationTitle(localization.t("profiles.preferences"))
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
+                    Button(localization.t("common.cancel")) {
                         onDismiss()
                     }
                 }
@@ -54,7 +57,7 @@ struct TVPreferencesView: View {
                         if isSaving {
                             ProgressView()
                         } else {
-                            Text("Save")
+                            Text(localization.t("common.save"))
                                 .bold()
                         }
                     }
@@ -76,25 +79,25 @@ struct TVPreferencesView: View {
 
     private var languageSection: some View {
         Section {
-            Picker("App Language", selection: $selectedLanguage) {
-                Text("English").tag("en")
-                Text("Hebrew (עברית)").tag("he")
-                Text("Spanish (Español)").tag("es")
-                Text("French (Français)").tag("fr")
-                Text("Russian (Русский)").tag("ru")
+            Picker(localization.t("settings.appLanguage"), selection: $selectedLanguage) {
+                Text(localization.t("languages.english")).tag("en")
+                Text(localization.t("languages.hebrew")).tag("he")
+                Text(localization.t("languages.spanish")).tag("es")
+                Text(localization.t("languages.french")).tag("fr")
+                Text(localization.t("languages.russian")).tag("ru")
             }
 
-            Picker("Subtitle Language", selection: $selectedSubtitleLanguage) {
-                Text("Hebrew (עברית)").tag("he")
-                Text("English").tag("en")
-                Text("Spanish (Español)").tag("es")
-                Text("French (Français)").tag("fr")
-                Text("Russian (Русский)").tag("ru")
+            Picker(localization.t("settings.subtitleLanguage"), selection: $selectedSubtitleLanguage) {
+                Text(localization.t("languages.hebrew")).tag("he")
+                Text(localization.t("languages.english")).tag("en")
+                Text(localization.t("languages.spanish")).tag("es")
+                Text(localization.t("languages.french")).tag("fr")
+                Text(localization.t("languages.russian")).tag("ru")
             }
         } header: {
-            sectionHeader("Language & Subtitles")
+            sectionHeader(localization.t("settings.languageSubtitles"))
         } footer: {
-            Text("Choose your preferred language for app interface and subtitles")
+            Text(localization.t("settings.languageDescription"))
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -106,23 +109,23 @@ struct TVPreferencesView: View {
         Section {
             Toggle(isOn: $autoplay) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Autoplay Next Episode")
+                    Text(localization.t("settings.autoplayNextEpisode"))
                         .font(.system(size: TVDesignTokens.FontSize.lg))
 
-                    Text("Automatically play the next episode when one finishes")
+                    Text(localization.t("settings.autoplayDescription"))
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
             }
 
-            Picker("Video Quality", selection: $quality) {
-                Text("Auto (Recommended)").tag("auto")
-                Text("High (1080p)").tag("high")
-                Text("Medium (720p)").tag("medium")
-                Text("Low (480p)").tag("low")
+            Picker(localization.t("settings.videoQuality"), selection: $quality) {
+                Text(localization.t("settings.qualityAuto")).tag("auto")
+                Text(localization.t("settings.qualityHigh")).tag("high")
+                Text(localization.t("settings.qualityMedium")).tag("medium")
+                Text(localization.t("settings.qualityLow")).tag("low")
             }
         } header: {
-            sectionHeader("Playback Settings")
+            sectionHeader(localization.t("settings.playbackSettings"))
         }
     }
 
@@ -130,17 +133,17 @@ struct TVPreferencesView: View {
 
     private var contentSection: some View {
         Section {
-            Picker("Content Rating", selection: $contentRating) {
-                Text("All Ages").tag("g")
-                Text("Parental Guidance (PG)").tag("pg")
-                Text("PG-13").tag("pg13")
-                Text("Mature (R)").tag("r")
-                Text("Adults Only").tag("nc17")
+            Picker(localization.t("settings.contentRating"), selection: $contentRating) {
+                Text(localization.t("settings.ratingAllAges")).tag("g")
+                Text(localization.t("settings.ratingPG")).tag("pg")
+                Text(localization.t("settings.ratingPG13")).tag("pg13")
+                Text(localization.t("settings.ratingMature")).tag("r")
+                Text(localization.t("settings.ratingAdultsOnly")).tag("nc17")
             }
         } header: {
-            sectionHeader("Content Restrictions")
+            sectionHeader(localization.t("settings.contentRestrictions"))
         } footer: {
-            Text("Content above this rating will be filtered from recommendations")
+            Text(localization.t("settings.contentRatingDescription"))
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -152,16 +155,16 @@ struct TVPreferencesView: View {
         Section {
             Toggle(isOn: $notifications) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Push Notifications")
+                    Text(localization.t("settings.pushNotifications"))
                         .font(.system(size: TVDesignTokens.FontSize.lg))
 
-                    Text("Receive updates about new content and features")
+                    Text(localization.t("settings.notificationsDescription"))
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundStyle(DesignTokens.Text.secondary)
                 }
             }
         } header: {
-            sectionHeader("Notifications")
+            sectionHeader(localization.t("settings.notifications"))
         }
     }
 

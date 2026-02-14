@@ -1,5 +1,6 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
@@ -7,6 +8,7 @@ import SwiftUI
 /// Docks to the right edge of the screen with a wide panel showing
 /// widget posters, content details, and playback controls.
 struct TVWidgetSidebarView: View {
+    @Environment(LocalizationManager.self) private var localization
 
     let widgets: [WidgetItem]
     let onMinimize: (String) -> Void
@@ -93,7 +95,7 @@ struct TVWidgetSidebarView: View {
                     .font(.system(size: 22, weight: .medium))
                     .foregroundStyle(DesignTokens.Primary.p300)
 
-                Text("Widgets")
+                Text(localization.t("widgets.title"))
                     .font(.system(size: TVDesignTokens.FontSize.base, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
                     .lineLimit(1)

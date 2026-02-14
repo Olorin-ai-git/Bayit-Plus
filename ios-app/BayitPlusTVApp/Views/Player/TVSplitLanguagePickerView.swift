@@ -1,8 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS split subtitle language picker for selecting two languages for side-by-side display.
 struct TVSplitLanguagePickerView: View {
+    @Environment(LocalizationManager.self) private var localization
     let availableLanguages: [String]
     @Binding var selectedLanguages: [String]
     @Binding var layout: SplitSubtitleLayout
@@ -14,11 +16,11 @@ struct TVSplitLanguagePickerView: View {
 
     var body: some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
-            Text("Split Subtitles")
+            Text(localization.t("subtitles.splitDisplay"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Select two languages to display simultaneously")
+            Text(localization.t("subtitles.selectTwoLanguages"))
                 .font(.system(size: TVDesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.muted)
 
@@ -38,7 +40,7 @@ struct TVSplitLanguagePickerView: View {
                     HStack(spacing: TVDesignTokens.Spacing.sm) {
                         Image(systemName: "xmark")
                             .font(.system(size: 18, weight: .medium))
-                        Text("Cancel")
+                        Text(localization.t("common.cancel"))
                             .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
                     }
                     .foregroundStyle(DesignTokens.Text.secondary)
@@ -53,7 +55,7 @@ struct TVSplitLanguagePickerView: View {
                     HStack(spacing: TVDesignTokens.Spacing.sm) {
                         Image(systemName: "checkmark")
                             .font(.system(size: 18, weight: .medium))
-                        Text("Confirm")
+                        Text(localization.t("common.confirm"))
                             .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
                     }
                     .foregroundStyle(.white)

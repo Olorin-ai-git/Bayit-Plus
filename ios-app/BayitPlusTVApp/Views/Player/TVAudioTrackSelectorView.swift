@@ -1,17 +1,19 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS audio track selector: vertical list of focusable track rows with radio-button selection.
 /// Dismiss via Menu button on the Siri Remote (no X button).
 /// Uses AudioTrack from the shared module.
 struct TVAudioTrackSelectorView: View {
+    @Environment(LocalizationManager.self) private var localization
     let tracks: [AudioTrack]
     @Binding var selectedTrackId: String?
     let onDismiss: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Audio Track")
+            Text(localization.t("player.audioTrack"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.lg)

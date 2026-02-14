@@ -1,5 +1,6 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import BayitNetworking
 import CoreImage.CIFilterBuiltins
 import SwiftUI
@@ -9,6 +10,7 @@ import UIKit
 /// Displays a QR code for companion device authentication with status indicators.
 struct TVQRCodePanel: View {
     @Environment(AuthManager.self) private var authManager
+    @Environment(LocalizationManager.self) private var localization
 
     let onAuthSuccess: () -> Void
 
@@ -51,14 +53,14 @@ struct TVQRCodePanel: View {
 
     private var headerSection: some View {
         VStack(spacing: TVDesignTokens.Spacing.sm) {
-            Text("Scan to Sign In")
+            Text(localization.t("tvLogin.qrTitle"))
                 .font(.system(
                     size: TVDesignTokens.FontSize.xxl,
                     weight: .bold
                 ))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Use your phone camera")
+            Text(localization.t("tvLogin.qrSubtitle"))
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
@@ -126,7 +128,7 @@ struct TVQRCodePanel: View {
                         )
                 }
 
-                Text("Scan with your phone to sign in")
+                Text(localization.t("tvLogin.scanWithPhone"))
                     .font(.system(
                         size: TVDesignTokens.FontSize.base,
                         weight: .medium
@@ -149,16 +151,16 @@ struct TVQRCodePanel: View {
                     .font(.system(size: TVDesignTokens.FontSize.display))
                     .foregroundStyle(DesignTokens.Primary.p400)
                     .symbolEffect(.pulse)
-                    .accessibilityLabel("Phone connected")
+                    .accessibilityLabel(localization.t("tvLogin.phoneConnected"))
 
-                Text("Phone connected")
+                Text(localization.t("tvLogin.phoneConnected"))
                     .font(.system(
                         size: TVDesignTokens.FontSize.lg,
                         weight: .semibold
                     ))
                     .foregroundStyle(DesignTokens.Text.primary)
 
-                Text("Complete sign-in on your phone")
+                Text(localization.t("tvLogin.completeOnPhone"))
                     .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundStyle(DesignTokens.Text.secondary)
             }
@@ -171,7 +173,7 @@ struct TVQRCodePanel: View {
                 .tint(.white)
                 .scaleEffect(1.5)
 
-            Text("Signing you in...")
+            Text(localization.t("tvLogin.signingIn"))
                 .font(.system(
                     size: TVDesignTokens.FontSize.lg,
                     weight: .medium
@@ -185,9 +187,9 @@ struct TVQRCodePanel: View {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Colors.Semantic.success)
-                .accessibilityLabel("Sign-in successful")
+                .accessibilityLabel(localization.t("tvLogin.signedIn"))
 
-            Text("Signed in successfully")
+            Text(localization.t("tvLogin.signedIn"))
                 .font(.system(
                     size: TVDesignTokens.FontSize.lg,
                     weight: .semibold
@@ -235,9 +237,9 @@ struct TVQRCodePanel: View {
                 Image(systemName: "clock.badge.exclamationmark")
                     .font(.system(size: TVDesignTokens.FontSize.display))
                     .foregroundStyle(DesignTokens.Colors.Semantic.warning)
-                    .accessibilityLabel("QR code expired")
+                    .accessibilityLabel(localization.t("tvLogin.qrExpired"))
 
-                Text("QR code expired")
+                Text(localization.t("tvLogin.qrExpired"))
                     .font(.system(
                         size: TVDesignTokens.FontSize.lg,
                         weight: .semibold

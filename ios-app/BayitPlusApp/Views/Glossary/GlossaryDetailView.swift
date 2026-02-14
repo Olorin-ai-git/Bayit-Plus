@@ -1,7 +1,9 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 struct GlossaryDetailView: View {
+    @Environment(LocalizationManager.self) private var localization
     let entry: GlossaryEntry
     @State private var isExpanded: Bool = false
 
@@ -79,7 +81,7 @@ struct GlossaryDetailView: View {
                     Image(systemName: "sparkles")
                         .foregroundStyle(.yellow)
                         .font(.caption2)
-                    Text("Fun Fact")
+                    Text(localization.t("glossary.funFact"))
                         .font(.caption2)
                         .fontWeight(.semibold)
                         .foregroundStyle(DesignTokens.Primary.p400)

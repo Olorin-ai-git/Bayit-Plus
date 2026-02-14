@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// OpenSubtitles fetch UI for tvOS - downloads additional subtitle tracks from OpenSubtitles.org.
 /// Optimized for 10-foot UI with proper focus targets and tvOS design tokens.
 struct TVOpenSubtitlesDownloadView: View {
+    @Environment(LocalizationManager.self) private var localization
     let contentId: String
     let repository: any SubtitleRepository
     let onSuccess: () -> Void
@@ -39,7 +41,7 @@ struct TVOpenSubtitlesDownloadView: View {
                     .font(.system(size: 28))
                     .foregroundStyle(DesignTokens.Primary.p400)
 
-                Text("Download More Subtitles")
+                Text(localization.t("subtitles.downloadMore"))
                     .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.primary)
 
@@ -60,7 +62,7 @@ struct TVOpenSubtitlesDownloadView: View {
                 .tint(DesignTokens.Primary.p400)
                 .scaleEffect(1.2)
 
-            Text("Searching OpenSubtitles...")
+            Text(localization.t("subtitles.searchingOpenSubs"))
                 .font(.system(size: TVDesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -172,7 +174,7 @@ struct TVOpenSubtitlesDownloadView: View {
     // MARK: - Attribution
 
     private var attributionText: some View {
-        Text("From OpenSubtitles.com")
+        Text(localization.t("subtitles.fromOpenSubs"))
             .font(.system(size: TVDesignTokens.FontSize.sm))
             .foregroundStyle(DesignTokens.Text.muted)
     }

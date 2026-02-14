@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 import UIKit
 
@@ -8,6 +9,7 @@ import UIKit
 /// adjusting sensitivity, and testing microphone access.
 struct WakeWordSettingsView: View {
 
+    @Environment(LocalizationManager.self) private var localization
     @State private var wakeWordService: WakeWordService
     @State private var isEnabled = false
     @State private var testResult: TestResult?
@@ -50,11 +52,11 @@ struct WakeWordSettingsView: View {
                     .foregroundStyle(DesignTokens.Primary.p300)
             }
 
-            Text("Hey Bayit")
+            Text(localization.t("settings.wakeWord"))
                 .font(.system(size: DesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Activate voice control by saying the wake word.")
+            Text(localization.t("settings.wakeWordDescription"))
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -66,11 +68,11 @@ struct WakeWordSettingsView: View {
     private var toggleSection: some View {
         HStack {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-                Text("Wake Word Detection")
+                Text(localization.t("tvos.settings.wakeWord"))
                     .font(.system(size: DesignTokens.FontSize.base, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
-                Text("Listen for \"Hey Bayit\" to activate voice control")
+                Text(localization.t("tvos.settings.wakeWordSubtitle"))
                     .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
             }
@@ -92,7 +94,7 @@ struct WakeWordSettingsView: View {
     private var sensitivitySection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
             HStack {
-                Text("Sensitivity")
+                Text(localization.t("settings.sensitivity"))
                     .font(.system(size: DesignTokens.FontSize.base, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
@@ -114,13 +116,13 @@ struct WakeWordSettingsView: View {
             .tint(DesignTokens.Primary.default)
 
             HStack {
-                Text("Low")
+                Text(localization.t("common.low"))
                     .font(.system(size: DesignTokens.FontSize.xs))
                     .foregroundStyle(DesignTokens.Text.disabled)
 
                 Spacer()
 
-                Text("High")
+                Text(localization.t("common.high"))
                     .font(.system(size: DesignTokens.FontSize.xs))
                     .foregroundStyle(DesignTokens.Text.disabled)
             }
@@ -177,9 +179,9 @@ struct WakeWordSettingsView: View {
 
     private var sensitivityLabel: String {
         let value = wakeWordService.sensitivity
-        if value < 0.33 { return "Low" }
-        if value < 0.66 { return "Medium" }
-        return "High"
+        if value < 0.33 { return localization.t("common.low") }
+        if value < 0.66 { return localization.t("common.medium") }
+        return localization.t("common.high")
     }
 
     private var statusColor: Color {

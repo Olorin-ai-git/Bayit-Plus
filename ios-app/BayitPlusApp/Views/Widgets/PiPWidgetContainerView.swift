@@ -191,7 +191,7 @@ struct PiPWidgetContainerView: View {
                     Circle()
                         .fill(DesignTokens.live)
                         .frame(width: 8, height: 8)
-                    Text("LIVE")
+                    Text(localization.t("player.liveBadge"))
                         .font(.system(size: DesignTokens.FontSize.xs, weight: .bold))
                         .foregroundStyle(DesignTokens.live)
                     Spacer()

@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS conversation list screen for Direct Messages.
 /// Reuses DirectMessagesViewModel from shared ViewModels.
 struct TVDirectMessagesView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var viewModel: DirectMessagesViewModel?
 
@@ -48,7 +50,7 @@ struct TVDirectMessagesView: View {
         LazyVStack(spacing: TVDesignTokens.Spacing.md) {
             @Bindable var bindableVM = vm
             GlassTextField(
-                "Search conversations",
+                localization.t("messages.searchConversations"),
                 text: $bindableVM.searchQuery,
                 icon: Image(systemName: "magnifyingglass")
             )
@@ -74,11 +76,11 @@ struct TVDirectMessagesView: View {
                 .foregroundStyle(DesignTokens.Text.muted)
 
             VStack(spacing: TVDesignTokens.Spacing.md) {
-                Text("No conversations")
+                Text(localization.t("messages.noConversations"))
                     .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
-                Text("Start chatting with friends from the mobile app")
+                Text(localization.t("messages.startChatHint"))
                     .font(.system(size: TVDesignTokens.FontSize.lg))
                     .foregroundStyle(DesignTokens.Text.secondary)
                     .multilineTextAlignment(.center)
@@ -94,7 +96,7 @@ struct TVDirectMessagesView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Conversations...")
+            Text(localization.t("messages.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

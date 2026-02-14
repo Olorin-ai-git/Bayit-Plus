@@ -1,5 +1,6 @@
 #if os(iOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Sheet-based content picker for selecting content when creating a personal widget.
@@ -10,6 +11,8 @@ struct ContentPickerView: View {
     @Bindable var viewModel: ContentPickerViewModel
     let onSelect: (ContentPickerItem) -> Void
     let onDismiss: () -> Void
+
+    @Environment(LocalizationManager.self) private var localization
 
     private let columns = [
         GridItem(.flexible(), spacing: DesignTokens.Spacing.md),
@@ -24,11 +27,11 @@ struct ContentPickerView: View {
                 contentArea
             }
             .background(DesignTokens.Background.primary)
-            .navigationTitle("Select Content")
+            .navigationTitle(localization.t("widgets.selectContent"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") { onDismiss() }
+                    Button(localization.t("common.cancel")) { onDismiss() }
                 }
             }
         }

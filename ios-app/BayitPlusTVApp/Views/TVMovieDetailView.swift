@@ -1,11 +1,13 @@
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
 struct TVMovieDetailView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: MovieDetailViewModel?
 
     let movieId: String
@@ -169,7 +171,7 @@ struct TVMovieDetailView: View {
             }
 
             if let director = detail.director {
-                Text("Director: \(director)")
+                Text("\(localization.t("content.director")): \(director)")
                     .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.muted)
             }
@@ -180,7 +182,7 @@ struct TVMovieDetailView: View {
 
     private func castSection(_ cast: [String]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Cast")
+            Text(localization.t("content.cast"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)
@@ -226,7 +228,7 @@ struct TVMovieDetailView: View {
 extension TVMovieDetailView {
     private func relatedSection(_ items: [RelatedItem]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Related")
+            Text(localization.t("content.related"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)

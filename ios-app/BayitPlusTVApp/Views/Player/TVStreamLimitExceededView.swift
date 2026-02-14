@@ -1,10 +1,12 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS modal shown when user exceeds maximum concurrent streams.
 /// Focus-based dismiss and device disconnect actions.
 struct TVStreamLimitExceededView: View {
+    @Environment(LocalizationManager.self) private var localization
 
     let maxStreams: Int
     let activeDevices: [ActiveDevice]
@@ -17,11 +19,11 @@ struct TVStreamLimitExceededView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Warning.default)
 
-            Text("Stream Limit Reached")
+            Text(localization.t("streamLimit.title"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("You can watch on up to \(maxStreams) devices at once. Disconnect a device to continue.")
+            Text(localization.t("streamLimit.message"))
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)

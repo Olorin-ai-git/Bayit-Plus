@@ -1,11 +1,13 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS profile selection -- "Who's watching?"
 /// Large profile cards with focus states for remote navigation.
 struct TVProfileSelectionView: View {
     @Environment(AuthManager.self) private var authManager
+    @Environment(LocalizationManager.self) private var localization
     let onProfileSelected: () -> Void
 
     private let avatarColors: [Color] = [
@@ -33,7 +35,7 @@ struct TVProfileSelectionView: View {
                     )
                 )
 
-            Text("Who's watching?")
+            Text(localization.t("profiles.whosWatching"))
                 .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 

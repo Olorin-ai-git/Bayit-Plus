@@ -1,8 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// A horizontal row of content cards for a category on the home screen
 struct CategoryRow: View {
+    @Environment(LocalizationManager.self) private var localization
     let category: ContentCategory
     let coordinator: NavigationCoordinator
     var cardActions: CardActionsViewModel?
@@ -20,7 +22,7 @@ struct CategoryRow: View {
                     navigateToCategory()
                 } label: {
                     HStack(spacing: DesignTokens.Spacing.xs) {
-                        Text("Show All")
+                        Text(localization.t("common.showAll"))
                             .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                             .foregroundStyle(DesignTokens.Primary.p400)
                         Image(systemName: "chevron.right")

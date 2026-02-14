@@ -1,10 +1,12 @@
 #if os(tvOS)
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS modal for adding a podcast via custom RSS URL.
 struct TVAddPodcastView: View {
+    @Environment(LocalizationManager.self) private var localization
 
     @State private var rssUrl = ""
     @State private var isLoading = false
@@ -21,11 +23,11 @@ struct TVAddPodcastView: View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             Spacer()
 
-            Text("Add Podcast")
+            Text(localization.t("podcasts.addPodcast"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Enter the RSS feed URL for your podcast")
+            Text(localization.t("podcasts.rssUrlHint"))
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
@@ -46,7 +48,7 @@ struct TVAddPodcastView: View {
                 HStack(spacing: TVDesignTokens.Spacing.md) {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundStyle(DesignTokens.Success.default)
-                    Text("Podcast added")
+                    Text(localization.t("podcasts.addedSuccess"))
                         .foregroundStyle(DesignTokens.Success.default)
                 }
             }

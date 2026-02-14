@@ -51,7 +51,7 @@ struct TriviaSettingsView: View {
                 .padding(DesignTokens.Spacing.lg)
             }
             .background(DesignTokens.Background.primary)
-            .navigationTitle("Trivia Settings")
+            .navigationTitle(localization.t("trivia.settings.title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -71,7 +71,7 @@ struct TriviaSettingsView: View {
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text("This will reset all trivia settings to their default values.")
+                Text(localization.t("trivia.settings.resetConfirm"))
             }
         }
         .task {
@@ -89,7 +89,7 @@ struct TriviaSettingsView: View {
                 VStack(spacing: DesignTokens.Spacing.md) {
                     Toggle(isOn: $autoPlay) {
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("Auto-play Trivia")
+                            Text(localization.t("trivia.settings.autoPlay"))
                                 .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
                                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -104,7 +104,7 @@ struct TriviaSettingsView: View {
                         .background(DesignTokens.Text.muted.opacity(0.3))
 
                     VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-                        Text("Frequency")
+                        Text(localization.t("trivia.settings.frequency"))
                             .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
                             .foregroundStyle(DesignTokens.Text.primary)
 
@@ -231,7 +231,7 @@ struct TriviaSettingsView: View {
                 ProgressView()
                     .tint(DesignTokens.Primary.p400)
             } else {
-                Text("Save")
+                Text(localization.t("common.save"))
                     .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                     .foregroundStyle(DesignTokens.Primary.p400)
             }
@@ -243,7 +243,7 @@ struct TriviaSettingsView: View {
         Button {
             dismiss()
         } label: {
-            Text("Cancel")
+            Text(localization.t("common.cancel"))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
     }

@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Animated horizontal bar showing Hebrew vs English percentage ratio.
@@ -8,6 +9,7 @@ struct LanguageRatioView: View {
     var compact: Bool = false
 
     @State private var animatedRatio: Double = 0
+    @Environment(LocalizationManager.self) private var localization
 
     private var hebrewPercent: Int {
         Int(round(clampedRatio * 100))
@@ -67,7 +69,7 @@ struct LanguageRatioView: View {
 
     private var percentageLabels: some View {
         HStack {
-            Text("Hebrew \(hebrewPercent)%")
+            Text(localization.t("vocabulary.hebrewPercent", ["percent": "\(hebrewPercent)"]))
                 .font(.system(
                     size: compact ? DesignTokens.FontSize.xs : DesignTokens.FontSize.sm,
                     weight: .medium
@@ -76,7 +78,7 @@ struct LanguageRatioView: View {
 
             Spacer()
 
-            Text("English \(englishPercent)%")
+            Text(localization.t("vocabulary.englishPercent", ["percent": "\(englishPercent)"]))
                 .font(.system(
                     size: compact ? DesignTokens.FontSize.xs : DesignTokens.FontSize.sm,
                     weight: .medium

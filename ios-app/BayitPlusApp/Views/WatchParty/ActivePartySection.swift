@@ -38,7 +38,7 @@ struct ActivePartySection: View {
                     .foregroundStyle(DesignTokens.Text.primary)
                     .lineLimit(1)
 
-                Text("Room: \(party.roomCode)")
+                Text(localization?.t("watchParty.roomCode", ["code": party.roomCode]) ?? "Room: \(party.roomCode)")
                     .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
             }

@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 import UIKit
 
@@ -10,6 +11,8 @@ struct QuizResultsView: View {
 
     @State private var scoreAnimated = false
     @State private var badgesVisible = false
+
+    @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.xxl) {
@@ -99,7 +102,7 @@ struct QuizResultsView: View {
     private var badgesSection: some View {
         if let badges = result.badges, !badges.isEmpty {
             VStack(spacing: DesignTokens.Spacing.md) {
-                Text("Badges Earned")
+                Text(localization.t("trivia.badgesEarned"))
                     .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
 

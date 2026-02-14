@@ -62,6 +62,43 @@ export type RootStackParamList = {
   ZehAniDashboard: { profileId: string };
   // Widgets
   Widgets: undefined;
+  // Watch Party
+  WatchParty: undefined;
+  ActiveParty: { partyId: string };
+  // Family & Profiles
+  FamilyControls: undefined;
+  Household: undefined;
+  AddProfile: undefined;
+  EditProfile: { profileId: string };
+  ForgotPassword: undefined;
+  // Content
+  CollectionDetail: { collectionId: string };
+  Audiobooks: undefined;
+  AudiobookDetail: { audiobookId: string };
+  // Gamification
+  Trivia: { contentId?: string };
+  Rewards: { profileId?: string };
+  // Social
+  DirectMessages: undefined;
+  Conversation: { conversationId?: string; recipientId?: string; recipientName?: string };
+  Chess: { gameId?: string; opponentId?: string };
+  // Cultural
+  Glossary: undefined;
+  GlossaryDetail: { wordId: string };
+  Culture: undefined;
+  StarStory: { profileId: string };
+  // ZehAni
+  V2VPractice: { profileId: string; avatarId: string };
+  // Auth & Security
+  MFASetup: undefined;
+  PhoneVerification: undefined;
+  PasskeyManagement: undefined;
+  ConnectedAccounts: undefined;
+  // Home & Discovery
+  Help: undefined;
+  AIOnboarding: undefined;
+  // Widgets
+  WidgetGallery: undefined;
 };
 
 export type MainTabParamList = {

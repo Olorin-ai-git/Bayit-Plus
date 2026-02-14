@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Detail screen for a podcast show displaying cover art, metadata, and episode list
 struct PodcastDetailView: View {
     @Environment(RepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: PodcastDetailViewModel?
 
     let showId: String
@@ -146,7 +148,7 @@ struct PodcastDetailView: View {
                 .font(.system(size: 48))
                 .foregroundColor(DesignTokens.Text.muted)
 
-            Text("Podcast not found")
+            Text(localization.t("podcasts.notFound"))
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundColor(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)

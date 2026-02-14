@@ -61,7 +61,7 @@ struct WidgetsView: View {
 
                 Spacer()
 
-                GlassButton("Create", variant: .primary, size: .small,
+                GlassButton(localization.t("widgets.create"), variant: .primary, size: .small,
                              icon: Image(systemName: "plus")) {
                     showCreateWidget = true
                 }
@@ -136,7 +136,7 @@ struct WidgetsView: View {
                     .font(.system(size: 32))
                     .foregroundColor(DesignTokens.Primary.p400)
 
-                Text("Create your first personal widget")
+                Text(localization.t("widgets.createFirstWidget"))
                     .font(.system(size: DesignTokens.FontSize.base))
                     .foregroundColor(DesignTokens.Text.muted)
                     .multilineTextAlignment(.center)

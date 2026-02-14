@@ -1,5 +1,6 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Sheet view for creating a new user profile.
@@ -8,6 +9,7 @@ import SwiftUI
 /// Calls `AuthManager.createProfile()` to persist the profile via the backend.
 struct AddProfileSheetView: View {
     @Environment(AuthManager.self) private var authManager
+    @Environment(LocalizationManager.self) private var localization
     @Environment(\.dismiss) private var dismiss
 
     @State private var profileName = ""
@@ -79,11 +81,11 @@ struct AddProfileSheetView: View {
 
     private var nameField: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-            Text("Profile Name")
+            Text(localization.t("profiles.profileName"))
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
-            TextField("Enter name", text: $profileName)
+            TextField(localization.t("profiles.enterName"), text: $profileName)
                 .textFieldStyle(.plain)
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.primary)
@@ -105,7 +107,7 @@ struct AddProfileSheetView: View {
 
     private var colorPicker: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Text("Avatar Color")
+            Text(localization.t("profiles.avatarColor"))
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
@@ -140,11 +142,11 @@ struct AddProfileSheetView: View {
     private var kidsToggle: some View {
         HStack {
             VStack(alignment: .leading, spacing: DesignTokens.Spacing.xxs) {
-                Text("Kids Profile")
+                Text(localization.t("profiles.kidsProfile"))
                     .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.primary)
 
-                Text("Restricts content to kid-friendly selections")
+                Text(localization.t("profiles.kidsProfileHint"))
                     .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundStyle(DesignTokens.Text.muted)
             }

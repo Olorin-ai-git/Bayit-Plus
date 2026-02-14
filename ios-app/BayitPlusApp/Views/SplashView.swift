@@ -56,9 +56,9 @@ struct SplashView: View {
                     .frame(width: 120, height: 60)
             }
 
-            (Text("Bayit")
+            (Text(localization.t("splash.bayit"))
                 .foregroundColor(.white)
-            + Text("+")
+            + Text(localization.t("splash.plus"))
                 .foregroundColor(DesignTokens.Colors.Primary.base))
                 .font(.system(size: DesignTokens.FontSize.display, weight: .bold))
         }
@@ -85,7 +85,7 @@ struct SplashView: View {
     // MARK: - Footer
 
     private var poweredByFooter: some View {
-        Text("Powered by Olorin.ai")
+        Text(localization.t("splash.poweredBy"))
             .font(.system(size: DesignTokens.FontSize.sm))
             .foregroundStyle(DesignTokens.Text.muted)
     }

@@ -1,16 +1,18 @@
 #if os(iOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Sheet picker for selecting HLS quality tier during playback.
 struct QualitySelectorView: View {
+    @Environment(LocalizationManager.self) private var localization
     let currentQuality: StreamQuality
     let onSelect: (StreamQuality) -> Void
     let onDismiss: () -> Void
 
     var body: some View {
         VStack(spacing: DesignTokens.Spacing.lg) {
-            Text("Video Quality")
+            Text(localization.t("player.quality"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -18,7 +20,7 @@ struct QualitySelectorView: View {
                 qualityRow(quality)
             }
 
-            GlassButton("Close", variant: .ghost) { onDismiss() }
+            GlassButton(localization.t("common.close"), variant: .ghost) { onDismiss() }
         }
         .padding(DesignTokens.Spacing.xl)
         .background(DesignTokens.Background.elevated)

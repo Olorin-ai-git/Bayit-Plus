@@ -1,9 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Main tvOS chess screen with lobby for creating/joining games
 /// and full game board with focus-based d-pad navigation.
 struct TVChessView: View {
+    @Environment(LocalizationManager.self) private var localization
+
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var viewModel: ChessViewModel?
     @State private var showBotDifficulty = false
@@ -53,10 +56,10 @@ struct TVChessView: View {
             Image(systemName: "checkerboard.rectangle")
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Text.muted)
-            Text("Chess")
+            Text(localization.t("chess.title"))
                 .font(.system(size: TVDesignTokens.FontSize.display, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
-            Text("Play against friends or AI")
+            Text(localization.t("chess.subtitle"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
@@ -169,8 +172,8 @@ struct TVChessView: View {
 
     private func turnIndicator(_ vm: ChessViewModel) -> some View {
         Text(vm.gameStatus == .active
-            ? (vm.currentTurn == .white ? "White's Turn" : "Black's Turn")
-            : "Game Over")
+            ? (vm.currentTurn == .white ? localization.t("chess.whiteTurn") : localization.t("chess.blackTurn"))
+            : localization.t("chess.gameOver"))
             .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
             .foregroundStyle(DesignTokens.Text.secondary)
             .accessibilityLabel("Game status")
@@ -198,7 +201,7 @@ struct TVChessView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading...")
+            Text(localization.t("common.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

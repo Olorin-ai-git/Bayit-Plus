@@ -1,10 +1,12 @@
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 struct TVAudiobookDetailView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: AudiobookDetailViewModel?
 
     let audiobookId: String
@@ -81,7 +83,7 @@ struct TVAudiobookDetailView: View {
 
                 if let author = audiobook.author {
                     HStack(spacing: TVDesignTokens.Spacing.sm) {
-                        Text("By")
+                        Text(localization.t("audiobooks.by"))
                             .font(.system(size: TVDesignTokens.FontSize.lg))
                             .foregroundStyle(DesignTokens.Text.muted)
                         Text(author)
@@ -92,7 +94,7 @@ struct TVAudiobookDetailView: View {
 
                 if let narrator = audiobook.narrator {
                     HStack(spacing: TVDesignTokens.Spacing.sm) {
-                        Text("Narrated by")
+                        Text(localization.t("audiobooks.narratedBy"))
                             .font(.system(size: TVDesignTokens.FontSize.md))
                             .foregroundStyle(DesignTokens.Text.muted)
                         Text(narrator)
@@ -151,7 +153,7 @@ struct TVAudiobookDetailView: View {
 
     private func speedControl(vm: AudiobookDetailViewModel) -> some View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
-            Text("Speed:")
+            Text(localization.t("audiobooks.speed"))
                 .font(.system(size: TVDesignTokens.FontSize.lg, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
@@ -170,7 +172,7 @@ struct TVAudiobookDetailView: View {
 
     private func chapterList(_ chapters: [AudiobookChapter], vm: AudiobookDetailViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Chapters")
+            Text(localization.t("chapters.title"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)

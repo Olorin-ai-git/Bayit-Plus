@@ -1,11 +1,14 @@
 #if os(tvOS)
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS comprehension quiz overlay during playback.
 /// Focus-based answer selection for educational content.
 struct TVComprehensionQuizOverlayView: View {
+
+    @Environment(LocalizationManager.self) private var localization
 
     let question: String
     let options: [String]
@@ -59,7 +62,7 @@ struct TVComprehensionQuizOverlayView: View {
             HStack(spacing: TVDesignTokens.Spacing.sm) {
                 Image(systemName: "questionmark.circle")
                     .foregroundStyle(DesignTokens.Primary.p300)
-                Text("Comprehension Check")
+                Text(localization.t("comprehension.title"))
                     .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                     .foregroundStyle(DesignTokens.Primary.p300)
             }

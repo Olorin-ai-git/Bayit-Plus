@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Shared UI components for auth screens (login/register)
@@ -153,12 +154,14 @@ enum AuthComponents {
     // MARK: - Or Divider
 
     struct OrDivider: View {
+        @Environment(LocalizationManager.self) private var localization
+
         var body: some View {
             HStack {
                 Rectangle()
                     .fill(Color.white.opacity(0.1))
                     .frame(height: 1)
-                Text("or")
+                Text(localization.t("common.or"))
                     .font(.system(size: 14))
                     .foregroundStyle(DesignTokens.Colors.Text.secondary)
                     .padding(.horizontal, DesignTokens.Spacing.md)

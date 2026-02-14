@@ -3091,7 +3091,10 @@
     "details": "Details",
     "loading": "Loading audiobooks...",
     "sortOrder": "Order",
-    "subscription": "Subscription"
+    "subscription": "Subscription",
+    "by": "By",
+    "speed": "Speed:",
+    "loadingAudiobooks": "Loading audiobooks..."
   },
   "breadcrumbs": {
     "series": "Series",
@@ -3165,7 +3168,17 @@
       "multiContent": "Show side by side..."
     },
     "listening": "Listening...",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "startConversation": "Start a Conversation",
+    "askAboutContent": "Ask about content, get personalized recommendations, or just chat.",
+    "typePlaceholder": "Type a message..."
+  },
+  "voiceAssistant": {
+    "title": "Voice Assistant",
+    "listening": "Listening...",
+    "transcribing": "Transcribing...",
+    "thinking": "Thinking...",
+    "typePlaceholder": "Type your question..."
   },
   "chess": {
     "title": "Chess",
@@ -3515,6 +3528,7 @@
     "load": "Load",
     "moreInfo": "More Info",
     "seeAll": "See All",
+    "showAll": "Show All",
     "new": "New",
     "live": "LIVE",
     "recommended": "Recommended",
@@ -3739,7 +3753,15 @@
     "bulkDeleteConfirm": "Delete selected widgets?",
     "bulkDeleted": "Widgets deleted",
     "showDock": "Show Dock",
-    "hideDock": "Hide Dock"
+    "hideDock": "Hide Dock",
+    "title": "Widgets",
+    "createFirst": "Create your first personal widget",
+    "createWidget": "Create Widget",
+    "widgetTitle": "Widget Title",
+    "contentType": "Content Type",
+    "enterWidgetTitle": "Enter widget title",
+    "descriptionOptional": "Description (optional)",
+    "loadingWidgets": "Loading Widgets..."
   },
   "liveCategories": {
     "educational": "Educational"
@@ -3897,7 +3919,18 @@
     "availableSubtitles": "Available Subtitles",
     "subtitleSelected": "Selected: {{language}}",
     "trailer": "Trailer",
-    "trailerNotAvailable": "Trailer not available for this title"
+    "trailerNotAvailable": "Trailer not available for this title",
+    "movieDetail": {
+      "director": "Director:",
+      "cast": "Cast",
+      "related": "Related"
+    },
+    "seriesDetail": {
+      "related": "Related",
+      "episode": "Episode {{number}}",
+      "seasons": "{{count}} Seasons",
+      "episodes": "{{count}} Episodes"
+    }
   },
   "cultureCities": {
     "connectionTo": "{{city}} Connection",
@@ -4163,7 +4196,9 @@
     },
     "noVoicesAvailable": "No voices available",
     "premiumRequired": "Premium subscription required",
-    "selectInputLanguage": "Select input language"
+    "selectInputLanguage": "Select input language",
+    "upgradeForDubbing": "Upgrade to Premium to access live dubbing",
+    "maybeLater": "Maybe Later"
   },
   "empty": {
     "noContent": "No content available",
@@ -4635,7 +4670,12 @@
     "removeFailed": "Failed to remove friend",
     "friendsCount": "{{count}} friends",
     "gamesCount": "{{count}} games",
-    "alreadyFriends": "Friends"
+    "alreadyFriends": "Friends",
+    "searchUsers": "Search users...",
+    "searchToAdd": "Search for users to add friends",
+    "loadingFriends": "Loading Friends...",
+    "searchResults": "Search Results ({{count}})",
+    "pending": "Pending"
   },
   "googleLogin": {
     "cancelledError": "Google sign-in was cancelled",
@@ -4721,6 +4761,7 @@
   },
   "hero": {
     "watch": "Watch",
+    "watchNow": "Watch Now",
     "moreInfo": "More Info",
     "addToList": "Add to List"
   },
@@ -4774,7 +4815,11 @@
     "israeli_businesses_nearby": "Israeli Businesses Near You - From {{city}}",
     "searching_businesses": "Searching for Israeli businesses in {{city}}...",
     "no_businesses_found": "No Israeli businesses found in {{city}}",
-    "businesses_load_error": "Unable to load business listings. Please try again."
+    "businesses_load_error": "Unable to load business listings. Please try again.",
+    "liveTVRow": "Live TV",
+    "continueWatchingRow": "Continue Watching",
+    "contentFrom": "Content from {{city}} ({{distance}} miles away)",
+    "youngsters": "Youngsters"
   },
   "jerusalem": {
     "title": "Jerusalem Connection",
@@ -4974,7 +5019,25 @@
     "createAccount": "Create Account",
     "bayitThinking": "Bayit is thinking...",
     "unexpectedError": "An unexpected error occurred",
-    "signUpNow": "Sign up now"
+    "signUpNow": "Sign up now",
+    "continueWithApple": "Continue with Apple",
+    "signInWithFaceId": "Sign in with Face ID",
+    "signInWithTouchId": "Sign in with Touch ID",
+    "signInWithBiometric": "Sign in with Biometric",
+    "deviceCode": {
+      "signInOnDevice": "Sign in on your phone or computer",
+      "waitingForActivation": "Waiting for activation..."
+    },
+    "qrCode": {
+      "scanToSignIn": "Scan to Sign In",
+      "usePhoneCamera": "Use your phone camera",
+      "scanWithPhone": "Scan with your phone to sign in",
+      "phoneConnected": "Phone connected",
+      "completeSignIn": "Complete sign-in on your phone",
+      "signingIn": "Signing you in...",
+      "signedIn": "Signed in successfully",
+      "expired": "QR code expired"
+    }
   },
   "nav": {
     "home": "Home",
@@ -5292,7 +5355,12 @@
     "liveLanguageMagic": "Live Language Magic",
     "retrying": "Retry attempt",
     "selectLanguage": "Select Language",
-    "selectOutputLanguage": "Select Output Language"
+    "selectOutputLanguage": "Select Output Language",
+    "liveDubbing": "Live Dubbing",
+    "liveDubbingOnlyLive": "Live dubbing is only available for live channels",
+    "director": "Director",
+    "castLabel": "Cast",
+    "related": "Related"
   },
   "podcast": {
     "selectLanguage": "Select Language",
@@ -5403,7 +5471,13 @@
       "errorResolve": "Could not resolve this URL",
       "errorAdd": "Could not add podcast",
       "errorDuplicate": "This podcast already exists"
-    }
+    },
+    "noEpisodes": "No episodes available",
+    "podcastRssUrl": "Podcast RSS URL",
+    "podcastAdded": "Podcast added successfully",
+    "podcastNotFound": "Podcast not found",
+    "radio": "Radio",
+    "loadingPodcasts": "Loading Podcasts..."
   },
   "profile": {
     "title": "My Profile",
@@ -5701,7 +5775,13 @@
     "loading": "Loading profiles...",
     "manage": "Manage Profiles",
     "whoIsWatching": "Who's Watching?",
-    "manageProfiles": "Manage Profiles"
+    "whosWatching": "Who's watching?",
+    "manageProfiles": "Manage Profiles",
+    "profileName": "Profile Name",
+    "enterName": "Enter name",
+    "avatarColor": "Avatar Color",
+    "kidsProfile": "Kids Profile",
+    "kidsProfileDescription": "Restricts content to kid-friendly selections"
   },
   "radio": {
     "title": "Radio",
@@ -5827,7 +5907,9 @@
       "fillAllFields": "Please fill in all fields",
       "registrationFailed": "Registration failed. Please try again.",
       "googleFailed": "Sign up with Google failed. Please try again."
-    }
+    },
+    "continueWithApple": "Continue with Apple",
+    "joinBayitPlus": "Join Bayit+ streaming"
   },
   "ritual": {
     "title": "Morning Ritual",
@@ -5860,6 +5942,9 @@
     "recentSearches": "Recent Searches",
     "clearAll": "Clear All",
     "trending": "Trending Searches",
+    "trendingSearches": "Trending Searches",
+    "noResultsFound": "No results found",
+    "tryDifferentSearch": "Try a different search term",
     "promptTitle": "What are you looking for?",
     "promptDescription": "Search for your favorite content or use voice search",
     "filters": {
@@ -6365,7 +6450,23 @@
       "cuesFailed": "Failed to load subtitle text",
       "networkError": "Network error - please check your connection",
       "serverError": "Server error - please try again later"
-    }
+    },
+    "noHebrewSubtitles": "No Hebrew Subtitles",
+    "uploadHebrewFirst": "Upload Hebrew subtitles first to enable AI features like Nikud and Shoresh.",
+    "aiModes": "AI Modes",
+    "splitDisplay": "Split Display",
+    "twoLanguagesSideBySide": "Show two languages side-by-side",
+    "selectTwoLanguages": "Select Two Languages",
+    "chooseTwoLanguages": "Choose two languages for split screen subtitles",
+    "startSplitScreen": "Start Split Screen",
+    "subtitleSettings": "Subtitle Settings",
+    "fontSize": "Font Size",
+    "backgroundOpacity": "Background Opacity",
+    "position": "Position",
+    "preview": "Preview",
+    "sampleSubtitleText": "Sample subtitle text",
+    "hebrewLearningModes": "Hebrew Learning Modes",
+    "englishLearningModes": "English Learning Modes"
   },
   "support": {
     "title": "Support Center",
@@ -6561,7 +6662,42 @@
     "errors": {
       "loadFailed": "Failed to load trivia",
       "saveFailed": "Failed to save trivia preferences"
-    }
+    },
+    "questionCount": "Question {{current}} / {{total}}",
+    "score": "Score: {{score}}",
+    "quizComplete": "Quiz Complete",
+    "percentCorrect": "{{percent}}% correct",
+    "loadingTrivia": "Loading Trivia..."
+  },
+  "splash": {
+    "bayit": "Bayit",
+    "plus": "+",
+    "poweredBy": "Powered by Olorin.ai"
+  },
+  "sceneSearch": {
+    "title": "Scene Search",
+    "placeholder": "Search for a topic or scene...",
+    "noScenesFound": "No scenes found"
+  },
+  "streamLimit": {
+    "title": "Stream Limit Reached",
+    "message": "You can watch on up to {{max}} devices at once. Disconnect a device to continue."
+  },
+  "wakeWord": {
+    "title": "Hey Bayit",
+    "description": "Activate voice control by saying the wake word.",
+    "detection": "Wake Word Detection",
+    "detectionDescription": "Listen for \"Hey Bayit\" to activate voice control",
+    "sensitivity": "Sensitivity",
+    "low": "Low",
+    "high": "High"
+  },
+  "aiSearch": {
+    "aiInterpretation": "AI Interpretation",
+    "confidence": "Confidence",
+    "trySuggestion": "Try asking:",
+    "noResults": "No results found",
+    "tryRephrasing": "Try rephrasing your question"
   },
   "tvLogin": {
     "invalidQR": "Invalid QR code. Please scan again from your TV.",
@@ -6986,6 +7122,7 @@
   },
   "beta": {
     "credits": {
+      "title": "Beta 500",
       "error": "Failed to load credits",
       "label": "AI Credits",
       "loading": "Loading credits...",
@@ -7671,7 +7808,10 @@
     "userLeft": "A user left the chat",
     "placeholder": "Send a message...",
     "send": "Send",
-    "translationBeta": "Translation (Beta)"
+    "translationBeta": "Translation (Beta)",
+    "liveChat": "Live Chat",
+    "chatPlaceholder": "Say something...",
+    "chatRequiresConnection": "Chat requires an active connection"
   },
   "avatar": {
     "dialogue": {
@@ -7928,6 +8068,9 @@
     "days": "days",
     "noBadges": "Complete quizzes to earn badges!",
     "locked": "Keep playing to unlock!",
+    "level": "Level {{level}}",
+    "points": "{{count}} points",
+    "dayStreak": "{{count}} day streak",
     "earnedOn": "Earned on {{date}}",
     "pointsBonus": "+{{points}} bonus points",
     "rarity": {
@@ -7989,7 +8132,9 @@
     "redirectingToHousehold": "Redirecting to your household...",
     "goToHousehold": "Go to Household",
     "success": "Success!",
-    "error": "Error"
+    "error": "Error",
+    "owner": "OWNER",
+    "loadingHousehold": "Loading Household..."
   },
   "profileControls": {
     "title": "Profile Family Controls",
@@ -8050,7 +8195,8 @@
     "explanation": "Explanation",
     "loading": "Loading question...",
     "insufficient_credits": "Insufficient credits for comprehension question",
-    "error": "Error loading question"
+    "error": "Error loading question",
+    "comprehensionCheck": "Comprehension Check"
   },
   "bar": {
     "translate": "Translate",
@@ -8198,7 +8344,9 @@
       "live": "LIVE",
       "mute": "Mute",
       "unmute": "Unmute",
-      "close": "Close"
+      "close": "Close",
+      "subtitles": "Subtitles",
+      "playbackSpeed": "Playback Speed"
     },
     "aiSearch": {
       "title": "AI Search",
@@ -8247,6 +8395,13 @@
       "seeAll": "See All",
       "retry": "Retry",
       "back": "Back"
+    },
+    "auth": {
+      "welcomeBack": "Welcome Back",
+      "signInToContinue": "Sign in to continue your journey",
+      "email": "EMAIL",
+      "emailPlaceholder": "your@email.com",
+      "password": "PASSWORD"
     }
   },
   "missions": {
@@ -8439,7 +8594,8 @@
       "origin": "Origin",
       "usage": "Common Usage",
       "funFact": "Fun Fact"
-    }
+    },
+    "funFact": "Fun Fact"
   },
   "interactiveMission": {
     "title": "Interactive Mission",

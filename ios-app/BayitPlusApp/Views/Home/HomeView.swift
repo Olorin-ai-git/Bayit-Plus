@@ -8,6 +8,7 @@ struct HomeView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(AppLocationProvider.self) private var locationProvider
     @Environment(FeatureFlags.self) private var featureFlags
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: HomeViewModel?
     @State private var cardActions: CardActionsViewModel?
 
@@ -171,7 +172,7 @@ struct HomeView: View {
     private func youngstersSection(_ vm: HomeViewModel) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
             HStack {
-                Text("Youngsters")
+                Text(localization.t("youngsters.title"))
                     .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                     .foregroundColor(DesignTokens.Text.primary)
 
@@ -181,7 +182,7 @@ struct HomeView: View {
                     coordinator.navigate(to: .youngsters)
                 } label: {
                     HStack(spacing: DesignTokens.Spacing.xs) {
-                        Text("Show All")
+                        Text(localization.t("common.showAll"))
                             .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                             .foregroundStyle(DesignTokens.Primary.p400)
                         Image(systemName: "chevron.right")

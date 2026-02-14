@@ -166,12 +166,19 @@ struct CollectionListItem: Decodable, Sendable, Identifiable {
     let totalMovies: Int
     let tmdbCollectionId: Int?
 
+    /// Returns localized promo text based on device locale, falling back to English then Hebrew.
+    var localizedPromoText: String? {
+        let lang = Locale.current.language.languageCode?.identifier ?? "en"
+        let localized: String? = (lang == "he") ? promoText : promoTextEn
+        return localized ?? promoTextEn ?? promoText
+    }
+
     /// Convert to ContentItem for display in the VOD grid
     func toContentItem() -> ContentItem {
         ContentItem(
             id: id,
             title: title,
-            description: promoText,
+            description: localizedPromoText,
             thumbnail: thumbnail,
             backdrop: backdrop,
             duration: nil,
@@ -205,7 +212,35 @@ struct CollectionDetail: Decodable, Sendable, Identifiable {
     let availableMovies: Int?
     let totalMovies: Int?
     let promoText: String?
+    let promoTextEn: String?
+    let promoTextEs: String?
+    let promoTextFr: String?
+    let promoTextIt: String?
+    let promoTextHi: String?
+    let promoTextTa: String?
+    let promoTextBn: String?
+    let promoTextJa: String?
+    let promoTextZh: String?
     let movies: [CollectionMovie]
+
+    /// Returns localized promo text based on device locale, falling back to English then Hebrew.
+    var localizedPromoText: String? {
+        let lang = Locale.current.language.languageCode?.identifier ?? "en"
+        let localized: String? = switch lang {
+        case "he": promoText
+        case "en": promoTextEn
+        case "es": promoTextEs
+        case "fr": promoTextFr
+        case "it": promoTextIt
+        case "hi": promoTextHi
+        case "ta": promoTextTa
+        case "bn": promoTextBn
+        case "ja": promoTextJa
+        case "zh": promoTextZh
+        default: promoTextEn
+        }
+        return localized ?? promoTextEn ?? promoText
+    }
 }
 
 /// Movie within a collection

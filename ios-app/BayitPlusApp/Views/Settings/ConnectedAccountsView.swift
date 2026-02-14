@@ -178,7 +178,7 @@ struct ConnectedAccountsView: View {
                 #if os(iOS)
                 linkProviderButton(
                     icon: "g.circle.fill",
-                    title: "Link Google Account"
+                    title: localization.t("settings.linkGoogleAccount")
                 ) {
                     await linkGoogle()
                 }

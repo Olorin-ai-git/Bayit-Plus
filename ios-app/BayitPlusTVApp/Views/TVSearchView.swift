@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
@@ -8,6 +9,7 @@ import SwiftUI
 struct TVSearchView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: SearchViewModel?
     @State private var searchText = ""
     @State private var showAISearch = false
@@ -100,7 +102,7 @@ struct TVSearchView: View {
 
     private func resultsGrid(_ results: [UnifiedSearchResult]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("\(results.count) Results")
+            Text("\(results.count) \(localization.t("search.resultsFor"))")
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.leading, TVDesignTokens.Spacing.xl)
@@ -147,7 +149,7 @@ struct TVSearchView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Searching...")
+            Text(localization.t("search.searching"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -160,11 +162,11 @@ struct TVSearchView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Text.muted)
 
-            Text("No results found")
+            Text(localization.t("search.noResults"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
-            Text("Try a different search term")
+            Text(localization.t("search.tryDifferent"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -177,7 +179,7 @@ struct TVSearchView: View {
                 .font(.system(size: 80))
                 .foregroundStyle(DesignTokens.Text.muted.opacity(0.4))
 
-            Text("Search for content")
+            Text(localization.t("tvos.search.searchForContent"))
                 .font(.system(size: TVDesignTokens.FontSize.xl))
                 .foregroundStyle(DesignTokens.Text.muted)
 

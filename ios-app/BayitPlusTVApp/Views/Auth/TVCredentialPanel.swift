@@ -1,6 +1,7 @@
 import AuthenticationServices
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 import UIKit
 
@@ -8,6 +9,7 @@ import UIKit
 /// Clean, simple design optimized for 10-foot TV viewing.
 struct TVCredentialPanel: View {
     @Environment(AuthManager.self) private var authManager
+    @Environment(LocalizationManager.self) private var localization
 
     let onAuthSuccess: () -> Void
 
@@ -26,7 +28,7 @@ struct TVCredentialPanel: View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             // Header
             VStack(spacing: TVDesignTokens.Spacing.sm) {
-                Text("Welcome Back")
+                Text(localization.t("login.title"))
                     .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
                     .foregroundStyle(
                         LinearGradient(
@@ -36,7 +38,7 @@ struct TVCredentialPanel: View {
                         )
                     )
 
-                Text("Sign in to continue your journey")
+                Text(localization.t("login.subtitle"))
                     .font(.system(size: TVDesignTokens.FontSize.lg, weight: .medium))
                     .foregroundStyle(DesignTokens.Text.secondary)
             }
@@ -45,7 +47,7 @@ struct TVCredentialPanel: View {
             VStack(spacing: TVDesignTokens.Spacing.lg) {
                 // Email field
                 VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-                    Text("EMAIL")
+                    Text(localization.t("login.email"))
                         .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
                         .foregroundStyle(DesignTokens.Text.secondary)
                         .kerning(2.0)
@@ -57,7 +59,7 @@ struct TVCredentialPanel: View {
 
                         ZStack(alignment: .leading) {
                             if email.isEmpty {
-                                Text("your@email.com")
+                                Text(localization.t("placeholder.email"))
                                     .font(.system(size: TVDesignTokens.FontSize.base))
                                     .foregroundStyle(DesignTokens.Colors.Primary.dark.opacity(0.7))
                             }
@@ -93,7 +95,7 @@ struct TVCredentialPanel: View {
 
                 // Password field
                 VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
-                    Text("PASSWORD")
+                    Text(localization.t("login.password"))
                         .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
                         .foregroundStyle(DesignTokens.Text.secondary)
                         .kerning(2.0)

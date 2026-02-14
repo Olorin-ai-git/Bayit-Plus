@@ -29,7 +29,7 @@ struct SubtitleModePicker: View {
                 .padding(DesignTokens.Spacing.lg)
             }
             .background(DesignTokens.Background.primary)
-            .navigationTitle("Subtitle Modes")
+            .navigationTitle(localization.t("subtitles.modes"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -48,7 +48,7 @@ struct SubtitleModePicker: View {
 
     private var hebrewModesSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text("Hebrew Learning Modes")
+            Text(localization.t("subtitles.hebrewLearningModes"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -73,7 +73,7 @@ struct SubtitleModePicker: View {
 
     private var englishModesSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.md) {
-            Text("English Learning Modes")
+            Text(localization.t("subtitles.englishLearningModes"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.primary)
 

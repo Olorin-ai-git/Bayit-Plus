@@ -1,10 +1,12 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Registration screen matching web app design at /register
 struct RegisterView: View {
     @Environment(AuthManager.self) private var authManager
+    @Environment(LocalizationManager.self) private var localization
 
     @State private var name = ""
     @State private var email = ""
@@ -51,12 +53,12 @@ struct RegisterView: View {
 
     private var cardHeader: some View {
         VStack(spacing: DesignTokens.Spacing.xs) {
-            Text("Create Account")
+            Text(localization.t("register.title"))
                 .font(.system(size: 28, weight: .bold))
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
 
-            Text("Join Bayit+ streaming")
+            Text(localization.t("register.subtitle"))
                 .font(.system(size: 15))
                 .foregroundStyle(DesignTokens.Colors.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -75,9 +77,9 @@ struct RegisterView: View {
     // MARK: - Form Fields
 
     private var nameField: some View {
-        labeledField(label: "Full Name") {
+        labeledField(label: localization.t("register.name")) {
             AuthComponents.GlassTextField(
-                placeholder: "Enter your name",
+                placeholder: localization.t("register.namePlaceholder"),
                 text: $name,
                 contentType: .name,
                 capitalization: .words
@@ -86,9 +88,9 @@ struct RegisterView: View {
     }
 
     private var emailField: some View {
-        labeledField(label: "Email") {
+        labeledField(label: localization.t("register.email")) {
             AuthComponents.GlassTextField(
-                placeholder: "Enter your email",
+                placeholder: localization.t("register.emailPlaceholder"),
                 text: $email,
                 contentType: .emailAddress,
                 keyboardType: .emailAddress
@@ -97,9 +99,9 @@ struct RegisterView: View {
     }
 
     private var passwordField: some View {
-        labeledField(label: "Password") {
+        labeledField(label: localization.t("register.password")) {
             AuthComponents.GlassSecureField(
-                placeholder: "Create a password",
+                placeholder: localization.t("register.passwordPlaceholder"),
                 text: $password,
                 showText: $showPassword,
                 contentType: .newPassword
@@ -108,9 +110,9 @@ struct RegisterView: View {
     }
 
     private var confirmPasswordField: some View {
-        labeledField(label: "Confirm Password") {
+        labeledField(label: localization.t("register.confirmPassword")) {
             AuthComponents.GlassSecureField(
-                placeholder: "Confirm your password",
+                placeholder: localization.t("register.confirmPasswordPlaceholder"),
                 text: $confirmPassword,
                 showText: $showConfirmPassword,
                 contentType: .newPassword
@@ -165,10 +167,10 @@ struct RegisterView: View {
 
     private var termsLabel: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text("I agree to the Terms of Service")
+            Text(localization.t("register.acceptTerms") + " " + localization.t("register.termsOfService"))
                 .font(.system(size: 13))
                 .foregroundStyle(DesignTokens.Colors.Text.secondary)
-            Text("and Privacy Policy")
+            Text(localization.t("register.and") + " " + localization.t("register.privacyPolicy"))
                 .font(.system(size: 13))
                 .foregroundStyle(DesignTokens.Colors.Text.secondary)
         }
@@ -182,7 +184,7 @@ struct RegisterView: View {
                 if authManager.isLoading {
                     ProgressView().tint(.black).scaleEffect(0.8)
                 }
-                Text("Create Account")
+                Text(localization.t("register.submit"))
                     .font(.system(size: 16, weight: .semibold))
             }
             .frame(maxWidth: .infinity)
@@ -198,7 +200,7 @@ struct RegisterView: View {
     private var socialButtons: some View {
         VStack(spacing: DesignTokens.Spacing.md) {
             AuthComponents.SocialButton(
-                title: "Continue with Google",
+                title: localization.t("register.continueWithGoogle"),
                 iconName: "g.circle.fill",
                 action: {
                     Task {
@@ -212,7 +214,7 @@ struct RegisterView: View {
                 }
             )
             AuthComponents.SocialButton(
-                title: "Continue with Apple",
+                title: localization.t("login.continueWithApple"),
                 iconName: "apple.logo",
                 action: {
                     Task {
@@ -236,9 +238,9 @@ struct RegisterView: View {
                 .padding(.bottom, DesignTokens.Spacing.lg)
 
             Button(action: onBack) {
-                Text("Already have an account? ")
+                Text(localization.t("register.haveAccount") + " ")
                     .foregroundStyle(DesignTokens.Colors.Text.secondary)
-                + Text("Sign In")
+                + Text(localization.t("register.signIn"))
                     .foregroundStyle(DesignTokens.Colors.Primary.base)
                     .bold()
             }
@@ -260,17 +262,17 @@ struct RegisterView: View {
 
     private func handleRegister() async {
         validationError = nil
-        guard !name.isEmpty else { validationError = "Please enter your name"; return }
-        guard !email.isEmpty else { validationError = "Please enter your email"; return }
-        guard !password.isEmpty else { validationError = "Please enter a password"; return }
+        guard !name.isEmpty else { validationError = localization.t("register.errors.nameRequired"); return }
+        guard !email.isEmpty else { validationError = localization.t("register.errors.emailRequired"); return }
+        guard !password.isEmpty else { validationError = localization.t("register.errors.passwordRequired"); return }
         guard password.count >= 8 else {
-            validationError = "Password must be at least 8 characters"; return
+            validationError = localization.t("register.errors.passwordTooShort"); return
         }
         guard password == confirmPassword else {
-            validationError = "Passwords do not match"; return
+            validationError = localization.t("register.errors.passwordMismatch"); return
         }
         guard acceptTerms else {
-            validationError = "Please accept the Terms of Service"; return
+            validationError = localization.t("register.errors.acceptTerms"); return
         }
 
         do {

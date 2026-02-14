@@ -1,8 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Displays trending and recent search suggestions when the search query is empty.
 struct SearchSuggestionsView: View {
+    @Environment(LocalizationManager.self) private var localization
     let trendingSearches: [String]
     let recentSearches: [String]
     let onSelect: (String) -> Void
@@ -31,7 +33,7 @@ struct SearchSuggestionsView: View {
                     .foregroundColor(DesignTokens.Primary.default)
                     .accessibilityHidden(true)
 
-                Text("Trending Searches")
+                Text(localization.t("search.trending"))
                     .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                     .foregroundColor(DesignTokens.Text.primary)
             }
@@ -59,19 +61,19 @@ struct SearchSuggestionsView: View {
                         .foregroundColor(DesignTokens.Text.secondary)
                         .accessibilityHidden(true)
 
-                    Text("Recent Searches")
+                    Text(localization.t("search.recentSearches"))
                         .font(.system(size: DesignTokens.FontSize.md, weight: .semibold))
                         .foregroundColor(DesignTokens.Text.primary)
                 }
 
                 Spacer()
 
-                Button("Clear") {
+                Button(localization.t("search.clear")) {
                     onClearRecent()
                 }
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundColor(DesignTokens.Primary.default)
-                .accessibilityLabel("Clear recent searches")
+                .accessibilityLabel(localization.t("search.clearRecent"))
             }
 
             WrappingChipLayout(spacing: DesignTokens.Spacing.sm) {

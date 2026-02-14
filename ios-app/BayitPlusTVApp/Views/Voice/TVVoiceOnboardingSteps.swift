@@ -1,18 +1,20 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Welcome step content for tvOS voice onboarding.
 struct TVVoiceWelcomeStep: View {
+    @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
             voiceOrbIcon
 
-            Text("AI Features")
+            Text(localization.t("voiceOnboarding.features"))
                 .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Ask questions, get recommendations, and explore content with AI.")
+            Text(localization.t("voiceOnboarding.featuresDescription"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)
@@ -69,6 +71,7 @@ struct TVVoiceWelcomeStep: View {
 
 /// Language selection step for tvOS voice onboarding.
 struct TVVoiceLanguageSelectStep: View {
+    @Environment(LocalizationManager.self) private var localization
 
     @Binding var selectedLanguage: SupportedLanguage
     let availableLanguages: [SupportedLanguage]
@@ -85,11 +88,11 @@ struct TVVoiceLanguageSelectStep: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Primary.p400)
 
-            Text("Choose Language")
+            Text(localization.t("voiceOnboarding.chooseLanguage"))
                 .font(.system(size: TVDesignTokens.FontSize.xxxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Select your preferred language for AI features.")
+            Text(localization.t("voiceOnboarding.chooseLanguageDescription"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)

@@ -82,7 +82,7 @@ struct TVLanguageSettingsView: View {
                     .foregroundStyle(DesignTokens.Text.muted)
 
                 if language.isRTL {
-                    Text("RTL")
+                    Text(localization.t("settings.rtl"))
                         .font(.system(size: TVDesignTokens.FontSize.xs, weight: .medium))
                         .foregroundStyle(DesignTokens.Text.primary)
                         .padding(.horizontal, TVDesignTokens.Spacing.sm)

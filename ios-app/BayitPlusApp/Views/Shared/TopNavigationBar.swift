@@ -1,11 +1,13 @@
 import BayitAuth
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
-/// Fixed top navigation bar with brand name, playlist, and profile avatar.
+/// Fixed top navigation bar with brand name, language, playlist, and profile avatar.
 struct TopNavigationBar: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.md) {
@@ -14,6 +16,23 @@ struct TopNavigationBar: View {
                 .foregroundColor(DesignTokens.Primary.p400)
 
             Spacer()
+
+            Button {
+                coordinator.navigate(to: .languageSettings)
+            } label: {
+                HStack(spacing: 4) {
+                    Image(systemName: "globe")
+                        .font(.system(size: 16))
+                    Text(localization.currentLanguage.rawValue.uppercased())
+                        .font(.system(size: DesignTokens.FontSize.xs, weight: .semibold))
+                }
+                .foregroundColor(DesignTokens.Text.primary)
+                .frame(height: 44)
+                .padding(.horizontal, DesignTokens.Spacing.sm)
+                .background(DesignTokens.Glass.bgMedium)
+                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
+            }
+            .accessibilityLabel("Language")
 
             Button {
                 coordinator.navigate(to: .playlist)
@@ -25,7 +44,7 @@ struct TopNavigationBar: View {
                     .background(DesignTokens.Glass.bgMedium)
                     .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.sm))
             }
-            .accessibilityLabel("Playlist")
+            .accessibilityLabel(localization.t("common.playlist"))
 
             Button {
                 coordinator.navigate(to: .profile)

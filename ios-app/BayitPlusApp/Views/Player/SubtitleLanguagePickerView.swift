@@ -58,11 +58,11 @@ struct SubtitleLanguagePickerView: View {
                                     .foregroundStyle(DesignTokens.Primary.p400)
 
                                 VStack(alignment: .leading, spacing: 2) {
-                                    Text("Split Display")
+                                    Text(localization.t("subtitles.splitDisplay"))
                                         .font(.system(size: DesignTokens.FontSize.md, weight: .medium))
                                         .foregroundStyle(DesignTokens.Text.primary)
 
-                                    Text("Show two languages side by side")
+                                    Text(localization.t("subtitles.splitDisplayDescription"))
                                         .font(.system(size: DesignTokens.FontSize.sm))
                                         .foregroundStyle(DesignTokens.Text.muted)
                                 }
@@ -239,7 +239,7 @@ struct SubtitleLanguagePickerView: View {
 
     private func modeChips(for language: String) -> some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.xs) {
-            Text("AI Modes:")
+            Text(localization.t("subtitles.aiModes"))
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
                 .foregroundStyle(DesignTokens.Primary.p400)
                 .padding(.leading, DesignTokens.Spacing.xs)

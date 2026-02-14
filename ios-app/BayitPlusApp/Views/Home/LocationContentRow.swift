@@ -1,8 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Location-based content row (Israelis in City, Israeli Businesses)
 struct LocationContentRow: View {
+    @Environment(LocalizationManager.self) private var localization
     let title: String
     let items: [LocationItem]
     let coverage: Coverage?
@@ -38,11 +40,11 @@ struct LocationContentRow: View {
 
             if let coverage = coverage {
                 if let nearestCity = coverage.nearestMajorCity, let distance = coverage.distanceMiles {
-                    Text("Content from \(nearestCity) (\(String(format: "%.0f", distance)) miles away)")
+                    Text(localization.t("home.contentFromCity", ["city": nearestCity, "distance": String(format: "%.0f", distance)]))
                         .font(.system(size: DesignTokens.FontSize.xs))
                         .foregroundColor(DesignTokens.Text.muted)
                 } else if coverage.contentSource == "local" {
-                    Text("Near You")
+                    Text(localization.t("home.nearYou"))
                         .font(.system(size: DesignTokens.FontSize.xs))
                         .foregroundColor(DesignTokens.Text.muted)
                 }

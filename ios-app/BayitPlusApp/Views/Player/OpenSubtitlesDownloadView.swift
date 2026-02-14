@@ -39,7 +39,7 @@ struct OpenSubtitlesDownloadView: View {
 
     private var downloadButton: some View {
         GlassButton(
-            "Download More Subtitles",
+            localization.t("subtitles.downloadMore"),
             variant: .secondary,
             size: .medium,
             icon: Image(systemName: "arrow.down.circle")
@@ -59,7 +59,7 @@ struct OpenSubtitlesDownloadView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.p400)
 
-            Text("Searching OpenSubtitles...")
+            Text(localization.t("subtitles.searchingOpenSubs"))
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -171,7 +171,7 @@ struct OpenSubtitlesDownloadView: View {
     // MARK: - Attribution
 
     private var attributionText: some View {
-        Text("From OpenSubtitles.com")
+        Text(localization.t("subtitles.fromOpenSubs"))
             .font(.system(size: DesignTokens.FontSize.xs))
             .foregroundStyle(DesignTokens.Text.muted)
     }
@@ -193,11 +193,11 @@ struct OpenSubtitlesDownloadView: View {
             // Parse user-friendly error messages
             let errorDescription = error.localizedDescription
             if errorDescription.contains("quota") || errorDescription.contains("100 subtitles") {
-                self.error = "OpenSubtitles daily quota reached (100/24h). Try again tomorrow."
+                self.error = localization.t("subtitles.quotaExceeded")
             } else if errorDescription.contains("429") || errorDescription.contains("Too Many Requests") {
-                self.error = "OpenSubtitles rate limit exceeded. Please wait a moment and try again."
+                self.error = localization.t("subtitles.rateLimitExceeded")
             } else if errorDescription.contains("decode") || errorDescription.contains("format") {
-                self.error = "No additional subtitles found for this content."
+                self.error = localization.t("subtitles.noAdditionalFound")
             } else {
                 self.error = errorDescription
             }

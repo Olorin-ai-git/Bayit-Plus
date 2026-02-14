@@ -105,7 +105,7 @@ struct WatchPartyView: View {
                                     .font(.system(size: DesignTokens.FontSize.base, weight: .medium))
                                     .foregroundStyle(DesignTokens.Text.primary)
                                     .lineLimit(1)
-                                Text("\(party.participantCount) participants")
+                                Text(localization?.t("watchParty.participants", ["count": "\(party.participantCount)"]) ?? "\(party.participantCount) participants")
                                     .font(.system(size: DesignTokens.FontSize.sm))
                                     .foregroundStyle(DesignTokens.Text.muted)
                             }

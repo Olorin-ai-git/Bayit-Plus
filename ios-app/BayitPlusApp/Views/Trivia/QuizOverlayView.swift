@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 import UIKit
 
@@ -6,6 +7,7 @@ import UIKit
 /// Manages quiz flow from loading through questions to results.
 struct QuizOverlayView: View {
     @Environment(RepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: TriviaViewModel?
 
     let contentId: String
@@ -103,7 +105,7 @@ struct QuizOverlayView: View {
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.2)
 
-            Text("Loading quiz...")
+            Text(localization.t("quiz.loading"))
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

@@ -171,9 +171,9 @@ struct TVCollectionDetailView: View {
 
         do {
             try await repos.playlist.addBulkToPlaylist(contentIds: movieIds)
-            coordinator.fullscreenRoute = .player(contentId: movieIds[0], contentType: .movie, channelId: nil)
+            coordinator.fullscreenRoute = .player(contentId: movieIds[0], contentType: .vod, channelId: nil)
         } catch {
-            coordinator.fullscreenRoute = .player(contentId: movieIds[0], contentType: .movie, channelId: nil)
+            coordinator.fullscreenRoute = .player(contentId: movieIds[0], contentType: .vod, channelId: nil)
         }
     }
 }

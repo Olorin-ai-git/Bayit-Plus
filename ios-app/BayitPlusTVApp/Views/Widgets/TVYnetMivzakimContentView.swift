@@ -1,11 +1,13 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS-adapted Ynet breaking news (mivzakim) widget for the sidebar.
 /// Matches iOS YnetMivzakimContentView: red header, scrollable news list with timestamps.
 /// Sized for 10-foot UI with tvOS focus navigation.
 struct TVYnetMivzakimContentView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(TVRepositoryProvider.self) private var repos
     @State private var viewModel: YnetMivzakimViewModel?
 
@@ -48,7 +50,7 @@ struct TVYnetMivzakimContentView: View {
             Spacer()
 
             VStack(alignment: .trailing, spacing: 3) {
-                Text("Ynet Breaking News")
+                Text(localization.t("widgets.ynetBreakingNews"))
                     .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
                     .foregroundStyle(.white)
                     .lineLimit(1)

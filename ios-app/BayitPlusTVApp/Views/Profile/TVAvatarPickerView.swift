@@ -1,9 +1,12 @@
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Avatar picker for tvOS - allows selecting from predefined avatars or colors.
 struct TVAvatarPickerView: View {
+    @Environment(LocalizationManager.self) private var localization
+
     let currentAvatar: String?
     let viewModel: ProfileViewModel
     let onDismiss: () -> Void
@@ -24,14 +27,14 @@ struct TVAvatarPickerView: View {
     var body: some View {
         VStack(spacing: TVDesignTokens.Spacing.xxxl) {
             // Header
-            Text("Choose Avatar")
+            Text(localization.t("avatar.choose"))
                 .font(.system(size: TVDesignTokens.FontSize.display, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
             // Type selector
-            Picker("Avatar Type", selection: $selectedAvatarType) {
-                Text("Gradient").tag(AvatarType.gradient)
-                Text("Photo").tag(AvatarType.photo)
+            Picker(localization.t("avatar.type"), selection: $selectedAvatarType) {
+                Text(localization.t("avatar.gradient")).tag(AvatarType.gradient)
+                Text(localization.t("avatar.photo")).tag(AvatarType.photo)
             }
             .pickerStyle(.segmented)
             .frame(maxWidth: 500)
@@ -48,7 +51,7 @@ struct TVAvatarPickerView: View {
                 Button {
                     onDismiss()
                 } label: {
-                    Text("Cancel")
+                    Text(localization.t("common.cancel"))
                         .font(.system(size: TVDesignTokens.FontSize.lg, weight: .semibold))
                         .foregroundStyle(DesignTokens.Text.secondary)
                         .frame(width: 220, height: 70)
@@ -64,7 +67,7 @@ struct TVAvatarPickerView: View {
                         ProgressView()
                             .tint(.white)
                     } else {
-                        Text("Save Avatar")
+                        Text(localization.t("avatar.save"))
                             .font(.system(size: TVDesignTokens.FontSize.lg, weight: .bold))
                             .foregroundStyle(.white)
                     }
@@ -137,11 +140,11 @@ struct TVAvatarPickerView: View {
                 .font(.system(size: 72))
                 .foregroundStyle(DesignTokens.Text.muted)
 
-            Text("Photo upload coming soon")
+            Text(localization.t("avatar.photoUploadSoon"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
-            Text("Use the iOS or web app to upload a custom avatar")
+            Text(localization.t("avatar.useIosOrWeb"))
                 .font(.system(size: TVDesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
                 .multilineTextAlignment(.center)

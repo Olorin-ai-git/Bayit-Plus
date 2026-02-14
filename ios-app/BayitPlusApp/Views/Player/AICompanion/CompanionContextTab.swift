@@ -1,9 +1,11 @@
 #if os(iOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Context tab showing educational context about current content.
 struct CompanionContextTab: View {
+    @Environment(LocalizationManager.self) private var localization
     let viewModel: AICompanionViewModel
 
     var body: some View {
@@ -35,7 +37,7 @@ struct CompanionContextTab: View {
 
     private var topicsSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Text("Related Topics")
+            Text(localization.t("culturalContext.related"))
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -60,7 +62,7 @@ struct CompanionContextTab: View {
 
     private var linksSection: some View {
         VStack(alignment: .leading, spacing: DesignTokens.Spacing.sm) {
-            Text("Learn More")
+            Text(localization.t("common.learnMore"))
                 .font(.system(size: DesignTokens.FontSize.sm, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -82,7 +84,7 @@ struct CompanionContextTab: View {
             Image(systemName: "text.book.closed")
                 .font(.system(size: 32))
                 .foregroundStyle(DesignTokens.Text.muted)
-            Text("No context available for this content")
+            Text(localization.t("aiCompanion.noContext"))
                 .font(.system(size: DesignTokens.FontSize.sm))
                 .foregroundStyle(DesignTokens.Text.muted)
             Spacer()

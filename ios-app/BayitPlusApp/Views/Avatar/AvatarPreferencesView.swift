@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 import UIKit
 
@@ -8,6 +9,7 @@ import UIKit
 struct AvatarPreferencesView: View {
 
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var selectedStyle: String
     @State private var selectedVoice: String
     @State private var selectedPersonality: String
@@ -173,11 +175,11 @@ struct AvatarPreferencesView: View {
                     .tint(DesignTokens.Primary.default)
 
                 HStack {
-                    Text("Subtle")
+                    Text(localization.t("avatar.subtle"))
                         .font(.system(size: DesignTokens.FontSize.xs))
                         .foregroundStyle(DesignTokens.Text.disabled)
                     Spacer()
-                    Text("Dynamic")
+                    Text(localization.t("avatar.dynamic"))
                         .font(.system(size: DesignTokens.FontSize.xs))
                         .foregroundStyle(DesignTokens.Text.disabled)
                 }

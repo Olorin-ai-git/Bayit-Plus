@@ -1,9 +1,11 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Enhanced trivia facts overlay for tvOS with AI-based features.
 /// Matches iOS and web app implementations with glass design, categories, and multilingual support.
 struct TVTriviaFactsOverlayView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Bindable var viewModel: TriviaFactsViewModel
     let contentId: String
     let currentTime: Double
@@ -59,7 +61,7 @@ struct TVTriviaFactsOverlayView: View {
                     .font(.system(size: 22))
                     .foregroundStyle(Color.yellow)
 
-                Text("Did You Know?")
+                Text(localization.t("trivia.didYouKnow"))
                     .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
@@ -103,7 +105,7 @@ struct TVTriviaFactsOverlayView: View {
                             .font(.system(size: 18))
                             .foregroundStyle(Color.yellow)
 
-                        Text("Want to know more?")
+                        Text(localization.t("trivia.wantToKnowMore"))
                             .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
                             .foregroundStyle(DesignTokens.Text.primary)
 

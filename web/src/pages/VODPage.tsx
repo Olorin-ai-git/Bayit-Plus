@@ -479,7 +479,7 @@ export default function VODPage() {
               collectionId={featuredCollection.id}
               title={featuredCollection.title}
               posterUrl={featuredCollection.thumbnail}
-              promoText={featuredCollection.promoText || 'Discover this amazing collection'}
+              promoText={(i18n.language === 'he' ? featuredCollection.promo_text : featuredCollection[`promo_text_${i18n.language}`]) || featuredCollection.promo_text_en || featuredCollection.promo_text || 'Discover this amazing collection'}
               movieCount={featuredCollection.availableMovies || 0}
             />
           </View>

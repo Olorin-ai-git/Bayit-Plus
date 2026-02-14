@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 import UIKit
 
 /// Episode list section for podcast detail with infinite scroll and play buttons
 struct PodcastEpisodeListView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
 
     let episodes: [PodcastEpisodeItem]
     let isLoadingMore: Bool
@@ -17,7 +19,7 @@ struct PodcastEpisodeListView: View {
             episodesHeader
 
             if episodes.isEmpty {
-                Text("No episodes available")
+                Text(localization.t("podcasts.noEpisodes"))
                     .font(.system(size: DesignTokens.FontSize.sm))
                     .foregroundColor(DesignTokens.Text.muted)
                     .frame(maxWidth: .infinity)
@@ -44,7 +46,7 @@ struct PodcastEpisodeListView: View {
 
     private var episodesHeader: some View {
         HStack {
-            Text("Episodes")
+            Text(localization.t("podcasts.episodes"))
                 .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
                 .foregroundColor(DesignTokens.Text.primary)
                 .accessibilityAddTraits(.isHeader)
@@ -76,7 +78,7 @@ struct PodcastEpisodeListView: View {
             HStack(spacing: DesignTokens.Spacing.md) {
                 VStack(alignment: .leading, spacing: 2) {
                     if let number = episode.episodeNumber {
-                        Text("Ep. \(number)")
+                        Text(localization.t("podcasts.episodeShort", ["number": String(number)]))
                             .font(.system(size: DesignTokens.FontSize.xs))
                             .foregroundColor(DesignTokens.Primary.p400)
                     }

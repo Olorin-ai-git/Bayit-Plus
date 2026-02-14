@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Renders Ynet breaking news (mivzakim) inside a widget container.
 /// Matches the web YnetMivzakimWidget: red header, scrollable news list with timestamps.
 struct YnetMivzakimContentView: View {
     @Environment(RepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: YnetMivzakimViewModel?
 
     var body: some View {
@@ -44,7 +46,7 @@ struct YnetMivzakimContentView: View {
             Spacer()
 
             VStack(alignment: .trailing, spacing: 2) {
-                Text("Ynet Breaking News")
+                Text(localization.t("widgets.ynetBreakingNews"))
                     .font(.system(size: 14, weight: .bold))
                     .foregroundStyle(.white)
 

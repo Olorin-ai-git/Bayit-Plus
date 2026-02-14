@@ -1,10 +1,12 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS full-screen content picker for selecting content when creating a personal widget.
 /// Displays 4 browsable tabs with a focus-navigable grid of thumbnails.
 struct TVContentPickerView: View {
+    @Environment(LocalizationManager.self) private var localization
 
     @Bindable var viewModel: ContentPickerViewModel
     let onSelect: (ContentPickerItem) -> Void
@@ -31,7 +33,7 @@ struct TVContentPickerView: View {
 
     private var header: some View {
         HStack {
-            Text("Select Content")
+            Text(localization.t("widgets.selectContent"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -134,7 +136,7 @@ struct TVContentPickerView: View {
                 .font(.system(size: 48))
                 .foregroundStyle(DesignTokens.Text.disabled)
 
-            Text("No \(viewModel.selectedTab.displayLabel.lowercased()) found")
+            Text(localization.t("widgets.noContentFound"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

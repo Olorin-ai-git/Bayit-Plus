@@ -1,12 +1,14 @@
 #if os(tvOS)
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Widgets gallery with system and personal widgets in a focusable grid.
 struct TVWidgetsView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: WidgetsViewModel?
     @State private var showCreateWidget = false
     @State private var pickerViewModel: ContentPickerViewModel?
@@ -63,7 +65,7 @@ struct TVWidgetsView: View {
     private func contentGrid(_ vm: WidgetsViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xl) {
             if !vm.myWidgets.isEmpty {
-                Text("Widgets")
+                Text(localization.t("widgets.title"))
                     .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
                     .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -86,7 +88,7 @@ struct TVWidgetsView: View {
     private func personalWidgetsSection(_ vm: WidgetsViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
             HStack {
-                Text("My Widgets")
+                Text(localization.t("widgets.myWidgets"))
                     .font(.system(size: TVDesignTokens.FontSize.xl, weight: .bold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
@@ -120,7 +122,7 @@ struct TVWidgetsView: View {
                     .font(.system(size: 48))
                     .foregroundStyle(DesignTokens.Primary.p400)
 
-                Text("Create your first personal widget")
+                Text(localization.t("widgets.emptyPersonalHint"))
                     .font(.system(size: TVDesignTokens.FontSize.lg))
                     .foregroundStyle(DesignTokens.Text.muted)
             }
@@ -198,7 +200,7 @@ struct TVWidgetsView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Widgets...")
+            Text(localization.t("widgets.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }

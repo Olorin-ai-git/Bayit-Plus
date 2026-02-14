@@ -1,6 +1,7 @@
 #if os(iOS)
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import BayitNetworking
 import SwiftUI
 

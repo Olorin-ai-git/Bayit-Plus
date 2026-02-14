@@ -1,12 +1,14 @@
 #if os(tvOS)
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import BayitVoice
 import SwiftUI
 
 /// tvOS voice assistant modal with both text input and Siri Remote microphone.
 struct TVVoiceAssistantSheet: View {
 
+    @Environment(LocalizationManager.self) private var localization
     let chatRepository: any ChatRepository
     let onDismiss: () -> Void
 
@@ -42,7 +44,7 @@ struct TVVoiceAssistantSheet: View {
 
     private var header: some View {
         HStack {
-            Text("Voice Assistant")
+            Text(localization.t("voice.title"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -152,15 +154,15 @@ struct TVVoiceAssistantSheet: View {
             }
 
             if isRecording {
-                Text("Listening...")
+                Text(localization.t("voice.listening"))
                     .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundStyle(Color.red)
             } else if isTranscribing {
-                Text("Transcribing...")
+                Text(localization.t("voice.processing"))
                     .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundStyle(DesignTokens.Text.muted)
             } else if isProcessing {
-                Text("Thinking...")
+                Text(localization.t("voice.thinking"))
                     .font(.system(size: TVDesignTokens.FontSize.base))
                     .foregroundStyle(DesignTokens.Text.muted)
             }
@@ -174,7 +176,7 @@ struct TVVoiceAssistantSheet: View {
         HStack(spacing: TVDesignTokens.Spacing.md) {
             microphoneButton
 
-            TextField("Type your question...", text: $inputText)
+            TextField(localization.t("voice.tapToSpeak"), text: $inputText)
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .focused($isInputFocused)

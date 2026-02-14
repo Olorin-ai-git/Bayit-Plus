@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Promotional banner for movie collections with AI-generated text
@@ -9,6 +10,7 @@ import SwiftUI
 /// - Localized content
 struct CollectionPromoBannerView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
 
     let collectionId: String
     let title: String
@@ -40,7 +42,7 @@ struct CollectionPromoBannerView: View {
                             .foregroundColor(DesignTokens.Primary.default)
                             .font(.system(size: 16))
 
-                        Text("AI Recommendation")
+                        Text(localization.t("vod.collection.aiRecommendation"))
                             .font(.system(
                                 size: DesignTokens.FontSize.xs,
                                 weight: .semibold
@@ -63,11 +65,11 @@ struct CollectionPromoBannerView: View {
                         .lineLimit(3)
                         .lineSpacing(2)
 
-                    Text("\(movieCount) movies")
+                    Text("\(movieCount) \(localization.t("vod.collection.movies"))")
                         .font(.system(size: DesignTokens.FontSize.xs))
                         .foregroundColor(DesignTokens.Text.muted)
 
-                    Text("Watch Now")
+                    Text(localization.t("vod.collection.watchNow"))
                         .font(.system(
                             size: DesignTokens.FontSize.sm,
                             weight: .semibold

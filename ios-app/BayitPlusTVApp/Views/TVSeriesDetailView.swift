@@ -1,10 +1,12 @@
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 struct TVSeriesDetailView: View {
     @Environment(TVRepositoryProvider.self) private var repos
     @Environment(TVNavigationCoordinator.self) private var coordinator
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: SeriesDetailViewModel?
 
     let seriesId: String
@@ -93,12 +95,12 @@ struct TVSeriesDetailView: View {
                             .foregroundStyle(DesignTokens.Text.secondary)
                     }
                     if let seasons = detail.totalSeasons {
-                        Text("\(seasons) Seasons")
+                        Text("\(seasons) \(localization.t("content.seasons"))")
                             .font(.system(size: TVDesignTokens.FontSize.md))
                             .foregroundStyle(DesignTokens.Text.secondary)
                     }
                     if let episodes = detail.totalEpisodes {
-                        Text("\(episodes) Episodes")
+                        Text("\(episodes) \(localization.t("content.episodes"))")
                             .font(.system(size: TVDesignTokens.FontSize.md))
                             .foregroundStyle(DesignTokens.Text.secondary)
                     }
@@ -121,7 +123,7 @@ struct TVSeriesDetailView: View {
 
     private func seasonPicker(_ vm: SeriesDetailViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Seasons")
+            Text(localization.t("content.seasons"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)
@@ -148,7 +150,7 @@ struct TVSeriesDetailView: View {
 
     private func episodeGrid(_ vm: SeriesDetailViewModel) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Episodes")
+            Text(localization.t("content.episodes"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)
@@ -207,7 +209,7 @@ struct TVSeriesDetailView: View {
 extension TVSeriesDetailView {
     private func relatedSection(_ items: [RelatedItem]) -> some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("Related")
+            Text(localization.t("content.related"))
                 .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .padding(.horizontal, TVDesignTokens.Spacing.xxl)

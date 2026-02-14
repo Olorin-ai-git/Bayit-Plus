@@ -1,10 +1,12 @@
 #if os(tvOS)
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Zeh Ani hub for tvOS - consolidates interactive and social features.
 /// Sub-sections: Avatar, Watch Party, Trivia, Chess, AI Chat, Rewards, Beta Credits.
 struct TVZehAniHubView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Environment(TVNavigationCoordinator.self) private var coordinator
 
     private let features: [(icon: String, title: String, color: Color, view: AnyView)] = []
@@ -40,7 +42,7 @@ struct TVZehAniHubView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero, weight: .bold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
-            Text("Interactive experiences and social features")
+            Text(localization.t("zehAni.subtitle"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }

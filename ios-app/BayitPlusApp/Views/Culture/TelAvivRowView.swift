@@ -1,8 +1,10 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Tel Aviv culture content row with panoramic background and horizontal card scroll
 struct TelAvivRowView: View {
+    @Environment(LocalizationManager.self) private var localization
     let items: [CultureItem]
     let onTap: (CultureItem) -> Void
 
@@ -22,7 +24,7 @@ struct TelAvivRowView: View {
                     endPoint: .bottom
                 )
 
-                Text("Tel Aviv")
+                Text(localization.t("telAviv.title"))
                     .font(.system(size: DesignTokens.FontSize.xl, weight: .bold))
                     .foregroundColor(DesignTokens.Text.primary)
                     .padding(DesignTokens.Spacing.lg)

@@ -1,4 +1,5 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 enum SubtitleMode: String, CaseIterable, Identifiable {
@@ -35,13 +36,14 @@ enum SubtitleMode: String, CaseIterable, Identifiable {
 }
 
 struct TVSubtitleModePicker: View {
+    @Environment(LocalizationManager.self) private var localization
     @Binding var selectedMode: SubtitleMode
     @FocusState private var focusedMode: SubtitleMode?
     let onDismiss: () -> Void
 
     var body: some View {
         VStack(spacing: TVDesignTokens.Spacing.xl) {
-            Text("Subtitle Mode")
+            Text(localization.t("subtitles.title"))
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundStyle(DesignTokens.Colors.Text.primary)

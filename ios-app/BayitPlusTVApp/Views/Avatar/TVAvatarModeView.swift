@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS AI avatar interaction view. Text-input only.
 struct TVAvatarModeView: View {
 
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: TVAvatarViewModel?
     @State private var showPreferences = false
 
@@ -56,7 +58,7 @@ struct TVAvatarModeView: View {
 
     private func topBar(_ vm: TVAvatarViewModel) -> some View {
         HStack {
-            Text("Avatar Mode")
+            Text(localization.t("avatar.mode"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.primary)
 
@@ -181,7 +183,7 @@ struct TVAvatarModeView: View {
 
     private func textInputBar(_ vm: TVAvatarViewModel) -> some View {
         HStack(spacing: TVDesignTokens.Spacing.lg) {
-            TextField("Ask the avatar...", text: Bindable(vm).inputText)
+            TextField(localization.t("avatar.askPlaceholder"), text: Bindable(vm).inputText)
                 .font(.system(size: TVDesignTokens.FontSize.base))
                 .foregroundStyle(DesignTokens.Text.primary)
                 .submitLabel(.send)

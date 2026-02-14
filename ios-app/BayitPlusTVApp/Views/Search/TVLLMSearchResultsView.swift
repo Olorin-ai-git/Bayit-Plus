@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import BayitMedia
 import SwiftUI
 
 /// Results list for LLM search showing content items with poster thumbnails
 /// and metadata. tvOS version using GlassFocusPoster for 10-foot UI.
 struct TVLLMSearchResultsView: View {
+    @Environment(LocalizationManager.self) private var localization
     let results: [ContentItem]
     let hasSearched: Bool
     let isSearching: Bool
@@ -36,7 +38,7 @@ struct TVLLMSearchResultsView: View {
 
     private var resultsList: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.lg) {
-            Text("\(results.count) results")
+            Text("\(results.count) \(localization.t("search.resultsFor"))")
                 .font(.system(size: TVDesignTokens.FontSize.base, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.muted)
                 .padding(.horizontal, TVDesignTokens.Spacing.xl)
@@ -66,11 +68,11 @@ struct TVLLMSearchResultsView: View {
                 .foregroundStyle(DesignTokens.Text.muted)
                 .accessibilityHidden(true)
 
-            Text("No results found")
+            Text(localization.t("search.noResults"))
                 .font(.system(size: TVDesignTokens.FontSize.xl, weight: .semibold))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
-            Text("Try rephrasing your question")
+            Text(localization.t("search.tryDifferent"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -87,7 +89,7 @@ struct TVLLMSearchResultsView: View {
                 .foregroundStyle(DesignTokens.ErrorColor.default)
 
             VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.xs) {
-                Text("Search failed")
+                Text(localization.t("errors.loadingFailed"))
                     .font(.system(size: TVDesignTokens.FontSize.base, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
 

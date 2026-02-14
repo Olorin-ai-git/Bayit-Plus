@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS Electronic Program Guide with channel schedules in horizontal timeline.
 /// Reuses EPGViewModel from shared ViewModels.
 struct TVEPGView: View {
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: EPGViewModel?
 
     var body: some View {
@@ -125,7 +127,7 @@ struct TVEPGView: View {
                     Spacer()
 
                     if program.isLive == true {
-                        Text("LIVE")
+                        Text(localization.t("player.liveBadge"))
                             .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
                             .foregroundStyle(DesignTokens.live)
                             .padding(.horizontal, TVDesignTokens.Spacing.sm)
@@ -162,7 +164,7 @@ struct TVEPGView: View {
                 .font(.system(size: TVDesignTokens.FontSize.hero))
                 .foregroundStyle(DesignTokens.Text.muted)
 
-            Text("No schedule available")
+            Text(localization.t("epg.noSchedule"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.secondary)
         }
@@ -175,7 +177,7 @@ struct TVEPGView: View {
             ProgressView()
                 .tint(DesignTokens.Primary.default)
                 .scaleEffect(1.5)
-            Text("Loading Guide...")
+            Text(localization.t("epg.loading"))
                 .font(.system(size: TVDesignTokens.FontSize.lg))
                 .foregroundStyle(DesignTokens.Text.muted)
         }
@@ -190,7 +192,7 @@ struct TVEPGView: View {
         let today = Date()
         return (0..<7).map { offset in
             let date = Calendar.current.date(byAdding: .day, value: offset, to: today) ?? today
-            let label = offset == 0 ? "Today" : dayFormatter.string(from: date)
+            let label = offset == 0 ? localization.t("common.today") : dayFormatter.string(from: date)
             return (label: label, value: offset == 0 ? nil : formatter.string(from: date))
         }
     }

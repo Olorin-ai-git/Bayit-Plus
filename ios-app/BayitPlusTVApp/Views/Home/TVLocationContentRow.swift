@@ -1,9 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Location-based content row for tvOS (Israelis in City, Israeli Businesses)
 /// Optimized for 10-foot UI with focus navigation
 struct TVLocationContentRow: View {
+    @Environment(LocalizationManager.self) private var localization
+
     let title: String
     let items: [LocationItem]
     let coverage: Coverage?
@@ -55,11 +58,11 @@ struct TVLocationContentRow: View {
 
             if let coverage = coverage {
                 if let nearestCity = coverage.nearestMajorCity, let distance = coverage.distanceMiles {
-                    Text("Content from \(nearestCity) (\(String(format: "%.0f", distance)) miles away)")
+                    Text(localization.t("home.nearYou"))
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundColor(DesignTokens.Text.muted)
                 } else if coverage.contentSource == "local" {
-                    Text("Near You")
+                    Text(localization.t("home.nearYou"))
                         .font(.system(size: TVDesignTokens.FontSize.sm))
                         .foregroundColor(DesignTokens.Text.muted)
                 }

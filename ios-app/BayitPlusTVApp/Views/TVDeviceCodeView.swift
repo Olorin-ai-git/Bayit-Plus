@@ -1,6 +1,7 @@
 import BayitAuth
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS device code activation flow.
@@ -9,6 +10,7 @@ import SwiftUI
 struct TVDeviceCodeView: View {
     @Environment(AuthManager.self) private var authManager
     @Environment(TVRepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
 
     let onAuthSuccess: () -> Void
 
@@ -24,7 +26,7 @@ struct TVDeviceCodeView: View {
             DesignTokens.Background.primary.ignoresSafeArea()
 
             VStack(spacing: TVDesignTokens.Spacing.xxl) {
-                Text("Sign in on your phone or computer")
+                Text(localization.t("tvLogin.deviceCodeInstruction"))
                     .font(.system(size: TVDesignTokens.FontSize.xl, weight: .semibold))
                     .foregroundStyle(DesignTokens.Text.primary)
 
@@ -44,7 +46,7 @@ struct TVDeviceCodeView: View {
                     HStack(spacing: TVDesignTokens.Spacing.md) {
                         ProgressView()
                             .tint(DesignTokens.Primary.default)
-                        Text("Waiting for activation...")
+                        Text(localization.t("tvLogin.waitingForActivation"))
                             .font(.system(size: TVDesignTokens.FontSize.md))
                             .foregroundStyle(DesignTokens.Text.muted)
                     }

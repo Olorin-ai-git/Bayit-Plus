@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Modal for selecting two languages for split screen subtitle mode.
 /// Allows users to choose which languages appear on left and right sides.
 struct SplitSubtitleLanguagePickerView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(LocalizationManager.self) private var localization
 
     let availableLanguages: [String]
     let sourceLanguage: String
@@ -22,11 +24,11 @@ struct SplitSubtitleLanguagePickerView: View {
         VStack(spacing: DesignTokens.Spacing.lg) {
             // Header
             VStack(spacing: DesignTokens.Spacing.xs) {
-                Text("Select Two Languages")
+                Text(localization.t("subtitles.selectTwoLanguages"))
                     .font(.system(size: 18, weight: .bold))
                     .foregroundColor(.white)
 
-                Text("Choose two languages for split screen subtitles")
+                Text(localization.t("subtitles.selectTwoLanguagesDescription"))
                     .font(.system(size: 13))
                     .foregroundColor(DesignTokens.Text.muted)
             }
@@ -56,7 +58,7 @@ struct SplitSubtitleLanguagePickerView: View {
                 onConfirm(tempSelection)
                 dismiss()
             } label: {
-                Text("Start Split Screen")
+                Text(localization.t("subtitles.startSplitScreen"))
                     .font(.system(size: 14, weight: .bold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
@@ -182,6 +184,7 @@ struct SplitSubtitleLanguagePickerView: View {
 
 /// Split mode toggle switch component.
 private struct SplitModeToggleView: View {
+    @Environment(LocalizationManager.self) private var localization
     @Binding var isEnabled: Bool
 
     var body: some View {
@@ -191,11 +194,11 @@ private struct SplitModeToggleView: View {
                 .foregroundColor(.purple)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("Split Screen")
+                Text(localization.t("subtitles.splitScreen"))
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
 
-                Text("Show two languages side-by-side")
+                Text(localization.t("subtitles.splitDisplayDescription"))
                     .font(.system(size: 12))
                     .foregroundColor(DesignTokens.Text.muted)
             }

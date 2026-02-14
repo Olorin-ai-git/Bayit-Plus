@@ -1,10 +1,12 @@
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// Full-screen trending content view with topics, headlines, and AI recommendations.
 /// Reuses the existing TrendingViewModel and TrendingRowView components.
 struct TrendingView: View {
     @Environment(RepositoryProvider.self) private var repos
+    @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: TrendingViewModel?
 
     var body: some View {
@@ -43,7 +45,7 @@ struct TrendingView: View {
                 .font(.system(size: 48))
                 .foregroundColor(DesignTokens.Text.muted)
 
-            Text("No trending content available")
+            Text(localization.t("trending.noTopics"))
                 .font(.system(size: DesignTokens.FontSize.md))
                 .foregroundColor(DesignTokens.Text.secondary)
                 .multilineTextAlignment(.center)

@@ -1,12 +1,14 @@
 #if os(tvOS)
 import BayitCore
 import BayitDesignSystem
+import BayitLocalization
 import SwiftUI
 
 /// tvOS full-screen widget creation form.
 /// Supports 4 content types (channels, podcasts, radio, audiobooks) via a content picker.
 /// No iframe support on tvOS.
 struct TVCreateWidgetView: View {
+    @Environment(LocalizationManager.self) private var localization
 
     let widgetsViewModel: WidgetsViewModel
     @Bindable var pickerViewModel: ContentPickerViewModel
@@ -53,7 +55,7 @@ struct TVCreateWidgetView: View {
     // MARK: - Header
 
     private var header: some View {
-        Text("Create Widget")
+        Text(localization.t("widgets.createWidget"))
             .font(.system(size: TVDesignTokens.FontSize.xxl, weight: .bold))
             .foregroundStyle(DesignTokens.Text.primary)
     }
@@ -62,13 +64,13 @@ struct TVCreateWidgetView: View {
 
     private var titleFields: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("Widget Title")
+            Text(localization.t("widgets.widgetTitle"))
                 .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
-            GlassTextField("Enter widget title", text: $title)
+            GlassTextField(localization.t("widgets.enterTitle"), text: $title)
 
-            GlassTextField("Description (optional)", text: $description)
+            GlassTextField(localization.t("widgets.descriptionOptional"), text: $description)
         }
     }
 
@@ -76,7 +78,7 @@ struct TVCreateWidgetView: View {
 
     private var contentTypeSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("Content Type")
+            Text(localization.t("widgets.contentType"))
                 .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
 
@@ -102,7 +104,7 @@ struct TVCreateWidgetView: View {
 
     private var contentSection: some View {
         VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            Text("Content")
+            Text(localization.t("widgets.content"))
                 .font(.system(size: TVDesignTokens.FontSize.md, weight: .medium))
                 .foregroundStyle(DesignTokens.Text.secondary)
 

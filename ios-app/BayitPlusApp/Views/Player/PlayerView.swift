@@ -302,11 +302,11 @@ struct PlayerView: View {
                     .presentationDragIndicator(.visible)
             } else {
                 VStack(spacing: DesignTokens.Spacing.md) {
-                    Text("Live Dubbing")
+                    Text(localization.t("dubbing.title"))
                         .font(.headline)
-                    Text("Live dubbing is only available for live channels")
+                    Text(localization.t("dubbing.liveOnly"))
                         .foregroundStyle(.secondary)
-                    GlassButton("OK", variant: .primary) {
+                    GlassButton(localization.t("common.ok"), variant: .primary) {
                         showDubbingControls = false
                     }
                 }
