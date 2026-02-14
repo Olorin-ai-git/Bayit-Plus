@@ -5,6 +5,12 @@ import BayitCore
 ///
 /// Provides typed get/set operations for widget data exchange.
 /// Fails fast if the App Group suite cannot be created.
+///
+/// **@unchecked Sendable:** This is safe because:
+/// 1. UserDefaults is documented as thread-safe for read/write operations
+/// 2. The `defaults` property is immutable (let) and never reassigned
+/// 3. All access is serialized through WidgetDataStore actor
+/// 4. JSONEncoder/Decoder instances are created per-call (no shared state)
 public final class SharedDefaults: @unchecked Sendable {
 
     private let defaults: UserDefaults

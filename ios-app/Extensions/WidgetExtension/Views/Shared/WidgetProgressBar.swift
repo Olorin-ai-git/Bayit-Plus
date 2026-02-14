@@ -18,14 +18,14 @@ struct WidgetProgressBar: View {
             let width = geometry.size.width
 
             ZStack(alignment: .leading) {
-                // Track background
+                // Track background (darker for better contrast)
                 Capsule()
-                    .fill(DesignTokens.Glass.bgMedium)
+                    .fill(Color.white.opacity(0.2))
                     .frame(height: height)
 
-                // Progress fill
+                // Progress fill (brighter for WCAG 3:1 contrast)
                 Capsule()
-                    .fill(DesignTokens.Primary.default)
+                    .fill(DesignTokens.Primary.p400)
                     .frame(
                         width: max(0, width * clampedProgress),
                         height: height
