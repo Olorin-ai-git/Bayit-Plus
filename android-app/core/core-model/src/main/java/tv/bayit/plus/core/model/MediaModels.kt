@@ -46,6 +46,20 @@ data class AudioTrack(
     val language: String? = null,
 )
 
+/**
+ * Playback descriptor passed to BayitMediaPlayer.
+ *
+ * Decouples the player from raw API response shapes (StreamInfo, LiveStreamResponse)
+ * so callers resolve the correct URL and optional resume position before handing off.
+ */
+data class MediaPlayback(
+    val streamUrl: String,
+    val contentId: String? = null,
+    val title: String? = null,
+    val startPosition: Long? = null,
+    val isLive: Boolean = false,
+)
+
 /** A subtitle cue with timing and optional word-level data. */
 @Serializable
 data class SubtitleCue(

@@ -5,9 +5,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
 import tv.bayit.plus.feature.home.HomeRoute
 import tv.bayit.plus.feature.livetv.LiveTVRoute
+import tv.bayit.plus.feature.player.PlayerRoute
 import tv.bayit.plus.feature.vod.VodRoute
 
 @Composable
@@ -56,7 +58,14 @@ fun BayitNavHost(
         composable<Route.Search> { GlassLoadingIndicator() }
 
         // Content detail
-        composable<Route.Player> { GlassLoadingIndicator() }
+        composable<Route.Player> { backStackEntry ->
+            val route = backStackEntry.toRoute<Route.Player>()
+            PlayerRoute(
+                contentId = route.contentId,
+                contentType = route.contentType,
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
         composable<Route.MovieDetail> { GlassLoadingIndicator() }
         composable<Route.SeriesDetail> { GlassLoadingIndicator() }
         composable<Route.CollectionDetail> { GlassLoadingIndicator() }
