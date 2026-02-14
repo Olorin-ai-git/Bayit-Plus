@@ -1,6 +1,8 @@
 import BayitDesignSystem
 import BayitLocalization
+import ModelIO
 import SceneKit
+import SceneKit.ModelIO
 import SwiftUI
 
 struct Avatar3DPreviewView: View {
@@ -121,9 +123,11 @@ struct SceneKitView: UIViewRepresentable {
         let scene = SCNScene()
         scnView.scene = scene
 
-        if let glbScene = loadGLB(from: glbData) {
-            scene.rootNode.addChildNode(glbScene.rootNode)
-            setupCamera(in: scene)
+        if let loadedScene = loadGLB(from: glbData) {
+            for child in loadedScene.rootNode.childNodes {
+                scene.rootNode.addChildNode(child)
+            }
+            frameCameraToFit(scene: scene, in: scnView)
             setupLighting(in: scene)
         }
 
@@ -133,40 +137,59 @@ struct SceneKitView: UIViewRepresentable {
     func updateUIView(_ uiView: SCNView, context: Context) {}
 
     private func loadGLB(from data: Data) -> SCNScene? {
-        let tempURL = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString + ".glb")
+        let tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent("bayit-glb-\(UUID().uuidString)")
+        try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        let tempURL = tempDir.appendingPathComponent("avatar.glb")
         do {
-            try data.write(to: tempURL, options: [.completeFileProtectionUnlessOpen])
-            defer { try? FileManager.default.removeItem(at: tempURL) }
-            return try SCNScene(url: tempURL, options: nil)
+            try data.write(to: tempURL)
+            let asset = MDLAsset(url: tempURL)
+            asset.loadTextures()
+            let scene = SCNScene(mdlAsset: asset)
+            return scene
         } catch {
-            try? FileManager.default.removeItem(at: tempURL)
             return nil
         }
     }
 
-    private func setupCamera(in scene: SCNScene) {
+    private func frameCameraToFit(scene: SCNScene, in scnView: SCNView) {
+        let (minVec, maxVec) = scene.rootNode.boundingBox
+        let center = SCNVector3(
+            x: (minVec.x + maxVec.x) / 2,
+            y: (minVec.y + maxVec.y) / 2,
+            z: (minVec.z + maxVec.z) / 2
+        )
+        let height = maxVec.y - minVec.y
+        let depth = maxVec.z - minVec.z
+        let cameraDistance = max(height, depth) * 2.0
+
         let cameraNode = SCNNode()
         cameraNode.camera = SCNCamera()
-        cameraNode.position = SCNVector3(x: 0, y: 1.5, z: 3)
-        cameraNode.look(at: SCNVector3(x: 0, y: 1, z: 0))
+        cameraNode.camera?.automaticallyAdjustsZRange = true
+        cameraNode.position = SCNVector3(
+            x: center.x,
+            y: center.y,
+            z: center.z + Float(cameraDistance)
+        )
+        cameraNode.look(at: center)
         scene.rootNode.addChildNode(cameraNode)
+        scnView.pointOfView = cameraNode
     }
 
     private func setupLighting(in scene: SCNScene) {
         let ambientLight = SCNNode()
         ambientLight.light = SCNLight()
         ambientLight.light?.type = .ambient
-        ambientLight.light?.intensity = 500
+        ambientLight.light?.intensity = 800
         ambientLight.light?.color = UIColor.white
         scene.rootNode.addChildNode(ambientLight)
 
         let directionalLight = SCNNode()
         directionalLight.light = SCNLight()
         directionalLight.light?.type = .directional
-        directionalLight.light?.intensity = 1000
-        directionalLight.position = SCNVector3(x: 2, y: 3, z: 2)
-        directionalLight.look(at: SCNVector3(x: 0, y: 1, z: 0))
+        directionalLight.light?.intensity = 1200
+        directionalLight.position = SCNVector3(x: 2, y: 5, z: 4)
+        directionalLight.look(at: SCNVector3(0, 0, 0))
         scene.rootNode.addChildNode(directionalLight)
     }
 }
