@@ -8,6 +8,7 @@ struct PodcastsView: View {
     @Environment(NavigationCoordinator.self) private var coordinator
     @Environment(LocalizationManager.self) private var localization
     @State private var viewModel: PodcastsViewModel?
+    @State private var audiobooksViewModel: AudiobooksViewModel?
     @State private var radioStations: [RadioStationItem] = []
     @State private var showAddSheet = false
 
@@ -47,6 +48,7 @@ struct PodcastsView: View {
         .background(DesignTokens.Background.primary)
         .refreshable {
             await viewModel?.refresh()
+            await audiobooksViewModel?.refresh()
         }
         .sheet(isPresented: $showAddSheet) {
             AddPodcastView(
@@ -62,7 +64,11 @@ struct PodcastsView: View {
             if viewModel == nil {
                 viewModel = PodcastsViewModel(repository: repos.podcasts)
             }
+            if audiobooksViewModel == nil {
+                audiobooksViewModel = AudiobooksViewModel(repository: repos.audiobook)
+            }
             await viewModel?.loadInitial()
+            await audiobooksViewModel?.loadInitial()
             await loadRadioStations()
         }
     }
@@ -84,6 +90,10 @@ struct PodcastsView: View {
             }
 
             showGrid(vm)
+
+            if let audiobookVM = audiobooksViewModel, !audiobookVM.items.isEmpty {
+                audiobooksSection(audiobookVM)
+            }
         }
     }
 
@@ -157,6 +167,37 @@ struct PodcastsView: View {
         }
         .padding(.horizontal, DesignTokens.Spacing.lg)
         .padding(.top, DesignTokens.Spacing.md)
+    }
+
+    private func audiobooksSection(_ audiobookVM: AudiobooksViewModel) -> some View {
+        VStack(spacing: DesignTokens.Spacing.md) {
+            HStack {
+                Text(localization.t("audiobooks.title"))
+                    .font(.system(size: DesignTokens.FontSize.lg, weight: .bold))
+                    .foregroundColor(DesignTokens.Text.primary)
+                Spacer()
+                Button {
+                    coordinator.navigate(to: .audiobooks)
+                } label: {
+                    Text(localization.t("common.seeAll"))
+                        .font(.system(size: DesignTokens.FontSize.sm, weight: .medium))
+                        .foregroundColor(DesignTokens.Primary.default)
+                }
+            }
+            .padding(.horizontal, DesignTokens.Spacing.lg)
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: DesignTokens.Spacing.md) {
+                    ForEach(Array(audiobookVM.items.prefix(10))) { audiobook in
+                        AudiobookCardView(audiobook: audiobook) {
+                            coordinator.navigate(to: .audiobookDetail(audiobookId: audiobook.id))
+                        }
+                        .frame(width: 150)
+                    }
+                }
+                .padding(.horizontal, DesignTokens.Spacing.lg)
+            }
+        }
     }
 }
 
