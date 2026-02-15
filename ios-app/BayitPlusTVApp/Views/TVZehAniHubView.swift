@@ -210,6 +210,14 @@ struct TVHighlightsView: View {
             VStack(spacing: 0) {
                 headerSection
 
+                if let error = error {
+                    errorDisplay(error)
+                }
+
+                if isGenerating {
+                    generatingFeedback
+                }
+
                 if isLoading {
                     ProgressView()
                         .tint(.white)
@@ -251,6 +259,34 @@ struct TVHighlightsView: View {
         }
         .padding(.horizontal, TVDesignTokens.Spacing.xxl)
         .padding(.vertical, TVDesignTokens.Spacing.xl)
+    }
+
+    private func errorDisplay(_ message: String) -> some View {
+        HStack(spacing: TVDesignTokens.Spacing.md) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(DesignTokens.ErrorColor.default)
+            Text(message)
+                .font(.system(size: TVDesignTokens.FontSize.base))
+                .foregroundStyle(DesignTokens.ErrorColor.default)
+        }
+        .padding(TVDesignTokens.Spacing.lg)
+        .background(DesignTokens.ErrorColor.default.opacity(0.1))
+        .cornerRadius(TVDesignTokens.Radius.md)
+        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
+    }
+
+    private var generatingFeedback: some View {
+        HStack(spacing: TVDesignTokens.Spacing.md) {
+            ProgressView()
+                .tint(DesignTokens.Primary.default)
+            Text(localization.t("zehAni.highlights.generating"))
+                .font(.system(size: TVDesignTokens.FontSize.base))
+                .foregroundStyle(DesignTokens.Text.primary)
+        }
+        .padding(TVDesignTokens.Spacing.lg)
+        .background(DesignTokens.Primary.default.opacity(0.1))
+        .cornerRadius(TVDesignTokens.Radius.md)
+        .padding(.horizontal, TVDesignTokens.Spacing.xxl)
     }
 
     private var emptyState: some View {
