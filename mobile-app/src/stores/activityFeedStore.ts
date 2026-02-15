@@ -2,6 +2,22 @@ import { create } from 'zustand';
 import api from '@bayit/shared-services/api';
 import { log } from '@bayit/shared-services/logger.native';
 
+interface MovieResponse {
+  _id: string;
+  title: string;
+  thumbnail?: string;
+  duration?: number;
+}
+
+interface ContentResponse {
+  _id?: string;
+  id?: string;
+  title: string;
+  thumbnail?: string;
+  type?: string;
+  duration?: number;
+}
+
 export interface FeedItem {
   id: string;
   title: string;
@@ -57,7 +73,7 @@ export const useActivityFeedStore = create<ActivityFeedState>((set, get) => ({
   fetchRecentlyAdded: async () => {
     try {
       const response = await api.get('/content/movies?limit=10&sort=newest');
-      const items = response.movies?.map((movie: any) => ({
+      const items = response.movies?.map((movie: MovieResponse) => ({
         id: movie._id,
         title: movie.title,
         thumbnail: movie.thumbnail,
@@ -75,8 +91,8 @@ export const useActivityFeedStore = create<ActivityFeedState>((set, get) => ({
   fetchTrending: async () => {
     try {
       const response = await api.get('/content/featured');
-      const items = response.items?.slice(0, 10).map((item: any) => ({
-        id: item._id || item.id,
+      const items = response.items?.slice(0, 10).map((item: ContentResponse) => ({
+        id: item._id || item.id || '',
         title: item.title,
         thumbnail: item.thumbnail,
         type: item.type || 'movie',

@@ -9,6 +9,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { GlassLoadingSpinner } from '@bayit/shared/ui';
 import MainTabNavigator from '../navigation/MainTabNavigator';
 import { initializeI18n } from '../services/i18n';
+import { setupTrackPlayer, playbackService, networkMonitor, rtlService, pushNotificationService } from '../services';
+import { useDeepLinking } from '../hooks/useDeepLinking';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 import { SplashScreen } from './SplashScreen';
 import { Colors } from '../theme/colors';
 import logger from '@/utils/logger';
@@ -20,15 +23,35 @@ export const AppContent: React.FC = () => {
   const [i18nReady, setI18nReady] = useState(false);
   const [splashComplete, setSplashComplete] = useState(false);
 
+  useDeepLinking();
+  usePushNotifications();
+
   useEffect(() => {
-    initializeI18n()
-      .then(() => {
+    const initializeApp = async () => {
+      try {
+        await Promise.all([
+          initializeI18n(),
+          setupTrackPlayer(),
+          rtlService.initialize(),
+          pushNotificationService.initialize(),
+        ]);
+
+        networkMonitor.initialize();
+
+        moduleLogger.info('App infrastructure initialized successfully');
         setI18nReady(true);
-      })
-      .catch((error) => {
-        moduleLogger.error('Failed to initialize i18n', { error });
+      } catch (error) {
+        moduleLogger.error('Failed to initialize app infrastructure', { error });
         setI18nReady(true);
-      });
+      }
+    };
+
+    initializeApp();
+
+    return () => {
+      networkMonitor.cleanup();
+      pushNotificationService.cleanup();
+    };
   }, []);
 
   if (!i18nReady) {

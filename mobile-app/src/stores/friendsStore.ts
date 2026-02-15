@@ -61,9 +61,11 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
     try {
       const data = (await api.get('/friends/list')) as { friends: Friend[] };
       set({ friends: data.friends || [], loading: false });
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMessage =
-        error?.detail || error?.message || t('errors.friends.fetchFailed');
+        (error as {detail?: string; message?: string})?.detail ||
+        (error as Error)?.message ||
+        t('errors.friends.fetchFailed');
       set({ error: errorMessage, loading: false, friends: [] });
     }
   },
@@ -80,9 +82,11 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
         outgoingRequests: data.outgoing || [],
         loading: false,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       const errorMessage =
-        error?.detail || error?.message || t('errors.friends.requestsFetchFailed');
+        (error as {detail?: string; message?: string})?.detail ||
+        (error as Error)?.message ||
+        t('errors.friends.requestsFetchFailed');
       set({
         error: errorMessage,
         loading: false,
@@ -98,9 +102,9 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
       await api.post('/friends/request', { receiver_id: receiverId, message });
       await get().fetchRequests();
       set({ loading: false });
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error?.detail || t('errors.friends.sendFailed'),
+        error: (error as {detail?: string})?.detail || t('errors.friends.sendFailed'),
         loading: false,
       });
       throw error;
@@ -114,9 +118,9 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
       await get().fetchFriends();
       await get().fetchRequests();
       set({ loading: false });
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error?.detail || t('errors.friends.acceptFailed'),
+        error: (error as {detail?: string})?.detail || t('errors.friends.acceptFailed'),
         loading: false,
       });
       throw error;
@@ -129,9 +133,9 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
       await api.post('/friends/request/reject', { request_id: requestId });
       await get().fetchRequests();
       set({ loading: false });
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error?.detail || t('errors.friends.rejectFailed'),
+        error: (error as {detail?: string})?.detail || t('errors.friends.rejectFailed'),
         loading: false,
       });
       throw error;
@@ -144,9 +148,9 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
       await api.post('/friends/request/cancel', { request_id: requestId });
       await get().fetchRequests();
       set({ loading: false });
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error?.detail || t('errors.friends.cancelFailed'),
+        error: (error as {detail?: string})?.detail || t('errors.friends.cancelFailed'),
         loading: false,
       });
       throw error;
@@ -159,9 +163,9 @@ export const useFriendsStore = create<FriendsStore>((set, get) => ({
       await api.delete(`/friends/${friendId}`);
       await get().fetchFriends();
       set({ loading: false });
-    } catch (error: any) {
+    } catch (error: unknown) {
       set({
-        error: error?.detail || t('errors.friends.removeFailed'),
+        error: (error as {detail?: string})?.detail || t('errors.friends.removeFailed'),
         loading: false,
       });
       throw error;

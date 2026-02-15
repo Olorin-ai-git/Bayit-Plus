@@ -53,3 +53,7 @@ export type { StarStoryAvatar, StarStoryEpisode, GenerationProgress } from './us
 // AI Onboarding
 export { useAIOnboarding } from './useAIOnboarding';
 export type { AIOnboardingStep } from './useAIOnboarding';
+
+// Platform Features (Phase 4)
+export { useDeepLinking } from './useDeepLinking';
+export { usePushNotifications } from './usePushNotifications';

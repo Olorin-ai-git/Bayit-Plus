@@ -75,6 +75,10 @@ export type RootStackParamList = {
   CollectionDetail: { collectionId: string };
   Audiobooks: undefined;
   AudiobookDetail: { audiobookId: string };
+  AudiobookPlayer: { audiobookId: string; audiobook: any; startChapter?: number };
+  PodcastDetail: { podcastId: string };
+  PodcastPlayer: { podcastId: string; episodeId: string; episode: any };
+  Beta500: undefined;
   // Gamification
   Trivia: { contentId?: string };
   Rewards: { profileId?: string };

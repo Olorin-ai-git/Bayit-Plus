@@ -99,7 +99,7 @@ interface PiPWidgetStoreState {
   updateWidget: (widgetId: string, updates: Partial<Widget>) => void;
 
   // Selectors
-  getWidgetState: (widgetId: string) => any;
+  getWidgetState: (widgetId: string) => WidgetLocalState[string] | undefined;
   getVisibleWidgets: () => Widget[];
 }
 

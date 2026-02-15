@@ -160,7 +160,7 @@ export const useEnhancedAvatarStore = create<AvatarStoreState>()(
           try {
             await avatarGenerationService.deleteAvatar(currentAvatar.avatarId);
             set({ currentAvatar: null });
-            await avatarPreferencesManager.setAvatarId(undefined as any);
+            await avatarPreferencesManager.setAvatarId(null);
           } catch (error) {
             console.error('Failed to delete avatar:', error);
             throw error;

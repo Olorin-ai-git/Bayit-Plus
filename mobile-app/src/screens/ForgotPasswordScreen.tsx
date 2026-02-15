@@ -1,91 +1,65 @@
-/**
- * Forgot Password Screen
- *
- * Allows users to request a password reset email.
- * Uses the shared auth service for the reset API call.
- */
+import React, { useState } from 'react'
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native'
+import { GlassCard, GlassTextField, GlassButton } from '../components/glass'
+import { theme } from '../theme'
+import { useNavigation } from '@react-navigation/native'
+import auth from '@react-native-firebase/auth'
+import { log } from '@bayit/shared-services/logger.native'
 
-import React, { useCallback, useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  Platform,  KeyboardAvoidingView,
-} from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
-import { authService } from '@bayit/shared-services/api';
-import { GlassLoadingSpinner } from '@bayit/shared/ui';
-import {
-  GlassButton,
-  GlassInput,
-  GlassCard,
-  GlassErrorBanner,
-  colors,
-  spacing,
-} from '@olorin/glass-ui/native';
-import { logger } from '../utils/logger';
+export default function ForgotPasswordScreen() {
+  const navigation = useNavigation()
+  const [email, setEmail] = useState('')
+  const [error, setError] = useState('')
+  const [success, setSuccess] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-const log = logger.scope('ForgotPasswordScreen');
-
-export const ForgotPasswordScreen: React.FC = () => {
-  const { t } = useTranslation();
-  const navigation = useNavigation();
-
-  const [email, setEmail] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-
-  const handleResetRequest = useCallback(async () => {
+  const handleResetPassword = async () => {
     if (!email.trim()) {
-      setError(t('forgotPassword.validation.emailRequired'));
-      return;
+      setError('Email is required')
+      return
     }
 
-    setError(null);
-    setIsLoading(true);
+    if (!/\S+@\S+\.\S+/.test(email)) {
+      setError('Email is invalid')
+      return
+    }
 
+    setLoading(true)
+    setError('')
     try {
-      await authService.login(email.trim(), '');
-      // The actual password reset endpoint
-      setSuccess(true);
-      log.info('Password reset email requested');
+      await auth().sendPasswordResetEmail(email)
+      log.info('Password reset email sent', { email })
+      setSuccess(true)
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : t('forgotPassword.error.generic');
-      setError(message);
-      log.error('Password reset request failed', err);
+      const errorMessage = (err as { message?: string })?.message || 'Failed to send reset email'
+      log.error('Password reset failed', { error: errorMessage })
+      setError(errorMessage)
     } finally {
-      setIsLoading(false);
+      setLoading(false)
     }
-  }, [email, t]);
-
-  const navigateToLogin = useCallback(() => {
-    navigation.goBack();
-  }, [navigation]);
+  }
 
   if (success) {
     return (
       <View style={styles.container}>
-        <View style={styles.successContainer}>
-          <GlassCard style={styles.card}>
-            <Text style={styles.headerTitle}>{t('forgotPassword.checkEmail')}</Text>
-            <Text style={styles.successMessage}>
-              {t('forgotPassword.emailSent', { email: email.trim() })}
-            </Text>
-            <GlassButton
-              variant="primary"
-              size="large"
-              onPress={navigateToLogin}
-              style={styles.backButton}
-            >
-              {t('forgotPassword.backToLogin')}
-            </GlassButton>
-          </GlassCard>
-        </View>
+        <GlassCard style={styles.card}>
+          <Text style={styles.successIcon}>✅</Text>
+          <Text style={styles.title}>Check Your Email</Text>
+          <Text style={styles.message}>
+            Password reset instructions have been sent to:
+          </Text>
+          <Text style={styles.email}>{email}</Text>
+          <Text style={styles.helpText}>
+            If you don't see the email, check your spam folder.
+          </Text>
+          <GlassButton
+            title="Back to Sign In"
+            onPress={() => navigation.goBack()}
+            variant="primary"
+          />
+        </GlassCard>
       </View>
-    );
+    )
   }
 
   return (
@@ -93,140 +67,80 @@ export const ForgotPasswordScreen: React.FC = () => {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Logo */}
-        <View style={styles.logoSection}>
-          <Text style={styles.logoText}>
-            <Text style={styles.logoWhite}>Bayit</Text>
-            <Text style={styles.logoAccent}>+</Text>
-          </Text>
-        </View>
+      <GlassCard style={styles.card}>
+        <Text style={styles.title}>Reset Password</Text>
+        <Text style={styles.message}>
+          Enter your email address and we'll send you instructions to reset your password.
+        </Text>
 
-        <GlassCard style={styles.card}>
-          <Text style={styles.headerTitle}>{t('forgotPassword.title')}</Text>
-          <Text style={styles.headerSubtitle}>{t('forgotPassword.subtitle')}</Text>
+        <GlassTextField
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+          error={error}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          autoComplete="email"
+          placeholder="Enter your email"
+        />
 
-          {error && (
-            <GlassErrorBanner
-              message={error}
-              onDismiss={() => setError(null)}
-            />
-          )}
+        <GlassButton
+          title="Send Reset Email"
+          onPress={handleResetPassword}
+          loading={loading}
+          variant="primary"
+        />
 
-          <View style={styles.fieldContainer}>
-            <Text style={styles.fieldLabel}>{t('forgotPassword.email')}</Text>
-            <GlassInput
-              placeholder={t('forgotPassword.emailPlaceholder')}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              textContentType="emailAddress"
-              editable={!isLoading}
-            />
-          </View>
-
-          <GlassButton
-            variant="primary"
-            size="large"
-            onPress={handleResetRequest}
-            disabled={isLoading || !email.trim()}
-            style={styles.resetButton}
-          >
-            {isLoading ? (
-              <GlassLoadingSpinner size="small" />
-            ) : (
-              t('forgotPassword.sendReset')
-            )}
-          </GlassButton>
-
-          <Text style={styles.backLink} onPress={navigateToLogin}>
-            {t('forgotPassword.backToLogin')}
-          </Text>
-        </GlassCard>
-      </ScrollView>
+        <GlassButton
+          title="Back to Sign In"
+          onPress={() => navigation.goBack()}
+          variant="secondary"
+        />
+      </GlassCard>
     </KeyboardAvoidingView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
-  },
-  logoSection: {
-    alignItems: 'center',
-    paddingTop: spacing.xxxl,
-    paddingBottom: spacing.xl,
-  },
-  logoText: {
-    fontSize: 40,
-    fontWeight: 'bold',
-  },
-  logoWhite: {
-    color: colors.text,
-  },
-  logoAccent: {
-    color: colors.primary,
+    backgroundColor: theme.colors.background,
+    justifyContent: 'center',
+    padding: theme.spacing.md,
   },
   card: {
-    padding: spacing.xl,
+    padding: theme.spacing.lg,
   },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.text,
+  successIcon: {
+    fontSize: 64,
     textAlign: 'center',
-    marginBottom: spacing.xs,
+    marginBottom: theme.spacing.md,
   },
-  headerSubtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
+  title: {
+    ...theme.typography.headlineMedium,
+    color: theme.colors.text,
+    marginBottom: theme.spacing.md,
     textAlign: 'center',
-    marginBottom: spacing.lg,
   },
-  fieldContainer: {
-    marginBottom: spacing.md,
-  },
-  fieldLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textMuted,
-    marginBottom: spacing.xs,
-  },
-  resetButton: {
-    marginTop: spacing.md,
-    marginBottom: spacing.lg,
-  },
-  backLink: {
-    fontSize: 14,
-    color: colors.primary,
+  message: {
+    ...theme.typography.bodyMedium,
+    color: theme.colors.textSecondary,
+    marginBottom: theme.spacing.lg,
     textAlign: 'center',
-    fontWeight: '500',
+    lineHeight: 24,
   },
-  successContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: spacing.xl,
-  },
-  successMessage: {
-    fontSize: 15,
-    color: colors.textSecondary,
+  email: {
+    ...theme.typography.bodyLarge,
+    color: theme.colors.primary,
+    marginBottom: theme.spacing.lg,
     textAlign: 'center',
-    marginBottom: spacing.xl,
-    lineHeight: 22,
+    fontWeight: '600',
   },
-  backButton: {
-    marginTop: spacing.md,
+  helpText: {
+    ...theme.typography.bodySmall,
+    color: theme.colors.textSecondary,
+    marginBottom: theme.spacing.lg,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
-});
+})

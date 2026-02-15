@@ -203,3 +203,19 @@ export const AIOnboardingScreenMobile = React.lazy(() =>
 export const WidgetGalleryScreenMobile = React.lazy(() =>
   import('../screens/WidgetGalleryScreenMobile').then((mod) => ({ default: mod.WidgetGalleryScreenMobile }))
 );
+
+// Podcasts & Audiobooks (Phase 2 - Parity)
+export const PodcastDetailScreen = React.lazy(() =>
+  import('../screens/PodcastDetailScreen').then((mod) => ({ default: mod.default }))
+);
+export const PodcastPlayerScreen = React.lazy(() =>
+  import('../screens/PodcastPlayerScreen').then((mod) => ({ default: mod.default }))
+);
+export const AudiobookPlayerScreen = React.lazy(() =>
+  import('../screens/AudiobookPlayerScreen').then((mod) => ({ default: mod.default }))
+);
+
+// Beta 500 (Phase 2 - Parity)
+export const Beta500Screen = React.lazy(() =>
+  import('../screens/Beta500Screen').then((mod) => ({ default: mod.default }))
+);

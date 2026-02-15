@@ -1,119 +1,65 @@
-/**
- * Register Screen - Full registration with Glass UI
- *
- * Features:
- * - Name, email, password, confirm password fields
- * - Client-side validation
- * - Google OAuth sign-up
- * - Apple Sign-In (iOS only)
- * - Terms acceptance checkbox
- * - Error handling with GlassErrorBanner
- * - Full i18n support
- */
+import React, { useState } from 'react'
+import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView } from 'react-native'
+import { GlassCard, GlassTextField, GlassButton } from '../components/glass'
+import { theme } from '../theme'
+import { useNavigation } from '@react-navigation/native'
+import auth from '@react-native-firebase/auth'
+import { log } from '@bayit/shared-services/logger.native'
 
-import React, { useCallback, useState } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  Platform,  KeyboardAvoidingView,
-} from 'react-native';
-import { useTranslation } from 'react-i18next';
-import { useNavigation } from '@react-navigation/native';
-import { useAuthStore } from '@bayit/shared-stores/authStore';
-import { GlassLoadingSpinner } from '@bayit/shared/ui';
-import {
-  GlassButton,
-  GlassInput,
-  GlassCard,
-  GlassCheckbox,
-  GlassErrorBanner,
-  colors,
-  spacing,
-} from '@olorin/glass-ui/native';
-import { logger } from '../utils/logger';
+export default function RegisterScreen() {
+  const navigation = useNavigation()
+  const [displayName, setDisplayName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [loading, setLoading] = useState(false)
 
-const log = logger.scope('RegisterScreen');
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {}
 
-const MIN_PASSWORD_LENGTH = 8;
-
-export const RegisterScreen: React.FC = () => {
-  const { t } = useTranslation();
-  const navigation = useNavigation();
-  const { register, loginWithGoogle, isLoading, error, clearError } = useAuthStore();
-
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [acceptTerms, setAcceptTerms] = useState(false);
-  const [validationError, setValidationError] = useState<string | null>(null);
-
-  const displayError = validationError || error;
-
-  const validate = useCallback((): boolean => {
-    setValidationError(null);
-    if (!name.trim()) {
-      setValidationError(t('register.validation.nameRequired'));
-      return false;
+    if (!displayName.trim()) {
+      newErrors.displayName = 'Display name is required'
     }
+
     if (!email.trim()) {
-      setValidationError(t('register.validation.emailRequired'));
-      return false;
+      newErrors.email = 'Email is required'
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Email is invalid'
     }
+
     if (!password) {
-      setValidationError(t('register.validation.passwordRequired'));
-      return false;
+      newErrors.password = 'Password is required'
+    } else if (password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters'
     }
-    if (password.length < MIN_PASSWORD_LENGTH) {
-      setValidationError(t('register.validation.passwordMinLength', { count: MIN_PASSWORD_LENGTH }));
-      return false;
-    }
+
     if (password !== confirmPassword) {
-      setValidationError(t('register.validation.passwordMismatch'));
-      return false;
+      newErrors.confirmPassword = 'Passwords do not match'
     }
-    if (!acceptTerms) {
-      setValidationError(t('register.validation.termsRequired'));
-      return false;
-    }
-    return true;
-  }, [name, email, password, confirmPassword, acceptTerms, t]);
 
-  const handleRegister = useCallback(async () => {
-    if (!validate()) return;
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
-    clearError();
+  const handleRegister = async () => {
+    if (!validate()) return
+
+    setLoading(true)
+    setErrors({})
     try {
-      await register({ name: name.trim(), email: email.trim(), password });
-      log.info('Registration successful');
-    } catch (err) {
-      log.error('Registration failed', err);
+      const userCredential = await auth().createUserWithEmailAndPassword(email, password)
+      await userCredential.user.updateProfile({ displayName })
+      log.info('User registered successfully', { userId: userCredential.user.uid })
+      navigation.navigate('Main' as never)
+    } catch (error: unknown) {
+      const errorMessage = (error as { message?: string })?.message || 'Registration failed'
+      log.error('Registration failed', { error: errorMessage })
+      setErrors({ general: errorMessage })
+    } finally {
+      setLoading(false)
     }
-  }, [validate, register, name, email, password, clearError]);
-
-  const handleGoogleSignUp = useCallback(async () => {
-    clearError();
-    setValidationError(null);
-    try {
-      await loginWithGoogle();
-      log.info('Google sign-up initiated');
-    } catch (err) {
-      log.error('Google sign-up failed', err);
-    }
-  }, [loginWithGoogle, clearError]);
-
-  const navigateToLogin = useCallback(() => {
-    clearError();
-    setValidationError(null);
-    navigation.goBack();
-  }, [navigation, clearError]);
-
-  const clearErrors = useCallback(() => {
-    clearError();
-    setValidationError(null);
-  }, [clearError]);
+  }
 
   return (
     <KeyboardAvoidingView
@@ -122,241 +68,104 @@ export const RegisterScreen: React.FC = () => {
     >
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Logo Section */}
-        <View style={styles.logoSection}>
-          <Text style={styles.logoText}>
-            <Text style={styles.logoWhite}>Bayit</Text>
-            <Text style={styles.logoAccent}>+</Text>
-          </Text>
-        </View>
-
-        {/* Register Card */}
         <GlassCard style={styles.card}>
-          <Text style={styles.headerTitle}>{t('register.createAccount')}</Text>
-          <Text style={styles.headerSubtitle}>{t('register.joinBayitPlus')}</Text>
+          <Text style={styles.title}>Create Account</Text>
+          <Text style={styles.subtitle}>Join Bayit+ to access premium content</Text>
 
-          {/* Error Banner */}
-          {displayError && (
-            <GlassErrorBanner
-              message={displayError}
-              onDismiss={clearErrors}
-            />
-          )}
-
-          {/* Name Field */}
-          <View style={styles.fieldContainer}>
-            <Text style={styles.fieldLabel}>{t('register.fullName')}</Text>
-            <GlassInput
-              placeholder={t('register.namePlaceholder')}
-              value={name}
-              onChangeText={setName}
-              autoCapitalize="words"
-              textContentType="name"
-              editable={!isLoading}
-            />
-          </View>
-
-          {/* Email Field */}
-          <View style={styles.fieldContainer}>
-            <Text style={styles.fieldLabel}>{t('register.email')}</Text>
-            <GlassInput
-              placeholder={t('register.emailPlaceholder')}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-              textContentType="emailAddress"
-              editable={!isLoading}
-            />
-          </View>
-
-          {/* Password Field */}
-          <View style={styles.fieldContainer}>
-            <Text style={styles.fieldLabel}>{t('register.password')}</Text>
-            <GlassInput
-              placeholder={t('register.passwordPlaceholder')}
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              textContentType="newPassword"
-              editable={!isLoading}
-            />
-          </View>
-
-          {/* Confirm Password Field */}
-          <View style={styles.fieldContainer}>
-            <Text style={styles.fieldLabel}>{t('register.confirmPassword')}</Text>
-            <GlassInput
-              placeholder={t('register.confirmPasswordPlaceholder')}
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-              secureTextEntry
-              textContentType="newPassword"
-              editable={!isLoading}
-            />
-          </View>
-
-          {/* Terms Checkbox */}
-          <GlassCheckbox
-            checked={acceptTerms}
-            onToggle={setAcceptTerms}
-            label={t('register.agreeToTerms')}
-            disabled={isLoading}
+          <GlassTextField
+            label="Display Name"
+            value={displayName}
+            onChangeText={setDisplayName}
+            error={errors.displayName}
+            autoCapitalize="words"
+            placeholder="Enter your name"
           />
 
-          {/* Create Account Button */}
-          <GlassButton
-            variant="primary"
-            size="large"
-            onPress={handleRegister}
-            disabled={isLoading}
-            style={styles.createButton}
-          >
-            {isLoading ? (
-              <GlassLoadingSpinner size="small" />
-            ) : (
-              t('register.createAccount')
-            )}
-          </GlassButton>
+          <GlassTextField
+            label="Email"
+            value={email}
+            onChangeText={setEmail}
+            error={errors.email}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+            placeholder="Enter your email"
+          />
 
-          {/* Divider */}
-          <View style={styles.divider}>
-            <View style={styles.dividerLine} />
-            <Text style={styles.dividerText}>{t('login.or')}</Text>
-            <View style={styles.dividerLine} />
-          </View>
+          <GlassTextField
+            label="Password"
+            value={password}
+            onChangeText={setPassword}
+            error={errors.password}
+            secureTextEntry
+            placeholder="At least 8 characters"
+          />
 
-          {/* Google Sign-Up */}
-          <GlassButton
-            variant="secondary"
-            size="large"
-            onPress={handleGoogleSignUp}
-            disabled={isLoading}
-            style={styles.socialButton}
-          >
-            {t('login.continueWithGoogle')}
-          </GlassButton>
+          <GlassTextField
+            label="Confirm Password"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            error={errors.confirmPassword}
+            secureTextEntry
+            placeholder="Re-enter password"
+          />
 
-          {/* Apple Sign-Up (iOS only) */}
-          {Platform.OS === 'ios' && (
-            <GlassButton
-              variant="secondary"
-              size="large"
-              onPress={() => log.info('Apple Sign-Up pressed')}
-              disabled={isLoading}
-              style={styles.socialButton}
-            >
-              {t('login.continueWithApple')}
-            </GlassButton>
+          {errors.general && (
+            <Text style={styles.generalError}>{errors.general}</Text>
           )}
 
-          {/* Sign In Link */}
-          <View style={styles.signInSection}>
-            <View style={styles.signInDivider} />
-            <Text style={styles.signInText}>
-              {t('register.alreadyHaveAccount')}{' '}
-              <Text style={styles.signInLink} onPress={navigateToLogin}>
-                {t('register.signIn')}
-              </Text>
-            </Text>
-          </View>
+          <GlassButton
+            title="Create Account"
+            onPress={handleRegister}
+            loading={loading}
+            variant="primary"
+          />
+
+          <GlassButton
+            title="Already have an account? Sign In"
+            onPress={() => navigation.goBack()}
+            variant="secondary"
+          />
         </GlassCard>
       </ScrollView>
     </KeyboardAvoidingView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: theme.colors.background,
   },
   scrollContent: {
     flexGrow: 1,
-    paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.xxl,
-  },
-  logoSection: {
-    alignItems: 'center',
-    paddingTop: spacing.xxl,
-    paddingBottom: spacing.lg,
-  },
-  logoText: {
-    fontSize: 40,
-    fontWeight: 'bold',
-  },
-  logoWhite: {
-    color: colors.text,
-  },
-  logoAccent: {
-    color: colors.primary,
+    justifyContent: 'center',
+    padding: theme.spacing.md,
   },
   card: {
-    padding: spacing.xl,
+    padding: theme.spacing.lg,
   },
-  headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.text,
-    textAlign: 'center',
-    marginBottom: spacing.xs,
-  },
-  headerSubtitle: {
-    fontSize: 15,
-    color: colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: spacing.lg,
-  },
-  fieldContainer: {
-    marginBottom: spacing.md,
-  },
-  fieldLabel: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: colors.textMuted,
-    marginBottom: spacing.xs,
-  },
-  createButton: {
-    marginTop: spacing.md,
-    marginBottom: spacing.md,
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: spacing.md,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.glassBorder,
-  },
-  dividerText: {
-    paddingHorizontal: spacing.md,
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  socialButton: {
-    marginBottom: spacing.sm,
-  },
-  signInSection: {
-    marginTop: spacing.md,
-  },
-  signInDivider: {
-    height: 1,
-    backgroundColor: colors.glassBorderLight,
-    marginBottom: spacing.lg,
-  },
-  signInText: {
-    fontSize: 14,
-    color: colors.textMuted,
+  title: {
+    ...theme.typography.headlineMedium,
+    color: theme.colors.text,
+    marginBottom: theme.spacing.xs,
     textAlign: 'center',
   },
-  signInLink: {
-    color: colors.primary,
-    fontWeight: 'bold',
+  subtitle: {
+    ...theme.typography.bodyMedium,
+    color: theme.colors.textSecondary,
+    marginBottom: theme.spacing.lg,
+    textAlign: 'center',
   },
-});
+  generalError: {
+    ...theme.typography.bodySmall,
+    color: theme.colors.error,
+    textAlign: 'center',
+    marginVertical: theme.spacing.sm,
+    padding: theme.spacing.sm,
+    backgroundColor: 'rgba(255, 82, 82, 0.1)',
+    borderRadius: 8,
+  },
+})

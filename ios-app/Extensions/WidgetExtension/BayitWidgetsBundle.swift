@@ -5,13 +5,13 @@ import WidgetKit
 struct BayitWidgetsBundle: WidgetBundle {
     @WidgetBundleBuilder
     var body: some Widget {
+        TestWidget()
         NowPlayingWidget()
         ContinueWatchingWidget()
         TrendingNewsWidget()
         QuickActionsWidget()
         ShabbatModeWidget()
         PlaylistWidget()
-        NowPlayingLiveActivityView()
 
         // Configurable widgets (iOS 17+)
         if #available(iOS 17.0, *) {

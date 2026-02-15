@@ -36,3 +36,15 @@ export type { OAuthCredentials } from './secureStorageService';
 
 // Offline Cache Service - persistent content caching
 export { offlineCacheService } from './offlineCacheService';
+
+// Infrastructure Services (Phase 3)
+export { storage } from './storage';
+export { networkMonitor } from './network';
+export { rtlService } from './rtl';
+export { setupTrackPlayer, playbackService } from './trackPlayerService';
+
+// Platform Services (Phase 4)
+export { deepLinkingService } from './deepLinking';
+export type { DeepLinkRoute } from './deepLinking';
+export { pushNotificationService } from './pushNotifications';
+export type { NotificationPayload, RemoteMessage } from './pushNotifications';

@@ -42,7 +42,8 @@ import {
   StarStoryScreenMobile, V2VPracticeScreenMobile, MFASetupScreenMobile,
   PhoneVerificationScreenMobile, PasskeyManagementScreenMobile,
   ConnectedAccountsScreenMobile, HelpScreenMobile, AIOnboardingScreenMobile,
-  WidgetGalleryScreenMobile,
+  WidgetGalleryScreenMobile, PodcastDetailScreen, PodcastPlayerScreen,
+  AudiobookPlayerScreen, Beta500Screen,
 } from './lazyScreens';
 
 const LazyScreenFallback: React.FC = () => (
@@ -117,6 +118,10 @@ export const RootNavigator: React.FC = () => (
     <Stack.Screen name="CollectionDetail" component={LazyScreen(CollectionDetailScreenMobile)} />
     <Stack.Screen name="Audiobooks" component={LazyScreen(AudiobooksScreenMobile)} />
     <Stack.Screen name="AudiobookDetail" component={LazyScreen(AudiobookDetailScreenMobile)} />
+    <Stack.Screen name="AudiobookPlayer" component={LazyScreen(AudiobookPlayerScreen)} options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+    <Stack.Screen name="PodcastDetail" component={LazyScreen(PodcastDetailScreen)} />
+    <Stack.Screen name="PodcastPlayer" component={LazyScreen(PodcastPlayerScreen)} options={{ presentation: 'fullScreenModal', animation: 'slide_from_bottom' }} />
+    <Stack.Screen name="Beta500" component={LazyScreen(Beta500Screen)} />
     <Stack.Screen name="Trivia" component={LazyScreen(TriviaScreenMobile)} />
     <Stack.Screen name="Rewards" component={LazyScreen(RewardsScreenMobile)} />
     <Stack.Screen name="DirectMessages" component={LazyScreen(DirectMessagesScreenMobile)} />
