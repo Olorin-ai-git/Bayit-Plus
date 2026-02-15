@@ -708,6 +708,42 @@ class Settings(BaseSettings):
         "ashjVK50jp28G73AUTnb"  # Olorin - custom cloned voice
     )
 
+    # Creatify Aurora (Character animation and lip-sync)
+    CREATIFY_API_URL: str = Field(
+        default="https://api.creatify.ai",
+        description="Creatify Aurora API base URL"
+    )
+    CREATIFY_API_ID: str = Field(
+        default="",
+        description="Creatify API ID for authentication"
+    )
+    CREATIFY_API_KEY: str = Field(
+        default="",
+        description="Creatify API key for authentication"
+    )
+
+    # Character Voice IDs (ElevenLabs voices for VOD interaction characters)
+    CHARACTER_VOICE_MOSHE: str = Field(
+        default="ashjVK50jp28G73AUTnb",
+        description="ElevenLabs voice ID for Moshe Rabbenu (wise, authoritative)"
+    )
+    CHARACTER_VOICE_DAVID: str = Field(
+        default="ashjVK50jp28G73AUTnb",
+        description="ElevenLabs voice ID for David HaMelech (strong, regal)"
+    )
+    CHARACTER_VOICE_MIRIAM: str = Field(
+        default="ashjVK50jp28G73AUTnb",
+        description="ElevenLabs voice ID for Miriam (warm, nurturing)"
+    )
+    CHARACTER_VOICE_ESTHER: str = Field(
+        default="ashjVK50jp28G73AUTnb",
+        description="ElevenLabs voice ID for Esther (graceful, confident)"
+    )
+    CHARACTER_VOICE_DEFAULT: str = Field(
+        default="ashjVK50jp28G73AUTnb",
+        description="Default ElevenLabs voice ID for unmatched characters"
+    )
+
     # OpenAI (Whisper speech-to-text)
     OPENAI_API_KEY: str = ""
 
@@ -2718,6 +2754,28 @@ class Settings(BaseSettings):
         default=5.0, ge=0.0,
         env="CREDIT_RATE_MAGIC_MIRROR",
         description="Beta credits per magic mirror greeting generation",
+    )
+
+    # VOD Avatar Interaction (Character Conversations)
+    CREDIT_RATE_VOD_INTERACTION_MESSAGE: int = Field(
+        default=1, ge=0,
+        env="CREDIT_RATE_VOD_INTERACTION_MESSAGE",
+        description="Beta credits per character dialogue exchange",
+    )
+    CREDIT_RATE_VOD_INTERACTION_REEL: int = Field(
+        default=25, ge=0,
+        env="CREDIT_RATE_VOD_INTERACTION_REEL",
+        description="Beta credits per interaction reel generation",
+    )
+    VOD_INTERACTION_MAX_DURATION: int = Field(
+        default=30, ge=10, le=120,
+        env="VOD_INTERACTION_MAX_DURATION",
+        description="Maximum reel duration in seconds",
+    )
+    VOD_INTERACTION_MAX_EXCHANGES: int = Field(
+        default=5, ge=1, le=20,
+        env="VOD_INTERACTION_MAX_EXCHANGES",
+        description="Maximum dialogue exchanges per session",
     )
 
     # ============================================

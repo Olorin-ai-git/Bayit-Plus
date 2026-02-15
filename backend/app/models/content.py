@@ -6,6 +6,8 @@ from beanie import Document
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pymongo import TEXT, IndexModel
 
+from app.models.vod_interaction import InteractiveMoment
+
 
 class ContentBase(BaseModel):
     title: str
@@ -211,6 +213,12 @@ class Content(Document):
     youngsters_educational_tags: List[str] = Field(
         default_factory=list
     )  # ["study-help", "career-prep", etc.]
+
+    # VOD Avatar Interaction fields (Zeh Ani integration)
+    interactive_moments: List[InteractiveMoment] = Field(
+        default_factory=list
+    )  # Predefined moments where avatars can interact with characters
+    supports_avatar_interaction: bool = False  # Quick check for interaction support
 
     # Audiobook-specific fields
     narrator: Optional[str] = None  # Narrator/speaker name
