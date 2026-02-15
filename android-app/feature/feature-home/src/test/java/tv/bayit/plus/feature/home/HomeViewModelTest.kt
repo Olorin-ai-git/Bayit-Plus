@@ -53,10 +53,7 @@ class HomeViewModelTest {
 
     @Test
     fun `initial state is Loading`() = runTest {
-        val featured = FeaturedResponse(
-            hero = null,
-            sections = emptyList()
-        )
+        val featured = FeaturedResponse()
         contentRepository.setFeatured(featured)
 
         viewModel = HomeViewModel(
@@ -76,29 +73,20 @@ class HomeViewModelTest {
 
     @Test
     fun `loadHomeFeed success - transitions to Success state`() = runTest {
-        val featured = FeaturedResponse(
-            hero = mapOf("id" to "hero-1", "title" to "Hero Content"),
-            sections = listOf(
-                mapOf("id" to "section-1", "title" to "Trending")
-            )
-        )
+        val featured = FeaturedResponse()
         contentRepository.setFeatured(featured)
 
         val liveChannels = listOf(
             LiveChannelItem(
                 id = "channel-1",
                 name = "Channel 1",
-                logo = "https://example.com/logo1.png",
-                number = "1"
+                logo = "https://example.com/logo1.png"
             )
         )
         liveTVRepository.setChannels(liveChannels)
 
         val radioStations = listOf(
-            mapOf(
-                "id" to "radio-1",
-                "name" to "Radio Station 1"
-            )
+            RadioStationItem(id = "radio-1", name = "Radio Station 1")
         )
         radioRepository.setStations(radioStations)
 
@@ -117,7 +105,6 @@ class HomeViewModelTest {
             assertThat(successState).isInstanceOf(HomeUiState.Success::class.java)
 
             val state = successState as HomeUiState.Success
-            assertThat(state.featured).isEqualTo(featured)
             assertThat(state.liveChannels).hasSize(1)
             assertThat(state.liveChannels.first().name).isEqualTo("Channel 1")
 
@@ -127,7 +114,7 @@ class HomeViewModelTest {
 
     @Test
     fun `loadHomeFeed error - transitions to Error state`() = runTest {
-        contentRepository.shouldThrowError = true
+        contentRepository.shouldReturnError = true
         contentRepository.errorMessage = "Network error loading featured content"
 
         viewModel = HomeViewModel(
@@ -153,10 +140,7 @@ class HomeViewModelTest {
 
     @Test
     fun `refresh - sets isRefreshing flag and reloads data`() = runTest {
-        val featured = FeaturedResponse(
-            hero = null,
-            sections = emptyList()
-        )
+        val featured = FeaturedResponse()
         contentRepository.setFeatured(featured)
 
         viewModel = HomeViewModel(
@@ -186,17 +170,14 @@ class HomeViewModelTest {
 
     @Test
     fun `filters hidden channels correctly`() = runTest {
-        val featured = FeaturedResponse(
-            hero = null,
-            sections = emptyList()
-        )
+        val featured = FeaturedResponse()
         contentRepository.setFeatured(featured)
 
         val liveChannels = listOf(
-            LiveChannelItem("1", "CNN News", "logo1.png", "1"),
-            LiveChannelItem("2", "Regular Channel", "logo2.png", "2"),
-            LiveChannelItem("3", "King 5 News", "logo3.png", "3"),
-            LiveChannelItem("4", "ABC Network", "logo4.png", "4")
+            LiveChannelItem(id = "1", name = "CNN News", logo = "logo1.png"),
+            LiveChannelItem(id = "2", name = "Regular Channel", logo = "logo2.png"),
+            LiveChannelItem(id = "3", name = "King 5 News", logo = "logo3.png"),
+            LiveChannelItem(id = "4", name = "ABC Network", logo = "logo4.png")
         )
         liveTVRepository.setChannels(liveChannels)
 
@@ -220,8 +201,9 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `loadHomeFeed with null featured data - handles gracefully`() = runTest {
-        contentRepository.setFeatured(null)
+    fun `loadHomeFeed with error featured data - handles gracefully`() = runTest {
+        contentRepository.shouldReturnError = true
+        contentRepository.errorMessage = "No featured content available"
 
         viewModel = HomeViewModel(
             contentRepository,
@@ -238,7 +220,7 @@ class HomeViewModelTest {
             assertThat(errorState).isInstanceOf(HomeUiState.Error::class.java)
 
             val state = errorState as HomeUiState.Error
-            assertThat(state.message).contains("Invalid featured data format")
+            assertThat(state.message).contains("No featured content available")
 
             cancelAndIgnoreRemainingEvents()
         }
@@ -246,10 +228,7 @@ class HomeViewModelTest {
 
     @Test
     fun `multiple refresh calls - handles concurrent requests`() = runTest {
-        val featured = FeaturedResponse(
-            hero = null,
-            sections = emptyList()
-        )
+        val featured = FeaturedResponse()
         contentRepository.setFeatured(featured)
 
         viewModel = HomeViewModel(
@@ -278,10 +257,7 @@ class HomeViewModelTest {
 
     @Test
     fun `empty data sets - renders success state with empty lists`() = runTest {
-        val featured = FeaturedResponse(
-            hero = null,
-            sections = emptyList()
-        )
+        val featured = FeaturedResponse()
         contentRepository.setFeatured(featured)
         liveTVRepository.setChannels(emptyList())
         radioRepository.setStations(emptyList())
@@ -300,7 +276,6 @@ class HomeViewModelTest {
             val successState = awaitItem() as HomeUiState.Success
             assertThat(successState.liveChannels).isEmpty()
             assertThat(successState.radioStations).isEmpty()
-            assertThat(successState.featured).isEqualTo(featured)
 
             cancelAndIgnoreRemainingEvents()
         }

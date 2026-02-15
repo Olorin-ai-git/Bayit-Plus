@@ -1,20 +1,21 @@
 package tv.bayit.plus.core.testing
 
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.model.WatchParty
+import tv.bayit.plus.core.model.Friend
 
 /**
  * Fake implementation of WatchPartyRepository for testing.
  */
 class FakeWatchPartyRepository {
 
-    private val watchParties = mutableListOf<Any>()
-    private val activeParty: Any? = null
-    private val participants = mutableMapOf<String, MutableList<Any>>()
+    private val watchParties = mutableListOf<WatchParty>()
+    private val participants = mutableMapOf<String, MutableList<Friend>>()
 
     var shouldReturnError = false
     var errorMessage = "Watch party repository error"
 
-    suspend fun getWatchParties(): BayitResult<List<Any>> {
+    suspend fun getWatchParties(): BayitResult<List<WatchParty>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -22,28 +23,28 @@ class FakeWatchPartyRepository {
         }
     }
 
-    suspend fun createWatchParty(contentId: String, invitedFriends: List<String>): BayitResult<Any> {
+    suspend fun createWatchParty(contentId: String, invitedFriends: List<String>): BayitResult<WatchParty> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
-            val party = mapOf(
-                "id" to "party-${System.currentTimeMillis()}",
-                "contentId" to contentId,
-                "hostId" to "user-123",
-                "participants" to invitedFriends
+            val party = WatchParty(
+                id = "party-${System.currentTimeMillis()}",
+                contentId = contentId,
+                hostId = "user-123",
+                participants = emptyList(),
+                status = "active",
+                createdAt = System.currentTimeMillis().toString()
             )
             watchParties.add(party)
             BayitResult.Success(party)
         }
     }
 
-    suspend fun joinWatchParty(partyId: String): BayitResult<Any> {
+    suspend fun joinWatchParty(partyId: String): BayitResult<WatchParty> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
-            val party = watchParties.find {
-                (it as? Map<*, *>)?.get("id") == partyId
-            }
+            val party = watchParties.find { it.id == partyId }
             if (party != null) {
                 BayitResult.Success(party)
             } else {
@@ -69,9 +70,13 @@ class FakeWatchPartyRepository {
         }
     }
 
-    fun setWatchParties(parties: List<Any>) {
+    fun setWatchParties(parties: List<WatchParty>) {
         watchParties.clear()
         watchParties.addAll(parties)
+    }
+
+    fun setParticipants(partyId: String, friendsList: List<Friend>) {
+        participants[partyId] = friendsList.toMutableList()
     }
 
     fun clear() {

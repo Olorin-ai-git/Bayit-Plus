@@ -1,19 +1,33 @@
 package tv.bayit.plus.core.testing
 
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.model.UserSubscription
 
 /**
  * Fake implementation of SubscriptionRepository for testing.
  */
 class FakeSubscriptionRepository {
 
-    private val plans = mutableListOf<Any>()
-    private var currentSubscription: Any? = null
+    data class SubscriptionPlan(
+        val id: String,
+        val name: String,
+        val price: Double,
+        val billingPeriod: String
+    )
+
+    data class PaymentIntent(
+        val id: String,
+        val clientSecret: String,
+        val planId: String
+    )
+
+    private val plans = mutableListOf<SubscriptionPlan>()
+    private var currentSubscription: UserSubscription? = null
 
     var shouldReturnError = false
     var errorMessage = "Subscription repository error"
 
-    suspend fun getPlans(): BayitResult<List<Any>> {
+    suspend fun getPlans(): BayitResult<List<SubscriptionPlan>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -21,7 +35,7 @@ class FakeSubscriptionRepository {
         }
     }
 
-    suspend fun getCurrentSubscription(): BayitResult<Any> {
+    suspend fun getCurrentSubscription(): BayitResult<UserSubscription> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else if (currentSubscription != null) {
@@ -48,25 +62,25 @@ class FakeSubscriptionRepository {
         }
     }
 
-    suspend fun createPaymentIntent(planId: String): BayitResult<Any> {
+    suspend fun createPaymentIntent(planId: String): BayitResult<PaymentIntent> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
-            val intent = mapOf(
-                "id" to "pi_${System.currentTimeMillis()}",
-                "clientSecret" to "secret_${System.currentTimeMillis()}",
-                "planId" to planId
+            val intent = PaymentIntent(
+                id = "pi_${System.currentTimeMillis()}",
+                clientSecret = "secret_${System.currentTimeMillis()}",
+                planId = planId
             )
             BayitResult.Success(intent)
         }
     }
 
-    fun setPlans(plansList: List<Any>) {
+    fun setPlans(plansList: List<SubscriptionPlan>) {
         plans.clear()
         plans.addAll(plansList)
     }
 
-    fun setCurrentSubscription(subscription: Any?) {
+    fun setCurrentSubscription(subscription: UserSubscription?) {
         currentSubscription = subscription
     }
 

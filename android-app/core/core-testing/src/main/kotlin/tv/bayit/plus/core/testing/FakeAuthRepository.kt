@@ -2,8 +2,7 @@ package tv.bayit.plus.core.testing
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
-import tv.bayit.plus.core.model.UserModels
+import tv.bayit.plus.core.model.UserResponse
 
 /**
  * Fake implementation of AuthRepository for testing.
@@ -19,7 +18,7 @@ import tv.bayit.plus.core.model.UserModels
  */
 class FakeAuthRepository {
 
-    private val _currentUser = MutableStateFlow<UserModels.User?>(null)
+    private val _currentUser = MutableStateFlow<UserResponse?>(null)
     private val _isAuthenticated = MutableStateFlow(false)
 
     var shouldFailLogin = false
@@ -31,7 +30,7 @@ class FakeAuthRepository {
     /**
      * Get current authenticated user.
      */
-    fun getCurrentUser(): Flow<UserModels.User?> {
+    fun getCurrentUser(): Flow<UserResponse?> {
         return _currentUser
     }
 
@@ -46,7 +45,7 @@ class FakeAuthRepository {
      * Login with email and password.
      * Returns Result with User on success or error on failure.
      */
-    suspend fun login(email: String, password: String): Result<UserModels.User> {
+    suspend fun login(email: String, password: String): Result<UserResponse> {
         return if (shouldFailLogin) {
             Result.failure(Exception(loginErrorMessage))
         } else {
@@ -64,13 +63,13 @@ class FakeAuthRepository {
         email: String,
         password: String,
         displayName: String
-    ): Result<UserModels.User> {
+    ): Result<UserResponse> {
         return if (shouldFailRegister) {
             Result.failure(Exception(registerErrorMessage))
         } else {
             val user = TestData.createUser(
                 email = email,
-                displayName = displayName
+                name = displayName
             )
             _currentUser.value = user
             _isAuthenticated.value = true
@@ -111,7 +110,7 @@ class FakeAuthRepository {
 
     // Test utility methods
 
-    fun setCurrentUser(user: UserModels.User?) {
+    fun setCurrentUser(user: UserResponse?) {
         _currentUser.value = user
         _isAuthenticated.value = user != null
     }

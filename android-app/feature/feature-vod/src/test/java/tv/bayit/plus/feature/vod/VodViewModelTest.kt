@@ -39,7 +39,7 @@ class VodViewModelTest {
     @Test
     fun `initial state is Loading`() = runTest {
         val categories = listOf(
-            ContentCategory("cat-1", "Movies", "movies", null, 100)
+            ContentCategory(id = "cat-1", name = "Movies", nameKey = "movies")
         )
         categoryRepository.setCategories(categories)
 
@@ -55,8 +55,8 @@ class VodViewModelTest {
     @Test
     fun `loadCategories success - transitions to Success state`() = runTest {
         val categories = listOf(
-            ContentCategory("cat-1", "Movies", "movies", null, 100),
-            ContentCategory("cat-2", "Series", "series", null, 50)
+            ContentCategory(id = "cat-1", name = "Movies", nameKey = "movies"),
+            ContentCategory(id = "cat-2", name = "Series", nameKey = "series")
         )
         categoryRepository.setCategories(categories)
 
@@ -64,8 +64,8 @@ class VodViewModelTest {
             ContentItem(
                 id = "content-1",
                 title = "Movie 1",
-                poster = "poster1.jpg",
-                contentType = "movie"
+                thumbnail = "poster1.jpg",
+                type = "movie"
             )
         )
         categoryRepository.setContentForCategory("cat-1", 1, content)
@@ -116,16 +116,16 @@ class VodViewModelTest {
     @Test
     fun `selectCategory - loads content for selected category`() = runTest {
         val categories = listOf(
-            ContentCategory("cat-1", "Movies", "movies", null, 100),
-            ContentCategory("cat-2", "Series", "series", null, 50)
+            ContentCategory(id = "cat-1", name = "Movies", nameKey = "movies"),
+            ContentCategory(id = "cat-2", name = "Series", nameKey = "series")
         )
         categoryRepository.setCategories(categories)
 
         val moviesContent = listOf(
-            ContentItem("movie-1", "Movie 1", "poster1.jpg", "movie")
+            ContentItem(id = "movie-1", title = "Movie 1", thumbnail = "poster1.jpg", type = "movie")
         )
         val seriesContent = listOf(
-            ContentItem("series-1", "Series 1", "poster2.jpg", "series")
+            ContentItem(id = "series-1", title = "Series 1", thumbnail = "poster2.jpg", type = "series")
         )
         categoryRepository.setContentForCategory("cat-1", 1, moviesContent)
         categoryRepository.setContentForCategory("cat-2", 1, seriesContent)
@@ -155,12 +155,12 @@ class VodViewModelTest {
     @Test
     fun `refresh - reloads categories and content`() = runTest {
         val categories = listOf(
-            ContentCategory("cat-1", "Movies", "movies", null, 100)
+            ContentCategory(id = "cat-1", name = "Movies", nameKey = "movies")
         )
         categoryRepository.setCategories(categories)
 
         val content = listOf(
-            ContentItem("content-1", "Content 1", "poster.jpg", "movie")
+            ContentItem(id = "content-1", title = "Content 1", thumbnail = "poster.jpg", type = "movie")
         )
         categoryRepository.setContentForCategory("cat-1", 1, content)
 
@@ -202,7 +202,7 @@ class VodViewModelTest {
     @Test
     fun `content loading error - updates state with error content`() = runTest {
         val categories = listOf(
-            ContentCategory("cat-1", "Movies", "movies", null, 100)
+            ContentCategory(id = "cat-1", name = "Movies", nameKey = "movies")
         )
         categoryRepository.setCategories(categories)
 

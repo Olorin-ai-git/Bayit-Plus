@@ -1,6 +1,8 @@
 package tv.bayit.plus.core.testing
 
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.model.Audiobook
+import tv.bayit.plus.core.model.AudiobookChapter
 
 /**
  * Fake implementation of AudiobookRepository for testing.
@@ -9,10 +11,18 @@ import tv.bayit.plus.core.common.BayitResult
  */
 class FakeAudiobookRepository {
 
-    private val audiobooks = mutableListOf<Any>()
-    private val chapters = mutableMapOf<String, List<Any>>()
+    private val audiobooks = mutableListOf<Audiobook>()
     private val playbackPositions = mutableMapOf<String, Long>()
-    private val bookmarks = mutableMapOf<String, MutableList<Any>>()
+
+    data class Bookmark(
+        val id: String,
+        val audiobookId: String,
+        val positionMs: Long,
+        val note: String?,
+        val createdAt: Long
+    )
+
+    private val bookmarks = mutableMapOf<String, MutableList<Bookmark>>()
 
     var shouldReturnError = false
     var errorMessage = "Audiobook repository error"
@@ -20,7 +30,7 @@ class FakeAudiobookRepository {
     /**
      * Get all audiobooks.
      */
-    suspend fun getAudiobooks(): BayitResult<List<Any>> {
+    suspend fun getAudiobooks(): BayitResult<List<Audiobook>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -31,13 +41,11 @@ class FakeAudiobookRepository {
     /**
      * Get audiobook by ID.
      */
-    suspend fun getAudiobook(audiobookId: String): BayitResult<Any> {
+    suspend fun getAudiobook(audiobookId: String): BayitResult<Audiobook> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
-            val audiobook = audiobooks.find {
-                (it as? Map<*, *>)?.get("id") == audiobookId
-            }
+            val audiobook = audiobooks.find { it.id == audiobookId }
             if (audiobook != null) {
                 BayitResult.Success(audiobook)
             } else {
@@ -49,11 +57,12 @@ class FakeAudiobookRepository {
     /**
      * Get chapters for an audiobook.
      */
-    suspend fun getChapters(audiobookId: String): BayitResult<List<Any>> {
+    suspend fun getChapters(audiobookId: String): BayitResult<List<AudiobookChapter>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
-            BayitResult.Success(chapters[audiobookId] ?: emptyList())
+            val audiobook = audiobooks.find { it.id == audiobookId }
+            BayitResult.Success(audiobook?.chapters ?: emptyList())
         }
     }
 
@@ -83,7 +92,7 @@ class FakeAudiobookRepository {
     /**
      * Get bookmarks for an audiobook.
      */
-    suspend fun getBookmarks(audiobookId: String): BayitResult<List<Any>> {
+    suspend fun getBookmarks(audiobookId: String): BayitResult<List<Bookmark>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -94,16 +103,16 @@ class FakeAudiobookRepository {
     /**
      * Add a bookmark to an audiobook.
      */
-    suspend fun addBookmark(audiobookId: String, positionMs: Long, note: String?): BayitResult<Any> {
+    suspend fun addBookmark(audiobookId: String, positionMs: Long, note: String?): BayitResult<Bookmark> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
-            val bookmark = mapOf(
-                "id" to "bookmark-${System.currentTimeMillis()}",
-                "audiobookId" to audiobookId,
-                "positionMs" to positionMs,
-                "note" to note,
-                "createdAt" to System.currentTimeMillis()
+            val bookmark = Bookmark(
+                id = "bookmark-${System.currentTimeMillis()}",
+                audiobookId = audiobookId,
+                positionMs = positionMs,
+                note = note,
+                createdAt = System.currentTimeMillis()
             )
             bookmarks.getOrPut(audiobookId) { mutableListOf() }.add(bookmark)
             BayitResult.Success(bookmark)
@@ -112,17 +121,13 @@ class FakeAudiobookRepository {
 
     // Test utility methods
 
-    fun setAudiobooks(audiobooksList: List<Any>) {
+    fun setAudiobooks(audiobooksList: List<Audiobook>) {
         audiobooks.clear()
         audiobooks.addAll(audiobooksList)
     }
 
-    fun addAudiobook(audiobook: Any) {
+    fun addAudiobook(audiobook: Audiobook) {
         audiobooks.add(audiobook)
-    }
-
-    fun setChapters(audiobookId: String, chaptersList: List<Any>) {
-        chapters[audiobookId] = chaptersList
     }
 
     fun setPlaybackPosition(audiobookId: String, positionMs: Long) {
@@ -131,7 +136,6 @@ class FakeAudiobookRepository {
 
     fun clear() {
         audiobooks.clear()
-        chapters.clear()
         playbackPositions.clear()
         bookmarks.clear()
         shouldReturnError = false

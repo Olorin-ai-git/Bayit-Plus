@@ -1,25 +1,25 @@
 package tv.bayit.plus.core.testing
 
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.data.repository.RadioRepository
+import tv.bayit.plus.core.model.RadioStationItem
+import tv.bayit.plus.core.model.RadioStationDetail
 
 /**
  * Fake implementation of RadioRepository for testing.
  *
  * Provides controllable radio station data and streaming functionality for tests.
  */
-class FakeRadioRepository {
+class FakeRadioRepository : RadioRepository {
 
-    private val stations = mutableListOf<Any>()
+    private val stations = mutableListOf<RadioStationItem>()
+    private val stationDetails = mutableMapOf<String, RadioStationDetail>()
     private val favoriteStationIds = mutableSetOf<String>()
-    private val nowPlaying = mutableMapOf<String, Any>()
 
     var shouldReturnError = false
     var errorMessage = "Radio repository error"
 
-    /**
-     * Get all radio stations.
-     */
-    suspend fun getStations(): BayitResult<List<Any>> {
+    override suspend fun getStations(): BayitResult<List<Any>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -27,28 +27,20 @@ class FakeRadioRepository {
         }
     }
 
-    /**
-     * Get radio station by ID.
-     */
-    suspend fun getStation(stationId: String): BayitResult<Any> {
+    override suspend fun getStation(stationId: String): BayitResult<Any> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
-            val station = stations.find {
-                (it as? Map<*, *>)?.get("id") == stationId
-            }
-            if (station != null) {
-                BayitResult.Success(station)
+            val detail = stationDetails[stationId]
+            if (detail != null) {
+                BayitResult.Success(detail)
             } else {
                 BayitResult.Error(Exception("Station not found: $stationId"))
             }
         }
     }
 
-    /**
-     * Get stream URL for a radio station.
-     */
-    suspend fun getStreamUrl(stationId: String): BayitResult<String> {
+    override suspend fun getStreamUrl(stationId: String): BayitResult<String> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -56,39 +48,29 @@ class FakeRadioRepository {
         }
     }
 
-    /**
-     * Get currently playing information for a station.
-     */
-    suspend fun getNowPlaying(stationId: String): BayitResult<Any> {
+    override suspend fun getNowPlaying(stationId: String): BayitResult<Any> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
-            val playing = nowPlaying[stationId] ?: mapOf(
-                "title" to "Unknown",
-                "artist" to "Unknown"
+            val detail = stationDetails[stationId] ?: RadioStationDetail(
+                id = stationId,
+                name = "Unknown Station",
+                currentSong = "Unknown"
             )
-            BayitResult.Success(playing)
+            BayitResult.Success(detail)
         }
     }
 
-    /**
-     * Get favorite radio stations.
-     */
-    suspend fun getFavoriteStations(): BayitResult<List<Any>> {
+    override suspend fun getFavoriteStations(): BayitResult<List<Any>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
-            val favorites = stations.filter { station ->
-                (station as? Map<*, *>)?.get("id")?.toString() in favoriteStationIds
-            }
+            val favorites = stations.filter { it.id in favoriteStationIds }
             BayitResult.Success(favorites)
         }
     }
 
-    /**
-     * Toggle favorite status for a station.
-     */
-    suspend fun toggleFavorite(stationId: String): BayitResult<Boolean> {
+    override suspend fun toggleFavorite(stationId: String): BayitResult<Boolean> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -105,17 +87,17 @@ class FakeRadioRepository {
 
     // Test utility methods
 
-    fun setStations(stationsList: List<Any>) {
+    fun setStations(stationsList: List<RadioStationItem>) {
         stations.clear()
         stations.addAll(stationsList)
     }
 
-    fun addStation(station: Any) {
+    fun addStation(station: RadioStationItem) {
         stations.add(station)
     }
 
-    fun setNowPlaying(stationId: String, nowPlayingData: Any) {
-        nowPlaying[stationId] = nowPlayingData
+    fun setStationDetail(stationId: String, detail: RadioStationDetail) {
+        stationDetails[stationId] = detail
     }
 
     fun setFavorites(stationIds: Set<String>) {
@@ -125,8 +107,8 @@ class FakeRadioRepository {
 
     fun clear() {
         stations.clear()
+        stationDetails.clear()
         favoriteStationIds.clear()
-        nowPlaying.clear()
         shouldReturnError = false
     }
 }

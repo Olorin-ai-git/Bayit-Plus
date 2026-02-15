@@ -1,82 +1,99 @@
 package tv.bayit.plus.core.testing
 
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flowOf
-import tv.bayit.plus.core.model.LiveTVModels
+import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.data.repository.LiveTVRepository
+import tv.bayit.plus.core.model.LiveChannelItem
+import tv.bayit.plus.core.model.EPGEntry
 
 /**
  * Fake implementation of LiveTVRepository for testing.
  */
-class FakeLiveTVRepository {
+class FakeLiveTVRepository : LiveTVRepository {
 
-    private val _channels = MutableStateFlow<List<LiveTVModels.Channel>>(emptyList())
-    private val _currentPrograms = MutableStateFlow<Map<String, LiveTVModels.Program>>(emptyMap())
+    private val channels = mutableListOf<LiveChannelItem>()
+    private val currentPrograms = mutableMapOf<String, EPGEntry>()
 
-    var shouldThrowError = false
+    var shouldReturnError = false
     var errorMessage = "Test error"
 
-    /**
-     * Get all live TV channels.
-     */
-    fun getChannels(): Flow<List<LiveTVModels.Channel>> {
-        if (shouldThrowError) throw Exception(errorMessage)
-        return _channels
+    override suspend fun getChannels(): BayitResult<List<Any>> {
+        return if (shouldReturnError) {
+            BayitResult.Error(Exception(errorMessage))
+        } else {
+            BayitResult.Success(channels.toList())
+        }
     }
 
-    /**
-     * Get channels by category.
-     */
-    fun getChannelsByCategory(category: String): Flow<List<LiveTVModels.Channel>> {
-        if (shouldThrowError) throw Exception(errorMessage)
-        return flowOf(_channels.value.filter { it.category == category })
+    override suspend fun getChannel(channelId: String): BayitResult<Any> {
+        return if (shouldReturnError) {
+            BayitResult.Error(Exception(errorMessage))
+        } else {
+            val channel = channels.find { it.id == channelId }
+            if (channel != null) {
+                BayitResult.Success(channel)
+            } else {
+                BayitResult.Error(Exception("Channel not found: $channelId"))
+            }
+        }
     }
 
-    /**
-     * Get channel by ID.
-     */
-    fun getChannelById(id: String): Flow<LiveTVModels.Channel?> {
-        if (shouldThrowError) throw Exception(errorMessage)
-        return flowOf(_channels.value.find { it.id == id })
+    override suspend fun getStreamUrl(channelId: String): BayitResult<String> {
+        return if (shouldReturnError) {
+            BayitResult.Error(Exception(errorMessage))
+        } else {
+            BayitResult.Success("https://stream.example.com/channel/$channelId")
+        }
     }
 
-    /**
-     * Get current program for a channel.
-     */
-    fun getCurrentProgram(channelId: String): Flow<LiveTVModels.Program?> {
-        if (shouldThrowError) throw Exception(errorMessage)
-        return flowOf(_currentPrograms.value[channelId])
+    override suspend fun getCurrentProgram(channelId: String): BayitResult<Any> {
+        return if (shouldReturnError) {
+            BayitResult.Error(Exception(errorMessage))
+        } else {
+            val program = currentPrograms[channelId]
+            if (program != null) {
+                BayitResult.Success(program)
+            } else {
+                BayitResult.Error(Exception("No current program for channel: $channelId"))
+            }
+        }
     }
 
-    /**
-     * Get EPG schedule for a channel.
-     */
+    override suspend fun getChannelsByCategory(category: String): BayitResult<List<Any>> {
+        return if (shouldReturnError) {
+            BayitResult.Error(Exception(errorMessage))
+        } else {
+            BayitResult.Success(channels.filter { it.category == category })
+        }
+    }
+
     fun getEPGSchedule(
         channelId: String,
         startTime: Long,
         endTime: Long
-    ): Flow<List<LiveTVModels.Program>> {
-        if (shouldThrowError) throw Exception(errorMessage)
-        return flowOf(emptyList())
+    ): BayitResult<List<EPGEntry>> {
+        return if (shouldReturnError) {
+            BayitResult.Error(Exception(errorMessage))
+        } else {
+            BayitResult.Success(emptyList())
+        }
     }
 
-    // Test utility methods
-
-    fun setChannels(channels: List<LiveTVModels.Channel>) {
-        _channels.value = channels
+    fun setChannels(channelsList: List<LiveChannelItem>) {
+        channels.clear()
+        channels.addAll(channelsList)
     }
 
-    fun addChannel(channel: LiveTVModels.Channel) {
-        _channels.value = _channels.value + channel
+    fun addChannel(channel: LiveChannelItem) {
+        channels.add(channel)
     }
 
-    fun setCurrentProgram(channelId: String, program: LiveTVModels.Program) {
-        _currentPrograms.value = _currentPrograms.value + (channelId to program)
+    fun setCurrentProgram(channelId: String, program: EPGEntry) {
+        currentPrograms[channelId] = program
     }
 
     fun clear() {
-        _channels.value = emptyList()
-        _currentPrograms.value = emptyMap()
-        shouldThrowError = false
+        channels.clear()
+        currentPrograms.clear()
+        shouldReturnError = false
     }
 }

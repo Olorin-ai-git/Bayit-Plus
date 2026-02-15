@@ -1,19 +1,23 @@
 package tv.bayit.plus.core.testing
 
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.model.UserResponse
+import tv.bayit.plus.core.model.ProfileResponse
+import tv.bayit.plus.core.model.ProfilePreferences
 
 /**
  * Fake implementation of UserRepository for testing.
  */
 class FakeUserRepository {
 
-    private var currentUser: Any? = null
-    private var userPreferences: Map<String, Any> = emptyMap()
+    private var currentUser: UserResponse? = null
+    private var currentProfile: ProfileResponse? = null
+    private var userPreferences: ProfilePreferences? = null
 
     var shouldReturnError = false
     var errorMessage = "User repository error"
 
-    suspend fun getCurrentUser(): BayitResult<Any> {
+    suspend fun getCurrentUser(): BayitResult<UserResponse> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else if (currentUser != null) {
@@ -23,29 +27,44 @@ class FakeUserRepository {
         }
     }
 
-    suspend fun updateProfile(displayName: String?, avatarUrl: String?): BayitResult<Any> {
+    suspend fun getProfile(): BayitResult<ProfileResponse> {
+        return if (shouldReturnError) {
+            BayitResult.Error(Exception(errorMessage))
+        } else if (currentProfile != null) {
+            BayitResult.Success(currentProfile!!)
+        } else {
+            BayitResult.Error(Exception("No profile available"))
+        }
+    }
+
+    suspend fun updateProfile(displayName: String?, avatarUrl: String?): BayitResult<ProfileResponse> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
-            val updatedUser = mapOf(
-                "id" to ((currentUser as? Map<*, *>)?.get("id") ?: "user-id"),
-                "displayName" to (displayName ?: "Test User"),
-                "avatarUrl" to (avatarUrl ?: "https://example.com/avatar.jpg")
+            val updatedProfile = currentProfile?.copy(
+                displayName = displayName,
+                avatar = avatarUrl
+            ) ?: ProfileResponse(
+                id = "test-user-id",
+                displayName = displayName,
+                avatar = avatarUrl
             )
-            currentUser = updatedUser
-            BayitResult.Success(updatedUser)
+            currentProfile = updatedProfile
+            BayitResult.Success(updatedProfile)
         }
     }
 
-    suspend fun getPreferences(): BayitResult<Any> {
+    suspend fun getPreferences(): BayitResult<ProfilePreferences> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
+        } else if (userPreferences != null) {
+            BayitResult.Success(userPreferences!!)
         } else {
-            BayitResult.Success(userPreferences)
+            BayitResult.Error(Exception("No preferences available"))
         }
     }
 
-    suspend fun updatePreferences(preferences: Map<String, Any>): BayitResult<Unit> {
+    suspend fun updatePreferences(preferences: ProfilePreferences): BayitResult<Unit> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -59,22 +78,28 @@ class FakeUserRepository {
             BayitResult.Error(Exception(errorMessage))
         } else {
             currentUser = null
-            userPreferences = emptyMap()
+            currentProfile = null
+            userPreferences = null
             BayitResult.Success(Unit)
         }
     }
 
-    fun setCurrentUser(user: Any?) {
+    fun setCurrentUser(user: UserResponse?) {
         currentUser = user
     }
 
-    fun setPreferences(preferences: Map<String, Any>) {
+    fun setProfile(profile: ProfileResponse?) {
+        currentProfile = profile
+    }
+
+    fun setPreferences(preferences: ProfilePreferences?) {
         userPreferences = preferences
     }
 
     fun clear() {
         currentUser = null
-        userPreferences = emptyMap()
+        currentProfile = null
+        userPreferences = null
         shouldReturnError = false
     }
 }

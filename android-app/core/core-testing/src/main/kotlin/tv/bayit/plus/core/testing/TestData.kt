@@ -3,7 +3,7 @@ package tv.bayit.plus.core.testing
 import tv.bayit.plus.core.model.*
 
 /**
- * Test data factory for creating mock objects in tests.
+ * Test data factory for creating model instances in tests.
  *
  * Provides convenient factory methods for creating test instances
  * of domain models with sensible defaults.
@@ -11,98 +11,94 @@ import tv.bayit.plus.core.model.*
 object TestData {
 
     /**
-     * Creates a test Content object with customizable fields.
+     * Creates a test ContentItem.
      */
-    fun createContent(
+    fun createContentItem(
         id: String = "test-content-id",
         title: String = "Test Movie",
         description: String = "Test description for a great movie",
-        poster: String = "https://test.com/poster.jpg",
-        type: ContentType = ContentType.MOVIE,
-        rating: Double = 8.5,
+        thumbnail: String = "https://test.com/poster.jpg",
+        type: String = "movie",
         year: Int = 2024,
-        duration: Int? = 7200,
-        genres: List<String> = listOf("Action", "Drama")
-    ) = Content(
+        duration: String = "120",
+        category: String = "Action",
+    ) = ContentItem(
         id = id,
         title = title,
         description = description,
-        poster = poster,
+        thumbnail = thumbnail,
         type = type,
-        rating = rating,
         year = year,
         duration = duration,
-        genres = genres
+        category = category,
     )
 
     /**
-     * Creates a test User object.
+     * Creates a test UserResponse.
      */
     fun createUser(
         id: String = "test-user-id",
         email: String = "test@bayit.tv",
-        displayName: String = "Test User",
-        photoUrl: String? = null
-    ) = UserModels.User(
+        name: String = "Test User",
+        avatar: String? = null,
+    ) = UserResponse(
         id = id,
         email = email,
-        displayName = displayName,
-        photoUrl = photoUrl
+        name = name,
+        avatar = avatar,
     )
 
     /**
-     * Creates a test LiveTV channel.
+     * Creates a test LiveChannelItem.
      */
     fun createLiveTVChannel(
         id: String = "test-channel-id",
         name: String = "Test Channel",
         logo: String = "https://test.com/logo.jpg",
-        streamUrl: String = "https://test.com/stream.m3u8",
-        category: String = "General"
-    ) = LiveTVModels.Channel(
+        category: String = "General",
+    ) = LiveChannelItem(
         id = id,
         name = name,
         logo = logo,
-        streamUrl = streamUrl,
-        category = category
+        category = category,
     )
 
     /**
-     * Creates a test Podcast.
+     * Creates a test PodcastShow.
      */
-    fun createPodcast(
+    fun createPodcastShow(
         id: String = "test-podcast-id",
         title: String = "Test Podcast",
-        description: String = "Test podcast description",
         cover: String = "https://test.com/podcast.jpg",
-        author: String = "Test Author"
-    ) = PodcastModels.Podcast(
+        author: String = "Test Author",
+        category: String = "Technology",
+    ) = PodcastShow(
         id = id,
         title = title,
-        description = description,
         cover = cover,
-        author = author
+        author = author,
+        category = category,
     )
 
     /**
-     * Creates a test Podcast Episode.
+     * Creates a test PodcastEpisodeItem.
      */
     fun createPodcastEpisode(
         id: String = "test-episode-id",
-        podcastId: String = "test-podcast-id",
         title: String = "Test Episode",
         description: String = "Test episode description",
         audioUrl: String = "https://test.com/episode.mp3",
-        duration: Int = 3600,
-        publishDate: String = "2024-01-01"
-    ) = PodcastModels.Episode(
+        duration: String = "3600",
+        episodeNumber: Int = 1,
+        publishedAt: String = "2024-01-01",
+    ) = PodcastEpisodeItem(
         id = id,
-        podcastId = podcastId,
         title = title,
         description = description,
         audioUrl = audioUrl,
         duration = duration,
-        publishDate = publishDate
+        episodeNumber = episodeNumber,
+        publishedAt = publishedAt,
     )
 
     /**
@@ -113,84 +109,78 @@ object TestData {
         title: String = "Test Audiobook",
         author: String = "Test Author",
         narrator: String = "Test Narrator",
-        cover: String = "https://test.com/audiobook.jpg",
-        duration: Int = 36000
-    ) = AudiobookModels.Audiobook(
+        thumbnail: String = "https://test.com/audiobook.jpg",
+        duration: String = "36000",
+    ) = Audiobook(
         id = id,
         title = title,
         author = author,
         narrator = narrator,
-        cover = cover,
-        duration = duration
+        thumbnail = thumbnail,
+        duration = duration,
     )
 
     /**
-     * Creates a test Radio station.
+     * Creates a test RadioStationItem.
      */
     fun createRadioStation(
         id: String = "test-radio-id",
         name: String = "Test Radio",
         logo: String = "https://test.com/radio.jpg",
-        streamUrl: String = "https://test.com/radio.m3u8",
-        genre: String = "News"
-    ) = RadioModels.Station(
+        genre: String = "News",
+    ) = RadioStationItem(
         id = id,
         name = name,
         logo = logo,
-        streamUrl = streamUrl,
-        genre = genre
+        genre = genre,
     )
 
     /**
-     * Creates a test Series.
+     * Creates a test SeriesDetail.
      */
     fun createSeries(
         id: String = "test-series-id",
         title: String = "Test Series",
         description: String = "Test series description",
-        poster: String = "https://test.com/series.jpg",
-        rating: Double = 9.0,
+        thumbnail: String = "https://test.com/series.jpg",
         year: Int = 2024,
-        seasons: Int = 2
-    ) = SeriesModels.Series(
+        totalSeasons: Int = 2,
+        totalEpisodes: Int = 20,
+    ) = SeriesDetail(
         id = id,
         title = title,
         description = description,
-        poster = poster,
-        rating = rating,
+        thumbnail = thumbnail,
         year = year,
-        seasons = seasons
+        totalSeasons = totalSeasons,
+        totalEpisodes = totalEpisodes,
     )
 
     /**
-     * Creates a test Episode.
+     * Creates a test EpisodeItem.
      */
     fun createEpisode(
         id: String = "test-episode-id",
-        seriesId: String = "test-series-id",
-        seasonNumber: Int = 1,
-        episodeNumber: Int = 1,
         title: String = "Test Episode",
         description: String = "Test episode description",
-        duration: Int = 2700
-    ) = SeriesModels.Episode(
+        episodeNumber: Int = 1,
+        duration: String = "2700",
+    ) = EpisodeItem(
         id = id,
-        seriesId = seriesId,
-        seasonNumber = seasonNumber,
-        episodeNumber = episodeNumber,
         title = title,
         description = description,
-        duration = duration
+        episodeNumber = episodeNumber,
+        duration = duration,
     )
 
     /**
      * Creates a list of test content items.
      */
-    fun createContentList(count: Int = 5): List<Content> {
+    fun createContentList(count: Int = 5): List<ContentItem> {
         return (1..count).map { index ->
-            createContent(
+            createContentItem(
                 id = "test-content-$index",
-                title = "Test Content $index"
+                title = "Test Content $index",
             )
         }
     }

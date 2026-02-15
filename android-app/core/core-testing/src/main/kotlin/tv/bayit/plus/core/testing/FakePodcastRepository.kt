@@ -3,15 +3,16 @@ package tv.bayit.plus.core.testing
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import tv.bayit.plus.core.model.PodcastModels
+import tv.bayit.plus.core.model.PodcastEpisodeItem
+import tv.bayit.plus.core.model.PodcastShow
 
 /**
  * Fake implementation of PodcastRepository for testing.
  */
 class FakePodcastRepository {
 
-    private val _podcasts = MutableStateFlow<List<PodcastModels.Podcast>>(emptyList())
-    private val _episodes = MutableStateFlow<Map<String, List<PodcastModels.Episode>>>(emptyMap())
+    private val _podcasts = MutableStateFlow<List<PodcastShow>>(emptyList())
+    private val _episodes = MutableStateFlow<Map<String, List<PodcastEpisodeItem>>>(emptyMap())
 
     var shouldThrowError = false
     var errorMessage = "Test error"
@@ -19,7 +20,7 @@ class FakePodcastRepository {
     /**
      * Get all podcasts.
      */
-    fun getPodcasts(): Flow<List<PodcastModels.Podcast>> {
+    fun getPodcasts(): Flow<List<PodcastShow>> {
         if (shouldThrowError) throw Exception(errorMessage)
         return _podcasts
     }
@@ -27,7 +28,7 @@ class FakePodcastRepository {
     /**
      * Get podcast by ID.
      */
-    fun getPodcastById(id: String): Flow<PodcastModels.Podcast?> {
+    fun getPodcastById(id: String): Flow<PodcastShow?> {
         if (shouldThrowError) throw Exception(errorMessage)
         return flowOf(_podcasts.value.find { it.id == id })
     }
@@ -35,7 +36,7 @@ class FakePodcastRepository {
     /**
      * Get episodes for a podcast.
      */
-    fun getPodcastEpisodes(podcastId: String): Flow<List<PodcastModels.Episode>> {
+    fun getPodcastEpisodes(podcastId: String): Flow<List<PodcastEpisodeItem>> {
         if (shouldThrowError) throw Exception(errorMessage)
         return flowOf(_episodes.value[podcastId] ?: emptyList())
     }
@@ -43,7 +44,7 @@ class FakePodcastRepository {
     /**
      * Get episode by ID.
      */
-    fun getEpisodeById(episodeId: String): Flow<PodcastModels.Episode?> {
+    fun getEpisodeById(episodeId: String): Flow<PodcastEpisodeItem?> {
         if (shouldThrowError) throw Exception(errorMessage)
         val allEpisodes = _episodes.value.values.flatten()
         return flowOf(allEpisodes.find { it.id == episodeId })
@@ -52,31 +53,31 @@ class FakePodcastRepository {
     /**
      * Search podcasts.
      */
-    fun searchPodcasts(query: String): Flow<List<PodcastModels.Podcast>> {
+    fun searchPodcasts(query: String): Flow<List<PodcastShow>> {
         if (shouldThrowError) throw Exception(errorMessage)
         return flowOf(
             _podcasts.value.filter {
-                it.title.contains(query, ignoreCase = true) ||
-                it.description.contains(query, ignoreCase = true)
+                it.title.orEmpty().contains(query, ignoreCase = true) ||
+                it.author.orEmpty().contains(query, ignoreCase = true)
             }
         )
     }
 
     // Test utility methods
 
-    fun setPodcasts(podcasts: List<PodcastModels.Podcast>) {
+    fun setPodcasts(podcasts: List<PodcastShow>) {
         _podcasts.value = podcasts
     }
 
-    fun addPodcast(podcast: PodcastModels.Podcast) {
+    fun addPodcast(podcast: PodcastShow) {
         _podcasts.value = _podcasts.value + podcast
     }
 
-    fun setEpisodes(podcastId: String, episodes: List<PodcastModels.Episode>) {
+    fun setEpisodes(podcastId: String, episodes: List<PodcastEpisodeItem>) {
         _episodes.value = _episodes.value + (podcastId to episodes)
     }
 
-    fun addEpisode(podcastId: String, episode: PodcastModels.Episode) {
+    fun addEpisode(podcastId: String, episode: PodcastEpisodeItem) {
         val current = _episodes.value[podcastId] ?: emptyList()
         _episodes.value = _episodes.value + (podcastId to (current + episode))
     }

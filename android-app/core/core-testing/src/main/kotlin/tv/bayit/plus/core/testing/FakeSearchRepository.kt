@@ -1,25 +1,24 @@
 package tv.bayit.plus.core.testing
 
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.data.repository.SearchRepository
+import tv.bayit.plus.core.model.ContentItem
 
 /**
  * Fake implementation of SearchRepository for testing.
  *
  * Provides controllable search results, suggestions, and search history.
  */
-class FakeSearchRepository {
+class FakeSearchRepository : SearchRepository {
 
-    private val searchResults = mutableMapOf<String, List<Any>>()
+    private val searchResults = mutableMapOf<String, List<ContentItem>>()
     private val recentSearches = mutableListOf<String>()
     private val popularSearches = mutableListOf<String>()
 
     var shouldReturnError = false
     var errorMessage = "Search repository error"
 
-    /**
-     * Search for content with optional filters.
-     */
-    suspend fun search(query: String, filters: Map<String, String>?): BayitResult<List<Any>> {
+    override suspend fun search(query: String, filters: Map<String, String>?): BayitResult<List<Any>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -31,10 +30,7 @@ class FakeSearchRepository {
         }
     }
 
-    /**
-     * Get search suggestions for partial query.
-     */
-    suspend fun getSuggestions(partialQuery: String): BayitResult<List<String>> {
+    override suspend fun getSuggestions(partialQuery: String): BayitResult<List<String>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -47,10 +43,7 @@ class FakeSearchRepository {
         }
     }
 
-    /**
-     * Get recent search history.
-     */
-    suspend fun getRecentSearches(): BayitResult<List<String>> {
+    override suspend fun getRecentSearches(): BayitResult<List<String>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -58,10 +51,7 @@ class FakeSearchRepository {
         }
     }
 
-    /**
-     * Clear recent search history.
-     */
-    suspend fun clearRecentSearches(): BayitResult<Unit> {
+    override suspend fun clearRecentSearches(): BayitResult<Unit> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -70,10 +60,7 @@ class FakeSearchRepository {
         }
     }
 
-    /**
-     * Get popular search queries.
-     */
-    suspend fun getPopularSearches(): BayitResult<List<String>> {
+    override suspend fun getPopularSearches(): BayitResult<List<String>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -83,7 +70,7 @@ class FakeSearchRepository {
 
     // Test utility methods
 
-    fun setSearchResults(query: String, results: List<Any>) {
+    fun setSearchResults(query: String, results: List<ContentItem>) {
         searchResults[query] = results
     }
 

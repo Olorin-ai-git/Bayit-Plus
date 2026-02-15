@@ -60,4 +60,7 @@ dependencies {
 
     // Common for BayitResult
     implementation(project(":core:core-common"))
+
+    // Data layer for repository interfaces
+    implementation(project(":core:core-data"))
 }

@@ -66,6 +66,10 @@ dependencies {
     // Testing
     testImplementation(libs.bundles.testing)
     testImplementation(libs.hilt.testing)
+    testImplementation(project(":core:core-testing"))
+    testImplementation(project(":core:core-model"))
+    testImplementation(project(":core:core-data"))
+    testImplementation(libs.kotlinx.serialization.json)
     kspTest(libs.hilt.compiler)
 
     androidTestImplementation(libs.espresso.core)

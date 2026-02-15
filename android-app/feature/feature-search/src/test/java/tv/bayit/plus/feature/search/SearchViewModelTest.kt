@@ -53,8 +53,8 @@ class SearchViewModelTest {
     @Test
     fun `onQueryChange with valid query - triggers debounced search`() = runTest {
         val searchResults = listOf(
-            ContentItem("1", "Movie Result", "poster1.jpg", "movie"),
-            ContentItem("2", "Series Result", "poster2.jpg", "series")
+            ContentItem(id = "1", title = "Movie Result", thumbnail = "poster1.jpg", type = "movie"),
+            ContentItem(id = "2", title = "Series Result", thumbnail = "poster2.jpg", type = "series")
         )
         searchRepository.setSearchResults("action", searchResults)
 
@@ -107,7 +107,7 @@ class SearchViewModelTest {
     @Test
     fun `search with filter - applies filter to search`() = runTest {
         val moviesOnly = listOf(
-            ContentItem("1", "Action Movie", "poster.jpg", "movie")
+            ContentItem(id = "1", title = "Action Movie", thumbnail = "poster.jpg", type = "movie")
         )
         searchRepository.setSearchResults("action", moviesOnly)
 
@@ -147,7 +147,7 @@ class SearchViewModelTest {
     @Test
     fun `onSuggestionClick - updates query and triggers search`() = runTest {
         val suggestionResults = listOf(
-            ContentItem("1", "Suggested Movie", "poster.jpg", "movie")
+            ContentItem(id = "1", title = "Suggested Movie", thumbnail = "poster.jpg", type = "movie")
         )
         searchRepository.setSearchResults("suggested query", suggestionResults)
 
@@ -201,8 +201,8 @@ class SearchViewModelTest {
 
     @Test
     fun `rapid query changes - cancels previous searches`() = runTest {
-        val results1 = listOf(ContentItem("1", "Movie 1", "p1.jpg", "movie"))
-        val results2 = listOf(ContentItem("2", "Movie 2", "p2.jpg", "movie"))
+        val results1 = listOf(ContentItem(id = "1", title = "Movie 1", thumbnail = "p1.jpg", type = "movie"))
+        val results2 = listOf(ContentItem(id = "2", title = "Movie 2", thumbnail = "p2.jpg", type = "movie"))
 
         searchRepository.setSearchResults("query1", results1)
         searchRepository.setSearchResults("query2", results2)

@@ -1,21 +1,23 @@
 package tv.bayit.plus.core.testing
 
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.model.EPGEntry
+import tv.bayit.plus.core.model.ScheduleEntry
 
 /**
  * Fake implementation of EPGRepository for testing Electronic Program Guide.
  */
 class FakeEPGRepository {
 
-    private val guides = mutableMapOf<String, List<Any>>()
-    private val schedules = mutableMapOf<Pair<String, String>, List<Any>>()
-    private val programDetails = mutableMapOf<String, Any>()
+    private val guides = mutableMapOf<String, List<EPGEntry>>()
+    private val schedules = mutableMapOf<Pair<String, String>, List<ScheduleEntry>>()
+    private val programDetails = mutableMapOf<String, EPGEntry>()
     private val reminders = mutableSetOf<String>()
 
     var shouldReturnError = false
     var errorMessage = "EPG repository error"
 
-    suspend fun getGuide(date: String): BayitResult<List<Any>> {
+    suspend fun getGuide(date: String): BayitResult<List<EPGEntry>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -23,7 +25,7 @@ class FakeEPGRepository {
         }
     }
 
-    suspend fun getSchedule(channelId: String, date: String): BayitResult<List<Any>> {
+    suspend fun getSchedule(channelId: String, date: String): BayitResult<List<ScheduleEntry>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -31,7 +33,7 @@ class FakeEPGRepository {
         }
     }
 
-    suspend fun getProgramDetails(programId: String): BayitResult<Any> {
+    suspend fun getProgramDetails(programId: String): BayitResult<EPGEntry> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -62,15 +64,15 @@ class FakeEPGRepository {
         }
     }
 
-    fun setGuide(date: String, guideData: List<Any>) {
+    fun setGuide(date: String, guideData: List<EPGEntry>) {
         guides[date] = guideData
     }
 
-    fun setSchedule(channelId: String, date: String, scheduleData: List<Any>) {
+    fun setSchedule(channelId: String, date: String, scheduleData: List<ScheduleEntry>) {
         schedules[channelId to date] = scheduleData
     }
 
-    fun setProgramDetails(programId: String, program: Any) {
+    fun setProgramDetails(programId: String, program: EPGEntry) {
         programDetails[programId] = program
     }
 

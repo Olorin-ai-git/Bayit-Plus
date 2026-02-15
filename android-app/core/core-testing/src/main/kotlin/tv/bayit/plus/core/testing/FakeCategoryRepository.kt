@@ -1,20 +1,23 @@
 package tv.bayit.plus.core.testing
 
 import tv.bayit.plus.core.common.BayitResult
+import tv.bayit.plus.core.data.repository.CategoryRepository
+import tv.bayit.plus.core.model.ContentCategory
+import tv.bayit.plus.core.model.ContentItem
 
 /**
  * Fake implementation of CategoryRepository for testing.
  */
-class FakeCategoryRepository {
+class FakeCategoryRepository : CategoryRepository {
 
-    private val categories = mutableListOf<Any>()
-    private val subcategories = mutableMapOf<String, List<Any>>()
-    private val categoryContent = mutableMapOf<Pair<String, Int>, List<Any>>()
+    private val categories = mutableListOf<ContentCategory>()
+    private val subcategories = mutableMapOf<String, List<ContentCategory>>()
+    private val categoryContent = mutableMapOf<Pair<String, Int>, List<ContentItem>>()
 
     var shouldReturnError = false
     var errorMessage = "Category repository error"
 
-    suspend fun getCategories(): BayitResult<List<Any>> {
+    override suspend fun getCategories(): BayitResult<List<Any>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -22,13 +25,11 @@ class FakeCategoryRepository {
         }
     }
 
-    suspend fun getCategory(categoryId: String): BayitResult<Any> {
+    override suspend fun getCategory(categoryId: String): BayitResult<Any> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
-            val category = categories.find {
-                (it as? Map<*, *>)?.get("id") == categoryId
-            }
+            val category = categories.find { it.id == categoryId }
             if (category != null) {
                 BayitResult.Success(category)
             } else {
@@ -37,7 +38,7 @@ class FakeCategoryRepository {
         }
     }
 
-    suspend fun getSubcategories(parentId: String): BayitResult<List<Any>> {
+    override suspend fun getSubcategories(parentId: String): BayitResult<List<Any>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -45,7 +46,7 @@ class FakeCategoryRepository {
         }
     }
 
-    suspend fun getContentForCategory(categoryId: String, page: Int): BayitResult<List<Any>> {
+    override suspend fun getContentForCategory(categoryId: String, page: Int): BayitResult<List<Any>> {
         return if (shouldReturnError) {
             BayitResult.Error(Exception(errorMessage))
         } else {
@@ -53,20 +54,20 @@ class FakeCategoryRepository {
         }
     }
 
-    fun setCategories(categoriesList: List<Any>) {
+    fun setCategories(categoriesList: List<ContentCategory>) {
         categories.clear()
         categories.addAll(categoriesList)
     }
 
-    fun addCategory(category: Any) {
+    fun addCategory(category: ContentCategory) {
         categories.add(category)
     }
 
-    fun setSubcategories(parentId: String, subList: List<Any>) {
+    fun setSubcategories(parentId: String, subList: List<ContentCategory>) {
         subcategories[parentId] = subList
     }
 
-    fun setContentForCategory(categoryId: String, page: Int, content: List<Any>) {
+    fun setContentForCategory(categoryId: String, page: Int, content: List<ContentItem>) {
         categoryContent[categoryId to page] = content
     }
 
