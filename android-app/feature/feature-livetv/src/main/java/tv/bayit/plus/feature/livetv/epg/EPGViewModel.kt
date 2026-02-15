@@ -10,6 +10,8 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.EPGRepository
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,7 +51,8 @@ class EPGViewModel @Inject constructor(
     private fun loadEPG() {
         viewModelScope.launch {
             logger.debug("Loading EPG data")
-            when (val result = epgRepository.getEPGSchedule()) {
+            val today = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+            when (val result = epgRepository.getGuide(today)) {
                 is BayitResult.Success -> {
                     val epgData = result.data
                     logger.info("EPG data loaded", mapOf("channelCount" to epgData.size.toString()))

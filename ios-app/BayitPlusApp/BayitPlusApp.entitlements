@@ -10,5 +10,9 @@
 	<array>
 		<string>group.tv.bayit.plus</string>
 	</array>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)tv.bayit.BayitPlus</string>
+	</array>
 </dict>
 </plist>
