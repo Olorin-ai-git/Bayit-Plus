@@ -1,16 +1,13 @@
 package tv.bayit.plus.feature.zehani.avatar
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import tv.bayit.plus.core.model.zehani.AvatarMesh
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
@@ -116,45 +114,73 @@ private fun Avatar3DContent(
                 },
             contentAlignment = Alignment.Center,
         ) {
-            Text(
-                text = "3D Avatar\nRotate: Drag\nZoom: Double-tap",
-                color = DesignTokens.Colors.Text.muted,
-                style = MaterialTheme.typography.bodyMedium,
-            )
-        }
-
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
-            Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
-                    text = "Controls",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = DesignTokens.Colors.Text.primary,
-                    fontWeight = FontWeight.SemiBold,
+                    text = "GLB Mesh Viewer",
+                    color = DesignTokens.Colors.Text.muted,
+                    style = MaterialTheme.typography.bodyMedium,
                 )
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
-                ) {
-                    GlassButton(
-                        text = if (state.isAnimating) "Pause" else "Animate",
-                        onClick = onToggleAnimation,
-                        modifier = Modifier.weight(1f),
-                    )
-                    GlassButton(
-                        text = "Reset",
-                        onClick = { onRotate(0f, 0f); onZoom(1f) },
-                        isPrimary = false,
-                        modifier = Modifier.weight(1f),
-                    )
-                }
+                Text(
+                    text = "Status: ${state.mesh.status}",
+                    color = DesignTokens.Colors.Text.secondary,
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
         }
 
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
-            Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs)) {
-                InfoRow("Rotation X", "${state.rotationX.toInt()}°")
-                InfoRow("Rotation Y", "${state.rotationY.toInt()}°")
-                InfoRow("Zoom", "${(state.zoomLevel * 100).toInt()}%")
+        MeshInfoCard(mesh = state.mesh)
+
+        ControlsCard(
+            state = state,
+            onRotate = onRotate,
+            onZoom = onZoom,
+            onToggleAnimation = onToggleAnimation,
+        )
+    }
+}
+
+@Composable
+private fun MeshInfoCard(mesh: AvatarMesh) {
+    GlassCard(modifier = Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs)) {
+            InfoRow("Vertices", mesh.vertexCount.toString())
+            InfoRow("Bones", mesh.boneCount.toString())
+            InfoRow("Blend Shapes", mesh.blendShapes.size.toString())
+            InfoRow("Has GLB", if (mesh.hasGlb) "Yes" else "No")
+        }
+    }
+}
+
+@Composable
+private fun ControlsCard(
+    state: Avatar3DUiState.Success,
+    onRotate: (Float, Float) -> Unit,
+    onZoom: (Float) -> Unit,
+    onToggleAnimation: () -> Unit,
+) {
+    GlassCard(modifier = Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
+            Text(
+                text = "Controls",
+                style = MaterialTheme.typography.titleMedium,
+                color = DesignTokens.Colors.Text.primary,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
+            ) {
+                GlassButton(
+                    text = if (state.isAnimating) "Pause" else "Animate",
+                    onClick = onToggleAnimation,
+                    modifier = Modifier.weight(1f),
+                )
+                GlassButton(
+                    text = "Reset",
+                    onClick = { onRotate(0f, 0f); onZoom(1f) },
+                    isPrimary = false,
+                    modifier = Modifier.weight(1f),
+                )
             }
         }
     }
@@ -178,7 +204,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
-            Text(text = message, color = DesignTokens.Colors.Semantic.error, style = MaterialTheme.typography.bodyLarge)
+            Text(text = message, color = DesignTokens.Colors.Semantic.error)
             GlassButton(text = "Retry", onClick = onRetry)
         }
     }

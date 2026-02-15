@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.zehani.feedback
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,9 +15,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FeedbackViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val zehAniRepository: ZehAniRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
+
+    private val profileId: String = savedStateHandle["profileId"] ?: "current"
 
     private val _feedbackText = MutableStateFlow("")
     val feedbackText: StateFlow<String> = _feedbackText.asStateFlow()
@@ -45,7 +49,7 @@ class FeedbackViewModel @Inject constructor(
             _uiState.value = FeedbackUiState.Submitting
             logger.debug("Submitting Zeh Ani feedback", mapOf("rating" to _rating.value.toString()))
 
-            when (val result = zehAniRepository.submitFeedback(_feedbackText.value, _rating.value)) {
+            when (val result = zehAniRepository.submitFeedback(profileId, _feedbackText.value, _rating.value)) {
                 is BayitResult.Success -> {
                     logger.info("Feedback submitted successfully")
                     _uiState.value = FeedbackUiState.Success

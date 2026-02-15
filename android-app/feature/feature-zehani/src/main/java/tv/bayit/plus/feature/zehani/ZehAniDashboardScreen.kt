@@ -30,10 +30,13 @@ import tv.bayit.plus.designsystem.theme.DesignTokens
 private const val GRID_COLUMNS = 2
 
 private val menuCards = listOf(
-    ZehAniMenuCard(ZehAniFeature.MAGIC_MIRROR, "Magic Mirror", "Identify faces in content"),
+    ZehAniMenuCard(ZehAniFeature.MAGIC_MIRROR, "Magic Mirror", "Daily greetings and face ID"),
     ZehAniMenuCard(ZehAniFeature.V2V_PRACTICE, "V2V Practice", "Voice-to-voice pronunciation"),
-    ZehAniMenuCard(ZehAniFeature.AVATAR_3D, "3D Avatar", "Your personalized avatar"),
-    ZehAniMenuCard(ZehAniFeature.HIGHLIGHTS, "Highlights", "Your saved highlight clips"),
+    ZehAniMenuCard(ZehAniFeature.AVATAR_3D, "3D Avatar", "Your personalized avatar mesh"),
+    ZehAniMenuCard(ZehAniFeature.HIGHLIGHTS, "Highlights", "Video highlight compilations"),
+    ZehAniMenuCard(ZehAniFeature.CONTACTS, "Contacts", "WhatsApp sharing contacts"),
+    ZehAniMenuCard(ZehAniFeature.FEEDBACK, "Feedback", "Share your experience"),
+    ZehAniMenuCard(ZehAniFeature.CONSENT, "Consent", "Biometric consent management"),
 )
 
 @Composable
@@ -42,6 +45,9 @@ fun ZehAniDashboardRoute(
     onNavigateToV2V: () -> Unit,
     onNavigateToAvatar3D: () -> Unit,
     onNavigateToHighlights: () -> Unit,
+    onNavigateToContacts: () -> Unit,
+    onNavigateToFeedback: () -> Unit,
+    onNavigateToConsent: () -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: ZehAniDashboardViewModel = hiltViewModel(),
@@ -56,6 +62,9 @@ fun ZehAniDashboardRoute(
                 ZehAniFeature.V2V_PRACTICE -> onNavigateToV2V()
                 ZehAniFeature.AVATAR_3D -> onNavigateToAvatar3D()
                 ZehAniFeature.HIGHLIGHTS -> onNavigateToHighlights()
+                ZehAniFeature.CONTACTS -> onNavigateToContacts()
+                ZehAniFeature.FEEDBACK -> onNavigateToFeedback()
+                ZehAniFeature.CONSENT -> onNavigateToConsent()
             }
         },
         onRetry = viewModel::retry,
@@ -75,7 +84,7 @@ internal fun ZehAniDashboardScreen(
         when (uiState) {
             is ZehAniDashboardUiState.Loading -> GlassLoadingIndicator()
             is ZehAniDashboardUiState.Success -> DashboardContent(
-                historyCount = uiState.historyCount,
+                activeConsentCount = uiState.activeConsentCount,
                 onFeatureSelected = onFeatureSelected,
             )
             is ZehAniDashboardUiState.Error -> DashboardError(
@@ -88,7 +97,7 @@ internal fun ZehAniDashboardScreen(
 
 @Composable
 private fun DashboardContent(
-    historyCount: Int,
+    activeConsentCount: Int,
     onFeatureSelected: (ZehAniFeature) -> Unit,
 ) {
     LazyVerticalGrid(
@@ -98,17 +107,17 @@ private fun DashboardContent(
         horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         modifier = Modifier.fillMaxSize(),
     ) {
-        item(key = "history_count", span = { GridItemSpan(GRID_COLUMNS) }) {
+        item(key = "consent_status", span = { GridItemSpan(GRID_COLUMNS) }) {
             GlassCard(modifier = Modifier.fillMaxWidth()) {
                 Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs)) {
                     Text(
-                        text = "Recognition History",
+                        text = "Biometric Consent",
                         style = MaterialTheme.typography.titleMedium,
                         color = DesignTokens.Colors.Text.primary,
                         fontWeight = FontWeight.SemiBold,
                     )
                     Text(
-                        text = "$historyCount identifications",
+                        text = "$activeConsentCount active consents",
                         style = MaterialTheme.typography.bodyMedium,
                         color = DesignTokens.Colors.Text.secondary,
                     )

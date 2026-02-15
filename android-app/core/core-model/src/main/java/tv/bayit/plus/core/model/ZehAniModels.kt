@@ -1,5 +1,6 @@
 package tv.bayit.plus.core.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable

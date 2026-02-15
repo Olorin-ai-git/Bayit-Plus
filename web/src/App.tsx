@@ -165,6 +165,16 @@ const TriviaAnalyticsPage = lazy(() => import('./pages/admin/TriviaAnalyticsPage
 const SystemDiagnosticsPage = lazy(() => import('./pages/admin/SystemDiagnosticsPage'))
 const LiveAIDataFlowPage = lazy(() => import('./pages/admin/LiveAIDataFlowPage'))
 
+// Zeh Ani pages (Me in the Story - AI avatar features)
+const ZehAniHubPage = lazy(() => import('./pages/ZehAniHubPage'))
+const MagicMirrorPage = lazy(() => import('./pages/MagicMirrorPage'))
+const V2VPracticePage = lazy(() => import('./pages/V2VPracticePage'))
+const HighlightReelsPage = lazy(() => import('./pages/HighlightReelsPage'))
+const ContactsManagementPage = lazy(() => import('./pages/ContactsManagementPage'))
+const FeedbackInboxPage = lazy(() => import('./pages/FeedbackInboxPage'))
+const Avatar3DPage = lazy(() => import('./pages/Avatar3DPage'))
+const BiometricConsentPage = lazy(() => import('./pages/BiometricConsentPage'))
+
 // Auth hydration guard wrapper
 const AppContent = () => {
   const { isHydrated, isLoading } = useAuthStore()
@@ -319,6 +329,17 @@ const AppContent = () => {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/help" element={<HelpPage />} />
         <Route path="/support" element={<SupportPage />} />
+
+        {/* Zeh Ani (Me in the Story) Routes - AI Avatar Features */}
+        <Route path="/zeh-ani" element={<ZehAniHubPage />} />
+        <Route path="/zeh-ani/magic-mirror" element={<MagicMirrorPage />} />
+        <Route path="/zeh-ani/v2v" element={<V2VPracticePage />} />
+        <Route path="/zeh-ani/highlights" element={<HighlightReelsPage />} />
+        <Route path="/zeh-ani/contacts" element={<ContactsManagementPage />} />
+        <Route path="/zeh-ani/feedback" element={<FeedbackInboxPage />} />
+        <Route path="/zeh-ani/avatar" element={<Avatar3DPage />} />
+        <Route path="/zeh-ani/consent" element={<BiometricConsentPage />} />
+
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

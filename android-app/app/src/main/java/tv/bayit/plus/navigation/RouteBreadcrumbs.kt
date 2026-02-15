@@ -71,6 +71,7 @@ internal val routeLabels = mapOf(
     "ZehAniContacts" to "Contacts",
     "ZehAniFeedback" to "Feedback",
     "ZehAniAvatarSettings" to "Avatar Settings",
+    "ZehAniConsent" to "Biometric Consent",
     "Login" to "Login",
     "Register" to "Register",
     "ForgotPassword" to "Forgot Password",

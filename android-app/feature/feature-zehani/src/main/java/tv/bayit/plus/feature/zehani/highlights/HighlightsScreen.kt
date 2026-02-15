@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import tv.bayit.plus.core.model.zehani.HighlightReel
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
@@ -35,7 +36,7 @@ fun HighlightsRoute(
     HighlightsScreen(
         uiState = uiState,
         onRefresh = viewModel::refresh,
-        onShare = viewModel::shareHighlight,
+        onGenerate = viewModel::generateReel,
         onNavigateBack = onNavigateBack,
         onRetry = viewModel::retry,
         modifier = modifier,
@@ -46,7 +47,7 @@ fun HighlightsRoute(
 internal fun HighlightsScreen(
     uiState: HighlightsUiState,
     onRefresh: () -> Unit,
-    onShare: (String) -> Unit,
+    onGenerate: () -> Unit,
     onNavigateBack: () -> Unit,
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
@@ -60,7 +61,7 @@ internal fun HighlightsScreen(
                 highlights = uiState.highlights,
                 isRefreshing = uiState.isRefreshing,
                 onRefresh = onRefresh,
-                onShare = onShare,
+                onGenerate = onGenerate,
             )
         }
     }
@@ -68,21 +69,32 @@ internal fun HighlightsScreen(
 
 @Composable
 private fun HighlightsContent(
-    highlights: List<Any>,
+    highlights: List<HighlightReel>,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
-    onShare: (String) -> Unit,
+    onGenerate: () -> Unit,
 ) {
     PullToRefreshBox(isRefreshing = isRefreshing, onRefresh = onRefresh) {
         LazyColumn(
             modifier = Modifier.fillMaxSize().padding(horizontal = DesignTokens.Spacing.base),
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
         ) {
+            item {
+                GlassButton(
+                    text = "Generate New Reel",
+                    onClick = onGenerate,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+
             if (highlights.isEmpty()) {
                 item {
-                    Box(modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl), contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl),
+                        contentAlignment = Alignment.Center,
+                    ) {
                         Text(
-                            text = "No highlights yet.\nUse Magic Mirror to identify faces!",
+                            text = "No highlights yet",
                             color = DesignTokens.Colors.Text.muted,
                             style = MaterialTheme.typography.bodyLarge,
                         )
@@ -90,33 +102,49 @@ private fun HighlightsContent(
                 }
             }
 
-            items(highlights, key = { it.hashCode() }) { highlight ->
-                GlassCard(modifier = Modifier.fillMaxWidth()) {
-                    Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
-                        Text(
-                            text = highlight.toString(),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = DesignTokens.Colors.Text.primary,
-                            fontWeight = FontWeight.Medium,
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
-                        ) {
-                            GlassButton(
-                                text = "Share",
-                                onClick = { onShare(highlight.hashCode().toString()) },
-                                modifier = Modifier.weight(1f),
-                            )
-                            GlassButton(
-                                text = "Details",
-                                onClick = { },
-                                isPrimary = false,
-                                modifier = Modifier.weight(1f),
-                            )
-                        }
-                    }
-                }
+            items(highlights, key = { it.id }) { reel ->
+                ReelCard(reel = reel)
+            }
+        }
+    }
+}
+
+@Composable
+private fun ReelCard(reel: HighlightReel) {
+    GlassCard(modifier = Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = "Reel ${reel.id.take(8)}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = DesignTokens.Colors.Text.primary,
+                    fontWeight = FontWeight.Medium,
+                )
+                Text(
+                    text = reel.status,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = when (reel.status) {
+                        "ready" -> DesignTokens.Colors.Semantic.success
+                        "generating" -> DesignTokens.Colors.Primary.base
+                        else -> DesignTokens.Colors.Text.muted
+                    },
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+            Text(
+                text = "${reel.momentCount} moments",
+                style = MaterialTheme.typography.bodySmall,
+                color = DesignTokens.Colors.Text.secondary,
+            )
+            if (reel.shareToken != null) {
+                Text(
+                    text = "Shareable link available",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = DesignTokens.Colors.Primary.light,
+                )
             }
         }
     }
@@ -129,7 +157,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
-            Text(text = message, color = DesignTokens.Colors.Semantic.error, style = MaterialTheme.typography.bodyLarge)
+            Text(text = message, color = DesignTokens.Colors.Semantic.error)
             GlassButton(text = "Retry", onClick = onRetry)
         }
     }

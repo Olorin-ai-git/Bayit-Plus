@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.zehani.highlights
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,13 +11,17 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ZehAniRepository
+import tv.bayit.plus.core.model.zehani.HighlightReel
 import javax.inject.Inject
 
 @HiltViewModel
 class HighlightsViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val zehAniRepository: ZehAniRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
+
+    private val profileId: String = savedStateHandle["profileId"] ?: "current"
 
     private val _uiState = MutableStateFlow<HighlightsUiState>(HighlightsUiState.Loading)
     val uiState: StateFlow<HighlightsUiState> = _uiState.asStateFlow()
@@ -33,15 +38,16 @@ class HighlightsViewModel @Inject constructor(
         loadHighlights()
     }
 
-    fun shareHighlight(highlightId: String) {
+    fun generateReel() {
         viewModelScope.launch {
-            logger.debug("Sharing highlight", mapOf("highlightId" to highlightId))
-            when (val result = zehAniRepository.shareIdentification(highlightId)) {
+            logger.debug("Generating highlight reel", mapOf("profileId" to profileId))
+            when (val result = zehAniRepository.generateHighlightReel("default", profileId)) {
                 is BayitResult.Success -> {
-                    logger.info("Highlight shared", mapOf("highlightId" to highlightId))
+                    logger.info("Highlight reel generation started", mapOf("status" to result.data.status))
+                    loadHighlights()
                 }
                 is BayitResult.Error -> {
-                    logger.error("Share highlight failed", result.exception)
+                    logger.error("Highlight reel generation failed", result.exception)
                 }
                 is BayitResult.Loading -> Unit
             }
@@ -55,13 +61,13 @@ class HighlightsViewModel @Inject constructor(
 
     private fun loadHighlights() {
         viewModelScope.launch {
-            logger.debug("Loading Zeh Ani highlights")
-            when (val result = zehAniRepository.getIdentificationHistory()) {
+            logger.debug("Loading highlight reels", mapOf("profileId" to profileId))
+            when (val result = zehAniRepository.listHighlightReels(profileId)) {
                 is BayitResult.Success -> {
-                    val highlights = result.data
-                    logger.info("Highlights loaded", mapOf("count" to highlights.size.toString()))
+                    val reels = result.data
+                    logger.info("Highlights loaded", mapOf("count" to reels.size.toString()))
                     _uiState.value = HighlightsUiState.Success(
-                        highlights = highlights,
+                        highlights = reels,
                         isRefreshing = false,
                     )
                 }
@@ -81,7 +87,7 @@ sealed interface HighlightsUiState {
     data object Loading : HighlightsUiState
 
     data class Success(
-        val highlights: List<Any>,
+        val highlights: List<HighlightReel>,
         val isRefreshing: Boolean,
     ) : HighlightsUiState
 

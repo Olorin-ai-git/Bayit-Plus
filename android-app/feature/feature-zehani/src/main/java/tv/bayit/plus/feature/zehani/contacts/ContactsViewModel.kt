@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.zehani.contacts
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,13 +11,17 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ZehAniRepository
+import tv.bayit.plus.core.model.zehani.WhatsAppContact
 import javax.inject.Inject
 
 @HiltViewModel
 class ContactsViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val zehAniRepository: ZehAniRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
+
+    private val profileId: String = savedStateHandle["profileId"] ?: "current"
 
     private val _uiState = MutableStateFlow<ContactsUiState>(ContactsUiState.Loading)
     val uiState: StateFlow<ContactsUiState> = _uiState.asStateFlow()
@@ -35,18 +40,21 @@ class ContactsViewModel @Inject constructor(
             current.allContacts
         } else {
             current.allContacts.filter {
-                it.toString().contains(query, ignoreCase = true)
+                it.displayName.contains(query, ignoreCase = true) ||
+                    it.relationship.contains(query, ignoreCase = true)
             }
         }
         _uiState.value = current.copy(filteredContacts = filtered)
     }
 
-    fun addContact(name: String, photoUri: String?) {
+    fun addContact(displayName: String, phoneNumber: String, pin: String) {
         viewModelScope.launch {
-            logger.debug("Adding Zeh Ani contact", mapOf("name" to name))
-            when (val result = zehAniRepository.addContact(name, photoUri)) {
+            logger.debug("Adding WhatsApp contact", mapOf("name" to displayName))
+            when (val result = zehAniRepository.addContact(
+                profileId, phoneNumber, displayName, "grandparent", "he", pin,
+            )) {
                 is BayitResult.Success -> {
-                    logger.info("Contact added", mapOf("name" to name))
+                    logger.info("Contact added", mapOf("contactId" to result.data.id))
                     loadContacts()
                 }
                 is BayitResult.Error -> {
@@ -81,8 +89,8 @@ class ContactsViewModel @Inject constructor(
 
     private fun loadContacts() {
         viewModelScope.launch {
-            logger.debug("Loading Zeh Ani contacts")
-            when (val result = zehAniRepository.getContacts()) {
+            logger.debug("Loading WhatsApp contacts", mapOf("profileId" to profileId))
+            when (val result = zehAniRepository.listContacts(profileId)) {
                 is BayitResult.Success -> {
                     val contacts = result.data
                     logger.info("Contacts loaded", mapOf("count" to contacts.size.toString()))
@@ -107,8 +115,8 @@ sealed interface ContactsUiState {
     data object Loading : ContactsUiState
 
     data class Success(
-        val allContacts: List<Any>,
-        val filteredContacts: List<Any>,
+        val allContacts: List<WhatsAppContact>,
+        val filteredContacts: List<WhatsAppContact>,
     ) : ContactsUiState
 
     data class Error(val message: String) : ContactsUiState

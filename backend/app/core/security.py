@@ -61,7 +61,7 @@ async def get_current_user(
     )
 
     token = credentials.credentials
-    payload = decode_token(token)
+    payload = await decode_token(token)
 
     if payload is None:
         raise credentials_exception

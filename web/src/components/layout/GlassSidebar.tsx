@@ -79,6 +79,12 @@ const baseMenuSections: MenuSection[] = [
     ],
   },
   {
+    titleKey: 'nav.zehAni',
+    items: [
+      { id: 'zehAni', icon: 'avatar', labelKey: 'nav.zehAniHub', path: '/zeh-ani' },
+    ],
+  },
+  {
     titleKey: 'nav.favorites',
     items: [
       { id: 'playlist', icon: 'playlist', labelKey: 'nav.playlist' },

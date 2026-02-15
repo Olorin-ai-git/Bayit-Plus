@@ -1,5 +1,6 @@
 package tv.bayit.plus.feature.zehani.v2v
 
+import android.util.Base64
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,13 +11,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
-import tv.bayit.plus.core.data.repository.PhoneticMirrorRepository
+import tv.bayit.plus.core.data.repository.ZehAniRepository
+import tv.bayit.plus.core.model.zehani.V2VSession
+import tv.bayit.plus.core.model.zehani.V2VTransformResult
 import javax.inject.Inject
 
 @HiltViewModel
 class V2VPracticeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val phoneticMirrorRepository: PhoneticMirrorRepository,
+    private val zehAniRepository: ZehAniRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -36,41 +39,21 @@ class V2VPracticeViewModel @Inject constructor(
 
     fun stopRecording(audioData: ByteArray, practiceText: String) {
         _isRecording.value = false
-        logger.debug("Voice recording stopped, submitting attempt", mapOf("profileId" to profileId))
+        logger.debug("Voice recording stopped, submitting", mapOf("profileId" to profileId))
         submitAttempt(practiceText, audioData)
-    }
-
-    fun loadPhoneticGuide(text: String, languageCode: String) {
-        viewModelScope.launch {
-            _uiState.value = V2VPracticeUiState.LoadingGuide
-            logger.debug("Loading phonetic guide", mapOf("text" to text, "language" to languageCode))
-
-            when (val result = phoneticMirrorRepository.getPhoneticGuide(text, languageCode)) {
-                is BayitResult.Success -> {
-                    logger.info("Phonetic guide loaded")
-                    _uiState.value = V2VPracticeUiState.GuideLoaded(result.data)
-                }
-                is BayitResult.Error -> {
-                    logger.error("Phonetic guide load failed", result.exception)
-                    _uiState.value = V2VPracticeUiState.Error(
-                        result.message ?: result.exception.message.orEmpty(),
-                    )
-                }
-                is BayitResult.Loading -> Unit
-            }
-        }
     }
 
     fun loadProgress() {
         viewModelScope.launch {
-            logger.debug("Loading V2V progress", mapOf("profileId" to profileId))
-            when (val result = phoneticMirrorRepository.getProgress()) {
+            _uiState.value = V2VPracticeUiState.LoadingGuide
+            logger.debug("Loading V2V sessions", mapOf("profileId" to profileId))
+            when (val result = zehAniRepository.getV2VSessions(profileId)) {
                 is BayitResult.Success -> {
-                    logger.info("V2V progress loaded")
-                    _uiState.value = V2VPracticeUiState.ProgressLoaded(result.data)
+                    logger.info("V2V sessions loaded", mapOf("total" to result.data.total.toString()))
+                    _uiState.value = V2VPracticeUiState.ProgressLoaded(result.data.sessions)
                 }
                 is BayitResult.Error -> {
-                    logger.error("V2V progress load failed", result.exception)
+                    logger.error("V2V sessions load failed", result.exception)
                     _uiState.value = V2VPracticeUiState.Error(
                         result.message ?: result.exception.message.orEmpty(),
                     )
@@ -89,13 +72,15 @@ class V2VPracticeViewModel @Inject constructor(
             _uiState.value = V2VPracticeUiState.Analyzing
             logger.debug("Submitting pronunciation attempt")
 
-            when (val result = phoneticMirrorRepository.submitPronunciationAttempt(text, audioData)) {
+            val audioBase64 = Base64.encodeToString(audioData, Base64.NO_WRAP)
+
+            when (val result = zehAniRepository.transformVoice(avatarId, profileId, audioBase64, text)) {
                 is BayitResult.Success -> {
                     logger.info("Pronunciation feedback received")
                     _uiState.value = V2VPracticeUiState.FeedbackReady(result.data)
                 }
                 is BayitResult.Error -> {
-                    logger.error("Pronunciation attempt submission failed", result.exception)
+                    logger.error("Pronunciation attempt failed", result.exception)
                     _uiState.value = V2VPracticeUiState.Error(
                         result.message ?: result.exception.message.orEmpty(),
                     )
@@ -110,8 +95,7 @@ sealed interface V2VPracticeUiState {
     data object Ready : V2VPracticeUiState
     data object LoadingGuide : V2VPracticeUiState
     data object Analyzing : V2VPracticeUiState
-    data class GuideLoaded(val guide: Any) : V2VPracticeUiState
-    data class FeedbackReady(val feedback: Any) : V2VPracticeUiState
-    data class ProgressLoaded(val progress: Any) : V2VPracticeUiState
+    data class FeedbackReady(val feedback: V2VTransformResult) : V2VPracticeUiState
+    data class ProgressLoaded(val sessions: List<V2VSession>) : V2VPracticeUiState
     data class Error(val message: String) : V2VPracticeUiState
 }

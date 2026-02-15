@@ -10,8 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +25,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import tv.bayit.plus.core.model.zehani.V2VSession
+import tv.bayit.plus.core.model.zehani.V2VTransformResult
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
@@ -76,13 +79,12 @@ internal fun V2VPracticeScreen(
             )
             is V2VPracticeUiState.LoadingGuide -> GlassLoadingIndicator()
             is V2VPracticeUiState.Analyzing -> AnalyzingSection()
-            is V2VPracticeUiState.GuideLoaded -> GuideSection(guide = uiState.guide, onReset = onReset)
             is V2VPracticeUiState.FeedbackReady -> FeedbackSection(
                 feedback = uiState.feedback,
                 onReset = onReset,
             )
             is V2VPracticeUiState.ProgressLoaded -> ProgressSection(
-                progress = uiState.progress,
+                sessions = uiState.sessions,
                 onReset = onReset,
             )
             is V2VPracticeUiState.Error -> ErrorSection(message = uiState.message, onRetry = onReset)
@@ -142,38 +144,13 @@ private fun AnalyzingSection() {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             GlassLoadingIndicator()
             Spacer(modifier = Modifier.height(DesignTokens.Spacing.md))
-            Text(
-                text = "Analyzing pronunciation...",
-                color = DesignTokens.Colors.Text.secondary,
-                style = MaterialTheme.typography.bodyMedium,
-            )
+            Text(text = "Analyzing pronunciation...", color = DesignTokens.Colors.Text.secondary)
         }
     }
 }
 
 @Composable
-private fun GuideSection(guide: Any, onReset: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(DesignTokens.Spacing.base),
-        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
-    ) {
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
-            Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
-                Text(
-                    text = "Phonetic Guide",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = DesignTokens.Colors.Text.primary,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(text = guide.toString(), color = DesignTokens.Colors.Text.secondary)
-            }
-        }
-        GlassButton(text = "Back to Recording", onClick = onReset)
-    }
-}
-
-@Composable
-private fun FeedbackSection(feedback: Any, onReset: () -> Unit) {
+private fun FeedbackSection(feedback: V2VTransformResult, onReset: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize().padding(DesignTokens.Spacing.base),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -187,7 +164,15 @@ private fun FeedbackSection(feedback: Any, onReset: () -> Unit) {
                     color = DesignTokens.Colors.Text.primary,
                     fontWeight = FontWeight.SemiBold,
                 )
-                Text(text = feedback.toString(), color = DesignTokens.Colors.Text.secondary)
+                Text(
+                    text = "Similarity: ${(feedback.similarityScore * 100).toInt()}%",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = DesignTokens.Colors.Primary.light,
+                    fontWeight = FontWeight.Bold,
+                )
+                if (feedback.pronunciationFeedback != null) {
+                    Text(text = feedback.pronunciationFeedback, color = DesignTokens.Colors.Text.secondary)
+                }
             }
         }
         GlassButton(text = "Try Again", onClick = onReset)
@@ -195,23 +180,31 @@ private fun FeedbackSection(feedback: Any, onReset: () -> Unit) {
 }
 
 @Composable
-private fun ProgressSection(progress: Any, onReset: () -> Unit) {
-    Column(
+private fun ProgressSection(sessions: List<V2VSession>, onReset: () -> Unit) {
+    LazyColumn(
         modifier = Modifier.fillMaxSize().padding(DesignTokens.Spacing.base),
-        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
+        verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm),
     ) {
-        GlassCard(modifier = Modifier.fillMaxWidth()) {
-            Column(verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.sm)) {
-                Text(
-                    text = "Your Progress",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = DesignTokens.Colors.Text.primary,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Text(text = progress.toString(), color = DesignTokens.Colors.Text.secondary)
+        item {
+            Text(
+                text = "Your Progress",
+                style = MaterialTheme.typography.titleMedium,
+                color = DesignTokens.Colors.Text.primary,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+        items(sessions, key = { it.id }) { session ->
+            GlassCard(modifier = Modifier.fillMaxWidth()) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Column {
+                        Text(text = "Transforms: ${session.totalTransforms}", color = DesignTokens.Colors.Text.primary)
+                        Text(text = "Improvement: ${(session.scoreImprovement * 100).toInt()}%", color = DesignTokens.Colors.Text.secondary)
+                    }
+                    Text(text = session.status, color = DesignTokens.Colors.Text.muted, fontSize = DesignTokens.FontSize.sm)
+                }
             }
         }
-        GlassButton(text = "Continue Practicing", onClick = onReset)
+        item { GlassButton(text = "Continue Practicing", onClick = onReset) }
     }
 }
 

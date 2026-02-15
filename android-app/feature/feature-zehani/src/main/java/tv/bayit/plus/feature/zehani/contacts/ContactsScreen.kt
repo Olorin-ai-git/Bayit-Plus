@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import tv.bayit.plus.core.model.zehani.WhatsAppContact
 import tv.bayit.plus.designsystem.component.GlassButton
 import tv.bayit.plus.designsystem.component.GlassCard
 import tv.bayit.plus.designsystem.component.GlassLoadingIndicator
@@ -39,7 +40,6 @@ fun ContactsRoute(
         uiState = uiState,
         searchQuery = searchQuery,
         onSearchQueryChange = viewModel::updateSearchQuery,
-        onAddContact = { viewModel.addContact("New Contact", null) },
         onDeleteContact = viewModel::deleteContact,
         onNavigateBack = onNavigateBack,
         onRetry = viewModel::retry,
@@ -52,7 +52,6 @@ internal fun ContactsScreen(
     uiState: ContactsUiState,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    onAddContact: () -> Unit,
     onDeleteContact: (String) -> Unit,
     onNavigateBack: () -> Unit,
     onRetry: () -> Unit,
@@ -67,7 +66,6 @@ internal fun ContactsScreen(
                 contacts = uiState.filteredContacts,
                 searchQuery = searchQuery,
                 onSearchQueryChange = onSearchQueryChange,
-                onAddContact = onAddContact,
                 onDeleteContact = onDeleteContact,
             )
         }
@@ -76,10 +74,9 @@ internal fun ContactsScreen(
 
 @Composable
 private fun ContactsContent(
-    contacts: List<Any>,
+    contacts: List<WhatsAppContact>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
-    onAddContact: () -> Unit,
     onDeleteContact: (String) -> Unit,
 ) {
     LazyColumn(
@@ -94,19 +91,16 @@ private fun ContactsContent(
                 placeholder = "Search contacts...",
             )
             Spacer(Modifier.height(DesignTokens.Spacing.sm))
-            GlassButton(
-                text = "Add Contact",
-                onClick = onAddContact,
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Spacer(Modifier.height(DesignTokens.Spacing.sm))
         }
 
         if (contacts.isEmpty()) {
             item {
-                Box(modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(DesignTokens.Spacing.xxl),
+                    contentAlignment = Alignment.Center,
+                ) {
                     Text(
-                        text = if (searchQuery.isBlank()) "No contacts yet.\nAdd your first contact!" else "No matching contacts found.",
+                        text = if (searchQuery.isBlank()) "No contacts yet" else "No matching contacts",
                         color = DesignTokens.Colors.Text.muted,
                         style = MaterialTheme.typography.bodyLarge,
                     )
@@ -114,27 +108,41 @@ private fun ContactsContent(
             }
         }
 
-        items(contacts, key = { it.hashCode() }) { contact ->
-            GlassCard(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = contact.toString(),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = DesignTokens.Colors.Text.primary,
-                            fontWeight = FontWeight.Medium,
-                        )
-                    }
-                    Row(horizontalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xs)) {
-                        GlassButton(text = "Edit", onClick = { }, isPrimary = false)
-                        GlassButton(text = "Delete", onClick = { onDeleteContact(contact.hashCode().toString()) }, isPrimary = false)
-                    }
+        items(contacts, key = { it.id }) { contact ->
+            ContactCard(contact = contact, onDelete = { onDeleteContact(contact.id) })
+        }
+    }
+}
+
+@Composable
+private fun ContactCard(contact: WhatsAppContact, onDelete: () -> Unit) {
+    GlassCard(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = contact.displayName,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = DesignTokens.Colors.Text.primary,
+                    fontWeight = FontWeight.Medium,
+                )
+                Text(
+                    text = "${contact.relationship} - ${contact.language}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = DesignTokens.Colors.Text.secondary,
+                )
+                if (contact.totalReelsSent > 0) {
+                    Text(
+                        text = "${contact.totalReelsSent} reels shared",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = DesignTokens.Colors.Text.muted,
+                    )
                 }
             }
+            GlassButton(text = "Remove", onClick = onDelete, isPrimary = false)
         }
     }
 }
@@ -146,7 +154,7 @@ private fun ErrorContent(message: String, onRetry: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
         ) {
-            Text(text = message, color = DesignTokens.Colors.Semantic.error, style = MaterialTheme.typography.bodyLarge)
+            Text(text = message, color = DesignTokens.Colors.Semantic.error)
             GlassButton(text = "Retry", onClick = onRetry)
         }
     }

@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ZehAniRepository
+import tv.bayit.plus.core.model.zehani.MagicMirrorGreeting
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,21 +23,25 @@ class MagicMirrorViewModel @Inject constructor(
 
     val profileId: String = checkNotNull(savedStateHandle["profileId"])
 
-    private val _uiState = MutableStateFlow<MagicMirrorUiState>(MagicMirrorUiState.CameraReady)
+    private val _uiState = MutableStateFlow<MagicMirrorUiState>(MagicMirrorUiState.Loading)
     val uiState: StateFlow<MagicMirrorUiState> = _uiState.asStateFlow()
 
-    fun identifyFromCapture(imageData: ByteArray) {
-        viewModelScope.launch {
-            _uiState.value = MagicMirrorUiState.Processing
-            logger.debug("Identifying person from capture", mapOf("profileId" to profileId))
+    init {
+        loadGreeting()
+    }
 
-            when (val result = zehAniRepository.identifyPerson(imageData)) {
+    fun refreshGreeting() {
+        viewModelScope.launch {
+            _uiState.value = MagicMirrorUiState.Loading
+            logger.debug("Refreshing greeting", mapOf("profileId" to profileId))
+
+            when (val result = zehAniRepository.refreshGreeting(profileId)) {
                 is BayitResult.Success -> {
-                    logger.info("Person identified", mapOf("profileId" to profileId))
-                    _uiState.value = MagicMirrorUiState.ResultReady(result.data)
+                    logger.info("Greeting refreshed", mapOf("profileId" to profileId))
+                    _uiState.value = MagicMirrorUiState.GreetingReady(result.data)
                 }
                 is BayitResult.Error -> {
-                    logger.error("Face identification failed", result.exception)
+                    logger.error("Greeting refresh failed", result.exception)
                     _uiState.value = MagicMirrorUiState.Error(
                         result.message ?: result.exception.message.orEmpty(),
                     )
@@ -46,18 +51,22 @@ class MagicMirrorViewModel @Inject constructor(
         }
     }
 
-    fun getPersonDetails(personId: String) {
-        viewModelScope.launch {
-            _uiState.value = MagicMirrorUiState.Processing
-            logger.debug("Loading person details", mapOf("personId" to personId))
+    fun retry() {
+        _uiState.value = MagicMirrorUiState.Loading
+        loadGreeting()
+    }
 
-            when (val result = zehAniRepository.getPersonDetails(personId)) {
+    private fun loadGreeting() {
+        viewModelScope.launch {
+            logger.debug("Loading daily greeting", mapOf("profileId" to profileId))
+
+            when (val result = zehAniRepository.getDailyGreeting(profileId)) {
                 is BayitResult.Success -> {
-                    logger.info("Person details loaded", mapOf("personId" to personId))
-                    _uiState.value = MagicMirrorUiState.PersonDetail(result.data)
+                    logger.info("Daily greeting loaded", mapOf("profileId" to profileId))
+                    _uiState.value = MagicMirrorUiState.GreetingReady(result.data)
                 }
                 is BayitResult.Error -> {
-                    logger.error("Person details load failed", result.exception)
+                    logger.error("Daily greeting load failed", result.exception)
                     _uiState.value = MagicMirrorUiState.Error(
                         result.message ?: result.exception.message.orEmpty(),
                     )
@@ -65,17 +74,11 @@ class MagicMirrorViewModel @Inject constructor(
                 is BayitResult.Loading -> Unit
             }
         }
-    }
-
-    fun resetToCamera() {
-        _uiState.value = MagicMirrorUiState.CameraReady
     }
 }
 
 sealed interface MagicMirrorUiState {
-    data object CameraReady : MagicMirrorUiState
-    data object Processing : MagicMirrorUiState
-    data class ResultReady(val identificationResult: Any) : MagicMirrorUiState
-    data class PersonDetail(val person: Any) : MagicMirrorUiState
+    data object Loading : MagicMirrorUiState
+    data class GreetingReady(val greeting: MagicMirrorGreeting) : MagicMirrorUiState
     data class Error(val message: String) : MagicMirrorUiState
 }

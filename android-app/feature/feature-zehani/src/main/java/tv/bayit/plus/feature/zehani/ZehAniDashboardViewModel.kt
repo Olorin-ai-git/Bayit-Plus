@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.data.repository.ZehAniRepository
-import tv.bayit.plus.core.model.ZehAniProfile
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,14 +33,15 @@ class ZehAniDashboardViewModel @Inject constructor(
     private fun loadDashboard() {
         viewModelScope.launch {
             logger.debug("Loading Zeh Ani dashboard")
-            when (val result = zehAniRepository.getRecognitionHistory()) {
+            when (val result = zehAniRepository.checkBiometricConsent("current")) {
                 is BayitResult.Success -> {
+                    val consentCount = result.data.consents.count { it.active }
                     logger.info(
                         "Zeh Ani dashboard loaded",
-                        mapOf("historyCount" to result.data.size.toString()),
+                        mapOf("activeConsents" to consentCount.toString()),
                     )
                     _uiState.value = ZehAniDashboardUiState.Success(
-                        historyCount = result.data.size,
+                        activeConsentCount = consentCount,
                     )
                 }
                 is BayitResult.Error -> {
@@ -58,7 +58,7 @@ class ZehAniDashboardViewModel @Inject constructor(
 
 sealed interface ZehAniDashboardUiState {
     data object Loading : ZehAniDashboardUiState
-    data class Success(val historyCount: Int) : ZehAniDashboardUiState
+    data class Success(val activeConsentCount: Int) : ZehAniDashboardUiState
     data class Error(val message: String) : ZehAniDashboardUiState
 }
 
@@ -73,4 +73,7 @@ enum class ZehAniFeature {
     V2V_PRACTICE,
     AVATAR_3D,
     HIGHLIGHTS,
+    CONTACTS,
+    FEEDBACK,
+    CONSENT,
 }

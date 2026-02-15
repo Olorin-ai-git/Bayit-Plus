@@ -10,13 +10,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
-import tv.bayit.plus.core.data.repository.AvatarMeshRepository
+import tv.bayit.plus.core.data.repository.ZehAniRepository
+import tv.bayit.plus.core.model.zehani.AvatarMesh
 import javax.inject.Inject
 
 @HiltViewModel
 class Avatar3DViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val avatarMeshRepository: AvatarMeshRepository,
+    private val zehAniRepository: ZehAniRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
@@ -52,11 +53,11 @@ class Avatar3DViewModel @Inject constructor(
     private fun loadAvatar3D() {
         viewModelScope.launch {
             logger.debug("Loading 3D avatar mesh", mapOf("avatarId" to avatarId))
-            when (val result = avatarMeshRepository.getAvatarMesh(avatarId)) {
+            when (val result = zehAniRepository.getMeshStatus(avatarId)) {
                 is BayitResult.Success -> {
                     logger.info("3D avatar mesh loaded", mapOf("avatarId" to avatarId))
                     _uiState.value = Avatar3DUiState.Success(
-                        meshData = result.data,
+                        mesh = result.data,
                         rotationX = 0f,
                         rotationY = 0f,
                         zoomLevel = 1f,
@@ -79,7 +80,7 @@ sealed interface Avatar3DUiState {
     data object Loading : Avatar3DUiState
 
     data class Success(
-        val meshData: Any,
+        val mesh: AvatarMesh,
         val rotationX: Float,
         val rotationY: Float,
         val zoomLevel: Float,
