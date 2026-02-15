@@ -1,6 +1,8 @@
 package tv.bayit.plus.navigation
 
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -104,6 +106,7 @@ import tv.bayit.plus.feature.zehani.contacts.ContactsRoute
 import tv.bayit.plus.feature.zehani.feedback.FeedbackRoute
 import tv.bayit.plus.feature.zehani.highlights.HighlightsRoute
 import tv.bayit.plus.feature.zehani.mirror.MagicMirrorRoute
+import tv.bayit.plus.feature.zehani.consent.BiometricConsentRoute
 import tv.bayit.plus.feature.zehani.settings.AvatarSettingsRoute
 import tv.bayit.plus.feature.zehani.v2v.V2VPracticeRoute
 
@@ -482,6 +485,9 @@ fun BayitNavHost(
                 onNavigateToV2V = { navController.navigate(Route.ZehAniV2V(avatarId = "default", profileId = "current")) },
                 onNavigateToAvatar3D = { navController.navigate(Route.ZehAniAvatar3D(avatarId = "default")) },
                 onNavigateToHighlights = { navController.navigate(Route.ZehAniHighlights(profileId = "current")) },
+                onNavigateToContacts = { navController.navigate(Route.ZehAniContacts(profileId = "current")) },
+                onNavigateToFeedback = { navController.navigate(Route.ZehAniFeedback(profileId = "current")) },
+                onNavigateToConsent = { navController.navigate(Route.ZehAniConsent) },
                 onNavigateBack = { navController.popBackStack() },
             )
         }
@@ -505,6 +511,9 @@ fun BayitNavHost(
         }
         composable<Route.ZehAniAvatarSettings> {
             AvatarSettingsRoute(onNavigateBack = { navController.popBackStack() })
+        }
+        composable<Route.ZehAniConsent> {
+            BiometricConsentRoute(onNavigateBack = { navController.popBackStack() })
         }
         composable<Route.MissionsDashboard> {
             MissionsDashboardRoute(
@@ -562,8 +571,13 @@ fun BayitNavHost(
             })
         }
         composable<Route.Subscribe> {
+            val context = LocalContext.current
             SubscribeRoute(
-                onNavigateToCheckout = { /* Stripe checkout handled externally */ },
+                onNavigateToCheckout = { checkoutUrl ->
+                    // Launch Stripe checkout in browser
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(checkoutUrl))
+                    context.startActivity(intent)
+                },
                 onNavigateBack = { navController.popBackStack() },
             )
         }

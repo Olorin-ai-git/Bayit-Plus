@@ -16,20 +16,21 @@ export const isProduction = APP_MODE === 'production';
 
 // Get correct API URL based on platform
 const getApiBaseUrl = () => {
-  // Check for explicit environment variable first
-  if (process.env.REACT_APP_API_BASE_URL) {
-    return process.env.REACT_APP_API_BASE_URL;
+  const url = process.env.REACT_APP_API_BASE_URL;
+
+  if (!url) {
+    if (__DEV__) {
+      logger.info('Using development API URL', { url: 'http://localhost:8000/api/v1' });
+      return 'http://localhost:8000/api/v1';
+    }
+
+    const error = 'REACT_APP_API_BASE_URL environment variable is required in production';
+    logger.error(error, { env: process.env.NODE_ENV });
+    throw new Error(`[tvOS AppConfig] ${error}. Set this at build time.`);
   }
 
-  if (!__DEV__) {
-    throw new Error(
-      '[tvOS AppConfig] REACT_APP_API_BASE_URL environment variable is required in production. ' +
-      'Set this at build time.',
-    );
-  }
-
-  // In development, tvOS simulators use localhost
-  return 'http://localhost:8000/api/v1';
+  logger.info('API URL configured', { url });
+  return url;
 };
 
 export const API_BASE_URL = getApiBaseUrl();

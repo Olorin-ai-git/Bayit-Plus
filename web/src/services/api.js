@@ -204,35 +204,74 @@ api.interceptors.response.use(
       return api(config)
     }
 
-    // Only logout on authentication failures, not all 401 errors
+    // Handle 401 errors with token refresh and retry
     if (error.response?.status === 401) {
       const errorDetail = error.response?.data?.detail || ''
       const requestUrl = config?.url || ''
 
-      // Only logout if it's from critical auth endpoints
-      const isCriticalAuthEndpoint = ['/auth/me', '/auth/login', '/auth/refresh'].some(path =>
-        requestUrl.includes(path)
-      )
+      // Prevent infinite loops - check if this is already a retry
+      const isRetry = config.headers['X-Bayit-Retry-After-Refresh']
 
-      // Or if it's a token validation error (not just "not authenticated")
-      const isTokenError = [
-        'Could not validate credentials',
-        'Invalid authentication credentials',
-        'Token has expired',
-        'Invalid token',
-        'Signature has expired'
-      ].some(msg => errorDetail.toLowerCase().includes(msg.toLowerCase()))
-
-      if (isCriticalAuthEndpoint || isTokenError) {
-        // Use auth store logout - consistent with admin API and shared API client
+      if (isRetry) {
+        apiLogger.warn('401 after refresh retry, logging out', {
+          correlationId,
+          url: requestUrl
+        })
         useAuthStore.getState().logout()
-
-        // Redirect to login page with return URL
-        const currentPath = window.location.pathname
-        if (!currentPath.includes('/login')) {
-          window.location.href = `/login?redirect=${encodeURIComponent(currentPath)}`
-        }
+        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
+        return Promise.reject(error.response?.data || error)
       }
+
+      // Check if this is the refresh endpoint itself
+      const isRefreshEndpoint = requestUrl.includes('/auth/refresh')
+
+      if (isRefreshEndpoint) {
+        apiLogger.error('Token refresh endpoint failed, logging out', { correlationId })
+        useAuthStore.getState().logout()
+        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
+        return Promise.reject(error.response?.data || error)
+      }
+
+      // Attempt token refresh
+      const refreshToken = useAuthStore.getState().refreshToken
+      if (!refreshToken) {
+        apiLogger.warn('No refresh token available, logging out', { correlationId })
+        useAuthStore.getState().logout()
+        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
+        return Promise.reject(error.response?.data || error)
+      }
+
+      try {
+        apiLogger.info('Attempting token refresh after 401', {
+          correlationId,
+          url: requestUrl
+        })
+
+        const refreshed = await useAuthStore.getState().refreshAccessToken()
+
+        if (refreshed) {
+          // Retry original request with new token
+          const newToken = useAuthStore.getState().token
+          config.headers.Authorization = `Bearer ${newToken}`
+          config.headers['X-Bayit-Retry-After-Refresh'] = 'true'
+
+          apiLogger.info('Retrying request with refreshed token', {
+            correlationId,
+            url: requestUrl
+          })
+
+          return api(config)
+        }
+      } catch (refreshError) {
+        apiLogger.error('Token refresh failed', {
+          correlationId,
+          error: refreshError
+        })
+      }
+
+      // Refresh failed - logout
+      useAuthStore.getState().logout()
+      window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
     }
 
     return Promise.reject(error.response?.data || error)

@@ -4072,7 +4072,12 @@
     "untitled": "Untitled",
     "guest": "Guest",
     "anonymous": "Anonymous",
-    "content": "Content"
+    "content": "Content",
+    "email_placeholder": "अपना ईमेल दर्ज करें",
+    "password_placeholder": "अपना पासवर्ड दर्ज करें",
+    "new_password": "नया पासवर्ड",
+    "confirm_password": "पासवर्ड की पुष्टि करें",
+    "confirm_password_placeholder": "अपना पासवर्ड फिर से दर्ज करें"
   },
   "components": {
     "select": {
@@ -10141,5 +10146,27 @@
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
     "pageIndicator": "Page {{current}} of {{total}}"
+  },
+  "forgot_password": {
+    "title": "पासवर्ड रीसेट करें",
+    "subtitle": "अपना ईमेल पता दर्ज करें और हम आपको पासवर्ड रीसेट करने के लिए एक लिंक भेजेंगे",
+    "submit": "रीसेट लिंक भेजें",
+    "success_title": "अपना ईमेल जांचें",
+    "success_message": "हमने आपको पासवर्ड रीसेट लिंक भेज दिया है। कृपया अपने इनबॉक्स की जांच करें।",
+    "back_to_login": "लॉगिन पर वापस जाएं"
+  },
+  "reset_password": {
+    "title": "नया पासवर्ड बनाएं",
+    "subtitle": "अपने खाते के लिए एक मजबूत पासवर्ड चुनें",
+    "submit": "पासवर्ड रीसेट करें",
+    "requirements": "पासवर्ड में होना चाहिए:",
+    "requirement_length": "कम से कम 8 वर्ण",
+    "requirement_uppercase": "एक बड़ा अक्षर",
+    "requirement_lowercase": "एक छोटा अक्षर",
+    "requirement_number": "एक संख्या",
+    "requirement_match": "पासवर्ड मेल खाते हैं",
+    "success_title": "पासवर्ड रीसेट हो गया!",
+    "success_message": "आपका पासवर्ड सफलतापूर्वक रीसेट कर दिया गया है। अब आप अपने नए पासवर्ड से साइन इन कर सकते हैं।",
+    "back_to_login": "लॉगिन पर वापस जाएं"
   }
 }

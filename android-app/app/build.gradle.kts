@@ -27,7 +27,22 @@ android {
 
         buildConfigField("String", "API_BASE_URL", "\"${project.findProperty("bayit.api.baseUrl") ?: "https://api.bayit.tv/"}\"")
         buildConfigField("String", "WS_BASE_URL", "\"${project.findProperty("bayit.ws.baseUrl") ?: "wss://ws.bayit.tv/"}\"")
-        buildConfigField("String", "GOOGLE_CLIENT_ID", "\"${project.findProperty("bayit.google.clientId") ?: ""}\"")
+        buildConfigField(
+            "String",
+            "GOOGLE_CLIENT_ID",
+            "\"${project.findProperty("bayit.google.clientId")?.toString()
+                ?: throw GradleException(
+                    """
+                    Missing required property: bayit.google.clientId
+
+                    Add to gradle.properties:
+                      bayit.google.clientId=YOUR_GOOGLE_CLIENT_ID
+
+                    Get client ID from Google Cloud Console:
+                      https://console.cloud.google.com/apis/credentials
+                    """.trimIndent()
+                )}\""
+        )
 
     }
 

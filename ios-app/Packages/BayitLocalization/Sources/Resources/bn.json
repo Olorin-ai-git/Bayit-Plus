@@ -4062,7 +4062,12 @@
     "untitled": "Untitled",
     "guest": "Guest",
     "anonymous": "Anonymous",
-    "content": "Content"
+    "content": "Content",
+    "email_placeholder": "আপনার ইমেইল লিখুন",
+    "password_placeholder": "আপনার পাসওয়ার্ড লিখুন",
+    "new_password": "নতুন পাসওয়ার্ড",
+    "confirm_password": "পাসওয়ার্ড নিশ্চিত করুন",
+    "confirm_password_placeholder": "আপনার পাসওয়ার্ড পুনরায় লিখুন"
   },
   "components": {
     "select": {
@@ -10117,5 +10122,27 @@
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
     "pageIndicator": "Page {{current}} of {{total}}"
+  },
+  "forgot_password": {
+    "title": "পাসওয়ার্ড রিসেট করুন",
+    "subtitle": "আপনার ইমেইল ঠিকানা লিখুন এবং আমরা আপনাকে পাসওয়ার্ড রিসেট করার জন্য একটি লিঙ্ক পাঠাব",
+    "submit": "রিসেট লিঙ্ক পাঠান",
+    "success_title": "আপনার ইমেইল চেক করুন",
+    "success_message": "আমরা আপনাকে একটি পাসওয়ার্ড রিসেট লিঙ্ক পাঠিয়েছি। অনুগ্রহ করে আপনার ইনবক্স চেক করুন।",
+    "back_to_login": "লগইনে ফিরে যান"
+  },
+  "reset_password": {
+    "title": "নতুন পাসওয়ার্ড তৈরি করুন",
+    "subtitle": "আপনার অ্যাকাউন্টের জন্য একটি শক্তিশালী পাসওয়ার্ড নির্বাচন করুন",
+    "submit": "পাসওয়ার্ড রিসেট করুন",
+    "requirements": "পাসওয়ার্ডে থাকতে হবে:",
+    "requirement_length": "কমপক্ষে ৮টি অক্ষর",
+    "requirement_uppercase": "একটি বড় হাতের অক্ষর",
+    "requirement_lowercase": "একটি ছোট হাতের অক্ষর",
+    "requirement_number": "একটি সংখ্যা",
+    "requirement_match": "পাসওয়ার্ড মিলছে",
+    "success_title": "পাসওয়ার্ড রিসেট হয়েছে!",
+    "success_message": "আপনার পাসওয়ার্ড সফলভাবে রিসেট করা হয়েছে। এখন আপনি আপনার নতুন পাসওয়ার্ড দিয়ে সাইন ইন করতে পারবেন।",
+    "back_to_login": "লগইনে ফিরে যান"
   }
 }

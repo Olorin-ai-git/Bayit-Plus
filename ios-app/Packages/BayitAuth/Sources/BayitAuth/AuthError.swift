@@ -28,6 +28,7 @@ public enum AuthError: LocalizedError, Sendable {
     case unlinkProviderFailed(underlying: String)
     case providerAlreadyLinked(underlying: String)
     case networkError(underlying: String)
+    case passwordResetFailed(underlying: String)
 
     /// User-facing message suitable for display in the UI.
     /// Avoids exposing technical details.
@@ -77,6 +78,8 @@ public enum AuthError: LocalizedError, Sendable {
             return "This account is already linked to another user"
         case .networkError:
             return "Network error. Please check your connection."
+        case .passwordResetFailed:
+            return "Password reset failed. Please try again."
         }
     }
 
@@ -134,6 +137,8 @@ public enum AuthError: LocalizedError, Sendable {
             return "Provider already linked: \(underlying)"
         case .networkError(let underlying):
             return "Network error: \(underlying)"
+        case .passwordResetFailed(let underlying):
+            return "Password reset failed: \(underlying)"
         }
     }
 }

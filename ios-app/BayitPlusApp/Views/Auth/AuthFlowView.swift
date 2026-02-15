@@ -2,7 +2,7 @@ import BayitAuth
 import BayitDesignSystem
 import SwiftUI
 
-/// Authentication flow: Login -> Register -> Profile Selection
+/// Authentication flow: Login -> Register -> Forgot Password -> Reset Password -> Profile Selection
 struct AuthFlowView: View {
     @State private var authStep: AuthStep = .login
     @Environment(NavigationCoordinator.self) private var coordinator
@@ -11,6 +11,8 @@ struct AuthFlowView: View {
     enum AuthStep {
         case login
         case register
+        case forgotPassword
+        case resetPassword(token: String)
         case profileSelection
     }
 
@@ -32,6 +34,9 @@ struct AuthFlowView: View {
                     onRegister: {
                         withAnimation { authStep = .register }
                     },
+                    onForgotPassword: {
+                        withAnimation { authStep = .forgotPassword }
+                    },
                     onLoginSuccess: {
                         withAnimation { authStep = .profileSelection }
                     }
@@ -48,6 +53,29 @@ struct AuthFlowView: View {
                     },
                     onRegisterSuccess: {
                         withAnimation { authStep = .profileSelection }
+                    }
+                )
+                .transition(.asymmetric(
+                    insertion: .move(edge: .trailing),
+                    removal: .move(edge: .leading)
+                ))
+
+            case .forgotPassword:
+                ForgotPasswordView(
+                    onBack: {
+                        withAnimation { authStep = .login }
+                    }
+                )
+                .transition(.asymmetric(
+                    insertion: .move(edge: .trailing),
+                    removal: .move(edge: .leading)
+                ))
+
+            case .resetPassword(let token):
+                ResetPasswordView(
+                    token: token,
+                    onSuccess: {
+                        withAnimation { authStep = .login }
                     }
                 )
                 .transition(.asymmetric(

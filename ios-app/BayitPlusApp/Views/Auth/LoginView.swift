@@ -16,6 +16,7 @@ struct LoginView: View {
     @State private var biometricService = BiometricAuthService()
 
     let onRegister: () -> Void
+    let onForgotPassword: () -> Void
     let onLoginSuccess: () -> Void
 
     var body: some View {
@@ -98,9 +99,11 @@ struct LoginView: View {
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(Color.white.opacity(0.7))
                 Spacer()
-                Button(localization.t("login.forgotPassword")) {}
-                    .font(.system(size: 13, weight: .medium))
-                    .foregroundStyle(DesignTokens.Colors.Primary.base)
+                Button(localization.t("login.forgotPassword")) {
+                    onForgotPassword()
+                }
+                .font(.system(size: 13, weight: .medium))
+                .foregroundStyle(DesignTokens.Colors.Primary.base)
             }
 
             AuthComponents.GlassSecureField(

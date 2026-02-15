@@ -196,6 +196,29 @@ export const olorinAuthService = {
   },
 
   /**
+   * Request password reset email
+   */
+  requestPasswordReset: async (email: string) => {
+    const response = await authClient.post('/auth/password-reset/request', {
+      email,
+      tenant_id: TENANT_ID,
+    });
+    return response.data;
+  },
+
+  /**
+   * Confirm password reset with token
+   */
+  confirmPasswordReset: async (token: string, newPassword: string) => {
+    const response = await authClient.post('/auth/password-reset/confirm', {
+      token,
+      new_password: newPassword,
+      tenant_id: TENANT_ID,
+    });
+    return response.data;
+  },
+
+  /**
    * Get JWKS (public key for token verification)
    */
   getJWKS: async () => {

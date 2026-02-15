@@ -3995,6 +3995,11 @@
     "title": "タイトル",
     "description": "説明",
     "content": "コンテンツ",
+    "email_placeholder": "メールアドレスを入力",
+    "password_placeholder": "パスワードを入力",
+    "new_password": "新しいパスワード",
+    "confirm_password": "パスワードの確認",
+    "confirm_password_placeholder": "パスワードを再入力",
     "text": "テキスト",
     "image": "画像",
     "video": "動画",
@@ -11060,5 +11065,27 @@
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
     "pageIndicator": "Page {{current}} of {{total}}"
+  },
+  "forgot_password": {
+    "title": "パスワードをリセット",
+    "subtitle": "メールアドレスを入力すると、パスワードリセット用のリンクをお送りします",
+    "submit": "リセットリンクを送信",
+    "success_title": "メールを確認してください",
+    "success_message": "パスワードリセット用のリンクをお送りしました。受信トレイをご確認ください。",
+    "back_to_login": "ログインに戻る"
+  },
+  "reset_password": {
+    "title": "新しいパスワードを作成",
+    "subtitle": "アカウント用の強力なパスワードを選択してください",
+    "submit": "パスワードをリセット",
+    "requirements": "パスワードの要件:",
+    "requirement_length": "8文字以上",
+    "requirement_uppercase": "大文字1文字",
+    "requirement_lowercase": "小文字1文字",
+    "requirement_number": "数字1文字",
+    "requirement_match": "パスワードが一致",
+    "success_title": "パスワードがリセットされました！",
+    "success_message": "パスワードが正常にリセットされました。新しいパスワードでサインインできます。",
+    "back_to_login": "ログインに戻る"
   }
 }

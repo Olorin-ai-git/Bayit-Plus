@@ -11,8 +11,8 @@ import javax.inject.Singleton
 /**
  * Injects the Bearer token from [AuthTokenProvider] into every request.
  *
- * On a 401 response, attempts a single token refresh and retries
- * the request transparently -- mirroring the iOS APIClient auth flow.
+ * 401 handling is now done by [TokenAuthenticator] for cleaner separation
+ * and proper retry coordination via OkHttp's built-in Authenticator mechanism.
  *
  * Must be added as the first application interceptor so that all
  * subsequent interceptors and the network layer see the Authorization header.
@@ -39,39 +39,11 @@ class AuthInterceptor @Inject constructor(
             originalRequest
         }
 
-        val response = chain.proceed(authenticatedRequest)
-
-        if (response.code == HTTP_UNAUTHORIZED && token != null) {
-            logger.info(
-                "Received 401, attempting token refresh",
-                mapOf("url" to originalRequest.url.encodedPath),
-            )
-            val refreshedToken = runBlocking { authTokenProvider.refreshToken() }
-
-            if (refreshedToken != null) {
-                response.close()
-                val retryRequest = originalRequest.newBuilder()
-                    .header(AUTHORIZATION_HEADER, "$BEARER_PREFIX$refreshedToken")
-                    .build()
-                logger.debug(
-                    "Retrying request with refreshed token",
-                    mapOf("url" to originalRequest.url.encodedPath),
-                )
-                return chain.proceed(retryRequest)
-            }
-
-            logger.warning(
-                "Token refresh returned null, returning 401 response",
-                mapOf("url" to originalRequest.url.encodedPath),
-            )
-        }
-
-        return response
+        return chain.proceed(authenticatedRequest)
     }
 
     companion object {
         private const val AUTHORIZATION_HEADER = "Authorization"
         private const val BEARER_PREFIX = "Bearer "
-        private const val HTTP_UNAUTHORIZED = 401
     }
 }

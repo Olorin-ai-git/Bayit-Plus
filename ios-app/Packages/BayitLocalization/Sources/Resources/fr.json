@@ -4190,7 +4190,12 @@
     "untitled": "Untitled",
     "guest": "Guest",
     "anonymous": "Anonymous",
-    "content": "Content"
+    "content": "Content",
+    "email_placeholder": "Entrez votre email",
+    "password_placeholder": "Entrez votre mot de passe",
+    "new_password": "Nouveau Mot de Passe",
+    "confirm_password": "Confirmer le Mot de Passe",
+    "confirm_password_placeholder": "Saisissez à nouveau votre mot de passe"
   },
   "components": {
     "loading": "Chargement...",
@@ -11015,5 +11020,27 @@
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
     "pageIndicator": "Page {{current}} of {{total}}"
+  },
+  "forgot_password": {
+    "title": "Réinitialiser le Mot de Passe",
+    "subtitle": "Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe",
+    "submit": "Envoyer le Lien de Réinitialisation",
+    "success_title": "Vérifiez Votre Email",
+    "success_message": "Nous vous avons envoyé un lien de réinitialisation de mot de passe. Veuillez vérifier votre boîte de réception.",
+    "back_to_login": "Retour à la Connexion"
+  },
+  "reset_password": {
+    "title": "Créer un Nouveau Mot de Passe",
+    "subtitle": "Choisissez un mot de passe fort pour votre compte",
+    "submit": "Réinitialiser le Mot de Passe",
+    "requirements": "Le mot de passe doit contenir :",
+    "requirement_length": "Au moins 8 caractères",
+    "requirement_uppercase": "Une lettre majuscule",
+    "requirement_lowercase": "Une lettre minuscule",
+    "requirement_number": "Un chiffre",
+    "requirement_match": "Les mots de passe correspondent",
+    "success_title": "Mot de Passe Réinitialisé !",
+    "success_message": "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.",
+    "back_to_login": "Retour à la Connexion"
   }
 }

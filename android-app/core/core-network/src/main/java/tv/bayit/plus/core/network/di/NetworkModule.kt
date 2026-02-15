@@ -13,6 +13,7 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import tv.bayit.plus.core.common.logging.BayitLogger
 import tv.bayit.plus.core.network.NetworkConfiguration
 import tv.bayit.plus.core.network.api.BayitApiClient
+import tv.bayit.plus.core.network.authenticator.TokenAuthenticator
 import tv.bayit.plus.core.network.interceptor.AuthInterceptor
 import tv.bayit.plus.core.network.interceptor.CorrelationIdInterceptor
 import tv.bayit.plus.core.network.interceptor.LocaleInterceptor
@@ -25,8 +26,11 @@ import javax.inject.Singleton
  * Hilt module providing OkHttpClient, Retrofit, kotlinx.serialization Json,
  * and the [BayitApiClient].
  *
+ * OkHttp configuration order:
+ * 0. Authenticator -- handles 401 responses with token refresh (before interceptors)
+ *
  * Interceptor order (matching iOS APIClient header injection order):
- * 1. Auth       -- injects Bearer token (+ 401 refresh)
+ * 1. Auth       -- injects Bearer token
  * 2. Correlation -- injects X-Correlation-ID UUID
  * 3. Locale     -- injects Accept-Language from device
  * 4. RateLimit  -- handles 429 with Retry-After
@@ -57,6 +61,7 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
+        tokenAuthenticator: TokenAuthenticator,
         authInterceptor: AuthInterceptor,
         correlationIdInterceptor: CorrelationIdInterceptor,
         localeInterceptor: LocaleInterceptor,
@@ -65,6 +70,7 @@ object NetworkModule {
         loggingInterceptor: HttpLoggingInterceptor,
         configuration: NetworkConfiguration,
     ): OkHttpClient = OkHttpClient.Builder()
+        .authenticator(tokenAuthenticator)
         .addInterceptor(authInterceptor)
         .addInterceptor(correlationIdInterceptor)
         .addInterceptor(localeInterceptor)

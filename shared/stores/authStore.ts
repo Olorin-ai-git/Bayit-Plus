@@ -437,6 +437,31 @@ export const useAuthStore = create<AuthState>()(
               state.scheduleTokenRefresh();
             }
           }
+
+          // Add page visibility listener (web only)
+          if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+            const handleVisibilityChange = () => {
+              if (!document.hidden && state.token && state.refreshToken) {
+                // User returned to tab - check if token needs refresh
+                try {
+                  const payload = JSON.parse(atob(state.token.split('.')[1]));
+                  if (payload && payload.exp) {
+                    const expiresIn = (payload.exp * 1000) - Date.now();
+                    const tenMinutes = 10 * 60 * 1000;
+
+                    // Refresh if expires within 10 minutes
+                    if (expiresIn < tenMinutes && expiresIn > 0) {
+                      state.refreshAccessToken();
+                    }
+                  }
+                } catch (error) {
+                  // Silent fail - don't break on invalid token format
+                }
+              }
+            };
+
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+          }
         }
       },
     }

@@ -4091,7 +4091,12 @@
     "untitled": "Untitled",
     "guest": "Guest",
     "anonymous": "Anonymous",
-    "content": "Content"
+    "content": "Content",
+    "email_placeholder": "Enter your email",
+    "password_placeholder": "Enter your password",
+    "new_password": "New Password",
+    "confirm_password": "Confirm Password",
+    "confirm_password_placeholder": "Re-enter your password"
   },
   "components": {
     "select": {
@@ -9747,5 +9752,27 @@
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
     "pageIndicator": "Page {{current}} of {{total}}"
+  },
+  "forgot_password": {
+    "title": "Reset Password",
+    "subtitle": "Enter your email address and we'll send you a link to reset your password",
+    "submit": "Send Reset Link",
+    "success_title": "Check Your Email",
+    "success_message": "We've sent you a password reset link. Please check your inbox.",
+    "back_to_login": "Back to Login"
+  },
+  "reset_password": {
+    "title": "Create New Password",
+    "subtitle": "Choose a strong password for your account",
+    "submit": "Reset Password",
+    "requirements": "Password must have:",
+    "requirement_length": "At least 8 characters",
+    "requirement_uppercase": "One uppercase letter",
+    "requirement_lowercase": "One lowercase letter",
+    "requirement_number": "One number",
+    "requirement_match": "Passwords match",
+    "success_title": "Password Reset!",
+    "success_message": "Your password has been successfully reset. You can now sign in with your new password.",
+    "back_to_login": "Back to Login"
   }
 }

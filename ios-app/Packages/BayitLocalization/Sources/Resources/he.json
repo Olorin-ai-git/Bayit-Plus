@@ -4090,7 +4090,12 @@
     "untitled": "ללא כותרת",
     "guest": "אורח",
     "anonymous": "אנונימי",
-    "content": "תוכן"
+    "content": "תוכן",
+    "email_placeholder": "הזן את האימייל שלך",
+    "password_placeholder": "הזן את הסיסמה שלך",
+    "new_password": "סיסמה חדשה",
+    "confirm_password": "אימות סיסמה",
+    "confirm_password_placeholder": "הזן שוב את הסיסמה"
   },
   "components": {
     "select": {
@@ -10153,5 +10158,27 @@
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
     "pageIndicator": "Page {{current}} of {{total}}"
+  },
+  "forgot_password": {
+    "title": "איפוס סיסמה",
+    "subtitle": "הזן את כתובת האימייל שלך ונשלח לך קישור לאיפוס הסיסמה",
+    "submit": "שלח קישור לאיפוס",
+    "success_title": "בדוק את האימייל שלך",
+    "success_message": "שלחנו לך קישור לאיפוס סיסמה. אנא בדוק את תיבת הדואר הנכנס שלך.",
+    "back_to_login": "חזרה להתחברות"
+  },
+  "reset_password": {
+    "title": "צור סיסמה חדשה",
+    "subtitle": "בחר סיסמה חזקה לחשבון שלך",
+    "submit": "אפס סיסמה",
+    "requirements": "הסיסמה חייבת להכיל:",
+    "requirement_length": "לפחות 8 תווים",
+    "requirement_uppercase": "אות גדולה אחת",
+    "requirement_lowercase": "אות קטנה אחת",
+    "requirement_number": "ספרה אחת",
+    "requirement_match": "הסיסמאות תואמות",
+    "success_title": "הסיסמה אופסה!",
+    "success_message": "הסיסמה שלך אופסה בהצלחה. כעת תוכל להתחבר עם הסיסמה החדשה שלך.",
+    "back_to_login": "חזרה להתחברות"
   }
 }

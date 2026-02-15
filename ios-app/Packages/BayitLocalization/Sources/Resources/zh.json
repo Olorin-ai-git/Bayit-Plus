@@ -4066,7 +4066,12 @@
     "untitled": "Untitled",
     "guest": "Guest",
     "anonymous": "Anonymous",
-    "content": "Content"
+    "content": "Content",
+    "email_placeholder": "输入您的邮箱",
+    "password_placeholder": "输入您的密码",
+    "new_password": "新密码",
+    "confirm_password": "确认密码",
+    "confirm_password_placeholder": "重新输入您的密码"
   },
   "components": {
     "select": {
@@ -10132,5 +10137,27 @@
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
     "pageIndicator": "Page {{current}} of {{total}}"
+  },
+  "forgot_password": {
+    "title": "重置密码",
+    "subtitle": "输入您的邮箱地址，我们将向您发送重置密码的链接",
+    "submit": "发送重置链接",
+    "success_title": "查看您的邮箱",
+    "success_message": "我们已向您发送密码重置链接。请检查您的收件箱。",
+    "back_to_login": "返回登录"
+  },
+  "reset_password": {
+    "title": "创建新密码",
+    "subtitle": "为您的账户选择一个强密码",
+    "submit": "重置密码",
+    "requirements": "密码必须包含：",
+    "requirement_length": "至少8个字符",
+    "requirement_uppercase": "一个大写字母",
+    "requirement_lowercase": "一个小写字母",
+    "requirement_number": "一个数字",
+    "requirement_match": "密码匹配",
+    "success_title": "密码已重置！",
+    "success_message": "您的密码已成功重置。现在您可以使用新密码登录了。",
+    "back_to_login": "返回登录"
   }
 }

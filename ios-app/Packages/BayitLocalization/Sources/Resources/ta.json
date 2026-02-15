@@ -4149,7 +4149,12 @@
     "untitled": "Untitled",
     "guest": "Guest",
     "anonymous": "Anonymous",
-    "content": "Content"
+    "content": "Content",
+    "email_placeholder": "உங்கள் மின்னஞ்சலை உள்ளிடவும்",
+    "password_placeholder": "உங்கள் கடவுச்சொல்லை உள்ளிடவும்",
+    "new_password": "புதிய கடவுச்சொல்",
+    "confirm_password": "கடவுச்சொல்லை உறுதிப்படுத்தவும்",
+    "confirm_password_placeholder": "உங்கள் கடவுச்சொல்லை மீண்டும் உள்ளிடவும்"
   },
   "components": {
     "select": {
@@ -10215,5 +10220,27 @@
     "noPagesAvailable": "No Pages Available",
     "noPagesDescription": "This zine has no pages to display.",
     "pageIndicator": "Page {{current}} of {{total}}"
+  },
+  "forgot_password": {
+    "title": "கடவுச்சொல்லை மீட்டமை",
+    "subtitle": "உங்கள் மின்னஞ்சல் முகவரியை உள்ளிடவும், கடவுச்சொல்லை மீட்டமைக்க ஒரு இணைப்பை அனுப்புவோம்",
+    "submit": "மீட்டமைப்பு இணைப்பை அனுப்பு",
+    "success_title": "உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்",
+    "success_message": "கடவுச்சொல் மீட்டமைப்பு இணைப்பை அனுப்பியுள்ளோம். உங்கள் இன்பாக்ஸைச் சரிபார்க்கவும்.",
+    "back_to_login": "உள்நுழைவுக்குத் திரும்பு"
+  },
+  "reset_password": {
+    "title": "புதிய கடவுச்சொல்லை உருவாக்கு",
+    "subtitle": "உங்கள் கணக்கிற்கு வலுவான கடவுச்சொல்லைத் தேர்ந்தெடுக்கவும்",
+    "submit": "கடவுச்சொல்லை மீட்டமை",
+    "requirements": "கடவுச்சொல்லில் இருக்க வேண்டும்:",
+    "requirement_length": "குறைந்தது 8 எழுத்துக்கள்",
+    "requirement_uppercase": "ஒரு பெரிய எழுத்து",
+    "requirement_lowercase": "ஒரு சிறிய எழுத்து",
+    "requirement_number": "ஒரு எண்",
+    "requirement_match": "கடவுச்சொற்கள் பொருந்துகின்றன",
+    "success_title": "கடவுச்சொல் மீட்டமைக்கப்பட்டது!",
+    "success_message": "உங்கள் கடவுச்சொல் வெற்றிகரமாக மீட்டமைக்கப்பட்டது. இப்போது உங்கள் புதிய கடவுச்சொல்லுடன் உள்நுழையலாம்.",
+    "back_to_login": "உள்நுழைவுக்குத் திரும்பு"
   }
 }

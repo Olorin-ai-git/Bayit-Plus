@@ -344,6 +344,51 @@ public final class AuthManager {
         }
     }
 
+    // MARK: - Password Reset
+
+    /// Request password reset email from Olorin Auth Service.
+    ///
+    /// Maps to `POST /api/v1/auth/password-reset/request` on auth.olorin.ai.
+    /// - Parameter email: User's email address
+    public func requestPasswordReset(email: String) async throws {
+        do {
+            try await PasswordResetClient.requestPasswordReset(
+                email: email,
+                logger: logger
+            )
+            logger.info("Password reset email requested", metadata: ["email": email])
+        } catch {
+            let wrapped = AuthError.passwordResetFailed(
+                underlying: error.localizedDescription
+            )
+            self.error = wrapped
+            throw wrapped
+        }
+    }
+
+    /// Confirm password reset with token from email.
+    ///
+    /// Maps to `POST /api/v1/auth/password-reset/confirm` on auth.olorin.ai.
+    /// - Parameters:
+    ///   - token: Reset token from email
+    ///   - newPassword: New password meeting requirements (8+ chars, uppercase, lowercase, number)
+    public func confirmPasswordReset(token: String, newPassword: String) async throws {
+        do {
+            try await PasswordResetClient.confirmPasswordReset(
+                token: token,
+                newPassword: newPassword,
+                logger: logger
+            )
+            logger.info("Password reset confirmed successfully")
+        } catch {
+            let wrapped = AuthError.passwordResetFailed(
+                underlying: error.localizedDescription
+            )
+            self.error = wrapped
+            throw wrapped
+        }
+    }
+
     // MARK: - Internal State Mutation
 
     /// Clears all local authentication state.
