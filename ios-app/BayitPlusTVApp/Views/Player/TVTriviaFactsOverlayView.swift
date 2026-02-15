@@ -2,8 +2,10 @@ import BayitDesignSystem
 import BayitLocalization
 import SwiftUI
 
-/// Enhanced trivia facts overlay for tvOS with AI-based features.
-/// Matches iOS and web app implementations with glass design, categories, and multilingual support.
+/// AI-powered trivia banner overlay for tvOS - compact glassmorphic design in upper screen area.
+/// Slides in/out from trailing edge. Supports AI-detected topics, follow-up chains,
+/// related persons, and auto-dismiss progress from the live trivia pipeline.
+/// Scaled for 10-foot UI with focus-based navigation on Siri Remote.
 struct TVTriviaFactsOverlayView: View {
     @Environment(LocalizationManager.self) private var localization
     @Bindable var viewModel: TriviaFactsViewModel
@@ -19,18 +21,30 @@ struct TVTriviaFactsOverlayView: View {
     var body: some View {
         VStack {
             Spacer()
+                .frame(height: bannerTopOffset)
 
-            if let fact = viewModel.activeFact {
-                HStack {
-                    factCard(fact)
-                        .padding(.leading, TVDesignTokens.Spacing.xxl)
-                    Spacer()
+            HStack {
+                Spacer()
+
+                if let fact = viewModel.activeFact {
+                    factBanner(fact)
+                        .frame(maxWidth: bannerMaxWidth)
+                        .padding(.trailing, TVDesignTokens.Spacing.xl)
+                        .transition(
+                            .asymmetric(
+                                insertion: .move(edge: .trailing)
+                                    .combined(with: .opacity),
+                                removal: .move(edge: .trailing)
+                                    .combined(with: .opacity)
+                            )
+                        )
                 }
-                .padding(.bottom, bottomPadding)
-                .transition(.move(edge: .bottom).combined(with: .opacity))
-                .animation(.easeInOut(duration: 0.3), value: fact.id)
             }
+
+            Spacer()
         }
+        .animation(.spring(duration: 0.5, bounce: 0.12), value: viewModel.activeFact?.id)
+        .allowsHitTesting(viewModel.activeFact != nil)
         .onChange(of: currentTime) { _, newTime in
             viewModel.updateActiveFact(currentTime: newTime)
         }
@@ -51,99 +65,35 @@ struct TVTriviaFactsOverlayView: View {
         }
     }
 
-    // MARK: - Fact Card
+    // MARK: - Banner Layout
 
-    private func factCard(_ fact: TriviaFact) -> some View {
-        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.md) {
-            // Header
-            HStack(spacing: TVDesignTokens.Spacing.sm) {
-                Image(systemName: "lightbulb.fill")
-                    .font(.system(size: 22))
-                    .foregroundStyle(Color.yellow)
+    private func factBanner(_ fact: TriviaFact) -> some View {
+        VStack(alignment: .leading, spacing: TVDesignTokens.Spacing.sm) {
+            // Header row: sparkle icon + "AI Trivia" + detected topic + dismiss
+            headerRow(fact)
 
-                Text(localization.t("trivia.didYouKnow"))
-                    .font(.system(size: TVDesignTokens.FontSize.sm, weight: .bold))
-                    .foregroundStyle(DesignTokens.Text.primary)
-
-                Spacer()
-
-                Button {
-                    viewModel.dismissFact()
-                    onDismiss()
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 24))
-                        .foregroundStyle(DesignTokens.Text.muted)
-                }
-                .buttonStyle(.plain)
-            }
-
-            // Category Badge
+            // Category badge
             if let category = fact.category {
                 categoryBadge(category: category)
             }
 
-            // Fact Text with Flag
-            HStack(alignment: .top, spacing: TVDesignTokens.Spacing.sm) {
-                Text(languageFlag(for: currentLanguage))
-                    .font(.system(size: 24))
+            // Fact text
+            Text(factText(fact))
+                .font(.system(size: TVDesignTokens.FontSize.base))
+                .foregroundStyle(DesignTokens.Text.primary)
+                .lineLimit(3)
+                .fixedSize(horizontal: false, vertical: true)
 
-                Text(factText(fact))
-                    .font(.system(size: TVDesignTokens.FontSize.lg))
-                    .foregroundStyle(DesignTokens.Text.primary)
-                    .lineLimit(3)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+            // Related person + follow-up row
+            bottomRow(fact)
 
-            // Follow-Up Button
-            if fact.hasFollowUp == true {
-                Button {
-                    // Handle follow-up action
-                } label: {
-                    HStack(spacing: TVDesignTokens.Spacing.sm) {
-                        Image(systemName: "sparkles")
-                            .font(.system(size: 18))
-                            .foregroundStyle(Color.yellow)
-
-                        Text(localization.t("trivia.wantToKnowMore"))
-                            .font(.system(size: TVDesignTokens.FontSize.sm, weight: .medium))
-                            .foregroundStyle(DesignTokens.Text.primary)
-
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14))
-                            .foregroundStyle(DesignTokens.Text.muted)
-                    }
-                    .padding(.horizontal, TVDesignTokens.Spacing.md)
-                    .padding(.vertical, TVDesignTokens.Spacing.sm)
-                    .background(
-                        Capsule()
-                            .fill(Color.white.opacity(0.1))
-                    )
-                }
-                .buttonStyle(.plain)
-            }
-
-            // Related Person
-            if let relatedPerson = fact.relatedPerson {
-                HStack(spacing: TVDesignTokens.Spacing.sm) {
-                    Image(systemName: "chevron.right")
-                        .font(.system(size: 16))
-                        .foregroundStyle(DesignTokens.Info.default)
-
-                    Text(relatedPerson)
-                        .font(.system(size: TVDesignTokens.FontSize.sm))
-                        .foregroundStyle(DesignTokens.Info.default)
-                }
-            }
-
-            // Progress Bar
+            // Auto-dismiss progress bar
             progressBar
         }
-        .padding(TVDesignTokens.Spacing.lg)
-        .frame(maxWidth: 600, alignment: .leading)
+        .padding(TVDesignTokens.Spacing.md)
         .background(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
-                .fill(Color.black.opacity(0.85))
+                .fill(Color.black.opacity(0.75))
                 .background(
                     RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
                         .fill(.ultraThinMaterial.opacity(0.3))
@@ -152,9 +102,45 @@ struct TVTriviaFactsOverlayView: View {
         .clipShape(RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg))
         .overlay(
             RoundedRectangle(cornerRadius: TVDesignTokens.Radius.lg)
-                .stroke(Color.white.opacity(0.15), lineWidth: 1)
+                .stroke(DesignTokens.Glass.border, lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
+        .shadow(color: DesignTokens.Glass.purpleGlow, radius: 6, x: 0, y: 3)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(bannerAccessibilityLabel(fact))
+    }
+
+    // MARK: - Header
+
+    private func headerRow(_ fact: TriviaFact) -> some View {
+        HStack(spacing: TVDesignTokens.Spacing.xs) {
+            Image(systemName: "sparkles")
+                .font(.system(size: 20))
+                .foregroundStyle(DesignTokens.Primary.p400)
+
+            Text(localization.t("trivia.aiTrivia"))
+                .font(.system(size: TVDesignTokens.FontSize.xs, weight: .bold))
+                .foregroundStyle(DesignTokens.Primary.p400)
+
+            if let topic = fact.detectedTopic {
+                Text("  \(topic)")
+                    .font(.system(size: TVDesignTokens.FontSize.xs))
+                    .foregroundStyle(DesignTokens.Text.muted)
+                    .lineLimit(1)
+            }
+
+            Spacer()
+
+            Button {
+                viewModel.dismissFact()
+                onDismiss()
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 22))
+                    .foregroundStyle(DesignTokens.Text.muted)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(localization.t("common.dismiss"))
+        }
     }
 
     // MARK: - Category Badge
@@ -162,26 +148,95 @@ struct TVTriviaFactsOverlayView: View {
     private func categoryBadge(category: String) -> some View {
         let (icon, color) = categoryIconAndColor(for: category)
 
-        return HStack(spacing: TVDesignTokens.Spacing.xs) {
+        return HStack(spacing: TVDesignTokens.Spacing.xxs) {
             Image(systemName: icon)
-                .font(.system(size: 16))
+                .font(.system(size: 14))
                 .foregroundStyle(color)
 
             Text(category.uppercased())
-                .font(.system(size: TVDesignTokens.FontSize.xs, weight: .bold))
+                .font(.system(size: 14, weight: .bold))
                 .foregroundStyle(color)
         }
-        .padding(.horizontal, TVDesignTokens.Spacing.md)
-        .padding(.vertical, TVDesignTokens.Spacing.xs)
+        .padding(.horizontal, TVDesignTokens.Spacing.sm)
+        .padding(.vertical, TVDesignTokens.Spacing.xxs)
         .background(
-            Capsule()
-                .fill(color.opacity(0.2))
+            Capsule().fill(color.opacity(0.15))
         )
         .overlay(
-            Capsule()
-                .stroke(color.opacity(0.4), lineWidth: 1)
+            Capsule().stroke(color.opacity(0.3), lineWidth: 0.5)
         )
     }
+
+    // MARK: - Bottom Row (Related Person + Follow-Up)
+
+    private func bottomRow(_ fact: TriviaFact) -> some View {
+        HStack(spacing: TVDesignTokens.Spacing.md) {
+            if let person = fact.relatedPerson {
+                HStack(spacing: TVDesignTokens.Spacing.xxs) {
+                    Image(systemName: "person.fill")
+                        .font(.system(size: 16))
+                        .foregroundStyle(DesignTokens.Info.default)
+
+                    Text(person)
+                        .font(.system(size: TVDesignTokens.FontSize.xs))
+                        .foregroundStyle(DesignTokens.Info.default)
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer()
+
+            if fact.hasFollowUp == true {
+                followUpButton
+            }
+        }
+    }
+
+    private var followUpButton: some View {
+        Button {
+            viewModel.requestFollowUp()
+        } label: {
+            HStack(spacing: TVDesignTokens.Spacing.xxs) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 16))
+                    .foregroundStyle(DesignTokens.Secondary.s400)
+
+                Text(localization.t("trivia.more"))
+                    .font(.system(size: TVDesignTokens.FontSize.xs, weight: .medium))
+                    .foregroundStyle(DesignTokens.Text.primary)
+
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12))
+                    .foregroundStyle(DesignTokens.Text.muted)
+            }
+            .padding(.horizontal, TVDesignTokens.Spacing.sm)
+            .padding(.vertical, TVDesignTokens.Spacing.xxs)
+            .background(
+                Capsule().fill(Color.white.opacity(0.1))
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(localization.t("trivia.wantToKnowMore"))
+    }
+
+    // MARK: - Progress Bar
+
+    private var progressBar: some View {
+        GeometryReader { geometry in
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Color.white.opacity(0.15))
+                    .frame(height: 4)
+
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(DesignTokens.Primary.p400)
+                    .frame(width: geometry.size.width * progressValue, height: 4)
+            }
+        }
+        .frame(height: 4)
+    }
+
+    // MARK: - Category Styling
 
     private func categoryIconAndColor(for category: String) -> (String, Color) {
         switch category.lowercased() {
@@ -200,33 +255,12 @@ struct TVTriviaFactsOverlayView: View {
         }
     }
 
-    // MARK: - Progress Bar
-
-    private var progressBar: some View {
-        GeometryReader { geometry in
-            ZStack(alignment: .leading) {
-                // Track
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(Color.white.opacity(0.2))
-                    .frame(height: 4)
-
-                // Fill
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(DesignTokens.Primary.p400)
-                    .frame(width: geometry.size.width * progressValue, height: 4)
-            }
-        }
-        .frame(height: 4)
-    }
-
     // MARK: - Helpers
 
     private func factText(_ fact: TriviaFact) -> String {
-        // New schema: check translations dict
         if let translations = fact.translations, let text = translations[currentLanguage] {
             return text
         }
-        // Legacy fields fallback
         switch currentLanguage {
         case "he": if let he = fact.textHe { return he }
         case "en": if let en = fact.textEn { return en }
@@ -236,28 +270,24 @@ struct TVTriviaFactsOverlayView: View {
         return fact.text ?? ""
     }
 
-    private func languageFlag(for language: String) -> String {
-        switch language {
-        case "he": return "🇮🇱"
-        case "en": return "🇺🇸"
-        case "es": return "🇪🇸"
-        case "fr": return "🇫🇷"
-        case "de": return "🇩🇪"
-        case "ru": return "🇷🇺"
-        case "ar": return "🇸🇦"
-        case "pt": return "🇧🇷"
-        case "it": return "🇮🇹"
-        case "ja": return "🇯🇵"
-        default: return "🌐"
+    private func bannerAccessibilityLabel(_ fact: TriviaFact) -> String {
+        var label = "AI Trivia"
+        if let topic = fact.detectedTopic {
+            label += " about \(topic)"
         }
+        label += ": \(factText(fact))"
+        return label
     }
 
-    private var bottomPadding: CGFloat {
-        if isSubtitlesActive {
-            return TVDesignTokens.Spacing.xxxxl + TVDesignTokens.Spacing.xxl
-        } else {
-            return TVDesignTokens.Spacing.xxxxl
-        }
+    /// Position banner in upper third of TV screen.
+    private var bannerTopOffset: CGFloat {
+        // tvOS screen is 1080p - position at ~15% from top
+        180
+    }
+
+    /// Compact width for tvOS - roughly 40% of 1920px screen.
+    private var bannerMaxWidth: CGFloat {
+        750
     }
 
     private func startProgressAnimation() {
@@ -266,18 +296,18 @@ struct TVTriviaFactsOverlayView: View {
 
         guard let fact = viewModel.activeFact else { return }
         let duration = TimeInterval(fact.displayDuration ?? 15)
+        let steps = 60
 
         progressTask = Task {
-            let steps = 60  // 60 steps for smooth animation
             let stepDuration = duration / Double(steps)
 
             for i in 0...steps {
                 if Task.isCancelled { break }
-
                 await MainActor.run {
-                    progressValue = CGFloat(i) / CGFloat(steps)
+                    withAnimation(.linear(duration: stepDuration)) {
+                        progressValue = CGFloat(i) / CGFloat(steps)
+                    }
                 }
-
                 try? await Task.sleep(for: .seconds(stepDuration))
             }
         }
