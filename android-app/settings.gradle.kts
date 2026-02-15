@@ -34,6 +34,7 @@ include(":core:core-auth")
 include(":core:core-media")
 include(":core:core-voice")
 include(":core:core-analytics")
+include(":core:core-testing")
 
 // Design system
 include(":designsystem")
