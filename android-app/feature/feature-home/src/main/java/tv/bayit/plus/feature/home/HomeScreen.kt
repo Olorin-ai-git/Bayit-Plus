@@ -3,12 +3,9 @@ package tv.bayit.plus.feature.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -25,6 +22,11 @@ import tv.bayit.plus.designsystem.theme.DesignTokens
 fun HomeRoute(
     onNavigateToContent: (String, String) -> Unit,
     onNavigateToPlayer: (String, String) -> Unit,
+    onNavigateToChannel: (String) -> Unit,
+    onNavigateToRadio: (String) -> Unit,
+    onNavigateToYoungsters: () -> Unit,
+    onNavigateToJerusalem: () -> Unit,
+    onNavigateToTelAviv: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
 ) {
@@ -32,12 +34,13 @@ fun HomeRoute(
 
     HomeScreen(
         uiState = uiState,
-        onSpotlightClick = { item ->
-            onNavigateToPlayer(item.id, item.type.orEmpty())
-        },
-        onContentClick = { item ->
-            onNavigateToContent(item.id, item.type.orEmpty())
-        },
+        onSpotlightClick = { item -> onNavigateToPlayer(item.id, item.type.orEmpty()) },
+        onContentClick = { item -> onNavigateToContent(item.id, item.type.orEmpty()) },
+        onChannelClick = onNavigateToChannel,
+        onRadioClick = onNavigateToRadio,
+        onYoungstersClick = onNavigateToYoungsters,
+        onJerusalemClick = onNavigateToJerusalem,
+        onTelAvivClick = onNavigateToTelAviv,
         onRefresh = viewModel::refresh,
         modifier = modifier,
     )
@@ -48,52 +51,33 @@ internal fun HomeScreen(
     uiState: HomeUiState,
     onSpotlightClick: (SpotlightItem) -> Unit,
     onContentClick: (ContentItem) -> Unit,
+    onChannelClick: (String) -> Unit,
+    onRadioClick: (String) -> Unit,
+    onYoungstersClick: () -> Unit,
+    onJerusalemClick: () -> Unit,
+    onTelAvivClick: () -> Unit,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (uiState) {
-        is HomeUiState.Loading -> {
-            GlassLoadingIndicator(modifier = modifier)
-        }
-        is HomeUiState.Success -> {
-            PullToRefreshBox(
-                isRefreshing = uiState.isRefreshing,
-                onRefresh = onRefresh,
-                modifier = modifier,
-            ) {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(vertical = DesignTokens.Spacing.base),
-                    verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.xl),
-                ) {
-                    if (uiState.spotlight.isNotEmpty()) {
-                        item(key = "hero_spotlight") {
-                            SpotlightSection(
-                                items = uiState.spotlight,
-                                onItemClick = onSpotlightClick,
-                            )
-                        }
-                    }
-
-                    val contentItems = uiState.categoryItems.filterIsInstance<ContentItem>()
-                    if (contentItems.isNotEmpty()) {
-                        item(key = "content_shelf") {
-                            ContentShelfSection(
-                                items = contentItems,
-                                onItemClick = onContentClick,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-        is HomeUiState.Error -> {
-            ErrorSection(
-                message = uiState.message,
-                onRetry = onRefresh,
-                modifier = modifier,
-            )
-        }
+        is HomeUiState.Loading -> GlassLoadingIndicator(modifier = modifier)
+        is HomeUiState.Success -> HomeSuccessContent(
+            uiState = uiState,
+            onSpotlightClick = onSpotlightClick,
+            onContentClick = onContentClick,
+            onChannelClick = onChannelClick,
+            onRadioClick = onRadioClick,
+            onYoungstersClick = onYoungstersClick,
+            onJerusalemClick = onJerusalemClick,
+            onTelAvivClick = onTelAvivClick,
+            onRefresh = onRefresh,
+            modifier = modifier,
+        )
+        is HomeUiState.Error -> ErrorSection(
+            message = uiState.message,
+            onRetry = onRefresh,
+            modifier = modifier,
+        )
     }
 }
 
@@ -103,10 +87,7 @@ private fun ErrorSection(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(DesignTokens.Spacing.md),
@@ -116,10 +97,7 @@ private fun ErrorSection(
                 style = MaterialTheme.typography.bodyLarge,
                 color = DesignTokens.Colors.Semantic.error,
             )
-            GlassButton(
-                text = "Retry",
-                onClick = onRetry,
-            )
+            GlassButton(text = "Retry", onClick = onRetry)
         }
     }
 }

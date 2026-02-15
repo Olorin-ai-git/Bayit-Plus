@@ -18,6 +18,8 @@ let package = Package(
         .library(name: "BayitPersistence", targets: ["BayitPersistence"]),
         .library(name: "BayitAnalytics", targets: ["BayitAnalytics"]),
         .library(name: "BayitWidgetShared", targets: ["BayitWidgetShared"]),
+        .library(name: "BayitNotifications", targets: ["BayitNotifications"]),
+        .library(name: "BayitCast", targets: ["BayitCast"]),
     ],
     dependencies: [
         .package(url: "https://github.com/firebase/firebase-ios-sdk.git", from: "11.0.0"),
@@ -72,7 +74,11 @@ let package = Package(
         // MARK: - BayitMedia
         .target(
             name: "BayitMedia",
-            dependencies: ["BayitCore", "BayitNetworking"],
+            dependencies: [
+                "BayitCore",
+                "BayitNetworking",
+                .product(name: "GLTFKit2", package: "GLTFKit2"),
+            ],
             path: "Packages/BayitMedia/Sources/BayitMedia"
         ),
 
@@ -93,7 +99,11 @@ let package = Package(
         // MARK: - BayitAnalytics
         .target(
             name: "BayitAnalytics",
-            dependencies: ["BayitCore"],
+            dependencies: [
+                "BayitCore",
+                .product(name: "FirebaseAnalytics", package: "firebase-ios-sdk"),
+                .product(name: "FirebaseCrashlytics", package: "firebase-ios-sdk"),
+            ],
             path: "Packages/BayitAnalytics/Sources/BayitAnalytics"
         ),
 
@@ -102,6 +112,27 @@ let package = Package(
             name: "BayitWidgetShared",
             dependencies: ["BayitCore"],
             path: "Packages/BayitWidgetShared/Sources/BayitWidgetShared"
+        ),
+
+        // MARK: - BayitNotifications
+        .target(
+            name: "BayitNotifications",
+            dependencies: [
+                "BayitCore",
+                "BayitNetworking",
+                .product(name: "FirebaseMessaging", package: "firebase-ios-sdk"),
+            ],
+            path: "Packages/BayitNotifications/Sources/BayitNotifications"
+        ),
+
+        // MARK: - BayitCast
+        .target(
+            name: "BayitCast",
+            dependencies: [
+                "BayitCore",
+                "BayitMedia",
+            ],
+            path: "Packages/BayitCast/Sources/BayitCast"
         ),
 
         // MARK: - Tests
@@ -146,6 +177,18 @@ let package = Package(
             name: "BayitWidgetSharedTests",
             dependencies: ["BayitWidgetShared", "BayitCore"],
             path: "Packages/BayitWidgetShared/Tests/BayitWidgetSharedTests"
+        ),
+
+        .testTarget(
+            name: "BayitNotificationsTests",
+            dependencies: ["BayitNotifications", "BayitCore", "BayitNetworking"],
+            path: "Packages/BayitNotifications/Tests/BayitNotificationsTests"
+        ),
+
+        .testTarget(
+            name: "BayitCastTests",
+            dependencies: ["BayitCast", "BayitCore", "BayitMedia"],
+            path: "Packages/BayitCast/Tests/BayitCastTests"
         ),
     ]
 )

@@ -111,13 +111,19 @@ struct MagicMirrorView: View {
     @ViewBuilder
     private var avatarSceneView: some View {
         if let glbData = glbData {
-            SceneKitView(glbData: glbData)
-                .frame(height: 280)
-                .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
-                        .stroke(DesignTokens.Glass.border, lineWidth: 1)
-                )
+            ZStack(alignment: .topLeading) {
+                SceneKitView(glbData: glbData)
+                Text("GLB \(glbData.count / 1024)KB")
+                    .font(.system(size: 10))
+                    .foregroundStyle(.green)
+                    .padding(4)
+            }
+            .frame(height: 280)
+            .clipShape(RoundedRectangle(cornerRadius: DesignTokens.Radius.lg))
+            .overlay(
+                RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
+                    .stroke(DesignTokens.Glass.border, lineWidth: 1)
+            )
         } else if meshLoadFailed {
             RoundedRectangle(cornerRadius: DesignTokens.Radius.lg)
                 .fill(DesignTokens.Glass.bg.opacity(0.3))
@@ -197,6 +203,7 @@ struct MagicMirrorView: View {
         noAvatar = false
         glbData = nil
         meshLoadFailed = false
+        NSLog("BAYIT_MM loadGreeting start profileId=\(profileId)")
 
         Task {
             do {
@@ -208,6 +215,7 @@ struct MagicMirrorView: View {
                 let fetched = try await greetingTask
                 let avatarsResponse = try? await avatarsTask
                 let avatarId = avatarsResponse?.avatars.first?.avatarId
+                NSLog("BAYIT_MM greeting ok, avatarId=\(avatarId ?? "nil")")
 
                 await MainActor.run {
                     greeting = fetched
@@ -218,6 +226,7 @@ struct MagicMirrorView: View {
                 if let avatarId {
                     await loadAvatarMesh(avatarId: avatarId)
                 } else {
+                    NSLog("BAYIT_MM no avatarId, meshLoadFailed")
                     await MainActor.run { meshLoadFailed = true }
                 }
             } catch let apiError as APIError {
@@ -250,6 +259,7 @@ struct MagicMirrorView: View {
             let (data, response) = try await URLSession.shared.data(from: url)
             let httpStatus = (response as? HTTPURLResponse)?.statusCode ?? 0
             let isValidGlb = (httpStatus == 200 || httpStatus == 0) && data.count > 50_000
+            NSLog("BAYIT_MM meshDownload status=\(httpStatus) size=\(data.count) valid=\(isValidGlb)")
             await MainActor.run {
                 if isValidGlb {
                     glbData = data

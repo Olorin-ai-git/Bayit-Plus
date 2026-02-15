@@ -1,8 +1,7 @@
 import BayitDesignSystem
 import BayitLocalization
-import ModelIO
+import BayitMedia
 import SceneKit
-import SceneKit.ModelIO
 import SwiftUI
 
 struct LiveAvatarOverlayView: View {
@@ -108,15 +107,7 @@ struct LiveAvatarOverlayView: View {
 
     private func loadGLBNode(from url: URL) async throws -> SCNNode {
         let (data, _) = try await URLSession.shared.data(from: url)
-        let tempDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("bayit-live-\(UUID().uuidString)")
-        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-        let tempURL = tempDir.appendingPathComponent("avatar.glb")
-        try data.write(to: tempURL)
-        let asset = MDLAsset(url: tempURL)
-        asset.loadTextures()
-        let scene = SCNScene(mdlAsset: asset)
-        return scene.rootNode.childNodes.first ?? SCNNode()
+        return try GLBSceneLoader.loadNode(from: data) ?? SCNNode()
     }
 
     private func applyBlendShapes() {

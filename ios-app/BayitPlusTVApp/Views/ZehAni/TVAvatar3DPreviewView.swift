@@ -2,9 +2,8 @@
 import BayitCore
 import BayitDesignSystem
 import BayitLocalization
-import ModelIO
+import BayitMedia
 import SceneKit
-import SceneKit.ModelIO
 import SwiftUI
 
 struct TVAvatar3DPreviewView: View {
@@ -170,20 +169,11 @@ private struct AvatarSceneView: UIViewRepresentable {
     }
 
     private func loadModel(into scene: SCNScene) {
-        let tempDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("bayit-tvglb-\(UUID().uuidString)")
-        try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-        let tempURL = tempDir.appendingPathComponent("avatar.glb")
-        do {
-            try glbData.write(to: tempURL)
-            let asset = MDLAsset(url: tempURL)
-            asset.loadTextures()
-            let loadedScene = SCNScene(mdlAsset: asset)
-            for child in loadedScene.rootNode.childNodes {
-                scene.rootNode.addChildNode(child)
-            }
-        } catch {
+        guard let loadedScene = try? GLBSceneLoader.loadScene(from: glbData) else {
             return
+        }
+        for child in loadedScene.rootNode.childNodes {
+            scene.rootNode.addChildNode(child)
         }
     }
 }

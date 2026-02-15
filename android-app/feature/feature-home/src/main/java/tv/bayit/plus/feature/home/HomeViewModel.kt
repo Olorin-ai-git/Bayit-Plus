@@ -3,26 +3,44 @@ package tv.bayit.plus.feature.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import tv.bayit.plus.core.common.BayitResult
 import tv.bayit.plus.core.common.logging.BayitLogger
+import tv.bayit.plus.core.data.repository.CategoryRepository
 import tv.bayit.plus.core.data.repository.ContentRepository
-import tv.bayit.plus.core.model.ContentCategory
+import tv.bayit.plus.core.data.repository.LiveTVRepository
+import tv.bayit.plus.core.data.repository.RadioRepository
+import tv.bayit.plus.core.model.CityContentResponse
+import tv.bayit.plus.core.model.CultureTrendingItem
 import tv.bayit.plus.core.model.FeaturedResponse
-import tv.bayit.plus.core.model.SpotlightItem
+import tv.bayit.plus.core.model.IsraeliBusinessesResponse
+import tv.bayit.plus.core.model.IsraelisInCityResponse
+import tv.bayit.plus.core.model.LiveChannelItem
+import tv.bayit.plus.core.model.RadioStationItem
+import tv.bayit.plus.core.model.SectionContentItem
+import tv.bayit.plus.core.model.WatchHistoryItem
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val contentRepository: ContentRepository,
+    private val liveTVRepository: LiveTVRepository,
+    private val radioRepository: RadioRepository,
+    private val categoryRepository: CategoryRepository,
     private val logger: BayitLogger,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
+
+    private val hiddenChannelKeywords = listOf("king 5", "king5", "cnn", "abc")
+    private val hiddenCategoryKeywords = listOf(
+        "movie", "series", "audiobook", "kid", "children", "music", "documentar"
+    )
 
     init {
         loadHomeFeed()
@@ -42,20 +60,11 @@ class HomeViewModel @Inject constructor(
 
             when (val featuredResult = contentRepository.getFeatured()) {
                 is BayitResult.Success -> {
-                    @Suppress("UNCHECKED_CAST")
-                    val items = featuredResult.data as List<Any>
-                    val spotlight = items.filterIsInstance<SpotlightItem>()
-
-                    when (val categoriesResult = contentRepository.getHomeFeed()) {
-                        is BayitResult.Success -> {
-                            @Suppress("UNCHECKED_CAST")
-                            val categoryItems = categoriesResult.data as List<Any>
-                            handleFeedLoaded(spotlight, categoryItems)
-                        }
-                        is BayitResult.Error -> {
-                            handleFeedLoaded(spotlight, emptyList())
-                        }
-                        is BayitResult.Loading -> Unit
+                    val featured = featuredResult.data as? FeaturedResponse
+                    if (featured != null) {
+                        loadAdditionalSections(featured)
+                    } else {
+                        handleError("Invalid featured data format")
                     }
                 }
                 is BayitResult.Error -> {
@@ -65,7 +74,8 @@ class HomeViewModel @Inject constructor(
                         mapOf("errorMessage" to featuredResult.message.orEmpty()),
                     )
                     _uiState.value = HomeUiState.Error(
-                        message = featuredResult.message ?: featuredResult.exception.message.orEmpty(),
+                        message = featuredResult.message
+                            ?: featuredResult.exception.message.orEmpty(),
                     )
                 }
                 is BayitResult.Loading -> Unit
@@ -73,22 +83,127 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun handleFeedLoaded(
-        spotlight: List<SpotlightItem>,
-        categoryItems: List<Any>,
-    ) {
+    private suspend fun loadAdditionalSections(featured: FeaturedResponse) {
+        val liveChannelsDeferred = viewModelScope.async { loadLiveChannels() }
+        val radioStationsDeferred = viewModelScope.async { loadRadioStations() }
+        val continueWatchingDeferred = viewModelScope.async { loadContinueWatching() }
+        val trendingDeferred = viewModelScope.async { loadTrending() }
+        val youngstersDeferred = viewModelScope.async { loadYoungsters() }
+        val telAvivDeferred = viewModelScope.async { loadTelAvivContent() }
+        val jerusalemDeferred = viewModelScope.async { loadJerusalemContent() }
+        val israelisDeferred = viewModelScope.async { loadIsraelisInCity() }
+        val businessesDeferred = viewModelScope.async { loadIsraeliBusinesses() }
+
+        val liveChannels = liveChannelsDeferred.await()
+        val radioStations = radioStationsDeferred.await()
+        val continueWatching = continueWatchingDeferred.await()
+        val trending = trendingDeferred.await()
+        val youngsters = youngstersDeferred.await()
+        val telAviv = telAvivDeferred.await()
+        val jerusalem = jerusalemDeferred.await()
+        val israelisInCity = israelisDeferred.await()
+        val israeliBusinesses = businessesDeferred.await()
+
         logger.info(
             "Home feed loaded",
             mapOf(
-                "spotlightCount" to spotlight.size.toString(),
-                "categoryItemCount" to categoryItems.size.toString(),
+                "spotlightCount" to featured.spotlight.size.toString(),
+                "categoriesCount" to featured.categories.size.toString(),
+                "liveChannelsCount" to liveChannels.size.toString(),
+                "radioStationsCount" to radioStations.size.toString(),
             ),
         )
+
         _uiState.value = HomeUiState.Success(
-            spotlight = spotlight,
-            categoryItems = categoryItems,
+            hero = featured.hero,
+            spotlight = featured.spotlight,
+            categories = filterCategories(featured.categories),
+            liveChannels = liveChannels,
+            radioStations = radioStations,
+            continueWatching = continueWatching,
+            trendingContent = trending,
+            youngstersTrending = youngsters,
+            telAvivContent = telAviv,
+            jerusalemContent = jerusalem,
+            israelisInCity = israelisInCity,
+            israeliBusinesses = israeliBusinesses,
             isRefreshing = false,
         )
+    }
+
+    private suspend fun loadLiveChannels(): List<LiveChannelItem> {
+        return try {
+            when (val result = liveTVRepository.getChannels()) {
+                is BayitResult.Success -> {
+                    val channels = (result.data as? List<*>)?.filterIsInstance<LiveChannelItem>()
+                        ?: emptyList()
+                    channels.filter { channel ->
+                        val name = channel.name?.lowercase() ?: return@filter true
+                        !hiddenChannelKeywords.any { keyword -> name.contains(keyword) }
+                    }.take(8)
+                }
+                else -> emptyList()
+            }
+        } catch (e: Exception) {
+            logger.debug("Failed to load live channels (non-blocking)", mapOf("error" to e.message.orEmpty()))
+            emptyList()
+        }
+    }
+
+    private suspend fun loadRadioStations(): List<RadioStationItem> {
+        return try {
+            when (val result = radioRepository.getStations()) {
+                is BayitResult.Success -> {
+                    val stations = (result.data as? List<*>)?.filterIsInstance<RadioStationItem>()
+                        ?: emptyList()
+                    stations.take(8)
+                }
+                else -> emptyList()
+            }
+        } catch (e: Exception) {
+            logger.debug("Failed to load radio stations (non-blocking)", mapOf("error" to e.message.orEmpty()))
+            emptyList()
+        }
+    }
+
+    private suspend fun loadContinueWatching(): List<WatchHistoryItem> {
+        return emptyList()
+    }
+
+    private suspend fun loadTrending(): List<CultureTrendingItem> {
+        return emptyList()
+    }
+
+    private suspend fun loadYoungsters(): List<SectionContentItem> {
+        return emptyList()
+    }
+
+    private suspend fun loadTelAvivContent(): CityContentResponse? {
+        return null
+    }
+
+    private suspend fun loadJerusalemContent(): CityContentResponse? {
+        return null
+    }
+
+    private suspend fun loadIsraelisInCity(): IsraelisInCityResponse? {
+        return null
+    }
+
+    private suspend fun loadIsraeliBusinesses(): IsraeliBusinessesResponse? {
+        return null
+    }
+
+    private fun filterCategories(categories: List<tv.bayit.plus.core.model.ContentCategory>): List<tv.bayit.plus.core.model.ContentCategory> {
+        return categories.filter { category ->
+            val name = category.name.lowercase()
+            !hiddenCategoryKeywords.any { keyword -> name.contains(keyword) }
+        }
+    }
+
+    private fun handleError(message: String) {
+        logger.error("Home feed error", null, mapOf("message" to message))
+        _uiState.value = HomeUiState.Error(message = message)
     }
 }
 
@@ -96,8 +211,18 @@ sealed interface HomeUiState {
     data object Loading : HomeUiState
 
     data class Success(
-        val spotlight: List<SpotlightItem>,
-        val categoryItems: List<Any>,
+        val hero: tv.bayit.plus.core.model.HeroContent? = null,
+        val spotlight: List<tv.bayit.plus.core.model.SpotlightItem> = emptyList(),
+        val categories: List<tv.bayit.plus.core.model.ContentCategory> = emptyList(),
+        val liveChannels: List<LiveChannelItem> = emptyList(),
+        val radioStations: List<RadioStationItem> = emptyList(),
+        val continueWatching: List<WatchHistoryItem> = emptyList(),
+        val trendingContent: List<CultureTrendingItem> = emptyList(),
+        val youngstersTrending: List<SectionContentItem> = emptyList(),
+        val telAvivContent: CityContentResponse? = null,
+        val jerusalemContent: CityContentResponse? = null,
+        val israelisInCity: IsraelisInCityResponse? = null,
+        val israeliBusinesses: IsraeliBusinessesResponse? = null,
         val isRefreshing: Boolean = false,
     ) : HomeUiState
 

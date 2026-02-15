@@ -32,7 +32,7 @@ android {
 
 dependencies {
     // Core Android dependencies
-    implementation(libs.androidx.core.ktx)
+    implementation(libs.core.ktx)
 
     // JUnit 5
     api(libs.junit.jupiter.api)
@@ -50,11 +50,14 @@ dependencies {
     api(libs.truth)
 
     // Coroutines Test
-    api(libs.kotlinx.coroutines.test)
+    api(libs.coroutines.test)
 
     // Kotlin Test
     api(libs.kotlin.test)
 
     // Core models (for test data)
     implementation(project(":core:core-model"))
+
+    // Common for BayitResult
+    implementation(project(":core:core-common"))
 }

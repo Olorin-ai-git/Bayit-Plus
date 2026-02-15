@@ -1,8 +1,7 @@
 import BayitDesignSystem
 import BayitLocalization
-import ModelIO
+import BayitMedia
 import SceneKit
-import SceneKit.ModelIO
 import SwiftUI
 
 struct Avatar3DPreviewView: View {
@@ -124,35 +123,44 @@ struct SceneKitView: UIViewRepresentable {
         scnView.scene = scene
 
         if let loadedScene = loadGLB(from: glbData) {
-            let childCount = loadedScene.rootNode.childNodes.count
-            for child in loadedScene.rootNode.childNodes {
+            let children = loadedScene.rootNode.childNodes
+            for child in children {
                 scene.rootNode.addChildNode(child)
             }
-            let (minV, maxV) = scene.rootNode.boundingBox
-            NSLog("BAYIT_3D children=\(childCount) min=(\(minV.x),\(minV.y),\(minV.z)) max=(\(maxV.x),\(maxV.y),\(maxV.z))")
-            frameCameraToFit(scene: scene, in: scnView)
-            setupLighting(in: scene)
+            if !children.isEmpty {
+                frameCameraToFit(scene: scene, in: scnView)
+                setupLighting(in: scene)
+            }
+            addDebugLabel(to: scnView, text: "nodes: \(children.count)")
         } else {
-            NSLog("BAYIT_3D loadGLB returned nil")
+            addDebugLabel(to: scnView, text: "GLB LOAD FAILED")
         }
 
         return scnView
     }
 
+    private func addDebugLabel(to view: SCNView, text: String) {
+        let label = UILabel()
+        label.text = text
+        label.textColor = .green
+        label.font = .systemFont(ofSize: 12)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -8),
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
+        ])
+    }
+
     func updateUIView(_ uiView: SCNView, context: Context) {}
 
     private func loadGLB(from data: Data) -> SCNScene? {
-        let tempDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("bayit-glb-\(UUID().uuidString)")
-        try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-        let tempURL = tempDir.appendingPathComponent("avatar.glb")
         do {
-            try data.write(to: tempURL)
-            let asset = MDLAsset(url: tempURL)
-            asset.loadTextures()
-            let scene = SCNScene(mdlAsset: asset)
+            let scene = try GLBSceneLoader.loadScene(from: data)
+            NSLog("BAYIT_3D loadGLB success children=\(scene.rootNode.childNodes.count)")
             return scene
         } catch {
+            NSLog("BAYIT_3D loadGLB error: \(error)")
             return nil
         }
     }

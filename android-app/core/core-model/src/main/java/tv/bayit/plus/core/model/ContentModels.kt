@@ -132,3 +132,51 @@ data class RelatedItem(
     val year: Int? = null,
     val type: String? = null,
 )
+
+/** Trending content item (What's Hot in Israel). */
+@Serializable
+data class CultureTrendingItem(
+    val id: String,
+    val title: String? = null,
+    val description: String? = null,
+    val thumbnail: String? = null,
+    val duration: String? = null,
+    val type: String? = null,
+)
+
+/** Generic section content item (used for youngsters, city content, etc.). */
+@Serializable
+data class SectionContentItem(
+    val id: String,
+    val title: String? = null,
+    val thumbnail: String? = null,
+    val duration: String? = null,
+    val type: String? = null,
+)
+
+/** Response from location-based content endpoints (Israelis in City). */
+@Serializable
+data class IsraelisInCityResponse(
+    val content: LocationContent? = null,
+    val coverage: String? = null,
+)
+
+/** Response from Israeli businesses endpoint. */
+@Serializable
+data class IsraeliBusinessesResponse(
+    val content: LocationContent? = null,
+    val coverage: String? = null,
+)
+
+/** Location-based content container. */
+@Serializable
+data class LocationContent(
+    @SerialName("news_articles") val newsArticles: List<SectionContentItem>? = null,
+    @SerialName("community_events") val communityEvents: List<SectionContentItem>? = null,
+)
+
+/** Response from city-specific content endpoints (Jerusalem, Tel Aviv). */
+@Serializable
+data class CityContentResponse(
+    val items: List<SectionContentItem> = emptyList(),
+)
