@@ -428,5 +428,55 @@ class BetaCreditService:
             return (False, None)
         
         is_critical = balance < self.settings.BETA_CREDIT_CRITICAL_THRESHOLD
-        
+
         return (is_critical, balance)
+
+
+class CreditServiceWrapper:
+    """
+    Wrapper for backward compatibility with legacy charge_credits API.
+    This will be initialized with proper dependencies when the database is ready.
+    """
+    def __init__(self):
+        self._service: Optional[BetaCreditService] = None
+
+    def initialize(self, settings: Settings, metering_service: MeteringService, db):
+        """Initialize with dependencies after database connection is ready."""
+        self._service = BetaCreditService(settings, metering_service, db)
+
+    async def charge_credits(
+        self,
+        user_id: str,
+        amount: float,
+        reason: str,
+        metadata: dict = None
+    ) -> Tuple[bool, int]:
+        """
+        Legacy API wrapper for charge_credits - delegates to deduct_credits.
+
+        Args:
+            user_id: User ID
+            amount: Credit amount to charge
+            reason: Feature/reason for charge
+            metadata: Additional metadata
+
+        Returns:
+            Tuple of (success: bool, remaining_credits: int)
+        """
+        if self._service is None:
+            logger.warning(
+                "Credit service not initialized - skipping credit charge",
+                extra={"user_id": user_id, "reason": reason, "amount": amount}
+            )
+            return (True, 0)  # Return success to not block functionality during development
+
+        return await self._service.deduct_credits(
+            user_id=user_id,
+            feature=reason,
+            usage_amount=amount,
+            metadata=metadata
+        )
+
+
+# Default instance (will be initialized when database is ready)
+credit_service = CreditServiceWrapper()

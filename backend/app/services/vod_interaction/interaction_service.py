@@ -13,12 +13,14 @@ from app.models.vod_interaction import (
     InteractiveMoment
 )
 from app.models.content import Content
-from app.models.zeh_ani_avatar import AvatarMesh
+from app.models.avatar_mesh import AvatarMesh
 from app.services.vod_interaction.character_ai import character_ai_service
 from app.services.vod_interaction.character_animator import character_animator_service
-from app.services.credit_service import credit_service
-from app.core.logging import logger
+from app.services.beta.credit_service import credit_service
+from app.core.logging_config import get_logger
 from app.core.config import settings
+
+logger = get_logger(__name__)
 
 
 CHARACTER_VOICE_MAP = {

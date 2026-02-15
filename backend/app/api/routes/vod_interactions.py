@@ -11,8 +11,10 @@ from pydantic import BaseModel, Field
 from app.models.user import User
 from app.models.vod_interaction import VODInteractionSession, DialogueExchange
 from app.services.vod_interaction.interaction_service import vod_interaction_service
-from app.api.deps import get_current_user
-from app.core.logging import logger
+from app.core.security import get_current_user
+from app.core.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 router = APIRouter(prefix="/vod-interactions", tags=["VOD Interactions"])

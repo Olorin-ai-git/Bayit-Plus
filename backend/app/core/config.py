@@ -708,7 +708,13 @@ class Settings(BaseSettings):
         "ashjVK50jp28G73AUTnb"  # Olorin - custom cloned voice
     )
 
-    # Creatify Aurora (Character animation and lip-sync)
+    # Character Animation Provider Selection
+    CHARACTER_ANIMATION_PROVIDER: str = Field(
+        default="elevenlabs",
+        description="Provider for character animation: 'elevenlabs' or 'creatify'"
+    )
+
+    # Creatify Aurora (Character animation and lip-sync - Alternative provider)
     CREATIFY_API_URL: str = Field(
         default="https://api.creatify.ai",
         description="Creatify Aurora API base URL"
@@ -743,6 +749,17 @@ class Settings(BaseSettings):
         default="ashjVK50jp28G73AUTnb",
         description="Default ElevenLabs voice ID for unmatched characters"
     )
+
+    @field_validator("CHARACTER_ANIMATION_PROVIDER")
+    @classmethod
+    def validate_animation_provider(cls, v: str) -> str:
+        """Validate CHARACTER_ANIMATION_PROVIDER is a supported provider."""
+        valid_providers = ["elevenlabs", "creatify"]
+        if v.lower() not in valid_providers:
+            raise ValueError(
+                f"CHARACTER_ANIMATION_PROVIDER must be one of {valid_providers}, got '{v}'"
+            )
+        return v.lower()
 
     # OpenAI (Whisper speech-to-text)
     OPENAI_API_KEY: str = ""

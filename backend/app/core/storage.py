@@ -698,6 +698,28 @@ class StorageService:
         else:
             return await self._upload_to_local(content, remote_path)
 
+    async def upload_bytes(
+        self, content: bytes, remote_path: str, content_type: str
+    ) -> str:
+        """
+        Upload bytes directly to cloud storage.
+
+        Args:
+            content: File content as bytes
+            remote_path: Destination path in storage (e.g., 'vod-interactions/video.mp4')
+            content_type: MIME type of the content
+
+        Returns:
+            URL of uploaded file
+        """
+        # Upload based on provider type
+        if isinstance(self.provider, GCSStorageProvider):
+            return await self._upload_to_gcs(content, remote_path, content_type)
+        elif isinstance(self.provider, S3StorageProvider):
+            return await self._upload_to_s3(content, remote_path, content_type)
+        else:
+            return await self._upload_to_local(content, remote_path)
+
     async def _upload_to_gcs(
         self, content: bytes, remote_path: str, content_type: str
     ) -> str:
@@ -749,5 +771,6 @@ class StorageService:
         return f"/uploads/{remote_path}"
 
 
-# Default instance
+# Default instances
 storage = get_storage_provider()
+storage_service = StorageService()

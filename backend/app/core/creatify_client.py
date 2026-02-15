@@ -10,7 +10,9 @@ import httpx
 from typing import Optional
 from app.core.config import settings
 from app.core.storage import storage_service
-from app.core.logging import logger
+from app.core.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 class CreatifyClient:
@@ -129,8 +131,8 @@ class CreatifyClient:
                 result = response.json()
                 status = result.get("status")
 
-                if status == "completed":
-                    video_url = result.get("video_url")
+                if status == "done":
+                    video_url = result.get("output")
                     logger.info(
                         "Creatify lip-sync completed",
                         extra={"lipsync_id": lipsync_id, "video_url": video_url}

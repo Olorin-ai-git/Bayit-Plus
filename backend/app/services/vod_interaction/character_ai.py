@@ -6,9 +6,11 @@ Characters stay true to their personality, scene context, and speak naturally to
 """
 
 from typing import List, Optional
-from app.core.ai_clients import anthropic_client
+from app.core.ai_clients import get_anthropic_client
 from app.models.vod_interaction import DialogueExchange, CharacterResponse
-from app.core.logging import logger
+from app.core.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 class CharacterAIService:
@@ -53,7 +55,8 @@ class CharacterAIService:
                 }
             )
 
-            response = await anthropic_client.messages.create(
+            client = get_anthropic_client()
+            response = await client.messages.create(
                 model=self.model,
                 messages=[{"role": "user", "content": prompt}],
                 max_tokens=self.max_tokens

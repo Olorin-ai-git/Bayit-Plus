@@ -1,23 +1,30 @@
 """
 Character Animator Service
 
-Animates movie characters using ElevenLabs TTS + Creatify Aurora lip-sync.
-Generates audio from text, then creates animated video with lip-synced character.
+Animates movie characters using multiple providers:
+- ElevenLabs: Integrated TTS + video generation
+- Creatify Aurora: Separate TTS + lip-sync animation
+
+Provider selection is configurable via CHARACTER_ANIMATION_PROVIDER setting.
 """
 
 import httpx
 from typing import Optional
 from app.core.creatify_client import creatify_client
+from app.core.elevenlabs_animator import elevenlabs_animator_client
 from app.core.config import settings
 from app.core.storage import storage_service
-from app.core.logging import logger
+from app.core.logging_config import get_logger
 from app.models.vod_interaction import AnimatedResponse
+
+logger = get_logger(__name__)
 
 
 class CharacterAnimatorService:
-    """Animates characters with voice and lip-sync"""
+    """Animates characters with voice and lip-sync using multiple providers"""
 
     def __init__(self):
+        self.provider = settings.CHARACTER_ANIMATION_PROVIDER
         self.elevenlabs_api_key = settings.ELEVENLABS_API_KEY
         self.elevenlabs_api_url = "https://api.elevenlabs.io/v1"
 
@@ -45,44 +52,126 @@ class CharacterAnimatorService:
                 "Starting character animation",
                 extra={
                     "character_name": character_name,
-                    "text_length": len(dialogue_text)
+                    "text_length": len(dialogue_text),
+                    "provider": self.provider
                 }
             )
 
-            audio_url = await self._generate_tts(dialogue_text, voice_id, character_name)
-            duration = await self._get_audio_duration(audio_url)
-
-            animated_video_url = await creatify_client.create_lipsync(
-                image_url=character_frame_url,
-                audio_url=audio_url,
-                aspect_ratio="1:1"
-            )
-
-            logger.info(
-                "Character animation completed",
-                extra={
-                    "character_name": character_name,
-                    "duration": duration,
-                    "audio_url": audio_url,
-                    "video_url": animated_video_url
-                }
-            )
-
-            return AnimatedResponse(
-                audio_url=audio_url,
-                video_url=animated_video_url,
-                duration=duration
-            )
+            if self.provider == "elevenlabs":
+                return await self._animate_with_elevenlabs(
+                    character_name,
+                    dialogue_text,
+                    character_frame_url,
+                    voice_id
+                )
+            elif self.provider == "creatify":
+                return await self._animate_with_creatify(
+                    character_name,
+                    dialogue_text,
+                    character_frame_url,
+                    voice_id
+                )
+            else:
+                raise ValueError(f"Unknown animation provider: {self.provider}")
 
         except Exception as e:
             logger.error(
                 "Failed to animate character",
                 extra={
                     "character_name": character_name,
+                    "provider": self.provider,
                     "error": str(e)
                 }
             )
             raise
+
+    async def _animate_with_elevenlabs(
+        self,
+        character_name: str,
+        dialogue_text: str,
+        character_frame_url: str,
+        voice_id: str
+    ) -> AnimatedResponse:
+        """
+        Animate character using ElevenLabs (integrated TTS + video)
+
+        Args:
+            character_name: Name of character
+            dialogue_text: Text to speak
+            character_frame_url: GCS URL of character still image
+            voice_id: ElevenLabs voice ID
+
+        Returns:
+            AnimatedResponse with audio, video, and duration
+        """
+        animated_video_url = await elevenlabs_animator_client.create_lipsync(
+            image_url=character_frame_url,
+            text=dialogue_text,
+            voice_id=voice_id,
+            aspect_ratio="1:1"
+        )
+
+        audio_url = await self._generate_tts(dialogue_text, voice_id, character_name)
+        duration = await self._get_audio_duration(audio_url)
+
+        logger.info(
+            "ElevenLabs character animation completed",
+            extra={
+                "character_name": character_name,
+                "duration": duration,
+                "video_url": animated_video_url
+            }
+        )
+
+        return AnimatedResponse(
+            audio_url=audio_url,
+            video_url=animated_video_url,
+            duration=duration
+        )
+
+    async def _animate_with_creatify(
+        self,
+        character_name: str,
+        dialogue_text: str,
+        character_frame_url: str,
+        voice_id: str
+    ) -> AnimatedResponse:
+        """
+        Animate character using Creatify (separate TTS + lip-sync)
+
+        Args:
+            character_name: Name of character
+            dialogue_text: Text to speak
+            character_frame_url: GCS URL of character still image
+            voice_id: ElevenLabs voice ID for audio
+
+        Returns:
+            AnimatedResponse with audio, video, and duration
+        """
+        audio_url = await self._generate_tts(dialogue_text, voice_id, character_name)
+        duration = await self._get_audio_duration(audio_url)
+
+        animated_video_url = await creatify_client.create_lipsync(
+            image_url=character_frame_url,
+            audio_url=audio_url,
+            aspect_ratio="1:1"
+        )
+
+        logger.info(
+            "Creatify character animation completed",
+            extra={
+                "character_name": character_name,
+                "duration": duration,
+                "audio_url": audio_url,
+                "video_url": animated_video_url
+            }
+        )
+
+        return AnimatedResponse(
+            audio_url=audio_url,
+            video_url=animated_video_url,
+            duration=duration
+        )
 
     async def _generate_tts(
         self,
